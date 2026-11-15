@@ -21,6 +21,7 @@ run from tooling. It is maintainer-only, by hand in Workbench (#370).
 | `tools\cli playtest release` | Never | Yes |
 | Workshop upload of core and pack | Never. **Not yet: maintainer-only.** | Yes, by hand (#370), following [release-first-upload.md](release-first-upload.md) |
 | `tools\cli workshop boot-check <coreId> <packId>` (clean server from Workshop ids, #371) | Yes, once the ids are real | Yes |
+| `tools\cli release chapter <x.y.z>` (Workshop update of both items, the live 0grind server, Discord, tag) | The lead, when a chapter or milestone is done; other agents only `--dry-run` | Told afterwards |
 | `tools\cli example-zip` (draft zip) | Yes | Yes |
 | Set the confirmed Workshop ids in `tools/release/example-zip.json`, then the `--final` zip | Never | Yes (after #370) |
 | Host `preflight` and `restore` after a game update | Never | Yes (the server owner too) |
@@ -54,7 +55,7 @@ Two Workshop items (decision 2026-11-09, #367 and #375):
 
 | Item | Project Name and `.gproj` TITLE | Addon ID | Mod ID |
 |---|---|---|---|
-| Core | `Life Framework (Core)` | `LifeFramework` | `79636E668EA37AC9` |
+| Core | `Life Framework (Core)` | `LifeFramework` | `4550A2B656E1B569` |
 | Flagship pack | `Life Framework: Everon 1989` | `LF_Everon1989` | `B1E84D5687E11724` |
 
 - Versions are semver, `x.y.z`. While both items are 0.x, `tools\cli release <version>` stamps one
@@ -113,6 +114,14 @@ Two Workshop items (decision 2026-11-09, #367 and #375):
    the boot check, is [release-first-upload.md](release-first-upload.md). The version
    scheme and names are settled in #367. Every publish takes a higher version
    number, even for a text-only change.
+
+### Chapter releases (since 2026-11-15)
+
+Both Workshop items exist, so each later release is a headless update. When a chapter or milestone is done, the
+lead runs `tools\cli release chapter <x.y.z>`. It checks the commit, packs both addons, publishes the core and
+then the pack with the Workbench login saved on this PC, pushes the 0grind config, restarts the live server when
+it is empty, verifies the log, posts to Discord and tags `v<x.y.z>`. The 0grind server is both the live alpha and
+the playtest server. The maintainer is told afterwards. Runbook: [release/chapter-release.md](release/chapter-release.md).
 
 ### The first Workshop publish (D3)
 

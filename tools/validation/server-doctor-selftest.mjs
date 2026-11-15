@@ -16,7 +16,7 @@ const expect = (ok, msg) => { if (!ok) fails.push(msg); };
 
 const good = diagnose(fx("good.log"), { triage });
 expect(good.verdict === "PASS", `good boot is PASS: got ${good.verdict}`);
-expect(good.mods.some((m) => m.name === "LifeFramework" && m.guid === "79636E668EA37AC9" && m.version === "0.4.2"), "good: LifeFramework with guid and version listed");
+expect(good.mods.some((m) => m.name === "LifeFramework" && m.guid === "4550A2B656E1B569" && m.version === "0.4.2"), "good: LifeFramework with guid and version listed");
 expect(good.mods.some((m) => m.name === "LF_Everon1989" && m.version === "0.4.1"), "good: the pack listed with its version");
 expect(good.mods.length === 4, `good: four mods loaded: got ${good.mods.length}`);
 expect(good.engine === "193322" && good.game === "1.9.0.37", "good: engine and game versions read");

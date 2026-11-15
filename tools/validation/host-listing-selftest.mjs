@@ -1,11 +1,13 @@
 // tools/validation/host-listing-selftest.mjs
-// inputs: tools/host/listing.mjs, tools/host/commands/listing.mjs, tools/host/a2s.mjs, server/flagship/server.json
+// inputs: tools/host/listing.mjs, tools/host/commands/listing.mjs, tools/host/a2s.mjs, server/flagship/server.json, tools/host/remote-0grind.mjs
 //
 // Proves `tools\cli host listing`: an injected A2S reply that matches server/flagship/server.json
 // passes; a wrong name, a missing password flag and 64 max players each fail with one line;
 // the alpha name is pinned; the challenge step and a silent server are handled.
 // red-proof: before tools/host/listing.mjs existed this printed
 // "FAIL cannot load tools/host/listing.mjs: ERR_MODULE_NOT_FOUND" (2026-11-15).
+// The --remote case (#1734) failed first with "FAIL  commands/listing.mjs does not export listingTarget" (2026-11-16).
+// red-proof: with the password flag still checked this printed "FAIL a listing with the password flag off must not fail" (2026-11-15).
 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -65,7 +67,6 @@ check(ok.ok && ok.problems.length === 0, `matching reply failed: ${ok.problems.j
 // Each failure is exactly one line, and names the field.
 const cases = [
   ["wrong name", infoReply({ name: "Life Framework Playtest" }), /name/],
-  ["missing password flag", infoReply({ password: false }), /password/],
   ["64 max players", infoReply({ maxPlayers: 64 }), /max players/],
 ];
 for (const [label, reply, re] of cases) {
@@ -77,9 +78,11 @@ for (const [label, reply, re] of cases) {
 const drift = await run(infoReply({ name: "Something else" }), { expected: { ...expected, name: "Something else" } });
 check(!drift.ok && drift.problems.some((p) => /name/.test(p)), "a name other than the alpha name must fail even if server.json agrees");
 
-// The password is only waived by an explicit option.
-const open = await run(infoReply({ password: false }), { allowOpen: true });
-check(open.ok, `allowOpen should accept no password: ${open.problems.join(" / ")}`);
+// Reforger's A2S never reports the password flag (a wrong password is refused live), so a listing with the
+// flag off is not a failure, and the output says the password is not reported.
+const noFlag = await run(infoReply({ password: false }));
+check(noFlag.ok && noFlag.problems.length === 0, `a listing with the password flag off must not fail: ${noFlag.problems.join(" / ")}`);
+check(typeof listing.passwordLine === "function" && listing.passwordLine() === "password: not reported by A2S", "listing.passwordLine() must be 'password: not reported by A2S'");
 
 // Version and map are checked only when asked for.
 const ver = await run(infoReply({ version: "1.3.0.1" }), { version: "1.4.0.18" });
@@ -103,6 +106,24 @@ const down = await listing.runListing({ expected, exchange: async () => { throw 
 check(!down.ok && down.problems.length === 1 && /timed out/.test(down.problems[0]), `timeout gave ${JSON.stringify(down.problems)}`);
 const junk = await run(Buffer.from("00112233490000", "hex"));
 check(!junk.ok && junk.problems.length === 1, `garbage reply gave ${JSON.stringify(junk.problems)}`);
+
+// --remote 0grind (#1734): the rented box the alpha runs on, by name instead of a typed address.
+const cmd = await import(pathToFileURL(join(ROOT, "tools", "host", "commands", "listing.mjs")).href);
+const { FLAGSHIP_0GRIND } = await import(pathToFileURL(join(ROOT, "tools", "host", "remote-0grind.mjs")).href);
+if (typeof cmd.listingTarget !== "function") fail("commands/listing.mjs does not export listingTarget");
+else {
+  const box = cmd.listingTarget([], "0grind");
+  check(box === `${FLAGSHIP_0GRIND.address}:${FLAGSHIP_0GRIND.a2sPort}`, `--remote 0grind resolved to ${box}`);
+  let unknown = "";
+  try {
+    cmd.listingTarget([], "nitrado");
+  } catch (e) {
+    unknown = e.message;
+  }
+  check(/nitrado/.test(unknown) && /0grind/.test(unknown), `an unknown remote must refuse and name the known ones, got '${unknown}'`);
+  check(cmd.listingTarget(["10.0.0.5:17777"], "0grind") === "10.0.0.5:17777", "a typed address must win over --remote");
+  check(cmd.listingTarget(["10.0.0.5:17777"], null) === "10.0.0.5:17777", "a typed address alone is passed through");
+}
 
 if (failed) {
   console.log(`SUMMARY host-listing-selftest fail ${failed}`);

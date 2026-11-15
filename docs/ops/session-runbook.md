@@ -157,9 +157,11 @@ then `host ready: GO`, or `host ready: NO-GO` and the names of the failed checks
 
   `tools\cli host players` asks the server who is on (server name, map, players and the maximum),
   with a 3 second timeout.
-- **Warnings.** *(planned)* a restart schedule in the config sends every player a toast "Server
-  restart in N minutes" at each warning; nothing in this runbook needs doing at those times. A
-  restart you start by hand is announced in Discord first (see "Restart").
+- **Warnings.** The `restarts` schedule in the config sends every player a toast "Server
+  restart in N minutes" at each warning (the flagship: 15, 5 and 1 minute before 06:00 and
+  18:00); nothing in this runbook needs doing at those times. `tools\cli host next` prints the
+  next restart and its warnings. A restart you start by hand is announced in Discord first (see
+  "Restart").
 - **Do not touch the saves while it runs.** `host wipe` and `host restore` refuse while the host
   runs; stop it first.
 

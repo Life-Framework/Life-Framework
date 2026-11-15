@@ -55,15 +55,20 @@ export function parseListingReply(buf) {
   return { kind: "info", name, map, players, maxPlayers, password, version };
 }
 
+// What the A2S output says about the password: Reforger does not report it, so it is neither "set" nor "none".
+export function passwordLine() {
+  return "password: not reported by A2S";
+}
+
 // Problem lines, one per wrong field; empty when the listing is right.
-//   expected: { name, maxPlayers } from server.json. opts.allowOpen waives the alpha password
-//   requirement; opts.version / opts.map are checked only when given (server.json holds neither).
+//   expected: { name, maxPlayers } from server.json. opts.version / opts.map are checked only when
+//   given (server.json holds neither).
 export function compareListing(info, expected, opts = {}) {
   const problems = [];
   if (info.name !== ALPHA_NAME) problems.push(`name is '${info.name}', the alpha listing must be exactly '${ALPHA_NAME}'`);
   else if (expected.name !== undefined && info.name !== expected.name) problems.push(`name is '${info.name}', server.json has '${expected.name}'`);
   if (expected.maxPlayers !== undefined && info.maxPlayers !== expected.maxPlayers) problems.push(`max players is ${info.maxPlayers}, server.json has ${expected.maxPlayers}`);
-  if (!info.password && !opts.allowOpen) problems.push("password flag is off, the alpha is gated by a server password");
+  // The password flag is not checked: Reforger's A2S never reports it (a wrong password is refused live).
   if (opts.map !== undefined && info.map !== opts.map) problems.push(`map is '${info.map}', expected '${opts.map}'`);
   if (opts.version !== undefined && info.version !== opts.version) problems.push(`version is '${info.version}', expected '${opts.version}'`);
   return problems;

@@ -23,7 +23,7 @@ const steps = [
     body: (
       <>
         Choose a good first issue or an unclaimed {CURRENT_MILESTONE} scope below. Each issue says what to change and how to prove it.
-        Comment that you are taking it so we can coordinate.
+        Comment that you are taking it, and say so in #dev, so we can coordinate.
       </>
     ),
   },
@@ -113,6 +113,70 @@ const Contribute = () => {
           ))}
         </ol>
       </div>
+
+      <Section id="setup" kicker="Set up in about 15 minutes" title="Clone it and run the checks">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr]">
+          <div className="space-y-4 muted max-w-prose">
+            <p>
+              Life Framework is open source: the source is MIT, and the build on the Workshop is under the Arma Public License. The
+              fastest start is the setup guide; these four commands are most of it.
+            </p>
+            <p>
+              <strong className="text-ink">You need</strong> Git, Node.js 20 or newer, and PowerShell 7 for the repo checks. For game
+              changes add Arma Reforger and Arma Reforger Tools from Steam; the in-game tests also want Arma Reforger Server.
+            </p>
+            <p>
+              <strong className="text-ink">You do not need</strong> test machines, the MCP servers, or a coding agent. A change to the
+              docs, a script, or this site needs no game at all.
+            </p>
+            <p>
+              <GoLink to={blob("docs/setup.md")}>Setup guide</GoLink>
+            </p>
+          </div>
+          <div className="terminal p-5 md:p-6 overflow-x-auto">
+            <p className="font-mono text-[0.75rem] uppercase tracking-[0.08em] opacity-70 mb-3">First ten minutes</p>
+            <pre className="font-mono text-[0.8125rem] leading-relaxed">
+              {`git clone https://github.com/Life-Framework/Life-Framework.git
+cd Life-Framework
+git config core.hooksPath .githooks
+node tools/cli.mjs status      # what it found, what is missing
+node tools/cli.mjs validate    # the cheap repo checks
+node tools/cli.mjs wt new my-change   # your own worktree`}
+            </pre>
+          </div>
+        </div>
+      </Section>
+
+      <Section id="slices" kicker="Small, claimable work" title="Slice cards">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr]">
+          <div className="space-y-4 muted max-w-prose">
+            <p>
+              Big features are cut into slice cards: small issues of 30 to 45 minutes. Each card names the files it owns, what it waits
+              on, and the check that proves it, so several people can work at once without stepping on each other.
+            </p>
+            <p>
+              Stay inside the files a card owns. If a card turns out bigger than it says, tell us on the issue; we split it rather than
+              stretch it.
+            </p>
+            <p>
+              <GoLink to={blob("docs/process/slice-card.md")}>The slice card format</GoLink>
+            </p>
+          </div>
+          <ol className="border-t-2 border-ink text-[0.9375rem]">
+            {[
+              ["1", "Pick an open card with no assignee and no open pull request. Its depends line should already be merged."],
+              ["2", "On a roadmap issue (an M milestone) comment /claim and the bot assigns you. Slice cards sit outside the milestones: comment that you are taking it and tell #dev."],
+              ["3", "wt new, build it, run validate and the test the card names."],
+              ["4", "Open the pull request. CI runs validate; a maintainer reviews with you and merges."],
+            ].map(([n, what]) => (
+              <li key={n} className="py-3 border-b border-rule grid gap-x-4 sm:grid-cols-[2rem_1fr]">
+                <span className="font-mono text-[0.8125rem] text-stamp">{n}</span>
+                <span className="muted">{what}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </Section>
 
       <Section id="layers" kicker="Core or flagship" title="Where your change belongs">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr]">
@@ -256,6 +320,18 @@ tools\\cli wt ship m1-19-paper-fine --closes 104`}
             </p>
           </li>
         </ul>
+      </Section>
+
+      <Section id="ask" kicker="Stuck?" title="Where to ask">
+        <p className="lede muted max-w-3xl">
+          Ask in <code>#dev</code> on{" "}
+          <a href={DISCORD_URL} className="link">
+            Discord
+          </a>
+          : setup problems, whether a change belongs in the core or the pack, and which issue to take. Questions about what a card
+          wants go on the issue. Source contributions are MIT; contributions to the 1989 pack may be relicensed for future versions
+          (<a href={blob("CONTRIBUTING.md")} className="link">details</a>).
+        </p>
       </Section>
 
       <Section id="people" kicker="Credits" title="Who has shipped code">

@@ -26,6 +26,8 @@ class LF_DialogueScene
 	//! Option index behind each shown row.
 	protected static ref array<int> s_aRows;
 	protected static int s_iFocus;
+	//! MenuUp or MenuDown was down last tick: a held key (the harness holds one 300 ms) steps once.
+	protected static bool s_bStepHeld;
 	protected static bool s_bChoosing;
 	protected static bool s_bWaiting;
 	protected static int s_iLineEndMs;
@@ -44,6 +46,7 @@ class LF_DialogueScene
 		s_aRows = null;
 		s_bChoosing = false;
 		s_bWaiting = false;
+		s_bStepHeld = false;
 		s_iShown = 0;
 	}
 
@@ -449,11 +452,10 @@ class LF_DialogueScene
 			}
 		}
 
-		int step = 0;
-		if (input.GetActionTriggered("MenuDown"))
-			step = 1;
-		else if (input.GetActionTriggered("MenuUp"))
-			step = -1;
+		bool down = input.GetActionTriggered("MenuDown");
+		bool up = input.GetActionTriggered("MenuUp");
+		int step = ReadStep(down, up, s_bStepHeld);
+		s_bStepHeld = down || up;
 
 		if (step != 0)
 		{
@@ -464,6 +466,23 @@ class LF_DialogueScene
 
 		if (input.GetActionTriggered("MenuSelect"))
 			PickRow(s_iFocus);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The focus step one tick asks for: +1 down, -1 up, 0 none. A key still held from the last tick
+	//! does not step again, so Down then Up always returns to the row it left (#1715).
+	static int ReadStep(bool down, bool up, bool wasHeld)
+	{
+		if (wasHeld)
+			return 0;
+
+		if (down)
+			return 1;
+
+		if (up)
+			return -1;
+
+		return 0;
 	}
 
 	//------------------------------------------------------------------------------------------------

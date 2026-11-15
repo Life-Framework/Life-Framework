@@ -95,7 +95,7 @@ LF_ItemCatalogueConfig {
 | `catalogue` | `items` | item id (`pistol_m9`) |
 | `catalogue` | `offers` | `outlet/item` (`gun_counter/pistol_m9`) |
 | `crime` | `crimes` | crime id (`#LF-Offence_Robbery`) |
-| `vehicles` | `vehicles` | the lot prefab's GUID, 16 hex digits, braces and case ignored (`54C3CC22DEBD57BE`). A key naming the locked child's GUID addresses the same entry. A new or replaced vehicle needs `basePrice` above 0 |
+| `vehicles` | `vehicles` | the lot prefab's GUID, 16 hex digits, braces and case ignored (`54C3CC22DEBD57BE`). A key naming the locked child's GUID addresses the same entry. `{"op":"remove"}` by either key takes the car off the lot: the sheet stops listing it and the server refuses to sell it (#1741). A new or replaced vehicle needs `basePrice` above 0 |
 | `dialogue` | `lines`, `nodes` | line id, node id. Pack patch only (see "Dialogue patches") |
 | `ui-theme` | `themes` | theme id (`paper`, `id-card`, `terminal`, `price-list`). Pack overlays only: no owner section, a look is a pack's job (`docs/architecture/ui-theme.md`) |
 | `police` | `ranks` | rank id (`patrol`). A saved rank is its index: a remove is refused on a shipped rung and on any rung that is not the last |

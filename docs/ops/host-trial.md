@@ -10,7 +10,7 @@ The public site does not promise anything about 0grind; a row here is a question
 
 ## Before you start
 
-- [ ] The two Workshop items are published: core `79636E668EA37AC9` and pack `B1E84D5687E11724`. A missing item
+- [ ] The two Workshop items are published: core `4550A2B656E1B569` and pack `B1E84D5687E11724`. A missing item
       fails the first boot with `Addon <id> - Addon was not found on workshop`; that is a row 1 failure, not a
       host failure.
 - [ ] You have the trial's control panel and its file manager, or SFTP, open in one window.
@@ -28,8 +28,8 @@ The public site does not promise anything about 0grind; a row here is a question
 
 | Check | How to check in the trial | Proof | Result |
 |---|---|---|---|
-| Install both items by ID | Enter `79636E668EA37AC9` then `B1E84D5687E11724` in the panel's mods field (or `game.mods` in `server.json`), core first | First boot downloads both; no `was not found on workshop` line | [ ] Pass [ ] Fail [ ] Gap |
-| Load order is the core first | Read the mod list the panel shows, or the boot log's addon list | Core `79636E668EA37AC9` listed before the pack | [ ] Pass [ ] Fail [ ] Gap |
+| Install both items by ID | Enter `4550A2B656E1B569` then `B1E84D5687E11724` in the panel's mods field (or `game.mods` in `server.json`), core first | First boot downloads both; no `was not found on workshop` line | [ ] Pass [ ] Fail [ ] Gap |
+| Load order is the core first | Read the mod list the panel shows, or the boot log's addon list | Core `4550A2B656E1B569` listed before the pack | [ ] Pass [ ] Fail [ ] Gap |
 | Pin a version | Look for a version field or a "lock" option per item; note what it offers | The panel's own screen, saved as evidence | [ ] Pass [ ] Fail [ ] Gap |
 
 ## 2. File access
@@ -98,7 +98,7 @@ Record this even when it is a gap: in-world warnings before a restart need one o
 |---|---|---|---|
 | Ports are open | `tools\cli host ports --external <address>:17777` (it prints the forward rules a PC host needs) | Exit 0 and `held-by-server` after the start; the game is UDP 2001, A2S is UDP 17777 | [ ] Pass [ ] Fail [ ] Gap |
 | Open the ports in the host's panel | Network or firewall settings | The panel shows UDP 2001 and 17777 open | [ ] Pass [ ] Fail [ ] Gap |
-| Server appears in the browser | `tools\cli host listing` *(planned, #1461)*; until it merges, join from a machine off your network and look in the in-game browser | The server name in the browser and a join | [ ] Pass [ ] Fail [ ] Gap |
+| Server appears in the browser | `tools\cli host listing`, then join from a machine off your network and look in the in-game browser | The server name in the browser and a join | [ ] Pass [ ] Fail [ ] Gap |
 | Players can query A2S | `tools\cli host players <address>:17777` | Server name, map and the player count | [ ] Pass [ ] Fail [ ] Gap |
 
 ## 9. 16 players: CPU, memory and upload

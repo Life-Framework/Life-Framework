@@ -1228,6 +1228,37 @@ function cmdPack(root = ROOT, opts = {}) {
   }
 }
 
+// Publish a packed addon as an update of its existing Workshop item (`release chapter`, docs/release/chapter-release.md):
+// -wbModule=ResourceManager -publishAddon -publishAddonDir <packed> -publishAddonVersion <v> -publishAddonChangeNoteFile <f>
+// (BIKI Arma_Reforger:Startup_Parameters; the flags are in the Workbench exe). No -profile, so Workbench uses its
+// default profile, where the Bohemia login it saved on this PC lives; never -wbBackendLogin or a password. This
+// PC has no "workbench" pool cap, and publishing is the one Workbench run that must happen here (the login is
+// here): the maintainer's 2026-11-15 release decision. Returns { ok, line, log }.
+async function publishAddon({ root, addon, dir, version, notesFile }) {
+  const exe = workbenchExe();
+  if (!existsSync(exe)) return { ok: false, line: `workbench not found: ${exe}` };
+  const info = resolveAddon(addon);
+  if (!info) return { ok: false, line: `unknown addon ${addon}` };
+  const { publishFlags, judgePublishLog } = await import("./release/chapter.mjs");
+  const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+  const profile = join(os.homedir(), "Documents", "My Games", "ArmaReforgerWorkbench");
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: 900000 });
+    locked = true;
+    const args = [...publishFlags({ gproj: gprojOf(root, info.name), dir, version, notesFile }), ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "publish")])];
+    const started = Date.now();
+    const res = quietSpawnSync(exe, args, { cwd: gameDir, timeoutMs: 1800000 });
+    const log = latestWorkbenchLog(profile);
+    if (!log || statSync(log).mtimeMs < started) return { ok: false, line: `no Workbench log written by this run (exit ${res.status ?? res.error?.code ?? "?"})` };
+    return { ...judgePublishLog(readFileSync(log, "utf8")), log };
+  } catch (e) {
+    return { ok: false, line: e.message };
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
+}
+
 // Before every server boot from a worktree: copy main's resourceDatabase.rdb
 // when it is the better copy, then make sure it registers every .meta in the
 // addon. A resource that landed on main after anyone last opened Workbench is
@@ -3936,6 +3967,9 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   wt <command>                  worktree isolation + auto-merge (see: cli wt help)
   release <x.y.z> [--dry-run|--confirm [--push]]  HUMAN step: dry run by default; --confirm stamps both .gproj and kits,
                                 runs the gates, tags vX.Y.Z locally; never publishes (docs/worktrees.md "Release gates"; agents dry-run only)
+  release chapter <x.y.z> [--notes f] [--dry-run] [--now] [--published] [--verify]  LEAD step: preflight, pack, publish core then pack
+                                to the Workshop, config push + restart 0grind, verify, Discord post, tag; --published skips build and
+                                publish (both Workshop pages must already show x.y.z, published by hand) (docs/release/chapter-release.md)
   promote [--to sha] [--confirm]  stable branch: list PRs merged since stable and write the checklist;
                                 --confirm fast-forwards stable, verifies and closes their issues (cli promote --help)
   prs status|heal [--dry-run] [<n>...]
@@ -5363,6 +5397,10 @@ try {
     code = cmdPrs(ROOT, rest);
   } else if (cmd === "promote") {
     code = cmdPromote(ROOT, rest);
+  } else if (cmd === "release" && rest[0] === "chapter") {
+    // `release chapter <v>`: publish both Workshop items and roll the live 0grind server (tools/release/chapter.mjs).
+    const chapter = await import("./release/chapter.mjs");
+    code = await chapter.runChapter(ROOT, rest.slice(1), chapter.realDeps(ROOT, { publish: publishAddon, isMain: wt.isMainCheckout }));
   } else if (cmd === "release") {
     code = await runRelease(ROOT, rest);
   } else if (cmd === "discord") {

@@ -34,7 +34,7 @@ An empty `game.admins` or `game.passwordAdmin` only prints a warning.
 
 Follow [the 0.1.0 upload guide](../release/workshop-upload-0.1.0.md): publish the core first, then the
 pack, both **Unlisted** at version `0.1.0`. Run its Workshop boot check
-(`tools\cli workshop boot-check 79636E668EA37AC9 B1E84D5687E11724`) and wait for `stage=pass`. A failure
+(`tools\cli workshop boot-check 4550A2B656E1B569 B1E84D5687E11724`) and wait for `stage=pass`. A failure
 there will also stop the public server.
 
 ## 2. Get the two Workshop IDs
@@ -43,7 +43,7 @@ The Workshop ID of each item is the address of its page:
 
 | Item | Page | ID |
 |---|---|---|
-| Life Framework (Core) | `https://reforger.armaplatform.com/workshop/79636E668EA37AC9` | `79636E668EA37AC9` |
+| Life Framework (Core) | `https://reforger.armaplatform.com/workshop/4550A2B656E1B569` | `4550A2B656E1B569` |
 | Life Framework: Everon 1989 | `https://reforger.armaplatform.com/workshop/B1E84D5687E11724` | `B1E84D5687E11724` |
 
 The Workshop keeps each project's `.gproj` GUID as its ID, so the table should already be right. Open
@@ -58,7 +58,7 @@ All commands run from your host worktree (`tools\cli wt new host`, then `cd ..\L
 never the main checkout:
 
 ```
-tools\cli host config apply --mods 79636E668EA37AC9,B1E84D5687E11724 --admins-pending
+tools\cli host config apply --mods 4550A2B656E1B569,B1E84D5687E11724 --admins-pending
 ```
 
 `--mods` refuses IDs that differ from `server/flagship/server.json`. When they match, it records them in
@@ -144,8 +144,9 @@ tools\cli host players <your public IP>:17777
 ```
 
 It prints the server name, map and player count over A2S. Then open the game and look for the server in
-the Server Browser. *(planned, #1461)* `tools\cli host listing` will compare what the browser shows with
-`server/flagship/server.json`.
+the Server Browser. `tools\cli host listing <public IP>:17777` compares what the browser shows (name, map,
+maximum players) with `server/flagship/server.json`; `host listing --remote 0grind` does it for the
+rented box.
 
 ## 8. Your first join, and your admin ID
 
