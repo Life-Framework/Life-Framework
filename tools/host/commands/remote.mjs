@@ -2,7 +2,7 @@
 // (no shell on the box). The logic is tools/host/remote-0grind.mjs; docs/owner/host-the-flagship.md "0grind".
 //
 // Read-only: status, config show, logs pull, saves pull, rcon #players.
-// Changes the live server, so each needs --yes: start, stop, restart, config push, any other rcon command.
+// Changes the live server, so each needs --yes: start, stop, restart, system fix, config push, any other rcon command.
 import { get as httpsGet } from "node:https";
 import { join } from "node:path";
 import { queryInfo } from "../a2s.mjs";
@@ -13,6 +13,7 @@ import {
   configPush,
   createClient,
   isReadOnlyRcon,
+  systemSettingsPlan,
   logsPull,
   makeRedactor,
   maskSecrets,
@@ -26,9 +27,9 @@ import {
 } from "../remote-0grind.mjs";
 
 export const help =
-  "remote 0grind status|start|stop|restart|config show|config push|logs pull|saves pull|rcon <cmd> [--yes] [--verbose]   the flagship on the rented 0grind server through its API: status (API + A2S), config show (secrets masked), config push (server/flagship + secrets.json onto ServerConfig.json and server_settings; a diff unless --yes; ports, bind address and rcon kept), logs pull (newest console.log for host triage/summary/attendance), saves pull (/profile/.save to backups/<stamp>-remote); start, stop, restart, push and non-read-only rcon need --yes";
+  "remote 0grind status|start|stop|restart|system fix|config show|config push|logs pull|saves pull|rcon <cmd> [--yes] [--verbose]   the flagship on the rented 0grind server through its API: status (API + A2S), config show (secrets masked), config push (server/flagship + secrets.json onto ServerConfig.json and server_settings; a diff unless --yes; ports, bind address and rcon kept; --only name,password,passwordAdmin pushes just those server_settings fields and leaves the scenario, mods and files alone), logs pull (newest console.log for host triage/summary/attendance), saves pull (/profile/.save to backups/<stamp>-remote); system fix (the System-page settings the flagship needs: restart on failure, session save loading, A2S on, the save-deleting options off; a diff unless --yes); start, stop, restart, system fix, push and non-read-only rcon need --yes";
 
-const USAGE = "usage: tools\\cli host remote 0grind status | start|stop|restart --yes | config show | config push [--yes] [--admins-pending] | logs pull [--all] | saves pull | rcon <command> [--yes]";
+const USAGE = "usage: tools\\cli host remote 0grind status | start|stop|restart --yes | system fix [--yes] | config show | config push [--yes] [--admins-pending] [--only name,password,passwordAdmin] | logs pull [--all] | saves pull | rcon <command> [--yes]";
 const say = (m) => console.log(`[LFDebug:Host0grind] ${m}`);
 
 // node:https with no agent, not fetch: a second fetch origin left open at process.exit trips a libuv
@@ -126,6 +127,25 @@ export async function main(args, ctx) {
     return 0;
   }
 
+  if (sub === "system" && rest[0] === "fix") {
+    const sy = await client.systemSettings();
+    if (!sy.ok) return failed(sy, ctx);
+    const { changes, lines } = systemSettingsPlan(sy.data?.settings);
+    if (!lines.length) {
+      say("system settings: already as the flagship needs");
+      return 0;
+    }
+    for (const l of lines) say(l);
+    if (!yes) {
+      say("dry run: nothing written; add --yes (the change applies on the next restart)");
+      return 0;
+    }
+    const p = await client.patchSystemSettings(changes);
+    if (!p.ok) return failed(p, ctx);
+    say(`system settings written: ${(p.data?.changed ?? Object.keys(changes)).join(", ")}; restart to apply`);
+    return 0;
+  }
+
   if (sub === "config" && rest[0] === "show") {
     const ss = await client.serverSettings();
     if (!ss.ok) return failed(ss, ctx);
@@ -147,7 +167,13 @@ export async function main(args, ctx) {
   }
 
   if (sub === "config" && rest[0] === "push") {
-    const r = await configPush(client, { dir, adminsPending: rest.includes("--admins-pending"), yes, repoDir: ctx.repoDir });
+    const oi = rest.indexOf("--only");
+    const only = oi >= 0 ? String(rest[oi + 1] ?? "").split(",").map((x) => x.trim()).filter(Boolean) : null;
+    if (oi >= 0 && !only.length) {
+      say("usage: config push --only <game field>[,<field>...] (name, password, passwordAdmin, scenarioId, mods, ...)");
+      return 1;
+    }
+    const r = await configPush(client, { dir, adminsPending: rest.includes("--admins-pending"), yes, repoDir: ctx.repoDir, only });
     if (!r.ok) return failed(r, ctx);
     for (const l of r.lines) say(l);
     for (const w of r.warnings) say(w);
