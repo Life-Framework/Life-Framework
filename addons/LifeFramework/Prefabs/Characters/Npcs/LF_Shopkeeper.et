@@ -1,0 +1,42 @@
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "C75F37D98B8A2ADC"
+ components {
+  LF_DialogueComponent "{90132FC48D01E5E2}" {
+   m_sDialogueId "shopkeeper"
+  }
+  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{637C5D826FE183DE}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V3.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{DFA720AD8D2B0493}" {
+     ContextName "Talk"
+     Position PointInfo "{37E9BD98130D228A}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{4DF806E51C76FD89}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{392807AFD44DF798}" {
+      Name "#LF-Shopkeeper_Talk"
+     }
+    }
+   }
+  }
+ }
+}

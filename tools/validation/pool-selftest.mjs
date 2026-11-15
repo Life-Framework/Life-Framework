@@ -58,9 +58,9 @@
 // floor "3x p95 of 9 s runs is under the 30 s floor but was not floored"; with the
 // RAM verdict always ok "RAM gate: a second server started with 0.9 GB free".
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as q from "../lib/pool-queue.mjs";
 import * as gc from "../lib/session-gc.mjs";
@@ -69,6 +69,33 @@ import { takeHoldWarning } from "../lib/session-lease.mjs";
 import * as pool from "../remote/pool.mjs";
 import * as tb from "../remote/testbox.mjs";
 import { trimScript } from "../lib/ws-trim.mjs";
+import { safeRemoveTree } from "../link-safety.mjs";
+import { isolatePool } from "../lib/pool-isolation.mjs";
+import { sessionBase } from "../lib/session-lease.mjs";
+import * as wtLib from "../wt.mjs";
+
+// ---- Isolation: this selftest never touches the real pool (2026-11-15: an agent reported it "closed live
+// sessions mid-run"). Every acquire runs hygieneGate, which ran the session GC on the REAL
+// %LOCALAPPDATA%\LifeFramework\session with a fixture root: the orphan rule (`*-ws-*` folder whose worktree is not
+// beside the root) then classed every live session folder as orphaned, and the GC removed any whose session.json
+// had no live pid yet. Now the session base, the home dir and pool.json are a temp copy, the working directory is
+// a fixture repo (nothing resolves the real hub from cwd), and a guard throws (and records, for code that swallows
+// the throw) on any access to the real hub (tmp/wt: locks, queue, state), the real session base, or a process
+// this selftest did not start (taskkill, process.kill, `session.mjs down`). tools/lib/pool-isolation.mjs.
+const REAL_REPO = resolve(import.meta.dirname, "..", "..");
+const REAL_HUB = wtLib.hubDirOf(REAL_REPO);
+const REAL_SESSION_BASE = sessionBase();
+const ISO = mkdtempSync(join(tmpdir(), "lf-pool-iso-"));
+mkdirSync(join(ISO, "home", "AppData", "Local"), { recursive: true });
+mkdirSync(join(ISO, "cwd"), { recursive: true });
+spawnSync("git", ["init", "-q", join(ISO, "cwd")], { windowsHide: true });
+copyFileSync(join(REAL_REPO, "tools", "pool.json"), join(ISO, "pool.json"));
+process.env.LF_POOL_JSON = join(ISO, "pool.json");
+process.env.LOCALAPPDATA = join(ISO, "home", "AppData", "Local");
+process.env.USERPROFILE = join(ISO, "home");
+delete process.env.LF_SESSION_DIR;
+process.chdir(join(ISO, "cwd"));
+const guard = isolatePool({ deny: [REAL_HUB, join(REAL_REPO, "tmp", "wt"), REAL_SESSION_BASE], label: "pool-selftest" });
 
 // This PC may really be short of disk; the gate under test is exercised with explicit numbers below.
 process.env.LF_POOL_MIN_FREE_DISK_GB = "0.001";
@@ -84,6 +111,12 @@ const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);
 };
+
+check(guard.expectViolation(() => readdirSync(join(REAL_HUB, "locks"))), "the guard does not stop a read of the real tmp/wt/locks");
+check(guard.expectViolation(() => writeFileSync(join(REAL_HUB, "locks", "server-2001.lock"), "{}")), "the guard does not stop a write of the real server-2001 lock");
+check(guard.expectViolation(() => readdirSync(REAL_SESSION_BASE)), "the guard does not stop a listing of the real session folders");
+check(guard.expectViolation(() => spawnSync("taskkill", ["/T", "/F", "/PID", "4"])), "the guard does not stop a taskkill of a process this selftest did not start");
+check(!existsSync(join(ISO, "home", "AppData", "Local", "LifeFramework", "session", "x")) && pool.poolSettings(join(ISO, "cwd")) !== null, "the pool does not run on the fixture pool.json and session base");
 
 const deadPid = spawnSync(process.execPath, ["-e", ""]).pid;
 const ago = (min) => new Date(Date.now() - min * 60000).toISOString();
@@ -455,14 +488,18 @@ try {
 
     // Short timeout end to end: a queued session request closes an idle session and takes the slot.
     process.env.LF_POOL_SESSION_IDLE_MIN = "0.03";
+    process.env.LF_POOL_REAP_MS = "300"; // the queued request sweeps for idle sessions every 10 s by default
     const idleIso = new Date().toISOString();
     writeFileSync(join(sdir, "session.json"), JSON.stringify({ startedAt: idleIso, readyAt: idleIso }));
     rmSync(join(sdir, "lease.json"), { force: true });
     hold("server-2001", { purpose: "session", at: idleIso, root: join(rdir, "nosuch") });
     const t0 = Date.now();
-    const got = pool.acquireSessionLaneSync(rdir, { waitMs: 40000, meta: { slug: "next" } });
+    // No tight upper bound: spawn latency under a loaded gate stretched this to 40 s. The proof that the short limit
+    // applied is that the request got the lane at all: the default idle limit is 5 min, past the wait budget below.
+    const got = pool.acquireSessionLaneSync(rdir, { waitMs: 240000, meta: { slug: "next" } });
     const waited = Date.now() - t0;
-    check(waited > 1500 && waited < 25000, `idle session reaped after ${waited} ms (expected a few seconds)`);
+    delete process.env.LF_POOL_REAP_MS;
+    check(!!got && waited > 1500 && waited < 200000, `idle session reaped after ${waited} ms (the 0.03 min limit, not the 5 min default)`);
     if (got) {
       const lockInfo = JSON.parse(readFileSync(join(rLockDir, "server-2001.lock"), "utf8"));
       check(lockInfo.pid === process.pid && lockInfo.purpose === "session", "the session slot is not held by the new request");
@@ -690,7 +727,8 @@ try {
   }
   // 5. runtime budgets: learned from history, floor, seeded default, self-correcting.
   const passRuns = (kind, durS, n, machine = "local") => Array.from({ length: n }, () => ({ purpose: kind, machine, result: "pass", durS }));
-  check(q.budgetSeconds([], "test only", "local").runS === 30 && q.budgetSeconds([], "test all", "local").runS === 90 && q.budgetSeconds([], "test persistence", "local").runS === 120, "seeded budgets are not 30/90/120 s");
+  check(q.budgetSeconds([], "test only", "local").runS === 30 && q.budgetSeconds([], "test all", "local").runS === 90 && q.budgetSeconds([], "test persistence", "local").runS === 120 && q.budgetSeconds([], "test perf", "local").runS === 120, "seeded budgets are not 30/90/120 s (perf 120)");
+  check(q.testPurpose({ tier: "perf" }) === "test perf", "a perf run is not its own pool run kind `test perf`");
   check(q.budgetSeconds([], "test only", "lf-testbox", { multiplier: 2 }).runS === 60, "machine multiplier does not scale the seeded budget");
   check(q.budgetSeconds(passRuns("test only", 9, 20), "test only", "local").runS === 30, "3x p95 of 9 s runs is under the 30 s floor but was not floored");
   check(q.budgetSeconds(passRuns("test all", 20, 20), "test all", "local").runS === 60, "budget is not 3x the p95");
@@ -857,8 +895,9 @@ const dir0 = () => {
       if (booting) writeFileSync(join(ld, "server-test-1.lock"), JSON.stringify({ pid: process.pid, purpose: "test fast", at: new Date().toISOString() }));
       const os = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", "[int]((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1024)"], { encoding: "utf8", windowsHide: true, timeout: 60000 });
       const free = Number((os.stdout ?? "").trim());
-      // Floor just under what is free now: passes alone, fails with 2 GB more to find.
-      const cfg = { slots: [{ lock: "server-test-2" }], ram: { locks: ["server-test-1", "server-test-2"], floorMb: Math.max(1, free - 1024), reserveMb: 0, serverMb: 600, clientMb: 850, testMb: booting ? 2048 : 0, testBootS: 60, aheadMb } };
+      // Floor 1.5 GB under what is free now (a margin for RAM that moves between the reading and the gate on a loaded
+      // machine): passes alone, fails with 2 GB more to find.
+      const cfg = { slots: [{ lock: "server-test-2" }], ram: { locks: ["server-test-1", "server-test-2"], floorMb: Math.max(1, free - 1500), reserveMb: 0, serverMb: 600, clientMb: 850, testMb: booting ? 2048 : 0, testBootS: 60, aheadMb } };
       const ps = ["$cfg = '" + JSON.stringify(cfg) + "' | ConvertFrom-Json", "$ld = '" + ld + "'", "$slots = @($cfg.slots)", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", pool.PS_RAM_GATE, "Write-Host 'lf-pool: pass'"].join(String.fromCharCode(10));
       const r = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", ps], { encoding: "utf8", windowsHide: true, timeout: 60000 });
       return (r.stdout ?? "") + (r.stderr ?? "");
@@ -874,16 +913,32 @@ const dir0 = () => {
     const loop = src.slice(src.indexOf("for ($i = 0; $i -lt $slots.Count"), src.indexOf("if ($slots.Count -gt 0 -and $got -lt 0)"));
     check(loop.includes("[IO.FileMode]::CreateNew") && loop.length > 200, "the holder no longer takes its lane with an atomic create");
     const rd = mkdtempSync(join(tmpdir(), "lf-lockrace-"));
-    const racer = ["$ld = '" + rd + "'", "$enc = New-Object System.Text.UTF8Encoding($false)", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", "function Stop-Under($d) {}", "function Test-Server($d) { return $false }", "$cfg = [pscustomobject]@{ token = 'x'; slug = 's'; purpose = 'test'; origin = 'h'; originPid = 1 }", "$got = -1", "$slots = @(@{ lock = 'server-test-1'; dir = 'a' }, @{ lock = 'server-test-2'; dir = 'b' }, @{ lock = 'server-test-3'; dir = 'c' })", "while ((Get-Date) -lt [datetime]::Parse('" + new Date(Date.now() + 4000).toISOString() + "').ToLocalTime()) { Start-Sleep -Milliseconds 20 }", loop, "if ($got -ge 0) { Write-Host ('won ' + $slots[$got].lock) }", "Start-Sleep -Seconds 3"].join(String.fromCharCode(10));
+    // The racers start together on a file barrier, not a wall-clock instant (a start time 4 s ahead was missed
+    // when PowerShell took longer than that to start under load, and a racer that exits frees its lane for a late
+    // one: 4 winners). Each racer reports ready, waits for `go`, races, writes its result, and stays alive (so its
+    // lock is not reclaimable) until `done`.
+    const rb = mkdtempSync(join(tmpdir(), "lf-lockrace-b-"));
+    const racer = ["$ld = '" + rd + "'", "$rb = '" + rb + "'", "$enc = New-Object System.Text.UTF8Encoding($false)", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", "function Stop-Under($d) {}", "function Test-Server($d) { return $false }", "$cfg = [pscustomobject]@{ token = 'x'; slug = 's'; purpose = 'test'; origin = 'h'; originPid = 1 }", "$got = -1", "$slots = @(@{ lock = 'server-test-1'; dir = 'a' }, @{ lock = 'server-test-2'; dir = 'b' }, @{ lock = 'server-test-3'; dir = 'c' })", "Set-Content -LiteralPath (Join-Path $rb ('ready-' + $PID)) -Value 1", "while (-not (Test-Path -LiteralPath (Join-Path $rb 'go'))) { Start-Sleep -Milliseconds 10 }", loop, "if ($got -ge 0) { Set-Content -LiteralPath (Join-Path $rb ('result-' + $PID)) -Value ('won ' + $slots[$got].lock) } else { Set-Content -LiteralPath (Join-Path $rb ('result-' + $PID)) -Value 'lost' }", "while (-not (Test-Path -LiteralPath (Join-Path $rb 'done'))) { Start-Sleep -Milliseconds 20 }"].join(String.fromCharCode(10));
+    const racerFiles = (prefix) => readdirSync(rb).filter((f) => f.startsWith(prefix));
+    const until = async (what, fn) => {
+      const end = Date.now() + 180000;
+      while (!fn()) {
+        if (Date.now() > end) throw new Error("lock race: timed out waiting for " + what);
+        await new Promise((r) => setTimeout(r, 25));
+      }
+    };
     const kids = Array.from({ length: 6 }, () => new Promise((res) => {
       const c = spawn("powershell", ["-NoProfile", "-NonInteractive", "-Command", racer], { windowsHide: true });
-      let out = "";
-      c.stdout.on("data", (d) => (out += d));
-      c.on("close", () => res(out));
+      c.on("close", () => res());
     }));
-    const outs = await Promise.all(kids);
-    const wins = outs.map((o) => /won (\S+)/.exec(o)?.[1]).filter(Boolean);
+    await until("six racers ready", () => racerFiles("ready-").length === 6);
+    writeFileSync(join(rb, "go"), "1");
+    await until("six racer results", () => racerFiles("result-").length === 6);
+    const wins = racerFiles("result-").map((f) => /won (\S+)/.exec(readFileSync(join(rb, f), "utf8"))?.[1]).filter(Boolean);
+    writeFileSync(join(rb, "done"), "1");
+    await Promise.all(kids);
     check(wins.length === 3 && new Set(wins).size === 3, "holders racing for 3 lanes did not end with one owner per lane (" + wins.join(",") + ")");
+    rmSync(rb, { recursive: true, force: true });
     rmSync(rd, { recursive: true, force: true });
     // One snapshot per burst: runs asked together from one worktree share it (14 private snapshots at
     // once took 5-19 s and one failed on a loose object another was writing).
@@ -912,7 +967,7 @@ const dir0 = () => {
     writeFileSync(join(sr, "b.txt"), "b");
     const poolUrl = new URL("../remote/pool.mjs", import.meta.url).href;
     const tbUrl = new URL("../remote/testbox.mjs", import.meta.url).href;
-    const child = "const pool = await import(" + JSON.stringify(poolUrl) + "); const tb = await import(" + JSON.stringify(tbUrl) + "); const fs = await import('node:fs'); const s = pool.sharedSnapshot(process.argv[1], { take: (r) => { fs.appendFileSync(process.argv[1] + '/takes.txt', 'x'); return tb.snapshotCommit(r); } }); console.log('sha ' + s.sha);";
+    const child = "const pool = await import(" + JSON.stringify(poolUrl) + "); const tb = await import(" + JSON.stringify(tbUrl) + "); const fs = await import('node:fs'); const s = pool.sharedSnapshot(process.argv[1], { shareMs: 3600000, lockWaitMs: 600000, take: (r) => { fs.appendFileSync(process.argv[1] + '/takes.txt', 'x'); return tb.snapshotCommit(r); } }); console.log('sha ' + s.sha);";
     const sixRuns = await Promise.all(Array.from({ length: 6 }, () => new Promise((res) => {
       const c = spawn(process.execPath, ["--input-type=module", "-e", child, sr], { windowsHide: true });
       let out = "";
@@ -1253,6 +1308,13 @@ const dir0 = () => {
     rmSync(rr, { recursive: true, force: true });
   }
 }
+
+const touched = guard.violations();
+check(touched.length === 0, `the selftest touched the real pool (${touched.length}): ${[...new Set(touched)].slice(0, 5).join(" | ")}`);
+guard.uninstall();
+try {
+  safeRemoveTree(ISO);
+} catch {}
 
 if (failures.length) {
   console.log("pool-selftest: FAIL");

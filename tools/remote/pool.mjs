@@ -40,6 +40,8 @@ import * as shipQueue from "../lib/ship-queue.mjs";
 import { writeFileAtomic } from "../lib/atomic-file.mjs";
 
 const POOL_JSON = join(dirname(fileURLToPath(import.meta.url)), "..", "pool.json");
+// LF_POOL_JSON points the pool at another pool.json: pool-selftest runs on a copy (tools/lib/pool-isolation.mjs).
+const poolJson = () => process.env.LF_POOL_JSON || POOL_JSON;
 const HEALTH_TTL_MS = 60000;
 const REMOTE_RETRY_MS = 4000;
 export const SLOT_ENV = "LF_SERVER_SLOT_HELD";
@@ -62,7 +64,7 @@ export const { lanesFor, laneKind, portForLock, normalizePriority, testPurpose, 
 // start), roomyMb (headroom past which speed, not RAM, picks a machine), sessionHoldMin / sessionGraceMin / sessionHoldMaxMin (the
 // hold cap, below).
 export function poolSettings(root) {
-  const base = readJson(POOL_JSON, {});
+  const base = readJson(poolJson(), {});
   const over = localConfig(root).pool ?? {};
   const pick = (k, env) => {
     const e = process.env[env];
@@ -133,6 +135,8 @@ export const HOLDER_TIMEOUT_MS = 180000; // holder never reports a slot, busy, o
 
 // Queue poll interval; the selftest shortens it (LF_POOL_POLL_MS) so waits in it cost 0.1 s, not 1 s.
 const pollMs = () => Number(process.env.LF_POOL_POLL_MS) || 1000;
+// How often a queued session request sweeps for idle sessions to close; the selftest shortens it (LF_POOL_REAP_MS).
+const reapEveryMs = () => Number(process.env.LF_POOL_REAP_MS) || 10000;
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -300,7 +304,7 @@ export function laneNotes(m) {
 // entries merge by name ({"name": "lf-testbox", "disabled": true} turns one off).
 // LF_TESTBOX / LF_TESTBOX_ROOT keep working: they add or retarget that host.
 export function loadMachines(root) {
-  const base = readJson(POOL_JSON, { machines: [{ name: "local", via: "local", slots: 1 }] });
+  const base = readJson(poolJson(), { machines: [{ name: "local", via: "local", slots: 1 }] });
   const byName = new Map();
   for (const m of base.machines ?? []) byName.set(m.name, { ...m });
   const over = localConfig(root).pool;
@@ -1203,7 +1207,9 @@ export function sharedSnapshot(root, { take = tb.snapshotCommit, now = Date.now,
       closeSync(openSync(lock, "wx"));
       held = true;
     } catch (e) {
-      if (e.code !== "EEXIST") break;
+      // EPERM/EACCES/EBUSY: another process is deleting the lock right now (Windows); that is contention, not
+      // a reason to go on without the lock (which skipped the shared snapshot and took a private one).
+      if (!["EEXIST", "EPERM", "EACCES", "EBUSY"].includes(e.code)) break;
       // A lock left by a process that died mid-snapshot goes after a minute.
       try {
         if (Date.now() - statSync(lock).mtimeMs > 60000) unlinkSync(lock);
@@ -1567,7 +1573,7 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
       if (!me) throw supersededError(slug);
       const settings = poolSettings(root);
       const now = Date.now();
-      if (now - lastReap > 10000) {
+      if (now - lastReap > reapEveryMs()) {
         lastReap = now;
         reapIdleSessions(root, [m], tickets, settings);
       }
@@ -1871,6 +1877,15 @@ export function markDown(root, m, error) {
   markHealth(root, m, { reachable: false, error });
 }
 
+// This PC under its disk floor (hygieneGate threw): a run that may go elsewhere drops this PC and
+// goes to the pool machines (each checks its own disk before a run); a run pinned here, or with no
+// other machine, keeps the refusal. Returns the machines left, or throws the refusal.
+export function diskRoute(machines, err, { pinned = false } = {}) {
+  const others = machines.filter((m) => m.via !== "local");
+  if (pinned || !err?.refusal || !others.length) throw err;
+  return others;
+}
+
 // opts: mode "any"|"local"|"remote", machine (name or ssh host), purpose,
 // waitMs. Returns a slot with .release(), .machine, .waitedMs, and for a
 // remote slot .rDir, .prep, .snap.
@@ -1885,7 +1900,15 @@ export async function acquireSlot(root, opts = {}) {
   }
   let machines = resolveMachines(root, opts);
   if (machines.length === 0) throw new Error(`pool: no machine for --${mode}`);
-  if (machines.some((m) => m.via === "local")) hygieneGate(root);
+  if (machines.some((m) => m.via === "local")) {
+    try {
+      hygieneGate(root);
+    } catch (e) {
+      const kept = diskRoute(machines, e, { pinned: !!opts.machine || mode === "local" });
+      console.log(`pool: this PC refuses tests for now (${e.message.split(";")[0]}); the run goes to ${kept.map((m) => m.name).join(" or ")}`);
+      machines = kept;
+    }
+  }
 
   // Remote runs ship a snapshot; take it once, when a remote first comes into
   // play (what the worktree is when the run was asked for, or when a remote

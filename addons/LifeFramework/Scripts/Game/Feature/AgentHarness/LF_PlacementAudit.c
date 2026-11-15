@@ -714,7 +714,7 @@ class LF_PlacementAudit
 				ResourceName prefab = store.GetLinePrefab(line);
 				string file = FilePath.StripPath(prefab);
 				file.Replace(".et", "");
-				for (int slot = 0; slot < 32; slot++)
+				for (int slot = 0; slot < 64; slot++)
 				{
 					IEntity item = store.GetShelfItem(prefab, slot);
 					if (!item)

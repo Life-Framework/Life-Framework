@@ -165,10 +165,10 @@ never draw a window on your monitor and never take focus:
 
 | Run | Where it goes |
 | --- | --- |
-| `validate --full` (Workbench `-validate` in `validate-scripts.ps1`), `cli build` | `LF-Agents` desktop; exit code and console.log as before |
+| `validate --full` (Workbench `-validate` in `validate-scripts.ps1`), `cli build` | `LF-Agents` desktop; exit code and console.log as before. On a PC whose pool caps lack `workbench` (Gaming-Box) neither starts a Workbench: both run on a pool machine (`docs/worktrees.md` "No Workbench on this PC") |
 | `cli test` / `wt e2e` dedicated server | `LF-Agents`, no console window |
 | `agent-box/session.mjs up` game clients | `LF-Agents`; the server runs detached with no console |
-| `cli call wb_*`, `agent-box/harness.mjs play` | When no Workbench serves NET API port 5775, `tools/lib/quiet-workbench.mjs` starts one on `LF-Agents` first, so the MCP never launches a visible one |
+| `cli call wb_*`, `agent-box/harness.mjs play` | When no Workbench serves NET API port 5775, `tools/lib/quiet-workbench.mjs` starts one on `LF-Agents` first, so the MCP never launches a visible one. Refused on a PC without the `workbench` cap |
 | every node-spawned console tool | `windowsHide: true` |
 
 Workbench play mode and a game client both render on `LF-Agents`: harness

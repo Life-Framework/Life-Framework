@@ -3,7 +3,7 @@
 // each client with its own -profile, joined over 127.0.0.1:2001.
 //
 //   node agent-box/session.mjs up --clients 2     boot the server, launch the clients
-//   node agent-box/session.mjs up --clients 2 --mission playtest   the pack header (LF_Everon1989.conf), harness build
+//   node agent-box/session.mjs up --clients 2 --mission playtest   the pack header LF_PlaytestTown.conf, harness build
 //   node agent-box/session.mjs restart            save, stop, load, rejoin (playtest mission)
 //   node agent-box/session.mjs wait [--timeout 600]   block until a starting session is ready (exit 0), or say why not
 //   node agent-box/session.mjs down               close every process the session started
@@ -18,8 +18,8 @@
 //
 // The server runs the bare DebugWorld (no mission header, no test define), so
 // the world's game mode keeps dev tools open and the harness RPCs pass
-// LF_DevGate. The playtest mission (the pack's LF_Everon1989.conf, or the core's LF_PlaytestTown.conf
-// without the pack) closes that gate.
+// LF_DevGate. The playtest mission (the pack's LF_PlaytestTown.conf, the developer header that keeps the playtest helpers on;
+// the flagship LF_Everon1989.conf closes them) closes that gate.
 // `up --mission playtest` runs that mission the way `tools\cli host start` does,
 // with -scrDefine LF_HARNESS on the server and every client: the harness
 // (stand, pose, use) passes its own gate in that build only, the debug menu
@@ -44,7 +44,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
-import { addonsArgs, launchAddons, launchAddonsFor, PACK_MISSION, playtestMission, townWorld } from "../tools/lib/addons.mjs";
+import { addonsArgs, CORE_PLAYTEST_MISSION, launchAddons, launchAddonsFor, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
 import { sessionA2sPort } from "../tools/lib/pool-queue.mjs";
 export { applyClientSettings, resolveProfile };
@@ -406,6 +406,12 @@ export function selftestSession() {
     if (pinned.relay || pinned.rest.includes("--local")) failures.push("--local did not keep a proof on this PC");
     if (sessionRelay("asset-states-proof", [], null, true).relay) failures.push("a proof relayed with no remote session");
     if (sessionRelay("up", [], ptr, false).relay || sessionRelay("selftest", [], ptr, false).relay) failures.push("a non-session command was relayed");
+    // red-proof 2026-11-14: with cliSessionForwards always false, "tools\cli session down ignored the recorded remote session" failed.
+    if (!cliSessionForwards("down", [], ptr, {})) failures.push("tools\\cli session down ignored the recorded remote session");
+    if (!cliSessionForwards("status", [], ptr, {})) failures.push("tools\\cli session status ignored the recorded remote session");
+    if (cliSessionForwards("down", [], null, {})) failures.push("session down forwarded with no remote session recorded");
+    if (cliSessionForwards("down", [], ptr, { LF_SESSION_ROUTED: "1" })) failures.push("the router's local leg forwarded to itself again");
+    if (cliSessionForwards("up", [], ptr, {}) || cliSessionForwards("join", [], ptr, {})) failures.push("a command that is not routed was forwarded");
     const root = join(tmpdir(), "lf-wt");
     const m = remoteArgs(["{AB}P/x.et", "hand,ground", join(root, "tmp", "assets", "l", "states"), join(tmpdir(), "elsewhere")], root, ptr.dir);
     if (m.args[2] !== `${ptr.dir}/tmp/assets/l/states` || m.args[0] !== "{AB}P/x.et" || m.args[3] !== join(tmpdir(), "elsewhere")) failures.push(`remoteArgs mapped the wrong args: ${JSON.stringify(m.args)}`);
@@ -482,7 +488,7 @@ export function selftestSession() {
   if (s.includes("-loadSessionSave")) failures.push("a fresh session loads a save");
   const ps = serverArgs({ addonsDir: "A", profile: "SP", mission: "playtest" });
   const pc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "playtest" });
-  if (ps[1] !== PACK_MISSION) failures.push("--mission playtest does not run the pack's mission header");
+  if (ps[1] !== CORE_PLAYTEST_MISSION) failures.push("--mission playtest does not run the playtest header (LF_PlaytestTown; the flagship closes the playtest helpers)");
   for (const args of [s, ps, pc, a1]) if (args[args.indexOf("-addons") + 1] !== "LifeFramework,LF_Everon1989") failures.push(`a session launch loads ${args[args.indexOf("-addons") + 1]}, not the core and the pack`);
   const defs = (args) => args.filter((x, i) => args[i - 1] === "-scrDefine").sort().join(",");
   if (defs(ps) !== [HARNESS_DEFINE, SESSION_DEFINE].sort().join(",")) failures.push(`playtest server defines are ${defs(ps)}`);
@@ -1288,6 +1294,16 @@ export function sessionRelay(cmd, rest, ptr, isProof) {
   if (!cmd || !(SESSION_BOUND.has(cmd) || isProof)) return { relay: false, rest };
   if (rest.includes("--local")) return { relay: false, rest: rest.filter((a) => a !== "--local") };
   return { relay: !!ptr, rest };
+}
+
+// Pure: whether `tools\cli session <sub>` must go through this file instead of acting on this PC's
+// session dir. A remote session is recorded only here (tmp/session-remote.json); without the
+// forward `session down` read the local dir, said "none recorded" and left the server running on the
+// pool machine (2026-11-14, lf-cloud). `--machine local` still reaches the local session; the router
+// sets LF_SESSION_ROUTED for its own local leg, which must not forward again.
+export function cliSessionForwards(sub, rest, ptr, env = process.env) {
+  if (!ptr || env.LF_SESSION_ROUTED === "1") return false;
+  return ["down", "status", "restart", "wait"].includes(sub);
 }
 
 async function relayToSession(cmd, rest, ptr) {

@@ -2,7 +2,8 @@ enum LF_TestSuiteMode
 {
 	ALL,
 	FAST,
-	PERSISTENCE
+	PERSISTENCE,
+	PERF
 }
 
 class LF_TestManager
@@ -11,6 +12,10 @@ class LF_TestManager
 	protected ref array<ref LF_Test> m_aTests = {};
 	protected ref array<string> m_aOnly = {};
 	protected bool m_bRed;
+	protected bool m_bLogicWorld;
+
+	//! The minimal world tools\cli test boots when every selected test is LOGIC (tools/lib/test-world.mjs).
+	static const string LOGIC_WORLD = "Worlds/TestLogic/TestLogic.ent";
 
 	//------------------------------------------------------------------------------------------------
 	static LF_TestManager GetInstance()
@@ -53,6 +58,32 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Set by the runner placed in the minimal LOGIC world (Worlds/TestLogic): it has no terrain,
+	//! village or annex, so a WORLD or PERSISTENCE test fails by name instead of running, and a
+	//! LOGIC test that fails there carries a hint that it may need the WORLD tier.
+	void SetLogicWorld(bool on)
+	{
+		m_bLogicWorld = on;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why a test of this tier cannot run in the minimal LOGIC world, or "" when it can.
+	static string LogicWorldRefusal(LF_TestTier tier, string name)
+	{
+		if (tier == LF_TestTier.LOGIC)
+			return "";
+
+		return string.Format("%1 is tier=%2 and needs DebugWorld; this run booted the minimal LOGIC world %3 (run it without --world, or with --world Worlds/DebugWorld/DebugWorld.ent)", name, TierName(tier), LOGIC_WORLD);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The line a LOGIC test that fails in the minimal world prints under its failures.
+	static string LogicWorldHint(string name)
+	{
+		return string.Format("hint: %1 ran in the minimal LOGIC world %2 (no terrain, village or annex); if it needs world content, its tier is WORLD, not LOGIC", name, LOGIC_WORLD);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool MatchesOnly(LF_Test test, array<string> matched)
 	{
 		string className = test.ClassName();
@@ -72,7 +103,7 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Runs every registered test (LOGIC only when fast) and fills reportXml
+	//! Runs every registered test but the PERF tier (LOGIC only when fast) and fills reportXml
 	//! with a JUnit-style report. Prints [LFTEST] markers for the CLI.
 	//! A test that throws is fatal: EnforceScript has no exception handling, so
 	//! the whole suite dies with it. Tests must not deref null.
@@ -88,7 +119,8 @@ class LF_TestManager
 
 	//------------------------------------------------------------------------------------------------
 	//! Runs only the tests of one suite mode. FAST runs LOGIC-tier tests only,
-	//! PERSISTENCE runs PERSISTENCE-tier tests only, ALL runs every test.
+	//! PERSISTENCE runs PERSISTENCE-tier tests only, PERF runs PERF-tier tests only,
+	//! ALL runs every test except the PERF tier (timing gates run on demand, `--tier perf`).
 	//! Markers and XML shape match RunAll.
 	//! \return the number of failed tests.
 	int RunSuite(LF_TestSuiteMode mode, out string reportXml)
@@ -100,6 +132,8 @@ class LF_TestManager
 			tierName = "fast";
 		else if (mode == LF_TestSuiteMode.PERSISTENCE)
 			tierName = "persistence";
+		else if (mode == LF_TestSuiteMode.PERF)
+			tierName = "perf";
 
 		bool filtered = m_aOnly.Count() > 0;
 		array<string> matched = {};
@@ -131,6 +165,10 @@ class LF_TestManager
 					skip = true;
 				else if (mode == LF_TestSuiteMode.PERSISTENCE && test.Tier() != LF_TestTier.PERSISTENCE)
 					skip = true;
+				else if (mode == LF_TestSuiteMode.PERF && test.Tier() != LF_TestTier.PERF)
+					skip = true;
+				else if (mode == LF_TestSuiteMode.ALL && test.Tier() == LF_TestTier.PERF)
+					skip = true;
 
 				if (skip)
 				{
@@ -148,6 +186,19 @@ class LF_TestManager
 
 			total++;
 			string name = EscapeXml(test.GetName());
+			if (m_bLogicWorld)
+			{
+				string refusal = LogicWorldRefusal(test.Tier(), name);
+				if (refusal != "")
+				{
+					failures++;
+					PrintFormat("[LFTEST] FAIL %1 (wrong world)", name);
+					PrintFormat("[LFTEST]   - %1", refusal);
+					cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"wrong world\">%2</failure></testcase>\n", name, refusal);
+					continue;
+				}
+			}
+
 			PrintFormat("[LFTEST] START %1", name);
 
 			LF_TestContext ctx = new LF_TestContext();
@@ -190,12 +241,16 @@ class LF_TestManager
 					PrintFormat("[LFTEST]   - %1", failure);
 					body += string.Format("%1\n", EscapeXml(failure));
 				}
+				if (m_bLogicWorld)
+					PrintFormat("[LFTEST]   - %1", LogicWorldHint(name));
 				cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"assertion failed\">%2</failure></testcase>\n", name, body);
 			}
 			else if (ctx.AssertionCount() == 0)
 			{
 				failures++;
 				PrintFormat("[LFTEST] FAIL %1 (no assertions executed)", name);
+				if (m_bLogicWorld)
+					PrintFormat("[LFTEST]   - %1", LogicWorldHint(name));
 				cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"no assertions executed\"/></testcase>\n", name);
 			}
 			else
@@ -228,6 +283,19 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True in a `tools\cli test --tier perf` run (-scrDefine LF_TEST_TIER_PERF): a PERF test then takes
+	//! its sharp settings (more repeats and windows, a tighter limit). Under --only, --red or any other
+	//! tier it is false, so the same test keeps its lenient settings there.
+	static bool PerfRun()
+	{
+		#ifdef LF_TEST_TIER_PERF
+		return true;
+		#else
+		return false;
+		#endif
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True on a core-only run (-scrDefine LF_CORE_ONLY): only LifeFramework is loaded.
 	static bool CoreOnlyRun()
 	{
@@ -246,6 +314,9 @@ class LF_TestManager
 
 		if (tier == LF_TestTier.PERSISTENCE)
 			return "persistence";
+
+		if (tier == LF_TestTier.PERF)
+			return "perf";
 
 		return "logic";
 	}

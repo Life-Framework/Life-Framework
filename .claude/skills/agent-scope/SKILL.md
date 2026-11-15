@@ -41,11 +41,18 @@ unfinished. Run it in the foreground (timeout up to 600000 ms) or call
    `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`), write the PR body
    to `tmp\pr-body.md`, then
    `tools\cli wt ship <slug> --refs <n> --body-file tmp\pr-body.md`. It
-   checks the tree, pushes, opens the PR and puts it in the ship queue, which
-   merges main once and runs `ci --remote` (`validate --full` + build +
-   `--tier all` on pool machines), then queues auto-merge. It waits until the
-   gate passed or failed (`SUMMARY ship ok|fail ... log=`); if your shell
-   times out first, `tools\cli ship-queue wait <slug>` resumes the wait.
+   checks the tree, runs a preflight (merge-tree conflicts, `validate` of the
+   changed inputs), pushes, opens the PR with auto-merge off and puts it in
+   the ship queue, then **returns** (`SUMMARY ship queued ...`, a minute or two).
+   The queue merges main once and runs the tiered `ci --remote` on pool machines
+   (15-90 min); only a pass turns auto-merge on, and a fail comments on the PR
+   and sets the `ship-gate` status red (`docs/worktrees.md` "Async ship").
+   While it runs you may start the next stacked PR. `tools\cli wt ship-status <slug>`
+   prints one line (queued|running|passed|failed); `tools\cli wait ship <slug>`
+   blocks up to 540 s in the foreground and prints one SUMMARY line (exit 2 =
+   still going: run it again). Never wait in your own loop. Before the final
+   report, check it once more: "shipped, gate running" if it still runs,
+   "merged, in-dev" after a pass, fix and `wt ship` again after a fail.
    Ship checks the body before the gate and refuses: an `addons/` change with no
    body file, a `TODO(scaffold)` left in it, no `## Manual testing` section, a
    player-visible change with no embedded picture (`look`, `look item` or
@@ -82,6 +89,7 @@ unfinished. Run it in the foreground (timeout up to 600000 ms) or call
    `RESUME <worktree>\tmp\handoff-<slug>.md`. A fresh agent that only ships gets the
    ship-only brief in `docs/agent-budget.md`.
 10. **Report.** Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, and
-   last exactly `PR <full URL>, head <SHA>, checks and reviews <state>`
+   last exactly `PR <full URL>, head <SHA>, checks and reviews <state>` (the
+   state includes the `wt ship-status` phase, e.g. `ship gate running`)
    (`gh pr view <n> --json statusCheckRollup,reviewDecision,mergeStateStatus`),
    or the `RESUME` line.

@@ -22,6 +22,9 @@ class LF_TestRunnerComponent : ScriptComponent
 	//! Written by tools/test/test-e2e.ps1 under LF_TEST_HANG=run: the suite never starts, so the pool's runtime budget (tools/remote/pool.mjs) has a hang to kill.
 	protected static const string HANG_PATH = "$profile:LF_TestHang.txt";
 
+	[Attribute("0", desc: "This runner stands in the minimal LOGIC world (Worlds/TestLogic): WORLD and PERSISTENCE tests fail by name instead of running")]
+	protected bool m_bLogicWorld;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -70,6 +73,9 @@ class LF_TestRunnerComponent : ScriptComponent
 
 		string reportXml;
 		int failures;
+		LF_TestManager.GetInstance().SetLogicWorld(m_bLogicWorld);
+		if (m_bLogicWorld)
+			Print("[LF_Tests] minimal LOGIC world: only LOGIC-tier tests can run here");
 #ifdef LF_TEST_ONLY
 		LF_TestManager.GetInstance().SetOnly(ReadOnlyNames());
 #endif
@@ -80,11 +86,15 @@ class LF_TestRunnerComponent : ScriptComponent
 #ifdef LF_TEST_TIER_PERSISTENCE
 		failures = LF_TestManager.GetInstance().RunSuite(LF_TestSuiteMode.PERSISTENCE, reportXml);
 #else
+#ifdef LF_TEST_TIER_PERF
+		failures = LF_TestManager.GetInstance().RunSuite(LF_TestSuiteMode.PERF, reportXml);
+#else
 		bool fast = false;
 #ifdef LF_TEST_TIER_FAST
 		fast = true;
 #endif
 		failures = LF_TestManager.GetInstance().RunAll(fast, reportXml);
+#endif
 #endif
 		string reportFile = LF_TestManager.WriteReport(reportXml);
 		PrintFormat("[LF_Tests] runtime tests done, failures=%1, report=%2", failures, reportFile);
