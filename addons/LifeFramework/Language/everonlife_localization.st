@@ -4635,12 +4635,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{315A7D38264FAED4}" {
      Id "LF-Item_MoneyBag"
-     Target_en_us "Cash case"
+     Target_en_us "Cash sack"
      Comment "Bank vault money bag item name"
     }
     CustomStringTableItem "{44F201EB4501CD73}" {
      Id "LF-Item_MoneyBag_Desc"
-     Target_en_us "A heavy case of banknotes from the vault."
+     Target_en_us "A heavy sack of banknotes from the vault, carried by the neck."
      Comment "Bank money bag item description"
     }
     CustomStringTableItem "{798CD609229F3E62}" {
