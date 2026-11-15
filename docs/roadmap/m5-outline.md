@@ -2,8 +2,8 @@
 
 M5 is the first update after the 1989 Everon flagship goes live (M4). In its
 first weeks every player is new, so M5 deepens the first ten hours: arriving,
-getting kit, policing the roads, the evenings, the town paper, and the first
-part of the relocation story. The issue set was finalised on 2026-11-15. Read
+getting kit, the evenings, policing the roads, and the first part of the
+relocation story. The issue set was finalised on 2026-11-15. Read
 it with the [roadmap](README.md), [direction](../direction.md) and the
 [M4 outline](m4-outline.md).
 
@@ -20,16 +20,15 @@ one at a time to the live server as each passes its playtest, in this order:
 | Order | Chapter | Framework (core) | Flagship (1989 pack) |
 | --- | --- | --- | --- |
 | 1 | Armed and dressed #1009 | Catalogue and outlets #988 (stock #1064, outlets #1065, armory #1066, search and seizure #1067, conceal flags #1068, licence desk #1069), store previews #583 | Weapon split #989, clothing and equipment #990, police career #797, vanilla period assets #981 |
-| 2 | On patrol #1014 | Spike strips, cones and barriers #646, placement preview #928, breathalyser #634 | Police kit #647, breathalyser #635, an alarm per robbery type #929 |
-| 3 | Evenings in the village #1011 | Emotes and sitting #982, drunk effect #636, race runner #790 | Chess, range and hall #802, drunk effect #637, dirt race #791 |
-| 4 | Arrival #1007 | Onboarding chain #794, NPC bus #203, AI route driver #772, rejoin #640, handbook #642 | Arrival chain #795, Everon bus line #1101, rejoin #641, handbook #643 |
-| 5 | Read all about it #1008 | Gazette #792, event shell #757, board answers #758, nearest place #760 | Town paper #793 |
-| 6 | Story: The relocated #1015 | Event scenes #1754 | Bus at dawn #1755, the clerk's welcome #1756, townspeople #1757, the hostel #1758, radio music #1759 |
+| 2 | Evenings in the village #1011 | Emotes and sitting #982, drunk effect #636, race runner #790 | Chess, range and hall #802, drunk effect #637, dirt race #791 |
+| 3 | On patrol #1014 | Spike strips, cones and barriers #646, placement preview #928, breathalyser #634, board answers #758, nearest named place #760 | Police kit #647, breathalyser #635, an alarm per robbery type #929 |
+| 4 | Arrival #1007 | Onboarding chain #794, rejoin #640, handbook #642 | Arrival chain #795, rejoin #641, handbook #643 |
+| 5 | Story: The relocated #1015 | Event shell #757, event scenes #1754 | Bus at dawn #1755, the clerk's welcome #1756, townspeople #1757, the hostel #1758, radio music #1759 |
 
-Why this order: the first three chapters are mostly built already (catalogue,
-clothing, placement and emotes are merged and in playtest). Arrival waits on
-the AI route driver, the paper waits on the event shell, and the story chapter
-needs both, so it comes last and carries the update's trailer.
+Why this order: Armed and dressed is mostly built (the catalogue and clothing
+are merged and in playtest). Evenings comes before On patrol because the
+breathalyser needs the drunk effect. The story chapter needs the event shell,
+so it comes last and carries the update's trailer.
 
 ## Foundation
 
@@ -46,8 +45,7 @@ Plumbing that ships with M5 but has no video of its own:
   Harness only; its code is never copied.
 
 The animation, weapon and vehicle pipelines (#340, #341, #342) moved to
-Development on 2026-11-15, because no M5 chapter needs them. The bus runs on
-the placeholder UAZ-452 until #342 makes a real one.
+Development on 2026-11-15, because no M5 chapter needs them.
 
 ## Decisions (maintainer)
 
@@ -55,6 +53,9 @@ the placeholder UAZ-452 until #342 makes a real one.
   townspeople) and has period radio music. Each music track gets a licence and
   credit record before it ships; if the tool's terms do not allow Workshop
   redistribution, stop and ask.
+- **Firearm permit (2026-11-15).** A fee and a clean record (no active
+  warrant, no recent conviction); issued after one in-game day; police can
+  revoke it (#1069).
 - **Car upkeep stays light (2026-11-09).** Fuel and simple repairs only, with
   no parts system and no random breakdowns (repair kit #648 is in M6).
 - **Base-game assets first.** A new mesh only comes through the 3D harness,
@@ -62,6 +63,12 @@ the placeholder UAZ-452 until #342 makes a real one.
 
 ## Moved out of M5
 
+- The bus (#203, the AI route driver #772, the Everon line #1101) is its own
+  M6 chapter, Catch the bus #1793 (maintainer, 2026-11-15): AI driving is the
+  riskiest piece, so M5 does not wait for it. The story's dawn bus is parked
+  until then.
+- The town paper is removed from the roadmap (maintainer, 2026-11-15; #1008,
+  #792 and #793 closed).
 - Food, the state factory and the market go to M6 Making a living
   (story chapter #1021, The market moves #1016).
 - Property, the dacha and farming go to M8 Roots (#747, #1037).
