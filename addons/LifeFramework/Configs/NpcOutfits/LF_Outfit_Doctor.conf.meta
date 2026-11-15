@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{FE3FF19CE38781F8}Configs/NpcOutfits/LF_Outfit_Doctor.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

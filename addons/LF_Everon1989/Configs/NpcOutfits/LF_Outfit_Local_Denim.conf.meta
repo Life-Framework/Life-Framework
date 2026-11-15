@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{08D4AB72AB3C3346}Configs/NpcOutfits/LF_Outfit_Local_Denim.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

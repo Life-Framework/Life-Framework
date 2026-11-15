@@ -18,7 +18,10 @@ addons/LF_Everon1989/log
 tools/mcp/*/
 
 # EnfusionMCP Workbench handler scripts (injected, never commit)
-addons/LifeFramework/Scripts/WorkbenchGame/
+# Injected tool copies (MCP handlers, look and clothing plugins) stay ignored; LFTools/ is the committed
+# World Editor tooling for the maintainer (docs/tooling/npc-dresser.md).
+addons/LifeFramework/Scripts/WorkbenchGame/*
+!addons/LifeFramework/Scripts/WorkbenchGame/LFTools/
 addons/LF_Everon1989/Scripts/WorkbenchGame/
 
 # Editor temporary files
