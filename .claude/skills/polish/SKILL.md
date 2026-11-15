@@ -11,6 +11,16 @@ most of the town's jank by looking, after merge. Look first, so they do not have
 
 `docs/style-guide.md` says what right looks like. This is the procedure.
 
+## Which bar
+
+DebugWorld has two zones (`docs/architecture/world-zones.md`):
+
+- **Town** (village layers and the pack town): the whole checklist below, every line. Only a
+  town-placement pass (worktree slug `town-...`) edits town layers.
+- **Debug grid** (a feature's `Grid_<slug>.layer` cell, and the legacy annex): only "It sits on its
+  surface" and "can be reached on foot" hold. Debug-looking props, stand-ins and the grid sign are fine.
+  One `tools\cli look grid:<slug>` picture goes in the PR; there is no before picture.
+
 ## The loop
 
 1. **Before.** `tools\cli look <area>` (about 25 s, no session) before the first edit. Read

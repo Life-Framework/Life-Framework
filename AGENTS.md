@@ -81,7 +81,9 @@ agent per area. `tools\cli usage` shows where the tokens went.
     session.** A session is only for what Workbench play cannot capture: HUD and other UI
     widgets, a second player or late joiner, motion, animation, sound, filming. A screen
     is built from UI kit parts; nothing debug-looking goes in a village layer
-    (`validate-ui-kit`, `validate-player-props`).
+    (`validate-ui-kit`, `validate-player-props`). Slices put world props in a debug-grid
+    cell (`tools\cli grid place`); only a `town-` pass edits town layers
+    (`docs/architecture/world-zones.md`, `validate-world-zones`).
 
 ## Commands
 
