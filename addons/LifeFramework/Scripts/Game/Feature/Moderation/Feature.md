@@ -10,6 +10,10 @@ Administrators read incidents in Game Master EDIT mode (`LF_IncidentGm` answers 
 
 Players `/report` their recent incidents; flags (`LF_IncidentFlags`, saved as `incidentflags`) head the Game Master list until an admin types `!handled <number>`.
 
+## Staff relay (#1284)
+
+`LF_StaffRelay` (server only, no state saved) sends `LF_OnAdminAction` and `LF_OnIncidentFlagged` to the staff channel through `LF_StaffWebhook.Send`. Events of one kind collect for 5 s from the first, then one line goes out: the event's own line, or a count when there were more. `LF_IncidentFlags.Report` publishes the flag event after inserting the rows. `Install()` subscribes and starts a 1 s flush tick; the game mode must call it (not yet wired).
+
 ## Clip stamp (#1173)
 
 - **Player sees:** a small paper tag in the top left (UI kit frame and line, themed): server name, last six characters of their character id, real server date and time in UTC. Off by default; the `LF_ClipStamp` key (F9, gamepad tap RB + View) toggles it. A clip's stamp matches an incident row because both use `System.GetUnixTime` on the server.
