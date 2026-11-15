@@ -185,6 +185,7 @@ class LF_SignCatalog
 	static const string KEY_CLOSE = "#LF-Sign_Close";
 	//! What a board with no text of its own reads (a sign whose pack text is not loaded; #325).
 	static const string KEY_GENERIC_TITLE = "#LF-Sign_Generic_Title";
+	static const string GRID_PREFIX = "grid:";
 
 	//! Mark before a list item: a typed hyphen, which every UI font has. (U+2022 is a glyph the bitmap faces may lack.)
 	static const string BULLET = "-";
@@ -232,11 +233,32 @@ class LF_SignCatalog
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The sign with this id in LF_Signs.conf, or null.
+	//! The sign with this id in LF_Signs.conf, or null. A `grid:<slug>` id is a debug-grid cell label.
 	static LF_SignDef Find(string id)
 	{
+		LF_SignDef label = GridLabel(id);
+		if (label)
+			return label;
+
 		EnsureLoaded();
 		return FindIn(s_Config, id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The label plate of a debug-grid cell (tools\cli grid place, docs/architecture/world-zones.md):
+	//! id `grid:police-gates` reads POLICE GATES. The grid is a test zone with its own look bar, so the
+	//! title is the feature slug as written, not a string-table key. Null for any other id.
+	static LF_SignDef GridLabel(string id)
+	{
+		if (!id.StartsWith(GRID_PREFIX) || id.Length() <= GRID_PREFIX.Length())
+			return null;
+
+		string title = id.Substring(GRID_PREFIX.Length(), id.Length() - GRID_PREFIX.Length());
+		title.Replace("-", " ");
+		LF_SignDef sign = new LF_SignDef();
+		sign.m_sId = id;
+		sign.m_sTitle = title;
+		return sign;
 	}
 
 	//------------------------------------------------------------------------------------------------
