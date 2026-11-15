@@ -89,7 +89,7 @@ class LF_Test_DownedPatientWorld : LF_Test
 		}
 
 		ctx.True(actions.Contains("LF_ReviveAction"), "Revive is on the patient: " + actions);
-		ctx.True(actions.Contains("LF_DragAction"), "Drag is on the patient");
+		ctx.False(actions.Contains("LF_DragAction"), "Drag is gone from the patient (cut 2026-11-15)");
 		ctx.True(actions.Contains("LF_LoadPatientAction"), "Load into vehicle is on the patient");
 
 		// The town's own patient may already be tracked (DebugWorld is a playtest mission).
