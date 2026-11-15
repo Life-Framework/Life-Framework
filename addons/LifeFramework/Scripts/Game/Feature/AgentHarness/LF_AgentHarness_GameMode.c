@@ -7,6 +7,8 @@ modded class LF_GameModeRoleplay
 	override void OnPlayerConnected(int playerId)
 	{
 		super.OnPlayerConnected(playerId);
+		// A session's --admin-client: the engine administrator role, harness build only.
+		LF_HarnessStaff.GrantAdminIfListed(playerId);
 		// Menus (faction, spawn, debug) exist before the pawn does. EnsureLoop
 		// no-ops until this process has a local controller, and again on spawn.
 		LF_AgentHarness.EnsureLoop();
@@ -23,6 +25,8 @@ modded class LF_GameModeRoleplay
 	override void OnPlayerSpawned(int playerId, IEntity controlledEntity)
 	{
 		super.OnPlayerSpawned(playerId, controlledEntity);
+		// The account may not have resolved at connect: grant again (idempotent).
+		LF_HarnessStaff.GrantAdminIfListed(playerId);
 		LF_AgentHarness.EnsureLoop();
 	}
 }
