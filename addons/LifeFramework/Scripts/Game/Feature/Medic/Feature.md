@@ -45,7 +45,7 @@ patient it adds config seconds (capped) to the bleed-out clock and publishes `LF
 
 ## V1.3 - #258, the medic job
 
-The hospital duty desk (`Prefabs/Medic/LF_MedicDutyDesk.et`, `LF_DutyAction` with `m_eRole MEDIC`) is the
+The hospital duty desk (`Prefabs/Medic/LF_MedicDutyDesk.et`, an `LF_Workplace` with job MEDIC) is the
 police desk's twin: same swap through `LF_DutyLocker`, own slot `medic_duty`, open to every registered
 player, duty pay at clock-out. On duty the account's faction is MEDIC and `LF_MedicDuty` /
 `LF_ServiceCalls.JobFor` make routing see the medic job (board, take, pager). The kit lives in the

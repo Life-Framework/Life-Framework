@@ -177,6 +177,9 @@ class LF_JobsConfig
 	[Attribute("2", UIWidgets.Auto, "Delivery career before job tracks: each later level needed this many times the XP of the one before. Read only to migrate a version 7-27 save", params: "1 10")]
 	float m_fJobXpLevelGrowth;
 
+	[Attribute("0", UIWidgets.CheckBox, "TESTING ONLY, never on a live server. Opens every whitelist-gated job (police roster, playtime, application) to every player so a tester can clock in. A dedicated server ignores it unless the mission header allows it; the flagship config must not set it")]
+	bool m_bTestUnlockAll;
+
 	[Attribute("", UIWidgets.Object, "Job level ladders: the XP thresholds of each job")]
 	ref array<ref LF_JobTrackDef> m_aTracks;
 
@@ -278,8 +281,9 @@ class LF_JobsConfig
 	//! \param[in] source The file, for log lines.
 	void ApplyOwner(notnull LF_ConfigReader reader, string source = "config.json")
 	{
-		array<string> ownerKeys = {"policeDutyPayPerSecond", "medicDutyPayPerSecond", "benefitBalanceThreshold", "benefitAmount", "benefitCooldownSeconds", "jobXpFirstLevel", "jobXpLevelGrowth", "tracks", "xpAwards", "licenceGates"};
+		array<string> ownerKeys = {"policeDutyPayPerSecond", "medicDutyPayPerSecond", "benefitBalanceThreshold", "benefitAmount", "benefitCooldownSeconds", "jobXpFirstLevel", "jobXpLevelGrowth", "testUnlockAll", "tracks", "xpAwards", "licenceGates"};
 		reader.WarnUnknownKeys(ownerKeys);
+		reader.ReadBool("testUnlockAll", m_bTestUnlockAll);
 		reader.ReadFloat("policeDutyPayPerSecond", m_fPoliceDutyPayPerSecond, PAY_RATE_MIN, PAY_RATE_MAX);
 		reader.ReadFloat("medicDutyPayPerSecond", m_fMedicDutyPayPerSecond, PAY_RATE_MIN, PAY_RATE_MAX);
 		reader.ReadInt("benefitBalanceThreshold", m_iBenefitBalanceThreshold, CASH_MIN, CASH_MAX);
@@ -292,6 +296,13 @@ class LF_JobsConfig
 		LF_ConfigOverlay.ApplyRecords(reader, "tracks", new LF_JobTrackList(this), source);
 		LF_ConfigOverlay.ApplyRecords(reader, "xpAwards", new LF_JobXpAwardList(this), source);
 		LF_ConfigOverlay.ApplyRecords(reader, "licenceGates", new LF_JobLicenceGateList(this), source);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Testing bypass asked for by the owner config (LF_JobGates decides whether it applies).
+	bool TestUnlockAll()
+	{
+		return m_bTestUnlockAll;
 	}
 
 	//------------------------------------------------------------------------------------------------

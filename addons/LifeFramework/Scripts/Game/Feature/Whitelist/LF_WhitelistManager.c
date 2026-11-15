@@ -82,6 +82,10 @@ class LF_WhitelistManager
 		if (!LF_Systems.IsEnabled(SYSTEM))
 			return false;
 
+		// Testing bypass (LF_JobGates): nothing is restricted, so the roster is never asked.
+		if (LF_JobGates.Unlocked())
+			return false;
+
 		switch (factionType)
 		{
 			case LF_EFactionType.POLICE:
@@ -98,6 +102,10 @@ class LF_WhitelistManager
 	static bool IsJobRestricted(LF_EJobType jobType)
 	{
 		if (!LF_Systems.IsEnabled(SYSTEM))
+			return false;
+
+		// Testing bypass (LF_JobGates): see IsFactionRestricted.
+		if (LF_JobGates.Unlocked())
 			return false;
 
 		// Solo POLICE requiere whitelist

@@ -15,6 +15,7 @@ class LF_StaticReset
 	static void ResetAll()
 	{
 		LF_Places.ResetStatics();
+		LF_JobGates.ResetStatics();
 		LF_DayCycleSave.ResetStatics();
 		LF_PrefabSlots.ResetStatics();
 		LF_VehicleColoursConfig.Reload();
