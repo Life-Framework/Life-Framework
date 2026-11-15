@@ -34,8 +34,8 @@ checklist` reads this sheet after the run, so keep one line per observation.
   copy of the config.
 - A command name for a slice that has not merged is the name its card gives and is marked *(planned)* here
   with that card; `tools\cli host help` is the truth. A name that differs is a doc fix, not a failed beat.
-  Not on `main` as of 2026-11-15: `host next` (#1416), `host history` (#1409), `host post` (#1414), the
-  proof verbs `day-rate` (#1303) and `restart-cycle` (#1268).
+  Not on `main` as of 2026-11-15: the proof verbs `day-rate` (#1303) and `restart-cycle` (#1268).
+  `host next` (#1416), `host history` (#1409) and `host post` (#1414) have merged.
 
 Markers: **[two-player]** needs both clients at once, **[restart]** needs the server to stop and start,
 **[late-join]** needs a client that joins a world already in progress. Times are minutes of work, not of
@@ -135,9 +135,9 @@ Proves: #1264 (restart schedule), #1348 (the ticker publishes the warnings), #12
 #1267 (save and close), #1344 (the events and tickers start).
 
 Do: in the profile's copy of the config, set the next restart about 16 minutes ahead (do not edit the repo
-file), restart the server once so it reads it, rejoin both clients, then `tools\cli host next` *(planned)* (#1416).
+file), restart the server once so it reads it, rejoin both clients, then `tools\cli host next` (#1416).
 
-- [ ] `host next` *(planned)* (#1416) prints the next restart time and the next session. #1264, #1416
+- [ ] `host next` (#1416) prints the next restart time and the next session. #1264, #1416
 - [ ] A and B each get a toast at 15, 5 and 1 minute before the restart, "Server restart in N minutes". Nothing else
   is required of the player at those times. #1265, #1348
 - [ ] At the restart time the server saves and closes by itself: the log shows the shutdown save and a restart marker
@@ -169,7 +169,7 @@ before any notice; then `tools\cli host announce --wipe --at <time at least 24 h
 
 - [ ] The wipe refuses while the host runs, and refuses with no notice, saying a notice 24 hours old is needed. #1413, #1274
 - [ ] The announce draft says the wipe time, "at least 24 hours' notice" and links the
-  [wipe policy](../community/wipe-policy.md); `host post` *(planned)* (#1414) sends it to the test Discord webhook. #1273, #1414, #1323
+  [wipe policy](../community/wipe-policy.md); `host post` (#1414) sends it to the test Discord webhook. #1273, #1414, #1323
 - [ ] The wipe still refuses until 24 hours after the notice. Once the notice is old enough on the scratch folder it
   writes a `wipe` backup, moves the saves aside (nothing is deleted) and adds a line to `backups/wipes.log`. #1413, #1274
   If the notice cannot be aged on a scratch folder, record "refusal proven, wipe not proven" in the report and
@@ -190,14 +190,14 @@ Do: after B9's announce, build the site (`website/`) and open the servers page.
 Proves: #1269 (`host triage`), #1270 (issue drafts), #1271 and #1272 (`server-doctor`), #1349
 (its config report), #1409 (`host history`).
 
-Do: `tools\cli host triage`, `tools\cli server-doctor`, `tools\cli host history` *(planned)* (#1409).
+Do: `tools\cli host triage`, `tools\cli server-doctor`, `tools\cli host history` (#1409).
 
 - [ ] Triage groups the session's log into known and new lines against
   [debug-log-triage](../debug-log-triage.md). Each new group has a drafted issue body and the `gh` command, and the
   run files nothing by itself. #1269, #1270
 - [ ] `server-doctor` lists the mods that loaded, says the server booted, and shows the effective config with the
   fields that fell back to a default. #1271, #1272, #1349
-- [ ] `host history` *(planned)* (#1409) lists the session this run held, with its start, stop and restart. #1409
+- [ ] `host history` (#1409) lists the session this run held, with its start, stop and restart. #1409
 
 ## Not in this run
 
