@@ -21,7 +21,7 @@ class LF_RestartToast : LF_EventSubscriber
 	static const string FEATURE = "Ops";
 	static const string TITLE_KEY = "#LF-Ops_RestartTitle";
 	static const string MESSAGE_KEY = "#LF-Ops_RestartToast";
-	static const float DURATION = 10.0;
+	static const float DURATION = 10.0; // lf-fixed: toast display time, not an owner tunable
 
 	protected static ref LF_RestartToast s_Subscriber;
 	protected static ref LF_RestartToastSender s_Sender;
