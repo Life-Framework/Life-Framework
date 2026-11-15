@@ -26,10 +26,6 @@
       "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
     },
     {
-      "name": "faction-spawn-points",
-      "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
-    },
-    {
       "name": "incident/holdup",
       "reason": "reads a town shop (shelves, till, staff or stock), which is not in GridWorld"
     },
@@ -62,20 +58,12 @@
       "reason": "reads a town place found through LF_Places, which is not in GridWorld"
     },
     {
-      "name": "police/rank-permissions",
-      "reason": "reads the town police station or its spawns, which are not in GridWorld"
-    },
-    {
       "name": "prefab/moved-path",
       "reason": "reads a town place found through LF_Places, which is not in GridWorld"
     },
     {
       "name": "quests/arrival-chain",
       "reason": "reads the town square quest givers and the town board, which are not in GridWorld"
-    },
-    {
-      "name": "respawn/ward",
-      "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
     },
     {
       "name": "roadmap/contraband",
@@ -102,10 +90,6 @@
       "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband), not in GridWorld"
     },
     {
-      "name": "safezone/blocks",
-      "reason": "reads a town safe or lawless zone, which GridWorld leaves out on purpose"
-    },
-    {
       "name": "security/quest-turnin-takes-items",
       "reason": "reads the town square quest givers and the town board, which are not in GridWorld"
     },
@@ -124,10 +108,6 @@
     {
       "name": "signs/coverage",
       "reason": "reads the town signs, which are not in GridWorld"
-    },
-    {
-      "name": "spawnhub/travel",
-      "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
     },
     {
       "name": "store/folded-stack",
@@ -164,10 +144,6 @@
     {
       "name": "vehicles/test-cars",
       "reason": "reads the town test cars, which are not in GridWorld"
-    },
-    {
-      "name": "zones/quarry",
-      "reason": "reads a town safe or lawless zone, which GridWorld leaves out on purpose"
     }
   ]
 }
