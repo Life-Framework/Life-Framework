@@ -63,13 +63,13 @@ Contract slice: the toast (O6), the siren (O7) and the close (O8) subscribe to t
 - release-blocker: no
 
 ## Capability
-A siren prop prefab (a vanilla pole-mounted loudspeaker or siren mesh) carries `LF_RestartSirenComponent`, which registers with `LF_Places` under the kind `restart-siren` and does nothing else yet; P1 can place it and O7 gives it a voice.
+A siren prop prefab (a vanilla pole-mounted loudspeaker or siren mesh) carries `LF_RestartSirenComponent`, which registers with `LF_Places` under the kind `restart-siren` and does nothing else yet; O7 gives it a voice. It is a core option for other servers: the flagship pack places none (decision 2026-11-15), so P1 does not use it.
 
 ## Acceptance
 LF_Test_RestartSirenPrefab (`ops/siren-prefab`, WORLD): spawns the prefab, finds it through `LF_Places` by kind, and its mesh resolves (not an empty `MeshObject`). Red first. One `look` picture of the prop in the PR.
 
 ## Notes
-Contract slice: it takes the prefab off O7, so P1 (placement) and the trailer no longer wait for the toast and the siren logic. Vanilla assets first (`asset_search`, `game_duplicate`); a new prefab's `.meta` GUID is generated, never copied. Map independence: no coordinates. O7 fills the component's behaviour and owns the file after this slice.
+Contract slice: it takes the prefab off O7, so the siren logic stays separate from the prefab. Vanilla assets first (`asset_search`, `game_duplicate`); a new prefab's `.meta` GUID is generated, never copied. Map independence: no coordinates. O7 fills the component's behaviour and owns the file after this slice.
 
 # Slice SW: The staff webhook has its interface: one Send call with a capture seam
 ## Card
@@ -195,7 +195,7 @@ Split from O16 (#1275), O17 (#1324) and O18 (#1276) so those three docs start no
 - release-blocker: no
 
 ## Capability
-The two shots that need M4 work: an administrator approving a police recruit in the Game Master panel, and the rules board at the plaza with the siren behind it, filmed on the full profile.
+The two shots that need M4 work: an administrator approving a police recruit in the Game Master panel, and the rules board at the plaza (no siren: the flagship places none), filmed on the full profile.
 
 ## Acceptance
 Two clips exist and pass the film tool's checks; one still each in the PR.
