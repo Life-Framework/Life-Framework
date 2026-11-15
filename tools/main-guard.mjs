@@ -203,8 +203,18 @@ async function compileRouted(root, cdir, sha) {
 `); } catch {} };
   process.env.LF_PRIORITY = "high";
   try {
-    const r = await wbRoute.routeWorkbench(cdir, { purpose: "main guard compile", suffix: "-compile", args: ["ci", "--wb-only", "--compile-only", "--local"], log: say, runLocal: async () => runCli(root, cdir, ["ci", "--wb-only", "--compile-only", "--local"], `compile-${sha.slice(0, 8)}`).then((y) => y.code) });
-    return { code: r.code, log: file };
+    // The remote transcript is printed to stdout by the pool sync; tee it into the log to judge the verdict.
+    const orig = process.stdout.write.bind(process.stdout);
+    process.stdout.write = (chunk, ...rest) => { try { appendFileSync(file, chunk); } catch {} return orig(chunk, ...rest); };
+    let r;
+    try {
+      r = await wbRoute.routeWorkbench(cdir, { purpose: "main guard compile", suffix: "-compile", args: ["ci", "--wb-only", "--compile-only", "--local"], log: say, runLocal: async () => runCli(root, cdir, ["ci", "--wb-only", "--compile-only", "--local"], `compile-${sha.slice(0, 8)}`).then((y) => y.code) });
+    } finally {
+      process.stdout.write = orig;
+    }
+    let text = "";
+    try { text = readFileSync(file, "utf8"); } catch {}
+    return { code: r.code, log: file, text };
   } catch (e) {
     say(`route failed: ${e?.message ?? e}`);
     return { code: 3, log: file };
@@ -221,7 +231,7 @@ async function compileHead(root, cdir, head) {
     // The guard's own routing (not the checked-out commit's cli, which may predate it): send the compile to a pool
     // machine with the workbench cap; the remote runs that commit's `ci --wb-only --compile-only --local`.
     const x = await compileRouted(root, cdir, sha);
-    const v = mg.compileVerdict(x.code);
+    const v = mg.compileVerdict(x.code, x.text ?? null);
     log(root, `  compile ${sha.slice(0, 8)}: ${v} (exit ${x.code}, ${x.log})`);
     return v;
   };
