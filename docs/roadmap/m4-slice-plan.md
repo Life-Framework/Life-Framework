@@ -23,6 +23,10 @@ dispatch queue and every card's brief is `tools\cli slice brief <issue>`.
 - **Widened the same day: 60 slices, 2255 agent-minutes.** The re-cut of 2026-11-14 added 10 cards
   ([`m4-slices/plan-1006-widen.md`](m4-slices/plan-1006-widen.md), #1343 to #1352) and re-pointed 37
   ([Widening the graph](#widening-the-graph)).
+- **Wave 3 (2026-11-15): 80 slices.** 20 cards from the gaps the outline and the decisions left
+  ([`m4-slices/plan-1006-wave3.md`](m4-slices/plan-1006-wave3.md), #1405 to #1427); see [Wave 3](#wave-3-2026-11-15).
+- **Wave 4 (2026-11-15): 103 slices.** 23 cards that start on main today, 20 of them ready at creation
+  ([`m4-slices/plan-1006-wave4.md`](m4-slices/plan-1006-wave4.md), #1446 to #1468); see [Wave 4](#wave-4-2026-11-15).
 - **Models.** 56 Sonnet (`lf-builder`), 4 Opus (`lf-hard`): O8 and X3 (persistence), S6 (ban record file), S9 (GM RPC,
   replication), plus the independent reviewer on each of those.
 - **Enablers first.** K2 lets `host` subcommands live one file each in
@@ -47,8 +51,8 @@ dispatch queue and every card's brief is `tools\cli slice brief <issue>`.
 
 ## Decisions (2026-11-14)
 
-The maintainer answered the open questions. They are final unless the maintainer reopens them; the cards below already
-follow them.
+The maintainer answered the open questions (the last two rows on 2026-11-15). They are final unless the maintainer
+reopens them; the cards below already follow them.
 
 | Topic | Decision | What it did to the slices |
 |---|---|---|
@@ -62,7 +66,93 @@ follow them.
 | Flagship live `config.json` | In this repo under `server/`, so changes go through PRs | New C1 (the files) and C2 (secrets stay host-only); O17 created |
 | In-game day | 2 real hours (12x) | X1 and C1: the flagship config sets a 120-minute accelerated day; the core default stays vanilla |
 | Server name | "Life Framework \| Everon 1989 (Alpha)" | G5 and C1 use it exactly |
+| Flagship restarts (answered 2026-11-15) | Twice a day, at 06:00 and 18:00 server time, with warnings at 15, 5 and 1 minute | C1 sets `restarts.times` to `["06:00", "18:00"]` and leaves `warningMinutes` at the shipped 15, 5, 1; O5, O6, O6T and O9 test with these values |
+| Restart siren (answered 2026-11-15) | No plaza siren: the toast alone is enough. The siren prefab stays in core as an option; the flagship pack must not place one | O7 is toast-only for the flagship (the siren plays only where a server places one); P1 places the two boards and no siren; the trailer shot has no siren; OS stays as the core option |
 | Staff at opening | Only the maintainer is an administrator; the staff tools ship with a roster file to fill in later | New R1 (roster file and checker); S3 names nobody |
+
+## Decisions (2026-11-15)
+
+| Topic | Decision | What it did to the slices |
+|---|---|---|
+| Restart times | 06:00 and 18:00, warned with the toast only | FD (#1405) sets them in `server/flagship/config.json`; O7 (#1266) is on `hold` and O9 (#1268) no longer waits for it; P1 (#1280) places the boards, no siren |
+| Trailer | Storyboard and script first; no filming until the maintainer signs off | G2, G3, G3C and G4 (#1293, #1294, #1351, #1295) are on `hold`; SIGNOFF (#1422) and SCRIPT (#1423) are the next trailer cards; no filming card is cut |
+| DebugWorld zones | A fenced debug grid for slices' props (`tools\cli grid place`), a polished town touched only by one chapter-close card | No wave-3 card places props except TOWN (#1427), M4's town placement |
+
+A `hold` label keeps a card out of `slice list --ready` until the maintainer lifts it.
+
+## Wave 3 (2026-11-15)
+
+Every card of the first three plan files was an issue and the ready queue had run down, so the planner cut 20 more
+from what the M4 outline promises and no card yet covered. `slice new` now checks a plan against the chapter's live
+sub-issues, so a card may depend on one as `#N` and must be file-disjoint from the running ones.
+
+| Key | Issue | Slice | Model, tier | Min | Depends |
+|---|---|---|---|---|---|
+| FD | #1405 | Flagship config carries the decisions, with a check | sonnet T1 | 35 | #1321 |
+| PERF | #1406 | `host perf`: CPU, memory, upload for 40 players | sonnet T0 | 40 | |
+| DISK | #1407 | `host disk`: backups never fill the drive | sonnet T0 | 30 | |
+| READY | #1408 | `host ready`: go or no-go before a session | sonnet T0 | 40 | DISK |
+| HIST | #1409 | `host history` from the host's own records | sonnet T0 | 35 | PERF |
+| GATE | #1410 | `host gate`: the #555 opening gate | sonnet T0 | 40 | HIST |
+| WIPEN | #1413 | `host wipe` needs a notice 24 hours old | sonnet T0 | 30 | #1273 |
+| POST | #1414 | `host post` to the Discord webhook | sonnet T0 | 35 | #1273, #1322 |
+| PASSROT | #1415 | `host password rotate` for the alpha | sonnet T0 | 30 | #1322 |
+| NEXT | #1416 | `host next`: next restart and session | sonnet T0 | 30 | FD |
+| LOGFIX | #1417 | Owner log-line-to-fix table | sonnet T0 | 40 | |
+| DAYDOC | #1418 | Day-cycle owner page | haiku T0 | 30 | |
+| FAQ | #1419 | Player FAQ covers the alpha | haiku T0 | 30 | |
+| WSCOPY | #1420 | Workshop copy follows the decisions | haiku T0 | 30 | |
+| QUIZMAP | #1421 | Every quiz question tests a published rule | sonnet T1 | 40 | |
+| SIGNOFF | #1422 | Trailer sign-off packet | sonnet T0 | 35 | #1352 |
+| SCRIPT | #1423 | Trailer script names the features it shows | sonnet T0 | 35 | |
+| RYO | #1424 | Every flagship surface links run-your-own | sonnet T0 | 35 | |
+| BEATS | #1425 | Opening-day beat sheet for the integration run | haiku T0 | 30 | |
+| TOWN | #1427 | Town placement: M4's systems in the polished town (chapter close) | sonnet T1 | 45 | #1280 |
+
+Not sliced: a scripted operator restart (`host restart --in N`) would edit `LF_HostStop` beside the running close
+(O8, #1267); cut it once O8 merges.
+
+## Wave 4 (2026-11-15)
+
+The ready queue was down to one card with 18 running. Wave 4 cuts 23 cards, and 20 of them can start at once. A card
+that needs an unmerged PR's shape merges that branch in and owns none of its files (LISTING, DRIFT, PORTS, ALPHAPAGE).
+Maintainer, 2026-11-15: **no town-pass or placement-cleanup cards** (he fixes the existing placements by hand; the
+grid rule and the world-zones guard, #1443, cover new ones), and no video, trailer, filming or storyboard cards.
+
+#1006 reached GitHub's cap of 100 sub-issues after DRIFT. The last six cards are sub-issues of the epics (#230, #231,
+#232) and still carry `parent: 1006`; `slice list 1006` reads cards one level down, and `slice new --attach <epic>`
+files new ones there.
+
+| Key | Issue | Slice | Model, tier | Min | Depends |
+|---|---|---|---|---|---|
+| JOINEV | #1446 | Contract: a player spawn is an event on the bus | sonnet T2 | 30 | |
+| RECRUIT | #1447 | An approved recruit hears it at the next spawn (beat 4) | sonnet T2 | 40 | JOINEV |
+| JOINNOTE | #1448 | The alpha notice at a player's first spawn | sonnet T2 | 40 | JOINEV |
+| JNCFG | #1449 | The flagship turns the alpha notice on | haiku T1 | 30 | JOINNOTE, #1405 |
+| PRECRUIT | #1450 | Proof verb `recruit-uniform` (beat 4) | sonnet T0 | 45 | |
+| PINCIDENT | #1451 | Proof verb `incident-handled` (beat 3) | sonnet T0 | 45 | |
+| PERFLOG | #1452 | The server logs a perf line every minute | sonnet T2 | 40 | |
+| SAY | #1453 | `host say` puts an operator message on every screen | sonnet T2 | 45 | |
+| VERIFY | #1454 | `host verify` checks every backup can be read | sonnet T0 | 35 | |
+| OFFSITE | #1455 | `host offsite` copies backups to a second drive | sonnet T0 | 35 | |
+| LOGARCH | #1456 | `host logs` archives each session's logs | sonnet T0 | 35 | |
+| CRASHPACK | #1457 | `host crashpack` bundles a crash, secrets redacted | sonnet T0 | 35 | |
+| APPS | #1458 | `host applications` lists the police queue | sonnet T0 | 30 | |
+| ATTEND | #1459 | `host attendance` from the log's joins and leaves | sonnet T0 | 40 | |
+| PORTS | #1460 | `host ports` checks the game is reachable | sonnet T0 | 35 | |
+| LISTING | #1461 | `host listing` checks the server-browser entry (beat 1) | sonnet T0 | 35 | |
+| DRIFT | #1462 | `host drift`: the live config against the repo | sonnet T0 | 30 | |
+| SECRETS | #1463 | Validate fails on a committed secret (under #230) | sonnet T0 | 30 | |
+| CHEAT | #1464 | One-page session cheatsheet (under #230) | haiku T0 | 30 | |
+| OWNERALPHA | #1465 | Owner page: run a password alpha (under #230) | haiku T0 | 30 | |
+| STAFFADD | #1466 | `staff add/remove/promote` edit the roster (under #231) | sonnet T0 | 30 | |
+| POLICEDOC | #1467 | How to join the police in the alpha (under #231) | haiku T0 | 30 | |
+| ALPHAPAGE | #1468 | The site's `/alpha` page, next session time only (under #232) | sonnet T0 | 40 | |
+
+Chapters: M4 has one chapter, #1006, and every epic under it (#230, #231, #232) has cards. Still not sliced: a
+scripted operator restart (`host restart --in N`) waits for O8 (#1267). The flat horizon of the flagship world
+(`Everon1989Town`, seen in the 2026-11-15 preview shoot) is a terrain question and stays with the maintainer,
+like the placements.
 
 ## Widening the graph
 
@@ -80,7 +170,7 @@ and the dependents point at it:
 |---|---|---|---|
 | CF #1343 | The `restarts`, `staff` and `dayCycle` config section classes, one schema regen | O5, S4, X1, C1 | K1 (merge driver), X1 |
 | OC #1344 | `LF_OnRestartWarning` and `LF_OnRestartDue` on the bus; ticker and day-cycle stubs; the game-mode start lines | O6 (toast), O7, O8, X2 | O5 then O6 |
-| OS #1345 | The siren prefab with an empty `LF_Places` component | P1, O7 | O7 (siren logic) |
+| OS #1345 | The siren prefab with an empty `LF_Places` component (a core option; the flagship places none) | O7 | O7 (siren logic) |
 | SW #1346 | `LF_StaffWebhook.Send` with a capture seam | S5, S10, S4 | S4 (the real POST) |
 | SJ #1347 | `website/content/sessions.schema.json` and fixtures | G7, O14 writes to it | O14 |
 
@@ -89,7 +179,8 @@ ticker; G3 keeps shots five and six and G3C takes the two shots that need P1
 and S9; G4E writes the storyboard, captions and end card while G4 only renders
 the real clips; O12 and O13 build their parts side by side and O13W wires them.
 The siren prefab left O7 (OS above), so placement and the trailer no longer
-wait for the restart chain at all.
+wait for the restart chain at all. Since the 2026-11-15 decision P1 places no siren
+and no longer waits for OS either.
 
 **Docs from the plan.** O16, O17, O18, O19, S7, S11, S12 and W1 are written
 from the cards now: a command that has not merged is named in code font exactly
@@ -115,7 +206,7 @@ release blocker.
 | O4 | #1263 | Crash-loop guard and staff alert | sonnet T0 | 30 | O3 |
 | O5 | #1264 | Restart schedule from config (CP) | sonnet T2 | 45 | CF |
 | O6 | #1265 | Restart warning toast (subscribes to OC) | sonnet T2 | 40 | OC |
-| O7 | #1266 | Plaza siren at the warnings | sonnet T2 | 45 | OC, OS |
+| O7 | #1266 | Optional siren at the warnings (flagship: toast only) | sonnet T2 | 45 | OC, OS |
 | O8 | #1267 | Save and close at restart time | opus T2, persistence | 30 | OC |
 | O9 | #1268 | Proof `restart-cycle` (CP, B) | sonnet T2 | 45 | O3, O6, O6T, O7, O8 |
 | O10 | #1269 | `host triage` groups a log | sonnet T0 | 40 | K2 |
@@ -144,7 +235,7 @@ release blocker.
 | Key | Issue | Slice | Model, tier | Min | Depends |
 |---|---|---|---|---|---|
 | S1 | #1279 | Rules and run-your-own sign cards (pack) | sonnet T1 | 40 | |
-| P1 | #1280 | Place siren and both boards at the plaza (TP) | sonnet T1 | 40 | OS, S1 |
+| P1 | #1280 | Place both boards at the plaza, no siren (TP) | sonnet T1 | 40 | S1 |
 | S2 | #1281 | Rules export to the site and Discord | sonnet T0 | 40 | S1 |
 | S3 | #1282 | Moderator guide (B) | sonnet T0 | 40 | |
 | S4 | #1283 | Staff webhook sender (the real POST) | sonnet T2 | 45 | CF, SW |
@@ -205,8 +296,7 @@ graph LR
   OC --> O7 --> O9
   OS --> O7
   OC --> O8 --> O9
-  OS --> P1 --> G3C --> G4
-  S1 --> P1
+  S1 --> P1 --> G3C --> G4
   S1 --> S2
   S8 --> S9 --> G3C
   G1 --> G2 --> G4
@@ -254,7 +344,7 @@ graph LR
 ```
 
 **Critical path: 4 slices, 170 minutes** (was 7 slices, 290).
-CF (40) → O5 (45) → O6T (40) → O9 (45). The trailer chain is OS (40) → P1
+CF (40) → O5 (45) → O6T (40) → O9 (45). The trailer chain is S1 (40) → P1
 (40) → G3C (45) → G4 (30), 155 minutes, and no longer runs through the restart
 code; S9 → G3C → G4 is 120. Every slice now waits on at most one unfinished
 contract or one real predecessor, except the proofs (O9), the reconcile pass
@@ -293,7 +383,7 @@ gave 22 ready:
 | 22 | W1 | #1323 | docs from the plan |
 
 Next to open: O5, X1, S4 and C1 when CF merges; O6, O8 and X2 when OC merges
-(X2 also needs X1); O7 when OC and OS merge; P1 when OS and S1 merge; S5 and
+(X2 also needs X1); O7 when OC and OS merge; P1 when S1 merges; S5 and
 S10 when SW merges; G7 when SJ merges; G2, G3 and G4E when G1 merges.
 
 ## Steps only a human does
@@ -320,9 +410,6 @@ slices write.
 
 ## Open questions for the maintainer
 
-One is left. Nothing in the plan assumes an answer.
-
-1. **Restart times** for the flagship once it runs 24/7, and whether the
-   plaza siren suits the 1989 village or the toast alone is enough. Until
-   answered the flagship config sets no `restarts` list (C1) and O7's siren
-   falls back to the toast when no siren is placed.
+No open questions left. The last one was answered on 2026-11-15; see
+[Decisions](#decisions-2026-11-14): the flagship restarts at 06:00 and 18:00 server
+time with warnings at 15, 5 and 1 minute, and no plaza siren is placed.

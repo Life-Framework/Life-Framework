@@ -33,7 +33,7 @@ is a stand-in, record it in `docs/asset-inventory.md` as a placeholder and say s
 a wall, a counter, a kerb, another prop of the group. Three props that touch read as a place;
 three props two metres apart read as debris.
 
-**Nothing debug in the village.** Fixtures and debug tools live in the annex layers.
+**Nothing debug in the village.** Fixtures and debug tools live in the debug grid: a feature's `Grid_<slug>.layer` cell or the legacy annex layers (`docs/architecture/world-zones.md`).
 `validate-player-props` fails a new `*Debug*` entity or `/Debug/` prefab in a village layer.
 
 ## Signs and lettering

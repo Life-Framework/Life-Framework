@@ -21,7 +21,8 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ANNEX_LAYERS, LAYERS } from "./validate-annex-fixtures.mjs";
+import { LAYERS } from "./validate-annex-fixtures.mjs";
+import { PACK_TOWN_LAYERS, zoneOfLayer } from "../lib/world-zones.mjs";
 
 export const BASELINE = "tools/validation/player-props-baseline.json";
 
@@ -36,14 +37,18 @@ export function debugProps(text) {
   return out;
 }
 
+// Town layers only (docs/architecture/world-zones.md): the DebugWorld village layers and the pack
+// world Everon1989Town. The debug grid (Grid_*.layer, the legacy annex layers) may look like a test.
 export function scan(root) {
-  const dir = join(root, LAYERS);
   const found = [];
-  if (!existsSync(dir)) return found;
-  for (const f of readdirSync(dir).filter((n) => n.endsWith(".layer")).sort()) {
-    const layer = f.replace(/\.layer$/, "");
-    if (ANNEX_LAYERS.has(layer)) continue;
-    for (const hit of debugProps(readFileSync(join(dir, f), "utf8"))) found.push({ layer, ...hit });
+  for (const [rel, world] of [[LAYERS, "debug"], [PACK_TOWN_LAYERS, "pack"]]) {
+    const dir = join(root, rel);
+    if (!existsSync(dir)) continue;
+    for (const f of readdirSync(dir).filter((n) => n.endsWith(".layer")).sort()) {
+      const layer = f.replace(/\.layer$/, "");
+      if (zoneOfLayer(f, world) !== "town") continue;
+      for (const hit of debugProps(readFileSync(join(dir, f), "utf8"))) found.push({ layer, ...hit });
+    }
   }
   return found;
 }
