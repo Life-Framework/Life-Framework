@@ -12,3 +12,15 @@
   Tested by `LF_Test_ChessMoves`: the start position has 20 moves, perft 400 and 8902, and four
   published perft positions agree to depth 3. Not yet: a table, pieces in the world, a sheet, clocks,
   draw by repetition or the fifty-move rule, and a Systems switch (the catalog entry is `NOT_YET`).
+
+### `LF_ChessGame` — `Feature/Chess/` (#1933, chapter #1011)
+- ✅ One game from the first move to the end, still pure script. `LF_ChessGame` wraps an
+  `LF_ChessBoard`: `TryMove(white, "e2e4")` refuses (logs, changes nothing) a move out of turn, an
+  illegal or malformed move, and any move once the game is over. It keeps the move list
+  (`GetMoveNames`, `MoveListText` as `1. e2e4 e7e5 2. ...`), reports `IsCheck`, and ends on
+  checkmate (the side that mated wins), stalemate (a draw) or `Resign(white)` (the other side wins,
+  allowed off turn). `FromFen` loads a position and a game loaded already mated or stalemated is
+  over at once. Result is `GetResult()` (`RESULT_*`) and the reason `GetEnd()` (`END_*`).
+  Tested by `LF_Test_ChessGame`: fool's mate is mate for black, `Qf7` into the corner is a stalemate
+  draw, an out-of-turn move is refused, resignation gives the other side the game. Not yet: a
+  draw by agreement, repetition or the fifty-move rule, a clock, and the table that seats players.
