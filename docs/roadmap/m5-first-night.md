@@ -60,3 +60,11 @@ Card #2125 (draft, label `hold`) places it. Points for that card:
 Switch to the homestay of #1758: an ordinary town house (for example one of the `House_Town_E_2I0x` two-storey
 houses already in `Village_Buildings.layer`), the host's drum loop as an atmosphere sound, and "homestay" in the
 clerk's welcome and the first-night beat. Close #2125 and file the house version.
+
+## The dressed room (#1966)
+
+The hotel and its first-spawn beds stand in the grid block `first-night-room` (`Grid_first_night_room.layer`, claim
+`tools/grid/cells/first-night-room.json`, 3 x 2 cells at c7r5). Entity names start `FirstNightRoom_`: `Hotel`, `Bed_1` to
+`Bed_3`, `Nightstand_1`, `Nightstand_2`, `Locker`, `Suitcase_1`. Card #2125 copies them into the town with the hotel;
+every prop's position is its offset from `FirstNightRoom_Hotel`, so the whole set moves with one translation. The
+beds sit between the hotel's bunk rows; the steps off the bed are set per bed in the layer.

@@ -25,6 +25,7 @@ import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "
 import { join } from "node:path";
 import { CELL, isFrameClaim } from "../grid/lattice.mjs";
 import { loadWorld } from "../../agent-box/layers.mjs";
+import { withSpawn } from "../grid/cell-spawn.mjs";
 import {
   CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, claimCellIds, claimRect, entityPrefix, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, yardPlan, yawAlong,
 } from "../lib/world-zones.mjs";
@@ -232,7 +233,7 @@ async function place(root, args, flags, ctx = {}) {
     console.log("grid: dry run, nothing written.");
     return 0;
   }
-  if (fresh || !existsSync(layerFile)) writeFileSync(layerFile, yardLayer(slug, cell, P));
+  if (fresh || !existsSync(layerFile)) writeFileSync(layerFile, withSpawn(yardLayer(slug, cell, P), slug, yardPlan(cell)));
   if (fresh) {
     mkdirSync(join(root, CELLS_DIR), { recursive: true });
     writeFileSync(regFile, registryText(entry));

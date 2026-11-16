@@ -36,3 +36,7 @@
 
 ### `LF_EventShellRow`, `worldevents` payload — `Feature/Events/LF_EventShellSave.c` (#1951, 2026-11-17)
 - ⚠️ Events survive a restart by phase name: the `worldevents` payload (save version 41) keeps each event's phase name, phase age, cooldown left, time since it ended and an int bag (`LF_EventShell.GetInt/SetInt`, for module state), with times relative to the save because the shell clock restarts at 0. On load an event saved in a phase it still has goes to its full cooldown (a scene is never resumed), an idle one keeps its cooldown left, a phase name it no longer has loads idle with a warning, and an event id this boot does not run is dropped with a warning. Restart proof is manual (`wt e2e`). Tests: `events/shell-persist` (WORLD).
+
+### `LF_EventSceneCheck` — `Feature/Events/LF_EventSceneCheck.c` (#2067, 2026-11-16)
+- ✅ Three seconds after game start the server reads every placed scene marker (#1954) through `LF_Places` and logs one `[LFDebug:Events]` warning per broken scene: a gap in the route's orders (names the missing orders), waypoints with no target, no spawn marker. Each fault is named once; a scene with several faults is still one line. The scene stays usable, no event is switched off, nothing throws. A last info line says how many markers were read and how many scenes are broken. Tests: `events/scene-check` (LOGIC).
+

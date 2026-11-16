@@ -103,3 +103,12 @@ GenericEntity PoliceStation {
   }
  }
 }
+GenericEntity Grid_police_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "police"
+  }
+ }
+ coords 42.5 0 94.3
+}

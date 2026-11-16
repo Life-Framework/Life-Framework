@@ -198,3 +198,13 @@ LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et"
  coords 76 0 28
  m_vSize 4.5 1 3
 }
+GenericEntity Grid_crimes_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "crimes"
+  }
+ }
+ coords 73.5 0 33.7
+ angleY 180
+}

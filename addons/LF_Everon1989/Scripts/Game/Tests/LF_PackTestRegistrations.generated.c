@@ -7,6 +7,7 @@ modded class LF_TestManager
 	{
 		super.RegisterPackTests();
 		RegisterPack(new LF_Test_EveronArrivalEvent(), LF_TestTier.WORLD);
+		RegisterPack(new LF_Test_EveronCafeOwner(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronClerkWelcome(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronDrinksImpair(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronHandbookPages(), LF_TestTier.WORLD);
@@ -14,6 +15,7 @@ modded class LF_TestManager
 		RegisterPack(new LF_Test_EveronOldMan(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronPoliceKit(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronRulesOverlays(), LF_TestTier.WORLD);
+		RegisterPack(new LF_Test_EveronTownsfolk(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronWelcomeGift(), LF_TestTier.WORLD);
 	}
 }

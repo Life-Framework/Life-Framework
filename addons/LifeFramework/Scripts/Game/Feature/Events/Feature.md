@@ -47,6 +47,14 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Rules:** idle keeps its cooldown left; a phase the event still has goes to its full cooldown from the load; a phase name it no longer has loads idle with `LF_Debug.Warn`; an id this boot does not run (removed, off, refused) is dropped with `LF_Debug.Warn`. The int bag comes back for every applied row. A load before game start loads the config first and `StartIfServer` keeps those runs. Applying the same rows twice gives the same state, and a re-apply onto a live session leaves a running event alone. An end older than the boot loads as "ended at boot" (the clock restarted), so a gap condition waits longer, never less.
 - **Proof:** `events/shell-persist` (WORLD), restart by `wt e2e`.
 
+## Scene markers are checked at game start (#2067)
+
+- **Player sees:** nothing. A pack author sees one `[LFDebug:Events]` warning per broken scene in the server log.
+- **Owner and side:** `LF_EventSceneCheck` (core), server only, once per world, three seconds after game start so the placed markers (#1954) have registered. It only reads and logs: the scene stays usable and no event is switched off.
+- **Rules:** one line per scene, each fault named once: a gap in the route's orders (waypoints 0, 2, 3 is missing 1; a route starting at 1 is missing 0), waypoints but no `event_target`, no `event_spawn` marker. A marker with no scene id belongs to no scene (the component already logs it). A clean scene logs nothing; the check always ends with one `scene check: N marker(s) read, M scene(s) broken` info line.
+- **Proof:** `events/scene-check` (LOGIC, marker lists in script, no world).
+
+
 ## Modules from config (#2137)
 
 - **Player sees:** what the modules do (a scene of walkers); the loader itself is invisible.
