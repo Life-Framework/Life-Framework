@@ -7783,7 +7783,7 @@ CustomStringTableItem "{44869271883D0402}" {
   }
   CustomStringTableItem "{3655F9540576258C}" {
    Id "LF-Roadblock_Description"
-   Target_en_us "Folding roadblock kit: a barrier and four cones. Drop it at the roadside and deploy it across the road; pick any piece up to fold the set away. On-duty police only."
+   Target_en_us "Folding roadblock kit: a barrier and four cones. Drop it at the roadside and deploy it across the road; pick any piece up to fold the set away. On-duty {police} only."
    Comment "Inventory description of the police roadblock kit."
   }
   CustomStringTableItem "{986CA09EB5046245}" {

@@ -88,7 +88,7 @@ class LF_Roadblocks
 	static const int TICK_MS = 500; // lf-fixed: sampling period of a cosmetic log, not a gameplay knob
 
 	protected static ref array<ref LF_RoadblockSet> s_aSets = {};
-	protected static ref array<IEntity> s_aFound = {};
+	protected static ref array<EntityID> s_aFound = {};
 	protected static string s_sLastRefusal;
 
 	//------------------------------------------------------------------------------------------------
@@ -285,8 +285,12 @@ class LF_Roadblocks
 			LF_RoadblockSet block = s_aSets[i];
 			s_aFound.Clear();
 			world.QueryEntitiesBySphere(block.m_vCentre, LF_RoadblockSet.STOP_RADIUS, CollectVehicle, null, EQueryEntitiesFlags.ALL);
-			foreach (IEntity vehicle : s_aFound)
+			foreach (EntityID id : s_aFound)
 			{
+				IEntity vehicle = world.FindEntityByID(id);
+				if (!vehicle)
+					continue;
+
 				float speed;
 				Physics physics = vehicle.GetPhysics();
 				if (physics)
@@ -301,7 +305,7 @@ class LF_Roadblocks
 	protected static bool CollectVehicle(IEntity entity)
 	{
 		if (Vehicle.Cast(entity))
-			s_aFound.Insert(entity);
+			s_aFound.Insert(entity.GetID());
 
 		return true;
 	}
