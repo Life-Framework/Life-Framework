@@ -1,0 +1,54 @@
+// Fixture for town-kit-selftest: a made-up shop at world (500.5, 0, 300.25), building yaw 90.
+// The building, then a counter, a till on it (with stock it must NOT copy), a clerk, a wall sign, a group and a child.
+SCR_DestructibleBuildingEntity Fx_Building : "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et" {
+ coords 500.5 0 300.25
+ angleY 90
+}
+GenericEntity Fx_Counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 503.5 0.2 301.5
+ angleY 90
+}
+GenericEntity Fx_Till : "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et" {
+ components {
+  LF_StoreComponent "{5A4B0B84C86E4845}" {
+   m_sStoreKey "fx_store"
+   m_aLines {
+    LF_StoreLine "{5D755B170F096342}" {
+     m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+     m_iMaxStock 20
+    }
+   }
+  }
+ }
+ coords 503.5 1.238 301.5
+ angleY 270
+}
+LF_NpcBaseEntity Fx_Clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 504.5 0.2 301.5
+ angleY 270
+}
+GenericEntity Fx_Sign : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ coords 500.6 2.2 300.1
+ angles 0 90 0
+}
+$grp GenericEntity : "{78F2C1D0A7B3E5F9}Prefabs/Props/Furniture/Fixture_Crate.et" {
+ Fx_Crate_A {
+  coords 502 0.2 298.75
+ }
+ Fx_Crate_B {
+  coords 502 0.2 297.5
+  angleY 45
+  scale 1.2
+ }
+}
+GenericEntity Fx_Bag : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
+ coords 502.5 0.2 303
+ {
+  GenericEntity Fx_Bag_Cash : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
+   coords 0 0.15 0
+  }
+ }
+}
+GenericEntity Elsewhere_Prop : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ coords 10 0 10
+}
