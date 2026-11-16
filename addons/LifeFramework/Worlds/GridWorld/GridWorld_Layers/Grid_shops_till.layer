@@ -170,3 +170,13 @@ $grp GenericEntity {
 LF_NpcBaseEntity Grid_shops_till_Fence : "{C6EF5A8FFED301BB}Prefabs/Characters/Npcs/Outfits/LF_Npc_Fence_1.et" {
  coords 64 0 25.5
 }
+GenericEntity Grid_shops_till_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "shops-till"
+  }
+ }
+ coords 61.5 0 33.7
+ angleY 180
+}

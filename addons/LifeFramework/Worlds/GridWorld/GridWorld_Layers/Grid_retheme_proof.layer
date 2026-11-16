@@ -140,3 +140,13 @@ GenericEntity Retheme_Shop {
  coords 37.464 0 43
  angleY 90
 }
+GenericEntity Grid_retheme_proof_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "retheme-proof"
+  }
+ }
+ coords 37.5 0 45.7
+ angleY 180
+}

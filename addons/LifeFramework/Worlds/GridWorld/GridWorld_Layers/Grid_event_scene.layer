@@ -106,3 +106,13 @@ GenericEntity Grid_event_scene_R1_3 : "{F716FD32069F2BE8}Prefabs/Systems/Events/
  coords 39.999 0.002 55
  angleY 90
 }
+GenericEntity Grid_event_scene_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "event-scene"
+  }
+ }
+ coords 45.7 0 54.5
+ angleY 270
+}
