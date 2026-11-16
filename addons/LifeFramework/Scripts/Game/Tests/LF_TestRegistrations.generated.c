@@ -187,6 +187,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_EventBus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPackOverlay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPhaseRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventPreconditions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventWaypoints(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceLockerPersist(), LF_TestTier.PERSISTENCE);
@@ -224,6 +225,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FuelClerkDialogue(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GarageStoreRange(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_GraceProtection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GridFrameLabels(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GridWorldBoot(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GuidCompare(), LF_TestTier.WORLD);
@@ -308,6 +310,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LockpickVehicle(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LockpickVehicleWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LoggingChain(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_LogoutBody(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutRule(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_M4ConfigSections(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);

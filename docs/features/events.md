@@ -9,3 +9,6 @@
 
 ### `LF_EventOverlay` — `Feature/Events/LF_EventOverlay.c` (#1952, 2026-11-16)
 - ⚠️ A pack's event config (root `LF_EventsConfig`, listed in the mission header's `m_aLF_ConfigOverlays`) adds, replaces, patches or removes an event by id, with the shared override verbs (`m_sOp`). A patch changes a phase timing by phase name and keeps every field it does not set; `remove` disables a core event. Unknown ids and a duplicate add are refused and logged, the rest of the overlay applies. No shell reads the list yet (#757). Tests: `events/pack-overlay` (LOGIC).
+
+### `LF_EventPrecondition`, `LF_EventAbort`, `LF_EventContext` — `Feature/Events/` (#1949, 2026-11-16)
+- ✅ Condition modules (AND-ed) hold a phase until the in-game hour is in range (may wrap midnight), enough players are online or nearby, and a cooldown since the event last ended is over; abort modules (OR-ed) end the event on an hour window, too few players online or nearby, or a phase that lasts too long. Pure over a measured `LF_EventContext`; the shell (#757) fills it and feeds `LF_EventPhaseRules.Decide`. Tests: `events/preconditions` (LOGIC).
