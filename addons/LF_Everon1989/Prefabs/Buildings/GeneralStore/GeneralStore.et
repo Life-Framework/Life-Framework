@@ -331,9 +331,27 @@ SCR_DestructibleBuildingEntity : "{9064E65F34097C8F}Prefabs/Structures/Commercia
     }
    }
   }
-  GenericEntity : "{CBE2BA7FF0914514}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_FoodStore.et" {
+  GenericEntity : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
    ID "56F2E0BBBF98B9D0"
    components {
+    MeshObject "{5111E74D5E891458}" {
+     Materials {
+      MaterialAssignClass "{5EF79D9074AC18CC}" {
+       SourceMaterial "SignCommercial_01"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{7EAFD7FF46F56085}" {
+       SourceMaterial "MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{6E3FF3980D87CACE}" {
+     m_sSignId "general_store"
+     m_vRimColor 0.9 0.82 0.55
+     m_vPaintColor 0.1 0.28 0.17
+     m_vTextColor 0.96 0.93 0.82
+    }
     Hierarchy "{612AE78C95E98EEB}" {
      PivotID "socket_win_420x275_01"
     }
