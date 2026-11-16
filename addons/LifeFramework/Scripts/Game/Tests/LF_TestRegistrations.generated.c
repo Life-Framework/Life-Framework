@@ -125,7 +125,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CrimeRecord(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CrimeRecordPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CropPrefabs(), LF_TestTier.WORLD);
-		manager.Register(new LF_Test_CropStages(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CuffingOpenState(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CuffingRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Data(), LF_TestTier.WORLD);
@@ -463,6 +462,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ScenePiecesWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ScreenshotFailSafe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SearchCooldown(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SearchLegality(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FruitCatcherRewardClamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServerPerfLog(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceBoard(), LF_TestTier.WORLD);
