@@ -344,7 +344,7 @@
   landmark (`LF_NamedPlaces.Nearest`, #1944, WORLD `police/dispatch-names-place`:
   "bank robbery, Saint Philippe"), else a 100 m grid square. The place is stored as a
   localization key and localized where each board and radio line is built; the
-  core holds no place names.
+  core holds no place names. In town the hospital till's alarm stands on `Hospital_AlarmBox` (an alarm mount on the hospital front wall, `Street_Hospital.layer`) and the pack names the town "Saint Philippe" (`Place_SaintPhilippe`, town pass #1947).
   An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)
   catches it in the act and the report is identified at once. Showing your own
   ID card to an on-duty officer (`LF_ShowIDAction`) identifies every open
@@ -594,8 +594,8 @@
   80 %, the grip to 20 % and adds drag on every machine, so the car slows and pulls. A flat wheel is not hit
   twice. Logs `[LFDebug:SpikeStrip] punctured wheel N of <vehicle>`.
 - ✅ Pick up spike strip (on-duty police) puts the folded item back in the inventory, or at the feet when full.
-  The strip goes by itself after `LF_PoliceConfig.m_iSpikeStripLifetimeSeconds` (600). DebugWorld shows one
-  on the police station verge (`Roadmap_Police_SpikeStrip`: `m_bArmed 0`, `m_bExpires 0`; an officer can still pick it up).
+  The strip goes by itself after `LF_PoliceConfig.m_iSpikeStripLifetimeSeconds` (600). The town has no
+  loose strip: the police armory hands out the kit (town pass #1947; the grid cell `roadblock` keeps the film and test spot).
 - Model: one Meshy link repeated by the asset pipeline's deployable kind (`tools/assets/spike-strip`).
   Tests `police/spike-strip`, `police/spike-strip-geometry`; proof `session.mjs spike-strip-proof`.
 - ⚠️ Not persisted: a deployed strip is gone after a restart. The road-network alignment did not run in

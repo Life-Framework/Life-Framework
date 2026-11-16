@@ -429,6 +429,11 @@ StringTable {
      Target_en_us "{Org} Register - 1989 ledger"
      Comment "Registry ledger page title."
     }
+    CustomStringTableItem "{4B7A1E93C2D05F68}" {
+     Id "LF-Place_SaintPhilippe"
+     Target_en_us "Saint Philippe"
+     Comment "Named place (#1943, town pass #1947): the map label dispatch reads for a robbery away from any sign; LF_NamedPlaces.Nearest."
+    }
     CustomStringTableItem "{D8F9FC9FD0EEAC13}" {
      Id "LF-PoliceApp_Title"
      Target_en_us "Application to the Everon {Police}"

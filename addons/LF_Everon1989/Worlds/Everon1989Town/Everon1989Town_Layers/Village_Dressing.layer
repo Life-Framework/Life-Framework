@@ -1045,3 +1045,16 @@ GenericEntity : "{FEB4961C91993C22}Prefabs/Structures/Civilian/DogHouse_01.et" {
  coords 157 0 223.5
  angles 0 30 0
 }
+GenericEntity Place_SaintPhilippe : "{97CA105CBFA5884E}Prefabs/World/Locations/Common/Urban/LocationUrbanVillage.et" {
+ components {
+  SCR_EditableCommentComponent "{529AB059519FE609}" {
+   m_UIInfo SCR_EditableCommentUIInfo "{5298E609432D192D}" {
+    Name "#LF-Place_SaintPhilippe"
+   }
+  }
+  SCR_MapDescriptorComponent "{527892B6ED748CEB}" {
+   DisplayName "#LF-Place_SaintPhilippe"
+  }
+ }
+ coords 200 0 250
+}
