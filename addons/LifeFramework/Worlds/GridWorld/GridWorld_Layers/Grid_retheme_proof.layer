@@ -1,28 +1,28 @@
-// Grid cell c1r3 for retheme-proof: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+// Grid cell c1r1 for retheme-proof: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
 SCR_DestructibleEntity Grid_retheme_proof_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 35 0 59
+ coords 35 0 35
 }
 SCR_DestructibleEntity Grid_retheme_proof_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 40 0 59
+ coords 40 0 35
 }
 SCR_DestructibleEntity Grid_retheme_proof_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 45 0 59
+ coords 45 0 35
  angleY 270
 }
 SCR_DestructibleEntity Grid_retheme_proof_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 45 0 69
+ coords 45 0 45
  angleY 180
 }
 SCR_DestructibleEntity Grid_retheme_proof_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 40 0 69
+ coords 40 0 45
  angleY 180
 }
 SCR_DestructibleEntity Grid_retheme_proof_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 35 0 69
+ coords 35 0 45
  angleY 90
 }
 SCR_DestructibleEntity Grid_retheme_proof_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 35 0 64
+ coords 35 0 40
  angleY 90
 }
 GenericEntity Grid_retheme_proof_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -34,15 +34,15 @@ GenericEntity Grid_retheme_proof_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/L
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 45.8 0.505 68.4
+ coords 45.8 0.505 44.4
  angleY 90
 }
 GenericEntity Retheme_Guns : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et" {
- coords 37.464 0 61
+ coords 37.464 0 37
  angleY 90
 }
 GenericEntity Retheme_Desk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
- coords 37.127 0 62.149
+ coords 37.127 0 38.149
  angleY 90
 }
 GenericEntity Retheme_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
@@ -76,7 +76,7 @@ GenericEntity Retheme_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_Fuel
    }
   }
  }
- coords 37.52 0 64.944
+ coords 37.52 0 40.944
  angleY 90
 }
 GenericEntity Retheme_Shop {
@@ -137,6 +137,6 @@ GenericEntity Retheme_Shop {
    Enabled 1
   }
  }
- coords 37.464 0 67
+ coords 37.464 0 43
  angleY 90
 }
