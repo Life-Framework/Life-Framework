@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-16 with `toolsi test --no-build --red LF_Test_EventWalkArrival`: `RED-OK events/walk-arrival` (with the group-done flag off, "a formation member 4.4 m out arrived with its group" and "a member 10.6 m out that followed the leader arrived" fail); green with `--only` (passed=2 failed=0 with LF_Test_EventSceneWalk).
+// red-proof: Observed 2026-11-16 with `tools/cli test --no-build --red LF_Test_EventWalkArrival`: `RED-OK events/walk-arrival` (with the group-done flag off, "a formation member 4.4 m out arrived with its group" and "a member 10.6 m out that followed the leader arrived" fail); green with `--only` (passed=2 failed=0 with LF_Test_EventSceneWalk).
 
 // tier: LOGIC
 //! The scene walk's arrival rule (#2174): a walker that passed every waypoint arrives near the target;
