@@ -18,7 +18,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PAGES = ["docs/ops/session-runbook.md", "docs/ops/hotfix.md", "docs/ops/rented-box.md"];
 
 function cliOut(args) {
-  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...args], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 60000 });
+  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...args], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 60000, env: { ...process.env, LF_OUTPUT: "log" } });
   return `${r.stdout ?? ""}\n${r.stderr ?? ""}`;
 }
 
