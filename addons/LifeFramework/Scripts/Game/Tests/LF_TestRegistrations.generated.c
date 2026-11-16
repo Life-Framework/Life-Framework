@@ -195,6 +195,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_EventPreconditions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventScenePlan(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventSceneSpawn(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_EventSceneWalk(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventShell(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventWaypoints(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);
@@ -335,6 +336,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MoneyRework(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MovedPrefab(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Murder(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MurderLogoutBody(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NamedPlaces(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NewLifeRule(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_NoPassivePaycheck(), LF_TestTier.WORLD);
@@ -352,6 +354,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OrgRegistry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_OrgRights(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_OutletSerial(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PackManifest(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PackPatchOverlays(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Pager(), LF_TestTier.WORLD);
@@ -433,6 +436,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Quiz(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuizHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuizPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_RaceBoardProp(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceCourse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceCourses(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceHud(), LF_TestTier.LOGIC);
@@ -459,7 +463,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ReviveAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveCprGraph(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadblock(), LF_TestTier.WORLD);
-		manager.Register(new LF_Test_RoadblockExpiry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_Bank(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Roadmap_BankWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_BankPersistence(), LF_TestTier.PERSISTENCE);

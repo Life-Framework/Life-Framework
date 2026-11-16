@@ -26,6 +26,7 @@ import { localSetting } from "./lib/local-config.mjs";
 import { ADDONS } from "./lib/addons.mjs";
 import { sessionDirOf } from "./lib/session-lease.mjs";
 import * as pinLib from "./lib/guard-pin.mjs";
+import { isMachineWide, machineLockDir } from "./lib/machine-locks.mjs";
 
 const IS_WIN = process.platform === "win32";
 const GH_ON_PATH = IS_WIN ? "gh.cmd" : "gh";
@@ -124,6 +125,35 @@ export function ensureHub(root) {
   const hub = hubDirOf(root);
   mkdirSync(join(hub, "locks"), { recursive: true });
   return hub;
+}
+
+// Where lock `name` lives. Most locks are in this checkout's hub. A lock that guards a UDP port
+// (server-2001, server-test-<k>) is machine-wide: on a PC that is also a pool box for another PC, the
+// box clone's hub holds it, because the remote holder writes it there (tools/lib/machine-locks.mjs).
+export function lockFileOf(root, name) {
+  const shared = isMachineWide(name) ? machineLockDir(mainRootOf(root)) : null;
+  if (shared) {
+    mkdirSync(shared, { recursive: true });
+    return join(shared, `${name}.lock`);
+  }
+  return join(ensureHub(root), "locks", `${name}.lock`);
+}
+
+// The lock file this checkout wrote before slot locks were shared, or null. A holder started by older
+// code is still a holder: acquirers treat a live one as busy until it ends.
+function legacyLockFile(root, name) {
+  const own = join(ensureHub(root), "locks", `${name}.lock`);
+  return lockFileOf(root, name) === own ? null : own;
+}
+
+function legacyHeld(file) {
+  if (!file) return false;
+  try {
+    const info = JSON.parse(readFileSync(file, "utf8"));
+    return !!info.pid && info.pid !== process.pid && pidAlive(info.pid);
+  } catch {
+    return false;
+  }
 }
 
 export function readState(root) {
@@ -334,10 +364,11 @@ export function pidAlive(pid) {
 // callerPids: while queued, give up when one of these processes is gone, so a queued run whose caller
 // timed out never takes the slot later.
 export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs = 500, meta = {}, callerPids = [] } = {}) {
-  const lockFile = join(ensureHub(root), "locks", `${name}.lock`);
+  const lockFile = lockFileOf(root, name);
+  const legacy = legacyLockFile(root, name);
   const started = Date.now();
   for (;;) {
-    if (tryTakeLock(lockFile, name, meta, stealMs)) return { name, file: lockFile };
+    if (!legacyHeld(legacy) && tryTakeLock(lockFile, name, meta, stealMs)) return { name, file: lockFile };
     lockWaitCheck(name, lockFile, started, waitMs, callerPids);
     sleep(pollMs);
   }
@@ -348,10 +379,11 @@ export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs 
 // wait on the `build` lock ran beside `validate --full`, so every check that had already finished sat
 // unreaped and reported the same 908.8 s (2026-11-14). lock-async-selftest proves the loop keeps ticking.
 export async function acquireLockAsync(root, name, { waitMs = 0, stealMs = 1200000, pollMs = 500, meta = {}, callerPids = [] } = {}) {
-  const lockFile = join(ensureHub(root), "locks", `${name}.lock`);
+  const lockFile = lockFileOf(root, name);
+  const legacy = legacyLockFile(root, name);
   const started = Date.now();
   for (;;) {
-    if (tryTakeLock(lockFile, name, meta, stealMs)) return { name, file: lockFile };
+    if (!legacyHeld(legacy) && tryTakeLock(lockFile, name, meta, stealMs)) return { name, file: lockFile };
     lockWaitCheck(name, lockFile, started, waitMs, callerPids);
     await new Promise((r) => setTimeout(r, pollMs));
   }
@@ -411,7 +443,7 @@ function lockWaitCheck(name, lockFile, started, waitMs, callerPids) {
 // transferLock: hand a held lock to another process (a detached server), so
 // the lock stays held while that process lives and goes stale when it exits.
 export function transferLock(root, name, pid) {
-  const file = join(ensureHub(root), "locks", `${name}.lock`);
+  const file = lockFileOf(root, name);
   const info = JSON.parse(readFileSync(file, "utf8"));
   if (info.pid !== process.pid) throw new Error(`lock '${name}' is not held by this process`);
   writeFileSync(file, JSON.stringify({ ...info, pid, at: new Date().toISOString() }));
@@ -420,14 +452,14 @@ export function transferLock(root, name, pid) {
 // Takes a lock over from a process that holds it (a server about to restart),
 // so no queued run can grab it in the gap. Throws when fromPid does not hold it.
 export function adoptLock(root, name, fromPid) {
-  const file = join(ensureHub(root), "locks", `${name}.lock`);
+  const file = lockFileOf(root, name);
   const info = JSON.parse(readFileSync(file, "utf8"));
   if (info.pid !== fromPid) throw new Error(`lock '${name}' is held by pid ${info.pid}, not ${fromPid}`);
   writeFileSync(file, JSON.stringify({ ...info, pid: process.pid, at: new Date().toISOString() }));
 }
 
 export function releaseLock(root, name, owner = process.pid) {
-  const file = join(ensureHub(root), "locks", `${name}.lock`);
+  const file = lockFileOf(root, name);
   try {
     const info = JSON.parse(readFileSync(file, "utf8"));
     if (info.pid !== owner) return;
@@ -892,8 +924,9 @@ export function branchMerged(root, branch, base, { mergedHeads = mergedPrHeads }
 // Why a worktree must not be pruned right now, or null: a live lock or session that names it.
 export function worktreeBusy(root, e) {
   const want = normalize(resolve(e.path)).toLowerCase();
-  const dir = join(hubDirOf(root), "locks");
-  if (existsSync(dir)) {
+  const dirs = [join(hubDirOf(root), "locks"), machineLockDir(mainRootOf(root))].filter(Boolean);
+  for (const dir of dirs) {
+    if (!existsSync(dir)) continue;
     for (const f of readdirSync(dir)) {
       try {
         const info = JSON.parse(readFileSync(join(dir, f), "utf8"));

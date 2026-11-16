@@ -255,4 +255,4 @@
   `Character_Roleplay.et`, so licences persist only once a prefab carries it.
 
 ### Logged-out tag — `Feature/Character/LF_LogoutBodyTag.c` (#1974, 2026-11-16)
-- A logged-out player's body (#1973) shows a small "Logged out" label over it to everyone within 12 m. The server flags the body (`SCR_ChimeraCharacter.LF_IsLoggedOut`, an RplProp), so a late joiner sees it too; the label goes when the body dies, despawns or its player rejoins. Tests: `character/logout-body-tag` (LOGIC); two-client and late-joiner session proof pending.
+- A logged-out player's body (#1973) shows a small "Logged out" label over it to everyone within 12 m. The server flags the body (`SCR_ChimeraCharacter.LF_IsLoggedOut`, an RplProp), so a late joiner sees it too; the label goes when the body dies, despawns or its player rejoins (a rejoin that takes the body back clears the flag, #2104, so no client keeps tracking it). The session proof (2 clients, then client 1 as a late joiner, #2104) aims the camera at the body: a late joiner tracks and draws the label from the entity snapshot. Tests: `character/logout-body-tag` (LOGIC); two-client and late-joiner session proof pending.
