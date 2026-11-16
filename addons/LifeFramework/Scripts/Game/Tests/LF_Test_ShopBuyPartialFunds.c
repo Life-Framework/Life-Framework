@@ -1,10 +1,11 @@
+// red-proof: observed 2026-11-16 (#1891), `tools\cli test --no-build --no-cache --only <the 10 classes>` on GridWorld before the grid fixtures: 10 of 15 failed on `... resolves in the DebugWorld` (Shop_GeneralStore_Debug, Shop_BlackMarket_Debug, FenceNpc are town entities); on Grid_shops_till fixtures 15 of 15 pass.
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: turning the
 // `if (removed != totalPrice)` refusal in LF_ShopComponent.BuyItem into `if (false && ...)` failed it
 // with `[LFTEST] FAIL shop/buy-partial-funds`, `- a buyer with half the price is refused` and
 // `- buyer keeps their cash after the refused purchase (expected 250, got 0)`. Restored; green.
 
 //------------------------------------------------------------------------------------------------
-//! A buyer with half the price cannot buy. Drives LF_ShopComponent.BuyItem on the DebugWorld
+//! A buyer with half the price cannot buy. Drives LF_ShopComponent.BuyItem on the GridWorld
 //! black market with a real character, so cash is MoneyStack and delivery is a real insert.
 // tier: WORLD
 class LF_Test_ShopBuyPartialFunds : LF_Test
@@ -18,8 +19,8 @@ class LF_Test_ShopBuyPartialFunds : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity shopEntity = GetGame().GetWorld().FindEntityByName("Shop_BlackMarket_Debug");
-		ctx.NotNull(shopEntity, "Shop_BlackMarket_Debug resolves in the DebugWorld");
+		IEntity shopEntity = GetGame().GetWorld().FindEntityByName("Grid_shops_till_BlackMarket");
+		ctx.NotNull(shopEntity, "Grid_shops_till_BlackMarket resolves in the GridWorld");
 		if (!shopEntity)
 			return;
 
