@@ -4197,6 +4197,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                 grep the newest server console.log (default after=3 limit=8)
   perf [--log <file>] [test flags]   run the 128-character cost benchmark (LF_Test_PerfBudget), print the report vs Configs/Perf/LF_PerfBudget.conf; exit 1 over budget
+  perf building <slug|prefab.et> [--size small|medium|large] [--json]   count a fitted building's entities, lights and shadow casters against the building budget (docs/architecture/performance.md)
   suite-stamp <tier>            print the newest tmp/test-results/summaries.jsonl line for a tier
   suite-valid <sha>             exit 0 when every file since <sha> is localization, the generated
                                 test registry, or docs/features.md; exit 1 for gameplay, a
