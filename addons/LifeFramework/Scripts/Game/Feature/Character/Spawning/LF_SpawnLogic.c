@@ -399,8 +399,13 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		if (LF_HospitalRespawn.ResolveWake(playerId, LF_Utils.GetPlayerUID(playerId), position, yawPitchRoll))
 			return true;
 
-		// Order: the jail return (after the spawn, LF_Jail.OnPlayerSpawned), the hospital wake above,
-		// then the saved spot (off by default, #1778), then the spawn point below.
+		// A new character's first spawn wakes in a first-spawn bed when one is free (#1965); any later
+		// spawn skips this, and with no such bed placed the normal spawn applies.
+		if (LF_FirstSpawnBeds.Resolve(playerId, characterPersistenceId, position, yawPitchRoll))
+			return true;
+
+		// Order: the jail return (after the spawn, LF_Jail.OnPlayerSpawned), the hospital wake,
+		// the first-spawn bed, then the saved spot (off by default, #1778), then the spawn point below.
 		if (LF_RejoinSpot.Resolve(playerId, LF_Utils.GetPlayerUID(playerId), characterPersistenceId, position, yawPitchRoll))
 			return true;
 
@@ -456,6 +461,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	protected void OnFirstSpawn(int playerId, string characterPersistenceId, IEntity character)
 	{
 		LF_Debug.Info("Spawn", "player " + playerId + " spawned " + characterPersistenceId + " for the first time");
+		LF_FirstSpawnBeds.OnFirstSpawn(playerId, character);
 	}
 
 	//------------------------------------------------------------------------------------------------

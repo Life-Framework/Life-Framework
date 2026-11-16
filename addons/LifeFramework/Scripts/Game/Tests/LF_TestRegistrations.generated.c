@@ -222,6 +222,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_FirstAidRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FirstPlayerPolice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FirstSpawn(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_FirstSpawnBed(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FirstSpawnPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_FormatAbbreviate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
