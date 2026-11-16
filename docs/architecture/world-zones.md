@@ -61,8 +61,15 @@ tools\cli look grid:<slug>             the look pictures of that cell, from its 
    (`gh pr list`, cached 60 s in the OS temp dir; #2014 and #2016 both took c0r6 because a PR's claim is
    not on `origin/main` until it merges). `list` shows them with their PR numbers and flags two open
    PRs on one cell. No `gh` or token prints a warning and goes on; `--no-fetch` skips it (offline).
-   A claim made before the other slice's PR is open (a worktree not yet shipped) can still clash; `validate-world-zones`
-   catches that (below).
+   Claims not yet committed count too: a claim file still untracked in a sibling local worktree is on no
+   remote and in no PR (`ws/police-station-kit` and `ws/building-bank` both took c3r1 for a 2x2, 2026-11-16).
+   `place` and `list` read `tools/grid/cells/*.json` of every other worktree of the clone
+   (`git worktree list --porcelain`: no network, so `--no-fetch` keeps it), treat those cells as taken and name
+   the worktree in the clash (`claimed by <slug> in worktree <folder> (<branch>), not pushed yet`). A missing,
+   pruned or locked folder and an unreadable file are skipped; no `git` prints a warning. A stale claim file
+   left in an old worktree still blocks its cell until that worktree is pruned or runs `grid free`.
+   A claim made in a worktree that is gone, or before the other slice's PR is open on another machine, can still clash;
+   `validate-world-zones` catches that (below).
 2. Writes `Grid_<slug>.layer` with the cell's yard: a 10 m net-fence square, 1 m in from the cell's
    edges, built from seven 5 m runs. Half the side facing the annex centre is left open as the way
    in, and a pole-plate sign stands just outside that gap. The sign id is `grid:<slug>`, and

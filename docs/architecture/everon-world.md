@@ -230,6 +230,7 @@ supplies every coordinate the later steps use. No step types a coordinate.
 |---|---|
 | `grid place` (cells, claims, yards) | `town fit` (buildings, claims, kits). Same claim file shape, same `origin/main` and open-PR checks |
 | Open-PR claims (#2021) | Read for town claims too, with the same 60 s `gh` cache |
+| Sibling-worktree claims | An uncommitted claim file in another local worktree counts as taken, read from `git worktree list --porcelain` with no network |
 | `place on/against/ground/arrange` | Unchanged; the kit rows call it |
 | `audit placement --strict` | Run with `--world MainWorld` on the new layer; island layers get the town bar |
 | `look`, `look --interior` (#2194) | Pictures per slot and per place, on MainWorld |
