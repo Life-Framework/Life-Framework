@@ -158,6 +158,9 @@ class LF_RobHoldRules
 		if (refusal == LF_RobHold.REFUSED_WEAPON)
 			return "#LF-RobHold_Refused_Weapon";
 
+		if (refusal == LF_RobAction.REFUSED_GRACE)
+			return LF_Grace.REFUSAL_KEY;
+
 		if (refusal == LF_RobAction.REFUSED_OFF)
 			return "#LF-Systems_Off";
 
@@ -197,12 +200,15 @@ class LF_RobHold
 	protected static ref array<ref LF_RobHoldSession> s_aActive;
 	protected static bool s_bTicking;
 	protected static LF_ERobHoldEnd s_eLastEnd = LF_ERobHoldEnd.NONE;
+	//! The last refusal toast sent (test seam): the key the robber was told, or empty.
+	protected static string s_sLastRefusalNotice;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_aActive = null;
 		s_eLastEnd = LF_ERobHoldEnd.NONE;
+		s_sLastRefusalNotice = "";
 		if (s_bTicking && GetGame())
 			GetGame().GetCallqueue().Remove(Tick);
 
@@ -228,6 +234,27 @@ class LF_RobHold
 	static LF_ERobHoldEnd LastEnd()
 	{
 		return s_eLastEnd;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string LastRefusalNotice()
+	{
+		return s_sLastRefusalNotice;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a refused demand told to the robber the way every other crime path tells a grace
+	//! refusal (#2075): the grace toast. Other refusals have their caption in the conversation and
+	//! need no toast. eturn The toast key sent, or empty.
+	static string NoteRefusal(IEntity player, string refusal)
+	{
+		s_sLastRefusalNotice = "";
+		if (refusal != LF_RobAction.REFUSED_GRACE)
+			return "";
+
+		LF_Grace.Notify(player);
+		s_sLastRefusalNotice = LF_Grace.REFUSAL_KEY;
+		return s_sLastRefusalNotice;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -292,13 +319,17 @@ class LF_RobHold
 		if (!refusal.IsEmpty())
 		{
 			LF_Debug.Warn(FEATURE, string.Format("held robbery not started for player %1: %2", playerId, refusal));
+			NoteRefusal(player, refusal);
 			return refusal;
 		}
 
 		LF_RobAction till = TillOf(npc);
 		refusal = till.BeginHeld(player);
 		if (!refusal.IsEmpty())
+		{
+			NoteRefusal(player, refusal);
 			return refusal;
+		}
 
 		LF_RobHoldSession session = new LF_RobHoldSession();
 		session.m_iPlayerId = playerId;

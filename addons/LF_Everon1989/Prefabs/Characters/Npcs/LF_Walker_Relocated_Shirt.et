@@ -19,7 +19,7 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
     EntitySlotInfo Suitcase {
      PivotID "RightHandProp"
      Offset 0 -0.05 0
-     Angles 0 0 -90
+     Angles 0 0 -180
      Prefab "{A635265E5BAC8DCB}Prefabs/Props/Roleplay/LF_Prop_SuitcaseCarried.et"
     }
    }

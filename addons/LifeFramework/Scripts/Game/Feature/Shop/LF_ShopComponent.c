@@ -629,7 +629,9 @@ class LF_ShopComponent : ScriptComponent
 			charged = totalPrice;
 			LF_Debug.Info("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, units, totalPrice));
 			if (m_bFence)
-				LF_EventBus.Publish(LF_OnFenceSale.Create(buyerUid, prefab, units, totalPrice));
+				LF_EventBus.Publish(LF_OnFenceSale.Create(buyerUid, prefab, units, totalPrice, m_sOutletId));
+			else if (IsLicensedWeaponLine(prefab))
+				LF_FenceSerials.OnWeaponSale(buyer, LF_Utils.GetPlayerUid(buyer), prefab, units, m_sOutletId);
 			return LF_EShopRefusal.NONE;
 		}
 
@@ -753,6 +755,21 @@ class LF_ShopComponent : ScriptComponent
 		earned = LF_ShopRules.StackTradeTotal(unitPrice, removed);
 		LF_Debug.Info("Shop", string.Format("sold item=%1 qty=%2 price=%3 stock=%4 flagged=%5", prefab, removed, earned, m_sStockId, flaggedOnly));
 		return LF_EShopRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the prefab is a licensed weapon this outlet sells (#2153): a weapon in the catalogue, sold
+	//! under an offer that asks for a licence (the gun counter's firearm permit). The permit is what
+	//! makes the weapon a registered one, so an unlicensed outlet (the black market, a back room) sells
+	//! it with no serial. A shop with no outlet has no catalogue category to read.
+	protected bool IsLicensedWeaponLine(ResourceName prefab)
+	{
+		LF_OutletOffer offer = StockOffer(prefab);
+		if (!offer || offer.m_sLicence.IsEmpty())
+			return false;
+
+		LF_CatalogueItem entry = LF_ItemCatalogue.ItemByPrefab(LF_ItemCatalogueConfig.Get(), prefab);
+		return entry && entry.GetCategory() == LF_EItemCategory.WEAPON;
 	}
 
 	//------------------------------------------------------------------------------------------------
