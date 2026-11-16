@@ -444,6 +444,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RaceBoardProp(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceCourse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceCourses(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RaceEveryFinisher(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceHud(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceRecords(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_RaceRunner(), LF_TestTier.WORLD);
