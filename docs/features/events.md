@@ -6,3 +6,6 @@
 
 ### `LF_EventDef`, `LF_EventPhase`, `LF_EventPhaseRules` — `Feature/Events/` (#1948, 2026-11-16)
 - ✅ An event is config: an id, ordered named phases (cadence, idle timeout, module ids) and a cooldown; pure rules advance a phase when its conditions hold, end the event on an abort, an idle timeout or the last phase, and a cooldown blocks a restart until it runs out. Not yet ticked by a shell, not persisted. Tests: `events/phase-rules` (LOGIC).
+
+### `LF_EventOverlay` — `Feature/Events/LF_EventOverlay.c` (#1952, 2026-11-16)
+- ⚠️ A pack's event config (root `LF_EventsConfig`, listed in the mission header's `m_aLF_ConfigOverlays`) adds, replaces, patches or removes an event by id, with the shared override verbs (`m_sOp`). A patch changes a phase timing by phase name and keeps every field it does not set; `remove` disables a core event. Unknown ids and a duplicate add are refused and logged, the rest of the overlay applies. No shell reads the list yet (#757). Tests: `events/pack-overlay` (LOGIC).

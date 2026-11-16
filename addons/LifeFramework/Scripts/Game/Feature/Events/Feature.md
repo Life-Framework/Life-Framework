@@ -19,3 +19,16 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Data:** `Configs/Events/LF_Events.conf` (`LF_EventsConfig` of `LF_EventDef` of `LF_EventPhase`): per event an id, a cooldown, and phases each with a stable name, a cadence, an idle timeout and a module id list. The phase NAME is the save key, so phases may be added or reordered; never rename a shipped one. State is `LF_EventRunState` (not persisted yet).
 - **Rules:** conditions are AND-ed to advance, aborts OR-ed and end the event, an idle timeout ends it, finishing the last phase ends it, and each end starts the cooldown; a cooldown blocks `Start` until it runs out. A bad definition (no id, no phases, duplicate or empty phase name, negative time) is refused and logged `[LFDebug:Events]`.
 - **Proof:** `events/phase-rules` (LOGIC).
+
+## Packs add and patch events by id (#1952)
+
+- **Player sees:** nothing directly; it decides which events this server can run.
+- **Owner and side:** `LF_EventOverlay` (core) loads `Configs/Events/LF_Events.conf`, then each pack overlay in load order, on both sides. Nothing replicates.
+- **Data:** a pack ships a `.conf` with root class `LF_EventsConfig` and lists it in the mission header's `m_aLF_ConfigOverlays`. Each `LF_EventDef` has `m_sOp` (the shared override model, `docs/config/override-model.md`):
+  - `add`: a new event; an id the core has is refused.
+  - `replace`: the event is rebuilt from the pack entry alone, in its place in the list.
+  - `patch`: only what the entry sets changes. The cooldown if set. Each listed phase is matched by its NAME: patched field by field when the event has it (cadence, idle timeout, modules; an unset field keeps the core value), appended when it does not. A patch never removes a phase; `replace` does.
+  - `remove`: the event is disabled and never starts.
+  - no verb: patch an id that exists, add one that does not.
+- **Rules:** `replace`, `patch` and `remove` of an unknown id are refused and logged with the pack file and id; the rest of the overlay applies. An event that fails `LF_EventPhaseRules.Validate` after the overlays (a negative time, a duplicate phase name) is logged `[LFDebug:Events]` and left out by `LF_EventOverlay.Collect` and `Find`; the others still load. Two packs changing one id: the later pack wins and a warning names both.
+- **Proof:** `events/pack-overlay` (LOGIC) layers a fixture that adds, patches a phase timing, removes and replaces, and refuses a duplicate add and a patch of an unknown id.
