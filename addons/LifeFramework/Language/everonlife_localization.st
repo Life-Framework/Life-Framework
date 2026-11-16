@@ -1260,6 +1260,11 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "A higher rank has to authorize that"
      Comment "Promotion refused"
     }
+    CustomStringTableItem "{BB32E46F8C493D2C}" {
+     Id "EL-Rank_PromoteNeedsHigher"
+     Target_en_us "Only an officer above the rank you are promoting into can promote"
+     Comment "Toast to the promoter: the promotion was refused because their rank does not outrank the rank the target would reach."
+    }
     CustomStringTableItem "{C91A4E7700B10012}" {
      Id "EL-Rank_Senior"
      Target_en_us "Senior Officer"
