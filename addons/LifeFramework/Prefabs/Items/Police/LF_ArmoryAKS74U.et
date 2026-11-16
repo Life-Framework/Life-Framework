@@ -1,0 +1,7 @@
+GenericEntity : "{BFEA719491610A45}Prefabs/Weapons/Rifles/AKS74U/Rifle_AKS74U.et" {
+ ID "030659E96B78CE7D"
+ components {
+  LF_SerialComponent "{F170D0F3C797C4D0}" {
+  }
+ }
+}

@@ -8316,6 +8316,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Contraband found and seized"
      Comment "Officer search found chain goods (#419)."
     }
+    CustomStringTableItem "{2154A1C0B7D34E01}" {
+     Id "LF-Search_SeizedCount"
+     Target_en_us "%1x %2"
+     Comment "A seized item kind with its count; %1 is the count, %2 the item name (#2154)."
+    }
+    CustomStringTableItem "{2154A1C0B7D34E02}" {
+     Id "LF-Search_SeizedFrom"
+     Target_en_us "Seized from %1: %2"
+     Comment "Officer toast after a search; %1 is the suspect's name, %2 the seized items (#2154)."
+    }
+    CustomStringTableItem "{2154A1C0B7D34E03}" {
+     Id "LF-Search_SeizedMore"
+     Target_en_us "%1 and %2 more"
+     Comment "Seized list cut to three kinds; %1 is the named kinds, %2 how many more (#2154)."
+    }
     CustomStringTableItem "{5EA2C4A000000004}" {
      Id "LF-Search_Vehicle_Action"
      Target_en_us "Search vehicle"
