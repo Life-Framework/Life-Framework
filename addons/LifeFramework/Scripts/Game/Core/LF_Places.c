@@ -178,14 +178,18 @@ class LF_Places
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_Places's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Places_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Places_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_Places");
-		if (apply)
-			LF_Places.ResetStatics();
+		return "LF_Places";
+	}
+
+	override void Apply()
+	{
+		LF_Places.ResetStatics();
 	}
 }

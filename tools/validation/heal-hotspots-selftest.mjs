@@ -9,6 +9,8 @@
 //   4. A branch cut from old main appends to the central list and to docs/features.md. A plain merge of
 //      main conflicts (the red: that is the DIRTY churn); healBranch merges with no conflict, the hook
 //      lands in the class's own file and the row in its area file.
+//   5. A branch that still adds the retired `modded class LF_StaticResetHooks` layer (#2034: the chain
+//      overflowed the stack) heals into an LF_StaticResetHook subclass.
 //
 // red-proof: 2026-11-16 healBranch with the hook step removed (calls not placed) printed
 // FAIL "heal: LF_Delta's reset is now a hook in Feature/Delta/LF_Delta.c"; step 4's plain merge printing
@@ -17,7 +19,7 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { CENTRAL, addHooks, centralCalls, centralFile, hookedCalls } from "../lib/static-reset-hooks.mjs";
+import { CENTRAL, addHooks, centralCalls, centralFile, hookedCalls, registryHooks, staticResetProblems } from "../lib/static-reset-hooks.mjs";
 import { areaPath, renderIndex, splitSections } from "../lib/features-index.mjs";
 import { healBranch } from "../lib/heal-hotspots.mjs";
 import { overlap } from "../lib/ship-queue.mjs";
@@ -129,6 +131,32 @@ try {
   check(g("merge-base", "--is-ancestor", "main", "HEAD") === "", "heal: main is merged into the branch");
   const again = await healBranch({ root: dir, onto: "main" });
   check(again.ok && !again.plan.needed, "heal again: nothing to do (idempotent)");
+  // 5. a branch that still adds the retired modded layer (#2034) heals into a registry hook class
+  g("checkout", "-q", "-b", "layer-pr", "main");
+  const eps = `${GAME}/Feature/Epsilon/LF_Epsilon.c`;
+  put(eps, `${cls("LF_Epsilon")}
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_Epsilon");
+		if (apply)
+			LF_Epsilon.ResetStatics();
+	}
+}
+`);
+  g("add", "-A");
+  g("commit", "-q", "-m", "layer-pr: modded reset layer");
+  g("checkout", "-q", "main");
+  put("docs/unrelated.md", "main moved on\n");
+  g("add", "-A");
+  g("commit", "-q", "-m", "main moves");
+  g("checkout", "-q", "layer-pr");
+  const lr = await healBranch({ root: dir, onto: "main" });
+  const healed = get(eps);
+  check(lr.ok && !/modded\s+class\s+LF_StaticResetHooks/.test(healed) && staticResetProblems(healed).problems.length === 0, `heal: the modded layer became a registry hook (${lr.log.join("; ")})`);
+  check(registryHooks(healed).map((h) => h.owner).join() === "LF_Epsilon" && hookedCalls(healed).length === 1, "heal: LF_Epsilon_StaticResetHook registers LF_Epsilon once");
   void oldMain;
 } catch (e) {
   check(false, `selftest threw: ${e.message} ${e.stderr || ""} ${e.stdout || ""}`);

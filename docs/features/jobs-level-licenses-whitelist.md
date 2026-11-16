@@ -222,5 +222,6 @@
   record (wanted level 0, no open crime report, no conviction in the last `licences.permitConvictionDays`
   in-game days, default 7, 0 is off; #1995) and the licence's gate at application and collection,
   issued at the desk one in-game day later (`licences.permitWaitDays`). On-duty police revoke it with
-  a player interaction. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
+  a player interaction, but only once the holder is cuffed (`LF_Restraint`; #1916): the
+  interaction stays hidden and the server's `Revoke` refuses and logs for a free player. Test `licence/revoke-cuffs`. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
   `e2e/licence-desk` (the open application, a revoke and a conviction that still blocks the permit across `wt e2e`).

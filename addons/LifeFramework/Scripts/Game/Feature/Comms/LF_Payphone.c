@@ -263,17 +263,35 @@ class LF_PayphoneAction : ScriptedUserAction
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_Payphone's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Payphone_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Payphone_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_Payphone");
-		if (apply)
-			LF_Payphone.ResetStatics();
-		done.Insert("LF_ServiceCallDispatch");
-		if (apply)
-			LF_ServiceCallDispatch.ResetStatics();
+		return "LF_Payphone";
+	}
+
+	override void Apply()
+	{
+		LF_Payphone.ResetStatics();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ServiceCallDispatch's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_ServiceCallDispatch_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ServiceCallDispatch_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_ServiceCallDispatch";
+	}
+
+	override void Apply()
+	{
+		LF_ServiceCallDispatch.ResetStatics();
 	}
 }

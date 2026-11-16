@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{712B4AAB7B82396A}Prefabs/Props/Roleplay/Roadblock/Roadblock_Cone.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

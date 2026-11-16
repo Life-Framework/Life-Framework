@@ -424,14 +424,18 @@ class LF_Cleanup
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_Cleanup's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Cleanup_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Cleanup_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_Cleanup");
-		if (apply)
-			LF_Cleanup.ResetStatics();
+		return "LF_Cleanup";
+	}
+
+	override void Apply()
+	{
+		LF_Cleanup.ResetStatics();
 	}
 }
