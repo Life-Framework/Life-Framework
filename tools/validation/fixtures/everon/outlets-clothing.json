@@ -1,0 +1,266 @@
+[
+ {
+  "kind": "outlets",
+  "outlet": "clothing_rack",
+  "offers": [
+   {
+    "item": "jacket_denim_brown"
+   },
+   {
+    "item": "jacket_suit_grey"
+   },
+   {
+    "item": "jacket_suit_brown"
+   },
+   {
+    "item": "shirt_cotton_v2"
+   },
+   {
+    "item": "shirt_turtleneck_grey"
+   },
+   {
+    "item": "shirt_turtleneck_blue"
+   },
+   {
+    "item": "trousers_dark_brown"
+   },
+   {
+    "item": "trousers_dark_grey"
+   },
+   {
+    "item": "trousers_suit_grey"
+   },
+   {
+    "item": "hat_flatcap_darkgrey"
+   },
+   {
+    "item": "hat_knitted_brown"
+   },
+   {
+    "item": "hat_trucker_everon"
+   },
+   {
+    "item": "raincoat_green",
+    "concealsBuild": true
+   },
+   {
+    "item": "hat_hard_yellow",
+    "present": false
+   },
+   {
+    "item": "police_shirt",
+    "present": false
+   },
+   {
+    "item": "doctor_coat",
+    "present": false
+   },
+   {
+    "item": "jacket_m70",
+    "present": false
+   },
+   {
+    "item": "suit_rally",
+    "present": false
+   },
+   {
+    "item": "helmet_rally",
+    "present": false
+   },
+   {
+    "item": "gloves_rally",
+    "present": false
+   }
+  ]
+ },
+ {
+  "kind": "outlets",
+  "outlet": "workwear_counter",
+  "offers": [
+   {
+    "item": "jacket_denim_work"
+   },
+   {
+    "item": "trousers_fisherman_green"
+   },
+   {
+    "item": "hat_hard_yellow"
+   },
+   {
+    "item": "hat_hard_white"
+   },
+   {
+    "item": "boots_work"
+   },
+   {
+    "item": "gloves_leather"
+   },
+   {
+    "item": "flashlight_soviet"
+   },
+   {
+    "item": "jacket_suit_grey",
+    "present": false
+   },
+   {
+    "item": "police_shirt",
+    "present": false
+   },
+   {
+    "item": "jacket_m70",
+    "present": false
+   },
+   {
+    "item": "suit_rally",
+    "present": false
+   },
+   {
+    "item": "helmet_rally",
+    "present": false
+   },
+   {
+    "item": "gloves_rally",
+    "present": false
+   }
+  ]
+ },
+ {
+  "kind": "outlets",
+  "outlet": "police_stores",
+  "offers": [
+   {
+    "item": "police_shirt",
+    "job": "POLICE"
+   },
+   {
+    "item": "police_trousers",
+    "job": "POLICE"
+   },
+   {
+    "item": "police_cap",
+    "job": "POLICE"
+   },
+   {
+    "item": "radio_r148",
+    "job": "POLICE"
+   },
+   {
+    "item": "flashlight_soviet",
+    "job": "POLICE"
+   },
+   {
+    "item": "jacket_suit_grey",
+    "present": false
+   },
+   {
+    "item": "doctor_coat",
+    "present": false
+   },
+   {
+    "item": "jacket_m70",
+    "present": false
+   },
+   {
+    "item": "suit_rally",
+    "present": false
+   },
+   {
+    "item": "helmet_rally",
+    "present": false
+   },
+   {
+    "item": "gloves_rally",
+    "present": false
+   }
+  ]
+ },
+ {
+  "kind": "outlets",
+  "outlet": "medic_stores",
+  "offers": [
+   {
+    "item": "doctor_coat",
+    "job": "MEDIC"
+   },
+   {
+    "item": "medical_kit_us",
+    "job": "MEDIC"
+   },
+   {
+    "item": "police_shirt",
+    "present": false
+   },
+   {
+    "item": "jacket_suit_grey",
+    "present": false
+   },
+   {
+    "item": "jacket_m70",
+    "present": false
+   },
+   {
+    "item": "suit_rally",
+    "present": false
+   },
+   {
+    "item": "helmet_rally",
+    "present": false
+   },
+   {
+    "item": "gloves_rally",
+    "present": false
+   }
+  ]
+ },
+ {
+  "kind": "outlets",
+  "outlet": "surplus_stall",
+  "offers": [
+   {
+    "item": "jacket_m70"
+   },
+   {
+    "item": "trousers_m70"
+   },
+   {
+    "item": "hat_panama_soviet"
+   },
+   {
+    "item": "boots_combat_us"
+   },
+   {
+    "item": "canteen_us"
+   },
+   {
+    "item": "binoculars_b8"
+   },
+   {
+    "item": "backpack_alice_medium"
+   },
+   {
+    "item": "police_shirt",
+    "present": false
+   },
+   {
+    "item": "doctor_coat",
+    "present": false
+   },
+   {
+    "item": "jacket_suit_grey",
+    "present": false
+   },
+   {
+    "item": "suit_rally",
+    "present": false
+   },
+   {
+    "item": "helmet_rally",
+    "present": false
+   },
+   {
+    "item": "gloves_rally",
+    "present": false
+   }
+  ]
+ }
+]
