@@ -184,7 +184,7 @@ export const MILESTONE_PLAN: Record<string, { goal: string; plan: { label: strin
   M3: {
     goal: "The mod splits into the LifeFramework core and the LF_Everon1989 pack, and an owner configures it from one config.json. No new gameplay.",
     plan: { label: "M3 outline", to: "/docs/roadmap-m3-outline" },
-    status: "Published 0.1.0, in sign-off",
+    status: "Published 0.1.2, Public on the Workshop",
   },
   "M2.5": {
     goal: "Get new players and testers: weekly alpha playtests, a landing page, Discord onboarding and an outreach kit the maintainer posts from.",
