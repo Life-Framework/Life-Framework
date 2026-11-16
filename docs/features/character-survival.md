@@ -106,6 +106,12 @@
   `session.mjs downed-proof` proves it on a 2-client session plus a late joiner.
 
 ### Death & Respawn — `Feature/Character/Spawning/`
+- 🔧 (2026-11-16, #1767; merged, in-dev) **A fresh civilian can spawn in a catalogue starting kit.**
+  When the item catalogue has offers under the `starting_kit` outlet, `LF_SpawnLogic.GetFactionLoadout(CIVILIAN)`
+  returns a loadout built from them (`LF_FactionLoadout.WithStartingKit`, `LF_StartingKit.Resolve`):
+  `clothing` items go to loadout slots, every other category is carried. It replaces the game mode's
+  civilian loadout whole, including its starting cash; with no such outlet the game mode's loadout
+  applies unchanged. Other roles (the police kit) never read it. Proof: `catalogue/starting-kit` (LOGIC).
 - ✅ **Death is defined** (verified 2026-08-30): the dead body stays in the
   world with everything it carried — it is never deleted by the spawn flow and
   is only removed by a server restart or world cleanup.
