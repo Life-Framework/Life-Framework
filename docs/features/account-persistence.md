@@ -231,6 +231,7 @@
   carried snapshot, and its death drops the snapshot, so the rejoin and a restart restore only what
   the body still held. `rejoin/logout-body` (WORLD) covers keep, loot, window, rejoin and death;
   `tools\cli session logout-body-proof` closes a real client and rejoins it.
+- 🧪 (2026-11-16) **Rejoin takes the body back (#1975).** A player who rejoins while their logout body still stands gets that body back as it is: where it lies, cuffed, downed or robbed, with only what is left on it (`LF_LogoutBodyRejoin.TakeBack`, asked first by `LF_SpawnLogic.CreateCharacter`; the logout knockout ends, a real downed state stays). Nothing is restored or re-issued on it, so there is never a second copy. Jail and hospital (`LF_DisconnectRules.RejoinFor`) come first: the body ends and the normal spawn restores the snapshot, which already holds what the body carried. After the window there is no body and the rejoin rule (#1778) applies. A body killed while its player was away takes the ordinary death path (`LF_SpawnLogic.OnAccountDied_S`: snapshot dropped, next spawn wakes in hospital). Test `rejoin/logout-body-takeback`; `tools\cli session logout-body-proof` closes a real client and rejoins it into the same body.
 - ⚠️ The Logged out tag is server-side only (no name tag UI yet), the window is not owner config
   yet, and a downed logout still dies at once under `downedDies`, so the longer window applies only
   with that rule off.

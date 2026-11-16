@@ -203,12 +203,27 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		if (questManager)
 			questManager.ReportKill(playerEntity, killerEntity);
 
-		LF_Contraband.FailDiedFromEntity(playerEntity);
+		OnAccountDied_S(LF_Utils.GetPlayerUID(playerId), playerEntity);
+
+		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
+		if (respawn)
+			respawn.NotifyReadyForSpawn_S();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: what a death costs the account, for a played character and for a logout body killed
+	//! while its player was away (LF_LogoutBodyRejoin.OnKilled, #1975).
+	//! \param uid The account that died.
+	//! \param body The dead body, may be null.
+	static void OnAccountDied_S(string uid, IEntity body)
+	{
+		LF_Contraband.FailDiedFromEntity(body);
+		if (uid.IsEmpty())
+			return;
 
 		// Death drops what you carry: the body keeps the items, the account loses the snapshot.
-		string uid = LF_Utils.GetPlayerUID(playerId);
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
-		if (accounts && !uid.IsEmpty())
+		if (accounts)
 		{
 			LF_PlayerAccount account = accounts.GetAccount(uid);
 			if (account && account.GetActiveCharacter())
@@ -221,16 +236,9 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		}
 
 		// You wake up in hospital: the next spawn of this player goes to a bed and pays the bill.
-		if (!uid.IsEmpty())
-		{
-			LF_HospitalRespawn.MarkDied(uid);
-			if (playerEntity)
-				LF_NewLifeRule.RecordDeath(uid, playerEntity.GetOrigin());
-		}
-
-		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
-		if (respawn)
-			respawn.NotifyReadyForSpawn_S();
+		LF_HospitalRespawn.MarkDied(uid);
+		if (body)
+			LF_NewLifeRule.RecordDeath(uid, body.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -336,6 +344,15 @@ class LF_SpawnLogic : SCR_SpawnLogic
 
 		string characterPersistenceId = activeCharacter.GetId();
 
+		// Rejoin inside the logout window: the player takes back their body as it is (#1975). Jail and
+		// hospital come first; TakeBack ends the body for them, so the snapshot below is all they get.
+		IEntity kept = LF_LogoutBodyRejoin.TakeBack(LF_Utils.GetPlayerUID(playerId));
+		if (kept)
+		{
+			TakeBackBody(playerId, kept);
+			return;
+		}
+
 		ResourceName prefab = GetCreationPrefab(playerId, characterPersistenceId);
 		if (!prefab)
 		{
@@ -374,6 +391,18 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		// The signed-up delivery job (kept across death and restarts) goes on the new body. After the
 		// hand-over: the job component reads the player id from the body its player controls.
 		LF_CivilianJob.ApplySignUpToCharacter(LF_Utils.GetPlayerUID(playerId), character);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player gets their logout body back as it is: no snapshot, no kit, nothing re-issued (the
+	//! body still holds its card, tickets and job). Only the hand-over and the per-connection marks.
+	protected void TakeBackBody(int playerId, notnull IEntity body)
+	{
+		// A death after this is a respawn, not a rejoin (LF_RejoinSpot).
+		LF_RejoinSpot.NoteSpawn(LF_Utils.GetPlayerUID(playerId));
+		HandoverToPlayer(playerId, body);
+		TopUpPlayer(playerId, body);
+		LF_Debug.Info("Spawn", "player " + playerId + " took back their logout body");
 	}
 
 	//------------------------------------------------------------------------------------------------
