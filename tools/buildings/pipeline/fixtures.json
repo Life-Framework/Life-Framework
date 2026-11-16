@@ -134,11 +134,6 @@
    "center": [0.001, 0],
    "mesh": "{A47ED22E6647430A}Assets/Items/Food/ArmyCrackers_Soviet_01.xob"
   },
-  "Prefabs/Weapons/Rifles/VZ58/Rifle_VZ58P.et": {
-   "size": [0.062, 0.166, 0.619],
-   "center": [0.011, 0.203],
-   "mesh": "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
-  },
   "Prefabs/Characters/HeadGear/Hat_Ushanka_01/Hat_Ushanka_01_folded.et": {
    "size": [0.196, 0.151, 0.235],
    "center": [0.002, -0.001],
