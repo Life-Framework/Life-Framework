@@ -1,0 +1,142 @@
+// Grid cell c1r1 for retheme-proof: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_retheme_proof_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 35
+}
+SCR_DestructibleEntity Grid_retheme_proof_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 40 0 35
+}
+SCR_DestructibleEntity Grid_retheme_proof_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 35
+ angleY 270
+}
+SCR_DestructibleEntity Grid_retheme_proof_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_retheme_proof_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 40 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_retheme_proof_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 45
+ angleY 90
+}
+SCR_DestructibleEntity Grid_retheme_proof_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 40
+ angleY 90
+}
+GenericEntity Grid_retheme_proof_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:retheme-proof"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 45.8 0.505 44.4
+ angleY 90
+}
+GenericEntity Retheme_Guns : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et" {
+ coords 37.464 0 37
+ angleY 90
+}
+GenericEntity Retheme_Desk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
+ coords 37.127 0 38.149
+ angleY 90
+}
+GenericEntity Retheme_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  ActionsManagerComponent "{0EB5E90B59B96E16}" {
+   ActionContexts {
+    UserActionContext "{1CEC34C252323DE8}" {
+     ContextName "default"
+     Position PointInfo "{31CB98D3A58C97E8}" {
+      Offset 0 0.3 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_RobAction "{D9F0223A3372D263}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{1DAD1EDD42FE3031}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_sAlarmKind "fuel"
+     m_iMoneyAmount 150
+     m_iMinPayout 150
+     m_iMaxPayout 150
+     m_fCooldown 5
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+ }
+ coords 37.52 0 40.944
+ angleY 90
+}
+GenericEntity Retheme_Shop {
+ components {
+  MeshObject "{6C5B1A94D7E20F31}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{6C5B1A94D7E20F32}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_ShopComponent "{6C5B1A94D7E20F33}" {
+   m_sShopName "#LF-Shop_Name_General"
+   m_sShopDescription "#LF-Shop_Desc_General"
+   m_sShopHint "#LF-Shop_Hint_General"
+   m_aShopItems {
+    LF_ShopItem "{6C5B1A94D7E20F41}" {
+     m_ItemPrefab "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{6C5B1A94D7E20F42}" {
+     m_ItemPrefab "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{6C5B1A94D7E20F43}" {
+     m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+   }
+  }
+  ActionsManagerComponent "{6C5B1A94D7E20F34}" {
+   ActionContexts {
+    UserActionContext "{6C5B1A94D7E20F35}" {
+     ContextName "default"
+     Position PointInfo "{6C5B1A94D7E20F36}" {
+      Offset 0 0.8 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{6C5B1A94D7E20F37}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6C5B1A94D7E20F38}" {
+      Name "#LF-Shop_Open_General"
+      Description "#LF-Shop_OpenDesc_General"
+     }
+    }
+   }
+  }
+  RplComponent "{6C5B1A94D7E20F39}" {
+   Enabled 1
+  }
+ }
+ coords 37.464 0 43
+ angleY 90
+}

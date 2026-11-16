@@ -6,7 +6,10 @@
 // [LFTEST]   - an off-duty officer is not shown the armory actions
 // Restored; green.
 
-// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
+// red-proof: Observed 2026-11-16 with `tools\cli test --no-build --only LF_Test_PlaytestOffers --world Worlds/GridWorld/GridWorld.ent`
+// before the grid cell placed the organization hideout door: `the holder takes the hideout`,
+// `the holder may start (expected '', got '#LF-Contraband_NotHideoutOwner')`, `the holder starts the convoy`. Green with the cell.
+// tier: WORLD (needs a placed organization hideout door, which GridWorld's Grid_signs_board_quests.layer holds; LOGIC runs on any map, #1047)
 //! Playtest QA #157: police-only offers are hidden from civilians, the convoy refusal has a
 //! reason the player can read, and a crop never indexes a stage it does not have.
 class LF_Test_PlaytestOffers : LF_Test
