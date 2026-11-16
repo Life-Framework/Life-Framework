@@ -181,7 +181,8 @@ for (const p of realTown ?? []) {
 }
 const townClasses = new Set((realTown ?? []).map((p) => realNames[p.name] ?? p.name));
 const realLegs = fn("planLegs")({ tier: "all", tiers: realTiers, names: realNames, registry: suiteRegistry, pins: realPins, town: realTown, env }) ?? [];
-check(realLegs.length > 0 && realLegs.every((x) => (x.classes ?? []).length > 0 && !x.classes.some((c) => townClasses.has(c))), "the real --tier all plan has no town test in any leg");
+// classes null is the whole shard registry (the plan once world-pins.json is empty), which 2f checks holds no town test.
+check(realLegs.length > 0 && realLegs.every((x) => x.classes === null || (x.classes.length > 0 && !x.classes.some((c) => townClasses.has(c)))), "the real --tier all plan has no town test in any leg");
 
 // 3. The parser agrees with the generated registry on the real tests.
 const real = tw.testTiers(root);
