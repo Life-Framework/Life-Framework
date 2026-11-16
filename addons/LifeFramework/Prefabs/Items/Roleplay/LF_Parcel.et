@@ -1,6 +1,9 @@
-GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
  ID "0000000000000001"
  components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
     ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
@@ -8,6 +11,9 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
      Description "#LF-Item_Parcel_Desc"
     }
     ItemPhysAttributes ItemPhysicalAttributes "{59E108D9A227B7E3}" {
+     Weight 2
+     SizeSetupStrategy Volume
+     ItemVolume 3000
      DimensionScaler 0
      RestingAdditiveRotationLS 0 0 0
      RestingAdditiveOffsetLS 0 0 0
@@ -15,9 +21,8 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
     ItemAnimationAttributes ItemAnimationAttributes "{59E108DB000CCEEB}" {
      AnimationAttachments {
       AnimationAttachmentInfo "{59E33B494D8FF442}" {
-       AnimGraph "{9028A404378C292B}Anims/Workspaces/Player/player_carry.agr"
-       AnimInstance "{7D42F1DF2B857BC5}Anims/Workspaces/Player/player_carry.asi"
-       StartNode "Player Carry"
+       AnimGraph "{CEC539E559BB8BA6}Assets/Items/Equipment/workspaces/RepairKit.agr"
+       AnimInstance "{23AF6C3E45B2D948}Assets/Items/Equipment/workspaces/RepairKit.asi"
        BindingName "Gadget"
       }
      }
@@ -36,8 +41,12 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
       CameraDistanceToItem 2.2
      }
     }
-    m_Size SLOT_2x1
    }
+  }
+  LF_HandToolComponent "{4A1C9E27B05D3F21}" {
+   m_eAnimVariable ADRIANOV
+   m_sToolId "parcel"
+   m_bEquipOnPickup 1
   }
   LF_ParcelComponent "{4A1C9E27B05D3F20}" {
   }

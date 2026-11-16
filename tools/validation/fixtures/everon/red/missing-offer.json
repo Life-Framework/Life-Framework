@@ -1,0 +1,7 @@
+{
+  "kind": "outlets",
+  "outlet": "gun_counter",
+  "offers": [
+    { "item": "pistol_m1911", "licence": "FIREARM_PERMIT" }
+  ]
+}

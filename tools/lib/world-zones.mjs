@@ -10,9 +10,14 @@
 // Pure functions, no I/O except where a function says it reads the tree. Used by
 // tools/commands/grid.mjs, tools/validation/validate-world-zones.mjs, agent-box/place-audit.mjs,
 // tools/validation/validate-player-props.mjs and tools/visual/look.mjs.
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { CORE_ADDON, GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
+import { CELL, GRID_CENTRE, allCells, cellBounds, cellId, isFrameClaim, parseCellId } from "../grid/lattice.mjs";
+
+// The lattice constants and cell maths live in tools/grid/lattice.mjs (with the grid frame).
+export { CELL, GRID_CENTRE, allCells, cellBounds, cellId, parseCellId };
 
 export const DEBUG_LAYERS = `addons/${CORE_ADDON}/${layersOf(PLAYTEST_WORLD)}`;
 // Where Grid_<slug>.layer files are written and claims are checked: GridWorld, not the playtest world.
@@ -24,11 +29,6 @@ export const CELLS_DIR = "tools/grid/cells";
 export const GRID = { x0: 20, z0: 20, x1: 112, z1: 112 };
 // The rectangle the DebugWorld freeze watches: the fence plus 2 m (three-worlds.md "What counts as grid").
 export const ANNEX_RECT = { x0: 18, z0: 18, x1: 114, z1: 114 };
-// Cells: a 7 x 7 lattice of 12 m squares from 22,22 (2 m inside the annex fence). Each cell holds a
-// 10 m fenced yard (1 m in from its edges) with a 5 m gap on the side facing the annex centre.
-export const CELL = { size: 12, origin: 22, cols: 7, rows: 7, inset: 1, fence: 5 };
-export const GRID_CENTRE = [66, 66];
-
 // Ground no cell may take: the open ground world tests spawn their fixtures on
 // (docs/roadmap/m1-25-village.md "Test annex"), and the track in through the gap in the north fence.
 export const RESERVED = [
@@ -75,31 +75,6 @@ export const inGrid = (x, z) => x >= GRID.x0 && x <= GRID.x1 && z >= GRID.z0 && 
 export const inAnnexRect = (x, z) => x >= ANNEX_RECT.x0 && x <= ANNEX_RECT.x1 && z >= ANNEX_RECT.z0 && z <= ANNEX_RECT.z1;
 
 // ------------------------------------------------------------------ cells
-
-export function cellId(col, row) {
-  return `c${col}r${row}`;
-}
-
-export function parseCellId(id) {
-  const m = /^c(\d+)r(\d+)$/.exec(String(id));
-  if (!m) return null;
-  const col = Number(m[1]);
-  const row = Number(m[2]);
-  if (col >= CELL.cols || row >= CELL.rows) return null;
-  return { col, row };
-}
-
-export function cellBounds(col, row) {
-  const x0 = CELL.origin + col * CELL.size;
-  const z0 = CELL.origin + row * CELL.size;
-  return { x0, z0, x1: x0 + CELL.size, z1: z0 + CELL.size };
-}
-
-export function allCells() {
-  const out = [];
-  for (let row = 0; row < CELL.rows; row++) for (let col = 0; col < CELL.cols; col++) out.push({ id: cellId(col, row), col, row, ...cellBounds(col, row) });
-  return out;
-}
 
 const overlaps = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.z0 < b.z1 && b.z0 < a.z1;
 
@@ -226,9 +201,37 @@ export function readCells(root) {
 
 // The look target of a claimed cell: the centre of its yard, seen from the gap side.
 export function lookArea(entry) {
+  // The frame claims the whole lattice: its picture is the gate end, the map board seen from the spawn.
+  if (isFrameClaim(entry)) return { name: "grid-frame", x: 74, y: 0, z: 100, radius: 22, front: 0 };
   const p = parseCellId(entry.cell);
   if (!p) return null;
   const c = { ...cellBounds(p.col, p.row) };
   const front = { north: 0, east: 90, south: 180, west: 270 }[gapSide(c).side];
   return { name: `grid-${entry.slug}`, x: (c.x0 + c.x1) / 2, y: 0, z: (c.z0 + c.z1) / 2, radius: 8, front };
+}
+
+// The claims origin/main holds, read from git, so a second worktree sees a cell the first one took
+// after this branch was cut (every worktree has its own copy of tools/grid/cells/). Fetches
+// origin/main first (bounded to 20 s) unless { fetch: false }. A failed fetch is not fatal: it is
+// `note`, and the claims come from the last origin/main this clone has; no origin/main is no claims.
+export function mainClaims(root, { fetch = true, ref = "origin/main" } = {}) {
+  const git = (args, timeout = 20000) => spawnSync("git", args, { cwd: root, encoding: "utf8", timeout });
+  let note = "";
+  if (fetch) {
+    const f = git(["fetch", "--quiet", "origin", "main"]);
+    if (f.status !== 0) note = `could not fetch origin/main (${String(f.stderr || f.error?.message || "timed out").trim().split("\n")[0]}); using the last one this clone has`;
+  }
+  const ls = git(["ls-tree", "--name-only", "-r", ref, "--", `${CELLS_DIR}/`]);
+  if (ls.status !== 0) return { claims: [], note: note || `no ${ref} here; claims on main were not checked` };
+  const claims = [];
+  for (const file of ls.stdout.split(/\r?\n/).filter((f) => f.endsWith(".json"))) {
+    const show = git(["show", `${ref}:${file}`]);
+    if (show.status !== 0) continue;
+    try {
+      claims.push({ file, ...JSON.parse(show.stdout) });
+    } catch (e) {
+      claims.push({ file, error: String(e.message || e) });
+    }
+  }
+  return { claims, note };
 }
