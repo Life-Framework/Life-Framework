@@ -392,6 +392,7 @@ export function brief(issue, card, worktreeSlug) {
     `4. Gate ${card.tier}: ${gate}.${card.risk.length ? ` Risk ${card.risk.join(", ")}: an independent reviewer (lf-hard, interrogate) reads the diff before merge; findings in tmp/review-${slug}.md.` : ""}`,
     `5. Ship: tools\\cli wt ship ${slug} --refs ${issue.number}. Visible change: one look picture; polish nitpicks become follow-up issues, not blockers.`,
     `6. Record: tools\\cli slice record ${issue.number} --model ${card.model || "sonnet"} --outcome merged|handoff|split|failed --gate pass|fail --minutes N.`,
+    "Starter pack: tools\\cli brief slice (the exact commands, the red-proof loop, known traps); a map, town, grid or building slice also reads its own kind.",
     "Stay in your lane: do not re-verify other slices, start no helper agents, no wait loops. Report in five lines; say merged, in-dev.",
   ];
   if (card.notes) lines.push("", "Notes:", card.notes);
