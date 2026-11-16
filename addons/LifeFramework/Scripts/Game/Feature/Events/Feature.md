@@ -38,3 +38,11 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Player sees:** nothing yet. The data for the relocated families walking into the square at dawn is in the pack (`LF_Everon1989/Configs/Events/`): the `relocated_arrival` event, its dawn hour condition, its scene and three outfit presets. The core stays neutral; it only reads the pack's overlay (#1952).
 - **Owner and side:** data, server side once the shell module (follow-up) registers the condition and scene by id.
 - **Proof:** `everon/arrival-event` (pack leg).
+
+## Scene markers are checked at game start (#2067)
+
+- **Player sees:** nothing. A pack author sees one `[LFDebug:Events]` warning per broken scene in the server log.
+- **Owner and side:** `LF_EventSceneCheck` (core), server only, once per world, three seconds after game start so the placed markers (#1954) have registered. It only reads and logs: the scene stays usable and no event is switched off.
+- **Rules:** one line per scene, each fault named once: a gap in the route's orders (waypoints 0, 2, 3 is missing 1; a route starting at 1 is missing 0), waypoints but no `event_target`, no `event_spawn` marker. A marker with no scene id belongs to no scene (the component already logs it). A clean scene logs nothing; the check always ends with one `scene check: N marker(s) read, M scene(s) broken` info line.
+- **Proof:** `events/scene-check` (LOGIC, marker lists in script, no world).
+
