@@ -1,4 +1,29 @@
 {
   "_about": "Tests that still read the playtest town. tools\\cli test runs them in a second boot on DebugWorld; every other WORLD and PERSISTENCE test boots GridWorld (tools/lib/test-world.mjs, docs/architecture/three-worlds.md). Seeded from the W1 GridWorld failures (#1803) plus the town tests added since (#1804). Remove a pin when its test gains grid fixtures; the list should end empty. Slice #1808 (W7) removed 11 pins (the jail cluster and the farm plots) with the Grid_test_fixtures cell: one EL_JailCell and farm_plot_1..3. The 41 left need fixtures that are not one prefab each: shops and tills, a zone, spawn points, signs, quest givers, organization hideouts, the car lot and impound desk, and the roadmap scenarios. Each is a follow-up card; a test that is really about the town moves out of the suite instead.",
-  "pins": []
+  "pins": [
+    {
+      "name": "faction-spawn-points",
+      "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
+    },
+    {
+      "name": "police/rank-permissions",
+      "reason": "reads the town police station or its spawns, which are not in GridWorld"
+    },
+    {
+      "name": "respawn/ward",
+      "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
+    },
+    {
+      "name": "safezone/blocks",
+      "reason": "reads a town safe or lawless zone, which GridWorld leaves out on purpose"
+    },
+    {
+      "name": "spawnhub/travel",
+      "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
+    },
+    {
+      "name": "zones/quarry",
+      "reason": "reads a town safe or lawless zone, which GridWorld leaves out on purpose"
+    }
+  ]
 }
