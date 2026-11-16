@@ -53,10 +53,114 @@ class LF_LogoutBodyRejoin
 		// The logout knockout's job is done; a real downed state (a wound) stays.
 		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(body);
 		if (character && character.LF_IsStunned())
-			LF_Knockout.End(character);
+			EndLogoutKnockout(character);
 
 		LF_Debug.Info(FEATURE, string.Format("%1 rejoins inside the window: takes back the body at %2", uid, body.GetOrigin()));
 		return body;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, which owns the body until the spawn hands it over: end the logout knockout and get the
+	//! body up (#2156). The leaving client started and held the knockout ragdoll (LF_Knockout.Sync runs
+	//! on the owner, and the player still owned the body when LF_LogoutBody laid it down), so the
+	//! server had no hold of its own and a plain End released nothing: the body stayed ragdolled and
+	//! unconscious. Taking the hold over first makes End release it, settle and wake through vanilla.
+	static void EndLogoutKnockout(notnull SCR_ChimeraCharacter character)
+	{
+		character.LF_SetKnockoutRagdoll(true, false);
+		LF_Knockout.End(character);
+		// Not the owner (Sync did nothing): drop the borrowed hold; the owner wakes it on control.
+		if (character.LF_IsKnockoutRagdollHeld())
+			character.LF_SetKnockoutRagdoll(false, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure rule for the machine that just took control of a character: wake it when it lies
+	//! unconscious or ragdolled with nothing left that keeps it down. A wound or a knockout (keptDown)
+	//! or vanilla itself (wantsUnconscious) keeps it down.
+	static bool ShouldWakeOnControl(bool dead, bool keptDown, bool wantsUnconscious, bool incapacitated, bool ragdolled)
+	{
+		if (dead || keptDown || wantsUnconscious)
+			return false;
+
+		return incapacitated || ragdolled;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner, a moment after it took control. A client owner re-reads consciousness only on a damage
+	//! state or downed-flag change (LF_OnDownedReplicated), and a taken-back body brings neither: the
+	//! flag cleared while the server still owned it, so the new owner kept the body it inherited
+	//! INCAPACITATED. Vanilla's own path: release the ragdoll, then UpdateConsciousness.
+	static bool WakeOnControl(SCR_ChimeraCharacter character)
+	{
+		if (!character)
+			return false;
+
+		RplComponent rpl = RplComponent.Cast(character.FindComponent(RplComponent));
+		if (rpl && !rpl.IsOwner())
+			return false;
+
+		CharacterControllerComponent controller = character.GetCharacterController();
+		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(character.FindComponent(SCR_CharacterDamageManagerComponent));
+		if (!controller || !damageManager)
+			return false;
+
+		bool ragdolled;
+		CharacterAnimationComponent animation = character.GetAnimationComponent();
+		if (animation)
+			ragdolled = animation.IsRagdollActive();
+
+		bool dead = controller.GetLifeState() == ECharacterLifeState.DEAD;
+		bool keptDown = character.LF_IsDowned() || character.LF_HasStunFlag() || character.LF_IsKnockoutRagdollHeld() || character.LF_IsKnockoutSettling();
+		bool incapacitated = controller.GetLifeState() == ECharacterLifeState.INCAPACITATED;
+		if (!ShouldWakeOnControl(dead, keptDown, damageManager.LF_WantsUnconscious(), incapacitated, ragdolled))
+			return false;
+
+		if (ragdolled)
+			controller.RefreshRagdoll(0);
+
+		damageManager.UpdateConsciousness();
+		// Vanilla wakes a character lying prone; the rejoiner stands once the wake-up has played.
+		if (GetGame().GetCallqueue())
+			GetGame().GetCallqueue().CallLater(StandUp, STAND_UP_MS, false, character, STAND_UP_TRIES);
+
+		LF_Debug.Info(FEATURE, string.Format("%1 took control of a lying body (ragdoll %2, incapacitated %3): it gets up", LF_Utils.GetPlayerUID(character), ragdolled, incapacitated));
+		return true;
+	}
+
+	//! Time the vanilla wake-up gets before the stand, and the retry step while it still plays (the
+	//! controller drops a stance change asked for during the wake-up animation).
+	// lf-fixed: animation settle delays, not gameplay tuning
+	static const int STAND_UP_MS = 2000;
+	static const int STAND_UP_TRIES = 6;
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner: the woken body stands up from prone, unless something put it down again meanwhile.
+	static void StandUp(SCR_ChimeraCharacter character, int triesLeft)
+	{
+		if (!character || character.LF_IsDowned() || character.LF_HasStunFlag())
+			return;
+
+		CharacterControllerComponent controller = character.GetCharacterController();
+		if (!controller || controller.GetLifeState() == ECharacterLifeState.DEAD)
+			return;
+
+		if (controller.GetLifeState() == ECharacterLifeState.ALIVE && controller.GetStance() != ECharacterStance.PRONE)
+		{
+			LF_Debug.Info(FEATURE, string.Format("%1 is up from the logout body (stance %2)", LF_Utils.GetPlayerUID(character), typename.EnumToString(ECharacterStance, controller.GetStance())));
+			return;
+		}
+
+		if (triesLeft <= 0)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("%1 woke from the logout body but stays %2 (life %3)", LF_Utils.GetPlayerUID(character), typename.EnumToString(ECharacterStance, controller.GetStance()), typename.EnumToString(ECharacterLifeState, controller.GetLifeState())));
+			return;
+		}
+
+		if (controller.GetLifeState() == ECharacterLifeState.ALIVE)
+			controller.SetStanceChange(ECharacterStanceChange.STANCECHANGE_TOERECTED);
+
+		GetGame().GetCallqueue().CallLater(StandUp, 1000, false, character, triesLeft - 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -180,5 +284,23 @@ modded class SCR_BaseGameMode
 			LF_LogoutBodyRejoin.OnKilled(entity);
 
 		super.OnControllableDestroyed(entity, killerEntity, instigator);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The machine that takes control of a character gets it up when nothing keeps it down (#2156).
+modded class SCR_CharacterControllerComponent
+{
+	//! Lets the server's ragdoll release settle (LF_Knockout.SETTLE_MS) and ownership arrive first.
+	// lf-fixed: a replication and animation settle delay, not gameplay tuning
+	protected static const int LF_WAKE_ON_CONTROL_MS = 2500;
+
+	//------------------------------------------------------------------------------------------------
+	override void OnControlledByPlayer(IEntity owner, bool controlled)
+	{
+		super.OnControlledByPlayer(owner, controlled);
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(owner);
+		if (controlled && character && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().CallLater(LF_LogoutBodyRejoin.WakeOnControl, LF_WAKE_ON_CONTROL_MS, false, character);
 	}
 }
