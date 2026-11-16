@@ -1,0 +1,35 @@
+# Flagship handbook (#1776): the seven 1989 pages, read one by one, under the Everon 1989 pack.
+# Boot with the pack: session.mjs up --pack LF_Everon1989 --profile full --wait, then flow ui-intake
+# on a fresh profile so a character is spawned. The core flow ui-handbook expects the core page titles.
+pausemenu open
+wait 800
+click HandbookButton
+wait-text Pick a page to read.
+shot ui handbook_everon_list
+click HandbookPage1_Action
+wait-text Your first wages
+shot ui handbook_everon_parcel
+click HandbookContentsButton
+wait-text Pick a page to read.
+click HandbookPage2_Action
+wait-text Work in town
+click HandbookContentsButton
+wait-text Pick a page to read.
+click HandbookPage3_Action
+wait-text The police
+click HandbookContentsButton
+wait-text Pick a page to read.
+click HandbookPage4_Action
+wait-text The hospital
+click HandbookContentsButton
+wait-text Pick a page to read.
+click HandbookPage5_Action
+wait-text If you turn to crime
+click HandbookContentsButton
+wait-text Pick a page to read.
+click HandbookPage6_Action
+wait-text The law and the permit
+shot ui handbook_everon_law
+input MenuBack
+wait 600
+ui text
