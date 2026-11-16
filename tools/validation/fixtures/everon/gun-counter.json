@@ -1,0 +1,8 @@
+{
+  "kind": "outlets",
+  "outlet": "gun_counter",
+  "offers": [
+    { "item": "pistol_pm", "licence": "FIREARM_PERMIT" },
+    { "item": "rifle_m21", "licence": "FIREARM_PERMIT" }
+  ]
+}

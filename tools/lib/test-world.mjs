@@ -182,13 +182,17 @@ export function planLegs({ tier, only = [], world, env = process.env, tiers, nam
   const selection = only.length ? [...new Set(only.map(clsOf))] : registry.filter((t) => tier === "all" || t.tier === tier.toUpperCase()).map((t) => t.cls);
   // A tier run leaves the town tests out; an --only run that names one keeps it for the playtest leg.
   const suite = only.length ? selection : selection.filter((c) => !townSet.has(c));
+  // The suite registry (readRegistry) is already without the town tests, so nothing may be left to drop
+  // here; a tier run with a town list still names its classes, or the runner takes every registered
+  // test (classes null), the town ones included.
   const left = selection.length - suite.length;
+  const tierRun = !only.length && townSet.size > 0;
   const toPlaytest = suite.filter((c) => pinned.has(c) || townSet.has(c));
-  if (!toPlaytest.length && !left) return one;
+  if (!toPlaytest.length && !left && !tierRun) return one;
   const toGrid = suite.filter((c) => !pinned.has(c) && !townSet.has(c));
   const legs = [];
   const apart = toPlaytest.length ? `; ${toPlaytest.length} pinned or town test(s) run apart` : "";
-  const dropped = left ? `; ${left} town test(s) run only under --town` : "";
+  const dropped = left || tierRun ? `; ${townSet.size} town test(s) run only under --town` : "";
   if (toGrid.length) legs.push({ world: GRID_WORLD, classes: toGrid, reason: `${picked.reason}${apart}${dropped}` });
   if (toPlaytest.length) legs.push({ world: PLAYTEST_WORLD, classes: toPlaytest, reason: `pinned to the playtest world (${PINS_FILE}, ${TOWN_FILE})` });
   return legs;

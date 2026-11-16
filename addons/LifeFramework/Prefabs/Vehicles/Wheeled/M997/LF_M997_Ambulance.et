@@ -19,25 +19,19 @@ Vehicle : "{00C9BBE426F7D459}Prefabs/Vehicles/Wheeled/M998/M997_maxi_ambulance.e
   ActionsManagerComponent "{C97BE5489221AE18}" {
    additionalActions + {
     LF_SirenModeAction "{A3D1C0DE00000923}" {
-     ParentContextList {
-      "driver"
-     }
      UIInfo UIInfo "{A3D1C0DE00000924}" {
       Name "#LF-Siren_AmbulanceOn"
      }
-     VisibilityRange 1.6
+     VisibilityRange 2.5
      "Sort Priority" 7
      m_bDutyOnly 1
      m_Mode "Mode2"
     }
     LF_SirenModeAction "{A3D1C0DE00000925}" {
-     ParentContextList {
-      "driver"
-     }
      UIInfo UIInfo "{A3D1C0DE00000926}" {
       Name "#LF-Siren_AmbulanceOff"
      }
-     VisibilityRange 1.6
+     VisibilityRange 2.5
      "Sort Priority" 7
      m_bDutyOnly 1
      m_Mode "default"

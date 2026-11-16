@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{55A5EA15073304F8}Configs/Catalogue/LF_Catalogue_Weapons_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

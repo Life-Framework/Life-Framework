@@ -55,3 +55,8 @@ for the vehicle's `m_eService` (police or medic); anyone else is refused and log
 
 - **Causes:** the siren rows sat in the `light_switch` context (a 10 cm, non-omnidirectional dash point), so a seated driver saw nothing unless aiming at it; the duty gate hid the rows instead of greying them; `LF_SirenLightComponent` started lit and only a knob ticks the light animation, so an ambulance (no knob) never ran the default mode's "Turn Off" and its bar burned for good (the police jeep too, until its knob ticked).
 - **Now:** rows live in the `driver` context; off duty shows them greyed with `LF-Siren_NeedMedic` / `LF-Siren_NeedPolice`; lights start dark; `LF_SirenManagerComponent` ticks the animation on frames when there is no knob and stops once the default mode has turned everything off.
+
+## Fix: siren rows with no positional context (follow-up to the fix above)
+
+- **Cause:** the `driver` context is the vanilla get-in / switch-seat point at the seat (radius 25 cm), so a seated driver still had to aim at a point to see the rows; #1861 never reached the seat in a session.
+- **Now:** the two ambulance rows carry no `ParentContextList`, like the vanilla headlight toggle that always shows to the seated driver; `LF_SirenModeAction.SeatAllows` (pilot seat only) keeps them off everyone else's menu. `VisibilityRange` 2.5 m from the vehicle origin.
