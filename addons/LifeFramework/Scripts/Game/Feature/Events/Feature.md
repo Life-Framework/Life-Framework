@@ -32,3 +32,9 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
   - no verb: patch an id that exists, add one that does not.
 - **Rules:** `replace`, `patch` and `remove` of an unknown id are refused and logged with the pack file and id; the rest of the overlay applies. An event that fails `LF_EventPhaseRules.Validate` after the overlays (a negative time, a duplicate phase name) is logged `[LFDebug:Events]` and left out by `LF_EventOverlay.Collect` and `Find`; the others still load. Two packs changing one id: the later pack wins and a warning names both.
 - **Proof:** `events/pack-overlay` (LOGIC) layers a fixture that adds, patches a phase timing, removes and replaces, and refuses a duplicate add and a patch of an unknown id.
+
+## Everon arrival at dawn (#1957)
+
+- **Player sees:** nothing yet. The data for the relocated families walking into the square at dawn is in the pack (`LF_Everon1989/Configs/Events/`): the `relocated_arrival` event, its dawn hour condition, its scene and three outfit presets. The core stays neutral; it only reads the pack's overlay (#1952).
+- **Owner and side:** data, server side once the shell module (follow-up) registers the condition and scene by id.
+- **Proof:** `everon/arrival-event` (pack leg).
