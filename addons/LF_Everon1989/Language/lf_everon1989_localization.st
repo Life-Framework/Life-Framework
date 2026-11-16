@@ -1659,6 +1659,21 @@ StringTable {
      Target_en_us "Couriers wanted"
      Comment "Town board card (work): card title; the prompt reads Read: <title>."
     }
+    CustomStringTableItem "{6784DBE972ED4ECD}" {
+     Id "LF-Townsfolk_CafeOwner_Role"
+     Target_en_us "Café owner"
+     Comment "Townsfolk (The relocated, #1960): what Odile Marchand does, the role line under the name."
+    }
+    CustomStringTableItem "{B0FC17DD51416582}" {
+     Id "LF-Townsfolk_NightShift_Role"
+     Target_en_us "Night-shift worker"
+     Comment "Townsfolk (The relocated, #1960): what Rémi Duval does, the role line under the name."
+    }
+    CustomStringTableItem "{1F9CFB4C2CC31B69}" {
+     Id "LF-Townsfolk_OldMan_Role"
+     Target_en_us "Retired fisherman"
+     Comment "Townsfolk (The relocated, #1960): what Gaspard Lenoir does, the role line under the name."
+    }
     CustomStringTableItem "{AEFD273B4E3FE2B7}" {
      Id "LF_Everon1989_AlphaNotice"
      Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"

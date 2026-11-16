@@ -1,0 +1,31 @@
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "6359BFD8462BFFAE"
+ components {
+  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+   Identity Identity "{5A4B0B84AF44A913}" {
+    Name "Odile"
+    Surname "Marchand"
+   }
+  }
+  LF_NpcRoleComponent "{7A31C05E94D2B861}" {
+   m_sRole "townsfolk"
+  }
+  LF_PlaceComponent "{3165913B2276EBF8}" {
+   m_sKind "Townsfolk"
+   m_sId "cafe_owner"
+  }
+  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{86E0117B630414B5}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V2.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+   }
+  }
+ }
+}
