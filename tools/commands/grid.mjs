@@ -14,6 +14,11 @@
 // treat those cells as taken (#2014 and #2016 both took c0r6, 2026-11-16). No `gh` or token is a
 // printed warning, not a failure. `--no-fetch` is offline and skips it.
 //
+// Claims not yet committed count too: a claim file still `??` in a sibling local worktree is on no remote
+// and in no PR (ws/police-station-kit and ws/building-bank both took c3r1, 2026-11-16). `place` and `list`
+// read tools/grid/cells/*.json of every other worktree of this clone (`git worktree list --porcelain`, no
+// network, so `--no-fetch` keeps it), treat those cells as taken and name the worktree in the clash.
+//
 // `place` claims a cell for the feature (deterministic: the first usable cell from a hash of the
 // slug; `--span 3x2` takes a block of cells for a big item: the claim file gets "span": [3, 2] and one yard goes
 // round the whole block), writes GridWorld_Layers/Grid_<slug>.layer with the cell's fenced yard (a 5 m gap facing
@@ -27,7 +32,7 @@ import { CELL, isFrameClaim } from "../grid/lattice.mjs";
 import { loadWorld } from "../../agent-box/layers.mjs";
 import { withSpawn } from "../grid/cell-spawn.mjs";
 import {
-  CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, claimCellIds, claimRect, entityPrefix, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, yardPlan, yawAlong,
+  CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, claimCellIds, claimRect, entityPrefix, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, worktreeClaims, yardPlan, yawAlong,
 } from "../lib/world-zones.mjs";
 
 export const help = "grid place <slug> [<prefab>...] | grid list | grid free <slug>   a debug-grid cell per feature in the GridWorld annex: fenced yard, label sign, props placed and audited (docs/architecture/world-zones.md)";
@@ -115,6 +120,16 @@ function prView(root, flags, ctx, local, onMain) {
   return { inFlight: info.claims.filter((c) => c.slug && c.cell && !known.has(c.slug)) };
 }
 
+// The claims still uncommitted in sibling local worktrees (`inTrees`): no network, so `--no-fetch` keeps it.
+// A slug this tree, origin/main or an open PR already has is theirs, not a second claim. The injected reader
+// replaces `git worktree list` in tests.
+function treeView(root, ctx, known) {
+  const info = (ctx.worktreeClaims ?? worktreeClaims)(root);
+  if (info.note) console.log(`grid: warning: ${info.note}`);
+  const seen = new Set(known.map((c) => c.slug));
+  return { inTrees: info.claims.filter((c) => c.slug && c.cell && !seen.has(c.slug)) };
+}
+
 // The claims origin/main holds (`onMain`), and those this tree lacks (`extra`: a branch cut before they merged).
 function mainView(root, flags, local) {
   const info = mainClaims(root, { fetch: !flags["no-fetch"] });
@@ -128,20 +143,23 @@ function list(root, flags, ctx = {}) {
   const local = readCells(root);
   const { onMain, extra } = mainView(root, flags, local);
   const { inFlight } = prView(root, flags, ctx, local, onMain);
+  const { inTrees } = treeView(root, ctx, [...local, ...onMain, ...inFlight]);
   const frame = [...local, ...extra].find(isFrameClaim);
-  const claims = [...local, ...extra, ...inFlight].filter((c) => !isFrameClaim(c));
+  const claims = [...local, ...extra, ...inFlight, ...inTrees].filter((c) => !isFrameClaim(c));
   const ents = gridEnts(root);
   const taken = new Set(claims.flatMap(claimCellIds));
   const free = allCells().filter((c) => !taken.has(c.id) && !blockers(c, ents).length).length;
-  console.log(`grid: ${claims.length} cell(s) claimed (${extra.length} only on origin/main, ${inFlight.length} in open PRs), ${free} free (${CELLS_DIR}/)`);
+  console.log(`grid: ${claims.length} cell(s) claimed (${extra.length} only on origin/main, ${inFlight.length} in open PRs, ${inTrees.length} in other worktrees), ${free} free (${CELLS_DIR}/)`);
   claims.forEach((c, i) => {
     const b = claimRect(c);
     const layer = join(root, GRID_LAYERS, layerOfSlug(c.slug));
     const n = existsSync(layer) ? (readFileSync(layer, "utf8").match(/^\S.* : "\{/gm) || []).length : 0;
     const mine = new Set(claimCellIds(c));
-    const clash = inFlight.includes(c) ? claims.filter((x) => x !== c && claimCellIds(x).some((id) => mine.has(id))).map((x) => x.slug) : [];
+    const clash = inFlight.includes(c) || inTrees.includes(c) ? claims.filter((x) => x !== c && claimCellIds(x).some((id) => mine.has(id))).map((x) => x.slug) : [];
+    const clashText = clash.length ? `  CLASH with ${clash.join(", ")}` : "";
     const tail = inFlight.includes(c)
-      ? `claimed in open PR #${c.pr} (${c.branch}), not merged yet${clash.length ? `  CLASH with ${clash.join(", ")}` : ""}`
+      ? `claimed in open PR #${c.pr} (${c.branch}), not merged yet${clashText}`
+      : inTrees.includes(c) ? `claimed in worktree ${c.worktree} (${c.branch || "detached"}), not pushed yet${clashText}`
       : extra.includes(c) ? "claimed on origin/main, not merged here yet" : `${n} entities, ${c.rows ?? 0}/3 rows`;
     console.log(`  ${String.fromCharCode(97 + (i % 26))} ${c.slug.padEnd(28)} ${`${c.cell}${b && b.w * b.h > 1 ? `+${b.w}x${b.h}` : ""}`.padEnd(6)} ${b ? `x ${b.x0}..${b.x1} z ${b.z0}..${b.z1}` : "bad cell"}  ${tail}${c.error ? `  ERROR ${c.error}` : ""}`);
   });
@@ -192,9 +210,16 @@ async function place(root, args, flags, ctx = {}) {
       console.log(`grid: open PR #${dupPr.pr} (${dupPr.branch}) already claims ${slug} (cell ${dupPr.cell}); work on that branch, or pick another slug`);
       return 1;
     }
+    const { inTrees } = treeView(root, ctx, [...claims, ...onMain, ...inFlight]);
+    const dupTree = inTrees.find((c) => c.slug === slug);
+    if (dupTree) {
+      console.log(`grid: worktree ${dupTree.worktree} (${dupTree.branch}) already claims ${slug} (cell ${dupTree.cell}); work there, or pick another slug`);
+      return 1;
+    }
     const takenOnMain = new Map(onMain.flatMap((c) => claimCellIds(c).map((id) => [id, c.slug])));
     const takenInPr = new Map(inFlight.flatMap((c) => claimCellIds(c).map((id) => [id, c])));
-    const taken = new Set([...claims.flatMap(claimCellIds), ...takenOnMain.keys(), ...takenInPr.keys()]);
+    const takenInTrees = new Map(inTrees.flatMap((c) => claimCellIds(c).map((id) => [id, c])));
+    const taken = new Set([...claims.flatMap(claimCellIds), ...takenOnMain.keys(), ...takenInPr.keys(), ...takenInTrees.keys()]);
     const sp = /^([0-9]+)x([0-9]+)$/.exec(flags.span === true ? "" : String(flags.span ?? "1x1"));
     if (!sp) throw new Error(`--span ${flags.span} is not cols x rows, like 3x2`);
     span = [Number(sp[1]), Number(sp[2])];
@@ -207,8 +232,9 @@ async function place(root, args, flags, ctx = {}) {
       for (const id of claimCellIds({ cell: flags.cell, span })) {
         const owner = takenOnMain.get(id);
         const pr = takenInPr.get(id);
+        const wt = takenInTrees.get(id);
         const c1 = allCells().find((c) => c.id === id);
-        for (const w of [...(owner ? [`claimed on origin/main by ${owner}`] : pr ? [`claimed by ${pr.slug} in open PR #${pr.pr}`] : taken.has(id) ? ["claimed"] : []), ...blockers(c1, ents)]) why.push(`${id}: ${w}`);
+        for (const w of [...(owner ? [`claimed on origin/main by ${owner}`] : pr ? [`claimed by ${pr.slug} in open PR #${pr.pr}`] : wt ? [`claimed by ${wt.slug} in worktree ${wt.worktree} (${wt.branch || "detached"}), not pushed yet`] : taken.has(id) ? ["claimed"] : []), ...blockers(c1, ents)]) why.push(`${id}: ${w}`);
       }
       if (why.length) {
         console.log(`grid: cell ${cell.id} is not free: ${why.join("; ")}`);
@@ -269,9 +295,9 @@ function usage() {
   return 1;
 }
 
-// `openPrClaims(root)` in the context replaces the `gh` reader (the selftest's seam).
-export async function main(argv, { root, openPrClaims: prReader }) {
-  const ctx = { openPrClaims: prReader };
+// `openPrClaims(root)` and `worktreeClaims(root)` in the context replace the `gh` and `git worktree` readers (the selftest's seam).
+export async function main(argv, { root, openPrClaims: prReader, worktreeClaims: treeReader }) {
+  const ctx = { openPrClaims: prReader, worktreeClaims: treeReader };
   const [sub, ...rest] = argv;
   const { _: args, flags } = parse(rest);
   try {

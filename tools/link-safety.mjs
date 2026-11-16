@@ -89,7 +89,9 @@ export function findReparsePoints(root) {
 export function safeRemoveTree(root) {
   unlinkReparsePoints(root);
   assertNoLinks(root);
-  rmSync(root, { recursive: true, force: true });
+  // maxRetries: on Windows a just-exited git or the virus scanner can hold a scratch repo for a moment
+  // (EBUSY on the CI runner, 2026-11-16); the links are already gone, so waiting and retrying is safe
+  rmSync(root, { recursive: true, force: true, maxRetries: 8, retryDelay: 250 });
 }
 
 function assertNoLinks(root) {
