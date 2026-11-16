@@ -1,7 +1,19 @@
 # Chess board (#2099, #2056): sit at the grid chess table and read the board. Every one of the 64
 # keys shows its own label centred (a-file and h-file included), and the last-move line and Stand up
-# fit the sheet without a scroll. Boot GridWorld: `session up --profile full --mission grid`.
-layer LF_ChessTable_Grid
+# fit the sheet without a scroll. Boot GridWorld, then drive client 1:
+#   tools\cli session up --profile full --mission grid
+#   node agent-box/harness.mjs --client 1 flow ui-chess-board
+# A fresh profile registers first (form R-89), as ui-intake does. `layer` only knows DebugWorld pads, so
+# the table is reached with stand + use.
+ui
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+stand LF_ChessTable_Grid
+wait 1000
+use LF_ChessSitAction LF_ChessTable_Grid
 wait 1500
 shot ui chess_board
 ui text
@@ -12,4 +24,4 @@ click Chess_e4Button
 wait 1500
 shot ui chess_moved
 ui text
-click ChessStandButton
+click ChessStand
