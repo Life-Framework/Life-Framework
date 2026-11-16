@@ -31,7 +31,7 @@ Nothing in the world yet. This slice is the rules only (#1922); the checkpoint t
 
 ## Race panel (#1924)
 
-- **Player sees:** during a race a small panel at the top right: lap (2 / 3), next checkpoint (3 / 5), place (1 / 4) and the race clock; "Finished" at the line, "Race over" when the race settles, then it goes after six seconds.
+- **Player sees:** during a race a small panel on the left: lap (2 / 3), next checkpoint (3 / 5), place (1 / 4) and the race clock; "Finished" at the line, "Race over" when the race settles, then it goes after six seconds.
 - **Owner and side:** `LF_RaceHud.Sync` on the server, run after every `LF_RaceClock` tick, lobby close and time limit (modded `LF_RaceClock`). It sends `RpcDo_LF_RaceHudState` (eight ints, `SCR_PlayerController`, owner only) when a racer's lap, checkpoint, place or field size changed, never per frame, and `RpcDo_LF_RaceHudEnd` once the race is over for that racer. The client runs the clock from the elapsed time in the last update. The client sends nothing.
 - **Place:** finishers first by finish time, then most checkpoints passed, then who reached that count first (the server notes the race time of each racer's last new checkpoint), then uid.
 - **UI:** `UI/Layouts/Racing/LF_RaceHud.layout` is a theme-metal plate and a column (a HUD strip exception in `ui-kit-baseline.json`); the heading and four rows are the kit's `LF_UIHeading` and `LF_UIStatusRow` parts in theme colours. Strings `LF-RaceHud_*`.
