@@ -351,10 +351,10 @@ GenericEntity GridMarker_c0r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c0r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:jobs"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 22.5 0.505 49.5
@@ -687,10 +687,10 @@ GenericEntity GridMarker_c0r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c0r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:shooting-range"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 22.5 0.505 73.5
@@ -1023,10 +1023,10 @@ GenericEntity GridMarker_c0r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c0r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:jobs"
+   m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.95 0.78 0.1
-   m_vTextColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
   }
  }
  coords 22.5 0.505 97.5
@@ -2159,7 +2159,7 @@ StaticModelEntity GridPath_r6_35 : "{D93A7286584E122C}Prefabs/Props/Construction
 GenericEntity GridMapBoard : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:map c3r0 shops-till, c4r0 crimes, c5r0 zones-spawn, c1r1 retheme-proof, c1r3 test-fixtures, c1r4 fence-shop-2, c2r4 orgs-vehicles, c0r5 licence-desk, c1r5 everon-outlets, c2r5 signs-board-quests, c0r6 jobs, c1r6 police, c2r6 npcs, c5r6 wanted-posters"
+   m_sSignId "grid:map c3r0 shops-till, c4r0 crimes, c5r0 zones-spawn, c1r1 retheme-proof, c0r2 jobs, c1r3 test-fixtures, c0r4 shooting-range, c1r4 fence-shop-2, c2r4 orgs-vehicles, c0r5 licence-desk, c1r5 everon-outlets, c2r5 signs-board-quests, c1r6 police, c2r6 npcs, c5r6 wanted-posters"
    m_vRimColor 0.1 0.1 0.1
    m_vPaintColor 0.95 0.95 0.9
    m_vTextColor 0.05 0.05 0.05
