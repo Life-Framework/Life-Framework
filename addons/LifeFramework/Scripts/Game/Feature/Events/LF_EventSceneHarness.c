@@ -90,7 +90,94 @@ class LF_EventSceneHarness
 			return line + ", not walking";
 
 		int walking = walk.m_aWalkers.Count() - walk.CountArrived() - walk.CountTimedOut();
-		return string.Format("%1, walking %2, arrived %3, timed out %4, %5 s", line, walking, walk.CountArrived(), walk.CountTimedOut(), walk.m_fElapsed);
+		line = string.Format("%1, walking %2, arrived %3, timed out %4, %5 s", line, walking, walk.CountArrived(), walk.CountTimedOut(), walk.m_fElapsed);
+		return line + AiText(walk);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The walk's AI as the engine has it: the group's agents, waypoint, activation and LOD, and the
+	//! first walker's agent and position. A walk whose walkers stand still is read from here.
+	static string AiText(notnull LF_EventSceneWalk walk)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+			return "";
+
+		AIGroup group = AIGroup.Cast(world.FindEntityByID(walk.m_GroupId));
+		if (!group)
+			return "; ai: no group";
+
+		string text = string.Format("; ai: group agents=%1 waypoint=%2 active=%3 lod=%4", group.GetAgentsCount(), group.GetCurrentWaypoint() != null, group.IsAIActivated(), group.GetLOD());
+		ChimeraAIWorld aiWorld = ChimeraAIWorld.Cast(GetGame().GetAIWorld());
+		if (aiWorld)
+			text += string.Format(" dormancy=%1", aiWorld.IsGroupDormancyEnabled());
+
+		foreach (LF_EventSceneWalker walker : walk.m_aWalkers)
+		{
+			IEntity person = world.FindEntityByID(walker.m_Id);
+			if (!person)
+				continue;
+
+			AIControlComponent control = AIControlComponent.Cast(person.FindComponent(AIControlComponent));
+			AIAgent agent;
+			if (control)
+				agent = control.GetControlAIAgent();
+			if (agent)
+				text += string.Format(" | walker at %1 agent active=%2 lod=%3 inGroup=%4", person.GetOrigin(), agent.IsAIActivated(), agent.GetLOD(), agent.GetParentGroup() == group);
+			else
+				text += string.Format(" | walker at %1 no agent", person.GetOrigin());
+			break;
+		}
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Diagnosis: activates the walk's group and every agent and pins them to full LOD.
+	static string Kick()
+	{
+		LF_EventSceneWalk walk = LF_EventSceneWalk.Active();
+		BaseWorld world = GetGame().GetWorld();
+		if (!walk || !world || walk.m_aWalkers.IsEmpty())
+			return "refused: no walk";
+
+		AIGroup group = AIGroup.Cast(world.FindEntityByID(walk.m_GroupId));
+		if (!group)
+			return "refused: no group";
+
+		group.ActivateAI();
+		group.SetPermanentLOD(0);
+		// The faction of the first walker, so the group is not factionless.
+		string factionKey = "";
+		SCR_AIGroup scrGroup = SCR_AIGroup.Cast(group);
+		IEntity first = GetGame().GetWorld().FindEntityByID(walk.m_aWalkers[0].m_Id);
+		if (first)
+		{
+			FactionAffiliationComponent affiliation = FactionAffiliationComponent.Cast(first.FindComponent(FactionAffiliationComponent));
+			if (affiliation && affiliation.GetAffiliatedFaction())
+				factionKey = affiliation.GetAffiliatedFaction().GetFactionKey();
+		}
+		if (scrGroup && !factionKey.IsEmpty() && GetGame().GetFactionManager())
+			scrGroup.SetFaction(GetGame().GetFactionManager().GetFactionByKey(factionKey));
+
+		// Re-issue the waypoints so the group's behaviour picks them up again.
+		array<AIWaypoint> waypoints = {};
+		group.GetWaypoints(waypoints);
+		foreach (AIWaypoint waypoint : waypoints)
+			group.RemoveWaypoint(waypoint);
+		foreach (AIWaypoint waypoint : waypoints)
+			group.AddWaypoint(waypoint);
+
+		array<AIAgent> agents = {};
+		group.GetAgents(agents);
+		foreach (AIAgent agent : agents)
+		{
+			agent.ActivateAI();
+			agent.SetPermanentLOD(0);
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("eventscene: kicked the walk's group (%1, faction '%2', %3 waypoint(s)) and %4 agent(s)", group.ClassName(), factionKey, waypoints.Count(), agents.Count()));
+		return string.Format("ok: kicked %1 faction '%2' %3 waypoint(s)", group.ClassName(), factionKey, waypoints.Count()) + AiText(walk);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -134,10 +221,10 @@ modded class LF_AgentHarnessVerbs
 			return super.Handle(cmd);
 
 		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
-		bool known = cmd.Arg1 == "start" || cmd.Arg1 == "status" || cmd.Arg1 == "stop";
+		bool known = cmd.Arg1 == "start" || cmd.Arg1 == "status" || cmd.Arg1 == "stop" || cmd.Arg1 == "kick";
 		if (!known || !character)
 		{
-			LF_AgentHarness.Answer(cmd.Id, "error", "usage: eventscene start <{GUID}fixture.conf> [hour] | status [eventId] | stop (needs a character)");
+			LF_AgentHarness.Answer(cmd.Id, "error", "usage: eventscene start <{GUID}fixture.conf> [hour] | status [eventId] | kick | stop (needs a character)");
 			return true;
 		}
 
@@ -186,6 +273,8 @@ modded class SCR_ChimeraCharacter
 			detail = LF_EventSceneHarness.Start(arg, hour);
 		else if (action == "stop")
 			detail = LF_EventSceneHarness.Stop();
+		else if (action == "kick")
+			detail = LF_EventSceneHarness.Kick();
 		else
 			detail = LF_EventSceneHarness.Status(arg);
 
