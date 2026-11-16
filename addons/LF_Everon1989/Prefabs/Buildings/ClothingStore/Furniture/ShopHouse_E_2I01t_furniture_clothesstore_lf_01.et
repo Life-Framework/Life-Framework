@@ -581,7 +581,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{7480053B4EE198D3}Prefabs/Props/Commercial/Posters/PosterSingle_A3_Insurance_V1.et" {
    ID "57690E2BF9AA1698"
-   coords 4.6 1.7 -2.995
+   coords 4.85 1.7 -2.995
   }
   GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
    ID "5B2884E2AE5D37EC"
