@@ -76,12 +76,7 @@ GenericEntity Grid_race_track_R2_1 : "{FA7E269E563ADB3D}Prefabs/Props/Racing/LF_
  coords 30.498 0.505 97
  angleY 90
 }
-GenericEntity Grid_race_track_R2_2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
- components {
-  LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:race-records"
-  }
- }
- coords 30.498 0.505 103
+GenericEntity Grid_race_track_R2_2 : "{3A0DF994654216AF}Prefabs/Props/Roleplay/Racing/RaceRecordBoard.et" {
+ coords 30.498 0 103
  angleY 90
 }
