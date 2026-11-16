@@ -31,6 +31,11 @@ export function parseRegistry(text) {
   return [...String(text).matchAll(/new (LF_Test_\w+)\(\),\s*LF_TestTier\.(\w+)/g)].map((m) => ({ cls: m[1], tier: m[2] }));
 }
 
+// Every registered test but the PERF tier, the town tests included: `wt e2e` needs them (tools/lib/e2e-legs.mjs).
+export function readAllRegistry(root) {
+  return parseRegistry(readFileSync(join(root, ...REGISTRY), "utf8")).filter((t) => t.tier !== "PERF");
+}
+
 // The tests a `--tier all` run executes: the PERF tier runs only under `--tier perf`, so it is not in a shard plan or a timing history.
 // The town tests (tools/test/town-tests.json) run only under `test --town`, so no shard plan, gate or timing history holds them (#1895).
 export function readRegistry(root) {

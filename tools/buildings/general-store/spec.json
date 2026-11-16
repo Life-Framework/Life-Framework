@@ -29,6 +29,58 @@
       { "item": "{70BC751317551D9B}Prefabs/Items/Equipment/Canteens/Canteen_Soviet_01.et", "fixture": "ShelfUniversal_01_wide", "pick": [1], "boards": [1, 2], "per_board": 6 }
     ]
   },
+  "dress": {
+    "why": "dress.mjs: plain props on every shelf board the store lines do not use, the wall, counter and floor dressing below and the ceiling lights",
+    "shelves": { "ShelfShop_01": [1, 2, 3, 4, 5], "ShelfUniversal_01_wide": [0, 1, 2, 3, 4], "ShelfUniversal_01_Base": [0, 1] }
+  },
+  "dressing": [
+    { "prefab": "Prefabs/Props/PersonalBelongings/Notebooks/Notebook_01_Personal_Civilian.et", "at": [2.05, 1.24, -0.6], "yaw": 15, "why": "the cash ledger" },
+    { "prefab": "Prefabs/Props/Furniture/PhoneTable_01_Base.et", "at": [1.72, 1.24, -0.14], "yaw": 200, "why": "the shop telephone" },
+    { "prefab": "Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_newspaper_V1.et", "at": [2.12, 1.24, -0.05], "yaw": -8, "why": "today's paper" },
+    { "prefab": "Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_newspaper_V3.et", "at": [2.12, 1.25, -0.05], "yaw": 14 },
+    { "prefab": "Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et", "at": [1.6, 1.24, -0.64], "yaw": 40, "why": "the shopkeeper's mug" },
+    { "prefab": "Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et", "at": [1.55, 1.24, 0.12], "yaw": 170 },
+    { "prefab": "Prefabs/Props/Commercial/Posters/PosterSingle_A1_Cans_V1.et", "at": [-1.53, 1.75, 0.65], "yaw": 90 },
+    { "prefab": "Prefabs/Props/Commercial/Posters/PosterSingle_A3_AirMail_V1.et", "at": [-1.53, 1.7, 1.35], "yaw": 90 },
+    { "prefab": "Prefabs/Props/Commercial/Posters/PosterSingle_A3_Insurance_V1.et", "at": [-1.53, 1.7, 1.8], "yaw": 90 },
+    { "prefab": "Prefabs/Props/Furniture/ClockWall_01.et", "at": [5.752, 2.45, 2.5], "yaw": -90, "why": "the wall clock" },
+    { "prefab": "Prefabs/Props/Civilian/Freezer_01.et", "at": [-1.12, 0.199, 1.85], "yaw": 90, "why": "chest freezer by the west wall" },
+    { "prefab": "Prefabs/Props/Furniture/Stool_01.et", "at": [1.35, 0.199, -1.9], "yaw": 30, "why": "the shopkeeper's stool behind the counter" },
+    { "prefab": "Prefabs/Props/Civilian/Bucket_01.et", "at": [4.85, 0.199, -2.75], "yaw": 0, "why": "mop bucket" },
+    { "prefab": "Prefabs/Props/Civilian/Broom_01.et", "at": [5.3, 0.199, -3.05], "yaw": 0 },
+    { "prefab": "Prefabs/Props/Garbage/Bins/BinInterior_01_green.et", "at": [4.3, 0.199, -2.75], "yaw": 0 },
+    { "prefab": "Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et", "at": [3.75, 0.199, -2.7], "yaw": 10, "why": "a box being unpacked" },
+    { "prefab": "Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [3.8, 0.631, -2.72], "yaw": -20 },
+    { "prefab": "Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_DarkWood.et", "at": [3.4, 0.199, 6.55], "yaw": 0, "why": "window display table" },
+    { "prefab": "Prefabs/Props/Civilian/SodaBottle_01.et", "at": [3.2, 0.899, 6.5], "yaw": 0 },
+    { "prefab": "Prefabs/Props/Civilian/SodaBottle_01.et", "at": [3.4, 0.899, 6.4], "yaw": 0 },
+    { "prefab": "Prefabs/Props/Civilian/SodaBottle_01.et", "at": [3.6, 0.899, 6.55], "yaw": 0 },
+    { "prefab": "Prefabs/Props/S2/S2_Bread/S2_Bread.et", "at": [3.3, 0.899, 6.7], "yaw": 0 },
+    { "prefab": "Prefabs/Props/S2/S2_Bread/S2_Bread.et", "at": [3.5, 1, 6.7], "yaw": 12 },
+    { "prefab": "Prefabs/Props/Civilian/BeerBottle_01_green.et", "at": [3.15, 0.899, 6.7], "yaw": 0 },
+    { "prefab": "Prefabs/Props/Civilian/BeerBottle_01_brown.et", "at": [3.62, 0.899, 6.7], "yaw": 0 },
+    { "prefab": "Prefabs/Props/Crates/Crate_01_orange.et", "at": [2.4, 0.199, 6.75], "yaw": 0, "why": "produce crates in the window" },
+    { "prefab": "Prefabs/Props/Crates/Crate_01_green.et", "at": [2.45, 0.425, 6.75], "yaw": 6 },
+    { "prefab": "Prefabs/Props/Civilian/BasketWicker_01.et", "at": [4.2, 0.199, 6.7], "yaw": 0 },
+    { "prefab": "Prefabs/Props/Crates/Crate_01_green.et", "at": [2.2, 0, 8.25], "yaw": 0, "why": "produce crates outside" },
+    { "prefab": "Prefabs/Props/Crates/Crate_01_orange.et", "at": [2.85, 0, 8.25], "yaw": 0 },
+    { "prefab": "Prefabs/Props/Crates/Crate_01_green.et", "at": [3.5, 0, 8.25], "yaw": 0 },
+    { "prefab": "Prefabs/Props/Crates/Crate_01_orange.et", "at": [2.5, 0.226, 8.25], "yaw": 5 },
+    { "prefab": "Prefabs/Props/Crates/Crate_01_green.et", "at": [3.2, 0.226, 8.25], "yaw": -4 },
+    { "prefab": "Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_Base.et", "at": [5.2, 0, 8.3], "yaw": 0, "why": "bench by the door" },
+    { "prefab": "Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et", "at": [1.0, 0, 8.05], "yaw": 0, "why": "planter under the window" },
+    { "prefab": "Prefabs/Props/Furniture/Sunshade_01/Sunshade_01_yellow.et", "at": [2.85, 0, 9.4], "yaw": 0, "why": "a parasol over the produce crates" }
+  ],
+  "lights": [
+    { "at": [2.962, 3.72, 0.922], "lv": 6 },
+    { "at": [2.99, 3.72, 4.668], "lv": 6 },
+    { "at": [0.2, 3.72, 0.922], "lv": 6, "lamp": "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et", "lamp_at": [0.2, 3.919, 0.922], "yaw": -89.583 },
+    { "at": [0.2, 3.72, 4.668], "lv": 6, "lamp": "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et", "lamp_at": [0.2, 3.919, 4.668], "yaw": -89.583 },
+    { "at": [1.9, 3.72, -1.5], "lv": 5, "lamp": "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et", "lamp_at": [1.9, 3.919, -1.5], "yaw": -89.583 },
+    { "at": [2.0, 3.72, 6.4], "lv": 4, "radius": 5, "lamp": "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et", "lamp_at": [2.0, 3.919, 6.4], "yaw": -89.583 },
+    { "at": [4.267, 3.72, -5.488], "lv": 4 },
+    { "at": [2.0, 3.4, 8.6], "lv": 3, "radius": 7, "color": "1 0.85 0.6 1", "why": "outside: the frontage at night" }
+  ],
   "addon": "LF_Everon1989",
   "prefab_dir": "Prefabs/Buildings/GeneralStore"
 }
