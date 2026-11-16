@@ -126,6 +126,20 @@
                 "description": "Gate: organisation right the buyer's rank must carry (LF_EOrganizationPermission name). Empty is no right gate",
                 "default": ""
               },
+              "stock": {
+                "type": "integer",
+                "description": "Stock: units the outlet holds of this item. 0 is no limit. A sale beyond what is left is refused (out of stock); server memory only, so a restart refills it",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "restockSeconds": {
+                "type": "integer",
+                "description": "Restock: seconds after the first sale from a full shelf until the shelf is full again. 0 is no restock until the server restarts",
+                "default": 600,
+                "minimum": 0,
+                "maximum": 604800
+              },
               "removed": {
                 "type": "boolean",
                 "description": "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead",
