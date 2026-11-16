@@ -170,6 +170,9 @@ export function checkDialoguePatches(root) {
       }
       const id = conf.fields.m_sId;
       const base = core.get(id);
+      // A pack's own dialogue (#1961): its spec is tools/assets/dialogue/<id>/dialogue.json with no `patches`; the
+      // dialogue-pipeline selftest holds the conf to that spec, so it is not a patch of anything.
+      if (!base && id && existsSync(join(root, "tools", "assets", "dialogue", id, "dialogue.json")) && !JSON.parse(readFileSync(join(root, "tools", "assets", "dialogue", id, "dialogue.json"), "utf8")).patches) continue;
       if (!base) { errors.push(`${where}: patches dialogue '${id}', which the core does not ship`); continue; }
       const model = toModel(base);
       applyList(where, "line", model, conf.lists.m_aLines || [], errors);

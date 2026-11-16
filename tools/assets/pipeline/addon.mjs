@@ -3,7 +3,7 @@
 // command. A pack such as LF_Everon1989 gets its models, metas, prefabs, clips, sounds and strings in
 // its own folder; the core never learns the pack exists (docs/architecture/core-vs-pack.md).
 // Playbook: docs/asset-pipeline/README.md "Target addon".
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ADDONS, CORE, addonDir, gprojOf, resolveAddon } from "../../lib/addons.mjs";
 import { PACK, checkBoundary, packSurface } from "../../validation/validate-addon-boundary.mjs";
@@ -56,7 +56,15 @@ export function guidsInUse(root) {
 export const pluginDir = (root) => join(addonDir(root, CORE), "Scripts", "WorkbenchGame", "ResourceManager");
 
 // The localization table of the addon (docs/architecture/core-vs-pack.md "Strings").
-export const stringTable = (root, spec) => join(addonPath(root, spec), "Language", "everonlife_localization.st");
+// A pack names its table after itself (lf_everon1989_localization.st), so when the core's name is absent the
+// addon's one `.st` is the table (#1961: a pack's own dialogue).
+export const stringTable = (root, spec) => {
+  const dir = join(addonPath(root, spec), "Language");
+  const core = join(dir, "everonlife_localization.st");
+  if (existsSync(core) || !existsSync(dir)) return core;
+  const own = readdirSync(dir).filter((f) => f.endsWith(".st"));
+  return own.length === 1 ? join(dir, own[0]) : core;
+};
 
 // Everything wrong with where a spec writes, as a list. Empty means the target is usable.
 export function addonProblems(root, spec) {

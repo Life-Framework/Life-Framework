@@ -513,8 +513,10 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
   // A line whose key lives in the pack's table (its flavour text) is written there; the core keeps its neutral row.
   const inPack = new Set(parseStrings(packText).keys());
   const entries = stringEntries(spec);
-  const newSt = upsertStrings(stText, entries.filter((e) => !inPack.has(e.id)));
-  const newPack = packFile ? upsertStrings(packText, entries.filter((e) => inPack.has(e.id))) : packText;
+  // A pack's own dialogue (#1961) writes into the pack table, which is also the pack file: one table, one write.
+  const sameTable = packFile && resolve(packFile) === resolve(stFile);
+  const newSt = upsertStrings(stText, sameTable ? entries : entries.filter((e) => !inPack.has(e.id)));
+  const newPack = packFile && !sameTable ? upsertStrings(packText, entries.filter((e) => inPack.has(e.id))) : packText;
   const stChanged = newSt !== stText || newPack !== packText;
   if (newSt !== stText) writeFileSync(stFile, newSt);
   if (newPack !== packText) writeFileSync(packFile, newPack);
