@@ -76,6 +76,7 @@ import * as pool from "./remote/pool.mjs";
 import * as shards from "./lib/test-shards.mjs";
 import * as testCache from "./lib/test-cache.mjs";
 import * as testWorld from "./lib/test-world.mjs";
+import { planE2eLegs } from "./lib/e2e-legs.mjs";
 import * as wbGate from "./lib/wb-gate.mjs";
 import * as wbRoute from "./lib/wb-route.mjs";
 import * as gateTier from "./lib/gate-tier.mjs";
@@ -3193,8 +3194,10 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   // on DebugWorld (planLegs). A sharded --tier all leaves the split to each slice.
   const sharded = opts.shards !== undefined && !only.length && !opts.world && tier === "all";
   const tiers = testWorld.testTiers(root);
-  const legs = sharded ? null : testWorld.planLegs({ tier, only, world: opts.world, tiers, names: testWorld.testNames(root), registry: shards.readRegistry(root), pins: testWorld.readPins(root) });
-  if (legs && legs.length > 1) {
+  const legs = sharded ? null : testWorld.planLegs({ tier, only, world: opts.world, tiers, names: testWorld.testNames(root), registry: shards.readRegistry(root), pins: testWorld.readPins(root), town: testWorld.readTown(root) });
+  // A plan with one leg that names its classes is honoured too: --only <town test> is one playtest leg,
+  // and --tier all with the town tests left out is one GridWorld leg of the rest (#1895).
+  if (legs && (legs.length > 1 || (legs.length === 1 && legs[0].classes))) {
     if (!noBuild) {
       const b = await cmdBuild(root, { wait: opts.wait });
       if (b !== 0) return b;
@@ -4117,6 +4120,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 test lanes, at most 4; tools/lib/test-shards.mjs). --only-classes <A,B>
                                 runs exactly those registered classes (what a slice passes); --both (with --shards)
                                 also runs the core-only pass, at the same time (what ci does)
+                                --town runs the tests of tools/test/town-tests.json in one boot of the playtest
+                                world; no other run carries them (the main guard runs it warn-only, the lead before promote)
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
                                 Remote runs carry uncommitted state too (docs/worktrees.md).
@@ -4832,7 +4837,9 @@ function runE2eHere(root, legacySave = false, oldBuild = false, opts = {}) {
     console.log(`FAIL  e2e: --mission takes 'playtest' (got ${opts.mission})`);
     return 1;
   }
-  const mission = opts.mission === "playtest" ? "{1054CC8646357708}Missions/LF_PlaytestTown.conf" : e2eShutdown.E2E_MISSION;
+  const playtestMission = opts.mission === "playtest" ? "{1054CC8646357708}Missions/LF_PlaytestTown.conf" : e2eShutdown.E2E_MISSION;
+  // One pair of boots per world (#1993): the grid-fixture tests need GridWorld, the town tests the playtest world.
+  const legs = planE2eLegs({ registry: shards.readAllRegistry(root), names: testWorld.testNames(root), pins: testWorld.readPins(root), town: testWorld.readTown(root), mission: playtestMission, preMove: Boolean(opts.preMove) });
   let restore = null;
   if (opts.preMove) {
     const dirty = e2eGit(root, ["status", "--porcelain", "--untracked-files=normal"]).stdout.trim();
@@ -4858,16 +4865,25 @@ function runE2eHere(root, legacySave = false, oldBuild = false, opts = {}) {
     return r.status;
   };
   try {
-    return runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back, Boolean(opts.preMove));
+    let code = 0;
+    for (const [i, leg] of legs.entries()) {
+      console.log(`e2e: leg ${i + 1}/${legs.length} world ${leg.world} (${leg.reason}), ${leg.classes ? `${leg.classes.length} test(s)` : "the whole persistence tier"}`);
+      const r = runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, leg.mission, back, Boolean(opts.preMove), leg.classes, leg.markerWait);
+      if (r !== 0 && code === 0) code = r;
+      if (r !== 0) break;
+    }
+    return code;
   } finally {
     back();
   }
 }
 
-function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back, preMove = false) {
+// only: the class list of this leg (planE2eLegs), or null for the whole tier. A --pre-move save boot runs the
+// older tree, which may not hold these classes, so only the reload boot on this tree takes the list.
+function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, back, preMove = false, only = null, markerWait = true) {
   console.log(`e2e: pass 1/2 - save boot (tier=persistence, fresh profile, ${mission}, ends by the host stop file so the engine writes the SHUTDOWN save${legacySave ? ", legacy save format" : ""}${oldBuild ? ", stamped as game build 1.8.0.13" : ""}) in ${e.path}`);
   const pass1Defines = [e2eShutdown.HOST_STOP_DEFINE, legacy].filter(Boolean).join(",");
-  let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: e2eShutdown.MARKER_READY, extraDefine: pass1Defines, requireFreshRdb: preMove });
+  let pass1 = runE2ePass(e.path, "persistence", { mission, hostStop: true, hostStopAfter: markerWait ? e2eShutdown.MARKER_READY : undefined, extraDefine: pass1Defines, requireFreshRdb: preMove, only: preMove || !only ? undefined : only.join(",") });
   if (pass1 === 0) {
     const log = e2eShutdown.newestTestConsole(e.path);
     const check = e2eShutdown.checkShutdownSave(log ? readFileSync(log, "utf8") : "");
@@ -4901,7 +4917,7 @@ function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, b
   }
   const pass2Defines = ["LF_E2E_LOAD_BOOT", legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_EXPECT_OLD_BUILD" : "", preMove ? "LF_E2E_PRE_MOVE" : ""].filter(Boolean).join(",");
   console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, ${mission}, -loadSessionSave latest, ${pass2Defines})`);
-  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines, requireFreshRdb: preMove });
+  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines, requireFreshRdb: preMove, only: only ? only.join(",") : undefined });
   const log2 = e2eShutdown.newestTestConsole(e.path);
   for (const line of e2eShutdown.loadLines(log2 ? readFileSync(log2, "utf8") : "")) console.log(`e2e: pass 2 ${line}`);
   console.log(`e2e: profile ${profile}`);
@@ -5359,6 +5375,20 @@ const cmds = {
     const red = list.includes("--red") ? (argValue(list, "--red") ?? "") : undefined;
     const onlyClasses = list.includes("--only-classes") ? (argValue(list, "--only-classes") ?? "") : undefined;
     const shardsFlag = list.includes("--shards") ? (argValue(list, "--shards") ?? "auto") : undefined;
+    // --town: the tests of tools/test/town-tests.json in one boot of the playtest world (#1895).
+    if (list.includes("--town")) {
+      if (only !== undefined || red !== undefined || onlyClasses !== undefined || list.includes("--world")) {
+        console.log("test: --town runs the whole town list on the playtest world; it takes no --only, --red, --only-classes or --world");
+        return 2;
+      }
+      const leg = testWorld.townLeg({ names: testWorld.testNames(ROOT), town: testWorld.readTown(ROOT) });
+      if (!leg) {
+        console.log(`test: --town: ${testWorld.TOWN_FILE} lists no tests`);
+        return 2;
+      }
+      console.log(`test: --town ${leg.classes.length} test(s) on ${leg.world}`);
+      return cmdTest(noBuild, "all", ROOT, { force: list.includes("--force"), noCache: list.includes("--no-cache"), wait: list.includes("--wait"), onlyClasses: leg.classes.join(","), world: leg.world, coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
+    }
     return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), noCache: list.includes("--no-cache"), wait: list.includes("--wait"), only, onlyClasses, shards: shardsFlag, both: list.includes("--both"), red, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),

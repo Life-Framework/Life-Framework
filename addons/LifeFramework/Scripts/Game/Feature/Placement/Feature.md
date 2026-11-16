@@ -61,3 +61,23 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Proof:** `placement/aim` (LOGIC: aim ray to spot, reach clamp, rotation steps, snap to a road axis, wall
   normal), `placement-aim-proof` (two clients on a dedicated server; pictures in
   `website/public/docs-images/1028/`).
+
+## Composition placement (#1940)
+
+- **Player sees:** a set of props (the police roadblock's cones and barriers, #647) is one placement: one
+  ghost made of every piece, blue when every piece sits on valid ground and red when any piece does not, and one
+  confirm that puts the whole set down with each piece on the ground. Picking up any piece takes the whole set
+  away. No consumer wires it to an item yet, so nothing shows in the game until the roadblock item (#647).
+- **Owner and side:** `LF_PlacementCompositions.Plan` runs on both sides (each piece probed like a single placement:
+  ground at its ends and middle, the 0.25 m step, the box over it, what it lies on; the set's verdict is the first
+  piece that is not VALID). `Confirm` is the server's: who (`m_eWho`), `LF_RateLimit` SPAWN, the malformed-proposal
+  check, the reach from where the player stands now, then Plan again, then spawn every piece or none. `PickUp`
+  (server, within 4 m of a piece) removes the set a piece belongs to. `LF_PlacementCompositionGhost` is
+  client-local and never replicated. The service (`LF_PlacementService`) is untouched; the ground sampler is
+  a small copy in the composition file because the service's is protected.
+- **Data:** `LF_PlacementComposition` is a piece list (prefab, offset across and ahead, turn, footprint box), built in
+  script or read from a composition prefab's child props (`FromPrefab`). Refusals reuse the toasts
+  `#LF-Placement_NotAllowed`, `_Moved`, `_Blocked`, `_NoGround`. Nothing persists: a roadblock is temporary.
+- **Proof:** `placement/composition` (WORLD: a three-cone set places as one with each piece on the ground, a set on
+  a set, a malformed proposal and a far pick-up are refused, a pick-up removes every piece, a cone half on a table is
+  `TOO_STEEP`).

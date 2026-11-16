@@ -1,10 +1,10 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_RobberyAlarmsShipped`: flipping the range comparison failed with `the bank bell carries further than the store buzzer`; restored, green.
 // tier: WORLD
 //! Robbery alarms (#740), the shipped data: every robbery type (the bank vault, the fuel station till, the
-//! general store till, the cash van, the police armory) resolves through LF_Police.conf to an alarm prefab
+//! general store till, the cash van, the police armory, the hospital till) resolves through LF_Police.conf to an alarm prefab
 //! that loads and plays its own sound project and event; no two kinds share a sound; a normal and a loud
-//! prefab of a kind play the same sound; the bank bell carries further than the store buzzer; and a robbery
-//! with no kind (the hospital till) keeps the plain siren. That the sounds are heard is a manual step.
+//! prefab of a kind play the same sound; the bank bell carries further than the retail store alarm; and the hospital
+//! till has its own kind (#1937), which points at the loud siren prefab until it gets its own clip (#1938). That the sounds are heard is a manual step.
 class LF_Test_RobberyAlarmsShipped : LF_Test
 {
 	override string GetName()
@@ -14,9 +14,9 @@ class LF_Test_RobberyAlarmsShipped : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		array<string> names = {"bank vault", "fuel till", "store till", "cash van", "armory"};
-		array<string> kinds = {"bank", "fuel", "store", "", ""};
-		array<string> offences = {"", "", "", LF_WantedReports.OFFENCE_CASH_VAN, LF_WantedReports.OFFENCE_ARMORY};
+		array<string> names = {"bank vault", "fuel till", "store till", "cash van", "armory", "hospital till"};
+		array<string> kinds = {"bank", "fuel", "store", "", "", ""};
+		array<string> offences = {"", "", "", LF_WantedReports.OFFENCE_CASH_VAN, LF_WantedReports.OFFENCE_ARMORY, LF_WantedReports.OFFENCE_HOSPITAL};
 		array<string> projects = {};
 		float bankRange = 0;
 		float storeRange = 0;
@@ -57,11 +57,11 @@ class LF_Test_RobberyAlarmsShipped : LF_Test
 			}
 		}
 
-		ctx.True(bankRange > storeRange, "the bank bell carries further than the store buzzer");
+		ctx.True(bankRange > storeRange, "the bank bell carries further than the retail store alarm");
 
-		// A robbery with no kind (the hospital till) keeps the plain siren.
-		ctx.True(LF_PoliceConfig.AlarmPrefabFor("", LF_WantedReports.OFFENCE_HOSPITAL, false) == LF_PoliceConfig.AlarmPrefab(false), "an unlisted robbery keeps the plain siren");
-		ctx.True(LF_PoliceConfig.AlarmPrefabFor("", LF_WantedReports.OFFENCE_HOSPITAL, true) == LF_PoliceConfig.AlarmPrefab(true), "and the plain loud siren");
+		// A robbery no kind lists still keeps the plain siren.
+		ctx.True(LF_PoliceConfig.AlarmPrefabFor("", LF_WantedReports.OFFENCE_SHOPLIFTING, false) == LF_PoliceConfig.AlarmPrefab(false), "an unlisted robbery keeps the plain siren");
+		ctx.True(LF_PoliceConfig.AlarmPrefabFor("", LF_WantedReports.OFFENCE_SHOPLIFTING, true) == LF_PoliceConfig.AlarmPrefab(true), "and the plain loud siren");
 	}
 
 	//------------------------------------------------------------------------------------------------

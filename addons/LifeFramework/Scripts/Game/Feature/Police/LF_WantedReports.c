@@ -472,7 +472,11 @@ class LF_WantedReports
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The nearest place sign's title within the configured radius, else the 100 m grid square.
+	//! The nearest place sign's title within the configured radius, else the nearest map location's
+	//! name (LF_NamedPlaces: a town or landmark, "bank robbery, Saint Philippe"), else the 100 m grid
+	//! square. The result is a localization key or the grid form; every reader (dispatch board, radio
+	//! line, wanted board, case board) localizes it where it builds its text (LF_WantedBoard.ResolvePlace),
+	//! so the core stores no place name.
 	//! Police notices (the wanted board, the roster sign) name no place: a robbery beside the
 	//! station is not "seen at Wanted".
 	static string DescribePlace(vector origin)
@@ -487,6 +491,10 @@ class LF_WantedReports
 		s_sPlaceTitle = string.Empty;
 		if (!title.IsEmpty())
 			return title;
+
+		string named = LF_NamedPlaces.Nearest(origin);
+		if (!named.IsEmpty())
+			return named;
 
 		return GridPlace(origin);
 	}

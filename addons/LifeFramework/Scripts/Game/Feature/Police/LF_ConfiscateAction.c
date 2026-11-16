@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! Search: an on-duty officer searches the player in front of them (the action's owner): chain
-//! goods on anyone (LF_ChainSearch, #419) and the weapons of a wanted player, as one entry in the
+//! goods on anyone (LF_ChainSearch, #419), any item the carrier may not carry (LF_ItemSearch,
+//! #1764) and the weapons of a wanted player, as one entry in the
 //! player interaction menu (LF_PlayerInteraction). Offer checks read LF_AccountReplication
 //! (account cache on the server, replicated character state on a client); the search itself runs
 //! on the server and re-checks the officer against the real account and the reach.
@@ -61,6 +62,13 @@ class LF_ConfiscateAction : ScriptedUserAction
 		int goodsSeized = 0;
 		if (LF_ChainSearch.TryBeginSearch(LF_ChainSearch.PersonKey(pOwnerEntity), GetGame().GetWorld().GetWorldTime()))
 			goodsSeized = LF_ChainSearch.SearchPerson(pOwnerEntity, Math.RandomFloat01());
+
+		// Every search reads item legality (#1764): what the carrier may not carry is seized and its
+		// offence filed, whether or not they are wanted.
+		array<string> itemOffences = {};
+		string suspectUid = LF_Utils.GetPlayerUID(LF_PlayerInteraction.PlayerIdOf(pOwnerEntity));
+		goodsSeized += LF_ItemSearch.SearchAndSeize(pOwnerEntity, suspectUid, LF_EntityBuyerFacts.Of(pOwnerEntity), LF_ItemCatalogueConfig.Get(), itemOffences);
+
 		LF_PlayerAccount suspect = LF_PoliceUtils.GetAccountForEntity(pOwnerEntity);
 		if (!suspect || suspect.GetWantedLevel() <= 0)
 		{
@@ -111,7 +119,6 @@ class LF_ConfiscateAction : ScriptedUserAction
 				SCR_EntityHelper.DeleteEntityAndChildren(scannerItem);
 			}
 
-			string suspectUid = LF_Utils.GetPlayerUID(LF_PlayerInteraction.PlayerIdOf(pOwnerEntity));
 			foreach (string offence : offences)
 			{
 				LF_WantedReports.Report(suspectUid, pOwnerEntity, offence);

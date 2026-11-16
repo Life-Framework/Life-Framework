@@ -1,0 +1,172 @@
+// Grid cell c3r0 for shops-till: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_shops_till_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 59 0 23
+}
+SCR_DestructibleEntity Grid_shops_till_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 64 0 23
+}
+SCR_DestructibleEntity Grid_shops_till_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 69 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_shops_till_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 69 0 28
+ angleY 270
+}
+SCR_DestructibleEntity Grid_shops_till_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 69 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_shops_till_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 59 0 33
+ angleY 90
+}
+SCR_DestructibleEntity Grid_shops_till_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 59 0 28
+ angleY 90
+}
+GenericEntity Grid_shops_till_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:shops-till"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 59.6 0.505 33.8
+}
+$grp GenericEntity {
+ Grid_shops_till_Store {
+  components {
+   MeshObject "{7D3A5C10A4E64B01}" {
+    Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   }
+   RigidBody "{7D3A5C10A4E64B02}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   LF_ShopComponent "{7D3A5C10A4E64B03}" {
+    m_sShopName "#LF-Shop_Name_General"
+    m_sShopDescription "#LF-Shop_Desc_General"
+    m_sShopHint "#LF-Shop_Hint_General"
+    m_aShopItems {
+     LF_ShopItem "{7D3A5C10A4E64B11}" {
+      m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+      m_sDisplayName ""
+      m_iMaxQuantity 5
+     }
+     LF_ShopItem "{7D3A5C10A4E64B12}" {
+      m_ItemPrefab "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+      m_sDisplayName ""
+      m_iMaxQuantity 5
+     }
+    }
+   }
+   LF_StoreComponent "{7D3A5C10A4E64B04}" {
+    m_sStoreKey "grid_general_store"
+    m_aLines {
+     LF_StoreLine "{7D3A5C10A4E64B21}" {
+      m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+      m_iMaxStock 12
+      m_iRestockAmount 2
+      m_sSlots "-1.8 0.05 3 | -1.5 0.05 3 | -1.2 0.05 3 | -0.9 0.05 3 | -0.6 0.05 3 | -0.3 0.05 3 | 0 0.05 3 | 0.3 0.05 3 | 0.6 0.05 3 | 0.9 0.05 3 | 1.2 0.05 3 | 1.5 0.05 3"
+     }
+     LF_StoreLine "{7D3A5C10A4E64B22}" {
+      m_ItemPrefab "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+      m_iMaxStock 6
+      m_iRestockAmount 1
+      m_sSlots "-1.8 0.05 3.6 | -1.5 0.05 3.6 | -1.2 0.05 3.6 | -0.9 0.05 3.6 | -0.6 0.05 3.6 | -0.3 0.05 3.6"
+     }
+    }
+    m_vBoundaryCenter 0 0 1.5
+    m_vBoundaryHalf 2.5 0 2.5
+    m_iRestockSeconds 120
+   }
+   ActionsManagerComponent "{7D3A5C10A4E64B05}" {
+    ActionContexts {
+     UserActionContext "{7D3A5C10A4E64B06}" {
+      ContextName "default"
+      Position PointInfo "{7D3A5C10A4E64B07}" {
+       Offset 0 0.8 0
+      }
+      Radius 3
+     }
+    }
+    additionalActions {
+     LF_ShopAction "{7D3A5C10A4E64B08}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{7D3A5C10A4E64B09}" {
+       Name "#LF-Shop_Open_General"
+       Description "#LF-Shop_OpenDesc_General"
+      }
+     }
+    }
+   }
+   RplComponent "{7D3A5C10A4E64B0A}" {
+    Enabled 1
+   }
+  }
+  Flags 0x403 0
+  coords 63.5 0 28
+ }
+ Grid_shops_till_BlackMarket {
+  components {
+   MeshObject "{7D3A5C10A4E64C01}" {
+    Object "{8AEBC3FDF26E9C07}Assets/Props/Commercial/MarketStand_01/MarketStand_01.xob"
+   }
+   RigidBody "{7D3A5C10A4E64C02}" {
+    Mass 10
+    ModelGeometry 1
+    Static 1
+   }
+   LF_ShopComponent "{7D3A5C10A4E64C03}" {
+    m_sShopName "#LF-Shop_Name_BackRoom"
+    m_sShopDescription "#LF-Shop_Desc_BackRoom"
+    m_bBackRoom 1
+    m_aShopItems {
+     LF_ShopItem "{7D3A5C10A4E64C11}" {
+      m_ItemPrefab "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et"
+      m_iPrice 500
+      m_sDisplayName "#LF-Shop_Item_M9"
+      m_iMaxQuantity 1
+     }
+    }
+   }
+   ActionsManagerComponent "{7D3A5C10A4E64C05}" {
+    ActionContexts {
+     UserActionContext "{7D3A5C10A4E64C06}" {
+      ContextName "default"
+      Position PointInfo "{7D3A5C10A4E64C07}" {
+       Offset 0 0.8 0
+      }
+      Radius 3
+     }
+    }
+    additionalActions {
+     LF_ShopAction "{7D3A5C10A4E64C08}" {
+      ParentContextList {
+       "default"
+      }
+      UIInfo UIInfo "{7D3A5C10A4E64C09}" {
+       Name "#LF-Shop_Open_BackRoom"
+       Description "#LF-Shop_OpenDesc_BackRoom"
+      }
+     }
+    }
+   }
+   RplComponent "{7D3A5C10A4E64C0A}" {
+    Enabled 1
+   }
+  }
+  Flags 0x403 0
+  coords 67 0 30
+  angleY 270
+ }
+}
+LF_NpcBaseEntity Grid_shops_till_Fence : "{C6EF5A8FFED301BB}Prefabs/Characters/Npcs/Outfits/LF_Npc_Fence_1.et" {
+ coords 64 0 25.5
+}

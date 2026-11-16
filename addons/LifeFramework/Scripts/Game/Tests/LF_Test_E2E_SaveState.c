@@ -161,6 +161,13 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 				ctx.True(drillStamp.SetSerial(drillSerial), "e2e carried drill is stamped before the save");
 			}
 
+			// The same drill is flagged stolen (#1855): the flag must survive the restart ("itemstolen").
+			if (!carriedDrills.IsEmpty())
+			{
+				LF_StolenGoods.Mark(carriedDrills[0]);
+				ctx.True(LF_StolenGoods.IsStolen(carriedDrills[0]), "e2e carried drill is flagged stolen before the save");
+			}
+
 			LF_WantedReports.Add(SERIAL_BUYER_UID, LF_WantedReports.OFFENCE_ROBBERY, "", "", "Bank", false);
 		}
 
@@ -285,6 +292,11 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 			saveStore.FirstFill();
 			saveStore.ForceStock("{C9D661E5B0714711}Prefabs/Items/Food/Apple.et", 2);
 			ctx.Equal(2, saveStore.GetStock("{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"), "e2e store apple stock reads 2 before the save");
+
+			// A folded pile (the clothing store): four trousers, one sold, three stay piled through the save.
+			saveStore.AddTestLine(LF_Test_StoreFoldedStack.TROUSERS, 4, 4, LF_Test_StoreFoldedStack.CounterPile(), 4);
+			saveStore.ForceStock(LF_Test_StoreFoldedStack.TROUSERS, 3);
+			ctx.Equal(3, saveStore.GetShelfCount(LF_Test_StoreFoldedStack.TROUSERS), "e2e a folded pile of three stands on the counter before the save");
 		}
 
 		// Farm plots (#614, "farmplots" payload): plot 2 is ripe, plot 3 is 80 s in (half grown), plot 1 is empty.
@@ -416,6 +428,17 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	{
 		if (entity && LF_Utils.GetPrefabName(entity) == "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" && LF_InventoryUtils.GetStorageHierachyRoot(entity) == entity)
 			s_iLooseApples++;
+
+		return true;
+	}
+
+	protected static ref array<EntityID> s_aLoosePile;
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectLoosePile(IEntity entity)
+	{
+		if (entity && LF_Utils.SamePrefab(LF_Utils.GetPrefabName(entity), LF_Test_StoreFoldedStack.TROUSERS) && LF_InventoryUtils.GetStorageHierachyRoot(entity) == entity)
+			s_aLoosePile.Insert(entity.GetID());
 
 		return true;
 	}
@@ -668,6 +691,13 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 					ctx.False(LF_WantedReports.IsIdentified(SERIAL_BUYER_UID), "e2e the buyer's report is not identified before the locker checks the drill");
 					ctx.Equal(1, LF_FenceSerials.IdentifyItem(backDrills[0], "e2e evidence locker"), "e2e the evidence locker names the buyer from the restored drill");
 					ctx.True(LF_WantedReports.IsIdentified(SERIAL_BUYER_UID), "e2e the buyer's report is identified by the restored drill");
+
+					// #1855: the drill flagged stolen before the save is still stolen; a save older than
+					// the itemstolen payload (--legacy-save) restores it unflagged, as that build did.
+					if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("itemstolen"))
+						ctx.True(LF_StolenGoods.IsStolen(backDrills[0]), "e2e carried drill is still flagged stolen after the restart");
+					else
+						ctx.False(LF_StolenGoods.IsStolen(backDrills[0]), "e2e a legacy save restores the drill unflagged");
 				}
 
 				VerifyIdCard(ctx, restored);
@@ -757,6 +787,26 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			s_iLooseApples = 0;
 			GetGame().GetWorld().QueryEntitiesBySphere(loadedStore.GetOwner().GetOrigin(), 4, CountLooseApple, null, EQueryEntitiesFlags.ALL);
 			ctx.Equal(2, s_iLooseApples, "e2e exactly two loose apples stand around the store after the restart");
+
+			// The folded pile: the engine brought the three copies back; the line adopts each into its own
+			// slot. The bottom slot must not swallow the pile (delete two, respawn two).
+			s_aLoosePile = {};
+			GetGame().GetWorld().QueryEntitiesBySphere(loadedStore.GetOwner().GetOrigin(), 4, CollectLoosePile, null, EQueryEntitiesFlags.ALL);
+			array<EntityID> restoredPile = {};
+			restoredPile.Copy(s_aLoosePile);
+			ctx.Equal(3, restoredPile.Count(), "e2e the engine restored the three piled trousers");
+			loadedStore.AddTestLine(LF_Test_StoreFoldedStack.TROUSERS, 4, 3, LF_Test_StoreFoldedStack.CounterPile(), 4);
+			ctx.Equal(3, loadedStore.GetShelfCount(LF_Test_StoreFoldedStack.TROUSERS), "e2e the pile holds three after the restart");
+			for (int p = 0; p < 3; p++)
+			{
+				IEntity piled = loadedStore.GetShelfItem(LF_Test_StoreFoldedStack.TROUSERS, p);
+				ctx.True(piled && restoredPile.Contains(piled.GetID()), string.Format("e2e pile slot %1 holds a restored copy, not a respawned one", p));
+			}
+
+			s_aLoosePile = {};
+			GetGame().GetWorld().QueryEntitiesBySphere(loadedStore.GetOwner().GetOrigin(), 4, CollectLoosePile, null, EQueryEntitiesFlags.ALL);
+			ctx.Equal(3, s_aLoosePile.Count(), "e2e exactly three trousers lie around the store, none doubled");
+			loadedStore.RemoveTestLine(LF_Test_StoreFoldedStack.TROUSERS);
 		}
 
 		// Farm plots ride "farmplots" (#614). Growth counts while a server runs, so plot 3 has grown at

@@ -117,7 +117,8 @@ committed (`tmp/assets/<slug>/purchased/` is gitignored); only the compiled asse
 ## Generated audio
 | Vault drill sounds: motor loop, grinding loop (`Sounds/Items/Drill/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-14 on the maintainer's Starter plan, same terms as the taser sounds above | `tools/assets/drill/sounds.json` (every generation: prompt, parameters, date; the picks and why) |
 
-| Robbery alarms: bank bell, fuel station intruder alarm, store buzzer, van horn (`Sounds/Alarm/Robbery/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-14 on the maintainer's Starter plan, same terms as the taser sounds above. The fuel, store and van loops are one generated take cut into an on/off cadence (`derive` in `sounds.json`) | `tools/assets/robbery-alarms/sounds.json` (every generation: prompt, parameters, date; the picks and why) |
+| Robbery alarms: bank bell, fuel station intruder alarm, van horn (`Sounds/Alarm/Robbery/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-14 on the maintainer's Starter plan, same terms as the taser sounds above. The fuel and van loops are one generated take cut into an on/off cadence (`derive` in `sounds.json`) | `tools/assets/robbery-alarms/sounds.json` (every generation: prompt, parameters, date; the picks and why) |
+| Retail store alarm (`Sounds/Alarm/Robbery/Samples/Alarm_Robbery_LF_ALARM_STORE_LP_01.wav`) | Synthesised by this project: two band-limited square-wave tones (1400 and 1000 Hz), no sample or model | none | Original work, same licence as the repo | `tools/assets/retail-alarm/synth.mjs` (deterministic; `tools/validation/retail-alarm-selftest.mjs` checks the committed file is its output) |
 
 Music and ambience generated with ElevenLabs.
 
