@@ -73,8 +73,9 @@ agent per area. `tools\cli usage` shows where the tokens went.
 10. **Shared registries are per-feature files; never append to a central list.**
     A proof verb is `agent-box/proofs/<verb>.mjs`; a bus event is in
     `Feature/<Area>/LF_<Area>Events.c`; a world-end static reset is a
-    `modded class LF_StaticResetHooks` in the owning class's file (`Core/LF_StaticReset.c`
-    lists nothing); a harness verb is a `modded class LF_AgentHarnessVerbs` in its
+    `modded class LF_StaticResetHooks<N>` in the owning class's file (one of 8 bucket classes,
+    the scaffold picks N; one class of 122 layers overflowed the VM stack, so a bucket
+    holds at most 40; `Core/LF_StaticReset.c` lists nothing); a harness verb is a `modded class LF_AgentHarnessVerbs` in its
     feature (`LF_AgentHarness.Dispatch` is frozen). `validate-registries` enforces all
     four; `tools\cli heal-hotspots <slug>` moves an old branch's StaticReset and
     `docs/features.md` edits to their new files. A new CLI command is

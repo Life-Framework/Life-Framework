@@ -20,7 +20,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { CENTRAL, centralCalls, staticResetProblems } from "../lib/static-reset-hooks.mjs";
+import { CENTRAL, bucketCapProblems, centralCalls, staticResetProblems } from "../lib/static-reset-hooks.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const bad = [];
@@ -57,6 +57,7 @@ for (const f of files) {
 
 // World-end static resets: nothing in the central file; every hook block chains super.Run.
 let hooks = 0;
+const layers = {};
 if (existsSync(join(root, CENTRAL))) {
   for (const c of centralCalls(readFileSync(join(root, CENTRAL), "utf8")))
     bad.push(`FAIL ${CENTRAL}:${c.line} ${c.cls}.${c.method}(): register it in ${c.cls}'s own file with a modded class LF_StaticResetHooks (tools\\cli heal-hotspots does it)`);
@@ -66,8 +67,13 @@ for (const f of files) {
   if (!text.includes("LF_StaticResetHooks")) continue;
   const r = staticResetProblems(text);
   hooks += r.hooks;
+  for (const [cls, n] of Object.entries(r.layers)) layers[cls] = (layers[cls] || 0) + n;
   for (const msg of r.problems) bad.push(`FAIL ${f}: ${msg}`);
 }
+
+// Every layer of a bucket nests one frame deeper (super.Run), and the VM stack overflows near 120 (it did on
+// 2026-11-16 at 122 layers in one class). Past MAX_PER_BUCKET the class is full: use another bucket.
+for (const msg of bucketCapProblems(layers)) bad.push(`FAIL ${msg}`);
 
 // Harness verbs: LF_AgentHarness.Dispatch's own list is frozen at this many `cmd.Verb == "` tests (code
 // lines); a new verb is a `modded class LF_AgentHarnessVerbs` in its feature's file. Only ever lower it.

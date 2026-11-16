@@ -44,9 +44,7 @@ class LF_Test_Impairment : LF_Test
 		ctx.True(LF_Impairment.GetLevel(id) == 0, "death clears the level");
 
 		LF_Impairment.Apply(id, 40, 100, LF_EImpairmentCurve.LINEAR, 100);
-		LF_StaticResetHooks hooks = new LF_StaticResetHooks();
-		array<string> done = {};
-		hooks.Run(done, false);
+		array<string> done = LF_StaticReset.Registered();
 		ctx.True(done.Contains("LF_Impairment"), "the world-end reset covers impairment");
 		LF_Impairment.ResetStatics();
 		ctx.True(LF_Impairment.GetLevel(id) == 0, "a restart clears the level (persisting is off)");

@@ -224,7 +224,7 @@ class LF_LicencesConfig
 
 //------------------------------------------------------------------------------------------------
 //! World-end reset of the desk values.
-modded class LF_StaticResetHooks
+modded class LF_StaticResetHooks6
 {
 	override void Run(notnull array<string> done, bool apply)
 	{

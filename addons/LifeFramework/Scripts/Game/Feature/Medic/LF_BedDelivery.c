@@ -300,7 +300,7 @@ class LF_BedDeliveryAction : ScriptedUserAction
 
 //------------------------------------------------------------------------------------------------
 //! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+modded class LF_StaticResetHooks7
 {
 	override void Run(notnull array<string> done, bool apply)
 	{

@@ -449,7 +449,7 @@ modded class SCR_PlayerController
 
 //------------------------------------------------------------------------------------------------
 //! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+modded class LF_StaticResetHooks6
 {
 	override void Run(notnull array<string> done, bool apply)
 	{
