@@ -1,3 +1,4 @@
+// red-proof: observed 2026-11-16 with `toolsi test --no-build --only LF_Test_StoreShoplift --no-cache`: LF_StoreComponent.m_sAlarmKind defaulting to "" (the shoplift alarm falls back to the plain siren) failed the new kind assertions; restored, green.
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_StoreShoplift,...`: LF_Stores.Shoplift without LF_WantedReports.Identify failed `- the report names the thief`; in the same run Pay leaving the tags failed `- exactly one shopper is caught walking out (expected 1, got 2)`; restored, green.
 
 // tier: WORLD
