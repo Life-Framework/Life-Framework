@@ -138,7 +138,7 @@ export function checkEveron(root, fixtureDir) {
       let fx;
       try { fx = JSON.parse(readFileSync(join(fixtureDir, name), "utf8")); }
       catch (e) { fails.push(`${name}: not JSON (${e.message})`); continue; }
-      fails.push(...checkFixture(name, fx, merged));
+      for (const one of Array.isArray(fx) ? fx : [fx]) fails.push(...checkFixture(name, one, merged));
     }
   }
   return { fails, merged };
@@ -163,6 +163,9 @@ export function checkFixture(name, fx, merged) {
         if (want[field] === undefined) continue;
         const got = offer[prop] ?? dflt;
         if (String(got) !== String(want[field])) fails.push(`${name}: ${key} gate ${field} is "${got}", the fixture expects "${want[field]}" (${offer.__at})`);
+      }
+      for (const [k, p] of [["concealsFace", "m_bConcealsFace"], ["concealsBuild", "m_bConcealsBuild"]]) {
+        if (want[k] !== undefined && String(merged.items.find((i) => i.m_sId === want.item)?.[p] ?? "0") !== (want[k] ? "1" : "0")) fails.push(`${name}: item ${want.item} ${k} is not ${want[k]}`);
       }
       if (want.price !== undefined) {
         const item = merged.items.find((i) => i.m_sId === want.item);

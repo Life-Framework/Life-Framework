@@ -1,0 +1,144 @@
+// Grid cell c1r5 for everon-outlets: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_everon_outlets_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 83
+}
+SCR_DestructibleEntity Grid_everon_outlets_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 40 0 83
+}
+SCR_DestructibleEntity Grid_everon_outlets_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 83
+ angleY 270
+}
+SCR_DestructibleEntity Grid_everon_outlets_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_everon_outlets_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 40 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_everon_outlets_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 93
+ angleY 90
+}
+SCR_DestructibleEntity Grid_everon_outlets_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 88
+ angleY 90
+}
+GenericEntity Grid_everon_outlets_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:everon-outlets"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 45.8 0.505 92.4
+ angleY 90
+}
+GenericEntity Grid_everon_outlets_Counter_ClothesShop : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et" {
+ components {
+  LF_ShopComponent "{6EA70364DEB62E72}" {
+   m_sShopName "#LF-Shop_Name_ClothesShop"
+   m_sShopDescription "#LF-Shop_Desc_ClothesShop"
+   m_sOutletId "clothing_rack"
+  }
+  ActionsManagerComponent "{B7C803CAFE3104A4}" {
+   additionalActions {
+    LF_ShopAction "{5C5F25A80A5E24FA}" {
+     UIInfo UIInfo "{7045932E6CDA0A7C}" {
+      Name "#LF-Shop_Open_ClothesShop"
+      Description "#LF-Shop_Desc_ClothesShop"
+     }
+    }
+   }
+  }
+ }
+ coords 37.464 0 85
+ angleY 90
+}
+GenericEntity Grid_everon_outlets_Counter_Workwear : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et" {
+ components {
+  LF_ShopComponent "{6EA70364DEB62E72}" {
+   m_sShopName "#LF-Shop_Name_Workwear"
+   m_sShopDescription "#LF-Shop_Desc_Workwear"
+   m_sOutletId "workwear_counter"
+  }
+  ActionsManagerComponent "{B7C803CAFE3104A4}" {
+   additionalActions {
+    LF_ShopAction "{5C5F25A80A5E24FA}" {
+     UIInfo UIInfo "{7045932E6CDA0A7C}" {
+      Name "#LF-Shop_Open_Workwear"
+      Description "#LF-Shop_Desc_Workwear"
+     }
+    }
+   }
+  }
+ }
+ coords 37.464 0 91
+ angleY 90
+}
+GenericEntity Grid_everon_outlets_Counter_PoliceStores : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et" {
+ components {
+  LF_ShopComponent "{6EA70364DEB62E72}" {
+   m_sShopName "#LF-Shop_Name_PoliceStores"
+   m_sShopDescription "#LF-Shop_Desc_PoliceStores"
+   m_sOutletId "police_stores"
+  }
+  ActionsManagerComponent "{B7C803CAFE3104A4}" {
+   additionalActions {
+    LF_ShopAction "{5C5F25A80A5E24FA}" {
+     UIInfo UIInfo "{7045932E6CDA0A7C}" {
+      Name "#LF-Shop_Open_PoliceStores"
+      Description "#LF-Shop_Desc_PoliceStores"
+     }
+    }
+   }
+  }
+ }
+ coords 42 0 84
+ angleY 90
+}
+GenericEntity Grid_everon_outlets_Counter_MedicStores : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et" {
+ components {
+  LF_ShopComponent "{6EA70364DEB62E72}" {
+   m_sShopName "#LF-Shop_Name_MedicStores"
+   m_sShopDescription "#LF-Shop_Desc_MedicStores"
+   m_sOutletId "medic_stores"
+  }
+  ActionsManagerComponent "{B7C803CAFE3104A4}" {
+   additionalActions {
+    LF_ShopAction "{5C5F25A80A5E24FA}" {
+     UIInfo UIInfo "{7045932E6CDA0A7C}" {
+      Name "#LF-Shop_Open_MedicStores"
+      Description "#LF-Shop_Desc_MedicStores"
+     }
+    }
+   }
+  }
+ }
+ coords 42 0 88
+ angleY 90
+}
+GenericEntity Grid_everon_outlets_Counter_SurplusStall : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et" {
+ components {
+  LF_ShopComponent "{6EA70364DEB62E72}" {
+   m_sShopName "#LF-Shop_Name_SurplusStall"
+   m_sShopDescription "#LF-Shop_Desc_SurplusStall"
+   m_sOutletId "surplus_stall"
+  }
+  ActionsManagerComponent "{B7C803CAFE3104A4}" {
+   additionalActions {
+    LF_ShopAction "{5C5F25A80A5E24FA}" {
+     UIInfo UIInfo "{7045932E6CDA0A7C}" {
+      Name "#LF-Shop_Open_SurplusStall"
+      Description "#LF-Shop_Desc_SurplusStall"
+     }
+    }
+   }
+  }
+ }
+ coords 42 0 92
+ angleY 90
+}

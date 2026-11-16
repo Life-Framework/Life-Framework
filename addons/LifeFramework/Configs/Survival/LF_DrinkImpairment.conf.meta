@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{B51DE038F39E5336}Configs/Survival/LF_DrinkImpairment.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

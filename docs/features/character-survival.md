@@ -75,9 +75,29 @@
   The owner reads `LF_CharacterSurvivalComponent.GetReplicatedImpairment()`, an
   owner-only RplProp bumped on a 5-point change, start or end. Logs
   `[LFDebug:Impairment]`. Test: `survival/impairment`.
+- ✅ A drink's numbers come from a table (#2002): `LF_DrinkImpairmentTable` reads
+  `Configs/Survival/LF_DrinkImpairment.conf`, rows keyed by the drink's prefab GUID
+  (strength, duration, curve, cap), and a pack overlays rows with the override verbs
+  (`m_sOp` add, replace, patch, remove) like any other list. The core file ships no
+  rows; `LF_ConsumableEffectImpair` uses the row for the consumed item's exact prefab
+  and its own attributes when there is none. A row naming a prefab that does not load
+  logs `LF_Debug.Error` (`[LFDebug:Impairment]`) and is skipped. Pack-only: no owner
+  `config.json` section yet. Test: `survival/drink-impairment-table`.
 - ✅ `BeerBottle.et` and `Moonshine.et` (`Prefabs/Items/Drinks/`, #2001) are `Drink_Base` drinks that carry the
-  effect at its defaults; the engine takes one consumable effect per item, so they restore no thirst. Test: `drinks/alcohol`.
-- ⚠️ Nothing reads the level yet: the screen effect is a later #1011 slice.
+  effect at its defaults (no table row yet); the engine takes one consumable effect per item, so they restore no
+  thirst. Test: `drinks/alcohol`.
+
+### `LF_ImpairmentView` — `Feature/Survival/LF_ImpairmentView.c` (#1920)
+- ✅ While the owner's replicated impairment level is above zero their view sways and
+  the aim drifts: each frame the change in a slow two-sine yaw/pitch offset is added to
+  the local character's `CharacterInputContext` aim change, so view and aim move
+  together and stay where the player left them once the level is gone. Client only: the
+  owner-only level is 0 on every other body, and the frame skips any body that is not
+  the local controlled entity.
+- Amplitude is `max * (level / fullLevel)^power`, zero at level 0, capped at the maximum
+  (`LF_ImpairmentViewConfig`: full level 40, power 1.5, max 1.6 degrees yaw, pitch 60%).
+  Script defaults, no `.conf` yet. Test: `survival/impairment-view`.
+- Harness `impair <0-100|off>` pins the local view level for a session proof.
 
 ### `LF_SurvivalStatsSaveData` — `Feature/Survival/Persistence/`
 - ✅ Save/apply round-trip re-clamps through setters (corrupt save sanitized).
