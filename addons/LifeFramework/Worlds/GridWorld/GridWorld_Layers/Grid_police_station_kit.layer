@@ -1,0 +1,199 @@
+// Grid cell c3r1 for police-station-kit: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_police_station_kit_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 59 0 35
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 63.4 0 35
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 67.8 0 35
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 72.2 0 35
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 76.6 0 35
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 35
+ angleY 270
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 39.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 43.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 48.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 52.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 76.6 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 72.2 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 59 0 57
+ angleY 90
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 59 0 52.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 59 0 48.2
+ angleY 90
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 59 0 43.8
+ angleY 90
+}
+SCR_DestructibleEntity Grid_police_station_kit_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 59 0 39.4
+ angleY 90
+}
+GenericEntity Grid_police_station_kit_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:police-station-kit"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 59.6 0.505 57.8
+}
+GenericEntity Grid_police_station_kit_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "police-station-kit"
+  }
+ }
+ coords 63.4 0 57.7
+ angleY 180
+}
+SCR_DestructibleBuildingEntity PoliceKit_Villa : "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et" {
+ coords 67.5 0 40
+}
+GenericEntity PoliceKit_LicenceDesk : "{0970D6C0210F9612}Prefabs/Props/Commercial/LF_LicenceDesk.et" {
+ coords 68.24 0 44.9
+ angleY 90
+}
+GenericEntity PoliceKit_WantedBoard : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
+ coords 68.22 1.15 41.9
+ angleY 90
+}
+GenericEntity PoliceKit_DutyDesk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
+ Flags 0x403 0
+ coords 71.3 0 39.6
+ {
+  GenericEntity {
+   ID "281D3BD880CE964E"
+   coords -1.338 0.215 0.448
+   angles 0 0 0
+  }
+ }
+}
+GenericEntity PoliceKit_Armory {
+ components {
+  MeshObject "{A7C31A9B04D25011}" {
+   Object "{138FB8A2D71B1603}Assets/Props/Furniture/CabinetMetal_01/CabinetMetal_01.xob"
+   Materials {
+    MaterialAssignClass "{A7C31A9B04D25019}" {
+     SourceMaterial "CabinetMetal_01"
+     AssignedMaterial "{50729867FFC0AF7F}Assets/Props/Furniture/CabinetMetal_01/Data/CabinetMetal_01_V1.emat"
+    }
+   }
+  }
+  RigidBody "{A7C31A9B04D25012}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{A7C31A9B04D25013}" {
+   ActionContexts {
+    UserActionContext "{A7C31A9B04D25014}" {
+     ContextName "default"
+     Position PointInfo "{A7C31A9B04D25015}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ArmoryDrawAction "{A7C31A9B04D25016}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_RankPromoteAction "{A7C31A9B04D25017}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{A7C31A9B04D25018}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 73.3 0 36.8
+}
+GenericEntity PoliceKit_ArmoryStore : "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et" {
+ coords 73.35 0 41.6
+ angleY -90
+}
+GenericEntity PoliceKit_EvidenceLocker : "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et" {
+ components {
+  LF_BreachTargetComponent "{3A7C5E91B4D20F79}" {
+   m_sTargetId "PoliceKit_Police_EvidenceLocker"
+  }
+ }
+ coords 69 0 36.6
+}
+GenericEntity PoliceKit_DispatchBoard : "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et" {
+ coords 71.7 1.25 36.34
+}
+GenericEntity PoliceKit_Handcuffs : "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et" {
+ coords 70.5 0.907 39.9
+ angleY 20
+}
+GenericEntity PoliceKit_Taser : "{6D583A40C5C5C150}Prefabs/Weapons/Handguns/Taser/Handgun_Taser.et" {
+ coords 70.8 0.907 40.1
+}
+GenericEntity PoliceKit_CaseBoard : "{C8B78C628082CA0D}Prefabs/Investigation/LF_CaseBoard.et" {
+ coords 73.4 4.8 38.8
+ angleY 90
+}
+Vehicle PoliceKit_PatrolCar : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
+ coords 69 0.001 51.5
+}
+SCR_DestructibleBuildingEntity PoliceKit_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 73 0 49
+ angleY 180
+}
+GenericEntity PoliceKit_SpikeStrip : "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip.et" {
+ components {
+  LF_SpikeStripComponent "{EDD34B7850C70B44}" {
+   m_bExpires 0
+   m_bArmed 0
+  }
+ }
+ coords 76.5 0.002 53.5
+}
