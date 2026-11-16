@@ -244,10 +244,19 @@ export function scanRepo(root = ROOT) {
   const layers = walkDir(join(addon, "Worlds"), ".layer");
   // Surfaces and props live in different layers (a counter in Shops, its till in the same,
   // but a prop may be in a later layer): check the union of all layers together.
-  const all = [];
-  for (const f of layers) all.push(...flatten(root, parseTree(readFileSync(f, "utf8")), f.slice(addon.length + 1).replace(/\\/g, "/")));
-  entities += all.length;
-  findings.push(...checkEntities(all));
+  // Each world is its own coordinate space (GridWorld and DebugWorld both use x 20..160), so a grid prop that
+  // lands on a town table's coordinates is not on that table: group by world folder.
+  const worlds = new Map();
+  for (const f of layers) {
+    const rel = f.slice(addon.length + 1).replace(/\\/g, "/");
+    const world = rel.split("/").slice(0, 2).join("/");
+    if (!worlds.has(world)) worlds.set(world, []);
+    worlds.get(world).push(...flatten(root, parseTree(readFileSync(f, "utf8")), rel));
+  }
+  for (const all of worlds.values()) {
+    entities += all.length;
+    findings.push(...checkEntities(all));
+  }
   for (const f of walkDir(join(addon, "Prefabs"), ".et")) {
     const text = readFileSync(f, "utf8");
     if (!/^\s*\{\s*$/m.test(text) && !/\n\s+(?:GenericEntity|GameEntity|SCR_\w+)\s+\w+\s*(?::|\{)/.test(text)) continue; // no child entities

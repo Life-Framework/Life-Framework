@@ -8,7 +8,7 @@ the guard is `tools/validation/validate-world-zones.mjs`.
 | | Debug grid | Town |
 |---|---|---|
 | Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..160, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
-| Layers | `GridWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), and `Annex`, the one legacy annex layer still there (its stations move one system to a cell, epic #1802) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
+| Layers | `GridWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), and `Annex`, which now holds only the perimeter fence (the stations moved one system to a cell, #2133) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
 | For | Testing a system: one feature per cell, easy to find, easy to film for a proof | Players and videos: a real 1989 village |
 | Look bar | Low. Debug-looking props, stand-ins and a test sign are fine. Things still stand on the ground and are reachable | Full polish bar (`.claude/skills/polish/SKILL.md`, `docs/style-guide.md`): NPCs dressed for their job and standing inside their building, furniture under a roof, boards on walls, nothing debug-looking |
 | Who writes | Any slice, through `tools\cli grid place` only, inside its own cell | Only a town-placement pass: a worktree whose slug starts with `town-` |
@@ -93,7 +93,7 @@ stand inside its own cell.
 - a grid layer places anything outside its cell;
 - a `Grid_*.layer` is in `DebugWorld_Layers/` (the grid lives in GridWorld).
 
-`validate-grid-world` adds one rule: every entity in a GridWorld legacy layer stands in a claimed cell. Police, Crimes, Jobs and NPCs (#1811) each moved into their own cell (`police`, `crimes`, `jobs`, `npcs`) with their entity names unchanged, and their free-standing layers are deleted. The legacy layers still free-standing are listed in `PENDING` in that file; a slice that moves one removes its line.
+`validate-grid-world` adds one rule: every entity in a GridWorld legacy layer stands in a claimed cell. Police, Crimes, Jobs and NPCs (#1811) each moved into their own cell (`police`, `crimes`, `jobs`, `npcs`) with their entity names unchanged, and their free-standing layers are deleted. `PENDING` in that file is empty since #2133 moved the last stations out of `Annex.layer` (the annex fence runs are the grid wall and stay): 20 systems took cells `bank-heist` (with the breach and lockpick doors), `hideout`, `jail`, `chopshop`, `lockpick-cars`, `cash-van`, `police-desk`, `dispatch` (with the two test tills), `convoy`, `job-depot`, `zone-signs`, `apple-chain`, `org-desk`, `atm`, `furnace`, `gun-counter`, `hospital`, `chain-barrels`, `vehicle-lot` and `impound`, each shifted as one rigid group so its relative geometry is unchanged. The frame's gravel path stops at a claim spanning two rows, so a station may stand on the line between them.
 
 ## The frame
 

@@ -1,0 +1,58 @@
+// Grid cell c7r1 for chopshop: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_chopshop_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 107 0 35
+}
+SCR_DestructibleEntity Grid_chopshop_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 112 0 35
+}
+SCR_DestructibleEntity Grid_chopshop_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 117 0 35
+ angleY 270
+}
+SCR_DestructibleEntity Grid_chopshop_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 117 0 40
+ angleY 270
+}
+SCR_DestructibleEntity Grid_chopshop_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 117 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_chopshop_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 112 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_chopshop_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 107 0 45
+ angleY 90
+}
+GenericEntity Grid_chopshop_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:chopshop"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 106.2 0.505 35.6
+ angleY -90
+}
+GenericEntity Grid_chopshop_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "chopshop"
+  }
+ }
+ coords 106.3 0 37.5
+ angleY 90
+}
+GenericEntity Annex_ChopShop : "{9C2E4A7B1D5F8036}Prefabs/Crime/LF_ChopBench.et" {
+ components {
+  LF_ChopShopComponent "{2B2DF07E2B55506C}" {
+   m_sShopId "annex-chop"
+  }
+ }
+ coords 112 0.005 40
+ angleY 0
+}

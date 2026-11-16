@@ -1,0 +1,76 @@
+// Grid cell c6r1 for chain-barrels: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_chain_barrels_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 95 0 35
+}
+SCR_DestructibleEntity Grid_chain_barrels_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 100 0 35
+}
+SCR_DestructibleEntity Grid_chain_barrels_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 105 0 35
+ angleY 270
+}
+SCR_DestructibleEntity Grid_chain_barrels_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 105 0 40
+ angleY 270
+}
+SCR_DestructibleEntity Grid_chain_barrels_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 105 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_chain_barrels_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 100 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_chain_barrels_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 95 0 45
+ angleY 90
+}
+GenericEntity Grid_chain_barrels_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:chain-barrels"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 94.2 0.505 35.6
+ angleY -90
+}
+GenericEntity Grid_chain_barrels_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "chain-barrels"
+  }
+ }
+ coords 94.3 0 37.5
+ angleY 90
+}
+GenericEntity Annex_Chains_Barrel_1 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Annex_Chains_Barrel_1"
+   m_sSiteId "Annex_Chains_Site"
+  }
+ }
+ coords 96 0.017 40
+}
+GenericEntity Annex_Chains_Barrel_2 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Annex_Chains_Barrel_2"
+   m_sSiteId "Annex_Chains_Site"
+  }
+ }
+ coords 100 0.017 40
+}
+GenericEntity Annex_Chains_Barrel_3 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "Annex_Chains_Barrel_3"
+   m_sSiteId "Annex_Chains_Site"
+  }
+ }
+ coords 104 0.017 40
+}

@@ -183,10 +183,10 @@ GenericEntity GridMarker_c7r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c7r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:bank-heist"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 106.5 0.505 25.5
@@ -207,10 +207,10 @@ GenericEntity GridMarker_c8r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c8r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:bank-heist"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 118.5 0.505 25.5
@@ -231,10 +231,10 @@ GenericEntity GridMarker_c9r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c9r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:hideout"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 130.5 0.505 25.5
@@ -255,10 +255,10 @@ GenericEntity GridMarker_c10r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:jail"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 142.5 0.505 25.5
@@ -327,10 +327,10 @@ GenericEntity GridMarker_c2r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c2r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
-   m_vTextColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
   }
  }
  coords 46.5 0.505 37.5
@@ -351,10 +351,10 @@ GenericEntity GridMarker_c3r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c3r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
-   m_vTextColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
   }
  }
  coords 58.5 0.505 37.5
@@ -375,10 +375,10 @@ GenericEntity GridMarker_c4r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c4r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
-   m_vTextColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
   }
  }
  coords 70.5 0.505 37.5
@@ -399,9 +399,9 @@ GenericEntity GridMarker_c5r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c5r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:hospital"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -423,9 +423,9 @@ GenericEntity GridMarker_c6r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:chain-barrels"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -447,10 +447,10 @@ GenericEntity GridMarker_c7r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c7r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:chopshop"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 106.5 0.505 37.5
@@ -471,10 +471,10 @@ GenericEntity GridMarker_c8r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c8r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:lockpick-cars"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 118.5 0.505 37.5
@@ -495,10 +495,10 @@ GenericEntity GridMarker_c9r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c9r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:cash-van"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 130.5 0.505 37.5
@@ -519,10 +519,10 @@ GenericEntity GridMarker_c10r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:cash-van"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 142.5 0.505 37.5
@@ -615,10 +615,10 @@ GenericEntity GridMarker_c3r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c3r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
-   m_vTextColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
   }
  }
  coords 58.5 0.505 49.5
@@ -639,10 +639,10 @@ GenericEntity GridMarker_c4r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c4r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
-   m_vTextColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
   }
  }
  coords 70.5 0.505 49.5
@@ -663,9 +663,9 @@ GenericEntity GridMarker_c5r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c5r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:hospital"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -687,9 +687,9 @@ GenericEntity GridMarker_c6r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:impound"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -711,10 +711,10 @@ GenericEntity GridMarker_c7r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c7r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:police-desk"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 106.5 0.505 49.5
@@ -735,10 +735,10 @@ GenericEntity GridMarker_c8r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c8r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:police-desk"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 118.5 0.505 49.5
@@ -759,10 +759,10 @@ GenericEntity GridMarker_c9r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c9r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:dispatch"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 130.5 0.505 49.5
@@ -783,10 +783,10 @@ GenericEntity GridMarker_c10r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:convoy"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 142.5 0.505 49.5
@@ -951,9 +951,9 @@ GenericEntity GridMarker_c6r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:vehicle-lot"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -975,10 +975,10 @@ GenericEntity GridMarker_c7r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c7r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:job-depot"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 106.5 0.505 61.5
@@ -999,10 +999,10 @@ GenericEntity GridMarker_c8r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c8r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:job-depot"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 118.5 0.505 61.5
@@ -1023,10 +1023,10 @@ GenericEntity GridMarker_c9r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c9r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:zone-signs"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 130.5 0.505 61.5
@@ -1047,10 +1047,10 @@ GenericEntity GridMarker_c10r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:zone-signs"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 142.5 0.505 61.5
@@ -1215,9 +1215,9 @@ GenericEntity GridMarker_c6r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:vehicle-lot"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -1239,10 +1239,10 @@ GenericEntity GridMarker_c7r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c7r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:apple-chain"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 106.5 0.505 73.5
@@ -1263,10 +1263,10 @@ GenericEntity GridMarker_c8r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c8r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:apple-chain"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 118.5 0.505 73.5
@@ -1287,10 +1287,10 @@ GenericEntity GridMarker_c9r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c9r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:org-desk"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 130.5 0.505 73.5
@@ -1311,10 +1311,10 @@ GenericEntity GridMarker_c10r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:atm"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 142.5 0.505 73.5
@@ -1479,10 +1479,10 @@ GenericEntity GridMarker_c6r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
-   m_vTextColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
   }
  }
  coords 94.5 0.505 85.5
@@ -1575,10 +1575,10 @@ GenericEntity GridMarker_c10r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:furnace"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 142.5 0.505 85.5
@@ -1743,10 +1743,10 @@ GenericEntity GridMarker_c6r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
-   m_vTextColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
   }
  }
  coords 94.5 0.505 97.5
@@ -1839,10 +1839,10 @@ GenericEntity GridMarker_c10r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:gun-counter"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 142.5 0.505 97.5
@@ -2388,26 +2388,6 @@ StaticModelEntity GridPath_r2_25 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 80.67 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_26 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 83.07 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_27 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 85.47 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_28 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 87.87 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_29 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 90.27 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_30 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 92.67 0.025 46
- scale 0.3
-}
 StaticModelEntity GridPath_r2_31 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 95.07 0.025 46
  scale 0.3
@@ -2846,26 +2826,6 @@ StaticModelEntity GridPath_r4_29 : "{D93A7286584E122C}Prefabs/Props/Construction
 }
 StaticModelEntity GridPath_r4_30 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 92.67 0.025 70
- scale 0.3
-}
-StaticModelEntity GridPath_r4_31 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 95.07 0.025 70
- scale 0.3
-}
-StaticModelEntity GridPath_r4_32 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 97.47 0.025 70
- scale 0.3
-}
-StaticModelEntity GridPath_r4_33 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 99.87 0.025 70
- scale 0.3
-}
-StaticModelEntity GridPath_r4_34 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 102.27 0.025 70
- scale 0.3
-}
-StaticModelEntity GridPath_r4_35 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 104.67 0.025 70
  scale 0.3
 }
 StaticModelEntity GridPath_r4_36 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
@@ -3308,66 +3268,6 @@ StaticModelEntity GridPath_r6_35 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 104.67 0.025 94
  scale 0.3
 }
-StaticModelEntity GridPath_r6_36 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 107.07 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_37 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 109.47 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_38 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 111.87 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_39 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 114.27 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_40 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 116.67 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_41 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 119.07 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_42 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 121.47 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_43 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 123.87 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_44 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 126.27 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_45 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 128.67 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_46 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 131.07 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_47 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 133.47 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_48 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 135.87 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_49 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 138.27 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_50 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 140.67 0.025 94
- scale 0.3
-}
 StaticModelEntity GridPath_r6_51 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 143.07 0.025 94
  scale 0.3
@@ -3401,7 +3301,7 @@ GenericEntity Grid_frame_Spawn {
 GenericEntity GridMapBoard : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:map c0r0 chess-table, c1r0 pr-features, c2r0 whitelist-chat, c3r0 shops-till, c4r0 crimes, c5r0 zones-spawn, c6r0 first-night, c0r1 roadblock, c1r1 retheme-proof, c0r2 jobs, c1r2 event-scene, c2r2 community-hall, c0r3 houses-keys, c1r3 test-fixtures, c0r4 shooting-range, c1r4 fence-shop-2, c2r4 orgs-vehicles, c0r5 licence-desk, c1r5 everon-outlets, c2r5 signs-board-quests, c7r5 first-night-room, c8r5 first-night-room, c9r5 first-night-room, c0r6 race-track, c1r6 police, c2r6 npcs, c5r6 wanted-posters, c7r6 first-night-room, c8r6 first-night-room, c9r6 first-night-room"
+   m_sSignId "grid:map c0r0 chess-table, c1r0 pr-features, c2r0 whitelist-chat, c3r0 shops-till, c4r0 crimes, c5r0 zones-spawn, c6r0 first-night, c7r0 bank-heist, c8r0 bank-heist, c9r0 hideout, c10r0 jail, c0r1 roadblock, c1r1 retheme-proof, c5r1 hospital, c6r1 chain-barrels, c7r1 chopshop, c8r1 lockpick-cars, c9r1 cash-van, c10r1 cash-van, c0r2 jobs, c1r2 event-scene, c2r2 community-hall, c5r2 hospital, c6r2 impound, c7r2 police-desk, c8r2 police-desk, c9r2 dispatch, c10r2 convoy, c0r3 houses-keys, c1r3 test-fixtures, c6r3 vehicle-lot, c7r3 job-depot, c8r3 job-depot, c9r3 zone-signs, c10r3 zone-signs, c0r4 shooting-range, c1r4 fence-shop-2, c2r4 orgs-vehicles, c6r4 vehicle-lot, c7r4 apple-chain, c8r4 apple-chain, c9r4 org-desk, c10r4 atm, c0r5 licence-desk, c1r5 everon-outlets, c2r5 signs-board-quests, c7r5 first-night-room, c8r5 first-night-room, c9r5 first-night-room, c10r5 furnace, c0r6 race-track, c1r6 police, c2r6 npcs, c5r6 wanted-posters, c7r6 first-night-room, c8r6 first-night-room, c9r6 first-night-room, c10r6 gun-counter"
    m_vRimColor 0.1 0.1 0.1
    m_vPaintColor 0.95 0.95 0.9
    m_vTextColor 0.05 0.05 0.05
