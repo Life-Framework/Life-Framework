@@ -226,6 +226,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_GridWorldBoot(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GuidCompare(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GunCounter(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HandbookPages(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Handcuffs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HandToolEquip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HarnessDevGate(), LF_TestTier.LOGIC);
