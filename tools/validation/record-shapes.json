@@ -1,5 +1,5 @@
 {
-  "saveVersion": 38,
+  "saveVersion": 39,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -40,6 +40,7 @@
     "itemstolen": "LF_StorageItemStolenRecord",
     "convictions": "LF_ConvictionRow",
     "firstspawns": "LF_FirstSpawnRow",
+    "racerecords": "LF_RaceRecordRow",
     "lastpos": "LF_LastPositionRow"
   },
   "records": {
@@ -482,8 +483,17 @@
         "string m_sCharacterId"
       ]
     },
-    "LF_LastPositionRow": {
+    "LF_RaceRecordRow": {
       "since": 38,
+      "fields": [
+        "string m_sCourseId",
+        "string m_sUid",
+        "string m_sName",
+        "int m_iBestMs"
+      ]
+    },
+    "LF_LastPositionRow": {
+      "since": 39,
       "fields": [
         "string m_sCharacterId",
         "vector m_vPosition",
