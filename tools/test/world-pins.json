@@ -6,20 +6,8 @@
       "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
     },
     {
-      "name": "places/evidence-locker",
-      "reason": "reads a town place found through LF_Places, which is not in GridWorld"
-    },
-    {
-      "name": "playtest/offers",
-      "reason": "reads a town place found through LF_Places, which is not in GridWorld"
-    },
-    {
       "name": "police/rank-permissions",
       "reason": "reads the town police station or its spawns, which are not in GridWorld"
-    },
-    {
-      "name": "quests/arrival-chain",
-      "reason": "reads the town square quest givers and the town board, which are not in GridWorld"
     },
     {
       "name": "respawn/ward",
@@ -30,16 +18,8 @@
       "reason": "reads a town safe or lawless zone, which GridWorld leaves out on purpose"
     },
     {
-      "name": "security/quest-turnin-takes-items",
-      "reason": "reads the town square quest givers and the town board, which are not in GridWorld"
-    },
-    {
       "name": "spawnhub/travel",
       "reason": "reads the town spawn points or the spawn hub, which GridWorld replaces with one gate spawn"
-    },
-    {
-      "name": "townboard/board-world",
-      "reason": "reads the town board and the post office sign through LF_Places, which are not in GridWorld"
     },
     {
       "name": "zones/quarry",
