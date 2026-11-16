@@ -4,16 +4,10 @@
   "patches": "clerk",
   "addon": "LF_Everon1989",
   "voice": {
-    "id": "pB0wYnYoA5t7xU302lqw",
-    "name": "JC - Deep, Thoughful and Encouraging",
-    "public_owner_id": "4a3abb2838631717507cfb261f8223e0426f0d752248e5aef0f55c782e5c29d0",
-    "why": "A man over sixty with a French accent: an old island official. The town's own names are French (Dupont, Lefevre).",
-    "model": "eleven_multilingual_v2",
-    "settings": {
-      "stability": 0.55,
-      "similarity_boost": 0.75,
-      "style": 0.15
-    }
+    "engine": "piper",
+    "id": "en_US-ljspeech-high",
+    "name": "LJ Speech (Piper)",
+    "why": "One voice per character (lead decision, 2026-11-17). Piper en_US-ljspeech-high is trained on LJ Speech, public domain, so it is licence-safe for public builds. It replaced the ElevenLabs JC voice for all thirteen lines."
   },
   "budget_chars": 3000,
   "lines": {
@@ -48,31 +42,13 @@
       "text": "Good day to you."
     },
     "welcome_papers": {
-      "text": "Welcome to Everon. First, your papers. Form R-89 is the relocation form, and I will file it under your name. Your identity card comes with it.",
-      "voice": {
-        "engine": "piper",
-        "id": "en_US-ljspeech-high",
-        "name": "LJ Speech (Piper)",
-        "why": "Licence-safe: LJ Speech is public domain. The clerk's earlier lines keep the ElevenLabs voice (no key on this machine for new ElevenLabs takes); to re-voice the whole clerk, move this voice up to the top-level voice and drop budget_chars' ElevenLabs use."
-      }
+      "text": "Welcome to Everon. First, your papers. Form R-89 is the relocation form, and I will file it under your name. Your identity card comes with it."
     },
     "welcome_room": {
-      "text": "You sleep at the hostel tonight. The dormitory is upstairs, and any free bunk is yours. It is plain, but it is warm.",
-      "voice": {
-        "engine": "piper",
-        "id": "en_US-ljspeech-high",
-        "name": "LJ Speech (Piper)",
-        "why": "Licence-safe: LJ Speech is public domain. The clerk's earlier lines keep the ElevenLabs voice (no key on this machine for new ElevenLabs takes); to re-voice the whole clerk, move this voice up to the top-level voice and drop budget_chars' ElevenLabs use."
-      }
+      "text": "You sleep at the hostel tonight. The dormitory is upstairs, and any free bunk is yours. It is plain, but it is warm."
     },
     "welcome_town": {
-      "text": "The town expects honest work and quiet nights. Greet your neighbours, pay what you owe, and ask the police if you are ever lost.",
-      "voice": {
-        "engine": "piper",
-        "id": "en_US-ljspeech-high",
-        "name": "LJ Speech (Piper)",
-        "why": "Licence-safe: LJ Speech is public domain. The clerk's earlier lines keep the ElevenLabs voice (no key on this machine for new ElevenLabs takes); to re-voice the whole clerk, move this voice up to the top-level voice and drop budget_chars' ElevenLabs use."
-      }
+      "text": "The town expects honest work and quiet nights. Greet your neighbours, pay what you owe, and ask the police if you are ever lost."
     }
   },
   "nodes": [
