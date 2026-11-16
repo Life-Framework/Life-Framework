@@ -63,6 +63,16 @@ stand inside its own cell.
 - a grid layer places anything outside its cell;
 - a `Grid_*.layer` is in `DebugWorld_Layers/` (the grid lives in GridWorld).
 
+## The frame
+
+`Grid_frame.layer` (claim `tools/grid/cells/frame.json`, cell `lattice`) is the one layer that spans the whole lattice. It is written by `node tools/grid/lattice.mjs write`, not by `grid place`:
+
+- `GridMarker_cXrY`, a plate at each cell's west edge reading its id (`c3r1`), and `GridPlate_cXrY` above it reading the claim's slug, FREE, or BLOCKED (legacy stations or reserved ground);
+- `GridPath_rR_N`, gravel mounds end to end along the south edge of each row;
+- `GridMapBoard`, 3.5 m in front of the gate spawn and facing it, titled with the claimed cells (cell to system). `grid list` prints the same map.
+
+The plates are a snapshot of the claims: run `node tools/grid/lattice.mjs write` after claiming or freeing a cell (`check` exits 1 when the file is out of date). `validate-world-zones` checks only that the frame stays inside the lattice rectangle. `look grid:frame` shows the gate end and the board. The lattice constants (`CELL`, cell maths) live in `tools/grid/lattice.mjs`; `world-zones.mjs` re-exports them.
+
 ## The annex freeze
 
 The legacy annex exists in both worlds until slice W6 deletes it from DebugWorld. To keep the two

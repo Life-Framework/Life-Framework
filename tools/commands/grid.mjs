@@ -12,6 +12,7 @@
 // slug adds the next row, three rows in all. `free` deletes the layer and the claim.
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { isFrameClaim } from "../grid/lattice.mjs";
 import { loadWorld } from "../../agent-box/layers.mjs";
 import {
   CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, entityPrefix, layerOfSlug, parseCellId, readCells, rowLine, yardPlan, yawAlong,
@@ -67,7 +68,8 @@ export function registryText(entry) {
 }
 
 // A grid map: one character per cell, north at the top. `#` blocked, `.` free, a letter per claim.
-export function mapText(claims, ents) {
+export function mapText(allClaims, ents) {
+  const claims = allClaims.filter((c) => !isFrameClaim(c));
   const byCell = new Map(claims.map((c, i) => [c.cell, String.fromCharCode(97 + (i % 26))]));
   const rows = [];
   const cells = allCells();
@@ -92,7 +94,9 @@ function parse(argv) {
 }
 
 function list(root) {
-  const claims = readCells(root);
+  const all = readCells(root);
+  const frame = all.find(isFrameClaim);
+  const claims = all.filter((c) => !isFrameClaim(c));
   const ents = gridEnts(root);
   const free = allCells().filter((c) => !claims.some((x) => x.cell === c.id) && !blockers(c, ents).length).length;
   console.log(`grid: ${claims.length} cell(s) claimed, ${free} free (${CELLS_DIR}/)`);
@@ -104,6 +108,7 @@ function list(root) {
     console.log(`  ${String.fromCharCode(97 + (i % 26))} ${c.slug.padEnd(28)} ${String(c.cell).padEnd(6)} ${b ? `x ${b.x0}..${b.x1} z ${b.z0}..${b.z1}` : "bad cell"}  ${n} entities, ${c.rows ?? 0}/3 rows${c.error ? `  ERROR ${c.error}` : ""}`);
   });
   console.log(mapText(claims, ents));
+  if (frame) console.log(`  frame: ${frame.layer} marks every cell (GridMarker_cXrY) and lists them on GridMapBoard at the gate; node tools/grid/lattice.mjs write refreshes the plates`);
   console.log("  (# blocked by legacy stations or reserved ground, . free, letters as listed)");
   return 0;
 }

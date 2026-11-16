@@ -13,6 +13,10 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { CORE_ADDON, GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
+import { CELL, GRID_CENTRE, allCells, cellBounds, cellId, isFrameClaim, parseCellId } from "../grid/lattice.mjs";
+
+// The lattice constants and cell maths live in tools/grid/lattice.mjs (with the grid frame).
+export { CELL, GRID_CENTRE, allCells, cellBounds, cellId, parseCellId };
 
 export const DEBUG_LAYERS = `addons/${CORE_ADDON}/${layersOf(PLAYTEST_WORLD)}`;
 // Where Grid_<slug>.layer files are written and claims are checked: GridWorld, not the playtest world.
@@ -24,11 +28,6 @@ export const CELLS_DIR = "tools/grid/cells";
 export const GRID = { x0: 20, z0: 20, x1: 112, z1: 112 };
 // The rectangle the DebugWorld freeze watches: the fence plus 2 m (three-worlds.md "What counts as grid").
 export const ANNEX_RECT = { x0: 18, z0: 18, x1: 114, z1: 114 };
-// Cells: a 7 x 7 lattice of 12 m squares from 22,22 (2 m inside the annex fence). Each cell holds a
-// 10 m fenced yard (1 m in from its edges) with a 5 m gap on the side facing the annex centre.
-export const CELL = { size: 12, origin: 22, cols: 7, rows: 7, inset: 1, fence: 5 };
-export const GRID_CENTRE = [66, 66];
-
 // Ground no cell may take: the open ground world tests spawn their fixtures on
 // (docs/roadmap/m1-25-village.md "Test annex"), and the track in through the gap in the north fence.
 export const RESERVED = [
@@ -75,31 +74,6 @@ export const inGrid = (x, z) => x >= GRID.x0 && x <= GRID.x1 && z >= GRID.z0 && 
 export const inAnnexRect = (x, z) => x >= ANNEX_RECT.x0 && x <= ANNEX_RECT.x1 && z >= ANNEX_RECT.z0 && z <= ANNEX_RECT.z1;
 
 // ------------------------------------------------------------------ cells
-
-export function cellId(col, row) {
-  return `c${col}r${row}`;
-}
-
-export function parseCellId(id) {
-  const m = /^c(\d+)r(\d+)$/.exec(String(id));
-  if (!m) return null;
-  const col = Number(m[1]);
-  const row = Number(m[2]);
-  if (col >= CELL.cols || row >= CELL.rows) return null;
-  return { col, row };
-}
-
-export function cellBounds(col, row) {
-  const x0 = CELL.origin + col * CELL.size;
-  const z0 = CELL.origin + row * CELL.size;
-  return { x0, z0, x1: x0 + CELL.size, z1: z0 + CELL.size };
-}
-
-export function allCells() {
-  const out = [];
-  for (let row = 0; row < CELL.rows; row++) for (let col = 0; col < CELL.cols; col++) out.push({ id: cellId(col, row), col, row, ...cellBounds(col, row) });
-  return out;
-}
 
 const overlaps = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.z0 < b.z1 && b.z0 < a.z1;
 
@@ -226,6 +200,8 @@ export function readCells(root) {
 
 // The look target of a claimed cell: the centre of its yard, seen from the gap side.
 export function lookArea(entry) {
+  // The frame claims the whole lattice: its picture is the gate end, the map board seen from the spawn.
+  if (isFrameClaim(entry)) return { name: "grid-frame", x: 74, y: 0, z: 100, radius: 22, front: 0 };
   const p = parseCellId(entry.cell);
   if (!p) return null;
   const c = { ...cellBounds(p.col, p.row) };
