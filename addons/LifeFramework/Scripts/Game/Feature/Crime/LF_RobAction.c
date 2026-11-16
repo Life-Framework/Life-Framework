@@ -31,7 +31,7 @@ class LF_RobAction : ScriptedUserAction
 	[Attribute(defvalue: "0", uiwidget: UIWidgets.CheckBox, desc: "Robbed only through the attendant's dialogue (LF_RobHold): the world action is hidden and refused. The fuel station till (#936).")]
 	protected bool m_bDialogueOnly;
 
-	[Attribute(defvalue: "store", uiwidget: UIWidgets.EditBox, desc: "Alarm kind of this till's alarm (an LF_AlarmKind id in LF_Police.conf): store is the small buzzer, fuel the station's intruder alarm. Empty uses the plain siren.")]
+	[Attribute(defvalue: "store", uiwidget: UIWidgets.EditBox, desc: "Alarm kind of this till's alarm (an LF_AlarmKind id in LF_Police.conf): store is the retail two-tone alarm, fuel the station's intruder alarm. Empty uses the plain siren.")]
 	protected string m_sAlarmKind;
 
 	[Attribute(defvalue: "30", uiwidget: UIWidgets.Auto, desc: "Dialogue robbery: seconds the robber must keep the attendant at gunpoint before the till opens")]

@@ -8,7 +8,9 @@
 //    entity a grid layer places stands inside its own cell (a feature never sprawls past its fence).
 //    The frame (tools/grid/lattice.mjs, claim frame.json with cell "lattice") is the one claim that spans the
 //    lattice: its entities need only stand inside the lattice rectangle.
-//    A Grid_*.layer in DebugWorld_Layers fails: the grid lives in GridWorld.
+//    A Grid_*.layer in DebugWorld_Layers fails: the grid lives in GridWorld. A claim on a cell that
+//    origin/main gives to another slug fails too (two slices cut before either merged; #1905 and #1906
+//    both took c2r4): the claims come from git, fetched in CI.
 // 2. Annex freeze. Until slice W6 deletes the annex from DebugWorld, no branch adds or changes an
 //    entity inside the annex rectangle (x 18..114, z 18..114) in a DebugWorld layer; the copy in
 //    GridWorld is the one to edit. Deleting is allowed. Entities are compared with the merge base.
@@ -29,7 +31,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { FRAME_CELL, isFrameClaim, latticeRect } from "../grid/lattice.mjs";
-import { DEBUG_LAYERS, GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
+import { DEBUG_LAYERS, GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, mainClaims, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
 
 export const BASELINE = "tools/validation/zone-guard-baseline.json";
 export const TOWN_PASS = /^town-/;
@@ -54,10 +56,18 @@ export function topLevelCoords(text) {
   return out;
 }
 
-export function checkClaims(root) {
+// `mainClaims`: the claims origin/main holds (lib mainClaims). A cell this tree claims for one slug while
+// origin/main gives it to another is a clash between two slices cut before either merged.
+export function checkClaims(root, { mainClaims: onMain = [] } = {}) {
   const errors = [];
   const claims = readCells(root);
   const seen = new Map();
+  for (const c of claims) {
+    const other = onMain.find((m) => !m.error && m.cell === c.cell && m.slug !== c.slug);
+    if (other && !c.error) {
+      errors.push(`${c.file}: cell ${c.cell} is already claimed on origin/main by ${other.slug}. Merge origin/main, then run tools\\cli grid free ${c.slug} and grid place ${c.slug} again for a free cell`);
+    }
+  }
   for (const c of claims) {
     const base = c.file.slice(c.file.lastIndexOf("/") + 1).replace(/\.json$/, "");
     if (c.error) {
@@ -192,7 +202,10 @@ export function changedFiles(root) {
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isMain) {
   const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-  const claims = checkClaims(root);
+  // origin/main's claims: from git, fetched only in CI (locally validate stays offline; grid place fetches).
+  const main = mainClaims(root, { fetch: Boolean(process.env.CI) });
+  if (main.note && process.env.CI) console.log(`validate-world-zones: ${main.note}`);
+  const claims = checkClaims(root, { mainClaims: main.claims });
   const branch = process.env.GITHUB_HEAD_REF || (git(root, ["rev-parse", "--abbrev-ref", "HEAD"]) || "").trim();
   const baseline = existsSync(join(root, BASELINE)) ? JSON.parse(readFileSync(join(root, BASELINE), "utf8")).branches : [];
   const files = changedFiles(root);

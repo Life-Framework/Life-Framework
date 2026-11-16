@@ -1,3 +1,4 @@
+// red-proof: observed 2026-11-16 (#1891), `tools\cli test --no-build --no-cache --only <the 10 classes>` on GridWorld before the grid fixtures: 10 of 15 failed on `... resolves in the DebugWorld` (Shop_GeneralStore_Debug, Shop_BlackMarket_Debug, FenceNpc are town entities); on Grid_shops_till fixtures 15 of 15 pass.
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_StoreStaff`: CollectStaff without the
 // boundary check (s_pStaffStore.Contains) failed `- the shopkeeper outside is not`; Sell without the
 // CarriesHeldApart check failed `- an unpaid copy cannot be sold back to the shop` and `- the unpaid apple
@@ -12,7 +13,7 @@ class LF_Test_StoreStaff : LF_Test
 {
 	static const ResourceName SHOPKEEPER = "{AB73D0036F42E73E}Prefabs/Characters/Npcs/LF_Shopkeeper.et";
 	static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
-	static const string STORE_COUNTER = "Shop_GeneralStore_Debug";
+	static const string STORE_COUNTER = "Grid_shops_till_Store";
 
 	override string GetName()
 	{

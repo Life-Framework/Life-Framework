@@ -36,8 +36,14 @@ tools\cli look grid:<slug>             the look pictures of that cell, from its 
 `grid place` for a new slug:
 
 1. Picks the cell: the first usable, unclaimed cell in lattice order, starting from a hash of the slug
-   (FNV-1a modulo 49), so the same slug gets the same cell on every machine and two slices running
-   at once rarely collide. `--cell` asks for a particular free cell.
+   (FNV-1a modulo 49), so the same slug gets the same cell on every machine. `--cell` asks for a
+   particular free cell. "Unclaimed" is read from this worktree **and from `origin/main`**: `place`
+   fetches `origin/main` and treats its `tools/grid/cells/` claims as taken, so a slice cut before
+   another slice merged still avoids that slice's cell (#1905 and #1906 both took c2r4 when each only
+   looked at its own tree). It refuses a slug `origin/main` already claims. `--no-fetch` (also on
+   `grid list`) reads the `origin/main` the clone already has; a failed fetch prints a note and goes on.
+   Two slices that claim before either merges can still pick one cell; `validate-world-zones` catches
+   that (below).
 2. Writes `Grid_<slug>.layer` with the cell's yard: a 10 m net-fence square, 1 m in from the cell's
    edges, built from seven 5 m runs. Half the side facing the annex centre is left open as the way
    in, and a pole-plate sign stands just outside that gap. The sign id is `grid:<slug>`, and
@@ -58,7 +64,10 @@ stand inside its own cell.
 
 `validate-world-zones` checks the claims on every validate. It fails when:
 
-- two claims name one cell (the second slice runs `grid free` and `grid place` again);
+- two claims name one cell (the second slice runs `grid free` and `grid place` again). Two grid layers
+  cannot share a cell: each layer's entities must stand inside its own claim's cell, and claims are unique;
+- a claim names a cell `origin/main` gives to another slug (read from git; CI fetches `origin/main`, a
+  local `validate` uses the one the clone has);
 - a claim has no layer in `GridWorld_Layers/`, or a `Grid_*.layer` there has no claim;
 - a grid layer places anything outside its cell;
 - a `Grid_*.layer` is in `DebugWorld_Layers/` (the grid lives in GridWorld).
