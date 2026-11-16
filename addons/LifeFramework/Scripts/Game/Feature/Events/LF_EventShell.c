@@ -52,7 +52,8 @@ class LF_EventShellRun : Managed
 //! Players nearby (#2105): Measure counts the players within the radius of the event's place with
 //! LF_EventPlace (the scene's event_target marker through LF_Places); an event with no place counts 0.
 //!
-//! Not yet: run state is not persisted (a restart starts every event idle).
+//! Restart (#1951): run state is saved by phase name in the "worldevents" payload
+//! (LF_EventShellSave.c). An event saved mid-phase loads into cooldown; a scene is never resumed.
 //!
 //! Off by default: an event runs only with m_bEnabled set (the core example ships off; a pack patch
 //! turns an event on). Events come from LF_EventOverlay, the core file with the pack overlays over it.
@@ -520,7 +521,7 @@ class LF_EventShell
 
 //------------------------------------------------------------------------------------------------
 //! What the clients last heard about each event's phase (#1950). Client side; a HUD or map layer
-//! reads it later. Not JIP-filled: a late joiner hears the next change.
+//! reads it later. A late joiner's board is filled from the game mode's JIP snapshot (LF_EventPhaseJip, #2106).
 class LF_EventPhaseBoard
 {
 	protected static ref map<string, string> s_mPhases;
