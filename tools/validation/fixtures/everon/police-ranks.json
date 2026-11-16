@@ -1,0 +1,11 @@
+{
+  "kind": "ranks",
+  "count": 5,
+  "ranks": [
+    { "index": 0, "id": "patrol", "titleKey": "LF-Rank_Cadet", "fineCap": 500, "payPerSecond": 0.3, "dutySecondsForNext": 3600 },
+    { "index": 1, "id": "senior", "titleKey": "LF-Rank_Patrol", "fineCap": 1000, "payPerSecond": 0.5, "dutySecondsForNext": 7200 },
+    { "index": 2, "id": "senior_patrol", "titleKey": "LF-Rank_SeniorPatrol", "fineCap": 2500, "payPerSecond": 0.65, "dutySecondsForNext": 14400, "kit": ["Rifle_M16A2.et", "SpikeStrip_Item.et"] },
+    { "index": 3, "id": "sergeant", "titleKey": "LF-Rank_Sergeant", "fineCap": 4000, "payPerSecond": 0.8, "dutySecondsForNext": 28800, "kit": ["Rifle_M16A2.et", "SpikeStrip_Item.et"] },
+    { "index": 4, "id": "lieutenant", "titleKey": "LF-Rank_Lieutenant", "fineCap": 5000, "payPerSecond": 1, "dutySecondsForNext": 0, "kit": ["Rifle_M16A2.et", "SpikeStrip_Item.et"] }
+  ]
+}
