@@ -43,7 +43,7 @@ page only adds where each place sits in the build order (section 3, "Phased map 
 
 | Place | x, z | Role (bible) | Map state |
 |---|---|---|---|
-| **Saint-Philippe** | 4503, 10772 | The hub and capital; first location (D5). North-west coast, harbour quay at 4390, 11100. Within 400 m: 50 houses with interiors, 6 shop-houses, 2 pubs, a municipal office, a police villa, a fire station, a church | 0 (square), 1 (outskirts), 2 (dock, districts) |
+| **Saint-Philippe** | 4503, 10772 | The hub and capital; first location (D5). North-west coast, harbour quay at 4390, 11100. Within 400 m: 62 houses with interiors, 6 shop-houses, 2 pubs, a municipal office, a police villa, a fire station, a church | 0 (square), 1 (outskirts), 2 (dock, districts) |
 | Meaux | 4520, 9468 | Nearest town south, 1.3 km. Has a vanilla police villa, a church, a post office and two pubs | 1 (road out), 2 |
 | Tyrone | 4928, 9093 | Village on the road south | 2 |
 | Gravette | 4121, 7796 | West-coast village | 4 |
@@ -79,7 +79,7 @@ hub. Meaux, 1.3 km south, is the obvious first "second place".
 
 The square is about 120 m across, at 4450, 10780. The building list comes from the catalog agent's
 in-engine dump of vanilla Everon (CoreOnEveron, 1.44 M entities; `ws/everon-catalog`,
-`docs/everon/catalog-buildings.md` when it lands). Within 400 m of the town centre there are 50 houses
+`docs/everon/catalog-buildings.md` when it lands). Within 400 m of the town centre there are 62 houses
 with interiors, 15 without, 6 shop-houses, 2 pubs, 2 municipal buildings, a police villa, a fire station,
 2 churches and 4 chapels, 2 fuel stations, 25 industrial buildings and 50 quay pieces. "Interior" is the
 dump's provisional heuristic (door children and a raised floor); the scout dossier (card P1) confirms
