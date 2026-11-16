@@ -1164,7 +1164,7 @@ async function routeMachine(cmd, rest) {
     try {
       const nowMs = Date.now();
       const avoid = new Set([...refused].filter(([, until]) => until > nowMs).map(([name]) => name));
-      target = await pool.chooseSessionMachine(ROOT, { clients, profile, waitMs: Math.max(0, deadline - Date.now()), priority: prio, meta: { clients, profile }, avoid });
+      target = await pool.chooseSessionMachine(ROOT, { clients, profile, waitMs: Math.max(0, deadline - Date.now()), priority: prio, meta: { clients, profile, world: args.includes("--mission") ? args[args.indexOf("--mission") + 1] : undefined }, avoid });
     } catch (e) {
       if (!e.refusal) throw e;
       console.log(`session: ${e.message}`);

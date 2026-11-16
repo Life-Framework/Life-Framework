@@ -2611,7 +2611,7 @@ function cmdSessionUp(root, dir, flags) {
   let lane = null;
   try {
     if (flags.includes("--wait")) console.log(`session: the session lane is held by ${holderOf()}; queued (up to ${SESSION_QUEUE_MIN} min)`);
-    lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root, clients, profile: rp.profile }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
+    lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root, clients, profile: rp.profile, world: mission }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
   } catch (e) {
     if (e.refusal) {
       console.log(`FAIL  ${e.message}`);
