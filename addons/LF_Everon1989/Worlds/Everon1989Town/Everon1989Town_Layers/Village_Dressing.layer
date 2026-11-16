@@ -1045,3 +1045,7 @@ GenericEntity : "{FEB4961C91993C22}Prefabs/Structures/Civilian/DogHouse_01.et" {
  coords 157 0 223.5
  angles 0 30 0
 }
+GenericEntity SquareLicenceDesk : "{0970D6C0210F9612}Prefabs/Props/Commercial/LF_LicenceDesk.et" {
+ coords 135.394 0 239.003
+ angleY 114.8
+}

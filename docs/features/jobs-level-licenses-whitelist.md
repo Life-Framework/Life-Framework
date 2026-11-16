@@ -225,3 +225,4 @@
   a player interaction, but only once the holder is cuffed (`LF_Restraint`; #1916): the
   interaction stays hidden and the server's `Revoke` refuses and logs for a free player. Test `licence/revoke-cuffs`. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
   `e2e/licence-desk` (the open application, a revoke and a conviction that still blocks the permit across `wt e2e`).
+- ✅ The town has its own desk (town-licence-desk, 2026-11-16): `SquareLicenceDesk` in the pack's `Village_Dressing` layer stands on the spawn square beside the registry counter and the arrival clerk, in line with the counter. The GridWorld desk stays for the tests. Merged in-dev; see the PR for the manual steps.

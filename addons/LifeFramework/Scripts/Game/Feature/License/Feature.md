@@ -62,8 +62,9 @@ in-world document; a license is another document you carry.
   look-back has passed. A holder keeps the permit: only the police revoke it). The
   wait runs on the in-game clock, which vanilla persistence saves; a clock set back waits one term,
   never longer. On-duty police revoke the permit (and any open application) with the "Revoke firearm
-  permit" player interaction (`LF_LicenceRevokeRole`). The desk stands in GridWorld cell c0r5; the
-  town desk is a later town pass.
+  permit" player interaction (`LF_LicenceRevokeRole`). The test desk stands in GridWorld cell c0r5; the
+  town desk (`SquareLicenceDesk`, pack `Village_Dressing`, town-licence-desk) stands on the spawn square beside the registry
+  counter, so a player in the playtest town can get the permit and the gun counter (#1903) opens.
 
 ## Dependencies
 
