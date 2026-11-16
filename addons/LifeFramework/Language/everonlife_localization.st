@@ -7616,6 +7616,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "RULES ORIENTATION"
      Comment "Printed heading of the rules quiz sheet (#915)."
     }
+    CustomStringTableItem "{B995FFFBC0F45EF0}" {
+     Id "LF-Race_Action"
+     Target_en_us "Enter the race"
+     Comment "Start sign action: pay the entry fee into the pot (#1923)."
+    }
+    CustomStringTableItem "{848969C5F29E5FB3}" {
+     Id "LF-Race_AlreadyIn"
+     Target_en_us "You are already entered in a race."
+     Comment "Toast: second entry refused (#1923)."
+    }
+    CustomStringTableItem "{B86BE62EAB387D4D}" {
+     Id "LF-Race_Checkpoint"
+     Target_en_us "Checkpoint. Next: %1"
+     Comment "Toast: a checkpoint counted; %1 is the next checkpoint id (#1923)."
+    }
+    CustomStringTableItem "{A52B7FA55F67B76F}" {
+     Id "LF-Race_Full"
+     Target_en_us "This race is full."
+     Comment "Toast: lobby full (#1923)."
+    }
+    CustomStringTableItem "{AB74D2192D4315FA}" {
+     Id "LF-Race_Joined"
+     Target_en_us "You paid %1 into the pot. The race starts when the lobby closes."
+     Comment "Toast: entry fee paid (#1923)."
+    }
+    CustomStringTableItem "{82753B4F7ED6A371}" {
+     Id "LF-Race_NotEnoughCash"
+     Target_en_us "The entry fee is %1 in cash."
+     Comment "Toast: not enough carried cash (#1923)."
+    }
+    CustomStringTableItem "{5F8D6B98D3F38FB3}" {
+     Id "LF-Race_Prize"
+     Target_en_us "You won %1 from the pot."
+     Comment "Toast: race prize paid (#1923)."
+    }
+    CustomStringTableItem "{2000A8D4B046F01B}" {
+     Id "LF-Race_Refunded"
+     Target_en_us "The race is off. Your %1 fee is back in your pocket."
+     Comment "Toast: race cancelled or session ending, fee refunded (#1923)."
+    }
+    CustomStringTableItem "{8317507B576FC3F7}" {
+     Id "LF-Race_Running"
+     Target_en_us "This race is already running. Wait for the next one."
+     Comment "Toast: lobby closed (#1923)."
+    }
+    CustomStringTableItem "{30E47B1E13893274}" {
+     Id "LF-Race_Started"
+     Target_en_us "The race has started. Go!"
+     Comment "Toast to each racer when the lobby closes (#1923)."
+    }
+    CustomStringTableItem "{26AFE384C6B0253E}" {
+     Id "LF-Race_Title"
+     Target_en_us "Race"
+     Comment "Notification title for every race message (#1923)."
+    }
+    CustomStringTableItem "{AD4539F148C6F75D}" {
+     Id "LF-Race_Unavailable"
+     Target_en_us "This race is not available."
+     Comment "Toast: the sign's course is missing or broken (#1923)."
+    }
     CustomStringTableItem "{5985DB962913E1DE}" {
      Id "LF-Rank_EscortDenied"
      Target_en_us "Your rank cannot escort"

@@ -399,6 +399,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuizHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuizPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_RaceCourse(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RaceRunner(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RateLimit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RegistrationRules(), LF_TestTier.LOGIC);
