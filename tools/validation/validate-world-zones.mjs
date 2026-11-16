@@ -11,6 +11,8 @@
 //    A Grid_*.layer in DebugWorld_Layers fails: the grid lives in GridWorld. A claim on a cell that
 //    origin/main gives to another slug fails too (two slices cut before either merged; #1905 and #1906
 //    both took c2r4): the claims come from git, fetched in CI.
+//    In CI it also reads the claims of the other OPEN PRs (`gh`); a cell another open PR claims is a
+//    printed warning, never a failure (#2014 and #2016 both took c0r6; `grid place` now avoids those cells).
 // 2. Annex freeze. Until slice W6 deletes the annex from DebugWorld, no branch adds or changes an
 //    entity inside the annex rectangle (x 18..114, z 18..114) in a DebugWorld layer; the copy in
 //    GridWorld is the one to edit. Deleting is allowed. Entities are compared with the merge base.
@@ -31,7 +33,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { FRAME_CELL, isFrameClaim, latticeRect } from "../grid/lattice.mjs";
-import { DEBUG_LAYERS, GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, mainClaims, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
+import { DEBUG_LAYERS, GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
 
 export const BASELINE = "tools/validation/zone-guard-baseline.json";
 export const TOWN_PASS = /^town-/;
@@ -58,9 +60,20 @@ export function topLevelCoords(text) {
 
 // `mainClaims`: the claims origin/main holds (lib mainClaims). A cell this tree claims for one slug while
 // origin/main gives it to another is a clash between two slices cut before either merged.
-export function checkClaims(root, { mainClaims: onMain = [] } = {}) {
+// `prClaims`: the claims of other OPEN PRs (lib openPrClaims). Two PRs open at once can each take a cell
+// that is free on origin/main (#2014 and #2016, c0r6); that is only a WARNING here, so a GitHub flake or a
+// race lost by a minute never blocks a merge: the loser is stopped by the origin/main check once the
+// other merges.
+export function checkClaims(root, { mainClaims: onMain = [], prClaims = [] } = {}) {
   const errors = [];
+  const warnings = [];
   const claims = readCells(root);
+  for (const c of claims) {
+    if (c.error || isFrameClaim(c)) continue;
+    for (const o of prClaims.filter((x) => x.cell === c.cell && x.slug !== c.slug)) {
+      warnings.push(`${c.file}: cell ${c.cell} is also claimed by ${o.slug} in open PR #${o.pr} (${o.branch}); whichever merges second fails this check. Run tools\\cli grid free ${c.slug} and grid place ${c.slug} again if yours is the later one`);
+    }
+  }
   const seen = new Map();
   for (const c of claims) {
     const other = onMain.find((m) => !m.error && m.cell === c.cell && m.slug !== c.slug);
@@ -122,7 +135,7 @@ export function checkClaims(root, { mainClaims: onMain = [] } = {}) {
       errors.push(`${DEBUG_LAYERS}/${f}: a Grid_ layer belongs in ${GRID_LAYERS}/ (the grid lives in GridWorld; tools\\cli grid place writes it there)`);
     }
   }
-  return { errors, claims: claims.length, cells: allCells().length };
+  return { errors, warnings, claims: claims.length, cells: allCells().length };
 }
 
 // Top-level entities of a layer with their exact text: [{ name, x, z, text }] (x, z null without coords).
@@ -205,8 +218,12 @@ if (isMain) {
   // origin/main's claims: from git, fetched only in CI (locally validate stays offline; grid place fetches).
   const main = mainClaims(root, { fetch: Boolean(process.env.CI) });
   if (main.note && process.env.CI) console.log(`validate-world-zones: ${main.note}`);
-  const claims = checkClaims(root, { mainClaims: main.claims });
   const branch = process.env.GITHUB_HEAD_REF || (git(root, ["rev-parse", "--abbrev-ref", "HEAD"]) || "").trim();
+  // Claims in flight in other open PRs: CI only (locally validate stays offline), warn only, soft on any gh failure.
+  const prs = process.env.CI ? openPrClaims(root, { exclude: { branch } }) : { claims: [], note: "" };
+  if (prs.note) console.log(`validate-world-zones: warning: ${prs.note}`);
+  const claims = checkClaims(root, { mainClaims: main.claims, prClaims: prs.claims });
+  for (const w of claims.warnings) console.log(`validate-world-zones: warning: ${w}`);
   const baseline = existsSync(join(root, BASELINE)) ? JSON.parse(readFileSync(join(root, BASELINE), "utf8")).branches : [];
   const files = changedFiles(root);
   const guard = files ? checkGuard({ branch, files, baseline }) : { skipped: "no merge base with origin/main", town: [], errors: [] };
