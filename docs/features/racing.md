@@ -5,3 +5,6 @@
 
 ### `LF_RaceCourses` — `Feature/Racing/LF_RaceCourses.c` (#2006, 2026-11-16)
 - ⚠️ Loader only, no world yet: the core ships no course. `LF_RaceCourses.Get()` layers each pack overlay of `LF_RaceCoursesConfig` in load order, then the owner's `racing.courses` section, through the shared override model (add, replace, patch, remove by course id); `Find(id)` returns the record. Every course goes through `LF_RaceCourse.IsValid`; a bad row is logged (`[LFDebug:Racing]`) and dropped, never kept. The flagship course is pack data (#1927). Tests: `racing/courses` (LOGIC).
+
+### `dirt_loop` pack course — `LF_Everon1989/Configs/Racing/LF_RaceCourses_Everon1989.conf` (#1927, 2026-11-16)
+- ⚠️ Data only, no world yet: the flagship's dirt loop is a pack course (`LF_RaceCoursesConfig`, #791): five checkpoint ids (`dirt_cp_1`..`dirt_cp_5`, placed by the town card #1935), 3 laps, entry fee 50, 2 entrants minimum, 60 s lobby, payout 60/30/10. Listed as an overlay in the flagship mission header, so `LF_RaceCourses` (#2006) loads it and `LF_RaceCourse.IsValid` checks it at boot. Proof: `tools/validation/pack-race-course-selftest.mjs` (a core Enforce test cannot name a pack file, validate-addon-boundary) checks the values, validity and the header line.
