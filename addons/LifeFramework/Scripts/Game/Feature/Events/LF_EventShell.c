@@ -227,8 +227,7 @@ class LF_EventShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Removes a module of any kind by id (tests, a feature that shuts down). 
-eturn true when one was removed.
+	//! Removes a module of any kind by id (tests, a feature that shuts down). \return true when one was removed.
 	static bool Unregister(string id)
 	{
 		bool removed = Conditions().Contains(id) || Aborts().Contains(id) || Operations().Contains(id);

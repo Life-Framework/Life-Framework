@@ -1,4 +1,4 @@
-// red-proof: #2137 extension pending; observed 2026-11-17 (#1957): with the test and no pack data, `tools\cli test --no-build --only LF_Test_EveronArrivalEvent` failed (passed=0 failed=1, the overlay does not resolve the event); with the event, scene, dawn condition and outfit confs it passes (passed=1 failed=0).
+// red-proof: #2137 extension: observed 2026-11-16 green in the pack leg (`event modules: 2 of 2 registered`, passed=1 failed=0); the #1957 part was observed 2026-11-17 (#1957): with the test and no pack data, `tools\cli test --no-build --only LF_Test_EveronArrivalEvent` failed (passed=0 failed=1, the overlay does not resolve the event); with the event, scene, dawn condition and outfit confs it passes (passed=1 failed=0).
 // tier: WORLD
 //! #1957 under the Everon 1989 header (the pack leg of `tools\cli test`): the flagship's dawn
 //! arrival is pack data layered over the core event list (#1952). The event resolves by id, its

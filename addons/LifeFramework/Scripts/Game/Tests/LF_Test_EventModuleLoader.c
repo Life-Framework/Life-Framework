@@ -1,4 +1,4 @@
-// red-proof: pending
+// red-proof: `test --no-build --red LF_Test_EventModuleLoader` -> RED PROOF OK (2026-11-16): with the hook on nothing registers, so `the walk phase puts the scene on stage` and `the busy scene holds its phase` fail; without it `SUMMARY tier=only passed=1 failed=0`.
 // tier: WORLD
 //! Event module loader (#2137): an event config's module refs register by the root class of their
 //! .conf (an hour window and a players-nearby condition, a phase-length abort, a scene) and a ref of
