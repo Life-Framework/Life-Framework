@@ -20,7 +20,7 @@ Spoilers stay in `docs/everon/world-bible-internal.md`. This page is safe to pub
 | D6 | **Reputation:** a small system in M6, per faction (town, police, underworld), that feeds the per-player gates |
 | D7 | **Fishing:** a fishing chapter in M6 |
 | D8 | **Travel:** taxis and cars for now. Revisit when a second town opens |
-| D9 | **Buildings: mix** (was Q2, Q3). Convert a vanilla town house where one fits (hostel, town hall, police). Only where nothing fits, place a purpose-built building on a free plot near the square |
+| D9 | **Buildings: mix** (was Q2, Q3). Convert a vanilla town house where one fits (hostel, town hall, police). Only where nothing fits, place a purpose-built building on a free plot near the square. The in-engine dump later found a vanilla municipal office and police villa in town, so only the hostel and the clinic need a converted house |
 | D10 | **Mappings: the lead approves** each place's building mapping (was Q6). The maintainer reviews only the fitted `town-draft` PRs with pictures |
 | D11 | **No lawless zones yet** (was Q9). The whole island stays policed until the gang chapter in M7. The quarry and the military sites are ordinary policed ground until then |
 | D12 | **Reputation is jobs-first** (was Q10). In M6 each faction's standing mainly unlocks better jobs and better pay |
@@ -43,7 +43,7 @@ page only adds where each place sits in the build order (section 3, "Phased map 
 
 | Place | x, z | Role (bible) | Map state |
 |---|---|---|---|
-| **Saint-Philippe** | 4503, 10772 | The hub and capital; first location (D5). North-west coast, harbour quay at 4390, 11100 | 0 (square), 1 (outskirts), 2 (dock, districts) |
+| **Saint-Philippe** | 4503, 10772 | The hub and capital; first location (D5). North-west coast, harbour quay at 4390, 11100. Within 400 m: 50 houses with interiors, 6 shop-houses, 2 pubs, a municipal office, a police villa, a fire station, a church | 0 (square), 1 (outskirts), 2 (dock, districts) |
 | Meaux | 4520, 9468 | Nearest town south, 1.3 km. Has a vanilla police villa, a church, a post office and two pubs | 1 (road out), 2 |
 | Tyrone | 4928, 9093 | Village on the road south | 2 |
 | Gravette | 4121, 7796 | West-coast village | 4 |
@@ -71,50 +71,56 @@ The full list of 171 named places, with types, is what `tools\cli scout list` pr
 **What this means for the order.** Saint-Philippe's neighbours are an airport and two military sites
 within 1.5 km. With no lawless zones before M7 (D11) they are plain policed ground until then; when the gang
 chapter makes some of them lawless, the airport goes last, because it is the closest to new players at the
-hub. Meaux, 1.3 km south, is the obvious first "second place". It
-already has the island's police villa.
+hub. Meaux, 1.3 km south, is the obvious first "second place".
 
 ## 2. Systems and story beats by place
 
 ### State 0: the Saint-Philippe square
 
-The square is about 120 m across, at 4450, 10780. These are the vanilla buildings that a decode of
-`Eden.ent` names within 500 m. About 950 entities in that radius, among them most of the town
-houses, use leaf prefabs the decode cannot name; the scout dossier (card P1) replaces this table with a
-complete one.
+The square is about 120 m across, at 4450, 10780. The building list comes from the catalog agent's
+in-engine dump of vanilla Everon (CoreOnEveron, 1.44 M entities; `ws/everon-catalog`,
+`docs/everon/catalog-buildings.md` when it lands). Within 400 m of the town centre there are 50 houses
+with interiors, 15 without, 6 shop-houses, 2 pubs, 2 municipal buildings, a police villa, a fire station,
+2 churches and 4 chapels, 2 fuel stations, 25 industrial buildings and 50 quay pieces. "Interior" is the
+dump's provisional heuristic (door children and a raised floor); the scout dossier (card P1) confirms
+each one.
 
 | Building (vanilla prefab) | x, z | Notes |
 |---|---|---|
-| `ShopHouse_E_2I01t_clothesstore` | 4441, 10789 | On the square, ground-floor shop with interior |
-| `House_Town_E_2I01_orange` | 4475, 10781 | Town house on the square, two storeys, interior |
-| `House_Town_E_2I02_yellow` | 4412, 10773 | Town house on the square, interior |
-| `House_Village_E_1L01_Furniture` | 4392, 10733 | Furnished village house, west of the square |
-| `NewspaperBooth_E_01_redwhite` | 4437, 10691 | Kiosk on the south approach |
+| `MunicipalOffice_E_01` | 4419, 10648 | **Municipal office** with counter glass, office benches and files, south of the square |
+| `Villa_E_2I01_Police` | 4553, 10748 | **Police villa**, east of the square |
+| `Office_E_01` | 4369, 10656 | Office building beside the municipal office |
+| `MunicipalOffice_E_01_school` | 4592, 10818 | School, north-east |
+| `FireStation_E_01` | 4572, 10674 | Fire station, south-east |
+| `Church_01_red` | 4448, 10734 | Church, just south of the square |
+| `PubVillage_E_2L01_V8_ProgresBar` | 4455, 10700 | Pub with a wall sign, near the municipal office |
 | `PubVillage_E_2L01_V1` | 4469, 10902 | "Hostinec" pub with a beer garden, 120 m north, on the way to the quay |
+| `ShopHouse_E_2I01t_clothesstore` | 4441, 10789 | Clothes shop on the square |
+| `ShopHouse_E_2I01t_householdwares` | 4515, 10746 | Household-wares shop, east of the square |
+| `ShopHouse_E_2I01t_drugstore` | 4431, 10842 / 4553, 10774 | Two drugstores, north and east |
+| `House_Town_E_2I01/_2I02/_2I03` | around the square (4398, 10768; 4428, 10782; 4475, 10780; 4476, 10765; 4480, 10751; 4503, 10745; 4444, 10671 ...) | Town houses with interiors, the conversion stock (D9) |
+| `NewspaperBooth_E_01` | 4437, 10691 / 4425, 10754 | Kiosks |
 | `FuelStation_E_01_building` | 4617, 10659 | Fuel station on the south-east road in |
+| `Workshop_01_Garage`, `Workshop_01_Main` | 4401, 10970; 4391, 10630; 4546, 10670 ... | Workshops and garages (car lot, chop shop and fence candidates) |
 | `FactoryHall_E_01`, `GuardHouse_01` | 4566, 10503 / 4572, 10534 | Factory hall south of town. The legacy `MainWorld` spawn (4472, 10535) is beside it |
-| `Workshop_01_Main`, `Workshop_02_grey` | 4257, 10693 | Workshop yard, west, by the water |
-| `Warehouse_01_Workshop` | 4654, 11151 | Dock warehouse |
-| `HarborCrane_01`, `PierConcrete_01_*` | 4399, 11122 | The quay: about 40 concrete pier segments from 4000, 10990 to 4390, 11220 |
-| `Chapel_01_yellow` | 4308, 10447 | Chapel, south-west edge |
-| `House_Prefab_2I01_v1/_v2` | 4268, 10587 / 4297, 10587 | Prefab houses, south-west |
-| `HouseAddon_Garage_E_01`, `HouseAddon_Workshop_E_01` | 4866, 11029 | A garage and workshop at the east edge (fence barn candidate) |
+| `HarborCrane_01`, `PierConcrete_01_*` | 4399, 11122 | The quay, from 4000, 10990 to 4390, 11220 |
+| `HouseAddon_Garage_E_01`, `HouseAddon_Workshop_E_01` | 4866, 11029 | A garage and workshop yard at the east edge |
 
 **Proposed homes, state 0** (each one confirmed against the dossier at mapping time):
 
 | Slot | System | Proposed building | Status |
 |---|---|---|---|
-| `arrival` | Spawn, clerk, Form R-89, licence desk | The largest town house on the square (town hall role, D9) | No vanilla municipal office in Saint-Philippe; a converted town house, or a placed building on a free plot if none fits |
+| `arrival` | Spawn, clerk, Form R-89, licence desk | `MunicipalOffice_E_01` (4419, 10648) | Strong fit: the vanilla town hall, with a counter |
 | `hostel` | First night (#1758) | A town house on the square (D9), not `MountainHotel_01_green` | The green mountain hotel is in Vernon (9933, 2602), 8 km away. It keeps the coast's hotel role later |
-| `cafe` | Café owner, radio, chess (state 1) | A ground-floor shop-house on the square | Scout picks |
-| `bank` | Bank, vault, ATM | A solid town house on the square | Scout picks |
-| `police` | Police station, desk, cells, armoury | A town house on the square (D9) | No vanilla police villa in town (nearest: Meaux) |
-| `clinic` | Hospital and medic | A town house near the square | Scout picks |
-| `general-store` | General store | `ShopHouse` or a ground-floor shop | Scout picks |
+| `cafe` | Café owner, radio, chess (state 1) | `PubVillage_E_2L01_V8_ProgresBar` (4455, 10700), or a shop-house on the square | Good fit: a pub near the town hall |
+| `bank` | Bank, vault, ATM | `Office_E_01` (4369, 10656), beside the town hall | Good fit; the scout checks the interior for a vault room |
+| `police` | Police station, desk, cells, armoury | `Villa_E_2I01_Police` (4553, 10748) | Strong fit: the vanilla police villa |
+| `clinic` | Hospital and medic | A town house near the square (D9) | Converted town house |
+| `general-store` | General store | `ShopHouse_E_2I01t_householdwares` (4515, 10746) | Strong fit |
 | `clothing` | Clothing counter | `ShopHouse_E_2I01t_clothesstore` (4441, 10789) | Strong fit: the vanilla building is a clothes store |
-| `gun-counter` | Gun counter (permit-gated) | A shop-house near the police | Scout picks |
+| `gun-counter` | Gun counter (permit-gated) | `ShopHouse_E_2I01t_drugstore` (4553, 10774), beside the police villa | Good fit; the second drugstore (4431, 10842) stays the drug store |
 | `fuel` | Fuel job, robbery till | `FuelStation_E_01_building` (4617, 10659) | Strong fit |
-| `fence` | Vince's barn | A barn or the garage yard on the edge (4866, 11029) | Scout picks |
+| `fence` | Vince's barn | The garage and workshop yard on the east edge (4866, 11029) | Scout picks |
 | `board` | Town board and the physical map board (D16) | A wall on the square | Kit only |
 | `taxi` | Taxi rank and depot (D8) | Kerb on the square | Kit only |
 | `parcel` | Parcel job depot | Kiosk or a shop near the square | Scout picks |
@@ -368,5 +374,5 @@ cards were created with `tools\cli slice new 2201`. Each card is file-disjoint a
 `town-draft`, worktree `town-draft-saint-philippe-square-<slot>`, `arrival` first), then a state-0 readiness
 card, under #2201. Meaux's slot cards follow M1 the same way.
 
-**Why Meaux is the second place.** It is next in the bake order, its vanilla police villa and church test
-a different template fit, and its road to the hub is state 1's patrol route.
+**Why Meaux is the second place.** It is next in the bake order, its police villa, church and pubs test the
+`village` template, and its road to the hub is state 1's patrol route.
