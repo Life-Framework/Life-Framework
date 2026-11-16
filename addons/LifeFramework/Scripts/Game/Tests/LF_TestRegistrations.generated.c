@@ -189,11 +189,13 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_E2E_ShutdownSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2EInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventBus(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventModuleLoader(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventPackOverlay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPhaseJip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventPhaseRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPlayersNearby(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventPreconditions(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventSceneCheck(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventScenePlan(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventSceneSpawn(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventSceneWalk(), LF_TestTier.WORLD);
@@ -238,6 +240,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_GarageStoreRange(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GraceProtection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GridFrameLabels(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_GridTeleport(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GridWorldBoot(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GuidCompare(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GunCounter(), LF_TestTier.WORLD);

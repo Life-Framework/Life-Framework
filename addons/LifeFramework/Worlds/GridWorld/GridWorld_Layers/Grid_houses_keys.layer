@@ -103,3 +103,13 @@ LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et"
  coords 28 0 64
  m_vSize 2 1 1.5
 }
+GenericEntity Grid_houses_keys_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "houses-keys"
+  }
+ }
+ coords 33.7 0 66.5
+ angleY 270
+}

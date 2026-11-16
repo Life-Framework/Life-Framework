@@ -24,6 +24,76 @@ StringTable {
      Target_en_us "Civil Registry of Everon, Residents on File"
      Comment "Character pick title on arrival, shown when an account may hold more than one character. A 1989 registry sheet."
     }
+    CustomStringTableItem "{3E9F5343A58B4851}" {
+     Id "LF-Dialogue_CafeOwner_Bye"
+     Target_en_us "Come back when you are hungry. Or lonely. It is the same to me."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{25858095EC3BC26B}" {
+     Id "LF-Dialogue_CafeOwner_Clerk"
+     Target_en_us "Before anything else, see the town clerk at the desk on the square. He keeps the register. A person who is not in it is no one at all, here."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{CF6D5EEB9B023A27}" {
+     Id "LF-Dialogue_CafeOwner_Greet"
+     Target_en_us "Come in, come in. The coffee is hot. You are new here, I can tell. Nobody walks that slowly who has lived here long."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{73190CD9164F1A41}" {
+     Id "LF-Dialogue_CafeOwner_Handbook"
+     Target_en_us "And read the handbook. It is short. It tells you what the town expects of you, and what the police will not forgive."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{CCB81BA7119C635E}" {
+     Id "LF-Dialogue_CafeOwner_Move"
+     Target_en_us "When they brought us here, the town did not know what to say. So a neighbour brought bread, and nobody asked a single question. I still use the cups. Every day. Someone has to."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{29B0A09C06BED190}" {
+     Id "LF-Dialogue_CafeOwner_SayAskClerk"
+     Target_en_us "Who should I see first?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{6DCE0D9D87E35551}" {
+     Id "LF-Dialogue_CafeOwner_SayAskHandbook"
+     Target_en_us "Is there a guide to the town?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{B866FA8A45B03DF1}" {
+     Id "LF-Dialogue_CafeOwner_SayAskHelp"
+     Target_en_us "Where should I start?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{ABCADE5737CA86E0}" {
+     Id "LF-Dialogue_CafeOwner_SayAskMove"
+     Target_en_us "What was the move like?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{F6AB13DFF09CF8A6}" {
+     Id "LF-Dialogue_CafeOwner_SayAskWork"
+     Target_en_us "Where can I find work?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{B0261E2F6F14A07D}" {
+     Id "LF-Dialogue_CafeOwner_SayAskZone"
+     Target_en_us "Where did you come from?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{206E3B9DD2FBF559}" {
+     Id "LF-Dialogue_CafeOwner_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{A599A26E0012B1F7}" {
+     Id "LF-Dialogue_CafeOwner_Work"
+     Target_en_us "If you need work, ask at the post office. They always need couriers. Walk fast, keep the parcels dry, and you will be paid by the end of the day."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{CFA276D036C02296}" {
+     Id "LF-Dialogue_CafeOwner_Zone"
+     Target_en_us "I came out of the zone. They told us three days. Pack what you can carry, they said, and you will be back by Friday. I took the kettle and my mother's cups. That was three years ago."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
     CustomStringTableItem "{9BFB48FA2968AE5D}" {
      Id "LF-Dialogue_ClerkEveron_AboutTown"
      Target_en_us "Everon is a small island. People here know each other, and they remember faces. Stay honest and you will do well."
@@ -123,6 +193,51 @@ StringTable {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
      Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{29B583DBF009AF66}" {
+     Id "LF-Dialogue_NightShift_AboutMove"
+     Target_en_us "They gave us one bus and one suitcase each. The island is quiet, and the quiet is hard at first. But nobody asks you to leave in the middle of dinner."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{3A926B5A26D83CD5}" {
+     Id "LF-Dialogue_NightShift_AboutWork"
+     Target_en_us "If you need wages, read the town board on the square. It lists who is hiring. And the clerk's office has a bed upstairs, for the first nights. Ask the clerk."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{5844A7CD27076B26}" {
+     Id "LF-Dialogue_NightShift_AboutZone"
+     Target_en_us "I worked near the Zone before they moved us. Twelve kilometres from the reactor. They told us three days. That was three years ago. I still keep my house key."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{6F1F8D8B72E42914}" {
+     Id "LF-Dialogue_NightShift_Bye"
+     Target_en_us "Good night. Walk safe."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{B3BFC4DA71312BAC}" {
+     Id "LF-Dialogue_NightShift_Greet"
+     Target_en_us "Evening. Or morning, I lose track on nights. You are one of the new families, yes? Sit if you like."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{D435BA49E015D84F}" {
+     Id "LF-Dialogue_NightShift_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{88229E39461B49AD}" {
+     Id "LF-Dialogue_NightShift_SayMove"
+     Target_en_us "How was the move?"
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{BCCC43C3AC789D1A}" {
+     Id "LF-Dialogue_NightShift_SayWork"
+     Target_en_us "Is there work for me?"
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{DE78ADF43EDC7C40}" {
+     Id "LF-Dialogue_NightShift_SayZone"
+     Target_en_us "You worked near the Zone?"
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
     }
     CustomStringTableItem "{AA83C29649EB0D96}" {
      Id "LF-Dialogue_OldMan_Bye"
@@ -1874,10 +1989,20 @@ StringTable {
      Target_en_us "Couriers wanted"
      Comment "Town board card (work): card title; the prompt reads Read: <title>."
     }
+    CustomStringTableItem "{3E81A47C5D0B92F6}" {
+     Id "LF-Townsfolk_CafeOwner_Name"
+     Target_en_us "Odile Marchand"
+     Comment "Townsfolk (The relocated, #1961): the café owner's name, the speaker line of her dialogue."
+    }
     CustomStringTableItem "{6784DBE972ED4ECD}" {
      Id "LF-Townsfolk_CafeOwner_Role"
      Target_en_us "Café owner"
      Comment "Townsfolk (The relocated, #1960): what Odile Marchand does, the role line under the name."
+    }
+    CustomStringTableItem "{7C3E5A19D04B82F6}" {
+     Id "LF-Townsfolk_NightShift_Name"
+     Target_en_us "Rémi Duval"
+     Comment "Townsfolk (The relocated, #1963): the night-shift worker's name over his dialogue captions."
     }
     CustomStringTableItem "{B0FC17DD51416582}" {
      Id "LF-Townsfolk_NightShift_Role"
