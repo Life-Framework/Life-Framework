@@ -8,6 +8,11 @@
 //! once and the copies above close the gap. Deletes what it spawns.
 class LF_Test_StoreFoldedStack : LF_Test
 {
+	//! The e2e restart proof (LF_Test_E2E_SaveState) keeps its own DarkBrown pile on this same counter
+	//! and leaves it standing, so this test piles another colour: AddTestLine refuses a prefab the store
+	//! already has a line for, and a shared one made the run measure the e2e pile instead of its own.
+	static const ResourceName PILE_ITEM = "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et";
+	//! The e2e restart proof's pile (DarkBrown).
 	static const ResourceName TROUSERS = "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et";
 	//! Height between two folded copies of the pile.
 	static const float STEP = 0.04;
@@ -54,15 +59,15 @@ class LF_Test_StoreFoldedStack : LF_Test
 		if (!RedProof())
 			stack = 4;
 
-		store.AddTestLine(TROUSERS, 4, 4, slots, stack);
-		ctx.Equal(4, store.GetShelfCount(TROUSERS), "four copies on the pile");
+		store.AddTestLine(PILE_ITEM, 4, 4, slots, stack);
+		ctx.Equal(4, store.GetShelfCount(PILE_ITEM), "four copies on the pile");
 
 		// The pile: bottom on the counter, each copy one step higher, all turned by the slot yaw.
 		array<EntityID> ids = {};
 		float wantYaw = storeCounter.GetYawPitchRoll()[0] + YAW;
 		for (int i = 0; i < 4; i++)
 		{
-			IEntity copy = store.GetShelfItem(TROUSERS, i);
+			IEntity copy = store.GetShelfItem(PILE_ITEM, i);
 			if (!copy)
 			{
 				ids.Insert(EntityID.INVALID);
@@ -77,30 +82,30 @@ class LF_Test_StoreFoldedStack : LF_Test
 
 		// A restart: the engine restored the four copies and the store knows none of them. Each is
 		// adopted into its own slot; none is deleted and none is spawned anew.
-		store.ForgetShelf(TROUSERS);
-		store.ForceStock(TROUSERS, 4);
-		ctx.Equal(4, store.GetShelfCount(TROUSERS), "after the restart the pile still has four");
+		store.ForgetShelf(PILE_ITEM);
+		store.ForceStock(PILE_ITEM, 4);
+		ctx.Equal(4, store.GetShelfCount(PILE_ITEM), "after the restart the pile still has four");
 		for (int r = 0; r < 4; r++)
 		{
-			IEntity again = store.GetShelfItem(TROUSERS, r);
+			IEntity again = store.GetShelfItem(PILE_ITEM, r);
 			ctx.True(again && again.GetID() == ids[r], string.Format("the restored copy %1 is adopted into its own slot, not deleted and respawned", r));
 		}
 
 		// A shopper takes the second copy from the bottom: the stock drops once, the two above drop down.
-		IEntity middle = store.GetShelfItem(TROUSERS, 1);
+		IEntity middle = store.GetShelfItem(PILE_ITEM, 1);
 		ctx.NotNull(middle, "the second copy is on the pile");
 		if (middle)
 		{
 			middle.SetOrigin(tableAt + "3 0 3");
 			ctx.Equal(1, store.DetectTaken(), "the store notices one copy taken");
-			ctx.Equal(3, store.GetStock(TROUSERS), "the stock is down by one");
-			ctx.Equal(3, store.GetShelfCount(TROUSERS), "three copies are left on the pile");
-			ctx.True(store.GetShelfItem(TROUSERS, 3) == null, "the top of the pile is empty");
-			IEntity bottom = store.GetShelfItem(TROUSERS, 0);
+			ctx.Equal(3, store.GetStock(PILE_ITEM), "the stock is down by one");
+			ctx.Equal(3, store.GetShelfCount(PILE_ITEM), "three copies are left on the pile");
+			ctx.True(store.GetShelfItem(PILE_ITEM, 3) == null, "the top of the pile is empty");
+			IEntity bottom = store.GetShelfItem(PILE_ITEM, 0);
 			ctx.True(bottom && bottom.GetID() == ids[0], "the bottom copy never moved");
 			for (int c = 1; c < 3; c++)
 			{
-				IEntity closed = store.GetShelfItem(TROUSERS, c);
+				IEntity closed = store.GetShelfItem(PILE_ITEM, c);
 				ctx.NotNull(closed, string.Format("slot %1 is filled again", c));
 				if (closed)
 				{
@@ -112,7 +117,7 @@ class LF_Test_StoreFoldedStack : LF_Test
 			SCR_EntityHelper.DeleteEntityAndChildren(middle);
 		}
 
-		store.RemoveTestLine(TROUSERS);
+		store.RemoveTestLine(PILE_ITEM);
 		LF_Stores.ClearUnpaid();
 		SCR_EntityHelper.DeleteEntityAndChildren(table);
 	}
