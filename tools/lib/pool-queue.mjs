@@ -492,6 +492,51 @@ export function budgetSeconds(runs, kind, machine, { multiplier = 1, override } 
   return { runS: Math.ceil(runS), source, rate };
 }
 
+// Boot budget for one world on one machine, in seconds (#1700). DebugWorld (and no --world) boots in
+// seconds, so it keeps the small base budget. Any other world is a big map (CoreOnEveron streams ~1.1M
+// entities, over a minute on lf-cloud): it starts at WORLD_BOOT_S (the table, else BIG_WORLD_BOOT_S), and
+// a world whose recent runs on that machine timed out gets double (up to BOOT_CAP_S) so a budget that is
+// still too tight corrects itself. Times the machine multiplier; --boot-budget wins. The same function
+// runs on the pool machine itself (the remote leg gets --world), so nothing hangs on an env var travelling.
+export const BIG_WORLD_BOOT_S = 150;
+export const BOOT_CAP_S = 600;
+export const WORLD_BOOT_S = { CoreOnEveron: 150 };
+const SMALL_WORLDS = new Set(["", "DebugWorld", "GridWorld", "TestLogic", "Everon1989Town"]);
+
+// "Worlds/CoreOnEveron/CoreOnEveron.ent", a "{GUID}Missions/X.conf" header or a bare name -> "CoreOnEveron".
+export function worldKey(world) {
+  const s = String(world ?? "").replace(/^\{[0-9A-Fa-f]+\}/, "").replace(/\\/g, "/").trim();
+  const last = s.split("/").pop() ?? "";
+  return last.replace(/\.(ent|conf)$/i, "");
+}
+
+export function bootBudgetSeconds(runs, { world, machine, base = BOOT_BUDGET_S, multiplier = 1, override } = {}) {
+  const key = worldKey(world);
+  if (Number.isFinite(override) && override > 0) return { bootS: Math.round(override), source: "override", world: key };
+  if (SMALL_WORLDS.has(key)) return { bootS: Math.ceil(base * multiplier), source: "default", world: key };
+  let bootS = Math.max(base, WORLD_BOOT_S[key] ?? BIG_WORLD_BOOT_S) * multiplier;
+  let source = key in WORLD_BOOT_S ? "world" : "big-world";
+  const mine = runs.filter((r) => r.machine === machine && worldKey(r.world) === key).slice(-20);
+  if (mine.some((r) => r.result === "timeout")) {
+    bootS *= 2;
+    source += "+raised";
+  }
+  return { bootS: Math.min(BOOT_CAP_S, Math.ceil(bootS)), source, world: key };
+}
+
+// The machines to rank this round: those not in `avoid`, or all of them when avoiding would leave none
+// (a refused machine is the only one left: it is asked again, after the router's backoff).
+export function withoutAvoided(machines, avoid) {
+  if (!avoid || !avoid.size) return machines;
+  const keep = machines.filter((m) => !avoid.has(m.name));
+  return keep.length ? keep : machines;
+}
+
+// How long the router waits before asking again after n lane refusals in a row: 3 s, doubling, at most 60 s.
+export function laneRefusalBackoffMs(n) {
+  return Math.min(60000, 3000 * 2 ** Math.max(0, n - 1));
+}
+
 // One session request per worktree (issue #542): a retry whose earlier `session up` is still
 // queued (its caller timed out but the process lives) must not stack. Given the live tickets and
 // the ticket a request just wrote, returns the files of the OTHER session tickets from the same

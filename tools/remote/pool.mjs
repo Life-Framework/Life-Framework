@@ -102,10 +102,14 @@ export function poolSettings(root) {
 
 // Run and boot budgets (seconds) for a purpose on a machine: learned from
 // runs.jsonl, seeded by defaults, times the machine's multiplier; --budget wins.
-export function budgetsFor(root, m, purpose, override) {
+// world (#1700): a world other than DebugWorld gets a boot budget that fits it (q.bootBudgetSeconds);
+// bootOverride (--boot-budget) wins.
+export function budgetsFor(root, m, purpose, override, { world, bootOverride } = {}) {
   const settings = poolSettings(root);
-  const b = q.budgetSeconds(readRuns(root), purpose, m.name, { multiplier: m.budgetMultiplier ?? 1, override: Number(override) });
-  return { ...b, bootS: Math.ceil(settings.bootBudgetS * (m.budgetMultiplier ?? 1)) };
+  const runs = readRuns(root);
+  const b = q.budgetSeconds(runs, purpose, m.name, { multiplier: m.budgetMultiplier ?? 1, override: Number(override) });
+  const boot = q.bootBudgetSeconds(runs, { world, machine: m.name, base: settings.bootBudgetS, multiplier: m.budgetMultiplier ?? 1, override: Number(bootOverride) });
+  return { ...b, bootS: boot.bootS, bootSource: boot.source };
 }
 
 // The priority of a run: --priority, then LF_PRIORITY, then the worktree's
@@ -305,7 +309,30 @@ export function laneNotes(m) {
 // Committed registry, then lf.local.json "pool": { "machines": [ { "name", ... } ] }
 // entries merge by name ({"name": "lf-testbox", "disabled": true} turns one off).
 // LF_TESTBOX / LF_TESTBOX_ROOT keep working: they add or retarget that host.
+// The router tells a leg that runs on a pool machine how many lanes that machine has (LF_POOL_THIS_LANES,
+// {"test":N,"session":K}; #1699). The lane counts live in the router's pool.json / lf.local.json, which the
+// run folder on the machine does not have, so without this the leg takes this PC's counts (lf-cloud: 2 session
+// lanes, the router judged 9) and refuses a request the router sent it, forever. The env wins for the local machine.
+export const LANES_ENV = "LF_POOL_THIS_LANES";
+export function lanesEnvFor(m) {
+  return m?.lanes ? JSON.stringify({ test: m.lanes.test, session: m.lanes.session }) : "";
+}
+export function applyLanesEnv(machines, env = process.env) {
+  const raw = env[LANES_ENV];
+  if (!raw) return machines;
+  let lanes = null;
+  try {
+    lanes = laneSetting({ lanes: JSON.parse(raw) });
+  } catch {}
+  if (!lanes) return machines;
+  return machines.map((m) => (m.via === "local" ? { ...m, lanes } : m));
+}
+
 export function loadMachines(root) {
+  return applyLanesEnv(loadMachinesRaw(root));
+}
+
+function loadMachinesRaw(root) {
   const base = readJson(poolJson(), { machines: [{ name: "local", via: "local", slots: 1 }] });
   const byName = new Map();
   for (const m of base.machines ?? []) byName.set(m.name, { ...m });
@@ -1667,7 +1694,9 @@ export function machineCtx(root, m, settings, remote = null) {
   return { starveMs, freeMb: remote.freeMb ?? undefined, heldMb: heldMbOf(settings, Object.values(remote.locks ?? {}).filter((i) => i?.alive)) };
 }
 
-export async function chooseSessionMachine(root, { clients = 1, profile = "full", waitMs = 0, priority, meta = {}, log = console.log, opts = {} } = {}) {
+// avoid: names of machines whose own `up` just refused this request (LANE_BUSY); they are not picked again while
+// another machine can take it (the router backs off and the refusal expires, agent-box/session.mjs).
+export async function chooseSessionMachine(root, { clients = 1, profile = "full", waitMs = 0, priority, meta = {}, log = console.log, opts = {}, avoid } = {}) {
   const all = sessionMachineCandidates(root, clients);
   // One machine configured: its own queue (cmdSessionUp) does the waiting.
   if (all.length < 2) return all[0] ?? null;
@@ -1736,7 +1765,7 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
       };
       // The machine with the most RAM headroom for this session goes first, weighted by speed
       // (q.rankMachines): a starved machine is not tried while another has room.
-      const order = orderMachines(root, machines, settings, { reserveMb: q.sessionReserveMb(settings, clients, profile), stateOf: (m) => seenOf(m)?.state, localFreeMb: opts.localFreeMb });
+      const order = orderMachines(root, q.withoutAvoided(machines, avoid), settings, { reserveMb: q.sessionReserveMb(settings, clients, profile), stateOf: (m) => seenOf(m)?.state, localFreeMb: opts.localFreeMb });
       for (const m of order) {
         const lanes = lanesFor(m, "session");
         const st = seenOf(m);
@@ -2008,7 +2037,7 @@ export async function acquireSlot(root, opts = {}) {
     if (!budgetCache.has(m.name)) {
       let b = null;
       try {
-        b = budgetsFor(root, m, purpose, opts.budget);
+        b = budgetsFor(root, m, purpose, opts.budget, { world: opts.world, bootOverride: opts.bootBudget });
       } catch (e) {
         console.log(`WARN  pool: run budget unavailable (${String(e?.message ?? e).split("\n")[0]}); no timeout for this run`);
       }
@@ -2858,7 +2887,7 @@ machines: tools/pool.json, overridden by "pool" in lf.local.json`);
 // Syncs this worktree to <box>/Life-Framework-rt-<slug><suffix> without taking
 // a slot, then runs `node <script> <args>` there (sessions: the remote
 // `session up` takes the box's server-2001 itself and hands it to its server).
-export async function syncAndRun(root, m, { script, args, suffix = "-session", purpose = "session", onSlot }) {
+export async function syncAndRun(root, m, { script, args, suffix = "-session", purpose = "session", onSlot, env }) {
   const snap = tb.snapshotCommit(root);
   const cfg = holderConfig(root, m, snap, { slots: 0, purpose, suffix });
   const r = await startHolder(root, m, cfg);
@@ -2868,7 +2897,7 @@ export async function syncAndRun(root, m, { script, args, suffix = "-session", p
   }
   r.slot.snap = snap;
   onSlot?.(r.slot.rDir);
-  const out = await tb.runRemote(root, r.slot, { args, script, writeSyncState: (rt, name, rec) => writeSyncState(rt, `${name}${suffix}`, rec), fetchLog: false });
+  const out = await tb.runRemote(root, r.slot, { args, script, writeSyncState: (rt, name, rec) => writeSyncState(rt, `${name}${suffix}`, rec), fetchLog: false, env });
   return { ...out, rDir: r.slot.rDir };
 }
 
