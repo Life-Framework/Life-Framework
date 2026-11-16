@@ -36,6 +36,7 @@ import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
 import { trimProcs } from "../lib/ws-trim.mjs";
 import { statusLine } from "../lib/wb-lock.mjs";
+import { setMachineHostnameForTest } from "../lib/machine-locks.mjs";
 import * as shipQueue from "../lib/ship-queue.mjs";
 import { writeFileAtomic } from "../lib/atomic-file.mjs";
 
@@ -52,6 +53,7 @@ let hostnameOverride = null;
 const hostname = () => hostnameOverride ?? osHostname();
 export function setHostnameForTest(name) {
   hostnameOverride = name ? String(name) : null;
+  setMachineHostnameForTest(name);
 }
 
 export const slotLockName = q.slotLockName;
@@ -446,7 +448,7 @@ export function dropTicket(root, f) {
 // ---------------------------------------------------------------- local slots
 
 function localLockFile(root, name) {
-  return join(wt.hubDirOf(root), "locks", `${name}.lock`);
+  return wt.lockFileOf(root, name);
 }
 
 // Servers a dead lock owner left behind still hold UDP 2001; stop the ones

@@ -35,6 +35,13 @@ class LF_ConfiscateAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the searched player had police contact now (#2102).
+	static void StampContact(string suspectUid)
+	{
+		LF_PoliceContact.Stamp(suspectUid, "search");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (LF_Systems.Refuses("Police", "LF_ConfiscateAction"))
@@ -55,6 +62,10 @@ class LF_ConfiscateAction : ScriptedUserAction
 			LF_Debug.Warn("Police", "confiscate refused: " + typename.EnumToString(LF_EInteractionRefusal, refusal));
 			return;
 		}
+
+		// The search is police contact for the logout rule (#2102), found or clean: stamped before it
+		// runs, so an offence the search files still lands on a suspect who just met an officer.
+		StampContact(LF_Utils.GetPlayerUID(LF_PlayerInteraction.PlayerIdOf(pOwnerEntity)));
 
 		// Any player can be searched at a stop for chain goods (#419); the weapon and scanner
 		// confiscation below stays for a wanted suspect.
