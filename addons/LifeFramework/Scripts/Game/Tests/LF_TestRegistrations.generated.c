@@ -342,6 +342,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PerfBudget(), LF_TestTier.PERF);
 		manager.Register(new LF_Test_PeriodCars(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PersistLastPosition(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PersistSwitches(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PersistSwitchesRestart(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PhoneCallBackBook(), LF_TestTier.LOGIC);

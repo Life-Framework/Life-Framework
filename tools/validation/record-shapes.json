@@ -1,5 +1,5 @@
 {
-  "saveVersion": 37,
+  "saveVersion": 38,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -39,7 +39,8 @@
     "heldground": "LF_HeldGroundRow",
     "itemstolen": "LF_StorageItemStolenRecord",
     "convictions": "LF_ConvictionRow",
-    "firstspawns": "LF_FirstSpawnRow"
+    "firstspawns": "LF_FirstSpawnRow",
+    "lastpos": "LF_LastPositionRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -479,6 +480,15 @@
       "since": 37,
       "fields": [
         "string m_sCharacterId"
+      ]
+    },
+    "LF_LastPositionRow": {
+      "since": 38,
+      "fields": [
+        "string m_sCharacterId",
+        "vector m_vPosition",
+        "float m_fYaw",
+        "int m_iTakenUnix"
       ]
     }
   }
