@@ -14,6 +14,12 @@ class LF_BackRoomRules
 {
 	//! The reach and the shut time are LF_ShopLimitsConfig fields.
 
+	//! The catalogue outlet every back room is (#1762): a back room with no outlet of its own sells
+	//! this one, so its stock and its gate are catalogue offers, not a list on the entity.
+	static const string OUTLET_BACK_ROOM = "back_room";
+	//! The catalogue outlet of the black market stall (#1762).
+	static const string OUTLET_BLACK_MARKET = "black_market";
+
 	//------------------------------------------------------------------------------------------------
 	static bool IsClosed(int closedUntilMs, int nowMs)
 	{
