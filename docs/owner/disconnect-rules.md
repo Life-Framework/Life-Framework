@@ -16,7 +16,8 @@ a key out to keep it.
     "cuffedFineAllowsDebt": true,
     "downedDies": true,
     "wantedLogoutAdd": 0,
-    "jailClockOffline": false
+    "jailClockOffline": false,
+    "contactWindowSeconds": 120
   }
 }
 ```
@@ -27,6 +28,7 @@ a key out to keep it.
 | Escorted by an officer (on foot or in a car) | Same as cuffed | `escortedCountsAsCuffed` |
 | Downed | Dies. The death counts as if they bled out: a murder goes to whoever downed them if that player is online, and the rejoin wakes at the hospital. A stunned player never dies this way. | `downedDies` |
 | Wanted | The warrant stays on the character and is saved. | `wantedLogoutAdd` raises it further |
+| Wanted, within two minutes of police contact | Treated as cuffed: jailed (or fined or released by `cuffedRule`), with the leaving-custody charge, and written up as a flagged logout. Police contact is a stop, a search or a chase report (an identification) on that character. Wanted but past the window rejoins in place with the warrant. | `contactWindowSeconds` (default 120, `0` turns it off) |
 | Jailed | The time left stays and is saved. Only online time is served. | `jailClockOffline: true` lets the clock run while they are away |
 
 `fine` takes `cuffedFine` from the bank; with `cuffedFineAllowsDebt: false` it takes only what the
