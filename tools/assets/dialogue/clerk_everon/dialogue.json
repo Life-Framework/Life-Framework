@@ -4,10 +4,17 @@
   "patches": "clerk",
   "addon": "LF_Everon1989",
   "voice": {
-    "engine": "piper",
-    "id": "en_US-ljspeech-high",
-    "name": "LJ Speech (Piper)",
-    "why": "One voice per character (lead decision, 2026-11-17). Piper en_US-ljspeech-high is trained on LJ Speech, public domain, so it is licence-safe for public builds. It replaced the ElevenLabs JC voice for all thirteen lines."
+    "id": "NxYVRLlKssuLUMfbtwGR",
+    "name": "Julien - Serious",
+    "public_owner_id": "97c22f391bb277b4443a74b97d91e3cb858eb9b1398a79c3157585acd545df2b",
+    "why": "A mid-aged man with a French accent, calm, smart and serious: a measured, slightly formal municipal clerk. The town's own names are French (Dupont, Lefevre). Replaces the old 'JC' pick, who read as an old island official, and Piper ljspeech (maintainer: voices in ElevenLabs, 2026-11-17).",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.6,
+      "similarity_boost": 0.75,
+      "style": 0.1,
+      "speed": 0.95
+    }
   },
   "budget_chars": 3000,
   "lines": {

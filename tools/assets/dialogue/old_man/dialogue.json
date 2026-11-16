@@ -4,11 +4,17 @@
   "addon": "LF_Everon1989",
   "speaker_key": "#LF-Townsfolk_OldMan_Name",
   "voice": {
-    "engine": "piper",
-    "id": "en_US-ljspeech-high",
-    "name": "Piper en_US-ljspeech-high",
-    "length_scale": 1.12,
-    "why": "Free, offline and public-domain (LJ Speech); a slightly slower reading for an old man on a bench. Licence rule: ljspeech only, never lessac or libritts_r."
+    "id": "nTMUXLFSfbWmdKKy7nDC",
+    "name": "Alder - Warm, Raspy and Comforting",
+    "public_owner_id": "20fba41d288ee835b5e24d946dd0a7ca1015cf9a951cbf710d8532529656ffaf",
+    "why": "Gaspard Lenoir is old and weathered. Alder is a seasoned old-man voice with a gentle rasp and a slow-paced, comforting delivery, a long way from the other three speakers. Slowed to speed 0.85 for a man who only watches the square.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.6,
+      "similarity_boost": 0.8,
+      "style": 0.1,
+      "speed": 0.85
+    }
   },
   "budget_chars": 1500,
   "hear_range_m": 10,
