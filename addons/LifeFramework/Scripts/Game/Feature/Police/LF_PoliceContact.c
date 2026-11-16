@@ -10,7 +10,8 @@
 //!
 //! Sources: the officer identifications on the bus (LF_OnSuspectIdentified with how "ID check" or
 //! "caught in the act", IsContactSource); a stop or search action calls
-//! LF_PoliceContact.Stamp(uid, "stop"|"search") directly.
+//! LF_PoliceContact.Stamp(uid, ...) directly: a search (LF_ConfiscateAction.StampContact, "search")
+//! and a completed cuffing (LF_Cuffing.StampContact, "cuffing"), both #2102.
 //------------------------------------------------------------------------------------------------
 class LF_PoliceContact
 {
