@@ -6,76 +6,8 @@
 //! and removed by one pick-up that gives the kit back. Only on-duty police deploy or pick it up.
 //! A vehicle that arrives at the set moving and stops beside it is logged ([LFDebug:Roadblock]).
 //! Server: the checks, the deploy, the pick-up, the stop log. Client: the ghost (LF_RoadblockPreview).
-//! Nothing persists: a roadblock is temporary (docs/roadmap/building-foundation.md section 5). A set
-//! clears itself after Configs/Police/LF_Roadblock.conf's time (20 minutes), or as soon as the officer
-//! who laid it goes off duty or leaves (#2100); each removal logs its reason.
+//! Nothing persists: a roadblock is temporary (docs/roadmap/building-foundation.md section 5).
 //------------------------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------------------------
-//! How long a laid roadblock stands: Configs/Police/LF_Roadblock.conf (#2100).
-[BaseContainerProps(configRoot: true)]
-class LF_RoadblockConfig
-{
-	static const ResourceName CONFIG_PATH = "{67BBF2138564D06C}Configs/Police/LF_Roadblock.conf";
-
-	static const int DEFAULT_EXPIRY_MINUTES = 20; // lf-fixed: the fallback when the conf does not resolve; the conf holds the live value
-	static const int EXPIRY_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
-	static const int EXPIRY_MAX = 1440;	// lf-fixed: the schema limit (a day), mirrors the attribute params
-
-	[Attribute("20", UIWidgets.Auto, "Minutes a laid roadblock stands before it clears itself. It also clears when the officer who laid it goes off duty or leaves", params: "1 1440")]
-	int m_iExpiryMinutes;
-
-	protected static ref LF_RoadblockConfig s_Config;
-	protected static bool s_bLoadAttempted;
-
-	//------------------------------------------------------------------------------------------------
-	//! The loaded config, or null (logged once) when the file does not resolve.
-	static LF_RoadblockConfig Get()
-	{
-		if (s_bLoadAttempted)
-			return s_Config;
-
-		s_bLoadAttempted = true;
-		Resource container = BaseContainerTools.LoadContainer(CONFIG_PATH);
-		if (!container || !container.GetResource())
-		{
-			LF_Debug.Error(LF_Roadblocks.FEATURE, string.Format("roadblock config does not resolve, using defaults: %1", CONFIG_PATH));
-			return null;
-		}
-
-		s_Config = LF_RoadblockConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
-		if (!s_Config)
-			LF_Debug.Error(LF_Roadblocks.FEATURE, string.Format("roadblock config has an unexpected root class, using defaults: %1", CONFIG_PATH));
-
-		return s_Config;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Drops the cached instance so the next Get() reads the file again.
-	static void Reload()
-	{
-		s_Config = null;
-		s_bLoadAttempted = false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Minutes a roadblock stands, clamped to the schema.
-	static int ExpiryMinutes()
-	{
-		LF_RoadblockConfig config = Get();
-		if (!config)
-			return DEFAULT_EXPIRY_MINUTES;
-
-		return Math.ClampInt(config.m_iExpiryMinutes, EXPIRY_MIN, EXPIRY_MAX);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Milliseconds a roadblock stands.
-	static int ExpiryMs()
-	{
-		return ExpiryMinutes() * 60000;
-	}
-}
 
 //------------------------------------------------------------------------------------------------
 //! One vehicle near a set: whether it was seen moving and whether its stop is already logged.
@@ -100,33 +32,8 @@ class LF_RoadblockSet
 	ref LF_PlacedComposition m_Placed;
 	string m_sDeployer;
 	vector m_vCentre;
-	//! World time (ms) the set was laid.
-	int m_iDeployedMs;
 	int m_iStopped;
 	protected ref array<ref LF_RoadblockTrack> m_aTracks = {};
-
-	//------------------------------------------------------------------------------------------------
-	//! Deletes every piece of `block` still in the world; returns how many it deleted. (The placement
-	//! bookkeeping keeps the dead ids until the world ends; nothing finds a deleted piece again.)
-	static int RemovePieces(LF_RoadblockSet block)
-	{
-		BaseWorld world = GetGame().GetWorld();
-		int removed;
-		if (!world || !block.m_Placed)
-			return 0;
-
-		foreach (EntityID id : block.m_Placed.m_aIds)
-		{
-			IEntity piece = world.FindEntityByID(id);
-			if (!piece)
-				continue;
-
-			SCR_EntityHelper.DeleteEntityAndChildren(piece);
-			removed++;
-		}
-
-		return removed;
-	}
 
 	//------------------------------------------------------------------------------------------------
 	//! One sample of a vehicle: its speed (m/s) and its distance (metres) from the set's middle.
@@ -290,7 +197,6 @@ class LF_Roadblocks
 		block.m_Placed = placed;
 		block.m_sDeployer = LF_PoliceRanks.ResolveUid(officer);
 		block.m_vCentre = proposal[3];
-		block.m_iDeployedMs = NowMs();
 		s_aSets.Insert(block);
 		if (s_aSets.Count() == 1)
 			GetGame().GetCallqueue().CallLater(Tick, TICK_MS, true);
@@ -367,66 +273,6 @@ class LF_Roadblocks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static int NowMs()
-	{
-		if (!GetGame() || !GetGame().GetWorld())
-			return 0;
-
-		return Math.Round(GetGame().GetWorld().GetWorldTime());
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Whether the officer who laid `block` is still on duty. An account that is gone (the officer
-	//! left) counts as off duty.
-	protected static bool DeployerOnDuty(LF_RoadblockSet block)
-	{
-		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
-		if (!accounts || block.m_sDeployer.IsEmpty())
-			return false;
-
-		return LF_PoliceUtils.IsOnDutyOfficer(accounts.GetAccount(block.m_sDeployer));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server: why `block` should clear at world time `nowMs`, or "" when it stays.
-	protected static string ExpiryReason(LF_RoadblockSet block, int nowMs)
-	{
-		if (nowMs - block.m_iDeployedMs >= LF_RoadblockConfig.ExpiryMs())
-			return string.Format("expired after %1 min", LF_RoadblockConfig.ExpiryMinutes());
-
-		if (!DeployerOnDuty(block))
-			return string.Format("%1 is off duty or gone", block.m_sDeployer);
-
-		return "";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server: clears every set that has stood its time or whose officer is off duty or gone, as of
-	//! world time `nowMs` (a test drives the clock). Each removal logs its reason.
-	//! \return how many sets were cleared.
-	static int ExpireAt(int nowMs)
-	{
-		int cleared;
-		for (int i = s_aSets.Count() - 1; i >= 0; i--)
-		{
-			LF_RoadblockSet block = s_aSets[i];
-			string reason = ExpiryReason(block, nowMs);
-			if (reason.IsEmpty())
-				continue;
-
-			int removed = LF_RoadblockSet.RemovePieces(block);
-			s_aSets.Remove(i);
-			cleared++;
-			LF_Debug.Info(FEATURE, string.Format("cleared the roadblock of %1: %2 (%3 pieces removed)", block.m_sDeployer, reason, removed));
-		}
-
-		if (s_aSets.IsEmpty() && cleared > 0)
-			GetGame().GetCallqueue().Remove(Tick);
-
-		return cleared;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Server: one sample of every vehicle near each set.
 	static void Tick()
 	{
@@ -434,7 +280,6 @@ class LF_Roadblocks
 		if (!world)
 			return;
 
-		ExpireAt(NowMs());
 		for (int i = s_aSets.Count() - 1; i >= 0; i--)
 		{
 			LF_RoadblockSet block = s_aSets[i];
@@ -708,22 +553,5 @@ class LF_Roadblocks_StaticResetHook : LF_StaticResetHook
 	override void Apply()
 	{
 		LF_Roadblocks.ResetStatics();
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! World-end reset of LF_RoadblockConfig's statics (registered at script load; Core/LF_StaticReset.c).
-class LF_RoadblockConfig_StaticResetHook : LF_StaticResetHook
-{
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_RoadblockConfig_StaticResetHook());
-
-	override string Owner()
-	{
-		return "LF_RoadblockConfig";
-	}
-
-	override void Apply()
-	{
-		LF_RoadblockConfig.Reload();
 	}
 }
