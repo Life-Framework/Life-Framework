@@ -16,6 +16,7 @@ import {
   CORE_VERSION_FILE,
   PACK_MANIFEST_FILE,
   STAMPED_FILES,
+  cacheBustedRequest,
   cmpSemver,
   discordPost,
   inRange,
