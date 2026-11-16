@@ -250,6 +250,7 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `resource database[ [addon]]: rdb complete after N s; stopped Workbench instead of waiting for it to exit` | INFO | The refresh Workbench wrote a complete rdb; it often freezes afterwards (`Application hangs (generated dump and waiting)`), so it is stopped once the rdb has held for 3 s. |
 | `WARN  resource database refresh[ [addon]]: Workbench ran the full 600 s without a complete rdb; stopped it` | WARN | The refresh never produced a complete rdb. Read `server/profile/rdb/logs/<newest>/console.log`. |
 | `[LFDebug:Packs] core <x.y.z> accepted by pack <id>` (server, boot) | INFO | The mission's pack manifest accepts the running core version; logged once. `toolscli release chapter --verify` reads it to prove the live server runs the released core (docs/release/chapter-release.md). |
+| `[LFDebug:Ops] restart due: wrote $profile:lf-host-restart, closing the game` then the 0grind service stays `stopped` | BY DESIGN / FIXED | The clean close is not a crash, so 0grind's Restart on Failure does not relaunch it; the panel Workflow `Scheduled restart start` does (Start the server). 2026-11-16 it was stored at 05:02 and 17:02 UTC (entered as local 06:02 and 18:02), an hour before the close, so the box stayed down about 6 h. The server clock and log timestamps are UTC. Now 06:02, 06:07, 18:02, 18:07 UTC. Check: `host remote 0grind status` shows `running` at 06:03 and 18:03; see `docs/ops/rented-box.md` "0grind: the scheduled restart". |
 
 ## How to add a row
 
