@@ -78,7 +78,7 @@ class LF_Test_Roadmap_JobsWorld : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		Resource parcel = Resource.Load(LF_CivilianJob.ParcelPrefab());
-		ctx.True(parcel.IsValid(), "hand-carry parcel prefab loads");
+		ctx.True(parcel.IsValid(), "parcel prefab loads");
 		Resource fuel = Resource.Load(LF_CivilianJob.FUEL_PREFAB);
 		ctx.True(fuel.IsValid(), "fuel can prefab loads");
 		Resource taxiPrefab = Resource.Load(LF_CivilianJob.TAXI_PREFAB);
@@ -92,8 +92,8 @@ class LF_Test_Roadmap_JobsWorld : LF_Test
 		ctx.True(crate != null, "parcel crate spawns");
 		if (crate)
 		{
-			LF_HandCarryComponent carry = LF_Component<LF_HandCarryComponent>.Find(crate);
-			ctx.NotNull(carry, "parcel crate is the hand-carry prefab");
+			LF_HandToolComponent carry = LF_HandTool.Of(crate);
+			ctx.NotNull(carry, "parcel crate is a hand tool (#1846)");
 		}
 
 		IEntity depot = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.JOB_DEPOT);

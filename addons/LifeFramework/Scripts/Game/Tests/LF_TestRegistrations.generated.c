@@ -317,6 +317,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ParcelCarry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParcelCollision(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParcelDescription(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ParcelHandTool(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ParkBrakeWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Payphone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PerfBudget(), LF_TestTier.PERF);
