@@ -37,9 +37,6 @@ class LF_FirstSpawn
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! World end: called from the LF_GameModeRoleplay destructor, after the shutdown save. Not a
-	//! LF_StaticResetHooks layer: that modded chain is past the script stack depth (the suite
-	//! overflows at about 124 layers).
 	static void ResetStatics()
 	{
 		s_aRows = null;
@@ -150,5 +147,22 @@ class LF_FirstSpawn
 		}
 
 		return applied;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_FirstSpawn's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_FirstSpawn_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_FirstSpawn_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_FirstSpawn";
+	}
+
+	override void Apply()
+	{
+		LF_FirstSpawn.ResetStatics();
 	}
 }

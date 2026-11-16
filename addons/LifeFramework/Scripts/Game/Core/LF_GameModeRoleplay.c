@@ -103,8 +103,6 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_PlayerAccountManager.Reset();
 		// World end: drop process-global feature state so a reload starts clean (see LF_StaticReset).
 		LF_StaticReset.ResetAll();
-		// First-spawn marks (#1964): no StaticResetHooks layer, the chain is at its stack limit.
-		LF_FirstSpawn.ResetStatics();
 		UnregisterDebugMenuListener();
 		if (m_bLF_AccountRefreshRunning && GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(LF_RefreshAccountReplication);
