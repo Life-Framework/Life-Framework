@@ -584,6 +584,6 @@
   in the last N in-game days?" (the stamp day counts as day 0, so a window of 3 is the stamp day and
   the two after it); the firearm permit desk (#1766) refuses an application on it, with the window
   from `LF_LicencesConfig`. Server only, never replicated. Saved as the `convictions` payload (save
-  version 35); vanilla persistence restores the clock, so a stamp keeps its age across a restart.
+  version 36); vanilla persistence restores the clock, so a stamp keeps its age across a restart.
   A stamp dated after today (an admin set the clock back) still counts as recent. Pin test
   `police/conviction-record` (also the `wt e2e` restart proof).
