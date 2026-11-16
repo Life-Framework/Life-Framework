@@ -17,8 +17,9 @@
 //!
 //! The owner config section is "disconnect" (docs/config/owner-config.md). Every decision logs a
 //! [LFDebug:Disconnect] line and a flagged logout writes an incident row (kind "logout").
-//! Persistence: nothing new. The sentence is the jail payload, the warrant the account, the fine
-//! the bank.
+//! Persistence: the sentence is the jail payload, the warrant the account, the fine the bank. A downed
+//! logout's hospital wake rides the "hospitalrejoin" payload (LF_HospitalRejoin, #2101), so a restart
+//! between the logout and the rejoin does not skip the hospital and the bill.
 //------------------------------------------------------------------------------------------------
 [BaseContainerProps(configRoot: true)]
 class LF_DisconnectConfig
@@ -483,6 +484,11 @@ class LF_DisconnectRules
 
 		LF_Debug.Info(LF_PoliceContact.FEATURE, string.Format("%1 rejoins %2: %3", uid, RejoinFor(decision), RejoinReason(state, decision)));
 		LF_PoliceContact.Forget(uid);
+
+		// The death at this logout owes a hospital wake, also when jail comes first (the sentence is
+		// put back after the hospital spawn). It is saved, so a restart before the rejoin keeps it (#2101).
+		if (decision.m_bDownedDies)
+			LF_HospitalRejoin.Record(uid, System.GetUnixTime());
 
 		vector position;
 		if (body)
