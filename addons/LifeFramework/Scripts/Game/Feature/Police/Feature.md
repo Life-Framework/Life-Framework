@@ -117,7 +117,7 @@ is the entry point.
 
 ## Robbery alarms (#740)
 
-- **Player sees:** the alarm at a robbery has its own sound: a bell at the bank vault, an intruder alarm at the fuel till, the electronic two-tone retail alarm at a store till and when a shopper walks out of a shop with unpaid goods, a horn at the cash van. The siren stays for crimes with no kind.
+- **Player sees:** the alarm at a robbery has its own sound: a bell at the bank vault, an intruder alarm at the fuel till, the electronic two-tone retail alarm at a store till and when a shopper walks out of a shop with unpaid goods, a soft rising three-note chime at the hospital till, a horn at the cash van. The siren stays for crimes with no kind.
 - **Owner and side:** `LF_Dispatch.StartAlarm` decides on the server; the alarm prefab replicates and each client plays its sound (`LF_SiteAlarmComponent`).
 - **Data:** `m_aAlarmKinds` in `Configs/Police/LF_Police.conf` (`LF_AlarmKind`), the `m_sAlarmKind` attribute on `LF_RobAction` and `LF_BankVaultComponent`, the prefabs `Prefabs/Police/LF_SiteAlarm_<Kind>[Loud].et`, the sounds `Sounds/Alarm/Robbery/`. Nothing is persisted.
 - **Proof:** `police/robbery-alarms` (LOGIC), `police/robbery-alarms-shipped` (WORLD), `robbery-alarm-proof`.
