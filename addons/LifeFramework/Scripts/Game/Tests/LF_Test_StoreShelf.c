@@ -12,8 +12,6 @@ class LF_Test_StoreShelf : LF_Test
 	static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
 	//! The grid fixture the store tests read (Grid_shops_till.layer).
 	static const string GRID_STORE = "Grid_shops_till_Store";
-	//! The town counter, kept for store/folded-stack until its pin is removed.
-	static const string STORE_COUNTER = "Shop_GeneralStore_Debug";
 
 	override string GetName()
 	{
