@@ -1,4 +1,4 @@
-// red-proof: PENDING
+// red-proof: `test --no-build --red LF_Test_RaceHud` -> RED PROOF OK (all 1 listed test(s) fail with the hook on): with the passes skipped the racer stays on lap 1 cp_a, so the lap-2 panel, the place order and the signature change all fail.
 // tier: LOGIC
 //! Race panel (#1924): the panel model for a race state names the right lap, next checkpoint and
 //! place. No world: a course built in script, progress set by the course rules.
