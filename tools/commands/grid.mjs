@@ -9,6 +9,11 @@
 // `place` fetches origin/main and treats the claims there as taken; `--no-fetch` reads the origin/main
 // this clone already has.
 //
+// Claims in flight count too: a PR's claim is not on origin/main until it merges, so `place` and
+// `list` also read the claim files of every open PR (`gh pr list`, cached 60 s in the temp dir) and
+// treat those cells as taken (#2014 and #2016 both took c0r6, 2026-11-16). No `gh` or token is a
+// printed warning, not a failure. `--no-fetch` is offline and skips it.
+//
 // `place` claims a cell for the feature (deterministic: the first usable cell from a hash of the
 // slug), writes GridWorld_Layers/Grid_<slug>.layer with the cell's fenced yard (a 5 m gap facing
 // the annex centre) and a label sign reading the slug, records the claim in
@@ -20,7 +25,7 @@ import { join } from "node:path";
 import { isFrameClaim } from "../grid/lattice.mjs";
 import { loadWorld } from "../../agent-box/layers.mjs";
 import {
-  CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, entityPrefix, layerOfSlug, mainClaims, parseCellId, readCells, rowLine, yardPlan, yawAlong,
+  CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, entityPrefix, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, yardPlan, yawAlong,
 } from "../lib/world-zones.mjs";
 
 export const help = "grid place <slug> [<prefab>...] | grid list | grid free <slug>   a debug-grid cell per feature in the GridWorld annex: fenced yard, label sign, props placed and audited (docs/architecture/world-zones.md)";
@@ -98,6 +103,15 @@ function parse(argv) {
   return out;
 }
 
+// The claims open PRs hold (`inFlight`): the injected reader in tests, none offline (`--no-fetch`), else `gh`.
+function prView(root, flags, ctx, local, onMain) {
+  if (!ctx.openPrClaims && flags["no-fetch"]) return { inFlight: [] };
+  const info = (ctx.openPrClaims ?? openPrClaims)(root);
+  if (info.note) console.log(`grid: warning: ${info.note}`);
+  const known = new Set([...local, ...onMain].map((c) => c.slug));
+  return { inFlight: info.claims.filter((c) => c.slug && c.cell && !known.has(c.slug)) };
+}
+
 // The claims origin/main holds (`onMain`), and those this tree lacks (`extra`: a branch cut before they merged).
 function mainView(root, flags, local) {
   const info = mainClaims(root, { fetch: !flags["no-fetch"] });
@@ -107,20 +121,24 @@ function mainView(root, flags, local) {
   return { onMain, extra: onMain.filter((c) => !mine.has(c.slug)) };
 }
 
-function list(root, flags) {
+function list(root, flags, ctx = {}) {
   const local = readCells(root);
-  const { extra } = mainView(root, flags, local);
+  const { onMain, extra } = mainView(root, flags, local);
+  const { inFlight } = prView(root, flags, ctx, local, onMain);
   const frame = [...local, ...extra].find(isFrameClaim);
-  const claims = [...local, ...extra].filter((c) => !isFrameClaim(c));
+  const claims = [...local, ...extra, ...inFlight].filter((c) => !isFrameClaim(c));
   const ents = gridEnts(root);
   const free = allCells().filter((c) => !claims.some((x) => x.cell === c.id) && !blockers(c, ents).length).length;
-  console.log(`grid: ${claims.length} cell(s) claimed (${extra.length} only on origin/main), ${free} free (${CELLS_DIR}/)`);
+  console.log(`grid: ${claims.length} cell(s) claimed (${extra.length} only on origin/main, ${inFlight.length} in open PRs), ${free} free (${CELLS_DIR}/)`);
   claims.forEach((c, i) => {
     const p = parseCellId(c.cell);
     const b = p ? cellBounds(p.col, p.row) : null;
     const layer = join(root, GRID_LAYERS, layerOfSlug(c.slug));
     const n = existsSync(layer) ? (readFileSync(layer, "utf8").match(/^\S.* : "\{/gm) || []).length : 0;
-    const tail = extra.includes(c) ? "claimed on origin/main, not merged here yet" : `${n} entities, ${c.rows ?? 0}/3 rows`;
+    const clash = inFlight.includes(c) ? claims.filter((x) => x !== c && x.cell === c.cell).map((x) => x.slug) : [];
+    const tail = inFlight.includes(c)
+      ? `claimed in open PR #${c.pr} (${c.branch}), not merged yet${clash.length ? `  CLASH with ${clash.join(", ")}` : ""}`
+      : extra.includes(c) ? "claimed on origin/main, not merged here yet" : `${n} entities, ${c.rows ?? 0}/3 rows`;
     console.log(`  ${String.fromCharCode(97 + (i % 26))} ${c.slug.padEnd(28)} ${String(c.cell).padEnd(6)} ${b ? `x ${b.x0}..${b.x1} z ${b.z0}..${b.z1}` : "bad cell"}  ${tail}${c.error ? `  ERROR ${c.error}` : ""}`);
   });
   console.log(mapText(claims, ents));
@@ -142,7 +160,7 @@ function free(root, slug) {
   return 0;
 }
 
-async function place(root, args, flags) {
+async function place(root, args, flags, ctx = {}) {
   const [slug, ...prefabs] = args;
   if (!slug || !SLUG_RX.test(slug)) {
     console.log(`grid: the slug must be lower-case letters, digits and dashes (2 to 41), like police-gates; got ${slug ?? "nothing"}`);
@@ -163,15 +181,23 @@ async function place(root, args, flags) {
       console.log(`grid: origin/main already has a claim for ${slug} (cell ${dup.cell}); merge origin/main into this branch, or pick another slug`);
       return 1;
     }
+    const { inFlight } = prView(root, flags, ctx, claims, onMain);
+    const dupPr = inFlight.find((c) => c.slug === slug);
+    if (dupPr) {
+      console.log(`grid: open PR #${dupPr.pr} (${dupPr.branch}) already claims ${slug} (cell ${dupPr.cell}); work on that branch, or pick another slug`);
+      return 1;
+    }
     const takenOnMain = new Map(onMain.map((c) => [c.cell, c.slug]));
-    const taken = new Set([...claims.map((c) => c.cell), ...takenOnMain.keys()]);
+    const takenInPr = new Map(inFlight.map((c) => [c.cell, c]));
+    const taken = new Set([...claims.map((c) => c.cell), ...takenOnMain.keys(), ...takenInPr.keys()]);
     let cell;
     if (flags.cell) {
       const p = parseCellId(flags.cell);
       if (!p) throw new Error(`--cell ${flags.cell} is not a cell (c0r0 to c6r6)`);
       cell = allCells().find((c) => c.col === p.col && c.row === p.row);
       const owner = takenOnMain.get(cell.id);
-      const why = [...(owner ? [`claimed on origin/main by ${owner}`] : taken.has(cell.id) ? ["claimed"] : []), ...blockers(cell, ents)];
+      const pr = takenInPr.get(cell.id);
+      const why = [...(owner ? [`claimed on origin/main by ${owner}`] : pr ? [`claimed by ${pr.slug} in open PR #${pr.pr}`] : taken.has(cell.id) ? ["claimed"] : []), ...blockers(cell, ents)];
       if (why.length) {
         console.log(`grid: cell ${cell.id} is not free: ${why.join("; ")}`);
         return 1;
@@ -230,12 +256,14 @@ function usage() {
   return 1;
 }
 
-export async function main(argv, { root }) {
+// `openPrClaims(root)` in the context replaces the `gh` reader (the selftest's seam).
+export async function main(argv, { root, openPrClaims: prReader }) {
+  const ctx = { openPrClaims: prReader };
   const [sub, ...rest] = argv;
   const { _: args, flags } = parse(rest);
   try {
-    if (sub === "place") return await place(root, args, flags);
-    if (sub === "list") return list(root, flags);
+    if (sub === "place") return await place(root, args, flags, ctx);
+    if (sub === "list") return list(root, flags, ctx);
     if (sub === "free") return free(root, args[0]);
   } catch (e) {
     console.log(`grid: ${e.message}`);

@@ -219,7 +219,8 @@
 
 ### `LF_LicenceDesk` — `Feature/License/LF_LicenceDesk.c` (#1766)
 - ✅ The firearm permit is sold at a licence desk: fee in carried cash (`licences.permitFee`), a clean
-  record (wanted level 0, no open crime report) and the licence's gate at application and collection,
+  record (wanted level 0, no open crime report, no conviction in the last `licences.permitConvictionDays`
+  in-game days, default 7, 0 is off; #1995) and the licence's gate at application and collection,
   issued at the desk one in-game day later (`licences.permitWaitDays`). On-duty police revoke it with
   a player interaction. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
-  `e2e/licence-desk` (the open application and a revoke across `wt e2e`).
+  `e2e/licence-desk` (the open application, a revoke and a conviction that still blocks the permit across `wt e2e`).

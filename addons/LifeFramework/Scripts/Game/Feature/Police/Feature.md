@@ -53,7 +53,7 @@ is the entry point.
   (`Configs/Police/LF_WantedPosters.conf`, owner section `wantedBoard`). The dispatch boards
   inherit the component with `m_bDrawPosters 0`.
 - Wanted board (M1-11): `Roadmap_Police_WantedBoard` (`Prefabs/Police/LF_WantedBoard.et`),
-  `LF_WantedBoardReadAction` -> `LF_WantedBoard` (per-read RPC). Posters come
+  `LF_WantedBoardReadAction` -> `LF_WantedBoardProvider` on the shared board read (`LF_BoardProviders`, Signs). Posters come
   from `LF_WantedReports`: a description at the crime, the name once identified
   (ID check to an on-duty officer, or caught in the act).
 - Alarm and dispatch (M1-20): every crime calls `LF_Dispatch.Report`. The site
@@ -86,7 +86,9 @@ is the entry point.
   ground in front of you (on-duty police, rate limited; placed where your ghost showed by the
   placement service, #1026, `Feature/Placement`); the server punctures each wheel whose path
   crosses it through the vanilla wheel damage, and an officer picks it up again. It goes after
-  `m_iSpikeStripLifetimeSeconds`. `LF_SpikeStrip.c`, `LF_SpikeStripActions.c`.
+  `m_iSpikeStripLifetimeSeconds`. While Deploy is selected every on-duty officer sees the ghost
+  across the road, green or red with the reason (#1939, `LF_SpikeStripPreview.c`).
+  `LF_SpikeStrip.c`, `LF_SpikeStripActions.c`.
 
 ## Dependencies
 

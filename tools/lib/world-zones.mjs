@@ -11,7 +11,8 @@
 // tools/commands/grid.mjs, tools/validation/validate-world-zones.mjs, agent-box/place-audit.mjs,
 // tools/validation/validate-player-props.mjs and tools/visual/look.mjs.
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { CORE_ADDON, GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
 import { CELL, GRID_CENTRE, allCells, cellBounds, cellId, isFrameClaim, parseCellId } from "../grid/lattice.mjs";
@@ -234,4 +235,59 @@ export function mainClaims(root, { fetch = true, ref = "origin/main" } = {}) {
     }
   }
   return { claims, note };
+}
+
+// ------------------------------------------------------------------ claims in flight (open PRs)
+
+// A PR's claim is invisible to origin/main until it merges, so two slices open at once can each take a
+// free-looking cell (#2014 `jobs` and #2016 `shooting-range` both took c0r6, 2026-11-16). This reads
+// the claim files of every OPEN PR from GitHub: one `gh pr list --json files` call, then one raw read
+// per cell file a PR touches. { claims: [{ file, slug, cell, pr, branch }], note, cached }.
+//
+// Fail soft: no `gh`, no token or an unreadable answer is `note` and no claims, never an error.
+// The answer is cached for `ttlMs` (default 60 s) in the OS temp dir so a burst of `grid place` and
+// `grid list` calls is one round of API calls. `exclude.branch` leaves out the caller's own PR;
+// `run(cmd, args)` returns spawnSync's shape and is the test seam (selftest stubs it).
+export const PR_CLAIMS_TTL_MS = 60000;
+const defaultPrCache = () => join(tmpdir(), "lf-grid-open-pr-claims.json");
+
+export function openPrClaims(root, { run, cacheFile = defaultPrCache(), ttlMs = PR_CLAIMS_TTL_MS, now = Date.now, exclude = {} } = {}) {
+  const exec = run ?? ((cmd, args) => spawnSync(cmd, args, { cwd: root, encoding: "utf8", timeout: 30000, maxBuffer: 64 * 1024 * 1024 }));
+  const keep = (claims) => claims.filter((c) => !(exclude.branch && c.branch === exclude.branch));
+  try {
+    const hit = JSON.parse(readFileSync(cacheFile, "utf8"));
+    if (cacheFile && now() - hit.at < ttlMs && Array.isArray(hit.claims)) return { claims: keep(hit.claims), note: "", cached: true };
+  } catch {
+    // no cache, or an unreadable one: ask GitHub
+  }
+  const fail = (why) => ({ claims: [], note: `could not read the claims of open PRs (${why}); cells claimed in flight were not checked`, cached: false });
+  const ls = exec("gh", ["pr", "list", "--state", "open", "--limit", "200", "--json", "number,headRefName,headRefOid,files"]);
+  if (!ls || ls.status !== 0) return fail(String(ls?.stderr || ls?.error?.message || "gh failed").trim().split("\n")[0]);
+  let prs;
+  try {
+    prs = JSON.parse(ls.stdout);
+  } catch (e) {
+    return fail(`gh answered with ${String(e.message).slice(0, 60)}`);
+  }
+  const claims = [];
+  for (const pr of Array.isArray(prs) ? prs : []) {
+    for (const f of pr.files ?? []) {
+      const path = String(f.path ?? "");
+      if (!path.startsWith(`${CELLS_DIR}/`) || !path.endsWith(".json")) continue;
+      const raw = exec("gh", ["api", "-H", "Accept: application/vnd.github.raw", `repos/{owner}/{repo}/contents/${path}?ref=${pr.headRefOid || pr.headRefName}`]);
+      if (!raw || raw.status !== 0) continue; // the PR deletes the file (grid free), or the read failed
+      try {
+        const j = JSON.parse(raw.stdout);
+        if (j.slug && j.cell) claims.push({ file: path, slug: j.slug, cell: j.cell, pr: pr.number, branch: pr.headRefName });
+      } catch {
+        // not a claim file we can read; validate-world-zones reports it on that PR
+      }
+    }
+  }
+  try {
+    writeFileSync(cacheFile, JSON.stringify({ at: now(), claims }));
+  } catch {
+    // an unwritable temp dir only costs the cache
+  }
+  return { claims: keep(claims), note: "", cached: false };
 }

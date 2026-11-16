@@ -5074,6 +5074,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The licence desk cannot help you right now."
      Comment "Licence desk: an internal failure; the server log names it."
     }
+    CustomStringTableItem "{7E1C4A90D35B28F6}" {
+     Id "LF-LicenceDesk_Convicted"
+     Target_en_us "Refused: you were convicted too recently."
+     Comment "Licence desk refusal: the player has a conviction within the configured look-back (#1995)."
+    }
     CustomStringTableItem "{A23456CB32ABE45B}" {
      Id "LF-LicenceDesk_Issued"
      Target_en_us "Here is your firearm permit. A licensed gun counter will now serve you."

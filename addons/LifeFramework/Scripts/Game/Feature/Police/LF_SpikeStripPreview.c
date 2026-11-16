@@ -5,7 +5,8 @@
 //! it: across the road, green when the spot is valid, red when not. It runs the server's own plan
 //! (LF_PlacementService.Plan) every TICK_MS, so the colour is the answer the server will give, and
 //! Deploy sends the spot it shows as the proposal (LF_SpikeStripDeployAction.OnSaveActionData).
-//! Behind a flag: only while the game mode has dev tools on (DebugWorld), until #928 ships it.
+//! Shipped (#1939): every on-duty officer sees it on any world (it was behind the dev-tools flag
+//! while #928 was a prototype). The server still decides again on Deploy.
 //------------------------------------------------------------------------------------------------
 class LF_SpikeStripPreview
 {
@@ -21,12 +22,34 @@ class LF_SpikeStripPreview
 	protected static vector s_vSpotForward;
 
 	//------------------------------------------------------------------------------------------------
-	//! The prototype flag: the running game mode has dev tools on (LF_GameModeRoleplay
-	//! m_bDevToolsEnabled; DebugWorld yes, the playtest town and a live server no).
+	//! Whether the ghost runs at all: the Police system is on. No dev-tools flag any more (#1939).
 	static bool Enabled()
 	{
-		LF_GameModeRoleplay gameMode = LF_GameModeRoleplay.Cast(GetGame().GetGameMode());
-		return gameMode && gameMode.AreDevToolsEnabled();
+		return LF_Systems.IsEnabled("Police");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether `user` is offered the ghost of `item`: the preview is on and the server would let them place it.
+	static bool AvailableTo(IEntity user, IEntity item)
+	{
+		if (!Enabled())
+			return false;
+
+		LF_PlaceableComponent placeable = LF_Component<LF_PlaceableComponent>.Find(item);
+		return placeable && LF_PlacementService.MayPlace(user, placeable);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The plan the ghost shows for `officer` and the folded `item`: the spot on the ground in
+	//! `transform` (across the road where there is one), its verdict, and `reason` (empty when VALID,
+	//! else why it is red: "<thing> is in the way", "no ground under it"). The same plan and rules
+	//! the server's confirm applies.
+	static LF_EPlacementVerdict Evaluate(IEntity officer, notnull LF_PlaceableComponent placeable, IEntity item, out vector transform[4], out string reason)
+	{
+		LF_PlacementProbe probe = new LF_PlacementProbe();
+		LF_EPlacementVerdict verdict = LF_PlacementService.Plan(officer, placeable, item, transform, probe);
+		reason = LF_PlacementRules.Reason(verdict, probe, LF_PlacementService.MAX_STEP);
+		return verdict;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -147,9 +170,8 @@ class LF_SpikeStripPreview
 		}
 
 		vector transform[4];
-		LF_PlacementProbe probe = new LF_PlacementProbe();
-		LF_EPlacementVerdict verdict = LF_PlacementService.Plan(officer, placeable, item, transform, probe);
-		string reason = LF_PlacementRules.Reason(verdict, probe, LF_PlacementService.MAX_STEP);
+		string reason;
+		LF_EPlacementVerdict verdict = Evaluate(officer, placeable, item, transform, reason);
 		if (verdict != s_eVerdict)
 			LF_Debug.Info(LF_SpikeStrips.FEATURE, string.Format("preview %1 at %2 %3", LF_PlacementRules.Name(verdict), transform[3], reason));
 

@@ -1,0 +1,6 @@
+SCR_FiringRangeTarget : "{379D34B0D41DA810}Prefabs/Props/Military/Training/TargetInfantry_01.et" {
+ ID "7C2E4A91B05D38F6"
+ m_fTimeInFoldedPosition 2
+ m_iTargetDistance 6
+ m_fTimeInErectedPosition 3
+}
