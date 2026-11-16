@@ -1,6 +1,6 @@
 // tools/lib/world-zones.mjs: the two world zones (docs/architecture/world-zones.md).
 //
-// Grid: the net-fenced annex (x 20..208, z 20..112; it was 20..112 before the lattice grew east), which lives in GridWorld
+// Grid: the net-fenced annex (x 20..328, z 20..112; it was 20..112 before the lattice grew east), which lives in GridWorld
 // (Worlds/GridWorld/GridWorld_Layers, docs/architecture/three-worlds.md); until slice W6 deletes
 // it, the legacy annex layers also sit in DebugWorld. One feature per cell, low look bar, written
 // by `tools\cli grid`. Town: every other layer the playtest town loads
@@ -351,7 +351,7 @@ export function openPrClaims(root, { run, cacheFile = defaultPrCache(), ttlMs = 
       if (!raw || raw.status !== 0) continue; // the PR deletes the file (grid free), or the read failed
       try {
         const j = JSON.parse(raw.stdout);
-        if (j.slug && j.cell) claims.push({ file: path, slug: j.slug, cell: j.cell, pr: pr.number, branch: pr.headRefName });
+        if (j.slug && j.cell) claims.push({ file: path, slug: j.slug, cell: j.cell, ...(j.span ? { span: j.span } : {}), pr: pr.number, branch: pr.headRefName });
       } catch {
         // not a claim file we can read; validate-world-zones reports it on that PR
       }
