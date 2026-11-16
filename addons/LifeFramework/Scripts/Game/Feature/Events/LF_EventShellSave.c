@@ -145,7 +145,12 @@ modded class LF_EventShell
 		if (!rows || !Replication.IsServer())
 			return 0;
 		if (!s_aRuns)
-			Use(LoadConfig());
+		{
+			// As StartIfServer does: it skips both once the runs exist (#2137).
+			LF_EventsConfig config = LoadConfig();
+			Use(config);
+			LF_EventModuleLoader.RegisterFrom(config);
+		}
 
 		int applied;
 		foreach (LF_EventShellRow row : rows)
