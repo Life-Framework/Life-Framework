@@ -3557,6 +3557,11 @@ function stampMergedSuite(root, tier, m) {
 // --local / --remote [name] / --machine <name|any> / --any (default).
 // LF_TESTBOX_AUTO=0 keeps the default on this machine.
 function poolMode(root, opts) {
+  const m = poolModeBase(root, opts);
+  return m.mode === "any" && opts.preferLocal ? { ...m, preferLocal: true } : m;
+}
+
+function poolModeBase(root, opts) {
   if (opts.local) return { mode: "local" };
   if (opts.machine) return opts.machine === "any" ? { mode: "any" } : { mode: "any", machine: opts.machine };
   if (opts.remote !== undefined) return opts.remote ? { mode: "remote", machine: opts.remote } : { mode: "remote" };
@@ -4267,7 +4272,7 @@ function pinFlags(list) {
 }
 
 function remoteFlags(list) {
-  const out = { local: list.includes("--local"), any: list.includes("--any"), priority: priorityFlag(list) };
+  const out = { local: list.includes("--local"), any: list.includes("--any"), preferLocal: list.includes("--prefer-local"), priority: priorityFlag(list) };
   const b = argValue(list, "--budget");
   if (b !== null) {
     const n = Number(b);
