@@ -91,6 +91,12 @@ class LF_OutletOffer : LF_ConfigRecord
 	[Attribute("600", UIWidgets.Auto, "Restock: seconds after the first sale from a full shelf until the shelf is full again. 0 is no restock until the server restarts", params: "0 604800")]
 	int m_iRestockSeconds;
 
+	[Attribute("0", UIWidgets.CheckBox, "Issue: the outlet hands the item out free to a buyer who passes the gates, and books a serial to them (the police armory, #1763). No money moves")]
+	bool m_bIssue;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Issue: the prefab handed out instead of the item's own, a twin that carries a serial component. Empty hands out the item's prefab", "et")]
+	ResourceName m_IssuePrefab;
+
 	[Attribute("0", UIWidgets.CheckBox, "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead")]
 	bool m_bRemoved;
 
@@ -321,8 +327,10 @@ class LF_ItemCatalogueConfig
 	//! Reads an offer's owner fields (LF_OutletOfferList).
 	void ReadOffer(notnull LF_OutletOffer offer, notnull LF_ConfigReader reader)
 	{
-		array<string> offerKeys = {"op", "licence", "job", "minRank", "orgRight", "stock", "restockSeconds", "removed"};
+		array<string> offerKeys = {"op", "licence", "job", "minRank", "orgRight", "stock", "restockSeconds", "issue", "issuePrefab", "removed"};
 		reader.WarnUnknownKeys(offerKeys);
+		reader.ReadBool("issue", offer.m_bIssue);
+		reader.ReadResource("issuePrefab", offer.m_IssuePrefab);
 		reader.ReadString("licence", offer.m_sLicence);
 		reader.ReadString("job", offer.m_sJob);
 		reader.ReadInt("minRank", offer.m_iMinRank, RANK_MIN, RANK_MAX);
@@ -398,6 +406,9 @@ class LF_ItemCatalogueConfig
 				ctx.WriteValue("orgRight", offer.m_sOrgRight);
 				ctx.WriteValue("stock", offer.m_iStock);
 				ctx.WriteValue("restockSeconds", offer.m_iRestockSeconds);
+				ctx.WriteValue("issue", offer.m_bIssue);
+				string issuePrefab = offer.m_IssuePrefab;
+				ctx.WriteValue("issuePrefab", issuePrefab);
 				ctx.WriteValue("removed", offer.m_bRemoved);
 				ctx.EndObject();
 			}
@@ -682,6 +693,10 @@ class LF_OutletOfferList : LF_ConfigList
 		changed += LF_CatalogueFields.Copy(container, "m_sOrgRight", offer.m_sOrgRight);
 		changed += LF_CatalogueFields.CopyInt(container, "m_iStock", offer.m_iStock);
 		changed += LF_CatalogueFields.CopyInt(container, "m_iRestockSeconds", offer.m_iRestockSeconds);
+		changed += LF_CatalogueFields.CopyBool(container, "m_bIssue", offer.m_bIssue);
+		string issuePrefab = offer.m_IssuePrefab;
+		changed += LF_CatalogueFields.Copy(container, "m_IssuePrefab", issuePrefab);
+		offer.m_IssuePrefab = issuePrefab;
 		changed += LF_CatalogueFields.CopyBool(container, "m_bRemoved", offer.m_bRemoved);
 		return changed;
 	}
