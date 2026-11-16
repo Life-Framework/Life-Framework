@@ -64,9 +64,10 @@ class LF_RobWeaponAction : ScriptedUserAction
 		if (!Replication.IsServer())
 			return;
 
-		if (CommitWeaponRobbery(LF_Utils.GetPlayerUid(pUserEntity), pUserEntity, m_WeaponPrefab))
+		string playerUid = LF_Utils.GetPlayerUid(pUserEntity);
+		if (CommitWeaponRobbery(playerUid, pUserEntity, m_WeaponPrefab))
 			LF_Utils.NotifyEntity(pUserEntity, "#EL-Weapon_Stolen", "#EL-Robbery_Successful", 3.0);
-		else
+		else if (!LF_Grace.Protects(playerUid))
 			LF_Utils.NotifyEntity(pUserEntity, "#EL-Inventory_Full", "#EL-Robbery_Failed", 3.0);
 	}
 
@@ -79,6 +80,13 @@ class LF_RobWeaponAction : ScriptedUserAction
 	{
 		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "weapon robbery"))
 			return false;
+
+		// A new character is in its grace (#1780): it may not rob.
+		if (LF_Grace.Refuses(playerUid, "weapon robbery"))
+		{
+			LF_Grace.Notify(user);
+			return false;
+		}
 
 		SCR_InventoryStorageManagerComponent inventoryManager = LF_Component<SCR_InventoryStorageManagerComponent>.Find(user);
 		if (!inventoryManager)

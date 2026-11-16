@@ -219,5 +219,20 @@
 
 
 - 🧪 (2026-11-16) **First spawn (#1964, chapter Story: The relocated #1015).** The character-creation flow marks a brand-new character (`LF_FirstSpawn.Mark`); its first spawn through `LF_SpawnLogic.CreateCharacter` reads and clears the mark (`LF_FirstSpawn.Consume`) and runs `OnFirstSpawn`, so the first-night rule (#1758) applies on first spawn only. A later spawn (after a death, a rejoin or a restart) and a character from an old save are never first. The mark is saved per character persistence id as the `firstspawns` payload (save version 37), so a character created and not yet spawned is still new after a restart. Tests `character/first-spawn`, `character/first-spawn-persist`.
+
+### `LF_LogoutBody` — `Feature/Character/LF_LogoutBody.c` (#1973, in-dev)
+- ✅ A logged-out character stays in the world as a body for 5 minutes (10 while downed and not
+  dying): the server takes it from the leaving player just before the base game would delete it,
+  knocks it out (`LF_Knockout`, so the vanilla inventory lets anyone loot it) and tags it Logged out
+  (`IsLoggedOut`). Killing it is an ordinary death. It despawns when the window closes or the player
+  rejoins; it is never saved, so a restart ends it. Where the rejoin lands stays
+  `LF_DisconnectRules.RejoinFor` (#1972).
+- ✅ No dupes: while the body exists, every item taken from or put on it re-captures the account's
+  carried snapshot, and its death drops the snapshot, so the rejoin and a restart restore only what
+  the body still held. `rejoin/logout-body` (WORLD) covers keep, loot, window, rejoin and death;
+  `tools\cli session logout-body-proof` closes a real client and rejoins it.
+- ⚠️ The Logged out tag is server-side only (no name tag UI yet), the window is not owner config
+  yet, and a downed logout still dies at once under `downedDies`, so the longer window applies only
+  with that rule off.
 - 🧪 (2026-11-16) **Last position (#1777, first half of #640).** The server keeps where each character last stood: position, heading and the unix time it was taken (`LF_LastPosition`, one `LF_LastPositionRow` per character persistence id). It is taken when a player disconnects, before the game mode's disconnect cleanup, and for every connected player just before each save; a dead body is not taken. Saved as the `lastpos` payload (save version 39). Nothing spawns at it yet; that is the second half of #640. Test `spawn/last-position`.
 - 🧪 (2026-11-16) **Rejoin at the saved spot (#1778, second half of #640).** With `m_bRejoinAtLastPosition` on (`LF_Respawn.conf`, off by default: vanilla spawn), a returning character spawns at its `LF_LastPosition` row instead of the spawn point (`LF_RejoinSpot.Resolve`, called from `LF_SpawnLogic.GetCreationPosition`). Order: a jail return (a prisoner is moved into the cell after the spawn, `LF_Jail.OnPlayerSpawned`), the hospital wake (`LF_DisconnectRules.RejoinFor`: jail, hospital or in place), the saved spot, the spawn point. Only the first spawn of a connection is a rejoin; a respawn after a death takes the normal spawn. A spot older than `m_iRejoinMaxAgeHours` (12; 0 = no limit), under the terrain, in water, inside geometry (no standing head room), inside the jail, in a restricted zone (`LF_Zones` rule set that keeps police out) or inside a locked house falls back to the spawn point, with a `[LFDebug:Rejoin]` warning naming the reason. A character with no row (a new arrival) takes the spawn point, so the arrival flow is untouched. The setting is logged once when the config loads (`[LFDebug:Respawn] rejoinAtLastPosition=...`). Test `spawn/rejoin-spot`.
