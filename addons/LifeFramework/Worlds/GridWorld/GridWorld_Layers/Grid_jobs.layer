@@ -1,28 +1,28 @@
 // Grid cell c0r6 for jobs: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
 SCR_DestructibleEntity Grid_jobs_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 23 0 95
+ coords 23 0 47
 }
 SCR_DestructibleEntity Grid_jobs_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 28 0 95
+ coords 28 0 47
 }
 SCR_DestructibleEntity Grid_jobs_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 33 0 95
+ coords 33 0 47
  angleY 270
 }
 SCR_DestructibleEntity Grid_jobs_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 33 0 105
+ coords 33 0 57
  angleY 180
 }
 SCR_DestructibleEntity Grid_jobs_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 28 0 105
+ coords 28 0 57
  angleY 180
 }
 SCR_DestructibleEntity Grid_jobs_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 23 0 105
+ coords 23 0 57
  angleY 90
 }
 SCR_DestructibleEntity Grid_jobs_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 23 0 100
+ coords 23 0 52
  angleY 90
 }
 GenericEntity Grid_jobs_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -34,11 +34,11 @@ GenericEntity Grid_jobs_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 33.8 0.505 104.4
+ coords 33.8 0.505 56.4
  angleY 90
 }
 GenericEntity JobCenter {
- coords 28 0 98.7
+ coords 28 0 50.7
  angleY 90
  {
   $grp GenericEntity {
@@ -157,6 +157,6 @@ GenericEntity JobCenter {
  }
 }
 LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
- coords 28 0 100
+ coords 28 0 52
  m_vSize 4 1 4
 }
