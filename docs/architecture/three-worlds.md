@@ -21,7 +21,8 @@ slice cards are on GitHub (label `slice`); this page covers the design and the o
 | `test --tier all`, `--only`/`--red` with any WORLD or PERSISTENCE test | 2. Tests named in `tools/test/world-pins.json` boot 3 in a second run until that list is empty. The town tests (`tools/test/town-tests.json`) are in no tier run |
 | `test --town` | 3, one boot, the 12 town tests only (below). `--only <town test>` boots 3 too |
 | `ci`, `wt gate`, `wt ship` suite | as `--tier all`, without the town tests |
-| `e2e`, `--pre-move`, `host` | 3 (the playtest mission) |
+| `e2e` | one pair of boots per world (#1993): 2 for the grid-fixture persistence tests, 3 for the town tests (below). `--pre-move` keeps the town pair only |
+| `host` | 3 (the playtest mission) |
 | `session up` (default `--mission debug`) | 3, as today. `--mission grid` boots 2 |
 | `grid place`, `grid list`, `grid free`, `place --layer Grid_*` | 2 |
 | `look grid:<slug>`, `look grid:all` | 2 |
@@ -31,7 +32,13 @@ slice cards are on GitHub (label `slice`); this page covers the design and the o
 | Pass cache | the world is already in the key (`--world`), so a run on world 2 never stands in for a run on world 3 |
 
 PERSISTENCE goes to world 2 with WORLD: its tests read annex fixtures, which stop existing in world 3
-when the move ends. The real restart proof (`e2e`) stays on the playtest mission.
+when the move ends. The real restart proof (`e2e`) therefore boots twice, save and reload, on each world
+that holds PERSISTENCE tests: the `LF_GridWorld` mission for every test that is not a town test or a pin, the
+playtest mission (the suite's `EL_DebugTest` header, or `--mission playtest`) for the town tests and the pins.
+Each pair runs only its tests (`-Only`), so a test never boots a world without its fixtures. The plan is
+`planE2eLegs` (`tools/lib/e2e-legs.mjs`, `e2e-legs-selftest`); `e2e/pass2-verify-load` and
+`e2e/shutdown-save-loaded` follow `e2e/pass1-write-save` into its pair (the shutdown marker is deposited after that
+test's manual save). `LF_TEST_GRID_WORLD=0` is one playtest pair of the whole tier, as before.
 
 ## Town tests: out of the suite, in one playtest run (#1895)
 
