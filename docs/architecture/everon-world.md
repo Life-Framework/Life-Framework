@@ -27,7 +27,7 @@ Spoilers stay in `docs/everon/world-bible-internal.md`. This page is safe to pub
 | D13 | **Pack world: reuse `MainWorld`** (lead, was Q1). Delete the apple-farm layer and retire `EveronLifeGameMode.conf` |
 | D14 | **Live states on the header** (lead, was Q4): `m_aLF_LiveStates` on the flagship header, with dark place layers for places whose state has not shipped |
 | D15 | **Fitted buildings are indestructible** through the place layer (lead, was Q5) |
-| D16 | **The map** (lead, was Q7): superseded by a fully modded in-game map with waypoints, areas, POI icons and system markers, specified in the in-game map design (in progress) (its own spike). The cheap physical board on the square stays as well |
+| D16 | **The map** (lead, was Q7): superseded by a fully modded in-game map with waypoints, areas, POI icons and system markers, specified in [`everon-map.md`](everon-map.md) (its own spike). The cheap physical board on the square stays as well |
 | D17 | **Flagship box RAM** (lead, was Q8): before the cutover, check the 0grind plan's RAM with the host tools. The playtest-town header stays the flagship until state 0 is ready |
 | D18 | **Dirt track** (lead, was Q11): scout a closer site in state 1. Black Lake stays a later course |
 | D19 | **The bus** (lead, was Q12): reviewed when the state-2 cards are cut |
