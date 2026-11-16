@@ -16,6 +16,9 @@
 //   --town is one PLAYTEST_WORLD leg with the town tests (it was the ordinary GridWorld + DebugWorld plan);
 //   tools/test/town-tests.json reads as a list of 12 (got undefined).
 // Green after the change: test-world-selftest: OK.
+// red-proof (town legs, fix-town-legs), 2026-11-16: on main (planLegs without `town` at the cli.mjs call, and
+// no explicit class list when the suite registry already lacks the town tests) 2g and the two "registry without the
+// town tests" checks FAIL; green once the call passes town: readTown(root) and planLegs names the classes.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
@@ -146,6 +149,12 @@ l = tlegs({ tier: "persistence", pins: [] });
 check(l?.length === 1 && l[0].world === worlds.GRID_WORLD && eq(l[0].classes, ["LF_Test_P"]), `--tier persistence drops a PERSISTENCE town test (got ${show(l)})`);
 l = tlegs({ tier: "all", town: [], pins: [] });
 check(l?.length === 1 && l[0].world === worlds.GRID_WORLD && l[0].classes === null, `an empty town list changes nothing (got ${show(l)})`);
+// The suite registry (readRegistry) already lacks the town tests, so nothing is left to drop; the leg must
+// still name its classes, or the runner takes every registered test, the town ones included.
+l = tlegs({ tier: "all", pins: [], registry });
+check(l?.length === 1 && l[0].world === worlds.GRID_WORLD && eq(l[0].classes, ["LF_Test_A", "LF_Test_B", "LF_Test_P", "LF_Test_Q"]), `a registry without the town tests still plans one explicit GridWorld leg (got ${show(l)})`);
+l = tlegs({ tier: "all", registry });
+check(l?.length === 2 && l[0].world === worlds.GRID_WORLD && eq(l[0].classes, ["LF_Test_A", "LF_Test_B", "LF_Test_P"]) && l[1].world === worlds.PLAYTEST_WORLD && eq(l[1].classes, ["LF_Test_Q"]), `a registry without the town tests keeps the pin split (got ${show(l)})`);
 l = tlegs({ tier: "all", townRun: true });
 check(l?.length === 1 && l[0].world === worlds.PLAYTEST_WORLD && eq(l[0].classes, ["LF_Test_T", "LF_Test_U"]), `--town is one PLAYTEST_WORLD leg with the town tests, and nothing else (got ${show(l)})`);
 l = tlegs({ tier: "all", townRun: true, env: off });
@@ -181,8 +190,17 @@ for (const p of realTown ?? []) {
 }
 const townClasses = new Set((realTown ?? []).map((p) => realNames[p.name] ?? p.name));
 const realLegs = fn("planLegs")({ tier: "all", tiers: realTiers, names: realNames, registry: suiteRegistry, pins: realPins, town: realTown, env }) ?? [];
-// classes null is the whole shard registry (the plan once world-pins.json is empty), which 2f checks holds no town test.
-check(realLegs.length > 0 && realLegs.every((x) => x.classes === null || (x.classes.length > 0 && !x.classes.some((c) => townClasses.has(c)))), "the real --tier all plan has no town test in any leg");
+// classes null is "every registered test": with a town list that would run the town tests, so each leg names its classes.
+check(realLegs.length > 0 && realLegs.every((x) => (x.classes !== null || !townClasses.size) && (x.classes === null || (x.classes.length > 0 && !x.classes.some((c) => townClasses.has(c))))), "the real --tier all plan names its classes and has no town test in any leg");
+
+// 2g. The call site: a planLegs call without `town` plans the town tests into the GridWorld leg
+// (the module checks above pass; the CLI never gave it the list). Every caller outside the module passes it.
+for (const rel of ["tools/cli.mjs"]) {
+  const src = readFileSync(join(root, rel), "utf8");
+  const calls = [...src.matchAll(/planLegs\(\{[^\n]*\}\)/g)].map((m) => m[0]);
+  check(calls.length > 0, `${rel} calls planLegs`);
+  for (const c of calls) check(/\btown:\s*testWorld\.readTown\(/.test(c), `${rel}: planLegs is given the town list (got ${c.slice(0, 80)}...)`);
+}
 
 // 3. The parser agrees with the generated registry on the real tests.
 const real = tw.testTiers(root);
