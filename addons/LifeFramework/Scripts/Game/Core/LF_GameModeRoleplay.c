@@ -85,6 +85,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_CrimeRecord.EnsureSubscribed();
 		// Every arrest stamps a dated conviction, read by the permit desk (server only, #1914).
 		LF_ConvictionRecord.EnsureSubscribed();
+		// The record board keeps each character's best race time per course (server only, #1925).
+		LF_RaceRecords.EnsureSubscribed();
 		// The serial book stamps every tool the fence sells (server only).
 		LF_FenceSerials.EnsureSubscribed();
 		// The wanted board's posters rebuild on a crime, a wanted level, an identification (server only).

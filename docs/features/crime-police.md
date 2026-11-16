@@ -453,6 +453,11 @@
   per on-duty second; duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
   the pack patches the core's `patrol` (index 0) into Cadet and `senior` (index 1) into Patrol and appends the other three.
   Titles are the pack's `LF-Rank_*` rows. A saved rank above the ladder clamps to the top on load.
+- 🔨 The flagship kit (#1942, merged, in-dev; `LF_PoliceKit_Everon1989.conf`, listed after the ladder in the
+  mission header): the pack overlay restates each rung's `m_aKit`. Patrol (index 0) draws the M9 and the spike strip;
+  senior and every rung above draw the M16, the spike strip and the roadblock kit (`LF_Roadblocks.KIT`, added to the
+  station catalog in `LF_PoliceRanks.Catalog`, since a kit line outside it is not issued). A civilian cannot draw.
+  Test: `police/everon-kit`.
 - ✅ **One armory draw per duty shift** (2026-11-07): a draw
   that hands out any kit line marks the account; a second draw logs
   `draw refused: <uid> already drew a kit this shift` and shows

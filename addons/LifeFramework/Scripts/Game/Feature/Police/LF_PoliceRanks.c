@@ -593,6 +593,7 @@ class LF_PoliceRanks
 		prefabs.Insert(SIDEARM);
 		prefabs.Insert(LONG_GUN);
 		prefabs.Insert(SPIKE_STRIP);
+		prefabs.Insert(LF_Roadblocks.KIT);
 	}
 
 	//------------------------------------------------------------------------------------------------
