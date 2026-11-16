@@ -1,6 +1,6 @@
 // tools/lib/world-zones.mjs: the two world zones (docs/architecture/world-zones.md).
 //
-// Grid: the net-fenced annex (x 20..208, z 20..112; it was 20..112 before the lattice grew east), which lives in GridWorld
+// Grid: the net-fenced annex (x 20..328, z 20..112; it was 20..112 before the lattice grew east), which lives in GridWorld
 // (Worlds/GridWorld/GridWorld_Layers, docs/architecture/three-worlds.md); until slice W6 deletes
 // it, the legacy annex layers also sit in DebugWorld. One feature per cell, low look bar, written
 // by `tools\cli grid`. Town: every other layer the playtest town loads
