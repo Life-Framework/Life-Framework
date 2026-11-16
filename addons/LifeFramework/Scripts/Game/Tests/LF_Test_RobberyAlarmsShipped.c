@@ -3,7 +3,7 @@
 //! Robbery alarms (#740), the shipped data: every robbery type (the bank vault, the fuel station till, the
 //! general store till, the cash van, the police armory) resolves through LF_Police.conf to an alarm prefab
 //! that loads and plays its own sound project and event; no two kinds share a sound; a normal and a loud
-//! prefab of a kind play the same sound; the bank bell carries further than the store buzzer; and a robbery
+//! prefab of a kind play the same sound; the bank bell carries further than the retail store alarm; and a robbery
 //! with no kind (the hospital till) keeps the plain siren. That the sounds are heard is a manual step.
 class LF_Test_RobberyAlarmsShipped : LF_Test
 {
@@ -57,7 +57,7 @@ class LF_Test_RobberyAlarmsShipped : LF_Test
 			}
 		}
 
-		ctx.True(bankRange > storeRange, "the bank bell carries further than the store buzzer");
+		ctx.True(bankRange > storeRange, "the bank bell carries further than the retail store alarm");
 
 		// A robbery with no kind (the hospital till) keeps the plain siren.
 		ctx.True(LF_PoliceConfig.AlarmPrefabFor("", LF_WantedReports.OFFENCE_HOSPITAL, false) == LF_PoliceConfig.AlarmPrefab(false), "an unlisted robbery keeps the plain siren");

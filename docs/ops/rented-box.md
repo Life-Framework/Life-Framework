@@ -5,9 +5,10 @@ once the trigger in step 1 is met, not before. It is host-agnostic: everything h
 Linux box. The part that depends on the host is left for the host #378 picks (the last section).
 
 How to read it: each step names a command or a file. A command that has not merged yet is in code font as its
-card names it and marked *(planned)*; when it merges, drop the mark. Run the steps in order and tick the
-box when the step's check passes. Sessions on the live server follow [game-updates](game-updates.md) for
-builds and the session runbook (O16, #1275) for a normal session.
+card names it and marked *(planned)* until it merges; `tools\cli host help` lists the merged ones, and
+`tools/validation/ops-doc-commands-selftest.mjs` fails on a merged command still marked planned. Run the
+steps in order and tick the box when the step's check passes. Sessions on the live server follow
+[game-updates](game-updates.md) for builds and the [session runbook](session-runbook.md) for a normal session.
 
 ## Decision: the alpha box
 
@@ -146,6 +147,7 @@ A drill that fails means do not open the box. Fix the cause, or keep playing on 
 - [ ] **Restart schedule.** The flagship restarts at 06:00 and 18:00 server time, with in-game warnings at 15, 5
       and 1 minute ([m4-slice-plan](../roadmap/m4-slice-plan.md), "Decisions"). The times are set in
       `server/flagship/config.json` (`restarts.times`), and the in-world warning counts down to them.
+      A restart by hand is announced first with `tools\cli host announce --at <iso time>`.
 - [ ] A scheduled restart is also a backup point: `host stop` backs up, `host start` backs up. Rotate with
       `tools\cli host prune --keep 20` (dry-run it with `--dry-run`); tagged backups (preflight, wipe, crash,
       replaced-by-restore) are never deleted.
@@ -169,7 +171,7 @@ The live `config.json` is public in this repo, so no password or webhook goes in
 - [ ] Join by `<name>:2001` from outside the network. The browser listing uses the IP and A2S port, so it needs
       step 3 too.
 - [ ] Update every place that shows the address: the Discord announcement template, the website `sessions.json`
-      *(planned, O14)*, and `docs/playtest.md`, which today says the server is one PC.
+      (written by `tools\cli host announce`), and `docs/playtest.md`, which today says the server is one PC.
 
 ## 9. Dry run, then open
 

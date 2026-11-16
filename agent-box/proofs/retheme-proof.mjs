@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { bmpFileToPng, decodeBmp } from "../bmp.mjs";
-import { ROB_TARGET, ROOT, arrive, clientBox, sessionDir } from "../session.mjs";
+import { ROOT, arrive, clientBox, readSession, sessionDir } from "../session.mjs";
 
 // #1005 integration: one pack, four overlays, booted together and read on a client.
 // The slices (UI theme #1234, prices and items #1238, prefab slot swap #1239, terms #1241) were each proven
@@ -10,7 +10,9 @@ import { ROB_TARGET, ROOT, arrive, clientBox, sessionDir } from "../session.mjs"
 // `tools\cli pack new Retheme` plus tools/test/pack-fixtures/retheme (tools/pack/retheme-fixture.mjs).
 //
 //   node agent-box/proofs/retheme-proof.mjs --prepare   (or `session.mjs retheme-proof --prepare`) before `up`:
-//       scaffolds addons/LF_Retheme when missing, applies the fixture, runs `pack check`
+//       scaffolds addons/LF_Retheme when missing, applies the fixture, runs `pack check`, and points the pack header's World at GridWorld
+//   (`up --pack` forces the playtest mission, so `--mission grid --pack` together is not a launch; the pack header picks the world).
+//   `session.mjs retheme-proof --check` is the offline check that the four fixtures (Retheme_Shop, _Guns, _Desk, _Till) are in the cell.
 //   tools\cli session up --pack LF_Retheme --clients 1 --profile full
 //   node agent-box/session.mjs retheme-proof [out dir]        (runs where the session runs)
 //   node agent-box/session.mjs down
@@ -18,9 +20,14 @@ import { ROB_TARGET, ROOT, arrive, clientBox, sessionDir } from "../session.mjs"
 // One PASS or FAIL line per overlay: theme, prices, items, slot, terms. Each reads what client 1 sees,
 // then the server log says the overlay loaded. The picture of the themed price list goes to <out dir>
 // (default agent-box/reports/retheme, which `session pull` brings home).
-const SHOP = "Shop_GeneralStore_Debug";
-const GUNS = "Annex_GunCounter";
-const DESK = "Roadmap_Police_Desk";
+// The fixtures stand in this proof's own grid cell (Grid_retheme_proof.layer, `toolscli grid place retheme-proof`), never in the
+// annex or the town (three-worlds.md, #1896). The pack session runs on GridWorld: `--prepare` points the generated pack's header there.
+export const SHOP = "Retheme_Shop";
+export const GUNS = "Retheme_Guns";
+export const DESK = "Retheme_Desk";
+export const TILL = "Retheme_Till";
+const CELL_LAYER = join(ROOT, "addons", "LifeFramework", "Worlds", "GridWorld", "GridWorld_Layers", "Grid_retheme_proof.layer");
+const GRID_WORLD = "{2B35216B7F782445}Worlds/GridWorld/GridWorld.ent";
 const RECEIPT = "{3E8A5C1D7B2F4096}Prefabs/Items/Roleplay/LF_Receipt.et";
 const PAPER = [0xe8, 0xf1, 0xf7]; // the fixture's paper colour, #E8F1F7 (the flagship paper is warm)
 
@@ -36,6 +43,16 @@ async function runPrepare() {
     }
   }
   applyRetheme(addons);
+  // `session up --pack` boots the pack's own header and ignores --mission, so the pack's World is what picks the
+  // world. Point this generated, uncommitted pack at GridWorld, where the fixtures stand (#1896).
+  const header = join(addons, "LF_Retheme", "Missions", "LF_Retheme.conf");
+  const headerText = readFileSync(header, "utf8");
+  const pointed = headerText.replace(/^(\s*World\s+)"[^"]*"/m, `$1"${GRID_WORLD}"`);
+  if (pointed === headerText && !headerText.includes(GRID_WORLD)) {
+    console.log("FAIL  LF_Retheme.conf has no World line to point at GridWorld");
+    return 1;
+  }
+  writeFileSync(header, pointed);
   // The pack's strings reach the engine through its runtime tables (Language/*.conf), compiled from the .st.
   const regen = spawnSync(process.execPath, [cli, "regen-localization"], { cwd: ROOT, encoding: "utf8", windowsHide: true });
   if (regen.status !== 0) {
@@ -72,11 +89,49 @@ export function colourShare(rgb, pixels, tol) {
   return hit / n;
 }
 
+// Offline: every fixture the proof stands at is in this proof's grid cell. No session needed.
+export function checkFixtures(layerText) {
+  const fails = [];
+  for (const name of [SHOP, GUNS, DESK, TILL]) {
+    if (!new RegExp(`^\\s*\\S+ ${name} `, "m").test(layerText)) fails.push(`${name} is not in Grid_retheme_proof.layer`);
+  }
+  return fails;
+}
+
+function runCheck() {
+  const text = existsSync(CELL_LAYER) ? readFileSync(CELL_LAYER, "utf8") : "";
+  const fails = existsSync(CELL_LAYER) ? checkFixtures(text) : ["Grid_retheme_proof.layer does not exist (tools\\cli grid place retheme-proof)"];
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "retheme-proof --check: FAIL" : "retheme-proof --check: PASS (shop, gun counter, police desk and till are in the cell)");
+  return fails.length ? 1 : 0;
+}
+
+// The proof reads the pack overlays, so it needs the grid world AND the pack: a `--mission grid` session, or the
+// `--pack LF_Retheme` session `--prepare` pointed at GridWorld (`up --pack` forces the playtest mission, so that
+// session records mission "playtest" and a pack; its header names the world). "" when the session fits.
+function sessionProblem(h, session) {
+  if (session?.pack === "LF_Retheme") {
+    const header = join(ROOT, "addons", "LF_Retheme", "Missions", "LF_Retheme.conf");
+    const world = existsSync(header) ? /^\s*World\s+"([^"]*)"/m.exec(readFileSync(header, "utf8"))?.[1] : "";
+    if (world !== GRID_WORLD) return "this proof needs the pack on GridWorld (its fixtures are in that world): run `retheme-proof --prepare`, then `session up --pack LF_Retheme`";
+    return "";
+  }
+  const wrong = h.missionProblem(session, "grid");
+  if (wrong) return wrong;
+  return "this proof needs the LF_Retheme pack: `retheme-proof --prepare`, then `tools\\cli session up --pack LF_Retheme --clients 1 --profile full`";
+}
+
 async function runRetheme(args) {
   if (args.includes("--prepare")) return runPrepare();
+  if (args.includes("--check")) return runCheck();
 
   const h = await import("../harness.mjs");
   const dir = sessionDir();
+  const problem = sessionProblem(h, readSession(dir));
+  if (problem) {
+    console.log(`FAIL  ${problem}`);
+    return 1;
+  }
   const out = resolve(String(args.find((a) => !a.startsWith("--")) ?? join(ROOT, "agent-box", "reports", "retheme")));
   mkdirSync(out, { recursive: true });
   const on = (n, spec, timeout) => {
@@ -152,10 +207,10 @@ async function runRetheme(args) {
 
   // Slot swap: rob the till (opens an evidence scene), drop an item beside it; the marker the server spawns
   // for it is the pack's prefab, the shell casing, and this client's copy of it says so.
-  on(1, { verb: "stand", entityName: ROB_TARGET });
+  on(1, { verb: "stand", entityName: TILL });
   wait(2500);
   on(1, { verb: "look" });
-  const rob = on(1, { verb: "use", className: "LF_RobAction", entityName: ROB_TARGET }, 10000);
+  const rob = on(1, { verb: "use", className: "LF_RobAction", entityName: TILL }, 10000);
   wait(4000);
   if (rob.status !== "ok") judge("slot", [`the till robbery did not start ${noText(rob)}`]);
   const give = on(1, { verb: "itemgive", prefab: RECEIPT }, 10000);

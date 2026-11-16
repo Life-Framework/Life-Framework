@@ -1,3 +1,4 @@
+// red-proof: observed 2026-11-16 (#1891), `tools\cli test --no-build --no-cache --only <the 10 classes>` on GridWorld before the grid fixtures: 10 of 15 failed on `... resolves in the DebugWorld` (Shop_GeneralStore_Debug, Shop_BlackMarket_Debug, FenceNpc are town entities); on Grid_shops_till fixtures 15 of 15 pass.
 // red-proof: observed 2026-11-08, `tools\cli test --no-build --only` on the six tests below, one
 // break per test in the code under test, then restored (SUMMARY passed=0 failed=6 total=6):
 //   atm/keypad, limit guard off in LF_ATMKeypad.Press:
@@ -107,7 +108,7 @@ class LF_Test_CounterRefusalText : LF_Test
 //------------------------------------------------------------------------------------------------
 //! The ATM and shop screens open only on the machine of the player who used the counter: both
 //! placed actions run PerformAction on the acting machine only, and the owner check refuses
-//! anyone else. Reads the DebugWorld placements Annex_ATM and Shop_GeneralStore_Debug.
+//! anyone else. Reads the GridWorld placements Annex_ATM and Grid_shops_till_Store.
 // tier: WORLD
 class LF_Test_CounterLocalOnly : LF_Test
 {
@@ -119,16 +120,16 @@ class LF_Test_CounterLocalOnly : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		IEntity atm = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.ATM);
-		IEntity shop = GetGame().GetWorld().FindEntityByName("Shop_GeneralStore_Debug");
-		ctx.NotNull(atm, "DebugWorld places Annex_ATM");
-		ctx.NotNull(shop, "DebugWorld places Shop_GeneralStore_Debug");
+		IEntity shop = GetGame().GetWorld().FindEntityByName("Grid_shops_till_Store");
+		ctx.NotNull(atm, "GridWorld places Annex_ATM");
+		ctx.NotNull(shop, "GridWorld places Grid_shops_till_Store");
 		if (!atm || !shop)
 			return;
 
 		ScriptedUserAction atmAction = FindAction(atm, "LF_ATMAction");
 		ScriptedUserAction shopAction = FindAction(shop, "LF_ShopAction");
 		ctx.NotNull(atmAction, "Annex_ATM carries LF_ATMAction");
-		ctx.NotNull(shopAction, "Shop_GeneralStore_Debug carries LF_ShopAction");
+		ctx.NotNull(shopAction, "Grid_shops_till_Store carries LF_ShopAction");
 		if (atmAction)
 			ctx.True(atmAction.HasLocalEffectOnlyScript(), "the ATM action runs only on the acting player's machine");
 		if (shopAction)
@@ -208,7 +209,7 @@ class LF_Test_ATMRefusalReasons : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-//! The till names why it refused, so the order slip can say it. Drives the DebugWorld black
+//! The till names why it refused, so the order slip can say it. Drives the GridWorld black
 //! market (it sells only the M9) with a real character.
 // tier: WORLD
 class LF_Test_ShopRefusalReasons : LF_Test
@@ -223,8 +224,8 @@ class LF_Test_ShopRefusalReasons : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity shopEntity = GetGame().GetWorld().FindEntityByName("Shop_BlackMarket_Debug");
-		ctx.NotNull(shopEntity, "Shop_BlackMarket_Debug resolves in the DebugWorld");
+		IEntity shopEntity = GetGame().GetWorld().FindEntityByName("Grid_shops_till_BlackMarket");
+		ctx.NotNull(shopEntity, "Grid_shops_till_BlackMarket resolves in the GridWorld");
 		if (!shopEntity)
 			return;
 
