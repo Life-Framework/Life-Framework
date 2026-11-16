@@ -219,3 +219,18 @@
 
 
 - 🧪 (2026-11-16) **First spawn (#1964, chapter Story: The relocated #1015).** The character-creation flow marks a brand-new character (`LF_FirstSpawn.Mark`); its first spawn through `LF_SpawnLogic.CreateCharacter` reads and clears the mark (`LF_FirstSpawn.Consume`) and runs `OnFirstSpawn`, so the first-night rule (#1758) applies on first spawn only. A later spawn (after a death, a rejoin or a restart) and a character from an old save are never first. The mark is saved per character persistence id as the `firstspawns` payload (save version 37), so a character created and not yet spawned is still new after a restart. Tests `character/first-spawn`, `character/first-spawn-persist`.
+
+### `LF_LogoutBody` — `Feature/Character/LF_LogoutBody.c` (#1973, in-dev)
+- ✅ A logged-out character stays in the world as a body for 5 minutes (10 while downed and not
+  dying): the server takes it from the leaving player just before the base game would delete it,
+  knocks it out (`LF_Knockout`, so the vanilla inventory lets anyone loot it) and tags it Logged out
+  (`IsLoggedOut`). Killing it is an ordinary death. It despawns when the window closes or the player
+  rejoins; it is never saved, so a restart ends it. Where the rejoin lands stays
+  `LF_DisconnectRules.RejoinFor` (#1972).
+- ✅ No dupes: while the body exists, every item taken from or put on it re-captures the account's
+  carried snapshot, and its death drops the snapshot, so the rejoin and a restart restore only what
+  the body still held. `rejoin/logout-body` (WORLD) covers keep, loot, window, rejoin and death;
+  `tools\cli session logout-body-proof` closes a real client and rejoins it.
+- ⚠️ The Logged out tag is server-side only (no name tag UI yet), the window is not owner config
+  yet, and a downed logout still dies at once under `downedDies`, so the longer window applies only
+  with that rule off.
