@@ -274,6 +274,7 @@ class LF_LogoutBody
 		record.m_fEndsAt = endsAt;
 		Bodies().Set(uid, record);
 		Watch(body, true);
+		LF_LogoutBodyTag.Mark(body, true);
 
 		// The disconnect captured the snapshot; capture again so it is the body's from here on.
 		Recapture(record);
@@ -325,6 +326,7 @@ class LF_LogoutBody
 		}
 
 		Watch(body, false);
+		LF_LogoutBodyTag.Mark(body, false);
 		Recapture(record);
 		if (record.m_bDead || !LF_StorageSnapshot.IsAlive(body))
 		{
