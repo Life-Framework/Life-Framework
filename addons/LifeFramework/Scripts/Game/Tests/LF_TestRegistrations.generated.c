@@ -224,6 +224,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_FirstAidRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FirstPlayerPolice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FirstSpawn(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_FirstSpawnBed(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FirstSpawnPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_FormatAbbreviate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
@@ -316,6 +317,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LockpickVehicleWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LoggingChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutBody(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_LogoutBodyRejoin(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutBodyTag(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LogoutRule(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_M4ConfigSections(), LF_TestTier.LOGIC);

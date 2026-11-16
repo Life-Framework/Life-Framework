@@ -203,12 +203,27 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		if (questManager)
 			questManager.ReportKill(playerEntity, killerEntity);
 
-		LF_Contraband.FailDiedFromEntity(playerEntity);
+		OnAccountDied_S(LF_Utils.GetPlayerUID(playerId), playerEntity);
+
+		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
+		if (respawn)
+			respawn.NotifyReadyForSpawn_S();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: what a death costs the account, for a played character and for a logout body killed
+	//! while its player was away (LF_LogoutBodyRejoin.OnKilled, #1975).
+	//! \param uid The account that died.
+	//! \param body The dead body, may be null.
+	static void OnAccountDied_S(string uid, IEntity body)
+	{
+		LF_Contraband.FailDiedFromEntity(body);
+		if (uid.IsEmpty())
+			return;
 
 		// Death drops what you carry: the body keeps the items, the account loses the snapshot.
-		string uid = LF_Utils.GetPlayerUID(playerId);
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
-		if (accounts && !uid.IsEmpty())
+		if (accounts)
 		{
 			LF_PlayerAccount account = accounts.GetAccount(uid);
 			if (account && account.GetActiveCharacter())
@@ -221,16 +236,9 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		}
 
 		// You wake up in hospital: the next spawn of this player goes to a bed and pays the bill.
-		if (!uid.IsEmpty())
-		{
-			LF_HospitalRespawn.MarkDied(uid);
-			if (playerEntity)
-				LF_NewLifeRule.RecordDeath(uid, playerEntity.GetOrigin());
-		}
-
-		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
-		if (respawn)
-			respawn.NotifyReadyForSpawn_S();
+		LF_HospitalRespawn.MarkDied(uid);
+		if (body)
+			LF_NewLifeRule.RecordDeath(uid, body.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -336,6 +344,15 @@ class LF_SpawnLogic : SCR_SpawnLogic
 
 		string characterPersistenceId = activeCharacter.GetId();
 
+		// Rejoin inside the logout window: the player takes back their body as it is (#1975). Jail and
+		// hospital come first; TakeBack ends the body for them, so the snapshot below is all they get.
+		IEntity kept = LF_LogoutBodyRejoin.TakeBack(LF_Utils.GetPlayerUID(playerId));
+		if (kept)
+		{
+			TakeBackBody(playerId, kept);
+			return;
+		}
+
 		ResourceName prefab = GetCreationPrefab(playerId, characterPersistenceId);
 		if (!prefab)
 		{
@@ -377,6 +394,18 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The player gets their logout body back as it is: no snapshot, no kit, nothing re-issued (the
+	//! body still holds its card, tickets and job). Only the hand-over and the per-connection marks.
+	protected void TakeBackBody(int playerId, notnull IEntity body)
+	{
+		// A death after this is a respawn, not a rejoin (LF_RejoinSpot).
+		LF_RejoinSpot.NoteSpawn(LF_Utils.GetPlayerUID(playerId));
+		HandoverToPlayer(playerId, body);
+		TopUpPlayer(playerId, body);
+		LF_Debug.Info("Spawn", "player " + playerId + " took back their logout body");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Picks the spawn position and orientation for a player character.
 	//! \return false when no spawn point could be resolved. The caller must abort the spawn
 	//!         rather than place the character at a default origin.
@@ -399,8 +428,13 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		if (LF_HospitalRespawn.ResolveWake(playerId, LF_Utils.GetPlayerUID(playerId), position, yawPitchRoll))
 			return true;
 
-		// Order: the jail return (after the spawn, LF_Jail.OnPlayerSpawned), the hospital wake above,
-		// then the saved spot (off by default, #1778), then the spawn point below.
+		// A new character's first spawn wakes in a first-spawn bed when one is free (#1965); any later
+		// spawn skips this, and with no such bed placed the normal spawn applies.
+		if (LF_FirstSpawnBeds.Resolve(playerId, characterPersistenceId, position, yawPitchRoll))
+			return true;
+
+		// Order: the jail return (after the spawn, LF_Jail.OnPlayerSpawned), the hospital wake,
+		// the first-spawn bed, then the saved spot (off by default, #1778), then the spawn point below.
 		if (LF_RejoinSpot.Resolve(playerId, LF_Utils.GetPlayerUID(playerId), characterPersistenceId, position, yawPitchRoll))
 			return true;
 
@@ -456,6 +490,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	protected void OnFirstSpawn(int playerId, string characterPersistenceId, IEntity character)
 	{
 		LF_Debug.Info("Spawn", "player " + playerId + " spawned " + characterPersistenceId + " for the first time");
+		LF_FirstSpawnBeds.OnFirstSpawn(playerId, character);
 	}
 
 	//------------------------------------------------------------------------------------------------

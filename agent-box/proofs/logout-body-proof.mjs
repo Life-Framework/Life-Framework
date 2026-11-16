@@ -5,7 +5,8 @@ import { arrive, clientBox, newestLog, readSession, sessionDir, sessionPaths } f
 
 // #1973 logout body on a running `session up --clients 2`: client 2 closes its game (a logout), so the
 // server keeps its character as a knocked-out body tagged Logged out instead of deleting it. Client 2
-// then joins again as the same identity; the body leaves the world on the rejoin.
+// then joins again as the same identity inside the window and takes the same body back (#1975): no
+// new character, no despawn.
 async function runLogoutBodyProof() {
   const h = await import("../harness.mjs");
   const dir = sessionDir();
@@ -47,11 +48,15 @@ async function runLogoutBodyProof() {
   wait(8000);
   const log = serverLog();
   show(log, /LogoutBody|VME|SCRIPT\s+\(E\)/);
-  if (leaver) need(log.includes(`logout body of ${leaver} despawned (rejoined)`), `the body of ${leaver} did not despawn on the rejoin`);
+  if (leaver) {
+    need(log.includes(`logout body of ${leaver} taken back by its player`), `the body of ${leaver} was not taken back on the rejoin`);
+    need(!log.includes(`logout body of ${leaver} despawned`), `the body of ${leaver} despawned instead of being taken back (a second character)`);
+  }
+  need(/took back their logout body/.test(log), "no `[LFDebug:Spawn] player N took back their logout body` line");
   need(!/VME|\[LFDebug:LogoutBody\][^\n]*(could not|refused)/.test(log), "a VME or a LogoutBody refusal in the server log");
   console.log("");
   for (const f of fails) console.log(`FAIL  ${f}`);
-  console.log(fails.length ? "logout body proof: FAIL" : "logout body proof: PASS (client 2 closed its game: the character stayed as a laid-down Logged out body; the rejoin removed it)");
+  console.log(fails.length ? "logout body proof: FAIL" : "logout body proof: PASS (client 2 closed its game: the character stayed as a laid-down Logged out body; the rejoin took the same body back)");
   return fails.length ? 1 : 0;
 }
 
