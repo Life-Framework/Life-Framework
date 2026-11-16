@@ -13,6 +13,13 @@
 // red-proof: 2026-11-16, place against on House_Town_E_2I01 (the fix reverted, the new checks failed, then restored):
 //   againstWall taking the farthest hit as the face -> FAIL against: a recessed door behind the prop is uneven
 //   againstWall sampling the floor at the wall plane -> FAIL against: a ledge at the wall plane does not lift the prop
+// red-proof: 2026-11-16, place into a GridWorld layer (the audit listed only the town's layers, so a correctly placed grid
+// prop was "not listed" and rolled back; each line broken, FAIL seen, restored):
+//   serverRun listing the town's layers for a grid command -> FAIL grid audit: the list is GridWorld's own layers (no town layer)
+//   serverRun not telling the boot it is GridWorld         -> FAIL grid audit: the boot is told it is GridWorld
+//   judge without the grid bar                             -> FAIL grid audit: a tilted grid prop passes the grid bar
+//   gridWorldOf not refusing a mixed command               -> FAIL grid audit: a command spanning both worlds is refused
+//   judge resting a grid prop on its bounds bottom alone   -> FAIL grid audit: a pole 0.17 m into a mound, pivot above it, passes
 // red-proof: 2026-11-12, one line broken per move bug (#833 follow-up), each restored after its FAIL was seen:
 //   setTransform ignoring `scale`       -> FAIL edit: --scale on a move writes the scale line
 //   excludeOf returning item.name only  -> FAIL exclude: an unnamed moved entity is excluded by prefab and spot
@@ -20,9 +27,12 @@
 //   judge resting a tree on its bounds base (2026-11-14, #924) -> FAIL judge: a tree whose roots go 0.51 m below the ground
 //   onGround raising a building by its foundation (2026-11-16, town-arrival-desk; the code before the fix)
 //     -> FAIL ground: a building's pivot (its floor) stands on the ground, its foundation below
+import { existsSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { checkEntities } from "../actions/prop-on-surface.mjs";
-import { obbPenetration } from "../../agent-box/place-audit.mjs";
-import { PlaceError, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, judge, modelOf, offlineProblems, onGround, restOn, rot, rowCentres, excludeOf, setTransform, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
+import { isKind, obbPenetration } from "../../agent-box/place-audit.mjs";
+import { GRID_LAYERS } from "../lib/world-zones.mjs";
+import { PlaceError, ROOT, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, gridWorldOf, judge, modelOf, offlineProblems, onGround, restOn, rot, rowCentres, excludeOf, serverRun, setTransform, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
 
 let failed = 0;
 const ok = (cond, what) => {
@@ -265,6 +275,51 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
   ok(judge([t], recs, `0 ${row({ a0: "0,0,-1", a2: "1,0,0" })}`)[0].problems.some((p) => /facing/.test(p)), "judge: a yaw the engine read differently fails");
   ok(judge([t], recs, "0 missing=1")[0].problems.some((p) => /not in the world/.test(p)), "judge: a prefab that did not load fails");
   ok(judge([{ ...t, hung: true }], recs, `0 ${row({ gap: 1.4, backed: 0 })}`)[0].problems.some((p) => /hangs in the air|floating/.test(p)), "judge: a hung thing with nothing behind it fails");
+}
+
+// ---- grid audit: `place` into GridWorld_Layers/Grid_<slug>.layer audits that layer ----------------------
+// The audit used to list only the playtest world's layers, so a correctly placed grid prop was "not listed"
+// and rolled back (three agents fell back to --no-verify plus `audit placement --grid`). serverRun now takes
+// `grid`; the boot is replaced by a stub that answers every listed entity with a clean row.
+{
+  const gridDir = join(ROOT, GRID_LAYERS);
+  const gridNames = existsSync(gridDir) ? new Set(readdirSync(gridDir).filter((f) => f.endsWith(".layer"))) : new Set();
+  ok(gridNames.size > 0 && [...gridNames].some((f) => f.startsWith("Grid_")), "grid audit: GridWorld_Layers holds a Grid_*.layer to measure");
+  ok(gridWorldOf(["Grid_police_gates.layer"]) === true && gridWorldOf(["Street_Police.layer", "Signs.layer"]) === false && gridWorldOf([]) === false, "grid audit: a Grid_*.layer is the grid world, any other layer is the town");
+  refuses(() => gridWorldOf(["Grid_police_gates.layer", "Street_Police.layer"]), /GridWorld .* town at once/, "grid audit: a command spanning both worlds is refused");
+  const clean = (o = {}) => `bmin=0,0,0 bmax=1,1,1 gap=${o.gap ?? 0} tilt=${o.tilt ?? 0} walk=-1 pgap=${o.pgap ?? 0} clip=none scale=1 on=terrain over=0 drop=0 backed=0 c=5,0.3,5 h=0.3,0.3,0.3 a0=1,0,0 a1=0,1,0 a2=0,0,1 flags=none found=x`;
+  const boot = (seen, o) => (records, opts) => {
+    seen.records = records;
+    seen.opts = opts;
+    return { outText: records.map((_, i) => `${i} ${clean(o)}`).join("\n") + "\n", failed: false };
+  };
+  const seen = {};
+  const grid = serverRun([], { grid: true, measure: boot(seen) });
+  ok(seen.opts?.grid === true, "grid audit: the boot is told it is GridWorld");
+  ok(grid.records.length > 0 && grid.records.every((r) => gridNames.has(r.layer)), "grid audit: the list is GridWorld's own layers (no town layer)");
+  // A plain prop: buildings and vegetation are judged by their pivot anyway, which would hide the pole case below.
+  const target = grid.records.find((r) => r.name && /^Grid_/.test(r.layer) && !isKind(r, "building") && !isKind(r, "vegetation"));
+  ok(Boolean(target), "grid audit: a named entity of a Grid_*.layer is in the list");
+  if (target) {
+    const t = { name: target.name, prefab: target.prefab, x: target.x, y: target.y, z: target.z, yaw: 0, hung: false };
+    const mine = judge([t], grid.records, grid.outText, { grid: true })[0];
+    ok(mine.problems.length === 0, `grid audit: a grid prop placed in its Grid layer is listed and clean (got: ${mine.problems.join("; ")})`);
+    const townSeen = {};
+    const town = serverRun([], { grid: false, measure: boot(townSeen) });
+    ok(townSeen.opts?.grid === false && town.records.every((r) => !/^Grid_/.test(r.layer)), "grid audit: a town run still lists the playtest world's layers");
+    ok(judge([t], town.records, town.outText)[0].problems.some((p) => /did not list it/.test(p)), "grid audit: judged against the town's list the same grid prop is 'not listed' (the old failure)");
+    // The grid bar: a tilt is the town's concern, not the grid's (docs/architecture/world-zones.md "Look bar").
+    const tiltSeen = {};
+    const tilted = serverRun([], { grid: true, measure: boot(tiltSeen, { tilt: 30 }) });
+    ok(judge([t], tilted.records, tilted.outText)[0].problems.some((p) => /tilt/i.test(p)), "grid audit: the town bar flags a tilted prop (control)");
+    ok(judge([t], tilted.records, tilted.outText, { grid: true })[0].problems.length === 0, "grid audit: a tilted grid prop passes the grid bar");
+    // A label sign's pole goes 0.17 m into the gravel mound by the cell: the audit calls that fine (pivot above the mound), so does the grid judge.
+    const poled = serverRun([], { grid: true, measure: boot({}, { gap: -0.17, pgap: 0.34 }) });
+    ok(judge([t], poled.records, poled.outText, { grid: true })[0].problems.length === 0, "grid audit: a pole 0.17 m into a mound, pivot above it, passes (the audit's own sunk rule)");
+    ok(judge([t], poled.records, poled.outText)[0].problems.some((p) => /0.17 m below/.test(p)), "grid audit: the town judge still fails the same 0.17 m (control)");
+    const aired = serverRun([], { grid: true, measure: boot({}, { gap: 0.08, pgap: 0.08 }) });
+    ok(judge([t], aired.records, aired.outText, { grid: true })[0].problems.some((p) => /0.08 m above/.test(p)), "grid audit: 8 cm of air under a grid prop still fails the tool");
+  }
 }
 
 if (failed) {

@@ -29,7 +29,7 @@ import { GRID_LAYERS } from "../lib/world-zones.mjs";
 import { layerEntityPrefabs } from "../lib/layer-prefabs.mjs";
 import { boundsOf, braceBlock, matchBlock, parentOf, readResource, resolveChain } from "../actions/place-action-contexts.mjs";
 import { meshOf, ownMesh, parseTree, prefabOf } from "../actions/prop-on-surface.mjs";
-import { LIMITS, analyse, auditRecords, doorZone, insideFraction, isKind, measureTown, obbAabb, obbPenetration, parseDoor, parseKv, parseRoads, parseRow, polylineDistance, readJson } from "../../agent-box/place-audit.mjs";
+import { LIMITS, analyse, auditRecords, doorZone, gridBar, insideFraction, isKind, measureTown, obbAabb, obbPenetration, parseDoor, parseKv, parseRoads, parseRow, polylineDistance, readJson } from "../../agent-box/place-audit.mjs";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const ADDON = join(ROOT, "addons", "LifeFramework");
@@ -37,6 +37,15 @@ const ADDON = join(ROOT, "addons", "LifeFramework");
 // A Grid_*.layer lives in GridWorld_Layers (the debug grid, docs/architecture/world-zones.md); every
 // other layer is the playtest world's (DebugWorld, then the pack town).
 const isGridLayer = (name) => /^Grid_.*.layer$/.test(String(name));
+// Which world one command works in: true when every layer file named is a Grid_*.layer (GridWorld), false
+// when none is (the playtest world). The audit boots and reads that world only, so a command that spans both
+// is refused rather than half-audited.
+export function gridWorldOf(files) {
+  const kinds = new Set(files.filter(Boolean).map((f) => isGridLayer(String(f).split(/[\/]/).pop())));
+  if (kinds.size > 1) throw new PlaceError("this command places in GridWorld (Grid_*.layer) and in the town at once: the audit measures one world per run, so place them with separate commands");
+  return kinds.has(true);
+}
+const itemsGrid = (items) => gridWorldOf(items.map((it) => (it.mode === "move" ? it.ent?.file : it.layer)));
 export function layerPath(root, name) {
   return isGridLayer(name) ? join(root, GRID_LAYERS, name) : townLayerFile(root, name);
 }
@@ -834,14 +843,18 @@ export function parseRays(outText) {
 }
 
 // One boot of the test server: the whole town measured (so the audit's pair checks see everything) plus the probe rays.
-function serverRun(rayLines = []) {
+// `grid`: the command targets a Grid_*.layer, so the list is GridWorld's own layers and the server boots GridWorld
+// (what `audit placement --grid` measures); a town run lists the playtest world's layers and boots that.
+// `measure` is the server boot, replaceable so the selftest can see what the tool would send.
+export function serverRun(rayLines = [], { grid = false, measure = measureTown } = {}) {
   mkdirSync(TMP, { recursive: true });
-  const records = auditRecords({ annex: true });
+  const records = grid ? auditRecords({ grid: true }) : auditRecords({ annex: true });
   // The interactive placement loop stays on this PC (a probe is seconds; a remote run adds a sync).
-  const run = measureTown(records, { outDir: TMP, extra: rayLines, local: true });
+  const run = measure(records, { outDir: TMP, extra: rayLines, local: true, grid });
   if (run.outText == null) throw new PlaceError("the test server wrote no measurements (lines above). Run it from a worktree; `tools\\cli test --no-build --only LF_Test_PlacementAuditTown` shows why");
   const { rays, doors } = parseRays(run.outText);
-  if (doors.length) writeFileSync(join(TMP, "doors.json"), JSON.stringify({ at: new Date().toISOString(), doors }));
+  // doors.json is the town's door cache (loadDoors); GridWorld's doors must not replace it.
+  if (doors.length && !grid) writeFileSync(join(TMP, "doors.json"), JSON.stringify({ at: new Date().toISOString(), doors }));
   const missingRays = rayLines.length - rays.size;
   if (missingRays > 0) throw new PlaceError(`the test server answered ${rays.size} of ${rayLines.length} probe rays: its scripts are older than this tool (run from a worktree at this commit)`);
   return { records, outText: run.outText, rays, doors };
@@ -859,8 +872,10 @@ const rayLine = (id, from, to, exclude = "") => `ray ${id} ${from.map(r3).join("
 
 // The placement audit on the entities just written. Fails on any problem the audit ranks for one of them or
 // that names one of them, on a bottom more than TOL.rest from its support, and on a yaw the engine read differently.
-export function judge(targets, records, outText, { allow = [], areas = [], roads = [] } = {}) {
+// `grid`: the records are GridWorld's, judged at the grid bar like `audit placement --grid` (floating, sunk, unreachable).
+export function judge(targets, records, outText, { allow = [], areas = [], roads = [], grid = false } = {}) {
   const res = analyse(records, outText, { allow, areas, roads });
+  if (grid) res.ranked = gridBar(res.ranked);
   const rows = new Map();
   for (const raw of outText.split(/\r?\n/)) {
     const sp = raw.indexOf(" ");
@@ -883,7 +898,13 @@ export function judge(targets, records, outText, { allow = [], areas = [], roads
         }
       }
       // A tree's roots go below its pivot (onGround): judge it by its pivot, which the audit's own sunk rule covers.
-      const rest = isKind(t, "vegetation") || isKind(t, "building") ? Math.max(m.gap, m.pgap ?? m.gap) : m.gap;
+      // In GridWorld a prop is judged the audit's way too (`audit placement --grid`, singleProblems): floating by its bounds
+      // bottom, sunk only when its bounds bottom AND its pivot are under the support. A label sign's pole is meant to go
+      // into the gravel mound beside its cell.
+      const pivot = Number.isFinite(m.pgap) ? m.pgap : m.gap;
+      let rest;
+      if (grid) rest = m.gap > 0 ? m.gap : Math.min(0, Math.max(m.gap, pivot));
+      else rest = isKind(t, "vegetation") || isKind(t, "building") ? Math.max(m.gap, pivot) : m.gap;
       if (!t.hung && !m.point && Math.abs(rest) > TOL.rest && !problems.some((p) => /floating|sunk/.test(p))) problems.push(`its base is ${r2(rest)} m ${rest > 0 ? "above" : "below"} ${m.on}`);
       if (t.hung && !m.backed) problems.push("nothing is behind it within 0.3 m: it hangs in the air");
       if (!m.point && !m.character) {
@@ -984,7 +1005,7 @@ function topOf(ctx, surface, flags, { force = false } = {}) {
     return rayLine(`s${k}`, [host.x + dx, topY, host.z + dz], [host.x + dx, lowY, host.z + dz]);
   });
   console.log(`  probing the top of ${labelOf(host)} (${cells.length} rays, one test-server boot)`);
-  const run = serverRun(lines);
+  const run = serverRun(lines, { grid: gridWorldOf([host.file]) });
   const entry = cacheFromRays(host, cells.map((_, k) => run.rays.get(`s${k}`)));
   const next = loadCache();
   next[surface.mesh] = { ...entry, from: labelOf(host), at: new Date().toISOString().slice(0, 10) };
@@ -996,8 +1017,10 @@ function topOf(ctx, surface, flags, { force = false } = {}) {
 
 // The offline checks on every plan of one command. Prints each plan (unless `quiet`) and its problems; true when any has one.
 function review(ctx, plans, flags, { quiet = false } = {}) {
-  const roads = loadRoads(ROOT);
-  const doors = ctx.doors ?? loadDoors();
+  // GridWorld has no roads and its own doors (the town's would only mark grid props "on the carriageway").
+  const grid = !ctx.prefabFile && itemsGrid(plans.map((p) => p.item));
+  const roads = grid ? [] : loadRoads(ROOT);
+  const doors = ctx.doors ?? (grid ? [] : loadDoors());
   const staged = [];
   // Entities this command moves leave their old spots: they are not obstacles for each other.
   const moving = plans.map((p) => p.item.ent).filter(Boolean);
@@ -1061,7 +1084,7 @@ function commit(ctx, plans, flags) {
   const targets = plans.map((p) => ({ name: p.item.name, prefab: p.item.prefab, x: r3(p.x), y: r3(p.y), z: r3(p.z), yaw: p.yaw, hung: Boolean(p.hung) }));
   let verdict;
   try {
-    verdict = runJudge(targets);
+    verdict = runJudge(targets, { grid: itemsGrid(plans.map((p) => p.item)) });
   } catch (e) {
     for (const [file, text] of originals) writeFileSync(file, text);
     throw e;
@@ -1082,11 +1105,11 @@ function commit(ctx, plans, flags) {
   return bad.length ? 1 : 0;
 }
 
-function runJudge(targets) {
-  const run = serverRun([]);
+function runJudge(targets, { grid = false } = {}) {
+  const run = serverRun([], { grid });
   const allow = readJson(join(ROOT, "agent-box", "place-audit-allow.json"), { allow: [] }).allow ?? [];
   const areas = readJson(join(ROOT, "agent-box", "areas.json"), { areas: [] }).areas ?? [];
-  return judge(targets, run.records, run.outText, { allow, areas, roads: loadRoads(ROOT) });
+  return judge(targets, run.records, run.outText, { allow, areas, roads: grid ? [] : loadRoads(ROOT), grid });
 }
 
 function relYawOf(flags, surface) {
@@ -1179,7 +1202,7 @@ function groundPlans(ctx, wants, flags) {
     return 1;
   }
   console.log(`  probing the ground (${lines.length} rays, one test-server boot)`);
-  const run = serverRun(lines);
+  const run = serverRun(lines, { grid: itemsGrid(wants.map((w) => w.item)) });
   ctx.doors = run.doors;
   const plans = wants.map((w, i) => {
     const samples = [0, 1, 2, 3, 4].map((k) => {
@@ -1251,7 +1274,7 @@ function cmdAgainst(args, flags) {
     lines.push(rayLine(`f${k}`, [p[0], y0 + 1.3, p[1]], [p[0], y0 - 2, p[1]], exclude));
   }
   console.log(`  probing the ${r2(headingOf(n[0], n[1]))} deg face of ${targetName} from ${r2(start[0])}, ${r2(start[1])} (${lines.length} rays, one test-server boot)`);
-  const run = serverRun(lines);
+  const run = serverRun(lines, { grid: itemsGrid([item]) });
   ctx.doors = run.doors;
   const seen = (ray) => ray.d < ray.len - 0.001;
   const nameOfHit = (ray) => (ray.root && ray.root !== "GenericEntity" && ray.root !== "none" ? ray.root : ray.hit);
@@ -1352,11 +1375,12 @@ function cmdProbe(args, flags) {
 function cmdVerify(args) {
   if (!args.length) throw new PlaceError("usage: place verify <entity>...");
   const ents = loadModel(ROOT);
-  const targets = args.map((name) => {
-    const e = findEntity(ents, name);
+  const found = args.map((name) => findEntity(ents, name));
+  const targets = args.map((name, i) => {
+    const e = found[i];
     return { name, prefab: e.prefab, x: r3(e.x), y: r3(e.y), z: r3(e.z), yaw: e.yaw, hung: false, tilted: e.tilted };
   });
-  const verdict = runJudge(targets);
+  const verdict = runJudge(targets, { grid: gridWorldOf(found.map((e) => e.file)) });
   let bad = 0;
   for (const v of verdict) {
     // A hung thing is judged by the audit's own mounted rule, not by the tool's rest tolerance.
