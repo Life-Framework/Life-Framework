@@ -124,6 +124,51 @@ StringTable {
      Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
+    CustomStringTableItem "{29B583DBF009AF66}" {
+     Id "LF-Dialogue_NightShift_AboutMove"
+     Target_en_us "They gave us one bus and one suitcase each. The island is quiet, and the quiet is hard at first. But nobody asks you to leave in the middle of dinner."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{3A926B5A26D83CD5}" {
+     Id "LF-Dialogue_NightShift_AboutWork"
+     Target_en_us "If you need wages, read the town board on the square. It lists who is hiring. And the clerk's office has a bed upstairs, for the first nights. Ask the clerk."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{5844A7CD27076B26}" {
+     Id "LF-Dialogue_NightShift_AboutZone"
+     Target_en_us "I worked near the Zone before they moved us. Twelve kilometres from the reactor. They told us three days. That was three years ago. I still keep my house key."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{6F1F8D8B72E42914}" {
+     Id "LF-Dialogue_NightShift_Bye"
+     Target_en_us "Good night. Walk safe."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{B3BFC4DA71312BAC}" {
+     Id "LF-Dialogue_NightShift_Greet"
+     Target_en_us "Evening. Or morning, I lose track on nights. You are one of the new families, yes? Sit if you like."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{D435BA49E015D84F}" {
+     Id "LF-Dialogue_NightShift_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{88229E39461B49AD}" {
+     Id "LF-Dialogue_NightShift_SayMove"
+     Target_en_us "How was the move?"
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{BCCC43C3AC789D1A}" {
+     Id "LF-Dialogue_NightShift_SayWork"
+     Target_en_us "Is there work for me?"
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{DE78ADF43EDC7C40}" {
+     Id "LF-Dialogue_NightShift_SayZone"
+     Target_en_us "You worked near the Zone?"
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
     CustomStringTableItem "{AA83C29649EB0D96}" {
      Id "LF-Dialogue_OldMan_Bye"
      Target_en_us "Go well. Come and sit with me again some time."
@@ -1878,6 +1923,11 @@ StringTable {
      Id "LF-Townsfolk_CafeOwner_Role"
      Target_en_us "Café owner"
      Comment "Townsfolk (The relocated, #1960): what Odile Marchand does, the role line under the name."
+    }
+    CustomStringTableItem "{7C3E5A19D04B82F6}" {
+     Id "LF-Townsfolk_NightShift_Name"
+     Target_en_us "Rémi Duval"
+     Comment "Townsfolk (The relocated, #1963): the night-shift worker's name over his dialogue captions."
     }
     CustomStringTableItem "{B0FC17DD51416582}" {
      Id "LF-Townsfolk_NightShift_Role"
