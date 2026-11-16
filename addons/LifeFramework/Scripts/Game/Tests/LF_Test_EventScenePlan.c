@@ -76,7 +76,10 @@ class LF_Test_EventScenePlan : LF_Test
 
 		// A restart does not resume a scene: the static reset drops it.
 		LF_EventScenePlanner.Begin(LF_EventScenePlanner.Plan(MakeScene("arrival", 1), 5));
-		LF_StaticReset.ResetAll();
+		// Only this feature's hook: LF_StaticReset.ResetAll() would wipe every feature's statics
+		// (placed-object registries) for the tests that run after this one.
+		LF_EventScenePlanner_StaticResetHook hook = new LF_EventScenePlanner_StaticResetHook();
+		hook.Apply();
 		ctx.True(LF_EventScenePlanner.RunningScene() == "", "a world reset drops the running scene");
 
 		// A malformed scene is refused.
