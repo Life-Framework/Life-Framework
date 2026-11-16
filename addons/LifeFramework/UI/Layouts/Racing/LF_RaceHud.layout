@@ -1,0 +1,40 @@
+FrameWidgetClass "{4D05600C49666678}" {
+ Name "RaceHudRoot"
+ Slot FrameWidgetSlot "{1840F4ED9DDF6C9C}" {
+  Anchor 0 0 1 1
+ }
+ {
+  FrameWidgetClass "{500B9453B45F01AE}" {
+   Name "Panel"
+   Slot FrameWidgetSlot "{D95A5B3ACEC57508}" {
+    Anchor 1 0.2 1 0.2
+    PositionX -24
+    OffsetLeft -24
+    PositionY 0
+    OffsetTop 0
+    SizeX 340
+    OffsetRight -316
+    SizeY 360
+    OffsetBottom -360
+    Alignment 1 0
+   }
+   {
+    ImageWidgetClass "{A23ED661C66A1C6C}" {
+     Name "Plate"
+     Slot FrameWidgetSlot "{BD5F768E6119FFA5}" {
+      Anchor 0 0 1 1
+     }
+     Color 0.478 0.4 0.251 0.92
+    }
+    VerticalLayoutWidgetClass "{9CBCE7E00A34A7C0}" {
+     Name "Rows"
+     Slot FrameWidgetSlot "{49266E2EB8A29529}" {
+      Anchor 0 0 1 1
+      OffsetTop 4
+      OffsetBottom 8
+     }
+    }
+   }
+  }
+ }
+}

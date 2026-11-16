@@ -7626,6 +7626,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "RULES ORIENTATION"
      Comment "Printed heading of the rules quiz sheet (#915)."
     }
+    CustomStringTableItem "{2AF33ED38BCE9973}" {
+     Id "LF-RaceHud_Finished"
+     Target_en_us "Finished"
+     Comment "Race panel next-checkpoint value once the racer crossed the finish (#1924)."
+    }
+    CustomStringTableItem "{059DB4A9DCC74AC6}" {
+     Id "LF-RaceHud_Lap"
+     Target_en_us "Lap"
+     Comment "Race panel row label: the lap the racer is on, shown as 2 / 3 (#1924)."
+    }
+    CustomStringTableItem "{527550AA7B1AF1F6}" {
+     Id "LF-RaceHud_Next"
+     Target_en_us "Next checkpoint"
+     Comment "Race panel row label: the next checkpoint in the lap, shown as 3 / 5 (#1924)."
+    }
+    CustomStringTableItem "{C140B122F6F49FB0}" {
+     Id "LF-RaceHud_Over"
+     Target_en_us "Race over"
+     Comment "Race panel next-checkpoint value once the race has ended (#1924)."
+    }
+    CustomStringTableItem "{141401C4193B4C2C}" {
+     Id "LF-RaceHud_Place"
+     Target_en_us "Place"
+     Comment "Race panel row label: the racer's position, shown as 1 / 4 (#1924)."
+    }
+    CustomStringTableItem "{AAC1CF2075F935EF}" {
+     Id "LF-RaceHud_Time"
+     Target_en_us "Time"
+     Comment "Race panel row label: the race clock (#1924)."
+    }
+    CustomStringTableItem "{53EFFC318C712E0F}" {
+     Id "LF-RaceHud_Title"
+     Target_en_us "RACE"
+     Comment "Heading of the racer's panel during a race (#1924)."
+    }
     CustomStringTableItem "{B995FFFBC0F45EF0}" {
      Id "LF-Race_Action"
      Target_en_us "Enter the race"

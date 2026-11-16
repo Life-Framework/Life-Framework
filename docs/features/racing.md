@@ -11,3 +11,6 @@
 
 ### `dirt_loop` pack course — `LF_Everon1989/Configs/Racing/LF_RaceCourses_Everon1989.conf` (#1927, 2026-11-16)
 - ⚠️ Data only, no world yet: the flagship's dirt loop is a pack course (`LF_RaceCoursesConfig`, #791): five checkpoint ids (`dirt_cp_1`..`dirt_cp_5`, placed by the town card #1935), 3 laps, entry fee 50, 2 entrants minimum, 60 s lobby, payout 60/30/10. Listed as an overlay in the flagship mission header, so `LF_RaceCourses` (#2006) loads it and `LF_RaceCourse.IsValid` checks it at boot. Proof: `tools/validation/pack-race-course-selftest.mjs` (a core Enforce test cannot name a pack file, validate-addon-boundary) checks the values, validity and the header line.
+
+### `LF_RaceHud` — `Feature/Racing/LF_RaceHud.c` (#1924, 2026-11-16)
+- ⚠️ During a race each racer sees a panel with lap, next checkpoint, place and time; the server sends it to the racer's own client only when lap, checkpoint or place change. Tests: `racing/race-hud` (LOGIC); two-player look manual.
