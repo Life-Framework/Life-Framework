@@ -1,0 +1,27 @@
+GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" {
+ ID "508AB2013EEE1E01"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Empty beer bottle"
+     Description "An empty beer bottle, ready to be filled at a brewery"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.2
+     SizeSetupStrategy Volume
+     ItemVolume 550
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{93805DF1EFA4F212}Assets/Props/Civilian/BeerBottle_01/BeerBottle_01_Empty.xob"
+   Materials {
+    MaterialAssignClass "{5A4ACD10B8DA3050}" {
+     SourceMaterial "BeerBottle_01"
+     AssignedMaterial "{A3B7F4DA5C108E3D}Assets/Props/Civilian/BeerBottle_01/Data/BeerBottle_01_empty_brown.emat"
+    }
+   }
+  }
+ }
+}
