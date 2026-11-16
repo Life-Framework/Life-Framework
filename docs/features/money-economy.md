@@ -133,6 +133,15 @@
   (the building pipeline's `storePlan` over the furniture prefab, `--check` to compare); the store stays on the
   core counter entity because the suite boots the core world without the pack. ⚠️ In the core-only test world
   the shelves are not there (the copies settle on the floor) and the canteen has no price.
+- ✅ **The general store is dressed and lit** (2026-11-16, #2008). `tools/buildings/general-store/dress.mjs` writes
+  the plain props (tins, bottles, bread, cartons; no Items, nothing pickable or sold) on every shelf board the
+  store lines do not use and a back row on the sold boards that have room, plus the counter-top, wall, floor
+  and window-display props and the ceiling lights from `spec.json` (`dress`, `dressing`, `lights`) into the
+  furniture prefab; every generated child has an ID starting `D0` and `--check` compares. Seven inline
+  `LightEntity` spots (always on, as the building pipeline's lighting preset) light the shop and make the window
+  glow from the street at night, one more spot lights the frontage. The vanilla `SignCommercial_01_FoodStore`
+  panel (which read DROGERIE) is now `LF_Sign_Fascia` with sign id `general_store`, like the gun store (#1903);
+  the DebugWorld overlay `Sign_GeneralStore` is removed as the building carries the sign.
 
 ### Shop price list — `Feature/Shop/LF_ShopPriceList.c` (was `LF_ShopMenu`)
 - ✅ (2026-11-08, M1-13) Typed price list on `LF_UIScreen` with the
