@@ -21,6 +21,12 @@ class LF_RespawnConfig
 	[Attribute("0", UIWidgets.Auto, "Seconds before the bed loiter is stopped into the get-up. 0 lets the animation end by itself")]
 	float m_fWakeLieSeconds;
 
+	[Attribute("0", UIWidgets.CheckBox, "A returning character spawns where it logged out (rejoinAtLastPosition, #1778). Off: the normal spawn point. A jail return and a hospital wake come first; a stale or unsafe spot falls back to the spawn point (LF_RejoinSpot)")]
+	bool m_bRejoinAtLastPosition;
+
+	[Attribute("12", UIWidgets.Auto, "A saved spot older than this many hours is stale and the character takes the spawn point. 0 means no age limit", params: "0 720")]
+	int m_iRejoinMaxAgeHours;
+
 	protected static ref LF_RespawnConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
@@ -42,6 +48,10 @@ class LF_RespawnConfig
 		s_Config = LF_RespawnConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
 			LF_Debug.Error("Respawn", string.Format("respawn config has an unexpected root class: %1", CONFIG_PATH));
+
+		// The setting is logged once, when the config first loads.
+		if (s_Config)
+			LF_Debug.Info("Respawn", string.Format("rejoinAtLastPosition=%1 maxAgeHours=%2", s_Config.m_bRejoinAtLastPosition, s_Config.m_iRejoinMaxAgeHours));
 
 		return s_Config;
 	}
