@@ -3010,6 +3010,736 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.58 2.274 -2.271
    angleY 77
   }
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "D0E90B788F3FB364"
+   coords -1.249 2.796 4.266
+   angleY -178
+  }
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "D035607BBAFCC9E9"
+   coords -1.263 3.226 4.274
+   angleY -170
+  }
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "D0CFCE6F7C650DE3"
+   coords -1.243 2.796 3.522
+   angleY -175
+  }
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "D01248FD3A5E98E8"
+   coords -1.262 3.226 3.545
+   angleY -173
+  }
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "D0ABEA8527664ACB"
+   coords -1.244 2.796 5.701
+   angleY -179
+  }
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "D0F7A1FFBEA3234A"
+   coords -1.254 2.796 4.992
+   angleY 176
+  }
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "D0086A3BF818795E"
+   coords -1.244 3.226 4.995
+   angleY -178
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "D079F46884581CD1"
+   coords 1.215 2.796 -2.691
+   angleY 94
+  }
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "D097EA8DF7A845E3"
+   coords 1.23 3.226 -2.691
+   angleY 91
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "D03008A1A2451A7D"
+   coords 1.939 2.796 -2.708
+   angleY 89
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "D04A3A93813B663D"
+   coords 5.507 2.796 -1.542
+   angleY 3
+  }
+  GenericEntity : "{F3421D70839BA998}Prefabs/Props/Crates/CardboardBox/CardboardBox_04.et" {
+   ID "D0A524B490ACA99C"
+   coords 5.485 3.226 -1.525
+   angleY -5
+  }
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "D06CA5D39E854033"
+   coords 5.511 2.796 -0.805
+   angleY 5
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "D09FB0D70628D77B"
+   coords 5.494 3.226 -0.796
+   angleY 1
+  }
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "D06706932409D0C6"
+   coords 5.489 2.796 4.954
+   angleY -4
+  }
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "D0E7C13E560CD09C"
+   coords 5.491 3.226 4.957
+   angleY -5
+  }
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "D0E1AAD8FCA0270F"
+   coords 5.499 2.796 5.689
+   angleY -4
+  }
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "D0AFACE9A3053FA4"
+   coords 2.776 2.796 -2.752
+   angleY 88
+  }
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "D0B795A90A80660F"
+   coords 5.524 2.796 -2.459
+   angleY 5
+  }
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "D0C424C7A7D2B935"
+   coords 5.497 3.226 -2.441
+   angleY 6
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0DC90143EAFAB31"
+   coords 1.577 0.598 2.512
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D04E188112B43C30"
+   coords 1.577 0.598 2.812
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0350B5893257D88"
+   coords 1.577 0.598 3.112
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0AEE0C35D24E4F8"
+   coords 1.577 0.598 3.412
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0DC8D1CA0739C0B"
+   coords 1.577 0.598 3.712
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0C67AF05080EC71"
+   coords 1.577 0.598 4.012
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0500C7880FDB8CF"
+   coords 1.577 0.598 4.312
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D07842D0286E5644"
+   coords 1.669 0.99 2.512
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D04411F11153E099"
+   coords 1.669 0.99 2.812
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D06BE523BD88EE99"
+   coords 1.669 0.99 3.112
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0E961B1D8601DAC"
+   coords 1.669 0.99 3.412
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0AA3E51050BD5C8"
+   coords 1.669 0.99 3.712
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0D5B91BA16A6B17"
+   coords 1.669 0.99 4.012
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0995287609FD1E8"
+   coords 1.669 0.99 4.312
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0875F40EA5B1C8A"
+   coords 1.729 1.347 2.512
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0C37CA7CAFD00C8"
+   coords 1.729 1.347 2.812
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D01343DA8879AC85"
+   coords 1.729 1.347 3.112
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D07EC3700EBC2EE0"
+   coords 1.729 1.347 3.412
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D06A58535638ED4C"
+   coords 1.729 1.347 3.712
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D075A706DF1A0BC8"
+   coords 1.729 1.347 4.012
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0C3B2441095048F"
+   coords 1.729 1.347 4.312
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0C31D58338359DE"
+   coords 2.571 0.598 4.5
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0FDAD97891A36E6"
+   coords 2.571 0.598 4.2
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D016E0D6488294A8"
+   coords 2.571 0.598 3.9
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D03CD538D8C3B70B"
+   coords 2.571 0.598 3.6
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0E90D5792566C65"
+   coords 2.571 0.598 3.3
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D055ACEB489EF5E6"
+   coords 2.571 0.598 3
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0AB0D2F30015939"
+   coords 2.571 0.598 2.7
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0FA3B7D4364A407"
+   coords 2.479 0.99 4.5
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D091C51D8B46F76B"
+   coords 2.479 0.99 4.2
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D08A90923E031B98"
+   coords 2.479 0.99 3.9
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0B404BEAA594E73"
+   coords 2.479 0.99 3.6
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D08C255F81E4797E"
+   coords 2.479 0.99 3.3
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D05DF5CFD976E685"
+   coords 2.479 0.99 3
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0E1BDE2ACB98030"
+   coords 2.479 0.99 2.7
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D05D862F14C87C9E"
+   coords 2.419 1.347 4.5
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0B38CF7803BDFC6"
+   coords 2.419 1.347 4.2
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0625D62E90A44BD"
+   coords 2.419 1.347 3.9
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D067800068981475"
+   coords 2.419 1.347 3.6
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0BA4A2FF397620C"
+   coords 2.419 1.347 3.3
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D05AAF145C3D08AD"
+   coords 2.419 1.347 3
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D00234B152A15C3C"
+   coords 2.419 1.347 2.7
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D02FDF63E8621020"
+   coords 1.577 0.598 4.989
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0B1031DC072FE9E"
+   coords 1.577 0.598 5.289
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D09D2D83444266AB"
+   coords 1.577 0.598 5.589
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0BF4ADBCB52F31E"
+   coords 1.577 0.598 5.889
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0B6851A266C81FB"
+   coords 1.577 0.598 6.189
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D09DF2FE267CF9E4"
+   coords 1.577 0.598 6.489
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0BCC979221B0F0E"
+   coords 1.577 0.598 6.789
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0B49D715906F6B9"
+   coords 1.669 0.99 4.989
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0E8DF83D395540F"
+   coords 1.669 0.99 5.289
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D05242FD45B9782A"
+   coords 1.669 0.99 5.589
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0140B635773697C"
+   coords 1.669 0.99 5.889
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D00F028D20929CE5"
+   coords 1.669 0.99 6.189
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D05047629012C51C"
+   coords 1.669 0.99 6.489
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0BC4DDD9B763A38"
+   coords 1.669 0.99 6.789
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D09C797B16CED98B"
+   coords 1.729 1.347 4.989
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D03740B115D662B5"
+   coords 1.729 1.347 5.289
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D01885D8C808E9C5"
+   coords 1.729 1.347 5.589
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D07C738B349CEFC6"
+   coords 1.729 1.347 5.889
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D00C8EC7671127AE"
+   coords 1.729 1.347 6.189
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D07A6F45998B25D8"
+   coords 1.729 1.347 6.489
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0EB0B2D30842C28"
+   coords 1.729 1.347 6.789
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0AD3826FEDED337"
+   coords 2.571 0.598 6.977
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0C2E15BCE93B1D7"
+   coords 2.571 0.598 6.677
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0A85B9C6EF47D0C"
+   coords 2.571 0.598 6.377
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0518BFDB88A672F"
+   coords 2.571 0.598 6.077
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0D330BA8A4C461C"
+   coords 2.571 0.598 5.777
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D00FE1CB228EC247"
+   coords 2.571 0.598 5.477
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0E438D3E98D8CDB"
+   coords 2.571 0.598 5.177
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D02901A6E6084D00"
+   coords 2.479 0.99 6.977
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D059CBD8AEA160DB"
+   coords 2.479 0.99 6.677
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D07C01F37421819B"
+   coords 2.479 0.99 6.377
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0A665F631C60767"
+   coords 2.479 0.99 6.077
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0E9D69D8974320A"
+   coords 2.479 0.99 5.777
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0943AD19167ADBC"
+   coords 2.479 0.99 5.477
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D053EB9AF21D2FC5"
+   coords 2.479 0.99 5.177
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0170645980BE213"
+   coords 2.419 1.347 6.977
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0A972D6FA352BD9"
+   coords 2.419 1.347 6.677
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D01DEA74312EE10A"
+   coords 2.419 1.347 6.377
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D08716290CD6DC20"
+   coords 2.419 1.347 6.077
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0DE17C857FAF1EE"
+   coords 2.419 1.347 5.777
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D017C6C31CB1EF29"
+   coords 2.419 1.347 5.477
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0B8159D7C254944"
+   coords 2.419 1.347 5.177
+   angleY 90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D014871C163CFD5A"
+   coords 5.254 0.597 2.387
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0A7B5A0346935E6"
+   coords 5.254 0.597 2.687
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0ED7B081D398079"
+   coords 5.254 0.597 2.987
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D095DD60EE8517F6"
+   coords 5.254 0.597 3.287
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0674CAA02F5D88E"
+   coords 5.254 0.597 3.587
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D00164B42FD4138A"
+   coords 5.254 0.597 3.887
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D08190BF260B11FE"
+   coords 5.254 0.597 4.187
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D01EFAE0D2BE1BAF"
+   coords 5.346 0.989 2.387
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0A399CD8AE6B5DD"
+   coords 5.346 0.989 2.687
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D05FDC029E721008"
+   coords 5.346 0.989 2.987
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0A3F3ADD753B913"
+   coords 5.346 0.989 3.287
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D04E6DF57E20B37C"
+   coords 5.346 0.989 3.587
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D05B0B1761701CDD"
+   coords 5.346 0.989 3.887
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0E6A04F422F70A0"
+   coords 5.346 0.989 4.187
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D05600BC7EABADB8"
+   coords 5.406 1.346 2.387
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D075E3BC807F3CFC"
+   coords 5.406 1.346 2.687
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D0DC598B9B50D49D"
+   coords 5.406 1.346 2.987
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+   ID "D0C82B90DBE130E8"
+   coords 5.406 1.346 3.287
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D044D25594A4D1F5"
+   coords 5.406 1.346 3.587
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
+   ID "D03080171E583418"
+   coords 5.406 1.346 3.887
+   angleY -90
+   scale 0.17
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "D0A00CB4359A62F0"
+   coords 5.406 1.346 4.187
+   angleY -90
+   scale 0.17
+  }
   GenericEntity : "{FB388A4B8389EFB2}Prefabs/Props/PersonalBelongings/Notebooks/Notebook_01_Personal_Civilian.et" {
    ID "D074CC4C8F3B436C"
    coords 2.05 1.24 -0.6
@@ -3172,6 +3902,112 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "D047B309131C39D2"
    coords 2.85 0 9.4
   }
+  GenericEntity : "{473922A1279485A9}Prefabs/Props/Furniture/Carpet_01.et" {
+   ID "D00547E685A8D9D2"
+   coords -0.95 0.199 1.3
+   scale 0.65
+  }
+  GenericEntity : "{473922A1279485A9}Prefabs/Props/Furniture/Carpet_01.et" {
+   ID "D0A8B5A41A888D0A"
+   coords -3.8 0.005 8
+   scale 0.65
+  }
+  GenericEntity : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
+   ID "D0C2D3D7BB5D5169"
+   coords 2.08 0.199 1.8
+  }
+  GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
+   ID "D0E7EF0608EA2649"
+   coords 1.95 1.034 1.8
+   angleY 10
+  }
+  GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
+   ID "D0EA84067DCA6FA0"
+   coords 2.22 1.034 1.78
+   angleY -15
+  }
+  GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+   ID "D00DEA1DC72EB620"
+   coords 3 0.199 1.85
+  }
+  GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+   ID "D0BD990E41E23424"
+   coords 3 0.426 1.85
+   angleY 4
+  }
+  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
+   ID "D0B886E879B090FB"
+   coords 2.82 0.658 1.85
+  }
+  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
+   ID "D0D3D363116CECDC"
+   coords 3 0.658 1.8
+  }
+  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
+   ID "D0A12BA495B93A2D"
+   coords 3.18 0.658 1.88
+  }
+  GenericEntity : "{83E6FF1C73E92AA3}Prefabs/Props/Civilian/NoticeBoardCork_01_posters.et" {
+   ID "D091A1512FC4909E"
+   coords -1.53 2.78 1.3
+   angleY 90
+  }
+  GenericEntity : "{A08D6C886BE1B004}Prefabs/Props/Decorations/Paintings/PaintingSmall_01_V3.et" {
+   ID "D070F31A79E4648E"
+   coords -1.53 2.5 2.62
+   angleY 90
+   scale 0.6
+  }
+  GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
+   ID "D09BC461C4C3D21E"
+   coords 3.35 0.199 -7.55
+   angleY 90
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "D0037D6A48414A4C"
+   coords 3.36 0.631 -7.55
+   angleY 94
+  }
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "D0E81A6B3350CFF3"
+   coords 3.34 1.063 -7.55
+   angleY 86
+  }
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "D088955AD91BB184"
+   coords 5.4 0.199 -7.55
+   angleY 90
+  }
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "D0E289A2F5AF54EB"
+   coords 5.42 0.631 -7.55
+   angleY 88
+  }
+  GenericEntity : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
+   ID "D03FA498D51E97EA"
+   coords 4.65 0.199 -5
+   angleY 6
+  }
+  GenericEntity : "{9545DA837C6C4E3F}Prefabs/Props/Crates/Crate_01_yellow.et" {
+   ID "D0238E9D653B11D3"
+   coords 3.85 0.199 -4.7
+   angleY 90
+  }
+  GenericEntity : "{9545DA837C6C4E3F}Prefabs/Props/Crates/Crate_01_yellow.et" {
+   ID "D00C4B63D4DD0B36"
+   coords 3.85 0.426 -4.7
+   angleY 84
+  }
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "D05B7737FDAC1B76"
+   coords 5.2 0.199 -6.4
+   angleY 90
+  }
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "D07BC56C91BAF907"
+   coords 5.2 0.631 -6.4
+   angleY 80
+  }
   LightEntity {
    ID "D0E38A14AF7A817F"
    coords 2.962 3.72 0.922
@@ -3272,15 +4108,14 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   LightEntity {
    ID "D03D86C30E1A040F"
-   coords 4.267 3.72 -5.488
+   coords 4.267 3.3 -5.488
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 4
+   LV 2.4
    ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
+   Radius 6
+   DistanceAttenuation 0.8
+   NearPlane 0.45
    LensFlareType Disabled
   }
   LightEntity {
@@ -3294,6 +4129,42 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    Radius 7
    NearPlane 0.3
    SpotAngle 140
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "D01023046A3BEF8B"
+   coords 0.6 3 5.4
+   angles -90 0 0
+   Color 1 0.87 0.7 1
+   LV 1.6
+   ClipEV -10
+   Radius 8
+   DistanceAttenuation 0.8
+   NearPlane 0.45
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "D0D6D8FCE6AAE736"
+   coords 4.4 3 2.2
+   angles -90 0 0
+   Color 1 0.87 0.7 1
+   LV 1.6
+   ClipEV -10
+   Radius 8
+   DistanceAttenuation 0.8
+   NearPlane 0.45
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "D0CD0A9FBF16D044"
+   coords 0.9 3 -0.4
+   angles -90 0 0
+   Color 1 0.87 0.7 1
+   LV 1.6
+   ClipEV -10
+   Radius 8
+   DistanceAttenuation 0.8
+   NearPlane 0.45
    LensFlareType Disabled
   }
  }
