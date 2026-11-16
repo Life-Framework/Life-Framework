@@ -443,6 +443,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RaceHud(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceRecords(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_RaceRunner(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RadioPlaylist(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RangeTargets(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RateLimit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);

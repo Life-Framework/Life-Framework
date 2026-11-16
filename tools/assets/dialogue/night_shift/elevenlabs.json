@@ -1,0 +1,81 @@
+{
+  "id": "night_shift",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "1b9eebdc4abd59c4",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "LJ Speech (Piper)",
+      "model": "piper",
+      "engine": "piper",
+      "text": "Evening. Or morning, I lose track on nights. You are one of the new families, yes? Sit if you like.",
+      "chars": 99,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 7.64,
+      "mouth": "999437631100000079985666644221008874565362259961353346663200342100000169998356441575698321887646665354100000059973236664100000599989325133653488972101000"
+    },
+    "about_zone": {
+      "hash": "2635ed3818f8cacf",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "LJ Speech (Piper)",
+      "model": "piper",
+      "engine": "piper",
+      "text": "I worked near the Zone before they moved us. Twelve kilometres from the reactor. They told us three days. That was three years ago. I still keep my house key.",
+      "chars": 158,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 11.16,
+      "mouth": "99959952135666355657643332189668545873149962235433210000021999721229865654265562175455699976210133100000199825998868569211899529985421253100000089996213465111355533677532316766531000000696995597512341048983465488211156531000"
+    },
+    "about_move": {
+      "hash": "be6287a35f71595c",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "LJ Speech (Piper)",
+      "model": "piper",
+      "engine": "piper",
+      "text": "They gave us one bus and one suitcase each. The island is quiet, and the quiet is hard at first. But nobody asks you to leave in the middle of dinner.",
+      "chars": 150,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 10.45,
+      "mouth": "974997996717643179733885100000000896327854895621268569316763104753100000566999976633209781225976554110558222399768687732899766111199741366210000009615998799731787759812751000000373555677576558999962148645421000"
+    },
+    "about_work": {
+      "hash": "02be07f4e3b2ec86",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "LJ Speech (Piper)",
+      "model": "piper",
+      "engine": "piper",
+      "text": "If you need wages, read the town board on the square. It lists who is hiring. And the clerk's office has a bed upstairs, for the first nights. Ask the clerk.",
+      "chars": 157,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 11.59,
+      "mouth": "9824899888872228997358753661111110006996163539767552397786215764648951299988521000009923699769712982255566226988865421000000789322899712658731456285551676621785487654433631000001566221995551466421026641000003998586115121699974111000"
+    },
+    "bye": {
+      "hash": "eeca51c279e87095",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "LJ Speech (Piper)",
+      "model": "piper",
+      "engine": "piper",
+      "text": "Good night. Walk safe.",
+      "chars": 22,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 2.02,
+      "mouth": "19935787321031000003899411798698521110000"
+    }
+  },
+  "voice": {
+    "id": "en_US-ljspeech-high",
+    "name": "LJ Speech (Piper)",
+    "source": "piper"
+  }
+}
