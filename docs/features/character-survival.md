@@ -83,7 +83,9 @@
   and its own attributes when there is none. A row naming a prefab that does not load
   logs `LF_Debug.Error` (`[LFDebug:Impairment]`) and is skipped. Pack-only: no owner
   `config.json` section yet. Test: `survival/drink-impairment-table`.
-- ⚠️ No drink prefab carries the effect yet: the beer wiring is a later #1011 slice.
+- ✅ `BeerBottle.et` and `Moonshine.et` (`Prefabs/Items/Drinks/`, #2001) are `Drink_Base` drinks that carry the
+  effect at its defaults (no table row yet); the engine takes one consumable effect per item, so they restore no
+  thirst. Test: `drinks/alcohol`.
 
 ### `LF_ImpairmentView` — `Feature/Survival/LF_ImpairmentView.c` (#1920)
 - ✅ While the owner's replicated impairment level is above zero their view sways and

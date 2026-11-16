@@ -23,6 +23,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AimIntent(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AlarmMount(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AlarmRests(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_AlcoholDrinks(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AmbientFuelPump(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AmbientSwitch(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AmbientTown(), LF_TestTier.LOGIC);
