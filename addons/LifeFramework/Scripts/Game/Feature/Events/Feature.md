@@ -38,3 +38,11 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Player sees:** nothing yet. The data for the relocated families walking into the square at dawn is in the pack (`LF_Everon1989/Configs/Events/`): the `relocated_arrival` event, its dawn hour condition, its scene and three outfit presets. The core stays neutral; it only reads the pack's overlay (#1952).
 - **Owner and side:** data, server side once the shell module (follow-up) registers the condition and scene by id.
 - **Proof:** `everon/arrival-event` (pack leg).
+
+## Events survive a restart by phase name (#1951)
+
+- **Player sees:** an event that was running at a restart does not replay its scene after the boot; it cools down. A cooldown left at the save still holds after it.
+- **Owner and side:** `LF_EventShell.ExportSaved` and `ApplySaved` (`LF_EventShellSave.c`), server only; nothing replicates.
+- **Data:** the `worldevents` payload, one `LF_EventShellRow` per event the shell runs: row version first, event id, phase NAME, phase age, cooldown left, seconds since it ended, and the int bag as parallel key and value lists. Times are relative to the save; the shell clock is world seconds since boot.
+- **Rules:** idle keeps its cooldown left; a phase the event still has goes to its full cooldown from the load; a phase name it no longer has loads idle with `LF_Debug.Warn`; an id this boot does not run (removed, off, refused) is dropped with `LF_Debug.Warn`. The int bag comes back for every applied row. A load before game start loads the config first and `StartIfServer` keeps those runs. Applying the same rows twice gives the same state.
+- **Proof:** `events/shell-persist` (WORLD), restart by `wt e2e`.

@@ -35,7 +35,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin. The written version is that list's length (40). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents. The written version is that list's length (41). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -92,6 +92,8 @@
 //! with no last position kept, which is what that build had.
 //! A version 39 save includes the last positions and has no hospital rejoins (#2101): a downed logout
 //! that restarted before its rejoin wakes at the plaza with no bill, which is what that build did.
+//! A version 40 save includes the hospital rejoins and has no world events (#1951): every event loads
+//! idle with no cooldown, which is what that build did.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -221,6 +223,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("racerecords");
 		order.Insert("lastpos");
 		order.Insert("hospitalrejoin");
+		order.Insert("worldevents");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -254,7 +257,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 40);
+		context.WriteValue("version", 41);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -736,6 +739,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_HospitalRejoinRow> hospitalRejoinRows = LF_HospitalRejoin.ExportAll();
 			context.Write(hospitalRejoinRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 pending hospital rejoin(s)", hospitalRejoinRows.Count()));
+		}
+		else if (payload == "worldevents")
+		{
+			// Each world event's phase name, cooldown and int bag (#1951), keyed by event id.
+			array<ref LF_EventShellRow> worldEventRows = LF_EventShell.ExportSaved(LF_EventShell.ClockNow());
+			context.Write(worldEventRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 world event(s)", worldEventRows.Count()));
 		}
 		else
 		{
@@ -1344,6 +1354,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("pending hospital rejoins failed to read, none is pending");
+			}
+		}
+		else if (payload == "worldevents")
+		{
+			// A version 1-40 save never reaches this payload: every event starts idle.
+			array<ref LF_EventShellRow> worldEventRows = new array<ref LF_EventShellRow>();
+			if (context.Read(worldEventRows))
+			{
+				int worldEventsApplied = LF_EventShell.ApplySaved(worldEventRows, LF_EventShell.ClockNow());
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 world event(s)", worldEventsApplied, worldEventRows.Count()));
+			}
+			else
+			{
+				ReadFailed("world events failed to read, every event starts idle");
 			}
 		}
 		else

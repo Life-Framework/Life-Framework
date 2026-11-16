@@ -1,5 +1,5 @@
 {
-  "saveVersion": 40,
+  "saveVersion": 41,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -42,7 +42,8 @@
     "firstspawns": "LF_FirstSpawnRow",
     "racerecords": "LF_RaceRecordRow",
     "lastpos": "LF_LastPositionRow",
-    "hospitalrejoin": "LF_HospitalRejoinRow"
+    "hospitalrejoin": "LF_HospitalRejoinRow",
+    "worldevents": "LF_EventShellRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -507,6 +508,19 @@
       "fields": [
         "string m_sPlayerUid",
         "int m_iLoggedOutUnix"
+      ]
+    },
+    "LF_EventShellRow": {
+      "since": 41,
+      "fields": [
+        "int m_iVersion",
+        "string m_sEventId",
+        "string m_sPhaseName",
+        "float m_fPhaseAge",
+        "float m_fCooldownLeft",
+        "float m_fEndedAgo",
+        "array<string> m_aIntKeys",
+        "array<int> m_aIntValues"
       ]
     }
   }
