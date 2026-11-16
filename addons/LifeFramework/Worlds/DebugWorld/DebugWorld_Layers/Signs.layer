@@ -51,17 +51,6 @@ $grp GenericEntity : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
   coords 190 3.3 259.71
   angles 0 180 0
  }
- Sign_GeneralStore {
-  components {
-   LF_SignComponent "{6E3FF3980D87CACE}" {
-    m_sSignId "general_store"
-    m_vRimColor 0.92 0.88 0.76
-    m_vPaintColor 0.1 0.33 0.2
-    m_vTextColor 0.95 0.92 0.8
-   }
-  }
-  coords 181.5 3.05 241.58
- }
 }
 GenericEntity Sign_TownMap : "{EE587A113AF85FC5}Prefabs/Props/Signs/LF_TownBoard.et" {
  components {

@@ -161,6 +161,13 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 				ctx.True(drillStamp.SetSerial(drillSerial), "e2e carried drill is stamped before the save");
 			}
 
+			// The same drill is flagged stolen (#1855): the flag must survive the restart ("itemstolen").
+			if (!carriedDrills.IsEmpty())
+			{
+				LF_StolenGoods.Mark(carriedDrills[0]);
+				ctx.True(LF_StolenGoods.IsStolen(carriedDrills[0]), "e2e carried drill is flagged stolen before the save");
+			}
+
 			LF_WantedReports.Add(SERIAL_BUYER_UID, LF_WantedReports.OFFENCE_ROBBERY, "", "", "Bank", false);
 		}
 
@@ -684,6 +691,13 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 					ctx.False(LF_WantedReports.IsIdentified(SERIAL_BUYER_UID), "e2e the buyer's report is not identified before the locker checks the drill");
 					ctx.Equal(1, LF_FenceSerials.IdentifyItem(backDrills[0], "e2e evidence locker"), "e2e the evidence locker names the buyer from the restored drill");
 					ctx.True(LF_WantedReports.IsIdentified(SERIAL_BUYER_UID), "e2e the buyer's report is identified by the restored drill");
+
+					// #1855: the drill flagged stolen before the save is still stolen; a save older than
+					// the itemstolen payload (--legacy-save) restores it unflagged, as that build did.
+					if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("itemstolen"))
+						ctx.True(LF_StolenGoods.IsStolen(backDrills[0]), "e2e carried drill is still flagged stolen after the restart");
+					else
+						ctx.False(LF_StolenGoods.IsStolen(backDrills[0]), "e2e a legacy save restores the drill unflagged");
 				}
 
 				VerifyIdCard(ctx, restored);

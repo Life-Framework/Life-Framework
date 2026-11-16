@@ -628,6 +628,20 @@
             },
             "additionalProperties": false
           }
+        },
+        "permitFee": {
+          "type": "integer",
+          "description": "Licence desk: the firearm permit's fee in carried cash",
+          "default": 250,
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "permitWaitDays": {
+          "type": "number",
+          "description": "Licence desk: in-game days from application to collection (0 issues at once)",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 365
         }
       },
       "additionalProperties": false,

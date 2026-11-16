@@ -65,6 +65,30 @@
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
   values `> 0`.
 
+### `LF_Impairment` and `LF_ConsumableEffectImpair` — `Feature/Survival/` (#1919)
+- ✅ Any consumable can carry `LF_ConsumableEffectImpair` (strength, duration,
+  `LINEAR` or `EXPONENTIAL` curve, stack cap). Use on the server adds a dose to the
+  drinker's level (0-100), held in memory per character id by `LF_Impairment`.
+  Linear falls to zero over the duration; exponential halves every fifth of it.
+  Doses stack up to the cap. The survival tick decays it; death or the body being
+  deleted clears it, and so does a restart (persisting is not built, off by default).
+  The owner reads `LF_CharacterSurvivalComponent.GetReplicatedImpairment()`, an
+  owner-only RplProp bumped on a 5-point change, start or end. Logs
+  `[LFDebug:Impairment]`. Test: `survival/impairment`.
+- ⚠️ No drink prefab carries the effect yet: the beer wiring is a later #1011 slice.
+
+### `LF_ImpairmentView` — `Feature/Survival/LF_ImpairmentView.c` (#1920)
+- ✅ While the owner's replicated impairment level is above zero their view sways and
+  the aim drifts: each frame the change in a slow two-sine yaw/pitch offset is added to
+  the local character's `CharacterInputContext` aim change, so view and aim move
+  together and stay where the player left them once the level is gone. Client only: the
+  owner-only level is 0 on every other body, and the frame skips any body that is not
+  the local controlled entity.
+- Amplitude is `max * (level / fullLevel)^power`, zero at level 0, capped at the maximum
+  (`LF_ImpairmentViewConfig`: full level 40, power 1.5, max 1.6 degrees yaw, pitch 60%).
+  Script defaults, no `.conf` yet. Test: `survival/impairment-view`.
+- Harness `impair <0-100|off>` pins the local view level for a session proof.
+
 ### `LF_SurvivalStatsSaveData` — `Feature/Survival/Persistence/`
 - ✅ Save/apply round-trip re-clamps through setters (corrupt save sanitized).
 - ⚠️ `Equals` uses exact float `==` (no epsilon).
