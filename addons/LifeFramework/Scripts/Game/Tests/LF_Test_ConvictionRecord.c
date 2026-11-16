@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-16 with `tools/cli test --no-build --only LF_Test_ConvictionRecord` before the "convictions" payload was registered: failed "the conviction is back, no extra rows (expected 1, got 0)". Green once the payload was wired.
+// red-proof: Observed 2026-11-16 with `tools/cli test --no-build --only LF_Test_ConvictionRecord` before the "convictions" payload was registered: failed "the conviction is back, no extra rows (expected 1, got 0)". Green once the payload was wired. 2026-11-16: in a full suite an earlier test resets the event bus and this one found "no subscribers" (expected 1, got 0, run on #2001 + the hook fix); the ResetStatics above is the fix, run 611/611.
 // tier: PERSISTENCE
 //! #1914: an arrest published on the bus stamps the account with the in-game day; IsRecent answers
 //! the clean-record question for a window of days; the stamp survives the "convictions" payload.
@@ -34,6 +34,8 @@ class LF_Test_ConvictionRecord : LF_Test
 #endif
 
 		array<ref LF_ConvictionRow> before = LF_ConvictionRecord.ExportAll();
+		// A test earlier in the suite resets the event bus; a subscriber kept from before would never hear the arrest.
+		LF_ConvictionRecord.ResetStatics();
 		LF_ConvictionRecord.ApplyAll(null);
 		LF_ConvictionRecord.SetTodayForTest(STAMP_DAY);
 		ctx.True(LF_ConvictionRecord.EnsureSubscribed(), "the record subscribes to LF_OnArrested");
