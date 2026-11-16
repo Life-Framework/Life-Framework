@@ -140,6 +140,16 @@
                 "minimum": 0,
                 "maximum": 604800
               },
+              "issue": {
+                "type": "boolean",
+                "description": "Issue: the outlet hands the item out free to a buyer who passes the gates, and books a serial to them (the police armory, #1763). No money moves",
+                "default": false
+              },
+              "issuePrefab": {
+                "type": "string",
+                "description": "Issue: the prefab handed out instead of the item's own, a twin that carries a serial component. Empty hands out the item's prefab",
+                "default": ""
+              },
               "removed": {
                 "type": "boolean",
                 "description": "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead",

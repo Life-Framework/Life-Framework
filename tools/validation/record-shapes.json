@@ -1,5 +1,5 @@
 {
-  "saveVersion": 39,
+  "saveVersion": 40,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -41,7 +41,8 @@
     "convictions": "LF_ConvictionRow",
     "firstspawns": "LF_FirstSpawnRow",
     "racerecords": "LF_RaceRecordRow",
-    "lastpos": "LF_LastPositionRow"
+    "lastpos": "LF_LastPositionRow",
+    "hospitalrejoin": "LF_HospitalRejoinRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -499,6 +500,13 @@
         "vector m_vPosition",
         "float m_fYaw",
         "int m_iTakenUnix"
+      ]
+    },
+    "LF_HospitalRejoinRow": {
+      "since": 40,
+      "fields": [
+        "string m_sPlayerUid",
+        "int m_iLoggedOutUnix"
       ]
     }
   }
