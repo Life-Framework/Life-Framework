@@ -21,6 +21,9 @@ export const PLAYTEST_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
 // Vanilla Everon with only the core game mode, a spawn point, the test runner and an SCR_AIWorld (navmesh,
 // roads): where vanilla AI walks. session --mission everon boots it (#2174).
 export const EVERON_WORLD = "Worlds/CoreOnEveron/CoreOnEveron.ent";
+// The island's header: the pack on MainWorld (vanilla Everon, its AI world and navmesh). It inherits
+// LF_Everon1989.conf and is hidden from Scenarios; session --mission island boots it (#2204).
+export const ISLAND_MISSION = "{5E2A9C41B7D08F36}Missions/LF_EveronIsland.conf";
 // The pack world that is a SubScene of PLAYTEST_WORLD and holds the pack town's layers.
 export const PLAYTEST_PACK_WORLD = "Worlds/Everon1989Town/Everon1989Town.ent";
 

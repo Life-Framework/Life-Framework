@@ -119,7 +119,7 @@ depends on the core (`addons/README.md`, `docs/architecture/core-vs-pack.md`).
 | Scenario | Project | Use |
 | --- | --- | --- |
 | `Missions/EL_DebugTest.conf` | core, DebugWorld | The `LF_Test*` suite and the per-feature test layers |
-| `Missions/EveronLifeGameMode.conf` | pack, MainWorld | Normal play, the 1989 town |
+| `Missions/LF_EveronIsland.conf` | pack, MainWorld | Hidden island header: vanilla Everon, `session up --mission island` |
 | `Missions/LF_PlaytestTown.conf` | pack | The small playtest town |
 
 Typical loop:

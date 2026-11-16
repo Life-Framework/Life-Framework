@@ -277,6 +277,10 @@ on its own**:
 EveronLife-era apple trader). Its old header, `Missions/EveronLifeGameMode.conf` ("Life Framework
 Pre-Alpha", 256 slots), is hidden from Scenarios. Decided (D13):
 
+Steps 1 to 3 landed in #2204 (W1): the apple-farm layer and `EveronLifeGameMode.conf` are deleted, `Gamemode.layer`
+holds the `SCR_AIWorld_Eden` with `GM_Eden.nmn`, `LF_EveronIsland.conf` exists and `session up --mission island`
+boots it. The old spawn (4472, 10535) stays until the `arrival` slot owns one.
+
 1. Keep `MainWorld` (no new GUID), delete the legacy apple-farm layer and retire `EveronLifeGameMode.conf`.
 2. Copy CoreOnEveron's game layer into it: the `SCR_AIWorld_Eden` with the soldier `NavmeshWorldComponent`
    listing `{AD5F99CD7C59D5E0}worlds/GameMaster/Navmeshes/GM_Eden.nmn` (PR #2195, the fix that made
