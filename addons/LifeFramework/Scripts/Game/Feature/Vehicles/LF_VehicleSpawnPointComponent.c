@@ -162,14 +162,18 @@ class LF_VehicleSpawnPointComponent : ScriptComponent
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_VehicleSpawnPointComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_VehicleSpawnPointComponent_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_VehicleSpawnPointComponent_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_VehicleSpawnPointComponent");
-		if (apply)
-			LF_VehicleSpawnPointComponent.ResetStatics();
+		return "LF_VehicleSpawnPointComponent";
+	}
+
+	override void Apply()
+	{
+		LF_VehicleSpawnPointComponent.ResetStatics();
 	}
 }

@@ -49,6 +49,12 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_ConfigService.Boot();
 		// Which systems this server runs (#960): logs each one that is off, before anything spawns.
 		LF_Systems.Boot();
+		// The arrival settings (#1779): read now so the rejoin and grace lines are in the boot log, not at the first spawn.
+		if (Replication.IsServer())
+		{
+			LF_RespawnConfig.Get();
+			LF_GraceConfig.Minutes();
+		}
 		// The testing bypass for gated jobs logs its one warning here, before the first player joins.
 		LF_JobGates.Announce();
 		// World cleanup sweep (#690): abandoned items, vehicles and bodies.
@@ -85,6 +91,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_CrimeRecord.EnsureSubscribed();
 		// Every arrest stamps a dated conviction, read by the permit desk (server only, #1914).
 		LF_ConvictionRecord.EnsureSubscribed();
+		// The record board keeps each character's best race time per course (server only, #1925).
+		LF_RaceRecords.EnsureSubscribed();
 		// The serial book stamps every tool the fence sells (server only).
 		LF_FenceSerials.EnsureSubscribed();
 		// The wanted board's posters rebuild on a crime, a wanted level, an identification (server only).

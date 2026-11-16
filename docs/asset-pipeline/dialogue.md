@@ -155,6 +155,15 @@ tools\cli asset dialogue clerk_everon               write Configs/Dialogue/LF_Di
   checks the file still matches the json.
 - The Everon pack's clerk is the worked example (`tools/assets/dialogue/clerk_everon/`).
 
+## A pack's own full dialogue
+
+A dialogue that patches no core one but belongs to a pack (the old man on the bench, #1962) is a normal
+`dialogue.json` with `"addon": "LF_Everon1989"` and no `patches`. The stage writes its `.conf`, recordings
+and audio project into that pack and its captions into the pack's `Language/*.st`; the core table is only read
+for keys that already exist. Its `voice` may be Piper (`{"engine": "piper", "id": "en_US-ljspeech-high"}`, free,
+ljspeech only). A pack conf that names a speaker and a start is read whole by `validate-dialogue-patch`.
+It is reached by id only once the pack's index overlay lists it and the NPC prefab carries `LF_DialogueComponent`.
+
 ## Voices
 
 - `GET /v1/voices` lists the account's voices; the premade ones are American and British.
@@ -165,6 +174,15 @@ tools\cli asset dialogue clerk_everon               write Configs/Dialogue/LF_Di
 - One voice per NPC. Say why you picked it in the spec's `voice.why`.
 - `settings` are ElevenLabs voice settings. The clerk uses stability 0.55, similarity 0.75,
   style 0.15. Changing them regenerates every line.
+
+## A line with a Piper voice (free)
+
+A line may carry its own `"voice": {"engine": "piper", "id": "en_US-ljspeech-high"}`. The stage then makes it with Piper
+(MIT, offline, `toolscli film-make --setup` installs it into `tools/film/.tts`): no key, no characters, no budget.
+The same block as the dialogue's top-level `voice` gives every line Piper (the Everon clerk, #1959: one voice per character); a single-line voice is for a mixed dialogue, which sounds like two people, so avoid it for one NPC. Only licence-safe voices are accepted
+(`tools/assets/pipeline/piper.mjs`: `en_US-ljspeech-high` and `-medium`, trained on public-domain LJ Speech); `lessac`, `libritts_r`
+and any voice fine-tuned from them are refused (docs/credits.md "Voice-over"). Each line's provenance in `elevenlabs.json`
+records `"engine": "piper"`. Credit the voice in `docs/credits.md`. The clerk's welcome (#1959) is the worked example.
 
 ## Key and cost
 

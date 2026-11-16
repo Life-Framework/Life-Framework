@@ -9,7 +9,12 @@
 //   - a core text file names a pack resource path that has no core file at the
 //     same path;
 //   - a core script names a class declared in pack script;
-//   - the pack holds a .c file that is not on PACK_SCRIPT_ALLOWLIST.
+//   - the pack holds a .c file that is not on PACK_SCRIPT_ALLOWLIST and is not a pack test.
+// Pack tests are the one kind of pack script (docs/architecture/three-worlds.md "Pack test leg"):
+// Scripts/Game/Tests/LF_Test_*.c declaring only LF_Test_* classes that extend LF_Test, and the
+// registry regen-tests writes there (LF_PackTestRegistrations.generated.c), whose one class is
+// `modded class LF_TestManager`. A modded class is the core's own class, so it is not a pack class
+// the core could be caught naming.
 // A missing pack folder passes: the core must boot alone.
 // red-proof: tools/validation/addon-boundary-selftest.mjs plants each violation
 // in a fixture tree and asserts this check reports it.
@@ -25,6 +30,25 @@ export const PACK = "LF_Everon1989";
 // slashes). Keep it short: script in the pack is a smell; the fix is an
 // extension point in the core. Each entry needs a decision entry.
 export const PACK_SCRIPT_ALLOWLIST = new Set([]);
+
+export const PACK_TEST_REGISTRY = "Scripts/Game/Tests/LF_PackTestRegistrations.generated.c";
+const PACK_TEST_FILE = /^Scripts\/Game\/Tests\/LF_Test_\w+\.c$/;
+const CLASS_DECL = /^\s*((?:modded\s+|sealed\s+)*)class\s+([A-Za-z_]\w*)(\s*:\s*([A-Za-z_]\w*))?/gm;
+
+// Why a pack script on a pack test path is not a pack test, "" when it is one, null when the path is
+// not a pack test path (the allowlist rule decides).
+export function packTestProblem(r, text) {
+  const decls = [...text.matchAll(CLASS_DECL)].map((m) => ({ modded: /modded/.test(m[1]), name: m[2], base: m[4] }));
+  if (r === PACK_TEST_REGISTRY) {
+    const bad = decls.filter((d) => !(d.modded && d.name === "LF_TestManager"));
+    return bad.length ? `the pack test registry declares ${bad.map((d) => d.name).join(", ")}; it holds only the generated modded LF_TestManager (tools\\cli regen-tests)` : "";
+  }
+  if (!PACK_TEST_FILE.test(r)) return null;
+  const bad = decls.filter((d) => d.modded || !/^LF_Test_\w+$/.test(d.name) || d.base !== "LF_Test");
+  if (bad.length) return `a pack test file declares ${bad.map((d) => (d.modded ? "modded " : "") + d.name).join(", ")}; it holds only LF_Test_* classes that extend LF_Test`;
+  if (!decls.length) return "a pack test file declares no LF_Test_* class";
+  return "";
+}
 
 // Text formats that can carry a {GUID}path reference.
 const TEXT_EXT = new Set([
@@ -77,8 +101,9 @@ export function packSurface(packDir) {
     paths.add(r);
     if (e === ".c") {
       scripts.push(r);
-      for (const m of readFileSync(file, "utf8").matchAll(/^\s*(?:modded\s+|sealed\s+)*class\s+([A-Za-z_]\w*)/gm)) {
-        classes.set(m[1], r);
+      // A modded class is the core's own class, not one the pack owns.
+      for (const m of readFileSync(file, "utf8").matchAll(/^\s*(modded\s+)?(?:sealed\s+)*class\s+([A-Za-z_]\w*)/gm)) {
+        if (!m[1]) classes.set(m[2], r);
       }
     }
   }
@@ -104,6 +129,9 @@ function checkPackBoundary(addonsDir, PACK) {
 
   const pack = packSurface(packDir);
   for (const s of pack.scripts) {
+    const testProblem = packTestProblem(s, readFileSync(join(packDir, ...s.split("/")), "utf8"));
+    if (testProblem) errors.push(`${PACK}/${s}: ${testProblem}`);
+    if (testProblem !== null) continue;
     if (!PACK_SCRIPT_ALLOWLIST.has(s)) {
       errors.push(`${PACK}/${s}: script in the pack; add a core extension point (config field, attribute, prefab slot) instead, or allowlist it with a decision entry`);
     }

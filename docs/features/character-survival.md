@@ -83,7 +83,16 @@
   and its own attributes when there is none. A row naming a prefab that does not load
   logs `LF_Debug.Error` (`[LFDebug:Impairment]`) and is skipped. Pack-only: no owner
   `config.json` section yet. Test: `survival/drink-impairment-table`.
-- ⚠️ No drink prefab carries the effect yet: the beer wiring is a later #1011 slice.
+- ✅ `BeerBottle.et` and `Moonshine.et` (`Prefabs/Items/Drinks/`, #2001) are `Drink_Base` drinks that carry the
+  effect at its defaults (no table row yet). Test: `drinks/alcohol`.
+- ✅ A drink quenches and impairs in one sip (#2159): the engine takes one consumable effect per item, so
+  `LF_ConsumableEffectImpair` carries `m_fThirstRestore` and calls `LF_CharacterSurvivalComponent.Drink` itself
+  (nothing when the Survival system is off). The amount lives in the prefab, not the impairment table: beer 10,
+  moonshine 3 (water restores 25). Test: `drinks/quenches`.
+- ✅ 1989 Everon drinks impair (#2003): the pack overlay `LF_Everon1989/Configs/Survival/LF_DrinkImpairment_Everon1989.conf`
+  (listed in the pack mission header) adds a row per drink prefab GUID. Beer: 12 points, linear over 10 min, cap 45.
+  Moonshine, the strongest: 40 points (one bottle reaches the full sway of #1920), exponential over 20 min, cap 90.
+  Pack data only; the core table still ships no rows. Test: `everon/drinks-impair` (pack test, run under the pack header); the overlay mechanics: `survival/drink-impairment-table`.
 
 ### `LF_ImpairmentView` — `Feature/Survival/LF_ImpairmentView.c` (#1920)
 - ✅ While the owner's replicated impairment level is above zero their view sways and
@@ -248,3 +257,5 @@
   courier is still signed up and starts a new run. `LF_LicenseManagerComponent` is not on
   `Character_Roleplay.et`, so licences persist only once a prefab carries it.
 
+### Logged-out tag — `Feature/Character/LF_LogoutBodyTag.c` (#1974, 2026-11-16)
+- A logged-out player's body (#1973) shows a small "Logged out" label over it to everyone within 12 m. The server flags the body (`SCR_ChimeraCharacter.LF_IsLoggedOut`, an RplProp), so a late joiner sees it too; the label goes when the body dies, despawns or its player rejoins (a rejoin that takes the body back clears the flag, #2104, so no client keeps tracking it). The session proof (2 clients, then client 1 as a late joiner, #2104) aims the camera at the body: a late joiner tracks and draws the label from the entity snapshot. Tests: `character/logout-body-tag` (LOGIC); two-client and late-joiner session proof pending.

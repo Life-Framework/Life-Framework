@@ -1,0 +1,81 @@
+{
+  "id": "old_man",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "7ca85cfa00b058ed",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "Piper en_US-ljspeech-high",
+      "model": "piper",
+      "engine": "piper",
+      "text": "Sit down a minute. Everyone is in a hurry these days. I only watch the square.",
+      "chars": 78,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 5.95,
+      "mouth": "389997110797655676441003100000793487546765211454556349888726655446376643212331000003998976764467631542599215989886210000"
+    },
+    "zone": {
+      "hash": "be796b4d4a7f40a6",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "Piper en_US-ljspeech-high",
+      "model": "piper",
+      "engine": "piper",
+      "text": "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep.",
+      "chars": 161,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 11.75,
+      "mouth": "8996699423566643546886764211000000798964959866766456876542320339995311100000059975998641238756841144320355210000049953581189974887631781229742320000017575348988622631549999842464443210000029149998678561199874210000005333995698412452000"
+    },
+    "move": {
+      "hash": "08a7620304ee2f1c",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "Piper en_US-ljspeech-high",
+      "model": "piper",
+      "engine": "piper",
+      "text": "The first winter was hard. But the island people brought us wood and soup, and nobody asked what we had left behind. That is how you start again.",
+      "chars": 145,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 9.7,
+      "mouth": "842599665227634685464322999954111000008728999999753211441385218998857226645435997464200000000078669853995531677765931148546456159952105632366543321100000019987577442477632224672887424138765111000"
+    },
+    "start": {
+      "hash": "36decea63c76f640",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "Piper en_US-ljspeech-high",
+      "model": "piper",
+      "engine": "piper",
+      "text": "Read the town board on the square. It shows where everything is. Then see the clerk, right beside it. He was kind to us, and he will be kind to you.",
+      "chars": 148,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 10.37,
+      "mouth": "4997227448877552998774565758971199875410000046266999865358862992871175333213542100000685469856151217997621100000002897214799465542310022000000796998328877523205498887445410001995498893732278875320446699631000"
+    },
+    "bye": {
+      "hash": "b2100a8304aa1a97",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "Piper en_US-ljspeech-high",
+      "model": "piper",
+      "engine": "piper",
+      "text": "Go well. Come and sit with me again some time.",
+      "chars": 46,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 3.26,
+      "mouth": "995369986420000002799952675899951261368872687437766634287553110000"
+    }
+  },
+  "voice": {
+    "id": "en_US-ljspeech-high",
+    "name": "Piper en_US-ljspeech-high",
+    "source": "premade"
+  }
+}

@@ -1,7 +1,7 @@
 {
   "slug": "drugstore",
   "name": "Drugstore",
-  "concept": "The village pharmacy of 1989 Everon: a chemist on the ground floor of a two-storey town shop house, the pharmacist living in the flat above. The base-game ShopHouse_E_2I01t with the vanilla drugstore variant's doors, windows and Drugstore fascia sign, and our own copy of its furniture: self-serve gondolas of gauze, aspirin and tourniquets paid at the till, and a dispensary counter where morphine and saline are sold to licensed medics only (MEDIC_ACCESS). A pharmacist in a white coat stands behind the counter. The shelves stay thin until the supermarket card's package pipeline can make 1989 pharmacy packages (pill boxes, plasters, cough syrup).",
+  "concept": "The village pharmacy of 1989 Everon: a chemist on the ground floor of a two-storey town shop house, the pharmacist living in the flat above. The base-game ShopHouse_E_2I01t with the vanilla drugstore variant's doors, windows and Drugstore fascia sign, and our own copy of its furniture: self-serve gondolas of gauze, aspirin and tourniquets paid at the till, and a dispensary counter where morphine and saline are sold to licensed medics only (MEDIC_ACCESS). A pharmacist in a white coat stands behind the counter. The furniture prefab also carries hand-placed base-game decor (lamps with real lights, a lit window display, clutter on every shelf, counter paperwork, posters, a blade sign outside); 1989 pharmacy packages (pill boxes, plasters, cough syrup) wait for the supermarket card's package pipeline.",
   "red_line": "pack",
   "addon": "LF_Everon1989",
   "prefab_dir": "Prefabs/Buildings/Drugstore",

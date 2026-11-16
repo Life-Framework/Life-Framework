@@ -379,13 +379,16 @@ class LF_HospitalWake
 		if (!body)
 			return;
 
+		vector stand;
 		LF_HospitalBedComponent bed = LF_HospitalBedComponent.FindNearest(body.GetOrigin(), 1.5);
-		if (!bed)
+		if (bed)
+			stand = bed.GetStandPosition();
+		else if (!LF_FirstSpawnBeds.FindStandPosition(body.GetOrigin(), 1.5, stand)) // a first-spawn bed wake (#1965)
 			return;
 
 		vector transform[4];
 		body.GetWorldTransform(transform);
-		transform[3] = bed.GetStandPosition();
+		transform[3] = stand;
 		body.Teleport(transform);
 		LF_Debug.Info("Respawn", string.Format("stepped off the hospital bed to %1", transform[3]));
 	}

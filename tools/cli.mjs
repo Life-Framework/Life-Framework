@@ -1885,7 +1885,7 @@ function cmdHostStart(root, dir, opts) {
       // looked like a server that wrote no console.log. Say who holds the port before queueing.
       try { wt.acquireLock(root, SERVER_SLOT); } catch (e) {
         if (!opts.wait) throw e;
-        console.log(`host: port 2001 is held by ${describeHolder(join(wt.ensureHub(root), "locks", `${SERVER_SLOT}.lock`))} (${e.message}); nothing launched yet, queued up to ${opts.timeoutSec ?? 1800} s`);
+        console.log(`host: port 2001 is held by ${describeHolder(wt.lockFileOf(root, SERVER_SLOT))} (${e.message}); nothing launched yet, queued up to ${opts.timeoutSec ?? 1800} s`);
         wt.acquireLock(root, SERVER_SLOT, { waitMs: (opts.timeoutSec ?? 1800) * 1000 });
       }
     } catch (e) {
@@ -2145,7 +2145,7 @@ function playtestCheckout(mainRoot) {
 
 function playtestServerSlotHolder(mainRoot) {
   try {
-    const info = JSON.parse(readFileSync(join(wt.hubDirOf(mainRoot), "locks", `${SERVER_SLOT}.lock`), "utf8"));
+    const info = JSON.parse(readFileSync(wt.lockFileOf(mainRoot, SERVER_SLOT), "utf8"));
     return info.pid && host.pidAlive(info.pid) ? info : null;
   } catch {
     return null;
@@ -2295,11 +2295,12 @@ function cmdPlaytest(args) {
 // name (LF_Test_Money or LF_Test_Money.c), which expands to every test class
 // declared in that file. Names the suite cannot match fail the run there.
 function resolveOnlyNames(root, spec) {
-  const testsDir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
+  // A file name resolves in the core's test folder, then the pack's (its tests run in the pack leg).
+  const testsDirs = [join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests"), testWorld.packTestsDir(root)];
   const names = [];
   for (const raw of String(spec).split(",").map((x) => x.trim()).filter(Boolean)) {
-    const file = join(testsDir, raw.endsWith(".c") ? raw : `${raw}.c`);
-    if (/^(EL|LF)_Test_\w+(\.c)?$/.test(raw) && existsSync(file)) {
+    const file = testsDirs.map((d) => join(d, raw.endsWith(".c") ? raw : `${raw}.c`)).find((f) => existsSync(f));
+    if (/^(EL|LF)_Test_\w+(\.c)?$/.test(raw) && file) {
       const classes = [...readFileSync(file, "utf8").matchAll(/class\s+(LF_Test_\w+)\s*:\s*LF_Test\b/g)].map((m) => m[1]);
       if (classes.length) {
         names.push(...classes);
@@ -2592,7 +2593,7 @@ function cmdSessionUp(root, dir, flags) {
       const holders = [];
       for (const l of pool.sessionLanes(root)) {
         try {
-          const h = JSON.parse(readFileSync(join(wt.hubDirOf(root), "locks", `${l.lock}.lock`), "utf8"));
+          const h = JSON.parse(readFileSync(wt.lockFileOf(root, l.lock), "utf8"));
           if (h.pid && host.pidAlive(h.pid)) holders.push(`${h.purpose ?? "a run"} of ${h.slug ?? h.root ?? "another checkout"} (pid ${h.pid})`);
         } catch {}
       }
@@ -3194,7 +3195,10 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   // on DebugWorld (planLegs). A sharded --tier all leaves the split to each slice.
   const sharded = opts.shards !== undefined && !only.length && !opts.world && tier === "all";
   const tiers = testWorld.testTiers(root);
-  const legs = sharded ? null : testWorld.planLegs({ tier, only, world: opts.world, tiers, names: testWorld.testNames(root), registry: shards.readRegistry(root), pins: testWorld.readPins(root), town: testWorld.readTown(root) });
+  // Pack tests (addons/LF_Everon1989/Scripts/Game/Tests) run in a leg of their own on the pack test header
+  // (testWorld.packLeg); a leg's own run (opts.inLeg) never plans them again.
+  const packTests = opts.inLeg ? [] : testWorld.readPackTests(root);
+  const legs = sharded ? null : testWorld.planLegs({ tier, only, world: opts.world, tiers, names: testWorld.testNames(root), registry: shards.readRegistry(root), pins: testWorld.readPins(root), town: testWorld.readTown(root), pack: packTests, coreOnly: !!opts.coreOnly });
   // A plan with one leg that names its classes is honoured too: --only <town test> is one playtest leg,
   // and --tier all with the town tests left out is one GridWorld leg of the rest (#1895).
   if (legs && (legs.length > 1 || (legs.length === 1 && legs[0].classes))) {
@@ -3204,8 +3208,9 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     }
     const results = [];
     for (const leg of legs) {
-      console.log(`test: leg ${results.length + 1}/${legs.length} world ${leg.world} (${leg.reason}), ${leg.classes.length} test(s)`);
-      const code = await cmdTest(true, tier, root, { ...opts, only: undefined, red: undefined, redLeg: red, onlyClasses: leg.classes.join(","), world: leg.world, shards: undefined });
+      // classes null: the tier as asked (a core leg beside the pack leg); the runner leaves the pack tests out.
+      console.log(`test: leg ${results.length + 1}/${legs.length} world ${leg.world ?? testWorld.PLAYTEST_WORLD} (${leg.reason}), ${leg.classes ? `${leg.classes.length} test(s)` : `tier ${tier}`}`);
+      const code = await cmdTest(true, tier, root, { ...opts, only: undefined, red: undefined, redLeg: red, onlyClasses: leg.classes ? leg.classes.join(",") : undefined, world: leg.world, shards: undefined, inLeg: true });
       results.push({ code, ...(lastTestCounts ?? {}) });
     }
     const v = testWorld.mergeLegs(results);
@@ -3229,7 +3234,15 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     // A pass the cache already holds (identical inputs) is not run again (runShardedTests checks each pass).
     const specs = [{ coreOnly: !!opts.coreOnly }, ...(opts.both && !opts.coreOnly && launchAddons(root).length > 1 ? [{ coreOnly: true }] : [])];
     const r = await runShardedTests(root, specs, opts);
-    if (r !== null) return r;
+    if (r !== null) {
+      // The shards run the core registry; the pack tests follow in their own leg on the pack header.
+      const pl = testWorld.packLeg({ tier, pack: packTests, coreOnly: !!opts.coreOnly });
+      if (!pl) return r;
+      console.log(`test: pack leg world ${pl.world} (${pl.reason}), ${pl.classes.length} test(s)`);
+      const pc = await cmdTest(true, tier, root, { ...opts, shards: undefined, both: undefined, onlyClasses: pl.classes.join(","), world: pl.world, inLeg: true });
+      console.log(`SUMMARY test ${r === 0 && pc === 0 ? "ok" : "fail"} tier=${tier} shards+pack shards=${r === 0 ? "ok" : "fail"} pack=${pc === 0 ? "ok" : "fail"}`);
+      return r !== 0 ? r : pc;
+    }
   }
   const purpose = pool.testPurpose({ tier, only, coreOnly: opts.coreOnly });
   // The pass cache (tools/lib/test-cache.mjs): checked after the rdb refresh (the rdb is in the
@@ -4839,7 +4852,7 @@ function runE2eHere(root, legacySave = false, oldBuild = false, opts = {}) {
   }
   const playtestMission = opts.mission === "playtest" ? "{1054CC8646357708}Missions/LF_PlaytestTown.conf" : e2eShutdown.E2E_MISSION;
   // One pair of boots per world (#1993): the grid-fixture tests need GridWorld, the town tests the playtest world.
-  const legs = planE2eLegs({ registry: shards.readAllRegistry(root), names: testWorld.testNames(root), pins: testWorld.readPins(root), town: testWorld.readTown(root), mission: playtestMission, preMove: Boolean(opts.preMove) });
+  const legs = planE2eLegs({ registry: shards.readAllRegistry(root), names: testWorld.testNames(root), pins: testWorld.readPins(root), town: testWorld.readTown(root), mission: playtestMission, pack: testWorld.readPackTests(root), preMove: Boolean(opts.preMove) });
   let restore = null;
   if (opts.preMove) {
     const dirty = e2eGit(root, ["status", "--porcelain", "--untracked-files=normal"]).stdout.trim();

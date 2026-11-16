@@ -1,0 +1,47 @@
+GenericEntity : "{DAEBE5DD34859027}Prefabs/Props/Commercial/LF_Mannequin.et" {
+ ID "57B2B15E31C126F0"
+ {
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "4BB52B0556416BDD"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{565D08338A418986}Assets/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01.xob"
+     Materials {
+      MaterialAssignClass "{270BDF9D280228FC}" {
+       SourceMaterial "Shirt_Turtleneck_01"
+       AssignedMaterial "{7B6444CBD461B22D}Assets/Characters/Uniforms/Shirt_Turtleneck_01/Data/Shirt_Turtleneck_01_Beige.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "669D0A75044C258C"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{31E885287C626DFD}Assets/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01.xob"
+     Materials {
+      MaterialAssignClass "{6E2B70B4E2BC7739}" {
+       SourceMaterial "Pants_Trousers_01"
+       AssignedMaterial "{C5B6564B9002F293}Assets/Characters/Uniforms/Pants_Trousers_01/Data/Pants_Trousers_01_DarkGrey.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "0629E8F688888BE7"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{49B326457951B0F6}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01.xob"
+     Materials {
+      MaterialAssignClass "{CC5A6921311A60CC}" {
+       SourceMaterial "Hat_Knitted_01"
+       AssignedMaterial "{3A7AFA6B91A7B89D}Assets/Characters/HeadGear/Hat_Knitted_01/Data/Hat_Knitted_01_red.emat"
+      }
+     }
+    }
+   }
+  }
+ }
+}

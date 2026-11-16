@@ -333,14 +333,18 @@ class LF_PhoneVoiceClient
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_PhoneVoiceClient's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PhoneVoiceClient_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PhoneVoiceClient_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_PhoneVoiceClient");
-		if (apply)
-			LF_PhoneVoiceClient.ResetStatics();
+		return "LF_PhoneVoiceClient";
+	}
+
+	override void Apply()
+	{
+		LF_PhoneVoiceClient.ResetStatics();
 	}
 }

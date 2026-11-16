@@ -17,7 +17,9 @@
   `LF_JobManager` on first player connect and drives character creation.
 - ✅ **World-end static reset** (2026-11-08): the game-mode
   destructor calls `LF_StaticReset.ResetAll`, which runs every class's own
-  `modded class LF_StaticResetHooks` (2026-11-16: no central list; `LF_StaticReset.Registered()`
+  `LF_StaticResetHook` subclass, registered from a static initializer into a flat array
+  (2026-11-16: no central list; #2034 retired the `modded class LF_StaticResetHooks` chain, whose
+  nested `super.Run` overflowed the script stack at about 123 layers; `LF_StaticReset.Registered()`
   lists them, `LF_Test_StaticResetHooks`), and so drops `LF_Breach`, `LF_Jail`,
   `LF_JailEscort`, `LF_Contraband`, `LF_PoliceRanks`, the jail cell/arrestable
   tick owners, the garage and spawn-point registries, and the quantity transfer
@@ -392,3 +394,4 @@
 
 ### `LF_NamedPlaces` — `Scripts/Game/Core/LF_NamedPlaces.c` (#1943, chapter #1014)
 - 🧪 (2026-11-16, #1943) `LF_NamedPlaces.Nearest(pos, maxRadius = 600)` returns the display name of the nearest map location (the editor comment entities every map places for its town, village and landmark labels; a pack adds a name by placing one), or empty when none is within the radius or the world has no editable-entity core. The name is the map's own, usually a `#` localization key for a widget's SetText. The core holds no town list. Test `world/named-place`.
+- 🔧 (2026-11-16, #1771; merged, in-dev) **The 1989 Everon pack fills the starting kit.** `LF_Catalogue_Kit_Everon1989.conf` offers under `starting_kit`: a brown denim jacket (its shirt is part of the prefab; shirts and jackets share the one upper slot), dark-brown trousers, the dirty work boots, a flat cap and `cash_start` (the `MoneyStack` default of 100, carried in a pocket, the same cash the game mode's M88 jacket held). No M88 or M70 pieces, Soviet panama, ALICE pack, police kit or weapon. Fixture `tools/validation/fixtures/everon/starting-kit.json` (kind `outlets`, `present:false` for the military pieces) is read by `validate-everon-config`. Vanilla has no civilian shoe, so the boots are the pack's existing `boots_work`; a civilian shoe asset is a follow-up.

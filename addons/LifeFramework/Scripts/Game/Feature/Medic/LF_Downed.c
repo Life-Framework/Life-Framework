@@ -559,14 +559,18 @@ modded class SCR_InventoryStorageManagerComponent
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_Downed's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Downed_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Downed_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_Downed");
-		if (apply)
-			LF_Downed.ResetStatics();
+		return "LF_Downed";
+	}
+
+	override void Apply()
+	{
+		LF_Downed.ResetStatics();
 	}
 }

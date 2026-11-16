@@ -73,10 +73,13 @@ class LF_ConvictionRecord
 		if (!Replication.IsServer())
 			return false;
 
-		if (s_Subscriber)
+		// A bus reset on its own (tests do it) drops the subscriber while s_Subscriber stays set.
+		if (s_Subscriber && LF_EventBus.IsSubscribed(LF_OnArrested, s_Subscriber))
 			return true;
 
-		s_Subscriber = new LF_ConvictionRecordSubscriber();
+		if (!s_Subscriber)
+			s_Subscriber = new LF_ConvictionRecordSubscriber();
+
 		return LF_EventBus.Subscribe(LF_OnArrested, s_Subscriber);
 	}
 
@@ -249,14 +252,18 @@ class LF_ConvictionRecord
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_ConvictionRecord's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_ConvictionRecord_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ConvictionRecord_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_ConvictionRecord");
-		if (apply)
-			LF_ConvictionRecord.ResetStatics();
+		return "LF_ConvictionRecord";
+	}
+
+	override void Apply()
+	{
+		LF_ConvictionRecord.ResetStatics();
 	}
 }

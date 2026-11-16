@@ -219,6 +219,10 @@ class LF_ConfigService
 		if (key == LF_JoinNoticeConfig.SECTION)
 			return true;
 
+		// The arrival sections (#1779): rejoin at the saved spot and the new-character grace.
+		if (key == LF_RespawnConfig.SECTION || key == LF_GraceConfig.SECTION)
+			return true;
+
 		return key == "schemaVersion" || key == LF_ShopPricesConfig.SECTION || key == LF_VehiclePricesConfig.SECTION || key == LF_CrimeCatalogConfig.SECTION || key == LF_JobsConfig.SECTION || key == LF_WantedPostersConfig.SECTION || key == LF_ZoneConfig.SECTION || key == LF_PoliceConfig.SECTION || key == LF_OrgConfig.SECTION || key == LF_PersistenceConfig.SECTION || key == LF_LicencesConfig.SECTION || key == LF_PhotoIdCardConfig.SECTION || key == LF_ItemCatalogueConfig.SECTION || key == LF_SystemsConfig.SECTION || key == LF_CleanupConfig.SECTION || key == LF_DisconnectConfig.SECTION || key == LF_Terms.SECTION;
 	}
 

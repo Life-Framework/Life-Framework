@@ -1,0 +1,16 @@
+GenericEntity : "{3C7A51E2D94B08F6}Prefabs/Police/LF_SiteAlarm.et" {
+ ID "6AB28B537F1FE5C6"
+ components {
+  LF_SiteAlarmComponent "{7615F1642D373349}" {
+   m_bLoud 0
+   m_sSoundProject "{F37DB054DD8BEE76}Sounds/Alarm/Robbery/Alarm_Robbery_Hospital.acp"
+   m_sSoundEvent "SOUND_LF_ALARM_HOSPITAL_LP"
+   m_sSignalName ""
+   m_fHearRange 90
+   m_vLightColor 0.9 0.15 0.15
+   m_fLightRadius 3
+   m_fLightLV 8
+   m_iFlashMs 600
+  }
+ }
+}

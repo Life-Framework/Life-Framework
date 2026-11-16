@@ -55,5 +55,31 @@ reading a rule and picking an answer needs text; it asks nothing a world object 
 - **Persisted:** nothing; "once" is per account uid per world session.
 - **Proof:** `rules/join-notice` (LOGIC).
 
+## Handbook pages (#1772)
+
+- **Player sees:** nothing yet; this is the data half of the handbook (#642). A later sheet reads the pages.
+- **Owner and side:** `LF_Handbook` (`LF_Handbook.c`) loads and orders the pages; `LF_HandbookConfig.c` holds the
+  page record, the config root and the list the shared override model (`LF_ConfigOverlay`) merges.
+- **Data:** `Configs/Rules/LF_Handbook.conf`: pages with `m_sId`, `m_sTitleKey`, `m_aBodyKeys`, `m_iOrder` (lowest
+  first; -1 sorts last in file order). The core ships two neutral pages; a pack overlay adds, replaces,
+  patches or removes a page by id. A page with no id, title or body paragraph is logged and left out.
+  Not an owner config section yet.
+- **Persisted:** nothing.
+- **Proof:** `handbook/pages` (LOGIC).
+
 Not done: a world prop at the clerk's desk, the "cannot leave the arrival room" gate beyond no
 registration and no spawn, staff chat commands, shuffled options.
+
+## Handbook screen (#1773)
+
+- **Player sees:** a Handbook button in the pause menu under Field Manual. It puts the pause menu away and opens a
+  paper sheet with the list of pages, one row each with a Read button. Picking one shows that page: its title, its
+  paragraphs, a button back to the list and Close. Back (Escape, Backspace, gamepad B), Close and death put the
+  handbook away from either view; with no readable page the sheet says so and still closes.
+- **Owner and side:** `LF_HandbookScreen` (`LF_HandbookScreen.c`) is client only, built from UI kit parts on
+  `LF_UIScreen` (no new layout; Back is the kit's shared path, `LF_UIBack`). The button is `UI/LF_PauseMenuHandbook.c`,
+  a `modded class PauseMenuUI` that adds it the way the base game's rally mod adds its restart button; a pause menu
+  without the Field Manual column logs one `[LFDebug:Rules]` error and shows no button. Nothing is sent to the server.
+- **Data:** the pages are `LF_Handbook.GetPages` (#1772); the screen's own words are `LF-Handbook_*` string keys
+  (Title, Pick, Read, Contents, Close, Empty, PauseButton). The list keeps at most 40 pages. Persisted: nothing.
+- **Proof:** `rules/handbook-screen` (LOGIC); `node agent-box/harness.mjs flow ui-handbook` (harness verb `pausemenu`).

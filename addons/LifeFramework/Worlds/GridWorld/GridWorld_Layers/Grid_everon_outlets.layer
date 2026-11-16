@@ -142,3 +142,13 @@ GenericEntity Grid_everon_outlets_Counter_SurplusStall : "{F7EEC900E44C3CCA}Pref
  coords 42 0 92
  angleY 90
 }
+GenericEntity Grid_everon_outlets_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "everon-outlets"
+  }
+ }
+ coords 45.7 0 90.5
+ angleY 270
+}

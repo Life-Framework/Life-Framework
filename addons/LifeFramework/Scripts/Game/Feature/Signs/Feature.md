@@ -122,3 +122,8 @@ The read is one RPC pair on `SCR_PlayerController` (`LF_AskBoard(kind)` ->
 action; `RpcDo_LF_ShowBoard` carries `LF_BoardAnswer`: a flag plus flat text and int arrays).
 Nothing is cached: an answer is built per read and dropped after painting. The wanted board is
 the first kind (`LF_WantedBoardProvider`, kind `wanted`, #758). Test `boards/provider`.
+
+The priced sign (#1946, `m_sPriceLotShopId`) is the second kind: `LF_PricedSignProvider`, kind
+`priced`, in `LF_SignComponent.c`. `AnswerFor(lot, vehicle)` is its answer (offer name key, price);
+the sign fills its title from it. It names no read action (the face is painted on each client, no
+RPC), so a client cannot ask the server for it. Test `signs/priced-provider`.

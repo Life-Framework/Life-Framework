@@ -344,14 +344,18 @@ class LF_Quiz
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_Quiz's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Quiz_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Quiz_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_Quiz");
-		if (apply)
-			LF_Quiz.ResetStatics();
+		return "LF_Quiz";
+	}
+
+	override void Apply()
+	{
+		LF_Quiz.ResetStatics();
 	}
 }

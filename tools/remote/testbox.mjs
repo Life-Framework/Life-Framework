@@ -123,7 +123,7 @@ export function reachable(host) {
 
 // The live owner of this machine's server-2001 lock, or null when it is free.
 export function serverSlotOwner(root) {
-  const file = join(wt.hubDirOf(root), "locks", `${SERVER_SLOT}.lock`);
+  const file = wt.lockFileOf(root, SERVER_SLOT);
   if (!existsSync(file)) return null;
   try {
     const info = JSON.parse(readFileSync(file, "utf8"));

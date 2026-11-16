@@ -5,7 +5,7 @@
 // fails the right checks until the real work is done:
 //
 //   Feature/<Area>/LF_<Name>.c          the rule, one logging path, ResetStatics and its own
-//                                       modded class LF_StaticResetHooks (no central list)
+//                                       LF_StaticResetHook subclass (no central list)
 //   Feature/<Area>/LF_<Name>Action.c    world, item: the F-key action
 //   Feature/<Area>/LF_<Name>Sheet.c     ui: a paper sheet built from UI kit parts
 //   Feature/<Area>/Feature.md           created, or a section appended

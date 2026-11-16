@@ -1,0 +1,14 @@
+GenericEntity : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
+ ID "2DB42E16E389E5DA"
+ components {
+  RigidBody "{5872F0EB7DFB5A9D}" {
+   Enabled 0
+  }
+  SCR_DestructionMultiPhaseComponent "{5624A88D86EFE8BA}" {
+   Enabled 0
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 0
+  }
+ }
+}

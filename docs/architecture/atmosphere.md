@@ -179,6 +179,24 @@ per second of a loop; the price list says 15 and 40. The counter lags a call by 
 so the tool reads the balance once before and once after a run and gives each take its share by
 these rates (`runs` and `generations` in `ambience.json`).
 
+### Period radio tracks (#1967)
+
+Six more radio tracks sit beside the store and pub tracks, for the story's radio: `radio_estrada_ballad`,
+`radio_estrada_dance`, `radio_accordion_waltz`, `radio_accordion_kolo`, `radio_orchestral_morning` and
+`radio_orchestral_serenade` (`Sounds/Atmosphere/Atmosphere_Radio*.acp`, mono 24 kHz, about 62 s each, 3 MB
+a sample). They are not generated with ElevenLabs: the Music Terms above do not cover "radio", and the
+maintainer asked for music clean for a public mod and public videos. They are composed and rendered by
+`tools/assets/atmosphere/radio-synth.mjs`: a table per track (tempo, key, scale, chord loop, rhythm cells,
+instruments), a seeded random generator, additive reed, FM electric piano, Karplus-Strong plucks and a drum
+machine, a Schroeder reverb whose tail folds onto the start (so the loop closes with no crossfade) and the
+same 180 Hz to 5.2 kHz small-speaker band as the other radios. No sample, recording or model is involved, so
+the tracks are original work under the repo licence (`docs/credits.md`). `node
+tools/assets/atmosphere/radio-synth.mjs --record` renders them into `tmp/` and fills the dated records in
+`ambience.json`; `toolscli asset ambience --only wire` copies them into the pack and writes the projects (no
+Workbench needed: the sample and project metas are written by the tool, like every other town sound).
+`radio-tracks-selftest.mjs` checks the committed samples are the script's output. Nothing plays them yet:
+the story slice that wires a radio picks one by its `SOUND_LF_AMBIENT_LP` project.
+
 ## Licence
 
 ElevenLabs Music Terms (read 2026-11-13, last updated 2026-10-09), Starter column: commercial

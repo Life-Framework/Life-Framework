@@ -583,14 +583,18 @@ class LF_QuantityCombineablePredicate: InventorySearchPredicate
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_QuantityComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_QuantityComponent_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_QuantityComponent_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_QuantityComponent");
-		if (apply)
-			LF_QuantityComponent.ResetStatics();
+		return "LF_QuantityComponent";
+	}
+
+	override void Apply()
+	{
+		LF_QuantityComponent.ResetStatics();
 	}
 }

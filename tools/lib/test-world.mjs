@@ -16,6 +16,9 @@
 //   --tier all | persistence       -> GridWorld (+ DebugWorld for the pinned tests of that tier)
 //   --tier perf                    -> DebugWorld (its budgets were measured there)
 //   --town                         -> one PLAYTEST_WORLD boot of the town tests only (townLeg)
+//   pack tests (addons/LF_Everon1989/Scripts/Game/Tests, --tier all|persistence or named)
+//                                  -> one more boot on PACK_TEST_MISSION: GridWorld under the pack's
+//                                     header, so its config overlays apply (packLeg)
 //   --world <path>                 always wins, never split. LF_TEST_LOGIC_WORLD=0 turns the LOGIC
 //                                  routing off; LF_TEST_GRID_WORLD=0 sends WORLD/PERSISTENCE to DebugWorld
 //
@@ -26,9 +29,9 @@
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { TEST_WORLD, GRID_WORLD, PLAYTEST_WORLD } from "./worlds.mjs";
+import { TEST_WORLD, GRID_WORLD, PLAYTEST_WORLD, PACK_ADDON, PACK_TEST_MISSION, PACK_TESTS_DIR, PACK_TEST_REGISTRY } from "./worlds.mjs";
 
-export { GRID_WORLD, PLAYTEST_WORLD };
+export { GRID_WORLD, PLAYTEST_WORLD, PACK_TEST_MISSION };
 export const LOGIC_WORLD = TEST_WORLD;
 export const LOGIC_WORLD_LAYER = "addons/LifeFramework/Worlds/TestLogic/TestLogic_Layers/Tests.layer";
 export const PINS_FILE = "tools/test/world-pins.json";
@@ -101,18 +104,50 @@ export function parseNames(text) {
   return names;
 }
 
+// The pack's test folder (addons/LF_Everon1989/Scripts/Game/Tests): its LF_Test_* classes run only in
+// the pack leg, on PACK_TEST_MISSION (docs/architecture/three-worlds.md "Pack test leg").
+export const packTestsDir = (root) => join(root, "addons", PACK_ADDON, ...PACK_TESTS_DIR.split("/"));
+
 function eachTestFile(root, parse) {
-  const dir = join(root, ...TESTS_DIR);
   const out = {};
-  if (!existsSync(dir)) return out;
-  for (const f of readdirSync(dir)) {
-    if (f.endsWith(".c")) Object.assign(out, parse(readFileSync(join(dir, f), "utf8")));
+  for (const dir of [join(root, ...TESTS_DIR), packTestsDir(root)]) {
+    if (!existsSync(dir)) continue;
+    for (const f of readdirSync(dir)) {
+      if (f.endsWith(".c")) Object.assign(out, parse(readFileSync(join(dir, f), "utf8")));
+    }
   }
   return out;
 }
 
 export const testTiers = (root) => eachTestFile(root, parseTiers);
 export const testNames = (root) => eachTestFile(root, parseNames);
+
+// [{ cls, tier }] of the pack tests, from the registry `regen-tests` writes in the pack
+// (RegisterPack(new LF_Test_X(), LF_TestTier.T)). Empty when the pack or its tests are absent.
+export function parsePackRegistry(text) {
+  return [...String(text).matchAll(/RegisterPack\(\s*new (LF_Test_\w+)\(\),\s*LF_TestTier\.(\w+)\)/g)].map((m) => ({ cls: m[1], tier: m[2] }));
+}
+export function readPackTests(root) {
+  const f = join(packTestsDir(root), PACK_TEST_REGISTRY);
+  return existsSync(f) ? parsePackRegistry(readFileSync(f, "utf8")) : [];
+}
+
+// The pack leg of a run: { world: PACK_TEST_MISSION, classes, reason } or null. A tier run takes the
+// pack tests of that tier (all: every one but PERF; persistence: PERSISTENCE; fast and perf: none, the
+// pack leg needs the grid and the pack header); an --only run takes the pack tests it names.
+// A core-only run (--core-only) has no pack loaded, so no pack leg.
+export function packLeg({ tier, only = [], pack = [], names, coreOnly = false }) {
+  if (coreOnly || !pack.length) return null;
+  const clsOf = (n) => (names ?? {})[n] ?? n;
+  const all = new Set(pack.map((p) => p.cls));
+  let classes;
+  if (only.length) classes = [...new Set(only.map(clsOf))].filter((c) => all.has(c));
+  else if (tier === "all") classes = pack.filter((p) => p.tier !== "PERF").map((p) => p.cls);
+  else if (tier === "persistence") classes = pack.filter((p) => p.tier === "PERSISTENCE").map((p) => p.cls);
+  else classes = [];
+  if (!classes.length) return null;
+  return { world: PACK_TEST_MISSION, classes, reason: `pack tests under the pack header (${PACK_ADDON}/${PACK_TESTS_DIR})` };
+}
 
 // [{ name, reason }] from tools/test/world-pins.json: the tests that still need the playtest world.
 export function readPins(root) {
@@ -167,7 +202,23 @@ export function pickWorld({ tier, only = [], world, env = process.env, tiers }) 
 // and no leg holds it; named with --only it runs on the playtest world like a pin. townRun is
 // `test --town`: one PLAYTEST_WORLD leg of the list (townLeg). registry is [{ cls, tier }]
 // (tools/lib/test-shards.mjs readRegistry); names is testNames(); town is readTown().
-export function planLegs({ tier, only = [], world, env = process.env, tiers, names, registry, pins, town, townRun = false }) {
+// pack is readPackTests(): the pack tests leave every core leg (the runner skips a pack test it was not
+// named for) and run in one more leg on PACK_TEST_MISSION (packLeg). A core leg of a split run may keep
+// classes null: "the tier as asked", which the runner runs without the pack tests.
+// --world and --town are never split for the pack.
+export function planLegs(args) {
+  const { tier, only = [], world, names, pack = [], coreOnly = false, townRun = false } = args;
+  if (townRun || world) return planCoreLegs(args);
+  const p = packLeg({ tier, only, pack, names, coreOnly });
+  if (!p) return planCoreLegs(args);
+  const inPack = new Set(p.classes);
+  const clsOf = (n) => (names ?? {})[n] ?? n;
+  const rest = only.length ? [...new Set(only.map(clsOf))].filter((c) => !inPack.has(c)) : null;
+  if (rest && !rest.length) return [p];
+  return [...planCoreLegs({ ...args, only: rest ?? only }), p];
+}
+
+function planCoreLegs({ tier, only = [], world, env = process.env, tiers, names, registry, pins, town, townRun = false }) {
   if (townRun) {
     const leg = townLeg({ names, town, world });
     return leg ? [leg] : [];
@@ -211,6 +262,6 @@ export function mergeLegs(results) {
 }
 
 export function legsSummaryLine(tier, v, legs) {
-  const where = legs.map((l) => (l.world ?? PLAYTEST_WORLD).replace(/^.*\/([^/]+)\.ent$/, "$1")).join("+");
+  const where = legs.map((l) => (l.world ?? PLAYTEST_WORLD).replace(/^.*\/([^/]+)\.(ent|conf)$/, "$1")).join("+");
   return `SUMMARY test ${v.code === 0 ? "ok" : "fail"} tier=${tier} legs=${legs.length} passed=${v.passed} failed=${v.failed} total=${v.total} worlds=${where}`;
 }

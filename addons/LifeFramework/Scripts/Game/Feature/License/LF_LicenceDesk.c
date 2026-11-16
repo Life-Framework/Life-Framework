@@ -339,7 +339,8 @@ class LF_LicenceDesk
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: an on-duty officer takes the target's permit (and any open application).
+	//! Server: an on-duty officer takes the target's permit (and any open application). The target has
+	//! to be restrained first (LF_Restraint); a free player is refused and the refusal is logged.
 	//! \return True when a permit or an application was taken.
 	static bool Revoke(IEntity officer, IEntity target)
 	{
@@ -349,15 +350,27 @@ class LF_LicenceDesk
 			return false;
 		}
 
-		return RevokeFor(target, LF_Utils.GetPlayerUID(target), LF_Utils.GetPlayerUID(officer));
+		if (!LF_Restraint.IsRestrained(target))
+		{
+			LF_Debug.Warn(FEATURE, "permit revoke refused: the target is not restrained");
+			return false;
+		}
+
+		return RevokeFor(target, LF_PoliceRanks.ResolveUid(target), LF_PoliceRanks.ResolveUid(officer));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: take the permit of uid (body optional). The officer check is Revoke's.
 	static bool RevokeFor(IEntity target, string uid, string officerUid)
 	{
-		if (!Replication.IsServer() || uid.IsEmpty())
+		if (!Replication.IsServer())
 			return false;
+
+		if (uid.IsEmpty())
+		{
+			LF_Debug.Warn(FEATURE, "permit revoke refused: the target has no player id");
+			return false;
+		}
 
 		bool hadApplication = DueMinutes(uid) >= 0;
 		ClearDue(uid);
@@ -430,7 +443,7 @@ class LF_LicenceRevokeRole : LF_PlayerRoleHandler
 	//------------------------------------------------------------------------------------------------
 	override bool CanOffer(IEntity user, IEntity target)
 	{
-		if (!LF_PoliceUtils.IsOnDutyCharacter(user))
+		if (!LF_PoliceUtils.IsOnDutyCharacter(user) || !LF_Restraint.IsRestrained(target))
 			return false;
 
 		LF_LicenseManagerComponent licences = LF_Component<LF_LicenseManagerComponent>.Find(target);
@@ -461,14 +474,18 @@ modded class LF_GameModeRoleplay
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_LicenceDesk's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_LicenceDesk_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_LicenceDesk_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_LicenceDesk");
-		if (apply)
-			LF_LicenceDesk.ResetStatics();
+		return "LF_LicenceDesk";
+	}
+
+	override void Apply()
+	{
+		LF_LicenceDesk.ResetStatics();
 	}
 }

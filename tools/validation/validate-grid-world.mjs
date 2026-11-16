@@ -29,10 +29,6 @@ import { topLevelBlocks } from "./validate-world-zones.mjs";
 // Legacy layers still free-standing. One per line so slices that remove one do not conflict.
 export const PENDING = [
   "Annex",
-  "HousesKeys",
-  "PRFeatures",
-  "Tests",
-  "WhitelistChat",
 ];
 
 // Entities of the legacy layers that stand outside every claimed cell: [{ layer, name, x, z }].
