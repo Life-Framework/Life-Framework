@@ -189,6 +189,9 @@ roadmapFiles.forEach((rel, i) => {
   addRepoDoc(rel, { slug: ["roadmap", ...parts].join("-").toLowerCase(), group: "Current plan", order: i, title });
 });
 
+// The public world vision; docs/everon/world-bible-internal.md holds the spoilers and stays off the site.
+addRepoDoc("docs/everon/world-bible.md", { slug: "world-of-everon", group: "Current plan", order: 0.5, title: "World of Everon" });
+
 // Pages with their own route instead of /docs/<slug>.
 const ownRoute = { decisions: "/decisions", credits: "/credits" };
 const docHref = (d) => ownRoute[d.slug] || `/docs/${d.slug}`;
