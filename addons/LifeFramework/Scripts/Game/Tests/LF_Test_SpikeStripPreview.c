@@ -1,7 +1,7 @@
 // red-proof: observed 2026-11-16 (#1939) with `--only LF_Test_SpikeStripPreview` before the change: the script failed to compile (`Undefined function LF_SpikeStripPreview.AvailableTo/Evaluate`); implemented, green; then `--red LF_Test_SpikeStripPreview` printed `RED PROOF OK` (a confirm for the red spot, its refusal reason and the kept folded strip all failed with the overlapping strip left out).
 // tier: WORLD
-//! #1939 acceptance: the spike strip preview ships. An on-duty officer on the main street's south
-//! verge, with the folded strip at their feet, is offered the ghost on any world (no dev-tools flag;
+//! #1939 acceptance: the spike strip preview ships. An on-duty officer on open grid ground,
+//! with the folded strip at their feet, is offered the ghost on any world (no dev-tools flag;
 //! a civilian is not). The planned spot is valid and green, the plan lies straight across a road
 //! (the axis for a player facing 40 degrees off it, on a made-up road direction: the real network
 //! runs in LF_Test_PlacementRoad on CoreOnEveron). With a strip already lying in the planned spot the ghost is red
@@ -14,8 +14,8 @@ class LF_Test_SpikeStripPreview : LF_Test
 	static const ResourceName BLOCKER = "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip.et";
 	protected static const string OFFICER_UID = "strip-preview-officer";
 	protected static const string CIVILIAN_UID = "strip-preview-civilian";
-	//! Open verge south of Village_MainStreet (centre line z = 250), as in LF_Test_PlacementConfirm.
-	protected static const vector VERGE = "300 0 245.5";
+	//! Open ground on the grid, away from any town (LF_Test_ExploitGuardsWorld stands there too).
+	protected static const vector VERGE = "70 0 70";
 
 	override string GetName()
 	{
@@ -67,7 +67,7 @@ class LF_Test_SpikeStripPreview : LF_Test
 		vector spot[4];
 		string reason;
 		LF_EPlacementVerdict verdict = LF_SpikeStripPreview.Evaluate(officer, placeable, item, spot, reason);
-		ctx.Equal(LF_EPlacementVerdict.VALID, verdict, "the verge in front of the officer is green: " + reason);
+		ctx.Equal(LF_EPlacementVerdict.VALID, verdict, "the ground in front of the officer is green: " + reason);
 		ctx.EqualStr("", reason, "a green ghost has no reason");
 
 		// Across the road: for a player facing 40 degrees off a road running east-west, the plan's axis
