@@ -1,0 +1,56 @@
+// Grid cell c4r0 for community-hall: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_community_hall_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 71 0 23
+}
+SCR_DestructibleEntity Grid_community_hall_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 76 0 23
+}
+SCR_DestructibleEntity Grid_community_hall_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_community_hall_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 28
+ angleY 270
+}
+SCR_DestructibleEntity Grid_community_hall_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_community_hall_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 71 0 33
+ angleY 90
+}
+SCR_DestructibleEntity Grid_community_hall_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 71 0 28
+ angleY 90
+}
+GenericEntity Grid_community_hall_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:community-hall"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 71.6 0.505 33.8
+}
+GenericEntity Grid_community_hall_R0 : "{40B1E5FC57371D5E}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V1.et" {
+ coords 75.99 0 25.509
+}
+GenericEntity Grid_community_hall_R1 : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
+ coords 75.998 0 27.999
+}
+SCR_DestructibleEntity Grid_community_hall_R2_1 : "{CECA6D57E2CAB7A8}Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et" {
+ coords 72.997 -0.001 30.525
+}
+GenericEntity Grid_community_hall_R2_2 : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
+ coords 76.004 0.01 30.512
+}
+GenericEntity Grid_community_hall_R2_3 : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
+ coords 79.004 0.01 30.512
+}
+GenericEntity Grid_community_hall_Radio : "{16C2DFD610CC7AFB}Prefabs/Atmosphere/LF_Radio.et" {
+ coords 76.002 0.915 27.994
+}

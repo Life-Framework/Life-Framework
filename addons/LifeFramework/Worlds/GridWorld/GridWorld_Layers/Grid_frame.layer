@@ -111,10 +111,10 @@ GenericEntity GridMarker_c4r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c4r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:community-hall"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 70.5 0.505 25.5
@@ -135,10 +135,10 @@ GenericEntity GridMarker_c5r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c5r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:zones-spawn"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 82.5 0.505 25.5
@@ -2159,7 +2159,7 @@ StaticModelEntity GridPath_r6_35 : "{D93A7286584E122C}Prefabs/Props/Construction
 GenericEntity GridMapBoard : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:map c3r0 shops-till, c1r1 retheme-proof, c1r3 test-fixtures, c1r4 fence-shop-2, c2r4 orgs-vehicles, c2r5 signs-board-quests, c5r6 wanted-posters"
+   m_sSignId "grid:map c3r0 shops-till, c4r0 community-hall, c5r0 zones-spawn, c1r1 retheme-proof, c1r3 test-fixtures, c1r4 fence-shop-2, c2r4 orgs-vehicles, c2r5 signs-board-quests, c5r6 wanted-posters"
    m_vRimColor 0.1 0.1 0.1
    m_vPaintColor 0.95 0.95 0.9
    m_vTextColor 0.05 0.05 0.05
