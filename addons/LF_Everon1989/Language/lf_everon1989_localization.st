@@ -319,30 +319,105 @@ StringTable {
      Target_en_us "Civil Registry of Everon, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
     }
+    CustomStringTableItem "{CA4D10F34DED233D}" {
+     Id "LF-Shop_Desc_ClothesShop"
+     Target_en_us "Jackets, shirts, trousers and hats in this year's colours."
+     Comment "Everon 1989 outlet counter (#1770): clothing_rack."
+    }
     CustomStringTableItem "{0238B801ABD1D07C}" {
      Id "LF-Shop_Desc_GunCounter"
      Target_en_us "Rifles, pistols and ammunition for permit holders; scopes, holsters and pouches for anyone."
      Comment "Pack override of the core gun counter description (price list subtitle) for the Everon 1989 gun store."
+    }
+    CustomStringTableItem "{CE06D40741D4A653}" {
+     Id "LF-Shop_Desc_MedicStores"
+     Target_en_us "Coats and a medical kit for the hospital staff."
+     Comment "Everon 1989 outlet counter (#1770): medic_stores."
     }
     CustomStringTableItem "{88A40BFFEF7CB897}" {
      Id "LF-Shop_Desc_PharmacyCounter"
      Target_en_us "Morphine and saline, for licensed medics only."
      Comment "Shop description of the drug store pharmacy counter (outlet pharmacy_counter)."
     }
+    CustomStringTableItem "{B0B34427BAC15241}" {
+     Id "LF-Shop_Desc_PoliceStores"
+     Target_en_us "Uniform pieces, a radio and a flashlight for officers on duty."
+     Comment "Everon 1989 outlet counter (#1770): police_stores."
+    }
+    CustomStringTableItem "{0BFE6BABD6975286}" {
+     Id "LF-Shop_Desc_SurplusStall"
+     Target_en_us "Older army jackets, boots, canteens, binoculars and packs."
+     Comment "Everon 1989 outlet counter (#1770): surplus_stall."
+    }
+    CustomStringTableItem "{BF8187149016069E}" {
+     Id "LF-Shop_Desc_Workwear"
+     Target_en_us "Hard hats, work boots, gloves and a flashlight."
+     Comment "Everon 1989 outlet counter (#1770): workwear_counter."
+    }
+    CustomStringTableItem "{3891D91F71F15DB1}" {
+     Id "LF-Shop_Name_ClothesShop"
+     Target_en_us "Clothes shop"
+     Comment "Everon 1989 outlet counter (#1770): clothing_rack."
+    }
+    CustomStringTableItem "{D815E73D4340CE7D}" {
+     Id "LF-Shop_Name_MedicStores"
+     Target_en_us "Medic stores"
+     Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
     CustomStringTableItem "{B1BC977506FDDA48}" {
      Id "LF-Shop_Name_PharmacyCounter"
      Target_en_us "Dispensary"
      Comment "Shop name of the drug store pharmacy counter: the item catalogue outlet pharmacy_counter, morphine and saline behind the medic licence."
+    }
+    CustomStringTableItem "{787591774EE783D6}" {
+     Id "LF-Shop_Name_PoliceStores"
+     Target_en_us "Police stores"
+     Comment "Everon 1989 outlet counter (#1770): police_stores."
+    }
+    CustomStringTableItem "{4D08F861A5C58B94}" {
+     Id "LF-Shop_Name_SurplusStall"
+     Target_en_us "Army surplus stall"
+     Comment "Everon 1989 outlet counter (#1770): surplus_stall."
+    }
+    CustomStringTableItem "{9FAFCE2654A4E7E6}" {
+     Id "LF-Shop_Name_Workwear"
+     Target_en_us "Workwear counter"
+     Comment "Everon 1989 outlet counter (#1770): workwear_counter."
+    }
+    CustomStringTableItem "{AB6C9C6741E3729B}" {
+     Id "LF-Shop_Open_ClothesShop"
+     Target_en_us "Browse the clothes rack"
+     Comment "Everon 1989 outlet counter (#1770): clothing_rack."
     }
     CustomStringTableItem "{53F9E5EEA5C98E4E}" {
      Id "LF-Shop_Open_GunCounter"
      Target_en_us "Buy guns and ammunition"
      Comment "Pack override of the core gun counter action: in the Everon 1989 gun store the counter sells rifles, pistols, magazines, scopes, holsters and pouches, not only a handgun."
     }
+    CustomStringTableItem "{8D1EB732FECFCC26}" {
+     Id "LF-Shop_Open_MedicStores"
+     Target_en_us "Open the medic stores"
+     Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
     CustomStringTableItem "{7729AC333C1E6567}" {
      Id "LF-Shop_Open_PharmacyCounter"
      Target_en_us "Ask the pharmacist"
      Comment "Action prompt at the drug store pharmacy counter: opens the price list of the restricted medicines."
+    }
+    CustomStringTableItem "{0518C747FCA0A005}" {
+     Id "LF-Shop_Open_PoliceStores"
+     Target_en_us "Open the police stores"
+     Comment "Everon 1989 outlet counter (#1770): police_stores."
+    }
+    CustomStringTableItem "{E20C00A121F45328}" {
+     Id "LF-Shop_Open_SurplusStall"
+     Target_en_us "Browse the surplus stall"
+     Comment "Everon 1989 outlet counter (#1770): surplus_stall."
+    }
+    CustomStringTableItem "{7DBE4B7DA98E5893}" {
+     Id "LF-Shop_Open_Workwear"
+     Target_en_us "Browse workwear"
+     Comment "Everon 1989 outlet counter (#1770): workwear_counter."
     }
     CustomStringTableItem "{4C78A1A01E9D8559}" {
      Id "LF-Sign_Atm_How"
