@@ -10,12 +10,13 @@
 // red-proof: with checkGuard's town- test made always true (`TOWN_PASS.test(slug) || true`) this printed
 // "FAIL a slice that edits Street_Hospital.layer is refused" and exited 1 (2026-11-15); restored, it passes.
 
+import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
 import { main as gridMain, yardLayer } from "../commands/grid.mjs";
-import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, gapSide, inGrid, layerOfSlug, lookArea, rowLine, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
+import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, gapSide, inGrid, layerOfSlug, lookArea, mainClaims as mainClaimsOf, rowLine, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
 import { checkClaims, checkFreeze, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
 
 let failed = 0;
@@ -119,8 +120,61 @@ try {
   rmSync(root, { recursive: true, force: true });
 }
 
+// ---- claims against origin/main: two slices in separate worktrees must not take one cell
+// A temp repo whose origin/main already holds a claim the working tree has not merged yet.
+const natural = allocate("clash-probe");
+const mainClaim = (slug, c) => JSON.stringify({ slug, cell: c, layer: layerOfSlug(slug), rows: 0, created: "2026-11-15" });
+const root2 = mkdtempSync(join(tmpdir(), "lf-grid-main-"));
+try {
+  const git = (...a) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", ...a], { cwd: root2, encoding: "utf8" });
+  git("init", "-q");
+  put(root2, `${CELLS_DIR}/earlier-slice.json`, mainClaim("earlier-slice", natural.id));
+  put(root2, `${GRID_LAYERS}/Annex.layer`, "");
+  git("add", "-A");
+  git("commit", "-q", "-m", "main has the earlier claim");
+  git("update-ref", "refs/remotes/origin/main", "HEAD");
+  rmSync(join(root2, CELLS_DIR, "earlier-slice.json")); // the worktree branched before it merged
+  const run = async (...argv) => {
+    const out = [];
+    console.log = (...a) => out.push(a.join(" "));
+    try {
+      return { code: await gridMain(argv, { root: root2 }), out };
+    } finally {
+      console.log = realLogMain;
+    }
+  };
+  const realLogMain = console.log;
+  const mc = mainClaimsOf(root2, { fetch: false });
+  ok(mc.claims.length === 1 && mc.claims[0].cell === natural.id, `origin/main's claims are read from git (got ${JSON.stringify(mc.claims.map((c) => c.cell))})`);
+  let g = await run("place", "clash-probe", "--dry", "--no-fetch");
+  ok(g.code === 0 && !g.out.some((l) => l.includes(`-> cell ${natural.id} `)), `grid place avoids a cell origin/main already claims (${natural.id}); got ${g.out[0]}`);
+  g = await run("place", "clash-probe", "--dry", "--no-fetch", "--cell", natural.id);
+  ok(g.code === 1 && g.out.some((l) => /origin\/main/.test(l)), `grid place --cell refuses a cell origin/main claims (${g.out.join(" | ")})`);
+  g = await run("place", "earlier-slice", "--dry", "--no-fetch");
+  ok(g.code === 1 && g.out.some((l) => /origin\/main already/.test(l)), `grid place refuses a slug origin/main already claims (${g.out.join(" | ")})`);
+  g = await run("list", "--no-fetch");
+  ok(g.out.some((l) => /origin\/main/.test(l) && l.includes(natural.id)), "grid list shows the claims only origin/main has");
+} finally {
+  rmSync(root2, { recursive: true, force: true });
+}
+{
+  // validate: a branch claim on a cell origin/main gives to another slug fails; its own claim never does
+  const r3 = mkdtempSync(join(tmpdir(), "lf-grid-v-"));
+  try {
+    put(r3, `${CELLS_DIR}/signs.json`, claim("signs", "c2r4"));
+    put(r3, `${GRID_LAYERS}/${layerOfSlug("signs")}`, yardLayer("signs", { id: "c2r4", col: 2, row: 4, ...cellBounds(2, 4) }, P));
+    const mainSame = [{ file: `${CELLS_DIR}/signs.json`, slug: "signs", cell: "c2r4" }];
+    ok(checkClaims(r3, { mainClaims: mainSame }).errors.length === 0, "a claim origin/main holds under the same slug passes");
+    ok(checkClaims(r3).errors.length === 0, "without origin/main claims the check is as before");
+    const e = checkClaims(r3, { mainClaims: [{ file: `${CELLS_DIR}/orgs.json`, slug: "orgs", cell: "c2r4" }] }).errors;
+    ok(e.some((x) => /signs\.json/.test(x) && /c2r4/.test(x) && /origin\/main/.test(x) && /orgs/.test(x)), `a claim on a cell origin/main gives to another slice is reported (${e.join("; ")})`);
+  } finally {
+    rmSync(r3, { recursive: true, force: true });
+  }
+}
+
 // ---- the guard
-const hosp = `${DEBUG_LAYERS}/Street_Hospital.layer`;
+const hosp =`${DEBUG_LAYERS}/Street_Hospital.layer`;
 const packTown = "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers/Village_Dressing.layer";
 ok(checkGuard({ branch: "ws/slice-1500", files: [hosp], baseline: [] }).errors.length === 1, "a slice that edits Street_Hospital.layer is refused");
 ok(checkGuard({ branch: "ws/slice-1500", files: [packTown], baseline: [] }).errors.length === 1, "a slice that edits the pack town is refused");

@@ -58,6 +58,13 @@ export async function bisect(list, fails) {
 }
 
 // After a red run: a failure counts only when the recheck at the same head fails too.
+// A step that exits with an NTSTATUS (0x40010004 = the process was killed by a logoff or shutdown, 0xC000013A =
+// Ctrl+C, ...), by the budget kill (124) or with no code, died of the machine, not of the commit: no recheck, no
+// bisect, no revert (2026-11-15: a logoff killed `build`, the guard bisected and then failed on a dead checkout).
+export function isEnvExit(code) {
+  return code == null || code < 0 || code === 124 || code >= 0x40000000;
+}
+
 export function judgeRecheck(firstFailed, recheckFailed) {
   if (!firstFailed) return "green";
   return recheckFailed ? "red" : "flake";

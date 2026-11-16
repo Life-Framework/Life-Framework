@@ -101,9 +101,16 @@ function ensureRunWorktree(root, slug = RUN_SLUG) {
 }
 
 function checkout(dir, sha) {
-  git(dir, ["reset", "-q", "--hard"]);
-  const r = git(dir, ["checkout", "-q", "--detach", sha]);
-  if (r.status !== 0) throw new Error(`checkout ${sha.slice(0, 8)}: ${(r.stderr || r.stdout).trim()}`);
+  let last = "";
+  for (let i = 0; i < 3; i++) {
+    git(dir, ["reset", "-q", "--hard"]);
+    const r = git(dir, ["checkout", "-q", "--detach", sha]);
+    if (r.status === 0) return;
+    // An empty stderr was a spawn that never ran git (killed, no buffer): name the real reason.
+    last = (r.stderr || r.stdout || "").trim() || `git exited ${r.status ?? "-"}${r.signal ? ` (${r.signal})` : ""}${r.error ? `: ${r.error.message}` : ""}`;
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 3000);
+  }
+  throw new Error(`checkout ${sha.slice(0, 8)} in ${dir}: ${last} (after 3 tries)`);
 }
 
 // One cli command in the run worktree, at high pool priority (LF_PRIORITY: `build` takes no --priority flag and read it as an addon), logged to its own file; resolves { code, text, log }.
@@ -147,10 +154,20 @@ async function checkHead(root, dir, head) {
     log(root, `${head.slice(0, 8)} ${step.name}: ${step.args.join(" ")}`);
     const r = await runCli(root, dir, step.args, `${head.slice(0, 8)}-${step.name.replace(/\W+/g, "-")}`);
     if (r.code === 0) continue;
+    if (mg.isEnvExit(r.code)) {
+      log(root, `${head.slice(0, 8)} ${step.name}: exit ${r.code} is the machine (logoff, shutdown or budget kill), not the commit; no recheck, no revert, retried on a later tick (log ${r.log})`);
+      writeState(root, { running: null });
+      return;
+    }
     const failing = step.name === "suite" ? mg.failingTests(r.text) : [];
     const what = failing.length ? failing.slice(0, 3).join(", ") : step.name;
     log(root, `${head.slice(0, 8)} ${step.name} RED (exit ${r.code}, ${what}); rechecking at the same head (log ${r.log})`);
     const again = await runCli(root, dir, step.recheck(failing), `${head.slice(0, 8)}-recheck`);
+    if (mg.isEnvExit(again.code)) {
+      log(root, `${head.slice(0, 8)} ${step.name} recheck: exit ${again.code} is the machine, not the commit; no revert, retried on a later tick`);
+      writeState(root, { running: null });
+      return;
+    }
     const verdict = mg.judgeRecheck(true, again.code !== 0);
     if (verdict === "flake") {
       try { appendFileSync(flakeLog(root), `${now()} ${head.slice(0, 8)} ${step.name}: ${what} failed once, passed on recheck (${r.log})\n`); } catch {}
@@ -165,6 +182,7 @@ async function checkHead(root, dir, head) {
     const b = await mg.bisect(list, async (c) => {
       checkout(dir, c.sha);
       const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
+      if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
       log(root, `  bisect ${c.sha.slice(0, 8)} ${x.code === 0 ? "green" : "red"} (${c.subject.slice(0, 60)})`);
       return x.code !== 0;
     });
@@ -199,8 +217,7 @@ async function compileRouted(root, cdir, sha) {
   const file = join(mainRoot(root), "tmp", "logs", `main-guard-compile-${sha.slice(0, 8)}-${Date.now()}.log`);
   mkdirSync(dirname(file), { recursive: true });
   const wbRoute = await import("./lib/wb-route.mjs");
-  const say = (l) => { try { appendFileSync(file, `${l}
-`); } catch {} };
+  const say = (l) => { try { appendFileSync(file, String(l) + String.fromCharCode(10)); } catch {} log(root, `  compile ${sha.slice(0, 8)}: ${String(l).split(String.fromCharCode(10))[0].slice(0, 300)}`); };
   process.env.LF_PRIORITY = "high";
   try {
     // The remote transcript is printed to stdout by the pool sync; tee it into the log to judge the verdict.
@@ -336,6 +353,7 @@ export async function runWorker(root) {
   const ld = pin.leaseDecision(lease, HOST);
   if (lease === undefined) log(root, "lease: gh could not read it; starting on the local lock only");
   else if (!ld.ok) { log(root, `lease refused: ${ld.why}; worker exits`); try { unlinkSync(lockPath(root)); } catch {} return 1; }
+  log(root, `lease: ${lease === undefined ? "unreadable" : ld.why}`);
   pin.writeLease(dir, "held", HOST, process.pid);
   let leaseAt = Date.now();
   writeState(root, { running: null, pid: process.pid });
@@ -402,8 +420,12 @@ export async function main(args, { root }) {
       if (!ld.ok) { console.log(`FAIL  main-guard: ${ld.why}. Only one guard runs; stop that one first.`); return 1; }
     }
     const { quietSpawnDetached } = await import("./lib/quiet-launch.mjs");
+    const il = await import("./lib/interactive-launch.mjs");
     try {
-      quietSpawnDetached(process.execPath, [SELF, "worker", mainRoot(root)], { cwd: dirname(dirname(SELF)), env: process.env });
+      // Over ssh a detached child dies with the session (2026-11-16: three workers logged "starts" and vanished), so the
+      // worker starts through a one-shot Interactive task on the console desktop, which outlives the ssh job.
+      if (il.interactiveNeeded()) il.interactiveSpawnDetached(process.execPath, [SELF, "worker", mainRoot(root)], { cwd: dirname(dirname(SELF)), marker: "main-guard.mjs" });
+      else quietSpawnDetached(process.execPath, [SELF, "worker", mainRoot(root)], { cwd: dirname(dirname(SELF)), env: process.env });
     } catch (e) {
       console.log(`FAIL  main-guard: worker did not start: ${e?.message ?? e} (log ${logPath(root)})`);
       return 1;
@@ -443,7 +465,8 @@ export async function main(args, { root }) {
     const head = wt.git(mr, ["rev-parse", "origin/main"]).stdout.trim();
     const hs = pin.ghStatus(mr, head);
     const ck = pin.resolveChecked(mr, { hub: wt.hubDirOf(mr), remoteLookups: 30 });
-    const who = lease === undefined ? "lease unknown (gh failed)" : !lease || lease.state !== "held" ? "no guard holds the lease" : `running on ${lease.host} (pid ${lease.pid}, lease renewed ${Math.round((Date.now() - Date.parse(lease.at)) / 60000)} min ago)`;
+    const leaseAge = lease?.at ? Date.now() - Date.parse(lease.at) : 0;
+    const who = lease === undefined ? "lease unknown (gh failed)" : !lease || lease.state !== "held" ? "no guard holds the lease" : leaseAge > pin.LEASE_TTL_MS ? `STALE lease of ${lease.host} (pid ${lease.pid}, renewed ${Math.round(leaseAge / 60000)} min ago; no live guard, \`main-guard start\` takes it over)` : `running on ${lease.host} (pid ${lease.pid}, lease renewed ${Math.round((Date.now() - Date.parse(lease.at)) / 60000)} min ago)`;
     if (!alive) console.log(`MAIN GUARD ${who}`);
     else console.log(`  github: ${who}`);
     console.log(`  main ${head.slice(0, 8)}: ${hs ?? "unchecked"}; newest compiled-ok or better: ${ck ? `${ck.sha.slice(0, 8)} (${ck.status}, ${ck.behind} behind)` : "none"}`);
