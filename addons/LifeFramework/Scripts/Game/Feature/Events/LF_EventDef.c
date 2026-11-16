@@ -51,10 +51,27 @@ class LF_EventDef : LF_ConfigRecord
 }
 
 //------------------------------------------------------------------------------------------------
+//! A module a phase can name by id (#2137): the id and the .conf that defines it. The root class of
+//! the .conf says what kind it is: LF_EventPrecondition is a condition, LF_EventAbort an abort and
+//! LF_EventScene an operation that spawns the scene and walks it (LF_EventModuleLoader).
+[BaseContainerProps()]
+class LF_EventModuleRef
+{
+	[Attribute("", UIWidgets.EditBox, "Module id, as a phase names it in m_aModules. Unique across conditions, aborts and operations")]
+	string m_sId;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "The module's .conf: root class LF_EventPrecondition, LF_EventAbort or LF_EventScene", "conf")]
+	ResourceName m_Config;
+}
+
+//------------------------------------------------------------------------------------------------
 //! The event config file root (Configs/Events/LF_Events.conf). The shell (#757) loads it.
 [BaseContainerProps(configRoot: true)]
 class LF_EventsConfig
 {
 	[Attribute("", UIWidgets.Object, "Every event this server can run")]
 	ref array<ref LF_EventDef> m_aEvents;
+
+	[Attribute("", UIWidgets.Object, "The modules the phases name, by id. A pack overlay adds its own; a later one with the same id replaces the earlier")]
+	ref array<ref LF_EventModuleRef> m_aModules;
 }

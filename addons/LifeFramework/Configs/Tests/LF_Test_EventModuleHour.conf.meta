@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D9FE49355E2B6E5B}Configs/Tests/LF_Test_EventModuleHour.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
