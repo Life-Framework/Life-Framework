@@ -396,6 +396,11 @@ function Write-SuiteLines([string]$dir) {
   foreach ($h in ($hits | Select-Object -First 40)) { Write-Host "  $($h.Line.Trim())" }
 }
 
+# The console lines that count as a crash. PowerShell -match ignores case, so a bare `VME` also hit
+# "Na-vme-sh" in the `Navmesh Init` line of any world with an SCR_AIWorld (CoreOnEveron) and failed the
+# boot as a crash (2026-11-16): VME is matched as an upper-case word only. Proof: tools/validation/test-crash-regex-selftest.mjs.
+$CrashLineRe = 'Virtual Machine Exception|NULL pointer|Exception|(?-i:\bVME\b)|\( E \)'
+
 # Crash check for the poll loop: crash.log, plus the crash lines among the console lines this
 # poll added (each console line is looked at once, not 4 times a second).
 function Read-CrashFresh([string]$dir, [string]$fresh) {
@@ -406,7 +411,7 @@ function Read-CrashFresh([string]$dir, [string]$fresh) {
     $out += Get-Content $cl -ErrorAction SilentlyContinue
   }
   if ($fresh) {
-    $out += @($fresh -split "`n" | ForEach-Object { $_.TrimEnd("`r") } | Where-Object { $_ -match 'Virtual Machine Exception|NULL pointer|Exception|VME|\( E \)' })
+    $out += @($fresh -split "`n" | ForEach-Object { $_.TrimEnd("`r") } | Where-Object { $_ -match $CrashLineRe })
   }
   return $out
 }
@@ -420,7 +425,7 @@ function Get-HungLines([string]$dir) {
     if (Test-Path -LiteralPath $c) { $lines = @(Get-Content -LiteralPath $c -ErrorAction SilentlyContinue | Where-Object { $_ -and $_.Trim() }) }
   }
   $pick = New-Object System.Collections.ArrayList
-  foreach ($l in @($lines | Where-Object { $_ -match 'SCRIPT\s+\(E\)|Virtual Machine Exception|VME' } | Select-Object -Last 2)) { [void]$pick.Add($l) }
+  foreach ($l in @($lines | Where-Object { $_ -match 'SCRIPT\s+\(E\)|Virtual Machine Exception|(?-i:\bVME\b)' } | Select-Object -Last 2)) { [void]$pick.Add($l) }
   foreach ($l in @($lines | Where-Object { $_ -match '\[LFTEST\]|\[LF_Tests\]' } | Select-Object -Last 2)) { if (-not $pick.Contains($l)) { [void]$pick.Add($l) } }
   # Fill with the tail of the log, feature debug lines excluded (hundreds of them).
   foreach ($l in @($lines | Where-Object { $_ -notmatch '\[LFDebug:' } | Select-Object -Last 8)) { if ($pick.Count -lt 5 -and -not $pick.Contains($l)) { [void]$pick.Add($l) } }
