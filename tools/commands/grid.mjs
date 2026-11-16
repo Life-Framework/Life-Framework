@@ -1,8 +1,13 @@
 // tools\cli grid: one debug-grid cell per feature in the GridWorld annex (docs/architecture/world-zones.md).
 //
-//   grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--dry] [--no-verify]
-//   grid list
+//   grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--dry] [--no-verify] [--no-fetch]
+//   grid list [--no-fetch]
 //   grid free <slug>
+//
+// A new claim is made against origin/main as well as this worktree. Every worktree holds its own copy of
+// tools/grid/cells/, so two slices claiming at once each saw a free cell (both took c2r4, 2026-11-16).
+// `place` fetches origin/main and treats the claims there as taken; `--no-fetch` reads the origin/main
+// this clone already has.
 //
 // `place` claims a cell for the feature (deterministic: the first usable cell from a hash of the
 // slug), writes GridWorld_Layers/Grid_<slug>.layer with the cell's fenced yard (a 5 m gap facing
@@ -14,7 +19,7 @@ import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "
 import { join } from "node:path";
 import { loadWorld } from "../../agent-box/layers.mjs";
 import {
-  CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, entityPrefix, layerOfSlug, parseCellId, readCells, rowLine, yardPlan, yawAlong,
+  CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, entityPrefix, layerOfSlug, mainClaims, parseCellId, readCells, rowLine, yardPlan, yawAlong,
 } from "../lib/world-zones.mjs";
 
 export const help = "grid place <slug> [<prefab>...] | grid list | grid free <slug>   a debug-grid cell per feature in the GridWorld annex: fenced yard, label sign, props placed and audited (docs/architecture/world-zones.md)";
@@ -91,17 +96,29 @@ function parse(argv) {
   return out;
 }
 
-function list(root) {
-  const claims = readCells(root);
+// The claims origin/main holds (`onMain`), and those this tree lacks (`extra`: a branch cut before they merged).
+function mainView(root, flags, local) {
+  const info = mainClaims(root, { fetch: !flags["no-fetch"] });
+  if (info.note) console.log(`grid: ${info.note}`);
+  const onMain = info.claims.filter((c) => !c.error && c.slug && c.cell);
+  const mine = new Set(local.map((c) => c.slug));
+  return { onMain, extra: onMain.filter((c) => !mine.has(c.slug)) };
+}
+
+function list(root, flags) {
+  const local = readCells(root);
+  const { extra } = mainView(root, flags, local);
+  const claims = [...local, ...extra];
   const ents = gridEnts(root);
   const free = allCells().filter((c) => !claims.some((x) => x.cell === c.id) && !blockers(c, ents).length).length;
-  console.log(`grid: ${claims.length} cell(s) claimed, ${free} free (${CELLS_DIR}/)`);
+  console.log(`grid: ${claims.length} cell(s) claimed (${extra.length} only on origin/main), ${free} free (${CELLS_DIR}/)`);
   claims.forEach((c, i) => {
     const p = parseCellId(c.cell);
     const b = p ? cellBounds(p.col, p.row) : null;
     const layer = join(root, GRID_LAYERS, layerOfSlug(c.slug));
     const n = existsSync(layer) ? (readFileSync(layer, "utf8").match(/^\S.* : "\{/gm) || []).length : 0;
-    console.log(`  ${String.fromCharCode(97 + (i % 26))} ${c.slug.padEnd(28)} ${String(c.cell).padEnd(6)} ${b ? `x ${b.x0}..${b.x1} z ${b.z0}..${b.z1}` : "bad cell"}  ${n} entities, ${c.rows ?? 0}/3 rows${c.error ? `  ERROR ${c.error}` : ""}`);
+    const tail = extra.includes(c) ? "claimed on origin/main, not merged here yet" : `${n} entities, ${c.rows ?? 0}/3 rows`;
+    console.log(`  ${String.fromCharCode(97 + (i % 26))} ${c.slug.padEnd(28)} ${String(c.cell).padEnd(6)} ${b ? `x ${b.x0}..${b.x1} z ${b.z0}..${b.z1}` : "bad cell"}  ${tail}${c.error ? `  ERROR ${c.error}` : ""}`);
   });
   console.log(mapText(claims, ents));
   console.log("  (# blocked by legacy stations or reserved ground, . free, letters as listed)");
@@ -136,13 +153,21 @@ async function place(root, args, flags) {
   const ents = gridEnts(root);
   let fresh = false;
   if (!entry) {
-    const taken = new Set(claims.map((c) => c.cell));
+    const { onMain } = mainView(root, flags, claims);
+    const dup = onMain.find((c) => c.slug === slug);
+    if (dup) {
+      console.log(`grid: origin/main already has a claim for ${slug} (cell ${dup.cell}); merge origin/main into this branch, or pick another slug`);
+      return 1;
+    }
+    const takenOnMain = new Map(onMain.map((c) => [c.cell, c.slug]));
+    const taken = new Set([...claims.map((c) => c.cell), ...takenOnMain.keys()]);
     let cell;
     if (flags.cell) {
       const p = parseCellId(flags.cell);
       if (!p) throw new Error(`--cell ${flags.cell} is not a cell (c0r0 to c6r6)`);
       cell = allCells().find((c) => c.col === p.col && c.row === p.row);
-      const why = [...(taken.has(cell.id) ? ["claimed"] : []), ...blockers(cell, ents)];
+      const owner = takenOnMain.get(cell.id);
+      const why = [...(owner ? [`claimed on origin/main by ${owner}`] : taken.has(cell.id) ? ["claimed"] : []), ...blockers(cell, ents)];
       if (why.length) {
         console.log(`grid: cell ${cell.id} is not free: ${why.join("; ")}`);
         return 1;
@@ -197,7 +222,7 @@ async function place(root, args, flags) {
 }
 
 function usage() {
-  console.log("usage: tools\\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--dry] [--no-verify]\n       tools\\cli grid list\n       tools\\cli grid free <slug>\n(docs/architecture/world-zones.md)");
+  console.log("usage: tools\\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--dry] [--no-verify] [--no-fetch]\n       tools\\cli grid list [--no-fetch]\n       tools\\cli grid free <slug>\n(docs/architecture/world-zones.md)");
   return 1;
 }
 
@@ -206,7 +231,7 @@ export async function main(argv, { root }) {
   const { _: args, flags } = parse(rest);
   try {
     if (sub === "place") return await place(root, args, flags);
-    if (sub === "list") return list(root);
+    if (sub === "list") return list(root, flags);
     if (sub === "free") return free(root, args[0]);
   } catch (e) {
     console.log(`grid: ${e.message}`);

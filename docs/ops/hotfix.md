@@ -107,6 +107,7 @@ For a host on your own PC (a scratch host, or the maintainer's box before the mo
 4. **Apply to the host.** It refuses while the host runs, so stop first (step 6).
 
    ```
+   tools\cli host config apply --dry-run
    tools\cli host config apply
    ```
 

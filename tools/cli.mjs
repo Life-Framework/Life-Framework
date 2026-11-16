@@ -3194,7 +3194,9 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   const sharded = opts.shards !== undefined && !only.length && !opts.world && tier === "all";
   const tiers = testWorld.testTiers(root);
   const legs = sharded ? null : testWorld.planLegs({ tier, only, world: opts.world, tiers, names: testWorld.testNames(root), registry: shards.readRegistry(root), pins: testWorld.readPins(root) });
-  if (legs && legs.length > 1) {
+  // A plan with one leg that names its classes is honoured too: --only <town test> is one playtest leg,
+  // and --tier all with the town tests left out is one GridWorld leg of the rest (#1895).
+  if (legs && (legs.length > 1 || (legs.length === 1 && legs[0].classes))) {
     if (!noBuild) {
       const b = await cmdBuild(root, { wait: opts.wait });
       if (b !== 0) return b;
@@ -4117,6 +4119,8 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 test lanes, at most 4; tools/lib/test-shards.mjs). --only-classes <A,B>
                                 runs exactly those registered classes (what a slice passes); --both (with --shards)
                                 also runs the core-only pass, at the same time (what ci does)
+                                --town runs the tests of tools/test/town-tests.json in one boot of the playtest
+                                world; no other run carries them (the main guard runs it warn-only, the lead before promote)
                                 The test pool runs it on the first free slot of any machine
                                 (--any, default); --local / --remote [name] / --machine narrow it.
                                 Remote runs carry uncommitted state too (docs/worktrees.md).
@@ -5359,6 +5363,20 @@ const cmds = {
     const red = list.includes("--red") ? (argValue(list, "--red") ?? "") : undefined;
     const onlyClasses = list.includes("--only-classes") ? (argValue(list, "--only-classes") ?? "") : undefined;
     const shardsFlag = list.includes("--shards") ? (argValue(list, "--shards") ?? "auto") : undefined;
+    // --town: the tests of tools/test/town-tests.json in one boot of the playtest world (#1895).
+    if (list.includes("--town")) {
+      if (only !== undefined || red !== undefined || onlyClasses !== undefined || list.includes("--world")) {
+        console.log("test: --town runs the whole town list on the playtest world; it takes no --only, --red, --only-classes or --world");
+        return 2;
+      }
+      const leg = testWorld.townLeg({ names: testWorld.testNames(ROOT), town: testWorld.readTown(ROOT) });
+      if (!leg) {
+        console.log(`test: --town: ${testWorld.TOWN_FILE} lists no tests`);
+        return 2;
+      }
+      console.log(`test: --town ${leg.classes.length} test(s) on ${leg.world}`);
+      return cmdTest(noBuild, "all", ROOT, { force: list.includes("--force"), noCache: list.includes("--no-cache"), wait: list.includes("--wait"), onlyClasses: leg.classes.join(","), world: leg.world, coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
+    }
     return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), noCache: list.includes("--no-cache"), wait: list.includes("--wait"), only, onlyClasses, shards: shardsFlag, both: list.includes("--both"), red, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
   testbox: (flags) => testbox.cmdTestbox(ROOT, flags ?? []),

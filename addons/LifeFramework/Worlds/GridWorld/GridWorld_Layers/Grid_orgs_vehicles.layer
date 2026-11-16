@@ -1,0 +1,264 @@
+// Grid cell c2r4 for orgs-vehicles: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_orgs_vehicles_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 47 0 71
+}
+SCR_DestructibleEntity Grid_orgs_vehicles_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 52 0 71
+}
+SCR_DestructibleEntity Grid_orgs_vehicles_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 57 0 71
+ angleY 270
+}
+SCR_DestructibleEntity Grid_orgs_vehicles_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 57 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_orgs_vehicles_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 52 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_orgs_vehicles_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 47 0 81
+ angleY 90
+}
+SCR_DestructibleEntity Grid_orgs_vehicles_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 47 0 76
+ angleY 90
+}
+GenericEntity Grid_orgs_vehicles_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:orgs-vehicles"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 57.8 0.505 80.4
+ angleY 90
+}
+GenericEntity Grid_orgs_vehicles_Lot {
+ components {
+  LF_VehicleLotComponent "{E1B0E70100000003}" {
+   m_sShopId "grid-lot"
+   m_iCashCeiling 500
+   m_iExtraKeyPrice 25
+   m_aOffers {
+    LF_VehicleOffer "{E1B0E70100000011}" {
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     m_sSpawnPrefab "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et"
+     m_iPrice 1000
+     m_sNameKey "#EL-Vehicle_S105"
+    }
+    LF_VehicleOffer "{E1B0E70100000012}" {
+     m_sPrefab "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
+     m_sSpawnPrefab "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et"
+     m_iPrice 2500
+     m_sNameKey "#EL-Vehicle_UAZ469"
+    }
+    LF_VehicleOffer "{E1B0E70100000013}" {
+     m_sPrefab "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
+     m_sSpawnPrefab "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et"
+     m_iPrice 4000
+     m_sNameKey "#EL-Vehicle_S1203"
+    }
+    LF_VehicleOffer "{E1B0E70100000014}" {
+     m_sPrefab "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
+     m_sSpawnPrefab "{E1A452BE1A000001}Prefabs/Vehicles/Wheeled/UAZ452/EL_UAZ452_base.et"
+     m_iPrice 3500
+     m_sNameKey "#EL-Vehicle_UAZ452"
+    }
+    LF_VehicleOffer "{E1B0E70100000015}" {
+     m_sPrefab "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et"
+     m_sSpawnPrefab "{E1A923BE1A000001}Prefabs/Vehicles/Wheeled/M923A1/EL_M923A1_transport.et"
+     m_iPrice 8000
+     m_sNameKey "#EL-Vehicle_M923"
+    }
+    LF_VehicleOffer "{E1B0E70100000016}" {
+     m_sPrefab "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et"
+     m_sSpawnPrefab "{E1A2101BE1A00001}Prefabs/Vehicles/Wheeled/V2101/EL_V2101_beige.et"
+     m_iPrice 1800
+     m_sNameKey "#EL-Vehicle_Dana2101"
+    }
+    LF_VehicleOffer "{E1B0E70100000017}" {
+     m_sPrefab "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et"
+     m_sSpawnPrefab "{E1A601BE1A000001}Prefabs/Vehicles/Wheeled/T601/EL_T601_beige.et"
+     m_iPrice 700
+     m_sNameKey "#EL-Vehicle_SputnikT601"
+    }
+   }
+   m_bTestCarLot 1
+  }
+  LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
+   m_sShopId "grid-lot"
+   m_vOffset 0 0 -3
+  }
+  MeshObject "{E1B0E70100000001}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{E1B0E70100000002}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{E1B0E70100000006}" {
+   ActionContexts {
+    UserActionContext "{E1B0E70100000007}" {
+     ContextName "default"
+     Position PointInfo "{E1B0E70100000008}" {
+      Offset 0 0.8 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_VehicleBuyAction "{E1B0E70100000021}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000022}" {
+      Name "#EL-Vehicle_Buy"
+     }
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+    }
+    LF_VehicleExtraKeyAction "{E1B0E70100000023}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000024}" {
+      Name "#EL-Vehicle_ExtraKey"
+     }
+    }
+   }
+  }
+  RplComponent "{E1B0E70100000009}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 52.5 0 79
+}
+GenericEntity Grid_orgs_vehicles_ImpoundDesk {
+ components {
+  LF_ImpoundDeskComponent "{B7547E5E3F7A5535}" {
+   m_sPadId "grid-impound"
+  }
+  LF_VehicleSpawnPointComponent "{853E602F9A3F24EC}" {
+   m_sShopId "grid-impound"
+   m_vOffset -2 0 0
+   m_iSlots 1
+   m_vSlotStep -6 0 0
+   m_vAngles 180 0 0
+  }
+  MeshObject "{DE98802C17B46422}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{5F5D1789B1447AD1}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{47EB65DDFAE5E427}" {
+   ActionContexts {
+    UserActionContext "{BFA166AD194CF220}" {
+     ContextName "default"
+     Position PointInfo "{52BBA330E1E12774}" {
+      Offset 0 0.8 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ImpoundCollectAction "{2D594A0A83AE40B7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{2426F79B9E22C4CB}" {
+      Name "#LF-Impound_Collect"
+     }
+    }
+    LF_GarageLedgerAction "{AB18B805A523E985}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3AE5CC43C788D6EE}" {
+      Name "#LF-Garage_ReadLedger"
+     }
+    }
+   }
+  }
+  RplComponent "{9C41D07E2B85F3A6}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 55.5 0 77
+}
+GenericEntity Grid_orgs_vehicles_OrgHideoutDoor : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  LF_HideoutDoorComponent "{205C142A05C4A6B3}" {
+   m_sHideoutId "grid-org-hideout"
+   m_bOrganizationHideout 1
+  }
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 49 0.001 79
+}
+GenericEntity Grid_orgs_vehicles_Store {
+ components {
+  MeshObject "{5A4B0B84C86E2841}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{5A4B0B84C86E2842}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_StoreComponent "{5A4B0B84C86E284B}" {
+   m_sStoreKey "grid_orgs_vehicles_store"
+   m_aLines {
+    LF_StoreLine "{7C1A5E30B92D4F01}" {
+     m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+     m_iMaxStock 4
+     m_iRestockAmount 0
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 53 0 73.5
+}
+GenericEntity Grid_orgs_vehicles_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "FilmTill"
+   m_sId "street"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{5A4B0B84C86E4846}" {
+     ContextName "default"
+     Position PointInfo "{5A4B0B84C86E4847}" {
+      Offset 0 0.3 0.35
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_StoreTillAction "{5A4B0B84C86E4848}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86E4849}" {
+      Name "#LF-Store_Pay"
+     }
+     m_sStoreKey "grid_orgs_vehicles_store"
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 49 0 73.5
+}

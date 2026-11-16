@@ -1,4 +1,6 @@
 // red-proof: [LFTEST] RED-OK townboard/board-world (fails with the hook on, 39 assertions) (tools/cli test --no-build --red, 2026-11-16)
+// red-proof: Observed 2026-11-16 with `tools\cli test --no-build --only LF_Test_TownBoardWorld --world Worlds/GridWorld/GridWorld.ent`
+// before the grid cell placed the post_office sign: `a card pointed at the post office sign finds it through LF_Places`. Green with the cell.
 // tier: WORLD
 //! The town board prop: one card context over each face slot (where LF_TownBoardFace draws the card),
 //! each carrying the read action for its own slot, an empty slot offering nothing; and a card pointed

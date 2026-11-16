@@ -169,6 +169,13 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    `build`, `test --no-build --tier all`, `audit placement --strict`, `e2e --pre-move 502ebf39 --mission playtest`.
    All pass: `green`. A red step reruns at the same head; a pass on the rerun is a flake
    (`tmp/logs/main-guard-flakes.log`), red twice bisects and reverts.
+   **Stage 2b, the town tests (warn-only).** The 12 tests of `tools/test/town-tests.json` (the roadmap scenarios, the
+   narrative loop, the sign coverage) are not in the suite: `test --tier all`, `ci`, `wt gate` and `wt ship` skip them.
+   After the suite goes `green`, the guard runs them once as their own stage, `test --no-build --town` (one boot of the
+   playtest world), and posts the commit status `main-guard/town` (success or failure). A red town stage never bisects,
+   reruns or reverts, and never changes `main-guard/suite`; it is a line in `tmp/logs/main-guard.log` and a fix-card
+   issue. The lead also runs `tools\cli test --no-build --town` before `promote`. Maintainer decision, 2026-11-16 (#1895);
+   the guard wiring is #1901, until it lands the lead's run is the only one.
 3. **Verdicts, on GitHub.** Each head gets commit statuses every machine reads through `gh`: `main-guard/compile`
    (success = `compiled-ok`, failure = compile red) and `main-guard/suite` (success = `green`, failure = red).
    `<hub>/main-guard-state.json` on the guard machine is only a cache, used when GitHub has no verdict or `gh` fails
