@@ -56,13 +56,17 @@ point; the slip is where the gate's answer is printed.
   config only.
 - **Testing a licence:** `/licence FIREARM_PERMIT` in chat grants the caller one licence by name
   (`LF_LicenceGrantCommand.c`; administrators, dev worlds and harness builds only).
+- **Starting kit (#1767):** offers under the `starting_kit` outlet are what a fresh civilian spawns with,
+  instead of the game mode's civilian loadout (`LF_StartingKit.Resolve`, `LF_FactionLoadout.WithStartingKit`).
+  Items of category `clothing` are worn, the rest are carried; gates are not read, nobody buys the kit.
+  No offers under it, the game mode's loadout applies. Proof: `catalogue/starting-kit` (LOGIC).
 - **Stock and restock (#1064):** an offer's `stock` (0 is no limit) and `restockSeconds` (0 is no restock
   until the server restarts; default 600) are owner and overlay fields like the gates.
   `LF_CatalogueStock` counts each offer on its own in server memory: `LF_ShopComponent.Buy` refuses a
   sale beyond what is left with `OUT_OF_STOCK`, takes only the units delivered, and the first sale from a
   full shelf starts the restock clock; when it is due the shelf is full again. Nothing is saved, so a
   restart refills every outlet. The price list does not show the count yet.
-- **Proof:** `catalogue/stock` (LOGIC, `LF_Test_CatalogueStock`), `catalogue/outlets` (LOGIC, `LF_Test_ItemCatalogue`), `catalogue/gun-counter` (WORLD, `LF_Test_GunCounter`: the annex counter refuses without the permit and sells with it), `item-catalogue-selftest.mjs`.
+- **Proof:** `catalogue/stock` (LOGIC, `LF_Test_CatalogueStock`), `catalogue/starting-kit` (LOGIC, `LF_Test_StartingKit`), `catalogue/outlets` (LOGIC, `LF_Test_ItemCatalogue`), `catalogue/gun-counter` (WORLD, `LF_Test_GunCounter`: the annex counter refuses without the permit and sells with it), `item-catalogue-selftest.mjs`.
 
 ## Not yet (follow-ups of #988)
 

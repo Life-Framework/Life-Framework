@@ -462,6 +462,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ScenePiecesWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ScreenshotFailSafe(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SearchCooldown(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SearchLegality(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FruitCatcherRewardClamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServerPerfLog(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceBoard(), LF_TestTier.WORLD);
@@ -512,6 +513,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_StaffRelayInstall(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookPayload(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookSeam(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StartingKit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaticResetHooks(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StationsProgress(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StolenReport(), LF_TestTier.LOGIC);
@@ -553,6 +555,10 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_TreatmentBill(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBillPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_UIBackPath(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_UIKitInitialFocus(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_UIKitButtonInvoker(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_NotificationToastTiming(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_NotificationToastLayout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UIKitParts(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIKitQuantity(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIKitClose(), LF_TestTier.LOGIC);
