@@ -178,6 +178,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DrillLeftBeside(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrillLeftSize(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DrinkImpairmentTable(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DrinkQuenches(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyDeskActions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyPay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_E2E_CashSlotSwap(), LF_TestTier.PERSISTENCE);
@@ -196,6 +197,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_EventPlayersNearby(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventPreconditions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventSceneCheck(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventSceneHarness(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventScenePlan(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventSceneSpawn(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventSceneWalk(), LF_TestTier.WORLD);
@@ -330,6 +332,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LogoutBody(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutBodyRejoin(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutBodyTag(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_LogoutBodyWake(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutRule(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_M4ConfigSections(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);
@@ -445,6 +448,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RaceBoardProp(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceCourse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceCourses(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RaceEveryFinisher(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceHud(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceRecords(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_RaceRunner(), LF_TestTier.WORLD);

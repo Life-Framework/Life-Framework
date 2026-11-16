@@ -450,7 +450,14 @@ class LF_RaceRunner
 		}
 
 		LF_RaceEntrant winner = finishers[order[0]];
-		LF_EventBus.Publish(LF_OnRaceFinished.Create(courseId, winner.m_sUid, race.m_iPot, race.m_iStarted, winner.m_Progress.m_iFinishMs));
+		LF_OnRaceFinished finish = LF_OnRaceFinished.Create(courseId, winner.m_sUid, race.m_iPot, race.m_iStarted, winner.m_Progress.m_iFinishMs);
+		// Every finisher, in finish order, so the record board can keep each one's personal best (#2160).
+		foreach (int at : order)
+		{
+			finish.AddFinisher(finishers[at].m_sUid, finishers[at].m_Progress.m_iFinishMs);
+		}
+
+		LF_EventBus.Publish(finish);
 		LF_Debug.Info(FEATURE, string.Format("race '%1' finished: %2 wins the %3 pot", courseId, winner.m_sUid, race.m_iPot));
 	}
 
