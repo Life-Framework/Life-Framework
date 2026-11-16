@@ -444,6 +444,11 @@
   faction and does not write the police whitelist. Lower ranks still open the
   wanted list. DebugWorld places `Roadmap_Police_Armory` at `241.2 0 244.2`
   (police station forecourt) on `Street_Police.layer`.
+- 🔨 The flagship ladder (#1769, merged, in-dev; `LF_Police_Everon1989.conf`): five ranks, Cadet, Patrol,
+  Senior Patrol, Sergeant, Lieutenant. Fine caps 500, 1000, 2500, 4000, 5000; pay 0.3, 0.5, 0.65, 0.8, 1
+  per on-duty second; duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
+  the pack patches the core's `patrol` (index 0) into Cadet and `senior` (index 1) into Patrol and appends the other three.
+  Titles are the pack's `LF-Rank_*` rows. A saved rank above the ladder clamps to the top on load.
 - ✅ **One armory draw per duty shift** (2026-11-07): a draw
   that hands out any kit line marks the account; a second draw logs
   `draw refused: <uid> already drew a kit this shift` and shows
@@ -533,6 +538,8 @@
   The offer reads replicated officer and target state; the deletion runs on the
   server only and re-checks the officer's account (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual).
 - ⚠️ No compensation or wanted reduction.
+- ✅ **The search reads item legality** (#1764, `Feature/Catalogue/LF_ItemSearch.c`): every search, wanted or not, checks each carried item (inventory and equipped weapons) against the item catalogue (`LF_ItemCatalogue.OffenceFor` with the carrier's licences). An item that is an offence for that carrier is listed, dropped and deleted on the server, and each offence kind is filed once through `LF_WantedReports.Report` (`#LF-Offence_UnlicensedItem`, `_RestrictedItem`, `_IllegalItem`); the officer sees "Contraband found and seized". A pistol with `FIREARM_PERMIT` is left alone. An on-duty officer is not checked, because the police kit issues the catalogue's M9 without the civilian permit. Test `catalogue/search-legality`. Logs `[LFDebug:Catalogue] search of <uid> flags <prefab>: <offence>`.
+- ⚠️ An off-duty officer still carrying the service M9 would lose it to a search; the kit needs its own prefab. The officer gets a count, not an itemised list on screen. A seized weapon's serial is not traced to its outlet yet (#1067).
 
 ### `LF_Restraint` and the handcuffs — `Feature/Police/LF_Restraint.c`, `Prefabs/Items/Roleplay/Handcuffs.et` (#664, 2026-11-13)
 - ✅ **An on-duty officer holding handcuffs cuffs a downed, stunned, or held-up and unarmed player.** Two entries in the player interaction menu (`Character_Roleplay.et`, context `LF_ID`): **Cuff** (`LF_RestrainAction`), offered to an on-duty officer whose left hand holds an item with `LF_HandcuffsComponent`, and **Uncuff** (`LF_ReleaseRestraintAction`), offered to any on-duty officer facing a cuffed player. The server decides (`LF_Restraint.Restrain` / `Release`): the request goes through `LF_RateLimit` (`SPAWN`), the officer's real account must be on duty, the cuffs must be in hand (`HeldCuffs`: the gadget manager's held gadget, else the controller's left-hand attachment, both readable on the server), and the target must be downed (`LF_Downed`, a taser stun included) or compliant: held up (`LF_HoldUp.HeldUpAt`) within `m_iCompliantSeconds` (`LF_Police.conf`, default 60, 0 = downed only) and holding no weapon. Every refusal logs and toasts the reason. `DecideRestrain`, `DecideRelease` and `IsCompliant` are the pure rules (test `police/restraint-rules`).

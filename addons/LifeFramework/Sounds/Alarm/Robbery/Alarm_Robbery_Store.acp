@@ -195,11 +195,11 @@ AudioClass {
   }
  }
  amplitudes {
-  AmplitudeClass : "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf" {
+  AmplitudeClass : "{2D5607FF1ED3F5D3}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-35LUFS_to_-30LUFS.conf" {
    id 51219
    version 5
    tl 432 -400
-   parent "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf"
+   parent "{2D5607FF1ED3F5D3}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-35LUFS_to_-30LUFS.conf"
   }
  }
  frequency {
@@ -230,7 +230,7 @@ AudioClass {
    name "LF_ALARM_STORE_LP"
    version 7
    tl 150 0
-   Volume -12
+   Volume -8
    "Loop count" 255
    "Infinite loop" 1
    "Termination Fade Out" 150

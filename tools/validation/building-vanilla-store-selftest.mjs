@@ -8,6 +8,9 @@
 //   storePrefab listing display lines in m_aShopItems (allow over display) -> FAIL display: a display copy is a plain model
 //   runStages without the VANILLA_SKIPS branch                      -> FAIL vanilla: generate to import are not needed
 //   permitSteps granting the licence before the first order          -> FAIL permit: the refused order comes before the licence
+// red-proof: 2026-11-15 (folded piles):
+//   pilePoints with every copy at p[1] (no k * height)              -> FAIL pile: a pile stands on its shelf point, one item height per copy
+//   storePrefab without the m_iStack row                            -> FAIL pile: the prefab writes the yaw as each point's fourth number and m_iStack
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -116,6 +119,20 @@ export async function main() {
   ok(storePlan({ ...store, fixtures: [] }, "", FX, IT, opts).problems.every((p) => !/to pay at/.test(p)), "store: a store of display lines and counters needs no till");
   const shelfFurn = 'GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {\n {\n  GenericEntity : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {\n   ID "0000000000000003"\n   coords 1 0.1 1\n  }\n }\n}\n';
   ok(storePlan({ ...store, fixtures: [store.fixtures[0]], lines: [...store.lines, { item: APPLE, fixture: "ShelfShop_01", pick: [0], boards: [0] }] }, shelfFurn, FX, IT, opts).problems.some((p) => /to pay at/.test(p)), "store: self-serve lines still need a till");
+
+  // ---- folded piles (the clothing store): line "stack": N
+  const tillFix = { prefab: TILL, at: [0, 0, 0] };
+  const flat = storePlan({ ...store, lines: [{ item: APPLE, fixture: "ShelfShop_01", pick: [0], boards: [0], per_board: 2, rows: 1 }], fixtures: [tillFix], counters: [] }, shelfFurn, FX, IT, opts);
+  const piled = storePlan({ ...store, lines: [{ item: APPLE, fixture: "ShelfShop_01", pick: [0], boards: [0], per_board: 2, rows: 1, stack: 4 }], fixtures: [tillFix], counters: [] }, shelfFurn, FX, IT, opts);
+  const pl = piled.lines[0];
+  ok(!piled.problems.length && pl.slots.length === 8 && pl.max === 8 && pl.stack === 4, `pile: two shelf points in piles of four are eight points, eight in stock (${piled.problems.join("; ")})`);
+  const base = flat.lines[0]?.slots[0] ?? [0, 0, 0];
+  ok(pl.slots.slice(0, 4).every((p, k) => p[0] === base[0] && p[2] === base[2] && Math.abs(p[1] - (base[1] + k * 0.07)) < 0.001), "pile: a pile stands on its shelf point, one item height (0.07) per copy, bottom first");
+  ok(pl.slots.every((p) => p.length === 4 && Math.abs(p[3]) <= 8) && new Set(pl.slots.map((p) => p[3])).size > 1, "pile: every copy has a twist of at most 8 degrees, and they differ");
+  const piledText = storePrefab("gun-store", store, piled, "{1111111111111111}Prefabs/Buildings/GunStore/ShopHouse_E_2I01t_gunstore.et");
+  ok(/m_sSlots "[^"|]+ [^"|]+ [^"|]+ -?[\d.]+ \|/.test(piledText) && /\n {5}m_iStack 4\n/.test(piledText), "pile: the prefab writes the yaw as each point's fourth number and m_iStack");
+  ok(!/m_iStack/.test(storePrefab("gun-store", store, flat, "{1111111111111111}Prefabs/Buildings/GunStore/ShopHouse_E_2I01t_gunstore.et")), "pile: a line with no stack writes no m_iStack");
+  ok(storePlan({ ...store, lines: [{ item: APPLE, fixture: "ShelfShop_01", pick: [0], boards: [0], stack: 6 }], fixtures: [tillFix], counters: [] }, shelfFurn, FX, IT, opts).problems.some((p) => /a pile of 6 .* over the/.test(p)), "pile: a pile taller than the air under the board above is refused");
 
   // ---- permit counter proof (scenario.mjs) and the harness verb
   const permit = { licence: "FIREARM_PERMIT", look: [0, 1, -1], from: [0, 0, -1.5], rows: [0, 2], items: ["Handgun_M9", "Magazine_9x19_M9_15rnd_Ball"] };

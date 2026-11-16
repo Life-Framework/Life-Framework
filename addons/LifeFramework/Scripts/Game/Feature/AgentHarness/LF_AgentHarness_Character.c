@@ -651,7 +651,13 @@ modded class SCR_ChimeraCharacter
 				return;
 			}
 
+			// The parcel is a hand tool (#1846): it sits in a pocket or the pack, not in a slot of the
+			// character itself, so it leaves the storage it is in, as the inventory's drop does.
 			bool dropped = LF_InventoryUtils.DropItem(this, parcels[0]);
+			InventoryItemComponent parcelItem = LF_Component<InventoryItemComponent>.Find(parcels[0]);
+			if (!dropped && parcelItem && parcelItem.GetParentSlot() && parcelItem.GetParentSlot().GetStorage())
+				dropped = parcelStorage.TryRemoveItemFromStorage(parcels[0], parcelItem.GetParentSlot().GetStorage());
+
 			LF_HarnessReply(commandId, "ok", string.Format("parcel dropped=%1 at=%2", dropped, GetOrigin().ToString(false)));
 			return;
 		}
