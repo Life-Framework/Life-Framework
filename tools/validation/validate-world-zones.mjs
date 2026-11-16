@@ -32,7 +32,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { FRAME_CELL, isFrameClaim, latticeRect } from "../grid/lattice.mjs";
+import { FRAME_CELL, claimCellIds, claimRect, isFrameClaim, latticeRect } from "../grid/lattice.mjs";
 import { DEBUG_LAYERS, GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
 
 export const BASELINE = "tools/validation/zone-guard-baseline.json";
@@ -70,13 +70,15 @@ export function checkClaims(root, { mainClaims: onMain = [], prClaims = [] } = {
   const claims = readCells(root);
   for (const c of claims) {
     if (c.error || isFrameClaim(c)) continue;
-    for (const o of prClaims.filter((x) => x.cell === c.cell && x.slug !== c.slug)) {
+    const mine = new Set(claimCellIds(c));
+    for (const o of prClaims.filter((x) => x.slug !== c.slug && claimCellIds(x).some((id) => mine.has(id)))) {
       warnings.push(`${c.file}: cell ${c.cell} is also claimed by ${o.slug} in open PR #${o.pr} (${o.branch}); whichever merges second fails this check. Run tools\\cli grid free ${c.slug} and grid place ${c.slug} again if yours is the later one`);
     }
   }
   const seen = new Map();
   for (const c of claims) {
-    const other = onMain.find((m) => !m.error && m.cell === c.cell && m.slug !== c.slug);
+    const mine = new Set(claimCellIds(c));
+    const other = onMain.find((m) => !m.error && m.slug !== c.slug && claimCellIds(m).some((id) => mine.has(id)));
     if (other && !c.error) {
       errors.push(`${c.file}: cell ${c.cell} is already claimed on origin/main by ${other.slug}. Merge origin/main, then run tools\\cli grid free ${c.slug} and grid place ${c.slug} again for a free cell`);
     }
@@ -103,11 +105,18 @@ export function checkClaims(root, { mainClaims: onMain = [], prClaims = [] } = {
     }
     const p = parseCellId(c.cell);
     if (!p) {
-      errors.push(`${c.file}: cell "${c.cell}" is not in the lattice (c0r0 to c6r6)`);
+      errors.push(`${c.file}: cell "${c.cell}" is not in the lattice (c0r0 to the last cell, see grid list)`);
       continue;
     }
-    if (seen.has(c.cell)) errors.push(`${c.file}: cell ${c.cell} is claimed by ${seen.get(c.cell)} too. Run tools\\cli grid free ${c.slug} and grid place again for a free cell`);
-    else seen.set(c.cell, c.file);
+    const rect = claimRect(c);
+    if (!rect) {
+      errors.push(`${c.file}: span ${JSON.stringify(c.span ?? [1, 1])} from ${c.cell} is not a block of whole cells inside the lattice`);
+      continue;
+    }
+    for (const id of claimCellIds(c)) {
+      if (seen.has(id)) errors.push(`${c.file}: cell ${id} is claimed by ${seen.get(id)} too. Run tools\cli grid free ${c.slug} and grid place again for a free cell`);
+      else seen.set(id, c.file);
+    }
     const layer = layerOfSlug(c.slug);
     if (c.layer !== layer) errors.push(`${c.file}: layer should be ${layer}`);
     const file = join(root, GRID_LAYERS, layer);
@@ -115,10 +124,10 @@ export function checkClaims(root, { mainClaims: onMain = [], prClaims = [] } = {
       errors.push(`${c.file}: ${GRID_LAYERS}/${layer} is missing (tools\\cli grid place ${c.slug} writes it)`);
       continue;
     }
-    const b = cellBounds(p.col, p.row);
+    const b = rect;
     for (const e of topLevelCoords(readFileSync(file, "utf8"))) {
       if (e.x < b.x0 - 0.5 || e.x > b.x1 + 0.5 || e.z < b.z0 - 0.5 || e.z > b.z1 + 0.5) {
-        errors.push(`${layer}: ${e.name} at ${e.x},${e.z} is outside cell ${c.cell} (x ${b.x0}..${b.x1}, z ${b.z0}..${b.z1}); a grid feature stays in its cell`);
+        errors.push(`${layer}: ${e.name} at ${e.x},${e.z} is outside cell ${c.cell}${rect.w * rect.h > 1 ? ` +${rect.w}x${rect.h}` : ""} (x ${b.x0}..${b.x1}, z ${b.z0}..${b.z1}); a grid feature stays in its cell`);
       }
     }
   }

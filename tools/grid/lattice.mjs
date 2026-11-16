@@ -19,10 +19,25 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Cells: a 7 x 7 lattice of 12 m squares from 22,22 (2 m inside the annex fence). Each cell holds a
+// Cells: an 11 x 7 lattice of 12 m squares from 22,22 (2 m inside the annex fence). Each cell holds a
 // 10 m fenced yard (1 m in from its edges) with a 5 m gap on the side facing the annex centre.
-export const CELL = { size: 12, origin: 22, cols: 7, rows: 7, inset: 1, fence: 5 };
+// The lattice grew east from 7 to 11 columns (capacity, 2026-11-16): existing cells keep their ids and
+// coordinates, so every old claim stands. Growing again: raise `cols`, move the Annex.layer east wall
+// (GRID.x1 below follows), `node tools/grid/lattice.mjs write`. The terrain (GridTerrain, 257 x 257 points
+// at 2 m = 512 m) is far larger than the grid; keep GRID inside 0..512 (tools/validation/grid-world-selftest.mjs).
+// GRID_CENTRE stays where it was so no old cell's gap flips to another side.
+export const CELL = { size: 12, origin: 22, cols: 11, rows: 7, inset: 1, fence: 5 };
 export const GRID_CENTRE = [66, 66];
+// The outer fence (Annex.layer): 2 m outside the lattice on the west and south, 6 m on the east and north
+// (the north gate and the track in through it live in that margin). x 20..160, z 20..112.
+export const FENCE_MARGIN = { low: 2, high: 6 };
+export const GRID_FENCE = {
+  x0: CELL.origin - FENCE_MARGIN.low,
+  z0: CELL.origin - FENCE_MARGIN.low,
+  x1: CELL.origin + CELL.cols * CELL.size + FENCE_MARGIN.high,
+  z1: CELL.origin + CELL.rows * CELL.size + FENCE_MARGIN.high,
+};
+export const TERRAIN_SIZE = 512;
 
 export const FRAME_SLUG = "frame";
 export const FRAME_CELL = "lattice";
@@ -30,6 +45,15 @@ export const FRAME_LAYER = "Grid_frame.layer";
 export const isFrameClaim = (c) => !!c && c.slug === FRAME_SLUG;
 
 export const cellId = (col, row) => `c${col}r${row}`;
+
+// A claim may cover several cells for a big item (a 33 x 19 m hotel): "cell" is its low corner (west, south)
+// and "span": [cols, rows] its size; no "span" is one cell. The claim's cells are a rectangle.
+export function claimSpan(c) {
+  const s = c && Array.isArray(c.span) ? c.span : [1, 1];
+  const w = Number(s[0]);
+  const h = Number(s[1]);
+  return Number.isInteger(w) && Number.isInteger(h) && w >= 1 && h >= 1 ? { w, h } : null;
+}
 
 export function parseCellId(id) {
   const m = /^c(\d+)r(\d+)$/.exec(String(id));
@@ -46,13 +70,33 @@ export function cellBounds(col, row) {
   return { x0, z0, x1: x0 + CELL.size, z1: z0 + CELL.size };
 }
 
+// The cell ids a claim covers (empty when the anchor or the span is bad or the block leaves the lattice).
+export function claimCellIds(c) {
+  const p = c && c.cell ? parseCellId(c.cell) : null;
+  const s = claimSpan(c);
+  if (!p || !s || p.col + s.w > CELL.cols || p.row + s.h > CELL.rows) return [];
+  const out = [];
+  for (let r = 0; r < s.h; r++) for (let k = 0; k < s.w; k++) out.push(cellId(p.col + k, p.row + r));
+  return out;
+}
+
+// The claim's rectangle (the span's cells joined), or null.
+export function claimRect(c) {
+  const p = c && c.cell ? parseCellId(c.cell) : null;
+  const s = claimSpan(c);
+  if (!p || !s || !claimCellIds(c).length) return null;
+  const a = cellBounds(p.col, p.row);
+  const b = cellBounds(p.col + s.w - 1, p.row + s.h - 1);
+  return { id: c.cell, col: p.col, row: p.row, w: s.w, h: s.h, x0: a.x0, z0: a.z0, x1: b.x1, z1: b.z1 };
+}
+
 export function allCells() {
   const out = [];
   for (let row = 0; row < CELL.rows; row++) for (let col = 0; col < CELL.cols; col++) out.push({ id: cellId(col, row), col, row, ...cellBounds(col, row) });
   return out;
 }
 
-// The whole lattice as one rectangle (x 22..106, z 22..106).
+// The whole lattice as one rectangle (x 22..154, z 22..106).
 export const latticeRect = () => {
   const a = cellBounds(0, 0);
   const b = cellBounds(CELL.cols - 1, CELL.rows - 1);
@@ -89,7 +133,7 @@ const num = (v) => {
 // What a plate reads for each cell: the claim's slug, FREE, or BLOCKED (legacy stations or reserved ground).
 // `claims` is readCells(); `blocked` a Set of cell ids that blockers() rejects.
 export function cellStates(claims, blocked = new Set()) {
-  const bySlug = new Map(claims.filter((c) => c.slug && !c.error && !isFrameClaim(c) && parseCellId(c.cell)).map((c) => [c.cell, c.slug]));
+  const bySlug = new Map(claims.filter((c) => c.slug && !c.error && !isFrameClaim(c)).flatMap((c) => claimCellIds(c).map((id) => [id, c.slug])));
   return allCells().map((c) => {
     const slug = bySlug.get(c.id);
     const state = slug ? "claimed" : blocked.has(c.id) ? "blocked" : "free";

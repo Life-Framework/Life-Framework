@@ -1,6 +1,6 @@
 // tools/lib/world-zones.mjs: the two world zones (docs/architecture/world-zones.md).
 //
-// Grid: the net-fenced annex (x 20..112, z 20..112), which lives in GridWorld
+// Grid: the net-fenced annex (x 20..160, z 20..112; it was 20..112 before the lattice grew east), which lives in GridWorld
 // (Worlds/GridWorld/GridWorld_Layers, docs/architecture/three-worlds.md); until slice W6 deletes
 // it, the legacy annex layers also sit in DebugWorld. One feature per cell, low look bar, written
 // by `tools\cli grid`. Town: every other layer the playtest town loads
@@ -15,10 +15,10 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { CORE_ADDON, GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
-import { CELL, GRID_CENTRE, allCells, cellBounds, cellId, isFrameClaim, parseCellId } from "../grid/lattice.mjs";
+import { CELL, GRID_CENTRE, GRID_FENCE, allCells, cellBounds, cellId, claimCellIds, claimRect, claimSpan, isFrameClaim, parseCellId } from "../grid/lattice.mjs";
 
 // The lattice constants and cell maths live in tools/grid/lattice.mjs (with the grid frame).
-export { CELL, GRID_CENTRE, allCells, cellBounds, cellId, parseCellId };
+export { CELL, GRID_CENTRE, allCells, cellBounds, cellId, claimCellIds, claimRect, claimSpan, parseCellId };
 
 export const DEBUG_LAYERS = `addons/${CORE_ADDON}/${layersOf(PLAYTEST_WORLD)}`;
 // Where Grid_<slug>.layer files are written and claims are checked: GridWorld, not the playtest world.
@@ -27,7 +27,7 @@ export const PACK_TOWN_LAYERS = "addons/LF_Everon1989/Worlds/Everon1989Town/Ever
 export const CELLS_DIR = "tools/grid/cells";
 
 // The annex fence (Annex.layer): the grid zone.
-export const GRID = { x0: 20, z0: 20, x1: 112, z1: 112 };
+export const GRID = { ...GRID_FENCE };
 // The rectangle the DebugWorld freeze watches: the fence plus 2 m (three-worlds.md "What counts as grid").
 export const ANNEX_RECT = { x0: 18, z0: 18, x1: 114, z1: 114 };
 // Ground no cell may take: the open ground world tests spawn their fixtures on
@@ -111,14 +111,19 @@ export function slugHash(slug) {
 // The cell for a slug: the first usable cell from hash(slug) in lattice order. Two branches with
 // different slugs rarely land on one cell; validate-world-zones fails if they do.
 // `taken` is a Set of cell ids claimed in tools/grid/cells/.
-export function allocate(slug, { ents = [], taken = new Set() } = {}) {
+// `span` is [cols, rows] for a big item: the first free block of that size, returned as the claim's rectangle
+// (its low corner's id, so a one-cell span is the same cell as before).
+export function allocate(slug, { ents = [], taken = new Set(), span = [1, 1] } = {}) {
   const cells = allCells();
   const start = slugHash(slug) % cells.length;
   for (let k = 0; k < cells.length; k++) {
     const c = cells[(start + k) % cells.length];
-    if (taken.has(c.id)) continue;
-    if (blockers(c, ents).length) continue;
-    return c;
+    const rect = claimRect({ cell: c.id, span });
+    if (!rect) continue;
+    const ids = claimCellIds({ cell: c.id, span });
+    if (ids.some((id) => taken.has(id))) continue;
+    if (ids.some((id) => blockers(cells.find((x) => x.id === id), ents).length)) continue;
+    return rect;
   }
   return null;
 }
@@ -138,10 +143,12 @@ export function yawAlong(d, rot) {
 // The fence runs of a cell's yard: 5 m segments (pivot at one end, extending along local +x),
 // two per side, one left out on the gap side. Returns [{ at: [x, z], dir: [dx, dz] }], plus the
 // sign spot (outside the open end of the gap) and the facing the sign and the props take.
+// A claim of several cells (a rectangle from claimRect) gets one yard around the whole block: each side is
+// ceil(length / 5) runs spaced evenly (a 10 m side is two runs at 5 m, as for one cell); a side 20 m or more
+// leaves two runs out for the gap, a shorter one leaves one.
 export function yardPlan(cell) {
   const i = CELL.inset;
   const a = { x0: cell.x0 + i, z0: cell.z0 + i, x1: cell.x1 - i, z1: cell.z1 - i };
-  const L = CELL.fence;
   const sides = {
     south: { from: [a.x0, a.z0], dir: [1, 0] },
     east: { from: [a.x1, a.z0], dir: [0, 1] },
@@ -152,14 +159,18 @@ export function yardPlan(cell) {
   const runs = [];
   let signAt = null;
   for (const [name, s] of Object.entries(sides)) {
-    for (let k = 0; k < 2; k++) {
+    const len = Math.abs(s.dir[0]) ? a.x1 - a.x0 : a.z1 - a.z0;
+    const n = Math.max(2, Math.ceil(len / CELL.fence - 1e-9));
+    const L = len / n;
+    const open = name === gap.side ? (len >= 20 ? 2 : 1) : 0;
+    for (let k = 0; k < n; k++) {
       const at = [s.from[0] + s.dir[0] * L * k, s.from[1] + s.dir[1] * L * k];
-      if (name === gap.side && k === 1) {
-        // The open half: the sign stands just outside its far end, clear of the opening.
-        const end = [s.from[0] + s.dir[0] * L * 2, s.from[1] + s.dir[1] * L * 2];
+      if (k === n - open) {
+        // The open end: the sign stands just outside its far end, clear of the opening.
+        const end = [s.from[0] + s.dir[0] * len, s.from[1] + s.dir[1] * len];
         signAt = [end[0] - s.dir[0] * 0.6 + gap.out[0] * 0.8, end[1] - s.dir[1] * 0.6 + gap.out[1] * 0.8];
-        continue;
       }
+      if (k >= n - open) continue;
       runs.push({ at, dir: s.dir });
     }
   }
@@ -170,7 +181,8 @@ export function yardPlan(cell) {
 // (row 0 at the back), facing the gap. Returns the two end points and the compass word.
 export function rowLine(cell, k) {
   const { gap, yard } = yardPlan(cell);
-  const depth = 7.5 - 2.5 * k; // from the gap side, inside a 10 m yard
+  const across = gap.side === "north" || gap.side === "south" ? yard.z1 - yard.z0 : yard.x1 - yard.x0;
+  const depth = across - 2.5 - 2.5 * k; // from the gap side: 7.5 m for the first row of a 10 m yard
   if (k < 0 || depth < 1.5) return null;
   const edge = 2; // keep row ends 2 m off the side fences
   if (gap.side === "north" || gap.side === "south") {
@@ -204,11 +216,10 @@ export function readCells(root) {
 export function lookArea(entry) {
   // The frame claims the whole lattice: its picture is the gate end, the map board seen from the spawn.
   if (isFrameClaim(entry)) return { name: "grid-frame", x: 74, y: 0, z: 100, radius: 22, front: 0 };
-  const p = parseCellId(entry.cell);
-  if (!p) return null;
-  const c = { ...cellBounds(p.col, p.row) };
+  const c = claimRect(entry);
+  if (!c) return null;
   const front = { north: 0, east: 90, south: 180, west: 270 }[gapSide(c).side];
-  return { name: `grid-${entry.slug}`, x: (c.x0 + c.x1) / 2, y: 0, z: (c.z0 + c.z1) / 2, radius: 8, front };
+  return { name: `grid-${entry.slug}`, x: (c.x0 + c.x1) / 2, y: 0, z: (c.z0 + c.z1) / 2, radius: 8 * Math.max(c.w, c.h), front };
 }
 
 // The claims origin/main holds, read from git, so a second worktree sees a cell the first one took

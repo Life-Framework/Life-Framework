@@ -463,6 +463,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ReviveAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveCprGraph(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadblock(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RoadblockExpiry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_Bank(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Roadmap_BankWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_BankPersistence(), LF_TestTier.PERSISTENCE);
@@ -527,6 +528,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ServerPerfLog(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceBoard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceCalls(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ServicePistolLawful(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceRadio(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceRange(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceTake(), LF_TestTier.WORLD);
