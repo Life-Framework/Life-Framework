@@ -10,6 +10,7 @@ modded class LF_TestManager
 		RegisterPack(new LF_Test_EveronClerkWelcome(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronDrinksImpair(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronHandbookPages(), LF_TestTier.WORLD);
+		RegisterPack(new LF_Test_EveronNightShift(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronPoliceKit(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronRulesOverlays(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronWelcomeGift(), LF_TestTier.WORLD);

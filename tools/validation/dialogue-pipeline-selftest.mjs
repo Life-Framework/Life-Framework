@@ -253,8 +253,9 @@ export async function main() {
       const stale = dlg.staleLines(ROOT, s, prov);
       ok(stale.length === 0, `${id}: these lines were reworded or are missing their recording: ${stale.join(", ")} (${fix})`);
       for (const [rel, text] of Object.entries(dlg.expectedFiles(ROOT, s, prov))) {
-        const file = join(ROOT, ADDON, rel);
-        ok(existsSync(file) && readFileSync(file, "utf8") === text, `${id}: ${ADDON}/${rel} does not match dialogue.json (${fix})`);
+        const home = s.addon ? `addons/${s.addon}` : ADDON; // a dialogue a pack owns whole lives in the pack (#1963)
+        const file = join(ROOT, home, rel);
+        ok(existsSync(file) && readFileSync(file, "utf8") === text, `${id}: ${home}/${rel} does not match dialogue.json (${fix})`);
       }
       for (const e of dlg.stringEntries(s)) ok(real.get(e.id) === e.text.replace(/"/g, '\\"'), `${id}: string ${e.id} does not match dialogue.json (${fix})`);
       const total = Object.values(prov.lines).reduce((n, l) => n + (l.chars_total || 0), 0);

@@ -150,6 +150,16 @@ export function checkDialoguePatches(root) {
   const coreIndex = new Set(existsSync(indexFile) ? (parseConf(readFileSync(indexFile, "utf8")).lists.m_aEntries || []).map((e) => e.fields.m_sId) : []);
   const keys = stringKeys(root), hooks = hookClasses(root);
   const addons = readdirSync(addonsDir).filter((d) => statSync(join(addonsDir, d)).isDirectory());
+  // The ids a pack's index overlay adds (a dialogue the pack owns whole, not a patch of a core one).
+  const packAdds = new Set();
+  for (const pack of addons.filter((d) => d !== CORE)) {
+    for (const file of walk(join(addonsDir, pack))) {
+      if (!file.endsWith(".conf")) continue;
+      const text = readFileSync(file, "utf8");
+      if (!/^\s*LF_DialogueIndexConfig\s*\{/m.test(text)) continue;
+      for (const e of parseConf(text).lists.m_aEntries || []) if (e.fields.m_sOp === "add") packAdds.add(e.fields.m_sId);
+    }
+  }
   for (const pack of addons.filter((d) => d !== CORE)) {
     for (const file of walk(join(addonsDir, pack))) {
       if (!file.endsWith(".conf")) continue;
@@ -170,6 +180,16 @@ export function checkDialoguePatches(root) {
       }
       const id = conf.fields.m_sId;
       const base = core.get(id);
+      if (!base && packAdds.has(id)) {
+        // A dialogue the pack owns whole (its index overlay adds the id, #1963): read it on its own.
+        const own = [
+          ...(conf.lists.m_aLines || []).map((l) => l.fields.m_sTextKey).filter(Boolean),
+          ...(conf.lists.m_aNodes || []).flatMap((n) => (n.lists.m_aOptions || []).map((o) => o.fields.m_sTextKey).filter(Boolean)),
+        ];
+        if (conf.fields.m_sSpeakerKey) own.push(conf.fields.m_sSpeakerKey);
+        errors.push(...problems(where, toModel(conf), keys, hooks, own));
+        continue;
+      }
       if (!base) { errors.push(`${where}: patches dialogue '${id}', which the core does not ship`); continue; }
       const model = toModel(base);
       applyList(where, "line", model, conf.lists.m_aLines || [], errors);

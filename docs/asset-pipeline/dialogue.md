@@ -188,3 +188,10 @@ records `"engine": "piper"`. Credit the voice in `docs/credits.md`. The clerk's 
 - It does not judge the performance. Listen; `--force <line>` buys another take.
 - It does not write hooks, put the component on the prefab, or write tests.
 - It does not translate. Captions go through the string table; the voice is English.
+
+## A dialogue a pack owns whole
+
+A `dialogue.json` with `"addon": "<pack>"` and no `patches` makes a new dialogue that lives in the pack (the night-shift
+worker, #1963): conf, recordings, audio project and every caption (the speaker key too, which you add by hand) in the pack's own
+string table. Add a pack index overlay with `"m_sOp" "add"` for its id (`Configs/Dialogue/LF_DialogueIndex_<Name>.conf`) and
+list the overlay in the mission headers. `validate-dialogue-patch` reads such a conf on its own, since no core dialogue exists.

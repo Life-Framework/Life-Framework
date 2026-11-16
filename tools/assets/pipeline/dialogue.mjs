@@ -488,13 +488,16 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
     return runVoicedPatch(root, full, { dryRun, force, fetchImpl, ffmpeg, convert, log, piperRun }, patch);
   }
   const addon = join(root, ADDON(spec));
-  const stFile = stringTable(root, spec);
-  if (!existsSync(stFile)) throw new Error(`${ADDON(spec)} has no ${stFile}; a pack's string table does not exist yet (core-pack-inventory.md, #325)`);
-  const stText = readFileSync(stFile, "utf8");
+  // A new dialogue in a pack keeps every string in the pack's own table (the core addon's file has another name).
+  const inPackAddon = addonOf(spec) !== "LifeFramework";
   const packFile = packStringFile(root);
+  const stFile = inPackAddon ? packFile : stringTable(root, spec);
+  if (!stFile || !existsSync(stFile)) throw new Error(`${ADDON(spec)} has no string table (${stFile}); a pack's string table does not exist yet (core-pack-inventory.md, #325)`);
+  const stText = readFileSync(stFile, "utf8");
   const packText = packFile ? readFileSync(packFile, "utf8") : "";
   const known = parseStrings(stText);
   for (const [k, v] of parseStrings(packText)) known.set(k, v);
+  if (inPackAddon) for (const [k, v] of parseStrings(readFileSync(stringTable(root, { addon: "LifeFramework" }), "utf8"))) if (!known.has(k)) known.set(k, v);
   const problems = [...addonProblems(root, spec), ...specProblems(spec, known)];
   if (problems.length) throw new Error("dialogue problems:\n  " + problems.join("\n  "));
 
@@ -513,11 +516,11 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
   // A line whose key lives in the pack's table (its flavour text) is written there; the core keeps its neutral row.
   const inPack = new Set(parseStrings(packText).keys());
   const entries = stringEntries(spec);
-  const newSt = upsertStrings(stText, entries.filter((e) => !inPack.has(e.id)));
-  const newPack = packFile ? upsertStrings(packText, entries.filter((e) => inPack.has(e.id))) : packText;
+  const newSt = upsertStrings(stText, inPackAddon ? entries : entries.filter((e) => !inPack.has(e.id)));
+  const newPack = inPackAddon ? packText : packFile ? upsertStrings(packText, entries.filter((e) => inPack.has(e.id))) : packText;
   const stChanged = newSt !== stText || newPack !== packText;
   if (newSt !== stText) writeFileSync(stFile, newSt);
-  if (newPack !== packText) writeFileSync(packFile, newPack);
+  if (newPack !== packText && !inPackAddon) writeFileSync(packFile, newPack);
 
   assertBoundary(root, spec);
   const wrote = spec.text_only ? `${ADDON(spec)}/${confRes(spec)} (${Object.keys(spec.lines).length} text-only lines)` : `${ADDON(spec)}/${confRes(spec)} and ${ADDON(spec)}/${acpRes(spec)} (${Object.keys(spec.lines).length} events)`;
