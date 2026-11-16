@@ -686,6 +686,28 @@
       "additionalProperties": false,
       "x-class": "LF_LicencesConfig"
     },
+    "logoutBody": {
+      "type": "object",
+      "description": "Owner config, section \"logoutBody\".",
+      "properties": {
+        "windowSeconds": {
+          "type": "integer",
+          "description": "Seconds a logged-out character stays in the world as a lootable body. 0 turns the body off (the character leaves with the player)",
+          "default": 300,
+          "minimum": 0,
+          "maximum": 3600
+        },
+        "downedWindowSeconds": {
+          "type": "integer",
+          "description": "Seconds the body stays when the player left downed and did not die (disconnect downedDies off). Never shorter than windowSeconds",
+          "default": 600,
+          "minimum": 0,
+          "maximum": 3600
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_LogoutBodyConfig"
+    },
     "organizations": {
       "type": "object",
       "description": "Organization tuning: the founding fee, name length, offer lifetime, fund cash limit, upgrade prices and the desk reach.",

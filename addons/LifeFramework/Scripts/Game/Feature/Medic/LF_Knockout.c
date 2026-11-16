@@ -216,11 +216,18 @@ class LF_Knockout
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static string Uid(IEntity character)
+	//! Who to name in the log: the player's uid, the owner of a logged-out body, else "npc".
+	static string Uid(IEntity character)
 	{
 		string uid = LF_Utils.GetPlayerUID(character);
 		if (uid.IsEmpty())
+		{
+			string owner = LF_LogoutBody.UidOfBody(character);
+			if (!owner.IsEmpty())
+				return owner + " (logged out)";
+
 			return "npc";
+		}
 
 		return uid;
 	}
