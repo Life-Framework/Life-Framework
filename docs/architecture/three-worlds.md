@@ -112,7 +112,7 @@ included (that is how `Everon1989Town` works). So the grid layers are copied ver
 - New GUIDs go only to the new world's own files: `GridWorld.ent.meta`, the mission header
   `Missions/LF_GridWorld.conf(.meta)` and, only if the terrain cannot be shared (below), the copied
   terrain's `.terr.meta`.
-- The world keeps the annex coordinates (x 20..112, z 20..112) on the same flat terrain, so the
+- The world keeps the annex coordinates on the same flat terrain (x 20..112, z 20..112 at the split; the fence now runs to x 160 after the lattice grew east, world-zones.md "The grid"), so the
   lattice maths in `world-zones.mjs` and every claim stay valid without changes.
 
 **Terrain.** `default.layer` holds `GenericTerrainEntity DebugTerrain`, whose data lives in

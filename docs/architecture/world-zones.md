@@ -7,27 +7,42 @@ the guard is `tools/validation/validate-world-zones.mjs`.
 
 | | Debug grid | Town |
 |---|---|---|
-| Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..112, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
-| Layers | `GridWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), and the legacy annex layers there (`Annex`, `Crimes`, `HousesKeys`, `Jobs`, `NPCs`, `PRFeatures`, `Police`, `Tests`, `WhitelistChat`, `Shops`) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
+| Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..160, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
+| Layers | `GridWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), and `Annex`, the one legacy annex layer still there (its stations move one system to a cell, epic #1802) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
 | For | Testing a system: one feature per cell, easy to find, easy to film for a proof | Players and videos: a real 1989 village |
 | Look bar | Low. Debug-looking props, stand-ins and a test sign are fine. Things still stand on the ground and are reachable | Full polish bar (`.claude/skills/polish/SKILL.md`, `docs/style-guide.md`): NPCs dressed for their job and standing inside their building, furniture under a roof, boards on walls, nothing debug-looking |
 | Who writes | Any slice, through `tools\cli grid place` only, inside its own cell | Only a town-placement pass: a worktree whose slug starts with `town-` |
 
 ## The grid
 
-The grid is a 7 x 7 lattice of 12 m cells from x 22, z 22 (2 m inside the annex fence), ids `c0r0`
-(south-west) to `c6r6` (north-east). A cell is usable when none of these is in it:
+The grid is an 11 x 7 lattice of 12 m cells from x 22, z 22 (2 m inside the annex fence), ids `c0r0`
+(south-west) to `c10r6` (north-east). It started 7 x 7 and grew east by four columns when the old square ran out of
+free cells (2026-11-16): `c0r0` to `c6r6` keep their ids and coordinates, so every claim stands, and
+`GRID_CENTRE` stays at 66,66 so no old cell's gap flips. The east wall of `Annex.layer` moved from x 112 to
+x 160 and the north and south walls were extended; the margin is 2 m west and south of the lattice and 6 m east
+and north (the gate and its track live in that margin). Terrain bounds: `GridTerrain` is 257 x 257 points at 2 m,
+512 m square, so the grid is far inside it; `world-zones-selftest` asserts the fence stays
+inside 0..512 (`TERRAIN_SIZE` in `tools/grid/lattice.mjs`). To grow again: raise `CELL.cols` or `CELL.rows`,
+move the matching `Annex.layer` wall, run `node tools/grid/lattice.mjs write`. A cell is usable when none of these is in it:
 
 - a legacy station: any entity of a non-grid layer (the annex fence runs excepted);
 - the ground the world tests spawn their fixtures on, x 60..90, z 60..91, and the spot 48,64
   (`docs/roadmap/m1-25-village.md` "Test annex");
 - the track in through the north gate, x 66..82, z 100..112.
 
-On 2026-11-15 that leaves 15 free cells. Each legacy station a town pass retires, or moves into a cell
-of its own, frees ground.
+Each legacy station a town pass retires, or moves into a cell of its own, frees ground. After the
+2026-11-16 growth the east columns (`c7` to `c10`) are free of stations and reserved ground, so `grid list`
+shows 28 more free cells.
+
+**Big items take several cells.** A claim may cover a rectangle of cells: `grid place <slug> --span 3x2`
+(`cols x rows`) takes the first free 3 x 2 block, or a block from `--cell` (its south-west corner). The claim
+file records `"span": [3, 2]` beside `"cell"` (the corner); no `span` is one cell. One yard goes round the whole
+block (fence runs of about 5 m, two left out for the gap on a side of 20 m or more), the entities may stand
+anywhere inside the block, and every cell of it counts as claimed for `grid list`, the frame plates, the
+open-PR and `origin/main` clash checks and `validate-world-zones`. A 3 x 2 block is 36 x 24 m: a 33 x 19 m hotel fits.
 
 ```
-tools\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--dry] [--no-verify]
+tools\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--dry] [--no-verify]
 tools\cli grid list                    claims, free cells, and a map (north up)
 tools\cli grid free <slug>             delete the feature's grid layer and its claim
 tools\cli look grid:<slug>             the look pictures of that cell, from its gap
@@ -36,7 +51,7 @@ tools\cli look grid:<slug>             the look pictures of that cell, from its 
 `grid place` for a new slug:
 
 1. Picks the cell: the first usable, unclaimed cell in lattice order, starting from a hash of the slug
-   (FNV-1a modulo 49), so the same slug gets the same cell on every machine. `--cell` asks for a
+   (FNV-1a modulo the 77 cells), so the same slug gets the same cell on every machine. `--cell` asks for a
    particular free cell. "Unclaimed" is read from this worktree **and from `origin/main`**: `place`
    fetches `origin/main` and treats its `tools/grid/cells/` claims as taken, so a slice cut before
    another slice merged still avoids that slice's cell (#1905 and #1906 both took c2r4 when each only

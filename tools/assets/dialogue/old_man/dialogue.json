@@ -1,0 +1,55 @@
+{
+  "id": "old_man",
+  "name": "OldMan",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Townsfolk_OldMan_Name",
+  "voice": {
+    "engine": "piper",
+    "id": "en_US-ljspeech-high",
+    "name": "Piper en_US-ljspeech-high",
+    "length_scale": 1.12,
+    "why": "Free, offline and public-domain (LJ Speech); a slightly slower reading for an old man on a bench. Licence rule: ljspeech only, never lessac or libritts_r."
+  },
+  "budget_chars": 1500,
+  "hear_range_m": 10,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        { "text": "zone", "next": "zone" },
+        { "text": "move", "next": "move" },
+        { "text": "start", "next": "start" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "zone", "line": "zone", "options_from": "greet" },
+    { "id": "move", "line": "move", "options_from": "greet" },
+    { "id": "start", "line": "start", "options_from": "greet" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Sit down a minute. Everyone is in a hurry these days. I only watch the square."
+    },
+    "zone": {
+      "text": "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
+    },
+    "move": {
+      "text": "The first winter was hard. But the island people brought us wood and soup, and nobody asked what we had left behind. That is how you start again."
+    },
+    "start": {
+      "text": "Read the town board on the square. It shows where everything is. Then see the clerk, right beside it. He was kind to us, and he will be kind to you."
+    },
+    "bye": {
+      "text": "Go well. Come and sit with me again some time."
+    }
+  },
+  "replies": {
+    "zone": "Do you remember the zone?",
+    "move": "What was the move like?",
+    "start": "Where should I start here?",
+    "bye": "Goodbye."
+  }
+}

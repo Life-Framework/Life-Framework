@@ -1,0 +1,100 @@
+// Grid cell c1r0 for pr-features: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_pr_features_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 23
+}
+SCR_DestructibleEntity Grid_pr_features_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 40 0 23
+}
+SCR_DestructibleEntity Grid_pr_features_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_pr_features_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 28
+ angleY 270
+}
+SCR_DestructibleEntity Grid_pr_features_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_pr_features_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 33
+ angleY 90
+}
+SCR_DestructibleEntity Grid_pr_features_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 28
+ angleY 90
+}
+GenericEntity Grid_pr_features_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:pr-features"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 35.6 0.505 33.8
+}
+$grp GenericEntity : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
+ Vehicle_PlateTest {
+  coords 36.5 0 26
+ }
+ Vehicle_LockTest {
+  components {
+   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+    m_sDebugIdentifier "LFDebugKey1"
+   }
+  }
+  coords 40 0 26
+ }
+ Vehicle_SirenTest {
+  coords 43.5 0 26
+ }
+}
+GenericEntity PRFeatureCrate {
+ coords 40 0 30.5
+ {
+  $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   {
+    Flags 0x403 0
+    coords 0 0 0
+   }
+  }
+  $grp GenericEntity {
+   PRFeatureItems {
+    coords 0 0.9 0
+    {
+     $grp GenericEntity : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
+      IDCard_Debug {
+       coords 0 0 0
+      }
+     }
+     $grp GenericEntity : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
+      MoneyStack_Debug {
+       coords 0.2 0 0
+      }
+     }
+     $grp GenericEntity : "{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et" {
+      VehicleKey_Matching_Debug {
+       components {
+        LF_VehicleKeyComponent "{DF4CAEED0C904715}" {
+         m_sDebugIdentifier "LFDebugKey1"
+        }
+       }
+       coords -0.2 0 0
+      }
+      VehicleKey_Wrong_Debug {
+       components {
+        LF_VehicleKeyComponent "{DF4CAEED0C904715}" {
+         m_sDebugIdentifier "LFDebugKeyWrong"
+        }
+       }
+       coords -0.4 0 0
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -188,7 +188,9 @@ under "Hard-coded flagship values in script".
 | `UI/LF_UITheme.conf` | split | The theme shape (`LF_UIThemeRecord`, the reader) is core; the 1989 paper, brass and phosphor values are the flagship's look, kept as the core default until the M3 move. A pack overlay patches a theme by id (#966) |
 | `Dialogue/LF_DialogueIndex.conf` | core | The dialogue registry (#957): id to file; a pack overlay adds, replaces or removes an id |
 | `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`): the Everon wording and the voiced lines, listed in the pack's mission header |
-| `Sounds/Dialogue/clerk_everon/` (in `LF_Everon1989`) | pack | The clerk's ten recordings and audio project, moved out of the core's `Sounds/Dialogue/clerk/` (#323 batch 4) |
+| `Dialogue/LF_Dialogue_OldMan.conf` (in `LF_Everon1989`) | pack | The old man on the bench: a pack's own full dialogue (`tools/assets/dialogue/old_man/`, #1962), voiced; flavour of this server, so the core knows nothing of it |
+| `Sounds/Dialogue/old_man/` (in `LF_Everon1989`) | pack | His five recordings (Piper ljspeech) and audio project (#1962) |
+| `Sounds/Dialogue/clerk_everon/` (in `LF_Everon1989`) | pack | The clerk's thirteen recordings and audio project (the ten from #323 batch 4, moved out of the core's `Sounds/Dialogue/clerk/`, and the three welcome lines of #1959), all Piper en_US-ljspeech (#1959) |
 | `Dialogue/LF_Dialogue_Shopkeeper.conf` | core | A store's shopkeeper, neutral and text only (#1143, `tools/assets/dialogue/shopkeeper/`): greeting, how to pay, what the store sells, and the line a store's staff say on a walk-out. The prefab `Characters/Npcs/LF_Shopkeeper.et` is core too; the pack places it in its supermarket |
 | `Dialogue/LF_Dialogue_Clerk.conf` | core | The neutral, text-only clerk conversation (generated from `tools/assets/dialogue/clerk/`, `text_only`); the Everon voice is a pack patch (#323) |
 | `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |

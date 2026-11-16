@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5DE2E2F0708628B8}Sounds/Atmosphere/Atmosphere_RadioOrchestralMorning.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}
