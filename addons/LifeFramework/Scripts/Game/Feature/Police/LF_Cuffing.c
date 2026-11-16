@@ -428,7 +428,20 @@ class LF_Cuffing
 		}
 
 		s_iFinished++;
-		LF_Restraint.Restrain(officer, target);
+		LF_ERestrain restrained = LF_Restraint.Restrain(officer, target);
+		StampContact(LF_Utils.GetPlayerUID(target), restrained);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a cuffing that went through is police contact for the logout rule (#2102). A cuffing the
+	//! restraint refused is not. \return true when contact was stamped.
+	static bool StampContact(string suspectUid, LF_ERestrain result)
+	{
+		if (result != LF_ERestrain.OK)
+			return false;
+
+		LF_PoliceContact.Stamp(suspectUid, "cuffing");
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
