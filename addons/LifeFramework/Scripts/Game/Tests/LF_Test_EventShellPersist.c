@@ -74,6 +74,14 @@ class LF_Test_EventShellPersist : LF_Test
 		ctx.EqualFloat(300, LF_EventShell.CooldownLeftOf("test_persist_b", 5), 0.01, "B saved mid-phase loads into its full cooldown");
 		ctx.Equal(1, LF_EventShell.LoadWarningCount(), "the removed event id warns once");
 
+		// A ended 100 s before the save, longer ago than this boot: it still counts as ended (at boot).
+		array<ref LF_EventShellRow> again = LF_EventShell.ExportSaved(5);
+		foreach (LF_EventShellRow rowAgain : again)
+		{
+			if (rowAgain.m_sEventId == "test_persist_a")
+				ctx.EqualFloat(5, rowAgain.m_fEndedAgo, 0.01, "an end older than the boot is kept as ended at boot, not lost");
+		}
+
 		// Idempotent: applying the same rows again gives the same state.
 		LF_EventShell.ApplySaved(rows, 5);
 		ctx.EqualFloat(200, LF_EventShell.CooldownLeftOf("test_persist_a", 5), 0.01, "a second apply keeps A's cooldown");
@@ -89,6 +97,14 @@ class LF_Test_EventShellPersist : LF_Test
 		ctx.EqualFloat(0, LF_EventShell.CooldownLeftOf("test_persist_b", 5), 0.01, "B in a removed phase loads idle with no cooldown");
 		ctx.EqualStr("", LF_EventShell.PhaseOf("test_persist_b"), "B in a removed phase has no phase");
 		ctx.Equal(2, LF_EventShell.LoadWarningCount(), "the removed phase name and the removed id each warn");
+
+		// A re-apply onto a live session leaves a running event alone (its scene is not cut short).
+		LF_EventShell.Tick(6);
+		ctx.EqualStr("prep", LF_EventShell.PhaseOf("test_persist_b"), "idle B starts");
+		LF_EventShell.ApplySaved(rows, 7);
+		ctx.EqualStr("prep", LF_EventShell.PhaseOf("test_persist_b"), "a re-apply does not end a running event");
+
+		LF_EventShell.ResetLoadWarnings();
 
 		// Restore the live shell.
 		LF_EventShell.Use(LF_EventShell.LoadConfig());

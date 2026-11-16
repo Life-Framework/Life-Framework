@@ -86,6 +86,13 @@ modded class LF_EventShell
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Tests: clears the warning count after their own loads.
+	static void ResetLoadWarnings()
+	{
+		s_iLoadWarnings = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server seconds on the shell's clock (TickNow's), 0 before a world.
 	static float ClockNow()
 	{
@@ -135,7 +142,7 @@ modded class LF_EventShell
 	static int ApplySaved(array<ref LF_EventShellRow> rows, float now)
 	{
 		s_iLoadWarnings = 0;
-		if (!rows)
+		if (!rows || !Replication.IsServer())
 			return 0;
 		if (!s_aRuns)
 			Use(LoadConfig());
@@ -156,11 +163,23 @@ modded class LF_EventShell
 				continue;
 			}
 
+			// A re-apply onto a live session never cuts a running scene short: the live state wins.
+			if (LF_EventPhaseRules.IsRunning(run.m_State))
+			{
+				LF_Debug.Info(FEATURE, string.Format("event %1 is running in phase %2: its saved state is not applied", row.m_sEventId, run.m_State.m_sPhaseName));
+				continue;
+			}
+
 			LF_EventRunState state = new LF_EventRunState();
 			run.m_fLastRunAt = -1000000;
 			run.m_fLastEndedAt = -1;
 			if (row.m_fEndedAgo >= 0)
-				run.m_fLastEndedAt = now - row.m_fEndedAgo;
+			{
+				// The clock restarted at 0, so an end older than this boot reads as "at boot" (0), never
+				// as negative, which LF_EventContext takes for "never ended". A gap condition waits
+				// longer than it would have, never less.
+				run.m_fLastEndedAt = Math.Max(0, now - row.m_fEndedAgo);
+			}
 
 			if (row.m_sPhaseName.IsEmpty())
 			{
