@@ -244,6 +244,8 @@ const cands = pickCandidates(a.buildings, 6);
 check("civic candidates are the church, office and pub, nearest first, with a view radius", cands.map((b) => b.type).sort().join() === "church,government,pub" && cands.every((b) => b.view >= 14 && b.view <= 40));
 const shops = Array.from({ length: 6 }, (_, i) => ({ id: `b0${i}`, stem: "ShopHouse_E_2I01t_foodstore", type: "shop", civic: true, ruin: false, distance: i, footprint: { w: 10, d: 8 } }));
 check("a street of one shop is not six pictures", pickCandidates(shops, 6).length === 2);
+const stackedPair = [{ id: "b01", stem: "Church_01_red", type: "church", civic: true, ruin: false, x: 10, z: 10, distance: 5, footprint: { w: 20, d: 33.8, area: 676 } }, { id: "b02", stem: "Church_01_crypt_attic", type: "church", civic: true, ruin: false, x: 10, z: 10, distance: 5, footprint: { w: 16.5, d: 28, area: 462 } }];
+check("two models on one spot are one picture, the bigger one", pickCandidates(stackedPair, 6).map((b) => b.id).join() === "b01" && pickCandidates([...stackedPair].reverse(), 6).map((b) => b.id).join() === "b01");
 const ins = pickInteriors(cands, 5);
 check("interiors: only buildings with a door entity, the church first, with a room to stand in", ins.length === 2 && ins[0].type === "church" && ins[0].room.radius >= 3 && near(ins[0].room.x, church.footprint.cx));
 check("the look area spec and name agree", areaSpec(1000.04, 2000.46, 30) === "1000,2000.5,30" && areaName(1000.04, 2000.46) === "xz-1000-2001");

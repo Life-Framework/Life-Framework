@@ -22,7 +22,8 @@ many civic buildings get pictures, 6), `--interiors n` (how many get an inside l
 | Section | From |
 |---|---|
 | Place: name, kind, coordinates | the map's own label prefabs, `Prefabs/World/Locations/Eden/**` (Eden is the engine's name for Everon), names from the game's string table |
-| Buildings: `{GUID}path`, type, position, yaw, footprint, interior, entrances | the engine's entities through the `dump` directive of the look plugin; footprint from `tools\cli measure` (the model's bounds turned by the yaw), the engine's world bounds when the model does not cover the building |
+| Buildings: `{GUID}path`, type, position, yaw, footprint, floors, interior | **the Everon catalog** ([catalog-buildings.json](catalog-buildings.md), read, not re-derived): its type names, footprint extents (turned by the yaw), floors, cellar, `enterable`; a place file beside it (`saint-philippe.json`) adds what stands inside. Without the catalog in the checkout, scout types the dump's entities by prefab path (the same rules) and measures them with `tools\cli measure` |
+| Entrances | door entities below each building from the engine dump; a door within 1.3 m of the footprint outline is an entrance, the side and compass facing recorded; inner doors only raise the door count |
 | Roads and junctions, the main street | road splines from the same dump; crossings and ends within 3 m of another road are junctions (merged within 8 m), the main street is the road with the most buildings within 25 m |
 | Notable props: piers and docks, fuel pumps, benches, bus shelters, monuments ... | the dump, classified by prefab path (`tools/scout/types.mjs`) |
 | Free plots | open rectangles of at least 10 m on the short side, 2.5 m off buildings, 4.5 m off a road's centre line, 2 m off trees, on ground under 12 degrees, not in the sea |
@@ -42,11 +43,10 @@ pictures and the dump come from one hidden Workbench run, routed through the poo
 
 ## Interiors and entrances
 
-A vanilla building is enterable through door entities (`BaseDoorComponent`) that hang below it, so the dump lists
-them: each is an entrance with the side of the building it stands on and the way it faces. `interior: yes` means at least
-one door entity; `no` means none and a type that is not built to be entered (a shed), or a ruin; `unknown` means a
-type that is built to be entered (a church, a pub) but no door entity was found: look at it. The inside pictures
-are `look --interior x,y,z` from the middle of the footprint at the floor height; read them before relying on a room's size.
+`interior` is the catalog's `enterable` (door entities and a walkable floor, a heuristic nobody has walked): `yes`;
+`unknown` is door entities but no walkable floor; `no` is neither, or a ruin. The engine dump then gives each door's
+position, so an entrance is the side of the building it stands on and the way it faces. The inside pictures are
+`look --interior x,y,z` from the middle of the footprint at the catalog's first floor level; read them before relying on a room's size.
 
 ## Several at once
 
@@ -56,11 +56,11 @@ list the places with `ls docs/everon/places`.
 
 ## Building type names
 
-`tools\cli scout types` prints the vocabulary: `church`, `chapel`, `municipal-office`, `school`, `fire-station`, `pub`,
-`shop-food` ..., `hotel`, `fuel-station`, `house-village`, `house-town`, `farmhouse`, `villa`, `apartment-block`,
-`shed`, `garage`, `farm-building`, `industrial-building`, `ruin` and more. They are read off the vanilla prefab path
-(`Prefabs/Structures/<Category>/<Sub>/<Name>.et`), so they are stable across game builds. A catalogue of vanilla
-buildings should use the same names so a dossier and a catalogue never name one thing twice.
+The catalog's names (`docs/everon/method/classify.mjs`): `townhouse`, `house`, `villa`, `farmhouse`, `police`, `government`,
+`fire`, `church`, `chapel`, `pub`, `shop`, `kiosk`, `fuel`, `hotel`, `recreation`, `farm`, `farm-small`, `garage`, `shed`,
+`industrial`, `industrial-tank`, `industrial-tower`, `military`, `airport`, `castle`, `ruin`, `port`, `waterworks`.
+`tools\cli scout types` prints the rules (`tools/scout/types.mjs` mirrors the catalog's, for a building the catalog does not
+list and for props). `port` and `waterworks` pieces (a harbour is hundreds of quay and pier pieces) are counted, not listed.
 
 ## Limits
 

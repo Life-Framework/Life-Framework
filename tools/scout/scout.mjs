@@ -83,12 +83,14 @@ export function resolveTarget(pos, entries) {
 }
 
 // Pure: the civic buildings to photograph, nearest first, at most `max`, no more than two of one vanilla prefab
-// (a street of identical shops is one picture). -> the building records, each with a `view` radius.
+// (a street of identical shops is one picture), one per spot. -> the building records, each with a `view` radius.
 export function pickCandidates(buildings, max = 6) {
   const out = [];
   const seen = new Map();
+  // Variants stacked on one spot (a church and its crypt-and-attic model) are one building: the biggest stands for them.
+  const stacked = (b) => buildings.some((o) => o !== b && o.civic && !o.ruin && Math.hypot(o.x - b.x, o.z - b.z) < 5 && (o.footprint.area > b.footprint.area || (o.footprint.area === b.footprint.area && o.id < b.id)));
   for (const b of buildings) {
-    if (!b.civic || b.ruin) continue;
+    if (!b.civic || b.ruin || stacked(b)) continue;
     const n = seen.get(b.stem) ?? 0;
     if (n >= 2) continue;
     seen.set(b.stem, n + 1);
