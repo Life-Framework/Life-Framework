@@ -2400,6 +2400,86 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Every character slot on this account is taken."
      Comment "Character creation refused because the account already holds the configured maximum number of characters."
     }
+    CustomStringTableItem "{294B1C333502C014}" {
+     Id "LF-Chess_BlackInCheck"
+     Target_en_us "Black to move, in check"
+     Comment "Chess board: whose turn, in check."
+    }
+    CustomStringTableItem "{DF5A83BF2E8A0BF7}" {
+     Id "LF-Chess_BlackToMove"
+     Target_en_us "Black to move"
+     Comment "Chess board: whose turn."
+    }
+    CustomStringTableItem "{5ED12C260FF1021C}" {
+     Id "LF-Chess_BlackWins"
+     Target_en_us "Black wins"
+     Comment "Chess board: the game ended."
+    }
+    CustomStringTableItem "{8441B5995A901878}" {
+     Id "LF-Chess_Draw"
+     Target_en_us "Drawn game"
+     Comment "Chess board: the game ended in a draw."
+    }
+    CustomStringTableItem "{B43B12CB3A87A5CA}" {
+     Id "LF-Chess_LastMove"
+     Target_en_us "Last move: %1"
+     Comment "Chess board: the last move played, such as e2e4."
+    }
+    CustomStringTableItem "{0903BC959C769DD9}" {
+     Id "LF-Chess_Play"
+     Target_en_us "Play chess"
+     Comment "Action on a chess table: sit and play, or watch when both seats are taken."
+    }
+    CustomStringTableItem "{EAB56E5EA3549E64}" {
+     Id "LF-Chess_Selected"
+     Target_en_us "Moving from %1: click where it goes"
+     Comment "Chess board: a piece is picked up. %1 is a square such as e2."
+    }
+    CustomStringTableItem "{E7ED7DA4025B0B70}" {
+     Id "LF-Chess_StandUp"
+     Target_en_us "Stand up"
+     Comment "Close button of the chess board; standing up mid-game resigns after a grace period."
+    }
+    CustomStringTableItem "{6484B0F23B8FE931}" {
+     Id "LF-Chess_Title"
+     Target_en_us "Chess"
+     Comment "Title of the chess board sheet."
+    }
+    CustomStringTableItem "{475A1556AF20C80E}" {
+     Id "LF-Chess_Waiting"
+     Target_en_us "Waiting for an opponent to sit down"
+     Comment "Chess board: one seat is empty."
+    }
+    CustomStringTableItem "{10A7EDA4F1EAEA27}" {
+     Id "LF-Chess_Watching"
+     Target_en_us "Both seats are taken; you are watching"
+     Comment "Chess board: the reader holds no seat."
+    }
+    CustomStringTableItem "{16D1027DC7BC0180}" {
+     Id "LF-Chess_WhiteInCheck"
+     Target_en_us "White to move, in check"
+     Comment "Chess board: whose turn, in check."
+    }
+    CustomStringTableItem "{7E0B60D70576A7CA}" {
+     Id "LF-Chess_WhiteToMove"
+     Target_en_us "White to move"
+     Comment "Chess board: whose turn."
+    }
+    CustomStringTableItem "{541A8E2D2D07B46F}" {
+     Id "LF-Chess_WhiteWins"
+     Target_en_us "White wins"
+     Comment "Chess board: the game ended."
+    }
+    CustomStringTableItem "{BC3DF558CF296BE6}" {
+     Id "LF-Chess_YouBlack"
+     Target_en_us "You play black"
+     Comment "Chess board: your seat."
+    }
+    CustomStringTableItem "{5564712FA572FA16}" {
+     Id "LF-Chess_YouWhite"
+     Target_en_us "You play white"
+     Comment "Chess board: your seat."
+    }
     CustomStringTableItem "{87229FC4BD0FB108}" {
      Id "LF-Chop_Busy"
      Target_en_us "The bench is busy"
