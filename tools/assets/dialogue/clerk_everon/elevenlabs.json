@@ -131,6 +131,48 @@
       "request_id": "btHj8vaUMSONr0Z5Svhw",
       "seconds": 1.13,
       "mouth": "64997799864455443221000"
+    },
+    "welcome_papers": {
+      "hash": "acc0a67fccb53e8b",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "LJ Speech (Piper)",
+      "model": "piper",
+      "engine": "piper",
+      "text": "Welcome to Everon. First, your papers. Form R-89 is the relocation form, and I will file it under your name. Your identity card comes with it.",
+      "chars": 142,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 10.29,
+      "mouth": "89825853354389244321000001899678131696127951553354310000017999532699841486334233777766431364454765992278553542259965433100079999888411999987658645654674477542100000069999842784233421267611254323365352002000"
+    },
+    "welcome_room": {
+      "hash": "d51233057374d773",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "LJ Speech (Piper)",
+      "model": "piper",
+      "engine": "piper",
+      "text": "You sleep at the hostel tonight. The dormitory is upstairs, and any free bunk is yours. It is plain, but it is warm.",
+      "chars": 116,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 8.52,
+      "mouth": "899987982881734986626413457664103300000183398865433666631477823992798875435411495215876322376317973113484489976423552100001959987126976632100000009982200799986279986321000"
+    },
+    "welcome_town": {
+      "hash": "53ab976c6c8ca3dd",
+      "date": "2026-11-16",
+      "voice_id": "en_US-ljspeech-high",
+      "voice_name": "LJ Speech (Piper)",
+      "model": "piper",
+      "engine": "piper",
+      "text": "The town expects honest work and quiet nights. Greet your neighbours, pay what you owe, and ask the police if you are ever lost.",
+      "chars": 128,
+      "chars_total": 0,
+      "request_id": "",
+      "seconds": 7.78,
+      "mouth": "417499866267199415711997869323699321564223999842699741016631000015894267536772555445310000189569458687652100016479987671361479646532579978866578852146412000"
     }
   },
   "voice": {

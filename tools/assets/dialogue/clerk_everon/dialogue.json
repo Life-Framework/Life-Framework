@@ -46,6 +46,103 @@
     },
     "bye": {
       "text": "Good day to you."
+    },
+    "welcome_papers": {
+      "text": "Welcome to Everon. First, your papers. Form R-89 is the relocation form, and I will file it under your name. Your identity card comes with it.",
+      "voice": {
+        "engine": "piper",
+        "id": "en_US-ljspeech-high",
+        "name": "LJ Speech (Piper)",
+        "why": "Licence-safe: LJ Speech is public domain. The clerk's earlier lines keep the ElevenLabs voice (no key on this machine for new ElevenLabs takes); to re-voice the whole clerk, move this voice up to the top-level voice and drop budget_chars' ElevenLabs use."
+      }
+    },
+    "welcome_room": {
+      "text": "You sleep at the hostel tonight. The dormitory is upstairs, and any free bunk is yours. It is plain, but it is warm.",
+      "voice": {
+        "engine": "piper",
+        "id": "en_US-ljspeech-high",
+        "name": "LJ Speech (Piper)",
+        "why": "Licence-safe: LJ Speech is public domain. The clerk's earlier lines keep the ElevenLabs voice (no key on this machine for new ElevenLabs takes); to re-voice the whole clerk, move this voice up to the top-level voice and drop budget_chars' ElevenLabs use."
+      }
+    },
+    "welcome_town": {
+      "text": "The town expects honest work and quiet nights. Greet your neighbours, pay what you owe, and ask the police if you are ever lost.",
+      "voice": {
+        "engine": "piper",
+        "id": "en_US-ljspeech-high",
+        "name": "LJ Speech (Piper)",
+        "why": "Licence-safe: LJ Speech is public domain. The clerk's earlier lines keep the ElevenLabs voice (no key on this machine for new ElevenLabs takes); to re-voice the whole clerk, move this voice up to the top-level voice and drop budget_chars' ElevenLabs use."
+      }
     }
+  },
+  "nodes": [
+    {
+      "id": "greet",
+      "options": [
+        {
+          "text": "new",
+          "next": "welcome_papers",
+          "condition": "QuestNotTurnedIn",
+          "param": "arrival_register"
+        },
+        {
+          "text": "next",
+          "next": "menu",
+          "condition": "QuestTurnedIn",
+          "param": "arrival_register",
+          "action": "QuestConverse"
+        },
+        {
+          "text": "lost",
+          "next": "menu",
+          "condition": "IdCardMissing",
+          "action": "IdCardReplace"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "welcome_papers",
+      "line": "welcome_papers",
+      "options": [
+        {
+          "text": "goon",
+          "next": "welcome_room"
+        }
+      ]
+    },
+    {
+      "id": "welcome_room",
+      "line": "welcome_room",
+      "options": [
+        {
+          "text": "goon",
+          "next": "welcome_town"
+        }
+      ]
+    },
+    {
+      "id": "welcome_town",
+      "line": "welcome_town",
+      "options": [
+        {
+          "text": "ready",
+          "next": "menu",
+          "action": "QuestConverse",
+          "param": "arrival_register"
+        }
+      ]
+    }
+  ],
+  "replies": {
+    "new": "I am new in Everon.",
+    "next": "What should I do now?",
+    "lost": "I have lost my identity card.",
+    "bye": "Goodbye.",
+    "goon": "Go on, please.",
+    "ready": "I understand. What now?"
   }
 }
