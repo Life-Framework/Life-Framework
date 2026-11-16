@@ -1240,6 +1240,11 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "That fine is above your rank"
      Comment "Fine refused because it is above the officer's rank cap"
     }
+    CustomStringTableItem "{5F2C8E1B7D4A9306}" {
+     Id "EL-Rank_IssueNeedsRank"
+     Target_en_us "The armory issues that from the rank of %1"
+     Comment "Toast: the armory refused an item because the officer's rank is below the offer's. %1 = the rank title that may draw it."
+    }
     CustomStringTableItem "{C91A4E7700B10011}" {
      Id "EL-Rank_Patrol"
      Target_en_us "Patrol Officer"
@@ -1254,6 +1259,11 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Id "EL-Rank_PromoteDenied"
      Target_en_us "A higher rank has to authorize that"
      Comment "Promotion refused"
+    }
+    CustomStringTableItem "{BB32E46F8C493D2C}" {
+     Id "EL-Rank_PromoteNeedsHigher"
+     Target_en_us "Only an officer above the rank you are promoting into can promote"
+     Comment "Toast to the promoter: the promotion was refused because their rank does not outrank the rank the target would reach."
     }
     CustomStringTableItem "{C91A4E7700B10012}" {
      Id "EL-Rank_Senior"

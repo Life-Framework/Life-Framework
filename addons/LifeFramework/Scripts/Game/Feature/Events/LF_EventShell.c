@@ -21,6 +21,7 @@ class LF_EventShellRun : Managed
 	ref LF_EventRunState m_State;
 	float m_fLastRunAt = -1000000;	// lf-fixed: "never ran", so the first tick is always due
 	float m_fLastEndedAt = -1;		// negative: never ended (LF_EventContext)
+	int m_iLastNearby;				// players inside the event's place at the last measure (#2105)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -39,8 +40,10 @@ class LF_EventShellRun : Managed
 //! the first phase's conditions are also the event's start gate. A running phase advances when its
 //! own conditions hold (LF_EventPhaseRules.Decide).
 //!
-//! Not yet: run state is not persisted (a restart starts every event idle), PLAYERS_NEARBY measures
-//! 0 until an event names its place.
+//! Players nearby (#2105): Measure counts the players within the radius of the event's place with
+//! LF_EventPlace (the scene's event_target marker through LF_Places); an event with no place counts 0.
+//!
+//! Not yet: run state is not persisted (a restart starts every event idle).
 //!
 //! Off by default: an event runs only with m_bEnabled set (the core example ships off; a pack patch
 //! turns an event on). Events come from LF_EventOverlay, the core file with the pack overlays over it.
@@ -150,6 +153,16 @@ class LF_EventShell
 	static int ChangeCount()
 	{
 		return s_iChanges;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return players inside the event's place at its last measure, 0 for an unknown event.
+	static int NearbyOf(string eventId)
+	{
+		LF_EventShellRun run = FindRun(eventId);
+		if (!run)
+			return 0;
+		return run.m_iLastNearby;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -324,8 +337,13 @@ class LF_EventShell
 		if (GetGame() && GetGame().GetPlayerManager())
 			online = GetGame().GetPlayerManager().GetPlayerCount();
 
-		// Nearby stays 0 until an event names its place (scene markers, #1954): a later slice.
-		LF_EventContext ctx = LF_EventContext.Make(hour, online, 0, now);
+		// The running phase's radius, or the first phase's while the event is idle (its start gate).
+		string phaseName = run.m_State.m_sPhaseName;
+		if (phaseName.IsEmpty() && run.m_Def.m_aPhases.Count() > 0)
+			phaseName = run.m_Def.m_aPhases[0].m_sName;
+		run.m_iLastNearby = LF_EventPlace.CountNearby(run.m_Def.m_sEventId, phaseName);
+
+		LF_EventContext ctx = LF_EventContext.Make(hour, online, run.m_iLastNearby, now);
 		ctx.m_fLastEndedAt = run.m_fLastEndedAt;
 		if (LF_EventPhaseRules.IsRunning(run.m_State))
 			ctx.m_fPhaseStartedAt = run.m_State.m_fPhaseStartedAt;
