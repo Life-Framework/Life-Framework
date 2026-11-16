@@ -1,8 +1,10 @@
 // tools/lib/heal-hotspots.mjs - merge main into a branch that still edits the old central hotspots.
 //
 // Two shared files became per-feature files (PR "kill hotspots"):
-//   - Core/LF_StaticReset.c lost its list; each class registers a `modded class LF_StaticResetHooks`
-//     in its own file (tools/lib/static-reset-hooks.mjs).
+//   - Core/LF_StaticReset.c lost its list; each class registers an LF_StaticResetHook subclass in its
+//     own file (tools/lib/static-reset-hooks.mjs). A branch that still adds the interim
+//     `modded class LF_StaticResetHooks` layer (#1870, retired by #2034: the chain overflowed the
+//     stack) gets that layer converted to a hook class in place.
 //   - docs/features.md became a generated index; the rows live in docs/features/<area>.md
 //     (tools/lib/features-index.mjs).
 // A branch cut before that still appends to the old files, so merging main conflicts on them. healBranch
@@ -16,7 +18,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { CENTRAL, addHooks, addedCalls, centralCalls, classFiles, git, gitShow, placeCalls } from "./static-reset-hooks.mjs";
+import { CENTRAL, addHooks, addedCalls, centralCalls, classFiles, git, gitShow, migrateText, placeCalls } from "./static-reset-hooks.mjs";
 import { mergeLines } from "../merge/merge-markdown.mjs";
 
 export const FEATURES = "docs/features.md";
@@ -54,10 +56,18 @@ export async function planHeal({ root, onto = "origin/main" }) {
   const ontoCentral = gitShow(root, onto, CENTRAL);
   const migrated = ontoCentral != null && centralCalls(ontoCentral).length === 0;
   const calls = migrated ? addedCalls(gitShow(root, base, CENTRAL), gitShow(root, "HEAD", CENTRAL)) : [];
+  const registry = ontoCentral != null && /static\s+bool\s+Register\(/.test(ontoCentral);
+  const layers = registry ? moddedLayerFiles(root, base) : [];
   const lib = await featuresLib();
   const split = isIndex(gitShow(root, onto, FEATURES)) && !isIndex(gitShow(root, "HEAD", FEATURES));
   const sections = split ? changedSections(lib, gitShow(root, base, FEATURES), gitShow(root, "HEAD", FEATURES)) : [];
-  return { onto, base, calls, sections, migrated, split, lib, needed: calls.length > 0 || sections.length > 0 };
+  return { onto, base, calls, layers, sections, migrated, split, lib, needed: calls.length > 0 || layers.length > 0 || sections.length > 0 };
+}
+
+// .c files the branch changed since base that still hold a `modded class LF_StaticResetHooks` layer.
+function moddedLayerFiles(root, base) {
+  const changed = git(root, ["diff", "--name-only", base, "HEAD", "--", "addons"]).split("\n").filter((f) => f.endsWith(".c"));
+  return changed.filter((f) => /^modded\s+class\s+LF_StaticResetHooks\b/m.test(gitShow(root, "HEAD", f) ?? ""));
 }
 
 function unmerged(root) {
@@ -70,8 +80,9 @@ export async function healBranch({ root, onto = "origin/main", dryRun = false, c
   const log = [];
   const plan = await planHeal({ root, onto });
   for (const c of plan.calls) log.push(`static reset: ${c.cls}.${c.method}() moves to a hook in its own file`);
+  for (const f of plan.layers) log.push(`static reset: ${f} has a modded LF_StaticResetHooks layer; it becomes a registry hook class`);
   for (const s of plan.sections) log.push(`features: section "${s.slug}" changes go to ${plan.lib.areaPath(s.slug)}`);
-  if (!plan.needed) log.push(`nothing to heal: the branch adds no entry to ${CENTRAL} or rows to ${FEATURES}`);
+  if (!plan.needed) log.push(`nothing to heal: the branch adds no entry to ${CENTRAL}, no modded reset layer, and no rows to ${FEATURES}`);
   if (dryRun || !plan.needed) return { ok: true, plan, log, left: [] };
   if (git(root, ["status", "--porcelain", "--untracked-files=no"]).trim()) return { ok: false, plan, log: [...log, "the worktree has uncommitted changes; commit or stash them first"], left: [] };
 
@@ -89,6 +100,20 @@ export async function healBranch({ root, onto = "origin/main", dryRun = false, c
     }
     for (const c of missing) log.push(`WARN no file declares class ${c.cls}; add its hook by hand`);
     git(root, ["add", "--", CENTRAL]);
+  }
+
+  for (const f of plan.layers) {
+    const p = join(root, f);
+    if (!existsSync(p)) continue;
+    const text = readFileSync(p, "utf8");
+    if (/^(<<<<<<<|>>>>>>>)/m.test(text)) {
+      log.push(`WARN ${f} has conflict markers; convert its reset layer after resolving (node tools/codemods/static-reset-registry.mjs --no-central)`);
+      continue;
+    }
+    const r = migrateText(text);
+    writeFileSync(p, r.text);
+    git(root, ["add", "--", f]);
+    log.push(`converted the reset layer in ${f} (${r.calls.map((c) => c.cls).join(", ")})`);
   }
 
   if (plan.split) {

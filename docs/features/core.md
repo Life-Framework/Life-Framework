@@ -17,7 +17,9 @@
   `LF_JobManager` on first player connect and drives character creation.
 - ✅ **World-end static reset** (2026-11-08): the game-mode
   destructor calls `LF_StaticReset.ResetAll`, which runs every class's own
-  `modded class LF_StaticResetHooks` (2026-11-16: no central list; `LF_StaticReset.Registered()`
+  `LF_StaticResetHook` subclass, registered from a static initializer into a flat array
+  (2026-11-16: no central list; #2034 retired the `modded class LF_StaticResetHooks` chain, whose
+  nested `super.Run` overflowed the script stack at about 123 layers; `LF_StaticReset.Registered()`
   lists them, `LF_Test_StaticResetHooks`), and so drops `LF_Breach`, `LF_Jail`,
   `LF_JailEscort`, `LF_Contraband`, `LF_PoliceRanks`, the jail cell/arrestable
   tick owners, the garage and spawn-point registries, and the quantity transfer

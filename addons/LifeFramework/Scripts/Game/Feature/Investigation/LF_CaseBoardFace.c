@@ -671,17 +671,35 @@ modded class SCR_PlayerController
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_CaseBoardView's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_CaseBoardView_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_CaseBoardView_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_CaseBoardView");
-		if (apply)
-			LF_CaseBoardView.ResetStatics();
-		done.Insert("LF_CaseBoardComponent");
-		if (apply)
-			LF_CaseBoardComponent.ResetStatics();
+		return "LF_CaseBoardView";
+	}
+
+	override void Apply()
+	{
+		LF_CaseBoardView.ResetStatics();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CaseBoardComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_CaseBoardComponent_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_CaseBoardComponent_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_CaseBoardComponent";
+	}
+
+	override void Apply()
+	{
+		LF_CaseBoardComponent.ResetStatics();
 	}
 }

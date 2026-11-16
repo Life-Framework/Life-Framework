@@ -223,15 +223,19 @@ class LF_LicencesConfig
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of the desk values.
-modded class LF_StaticResetHooks
+//! World-end reset of LF_LicencesConfig's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_LicencesConfig_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_LicencesConfig_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_LicencesConfig");
-		if (apply)
-			LF_LicencesConfig.ResetStatics();
+		return "LF_LicencesConfig";
+	}
+
+	override void Apply()
+	{
+		LF_LicencesConfig.ResetStatics();
 	}
 }
 
