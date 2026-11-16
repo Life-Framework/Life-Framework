@@ -43,6 +43,10 @@ check(g.judgeRecheck(true, false) === "flake", "a failure that passes on recheck
 check(g.judgeRecheck(true, true) === "red", "a failure that reproduces is red");
 check(g.judgeRecheck(false, false) === "green", "green is green");
 
+// Environmental exits: a logoff/shutdown kill (0x40010004 = 1073807364), Ctrl+C, a budget kill: never a recheck or a revert.
+check(g.isEnvExit(1073807364) && g.isEnvExit(3221225786) && g.isEnvExit(124) && g.isEnvExit(null), "NTSTATUS, budget-kill and missing exit codes are environmental");
+check(!g.isEnvExit(1) && !g.isEnvExit(2) && !g.isEnvExit(0), "ordinary failing exit codes are the commit's");
+
 // Failing tests from real output lines.
 const ft = g.failingTests("12:28:33.241 SCRIPT       : [LFTEST] FAIL LF_Test_ShopBuy (2 assertions)\nFAIL  LF_Test_Other: boom\n[LFTEST] START LF_Test_X");
 check(ft.join() === "LF_Test_ShopBuy,LF_Test_Other", `failingTests: ${ft}`);
