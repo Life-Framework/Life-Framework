@@ -25,8 +25,8 @@ class LF_Test_StoreFoldedStack : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity storeCounter = GetGame().GetWorld().FindEntityByName(LF_Test_StoreShelf.STORE_COUNTER);
-		ctx.NotNull(storeCounter, "the general store counter resolves in the DebugWorld");
+		IEntity storeCounter = GetGame().GetWorld().FindEntityByName(LF_Test_StoreShelf.GRID_STORE);
+		ctx.NotNull(storeCounter, "the general store counter resolves in the GridWorld");
 		if (!storeCounter)
 			return;
 
