@@ -217,3 +217,5 @@
   police and read accounts directly in their offers; move them to
   `LF_AccountReplication` next.
 
+
+- 🧪 (2026-11-16) **First spawn (#1964, chapter Story: The relocated #1015).** The character-creation flow marks a brand-new character (`LF_FirstSpawn.Mark`); its first spawn through `LF_SpawnLogic.CreateCharacter` reads and clears the mark (`LF_FirstSpawn.Consume`) and runs `OnFirstSpawn`, so the first-night rule (#1758) applies on first spawn only. A later spawn (after a death, a rejoin or a restart) and a character from an old save are never first. The mark is saved per character persistence id as the `firstspawns` payload (save version 37), so a character created and not yet spawned is still new after a restart. Tests `character/first-spawn`, `character/first-spawn-persist`.
