@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7B3E1F04C2A95D68}Configs/Quests/LF_WelcomeGift.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
