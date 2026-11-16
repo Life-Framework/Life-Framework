@@ -6,7 +6,9 @@
 //   2. a red step is rerun at the same head (only the failing tests): a one-off is a flake, logged to
 //      tmp/logs/main-guard-flakes.log, and nothing is reverted;
 //   3. a red that reproduces: bisect the first-parent PR merges since the last green head (only merges made
-//      after the guard started), rerunning only what failed at each candidate;
+//      after the guard started), rerunning only what failed at each candidate; a suite red is matched by its failing
+//      test names (a commit is red only if it fails one of them) and stops with "mixed causes", no revert, when no
+//      single merge explains the set (#2052);
 //   4. the culprit merge is reverted with `git revert -m 1` on a ws/revert-pr<N>-guard branch, a PR titled
 //      "Revert #N (main guard: <what failed>)" with auto-merge (GitHub's required validate check gates it),
 //      a comment on the original PR, its issues reopened as `regression`, one line to the staff webhook.
@@ -86,7 +88,7 @@ function runDir(root, slug = RUN_SLUG) {
 // wt new pin to on any machine).
 function mark(root, dir, sha, status, extra) {
   try { pin.recordHead(hub(root), sha, status, extra); } catch (e) { log(root, `state write failed: ${e.message}`); }
-  const r = pin.postStatus(dir, sha, status, extra?.step);
+  const r = pin.postStatus(dir, sha, status, extra?.step, extra?.note);
   if (r.status !== 0) log(root, `commit status ${status} on ${sha.slice(0, 8)} not posted: ${String(r.stderr || "").trim().slice(0, 160)}`);
 }
 
@@ -179,25 +181,44 @@ async function checkHead(root, dir, head) {
     const list = mg.candidates(mergesSince(dir, state.lastGreen ?? state.startHead, head, state.startHead));
     log(root, `${head.slice(0, 8)} ${step.name} reproduced (${what}); bisecting ${list.length} merge(s) since ${(state.lastGreen ?? state.startHead ?? "").slice(0, 8)}`);
     writeState(root, { running: { head, step: `bisect ${step.name}`, at: now() } });
-    const b = await mg.bisect(list, async (c) => {
-      checkout(dir, c.sha);
-      const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
-      if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
-      log(root, `  bisect ${c.sha.slice(0, 8)} ${x.code === 0 ? "green" : "red"} (${c.subject.slice(0, 60)})`);
-      return x.code !== 0;
-    });
+    // The recorded red set (#2052): the failing tests and FAIL lines at this head. The suite bisect treats a commit as
+    // red only when it fails one of these tests; other steps (build, audit, e2e) have no test set and stay red/green.
+    const redLines = step.name === "suite" ? mg.failLines(r.text) : [];
+    if (step.name === "suite") log(root, `${head.slice(0, 8)} suite red set: ${failing.length ? failing.join(", ") : "(no test names parsed)"}${redLines.length ? ` | ${redLines.slice(0, 3).join(" | ")}` : ""}`);
+    let b;
+    if (step.name === "suite" && !failing.length) {
+      b = { culprit: null, stop: "no failing test name could be read from the suite output, so no merge can be matched to it" };
+    } else if (step.name === "suite") {
+      b = await mg.bisectBySet(list, failing, async (c) => {
+        checkout(dir, c.sha);
+        const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
+        if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
+        const failed = mg.failingTests(x.text);
+        const hit = mg.setHits(failing, failed);
+        log(root, `  bisect ${c.sha.slice(0, 8)} ${hit.length ? `red (${hit.slice(0, 3).join(", ")})` : x.code === 0 ? "green" : `green for the set (exit ${x.code}, other failures: ${failed.slice(0, 3).join(", ") || "none parsed"})`} (${c.subject.slice(0, 60)})`);
+        return failed;
+      }, { head });
+    } else {
+      b = await mg.bisect(list, async (c) => {
+        checkout(dir, c.sha);
+        const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
+        if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
+        log(root, `  bisect ${c.sha.slice(0, 8)} ${x.code === 0 ? "green" : "red"} (${c.subject.slice(0, 60)})`);
+        return x.code !== 0;
+      });
+    }
     checkout(dir, head);
-    const refusal = mg.revertRefusal(b.culprit, readState(root), { step: step.name });
+    const refusal = b.stop ?? mg.revertRefusal(b.culprit, readState(root), { step: step.name });
     if (refusal) {
       log(root, `${head.slice(0, 8)} ${step.name} red, no revert: ${refusal}`);
       if (mg.fixCardInstead(b.culprit, step.name)) openFixCard(root, dir, b.culprit, step.name, what, r.log);
-      mark(root, dir, head, "red", { step: step.name, what });
-      writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), note: refusal } });
+      mark(root, dir, head, "red", { step: step.name, what, note: b.stop ? refusal : "" });
+      writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), note: refusal, failing, failLines: redLines } });
       return;
     }
     await revert(root, dir, b.culprit, what, r.log);
     mark(root, dir, head, "red", { step: step.name, what });
-    writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), culprit: mg.prOfMerge(b.culprit.subject) } });
+    writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), culprit: mg.prOfMerge(b.culprit.subject), failing, failLines: redLines } });
     return;
   }
   mark(root, dir, head, "green");
