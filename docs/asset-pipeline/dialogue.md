@@ -155,6 +155,15 @@ tools\cli asset dialogue clerk_everon               write Configs/Dialogue/LF_Di
   checks the file still matches the json.
 - The Everon pack's clerk is the worked example (`tools/assets/dialogue/clerk_everon/`).
 
+## A pack's own full dialogue
+
+A dialogue that patches no core one but belongs to a pack (the old man on the bench, #1962) is a normal
+`dialogue.json` with `"addon": "LF_Everon1989"` and no `patches`. The stage writes its `.conf`, recordings
+and audio project into that pack and its captions into the pack's `Language/*.st`; the core table is only read
+for keys that already exist. Its `voice` may be Piper (`{"engine": "piper", "id": "en_US-ljspeech-high"}`, free,
+ljspeech only). A pack conf that names a speaker and a start is read whole by `validate-dialogue-patch`.
+It is reached by id only once the pack's index overlay lists it and the NPC prefab carries `LF_DialogueComponent`.
+
 ## Voices
 
 - `GET /v1/voices` lists the account's voices; the premade ones are American and British.
@@ -188,10 +197,3 @@ records `"engine": "piper"`. Credit the voice in `docs/credits.md`. The clerk's 
 - It does not judge the performance. Listen; `--force <line>` buys another take.
 - It does not write hooks, put the component on the prefab, or write tests.
 - It does not translate. Captions go through the string table; the voice is English.
-
-## A dialogue a pack owns whole
-
-A `dialogue.json` with `"addon": "<pack>"` and no `patches` makes a new dialogue that lives in the pack (the night-shift
-worker, #1963): conf, recordings, audio project and every caption (the speaker key too, which you add by hand) in the pack's own
-string table. Add a pack index overlay with `"m_sOp" "add"` for its id (`Configs/Dialogue/LF_DialogueIndex_<Name>.conf`) and
-list the overlay in the mission headers. `validate-dialogue-patch` reads such a conf on its own, since no core dialogue exists.

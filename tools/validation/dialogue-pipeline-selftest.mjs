@@ -253,7 +253,8 @@ export async function main() {
       const stale = dlg.staleLines(ROOT, s, prov);
       ok(stale.length === 0, `${id}: these lines were reworded or are missing their recording: ${stale.join(", ")} (${fix})`);
       for (const [rel, text] of Object.entries(dlg.expectedFiles(ROOT, s, prov))) {
-        const home = s.addon ? `addons/${s.addon}` : ADDON; // a dialogue a pack owns whole lives in the pack (#1963)
+        // A pack's full dialogue (#1962) lives in its pack, not the core.
+        const home = s.addon && s.addon !== "LifeFramework" ? join("addons", s.addon) : ADDON;
         const file = join(ROOT, home, rel);
         ok(existsSync(file) && readFileSync(file, "utf8") === text, `${id}: ${home}/${rel} does not match dialogue.json (${fix})`);
       }
