@@ -1,0 +1,150 @@
+// THROWAWAY research dump (everon-catalog); never committed.
+class LF_ZzEveronDump
+{
+	protected ref map<string, int> m_Counts = new map<string, int>();
+	protected ref map<string, string> m_Sample = new map<string, string>();
+	protected string m_Tag;
+
+	protected void Out(string line)
+	{
+		Print("EVD|" + m_Tag + "|" + line);
+	}
+	protected int m_Total;
+	protected int m_Rows;
+	protected bool m_bAllProps;
+	protected vector m_vCenter;
+	protected float m_fRadius;
+
+	//------------------------------------------------------------------------------------------------
+	protected bool OnEntity(IEntity e)
+	{
+		m_Total++;
+		string prefab = LF_Utils.GetPrefabName(e);
+		string cls = e.Type().ToString();
+		MapDescriptorComponent md = MapDescriptorComponent.Cast(e.FindComponent(MapDescriptorComponent));
+		if (md)
+		{
+			MapItem item = md.Item();
+			string nm;
+			if (item)
+				nm = item.GetDisplayName();
+			vector mp = e.GetOrigin();
+			Out(string.Format("M|%1|%2|%3|%4|%5|%6|%7", nm, md.GetBaseType(), md.GetUnitType(), mp[0], mp[2], prefab, cls));
+		}
+
+		if (m_fRadius > 0 && (prefab.IndexOf("Vegetation") != -1 || prefab.IndexOf("Rocks") != -1 || prefab.IndexOf("Tree") != -1 || prefab.IndexOf("Bush") != -1))
+			return true;
+
+		if (prefab.IsEmpty())
+		{
+			string k = "cls:" + cls;
+			m_Counts.Set(k, m_Counts.Get(k) + 1);
+			return true;
+		}
+
+		string path = prefab;
+		int br = path.IndexOf("}");
+		if (br != -1)
+			path = path.Substring(br + 1, path.Length() - br - 1);
+
+		bool building = path.IndexOf("Structures") != -1;
+		vector o = e.GetOrigin();
+		bool near = false;
+		if (m_fRadius > 0)
+		{
+			float dx = o[0] - m_vCenter[0];
+			float dz = o[2] - m_vCenter[2];
+			near = (dx * dx + dz * dz) < m_fRadius * m_fRadius;
+		}
+
+		if (building || near)
+		{
+			vector mins, maxs;
+			e.GetBounds(mins, maxs);
+			vector a = e.GetAngles();
+			int doors, kids;
+			IEntity c = e.GetChildren();
+			while (c)
+			{
+				kids++;
+				string cp = LF_Utils.GetPrefabName(c);
+				if (cp.IndexOf("Door") != -1 || cp.IndexOf("door") != -1)
+					doors++;
+				c = c.GetSibling();
+			}
+			string row1 = string.Format("B|%1|%2|%3|%4|%5", prefab, o[0], o[1], o[2], a[1]);
+			string row2 = string.Format("|%1|%2|%3|%4|%5|%6|%7", maxs[0] - mins[0], maxs[1] - mins[1], maxs[2] - mins[2], doors, kids, cls, mins[1]);
+			Out(row1 + row2);
+			m_Rows++;
+			if (building)
+				return true;
+		}
+
+		m_Counts.Set(prefab, m_Counts.Get(prefab) + 1);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param center + radius: also dump every prefab entity (props) within radius metres of centre (0 = none)
+	string Run(string fileName, vector center, float radius)
+	{
+		m_vCenter = center;
+		m_fRadius = radius;
+		m_Tag = fileName;
+
+		BaseWorld world = GetGame().GetWorld();
+		vector wmins, wmaxs;
+		world.GetBoundBox(wmins, wmaxs);
+		Out(string.Format("W|%1|%2", wmins, wmaxs));
+		float tile = 400;
+		if (radius > 0)
+		{
+			tile = 200;
+			wmins = Vector(center[0] - radius, 0, center[2] - radius);
+			wmaxs = Vector(center[0] + radius, 0, center[2] + radius);
+		}
+
+		for (float x = wmins[0]; x < wmaxs[0]; x += tile)
+		{
+			for (float z = wmins[2]; z < wmaxs[2]; z += tile)
+			{
+				world.QueryEntitiesByAABB(Vector(x, -200, z), Vector(x + tile, 1500, z + tile), OnEntity, null, EQueryEntitiesFlags.ALL);
+			}
+		}
+
+		foreach (string key, int n : m_Counts)
+			Out(string.Format("C|%1|%2", key, n));
+
+		Out(string.Format("DONE|total=%1|rows=%2|prefabs=%3", m_Total, m_Rows, m_Counts.Count()));
+		return string.Format("ok total=%1 rows=%2 prefabs=%3", m_Total, m_Rows, m_Counts.Count());
+	}
+}
+
+
+class LF_ZzEveronRunner
+{
+	static void RunAll()
+	{
+		Print("EVD start");
+		LF_ZzEveronDump d1 = new LF_ZzEveronDump();
+		Print("EVD world " + d1.Run("evd_world.txt", "0 0 0", 0));
+		array<string> names = {"saintphilippe", "saintpierre", "morton", "montignac"};
+		array<vector> cs = {"4503 0 10772", "9689 0 1558", "5135 0 4012", "4773 0 7095"};
+		for (int i = 0; i < names.Count(); i++)
+		{
+			LF_ZzEveronDump d = new LF_ZzEveronDump();
+			Print("EVD " + names[i] + " " + d.Run("evd_" + names[i] + ".txt", cs[i], 450));
+		}
+		Print("EVD ALLDONE");
+	}
+}
+
+modded class SCR_BaseGameMode
+{
+	override void OnGameStart()
+	{
+		super.OnGameStart();
+		if (Replication.IsServer() && GetGame().GetWorldFile().IndexOf("CoreOnEveron") != -1)
+			GetGame().GetCallqueue().CallLater(LF_ZzEveronRunner.RunAll, 20000, false);
+	}
+}
