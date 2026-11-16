@@ -29,6 +29,73 @@ class LF_LicencesConfig
 	[Attribute("", UIWidgets.Object, "Per-licence flags, keyed by licence name. A licence with no row keeps the catalog's flags")]
 	ref array<ref LF_LicenceRuleDef> m_aRules;
 
+	//! The licence desk's firearm permit (#1766): fee in carried cash and the wait in in-game days.
+	//! Neutral core defaults; the owner's "permitFee" and "permitWaitDays" set a server's values.
+	static const int DEFAULT_PERMIT_FEE = 250;
+	static const float DEFAULT_PERMIT_WAIT_DAYS = 1;
+
+	[Attribute("250", UIWidgets.EditBox, "Licence desk: the firearm permit's fee in carried cash", params: "0 1000000")]
+	int m_iPermitFee;
+
+	[Attribute("1", UIWidgets.EditBox, "Licence desk: in-game days from application to collection (0 issues at once)", params: "0 365")]
+	float m_fPermitWaitDays;
+	protected static int s_iPermitFee = -1;
+	protected static float s_fPermitWaitDays = -1;
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		s_iPermitFee = -1;
+		s_fPermitWaitDays = -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reads the desk values from the owner's section once per world.
+	protected static void LoadDesk()
+	{
+		if (s_iPermitFee >= 0)
+			return;
+
+		LF_LicencesConfig config = new LF_LicencesConfig();
+		config.m_iPermitFee = DEFAULT_PERMIT_FEE;
+		config.m_fPermitWaitDays = DEFAULT_PERMIT_WAIT_DAYS;
+		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
+		if (reader)
+		{
+			reader.ReadInt("permitFee", config.m_iPermitFee, 0, 1000000);
+			reader.ReadFloat("permitWaitDays", config.m_fPermitWaitDays, 0, 365);
+		}
+
+		int fee = config.m_iPermitFee;
+		float wait = config.m_fPermitWaitDays;
+
+		s_iPermitFee = fee;
+		s_fPermitWaitDays = wait;
+		LF_Debug.Info("License", string.Format("licence desk: firearm permit fee %1, wait %2 in-game days", fee, wait));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int PermitFee()
+	{
+		LoadDesk();
+		return s_iPermitFee;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float PermitWaitDays()
+	{
+		LoadDesk();
+		return s_fPermitWaitDays;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: set the desk values (fee -1 reads the config again).
+	static void SetDeskForTest(int fee, float waitDays)
+	{
+		s_iPermitFee = fee;
+		s_fPermitWaitDays = waitDays;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Layers the pack overlays of this class (load order), then the owner's "licences" section, over
 	//! a freshly built catalog (LF_ConfigOverlay, #1108).
@@ -110,7 +177,7 @@ class LF_LicencesConfig
 	//! \param[in] catalog The catalog the rules were made from.
 	void ApplyOwner(notnull LF_ConfigReader reader, notnull map<LF_ELicenseType, ref LF_LicenseConfig> catalog)
 	{
-		array<string> ownerKeys = {"rules"};
+		array<string> ownerKeys = {"rules", "permitFee", "permitWaitDays"};
 		reader.WarnUnknownKeys(ownerKeys);
 
 		if (!m_aRules)
@@ -132,6 +199,19 @@ class LF_LicencesConfig
 			if (entry && entry.m_bIsInitialLicense)
 				initial.Insert(licence);
 		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of the desk values.
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_LicencesConfig");
+		if (apply)
+			LF_LicencesConfig.ResetStatics();
 	}
 }
 

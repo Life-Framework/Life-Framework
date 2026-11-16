@@ -217,3 +217,9 @@
 - ✅ The cooldown survives a restart (M1-10): the save holds seconds since the
   last collection, because world time starts over.
 
+### `LF_LicenceDesk` — `Feature/License/LF_LicenceDesk.c` (#1766)
+- ✅ The firearm permit is sold at a licence desk: fee in carried cash (`licences.permitFee`), a clean
+  record (wanted level 0, no open crime report) and the licence's gate at application and collection,
+  issued at the desk one in-game day later (`licences.permitWaitDays`). On-duty police revoke it with
+  a player interaction. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
+  `e2e/licence-desk` (the open application and a revoke across `wt e2e`).
