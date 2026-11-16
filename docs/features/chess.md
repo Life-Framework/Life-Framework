@@ -39,3 +39,13 @@
   up a new one. One table stands in GridWorld cell `chess-table`.
   Tested by `LF_Test_ChessTable`. Not yet: a 3D board and pieces on the table, a sit pose on stools,
   a draw offer, clocks, and the grace period as a server setting.
+
+### Chess board layout — `LF_ChessScreen` (#2099, #2056, chapter #1011)
+- 🧪 Every one of the 64 keys shows its own label centred, the a-file and the h-file included. The kit
+  key is the pause-menu button (40 px of left padding and a 64 px arrow glyph before the label), which
+  pushed each label one key to the right in a key one eighth of the sheet wide. `LF_ChessScreen.FitKey`
+  drops the padding and the glyph, centres the label and sets a 40 px height; the board draws on its own
+  640 x 760 sheet (`BoardSkin`) so the last-move line and Stand up show without a scroll at 1280x720.
+  The kit itself is untouched (the row-width fix for other screens is #2080).
+  Tested by `LF_Test_ChessScreenLayout` (red with the fit skipped: 50 px padding, glyph present).
+  Not yet seen in a session picture: the grid-world session did not start on the pool (see the PR).

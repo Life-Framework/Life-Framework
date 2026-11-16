@@ -11,6 +11,10 @@ class LF_ChessScreen
 	static const string PART_TURN = "ChessTurn";
 	static const string PART_NOTE = "ChessNote";
 	static const float CLOSE_DISTANCE = 4; // lf-fixed: the board closes when you walk off, like the other sheets
+	static const float SHEET_WIDTH = 640; // lf-fixed: eight keys of about 70 reference pixels each
+	static const float SHEET_HEIGHT = 760; // lf-fixed: title, two lines, eight rows, last move and Stand up fit a 720p screen
+	static const float KEY_HEIGHT = 40; // lf-fixed: the kit button is 48 plus padding; eight rows would not fit the sheet
+	static const int KEY_FONT = 22; // lf-fixed: "[Q]" and "e4" fit one key
 
 	protected static ref LF_ChessScreen s_Screen;
 
@@ -47,6 +51,94 @@ class LF_ChessScreen
 		if (piece > 0)
 			return white.Substring(piece - 1, 1);
 		return black.Substring(-piece - 1, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sheet the board is drawn on: the paper form, wide enough for eight keys and short enough
+	//! that the last-move line and Stand up show without a scroll.
+	static LF_UISkin BoardSkin()
+	{
+		LF_UISkin skin = LF_UISkin.Paper();
+		skin.m_fWidth = SHEET_WIDTH;
+		skin.m_fHeight = SHEET_HEIGHT;
+		return skin;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Makes one kit button a chess square (#2099). The kit button is the pause-menu button: its label
+	//! row has 40 reference pixels of left padding and a 64 pixel arrow glyph in front of the text, so
+	//! in a key one eighth of the sheet wide the label was pushed a whole key to the right (the a-file
+	//! blank, the h-file clipped). The square drops the padding and the glyph, centres the label in
+	//! its own button and takes a shorter height.
+	//! eturn false when the key is missing the parts of the kit button.
+	static bool FitKey(Widget key)
+	{
+		if (!key)
+			return false;
+
+		Widget layout = key.FindAnyWidget("HorizontalLayout0");
+		Widget text = key.FindAnyWidget("Text");
+		if (!layout || !text)
+		{
+			LF_Debug.Error(LF_ChessTable.FEATURE, "key " + key.GetName() + " is missing its label row");
+			return false;
+		}
+
+		AlignableSlot.SetPadding(layout, 0, 0, 0, 0);
+		AlignableSlot.SetHorizontalAlign(layout, LayoutHorizontalAlign.Center);
+		AlignableSlot.SetVerticalAlign(layout, LayoutVerticalAlign.Center);
+
+		Widget glyph = key.FindAnyWidget("Scale0");
+		if (glyph)
+		{
+			LayoutSlot.SetPadding(glyph, 0, 0, 0, 0);
+			glyph.SetVisible(false);
+		}
+
+		LayoutSlot.SetPadding(text, 0, 0, 0, 0);
+		TextWidget label = TextWidget.Cast(text);
+		if (label)
+		{
+			label.SetTextWrapping(false);
+			label.SetExactFontSize(KEY_FONT);
+		}
+
+		SizeLayoutWidget size = SizeLayoutWidget.Cast(key.FindAnyWidget("SizeLayout"));
+		if (size)
+		{
+			size.SetHeightOverride(KEY_HEIGHT);
+			AlignableSlot.SetPadding(size, 0, 1, 0, 1);
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fits all 64 keys and the eight rows of the board that is open on the workspace.
+	//! eturn How many keys were fitted.
+	static int FitBoard()
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+			return 0;
+
+		int fitted = 0;
+		for (int sq = 0; sq < 64; sq++)
+		{
+			if (FitKey(workspace.FindAnyWidget(KeyName(sq))))
+				fitted++;
+		}
+
+		for (int rank = 1; rank <= 8; rank++)
+		{
+			Widget row = workspace.FindAnyWidget("ChessRank" + rank.ToString());
+			if (row)
+				AlignableSlot.SetPadding(row, LF_UITheme.PAD_LEFT, 1, LF_UITheme.PAD_RIGHT, 1);
+		}
+
+		if (fitted != 64)
+			LF_Debug.Warn(LF_ChessTable.FEATURE, "board fitted " + fitted.ToString() + " of 64 keys");
+		return fitted;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -94,12 +186,13 @@ class LF_ChessScreen
 		screen.m_TableRpl = LF_NetworkUtils.GetRplId(table);
 		// Black's seat is decided on the server; the board flips once the state says so.
 		screen.m_bFlipped = screen.LocalSeat(component) == LF_ChessTable.SEAT_BLACK;
-		screen.m_Screen = LF_UIScreen.Open(BuildParts(screen.m_bFlipped));
+		screen.m_Screen = LF_UIScreen.Open(BuildParts(screen.m_bFlipped), BoardSkin());
 		if (!screen.m_Screen)
 		{
 			LF_Debug.Error(LF_ChessTable.FEATURE, "board screen failed to open");
 			return null;
 		}
+		FitBoard();
 
 		screen.m_Screen.GetOnButton().Insert(screen.OnButton);
 		screen.m_Screen.GetOnClosed().Insert(screen.OnClosed);
