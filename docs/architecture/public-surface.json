@@ -29,6 +29,7 @@
     "LF_QuizConfig",
     "LF_QuizQuestion",
     "LF_RaceCoursesConfig",
+    "LF_RadioPlaylistConfig",
     "LF_ResourceChainConfig",
     "LF_RespawnConfig",
     "LF_ServiceCallsConfig",
