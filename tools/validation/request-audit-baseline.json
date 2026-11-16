@@ -1,6 +1,6 @@
 {
- "handlers": 59,
- "checked": 59,
+ "handlers": 79,
+ "checked": 79,
  "unchecked": 0,
  "entries": [
   {
@@ -10,6 +10,22 @@
    "checks": [
     "cooldown",
     "range"
+   ]
+  },
+  {
+   "file": "Core/Config/LF_ConfigReloadCommand.c",
+   "handler": "RpcAsk_LF_ConfigReload",
+   "verdict": "checked",
+   "checks": [
+    "noinput"
+   ]
+  },
+  {
+   "file": "Core/Config/LF_ContentReload.c",
+   "handler": "RpcAsk_LF_ContentReload",
+   "verdict": "checked",
+   "checks": [
+    "devgate"
    ]
   },
   {
@@ -38,12 +54,33 @@
   },
   {
    "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
-   "handler": "RpcAsk_LF_HarnessScanner",
+   "handler": "RpcAsk_LF_HarnessResetCrime",
+   "verdict": "checked",
+   "checks": [
+    "devgate"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessResetPlayer",
    "verdict": "checked",
    "checks": [
     "devgate",
     "money",
-    "range"
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/AgentHarness/LF_AgentHarness_Character.c",
+   "handler": "RpcAsk_LF_HarnessScanner",
+   "verdict": "checked",
+   "checks": [
+    "cooldown",
+    "devgate",
+    "money",
+    "ownership",
+    "range",
+    "role"
    ]
   },
   {
@@ -165,6 +202,24 @@
    ]
   },
   {
+   "file": "Feature/Comms/LF_PhoneCallBacks.c",
+   "handler": "RpcAsk_LF_PhoneCallBack",
+   "verdict": "checked",
+   "checks": [
+    "cooldown",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Comms/LF_PhoneCallBacks.c",
+   "handler": "RpcAsk_LF_PhoneLeave",
+   "verdict": "checked",
+   "checks": [
+    "cooldown",
+    "range"
+   ]
+  },
+  {
    "file": "Feature/Comms/LF_ServiceBoard.c",
    "handler": "RpcAsk_LF_ServiceBoard",
    "verdict": "checked",
@@ -185,6 +240,14 @@
    ]
   },
   {
+   "file": "Feature/Debug/LF_DebugWorldReset.c",
+   "handler": "RpcAsk_LF_WorldReset",
+   "verdict": "checked",
+   "checks": [
+    "devgate"
+   ]
+  },
+  {
    "file": "Feature/Debug/LF_SpawnHub.c",
    "handler": "RpcAsk_LF_SpawnHubTravel",
    "verdict": "checked",
@@ -196,12 +259,35 @@
    "note": "#693b: travel rate limit plus a server reach check to a travel globe (LF_ActionSite), admins and LF_HARNESS builds exempt"
   },
   {
+   "file": "Feature/Dialogue/LF_DialoguePlayerController.c",
+   "handler": "RpcAsk_LF_DialogueChoose",
+   "verdict": "checked",
+   "checks": [
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Dialogue/LF_DialoguePlayerController.c",
+   "handler": "RpcAsk_LF_DialogueLeave",
+   "verdict": "checked",
+   "checks": [
+    "noinput"
+   ]
+  },
+  {
+   "file": "Feature/Dialogue/LF_DialoguePlayerController.c",
+   "handler": "RpcAsk_LF_DialogueStart",
+   "verdict": "checked",
+   "checks": [
+    "range"
+   ]
+  },
+  {
    "file": "Feature/Film/LF_FilmActor.c",
    "handler": "RpcAsk_LF_FilmScene",
    "verdict": "checked",
    "checks": [
-    "devgate",
-    "range"
+    "devgate"
    ]
   },
   {
@@ -211,6 +297,23 @@
    "checks": [
     "range",
     "role"
+   ]
+  },
+  {
+   "file": "Feature/Identity/LF_IdentityController.c",
+   "handler": "RpcAsk_LF_AnswerIdRequest",
+   "verdict": "checked",
+   "checks": [
+    "range",
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Identity/LF_IdentityController.c",
+   "handler": "RpcAsk_LF_InspectIdCard",
+   "verdict": "checked",
+   "checks": [
+    "ownership"
    ]
   },
   {
@@ -233,10 +336,20 @@
    ]
   },
   {
+   "file": "Feature/Investigation/LF_CaseBoardFace.c",
+   "handler": "RpcAsk_LF_CaseBoard",
+   "verdict": "checked",
+   "checks": [
+    "noinput",
+    "role"
+   ]
+  },
+  {
    "file": "Feature/Jobs/LF_PlayerJobComponent.c",
    "handler": "RpcAsk_ClaimFruitCatcherReward",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "money",
     "role"
    ]
@@ -260,6 +373,14 @@
    ]
   },
   {
+   "file": "Feature/License/LF_LicenceGrantCommand.c",
+   "handler": "RpcAsk_LF_LicenceGrant",
+   "verdict": "checked",
+   "checks": [
+    "role"
+   ]
+  },
+  {
    "file": "Feature/Medic/LF_GiveUpController.c",
    "handler": "RpcAsk_LF_GiveUp",
    "verdict": "checked",
@@ -275,6 +396,14 @@
     "ownership",
     "range",
     "role"
+   ]
+  },
+  {
+   "file": "Feature/Moderation/LF_ClipStampController.c",
+   "handler": "RpcAsk_LF_ClipStamp",
+   "verdict": "checked",
+   "checks": [
+    "noinput"
    ]
   },
   {
@@ -361,6 +490,26 @@
    ]
   },
   {
+   "file": "Feature/Placement/LF_PlacementPlayerController.c",
+   "handler": "RpcAsk_LF_PlaceAimed",
+   "verdict": "checked",
+   "checks": [
+    "cooldown",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Police/LF_Cuffing.c",
+   "handler": "RpcAsk_LF_Cuffing",
+   "verdict": "checked",
+   "checks": [
+    "cooldown",
+    "devgate",
+    "range",
+    "role"
+   ]
+  },
+  {
    "file": "Feature/Police/LF_FineTicketRole.c",
    "handler": "RpcAsk_LF_WriteTicket",
    "verdict": "checked",
@@ -375,6 +524,7 @@
    "handler": "RpcAsk_LF_PoliceApplication",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "range",
     "role"
    ]
@@ -405,16 +555,6 @@
    "verdict": "checked",
    "checks": [
     "noinput"
-   ]
-  },
-  {
-   "file": "Feature/Police/LF_WantedBoard.c",
-   "handler": "RpcAsk_LF_WantedBoard",
-   "verdict": "checked",
-   "checks": [
-    "noinput",
-    "range",
-    "role"
    ]
   },
   {
@@ -498,6 +638,30 @@
    ]
   },
   {
+   "file": "Feature/Rules/LF_QuizController.c",
+   "handler": "RpcAsk_LF_QuizAnswers",
+   "verdict": "checked",
+   "checks": [
+    "role"
+   ]
+  },
+  {
+   "file": "Feature/Rules/LF_QuizController.c",
+   "handler": "RpcAsk_LF_QuizContinue",
+   "verdict": "checked",
+   "checks": [
+    "noinput"
+   ]
+  },
+  {
+   "file": "Feature/Rules/LF_QuizController.c",
+   "handler": "RpcAsk_LF_QuizRetry",
+   "verdict": "checked",
+   "checks": [
+    "noinput"
+   ]
+  },
+  {
    "file": "Feature/Shop/LF_CharacterShopComponent.c",
    "handler": "RpcAsk_Buy",
    "verdict": "checked",
@@ -516,6 +680,14 @@
     "cooldown",
     "money",
     "ownership",
+    "range"
+   ]
+  },
+  {
+   "file": "Feature/Signs/LF_BoardProvider.c",
+   "handler": "RpcAsk_LF_Board",
+   "verdict": "checked",
+   "checks": [
     "range"
    ]
   },
