@@ -7,7 +7,7 @@ the guard is `tools/validation/validate-world-zones.mjs`.
 
 | | Debug grid | Town |
 |---|---|---|
-| Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..208, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
+| Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..328, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
 | Layers | `GridWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), and `Annex`, which now holds only the perimeter fence (the stations moved one system to a cell, #2133) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
 | For | Testing a system: one feature per cell, easy to find, easy to film for a proof | Players and videos: a real 1989 village |
 | Look bar | Low. Debug-looking props, stand-ins and a test sign are fine. Things still stand on the ground and are reachable | Full polish bar (`.claude/skills/polish/SKILL.md`, `docs/style-guide.md`): NPCs dressed for their job and standing inside their building, furniture under a roof, boards on walls, nothing debug-looking |
@@ -15,11 +15,11 @@ the guard is `tools/validation/validate-world-zones.mjs`.
 
 ## The grid
 
-The grid is a 15 x 7 lattice of 12 m cells from x 22, z 22 (2 m inside the annex fence), ids `c0r0`
-(south-west) to `c14r6` (north-east). It started 7 x 7 and grew east by four columns when the old square ran out of
+The grid is a 25 x 7 lattice of 12 m cells from x 22, z 22 (2 m inside the annex fence), ids `c0r0`
+(south-west) to `c24r6` (north-east). It started 7 x 7 and grew east by four columns when the old square ran out of
 free cells (2026-11-16): `c0r0` to `c6r6` keep their ids and coordinates, so every claim stands, and
 `GRID_CENTRE` stays at 66,66 so no old cell's gap flips. The east wall of `Annex.layer` moved from x 112 to
-x 160 and the north and south walls were extended. It grew east by four columns again (11 to 15, east wall x 208) when the first 24 m buildings (a town hall, a bank) found no free 2 x 2 or 3 x 2 block (2026-11-16); the new cells are `c11r0` to `c14r6`. The margin is 2 m west and south of the lattice and 6 m east
+x 160 and the north and south walls were extended. It grew east by four columns again (11 to 15, east wall x 208) when the first 24 m buildings (a town hall, a bank) found no free 2 x 2 or 3 x 2 block (2026-11-16); the new cells are `c11r0` to `c14r6`, and once more (15 to 25, east wall x 328, 2026-11-16) so that buildings of any size and the whole town pipeline find room for months: `c15r0` to `c24r6` are free, x 202..322, and the north gate and its track did not move. The margin is 2 m west and south of the lattice and 6 m east
 and north (the gate and its track live in that margin). Terrain bounds: `GridTerrain` is 257 x 257 points at 2 m,
 512 m square, so the grid is far inside it; `world-zones-selftest` asserts the fence stays
 inside 0..512 (`TERRAIN_SIZE` in `tools/grid/lattice.mjs`). To grow again: raise `CELL.cols` or `CELL.rows`,
