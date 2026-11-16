@@ -33,6 +33,8 @@ class LF_Test_LogoutBodyRejoin : LF_Test
 
 		EntityID bodyId = body.GetID();
 		LF_LogoutBody.KeepBody(UID, CHARACTER_ID, body, LF_LogoutBody.Now() + 300);
+		SCR_ChimeraCharacter bodyCharacter = SCR_ChimeraCharacter.Cast(body);
+		ctx.True(bodyCharacter && bodyCharacter.LF_IsLoggedOut(), "the kept body carries the replicated Logged out flag");
 		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(body);
 		array<IEntity> water = LF_InventoryUtils.FindItemsByPrefab(manager, LF_TestCarriedInventoryKit.WATER_PREFAB);
 		if (!water.IsEmpty())
@@ -46,6 +48,7 @@ class LF_Test_LogoutBodyRejoin : LF_Test
 		ctx.True(taken && taken.GetID() == bodyId, "it is the same body");
 		ctx.False(IsGone(bodyId), "the body was not deleted");
 		ctx.False(LF_LogoutBody.HasBody(UID), "it is no longer a logout body");
+		ctx.False(bodyCharacter && bodyCharacter.LF_IsLoggedOut(), "the taken-back body drops the Logged out flag, so no client keeps tracking it (late-join proof #2104)");
 		ctx.Equal(0, LF_InventoryUtils.FindItemsByPrefab(manager, LF_TestCarriedInventoryKit.WATER_PREFAB).Count(), "the looted bottle stays gone");
 		ctx.True(LF_InventoryUtils.FindItemsByPrefab(manager, LF_TestCarriedInventoryKit.APPLE_PREFAB).Count() > 0, "what was left is still on it");
 		ctx.Equal(0, CountInSnapshot(LF_TestCarriedInventoryKit.WATER_PREFAB), "the save holds what the body holds");
