@@ -10,6 +10,7 @@ export const STEPS = [
   { name: "build", args: ["build"], recheck: () => ["build"] },
   { name: "suite", args: ["test", "--no-build", "--tier", "all"], recheck: (failing) => (failing.length ? ["test", "--no-build", "--no-cache", "--only", failing.join(",")] : ["test", "--no-build", "--no-cache", "--tier", "all"]) },
   { name: "placement audit", args: ["audit", "placement", "--strict"], recheck: () => ["audit", "placement", "--strict"] },
+  { name: "grid placement audit", args: ["audit", "placement", "--grid", "--strict"], recheck: () => ["audit", "placement", "--grid", "--strict"] },
   { name: "pre-move e2e", args: PRE_MOVE, recheck: () => PRE_MOVE },
 ];
 
@@ -177,7 +178,7 @@ export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;
 // Returns the reason when the guard must open a fix card instead, or null.
 export function fixCardInstead(c, step) {
   if (!c || step === "compile") return null;
-  if (step === "placement audit") return "a placement audit finding is fixed forward, never reverted (town layout warns, #1872)";
+  if (step === "placement audit" || step === "grid placement audit") return "a placement audit finding is fixed forward, never reverted (town layout warns, #1872)";
   const br = c.branch || branchOfMerge(c.subject);
   if (MAINTAINER_BRANCH.test(br)) return `#${prOfMerge(c.subject)} is the maintainer's town edit (${br}); only a compile break reverts it`;
   return null;

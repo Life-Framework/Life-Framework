@@ -195,7 +195,9 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    comment on #N, its issues reopened as `regression`, one line to the staff webhook (`LF_STAFF_WEBHOOK_URL` or
    `"mainGuard": { "webhookUrl" }` in `lf.local.json`).
 
-Never reverted: a revert; a merge that was on main when the guard first started; a PR twice; **a placement audit red**
+The placement steps are `audit placement --strict` (town findings warn) and `audit placement --grid --strict` (GridWorld; clean since #1814, any finding is red).
+
+Never reverted: a revert; a merge that was on main when the guard first started; a PR twice; **a placement audit red, town or grid**
 (town layout findings warn on every branch, #1872: the guard opens a fix-card issue instead); **a `town-maintainer-*`
 PR for anything but a compile break** (a test or audit failure gets a fix card). It never pushes `main`.
 `LF_MAIN_GUARD=0` stops the worker. Log: `tmp/logs/main-guard.log`.

@@ -121,6 +121,8 @@ tools\cli look bank                      tmp/look/bank/contact.jpg, index.json a
 tools\cli look bank hospital 262,255     several areas, or any x,z, in one Workbench run
 tools\cli look all                       all areas, plus tmp/look/overview.jpg (one wide per area)
 tools\cli look bank --close 0            only the five area shots
+tools\cli look grid:all --close 0        one set per claimed grid cell (docs/architecture/grid-cells.md is the picture index)
+tools\cli look grid:first-night-room --interior 127.5,3.4,96 --radius 9   from INSIDE a building: x,y,z is the room's centre on its floor; four eye-level views from the room's sides, no oblique or top, close-ups of that floor only
 tools\cli look bank --hour 19            local solar time (default 14, Clear weather)
 tools\cli look bank --edit               the World Editor view instead of play mode
 tools\cli look bank --measure            also print Workbench's peak working set
