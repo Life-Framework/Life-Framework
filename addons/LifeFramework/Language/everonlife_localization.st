@@ -7706,6 +7706,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "RULES ORIENTATION"
      Comment "Printed heading of the rules quiz sheet (#915)."
     }
+    CustomStringTableItem "{6DCFAEB06DBB55B8}" {
+     Id "LF-RaceBoard_None"
+     Target_en_us "No times yet. Win a race to set one."
+     Comment "Race record board line when no course has a record (#1925)."
+    }
+    CustomStringTableItem "{75DCC86B3E4169B4}" {
+     Id "LF-RaceBoard_Read"
+     Target_en_us "Read the record board"
+     Comment "Action on the board at the race track (#1925)."
+    }
+    CustomStringTableItem "{1C675205D498002A}" {
+     Id "LF-RaceBoard_Title"
+     Target_en_us "Track records"
+     Comment "Title of the race record board card (#1925)."
+    }
+    CustomStringTableItem "{9212F9758808535C}" {
+     Id "LF-RaceBoard_Unknown"
+     Target_en_us "Unknown racer"
+     Comment "Race record board: a record whose racer has no name (#1925)."
+    }
     CustomStringTableItem "{2AF33ED38BCE9973}" {
      Id "LF-RaceHud_Finished"
      Target_en_us "Finished"
