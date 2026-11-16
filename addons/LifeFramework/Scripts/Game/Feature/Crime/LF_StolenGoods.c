@@ -1,8 +1,10 @@
 //------------------------------------------------------------------------------------------------
 //! Goods flagged stolen (fence buyback). The server marks an item when a crime hands it over (a
 //! weapon robbery, the bank's loot) and a stocked shop whose buyback takes stolen goods buys it.
-//! Server only and not saved: the flag lives as long as the item entity does this session, so a
-//! restart launders an item (a known gap; the configured buyback list does not depend on it).
+//! Server only. The live flag is the item's EntityID in a session set; a carried or stored item keeps
+//! it through a save, a restart and a reconnect because the inventory snapshot records it
+//! (LF_StorageItemRecord.m_bStolen, the "itemstolen" payload, save version 35, #1855) and puts it
+//! back on the restored entity. An item left lying in the world is not in a snapshot and loses it.
 class LF_StolenGoods
 {
 	static const string FEATURE = "Stolen";

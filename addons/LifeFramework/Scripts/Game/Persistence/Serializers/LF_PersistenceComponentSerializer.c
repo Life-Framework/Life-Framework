@@ -35,7 +35,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground. The written version is that list's length (34). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen. The written version is that list's length (35). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -86,6 +86,8 @@
 //! loads untowed, uninspected and with no compartment, which is what that build had.
 //! A version 33 save includes the vehicle state and has no held-ground rows (#751): every site loads
 //! with no holder, no hold time and no points, which is exact (nobody held ground before #751).
+//! A version 34 save includes the held ground and has no stolen-item rows (#1855): carried items
+//! stolen before that restart come back unflagged, which is what that build did.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -209,6 +211,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("buildstamp");
 		order.Insert("vehiclestate");
 		order.Insert("heldground");
+		order.Insert("itemstolen");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -242,7 +245,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 34);
+		context.WriteValue("version", 35);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -680,6 +683,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_HeldGroundRow> heldGroundRows = LF_Hideout.ExportHeldGround();
 			context.Write(heldGroundRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 held-ground row(s)", heldGroundRows.Count()));
+		}
+		else if (payload == "itemstolen")
+		{
+			// Written after carried, like itemserials: the snapshots hold the live items' stolen flags.
+			array<ref LF_StorageItemStolenRecord> stolenRecords = LF_StorageSnapshot.ExportItemStolen();
+			context.Write(stolenRecords);
+			LF_Debug.Log("Persistence", string.Format("saved stolen flags of %1 snapshot(s)", stolenRecords.Count()));
 		}
 		else
 		{
@@ -1201,6 +1211,22 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("held-ground rows failed to read, every site stays unheld");
+			}
+		}
+		else if (payload == "itemstolen")
+		{
+			// Runs after "carried" in the same load. A version 1-34 save never reaches this payload:
+			// restored items stay unflagged.
+			array<ref LF_StorageItemStolenRecord> stolenRecords = new array<ref LF_StorageItemStolenRecord>();
+			if (context.Read(stolenRecords))
+			{
+				LF_SaveIds.ResolveItemStolen(stolenRecords);
+				int stolenMatched = LF_StorageSnapshot.ApplyItemStolen(stolenRecords);
+				LF_Debug.Info("Persistence", string.Format("applied stolen flags to %1 of %2 snapshot(s)", stolenMatched, stolenRecords.Count()));
+			}
+			else
+			{
+				ReadFailed("stolen flags failed to read, restored items stay unflagged");
 			}
 		}
 		else
