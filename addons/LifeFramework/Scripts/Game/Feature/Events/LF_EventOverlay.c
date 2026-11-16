@@ -4,7 +4,7 @@
 //! names an event by id and gives it a verb in `m_sOp`:
 //! - add: a new event (a pack's own convoy). An id the core already has is refused.
 //! - replace: the event is rebuilt from the pack entry alone, in its place in the list.
-//! - patch: only what the entry sets changes. The cooldown if set; each listed phase is matched by
+//! - patch: only what the entry sets changes. The cooldown and m_bEnabled if set; each listed phase is matched by
 //!   its NAME, patched field by field when the event has it (an unset field keeps the core value)
 //!   and appended when it does not. A phase is never removed by a patch; use replace for that.
 //! - remove: the event is disabled (it leaves the list; the shell never starts it).
@@ -86,6 +86,12 @@ class LF_EventDefList : LF_ConfigList
 		if (container.IsVariableSetDirectly("m_fCooldownSeconds"))
 		{
 			container.Get("m_fCooldownSeconds", def.m_fCooldownSeconds);
+			changed++;
+		}
+
+		if (container.IsVariableSetDirectly("m_bEnabled"))
+		{
+			container.Get("m_bEnabled", def.m_bEnabled);
 			changed++;
 		}
 

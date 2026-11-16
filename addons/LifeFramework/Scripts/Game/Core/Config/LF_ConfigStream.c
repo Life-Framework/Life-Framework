@@ -294,6 +294,10 @@ class LF_ConfigStream
 		// Disconnect rules (#691, server).
 		LF_DisconnectConfig.Reload();
 
+		// Rejoin at the saved spot and the new-character grace (#1779, server).
+		LF_RespawnConfig.Reload();
+		LF_GraceConfig.ResetStatics();
+
 		// Which systems run (#960): the server reads the owner file again, a client takes the stream's.
 		LF_Systems.Reload();
 

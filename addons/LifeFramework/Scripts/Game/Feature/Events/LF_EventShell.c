@@ -40,11 +40,13 @@ class LF_EventShellRun : Managed
 //! own conditions hold (LF_EventPhaseRules.Decide).
 //!
 //! Not yet: run state is not persisted (a restart starts every event idle), PLAYERS_NEARBY measures
-//! 0 until an event names its place, pack overlays (#1952) are layered by their own slice.
+//! 0 until an event names its place.
+//!
+//! Off by default: an event runs only with m_bEnabled set (the core example ships off; a pack patch
+//! turns an event on). Events come from LF_EventOverlay, the core file with the pack overlays over it.
 class LF_EventShell
 {
 	static const string FEATURE = "Events";
-	static const string CONFIG_PATH = "{6ACA05ED8116280F}Configs/Events/LF_Events.conf";
 	static const int TICK_MS = 1000;	// lf-fixed: once a second; phases set their own cadence on top
 
 	protected static ref array<ref LF_EventShellRun> s_aRuns;
@@ -80,25 +82,16 @@ class LF_EventShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return the core event config, or null (logged) when it does not resolve.
+	//! \return the core event config with the pack overlays over it, or null (LF_EventOverlay logs why).
 	static LF_EventsConfig LoadConfig()
 	{
-		Resource container = BaseContainerTools.LoadContainer(CONFIG_PATH);
-		if (!container || !container.GetResource())
-		{
-			LF_Debug.Error(FEATURE, string.Format("event config does not resolve, no events run: %1", CONFIG_PATH));
-			return null;
-		}
-
-		LF_EventsConfig config = LF_EventsConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
-		if (!config)
-			LF_Debug.Error(FEATURE, string.Format("event config has an unexpected root class, no events run: %1", CONFIG_PATH));
-		return config;
+		return LF_EventOverlay.Get();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Replaces the events the shell runs (game start, tests). A definition that fails
-	//! LF_EventPhaseRules.Validate, or repeats an id, is logged and skipped; the rest still run.
+	//! LF_EventPhaseRules.Validate, or repeats an id, is logged and skipped; one that is off is
+	//! logged and not run; the rest still run.
 	static void Use(LF_EventsConfig config)
 	{
 		s_aRuns = {};
@@ -117,6 +110,12 @@ class LF_EventShell
 				if (def)
 					id = def.m_sEventId;
 				LF_Debug.Error(FEATURE, string.Format("event %1 disabled: %2", id, reason));
+				continue;
+			}
+
+			if (!def.m_bEnabled)
+			{
+				LF_Debug.Info(FEATURE, string.Format("event %1 is off (m_bEnabled 0): not run", def.m_sEventId));
 				continue;
 			}
 

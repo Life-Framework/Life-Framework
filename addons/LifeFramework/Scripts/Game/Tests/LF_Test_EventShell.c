@@ -2,7 +2,8 @@
 // tier: WORLD
 //! The event shell (#1950): a test event with a forced in-game hour starts in prep, advances to hot
 //! and ends into cooldown, publishing one LF_OnEventPhase per change; outside its hour a failing
-//! start condition keeps it idle; a cooling event does not restart. Drives Tick with its own clock.
+//! start condition keeps it idle; a cooling event does not restart; an event that is off
+//! (the shipped core example) never runs. Drives Tick with its own clock.
 class LF_Test_EventShell_Listener : LF_EventSubscriber
 {
 	ref array<string> m_aSeen = {};
@@ -26,6 +27,12 @@ class LF_Test_EventShell : LF_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
+		// The core example ships off: a live server never runs it unless a pack turns it on.
+		LF_EventDef example = LF_EventOverlay.Find("example");
+		ctx.True(example != null, "the core example event loads");
+		if (example)
+			ctx.False(example.m_bEnabled, "the core example event is off by default");
+
 		// Stop the live ticker and swap in the test event; other modules' registrations stay.
 		LF_EventShell.Stop();
 		LF_EventShell.Unregister("test_shell_evening");
@@ -43,10 +50,13 @@ class LF_Test_EventShell : LF_Test
 		config.m_aEvents = {};
 		config.m_aEvents.Insert(LF_EventDef.Make("test_shell", phases, 300));
 		config.m_aEvents.Insert(LF_EventDef.Make("test_shell", phases, 300));
+		LF_EventDef off = LF_EventDef.Make("test_shell_off", phases, 300);
+		off.m_bEnabled = false;
+		config.m_aEvents.Insert(off);
 		array<ref LF_EventPhase> none = {};
 		config.m_aEvents.Insert(LF_EventDef.Make("test_broken", none, 300));
 		LF_EventShell.Use(config);
-		ctx.Equal(1, LF_EventShell.RunCount(), "a repeated id and an event with no phases are skipped");
+		ctx.Equal(1, LF_EventShell.RunCount(), "a repeated id, an event with no phases and an event that is off are skipped");
 
 		// Noon is outside 18 to 22: the start condition fails and the event stays idle.
 		LF_EventShell.ForceHour(12);
@@ -72,6 +82,8 @@ class LF_Test_EventShell : LF_Test
 			ctx.EqualStr("advance:hot:", listener.m_aSeen[1], "second: advance to hot");
 			ctx.EqualStr("end::done", listener.m_aSeen[2], "third: the last phase ends into cooldown");
 		}
+
+		ctx.EqualStr("", LF_EventShell.PhaseOf("test_shell_off"), "an event that is off never starts, even inside its hour");
 
 		// Cooling down: the hour still holds but the event does not restart before 300 s.
 		LF_EventShell.Tick(13);
