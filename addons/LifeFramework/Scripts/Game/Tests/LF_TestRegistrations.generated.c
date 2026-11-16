@@ -526,6 +526,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SpawnScale(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStrip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SpikeStripPreview(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelayInstall(), LF_TestTier.LOGIC);
