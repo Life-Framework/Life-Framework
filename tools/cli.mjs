@@ -1885,7 +1885,7 @@ function cmdHostStart(root, dir, opts) {
       // looked like a server that wrote no console.log. Say who holds the port before queueing.
       try { wt.acquireLock(root, SERVER_SLOT); } catch (e) {
         if (!opts.wait) throw e;
-        console.log(`host: port 2001 is held by ${describeHolder(join(wt.ensureHub(root), "locks", `${SERVER_SLOT}.lock`))} (${e.message}); nothing launched yet, queued up to ${opts.timeoutSec ?? 1800} s`);
+        console.log(`host: port 2001 is held by ${describeHolder(wt.lockFileOf(root, SERVER_SLOT))} (${e.message}); nothing launched yet, queued up to ${opts.timeoutSec ?? 1800} s`);
         wt.acquireLock(root, SERVER_SLOT, { waitMs: (opts.timeoutSec ?? 1800) * 1000 });
       }
     } catch (e) {
@@ -2145,7 +2145,7 @@ function playtestCheckout(mainRoot) {
 
 function playtestServerSlotHolder(mainRoot) {
   try {
-    const info = JSON.parse(readFileSync(join(wt.hubDirOf(mainRoot), "locks", `${SERVER_SLOT}.lock`), "utf8"));
+    const info = JSON.parse(readFileSync(wt.lockFileOf(mainRoot, SERVER_SLOT), "utf8"));
     return info.pid && host.pidAlive(info.pid) ? info : null;
   } catch {
     return null;
@@ -2593,7 +2593,7 @@ function cmdSessionUp(root, dir, flags) {
       const holders = [];
       for (const l of pool.sessionLanes(root)) {
         try {
-          const h = JSON.parse(readFileSync(join(wt.hubDirOf(root), "locks", `${l.lock}.lock`), "utf8"));
+          const h = JSON.parse(readFileSync(wt.lockFileOf(root, l.lock), "utf8"));
           if (h.pid && host.pidAlive(h.pid)) holders.push(`${h.purpose ?? "a run"} of ${h.slug ?? h.root ?? "another checkout"} (pid ${h.pid})`);
         } catch {}
       }
