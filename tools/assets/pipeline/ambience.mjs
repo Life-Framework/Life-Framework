@@ -68,6 +68,7 @@ export function specProblems(rec) {
     if (!(s.takes >= 1 && s.takes <= 3)) out.push(`${at}: takes must be 1 to 3`);
     if (s.pick !== undefined && !(Number.isInteger(s.pick) && s.pick >= 1)) out.push(`${at}: pick must be a take number`);
     if (s.pick && !s.reason) out.push(`${at}: a pick needs a reason`);
+    if (s.synth !== undefined && !/^tools\/.+\.mjs$/.test(s.synth)) out.push(`${at}: synth must be the repo path of the script that renders it`);
   }
   if (!(rec.sounds || []).length) out.push("sounds is empty");
   return out;
@@ -322,6 +323,7 @@ export async function stepGenerate(root, { again, now = new Date(), fetchImpl, s
   mkdirSync(dir, { recursive: true });
   const todo = [];
   for (const s of rec.sounds) {
+    if (s.synth) continue; // composed by its own script (tools/assets/atmosphere/radio-synth.mjs), not paid for
     const have = gens.filter((g) => g.id === s.id).map((g) => g.take);
     const want = s.takes + (again === s.id ? have.length - s.takes + 1 : 0);
     for (let n = 1; have.length + todo.filter((t) => t.s === s).length < want; n++) if (!have.includes(n)) todo.push({ s, n });

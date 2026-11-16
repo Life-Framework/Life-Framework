@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{74FD0F1798262E14}Sounds/Atmosphere/Atmosphere_RadioAccordionKolo.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}
