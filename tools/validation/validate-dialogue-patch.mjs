@@ -170,7 +170,20 @@ export function checkDialoguePatches(root) {
       }
       const id = conf.fields.m_sId;
       const base = core.get(id);
-      if (!base) { errors.push(`${where}: patches dialogue '${id}', which the core does not ship`); continue; }
+      if (!base) {
+        // A pack's own full dialogue (#1962): it names a speaker and a start, so it is read whole, not against a core one.
+        if (conf.fields.m_sSpeakerKey && conf.fields.m_sStart) {
+          const own = [
+            ...(conf.lists.m_aLines || []).map((l) => l.fields.m_sTextKey).filter(Boolean),
+            ...(conf.lists.m_aNodes || []).flatMap((n) => (n.lists.m_aOptions || []).map((o) => o.fields.m_sTextKey).filter(Boolean)),
+            conf.fields.m_sSpeakerKey,
+          ];
+          errors.push(...problems(where, toModel(conf), keys, hooks, own));
+          continue;
+        }
+        errors.push(`${where}: patches dialogue '${id}', which the core does not ship`);
+        continue;
+      }
       const model = toModel(base);
       applyList(where, "line", model, conf.lists.m_aLines || [], errors);
       applyList(where, "node", model, conf.lists.m_aNodes || [], errors);
