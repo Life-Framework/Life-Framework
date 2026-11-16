@@ -1,0 +1,69 @@
+{
+  "id": "cafe_owner",
+  "name": "CafeOwner",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Townsfolk_CafeOwner_Name",
+  "voice": {
+    "engine": "piper",
+    "id": "en_US-ljspeech-high",
+    "name": "Piper en_US-ljspeech-high",
+    "why": "Odile Marchand, the café owner, is a woman in her fifties who came out of the zone. A calm, even, unhurried voice suits someone who says hard things plainly. Piper ljspeech only (LJ Speech, public domain; lessac and libritts_r are never used)."
+  },
+  "budget_chars": 1000,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    { "id": "greet", "line": "greet", "options": [
+      { "text": "ask_zone", "next": "zone" },
+      { "text": "ask_help", "next": "help" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "zone", "line": "zone", "options": [
+      { "text": "ask_move", "next": "move" },
+      { "text": "ask_help", "next": "help" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "move", "line": "move", "options": [
+      { "text": "ask_help", "next": "help" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "help", "options": [
+      { "text": "ask_work", "next": "work" },
+      { "text": "ask_clerk", "next": "clerk" },
+      { "text": "ask_handbook", "next": "handbook" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "work", "line": "work", "options_from": "help" },
+    { "id": "clerk", "line": "clerk", "options_from": "help" },
+    { "id": "handbook", "line": "handbook", "options_from": "help" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Come in, come in. The coffee is hot. You are new here, I can tell. Nobody walks that slowly who has lived here long."
+    },
+    "zone": {
+      "text": "I came out of the zone. They told us three days. Pack what you can carry, they said, and you will be back by Friday. I took the kettle and my mother's cups. That was three years ago."
+    },
+    "move": {
+      "text": "When they brought us here, the town did not know what to say. So a neighbour brought bread, and nobody asked a single question. I still use the cups. Every day. Someone has to."
+    },
+    "work": {
+      "text": "If you need work, ask at the post office. They always need couriers. Walk fast, keep the parcels dry, and you will be paid by the end of the day."
+    },
+    "clerk": {
+      "text": "Before anything else, see the town clerk at the desk on the square. He keeps the register. A person who is not in it is no one at all, here."
+    },
+    "handbook": {
+      "text": "And read the handbook. It is short. It tells you what the town expects of you, and what the police will not forgive."
+    },
+    "bye": {
+      "text": "Come back when you are hungry. Or lonely. It is the same to me."
+    }
+  },
+  "replies": {
+    "ask_zone": "Where did you come from?",
+    "ask_move": "What was the move like?",
+    "ask_help": "Where should I start?",
+    "ask_work": "Where can I find work?",
+    "ask_clerk": "Who should I see first?",
+    "ask_handbook": "Is there a guide to the town?",
+    "bye": "Goodbye."
+  }
+}
