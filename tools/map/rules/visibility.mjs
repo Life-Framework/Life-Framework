@@ -65,12 +65,12 @@ function rowOf(poi) {
 // A persona is what `map render --as` names: the audience the picture is drawn for.
 //   new     a fresh player: only places the clerk marked (poi.heardOf) are heard of
 //   known   a player who has been everywhere and met the underworld: every place visited
-//   police  an officer on duty
+//   police  an officer on duty, who knows the town (every place visited)
 //   org:<id> a member of that org; knows the district by hearsay (heard of)
 export function audienceOf(persona = "new") {
   const [who, org] = String(persona).split(":");
   if (who === "known") return { roles: [], known: "visited", heardOfFlag: false };
-  if (who === "police") return { roles: ["police"], known: "none", heardOfFlag: false };
+  if (who === "police") return { roles: ["police"], known: "visited", heardOfFlag: false };
   if (who === "org") return { roles: [`org:${org}`], known: "heard", heardOfFlag: false };
   return { roles: [], known: "none", heardOfFlag: true };
 }
