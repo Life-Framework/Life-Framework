@@ -18,7 +18,7 @@
   (`Quest_Clerk` behind the registry counter on the square, 137.06 0 240.91, under a parasol beside the REGISTRY OFFICE sign) runs five steps: `arrival_register`
   (talk; hands over the ID card), `arrival_board` (`SIGNAL sign.read:town_map`),
   `arrival_work` (`SIGNAL job.run_complete:parcel`), `arrival_bank`
-  (`SIGNAL atm.deposit`), `arrival_done` (talk; $250 and "the town is yours" with
+  (`SIGNAL atm.deposit`), `arrival_done` (talk; a welcome gift, not cash (#1781), and "the town is yours" with
   pointers to the rest of town). Steps 2-4 start and finish on their own
   (`m_bAutoAccept`, `m_bAutoTurnIn`), so the player never walks back between
   errands; each new step's errand shows as a 12 s hint. A fresh spawn without the
@@ -45,6 +45,16 @@
   `QuestGiver_Start` (test quests, "Test quest board") moved to the test annex
   (`Quest_TestGiver`, 104 0 70). Tests: `quests/signal-event` (LOGIC),
   `quests/arrival-chain` (WORLD).
+
+- ✅ **The arrival chain ends with a gift, not cash** (#1781, #795). `arrival_done` pays no money. What the
+  clerk hands over is pack data: `LF_WelcomeGiftTable` (`Feature/Quests/LF_WelcomeGift.c`) reads
+  `Configs/Quests/LF_WelcomeGift.conf`, rows keyed by quest id with a list of item prefabs, and a pack overlays
+  rows with the override verbs (`m_sOp`). The core file ships no rows; `LF_QuestTrackerComponent.GrantReward`
+  spawns a quest's own `m_aRewardItems` and then its table row into the inventory. The 1989 Everon pack
+  (`LF_WelcomeGift_Everon1989.conf`, in its mission header) gives a folded paper map, a packet of crackers and a
+  bottle of apple juice. A row naming an item that does not load is refused (`[LFDebug:Quests]`). Pack-only: no
+  owner `config.json` section. Tests: `quests/onboarding-chain` (WORLD: links, no money, items resolve),
+  `quests/arrival-chain` (gift lands, no cash), `everon/welcome-gift` (pack leg).
 
 ### Layouts (loaded by `LF_Test_Data`)
 - ✅ `LF_SplitQuantityDialog`, `LF_CharacterCreationMenu`, `LF_ATMMenu`,

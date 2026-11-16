@@ -261,12 +261,11 @@ At 06:00 and 18:00 server time the mod writes the SHUTDOWN save and closes the s
 is not a failure, so a panel Workflow has to bring the server back:
 
 1. Open the service, then **Workflows**, and create a workflow named `flagship-restarts`.
-2. **Workflow Trigger:** **Schedule**. Add two times, **06:02** and **18:02** (a workflow holds up to 5).
+2. **Workflow Trigger:** **Schedule**. Add **06:02**, **06:07**, **18:02** and **18:07** (a workflow holds up to 5). The stored times are UTC and the box clock is UTC: if your browser is not on UTC, enter the UTC time converted to local (2026-11-16: 06:02 entered in CET fired at 05:02 UTC and the server stayed down for 6 hours).
    The two minutes give the shutdown save time to finish.
 3. **Workflow Steps:** **Start the server**. If the mod's close did not happen, the server is still up and
    the start does nothing.
-4. The panel appears to keep schedule times in UTC (its bundle formats them with UTC), and a Linux box's
-   clock is usually UTC too. After the first `logs pull`, compare the log's timestamps with the schedule.
+4. Confirm with `GET /armareforger/<id>/workflows/<workflow id>`: the stored `hour` must be 6 and 18, because the log clock is UTC ([incident](../ops/rented-box.md#0grind-the-scheduled-restart-incident-2026-11-16)).
 
 On the **System** page:
 

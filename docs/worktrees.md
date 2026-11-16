@@ -23,6 +23,13 @@ harmless to your editor because the worktree is a separate directory.
   So `test` (every tier), `dev`, `wt e2e`, and `serve` take one machine-wide
   `server-2001` lock: suites queue instead of colliding with
   `Unable to start replication`. `serve` fails fast when the lock is held.
+  A PC that is a pool box for another PC and also hosts its own agents (the laptop: pool entry
+  `lf-testbox` with `hostname` and `root`) has two main checkouts, and the other PC's remote holder
+  writes the lock into the box clone's `tmp/wt/locks`. The `server-*` slot locks of every checkout on
+  that PC therefore resolve to the box clone's directory (`wt.lockFileOf`, `tools/lib/machine-locks.mjs`,
+  `machine-locks-selftest`); other locks stay in the checkout's own hub. Before 2026-11-17 each side took
+  its own file and a remote and a local session were both granted 2001 (#2099). `LF_MACHINE_LOCKS=0` turns
+  the redirect off. A holder started by older code in the old file still blocks until it ends.
   The per-worktree `(gamePort, a2sPort)` pair from `wt list` is still passed
   and is what a2s uses.
 - **Resource database** — `resourceDatabase.rdb` is gitignored and only Workbench

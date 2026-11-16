@@ -1,0 +1,115 @@
+// Grid cell c0r3 for houses-keys: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_houses_keys_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 23 0 59
+}
+SCR_DestructibleEntity Grid_houses_keys_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 28 0 59
+}
+SCR_DestructibleEntity Grid_houses_keys_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 33 0 59
+ angleY 270
+}
+SCR_DestructibleEntity Grid_houses_keys_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 33 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_houses_keys_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 28 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_houses_keys_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 23 0 69
+ angleY 90
+}
+SCR_DestructibleEntity Grid_houses_keys_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 23 0 64
+ angleY 90
+}
+GenericEntity Grid_houses_keys_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:houses-keys"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 33.8 0.505 68.4
+ angleY 90
+}
+GenericEntity HouseKeysStation {
+ coords 28 0 64
+ {
+  GenericEntity HouseKeysTableItems {
+    coords 0 0.9 0.7
+   {
+    $grp GenericEntity : "{3735389521255DBE}Prefabs/Items/HouseKeyItem.et" {
+     HouseKey_Matching_Debug {
+      components {
+       LF_KeyComponent "{5AC2971C77FC6F17}" {
+        m_sDebugIdentifier "LFDebugHouse1"
+       }
+      }
+      coords 0 0 0
+     }
+     HouseKey_Wrong_Debug {
+      components {
+       LF_KeyComponent "{5AC2971C77FC6F17}" {
+        m_sDebugIdentifier "LFDebugHouseWrong"
+       }
+      }
+      coords 0.25 0 0.05
+     }
+    }
+   }
+  }
+  SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   Flags 0x403 0
+   coords 0 0 0.7
+  }
+  LF_NpcBaseEntity RealtorNpc : "{F1903A1C3E20A040}Prefabs/Characters/Npcs/Outfits/LF_Npc_Office_2.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Realtor"
+      Surname "Agent"
+     }
+    }
+   }
+   coords 0 0 -1.1
+  }
+  GenericEntity House_Door_Locked : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+   components {
+    LF_LockComponent "{5AC29970429B33BB}" {
+     m_sDebugIdentifier "LFDebugHouse1"
+     m_bDebugLocked 1
+    }
+   }
+   coords 0 -0.001 0
+  }
+  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+   components {
+    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+     m_bGradualLightning 0
+     m_fLV 2.6
+     m_eInitialLightState LIT
+    }
+   }
+   coords 0 0.9 0.7
+  }
+ }
+}
+LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 28 0 64
+ m_vSize 2 1 1.5
+}
+GenericEntity Grid_houses_keys_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "houses-keys"
+  }
+ }
+ coords 33.7 0 66.5
+ angleY 270
+}

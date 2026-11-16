@@ -1240,6 +1240,11 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "That fine is above your rank"
      Comment "Fine refused because it is above the officer's rank cap"
     }
+    CustomStringTableItem "{5F2C8E1B7D4A9306}" {
+     Id "EL-Rank_IssueNeedsRank"
+     Target_en_us "The armory issues that from the rank of %1"
+     Comment "Toast: the armory refused an item because the officer's rank is below the offer's. %1 = the rank title that may draw it."
+    }
     CustomStringTableItem "{C91A4E7700B10011}" {
      Id "EL-Rank_Patrol"
      Target_en_us "Patrol Officer"
@@ -1254,6 +1259,11 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Id "EL-Rank_PromoteDenied"
      Target_en_us "A higher rank has to authorize that"
      Comment "Promotion refused"
+    }
+    CustomStringTableItem "{BB32E46F8C493D2C}" {
+     Id "EL-Rank_PromoteNeedsHigher"
+     Target_en_us "Only an officer above the rank you are promoting into can promote"
+     Comment "Toast to the promoter: the promotion was refused because their rank does not outrank the rank the target would reach."
     }
     CustomStringTableItem "{C91A4E7700B10012}" {
      Id "EL-Rank_Senior"
@@ -2400,6 +2410,86 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Every character slot on this account is taken."
      Comment "Character creation refused because the account already holds the configured maximum number of characters."
     }
+    CustomStringTableItem "{294B1C333502C014}" {
+     Id "LF-Chess_BlackInCheck"
+     Target_en_us "Black to move, in check"
+     Comment "Chess board: whose turn, in check."
+    }
+    CustomStringTableItem "{DF5A83BF2E8A0BF7}" {
+     Id "LF-Chess_BlackToMove"
+     Target_en_us "Black to move"
+     Comment "Chess board: whose turn."
+    }
+    CustomStringTableItem "{5ED12C260FF1021C}" {
+     Id "LF-Chess_BlackWins"
+     Target_en_us "Black wins"
+     Comment "Chess board: the game ended."
+    }
+    CustomStringTableItem "{8441B5995A901878}" {
+     Id "LF-Chess_Draw"
+     Target_en_us "Drawn game"
+     Comment "Chess board: the game ended in a draw."
+    }
+    CustomStringTableItem "{B43B12CB3A87A5CA}" {
+     Id "LF-Chess_LastMove"
+     Target_en_us "Last move: %1"
+     Comment "Chess board: the last move played, such as e2e4."
+    }
+    CustomStringTableItem "{0903BC959C769DD9}" {
+     Id "LF-Chess_Play"
+     Target_en_us "Play chess"
+     Comment "Action on a chess table: sit and play, or watch when both seats are taken."
+    }
+    CustomStringTableItem "{EAB56E5EA3549E64}" {
+     Id "LF-Chess_Selected"
+     Target_en_us "Moving from %1: click where it goes"
+     Comment "Chess board: a piece is picked up. %1 is a square such as e2."
+    }
+    CustomStringTableItem "{E7ED7DA4025B0B70}" {
+     Id "LF-Chess_StandUp"
+     Target_en_us "Stand up"
+     Comment "Close button of the chess board; standing up mid-game resigns after a grace period."
+    }
+    CustomStringTableItem "{6484B0F23B8FE931}" {
+     Id "LF-Chess_Title"
+     Target_en_us "Chess"
+     Comment "Title of the chess board sheet."
+    }
+    CustomStringTableItem "{475A1556AF20C80E}" {
+     Id "LF-Chess_Waiting"
+     Target_en_us "Waiting for an opponent to sit down"
+     Comment "Chess board: one seat is empty."
+    }
+    CustomStringTableItem "{10A7EDA4F1EAEA27}" {
+     Id "LF-Chess_Watching"
+     Target_en_us "Both seats are taken; you are watching"
+     Comment "Chess board: the reader holds no seat."
+    }
+    CustomStringTableItem "{16D1027DC7BC0180}" {
+     Id "LF-Chess_WhiteInCheck"
+     Target_en_us "White to move, in check"
+     Comment "Chess board: whose turn, in check."
+    }
+    CustomStringTableItem "{7E0B60D70576A7CA}" {
+     Id "LF-Chess_WhiteToMove"
+     Target_en_us "White to move"
+     Comment "Chess board: whose turn."
+    }
+    CustomStringTableItem "{541A8E2D2D07B46F}" {
+     Id "LF-Chess_WhiteWins"
+     Target_en_us "White wins"
+     Comment "Chess board: the game ended."
+    }
+    CustomStringTableItem "{BC3DF558CF296BE6}" {
+     Id "LF-Chess_YouBlack"
+     Target_en_us "You play black"
+     Comment "Chess board: your seat."
+    }
+    CustomStringTableItem "{5564712FA572FA16}" {
+     Id "LF-Chess_YouWhite"
+     Target_en_us "You play white"
+     Comment "Chess board: your seat."
+    }
     CustomStringTableItem "{87229FC4BD0FB108}" {
      Id "LF-Chop_Busy"
      Target_en_us "The bench is busy"
@@ -2552,47 +2642,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{17725D5EE1952883}" {
      Id "LF-Credits_100"
-     Target_en_us "\"Hitman\""
+     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{27F672D865E0C90E}" {
      Id "LF-Credits_101"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "Radio track \"Orchestral morning\", a light orchestral morning piece: flute, strings, harp"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{52A89444BDFCFD47}" {
      Id "LF-Credits_102"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B34B54B3270EA1AB}" {
      Id "LF-Credits_103"
-     Target_en_us "Piper"
+     Target_en_us "Radio track \"Orchestral serenade\", a Mediterranean serenade: clarinet, strummed guitar, strings"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{08B073F287287452}" {
      Id "LF-Credits_104"
-     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{47D4FB9C4781CDA3}" {
      Id "LF-Credits_105"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square, bank murmur, bank till and clock, hospital equipment, hospital ward, payphone line, fuel pump, cash van idle"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FBFB66BA23F58688}" {
      Id "LF-Credits_106"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{53B06789666BA9A0}" {
      Id "LF-Credits_107"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "GENERATED VOICES"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{191CB88166129132}" {
      Id "LF-Credits_108"
-     Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
+     Target_en_us "Town clerk's spoken lines: all thirteen, the old arrival lines and the newcomer's welcome"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{A8D038048737972B}" {
+     Id "LF-Credits_109"
+     Target_en_us "Piper en_US-ljspeech-high (see Voice-over below), Piper MIT, voice trained on LJ Speech"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{857E5E05902D8F44}" {
@@ -2600,9 +2695,89 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Bohemia Interactive, Arma Public License (the Workshop build); game assets belong to Bohemia Interactive"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
+    CustomStringTableItem "{C0DF6FBEA91CB184}" {
+     Id "LF-Credits_110"
+     Target_en_us "Café owner's seven lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{1E14413C1D94DD1F}" {
+     Id "LF-Credits_111"
+     Target_en_us "Piper en_US-ljspeech-high (see Voice-over below), Piper MIT, voice trained on LJ Speech"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{96FE8BDEC46005B9}" {
+     Id "LF-Credits_112"
+     Target_en_us "Night-shift worker's spoken lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{863CCDCE20D8134D}" {
+     Id "LF-Credits_113"
+     Target_en_us "Piper en_US-ljspeech-high (see Voice-over below), Piper MIT, voice trained on LJ Speech"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{90202C71BA2045BB}" {
+     Id "LF-Credits_114"
+     Target_en_us "MUSIC"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BD650073C9503BC9}" {
+     Id "LF-Credits_115"
+     Target_en_us "\"Carefree\""
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BF312B42B05FCAC5}" {
+     Id "LF-Credits_116"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{AD8474D21ADA71ED}" {
+     Id "LF-Credits_117"
+     Target_en_us "\"Hitman\""
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{A20FA264480F9153}" {
+     Id "LF-Credits_118"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{8D2FBE7CB9BA1A19}" {
+     Id "LF-Credits_119"
+     Target_en_us "VOICE-OVER"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
     CustomStringTableItem "{0A5B0A916F1F634A}" {
      Id "LF-Credits_12"
      Target_en_us "thebonbon/EveronLife: roleplay chat, mining, jump pad and spike strip code. The mining code was ported with the author's permission given to the maintainer."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{C06863243F369B82}" {
+     Id "LF-Credits_120"
+     Target_en_us "Piper"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{034AB24F20B9C523}" {
+     Id "LF-Credits_121"
+     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{6FE700B6BDC757ED}" {
+     Id "LF-Credits_122"
+     Target_en_us "Voice en_US-ljspeech-high"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{2B6B443BB2E0DFB9}" {
+     Id "LF-Credits_123"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{0C744196304685EB}" {
+     Id "LF-Credits_124"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{9954645FD5FC4292}" {
+     Id "LF-Credits_125"
+     Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4698D3AC325BC21D}" {
@@ -3032,52 +3207,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AE8C2BFD5BDF0B32}" {
      Id "LF-Credits_90"
-     Target_en_us "Store radio and pub music"
+     Target_en_us "Hospital robbery alarm"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3D8F4A1805394D57}" {
      Id "LF-Credits_91"
-     Target_en_us "ElevenLabs Music (music_v1, instrumental), generated with ElevenLabs"
+     Target_en_us "Store radio and pub music"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8501F8EBAEAC730A}" {
      Id "LF-Credits_92"
-     Target_en_us "Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square, bank murmur, bank till and clock, hospital equipment, hospital ward, payphone line, fuel pump, cash van idle"
+     Target_en_us "ElevenLabs Music (music_v1, instrumental), generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D633223051CC74DB}" {
      Id "LF-Credits_93"
-     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
+     Target_en_us "Radio track \"Estrada ballad\", a 92 bpm estrada ballad: flute, electric piano, string pad"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{359938F793945EA0}" {
      Id "LF-Credits_94"
-     Target_en_us "GENERATED VOICES"
+     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9D89028E9844FF11}" {
      Id "LF-Credits_95"
-     Target_en_us "Town clerk's spoken lines"
+     Target_en_us "Radio track \"Estrada dance\", a 122 bpm estrada dance number: synthesizer lead and arpeggio, drum machine"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D3080A6969C70816}" {
      Id "LF-Credits_96"
-     Target_en_us "ElevenLabs text-to-speech, voices generated with ElevenLabs; voice \"JC\" from the voice library"
+     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AA282A4B5F344509}" {
      Id "LF-Credits_97"
-     Target_en_us "MUSIC"
+     Target_en_us "Radio track \"Accordion waltz\", a 3/4 accordion waltz"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FA45D273D68AA84A}" {
      Id "LF-Credits_98"
-     Target_en_us "\"Carefree\""
+     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C38448870F6795CB}" {
      Id "LF-Credits_99"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "Radio track \"Accordion kolo\", a 2/4 Balkan kolo: clarinet and accordion"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8B6C65DD4369872B}" {
@@ -3912,6 +4087,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Gather_Wait"
      Target_en_us "Wait %1 seconds"
      Comment "Gather refused: the resource is restocking. %1 = seconds"
+    }
+    CustomStringTableItem "{73D0C4773B5E967E}" {
+     Id "LF-Grace_Refused"
+     Target_en_us "A new arrival is under a short grace: no hold-up, robbery or arrest for now."
+     Comment "Toast when a hold-up, robbery or arrest is refused because a character is in its new-character grace."
+    }
+    CustomStringTableItem "{A97CA5DA23A8F11C}" {
+     Id "LF-Grace_Title"
+     Target_en_us "Grace period"
+     Comment "Toast title for the new-character grace refusal."
+    }
+    CustomStringTableItem "{B0C49E2CC5A91698}" {
+     Id "LF-Handbook_Close"
+     Target_en_us "Close"
+     Comment "Handbook screen: the button that puts the handbook away (#1773)."
+    }
+    CustomStringTableItem "{137851841CD11F98}" {
+     Id "LF-Handbook_Contents"
+     Target_en_us "Back to the pages"
+     Comment "Handbook screen: the button on a page that returns to the list of pages (#1773)."
+    }
+    CustomStringTableItem "{D2E4378EDC9C7624}" {
+     Id "LF-Handbook_Empty"
+     Target_en_us "The handbook has no pages yet."
+     Comment "Handbook screen: shown when no page can be read (#1773)."
+    }
+    CustomStringTableItem "{B368DC21838D0FEE}" {
+     Id "LF-Handbook_PauseButton"
+     Target_en_us "Handbook"
+     Comment "Pause menu: the button that opens the handbook (#1773)."
+    }
+    CustomStringTableItem "{29A96057080889A7}" {
+     Id "LF-Handbook_Pick"
+     Target_en_us "Pick a page to read."
+     Comment "Handbook screen: the line above the list of pages (#1773)."
+    }
+    CustomStringTableItem "{5B3900D36A58CBE9}" {
+     Id "LF-Handbook_Read"
+     Target_en_us "Read"
+     Comment "Handbook screen: the button on a page row in the list (#1773)."
+    }
+    CustomStringTableItem "{37A4E1474FFDB190}" {
+     Id "LF-Handbook_ReadBody1"
+     Target_en_us "The handbook is a short set of pages. Each page covers one topic and you can come back to it at any time."
+     Comment "Handbook page body, first paragraph of how to read it."
+    }
+    CustomStringTableItem "{F1367AFD4DBABE64}" {
+     Id "LF-Handbook_ReadBody2"
+     Target_en_us "Pages are listed in reading order. If a page is missing, ask a staff member."
+     Comment "Handbook page body, second paragraph of how to read it."
+    }
+    CustomStringTableItem "{C66A836BB94AF2C9}" {
+     Id "LF-Handbook_ReadTitle"
+     Target_en_us "How to read this handbook"
+     Comment "Handbook page title: how to use the handbook."
+    }
+    CustomStringTableItem "{5A806A961C8BB7E6}" {
+     Id "LF-Handbook_RulesBody1"
+     Target_en_us "The server rules are set by this server. Read them before you play, and ask a staff member if one is unclear."
+     Comment "Handbook page body, where to find the rules."
+    }
+    CustomStringTableItem "{D249EF1289AA15DE}" {
+     Id "LF-Handbook_RulesTitle"
+     Target_en_us "Where to find the rules"
+     Comment "Handbook page title: where the server rules live."
+    }
+    CustomStringTableItem "{2B856ABF8687043C}" {
+     Id "LF-Handbook_Title"
+     Target_en_us "HANDBOOK"
+     Comment "Printed heading of the handbook screen (#1773)."
     }
     CustomStringTableItem "{9306F928F7A81EBC}" {
      Id "LF-Heist_Armory_Open"
@@ -5586,6 +5831,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Lockpick_Title"
      Target_en_us "Lockpick"
      Comment "Toast title for lockpicking (#411)."
+    }
+    CustomStringTableItem "{F87E1E94DC2EE743}" {
+     Id "LF-LogoutBodyTag_Label"
+     Target_en_us "Logged out"
+     Comment "World-space tag over a logged-out player's body (#1974)."
     }
     CustomStringTableItem "{EBA0820132F44791}" {
      Id "LF-Lot_Browse"
@@ -7621,6 +7871,121 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "RULES ORIENTATION"
      Comment "Printed heading of the rules quiz sheet (#915)."
     }
+    CustomStringTableItem "{6DCFAEB06DBB55B8}" {
+     Id "LF-RaceBoard_None"
+     Target_en_us "No times yet. Win a race to set one."
+     Comment "Race record board line when no course has a record (#1925)."
+    }
+    CustomStringTableItem "{75DCC86B3E4169B4}" {
+     Id "LF-RaceBoard_Read"
+     Target_en_us "Read the record board"
+     Comment "Action on the board at the race track (#1925)."
+    }
+    CustomStringTableItem "{1C675205D498002A}" {
+     Id "LF-RaceBoard_Title"
+     Target_en_us "Track records"
+     Comment "Title of the race record board card (#1925)."
+    }
+    CustomStringTableItem "{9212F9758808535C}" {
+     Id "LF-RaceBoard_Unknown"
+     Target_en_us "Unknown racer"
+     Comment "Race record board: a record whose racer has no name (#1925)."
+    }
+    CustomStringTableItem "{2AF33ED38BCE9973}" {
+     Id "LF-RaceHud_Finished"
+     Target_en_us "Finished"
+     Comment "Race panel next-checkpoint value once the racer crossed the finish (#1924)."
+    }
+    CustomStringTableItem "{059DB4A9DCC74AC6}" {
+     Id "LF-RaceHud_Lap"
+     Target_en_us "Lap"
+     Comment "Race panel row label: the lap the racer is on, shown as 2 / 3 (#1924)."
+    }
+    CustomStringTableItem "{527550AA7B1AF1F6}" {
+     Id "LF-RaceHud_Next"
+     Target_en_us "Next checkpoint"
+     Comment "Race panel row label: the next checkpoint in the lap, shown as 3 / 5 (#1924)."
+    }
+    CustomStringTableItem "{C140B122F6F49FB0}" {
+     Id "LF-RaceHud_Over"
+     Target_en_us "Race over"
+     Comment "Race panel next-checkpoint value once the race has ended (#1924)."
+    }
+    CustomStringTableItem "{141401C4193B4C2C}" {
+     Id "LF-RaceHud_Place"
+     Target_en_us "Place"
+     Comment "Race panel row label: the racer's position, shown as 1 / 4 (#1924)."
+    }
+    CustomStringTableItem "{AAC1CF2075F935EF}" {
+     Id "LF-RaceHud_Time"
+     Target_en_us "Time"
+     Comment "Race panel row label: the race clock (#1924)."
+    }
+    CustomStringTableItem "{53EFFC318C712E0F}" {
+     Id "LF-RaceHud_Title"
+     Target_en_us "RACE"
+     Comment "Heading of the racer's panel during a race (#1924)."
+    }
+    CustomStringTableItem "{B995FFFBC0F45EF0}" {
+     Id "LF-Race_Action"
+     Target_en_us "Enter the race"
+     Comment "Start sign action: pay the entry fee into the pot (#1923)."
+    }
+    CustomStringTableItem "{848969C5F29E5FB3}" {
+     Id "LF-Race_AlreadyIn"
+     Target_en_us "You are already entered in a race."
+     Comment "Toast: second entry refused (#1923)."
+    }
+    CustomStringTableItem "{B86BE62EAB387D4D}" {
+     Id "LF-Race_Checkpoint"
+     Target_en_us "Checkpoint. Next: %1"
+     Comment "Toast: a checkpoint counted; %1 is the next checkpoint id (#1923)."
+    }
+    CustomStringTableItem "{A52B7FA55F67B76F}" {
+     Id "LF-Race_Full"
+     Target_en_us "This race is full."
+     Comment "Toast: lobby full (#1923)."
+    }
+    CustomStringTableItem "{AB74D2192D4315FA}" {
+     Id "LF-Race_Joined"
+     Target_en_us "You paid %1 into the pot. The race starts when the lobby closes."
+     Comment "Toast: entry fee paid (#1923)."
+    }
+    CustomStringTableItem "{82753B4F7ED6A371}" {
+     Id "LF-Race_NotEnoughCash"
+     Target_en_us "The entry fee is %1 in cash."
+     Comment "Toast: not enough carried cash (#1923)."
+    }
+    CustomStringTableItem "{5F8D6B98D3F38FB3}" {
+     Id "LF-Race_Prize"
+     Target_en_us "You won %1 from the pot."
+     Comment "Toast: race prize paid (#1923)."
+    }
+    CustomStringTableItem "{2000A8D4B046F01B}" {
+     Id "LF-Race_Refunded"
+     Target_en_us "The race is off. Your %1 fee is back in your pocket."
+     Comment "Toast: race cancelled or session ending, fee refunded (#1923)."
+    }
+    CustomStringTableItem "{8317507B576FC3F7}" {
+     Id "LF-Race_Running"
+     Target_en_us "This race is already running. Wait for the next one."
+     Comment "Toast: lobby closed (#1923)."
+    }
+    CustomStringTableItem "{30E47B1E13893274}" {
+     Id "LF-Race_Started"
+     Target_en_us "The race has started. Go!"
+     Comment "Toast to each racer when the lobby closes (#1923)."
+    }
+    CustomStringTableItem "{26AFE384C6B0253E}" {
+     Id "LF-Race_Title"
+     Target_en_us "Race"
+     Comment "Notification title for every race message (#1923)."
+    }
+    CustomStringTableItem "{AD4539F148C6F75D}" {
+     Id "LF-Race_Unavailable"
+     Target_en_us "This race is not available."
+     Comment "Toast: the sign's course is missing or broken (#1923)."
+    }
     CustomStringTableItem "{5985DB962913E1DE}" {
      Id "LF-Rank_EscortDenied"
      Target_en_us "Your rank cannot escort"
@@ -7771,6 +8136,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Too far away to revive them."
      Comment "Revive refusal: out of range."
     }
+  CustomStringTableItem "{BABA49E2440A6362}" {
+   Id "LF-Roadblock_Deploy"
+   Target_en_us "Deploy roadblock"
+   Comment "Action on the folded roadblock kit: lays the barrier and cones across the road in front of the officer (#1941)."
+  }
+  CustomStringTableItem "{3655F9540576258C}" {
+   Id "LF-Roadblock_Description"
+   Target_en_us "Folding roadblock kit: a barrier and four cones. Drop it at the roadside and deploy it across the road; pick any piece up to fold the set away. On-duty {police} only."
+   Comment "Inventory description of the police roadblock kit."
+  }
+  CustomStringTableItem "{986CA09EB5046245}" {
+   Id "LF-Roadblock_Name"
+   Target_en_us "Roadblock kit"
+   Comment "Inventory name of the police roadblock kit (#1941)."
+  }
+  CustomStringTableItem "{333125FDBDB896DE}" {
+   Id "LF-Roadblock_PickUp"
+   Target_en_us "Pick up roadblock"
+   Comment "Action on a piece of a deployed roadblock: folds the whole set back into the officer inventory."
+  }
+  CustomStringTableItem "{440F14D84078D338}" {
+   Id "LF-Roadblock_PoliceOnly"
+   Target_en_us "Only an on-duty officer can handle the roadblock kit."
+   Comment "Toast and greyed-out reason when someone who is not on-duty police tries the roadblock kit."
+  }
     CustomStringTableItem "{94A1952EED77A6E8}" {
      Id "LF-RobHold_ClerkBeg"
      Target_en_us "Please, I am not a hero. I will not call anyone, I swear it. Just take it."
@@ -7925,6 +8315,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Search_Found"
      Target_en_us "Contraband found and seized"
      Comment "Officer search found chain goods (#419)."
+    }
+    CustomStringTableItem "{2154A1C0B7D34E01}" {
+     Id "LF-Search_SeizedCount"
+     Target_en_us "%1x %2"
+     Comment "A seized item kind with its count; %1 is the count, %2 the item name (#2154)."
+    }
+    CustomStringTableItem "{2154A1C0B7D34E02}" {
+     Id "LF-Search_SeizedFrom"
+     Target_en_us "Seized from %1: %2"
+     Comment "Officer toast after a search; %1 is the suspect's name, %2 the seized items (#2154)."
+    }
+    CustomStringTableItem "{2154A1C0B7D34E03}" {
+     Id "LF-Search_SeizedMore"
+     Target_en_us "%1 and %2 more"
+     Comment "Seized list cut to three kinds; %1 is the named kinds, %2 how many more (#2154)."
     }
     CustomStringTableItem "{5EA2C4A000000004}" {
      Id "LF-Search_Vehicle_Action"

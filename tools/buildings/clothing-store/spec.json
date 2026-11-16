@@ -1,7 +1,7 @@
 {
   "slug": "clothing-store",
   "name": "ClothingStore",
-  "concept": "The village clothes shop of 1989 Everon: a draper on the ground floor of a two-storey town shop house, the shopkeeper living in the flat above. The base-game ShopHouse_E_2I01t with the vanilla clothes-store variant's doors, windows and ClothesStore fascia, and our own copy of its furniture with the shop-room clutter taken out. Two dressed mannequins stand in the shop window under spot lamps, the street signal at night; a third, in a suit, stands inside. Folded shirts, turtlenecks, trousers and a denim jacket lie folded on the wall shelves, suit jackets and suit trousers folded on two display counters (piles of 3 to 5 come back when the folded-pile store step, #1899, re-lands: it was reverted in #1902), and hats, gloves and boots sit on their own shelf by the door. Everything is paid at the till, where a clerk in a suit stands. Base-game civilian clothes only: no military uniforms (KLMK and KZS belong to the gun store) and no _Dirty variants.",
+  "concept": "The village clothes shop of 1989 Everon: a draper on the ground floor of a two-storey town shop house, the shopkeeper living in the flat above. The base-game ShopHouse_E_2I01t with the vanilla clothes-store variant's doors, windows and ClothesStore fascia, and our own copy of its furniture with the shop-room clutter taken out. Three dressed mannequins stand in the shop window under spot lamps, the street signal at night (denim, a beige turtleneck with a red knitted hat, a green raincoat); a fourth, in a suit, stands inside. Folded shirts, turtlenecks, trousers and a denim jacket lie folded on the wall shelves, suit jackets and suit trousers folded on two display counters (piles of 3 to 5 folded copies, #1899), and hats, gloves and boots sit on their own shelf by the door. Everything is paid at the till, where a clerk in a suit stands. Base-game civilian clothes only: no military uniforms (KLMK and KZS belong to the gun store) and no _Dirty variants.",
   "red_line": "pack",
   "addon": "LF_Everon1989",
   "prefab_dir": "Prefabs/Buildings/ClothingStore",
@@ -70,7 +70,12 @@
       {
         "prefab": "{918EEED162D663F2}Prefabs/Props/Clothing/LF_Mannequin_Raincoat.et",
         "at": [3.7, 0.199, 7],
-        "why": "window mannequin: the yellow raincoat reads from the street"
+        "why": "window mannequin: a muted green raincoat; the yellow one hangs on the wall rack so one bright coat no longer owns the window"
+      },
+      {
+        "prefab": "{4DC523B95D7DFD0F}Prefabs/Props/Clothing/LF_Mannequin_Knit.et",
+        "at": [2.75, 0.199, 6.55],
+        "why": "window mannequin in the middle, a step back: beige turtleneck, grey trousers and a red knitted hat, the warm accent between the denim and the green"
       },
       {
         "prefab": "{88F59F323FF25661}Prefabs/Props/Clothing/LF_Mannequin_Suit.et",
@@ -92,70 +97,80 @@
         "fixture": "ShelfShop_01",
         "pick": [2],
         "boards": [0],
-        "per_board": 6
+        "per_board": 6,
+        "stack": 3
       },
       {
         "item": "{86E0117B630414B5}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V2.et",
         "fixture": "ShelfShop_01",
         "pick": [2],
         "boards": [1],
-        "per_board": 6
+        "per_board": 6,
+        "stack": 3
       },
       {
         "item": "{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et",
         "fixture": "ShelfShop_01",
         "pick": [2],
         "boards": [2],
-        "per_board": 8
+        "per_board": 8,
+        "stack": 3
       },
       {
         "item": "{DD565E2C7E00A5BB}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_blue.et",
         "fixture": "ShelfShop_01",
         "pick": [1],
         "boards": [3],
-        "per_board": 8
+        "per_board": 8,
+        "stack": 3
       },
       {
         "item": "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et",
         "fixture": "ShelfShop_01",
         "pick": [1],
         "boards": [0],
-        "per_board": 6
+        "per_board": 6,
+        "stack": 3
       },
       {
         "item": "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et",
         "fixture": "ShelfShop_01",
         "pick": [1],
         "boards": [1],
-        "per_board": 6
+        "per_board": 6,
+        "stack": 3
       },
       {
         "item": "{CF185061C5C13DBF}Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_yellow.et",
         "fixture": "ShelfShop_01",
         "pick": [1],
         "boards": [2],
-        "per_board": 6
+        "per_board": 6,
+        "stack": 3
       },
       {
         "item": "{4F71E7468E78DDD2}Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_01.et",
         "fixture": "ShelfShop_01",
         "pick": [2],
         "boards": [3],
-        "per_board": 8
+        "per_board": 8,
+        "stack": 4
       },
       {
         "item": "{27162F1F6EE6581A}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et",
         "fixture": "ShelfShop_01",
         "pick": [0],
         "boards": [0],
-        "per_board": 5
+        "per_board": 5,
+        "stack": 4
       },
       {
         "item": "{50F8B1F928F93ABD}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_beige.et",
         "fixture": "ShelfShop_01",
         "pick": [0],
         "boards": [1],
-        "per_board": 6
+        "per_board": 6,
+        "stack": 4
       },
       {
         "item": "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et",
@@ -169,7 +184,8 @@
         "fixture": "ShelfShop_01",
         "pick": [0],
         "boards": [3],
-        "per_board": 8
+        "per_board": 8,
+        "stack": 3
       },
       {
         "item": "{AE93D885FDF713D4}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_black_V1.et",
@@ -177,7 +193,8 @@
         "pick": [1],
         "boards": [2],
         "per_board": 6,
-        "rows": 2
+        "rows": 2,
+        "stack": 5
       },
       {
         "item": "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et",
@@ -185,7 +202,8 @@
         "pick": [2],
         "boards": [2],
         "per_board": 6,
-        "rows": 2
+        "rows": 2,
+        "stack": 5
       }
     ]
   }

@@ -48,7 +48,11 @@
     "cuffedFineAllowsDebt": true,
     "downedDies": true,
     "wantedLogoutAdd": 0,
-    "jailClockOffline": false
+    "jailClockOffline": false,
+    "contactWindowSeconds": 120
+  },
+  "grace": {
+    "minutes": 0
   },
   "idCard": {
     "replacementFee": 50,
@@ -100,6 +104,10 @@
     "permitFee": 250,
     "permitWaitDays": 1,
     "permitConvictionDays": 7
+  },
+  "logoutBody": {
+    "windowSeconds": 300,
+    "downedWindowSeconds": 600
   },
   "organizations": {
     "foundingFee": 500,
@@ -163,6 +171,15 @@
     "applyMinPlaytimeHours": 50,
     "applyRejectCooldownHours": 72,
     "trialHours": 168
+  },
+  "respawn": {
+    "wakeInHospital": true,
+    "billAmount": 150,
+    "wakeLoiterType": 7,
+    "wakeRootMotion": true,
+    "wakeLieSeconds": 0,
+    "rejoinAtLastPosition": false,
+    "rejoinMaxAgeHours": 12
   },
   "restarts": {
     "times": [],

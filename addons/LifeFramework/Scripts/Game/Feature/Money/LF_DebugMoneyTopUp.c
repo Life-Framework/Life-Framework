@@ -107,14 +107,18 @@ class LF_DebugMoneyTopUp
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_DebugMoneyTopUp's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_DebugMoneyTopUp_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_DebugMoneyTopUp_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_DebugMoneyTopUp");
-		if (apply)
-			LF_DebugMoneyTopUp.ResetStatics();
+		return "LF_DebugMoneyTopUp";
+	}
+
+	override void Apply()
+	{
+		LF_DebugMoneyTopUp.ResetStatics();
 	}
 }

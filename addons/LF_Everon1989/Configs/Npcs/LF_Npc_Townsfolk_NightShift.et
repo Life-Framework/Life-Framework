@@ -1,0 +1,59 @@
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "66D814F18F73F531"
+ components {
+  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+   Identity Identity "{5A4B0B84AF44A913}" {
+    Name "Rémi"
+    Surname "Duval"
+   }
+  }
+  LF_NpcRoleComponent "{7A31C05E94D2B861}" {
+   m_sRole "townsfolk"
+  }
+  LF_DialogueComponent "{F406687B9DE895DA}" {
+   m_sDialogueId "night_shift"
+  }
+  LF_PlaceComponent "{13ED0F31F3AB4768}" {
+   m_sKind "Townsfolk"
+   m_sId "night_shift"
+  }
+  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{B0F4EAC29E9058EA}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_grey.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{537FD11C135757AC}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey_Dirty.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+    LoadoutSlotInfo Hat {
+     Enabled 1
+     Prefab "{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{ECD11017762BA5F9}" {
+     ContextName "Talk"
+     Position PointInfo "{5D1CD9BC8239101E}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{98BA6512C0F36DED}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{F4263E9CAB71F6C8}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
+ }
+}

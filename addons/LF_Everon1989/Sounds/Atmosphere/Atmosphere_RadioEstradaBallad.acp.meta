@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7643498A7C24A72C}Sounds/Atmosphere/Atmosphere_RadioEstradaBallad.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

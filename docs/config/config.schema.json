@@ -140,6 +140,16 @@
                 "minimum": 0,
                 "maximum": 604800
               },
+              "issue": {
+                "type": "boolean",
+                "description": "Issue: the outlet hands the item out free to a buyer who passes the gates, and books a serial to them (the police armory, #1763). No money moves",
+                "default": false
+              },
+              "issuePrefab": {
+                "type": "string",
+                "description": "Issue: the prefab handed out instead of the item's own, a twin that carries a serial component. Empty hands out the item's prefab",
+                "default": ""
+              },
               "removed": {
                 "type": "boolean",
                 "description": "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead",
@@ -374,10 +384,32 @@
           "type": "boolean",
           "description": "A jail sentence counts down while the prisoner is offline. Off: only online time is served",
           "default": false
+        },
+        "contactWindowSeconds": {
+          "type": "integer",
+          "description": "Seconds after police contact (a stop, a search, a chase report) in which logging out wanted is jailed like a cuffed logout. 0 turns the rule off",
+          "default": 120,
+          "minimum": 0,
+          "maximum": 3600
         }
       },
       "additionalProperties": false,
       "x-class": "LF_DisconnectConfig"
+    },
+    "grace": {
+      "type": "object",
+      "description": "The grace period setting (Configs/Moderation/LF_Grace.conf).",
+      "properties": {
+        "minutes": {
+          "type": "integer",
+          "description": "Minutes of playtime a new character is protected from being held up or arrested (and may not rob). 0 = no grace. A first crime ends it early",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 600
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_GraceConfig"
     },
     "idCard": {
       "type": "object",
@@ -653,6 +685,28 @@
       },
       "additionalProperties": false,
       "x-class": "LF_LicencesConfig"
+    },
+    "logoutBody": {
+      "type": "object",
+      "description": "Owner config, section \"logoutBody\".",
+      "properties": {
+        "windowSeconds": {
+          "type": "integer",
+          "description": "Seconds a logged-out character stays in the world as a lootable body. 0 turns the body off (the character leaves with the player)",
+          "default": 300,
+          "minimum": 0,
+          "maximum": 3600
+        },
+        "downedWindowSeconds": {
+          "type": "integer",
+          "description": "Seconds the body stays when the player left downed and did not die (disconnect downedDies off). Never shorter than windowSeconds",
+          "default": 600,
+          "minimum": 0,
+          "maximum": 3600
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_LogoutBodyConfig"
     },
     "organizations": {
       "type": "object",
@@ -1126,6 +1180,57 @@
       },
       "additionalProperties": false,
       "x-class": "LF_PoliceConfig"
+    },
+    "respawn": {
+      "type": "object",
+      "description": "Where a dead player wakes and what it costs.",
+      "properties": {
+        "wakeInHospital": {
+          "type": "boolean",
+          "description": "After a death, respawn in a hospital bed (LF_HospitalBedComponent). Off, or no bed in the world: the spawn plaza",
+          "default": true
+        },
+        "billAmount": {
+          "type": "integer",
+          "description": "Treatment bill written on paper at every respawn after a death, paid in cash at the hospital desk (#260). 0 disables the bill",
+          "default": 150,
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "wakeLoiterType": {
+          "type": "integer",
+          "description": "Loiter animation the waking body plays: the base game tutorial's bed wake (7 full, 8 fast). 0 skips the animation",
+          "default": 7,
+          "minimum": 0,
+          "maximum": 64
+        },
+        "wakeRootMotion": {
+          "type": "boolean",
+          "description": "The wake animation moves the body (root motion), so it gets off the bed instead of standing on it",
+          "default": true
+        },
+        "wakeLieSeconds": {
+          "type": "number",
+          "description": "Seconds before the bed loiter is stopped into the get-up. 0 lets the animation end by itself",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 600
+        },
+        "rejoinAtLastPosition": {
+          "type": "boolean",
+          "description": "A returning character spawns where it logged out (rejoinAtLastPosition, #1778). Off: the normal spawn point. A jail return and a hospital wake come first; a stale or unsafe spot falls back to the spawn point (LF_RejoinSpot)",
+          "default": false
+        },
+        "rejoinMaxAgeHours": {
+          "type": "integer",
+          "description": "A saved spot older than this many hours is stale and the character takes the spawn point. 0 means no age limit",
+          "default": 12,
+          "minimum": 0,
+          "maximum": 720
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_RespawnConfig"
     },
     "restarts": {
       "type": "object",

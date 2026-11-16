@@ -8,3 +8,10 @@ SCR_SpawnPoint Spawn_Grid_Gate : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_
 SCR_MPDestructionManager MPDestructionManager : "{9BB369F2803C6F71}Prefabs/MP/MPDestructionManager.et" {
  coords 0 0 0
 }
+SCR_DestructibleEntity LF_TestRunner : "{467951CEFC8F345B}PrefabLibrary/Props/Civilian/SignPub_01.et" {
+ components {
+  LF_TestRunnerComponent "{A5E5E5A1B17E0001}" {
+  }
+ }
+ coords 59.995 0.001 103.617
+}

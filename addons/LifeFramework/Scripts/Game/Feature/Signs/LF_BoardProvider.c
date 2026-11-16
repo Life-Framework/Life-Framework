@@ -9,7 +9,7 @@
 //! read asks the server again, so a card never shows what changed since.
 //!
 //! Registering: a feature adds `modded class LF_BoardProviderSet` in its own file and inserts its
-//! provider in Collect (the registry holds no central list; the shape of LF_StaticResetHooks).
+//! provider in Collect (the registry holds no central list).
 //------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------
@@ -231,15 +231,19 @@ class LF_BoardProviders
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_BoardProviders's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_BoardProviders_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_BoardProviders_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_BoardProviders");
-		if (apply)
-			LF_BoardProviders.ResetStatics();
+		return "LF_BoardProviders";
+	}
+
+	override void Apply()
+	{
+		LF_BoardProviders.ResetStatics();
 	}
 }
 

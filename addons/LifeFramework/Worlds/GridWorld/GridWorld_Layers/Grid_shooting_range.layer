@@ -49,3 +49,13 @@ SCR_FiringRangeTarget Grid_shooting_range_R0_3 : "{4D1A82E96B30C7F5}Prefabs/Prop
  coords 25.5 0 78.99
  angleY 90
 }
+GenericEntity Grid_shooting_range_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "shooting-range"
+  }
+ }
+ coords 33.7 0 78.5
+ angleY 270
+}

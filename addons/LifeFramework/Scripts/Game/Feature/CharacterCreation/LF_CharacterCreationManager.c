@@ -455,6 +455,8 @@ class LF_CharacterCreationManager : Managed
 
 		LF_PlayerCharacter character = LF_PlayerCharacter.Create(DEFAULT_CHARACTER_PREFAB, firstName.Trim(), lastName.Trim(), age);
 		account.AddCharacter(character, true);
+		// Its next spawn is its first (#1964); the spawn logic reads and clears the mark.
+		LF_FirstSpawn.Mark(character.GetId());
 		m_RegisterOffered.RemoveItem(playerId);
 		LF_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 		LF_AccountReplication.Publish(account);
@@ -477,6 +479,7 @@ class LF_CharacterCreationManager : Managed
 		{
 			LF_PlayerCharacter character = LF_PlayerCharacter.Create(DEFAULT_CHARACTER_PREFAB, LF_WorkbenchPlay.DEV_FIRST_NAME, LF_WorkbenchPlay.DEV_LAST_NAME, LF_WorkbenchPlay.DEV_AGE);
 			account.AddCharacter(character, true);
+			LF_FirstSpawn.Mark(character.GetId());
 			LF_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 			LF_AccountReplication.Publish(account);
 			OpenStartingBank(account.GetActiveCharacterKey());

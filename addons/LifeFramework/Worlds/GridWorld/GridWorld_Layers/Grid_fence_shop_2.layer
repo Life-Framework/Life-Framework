@@ -41,3 +41,13 @@ GenericEntity FenceStall_Grid : "{4855AC571C89CA6D}Prefabs/Props/Commercial/LF_F
  coords 37.429 0 75.998
  angleY 90
 }
+GenericEntity Grid_fence_shop_2_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "fence-shop-2"
+  }
+ }
+ coords 45.7 0 78.5
+ angleY 270
+}

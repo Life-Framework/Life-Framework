@@ -193,6 +193,12 @@ export function buildLine(id, spec) {
     if (!/^[A-Z][A-Z0-9_]{1,63}$/.test(spec.name ?? "")) throw new Error(`licence needs an LF_ELicenseType name such as FIREARM_PERMIT: ${spec.name}`);
     return `${id} licence ${spec.name}`;
   }
+  if (spec.verb === "pausemenu") {
+    // pausemenu [open|close]: opens the pause menu the way Escape does, or puts it away (LF_HandbookScreen.c, #1773).
+    const mode = spec.mode ?? "open";
+    if (mode !== "open" && mode !== "close") throw new Error(`pausemenu mode must be open or close: ${mode}`);
+    return `${id} pausemenu ${mode}`;
+  }
   if (spec.verb === "staffapprove") {
     // staffapprove <uid>: approve that account's open police application through LF_PoliceApplicationStaff.ApproveByUid
     // (LF_HarnessStaff). The uid is the same test as the staff API's (1..64 of letters, digits, - and _).
@@ -361,6 +367,8 @@ export function buildLine(id, spec) {
     return `${line} ${seconds}`;
   }
   if (spec.verb === "scene" || spec.verb === "camera") return `${id} ${spec.verb} ${spec.args}`;
+  // A feature verb (a modded LF_AgentHarnessVerbs): its words after the verb go to the game as they are.
+  if (/^[a-z][a-z0-9]*$/.test(spec.verb) && Array.isArray(spec.words)) return `${id} ${spec.verb} ${spec.words.join(" ")}`.trim();
   throw new Error(`unknown verb: ${spec.verb}`);
 }
 
@@ -780,6 +788,7 @@ export function runFlow(lines) {
     } else if (verb === "use") result = sendCommand({ verb: "use", className: rest[0], entityName: rest[1] });
     else if (verb === "input") result = sendCommand({ verb: "input", action: rest[0], value: rest[1] });
     else if (verb === "open") result = sendCommand({ verb: "open", menu: rest[0], mode: rest[1] });
+    else if (verb === "pausemenu") result = sendCommand({ verb: "pausemenu", mode: rest[0] });
     else if (verb === "kit") result = sendKit(rest);
     else if (verb === "layer") {
       const played = playLayer(rest[0], rest[1]);

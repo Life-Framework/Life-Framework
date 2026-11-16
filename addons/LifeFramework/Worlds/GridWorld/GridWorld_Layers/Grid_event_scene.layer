@@ -1,0 +1,118 @@
+// Grid cell c1r2 for event-scene: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_event_scene_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 47
+}
+SCR_DestructibleEntity Grid_event_scene_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 40 0 47
+}
+SCR_DestructibleEntity Grid_event_scene_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 47
+ angleY 270
+}
+SCR_DestructibleEntity Grid_event_scene_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_event_scene_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 40 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_event_scene_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 57
+ angleY 90
+}
+SCR_DestructibleEntity Grid_event_scene_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 52
+ angleY 90
+}
+GenericEntity Grid_event_scene_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:event-scene"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 45.8 0.505 56.4
+ angleY 90
+}
+GenericEntity Grid_event_scene_R0_3 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "grid_event_scene"
+   m_iOrder 2
+  }
+ }
+ coords 37.499 0.002 53
+ angleY 90
+}
+GenericEntity Grid_event_scene_R0_1 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "grid_event_scene"
+   m_iOrder 0
+  }
+ }
+ coords 37.499 0.002 49
+ angleY 90
+}
+GenericEntity Grid_event_scene_R0_4 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "grid_event_scene"
+   m_iOrder 3
+  }
+ }
+ coords 37.499 0.002 55
+ angleY 90
+}
+GenericEntity Grid_event_scene_R0_2 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "grid_event_scene"
+   m_iOrder 1
+  }
+ }
+ coords 37.499 0.002 51
+ angleY 90
+}
+GenericEntity Grid_event_scene_R1_1 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "grid_event_scene"
+   m_iOrder 0
+  }
+ }
+ coords 39.999 0.002 49
+ angleY 90
+}
+GenericEntity Grid_event_scene_R1_2 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "grid_event_scene"
+   m_iOrder 1
+  }
+ }
+ coords 39.999 0.002 52
+ angleY 90
+}
+GenericEntity Grid_event_scene_R1_3 : "{F716FD32069F2BE8}Prefabs/Systems/Events/LF_EventMarker_Target.et" {
+ components {
+  LF_EventWaypointComponent "{E01299EF5C4B8221}" {
+   m_sSceneId "grid_event_scene"
+  }
+ }
+ coords 39.999 0.002 55
+ angleY 90
+}
+GenericEntity Grid_event_scene_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "event-scene"
+  }
+ }
+ coords 45.7 0 54.5
+ angleY 270
+}

@@ -1,0 +1,9 @@
+{
+  "exit": 0,
+  "parse": "ok",
+  "problems": [],
+  "boot": true,
+  "bootLog": {
+    "has": [ "respawn: owner config read 2 fields, rejected 0", "rejoinAtLastPosition=1 maxAgeHours=12", "grace: owner config read 1 fields, rejected 0" ]
+  }
+}

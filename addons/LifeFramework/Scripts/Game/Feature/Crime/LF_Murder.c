@@ -4,6 +4,7 @@
 //! through the same report path as a robbery: LF_WantedReports records the killer's clothes,
 //! vehicle, and place, never the name, and every on-duty officer gets an alert.
 //!
+//! A logged-out body (LF_LogoutBody) is its player: killing it is murder with the player's uid.
 //! What does not count: a death with no player behind it (an NPC, a fall, a fire), a self-kill,
 //! and, by default (LF_Police.conf m_bOfficerKillOfWantedExempt), an on-duty officer killing a
 //! wanted suspect. Repeat offenders are an admin matter: no ban, no kick, no karma.
@@ -50,6 +51,27 @@ class LF_Murder
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The account uid behind a victim: a connected player's uid, or the uid whose logout body this
+	//! is (the body has no controlling player, so victimPlayerId is 0, #2103). Empty for an NPC.
+	static string VictimUid(IEntity victim, int victimPlayerId)
+	{
+		if (victimPlayerId > 0)
+			return LF_Utils.GetPlayerUID(victimPlayerId);
+
+		return LF_LogoutBody.UidOfBody(victim);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Is a player behind this victim: connected, or logged out and still lying in the world.
+	static bool VictimIsPlayer(IEntity victim, int victimPlayerId)
+	{
+		if (victimPlayerId > 0)
+			return true;
+
+		return !LF_LogoutBody.UidOfBody(victim).IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: a controllable died. Decides whether it was murder and records it.
 	//! \return True when a murder was recorded.
 	static bool OnCharacterKilled(IEntity victim, IEntity killerEntity, int victimPlayerId, int killerPlayerId)
@@ -75,22 +97,29 @@ class LF_Murder
 				killerOnDuty = killerAccount.GetFaction() == LF_Faction.POLICE && killerAccount.IsOnDuty();
 		}
 
+		// A logged-out body has no controlling player (victimPlayerId 0) but is still its player:
+		// its account uid stands in, so the kill gets the player-kill outcome (#2103).
+		bool victimIsPlayer = VictimIsPlayer(victim, victimPlayerId);
 		int victimWanted;
 		string victimLabel = "npc";
-		if (victimPlayerId > 0)
+		string victimUid;
+		if (victimIsPlayer)
 		{
-			string victimUid = LF_Utils.GetPlayerUID(victimPlayerId);
+			victimUid = VictimUid(victim, victimPlayerId);
 			victimLabel = victimUid;
 			LF_PlayerAccount victimAccount = FindAccount(victimUid);
 			if (victimAccount)
 				victimWanted = victimAccount.GetWantedLevel();
+
+			if (!killerUid.IsEmpty() && killerUid == victimUid)
+				killerIsVictim = true;
 		}
 
 		string skip = SkipReason(killerPlayerId, victimPlayerId, isCharacter, killerIsVictim, killerOnDuty, victimWanted, OfficerExempt());
 		if (skip.IsEmpty() && victim && LF_Zones.WantedSuppressedAt(victim.GetOrigin()))
 			skip = SKIP_LAWLESS_ZONE;
 
-		if (victimPlayerId > 0)
+		if (victimIsPlayer)
 		{
 			string killerPlayerUid;
 			if (killerPlayerId > 0 && !killerIsVictim)

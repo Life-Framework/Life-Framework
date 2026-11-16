@@ -115,7 +115,21 @@ class LF_JailArrestAction : ScriptedUserAction
 			return;
 		}
 
+		// A new character is in its grace (#1780): the officer is told, nothing else happens.
+		if (RefusedByGrace(prisonerUid))
+		{
+			LF_Grace.Notify(pUserEntity);
+			return;
+		}
+
 		LF_Jail.Arrest(officerUid, prisonerUid, pOwnerEntity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: is this suspect protected by the new-character grace? Logs the refusal.
+	static bool RefusedByGrace(string prisonerUid)
+	{
+		return LF_Grace.Refuses(prisonerUid, "arrest");
 	}
 
 	//------------------------------------------------------------------------------------------------

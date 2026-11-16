@@ -15,7 +15,7 @@
 // "FAIL a slice that edits Street_Hospital.layer is refused" and exited 1 (2026-11-15); restored, it passes.
 
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
@@ -174,6 +174,68 @@ try {
     ok(e.some((x) => /signs\.json/.test(x) && /c2r4/.test(x) && /origin\/main/.test(x) && /orgs/.test(x)), `a claim on a cell origin/main gives to another slice is reported (${e.join("; ")})`);
   } finally {
     rmSync(r3, { recursive: true, force: true });
+  }
+}
+
+// ---- capacity (2026-11-16): the lattice grew east, and a claim may span several cells
+{
+  const L = await import("../grid/lattice.mjs");
+  ok(L.CELL.cols === 11 && L.CELL.rows === 7 && allCells().length === 77, "the lattice is 11 x 7 cells");
+  ok(cellBounds(0, 0).x0 === 22 && cellBounds(6, 6).x1 === 106, "the old cells keep their coordinates (c0r0 at 22,22; c6r6 ends at 106)");
+  ok(L.GRID_FENCE.x1 === 160 && L.GRID_FENCE.z1 === 112 && L.GRID_FENCE.x0 === 20, "the outer fence is x 20..160, z 20..112");
+  ok(L.GRID_FENCE.x1 < L.TERRAIN_SIZE && L.GRID_FENCE.z1 < L.TERRAIN_SIZE, "the grid fits inside GridTerrain (512 m)");
+  ok(inGrid(150, 30) && !inGrid(161, 30), "inGrid follows the wider fence");
+  ok(allCells().find((c) => c.id === "c3r4") && cellBounds(7, 0).x0 === 106 && gapSide({ ...cellBounds(10, 3) }).side === "west", "the new east cells face the centre, so an old cell's gap never flips");
+  ok(L.claimCellIds({ cell: "c2r1", span: [3, 2] }).join() === "c2r1,c3r1,c4r1,c2r2,c3r2,c4r2", "a 3 x 2 claim covers six cells");
+  ok(L.claimCellIds({ cell: "c9r6", span: [3, 1] }).length === 0 && L.claimCellIds({ cell: "c0r0", span: [0, 1] }).length === 0, "a span that leaves the lattice or is empty covers nothing");
+  ok(L.claimCellIds({ cell: "c3r3" }).join() === "c3r3", "no span is one cell");
+  const r = L.claimRect({ cell: "c7r0", span: [3, 2] });
+  ok(r.x0 === 106 && r.x1 === 142 && r.z0 === 22 && r.z1 === 46, "a 3 x 2 claim from c7r0 is the 36 x 24 m rectangle (a 33 x 19 m hotel fits)");
+  const hotel = allocate("hotel", { span: [3, 2], ents: [] });
+  ok(hotel && hotel.w === 3 && hotel.h === 2 && L.claimCellIds({ cell: hotel.id, span: [3, 2] }).length === 6, "allocate finds a free 3 x 2 block");
+  const taken = new Set(allCells().map((c) => c.id));
+  for (const id of L.claimCellIds({ cell: "c8r2", span: [3, 2] })) taken.delete(id);
+  ok(allocate("hotel", { span: [3, 2], ents: [], taken })?.id === "c8r2", "allocate takes the one free block, never a block with a claimed cell in it");
+  ok(allocate("hotel", { span: [3, 2], ents: [], taken: new Set([...taken, "c9r3"]) }) === null, "a block with one claimed cell is not free");
+  const wide = yardPlan(r);
+  ok(wide.runs.length === 22 && wide.signAt, `a 3 x 2 yard (34 x 22 m) has 7+7+5+5 runs less the 2 left out for the gap (got ${wide.runs.length})`);
+  const big = rowLine(r, 0);
+  ok(big && big.a[0] >= r.x0 && big.b[0] <= r.x1 && big.a[1] >= r.z0 && big.b[1] <= r.z1, "the first row of a big yard stays inside it");
+  ok(lookArea({ slug: "hotel", cell: "c7r0", span: [3, 2] }).radius === 24 && lookArea({ slug: "x", cell: "c0r0" }).radius === 8, "a big claim's look area is wider");
+  const r4 = mkdtempSync(join(tmpdir(), "lf-grid-span-"));
+  try {
+    put(r4, `${CELLS_DIR}/hotel.json`, JSON.stringify({ slug: "hotel", cell: "c7r0", span: [3, 2], layer: layerOfSlug("hotel"), rows: 0, created: "2026-11-16" }));
+    put(r4, `${GRID_LAYERS}/${layerOfSlug("hotel")}`, yardLayer("hotel", r, P) + ["GenericEntity Grid_hotel_Lobby : \"{99D61E9EDBDF3CC8}Prefabs/x.et\" {", " coords 140 0 44", "}", ""].join("\n"));
+    ok(checkClaims(r4).errors.length === 0, `a spanning claim with props anywhere in its block passes (${checkClaims(r4).errors.join("; ")})`);
+    put(r4, `${CELLS_DIR}/inn.json`, claim("inn", "c9r1"));
+    put(r4, `${GRID_LAYERS}/${layerOfSlug("inn")}`, yardLayer("inn", { id: "c9r1", col: 9, row: 1, ...cellBounds(9, 1) }, P));
+    ok(checkClaims(r4).errors.some((x) => /inn.json/.test(x) && /c9r1/.test(x) && /hotel/.test(x)), "a claim on a cell inside another's span is reported");
+    ok(checkClaims(r4, { mainClaims: [{ file: "x", slug: "other", cell: "c8r0", span: [2, 2] }] }).errors.some((x) => /already claimed on origin.main by other/.test(x)), "origin/main's spanning claim counts as taken");
+    const bad = { slug: "tall", cell: "c10r5", span: [1, 4] };
+    put(r4, `${CELLS_DIR}/tall.json`, JSON.stringify({ ...bad, layer: layerOfSlug("tall"), rows: 0 }));
+    ok(checkClaims(r4).errors.some((x) => /tall.json/.test(x) && /not a block/.test(x)), "a span that leaves the lattice is reported");
+  } finally {
+    rmSync(r4, { recursive: true, force: true });
+  }
+  const r5 = mkdtempSync(join(tmpdir(), "lf-grid-spanplace-"));
+  try {
+    mkdirSync(join(r5, GRID_LAYERS), { recursive: true });
+    mkdirSync(join(r5, CELLS_DIR), { recursive: true });
+    const out = [];
+    const log = console.log;
+    console.log = (...a) => out.push(a.join(" "));
+    let code;
+    try {
+      code = await gridMain(["place", "ballroom", "--span", "2x2", "--no-fetch", "--no-verify"], { root: r5, openPrClaims: () => ({ claims: [], note: "" }) });
+    } finally {
+      console.log = log;
+    }
+    ok(code === 0, `grid place --span 2x2 succeeds (${out.join(" | ")})`);
+    const j = JSON.parse(readFileSync(join(r5, CELLS_DIR, "ballroom.json"), "utf8"));
+    ok(JSON.stringify(j.span) === "[2,2]", "the claim file records the span");
+    ok(checkClaims(r5).errors.length === 0, `the spanning layer passes validate (${checkClaims(r5).errors.join("; ")})`);
+  } finally {
+    rmSync(r5, { recursive: true, force: true });
   }
 }
 

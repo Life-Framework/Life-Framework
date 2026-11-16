@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D794DE1A99D396A8}Configs/Dialogue/LF_DialogueIndex_CafeOwner.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

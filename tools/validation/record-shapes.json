@@ -1,5 +1,5 @@
 {
-  "saveVersion": 36,
+  "saveVersion": 41,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -38,7 +38,12 @@
     "vehiclestate": "LF_VehicleStateRow",
     "heldground": "LF_HeldGroundRow",
     "itemstolen": "LF_StorageItemStolenRecord",
-    "convictions": "LF_ConvictionRow"
+    "convictions": "LF_ConvictionRow",
+    "firstspawns": "LF_FirstSpawnRow",
+    "racerecords": "LF_RaceRecordRow",
+    "lastpos": "LF_LastPositionRow",
+    "hospitalrejoin": "LF_HospitalRejoinRow",
+    "worldevents": "LF_EventShellRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -472,6 +477,50 @@
         "string m_sPlayerUid",
         "int m_iDay",
         "int m_iCount"
+      ]
+    },
+    "LF_FirstSpawnRow": {
+      "since": 37,
+      "fields": [
+        "string m_sCharacterId"
+      ]
+    },
+    "LF_RaceRecordRow": {
+      "since": 38,
+      "fields": [
+        "string m_sCourseId",
+        "string m_sUid",
+        "string m_sName",
+        "int m_iBestMs"
+      ]
+    },
+    "LF_LastPositionRow": {
+      "since": 39,
+      "fields": [
+        "string m_sCharacterId",
+        "vector m_vPosition",
+        "float m_fYaw",
+        "int m_iTakenUnix"
+      ]
+    },
+    "LF_HospitalRejoinRow": {
+      "since": 40,
+      "fields": [
+        "string m_sPlayerUid",
+        "int m_iLoggedOutUnix"
+      ]
+    },
+    "LF_EventShellRow": {
+      "since": 41,
+      "fields": [
+        "int m_iVersion",
+        "string m_sEventId",
+        "string m_sPhaseName",
+        "float m_fPhaseAge",
+        "float m_fCooldownLeft",
+        "float m_fEndedAgo",
+        "array<string> m_aIntKeys",
+        "array<int> m_aIntValues"
       ]
     }
   }

@@ -1,0 +1,32 @@
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ ID "0C8689557692B8E1"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Enabled 1
+     Prefab "{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{52AB6EC3FE535303}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_Brown_V1.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{E65D5C9848AC18E9}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_brown_V1.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+   }
+  }
+  SlotManagerComponent "{AA51DCAE3EF943B8}" {
+   Slots {
+    EntitySlotInfo Suitcase {
+     PivotID "RightHandProp"
+     Offset 0 -0.05 0
+     Angles 0 0 -180
+     Prefab "{A635265E5BAC8DCB}Prefabs/Props/Roleplay/LF_Prop_SuitcaseCarried.et"
+    }
+   }
+  }
+ }
+}

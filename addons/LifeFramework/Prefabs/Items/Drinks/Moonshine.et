@@ -1,0 +1,26 @@
+GenericEntity : "{693D54F74C95B3D6}Prefabs/Items/Drinks/Drink_Base.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Moonshine"
+     Description "A bottle of clear homebrew"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.9
+     SizeSetupStrategy Volume
+     ItemVolume 900
+    }
+   }
+  }
+  SCR_ConsumableItemComponent "{5AD2A3AD8402632B}" {
+   m_ConsumableEffect LF_ConsumableEffectImpair "{89685898B29F4A24}" {
+    m_fThirstRestore 3
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{AFDDAEDF81F02E79}Assets/Props/S2/S2_Vodka/S2_Vodka.xob"
+  }
+ }
+}

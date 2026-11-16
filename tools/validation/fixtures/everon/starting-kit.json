@@ -1,0 +1,22 @@
+{
+ "kind": "outlets",
+ "outlet": "starting_kit",
+ "offers": [
+  { "item": "jacket_denim_brown" },
+  { "item": "trousers_dark_brown" },
+  { "item": "boots_work" },
+  { "item": "hat_flatcap_darkgrey" },
+  { "item": "cash_start" },
+  { "item": "jacket_m70", "present": false },
+  { "item": "trousers_m70", "present": false },
+  { "item": "boots_combat_us", "present": false },
+  { "item": "hat_panama_soviet", "present": false },
+  { "item": "backpack_alice_medium", "present": false },
+  { "item": "police_shirt", "present": false },
+  { "item": "police_trousers", "present": false },
+  { "item": "police_cap", "present": false },
+  { "item": "doctor_coat", "present": false },
+  { "item": "pistol_m9", "present": false },
+  { "item": "rifle_m16a2", "present": false }
+ ]
+}

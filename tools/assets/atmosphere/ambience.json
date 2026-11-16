@@ -288,6 +288,120 @@
       "prompt": "A small diesel delivery van engine idling at a kerb: a steady low diesel tick-over with a slight rattle and a faint exhaust rumble. Outdoors, constant level, no revving, no voices, no music.",
       "pick": 1,
       "reason": "First take. Even diesel tick-over, no revving; loop step 0.32 is engine texture."
+    },
+    {
+      "id": "radio_estrada_ballad",
+      "name": "RadioEstradaBallad",
+      "kind": "music",
+      "radio": true,
+      "synth": "tools/assets/atmosphere/radio-synth.mjs",
+      "seconds": 62,
+      "rate": 24000,
+      "volume_db": -12,
+      "inner_m": 2,
+      "outer_m": 26,
+      "seam_ms": 20,
+      "takes": 1,
+      "fade_in_ms": 300,
+      "fade_out_ms": 250,
+      "prompt": "Original instrumental estrada ballad in the style of late-1980s Eastern European radio: slow 92 bpm minor-key melody on a breathy flute over electric piano arpeggios, a string pad, plucked bass and a drum machine with a gated snare. Composed and rendered by script.",
+      "pick": 1,
+      "reason": "Only take. Rendered as a circular buffer, so the loop closes with no crossfade; the level sits with the other radio tracks once the bank volume is applied."
+    },
+    {
+      "id": "radio_estrada_dance",
+      "name": "RadioEstradaDance",
+      "kind": "music",
+      "radio": true,
+      "synth": "tools/assets/atmosphere/radio-synth.mjs",
+      "seconds": 62,
+      "rate": 24000,
+      "volume_db": -11,
+      "inner_m": 2,
+      "outer_m": 26,
+      "seam_ms": 20,
+      "takes": 1,
+      "fade_in_ms": 300,
+      "fade_out_ms": 250,
+      "prompt": "Original instrumental estrada dance number in the style of late-1980s Eastern European radio: 122 bpm, bright synthesizer lead, 16th-note synth arpeggio, synth bass, four-on-the-floor drum machine with clap and offbeat hats, string pad, one drum-free break. Composed and rendered by script.",
+      "pick": 1,
+      "reason": "Only take. Rendered as a circular buffer, so the loop closes with no crossfade; the level sits with the other radio tracks once the bank volume is applied."
+    },
+    {
+      "id": "radio_accordion_waltz",
+      "name": "RadioAccordionWaltz",
+      "kind": "music",
+      "radio": true,
+      "synth": "tools/assets/atmosphere/radio-synth.mjs",
+      "seconds": 62,
+      "rate": 24000,
+      "volume_db": -12,
+      "inner_m": 2,
+      "outer_m": 26,
+      "seam_ms": 20,
+      "takes": 1,
+      "fade_in_ms": 300,
+      "fade_out_ms": 250,
+      "prompt": "Original instrumental accordion waltz in the style of Mediterranean regional radio: 3/4 at 150 bpm in a major key, musette-tuned accordion melody in parallel thirds, oom-pah-pah bass and chord stabs, brushed snare. Composed and rendered by script.",
+      "pick": 1,
+      "reason": "Only take. Rendered as a circular buffer, so the loop closes with no crossfade; the level sits with the other radio tracks once the bank volume is applied."
+    },
+    {
+      "id": "radio_accordion_kolo",
+      "name": "RadioAccordionKolo",
+      "kind": "music",
+      "radio": true,
+      "synth": "tools/assets/atmosphere/radio-synth.mjs",
+      "seconds": 62,
+      "rate": 24000,
+      "volume_db": -13,
+      "inner_m": 2,
+      "outer_m": 26,
+      "seam_ms": 20,
+      "takes": 1,
+      "fade_in_ms": 300,
+      "fade_out_ms": 250,
+      "prompt": "Original instrumental Balkan kolo in the style of Eastern European regional radio: lively 2/4 at 124 bpm in a phrygian-dominant scale, clarinet melody doubled in thirds, accordion chord stabs on the off-beat, oom-pah bass, snare and tambourine. Composed and rendered by script.",
+      "pick": 1,
+      "reason": "Only take. Rendered as a circular buffer, so the loop closes with no crossfade; the level sits with the other radio tracks once the bank volume is applied."
+    },
+    {
+      "id": "radio_orchestral_morning",
+      "name": "RadioOrchestralMorning",
+      "kind": "music",
+      "radio": true,
+      "synth": "tools/assets/atmosphere/radio-synth.mjs",
+      "seconds": 62,
+      "rate": 24000,
+      "volume_db": -13,
+      "inner_m": 2,
+      "outer_m": 26,
+      "seam_ms": 20,
+      "takes": 1,
+      "fade_in_ms": 300,
+      "fade_out_ms": 250,
+      "prompt": "Original instrumental light orchestral piece in the style of 1980s radio morning programmes: gentle 104 bpm major-key flute melody over a string pad, harp-like arpeggios, plucked bass and a soft shaker. Composed and rendered by script.",
+      "pick": 1,
+      "reason": "Only take. Rendered as a circular buffer, so the loop closes with no crossfade; the level sits with the other radio tracks once the bank volume is applied."
+    },
+    {
+      "id": "radio_orchestral_serenade",
+      "name": "RadioOrchestralSerenade",
+      "kind": "music",
+      "radio": true,
+      "synth": "tools/assets/atmosphere/radio-synth.mjs",
+      "seconds": 62,
+      "rate": 24000,
+      "volume_db": -13,
+      "inner_m": 2,
+      "outer_m": 26,
+      "seam_ms": 20,
+      "takes": 1,
+      "fade_in_ms": 300,
+      "fade_out_ms": 250,
+      "prompt": "Original instrumental Mediterranean serenade in the style of 1980s radio: 88 bpm dorian-mode clarinet melody over strummed nylon guitar, string pad, plucked bass and bolero claves with a soft shaker. Composed and rendered by script.",
+      "pick": 1,
+      "reason": "Only take. Rendered as a circular buffer, so the loop closes with no crossfade; the level sits with the other radio tracks once the bank volume is applied."
     }
   ],
   "generations": [
@@ -652,6 +766,108 @@
         "rms_db": -36.1,
         "wrap": 0.01
       }
+    },
+    {
+      "id": "radio_estrada_ballad",
+      "take": 1,
+      "date": "2026-11-16",
+      "tool": "Procedural synth (tools/assets/atmosphere/radio-synth.mjs)",
+      "model": "none",
+      "prompt": "Original instrumental estrada ballad in the style of late-1980s Eastern European radio: slow 92 bpm minor-key melody on a breathy flute over electric piano arpeggios, a string pad, plucked bass and a drum machine with a gated snare. Composed and rendered by script.",
+      "seconds": 62.61,
+      "bytes": 3005262,
+      "credits": 0,
+      "processed": {
+        "seconds": 62.61,
+        "peak_db": -3,
+        "rms_db": -16.2,
+        "wrap": 0.18
+      }
+    },
+    {
+      "id": "radio_estrada_dance",
+      "take": 1,
+      "date": "2026-11-16",
+      "tool": "Procedural synth (tools/assets/atmosphere/radio-synth.mjs)",
+      "model": "none",
+      "prompt": "Original instrumental estrada dance number in the style of late-1980s Eastern European radio: 122 bpm, bright synthesizer lead, 16th-note synth arpeggio, synth bass, four-on-the-floor drum machine with clap and offbeat hats, string pad, one drum-free break. Composed and rendered by script.",
+      "seconds": 62.95,
+      "bytes": 3021684,
+      "credits": 0,
+      "processed": {
+        "seconds": 62.95,
+        "peak_db": -3,
+        "rms_db": -17.1,
+        "wrap": 0.03
+      }
+    },
+    {
+      "id": "radio_accordion_waltz",
+      "take": 1,
+      "date": "2026-11-16",
+      "tool": "Procedural synth (tools/assets/atmosphere/radio-synth.mjs)",
+      "model": "none",
+      "prompt": "Original instrumental accordion waltz in the style of Mediterranean regional radio: 3/4 at 150 bpm in a major key, musette-tuned accordion melody in parallel thirds, oom-pah-pah bass and chord stabs, brushed snare. Composed and rendered by script.",
+      "seconds": 62.4,
+      "bytes": 2995244,
+      "credits": 0,
+      "processed": {
+        "seconds": 62.4,
+        "peak_db": -3,
+        "rms_db": -16.4,
+        "wrap": 0.05
+      }
+    },
+    {
+      "id": "radio_accordion_kolo",
+      "take": 1,
+      "date": "2026-11-16",
+      "tool": "Procedural synth (tools/assets/atmosphere/radio-synth.mjs)",
+      "model": "none",
+      "prompt": "Original instrumental Balkan kolo in the style of Eastern European regional radio: lively 2/4 at 124 bpm in a phrygian-dominant scale, clarinet melody doubled in thirds, accordion chord stabs on the off-beat, oom-pah bass, snare and tambourine. Composed and rendered by script.",
+      "seconds": 61.94,
+      "bytes": 2972948,
+      "credits": 0,
+      "processed": {
+        "seconds": 61.94,
+        "peak_db": -3,
+        "rms_db": -15.3,
+        "wrap": 0.06
+      }
+    },
+    {
+      "id": "radio_orchestral_morning",
+      "take": 1,
+      "date": "2026-11-16",
+      "tool": "Procedural synth (tools/assets/atmosphere/radio-synth.mjs)",
+      "model": "none",
+      "prompt": "Original instrumental light orchestral piece in the style of 1980s radio morning programmes: gentle 104 bpm major-key flute melody over a string pad, harp-like arpeggios, plucked bass and a soft shaker. Composed and rendered by script.",
+      "seconds": 64.62,
+      "bytes": 3101582,
+      "credits": 0,
+      "processed": {
+        "seconds": 64.62,
+        "peak_db": -3,
+        "rms_db": -14.6,
+        "wrap": 0.25
+      }
+    },
+    {
+      "id": "radio_orchestral_serenade",
+      "take": 1,
+      "date": "2026-11-16",
+      "tool": "Procedural synth (tools/assets/atmosphere/radio-synth.mjs)",
+      "model": "none",
+      "prompt": "Original instrumental Mediterranean serenade in the style of 1980s radio: 88 bpm dorian-mode clarinet melody over strummed nylon guitar, string pad, plucked bass and bolero claves with a soft shaker. Composed and rendered by script.",
+      "seconds": 65.45,
+      "bytes": 3141862,
+      "credits": 0,
+      "processed": {
+        "seconds": 65.45,
+        "peak_db": -3,
+        "rms_db": -14.6,
+        "wrap": 0.63
+      }
     }
   ],
   "runs": [
@@ -804,6 +1020,36 @@
     "van_idle": {
       "project": "{676F8D61F536FDD2}Sounds/Atmosphere/Atmosphere_VanIdle.acp",
       "sample": "{0E26CD428A38A60B}Sounds/Atmosphere/Samples/Atmosphere_VanIdle_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "radio_estrada_ballad": {
+      "project": "{7643498A7C24A72C}Sounds/Atmosphere/Atmosphere_RadioEstradaBallad.acp",
+      "sample": "{8D72384988FA0939}Sounds/Atmosphere/Samples/Atmosphere_RadioEstradaBallad_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "radio_estrada_dance": {
+      "project": "{C1B78EA360E52664}Sounds/Atmosphere/Atmosphere_RadioEstradaDance.acp",
+      "sample": "{AD44E1D8F04B3598}Sounds/Atmosphere/Samples/Atmosphere_RadioEstradaDance_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "radio_accordion_waltz": {
+      "project": "{1885BAB22909E3F4}Sounds/Atmosphere/Atmosphere_RadioAccordionWaltz.acp",
+      "sample": "{BF8257027AEC0A0D}Sounds/Atmosphere/Samples/Atmosphere_RadioAccordionWaltz_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "radio_accordion_kolo": {
+      "project": "{74FD0F1798262E14}Sounds/Atmosphere/Atmosphere_RadioAccordionKolo.acp",
+      "sample": "{EA2E7583EB6B4C8E}Sounds/Atmosphere/Samples/Atmosphere_RadioAccordionKolo_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "radio_orchestral_morning": {
+      "project": "{5DE2E2F0708628B8}Sounds/Atmosphere/Atmosphere_RadioOrchestralMorning.acp",
+      "sample": "{CAFFD0BBEF5DE39E}Sounds/Atmosphere/Samples/Atmosphere_RadioOrchestralMorning_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "radio_orchestral_serenade": {
+      "project": "{AC80A7236E14EEFC}Sounds/Atmosphere/Atmosphere_RadioOrchestralSerenade.acp",
+      "sample": "{D3CFB4FBE245D11D}Sounds/Atmosphere/Samples/Atmosphere_RadioOrchestralSerenade_LP.wav",
       "event": "SOUND_LF_AMBIENT_LP"
     }
   }

@@ -81,7 +81,7 @@ try {
   check(st.endsWith(ST_TAIL), "the string table no longer ends with its closing braces");
   check(st.includes('Id "LF-RadarGun_Action"') && st.includes('Id "LF-RadarGun_Denied"') && st.includes('Id "LF-Old"'), "the string rows were not appended beside the old ones");
   check(!read(`${game}/Core/LF_StaticReset.c`).includes("LF_RadarGun"), "the scaffold edited the central LF_StaticReset.c");
-  check(/modded class LF_StaticResetHooks[\s\S]*LF_RadarGun\.ResetStatics\(\);/.test(read(`${game}/Feature/Police/LF_RadarGun.c`)), "the scaffold did not register LF_RadarGun's reset hook in its own file");
+  check(/class LF_RadarGun_StaticResetHook : LF_StaticResetHook[\s\S]*LF_StaticReset\.Register\(new LF_RadarGun_StaticResetHook\(\)\)[\s\S]*LF_RadarGun\.ResetStatics\(\);/.test(read(`${game}/Feature/Police/LF_RadarGun.c`)), "the scaffold did not register LF_RadarGun's reset hook in its own file");
   const md = read(`${game}/Feature/Police/Feature.md`);
   check(md.startsWith("# Police\n\n## Intent\n\nOld text.") && md.includes("## Radar gun (#901)"), "Feature.md was rewritten instead of appended to");
   check(read("docs/features/police.md").includes("### `LF_RadarGun`") && read("docs/features/police.md").includes("### `LF_Old`"), "docs/features/police.md lost a row or did not gain one");

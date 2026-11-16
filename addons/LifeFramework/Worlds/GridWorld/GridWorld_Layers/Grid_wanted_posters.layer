@@ -80,3 +80,12 @@ GenericEntity Wanted_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelT
  coords 90.944 0 102.48
  angleY 180
 }
+GenericEntity Grid_wanted_posters_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "wanted-posters"
+  }
+ }
+ coords 90.5 0 94.3
+}

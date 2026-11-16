@@ -1,5 +1,15 @@
 SCR_DestructibleBuildingEntity : "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et" {
  ID "7EAFD7FF46F56084"
+ components {
+  MeshObject "{506EDA9D46FC6C06}" {
+   Materials {
+    MaterialAssignClass "{7EAFD7FF46F56090}" {
+     SourceMaterial "House_Town_E_2I01_Ext_MLOD"
+     AssignedMaterial "{9DF271E506010C04}Assets/Buildings/Facades/LF_ShopHouse_Ext_MLOD.emat"
+    }
+   }
+  }
+ }
  {
   $grp Building : "{0B1A0417822E5D17}Prefabs/Structures/BuildingParts/Windows/win_village_E_A_195x142_3_B_brown.et" {
    {

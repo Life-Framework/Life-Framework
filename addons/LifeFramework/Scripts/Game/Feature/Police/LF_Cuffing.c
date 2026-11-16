@@ -428,7 +428,20 @@ class LF_Cuffing
 		}
 
 		s_iFinished++;
-		LF_Restraint.Restrain(officer, target);
+		LF_ERestrain restrained = LF_Restraint.Restrain(officer, target);
+		StampContact(LF_Utils.GetPlayerUID(target), restrained);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a cuffing that went through is police contact for the logout rule (#2102). A cuffing the
+	//! restraint refused is not. \return true when contact was stamped.
+	static bool StampContact(string suspectUid, LF_ERestrain result)
+	{
+		if (result != LF_ERestrain.OK)
+			return false;
+
+		LF_PoliceContact.Stamp(suspectUid, "cuffing");
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -530,14 +543,18 @@ modded class SCR_PlayerController
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_Cuffing's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Cuffing_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Cuffing_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_Cuffing");
-		if (apply)
-			LF_Cuffing.ResetStatics();
+		return "LF_Cuffing";
+	}
+
+	override void Apply()
+	{
+		LF_Cuffing.ResetStatics();
 	}
 }

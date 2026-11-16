@@ -362,11 +362,31 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
    ID "52640E95D114237B"
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{DC1FEEC22DD045B6}" {
+       SourceMaterial "LampFluorescent_01_cover"
+       AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
+      }
+     }
+    }
+   }
    coords 2.99 3.919 4.668
    angleY -89.583
   }
   GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
    ID "E99B992F704FA5F1"
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{DC1F7EA73E22B75F}" {
+       SourceMaterial "LampFluorescent_01_cover"
+       AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
+      }
+     }
+    }
+   }
    coords 2.962 3.919 0.922
    angleY -89.583
   }
@@ -574,14 +594,44 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "DC1F420A40CEBBA9"
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{DC1F8D44A7525259}" {
+       SourceMaterial "LampFluorescent_01_cover"
+       AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
+      }
+     }
+    }
+   }
    coords 0.4 3.918 3.3
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "DC1F40B527CEA5BA"
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{DC1FB40BC0E49288}" {
+       SourceMaterial "LampFluorescent_01_cover"
+       AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
+      }
+     }
+    }
+   }
    coords 3 3.918 -0.5
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "DC1F59C6F6101B1C"
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{DC1FCE9EAC7EC0EC}" {
+       SourceMaterial "LampFluorescent_01_cover"
+       AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
+      }
+     }
+    }
+   }
    coords 3 3.918 6.3
   }
   GenericEntity : "{EB7E5064C540E8C7}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_02_board.et" {
@@ -599,377 +649,485 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 3 3.25 -2.99
    angleY 180
   }
-  GenericEntity : "{604DB9E50B433827}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_03_board.et" {
-   ID "DC1FEA34850B8D1C"
-   coords 0.55 2.7 -2.99
-   angleY 180
-  }
   GenericEntity : "{BC3EEB0F1E36272F}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_01_board.et" {
-   ID "DC1F55E94DF470B0"
+   ID "DC1F3E4FF203E329"
    coords 5.74 2.3 0.6
    angleY 90
   }
   GenericEntity : "{E116D7B3F0EAB84C}Prefabs/Props/Commercial/Posters/PosterSingle_E_A1_rallyeveron.et" {
-   ID "DC1F11A59751CB2C"
+   ID "DC1F6103EDFA8E63"
    coords 5.72 2.6 3.35
    angleY -90
   }
   GenericEntity : "{2F8BC4454FD8081B}Prefabs/Props/Commercial/Posters/PosterSingle_A3_Forest_V1.et" {
-   ID "DC1F397C9B907B13"
+   ID "DC1FEC984A834507"
    coords 5.72 2.7 2.65
    angleY -90
   }
   GenericEntity : "{43DFF0A5F31C8735}Prefabs/Props/Commercial/Posters/PosterSingle_A3_Forest_V2.et" {
-   ID "DC1F97471CB8622A"
+   ID "DC1FAB25D376B28A"
    coords 5.72 2.7 4.05
    angleY -90
   }
   GenericEntity : "{25B473F35DCBDA7A}Prefabs/Props/Civilian/ClockUniversal_01.et" {
-   ID "DC1F66DD4695FC58"
+   ID "DC1F0137FDAB62DF"
    scale 1.15
    coords 5.72 3.2 5.3
    angleY -90
   }
   GenericEntity : "{43E4EEB4CDBBFE34}Prefabs/Props/Commercial/Posters/PosterSingle_27x41_01_RadioEveron.et" {
-   ID "DC1FB39BB6EF611B"
+   ID "DC1FAC84666DDE8D"
    coords 5.72 3.1 5.9
    angleY -90
   }
   GenericEntity : "{E116D7B3F0EAB84C}Prefabs/Props/Commercial/Posters/PosterSingle_E_A1_rallyeveron.et" {
-   ID "DC1F2BDC0664D6BF"
+   ID "DC1F1443C17256AC"
    coords 5.72 1.95 -1.3
    angleY -90
   }
   GenericEntity : "{43DFF0A5F31C8735}Prefabs/Props/Commercial/Posters/PosterSingle_A3_Forest_V2.et" {
-   ID "DC1FA5166BC0C42D"
+   ID "DC1F263272B0A7E6"
    coords 5.72 2 -2
    angleY -90
   }
   GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
-   ID "DC1F786E7DEE7028"
+   ID "DC1FAB5DF7144D84"
    coords 3.3 1.238 -0.1
    angleY 15
   }
   GenericEntity : "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et" {
-   ID "DC1F9ECFD8356156"
+   ID "DC1FEF59BE847E3F"
    coords 3.5 1.238 -0.75
    angleY 200
   }
   GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
-   ID "DC1F4755994BA6F2"
+   ID "DC1FA1F01A3CCD6C"
    coords 3.1 1.238 -0.9
    angleY 180
   }
   GenericEntity : "{00C4B4415C735DCF}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01_V2.et" {
-   ID "DC1F7ED47CF83DB7"
+   ID "DC1FC4874BD92893"
    coords 3.62 1.238 -0.3
    angleY 195
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "DC1FAD7F65EA4C52"
+   ID "DC1F8F4F877F92BE"
    coords 5.4 0.199 -1.8
    angleY 90
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "DC1F9866700991FE"
+   ID "DC1F868BB32CA11C"
    coords 5.4 0.609 -1.8
    angleY 80
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "DC1F441F2461E526"
+   ID "DC1F3DFDD25620DF"
    coords 5.4 0.199 -2.45
    angleY 90
   }
   GenericEntity : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
-   ID "DC1F90F4F2CA235C"
+   ID "DC1FEBCCF9F5724E"
    coords 4.1 0.199 -0.65
   }
   GenericEntity : "{473922A1279485A9}Prefabs/Props/Furniture/Carpet_01.et" {
-   ID "DC1FB581A4C3FE86"
+   ID "DC1FFFCCB3389A5F"
    coords -0.75 0.199 1.5
    angleY 90
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "DC1F6E1225B46515"
+   ID "DC1FF1E8754D101C"
    coords 4.2 0.199 -2.5
   }
   GenericEntity : "{9C231B6AC1BD0A26}Prefabs/Props/Civilian/Broom_01.et" {
-   ID "DC1FD4BDE31CE8E1"
+   ID "DC1F1D5073B66325"
    coords 4.6 0.209 -2.85
   }
   GenericEntity : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
-   ID "DC1FB0044750D527"
+   ID "DC1FD5C4E95286AA"
    coords 0.45 0.199 6.85
   }
   GenericEntity : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
-   ID "DC1F8D1F87D1FE19"
+   ID "DC1FB0044750D527"
    coords 0.45 0.422 6.85
    angleY 20
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "DC1FE1A9669A4CE3"
+   ID "DC1FAE399C916BBE"
    scale 0.9
    coords 0.45 0.645 6.85
    angleY 100
   }
   GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
-   ID "DC1F9F201EA898B6"
+   ID "DC1F844D749BC608"
    coords 1.45 0.199 6.85
    angleY 10
   }
+  GenericEntity : "{67326F75C36A0760}Prefabs/Props/Furniture/CupboardOld_01/CupboardOld_01_medium.et" {
+   ID "DC1F9A5BE31E2A94"
+   scale 0.85
+   coords -1.53 0.199 3
+   angleY 90
+  }
+  GenericEntity : "{BC3EEB0F1E36272F}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_01_board.et" {
+   ID "DC1F207E385D5BC3"
+   coords -1.53 2.6 3.62
+   angleY -90
+  }
+  GenericEntity : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
+   ID "DC1F378744BA6251"
+   coords 3.35 0.199 3.1
+  }
+  GenericEntity : "{EA8D922E189837C2}Prefabs/Props/Civilian/Suitcase_04_open.et" {
+   ID "DC1FE3B3DB5B4330"
+   coords 2.95 1.119 3.1
+   angleY 20
+  }
+  GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
+   ID "DC1F55FAFF5EA463"
+   coords 3.75 1.119 2.95
+   angleY -10
+  }
+  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+   ID "DC1F78D2D115A0E7"
+   scale 0.8
+   coords 3.3 1.119 3.35
+  }
+  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+   ID "DC1FC597C26B6877"
+   scale 0.8
+   coords 3.5 1.119 3.42
+   angleY 40
+  }
+  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+   ID "DC1F081CA7D7A370"
+   scale 0.8
+   coords 3.4 1.119 3.2
+   angleY 80
+  }
+  GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+   ID "DC1F150233391827"
+   coords 3.95 1.119 3.4
+   angleY 80
+  }
+  GenericEntity : "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et" {
+   ID "DC1F09D5DF76AAAE"
+   coords 4.65 0.199 4.25
+  }
+  GenericEntity : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+   ID "DC1F9F6A46A1568C"
+   scale 0.85
+   coords 1.28 0.199 -1.75
+   angleY 90
+  }
+  GenericEntity : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et" {
+   ID "DC1F5DF47723DE33"
+   coords 1.5 1.049 -2.5
+   angleY 90
+  }
+  GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
+   ID "DC1F86BA9990AB3D"
+   coords 1.2 1.049 -1.5
+   angleY 90
+  }
+  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+   ID "DC1FE53C91B96883"
+   scale 0.8
+   coords 1.2 1.049 -2.05
+  }
+  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+   ID "DC1F3CB337B3608A"
+   scale 0.8
+   coords 1.32 1.049 -2.12
+   angleY 50
+  }
+  GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+   ID "DC1FE02945F12B14"
+   coords 1.35 1.049 -1
+   angleY 100
+  }
+  GenericEntity : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
+   ID "DC1FE63CB0E9429C"
+   coords 1.1 1.049 -2.6
+   angleY 70
+  }
+  GenericEntity : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
+   ID "DC1F6E06B50DEE07"
+   coords 2 0.199 -1.75
+   angleY -90
+  }
+  GenericEntity : "{20B9C968AAE98DCF}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V3.et" {
+   ID "DC1F3F8CB080DA7D"
+   coords 0.93 1.85 -1.35
+   angleY 90
+  }
+  GenericEntity : "{20B9C968AAE98DCF}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V3.et" {
+   ID "DC1F6CCDEFE30EFF"
+   coords 0.93 1.85 -1.8
+   angleY 90
+  }
+  GenericEntity : "{EB7E5064C540E8C7}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_02_board.et" {
+   ID "DC1FAE69E1801A7F"
+   coords 0.93 2.55 -2.2
+   angleY 90
+  }
+  GenericEntity : "{3FD3598CF08D3EE0}Prefabs/Props/Furniture/LampInterior_02/LampInterior_02_Orange.et" {
+   ID "DC1F3C6187B625AC"
+   coords -1.2 0.199 2
+   angleY 90
+  }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "DC1F6CF04389CA82"
+   ID "DC1F4331B09E752C"
    scale 0.9
    coords 1.247 0.311 -2.742
    angleY 90
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "DC1FC3183AEE4140"
+   ID "DC1F222D894248A6"
    scale 0.9
    coords 1.887 0.311 -2.742
    angleY 90
   }
   GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
-   ID "DC1F5CB7C5B0CE47"
+   ID "DC1F57DE1F6C1D9C"
    coords 1.217 0.787 -2.742
    angleY 90
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1F62E2DDE0DE4B"
+   ID "DC1F57EA95221A60"
    scale 0.8
    coords 1.667 0.787 -2.742
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1F78D2D115A0E7"
+   ID "DC1F4C89C81DD8E0"
    scale 0.8
    coords 1.897 0.787 -2.742
    angleY 30
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1FC597C26B6877"
+   ID "DC1F68F52B0B5D8E"
    scale 0.8
    coords 2.117 0.787 -2.742
    angleY 70
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "DC1F344EE10FCE97"
+   ID "DC1FB353C8662F7E"
    scale 0.9
    coords 1.247 1.28 -2.742
    angleY 90
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1FB3669D6B0E9C"
+   ID "DC1FBC59899F1DC6"
    scale 0.8
    coords 1.717 1.28 -2.742
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1F7A814FD16740"
+   ID "DC1FB38F2FF35748"
    scale 0.8
    coords 1.947 1.28 -2.742
    angleY 50
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1F8DBFF23BF854"
+   ID "DC1F63B5F1009B35"
    scale 0.8
    coords 2.157 1.28 -2.742
    angleY 10
   }
   GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
-   ID "DC1F796ED78A0E4B"
+   ID "DC1F195524E33883"
    coords 1.217 1.773 -2.742
    angleY 90
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "DC1FDA71666C93B0"
+   ID "DC1F296C9C9D4CD3"
    scale 0.9
    coords 1.867 1.773 -2.742
    angleY 90
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "DC1FA470F899DF00"
+   ID "DC1FB93CB2FAB5F1"
    scale 0.9
    coords 1.247 2.266 -2.742
    angleY 90
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "DC1F558E43529EBA"
+   ID "DC1F49206085DF40"
    scale 0.9
    coords 1.887 2.266 -2.742
    angleY 90
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "DC1F50ECD636351E"
+   ID "DC1F1106525410B4"
    scale 0.9
    coords 2.666 0.311 -2.79
    angleY 90
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1FEC801C94E3DE"
+   ID "DC1FC3A3D929169B"
    scale 0.8
    coords 3.086 0.311 -2.79
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1FE0EDD6988899"
+   ID "DC1FBB37379D5FAA"
    scale 0.8
    coords 2.486 0.787 -2.79
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1F15824EDC2700"
+   ID "DC1F9F37AE53FD70"
    scale 0.8
    coords 2.736 0.787 -2.79
    angleY 40
   }
   GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
-   ID "DC1F36F8AFEA34CA"
+   ID "DC1F9CEC4EA64381"
    scale 0.85
    coords 3.056 0.787 -2.79
    angleY 90
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "DC1FF58B31BB0BC4"
+   ID "DC1F0539D984655A"
    scale 0.9
    coords 2.666 1.28 -2.79
    angleY 90
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1F09329A13A1C4"
+   ID "DC1F4B2A6FA72DB8"
    scale 0.8
    coords 3.056 1.28 -2.79
   }
   GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
-   ID "DC1FD0CF97A59957"
+   ID "DC1FBB40B8577D35"
    scale 0.9
    coords 2.636 1.773 -2.79
    angleY 90
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1FACDCA7E48580"
+   ID "DC1F5E290C09E7B4"
    scale 0.8
    coords 2.986 1.773 -2.79
    angleY 20
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1F9872959317FB"
+   ID "DC1F8CD7CAA53BF6"
    scale 0.8
    coords 3.136 1.773 -2.79
    angleY 70
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "DC1F196368CBE04B"
+   ID "DC1FF8FB53B4E0AF"
    scale 0.9
    coords 2.666 2.266 -2.79
    angleY 90
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "DC1F4C93578B0468"
+   ID "DC1F04286D21A643"
    scale 0.55
    coords 3.096 2.266 -2.79
    angleY 100
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "DC1F521CAF828459"
+   ID "DC1FA45994C27975"
    scale 0.9
    coords 5.532 0.311 5.007
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "DC1F01BE34F67AE4"
+   ID "DC1F99CD7280E752"
    scale 0.9
    coords 5.532 0.311 5.647
   }
   GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
-   ID "DC1F558D2BC21C1C"
+   ID "DC1F8C0695DA48C7"
    coords 5.532 0.787 4.977
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1FB38F2FF35748"
+   ID "DC1F73C75C52425F"
    scale 0.8
    coords 5.532 0.787 5.427
    angleY -90
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1F63B5F1009B35"
+   ID "DC1F4F73A5A7709E"
    scale 0.8
    coords 5.532 0.787 5.657
    angleY -60
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1FE8545DA69664"
+   ID "DC1F8613AF1EECB8"
    scale 0.8
    coords 5.532 0.787 5.877
    angleY -20
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "DC1F06BC5D3CD89D"
+   ID "DC1F3BF259E7F72E"
    scale 0.9
    coords 5.532 1.28 5.007
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1FCE394AD334E9"
+   ID "DC1F392E65A5A739"
    scale 0.8
    coords 5.532 1.28 5.477
    angleY -90
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1FCAF2B61440EF"
+   ID "DC1F90944FB3F4F8"
    scale 0.8
    coords 5.532 1.28 5.707
    angleY -40
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "DC1FDFD8A2996802"
+   ID "DC1FCCEFDA5AA115"
    scale 0.8
    coords 5.532 1.28 5.917
    angleY -80
   }
   GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
-   ID "DC1F008B766C77D2"
+   ID "DC1F77D973CE65F9"
    coords 5.532 1.773 4.977
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "DC1FB78387CF2A6E"
+   ID "DC1FB7DAAEB13887"
    scale 0.9
    coords 5.532 1.773 5.627
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "DC1F2AE42B58CC44"
+   ID "DC1F6C162FDF16A7"
    scale 0.9
    coords 5.532 2.266 5.007
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "DC1F0BBFA6D7B542"
+   ID "DC1F33BDD73554AF"
    scale 0.9
    coords 5.532 2.266 5.647
   }
   GameEntity : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
-   ID "DC1FEA1E093602D0"
+   ID "DC1FCC0FBFCBEC18"
    coords -0.9 3.4 7.73
   }
   GameEntity : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
-   ID "DC1F074677684DF7"
+   ID "DC1FD45A10E49FCD"
    coords 4.9 3.4 7.73
   }
   GenericEntity : "{027DFD4BB8D66F61}Prefabs/Props/Furniture/BenchWooden_03.et" {
-   ID "DC1F66AFC530E79E"
+   ID "DC1FB29C22C33B01"
    coords 1.7 0 8.3
    angleY 180
   }
   GenericEntity : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
-   ID "DC1FCEC600EF0A01"
+   ID "DC1FD33479189519"
    coords 0.3 0 8.35
    angleY 8
   }
   GenericEntity : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
-   ID "DC1F507B00B621AA"
+   ID "DC1F0DFAC81F3229"
    coords 0.3 0.223 8.35
    angleY -12
   }
   SCR_DestructibleEntity : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
-   ID "DC1F403820DAED07"
+   ID "DC1F5A362D5F8BE3"
    coords -0.45 0.461 8.2
    angleY 180
   }
   SCR_DestructibleEntity : "{0DB0D75A16764A2C}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_pink.et" {
-   ID "DC1FF2342F841A04"
+   ID "DC1FDDEE342DC8C0"
    coords 4.95 0 8.55
   }
   LightEntity {
@@ -1035,6 +1193,61 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    Radius 4.5
    NearPlane 0.3
    SpotAngle 90
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "DC1FD58667683C06"
+   coords 2.99 3 4.668
+   Color 1 0.88 0.68 1
+   LV 2.2
+   ClipEV -10
+   Type Point
+   Radius 5.5
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "DC1FAE4A04F24944"
+   coords 2.962 3 0.922
+   Color 1 0.88 0.68 1
+   LV 2.2
+   ClipEV -10
+   Type Point
+   Radius 5.5
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "DC1F4F557AFE867C"
+   coords 0.4 3 3.3
+   Color 1 0.88 0.68 1
+   LV 2.2
+   ClipEV -10
+   Type Point
+   Radius 5.5
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "DC1F79E0695C6561"
+   coords 1.1 1.449 -2.55
+   Color 1 0.84 0.6 1
+   LV 2.6
+   ClipEV -10
+   Type Point
+   Radius 3.5
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "DC1F985C2BEE147A"
+   coords -1.2 1.7 2
+   Color 1 0.8 0.52 1
+   LV 2.6
+   ClipEV -10
+   Type Point
+   Radius 4.2
+   NearPlane 0.3
    LensFlareType Disabled
   }
  }

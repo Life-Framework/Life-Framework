@@ -119,6 +119,20 @@ class LF_EventBus
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when this subscriber instance is on the event type's list (a bus reset drops it).
+	static bool IsSubscribed(typename eventType, LF_EventSubscriber subscriber)
+	{
+		if (!subscriber || !eventType)
+			return false;
+
+		array<ref LF_EventSubscriber> list = Table().Get(eventType.ToString());
+		if (!list)
+			return false;
+
+		return list.Find(subscriber) >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int SubscriberCount(typename eventType)
 	{
 		array<ref LF_EventSubscriber> list = Table().Get(eventType.ToString());
@@ -190,14 +204,18 @@ class LF_EventBus
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_EventBus's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_EventBus_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_EventBus_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_EventBus");
-		if (apply)
-			LF_EventBus.ResetStatics();
+		return "LF_EventBus";
+	}
+
+	override void Apply()
+	{
+		LF_EventBus.ResetStatics();
 	}
 }

@@ -1,0 +1,7 @@
+GenericEntity : "{C0F7DD85A86B2900}Prefabs/Weapons/Handguns/PM/Handgun_PM.et" {
+ ID "0BE9B0BDE51E1CA1"
+ components {
+  LF_SerialComponent "{4DE2B528AE3CED12}" {
+  }
+ }
+}

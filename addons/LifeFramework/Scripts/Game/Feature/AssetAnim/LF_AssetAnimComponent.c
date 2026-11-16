@@ -533,14 +533,18 @@ class LF_AssetAnimComponent : ScriptComponent
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_AssetAnimComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_AssetAnimComponent_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_AssetAnimComponent_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_AssetAnimComponent");
-		if (apply)
-			LF_AssetAnimComponent.ResetStatics();
+		return "LF_AssetAnimComponent";
+	}
+
+	override void Apply()
+	{
+		LF_AssetAnimComponent.ResetStatics();
 	}
 }

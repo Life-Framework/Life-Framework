@@ -61,3 +61,13 @@ GenericEntity Grid_zones_spawn_Globe : "{33882C61BA9F0F90}Prefabs/Props/Civilian
  }
  coords 88 0 25.489
 }
+GenericEntity Grid_zones_spawn_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "zones-spawn"
+  }
+ }
+ coords 85.5 0 33.7
+ angleY 180
+}
