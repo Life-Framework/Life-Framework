@@ -75,8 +75,9 @@
   The owner reads `LF_CharacterSurvivalComponent.GetReplicatedImpairment()`, an
   owner-only RplProp bumped on a 5-point change, start or end. Logs
   `[LFDebug:Impairment]`. Test: `survival/impairment`.
-- ⚠️ No drink prefab carries the effect yet and nothing reads the level: the screen
-  effect and the beer wiring are later #1011 slices.
+- ✅ `BeerBottle.et` and `Moonshine.et` (`Prefabs/Items/Drinks/`, #2001) are `Drink_Base` drinks that carry the
+  effect at its defaults; the engine takes one consumable effect per item, so they restore no thirst. Test: `drinks/alcohol`.
+- ⚠️ Nothing reads the level yet: the screen effect is a later #1011 slice.
 
 ### `LF_SurvivalStatsSaveData` — `Feature/Survival/Persistence/`
 - ✅ Save/apply round-trip re-clamps through setters (corrupt save sanitized).
