@@ -85,6 +85,12 @@ class LF_OutletOffer : LF_ConfigRecord
 	[Attribute("", UIWidgets.EditBox, "Gate: organisation right the buyer's rank must carry (LF_EOrganizationPermission name). Empty is no right gate")]
 	string m_sOrgRight;
 
+	[Attribute("0", UIWidgets.Auto, "Stock: units the outlet holds of this item. 0 is no limit. A sale beyond what is left is refused (out of stock); server memory only, so a restart refills it", params: "0 10000")]
+	int m_iStock;
+
+	[Attribute("600", UIWidgets.Auto, "Restock: seconds after the first sale from a full shelf until the shelf is full again. 0 is no restock until the server restarts", params: "0 604800")]
+	int m_iRestockSeconds;
+
 	[Attribute("0", UIWidgets.CheckBox, "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead")]
 	bool m_bRemoved;
 
@@ -122,6 +128,10 @@ class LF_ItemCatalogueConfig
 	static const int PRICE_MAX = 1000000;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int RANK_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int RANK_MAX = 100;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int STOCK_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int STOCK_MAX = 10000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int RESTOCK_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int RESTOCK_MAX = 604800;	// lf-fixed: the schema limit, mirrors the attribute params
 
 	[Attribute("", UIWidgets.Object, "Catalogue items, keyed by id")]
 	ref array<ref LF_CatalogueItem> m_aItems;
@@ -311,12 +321,14 @@ class LF_ItemCatalogueConfig
 	//! Reads an offer's owner fields (LF_OutletOfferList).
 	void ReadOffer(notnull LF_OutletOffer offer, notnull LF_ConfigReader reader)
 	{
-		array<string> offerKeys = {"op", "licence", "job", "minRank", "orgRight", "removed"};
+		array<string> offerKeys = {"op", "licence", "job", "minRank", "orgRight", "stock", "restockSeconds", "removed"};
 		reader.WarnUnknownKeys(offerKeys);
 		reader.ReadString("licence", offer.m_sLicence);
 		reader.ReadString("job", offer.m_sJob);
 		reader.ReadInt("minRank", offer.m_iMinRank, RANK_MIN, RANK_MAX);
 		reader.ReadString("orgRight", offer.m_sOrgRight);
+		reader.ReadInt("stock", offer.m_iStock, STOCK_MIN, STOCK_MAX);
+		reader.ReadInt("restockSeconds", offer.m_iRestockSeconds, RESTOCK_MIN, RESTOCK_MAX);
 		reader.ReadBool("removed", offer.m_bRemoved);
 	}
 
@@ -384,6 +396,8 @@ class LF_ItemCatalogueConfig
 				ctx.WriteValue("job", offer.m_sJob);
 				ctx.WriteValue("minRank", offer.m_iMinRank);
 				ctx.WriteValue("orgRight", offer.m_sOrgRight);
+				ctx.WriteValue("stock", offer.m_iStock);
+				ctx.WriteValue("restockSeconds", offer.m_iRestockSeconds);
 				ctx.WriteValue("removed", offer.m_bRemoved);
 				ctx.EndObject();
 			}
@@ -666,6 +680,8 @@ class LF_OutletOfferList : LF_ConfigList
 		changed += LF_CatalogueFields.Copy(container, "m_sJob", offer.m_sJob);
 		changed += LF_CatalogueFields.CopyInt(container, "m_iMinRank", offer.m_iMinRank);
 		changed += LF_CatalogueFields.Copy(container, "m_sOrgRight", offer.m_sOrgRight);
+		changed += LF_CatalogueFields.CopyInt(container, "m_iStock", offer.m_iStock);
+		changed += LF_CatalogueFields.CopyInt(container, "m_iRestockSeconds", offer.m_iRestockSeconds);
 		changed += LF_CatalogueFields.CopyBool(container, "m_bRemoved", offer.m_bRemoved);
 		return changed;
 	}

@@ -3193,7 +3193,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   // on DebugWorld (planLegs). A sharded --tier all leaves the split to each slice.
   const sharded = opts.shards !== undefined && !only.length && !opts.world && tier === "all";
   const tiers = testWorld.testTiers(root);
-  const legs = sharded ? null : testWorld.planLegs({ tier, only, world: opts.world, tiers, names: testWorld.testNames(root), registry: shards.readRegistry(root), pins: testWorld.readPins(root) });
+  const legs = sharded ? null : testWorld.planLegs({ tier, only, world: opts.world, tiers, names: testWorld.testNames(root), registry: shards.readRegistry(root), pins: testWorld.readPins(root), town: testWorld.readTown(root) });
   // A plan with one leg that names its classes is honoured too: --only <town test> is one playtest leg,
   // and --tier all with the town tests left out is one GridWorld leg of the rest (#1895).
   if (legs && (legs.length > 1 || (legs.length === 1 && legs[0].classes))) {
