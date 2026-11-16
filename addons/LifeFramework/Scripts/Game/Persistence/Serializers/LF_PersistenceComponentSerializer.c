@@ -35,7 +35,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords. The written version is that list's length (38). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos. The written version is that list's length (39). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -88,6 +88,8 @@
 //! with no holder, no hold time and no points, which is exact (nobody held ground before #751).
 //! A version 34 save includes the held ground and has no stolen-item rows (#1855): carried items
 //! stolen before that restart come back unflagged, which is what that build did.
+//! A version 38 save includes the race records and has no last positions (#1777): every character loads
+//! with no last position kept, which is what that build had.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -215,6 +217,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("convictions");
 		order.Insert("firstspawns");
 		order.Insert("racerecords");
+		order.Insert("lastpos");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -248,7 +251,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 38);
+		context.WriteValue("version", 39);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -714,6 +717,15 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_RaceRecordRow> raceRecordRows = LF_RaceRecords.ExportAll();
 			context.Write(raceRecordRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 race record(s)", raceRecordRows.Count()));
+		}
+		else if (payload == "lastpos")
+		{
+			// Where each character last stood (#1777), keyed by character persistence id. Every
+			// connected player's position is taken now, so each save carries where they stand.
+			int taken = LF_LastPosition.CaptureOnline(System.GetUnixTime());
+			array<ref LF_LastPositionRow> lastPositionRows = LF_LastPosition.ExportAll();
+			context.Write(lastPositionRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 last position(s), %2 taken from online players", lastPositionRows.Count(), taken));
 		}
 		else
 		{
@@ -1294,6 +1306,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("race records failed to read, the record board starts empty");
+			}
+		}
+		else if (payload == "lastpos")
+		{
+			// A version 1-38 save never reaches this payload: no last position is kept.
+			array<ref LF_LastPositionRow> lastPositionRows = new array<ref LF_LastPositionRow>();
+			if (context.Read(lastPositionRows))
+			{
+				int lastPositionsApplied = LF_LastPosition.ApplyAll(lastPositionRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 last position(s)", lastPositionsApplied, lastPositionRows.Count()));
+			}
+			else
+			{
+				ReadFailed("last positions failed to read, no last position is kept");
 			}
 		}
 		else

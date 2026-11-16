@@ -3998,6 +3998,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Wait %1 seconds"
      Comment "Gather refused: the resource is restocking. %1 = seconds"
     }
+    CustomStringTableItem "{37A4E1474FFDB190}" {
+     Id "LF-Handbook_ReadBody1"
+     Target_en_us "The handbook is a short set of pages. Each page covers one topic and you can come back to it at any time."
+     Comment "Handbook page body, first paragraph of how to read it."
+    }
+    CustomStringTableItem "{F1367AFD4DBABE64}" {
+     Id "LF-Handbook_ReadBody2"
+     Target_en_us "Pages are listed in reading order. If a page is missing, ask a staff member."
+     Comment "Handbook page body, second paragraph of how to read it."
+    }
+    CustomStringTableItem "{C66A836BB94AF2C9}" {
+     Id "LF-Handbook_ReadTitle"
+     Target_en_us "How to read this handbook"
+     Comment "Handbook page title: how to use the handbook."
+    }
+    CustomStringTableItem "{5A806A961C8BB7E6}" {
+     Id "LF-Handbook_RulesBody1"
+     Target_en_us "The server rules are set by this server. Read them before you play, and ask a staff member if one is unclear."
+     Comment "Handbook page body, where to find the rules."
+    }
+    CustomStringTableItem "{D249EF1289AA15DE}" {
+     Id "LF-Handbook_RulesTitle"
+     Target_en_us "Where to find the rules"
+     Comment "Handbook page title: where the server rules live."
+    }
     CustomStringTableItem "{9306F928F7A81EBC}" {
      Id "LF-Heist_Armory_Open"
      Target_en_us "Breach the armory store"
