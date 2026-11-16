@@ -1,0 +1,8 @@
+GenericEntity : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+ ID "56CCBD61F18312ED"
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_eRole SPAWN
+  }
+ }
+}

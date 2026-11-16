@@ -55,5 +55,17 @@ reading a rule and picking an answer needs text; it asks nothing a world object 
 - **Persisted:** nothing; "once" is per account uid per world session.
 - **Proof:** `rules/join-notice` (LOGIC).
 
+## Handbook pages (#1772)
+
+- **Player sees:** nothing yet; this is the data half of the handbook (#642). A later sheet reads the pages.
+- **Owner and side:** `LF_Handbook` (`LF_Handbook.c`) loads and orders the pages; `LF_HandbookConfig.c` holds the
+  page record, the config root and the list the shared override model (`LF_ConfigOverlay`) merges.
+- **Data:** `Configs/Rules/LF_Handbook.conf`: pages with `m_sId`, `m_sTitleKey`, `m_aBodyKeys`, `m_iOrder` (lowest
+  first; -1 sorts last in file order). The core ships two neutral pages; a pack overlay adds, replaces,
+  patches or removes a page by id. A page with no id, title or body paragraph is logged and left out.
+  Not an owner config section yet.
+- **Persisted:** nothing.
+- **Proof:** `handbook/pages` (LOGIC).
+
 Not done: a world prop at the clerk's desk, the "cannot leave the arrival room" gate beyond no
 registration and no spawn, staff chat commands, shuffled options.
