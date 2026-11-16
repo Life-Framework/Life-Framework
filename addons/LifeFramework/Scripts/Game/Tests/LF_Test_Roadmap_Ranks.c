@@ -12,7 +12,7 @@ class LF_Test_Roadmap_Ranks : LF_Test
 	{
 		string sidearm = LF_PoliceRanks.SIDEARM;
 		string rifle = LF_PoliceRanks.LONG_GUN;
-		ctx.True(sidearm.IndexOf("Handgun_M9.et") != -1, "sidearm constant is the M9");
+		ctx.True(sidearm.IndexOf("Handgun_M9_Service.et") != -1, "sidearm constant is the duty M9");
 		ctx.True(rifle.IndexOf("Rifle_M16A2.et") != -1, "long gun constant is the M16A2");
 		ctx.EqualStr("EL-Rank_Patrol", LF_PoliceRanks.TitleKey(LF_PoliceRanks.PATROL), "patrol title is the patrol officer key");
 		ctx.EqualStr("EL-Rank_Senior", LF_PoliceRanks.TitleKey(LF_PoliceRanks.SENIOR), "senior title is the senior officer key");
@@ -33,7 +33,7 @@ class LF_Test_Roadmap_Ranks : LF_Test
 		LF_PoliceRanks.CollectKit(LF_PoliceRanks.PATROL, patrolKit);
 		ctx.Equal(2, patrolKit.Count(), "patrol kit is the rank's prefabs only");
 		if (patrolKit.Count() == 2)
-			ctx.True(patrolKit.Get(0) == LF_PoliceRanks.SIDEARM, "patrol kit is the M9");
+			ctx.True(patrolKit.Get(0) == LF_PoliceRanks.SIDEARM, "patrol kit is the duty M9");
 		ctx.True(KitHas(patrolKit, LF_PoliceRanks.SPIKE_STRIP), "patrol kit includes the spike strip");
 		ctx.False(KitHas(patrolKit, LF_PoliceRanks.LONG_GUN), "patrol kit does not include the rifle");
 
@@ -164,7 +164,7 @@ class LF_Test_Roadmap_RanksWorld : LF_Test
 	{
 		Resource sidearm = Resource.Load(LF_PoliceRanks.SIDEARM);
 		Resource rifle = Resource.Load(LF_PoliceRanks.LONG_GUN);
-		ctx.True(sidearm.IsValid(), "Handgun_M9.et loads");
+		ctx.True(sidearm.IsValid(), "Handgun_M9_Service.et loads");
 		ctx.True(rifle.IsValid(), "Rifle_M16A2.et loads");
 
 		IEntity armory = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.POLICE_ARMORY);
@@ -204,7 +204,7 @@ class LF_Test_Roadmap_RanksWorld : LF_Test
 
 		ctx.True(drawAction.CanBePerformedScript(patrol), "on-duty patrol can use the armory action");
 		drawAction.PerformAction(armory, patrol);
-		ctx.Equal(1, HeldCount(patrol, LF_PoliceRanks.SIDEARM), "on-duty lower rank receives the M9");
+		ctx.Equal(1, HeldCount(patrol, LF_PoliceRanks.SIDEARM), "on-duty lower rank receives the duty M9");
 		ctx.Equal(0, HeldCount(patrol, LF_PoliceRanks.LONG_GUN), "the lower rank does not receive the rifle");
 
 		IEntity senior = SpawnOfficer(ctx, "roadmap-ranks-e2e-senior", LF_PoliceRanks.SENIOR);

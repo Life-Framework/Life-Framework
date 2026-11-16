@@ -22,7 +22,8 @@ class LF_PoliceRanks
 	//! The outlet id the station armory reads (LF_ItemCatalogue.conf). Its issue offers carry the rank gate.
 	static const string ARMORY_OUTLET = "police_armory";
 
-	static const ResourceName SIDEARM = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
+	//! The duty M9 (#2096): a child of the base-game M9 that the catalogue lists as lawful police issue, so a search never seizes it.
+	static const ResourceName SIDEARM = "{C6869BB960C959DE}Prefabs/Weapons/Police/Handgun_M9_Service.et";
 	static const ResourceName LONG_GUN = "{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et";
 	//! The folded spike strip (#646): every rank carries one.
 	static const ResourceName SPIKE_STRIP = "{4B8BDB727DEE59B8}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et";
