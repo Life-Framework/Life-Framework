@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{81D226215C0DD606}Configs/Tests/LF_Test_DrinkImpairmentOverlay.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

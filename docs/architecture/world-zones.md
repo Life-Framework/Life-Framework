@@ -77,6 +77,8 @@ stand inside its own cell.
 - a grid layer places anything outside its cell;
 - a `Grid_*.layer` is in `DebugWorld_Layers/` (the grid lives in GridWorld).
 
+`validate-grid-world` adds one rule: every entity in a GridWorld legacy layer stands in a claimed cell. Police, Crimes, Jobs and NPCs (#1811) each moved into their own cell (`police`, `crimes`, `jobs`, `npcs`) with their entity names unchanged, and their free-standing layers are deleted. The legacy layers still free-standing are listed in `PENDING` in that file; a slice that moves one removes its line.
+
 ## The frame
 
 `Grid_frame.layer` (claim `tools/grid/cells/frame.json`, cell `lattice`) is the one layer that spans the whole lattice. It is written by `node tools/grid/lattice.mjs write`, not by `grid place`:
