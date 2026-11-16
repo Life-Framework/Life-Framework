@@ -51,6 +51,9 @@
     "jailClockOffline": false,
     "contactWindowSeconds": 120
   },
+  "grace": {
+    "minutes": 0
+  },
   "idCard": {
     "replacementFee": 50,
     "showSeconds": 8
@@ -164,6 +167,15 @@
     "applyMinPlaytimeHours": 50,
     "applyRejectCooldownHours": 72,
     "trialHours": 168
+  },
+  "respawn": {
+    "wakeInHospital": true,
+    "billAmount": 150,
+    "wakeLoiterType": 7,
+    "wakeRootMotion": true,
+    "wakeLieSeconds": 0,
+    "rejoinAtLastPosition": false,
+    "rejoinMaxAgeHours": 12
   },
   "restarts": {
     "times": [],
