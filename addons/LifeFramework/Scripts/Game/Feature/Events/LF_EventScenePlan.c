@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
 //! One walker in a scene (#1953): the outfit or role it wears and the dialogue it opens. Built by
-//! the planner from the scene's shared role and per-NPC dialogue list.
+//! the planner from the scene's walker prefabs (or its shared role) and per-NPC dialogue list.
 class LF_EventSceneNpc
 {
 	string m_sRole;
@@ -53,6 +53,9 @@ class LF_EventScene
 
 	[Attribute("", UIWidgets.EditBox, "Optional prefab slot id of a parked vehicle (#964). Empty means none")]
 	string m_sVehicleSlot;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Optional walker prefabs, handed out in turn (walker 0 the first, walker 1 the second, round again). Set, they win over m_sRole (#2137)", "et")]
+	ref array<ResourceName> m_aPrefabs;
 
 	//------------------------------------------------------------------------------------------------
 	//! The attribute defaults above, for a scene built in script (a field initializer would beat a config value of 0, #1077).
@@ -128,6 +131,14 @@ class LF_EventScenePlanner
 			if (waypointId == "")
 				return "an empty waypoint id";
 		}
+		if (scene.m_aPrefabs)
+		{
+			foreach (ResourceName prefab : scene.m_aPrefabs)
+			{
+				if (prefab.IsEmpty())
+					return "an empty walker prefab";
+			}
+		}
 		if (scene.m_iNpcCount < 1)
 			return "no NPCs";
 		if (scene.m_fSpawnStaggerSeconds < 0 || scene.m_fWalkTimeoutSeconds <= 0 || scene.m_fDespawnDelaySeconds < 0)
@@ -182,7 +193,10 @@ class LF_EventScenePlanner
 			string dialogueId;
 			if (scene.m_aDialogueIds && i < scene.m_aDialogueIds.Count())
 				dialogueId = scene.m_aDialogueIds[i];
-			plan.m_aNpcs.Insert(LF_EventSceneNpc.Make(scene.m_sRole, dialogueId, i * scene.m_fSpawnStaggerSeconds));
+			string wears = scene.m_sRole;
+			if (scene.m_aPrefabs && !scene.m_aPrefabs.IsEmpty())
+				wears = scene.m_aPrefabs[i % scene.m_aPrefabs.Count()];
+			plan.m_aNpcs.Insert(LF_EventSceneNpc.Make(wears, dialogueId, i * scene.m_fSpawnStaggerSeconds));
 		}
 		plan.m_sVehicleSlot = scene.m_sVehicleSlot;
 		plan.m_fWalkTimeoutSeconds = scene.m_fWalkTimeoutSeconds;

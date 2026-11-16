@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-17 (#1957): with the test and no pack data, `tools\cli test --no-build --only LF_Test_EveronArrivalEvent` failed (passed=0 failed=1, the overlay does not resolve the event); with the event, scene, dawn condition and outfit confs it passes (passed=1 failed=0).
+// red-proof: #2137 extension pending; observed 2026-11-17 (#1957): with the test and no pack data, `tools\cli test --no-build --only LF_Test_EveronArrivalEvent` failed (passed=0 failed=1, the overlay does not resolve the event); with the event, scene, dawn condition and outfit confs it passes (passed=1 failed=0).
 // tier: WORLD
 //! #1957 under the Everon 1989 header (the pack leg of `tools\cli test`): the flagship's dawn
 //! arrival is pack data layered over the core event list (#1952). The event resolves by id, its
@@ -49,6 +49,30 @@ class LF_Test_EveronArrivalEvent : LF_Test
 		}
 
 		return named >= 3;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A walker prefab spawns as an AI character carrying the suitcase in its right-hand slot.
+	protected static void CheckWalker(LF_TestContext ctx, ResourceName prefab)
+	{
+		IEntity walker = LF_Utils.SpawnEntityPrefab(prefab, Vector(0, 500, 0));
+		ctx.NotNull(walker, string.Format("walker %1 spawns", prefab));
+		if (!walker)
+			return;
+
+		ctx.NotNull(walker.FindComponent(AIControlComponent), string.Format("walker %1 has an AI to walk with", prefab));
+		SlotManagerComponent slots = SlotManagerComponent.Cast(walker.FindComponent(SlotManagerComponent));
+		EntitySlotInfo hand;
+		if (slots)
+			hand = slots.GetSlotByName("Suitcase");
+		IEntity suitcase;
+		if (hand)
+			suitcase = hand.GetAttachedEntity();
+		ctx.NotNull(suitcase, string.Format("walker %1 carries a suitcase", prefab));
+		if (suitcase)
+			ctx.True(LF_Utils.GetPrefabName(suitcase).Contains("Suitcase"), "the carried prop is the suitcase");
+
+		SCR_EntityHelper.DeleteEntityAndChildren(walker);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -105,6 +129,25 @@ class LF_Test_EveronArrivalEvent : LF_Test
 			ctx.True(plan.m_bGo, "the planner makes a plan with room in the AI budget");
 			ctx.Equal(scene.m_aWaypointIds.Count(), plan.m_aWaypointIds.Count(), "the plan keeps every waypoint");
 			LF_EventScenePlanner.ResetStatics();
+
+			// #2137: the walkers wear the three relocated outfits in turn, each with a suitcase in hand.
+			ctx.Equal(3, scene.m_aPrefabs.Count(), "the scene names three walker prefabs");
+			for (int n = 0; n < plan.m_aNpcs.Count(); n++)
+				ctx.EqualStr(scene.m_aPrefabs[n % 3], plan.m_aNpcs[n].m_sRole, string.Format("walker %1 wears walker prefab %2", n, n % 3));
+
+			foreach (ResourceName walkerPrefab : scene.m_aPrefabs)
+				CheckWalker(ctx, walkerPrefab);
+		}
+
+		// #2137: the overlay's module refs register as the condition and the scene the phases name.
+		LF_EventsConfig events = LF_EventOverlay.Get();
+		ctx.True(events && LF_EventOverlay.FindModule(events, DAWN_MODULE) != -1, "the overlay lists the dawn module");
+		ctx.True(events && LF_EventOverlay.FindModule(events, SCENE_MODULE) != -1, "the overlay lists the scene module");
+		if (events)
+		{
+			LF_EventModuleLoader.RegisterFrom(events);
+			ctx.True(LF_EventShell.IsRegistered(DAWN_MODULE), "the dawn condition registers");
+			ctx.True(LF_EventSceneOperation.Cast(LF_EventShell.FindOperation(SCENE_MODULE)) != null, "the arrival scene registers as a scene operation");
 		}
 
 		// What the families wear.

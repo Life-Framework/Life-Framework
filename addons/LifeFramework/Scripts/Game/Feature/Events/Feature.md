@@ -35,6 +35,14 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 
 ## Everon arrival at dawn (#1957)
 
-- **Player sees:** nothing yet. The data for the relocated families walking into the square at dawn is in the pack (`LF_Everon1989/Configs/Events/`): the `relocated_arrival` event, its dawn hour condition, its scene and three outfit presets. The core stays neutral; it only reads the pack's overlay (#1952).
-- **Owner and side:** data, server side once the shell module (follow-up) registers the condition and scene by id.
+- **Player sees:** once the town card places the route and a pack patch turns it on: at dawn six people in 1989 travelling clothes, each with a suitcase, walk in from the edge of town to the town hall. The data is in the pack (`LF_Everon1989/Configs/Events/`): the `relocated_arrival` event, its dawn hour condition, its scene, its module refs, three walker prefabs dressed in the three outfit presets. The core stays neutral; it only reads the pack's overlay (#1952).
+- **Owner and side:** server; `LF_EventModuleLoader` registers the condition and the scene by id at game start (#2137).
 - **Proof:** `everon/arrival-event` (pack leg).
+
+## Modules from config (#2137)
+
+- **Player sees:** what the modules do (a scene of walkers); the loader itself is invisible.
+- **Owner and side:** `LF_EventModuleLoader`, server, at game start from `LF_EventShell.StartIfServer`.
+- **Data:** `LF_EventsConfig.m_aModules` of `LF_EventModuleRef` (id + `.conf`), core and pack overlays merged by id. The `.conf` root class picks the kind: `LF_EventPrecondition` condition, `LF_EventAbort` abort, `LF_EventScene` scene operation (`LF_EventSceneOperation`).
+- **Rules:** a bad ref is logged and skipped, so its phase holds. A scene stages once per phase run and keeps its phase busy until its walkers have left out of sight.
+- **Proof:** `events/module-loader` (WORLD), `everon/arrival-event` (pack leg).
