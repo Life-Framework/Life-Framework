@@ -1,16 +1,14 @@
 // red-proof: 2026-11-11 `tools/cli test --no-build --only LF_Test_SpawnHub` with the `if (!hubEnabled)` refusal in LF_SpawnHubRules.Check disabled failed `- a game mode that is not a playtest refuses (expected 1, got 0)` and `- a disabled hub does not move the body (expected 1, got 0)`. Restored; green.
 // red-proof (#693b reach): 2026-11-12 with the `if (!mayTravel)` refusal in LF_SpawnHubRules.Check disabled, `--only LF_Test_SpawnHub` failed `- a request away from the globe is refused (expected 4, got 0)` and `- the far body stayed put (expected 0, got 182)`. Restored; green.
-// red-proof (#1893 grid globe): 2026-11-16 on GridWorld, before the Grid_zones_spawn globe, `--only LF_Test_SpawnHub
-// --world Worlds/GridWorld/GridWorld.ent` failed `- the spawn table stands at a travel globe`. The RedProof() hook looks
-// up a name no world places and the globe assertions go red.
 // tier: WORLD
 //! Spawn hub (#607): the shipped config loads with the areas the playtest notes name, every row has
 //! a unique id and a name string, a travel request is refused when the game mode is not a
 //! playtest mode, for an unknown id, for no body and away from the travel globe, and a good request puts a body at the row.
 class LF_Test_SpawnHub : LF_Test
 {
-	//! The travel globe in the grid cell GridWorld_Layers/Grid_zones_spawn.layer (the playtest town has its own).
-	static const string GRID_GLOBE = "Grid_zones_spawn_Globe";
+	//! SpawnHubStation in DebugWorld_Layers/Street_SpawnHub.layer; the globe sits on its table.
+	static const float GLOBE_STATION_X = 119;
+	static const float GLOBE_STATION_Z = 243.5;
 
 	override string GetName()
 	{
@@ -50,7 +48,7 @@ class LF_Test_SpawnHub : LF_Test
 		ctx.EqualFloat(5, written[1], 0.001, "a written Y is kept");
 
 		// The debug game mode is a playtest mode.
-		ctx.True(LF_SpawnHub.IsEnabled(), "the debug game mode opts into the hub");
+		ctx.True(LF_SpawnHub.IsEnabled(), "the DebugWorld game mode opts into the hub");
 
 		// Server path with a real body.
 		IEntity body = LF_Utils.SpawnEntityPrefab(LF_TestCharacterFixture.JACKET_PREFAB, vector.Zero);
@@ -67,14 +65,9 @@ class LF_Test_SpawnHub : LF_Test
 		// Reach (#693b): the server finds the globe itself; a body at the world origin is nowhere near it.
 		ctx.False(LF_SpawnHub.IsNearGlobe(body.GetOrigin()), "the world origin is not at a travel globe");
 		ctx.False(LF_SpawnHub.MayTravelFrom(body), "a body away from the globe with no admin player may not travel");
-		string globeName = GRID_GLOBE;
-		if (RedProof())
-			globeName = "no_such_globe";
-
-		IEntity globe = GetGame().GetWorld().FindEntityByName(globeName);
-		ctx.NotNull(globe, "the grid places the travel globe " + GRID_GLOBE);
-		if (globe)
-			ctx.True(LF_SpawnHub.IsNearGlobe(globe.GetOrigin()), "the globe carries the travel action");
+		vector station = Vector(GLOBE_STATION_X, 0, GLOBE_STATION_Z);
+		station[1] = GetGame().GetWorld().GetSurfaceY(station[0], station[2]);
+		ctx.True(LF_SpawnHub.IsNearGlobe(station), "the spawn table stands at a travel globe");
 		ctx.Equal(LF_ESpawnHubCheck.TOO_FAR, LF_SpawnHub.Serve(body, "bank", true, LF_SpawnHub.MayTravelFrom(body)), "a request away from the globe is refused");
 		ctx.EqualFloat(0, body.GetOrigin()[0], 0.01, "the far body stayed put");
 		ctx.Equal(LF_ESpawnHubCheck.OK, LF_SpawnHub.Serve(body, "bank", true, true), "a good request is served");

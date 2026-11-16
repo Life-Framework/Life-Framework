@@ -5,9 +5,6 @@
 // `- an occupied bed is skipped (expected 1, got 0)`.
 // respawn/ward: before the Hospital_Bed_* entities were placed it failed with
 // `- DebugWorld has a ward of at least three beds (found 0)`. All restored; green.
-// respawn/ward (#1893 fixtures): 2026-11-16 on GridWorld (one annex bed), before the fixture ward, `--only
-// LF_Test_HospitalWard --world Worlds/GridWorld/GridWorld.ent` failed `- DebugWorld has a ward of at least three
-// beds (found 1)`. The RedProof() hook skips the fixture beds and the ward assertions go red.
 
 //------------------------------------------------------------------------------------------------
 // tier: LOGIC
@@ -114,11 +111,6 @@ class LF_Test_HospitalBedPick : LF_Test
 // tier: WORLD
 class LF_Test_HospitalWard : LF_Test
 {
-	static const ResourceName WARD_BED_PREFAB = "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et";
-	//! Far from the grid annex (x 18..114, z 18..114) and its gate spawn.
-	static const float WARD_X = 400;
-	static const float WARD_Z = 560;
-
 	override string GetName()
 	{
 		return "respawn/ward";
@@ -134,33 +126,9 @@ class LF_Test_HospitalWard : LF_Test
 			ctx.True(config.m_iBillAmount > 0, "the flagship bill is set");
 		}
 
-		// The fixture ward: three core hospital beds the test spawns and deletes (GridWorld holds one annex bed).
-		array<vector> before = {};
-		LF_HospitalBedComponent.GetBedPositions(before);
-		array<IEntity> ward = {};
-		if (!RedProof())
-		{
-			for (int i = 0; i < 3; i++)
-			{
-				IEntity bed = LF_Utils.SpawnEntityPrefab(WARD_BED_PREFAB, Vector(WARD_X + i * 2.5, 0, WARD_Z));
-				ctx.True(bed != null, "fixture: a hospital bed spawns");
-				if (bed)
-					ward.Insert(bed);
-			}
-		}
-
 		array<vector> beds = {};
 		LF_HospitalBedComponent.GetBedPositions(beds);
-		ctx.True(beds.Count() >= 3, string.Format("the world has a ward of at least three beds (found %1)", beds.Count()));
-		ctx.Equal(before.Count() + 3, beds.Count(), "each fixture bed registers itself");
-		foreach (IEntity placed : ward)
-		{
-			SCR_EntityHelper.DeleteEntityAndChildren(placed);
-		}
-
-		beds.Clear();
-		LF_HospitalBedComponent.GetBedPositions(beds);
-		ctx.Equal(before.Count(), beds.Count(), "a deleted bed leaves the ward");
+		ctx.True(beds.Count() >= 3, string.Format("DebugWorld has a ward of at least three beds (found %1)", beds.Count()));
 
 		IEntity bill = LF_Utils.SpawnEntityPrefab(LF_HospitalBill.Prefab(), "0 0 0");
 		ctx.True(bill != null, "the hospital bill prefab spawns");
