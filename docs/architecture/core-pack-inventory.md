@@ -242,7 +242,7 @@ its save.
 | `EL_DebugTest.conf` | core | The suite's header |
 | `LF_PlaytestTown.conf` | pack, moved (batch 1) | The developer playtest header, hidden from the scenario list since #374 (`LF_Everon1989.conf` is the one listed flagship; this id still boots for `host`, `playtest`, `session --mission playtest`, the e2e `--mission playtest` and existing saves) and the one that keeps the playtest helpers on; its world is the pack world. The core suite reads the neutral fixture `LF_HostedTest.conf` (core) instead |
 | `LF_PlaytestTown_Preview.{edds,jpg}` | pack, moved (batch 1) | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
-| `EveronLifeGameMode.conf` | pack, moved (batch 1) | The MainWorld header |
+| `LF_EveronIsland.conf` | pack | The hidden island header: MainWorld under the flagship's overlays (#2204); `EveronLifeGameMode.conf` is retired |
 | `LF_HostedTest.conf` | core | Test fixture (#323 batch 1): a hosted header on DebugWorld with dev tools closed, read by `host/playtest-mission` and `harness/dev-gate-dedicated` |
 | `addons/LF_Everon1989/Missions/LF_Everon1989.conf` | pack (in the pack) | The flagship header, the only scenario Workshop players see (#322, #374, #1339). It closes the playtest helpers (`m_bLF_PlaytestHelpersOff 1`) and leaves `m_bLF_FirstPlayerPolice` and `m_bLF_InstantPoliceApproval` off, so a real server gets no test cars, top-up, spawn hub or auto-police; the listen-host proof boots it. Since batch 1 it loads the pack world `Everon1989Town.ent` and uses the moved preview art. A host whose save was made on `LF_PlaytestTown.conf` keeps that header until the save is cleared |
 | `EveronLife_TitleImage.{edds,jpg}` | split | Every header uses it; the core needs neutral art |
@@ -261,7 +261,7 @@ its save.
 | `Signs` | split | Village signs; `LF_Test_SafeZone` finds two |
 | Chain layers: `AppleChain`, `CementChain`, `CrimeChain`, `FarmingChain`, `GravelChain`, `LoggingChain`, `MiningChain`, `PlumChain`, `SandChain`, `TraderChain` | split | On the village outskirts; tests find some of their nodes |
 | `ATM`, `Gamemode`, `Roadmap`, `Survival`, `default` | split | Village placement of entities tests use; the game mode entity is core |
-| `MainWorld/` | pack, moved (batch 1) | The Everon town, St Philippe apple farm |
+| `MainWorld/` | pack, moved (batch 1) | Vanilla Everon with the game mode, a spawn and the Eden AI world and navmesh; the apple-farm layer is gone (#2204) |
 
 ## Assets
 
