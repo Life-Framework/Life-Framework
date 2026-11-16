@@ -48,7 +48,8 @@
     "cuffedFineAllowsDebt": true,
     "downedDies": true,
     "wantedLogoutAdd": 0,
-    "jailClockOffline": false
+    "jailClockOffline": false,
+    "contactWindowSeconds": 120
   },
   "idCard": {
     "replacementFee": 50,

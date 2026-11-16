@@ -8,7 +8,10 @@
 //!   placed cell falls back to the fine.
 //! - Downed (not stunned): dies at logout when downedDies is on (LF_BleedOut reads it).
 //! - Wanted: the warrant stays on the character (it is saved with the account); wantedLogoutAdd
-//!   raises it.
+//!   raises it. A wanted player who logs out within contactWindowSeconds of police contact (a stop,
+//!   a search, a chase report: LF_PoliceContact) is treated as cuffed: jail, flagged logout (#1972).
+//! - Every logout gets a rejoin place: jail, hospital (downed) or in place (RejoinFor), logged
+//!   as [LFDebug:Rejoin] with the reason.
 //! - Jailed: the remaining sentence stays (the jail payload); jailClockOffline lets it count down
 //!   while the prisoner is away.
 //!
@@ -56,6 +59,11 @@ class LF_DisconnectConfig
 	[Attribute("0", UIWidgets.CheckBox, "A jail sentence counts down while the prisoner is offline. Off: only online time is served")]
 	bool m_bJailClockOffline;
 
+	static const int CONTACT_WINDOW_MAX = 3600;	// lf-fixed: the schema limit, one hour
+
+	[Attribute("120", UIWidgets.Auto, "Seconds after police contact (a stop, a search, a chase report) in which logging out wanted is jailed like a cuffed logout. 0 turns the rule off", params: "0 3600")]
+	int m_iContactWindowSeconds;
+
 	protected static ref LF_DisconnectConfig s_Config;
 
 	//------------------------------------------------------------------------------------------------
@@ -72,6 +80,7 @@ class LF_DisconnectConfig
 		config.m_bDownedDies = true;
 		config.m_iWantedLogoutAdd = 0;
 		config.m_bJailClockOffline = false;
+		config.m_iContactWindowSeconds = 120;
 		return config;
 	}
 
@@ -90,7 +99,7 @@ class LF_DisconnectConfig
 			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("disconnect: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
 		}
 
-		LF_Debug.Info(LF_DisconnectRules.FEATURE, string.Format("rules: cuffed=%1 escorted-as-cuffed=%2 downed-dies=%3 wanted-add=%4 jail-clock-offline=%5", s_Config.m_sCuffedRule, s_Config.m_bEscortedCountsAsCuffed, s_Config.m_bDownedDies, s_Config.m_iWantedLogoutAdd, s_Config.m_bJailClockOffline));
+		LF_Debug.Info(LF_DisconnectRules.FEATURE, string.Format("rules: cuffed=%1 escorted-as-cuffed=%2 downed-dies=%3 wanted-add=%4 jail-clock-offline=%5 contact-window=%6s", s_Config.m_sCuffedRule, s_Config.m_bEscortedCountsAsCuffed, s_Config.m_bDownedDies, s_Config.m_iWantedLogoutAdd, s_Config.m_bJailClockOffline, s_Config.m_iContactWindowSeconds));
 		return s_Config;
 	}
 
@@ -117,7 +126,7 @@ class LF_DisconnectConfig
 	//------------------------------------------------------------------------------------------------
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"cuffedRule", "escortedCountsAsCuffed", "cuffedWantedAdd", "cuffedMinJailSeconds", "cuffedFine", "cuffedFineAllowsDebt", "downedDies", "wantedLogoutAdd", "jailClockOffline"};
+		array<string> ownerKeys = {"cuffedRule", "escortedCountsAsCuffed", "cuffedWantedAdd", "cuffedMinJailSeconds", "cuffedFine", "cuffedFineAllowsDebt", "downedDies", "wantedLogoutAdd", "jailClockOffline", "contactWindowSeconds"};
 		reader.WarnUnknownKeys(ownerKeys);
 
 		string rule = m_sCuffedRule;
@@ -138,6 +147,7 @@ class LF_DisconnectConfig
 		reader.ReadBool("downedDies", m_bDownedDies);
 		reader.ReadInt("wantedLogoutAdd", m_iWantedLogoutAdd, 0, WANTED_ADD_MAX);
 		reader.ReadBool("jailClockOffline", m_bJailClockOffline);
+		reader.ReadInt("contactWindowSeconds", m_iContactWindowSeconds, 0, CONTACT_WINDOW_MAX);
 	}
 }
 
@@ -153,6 +163,8 @@ class LF_DisconnectState : Managed
 	int m_iWanted;
 	bool m_bServing;
 	bool m_bCellPlaced;
+	//! Seconds since the last police contact (LF_PoliceContact), -1 for none.
+	int m_iContactAge = -1;
 
 	//------------------------------------------------------------------------------------------------
 	//! "cuffed,downed,wanted" style; "clean" when nothing applies.
@@ -169,6 +181,8 @@ class LF_DisconnectState : Managed
 			parts.Insert("stunned");
 		if (m_iWanted > 0)
 			parts.Insert("wanted" + m_iWanted);
+		if (m_iContactAge >= 0)
+			parts.Insert(string.Format("contact%1s", m_iContactAge));
 		if (m_bServing)
 			parts.Insert("jailed");
 
@@ -198,6 +212,8 @@ class LF_DisconnectDecision : Managed
 	bool m_bDownedDies;
 	bool m_bKeepWarrant;
 	bool m_bKeepSentence;
+	//! A wanted player left inside the police contact window: handled as a cuffed logout.
+	bool m_bContact;
 
 	//------------------------------------------------------------------------------------------------
 	//! True when the logout changes or keeps anything worth a log line and an incident row.
@@ -218,6 +234,8 @@ class LF_DisconnectDecision : Managed
 			parts.Insert("release");
 		if (m_bJailFellBack)
 			parts.Insert("(no cell: fine instead of jail)");
+		if (m_bContact)
+			parts.Insert("police contact");
 		if (m_iWantedAdd > 0)
 			parts.Insert("wanted+" + m_iWantedAdd);
 		if (m_bDownedDies)
@@ -242,6 +260,9 @@ class LF_DisconnectDecision : Managed
 class LF_DisconnectRules
 {
 	static const string FEATURE = "Disconnect";
+	static const string REJOIN_JAIL = "jail";
+	static const string REJOIN_HOSPITAL = "hospital";
+	static const string REJOIN_IN_PLACE = "in place";
 
 	//------------------------------------------------------------------------------------------------
 	//! Pure: the rules for one leaving player.
@@ -249,6 +270,13 @@ class LF_DisconnectRules
 	{
 		LF_DisconnectDecision decision = new LF_DisconnectDecision();
 		bool inCustody = state.m_bCuffed || (state.m_bEscorted && config.m_bEscortedCountsAsCuffed);
+
+		// Wanted and just met the police (a stop, a search, a chase report): leaving is fleeing.
+		if (!inCustody && !state.m_bServing && state.m_iWanted > 0 && LF_PoliceContact.InWindow(state.m_iContactAge, config.m_iContactWindowSeconds))
+		{
+			inCustody = true;
+			decision.m_bContact = true;
+		}
 
 		// A serving prisoner is already where custody leads; the sentence rule covers them.
 		if (inCustody && !state.m_bServing)
@@ -280,6 +308,51 @@ class LF_DisconnectRules
 		decision.m_bKeepWarrant = state.m_iWanted > 0 || decision.m_iWantedAdd > 0;
 		decision.m_bKeepSentence = state.m_bServing;
 		return decision;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: where the leaver rejoins. Jail beats the hospital (the sentence is put back after the
+	//! hospital spawn); a downed logout that dies wakes at the hospital with the bill; else in place.
+	static string RejoinFor(notnull LF_DisconnectDecision decision)
+	{
+		if (decision.m_sCustody == LF_DisconnectConfig.RULE_JAIL)
+			return REJOIN_JAIL;
+
+		if (decision.m_bKeepSentence)
+			return REJOIN_JAIL;
+
+		if (decision.m_bDownedDies)
+			return REJOIN_HOSPITAL;
+
+		return REJOIN_IN_PLACE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why RejoinFor said so, for the [LFDebug:Rejoin] line.
+	static string RejoinReason(notnull LF_DisconnectState state, notnull LF_DisconnectDecision decision)
+	{
+		string place = RejoinFor(decision);
+		if (place == REJOIN_JAIL)
+		{
+			if (decision.m_bKeepSentence)
+				return "serving a sentence";
+
+			if (decision.m_bContact)
+				return string.Format("logged out wanted %1 s after police contact (window %2 s)", state.m_iContactAge, LF_DisconnectConfig.Get().m_iContactWindowSeconds);
+
+			return "logged out cuffed or escorted";
+		}
+
+		if (place == REJOIN_HOSPITAL)
+			return "logged out downed: the death and the bill wait at the hospital";
+
+		if (decision.m_sCustody == LF_DisconnectConfig.RULE_FINE)
+			return "custody fined instead of jailed (the fine rule or no cell)";
+
+		if (state.m_iWanted > 0 && state.m_iContactAge >= 0)
+			return string.Format("wanted, but police contact was %1 s ago (outside the window or the rule is off)", state.m_iContactAge);
+
+		return "nothing to answer for";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -329,6 +402,7 @@ class LF_DisconnectRules
 
 		state.m_bServing = LF_Jail.IsServing(uid);
 		state.m_bCellPlaced = LF_Jail.HasCell();
+		state.m_iContactAge = LF_PoliceContact.AgeSecondsNow(uid);
 
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (accounts)
@@ -348,7 +422,11 @@ class LF_DisconnectRules
 		string uid = state.m_sPlayerUid;
 		LF_DisconnectDecision decision = Decide(state, LF_DisconnectConfig.Get());
 		if (!decision.IsFlagged())
+		{
+			LF_Debug.Info(LF_PoliceContact.FEATURE, string.Format("%1 rejoins in place: %2", uid, RejoinReason(state, decision)));
+			LF_PoliceContact.Forget(uid);
 			return decision;
+		}
 
 		LF_Debug.Info(FEATURE, string.Format("%1 left %2: %3", uid, state.Describe(), decision.Describe()));
 
@@ -402,6 +480,9 @@ class LF_DisconnectRules
 
 		if (accounts && account && decision.m_iWantedAdd > 0)
 			accounts.SaveAndReleaseAccount(account);
+
+		LF_Debug.Info(LF_PoliceContact.FEATURE, string.Format("%1 rejoins %2: %3", uid, RejoinFor(decision), RejoinReason(state, decision)));
+		LF_PoliceContact.Forget(uid);
 
 		vector position;
 		if (body)
