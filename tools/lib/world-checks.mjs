@@ -50,7 +50,8 @@ export const LAYER_READERS_KEPT_HARD = {
   "validate-addon-boundary.mjs": "core layers never name the pack: a build-breaking reference, not a placement",
   "validate-en-text.mjs": "non-English literal text in a layer: a content bug, not a position",
   "validate-npc-layer-overrides.mjs": "a layer override on a replicated NPC kicks clients on join (RplCreationError): never a layout call",
-  "validate-sound-slots.mjs": "a sound slot id a layer asks for must exist: a broken reference",
+  "validate-grid-world.mjs": "GridWorld only (the debug grid): a legacy station outside every claimed cell; the town layers are never read",
+  "validate-sound-slots.mjs":"a sound slot id a layer asks for must exist: a broken reference",
   "validate-no-town-layout-asserts.mjs": "judges new test files, and already only warns when the town moved under an old literal",
 };
 
