@@ -5,7 +5,8 @@
 //! draws the M16A2 and fines up to the existing maximum. Who may arrest and escort is config
 //! (LF_PoliceConfig); the flagship opens both to every on-duty officer, so a fresh server
 //! plays the arrest loop from the first minute. Promotion is server-side: an
-//! on-duty senior promotes a lower officer, or 3600 seconds on duty promotes patrol.
+//! on-duty officer promotes a lower one when the promoter outranks the rung the target moves
+//! into (on a two-rung ladder, any senior), or 3600 seconds on duty promotes patrol.
 //! RequestSelfPromotion is the RPC body and always refuses. Rank does not whitelist
 //! anyone and is not a license.
 //!
@@ -184,7 +185,28 @@ class LF_PoliceRanks
 		if (!OnDutyPolice(account))
 			return false;
 
-		return account.GetPoliceRank() > PATROL;
+		int rank = account.GetPoliceRank();
+		if (rank <= PATROL)
+			return false;
+
+		// The lowest promotion there is (rung 0 into rung 1) needs this rank at least.
+		return rank >= PromoterRankNeeded(PATROL);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lowest rank that may promote an officer now at targetRank: one above the rung the target is
+	//! promoted into. The top rung is the ceiling, so the top rank still promotes into the top rung
+	//! and a two-rung ladder keeps "the senior promotes the patrol".
+	static int PromoterRankNeeded(int targetRank)
+	{
+		return Math.Min(targetRank + 2, TopRank());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure rule: promoterRank outranks the rung targetRank is promoted into.
+	static bool PromoterOutranksNewRank(int promoterRank, int targetRank)
+	{
+		return promoterRank > targetRank && promoterRank >= PromoterRankNeeded(targetRank);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -346,6 +368,16 @@ class LF_PoliceRanks
 		if (!IsRankUsable(nextRank))
 		{
 			Note("promote refused: target has no higher rank");
+			return false;
+		}
+
+		// The server's rule, whatever the client offered: the promoter must hold a rank above the
+		// rung the target moves into (the top rank is the ceiling). Saved ranks are indexes.
+		if (!PromoterOutranksNewRank(promoter.GetPoliceRank(), target.GetPoliceRank()))
+		{
+			s_sLastError = string.Format("promote refused: rank %1 does not outrank new rank %2 (needs rank %3)", promoter.GetPoliceRank(), nextRank, PromoterRankNeeded(target.GetPoliceRank()));
+			LF_Debug.Warn("Police", s_sLastError);
+			NotifyOfficer(BoundEntity(promoterUid), "#EL-Rank_PromoteNeedsHigher");
 			return false;
 		}
 
@@ -634,6 +666,7 @@ class LF_PoliceRanks
 		if (!promoterAccount)
 			return "";
 
+		string refused;
 		for (int i = s_aBoundIds.Count() - 1; i >= 0; i--)
 		{
 			IEntity other = GetGame().GetWorld().FindEntityByID(s_aBoundIds.Get(i));
@@ -654,10 +687,16 @@ class LF_PoliceRanks
 			if (otherAccount.GetPoliceRank() >= promoterAccount.GetPoliceRank())
 				continue;
 
-			return otherUid;
+			// Prefer someone this promoter may actually promote; otherwise Promote refuses the
+			// nearest lower officer and tells the promoter why.
+			if (PromoterOutranksNewRank(promoterAccount.GetPoliceRank(), otherAccount.GetPoliceRank()))
+				return otherUid;
+
+			if (refused.IsEmpty())
+				refused = otherUid;
 		}
 
-		return "";
+		return refused;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -799,6 +838,22 @@ class LF_PoliceRanks
 	{
 		s_sLastError = message;
 		LF_Debug.Error("Ranks", message);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The entity BindOfficer tied to this uid, or null (a test account, a despawned officer).
+	protected static IEntity BoundEntity(string uid)
+	{
+		if (uid.IsEmpty() || !s_aBoundIds || !GetGame() || !GetGame().GetWorld())
+			return null;
+
+		for (int i = s_aBoundUids.Count() - 1; i >= 0; i--)
+		{
+			if (s_aBoundUids.Get(i) == uid)
+				return GetGame().GetWorld().FindEntityByID(s_aBoundIds.Get(i));
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------

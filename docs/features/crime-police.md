@@ -442,8 +442,8 @@
   `{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et` and fines up
   to the existing 5000 cap. The resolved kit is the intersection
   of that rank's list and the station catalog; a prefab that does not load is
-  logged and skipped, and the rank stays usable. An on-duty senior promotes a
-  lower officer. 3600 seconds on duty promotes patrol. `RequestSelfPromotion`
+  logged and skipped, and the rank stays usable. An on-duty officer promotes a
+  lower one (rule in the promotion bullet below). 3600 seconds on duty promotes patrol. `RequestSelfPromotion`
   is the self-promotion RPC body and always refuses. Rank does not change
   faction and does not write the police whitelist. Lower ranks still open the
   wanted list. DebugWorld places `Roadmap_Police_Armory` at `241.2 0 244.2`
@@ -453,6 +453,14 @@
   per on-duty second; duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
   the pack patches the core's `patrol` (index 0) into Cadet and `senior` (index 1) into Patrol and appends the other three.
   Titles are the pack's `LF-Rank_*` rows. A saved rank above the ladder clamps to the top on load.
+- 🔨 Only an officer above the new rank promotes (#2095, in-dev). `LF_PoliceRanks.Promote` (server) refuses
+  unless the on-duty promoter's rank is above the rung the target moves into: on the five-rung flagship ladder a
+  Patrol (1) cannot promote a Cadet (0) into Patrol, a Sergeant (3) promotes a Patrol into Senior Patrol, and a rank
+  equal to the new rung is refused. The top rank is the ceiling (`PromoterRankNeeded` = `min(target + 2, top)`), so
+  the Lieutenant still promotes into Lieutenant and a one- or two-rung core ladder keeps "the senior promotes the
+  patrol". A refusal logs `[LFDebug:Police]` and toasts the promoter `#EL-Rank_PromoteNeedsHigher`. The armory
+  action's server check (`CanPromote`) hides Promote from a rank that can promote nobody;
+  the nearest-officer pick prefers someone the promoter may promote. Test: `police/promote-rung`.
 - 🔨 The flagship kit (#1942, merged, in-dev; `LF_PoliceKit_Everon1989.conf`, listed after the ladder in the
   mission header): the pack overlay restates each rung's `m_aKit`. Patrol (index 0) draws the M9 and the spike strip;
   senior and every rung above draw the M16, the spike strip and the roadblock kit (`LF_Roadblocks.KIT`, added to the
