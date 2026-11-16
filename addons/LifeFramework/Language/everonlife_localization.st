@@ -5707,6 +5707,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Lockpick"
      Comment "Toast title for lockpicking (#411)."
     }
+    CustomStringTableItem "{F87E1E94DC2EE743}" {
+     Id "LF-LogoutBodyTag_Label"
+     Target_en_us "Logged out"
+     Comment "World-space tag over a logged-out player's body (#1974)."
+    }
     CustomStringTableItem "{EBA0820132F44791}" {
      Id "LF-Lot_Browse"
      Target_en_us "Look at the cars"
