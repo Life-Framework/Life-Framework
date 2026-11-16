@@ -188,6 +188,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_EventPackOverlay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPhaseRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPreconditions(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventScenePlan(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventWaypoints(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceLockerPersist(), LF_TestTier.PERSISTENCE);
@@ -426,6 +427,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RateLimit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RegistrationRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RejoinSafeSpot(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RemovedTomatoSkip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestartClose(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartBankSurvivesConnect(), LF_TestTier.LOGIC);
