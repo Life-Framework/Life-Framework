@@ -53,10 +53,13 @@ in-world document; a license is another document you carry.
   dev worlds and to administrators (`LF_LicenceGrantCommand.c`).
 - **Licence desk** (#1766, `LF_LicenceDesk.c`, `LF_LicenceDeskAction.c`, prefab
   `Prefabs/Props/Commercial/LF_LicenceDesk.et`): a player applies for the firearm permit in person.
-  Refused while wanted, with an open crime report, below the licence's gate, or short of the fee
+  Refused while wanted, with an open crime report, convicted within the last `licences.permitConvictionDays`
+  in-game days (default 7, 0 is off; `LF_ConvictionRecord.IsRecent`, #1995), below the licence's gate, or short of the fee
   (`licences.permitFee`, core default 250, carried cash). An application takes the fee once and is an
   account flag `permit_due:<in-game minute>` in the progression store; after `licences.permitWaitDays`
-  (default 1) in-game days the player collects the permit at the desk, the record checked again. The
+  (default 1) in-game days the player collects the permit at the desk, the record checked again (a conviction
+  after paying holds the permit back, keeps the application open and refunds nothing; the player collects once the
+  look-back has passed. A holder keeps the permit: only the police revoke it). The
   wait runs on the in-game clock, which vanilla persistence saves; a clock set back waits one term,
   never longer. On-duty police revoke the permit (and any open application) with the "Revoke firearm
   permit" player interaction (`LF_LicenceRevokeRole`). The desk stands in GridWorld cell c0r5; the
