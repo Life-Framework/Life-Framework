@@ -2682,12 +2682,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{191CB88166129132}" {
      Id "LF-Credits_108"
-     Target_en_us "Town clerk's spoken lines"
+     Target_en_us "Town clerk's spoken lines: all thirteen, the old arrival lines and the newcomer's welcome"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A8D038048737972B}" {
      Id "LF-Credits_109"
-     Target_en_us "ElevenLabs text-to-speech, voices generated with ElevenLabs; voice \"JC\" from the voice library"
+     Target_en_us "Piper en_US-ljspeech-high (see Voice-over below), Piper MIT, voice trained on LJ Speech"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{857E5E05902D8F44}" {

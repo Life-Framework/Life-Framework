@@ -144,10 +144,7 @@ fallback after that is a slow head nod, which needs an animation clip we do not 
 
 - `POST /v1/text-to-speech/{voice}` with `eleven_multilingual_v2`, mp3 at 44.1 kHz. Never called
   by the game: `tools\cli asset dialogue <npc>` runs it and commits the result.
-- Clerk voice: "JC" from the voice library, a man over sixty with a French accent. The town's own
-  names are French (Dupont, Lefevre), and an old official fits the desk. Premade voices are all
-  American or British. Alternatives found for later NPCs: Patrick (Czech, middle-aged), Maxim
-  (Russian-accented), Veru (Czech, female).
+- Clerk voice: Piper `en_US-ljspeech-high` (LJ Speech, public domain) for all thirteen lines (#1959, one voice per character). It replaced the first pick, "JC" from the ElevenLabs voice library, which fit an old island official but left the welcome lines in a different voice. Alternatives found for ElevenLabs NPCs: Patrick (Czech, middle-aged), Maxim (Russian-accented), Veru (Czech, female).
 - Cost: 1,165 characters of text for the clerk's 10 lines, 16 to 192 characters a line, about
   11.6 characters per second of speech. The service's own `character-cost` header added up to 465
   for those requests, so the plan bills this model below one credit per character. The account

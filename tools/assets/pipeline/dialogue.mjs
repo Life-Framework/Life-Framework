@@ -23,6 +23,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import * as eleven from "./elevenlabs.mjs";
+import * as piper from "./piper.mjs";
 import { freshGuid, readGuid } from "./meta.mjs";
 import { addonFlag, addonOf, addonProblems, assertBoundary, guidsInUse, stringTable, withAddon } from "./addon.mjs";
 import { acpText as soundAcpText } from "./sound.mjs";
@@ -53,7 +54,11 @@ export const voicedText = (line) => (line.say || line.text || "").trim();
 // `say` with its [audio tags] removed: what must read the same as the caption.
 export const untagged = (say) => say.replace(/\[[a-z][a-z ,'-]*\]/g, " ").replace(/\s+/g, " ").trim();
 
+// The voice a line is made with: its own (a Piper line in an ElevenLabs dialogue, #1959) else the spec's.
+export const lineVoice = (spec, line) => line?.voice || spec.voice;
+
 export function lineHash(voice, text) {
+  if (piper.isPiper(voice)) return createHash("sha1").update(JSON.stringify([voice.engine, voice.id, voice.length_scale ?? 1, text])).digest("hex").slice(0, 16);
   return createHash("sha1").update(JSON.stringify([voice.id, voice.model || eleven.DEFAULT_MODEL, voice.settings || null, text])).digest("hex").slice(0, 16);
 }
 
@@ -84,10 +89,18 @@ export function loadProvenance(root, id) {
   return existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : { id, service: "ElevenLabs text-to-speech", lines: {} };
 }
 
+// A line's own voice is Piper only (the dialogue's voice stays the one that speaks the rest).
+export function lineVoiceProblems(id, voice) {
+  if (!piper.isPiper(voice)) return [`line ${id}: a line's own voice must be {"engine": "piper", "id": "en_US-ljspeech-high"}; a different ElevenLabs voice for one line is not supported`];
+  return piper.voiceProblems(voice, `line ${id} voice`);
+}
+
 // The voice and the character budget of a spec that records its lines (a full dialogue or a voiced pack patch).
 export function voiceProblems(spec) {
   const out = [];
   if (!spec.voice?.id) out.push("voice.id is missing (docs/asset-pipeline/dialogue.md \"Voices\")");
+  out.push(...piper.voiceProblems(spec.voice));
+  for (const [lineId, line] of Object.entries(spec.lines || {})) if (line.voice) out.push(...lineVoiceProblems(lineId, line.voice));
   if (!(spec.budget_chars > 0 && spec.budget_chars <= MAX_BUDGET)) out.push(`budget_chars must be 1 to ${MAX_BUDGET}`);
   return out;
 }
@@ -335,14 +348,18 @@ export function expectedFiles(root, spec, prov) {
 // Lines whose audio in the addon does not match the spec (new, reworded, or a new voice).
 export function staleLines(root, spec, prov) {
   if (spec.text_only) return [];
-  return Object.entries(spokenLines(spec)).filter(([id, line]) => prov.lines[id]?.hash !== lineHash(spec.voice, voicedText(line)) || !existsSync(join(root, ADDON(spec), wavRes(spec, id)))).map(([id]) => id);
+  return Object.entries(spokenLines(spec)).filter(([id, line]) => prov.lines[id]?.hash !== lineHash(lineVoice(spec, line), voicedText(line)) || !existsSync(join(root, ADDON(spec), wavRes(spec, id)))).map(([id]) => id);
 }
 
 // ---------------------------------------------------------------- the stage
 // Buys and converts the stale lines of a spec that records its lines (a full dialogue, or a pack's voiced patch)
 // into the addon that owns the voice: wav + meta per line, the provenance file, lines that left the spec removed,
 // the audio project's meta. The caller writes the audio project and the conf from the returned provenance.
-async function voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, convert, log }) {
+function piperCheck(root) {
+  if (!piper.piperPath(root)) throw new Error("this dialogue has Piper lines and Piper is not installed. Run: tools\cli film-make --setup");
+}
+
+async function voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, convert, log, piperRun }) {
   const addon = join(root, ADDON(spec));
   const spoken = spokenLines(spec);
   const prov = loadProvenance(root, id);
@@ -355,16 +372,19 @@ async function voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, co
   else if (force) { if (!spoken[force]) throw new Error(`--force ${force}: no such line`); stale.add(force); }
   const todo = [...stale].map((lineId) => {
     const text = voicedText(spoken[lineId]);
-    const hash = lineHash(spec.voice, text);
+    const voice = lineVoice(spec, spoken[lineId]);
+    const hash = lineHash(voice, text);
+    // A Piper line is free and always made fresh (a forced take is just another run); no download is kept.
+    if (piper.isPiper(voice)) return { lineId, text, hash, voice, mp3: join(dir, `${lineId}.${hash}.wav`), paid: false, free: true, chars: 0 };
     const mp3 = join(dir, `${lineId}.${hash}.mp3`);
     // A forced line is a new paid take even when the old download is still there.
     const paid = force && (force === "all" || force === lineId) ? true : !existsSync(mp3);
-    return { lineId, text, hash, mp3, paid, chars: paid ? eleven.cost(text, spec.voice.model) : 0 };
+    return { lineId, text, hash, voice, mp3, paid, chars: paid ? eleven.cost(text, voice.model) : 0 };
   });
   const need = todo.reduce((n, t) => n + t.chars, 0);
   const everSpent = Object.values(prov.lines).reduce((n, l) => n + (l.chars_total || 0), 0);
   log(`dialogue ${id}: ${Object.keys(spoken).length} lines, ${todo.length} to (re)generate, ${need} characters to buy; this NPC has cost ${everSpent} of its ${spec.budget_chars} budget`);
-  for (const t of todo) log(`  ${t.paid ? "generate" : "resume  "} ${t.lineId} (${t.text.length} chars)`);
+  for (const t of todo) log(`  ${t.free ? "piper   " : t.paid ? "generate" : "resume  "} ${t.lineId} (${t.text.length} chars)`);
   if (everSpent + need > spec.budget_chars) throw new Error(`that would take this NPC to ${everSpent + need} characters, over its budget of ${spec.budget_chars}. Shorten the lines or raise budget_chars on purpose.`);
   if (dryRun) return { dry: true, need };
 
@@ -376,17 +396,22 @@ async function voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, co
     const voiceState = await eleven.ensureVoice(spec.voice, opts);
     if (voiceState === "added") log(`added voice ${spec.voice.name} to the account from the voice library`);
   }
+  // A Piper line needs the binary and the voice file, and says so before any other work.
+  if (todo.some((t) => t.free) && !dryRun && !piperRun) piperCheck(root);
   const ff = todo.length && convert === processAudio ? ffmpeg || await ffmpegPath() : ffmpeg;
   const used = guidsInUse(root);
   let bought = 0;
   for (const t of todo) {
     let requestId = prov.lines[t.lineId]?.hash === t.hash ? prov.lines[t.lineId].request_id : "";
     let billed = 0;
-    if (t.paid) {
-      const take = await eleven.speak(spec.voice, t.text, opts);
+    if (t.free) {
+      mkdirSync(dir, { recursive: true });
+      piper.speak(root, t.voice, t.text, t.mp3, { run: piperRun });
+    } else if (t.paid) {
+      const take = await eleven.speak(t.voice, t.text, opts);
       mkdirSync(dir, { recursive: true });
       writeFileSync(t.mp3, take.audio);
-      eleven.logChars(ledger, { line: t.lineId, hash: t.hash, chars: take.billed, voice: spec.voice.id, request: take.requestId });
+      eleven.logChars(ledger, { line: t.lineId, hash: t.hash, chars: take.billed, voice: t.voice.id, request: take.requestId });
       requestId = take.requestId;
       billed = take.billed;
       bought += billed;
@@ -398,7 +423,7 @@ async function voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, co
     const env = envelope(readFileSync(wav));
     const old = prov.lines[t.lineId] || {};
     prov.lines[t.lineId] = {
-      hash: t.hash, date: new Date().toISOString().slice(0, 10), voice_id: spec.voice.id, voice_name: spec.voice.name, model: spec.voice.model || eleven.DEFAULT_MODEL,
+      hash: t.hash, date: new Date().toISOString().slice(0, 10), voice_id: t.voice.id, voice_name: t.voice.name || t.voice.id, model: t.free ? piper.ENGINE : t.voice.model || eleven.DEFAULT_MODEL, ...(t.free ? { engine: piper.ENGINE } : {}),
       text: t.text, chars: t.text.length, chars_total: (old.chars_total || 0) + billed, request_id: requestId || "", seconds: env.seconds, mouth: env.mouth,
     };
     // Saved after every line: a run that dies keeps what it paid for.
@@ -414,7 +439,7 @@ async function voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, co
     if (m && !spoken[m[1]]) { unlinkSync(join(sdir, f)); log(`  removed ${f} (line no longer in the dialogue)`); }
   }
   for (const lineId of Object.keys(prov.lines)) if (!spoken[lineId]) delete prov.lines[lineId];
-  prov.voice = { id: spec.voice.id, name: spec.voice.name, source: spec.voice.public_owner_id ? "voice library" : "premade" };
+  prov.voice = { id: spec.voice.id, name: spec.voice.name, source: piper.isPiper(spec.voice) ? "piper" : spec.voice.public_owner_id ? "voice library" : "premade" };
   writeFileSync(provenanceFile(root, id), JSON.stringify(prov, null, 2) + "\n");
 
   const acp = join(addon, acpRes(spec));
@@ -429,7 +454,7 @@ async function voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, co
 
 // A voiced patch of a core dialogue (a pack that owns the voice): the stage above, then the audio project in the
 // pack and the patch conf carrying each line's event, length and mouth (dialogue-patch.mjs).
-export async function runVoicedPatch(root, spec, { dryRun = false, force = "", fetchImpl, ffmpeg, convert = processAudio, log = console.log } = {}, patch) {
+export async function runVoicedPatch(root, spec, { dryRun = false, force = "", fetchImpl, ffmpeg, convert = processAudio, log = console.log, piperRun } = {}, patch) {
   const addon = join(root, ADDON(spec));
   const stFile = patch.patchStringFile(root, spec);
   if (!stFile) throw new Error(`${ADDON(spec)} has no Language/*.st; the pack's string table does not exist yet (core-pack-inventory.md, #325)`);
@@ -439,7 +464,7 @@ export async function runVoicedPatch(root, spec, { dryRun = false, force = "", f
   const core = patch.loadCoreSpec(root, spec);
   const problems = [...addonProblems(root, spec), ...patch.patchProblems(spec, core, known)];
   if (problems.length) throw new Error("dialogue patch problems:\n  " + problems.join("\n  "));
-  const stage = await voiceStage(root, spec.id, spec, { dryRun, force, fetchImpl, ffmpeg, convert, log });
+  const stage = await voiceStage(root, spec.id, spec, { dryRun, force, fetchImpl, ffmpeg, convert, log, piperRun });
   if (stage.dry) return { generated: 0, chars: 0, need: stage.need };
   const conf = join(addon, confRes(spec));
   mkdirSync(dirname(conf), { recursive: true });
@@ -453,14 +478,14 @@ export async function runVoicedPatch(root, spec, { dryRun = false, force = "", f
   return { generated: stage.generated, chars: stage.chars, before: stage.before, after: stage.after, stChanged };
 }
 
-export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffmpeg, convert = processAudio, log = console.log, addon: addonName } = {}) {
+export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffmpeg, convert = processAudio, log = console.log, piperRun, addon: addonName } = {}) {
   const spec = withAddon(loadSpec(root, id), addonName);
   if (spec.patches) {
     // A pack's patch of a core dialogue (dialogue-patch.mjs, #957): text only, or voiced when the pack owns the voice.
     const patch = await import("./dialogue-patch.mjs");
     const full = { ...spec, addon: addonOf(spec) };
     if (!full.voice) return patch.runPatch(root, full, { dryRun, log });
-    return runVoicedPatch(root, full, { dryRun, force, fetchImpl, ffmpeg, convert, log }, patch);
+    return runVoicedPatch(root, full, { dryRun, force, fetchImpl, ffmpeg, convert, log, piperRun }, patch);
   }
   const addon = join(root, ADDON(spec));
   const stFile = stringTable(root, spec);
@@ -478,7 +503,7 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
     log(`dialogue ${id}: ${Object.keys(spec.lines).length} lines, text only: no recordings, 0 characters to buy`);
     if (dryRun) return { generated: 0, chars: 0, need: 0 };
   } else {
-    stage = await voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, convert, log });
+    stage = await voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, convert, log, piperRun });
     if (stage.dry) return { generated: 0, chars: 0, need: stage.need };
   }
   const conf = join(addon, confRes(spec));
