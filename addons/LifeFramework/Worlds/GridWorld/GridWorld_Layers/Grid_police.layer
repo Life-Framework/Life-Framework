@@ -1,0 +1,105 @@
+// Grid cell c1r6 for police: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_police_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 95
+}
+SCR_DestructibleEntity Grid_police_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 95
+ angleY 270
+}
+SCR_DestructibleEntity Grid_police_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 100
+ angleY 270
+}
+SCR_DestructibleEntity Grid_police_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 45 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 40 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 105
+ angleY 90
+}
+SCR_DestructibleEntity Grid_police_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 35 0 100
+ angleY 90
+}
+GenericEntity Grid_police_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:police"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 44.4 0.505 94.2
+ angleY 180
+}
+GenericEntity PoliceStation {
+ coords 40 0 100
+ angleY 180
+ {
+  GenericEntity PoliceStation_Debug {
+   components {
+    MeshObject "{5A4B0B84C86D7843}" {
+     Object "{85A1902159549DEF}Assets/Props/Services/Police/PoliceControlPanel_01.xob"
+    }
+    RigidBody "{5A4B0B84C86D7844}" {
+     Mass 10
+     ModelGeometry 1
+     Static 1
+    }
+    RplComponent "{5A4B0B84C86D784A}" {
+     Enabled 1
+    }
+   }
+   Flags 0x403 0
+     coords 0 0 0
+  }
+  GenericEntity PoliceTableItems {
+    coords 0 0.95 1.4
+   {
+    $grp GenericEntity : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
+     PoliceIDCard_Debug {
+      coords 0 0 0
+     }
+    }
+    $grp GenericEntity : "{9D94B834AF514B4A}Prefabs/Items/Roleplay/VehicleKey.et" {
+     ConfiscatedKey_Debug {
+      coords 0.2 0 0.05
+     }
+    }
+   }
+  }
+   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+    {
+     coords 0 0 1.4
+   }
+  }
+  LF_NpcBaseEntity PoliceNpc : "{284C8FEA46778B5E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Police_2.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Police"
+      Surname "Officer"
+     }
+    }
+   }
+   coords 0 0 -1.3
+  }
+
+  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+   components {
+    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+     m_bGradualLightning 0
+     m_fLV 2.6
+     m_eInitialLightState LIT
+    }
+   }
+   coords 0 0.95 1.4
+  }
+ }
+}

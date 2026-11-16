@@ -283,6 +283,34 @@
       "credits_estimate": 200
     }
   ],
+  "synthesised": [
+    {
+      "id": "store",
+      "event": "SOUND_LF_ALARM_STORE_LP",
+      "script": "tools/assets/retail-alarm/synth.mjs",
+      "date": "2026-11-16",
+      "note": "Two band-limited square tones, 1400 and 1000 Hz, 350 ms each. No generation, no credits."
+    },
+    {
+      "id": "hospital",
+      "event": "SOUND_LF_ALARM_HOSPITAL_LP",
+      "project": "Hospital",
+      "script": "tools/assets/hospital-alarm/synth.mjs",
+      "selftest": "tools/validation/hospital-alarm-selftest.mjs",
+      "date": "2026-11-16",
+      "issue": 1938,
+      "note": "A slow rising triple chime (G5 784, B5 988, D6 1175 Hz, 320 ms each, struck and left to ring, then a rest; three calls, 5.4 s). Sine with two quiet partials, exponential decay, silent loop seam. No generation, no credits, no sample or model. Chosen to differ from the others: the store alarm is two hard square tones alternating, the bank a clanging bell, the fuel alarm a shrill pulsed buzz, the van a single honk, the police siren a sweeping wail; the hospital call is soft, pitched upward, decays and is over half silence. The selftest proves none of the other clips carries its pitches.",
+      "wired": {
+        "project": "{F37DB054DD8BEE76}Sounds/Alarm/Robbery/Alarm_Robbery_Hospital.acp",
+        "events": [
+          "SOUND_LF_ALARM_HOSPITAL_LP"
+        ],
+        "samples": [
+          "{F28118BC45017EA0}Sounds/Alarm/Robbery/Samples/Alarm_Robbery_LF_ALARM_HOSPITAL_LP_01.wav"
+        ]
+      }
+    }
+  ],
   "runs": [
     {
       "date": "2026-11-14",

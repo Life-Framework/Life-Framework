@@ -23,6 +23,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AimIntent(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AlarmMount(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AlarmRests(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_AlcoholDrinks(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AmbientFuelPump(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AmbientSwitch(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AmbientTown(), LF_TestTier.LOGIC);
@@ -51,6 +52,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BillDebt(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BleedOut(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BleedOutRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_BoardProvider(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BreachEvidence(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CarriedInventoryRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CarriedInventoryDeathNoDupe(), LF_TestTier.WORLD);
@@ -74,6 +76,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CharacterSlotsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CharactersPerAccount(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ChessGame(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChessMoves(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPlacedCar(), LF_TestTier.WORLD);
@@ -168,6 +171,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DownedRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrillLeftBeside(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrillLeftSize(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DrinkImpairmentTable(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DutyDeskActions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyPay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_E2E_CashSlotSwap(), LF_TestTier.PERSISTENCE);
@@ -248,7 +252,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_IdCardRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IdentityFallback(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Impairment(), LF_TestTier.LOGIC);
-		manager.Register(new LF_Test_ImpairmentView(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagged(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_IncidentGmQuery(), LF_TestTier.LOGIC);
@@ -399,6 +402,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuizHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuizPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_RaceCourse(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RaceCourses(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RangeTargets(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RateLimit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RegistrationRules(), LF_TestTier.LOGIC);
@@ -523,6 +528,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SpawnScale(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStrip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_SpikeStripPreview(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelayInstall(), LF_TestTier.LOGIC);

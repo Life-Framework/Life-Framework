@@ -1,0 +1,162 @@
+// Grid cell c0r6 for jobs: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_jobs_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 23 0 47
+}
+SCR_DestructibleEntity Grid_jobs_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 28 0 47
+}
+SCR_DestructibleEntity Grid_jobs_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 33 0 47
+ angleY 270
+}
+SCR_DestructibleEntity Grid_jobs_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 33 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_jobs_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 28 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_jobs_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 23 0 57
+ angleY 90
+}
+SCR_DestructibleEntity Grid_jobs_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 23 0 52
+ angleY 90
+}
+GenericEntity Grid_jobs_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:jobs"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 33.8 0.505 56.4
+ angleY 90
+}
+GenericEntity JobCenter {
+ coords 28 0 50.7
+ angleY 90
+ {
+  $grp GenericEntity {
+   JobCenter_Debug {
+    components {
+     MeshObject "{5A4B0B84C86DE843}" {
+      Object "{62C27FEBF2823AE3}Assets/Props/Civilian/NoticeBoardCork_01/NoticeBoardCork_01.xob"
+     }
+     RigidBody "{5A4B0B84C86DE844}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{5A4B0B84C86DE845}" {
+      ActionContexts {
+       UserActionContext "{5A4B0B84C86DE846}" {
+        ContextName "default"
+        Position PointInfo "{5A4B0B84C86DE847}" {
+         Offset 0 1 0
+        }
+        Radius 3
+       }
+      }
+     }
+     RplComponent "{5A4B0B84C86DE84A}" {
+      Enabled 1
+     }
+    }
+     Flags 0x403 0
+     coords 0 -0.001 0
+   }
+   GatherPoint_AppleTree {
+    components {
+     MeshObject "{5A4B0B84C86DF843}" {
+      Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+     }
+     RigidBody "{5A4B0B84C86DF844}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{5A4B0B84C86DF845}" {
+      ActionContexts {
+       UserActionContext "{5A4B0B84C86DF846}" {
+        ContextName "default"
+        Position PointInfo "{5A4B0B84C86DF847}" {
+         Offset 0 0.0873 0
+        }
+        Radius 3
+       }
+      }
+      additionalActions {
+       LF_GatherAction "{5A4B0B84C86DF848}" {
+        ParentContextList {
+         "default"
+        }
+        UIInfo UIInfo "{5A4B0B84C86DF849}" {
+         Name "#LF-Job_GatherApples_Name"
+         Description "#LF-Job_GatherApples_Desc"
+        }
+        m_GatherItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+        m_GatherAmount 5
+        m_GatherAmountMax 10
+        m_GatherTimeout 10000
+       }
+      }
+     }
+     RplComponent "{5A4B0B84C86DF84A}" {
+      Enabled 1
+     }
+    }
+     Flags 0x403 0
+     coords -2.6 0.9 0.7
+   }
+   JobsTableItems {
+     coords 0 0.9 0.7
+    {
+     GenericEntity JobsMoneyStack_Debug : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
+      coords 0 0 0
+     }
+     GenericEntity JobsApple_Debug : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
+      coords 0.25 0 0.05
+     }
+    }
+   }
+  }
+   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+    {
+      coords 0 0 0.7
+   }
+   {
+    coords -2.6 0 0.7
+   }
+  }
+  LF_NpcBaseEntity JobsNpc : "{B56AEE932B667E9C}Prefabs/Characters/Npcs/Outfits/LF_Npc_Office_1.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Jobs"
+      Surname "Officer"
+     }
+    }
+   }
+   coords 0 0 -1.1
+  }
+  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+   components {
+    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+     m_bGradualLightning 0
+     m_fLV 2.6
+     m_eInitialLightState LIT
+    }
+   }
+    coords 0 0.9 0.7
+  }
+ }
+}
+LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 28 0 52
+ m_vSize 4 1 4
+}

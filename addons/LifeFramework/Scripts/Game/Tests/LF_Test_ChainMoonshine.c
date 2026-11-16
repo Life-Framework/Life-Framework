@@ -3,7 +3,7 @@
 // tier: WORLD
 //! The shipped moonshine chain (#420) loads from ResourceChains.conf with every prefab resolving,
 //! is tier 1 with no gate, and its steps hand items on: the mash output is the still input, and
-//! the still makes the contraband crate the convoy buyer already takes.
+//! the still makes the moonshine bottle (#2001; a pack step for the convoy crate is a follow-up).
 class LF_Test_ChainMoonshine : LF_Test
 {
 	override string GetName()
@@ -41,7 +41,7 @@ class LF_Test_ChainMoonshine : LF_Test
 			ctx.Equal(LF_EChainGate.OK, LF_ChainGate.Evaluate(mash, false, 0, false), "the easy tier has no gate");
 			ctx.Equal(LF_EChainGate.OK, LF_ChainGate.Evaluate(distill, false, 0, false), "the still has no gate either");
 			ctx.EqualStr(mash.m_aOutputs[0].m_OutputPrefab, distill.m_aInputs[0].m_InputPrefab, "the mash output feeds the still");
-			ctx.EqualStr(LF_Contraband.ITEM, distill.m_aOutputs[0].m_OutputPrefab, "the still makes the contraband crate");
+			ctx.EqualStr(LF_Test_AlcoholDrinks.MOONSHINE, distill.m_aOutputs[0].m_OutputPrefab, "the still makes the moonshine bottle (#2001)");
 			ctx.True(distill.m_iWork > mash.m_iWork, "the still is the slower step");
 		}
 

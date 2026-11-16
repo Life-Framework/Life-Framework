@@ -192,59 +192,59 @@ SCR_DestructibleBuildingEntity : "{7EAFD7FF46F56083}Prefabs/Buildings/GunStore/G
    angles 80 90 180
   }
   GenericEntity {
-   ID "6F3716506FCCF483"
+   ID "B5921B9E1C389EDC"
    components {
-    MeshObject "{C79110E3632E065F}" {
-     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    MeshObject "{B996FB02F94154DB}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
     }
    }
    coords 5.484 0.864 0.929
    angles 80 90 180
   }
   GenericEntity {
-   ID "865829CB3E05A49A"
+   ID "A220980120BD01FE"
    components {
-    MeshObject "{335900E036C3587F}" {
-     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    MeshObject "{CEE80279962871CF}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
     }
    }
    coords 5.484 0.864 1.083
    angles 80 90 180
   }
   GenericEntity {
-   ID "D57BA9FA800238AD"
+   ID "AB95C3DB4E795FB0"
    components {
-    MeshObject "{FD872D43AF090A65}" {
-     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    MeshObject "{614AC8BDB321CF50}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
     }
    }
    coords 5.484 0.864 1.233
    angles 80 90 180
   }
   GenericEntity {
-   ID "0EA8D125245CA846"
+   ID "A0DDF05E842B8641"
    components {
-    MeshObject "{A25F3EAC6223C822}" {
-     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    MeshObject "{DA2199E57233F456}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
     }
    }
    coords 5.484 0.864 1.39
    angles 80 90 180
   }
   GenericEntity {
-   ID "EE2065540AFF1D1C"
+   ID "8686A91B21CCAB53"
    components {
-    MeshObject "{814FB75DBDB9D451}" {
-     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    MeshObject "{0DC01A6E60C4A557}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
     }
    }
    coords 5.484 0.864 1.547
    angles 80 90 180
   }
   GenericEntity {
-   ID "9A2371FF59929A3C"
+   ID "6F3716506FCCF483"
    components {
-    MeshObject "{60114C6C6049EA8D}" {
+    MeshObject "{C79110E3632E065F}" {
      Object "{1E38513800383D64}Assets/Weapons/Handguns/M9/M9_body.xob"
     }
    }
@@ -252,9 +252,9 @@ SCR_DestructibleBuildingEntity : "{7EAFD7FF46F56083}Prefabs/Buildings/GunStore/G
    angles 0 -60 90
   }
   GenericEntity {
-   ID "5227F5E1873AF4B4"
+   ID "9A2371FF59929A3C"
    components {
-    MeshObject "{0DA9EAC6D16D1258}" {
+    MeshObject "{60114C6C6049EA8D}" {
      Object "{6F3FF53AF2AB04B3}Assets/Weapons/Handguns/PM/PM_body.xob"
     }
    }
@@ -262,9 +262,9 @@ SCR_DestructibleBuildingEntity : "{7EAFD7FF46F56083}Prefabs/Buildings/GunStore/G
    angles 0 -60 90
   }
   GenericEntity {
-   ID "DE8FAF07FEA8F163"
+   ID "5227F5E1873AF4B4"
    components {
-    MeshObject "{151B918C01C3F27F}" {
+    MeshObject "{0DA9EAC6D16D1258}" {
      Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
     }
    }
@@ -272,9 +272,19 @@ SCR_DestructibleBuildingEntity : "{7EAFD7FF46F56083}Prefabs/Buildings/GunStore/G
    angles 80 -180 180
   }
   GenericEntity {
-   ID "F17A7514DEDDF923"
+   ID "3849FD831068FFB1"
    components {
-    MeshObject "{EB46EC88A5A46FF6}" {
+    MeshObject "{CFB54B8879995B96}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 2.409 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "9C5C06FFFA2E6780"
+   components {
+    MeshObject "{04C1C031ECCEE7B5}" {
      Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
     }
    }
@@ -282,9 +292,19 @@ SCR_DestructibleBuildingEntity : "{7EAFD7FF46F56083}Prefabs/Buildings/GunStore/G
    angles 80 -180 180
   }
   GenericEntity {
-   ID "A66B70E63B6F418A"
+   ID "CACDA1811012F052"
    components {
-    MeshObject "{9B1D3EA8708C628A}" {
+    MeshObject "{E282583945B2267F}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 2.748 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "711410E24C34CB1E"
+   components {
+    MeshObject "{408E600B92335055}" {
      Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
     }
    }
@@ -292,9 +312,19 @@ SCR_DestructibleBuildingEntity : "{7EAFD7FF46F56083}Prefabs/Buildings/GunStore/G
    angles 80 -180 180
   }
   GenericEntity {
-   ID "27A87971F34CFBF6"
+   ID "CF06C88A6C0452C4"
    components {
-    MeshObject "{B1F9157E4EBD154D}" {
+    MeshObject "{5BBD633EC5BA248B}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 3.084 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "25825EDCAE61EC5A"
+   components {
+    MeshObject "{B1027CF1959D4526}" {
      Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
     }
    }
@@ -302,9 +332,19 @@ SCR_DestructibleBuildingEntity : "{7EAFD7FF46F56083}Prefabs/Buildings/GunStore/G
    angles 80 -180 180
   }
   GenericEntity {
-   ID "81C8CC83AA876ECF"
+   ID "72C41F7E031C4198"
    components {
-    MeshObject "{E93701729AAAC0C9}" {
+    MeshObject "{0FEB43519AE3109E}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 3.417 0.864 6.935
+   angles 80 -180 180
+  }
+  GenericEntity {
+   ID "5F31BF8B4413D90B"
+   components {
+    MeshObject "{D603056A0BA8C79D}" {
      Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
     }
    }
@@ -312,50 +352,10 @@ SCR_DestructibleBuildingEntity : "{7EAFD7FF46F56083}Prefabs/Buildings/GunStore/G
    angles 80 -180 180
   }
   GenericEntity {
-   ID "7B5702F833EE27B0"
+   ID "95B49F661D0DA677"
    components {
-    MeshObject "{7B117905B53D9278}" {
-     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
-    }
-   }
-   coords 2.409 0.864 6.935
-   angles 80 -180 180
-  }
-  GenericEntity {
-   ID "F03E322965A286FB"
-   components {
-    MeshObject "{4D89401FF4373D02}" {
-     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
-    }
-   }
-   coords 2.748 0.864 6.935
-   angles 80 -180 180
-  }
-  GenericEntity {
-   ID "735FBD15C951DB4B"
-   components {
-    MeshObject "{9359E5BA84815528}" {
-     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
-    }
-   }
-   coords 3.084 0.864 6.935
-   angles 80 -180 180
-  }
-  GenericEntity {
-   ID "5AE90F3D44E80568"
-   components {
-    MeshObject "{85335B082C8F6A64}" {
-     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
-    }
-   }
-   coords 3.417 0.864 6.935
-   angles 80 -180 180
-  }
-  GenericEntity {
-   ID "6B7DEF8C20F16BF4"
-   components {
-    MeshObject "{FD68741F175892B1}" {
-     Object "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+    MeshObject "{7BA023970C2E418D}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
     }
    }
    coords 3.749 0.864 6.935

@@ -98,7 +98,8 @@
       }
     },
     "permitFee": 250,
-    "permitWaitDays": 1
+    "permitWaitDays": 1,
+    "permitConvictionDays": 7
   },
   "organizations": {
     "foundingFee": 500,

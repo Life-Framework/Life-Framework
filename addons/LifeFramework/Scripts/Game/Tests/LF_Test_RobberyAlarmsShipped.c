@@ -4,7 +4,7 @@
 //! general store till, the cash van, the police armory, the hospital till) resolves through LF_Police.conf to an alarm prefab
 //! that loads and plays its own sound project and event; no two kinds share a sound; a normal and a loud
 //! prefab of a kind play the same sound; the bank bell carries further than the retail store alarm; and the hospital
-//! till has its own kind (#1937), which points at the loud siren prefab until it gets its own clip (#1938). That the sounds are heard is a manual step.
+//! till has its own kind (#1937) and its own clip (#1938): a sound project and event no other kind plays, and not the loud siren. That the sounds are heard is a manual step.
 class LF_Test_RobberyAlarmsShipped : LF_Test
 {
 	override string GetName()
@@ -48,6 +48,13 @@ class LF_Test_RobberyAlarmsShipped : LF_Test
 			float loudRange;
 			if (Read(ctx, loud, names[i] + " loud", loudProject, loudSoundEvent, loudRange))
 				ctx.True(loudProject == project && loudSoundEvent == soundEvent, names[i] + ": the loud alarm plays the same sound");
+
+			if (names[i] == "hospital till")
+			{
+				ctx.True(project.Contains("Alarm_Robbery_Hospital"), "hospital till: it plays its own sound project, not the loud siren: " + project);
+				ctx.True(soundEvent == "SOUND_LF_ALARM_HOSPITAL_LP", "hospital till: it plays its own sound event: " + soundEvent);
+				ctx.True(normal != LF_PoliceConfig.AlarmPrefab(true), "hospital till: it is not the plain loud siren prefab");
+			}
 
 			// The armory shares the bank's bell on purpose, so only the first of a pair is a new sound.
 			if (names[i] != "armory")
