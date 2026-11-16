@@ -556,7 +556,7 @@ GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" 
 }
 $grp Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
  {
-  coords 366 0 262
+  coords 369 0 266
  }
  {
   coords 372 0 238
@@ -924,7 +924,7 @@ GenericEntity Pub_Terrace_Radio : "{C6AF6D2D6EA3CBF9}Prefabs/Atmosphere/LF_Radio
 }
 $grp Tree : "{C98A6C1C2372354E}Prefabs/Vegetation/Bush/b_corylus_avellana_1.et" {
  {
-  coords 357.5 0 258.5
+  coords 368.6 0 259.4
  }
  {
   coords 312 0 231

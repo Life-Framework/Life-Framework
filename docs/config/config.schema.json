@@ -642,6 +642,13 @@
           "default": 1,
           "minimum": 0,
           "maximum": 365
+        },
+        "permitConvictionDays": {
+          "type": "integer",
+          "description": "Licence desk: a conviction within this many in-game days refuses the permit at application and at collection (0 turns the check off)",
+          "default": 7,
+          "minimum": 0,
+          "maximum": 365
         }
       },
       "additionalProperties": false,

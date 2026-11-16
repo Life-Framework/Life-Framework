@@ -1,0 +1,200 @@
+// Grid cell c4r0 for crimes: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_crimes_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 71 0 23
+}
+SCR_DestructibleEntity Grid_crimes_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 76 0 23
+}
+SCR_DestructibleEntity Grid_crimes_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_crimes_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 28
+ angleY 270
+}
+SCR_DestructibleEntity Grid_crimes_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 81 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_crimes_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 71 0 33
+ angleY 90
+}
+SCR_DestructibleEntity Grid_crimes_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 71 0 28
+ angleY 90
+}
+GenericEntity Grid_crimes_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:crimes"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 71.6 0.505 33.8
+}
+GenericEntity CrimeScene {
+ coords 72.7 -0.001 28
+ {
+  $grp GenericEntity {
+   RobberyPoint_Money {
+    components {
+     MeshObject "{5A4B0B84C86D8843}" {
+      Object "{4CD9B977F230E7DF}Assets/Props/Furniture/Safe_01/Safe_01.xob"
+     }
+     RigidBody "{5A4B0B84C86D8844}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{5A4B0B84C86D8845}" {
+      ActionContexts {
+       UserActionContext "{5A4B0B84C86D8846}" {
+        ContextName "default"
+        Position PointInfo "{5A4B0B84C86D8847}" {
+         Offset 0 0.5 0
+        }
+        Radius 3
+       }
+      }
+      additionalActions {
+       LF_RobAction "{5A4B0B84C86D8848}" {
+        ParentContextList {
+         "default"
+        }
+        UIInfo UIInfo "{5A4B0B84C86D8849}" {
+         Name "#LF-Crime_RobSafe_Name"
+         Description "#LF-Crime_RobSafe_Desc"
+        }
+        m_iMoneyAmount 200
+        m_fCooldown 60
+        m_iMinPoliceOnDuty 0
+       }
+      }
+     }
+     RplComponent "{5A4B0B84C86D884A}" {
+      Enabled 1
+     }
+    }
+     Flags 0x403 0
+     coords 0 0 0
+     angles 0 180 0
+   }
+   RobberyPoint_Weapon {
+    components {
+     MeshObject "{5A4B0B84C86D9843}" {
+      Object "{B98BC8DC4C59B8DA}Assets/Props/Military/Camps/WeaponRackStand_01/WeaponRackStand_01.xob"
+     }
+     RigidBody "{5A4B0B84C86D9844}" {
+      Mass 10
+      ModelGeometry 1
+      Static 1
+     }
+     ActionsManagerComponent "{5A4B0B84C86D9845}" {
+      ActionContexts {
+       UserActionContext "{5A4B0B84C86D9846}" {
+        ContextName "default"
+        Position PointInfo "{5A4B0B84C86D9847}" {
+         Offset 0 1 0
+        }
+        Radius 3
+       }
+      }
+      additionalActions {
+       LF_RobWeaponAction "{5A4B0B84C86D9848}" {
+        ParentContextList {
+         "default"
+        }
+        UIInfo UIInfo "{5A4B0B84C86D9849}" {
+         Name "#LF-Crime_RobRack_Name"
+         Description "#LF-Crime_RobRack_Desc"
+        }
+        m_WeaponPrefab "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et"
+        m_fCooldown 120
+        m_iMinPoliceOnDuty 0
+       }
+      }
+     }
+     RplComponent "{5A4B0B84C86D984A}" {
+      Enabled 1
+     }
+    }
+     Flags 0x403 0
+     coords 2.2 0 0
+    }
+    CrimesTableItems {
+     coords 6.6 0.95 0
+    {
+     GenericEntity StolenMoney_Debug : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
+      coords -0.5 -0.05 0
+     }
+     GenericEntity ConfiscatedRifle_Debug : "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et" {
+      coords 0 0.1 -0.25
+     }
+    }
+   }
+  }
+  GenericEntity RobberyPoint_Vehicle : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
+   components {
+    ActionsManagerComponent "{5A4B0B84C86DA845}" {
+     ActionContexts {
+      UserActionContext "{5A4B0B84C86DA846}" {
+       ContextName "default"
+       Position PointInfo "{5A4B0B84C86DA847}" {
+        Offset 0 0.5 0
+       }
+       Radius 3
+      }
+     }
+     additionalActions {
+      LF_RobVehicleAction "{5A4B0B84C86DA848}" {
+       ParentContextList {
+        "default"
+       }
+       UIInfo UIInfo "{5A4B0B84C86DA849}" {
+        Name "#LF-Crime_RobCar_Name"
+        Description "#LF-Crime_RobCar_Desc"
+       }
+       m_VehiclePrefab "{254289B9C09904AB}Prefabs/Vehicles/Wheeled/BRDM2/BRDM2.et"
+       m_fCooldown 600
+       m_iMinPoliceOnDuty 0
+      }
+     }
+    }
+   }
+   coords 4.4 0 0
+  }
+  SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+   Flags 0x403 0
+    coords 6.6 0 0
+  }
+  LF_NpcBaseEntity WantedPoliceNpc : "{B491683D0860BE58}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_3.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Wanted"
+      Surname "Suspect"
+     }
+    }
+   }
+   coords 6.6 0 -1.3
+  }
+  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+   components {
+    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+     m_bGradualLightning 0
+     m_fLV 2.6
+     m_eInitialLightState LIT
+    }
+   }
+    coords 7.1 0.9 0
+  }
+ }
+}
+LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 76 0 28
+ m_vSize 4.5 1 3
+}

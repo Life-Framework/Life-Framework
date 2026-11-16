@@ -23,3 +23,8 @@ Nothing in the world yet. This slice is the rules only (#1922); the checkpoint t
 - **Data:** nothing persisted. `LF_GameModeRoleplay.OnGameEnd` refunds every racer still in before the engine's shutdown save.
 - **Events:** `LF_OnRaceFinished` (`LF_RacingEvents.c`) for the results board.
 - **Proof:** `racing/runner` (WORLD).
+
+## Flagship dirt loop (#1927)
+
+- **Data:** `addons/LF_Everon1989/Configs/Racing/LF_RaceCourses_Everon1989.conf` holds course `dirt_loop`: checkpoints `dirt_cp_1` to `dirt_cp_5`, 3 laps, fee 50, 2 entrants minimum, 60 s lobby, payout 60/30/10. The town card places the checkpoints under those ids.
+- **Proof:** `tools/validation/pack-race-course-selftest.mjs` (the core test cannot name a pack file); the flagship mission header lists the file so `LF_RaceCourses` loads it.

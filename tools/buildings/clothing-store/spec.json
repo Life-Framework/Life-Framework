@@ -1,0 +1,192 @@
+{
+  "slug": "clothing-store",
+  "name": "ClothingStore",
+  "concept": "The village clothes shop of 1989 Everon: a draper on the ground floor of a two-storey town shop house, the shopkeeper living in the flat above. The base-game ShopHouse_E_2I01t with the vanilla clothes-store variant's doors, windows and ClothesStore fascia, and our own copy of its furniture with the shop-room clutter taken out. Two dressed mannequins stand in the shop window under spot lamps, the street signal at night; a third, in a suit, stands inside. Folded shirts, turtlenecks, trousers and a denim jacket lie folded on the wall shelves, suit jackets and suit trousers folded on two display counters (piles of 3 to 5 come back when the folded-pile store step, #1899, re-lands: it was reverted in #1902), and hats, gloves and boots sit on their own shelf by the door. Everything is paid at the till, where a clerk in a suit stands. Base-game civilian clothes only: no military uniforms (KLMK and KZS belong to the gun store) and no _Dirty variants.",
+  "red_line": "pack",
+  "addon": "LF_Everon1989",
+  "prefab_dir": "Prefabs/Buildings/ClothingStore",
+  "vanilla": {
+    "base": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et",
+    "building": "ShopHouse_E_2I01t_clothesstore_lf",
+    "furniture": "Furniture/ShopHouse_E_2I01t_furniture_clothesstore_lf_01"
+  },
+  "budget": {
+    "min_doors": 1
+  },
+  "store": {
+    "prefab": "ClothingStore_Store",
+    "key": "everon_clothingstore",
+    "boundary": {
+      "center": [2.08, 0, -0.45],
+      "half": [3.75, 0, 7.9]
+    },
+    "restock_seconds": 300,
+    "till": "CashierShop_01",
+    "fixtures": [
+      {
+        "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+        "at": [1.57, 0.199, -0.323],
+        "why": "the till counter, where the drug store's counter stands in the same house"
+      },
+      {
+        "prefab": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et",
+        "at": [1.16, 1.238, -0.325],
+        "yaw": -180,
+        "why": "the till on it: every pile in the shop is paid here"
+      },
+      {
+        "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+        "at": [-1.5, 0.199, 4.4],
+        "yaw": 90,
+        "why": "the denim, turtleneck, boots and flat cap shelf on the side wall, the first thing past the door"
+      },
+      {
+        "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+        "at": [5.75, 0.199, 2],
+        "yaw": -90,
+        "why": "trousers and flat caps, folded on the far wall"
+      },
+      {
+        "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+        "at": [5.75, 0.199, 4.6],
+        "yaw": -90,
+        "why": "shirts, turtlenecks, knitted hats and gloves on the far wall by the window"
+      },
+      {
+        "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+        "at": [2.2, 0.199, 2.6],
+        "why": "a display counter in the middle of the room: suit jackets folded on top"
+      },
+      {
+        "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+        "at": [2.2, 0.199, 4.9],
+        "why": "a second display counter nearer the window: suit trousers folded on top (the raincoat is 0.56 m folded and hangs off a board; it is shown on the window mannequin)"
+      },
+      {
+        "prefab": "{F55D2611E095EBAB}Prefabs/Props/Clothing/LF_Mannequin_Denim.et",
+        "at": [1.8, 0.199, 7],
+        "why": "window mannequin: denim jacket, trousers, flat cap"
+      },
+      {
+        "prefab": "{918EEED162D663F2}Prefabs/Props/Clothing/LF_Mannequin_Raincoat.et",
+        "at": [3.7, 0.199, 7],
+        "why": "window mannequin: the yellow raincoat reads from the street"
+      },
+      {
+        "prefab": "{88F59F323FF25661}Prefabs/Props/Clothing/LF_Mannequin_Suit.et",
+        "at": [-0.6, 0.199, 6.6],
+        "why": "the inside mannequin in a suit, beside the window"
+      }
+    ],
+    "alarm": {
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "at": [4.9, 2.6, 8.08],
+      "yaw": 0,
+      "offset": [0, 0.167, 0.065],
+      "reach": 10,
+      "why": "the bell box on the shop front beside the window, where the drug store has it on the same house"
+    },
+    "lines": [
+      {
+        "item": "{6A3F994EFFE22995}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_DarkBlue.et",
+        "fixture": "ShelfShop_01",
+        "pick": [2],
+        "boards": [0],
+        "per_board": 6
+      },
+      {
+        "item": "{86E0117B630414B5}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V2.et",
+        "fixture": "ShelfShop_01",
+        "pick": [2],
+        "boards": [1],
+        "per_board": 6
+      },
+      {
+        "item": "{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et",
+        "fixture": "ShelfShop_01",
+        "pick": [2],
+        "boards": [2],
+        "per_board": 8
+      },
+      {
+        "item": "{DD565E2C7E00A5BB}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_blue.et",
+        "fixture": "ShelfShop_01",
+        "pick": [1],
+        "boards": [3],
+        "per_board": 8
+      },
+      {
+        "item": "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et",
+        "fixture": "ShelfShop_01",
+        "pick": [1],
+        "boards": [0],
+        "per_board": 6
+      },
+      {
+        "item": "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et",
+        "fixture": "ShelfShop_01",
+        "pick": [1],
+        "boards": [1],
+        "per_board": 6
+      },
+      {
+        "item": "{CF185061C5C13DBF}Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_yellow.et",
+        "fixture": "ShelfShop_01",
+        "pick": [1],
+        "boards": [2],
+        "per_board": 6
+      },
+      {
+        "item": "{4F71E7468E78DDD2}Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_01.et",
+        "fixture": "ShelfShop_01",
+        "pick": [2],
+        "boards": [3],
+        "per_board": 8
+      },
+      {
+        "item": "{27162F1F6EE6581A}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et",
+        "fixture": "ShelfShop_01",
+        "pick": [0],
+        "boards": [0],
+        "per_board": 5
+      },
+      {
+        "item": "{50F8B1F928F93ABD}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_beige.et",
+        "fixture": "ShelfShop_01",
+        "pick": [0],
+        "boards": [1],
+        "per_board": 6
+      },
+      {
+        "item": "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et",
+        "fixture": "ShelfShop_01",
+        "pick": [0],
+        "boards": [2],
+        "per_board": 6
+      },
+      {
+        "item": "{6FEB0D9130EC400E}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_lightgrey.et",
+        "fixture": "ShelfShop_01",
+        "pick": [0],
+        "boards": [3],
+        "per_board": 8
+      },
+      {
+        "item": "{AE93D885FDF713D4}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_black_V1.et",
+        "fixture": "CounterShop_01",
+        "pick": [1],
+        "boards": [2],
+        "per_board": 6,
+        "rows": 2
+      },
+      {
+        "item": "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et",
+        "fixture": "CounterShop_01",
+        "pick": [2],
+        "boards": [2],
+        "per_board": 6,
+        "rows": 2
+      }
+    ]
+  }
+}

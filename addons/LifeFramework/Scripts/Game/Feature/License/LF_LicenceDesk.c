@@ -4,8 +4,9 @@
 //! on duty revoke it face to face (LF_LicenceRevokeRole).
 //!
 //! RULES (maintainer, 2026-11-16). The fee is LF_LicencesConfig.PermitFee(). The record must be
-//! clean at application and again at collection: wanted level 0 and no open crime report
-//! (LF_WantedReports). The licence's own gate (the License switch, whitelist, job level) is the
+//! clean at application and again at collection: wanted level 0, no open crime report
+//! (LF_WantedReports) and no conviction in the last LF_LicencesConfig.PermitConvictionDays()
+//! in-game days (LF_ConvictionRecord.IsRecent, #1995; 0 days turns that check off). The licence's own gate (the License switch, whitelist, job level) is the
 //! licence manager's CanUnlockLicense. The wait is LF_LicencesConfig.PermitWaitDays() in-game days.
 //!
 //! TIME. The wait is counted on the in-game clock (date and time of day of the vanilla
@@ -24,6 +25,7 @@ enum LF_ELicenceDesk
 	ALREADY_HELD,
 	WANTED,
 	OPEN_CRIME,
+	CONVICTED,
 	NOT_ENOUGH_CASH,
 	NOT_ALLOWED,
 	NO_CLOCK,
@@ -143,7 +145,7 @@ class LF_LicenceDesk
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: why the record is not clean, or ISSUED (used as "clean") when it is.
+	//! Server: why the record is not clean (wanted, open crime report, recent conviction), or ISSUED (used as "clean") when it is.
 	static LF_ELicenceDesk RecordRefusal(string uid)
 	{
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
@@ -156,6 +158,9 @@ class LF_LicenceDesk
 
 		if (LF_WantedReports.CountFor(uid) > 0)
 			return LF_ELicenceDesk.OPEN_CRIME;
+
+		if (LF_ConvictionRecord.IsRecent(uid, LF_LicencesConfig.PermitConvictionDays()))
+			return LF_ELicenceDesk.CONVICTED;
 
 		return LF_ELicenceDesk.ISSUED;
 	}
@@ -391,6 +396,7 @@ class LF_LicenceDesk
 			case LF_ELicenceDesk.ALREADY_HELD: return "#LF-LicenceDesk_AlreadyHeld";
 			case LF_ELicenceDesk.WANTED: return "#LF-LicenceDesk_Wanted";
 			case LF_ELicenceDesk.OPEN_CRIME: return "#LF-LicenceDesk_OpenCrime";
+			case LF_ELicenceDesk.CONVICTED: return "#LF-LicenceDesk_Convicted";
 			case LF_ELicenceDesk.NOT_ENOUGH_CASH: return "#LF-LicenceDesk_NoCash";
 			case LF_ELicenceDesk.NOT_ALLOWED: return "#LF-LicenceDesk_NotAllowed";
 		}

@@ -44,6 +44,8 @@
   pouch. Jam consumes rowan berries and produces berry jam. Beer consumes an
   empty beer bottle and produces a beer bottle. `LF_Test_RecipeChains` checks
   that each input prefab and output prefab is set and distinct.
+  ⚠️ The beer output is the real `Drinks/BeerBottle.et` (#2001, `drinks/alcohol`), but
+  `Items/Resources/EmptyBeerBottle.et`, the input, does not exist yet, so the beer processor cannot run.
 
 ### `LF_ResourceChainCatalog` — `Feature/Resources/LF_ResourceChainCatalog.c`
 - ✅ `Configs/Resources/ResourceChains.conf` names each gather node's tool,

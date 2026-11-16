@@ -788,6 +788,8 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			GetGame().GetWorld().QueryEntitiesBySphere(loadedStore.GetOwner().GetOrigin(), 4, CountLooseApple, null, EQueryEntitiesFlags.ALL);
 			ctx.Equal(2, s_iLooseApples, "e2e exactly two loose apples stand around the store after the restart");
 
+#ifndef LF_E2E_PRE_MOVE
+			// --pre-move: the ref build (502ebf39) predates the folded piles (#1899), so its save has no pile to restore.
 			// The folded pile: the engine brought the three copies back; the line adopts each into its own
 			// slot. The bottom slot must not swallow the pile (delete two, respawn two).
 			s_aLoosePile = {};
@@ -807,6 +809,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			GetGame().GetWorld().QueryEntitiesBySphere(loadedStore.GetOwner().GetOrigin(), 4, CollectLoosePile, null, EQueryEntitiesFlags.ALL);
 			ctx.Equal(3, s_aLoosePile.Count(), "e2e exactly three trousers lie around the store, none doubled");
 			loadedStore.RemoveTestLine(LF_Test_StoreFoldedStack.TROUSERS);
+#endif
 		}
 
 		// Farm plots ride "farmplots" (#614). Growth counts while a server runs, so plot 3 has grown at
