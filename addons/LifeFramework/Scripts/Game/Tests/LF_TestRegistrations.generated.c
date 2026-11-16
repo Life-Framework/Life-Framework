@@ -51,6 +51,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BillDebt(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BleedOut(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BleedOutRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_BoardProvider(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BreachEvidence(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CarriedInventoryRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CarriedInventoryDeathNoDupe(), LF_TestTier.WORLD);

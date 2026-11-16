@@ -351,7 +351,7 @@
   `wanted` payload (save version 10).
 - ✅ **Wanted board** `Roadmap_Police_WantedBoard` (`Prefabs/Police/LF_WantedBoard.et`,
   a cork `LF_Sign_Board` printing WANTED): "Read the wanted posters" asks the
-  server per read (`RpcAsk_LF_WantedBoard`, the server finds the board near
+  server per read (`RpcAsk_LF_Board` with kind `wanted`, the server finds the board near
   the reader). On-duty police get offence, stars, clothing, vehicle, and place;
   everyone else gets the public poster without the place. A name appears only
   on identified reports. The card is an `LF_UIScreen` paper sheet that closes
