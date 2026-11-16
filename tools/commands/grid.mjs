@@ -1,6 +1,6 @@
 // tools\cli grid: one debug-grid cell per feature in the GridWorld annex (docs/architecture/world-zones.md).
 //
-//   grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--dry] [--no-verify] [--no-fetch]
+//   grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--dry] [--no-verify] [--no-fetch]
 //   grid list [--no-fetch]
 //   grid free <slug>
 //
@@ -15,17 +15,18 @@
 // printed warning, not a failure. `--no-fetch` is offline and skips it.
 //
 // `place` claims a cell for the feature (deterministic: the first usable cell from a hash of the
-// slug), writes GridWorld_Layers/Grid_<slug>.layer with the cell's fenced yard (a 5 m gap facing
+// slug; `--span 3x2` takes a block of cells for a big item: the claim file gets "span": [3, 2] and one yard goes
+// round the whole block), writes GridWorld_Layers/Grid_<slug>.layer with the cell's fenced yard (a 5 m gap facing
 // the annex centre) and a label sign reading the slug, records the claim in
 // tools/grid/cells/<slug>.json, then puts the prefabs in a row inside the yard through
 // `tools\cli place arrange row` (offline checks, ground probe, audit). Each later call for the same
 // slug adds the next row, three rows in all. `free` deletes the layer and the claim.
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { isFrameClaim } from "../grid/lattice.mjs";
+import { CELL, isFrameClaim } from "../grid/lattice.mjs";
 import { loadWorld } from "../../agent-box/layers.mjs";
 import {
-  CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, entityPrefix, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, yardPlan, yawAlong,
+  CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, claimCellIds, claimRect, entityPrefix, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, yardPlan, yawAlong,
 } from "../lib/world-zones.mjs";
 
 export const help = "grid place <slug> [<prefab>...] | grid list | grid free <slug>   a debug-grid cell per feature in the GridWorld annex: fenced yard, label sign, props placed and audited (docs/architecture/world-zones.md)";
@@ -73,14 +74,15 @@ export function yardLayer(slug, cell, { rot, yawForFacing, parseHeading }) {
 }
 
 export function registryText(entry) {
-  const { slug, cell, layer, rows, created } = entry;
-  return `${JSON.stringify({ slug, cell, layer, rows, created }, null, 2)}\n`;
+  const { slug, cell, layer, rows, created, span } = entry;
+  const multi = Array.isArray(span) && (span[0] !== 1 || span[1] !== 1);
+  return `${JSON.stringify(multi ? { slug, cell, span, layer, rows, created } : { slug, cell, layer, rows, created }, null, 2)}\n`;
 }
 
 // A grid map: one character per cell, north at the top. `#` blocked, `.` free, a letter per claim.
 export function mapText(allClaims, ents) {
   const claims = allClaims.filter((c) => !isFrameClaim(c));
-  const byCell = new Map(claims.map((c, i) => [c.cell, String.fromCharCode(97 + (i % 26))]));
+  const byCell = new Map(claims.flatMap((c, i) => claimCellIds(c).map((id) => [id, String.fromCharCode(97 + (i % 26))])));
   const rows = [];
   const cells = allCells();
   const maxRow = Math.max(...cells.map((c) => c.row));
@@ -97,7 +99,7 @@ function parse(argv) {
     const a = argv[i];
     if (a.startsWith("--")) {
       const k = a.slice(2);
-      out.flags[k] = ["name", "cell"].includes(k) ? argv[++i] : true;
+      out.flags[k] = ["name", "cell", "span"].includes(k) ? argv[++i] : true;
     } else out._.push(a);
   }
   return out;
@@ -128,18 +130,19 @@ function list(root, flags, ctx = {}) {
   const frame = [...local, ...extra].find(isFrameClaim);
   const claims = [...local, ...extra, ...inFlight].filter((c) => !isFrameClaim(c));
   const ents = gridEnts(root);
-  const free = allCells().filter((c) => !claims.some((x) => x.cell === c.id) && !blockers(c, ents).length).length;
+  const taken = new Set(claims.flatMap(claimCellIds));
+  const free = allCells().filter((c) => !taken.has(c.id) && !blockers(c, ents).length).length;
   console.log(`grid: ${claims.length} cell(s) claimed (${extra.length} only on origin/main, ${inFlight.length} in open PRs), ${free} free (${CELLS_DIR}/)`);
   claims.forEach((c, i) => {
-    const p = parseCellId(c.cell);
-    const b = p ? cellBounds(p.col, p.row) : null;
+    const b = claimRect(c);
     const layer = join(root, GRID_LAYERS, layerOfSlug(c.slug));
     const n = existsSync(layer) ? (readFileSync(layer, "utf8").match(/^\S.* : "\{/gm) || []).length : 0;
-    const clash = inFlight.includes(c) ? claims.filter((x) => x !== c && x.cell === c.cell).map((x) => x.slug) : [];
+    const mine = new Set(claimCellIds(c));
+    const clash = inFlight.includes(c) ? claims.filter((x) => x !== c && claimCellIds(x).some((id) => mine.has(id))).map((x) => x.slug) : [];
     const tail = inFlight.includes(c)
       ? `claimed in open PR #${c.pr} (${c.branch}), not merged yet${clash.length ? `  CLASH with ${clash.join(", ")}` : ""}`
       : extra.includes(c) ? "claimed on origin/main, not merged here yet" : `${n} entities, ${c.rows ?? 0}/3 rows`;
-    console.log(`  ${String.fromCharCode(97 + (i % 26))} ${c.slug.padEnd(28)} ${String(c.cell).padEnd(6)} ${b ? `x ${b.x0}..${b.x1} z ${b.z0}..${b.z1}` : "bad cell"}  ${tail}${c.error ? `  ERROR ${c.error}` : ""}`);
+    console.log(`  ${String.fromCharCode(97 + (i % 26))} ${c.slug.padEnd(28)} ${`${c.cell}${b && b.w * b.h > 1 ? `+${b.w}x${b.h}` : ""}`.padEnd(6)} ${b ? `x ${b.x0}..${b.x1} z ${b.z0}..${b.z1}` : "bad cell"}  ${tail}${c.error ? `  ERROR ${c.error}` : ""}`);
   });
   console.log(mapText(claims, ents));
   if (frame) console.log(`  frame: ${frame.layer} marks every cell (GridMarker_cXrY) and lists them on GridMapBoard at the gate; node tools/grid/lattice.mjs write refreshes the plates`);
@@ -174,6 +177,7 @@ async function place(root, args, flags, ctx = {}) {
   let entry = claims.find((c) => c.slug === slug) ?? null;
   const ents = gridEnts(root);
   let fresh = false;
+  let span = [1, 1];
   if (!entry) {
     const { onMain } = mainView(root, flags, claims);
     const dup = onMain.find((c) => c.slug === slug);
@@ -187,34 +191,42 @@ async function place(root, args, flags, ctx = {}) {
       console.log(`grid: open PR #${dupPr.pr} (${dupPr.branch}) already claims ${slug} (cell ${dupPr.cell}); work on that branch, or pick another slug`);
       return 1;
     }
-    const takenOnMain = new Map(onMain.map((c) => [c.cell, c.slug]));
-    const takenInPr = new Map(inFlight.map((c) => [c.cell, c]));
-    const taken = new Set([...claims.map((c) => c.cell), ...takenOnMain.keys(), ...takenInPr.keys()]);
+    const takenOnMain = new Map(onMain.flatMap((c) => claimCellIds(c).map((id) => [id, c.slug])));
+    const takenInPr = new Map(inFlight.flatMap((c) => claimCellIds(c).map((id) => [id, c])));
+    const taken = new Set([...claims.flatMap(claimCellIds), ...takenOnMain.keys(), ...takenInPr.keys()]);
+    const sp = /^([0-9]+)x([0-9]+)$/.exec(flags.span === true ? "" : String(flags.span ?? "1x1"));
+    if (!sp) throw new Error(`--span ${flags.span} is not cols x rows, like 3x2`);
+    span = [Number(sp[1]), Number(sp[2])];
     let cell;
     if (flags.cell) {
-      const p = parseCellId(flags.cell);
-      if (!p) throw new Error(`--cell ${flags.cell} is not a cell (c0r0 to c6r6)`);
-      cell = allCells().find((c) => c.col === p.col && c.row === p.row);
-      const owner = takenOnMain.get(cell.id);
-      const pr = takenInPr.get(cell.id);
-      const why = [...(owner ? [`claimed on origin/main by ${owner}`] : pr ? [`claimed by ${pr.slug} in open PR #${pr.pr}`] : taken.has(cell.id) ? ["claimed"] : []), ...blockers(cell, ents)];
+      if (!parseCellId(flags.cell)) throw new Error(`--cell ${flags.cell} is not a cell (c0r0 to c${CELL.cols - 1}r${CELL.rows - 1})`);
+      cell = claimRect({ cell: flags.cell, span });
+      if (!cell) throw new Error(`--cell ${flags.cell} --span ${span.join("x")} leaves the lattice (${CELL.cols} x ${CELL.rows} cells)`);
+      const why = [];
+      for (const id of claimCellIds({ cell: flags.cell, span })) {
+        const owner = takenOnMain.get(id);
+        const pr = takenInPr.get(id);
+        const c1 = allCells().find((c) => c.id === id);
+        for (const w of [...(owner ? [`claimed on origin/main by ${owner}`] : pr ? [`claimed by ${pr.slug} in open PR #${pr.pr}`] : taken.has(id) ? ["claimed"] : []), ...blockers(c1, ents)]) why.push(`${id}: ${w}`);
+      }
       if (why.length) {
         console.log(`grid: cell ${cell.id} is not free: ${why.join("; ")}`);
         return 1;
       }
-    } else cell = allocate(slug, { ents, taken });
+    } else cell = allocate(slug, { ents, taken, span });
     if (!cell) {
       console.log("grid: no free cell left; free one with tools\\cli grid free <slug> (grid list shows them)");
       return 1;
     }
     entry = { slug, cell: cell.id, layer: layerName, rows: 0, created: new Date().toISOString().slice(0, 10) };
+    if (span[0] !== 1 || span[1] !== 1) entry.span = span;
     fresh = true;
   }
-  const p = parseCellId(entry.cell);
-  const cell = { id: entry.cell, ...p, ...cellBounds(p.col, p.row) };
-  console.log(`grid: ${slug} -> cell ${cell.id} (x ${cell.x0}..${cell.x1}, z ${cell.z0}..${cell.z1}, gap ${yardPlan(cell).gap.side})${fresh ? " (new)" : ""}`);
+  const cell = claimRect(entry);
+  if (!cell) throw new Error(`${slug}'s claim (cell ${entry.cell}, span ${JSON.stringify(entry.span ?? [1, 1])}) is not a block of the lattice`);
+  console.log(`grid: ${slug} -> cell ${cell.id}${cell.w * cell.h > 1 ? ` +${cell.w}x${cell.h}` : ""} (x ${cell.x0}..${cell.x1}, z ${cell.z0}..${cell.z1}, gap ${yardPlan(cell).gap.side})${fresh ? " (new)" : ""}`);
   if (flags.dry) {
-    if (fresh) console.log(`  would write ${GRID_LAYERS}/${layerName} (7 fence runs and the label sign) and ${CELLS_DIR}/${slug}.json`);
+    if (fresh) console.log(`  would write ${GRID_LAYERS}/${layerName} (the fence runs and the label sign) and ${CELLS_DIR}/${slug}.json`);
     const line = prefabs.length ? rowLine(cell, entry.rows ?? 0) : null;
     if (line) console.log(`  would place ${prefabs.length} prop(s) in row ${entry.rows ?? 0}: ${line.a.join(",")} to ${line.b.join(",")}, facing ${line.facing}`);
     console.log("grid: dry run, nothing written.");
@@ -252,7 +264,7 @@ async function place(root, args, flags, ctx = {}) {
 }
 
 function usage() {
-  console.log("usage: tools\\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--dry] [--no-verify] [--no-fetch]\n       tools\\cli grid list [--no-fetch]\n       tools\\cli grid free <slug>\n(docs/architecture/world-zones.md)");
+  console.log("usage: tools\\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--dry] [--no-verify] [--no-fetch]\n       tools\\cli grid list [--no-fetch]\n       tools\\cli grid free <slug>\n(docs/architecture/world-zones.md)");
   return 1;
 }
 
