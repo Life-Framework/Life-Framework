@@ -53,22 +53,46 @@ const P = {
   bench3: "Prefabs/Props/Furniture/BenchWooden_03.et",
   binStreet: "Prefabs/Props/Garbage/Bins/BinStreet_01.et",
   pot: "Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_pink.et",
+  // the second pass: the middle of the shop, the right wall, the repair corner
+  cabinet: "Prefabs/Props/Furniture/CupboardOld_01/CupboardOld_01_medium.et",
+  table: "Prefabs/Props/Furniture/Table_01.et",
+  suitcase: "Prefabs/Props/Civilian/Suitcase_04_open.et",
+  coatTree: "Prefabs/Props/Furniture/CoatRack_01.et",
+  floorLamp: "Prefabs/Props/Furniture/LampInterior_02/LampInterior_02_Orange.et",
+  bench: "Prefabs/Props/Industrial/Workbench_02.et",
+  vice: "Prefabs/Props/Industrial/Workbench_Vice_01.et",
+  deskLamp: "Prefabs/Props/Furniture/LightTable_01.et",
+  stool: "Prefabs/Props/Furniture/Chair_02/Chair_02_red.et",
+  notice: "Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V3.et",
 };
+// The base game's lit diffuser for the fluorescent lamps' "cover" slot (the lamp meshes ship dark).
+const LAMP_COVER_LIT = "Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat";
+// The two lamps the building pipeline flattened into the furniture prefab: their covers glow too.
+const VANILLA_LAMPS = ["52640E95D114237B", "E99B992F704FA5F1"];
 
 const items = []; // { path, x, y, z, yaw, scale }
 const lights = []; // { x, y, z, angles, color, lv, radius, angle }
-const put = (path, x, y, z, yaw = 0, scale = 1) => items.push({ path, x, y, z, yaw, scale });
-const spot = (x, y, z, o = {}) => lights.push({ x, y, z, angles: "-90 0 0", color: "1 0.86 0.64 1", lv: 5.5, radius: 7, angle: 140, ...o });
+const put = (path, x, y, z, yaw = 0, scale = 1, lit = false) => items.push({ path, x, y, z, yaw, scale, lit });
+const spot = (x, y, z, o = {}) => lights.push({ type: "Spot", x, y, z, angles: "-90 0 0", color: "1 0.86 0.64 1", lv: 5.5, radius: 7, angle: 140, ...o });
+// A point light has no cone: it is what lights the ceiling and the upper walls, which the downward spots never reach.
+const glow = (x, y, z, o = {}) => lights.push({ type: "Point", x, y, z, color: "1 0.88 0.68 1", lv: 2.2, radius: 5.5, ...o });
+const lamp = (x, z) => put(P.lamp, x, 3.918, z, 0, 1, true);
 
 // ---- Lights: ceiling lamps over the shop floor (the vanilla set's two lamps at x 3 are dead meshes) ----
 spot(2.99, 3.7, 4.668); // over the window end of the shop (lamp mesh already in the furniture)
 spot(2.962, 3.7, 0.922); // over the middle (lamp mesh already in the furniture)
-put(P.lamp, 0.4, 3.918, 3.3);
+lamp(0.4, 3.3);
 spot(0.4, 3.7, 3.3);
-put(P.lamp, 3.0, 3.918, -0.5); // the lamp over the till and the clerk
+lamp(3.0, -0.5); // the lamp over the till and the clerk
 spot(3.0, 3.7, -0.5, { color: "1 0.82 0.55 1", lv: 6.5, radius: 5, angle: 110 });
-put(P.lamp, 3.0, 3.918, 6.3); // the window display: a spot on the rack the street sees
+lamp(3.0, 6.3); // the window display: a spot on the rack the street sees
 spot(3.0, 3.7, 6.3, { color: "1 0.93 0.8 1", lv: 7.5, radius: 4.5, angle: 90 });
+// The black ceiling at night (#2012 second pass): every spot above points down and the ceiling is 0.2 m over it,
+// so nothing reached it and the covers were dark meshes. A soft point light hangs under three of the fittings
+// (it lights the ceiling above it and the walls) and the covers of all five lamps carry the lit material.
+glow(2.99, 3.0, 4.668);
+glow(2.962, 3.0, 0.922);
+glow(0.4, 3.0, 3.3);
 
 // ---- Walls ----
 // x -1.54 wall (faces +x): a trophy beside the door to the entry hall. Behind it, for z below -0.4, is the stair
@@ -77,7 +101,6 @@ put(P.skull2, -1.53, 2.45, 0.15, -90);
 // back wall z -3.0 (faces +z): trophies above the stock shelves
 put(P.skull1, 1.8, 3.1, -2.99, 180);
 put(P.skull3, 3.0, 3.25, -2.99, 180);
-put(P.skull3, 0.55, 2.7, -2.99, 180);
 // x 5.75 wall (faces -x): a trophy over the rifle cabinet, posters over the gear shelf and in the back corner
 put(P.skull1, 5.74, 2.3, 0.6, 90);
 put(P.posterA1, 5.72, 2.6, 3.35, -90);
@@ -107,6 +130,45 @@ put(P.crate, 0.45, F, 6.85);
 put(P.crate, 0.45, F + 0.223, 6.85, 20);
 put(P.box6, 0.45, F + 0.446, 6.85, 100, 0.9);
 put(P.toolbox, 1.45, F, 6.85, 10);
+
+// ---- Second pass: the middle of the shop, the right wall, the repair corner ----
+// The shop is the room x -1.54..5.75, z -3..7.25 (the stair room is behind the x -1.54 wall, z below -0.4). The lane
+// from the front door (near x 0) to the till (x 3, z -0.5) stays open: the table stands right of it.
+// Right wall (x -1.54, faces +x): between the notice board (z 2.6) and the hat shelf (z 4.25) a tall glass-fronted
+// cupboard stands as the gun cabinet, a deer mount over it. The pivot is the cabinet's right end; at yaw 90 it runs
+// +z from the pivot and its depth reaches into the room.
+put(P.cabinet, -1.53, F, 3.0, 90, 0.85);
+put(P.skull1, -1.53, 2.6, 3.62, -90);
+// The middle: a display table of cleaning kits and cases, a coat tree and a case beside it.
+put(P.table, 3.35, F, 3.1, 0);
+const TT = F + 0.92; // the table top
+put(P.suitcase, 2.95, TT, 3.1, 20);
+put(P.toolbox, 3.75, TT, 2.95, -10);
+put(P.can, 3.3, TT, 3.35, 0, 0.8);
+put(P.can, 3.5, TT, 3.42, 40, 0.8);
+put(P.can, 3.4, TT, 3.2, 80, 0.8);
+put(P.notebook, 3.95, TT, 3.4, 80);
+put(P.coatTree, 4.65, F, 4.25);
+// The repair corner, inside the shop room: the shop room's back-left is NOT the shop (the stair room is behind a
+// partition at x 0.9, z -3..-0.4; the first pass and this one's first try put a bench there). The partition's shop
+// face (x 0.9, faces +x) is bare, so the workbench stands along it, left of the till counter (x 1.9), with a vice, a
+// toolbox, solvent tins and a desk lamp, a stool, notices and a deer mount over it.
+put(P.bench, 1.28, F, -1.75, 90, 0.85);
+const BT = F + 0.85; // the bench top
+put(P.vice, 1.5, BT, -2.5, 90);
+put(P.toolbox, 1.2, BT, -1.5, 90);
+put(P.can, 1.2, BT, -2.05, 0, 0.8);
+put(P.can, 1.32, BT, -2.12, 50, 0.8);
+put(P.notebook, 1.35, BT, -1.0, 100);
+put(P.deskLamp, 1.1, BT, -2.6, 70);
+put(P.stool, 2.0, F, -1.75, -90);
+put(P.notice, 0.93, 1.85, -1.35, 90);
+put(P.notice, 0.93, 1.85, -1.8, 90);
+put(P.skull2, 0.93, 2.55, -2.2, 90);
+// A floor lamp on the right wall between the hall door and the notice board.
+put(P.floorLamp, -1.2, F, 2.0, 90);
+glow(1.1, BT + 0.4, -2.55, { color: "1 0.84 0.6 1", lv: 2.6, radius: 3.5 });
+glow(-1.2, 1.7, 2.0, { color: "1 0.8 0.52 1", lv: 2.6, radius: 4.2 });
 
 // ---- The back shelves: stock boxes, tool cases and solvent tins ----
 // unit: origin and yaw of the vanilla shelf; boards are y above the shelf origin, x the usable width.
@@ -176,10 +238,14 @@ async function build() {
     memo.set(path, v);
     return v;
   };
+  const litGuid = db.guidOf(LAMP_COVER_LIT);
+  if (!litGuid) throw new Error(`no GUID for ${LAMP_COVER_LIT} in the game's resource database`);
+  const litRef = `{${litGuid}}${LAMP_COVER_LIT}`;
   const rows = [];
   items.forEach((it, i) => {
     const { ref, cls } = info(it.path);
     const lines = [`  ${cls} : "${ref}" {`, `   ID "${hex16(`gun-store|decor|${i}|${it.path}`)}"`];
+    if (it.lit) lines.push(...litCover(litRef, hex16(`gun-store|decor|lit|${i}`)));
     if (it.scale !== 1) lines.push(`   scale ${num(it.scale)}`);
     lines.push(`   coords ${num(it.x)} ${num(it.y)} ${num(it.z)}`);
     if (it.yaw) lines.push(`   angleY ${num(it.yaw)}`);
@@ -187,25 +253,43 @@ async function build() {
     rows.push(lines.join("\n"));
   });
   lights.forEach((l, i) => {
-    rows.push(
-      [
-        "  LightEntity {",
-        `   ID "${hex16(`gun-store|decor|light|${i}`)}"`,
-        `   coords ${num(l.x)} ${num(l.y)} ${num(l.z)}`,
-        `   angles ${l.angles}`,
-        `   Color ${l.color}`,
-        `   LV ${l.lv}`,
-        "   ClipEV -10",
-        "   Type Spot",
-        `   Radius ${l.radius}`,
-        "   NearPlane 0.3",
-        `   SpotAngle ${l.angle}`,
-        "   LensFlareType Disabled",
-        "  }",
-      ].join("\n"),
-    );
+    const r = ["  LightEntity {", `   ID "${hex16(`gun-store|decor|light|${i}`)}"`, `   coords ${num(l.x)} ${num(l.y)} ${num(l.z)}`];
+    if (l.type === "Spot") r.push(`   angles ${l.angles}`);
+    r.push(`   Color ${l.color}`, `   LV ${l.lv}`, "   ClipEV -10", `   Type ${l.type}`, `   Radius ${l.radius}`, "   NearPlane 0.3");
+    if (l.type === "Spot") r.push(`   SpotAngle ${l.angle}`);
+    r.push("   LensFlareType Disabled", "  }");
+    rows.push(r.join("\n"));
   });
-  return rows.join("\n");
+  return { block: rows.join("\n"), litRef };
+}
+
+// The lamp meshes' "cover" slot, assigned the base game's lit diffuser (the component id is the lamp prefabs' MeshObject).
+function litCover(litRef, id) {
+  return [
+    "   components {",
+    `    MeshObject "{5872F0EB7FA40561}" {`,
+    "     Materials {",
+    `      MaterialAssignClass "{${id.slice(0, 16)}}" {`,
+    `       SourceMaterial "LampFluorescent_01_cover"`,
+    `       AssignedMaterial "${litRef}"`,
+    "      }",
+    "     }",
+    "    }",
+    "   }",
+  ];
+}
+
+// The two lamps the building pipeline put in the furniture prefab get the same lit cover (once: a lamp that has a
+// components block already is left as it is).
+export function glowVanillaLamps(text, litRef) {
+  const lines = text.split("\n");
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    out.push(lines[i]);
+    const id = /^ {3}ID "([0-9A-F]{16})"$/.exec(lines[i])?.[1];
+    if (id && VANILLA_LAMPS.includes(id) && lines[i + 1] !== "   components {") out.push(...litCover(litRef, hex16(`gun-store|vanilla-lamp|${id}`)));
+  }
+  return out.join("\n");
 }
 
 // Remove every child entity whose ID starts with the decor prefix, then append the new block.
@@ -227,7 +311,8 @@ export function rewrite(text, block) {
 }
 
 const text = readFileSync(FURNITURE, "utf8");
-const next = rewrite(text, await build());
+const built = await build();
+const next = glowVanillaLamps(rewrite(text, built.block), built.litRef);
 if (process.argv.includes("--check")) {
   const same = next === text;
   console.log(same ? "decor: the furniture prefab is current" : "decor: the furniture prefab differs; run node tools/buildings/gun-store/decor.mjs");

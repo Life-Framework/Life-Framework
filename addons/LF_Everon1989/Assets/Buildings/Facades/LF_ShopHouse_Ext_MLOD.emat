@@ -1,0 +1,5 @@
+MatPBRBasic {
+ DisableInteriorProbes 1
+ MetalnessScale 0
+ BCRMap "{C587F40CEB484B80}Assets/Buildings/Facades/LF_ShopHouse_Ext_MLOD_BCR.edds"
+}
