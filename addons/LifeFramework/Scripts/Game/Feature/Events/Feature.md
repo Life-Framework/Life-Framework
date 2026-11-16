@@ -39,6 +39,14 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Owner and side:** server; `LF_EventModuleLoader` registers the condition and the scene by id at game start (#2137).
 - **Proof:** `everon/arrival-event` (pack leg).
 
+## Scene markers are checked at game start (#2067)
+
+- **Player sees:** nothing. A pack author sees one `[LFDebug:Events]` warning per broken scene in the server log.
+- **Owner and side:** `LF_EventSceneCheck` (core), server only, once per world, three seconds after game start so the placed markers (#1954) have registered. It only reads and logs: the scene stays usable and no event is switched off.
+- **Rules:** one line per scene, each fault named once: a gap in the route's orders (waypoints 0, 2, 3 is missing 1; a route starting at 1 is missing 0), waypoints but no `event_target`, no `event_spawn` marker. A marker with no scene id belongs to no scene (the component already logs it). A clean scene logs nothing; the check always ends with one `scene check: N marker(s) read, M scene(s) broken` info line.
+- **Proof:** `events/scene-check` (LOGIC, marker lists in script, no world).
+
+
 ## Modules from config (#2137)
 
 - **Player sees:** what the modules do (a scene of walkers); the loader itself is invisible.
