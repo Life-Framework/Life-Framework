@@ -48,11 +48,11 @@ export const LEASE_CTX = "main-guard/lease";
 export const LEASE_TTL_MS = 30 * 60 * 1000;
 
 // What to post for a verdict: [{ context, state, description }].
-export function guardToGh(status, step = "") {
+export function guardToGh(status, step = "", note = "") {
   if (status === "compiled-ok") return [{ context: COMPILE_CTX, state: "success", description: "compiled-ok: Workbench compile passed" }];
   if (status === "green") return [{ context: SUITE_CTX, state: "success", description: "green: build, full suite, placement audit, pre-move e2e" }];
   if (step === "compile") return [{ context: COMPILE_CTX, state: "failure", description: "red: Workbench compile failed" }];
-  return [{ context: SUITE_CTX, state: "failure", description: ("red: " + (step || "post-merge check") + " failed").slice(0, 140) }];
+  return [{ context: SUITE_CTX, state: "failure", description: ("red: " + (step || "post-merge check") + " failed" + (note ? "; " + note : "")).slice(0, 140) }];
 }
 
 // Pure: a commit's statuses (any order; GitHub lists newest first) -> compiled-ok | green | red | null.
@@ -117,9 +117,9 @@ export function resolveChecked(dir, { hub, base = "main", limit = 200, remoteLoo
 }
 
 // Post a verdict on a commit (the guard). Returns the last spawn result; failures are logged by the caller.
-export function postStatus(dir, sha, status, step = "") {
+export function postStatus(dir, sha, status, step = "", note = "") {
   let r = { status: 0 };
-  for (const g of guardToGh(status, step)) {
+  for (const g of guardToGh(status, step, note)) {
     r = spawnSync("gh", ["api", "-X", "POST", `repos/{owner}/{repo}/statuses/${sha}`, "-f", `state=${g.state}`, "-f", `context=${g.context}`, "-f", `description=${g.description}`], { cwd: dir, encoding: "utf8", windowsHide: true, timeout: 20000 });
   }
   return r;

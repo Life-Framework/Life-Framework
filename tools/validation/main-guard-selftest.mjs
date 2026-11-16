@@ -1,9 +1,13 @@
 // Proves the main guard's rules (tools/lib/main-guard.mjs, docs/worktrees.md "Main guard"): batching, the merges it
 // may blame, the bisect, the flake rule, never reverting a revert or a pre-start merge, and the status line.
-// inputs: tools/lib/main-guard.mjs
+// inputs: tools/lib/main-guard.mjs, tools/main-guard.mjs
 // red-proof: with revertRefusal's isRevert check removed this printed "a revert merge must never be reverted";
 //   with bisect's `hi = mid` swapped for `lo = mid` the run never finished (killed by `timeout 10`).
+// red-proof #2052: with setHits returning every failed test (red/green again) this printed "FAIL same set: blame m3, got
+//   m1111111" and "FAIL different set: no blame".
+import { readFileSync } from "node:fs";
 import * as g from "../lib/main-guard.mjs";
+import * as pin from "../lib/guard-pin.mjs";
 
 const fails = [];
 const check = (ok, msg) => { if (!ok) fails.push(msg); };
@@ -66,6 +70,60 @@ check(g.issuesOf("Refs #1512\nCloses #7, fixes #7").join() === "1512,7", "issues
 check(/^MAIN GUARD watching \(pid 42\)/.test(g.statusLine({ lastGreen: "abcdef0123" }, { alive: 42, now: T })), "status watching");
 check(/not running/.test(g.statusLine({}, { alive: null })), "status not running");
 check(/off/.test(g.statusLine({}, { alive: 1, off: true })), "status off");
+
+// The failing-test-set bisect (#2052): a commit is red only when it fails one of the recorded tests.
+{
+  // Today's set is {A, B}. #11 broke an unrelated test X (fixed later, still failing when probed); #13 broke A and B.
+  const S = ["LF_Test_A", "LF_Test_B"];
+  const probeOf = (table) => async (c) => table[c.sha] ?? [];
+  const HEAD = cands[3].sha; // m4444444, the red head
+
+  // Same set: the earliest merge that fails it is blamed, not the earliest red one.
+  const same = await g.bisectBySet(cands, S, probeOf({ m1111111: ["LF_Test_X"], m2222222: ["LF_Test_X"], m3333333: S, m4444444: S }), { head: HEAD });
+  check(same.culprit?.sha === "m3333333" && same.stop === null, `same set: blame m3, got ${same.culprit?.sha} (${same.stop})`);
+  check(g.revertRefusal(same.culprit, {}) === null, "same set: the blamed PR may be reverted");
+  // The old red/green bisect, with X counted as red, blamed #11 (the 2026-11-16 bug).
+  const old = await g.bisect(cands, async (c) => ["m1111111", "m2222222", "m3333333", "m4444444"].includes(c.sha));
+  check(old.culprit?.sha === "m1111111", "red/green alone blames the earliest red merge (what the set match fixes)");
+
+  // A different set: nothing fails the recorded tests at the newest merge, so nothing is blamed or reverted.
+  const diff = await g.bisectBySet(cands, S, probeOf({ m1111111: ["LF_Test_X"], m2222222: ["LF_Test_X"], m3333333: ["LF_Test_X"], m4444444: ["LF_Test_Y"] }), { head: HEAD });
+  check(diff.culprit === null && /mixed causes/.test(diff.stop ?? ""), `different set: no blame, got ${diff.culprit?.sha} (${diff.stop})`);
+  // A failure with no parseable test line (a missing test, an exit with no FAIL line) is no hit either.
+  const none = await g.bisectBySet(cands, S, probeOf({}), { head: HEAD });
+  check(none.culprit === null && !!none.stop, "no parsed failures at the newest merge: no blame");
+  // The head is not the last merge: the last merge is probed first, and a green one stops the bisect there.
+  const later = await g.bisectBySet(cands, S, probeOf({ m4444444: [] }), { head: "headnotmerge" });
+  check(later.culprit === null && !!later.stop, "head after the last merge: last merge probed, green for the set, no blame");
+
+  // Mixed causes: #12 breaks A; #14 breaks B too. No single merge explains {A, B}: stop, never revert.
+  const mixed = await g.bisectBySet(cands, S, probeOf({ m2222222: ["LF_Test_A"], m3333333: ["LF_Test_A"], m4444444: S }), { head: HEAD });
+  check(mixed.culprit?.sha === "m2222222" && /^mixed causes/.test(mixed.stop ?? "") && mixed.missing.join() === "LF_Test_B", `mixed causes: stop, got ${mixed.culprit?.sha} (${mixed.stop})`);
+  check(/LF_Test_B/.test(mixed.stop ?? "") && !/LF_Test_A\b.*LF_Test_A\b.*fail from/.test(""), "mixed causes line names the unexplained test");
+  // Two candidates: the earlier one fails only part of the set, so it is not the whole explanation: stop.
+  const m2 = await g.bisectBySet([cands[2], cands[3]], S, probeOf({ m3333333: ["LF_Test_A"], m4444444: S }), { head: HEAD });
+  check(!!m2.stop && m2.culprit?.sha === "m3333333", "a culprit that fails only part of the set: stop, no revert");
+  // A single candidate is probed once; failing the whole set it is blamed.
+  const solo = await g.bisectBySet([cands[3]], S, probeOf({ m4444444: S }), { head: HEAD });
+  check(solo.culprit?.sha === "m4444444" && solo.stop === null, "one candidate failing the set: blamed");
+  check((await g.bisectBySet([], S, probeOf({}))).stop !== null, "no candidates: nothing to blame");
+  check(g.setHits(S, ["LF_Test_B", "LF_Test_Z", "LF_Test_B"]).join() === "LF_Test_B", "setHits keeps recorded tests only");
+  // FAIL lines recorded beside the names.
+  const fl = g.failLines("ok\n12:28:33.241 SCRIPT : [LFTEST] FAIL LF_Test_ShopBuy (2 assertions)\nFAIL  LF_Test_Other: boom\n[LFTEST] START LF_Test_X");
+  check(fl.length === 2 && /LF_Test_ShopBuy/.test(fl[0]), `failLines: ${fl}`);
+}
+
+// Wiring: the worker bisects the suite by the recorded set, stops on a mixed-causes verdict without reverting, and
+// posts the reason as the commit status description.
+{
+  const w = readFileSync(new URL("../main-guard.mjs", import.meta.url), "utf8");
+  check(w.includes("bisectBySet(list, failing,"), "worker: the suite bisect matches the recorded failing tests");
+  check(w.includes("const refusal = b.stop ?? mg.revertRefusal("), "worker: a mixed-causes stop is a refusal (no revert)");
+  check(w.includes('note: b.stop ? refusal : ""') && w.includes("postStatus(dir, sha, status, extra?.step, extra?.note)"), "worker: the stop reason goes on the GitHub status");
+  const d = pin.guardToGh("red", "suite", "mixed causes: LF_Test_B fail from another merge")[0];
+  check(d.state === "failure" && d.context === pin.SUITE_CTX && /^red: suite failed; mixed causes/.test(d.description) && d.description.length <= 140, `status description: ${d.description}`);
+  check(pin.guardToGh("red", "suite")[0].description === "red: suite failed", "no note: the old description");
+}
 
 if (fails.length) {
   for (const f of fails) console.log(`FAIL  ${f}`);
