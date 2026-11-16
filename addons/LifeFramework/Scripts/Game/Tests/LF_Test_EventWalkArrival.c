@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-16 with `tools/cli test --no-build --red LF_Test_EventWalkArrival`: `RED-OK events/walk-arrival` (with the group-done flag off, "a formation member 4.4 m out arrived with its group" and "a member 10.6 m out that followed the leader arrived" fail); green with `--only` (passed=2 failed=0 with LF_Test_EventSceneWalk).
+// red-proof: Observed 2026-11-16 with `tools/cli test --no-build --red LF_Test_EventWalkArrival`: `RED PROOF OK`; with the group-done flag off, "a formation member 4.4 m out arrived with its group", "a member 10.6 m out that followed the leader arrived" and "the outer member of a line of six, 18.8 m out, arrived" fail; green with `--only`.
 
 // tier: LOGIC
 //! The scene walk's arrival rule (#2174): a walker that passed every waypoint arrives near the target;
@@ -22,8 +22,12 @@ class LF_Test_EventWalkArrival : LF_Test
 		bool groupDone = true;
 		if (RedProof())
 			groupDone = false;
-		ctx.True(LF_EventSceneWalk.HasArrived(true, 4.4, groupDone), "a formation member 4.4 m out arrived with its group");
-		ctx.True(LF_EventSceneWalk.HasArrived(false, 10.6, groupDone), "a member 10.6 m out that followed the leader arrived");
-		ctx.False(LF_EventSceneWalk.HasArrived(true, LF_EventSceneWalk.FORMATION_ARRIVE_M + 5, true), "a straggler beyond the formation's spread has not arrived");
+		ctx.True(LF_EventSceneWalk.HasArrived(true, 4.4, groupDone, 6), "a formation member 4.4 m out arrived with its group");
+		ctx.True(LF_EventSceneWalk.HasArrived(false, 10.6, groupDone, 6), "a member 10.6 m out that followed the leader arrived");
+		// The outer member of a line of six stood 18.8 m out (#2174 follow-up); the spread scales with the group.
+		ctx.True(LF_EventSceneWalk.HasArrived(false, 18.8, groupDone, 6), "the outer member of a line of six, 18.8 m out, arrived");
+		ctx.False(LF_EventSceneWalk.HasArrived(false, 18.8, true, 2), "18.8 m is beyond a pair's spread");
+		float six = LF_EventSceneWalk.FormationArriveM(6);
+		ctx.False(LF_EventSceneWalk.HasArrived(true, six + 5, true, 6), "a straggler beyond the formation's spread has not arrived");
 	}
 }
