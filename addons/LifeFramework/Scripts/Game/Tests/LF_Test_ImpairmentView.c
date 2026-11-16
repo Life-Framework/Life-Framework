@@ -53,7 +53,9 @@ class LF_Test_ImpairmentView : LF_Test
 		LF_ImpairmentView.SetDebugLevel(55);
 		ctx.True(LF_ImpairmentView.ViewLevel(10) == 55, "a pinned level wins over the replicated one");
 		ctx.True(LF_StaticReset.Registered().Contains("LF_ImpairmentView"), "the world-end reset covers the view");
-		LF_StaticReset.ResetAll();
+		// Not LF_StaticReset.ResetAll(): that drops every feature's registries mid-suite and 35 later WORLD tests
+		// fail (the failures that got #2011 reverted). The view's own reset is enough to prove the hook's target.
+		LF_ImpairmentView.ResetStatics();
 		ctx.True(LF_ImpairmentView.ViewLevel(10) == 10, "the reset drops the pin");
 	}
 }

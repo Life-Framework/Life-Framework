@@ -152,7 +152,8 @@ class LF_Test_ShopCatalog : LF_Test
 		ctx.True(manager.IsHidden(moneyStack), "money is not sold in any shop");
 
 		ResourceName m9 = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
-		ctx.Equal(500, manager.GetBuyPrice(m9), "M9 buy price overrides the broad weapon rule");
-		ctx.Equal(250, manager.GetSellPrice(m9), "M9 sell price overrides the broad weapon rule");
+		// #1762: the flat weapon price rule and the M9 override are gone; weapons are hidden here and sold only
+		// through the outlets (LF_Test_BlackMarketOutlet), so the M9 has no price in this manager.
+		ctx.True(manager.IsHidden(m9), "the M9 is not sold by the general shop (outlets only, #1762)");
 	}
 };
