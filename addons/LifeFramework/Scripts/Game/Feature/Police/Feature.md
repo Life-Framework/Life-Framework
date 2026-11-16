@@ -86,7 +86,9 @@ is the entry point.
   ground in front of you (on-duty police, rate limited; placed where your ghost showed by the
   placement service, #1026, `Feature/Placement`); the server punctures each wheel whose path
   crosses it through the vanilla wheel damage, and an officer picks it up again. It goes after
-  `m_iSpikeStripLifetimeSeconds`. `LF_SpikeStrip.c`, `LF_SpikeStripActions.c`.
+  `m_iSpikeStripLifetimeSeconds`. While Deploy is selected every on-duty officer sees the ghost
+  across the road, green or red with the reason (#1939, `LF_SpikeStripPreview.c`).
+  `LF_SpikeStrip.c`, `LF_SpikeStripActions.c`.
 
 ## Dependencies
 

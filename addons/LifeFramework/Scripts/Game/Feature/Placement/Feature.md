@@ -16,7 +16,7 @@ selected; aimed placement with rotate, place and cancel is #1028.
 ## Placement rules and ghost (#928)
 
 - **Player sees:** a blue ghost of the strip where it will lie, red when the spot is refused
-  (no ground, a kerb or slope, something in the way). Only in dev-tools worlds until #928 ships.
+  (no ground, a kerb or slope, something in the way, with the reason). Shipped for every on-duty officer on any world (#1939); the server refuses a confirm for a red spot. LF_Test_SpikeStripPreview.
 - **Owner and side:** `LF_PlacementRules.Judge` is pure and runs on both sides on the same probe;
   the feature's server path (`LF_SpikeStrips.Deploy`) refuses anything but `VALID`.
   `LF_PlacementGhost` is client-local and never replicated.
