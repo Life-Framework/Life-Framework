@@ -33,8 +33,9 @@ Reddit modmail (the "Message the mods" link in the sidebar).
 
 ```
 Hi. I'm the maintainer of Life Framework, an open-source life and roleplay
-framework for Arma Reforger (MIT, on GitHub). It's an early test build, not a
-release, and not on the Workshop yet.
+framework for Arma Reforger (MIT, on GitHub). It's an early alpha (0.1.2), Public
+on the Workshop: https://reforger.armaplatform.com/workshop/4550A2B656E1B569 (core) and
+https://reforger.armaplatform.com/workshop/B1E84D5687E11724 (1989 Everon pack).
 
 Would a short post about it be welcome here, or should it go in the monthly
 recruitment thread? I've read the rules; I'd post once, with three screenshots
@@ -60,7 +61,7 @@ What's different from other life mods, and where it's the same:
 - It has an in-game test suite, and every change is a public pull request.
 - It started from EveronLife's code (MIT, credited) and uses a few small files from Overthrow with its author's permission, credited too.
 
-For honesty: it's built mostly by AI agents under my direction. I merge every change. There's no release date, it isn't on the Workshop yet, and the test build is a zip download from the page below.
+For honesty: it's built mostly by AI agents under my direction. I merge every change. There's no date for the next release, and the zip test build is still on the page below.
 
 What would help: a few people to try the test town and tell us what breaks. Happy to answer questions here.
 

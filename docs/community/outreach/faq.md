@@ -24,7 +24,7 @@ menus. A 1989 Everon server is the proof we are building alongside it.
 **How far along is it?**
 Early. A small test town is playable with a bank, a store, a car lot, police,
 medics, payphones, a fence and a few crimes. Most of it has not been played by
-many people. There is no public release.
+many people. Version 0.1.2 is public on the Workshop (alpha).
 
 **Can I play it?**
 Yes, the test build. It is a zip you download from https://life-framework.org/playtest
@@ -53,15 +53,15 @@ so. Every change goes through the same checks and a pull request, in the open.
 
 **Does it need a dedicated server?**
 It is built for dedicated servers. The playtest runs as one, hosted from the
-maintainer's or a volunteer's PC. Server owners cannot install it from the
-Workshop yet; that is the next planned milestone and has no date.
+maintainer's or a volunteer's PC. Server owners can add it from the Workshop:
+version 0.1.2 is Public (core `4550A2B656E1B569`, pack `B1E84D5687E11724`).
 
 **When does it release?**
-There is no date and we will not guess one. The plan is in the roadmap:
+0.1.2 is out as an alpha. There is no date for the next one and we will not guess one. The plan is in the roadmap:
 https://life-framework.org/roadmap
 
 **Is it free?**
-The source is MIT on GitHub, the Workshop build will be APL because the Workshop
+The source is MIT on GitHub, the Workshop build is APL because the Workshop
 requires it, and the framework is never sold. Donations are not open. See
 https://life-framework.org/support for what the project costs.
 
@@ -91,7 +91,7 @@ For a comment thread, adjust the opening to the question.
 
 ### "Can I add it to my server?"
 
-> Not yet. The framework is not packaged for server owners; the plan for that (config, a Workshop release, owner docs) is the next milestone. If you want to follow it, join the Discord or watch the roadmap.
+> Yes, as an alpha. Version 0.1.2 is Public on the Workshop as two addons: the core (https://reforger.armaplatform.com/workshop/4550A2B656E1B569, ID `4550A2B656E1B569`) and the 1989 Everon pack (https://reforger.armaplatform.com/workshop/B1E84D5687E11724, ID `B1E84D5687E11724`). The pack depends on the core. Expect rough edges; report them in the Discord.
 
 ### "Can it work with other mods?"
 
@@ -126,7 +126,7 @@ For a comment thread, adjust the opening to the question.
 | --- | --- |
 | Economy, banking, shops, jobs, vehicles and garage, jail, police duty, organizations and hideouts, payphones and dispatch, downed state and medics, investigation (witnesses, casings, case file), the fence and a few crimes | Built in the test town. Not widely played. `docs/features.md` has each system |
 | A travel hub and a few more areas | Planned or in progress. See the playtest page's "Not in this build" list |
-| A public Workshop item for the test build | Not yet. Today the build is a zip from the website. A Workshop-ready kit is being prepared (#567) |
+| Public Workshop items | Version 0.1.2 is Public: core `4550A2B656E1B569`, pack `B1E84D5687E11724` (https://reforger.armaplatform.com/workshop/4550A2B656E1B569) |
 | A framework release for server owners (two addons, config, owner docs) | Planned: milestone M3 |
 | A 24/7 flagship server | Planned: milestone M4 |
 | Console or a particular platform | Not tested. We make no claim |
