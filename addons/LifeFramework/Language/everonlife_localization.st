@@ -2642,27 +2642,27 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{17725D5EE1952883}" {
      Id "LF-Credits_100"
-     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{27F672D865E0C90E}" {
      Id "LF-Credits_101"
-     Target_en_us "Radio track \"Orchestral morning\", a light orchestral morning piece: flute, strings, harp"
+     Target_en_us "Radio track \"Orchestral morning\", a light orchestral morning piece"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{52A89444BDFCFD47}" {
      Id "LF-Credits_102"
-     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B34B54B3270EA1AB}" {
      Id "LF-Credits_103"
-     Target_en_us "Radio track \"Orchestral serenade\", a Mediterranean serenade: clarinet, strummed guitar, strings"
+     Target_en_us "Radio track \"Orchestral serenade\", a Mediterranean serenade"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{08B073F287287452}" {
      Id "LF-Credits_104"
-     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{47D4FB9C4781CDA3}" {
@@ -3217,27 +3217,27 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{8501F8EBAEAC730A}" {
      Id "LF-Credits_92"
-     Target_en_us "ElevenLabs Music (music_v1, instrumental), generated with ElevenLabs"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D633223051CC74DB}" {
      Id "LF-Credits_93"
-     Target_en_us "Radio track \"Estrada ballad\", a 92 bpm estrada ballad: flute, electric piano, string pad"
+     Target_en_us "Radio track \"Estrada ballad\", a slow 92 bpm estrada ballad"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{359938F793945EA0}" {
      Id "LF-Credits_94"
-     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9D89028E9844FF11}" {
      Id "LF-Credits_95"
-     Target_en_us "Radio track \"Estrada dance\", a 122 bpm estrada dance number: synthesizer lead and arpeggio, drum machine"
+     Target_en_us "Radio track \"Estrada dance\", an upbeat estrada dance number"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D3080A6969C70816}" {
      Id "LF-Credits_96"
-     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AA282A4B5F344509}" {
@@ -3247,12 +3247,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{FA45D273D68AA84A}" {
      Id "LF-Credits_98"
-     Target_en_us "Composed and synthesised by this project: every note, chord and drum hit comes from a table and a seeded random generator, no sample, recording or model"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C38448870F6795CB}" {
      Id "LF-Credits_99"
-     Target_en_us "Radio track \"Accordion kolo\", a 2/4 Balkan kolo: clarinet and accordion"
+     Target_en_us "Radio track \"Accordion kolo\", a 2/4 Balkan kolo"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8B6C65DD4369872B}" {
