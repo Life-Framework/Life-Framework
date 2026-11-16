@@ -234,3 +234,4 @@
 - ⚠️ The Logged out tag is server-side only (no name tag UI yet), the window is not owner config
   yet, and a downed logout still dies at once under `downedDies`, so the longer window applies only
   with that rule off.
+- 🧪 (2026-11-16) **Last position (#1777, first half of #640).** The server keeps where each character last stood: position, heading and the unix time it was taken (`LF_LastPosition`, one `LF_LastPositionRow` per character persistence id). It is taken when a player disconnects, before the game mode's disconnect cleanup, and for every connected player just before each save; a dead body is not taken. Saved as the `lastpos` payload (save version 39). Nothing spawns at it yet; that is the second half of #640. Test `spawn/last-position`.
