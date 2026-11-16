@@ -52,9 +52,8 @@ class LF_Test_ImpairmentView : LF_Test
 
 		LF_ImpairmentView.SetDebugLevel(55);
 		ctx.True(LF_ImpairmentView.ViewLevel(10) == 55, "a pinned level wins over the replicated one");
-		LF_StaticResetHooks hooks = new LF_StaticResetHooks();
 		array<string> done = {};
-		hooks.Run(done, true);
+		LF_StaticReset.RunBuckets(done, true);
 		ctx.True(done.Contains("LF_ImpairmentView"), "the world-end reset covers the view");
 		ctx.True(LF_ImpairmentView.ViewLevel(10) == 10, "the reset drops the pin");
 	}

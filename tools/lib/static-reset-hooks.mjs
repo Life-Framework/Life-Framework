@@ -172,8 +172,9 @@ class LF_StaticReset
 	protected static int s_iRuns;
 
 	//------------------------------------------------------------------------------------------------
-	//! Runs the buckets one after another (never one chain through another: see the header).
-	protected static void RunBuckets(notnull array<string> done, bool apply)
+	//! Runs the buckets one after another (never one chain through another: see the header). apply false
+	//! only lists the hooks; a test that needs the reset itself calls it with true.
+	static void RunBuckets(notnull array<string> done, bool apply)
 	{
 ${runs.join("")}	}
 
