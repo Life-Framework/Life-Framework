@@ -76,8 +76,10 @@ class LF_FenceSerials
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Books the next serial to a buyer. \return The serial, or empty when there is no buyer.
-	static string Issue(string buyerUid, string prefab)
+	//! Books the next serial to a buyer. \param[in] outlet Catalogue outlet that sold or issued it;
+	//! its id prefixes the serial (LF_OutletSerial, #1765). Empty keeps the old "LF-0001" shape.
+	//! \return The serial, or empty when there is no buyer.
+	static string Issue(string buyerUid, string prefab, string outlet = "")
 	{
 		if (buyerUid.IsEmpty())
 		{
@@ -94,7 +96,7 @@ class LF_FenceSerials
 
 		LF_FenceSerialRow row = new LF_FenceSerialRow();
 		row.m_iNumber = number;
-		row.m_sSerial = "LF-" + number.ToString(4, true);
+		row.m_sSerial = LF_OutletSerial.Mint(outlet, number);
 		row.m_sBuyerUid = buyerUid;
 		row.m_sPrefab = prefab;
 		Rows().Insert(row);
