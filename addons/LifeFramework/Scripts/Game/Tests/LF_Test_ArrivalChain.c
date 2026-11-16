@@ -16,6 +16,9 @@
 class LF_Test_ArrivalChain : LF_Test
 {
 	static const ResourceName CLERK_PREFAB = "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et";
+	static const ResourceName GIFT_OVERLAY = "{6A19C3E85B027D4F}Configs/Tests/LF_Test_WelcomeGiftOverlay.conf";
+	static const ResourceName GIFT_WATER = "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et";
+	static const ResourceName GIFT_APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
 
 	// The clerk is a spawned fixture, so the test works in a world with no clerk and leaves no giver behind
 	// (LF_Test_DialogueClerk spawns its own and needs the "clerk" id free). He stands 7 m from the post
@@ -127,11 +130,32 @@ class LF_Test_ArrivalChain : LF_Test
 		// Step 5: the clerk, in person.
 		ctx.False(tracker.RequestTurnIn("arrival_done"), "step 5 is not done before the player is back");
 		int cashBefore = LF_MoneyUtils.GetCash(player);
+		// The gift is a pack's decision (LF_WelcomeGiftTable): this test layers its own fixture rows
+		// over the table so the mechanism is proved with or without a pack header.
+		ctx.Equal(0, manager.CountItem(player, GIFT_WATER), "no gift water before the clerk's last talk");
+		LF_WelcomeGiftConfig gifts = LF_WelcomeGiftTable.Get();
+		if (!gifts)
+		{
+			ctx.Fail("the welcome gift table loads");
+			return;
+		}
+
+		Resource overlay = BaseContainerTools.LoadContainer(GIFT_OVERLAY);
+		if (!overlay || !overlay.IsValid() || !overlay.GetResource())
+		{
+			ctx.Fail("the welcome gift overlay fixture loads");
+			return;
+		}
+
+		ctx.Equal(1, gifts.ApplyContainer(overlay.GetResource().ToBaseContainer(), GIFT_OVERLAY), "the fixture sets the clerk's gift; the row naming a missing item is refused");
 		ctx.True(tracker.RequestConverse("clerk"), "back at the clerk, the talk finishes step 5");
 		ctx.True(Status(tracker, "arrival_done") == LF_EQuestStatus.TURNED_IN, "the clerk takes step 5 back");
 		ctx.False(tracker.RequestConverse("clerk"), "after the chain the clerk has nothing more to hand out");
-		ctx.Equal(cashBefore + manager.GetDefinition("arrival_done").m_iRewardMoney, LF_MoneyUtils.GetCash(player), "the welcome cash lands in the pockets");
-		ctx.True(manager.GetDefinition("arrival_done").m_iRewardMoney > 0, "the clerk gives a welcome");
+		ctx.Equal(cashBefore, LF_MoneyUtils.GetCash(player), "the welcome is a gift, not cash");
+		ctx.Equal(0, manager.GetDefinition("arrival_done").m_iRewardMoney, "step 5 rewards no money");
+		ctx.Equal(1, manager.CountItem(player, GIFT_WATER), "the welcome gift's drink lands in the pockets");
+		ctx.Equal(1, manager.CountItem(player, GIFT_APPLE), "the welcome gift's food lands in the pockets");
+		LF_WelcomeGiftTable.ResetStatics();
 
 		// After step 5 nothing else is pushed.
 		foreach (string questId, LF_QuestState state : tracker.GetTracker().GetStates())

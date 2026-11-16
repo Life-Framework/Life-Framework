@@ -9,6 +9,7 @@ modded class LF_TestManager
 		RegisterPack(new LF_Test_EveronDrinksImpair(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronPoliceKit(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronRulesOverlays(), LF_TestTier.WORLD);
+		RegisterPack(new LF_Test_EveronWelcomeGift(), LF_TestTier.WORLD);
 	}
 }
 

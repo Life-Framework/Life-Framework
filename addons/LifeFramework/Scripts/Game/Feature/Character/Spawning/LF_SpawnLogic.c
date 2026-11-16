@@ -399,6 +399,11 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		if (LF_HospitalRespawn.ResolveWake(playerId, LF_Utils.GetPlayerUID(playerId), position, yawPitchRoll))
 			return true;
 
+		// Order: the jail return (after the spawn, LF_Jail.OnPlayerSpawned), the hospital wake above,
+		// then the saved spot (off by default, #1778), then the spawn point below.
+		if (LF_RejoinSpot.Resolve(playerId, LF_Utils.GetPlayerUID(playerId), characterPersistenceId, position, yawPitchRoll))
+			return true;
+
 		SCR_SpawnPoint spawnPoint = ResolveSpawnPoint(playerId);
 		if (!spawnPoint)
 		{
