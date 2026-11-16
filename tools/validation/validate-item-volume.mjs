@@ -36,7 +36,6 @@ const ALLOW_VOLUME = {
   "Items/Core/RoleplayItem_Base.et": "base prefab, children set their own",
   "Items/Currencies/MoneyStack.et": "cash is a ledger entry, the stack never enters a bag",
   "Items/Roleplay/LF_MoneyBag.et": HAND_CARRY,
-  "Items/Roleplay/LF_Parcel.et": HAND_CARRY,
   "Items/Contraband/LF_ContrabandCrate.et": HAND_CARRY,
   "Resources/Mining/CopperBar.et": BASE_VOLUME,
   "Resources/Mining/GoldBar.et": BASE_VOLUME,

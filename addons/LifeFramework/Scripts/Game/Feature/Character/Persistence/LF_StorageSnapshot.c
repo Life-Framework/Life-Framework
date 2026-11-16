@@ -20,6 +20,11 @@ class LF_StorageItemRecord : Managed
 	[NonSerialized()]
 	string m_sSerial;
 
+	//! Flagged stolen (LF_StolenGoods, #1855). Travels in the separate itemstolen payload (save
+	//! version 35), like the serial.
+	[NonSerialized()]
+	bool m_bStolen;
+
 	//------------------------------------------------------------------------------------------------
 	static LF_StorageItemRecord Create(string prefab, int quantity, int parent, int storage, int slot)
 	{
@@ -51,6 +56,18 @@ class LF_StorageItemSerialRecord : Managed
 	string m_sOwnerKey;
 	string m_sSlot;
 	ref array<string> m_aSerials = {};
+}
+
+//------------------------------------------------------------------------------------------------
+//! Stolen items of one snapshot (#1855): the item indexes flagged stolen, and the snapshot's item
+//! count so a load applies them only to the same list. The itemstolen payload (save version 35),
+//! keyed by the snapshot's stable owner key and slot name.
+class LF_StorageItemStolenRecord : Managed
+{
+	string m_sOwnerKey;
+	string m_sSlot;
+	int m_iItemCount;
+	ref array<int> m_aStolen = {};
 }
 
 //------------------------------------------------------------------------------------------------
@@ -237,6 +254,7 @@ class LF_StorageSnapshot
 			LF_StorageItemRecord copy = LF_StorageItemRecord.Create(source.m_sPrefab, source.m_iQuantity, -1, source.m_iStorage, source.m_iSlot);
 			copy.m_iAmmo = source.m_iAmmo;
 			copy.m_sSerial = source.m_sSerial;
+			copy.m_bStolen = source.m_bStolen;
 			int parent = source.m_iParent;
 			if (parent >= 0 && parent < heldIndex && held[parent])
 			{
@@ -628,6 +646,8 @@ class LF_StorageSnapshot
 				if (serialComponent)
 					record.m_sSerial = serialComponent.GetSerial();
 
+				record.m_bStolen = LF_StolenGoods.IsStolen(item);
+
 				items.Insert(record);
 				CaptureChildren(item, items.Count() - 1, items, visited);
 			}
@@ -711,6 +731,7 @@ class LF_StorageSnapshot
 			SetQuantity(occupants[match], item);
 			SetAmmo(occupants[match], item);
 			SetSerial(occupants[match], item);
+			SetStolen(occupants[match], item);
 		}
 
 		// What the snapshot does not list is not carried: default prefab contents included.
@@ -812,6 +833,80 @@ class LF_StorageSnapshot
 
 		if (serial.GetSerial() != item.m_sSerial)
 			serial.RestoreSerial(item.m_sSerial);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a restored item that was stolen is flagged again, so a restart or a reconnect does not
+	//! launder it (#1855). A record that is not stolen never clears a live flag.
+	protected static void SetStolen(IEntity entity, LF_StorageItemRecord item)
+	{
+		if (item.m_bStolen && !LF_StolenGoods.IsStolen(entity))
+			LF_StolenGoods.Mark(entity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The itemstolen payload: one record per stored snapshot that holds a stolen item.
+	static array<ref LF_StorageItemStolenRecord> ExportItemStolen()
+	{
+		array<ref LF_StorageItemStolenRecord> rows = new array<ref LF_StorageItemStolenRecord>();
+		if (!s_mSnapshots)
+			return rows;
+
+		foreach (string key, LF_StorageSnapshotRecord record : s_mSnapshots)
+		{
+			if (!record || !record.m_aItems)
+				continue;
+
+			LF_StorageItemStolenRecord row = new LF_StorageItemStolenRecord();
+			row.m_sOwnerKey = record.m_sOwnerKey;
+			row.m_sSlot = record.m_sSlot;
+			row.m_iItemCount = record.m_aItems.Count();
+			for (int index = 0; index < record.m_aItems.Count(); index++)
+			{
+				LF_StorageItemRecord item = record.m_aItems[index];
+				if (item && item.m_bStolen)
+					row.m_aStolen.Insert(index);
+			}
+
+			if (!row.m_aStolen.IsEmpty())
+				rows.Insert(row);
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Runs after the carried payload loaded the snapshots. A row whose snapshot is gone or whose
+	//! item count differs is skipped with a warning (those items come back unflagged).
+	//! \return Number of snapshots that took their stolen flags.
+	static int ApplyItemStolen(array<ref LF_StorageItemStolenRecord> rows)
+	{
+		if (!rows)
+			return 0;
+
+		int matched;
+		foreach (LF_StorageItemStolenRecord row : rows)
+		{
+			if (!row || !row.m_aStolen)
+				continue;
+
+			LF_StorageSnapshotRecord record = Get(row.m_sOwnerKey, row.m_sSlot);
+			if (!record || !record.m_aItems || record.m_aItems.Count() != row.m_iItemCount)
+			{
+				LF_Debug.Warn(FEATURE, string.Format("stolen flags for %1/%2 skipped: no matching snapshot", row.m_sOwnerKey, row.m_sSlot));
+				continue;
+			}
+
+			foreach (int index : row.m_aStolen)
+			{
+				if (index >= 0 && index < record.m_aItems.Count() && record.m_aItems[index])
+					record.m_aItems[index].m_bStolen = true;
+			}
+
+			matched++;
+		}
+
+		return matched;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -980,6 +1075,7 @@ class LF_StorageSnapshot
 		SetQuantity(entity, item);
 		SetAmmo(entity, item);
 		SetSerial(entity, item);
+		SetStolen(entity, item);
 
 		// A restored stack keeps its own slot instead of merging into a neighbour.
 		bool isStack = entity.FindComponent(LF_QuantityComponent) != null;

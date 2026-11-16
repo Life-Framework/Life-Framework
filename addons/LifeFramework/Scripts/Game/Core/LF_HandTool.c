@@ -17,6 +17,11 @@ class LF_HandToolComponent : SCR_GadgetComponent
 	[Attribute("", UIWidgets.EditBox, desc: "Tool id the use actions look for (drill, parcel). Empty: the prefab file name.", category: "Hand tool")]
 	protected string m_sToolId;
 
+	[Attribute("0", UIWidgets.CheckBox, desc: "Take the tool into the hands once, when it first enters its carrier's inventory (a courier parcel fills the hands; a drill waits for its quick slot).", category: "Hand tool")]
+	protected bool m_bEquipOnPickup;
+
+	protected bool m_bPickupEquipped;
+
 	//------------------------------------------------------------------------------------------------
 	string GetToolId()
 	{
@@ -40,10 +45,43 @@ class LF_HandToolComponent : SCR_GadgetComponent
 		// Vanilla auto-slots only types with a default quick slot; a hand tool takes the first free
 		// tool slot on the owner's machine, where the 1-0 bar lives.
 		if (mode == EGadgetMode.IN_STORAGE && charOwner && charOwner == SCR_PlayerController.GetLocalControlledEntity())
+		{
 			LF_HandTool.QuickSlot(charOwner, GetOwner());
+			// Only the first time: a tool the player put away stays away.
+			if (m_bEquipOnPickup && !m_bPickupEquipped)
+			{
+				m_bPickupEquipped = true;
+				GetGame().GetCallqueue().CallLater(EquipOnPickup, 250, false, charOwner);
+			}
+		}
 
 		if (mode == EGadgetMode.IN_HAND)
 			LF_Debug.Log(LF_HandTool.FEATURE, string.Format("%1 in hand of %2", GetToolId(), LF_Utils.GetPlayerUid(charOwner)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Local machine, a moment after the pickup: the engine finishes taking the item into the
+	//! inventory first. A tool that left the carrier meanwhile stays where it is.
+	protected void EquipOnPickup(IEntity character)
+	{
+		if (!character || LF_HandTool.Carried(character, GetToolId()) != GetOwner())
+			return;
+
+		LF_HandTool.Equip(character, GetOwner());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool EquipsOnPickup()
+	{
+		return m_bEquipOnPickup;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A tool deleted within the pickup delay (a delivered parcel) must not leave the call queued.
+	void ~LF_HandToolComponent()
+	{
+		if (m_bPickupEquipped && GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(EquipOnPickup);
 	}
 }
 
