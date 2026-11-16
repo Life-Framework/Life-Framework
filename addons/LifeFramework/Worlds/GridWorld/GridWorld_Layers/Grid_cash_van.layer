@@ -1,0 +1,108 @@
+// Grid cell c9r1 for cash-van: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_cash_van_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 131 0 35
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 135.4 0 35
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 139.8 0 35
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 144.2 0 35
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 148.6 0 35
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 35
+ angleY 270
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 40
+ angleY 270
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 148.6 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 144.2 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 139.8 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 135.4 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_cash_van_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 131 0 45
+ angleY 90
+}
+GenericEntity Grid_cash_van_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:cash-van"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 130.2 0.505 35.6
+ angleY -90
+}
+GenericEntity Grid_cash_van_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "cash-van"
+  }
+ }
+ coords 130.3 0 37.5
+ angleY 90
+}
+GenericEntity Annex_Escort_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_sDebugIdentifier "POLICE"
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_JailPutInVehicleAction "{B2E1080B00000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{B2E1080B00000002}" {
+      Name "#EL-Escort_PutIn"
+     }
+    }
+   }
+  }
+ }
+ coords 135.512 -0.212 39.916
+ angleY 0
+}
+GenericEntity Annex_Cash_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et" {
+ components {
+  LF_AlarmMountComponent "{E7C1AAFA98829903}" {
+   m_vOffset 0 1.885 -0.6
+  }
+ }
+ coords 143.488 -0.18 40.08
+ angleY 0
+}
+GenericEntity Annex_Cash_Van_Box : "{8FABDE609C994BC2}Prefabs/Vehicles/LF_CashVanBox.et" {
+ components {
+  LF_HeistVaultComponent "{6C2C6ED0D7BD0D97}" {
+   m_fJamChance 0
+  }
+ }
+ coords 148.488 0 40.084
+}

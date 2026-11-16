@@ -4,7 +4,7 @@
 // re-exports it. The frame is GridWorld_Layers/Grid_frame.layer, written from here:
 //   - GridMarker_cXrY  a pole plate at each cell's west edge reading its id (c3r1);
 //   - GridPlate_cXrY   the plate above it: the slug of the cell's claim, FREE, or BLOCKED;
-//   - GridPath_rR_N    gravel mounds in a line along the south edge of each row;
+//   - GridPath_rR_N    gravel mounds in a line along the south edge of each row (not through a claim spanning two rows);
 //   - GridMapBoard     at the gate spawn, listing cell to system.
 // The frame is one claim, tools/grid/cells/frame.json, whose cell is "lattice": the checks accept its
 // entities anywhere inside the lattice rectangle instead of inside one cell.
@@ -177,11 +177,16 @@ export function framePlan(states) {
     out.push({ name: plateName(c.col, c.row), x: pAt[0], z: pAt[1], lines: signBlock(plateName(c.col, c.row), c.label, pAt, YAW.south, COLOURS[c.state]) });
   }
   const r = latticeRect();
+  const slugAt = new Map(states.filter((s) => s.state === "claimed").map((s) => [`${s.col}_${s.row}`, s.label]));
   for (let row = 0; row < CELL.rows; row++) {
     const z = cellBounds(0, row).z0;
     const n = Math.floor((r.x1 - r.x0 - 2 * 1.2) / GRAVEL.step) + 1;
     for (let k = 0; k < n; k++) {
       const x = r.x0 + 1.2 + k * GRAVEL.step - GRAVEL.pivotX;
+      // The path stops at a multi-row claim: its props may stand on the line between two of its rows.
+      const col = Math.min(CELL.cols - 1, Math.max(0, Math.floor((x - CELL.origin) / CELL.size)));
+      const above = slugAt.get(`${col}_${row - 1}`);
+      if (above && above === slugAt.get(`${col}_${row}`)) continue;
       const name = `GridPath_r${row}_${k + 1}`;
       out.push({ name, x, z, lines: [`${GRAVEL.cls} ${name} : "${GRAVEL.ref}" {`, ` coords ${num(x)} ${GRAVEL.y} ${num(z)}`, ` scale ${GRAVEL.scale}`, "}"] });
     }

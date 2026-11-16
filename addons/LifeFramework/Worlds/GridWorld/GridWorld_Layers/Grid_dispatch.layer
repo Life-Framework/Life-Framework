@@ -1,0 +1,132 @@
+// Grid cell c9r2 for dispatch: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_dispatch_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 131 0 47
+}
+SCR_DestructibleEntity Grid_dispatch_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 136 0 47
+}
+SCR_DestructibleEntity Grid_dispatch_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 141 0 47
+ angleY 270
+}
+SCR_DestructibleEntity Grid_dispatch_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 141 0 52
+ angleY 270
+}
+SCR_DestructibleEntity Grid_dispatch_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 141 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_dispatch_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 136 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_dispatch_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 131 0 57
+ angleY 90
+}
+GenericEntity Grid_dispatch_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:dispatch"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 130.2 0.505 47.6
+ angleY -90
+}
+GenericEntity Grid_dispatch_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "dispatch"
+  }
+ }
+ coords 130.3 0 49.5
+ angleY 90
+}
+GenericEntity Annex_Dispatch_Console : "{503B0EA32328591E}Prefabs/Comms/LF_DispatchConsole.et" {
+ coords 132.828 0 49.303
+ angleY 0
+}
+GenericEntity Annex_Dispatch_PoliceBoard : "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et" {
+ coords 135.967 0 49.685
+ angleY 0
+}
+GenericEntity Annex_Dispatch_MedicBoard : "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et" {
+ coords 139.967 0 49.685
+ angleY 0
+}
+GenericEntity Annex_Test_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  ActionsManagerComponent "{0EB5E90B59B96E16}" {
+   ActionContexts {
+    UserActionContext "{1CEC34C252323DE8}" {
+     ContextName "default"
+     Position PointInfo "{31CB98D3A58C97E8}" {
+      Offset 0 0.3 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_RobAction "{D9F0223A3372D263}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{1DAD1EDD42FE3031}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_sAlarmKind "fuel"
+     m_iMoneyAmount 150
+     m_iMinPayout 150
+     m_iMaxPayout 150
+     m_fCooldown 5
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 132.033 0 54.696
+ angleY 0
+}
+GenericEntity Annex_Fuel_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  ActionsManagerComponent "{D97D7ED02B9C4E1A}" {
+   ActionContexts {
+    UserActionContext "{85653734FAE04F9E}" {
+     ContextName "default"
+     Position PointInfo "{2514C1ACD78CF71D}" {
+      Offset -0.0559 0.5 -0.2756
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_RobAction "{4F8CAEB46DCDC14A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B715433AF152941C}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_sAlarmKind "fuel"
+     m_iMoneyAmount 150
+     m_iMinPayout 150
+     m_iMaxPayout 150
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+     m_bTillActionName 1
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 136.033 0 54.696
+ angleY 0
+}
