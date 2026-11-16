@@ -79,6 +79,131 @@ StringTable {
      Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
+    CustomStringTableItem "{5AFB8F50443E2D63}" {
+     Id "LF-Handbook_Everon_CrimeBody1"
+     Target_en_us "Hold up a shop, break into a vault or force a door and the police are told. Your wanted level goes up, and they come looking for you. You leave marks at the scene, and officers read them."
+     Comment "Everon handbook page crime, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{EA9B1ED2642F6852}" {
+     Id "LF-Handbook_Everon_CrimeBody2"
+     Target_en_us "A new arrival gets a short grace: no hold-up, robbery or arrest at first. After that you carry the risk."
+     Comment "Everon handbook page crime, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{9492A35C04271AAC}" {
+     Id "LF-Handbook_Everon_CrimeBody3"
+     Target_en_us "If someone points a gun at you, do as they say and report it afterwards. Your life comes first."
+     Comment "Everon handbook page crime, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{2E21092E3FE3A5D6}" {
+     Id "LF-Handbook_Everon_CrimeTitle"
+     Target_en_us "If you turn to crime"
+     Comment "Everon handbook page title: crime (#1776)."
+    }
+    CustomStringTableItem "{F3C602EA0D64403A}" {
+     Id "LF-Handbook_Everon_JobsBody1"
+     Target_en_us "Anyone may take courier work. Each run you finish counts. After a few, the post office offers fuel delivery, and after more than that, taxi work."
+     Comment "Everon handbook page jobs, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{9CC785B4852BA4F6}" {
+     Id "LF-Handbook_Everon_JobsBody2"
+     Target_en_us "The town board says who else is hiring. You sign up for a job at its own workplace, so go there in person."
+     Comment "Everon handbook page jobs, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{3BDC79E9DFB1A298}" {
+     Id "LF-Handbook_Everon_JobsBody3"
+     Target_en_us "If you are out of work and have little in the bank, the town pays a small benefit now and then."
+     Comment "Everon handbook page jobs, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{A92AF296789467C1}" {
+     Id "LF-Handbook_Everon_JobsTitle"
+     Target_en_us "Work in town"
+     Comment "Everon handbook page title: jobs (#1776)."
+    }
+    CustomStringTableItem "{9F56752F9C3CF3D7}" {
+     Id "LF-Handbook_Everon_LawBody1"
+     Target_en_us "Guns need a firearm permit. Apply at the licence desk. The permit takes some hours to be made ready, so come back to the desk to collect it. You are refused if the police want you, and the police can take a permit away."
+     Comment "Everon handbook page find-the-rules, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{1784EE3B13AB3D8B}" {
+     Id "LF-Handbook_Everon_LawBody2"
+     Target_en_us "The gun counters sell rifles, pistols and ammunition to permit holders only. Scopes, holsters and pouches are sold to anyone."
+     Comment "Everon handbook page find-the-rules, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{2EEEF5F2CB009486}" {
+     Id "LF-Handbook_Everon_LawBody3"
+     Target_en_us "Do not hurt anyone without a reason. If you are being arrested or robbed, see it through: leaving to dodge it is not allowed. When you die you forget what led to it, and you do not go after the killer."
+     Comment "Everon handbook page find-the-rules, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{0E88AD985C4C9CAF}" {
+     Id "LF-Handbook_Everon_LawBody4"
+     Target_en_us "Settle quarrels in person and in good faith. If that fails, ask staff."
+     Comment "Everon handbook page find-the-rules, paragraph 4 (#1776)."
+    }
+    CustomStringTableItem "{4EE993381103BF87}" {
+     Id "LF-Handbook_Everon_LawTitle"
+     Target_en_us "The law and the permit"
+     Comment "Everon handbook page title: find-the-rules (#1776)."
+    }
+    CustomStringTableItem "{70DD5D19ED5135AB}" {
+     Id "LF-Handbook_Everon_MedicBody1"
+     Target_en_us "The hospital treats the sick and the hurt. If you go down and no one reaches you, you wake up in the hospital with a treatment bill. Pay it in cash at the hospital desk."
+     Comment "Everon handbook page medic, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{8D9AF0769206C83F}" {
+     Id "LF-Handbook_Everon_MedicBody2"
+     Target_en_us "Medics treat people in the street and admit them to the ward. A medic needs an ambulance service ID, issued at the hospital, before going on duty. Only licensed medics may take the morphine and saline from the medic stores."
+     Comment "Everon handbook page medic, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{325BC1AC6E7EF57B}" {
+     Id "LF-Handbook_Everon_MedicBody3"
+     Target_en_us "The hospital till has an alarm. Rob it and the police are called."
+     Comment "Everon handbook page medic, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{426263BFDA51EA0F}" {
+     Id "LF-Handbook_Everon_MedicTitle"
+     Target_en_us "The hospital"
+     Comment "Everon handbook page title: medic (#1776)."
+    }
+    CustomStringTableItem "{2E69FDF258F92E02}" {
+     Id "LF-Handbook_Everon_ParcelBody1"
+     Target_en_us "Your first work is at the post office, down the street from the square. At the counter, take courier work and pick up a parcel. Carry it to the drop at the east end of the street, then complete the run."
+     Comment "Everon handbook page parcel, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{BB55531494D5F1F9}" {
+     Id "LF-Handbook_Everon_ParcelBody2"
+     Target_en_us "You are paid in cash. Cash in your pocket is lost if you die. Money in the bank is not, so put some in the cash machine on the bank wall, next to the post office."
+     Comment "Everon handbook page parcel, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{A3185217FFC81634}" {
+     Id "LF-Handbook_Everon_ParcelBody3"
+     Target_en_us "The town board on the square shows where the shops, the car lot, the police station and the organization office are."
+     Comment "Everon handbook page parcel, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{4C35BA08743F0DB1}" {
+     Id "LF-Handbook_Everon_ParcelTitle"
+     Target_en_us "Your first wages"
+     Comment "Everon handbook page title: parcel (#1776)."
+    }
+    CustomStringTableItem "{632C6A7B04F1EB50}" {
+     Id "LF-Handbook_Everon_PoliceBody1"
+     Target_en_us "The police keep order on Everon. An officer may ask to see your identity card, so keep it on you. Do as you are told and make any complaint afterwards."
+     Comment "Everon handbook page police, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{807BD18850F35A3F}" {
+     Id "LF-Handbook_Everon_PoliceBody2"
+     Target_en_us "Officers can fine you, arrest you and send you to jail. The more crime you have on your record, the harder they look for you."
+     Comment "Everon handbook page police, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{10EF539D0FA66DC7}" {
+     Id "LF-Handbook_Everon_PoliceBody3"
+     Target_en_us "To join the force you need an approved application. Ask at the police station. Officers start as cadets and are paid for the time they are on duty."
+     Comment "Everon handbook page police, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{796C2DE8FB4CBE0D}" {
+     Id "LF-Handbook_Everon_PoliceTitle"
+     Target_en_us "The police"
+     Comment "Everon handbook page title: police (#1776)."
+    }
     CustomStringTableItem "{6A9E43847B4BBA58}" {
      Id "LF-ID_CardTitle"
      Target_en_us "Republic of Everon, Identity Card"
