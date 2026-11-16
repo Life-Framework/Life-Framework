@@ -1,9 +1,10 @@
 //------------------------------------------------------------------------------------------------
 //! An event is data (#1948): an id and an ordered list of named phases, then a cooldown. The
 //! core ships the shell and no place names; a pack's config says what a phase means on this
-//! server. The pure rules over a definition live in LF_EventPhaseRules.
+//! server. The pure rules over a definition live in LF_EventPhaseRules. It is an LF_ConfigRecord
+//! so a pack overlay adds, replaces, patches or removes it by id (LF_EventOverlay, #1952).
 [BaseContainerProps()]
-class LF_EventDef
+class LF_EventDef : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Event id, unique across the config. Never rename a shipped id: saves key on it")]
 	string m_sEventId;
