@@ -26,6 +26,7 @@
     "LF_QuizBank",
     "LF_QuizConfig",
     "LF_QuizQuestion",
+    "LF_RaceCoursesConfig",
     "LF_ResourceChainConfig",
     "LF_RespawnConfig",
     "LF_ServiceCallsConfig",
