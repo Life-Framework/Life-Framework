@@ -26,6 +26,7 @@
 - [Agent box](features/agent-box.md)
 - [Atmosphere (music and background sound)](features/atmosphere.md)
 - [Character & Survival](features/character-survival.md)
+- [Chess](features/chess.md)
 - [Core](features/core.md)
 - [Crime & Police](features/crime-police.md)
 - [Cross-cutting risk summary (re-audited 2026-08-30; see per-feature rows)](features/cross-cutting-risk-summary.md)
