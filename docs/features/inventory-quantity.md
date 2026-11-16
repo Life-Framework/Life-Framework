@@ -51,6 +51,7 @@
 - ✅ `LF_HandInventoryStorageComponent` state machine
   (`NONE→READY→AWAIT_HOLSTER→ACTIVE→AWAIT_SWAP→NONE`), hands-only storage,
   modded vanilla SCR inventory/gadget wiring.
+- ✅ (#1846) The courier parcel left this system: it is a core hand tool (`LF_HandToolComponent`, weapon quick slot), so `LF_HandCarryComponent` no longer forwards slot changes to it; `ShouldGadgetBeDropped` still keeps a living carrier's parcel in the hands (sprint, stance). The money bag and contraband crate are the hand-carry users.
 - ✅ Missing `CharacterControllerComponent`, weapon manager, or inventory
   manager logs `LF_Debug.Error("HandCarry", ...)` and skips that step instead of
   a null dereference (2026-11-07).

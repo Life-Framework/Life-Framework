@@ -458,6 +458,19 @@ class LF_SaveIds
 	}
 
 	//------------------------------------------------------------------------------------------------
+	static void ResolveItemStolen(array<ref LF_StorageItemStolenRecord> records)
+	{
+		if (!records)
+			return;
+
+		foreach (LF_StorageItemStolenRecord record : records)
+		{
+			if (record)
+				record.m_sOwnerKey = Resolve(KIND_PLACE, record.m_sOwnerKey);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void ResolveProgression(array<ref LF_ProgressionRecord> records)
 	{
 		if (!records)

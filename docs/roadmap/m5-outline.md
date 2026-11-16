@@ -30,6 +30,19 @@ are merged and in playtest), and Evenings builds on the emotes and sitting
 already merged. The story chapter needs the event shell,
 so it comes last and carries the update's trailer.
 
+## Slice cards
+
+Cut by the M5 planner with the roadmap pipeline. `tools\cli slice list <chapter> --ready`
+is the dispatch queue; each chapter closes with one town placement card (`type: town`).
+
+| Chapter | Cards | Notes |
+| --- | --- | --- |
+| Armed and dressed #1009 | #1760 to #1771, #1914 to #1916 | The permit decision is split across #1766 (desk, fee, no wanted level), #1914 (no recent conviction), #1915 (issued after one in-game day) and #1916 (police revoke) |
+| Evenings in the village #1011 | #1919 to #1931, #1933 to #1935 | Drunk effect, race runner and record board, NPC loiter, range, hall, chess, town pass |
+| On patrol #1014 | #1937 to #1947 | Hospital alarm (the other kinds shipped in PR #1936), spike strip preview, roadblock composition (#1031) and kit, named places, board provider, town pass |
+| Arrival #1007 | #1772 to #1781, #1972 to #1975 | Handbook, rejoin, grace and gift; combat logout #1794 is #1972 to #1975. The bus slices went to Backlog with #1793 |
+| Story: The relocated #1015 | #1948 to #1970 | Event shell #757, scenes #1754 (on foot), voiced clerk and townspeople, first night, radio music, town pass |
+
 ## Foundation
 
 Plumbing that ships with M5 but has no video of its own:
@@ -103,4 +116,5 @@ Development on 2026-11-15, because no M5 chapter needs them.
 
 - Whether Meshy's plan terms allow Workshop redistribution (#664).
 - Whether a first spawn can be told apart without a core change, and which
-  building is the hostel or the homestay (#1758).
+  building is the hostel or the homestay (#1758). Cards #1964 (first spawn)
+  and #1958 (the building, decided by the maintainer's rule) answer it.

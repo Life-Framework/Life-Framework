@@ -63,9 +63,9 @@
   shrunk). Its body sits on the `PropFireView` layer, the layer of a vanilla box prop (the old
   `ItemFireView` body let a walking player through it); test `jobs/parcel-collision` compares the
   parcel's layer with a spawned `BoxWooden_01` and its size. Pickup and drop use the paper sound set
-  (`Items_PickUp_Map.acp`) and the carry is `player_carry`, not the jerrycan graph, so no canister
-  sounds. The mesh's own collider (`UBX_PostParcel`, `ItemFireView` in `PostParcel.xob.meta`) still
-  needs a Workbench reimport to match. Test: `items/carry-meshes`. A hand-carried item stays in a living carrier's hands: `SCR_CharacterControllerComponent.ShouldGadgetBeDropped` refuses the engine drop and `LF_HandInventoryStorageComponent` takes it back to the hands when the engine lowers it (sprint), so only a drop action, a drawn weapon or a downed or dead carrier lets go (#920). A parcel that lands on the ground gets a small faint warm marker light at its foot (`LF_ParcelComponent`, every machine; visible at night, barely by day), the dropper gets a toast, and the server lifts it onto the probed ground if it sank. Tests: `jobs/parcel-carry`, `jobs/parcel-collision`. Fuel cargo is
+  (`Items_PickUp_Map.acp`) and the hold is the wrench graph, not the jerrycan graph, so no canister
+  sounds. (#1846) The parcel is a core hand tool, not a hand-carry gadget: `LF_Parcel.et` inherits `RoleplayItem_Base` and carries `LF_HandToolComponent` (tool id `parcel`, `m_bEquipOnPickup`), so it takes the whole hand like the vault drill, sits in a 1-0 quick slot (the weapon bar) and, with `m_bEquipOnPickup`, is taken into the hands once when it first enters the carrier's inventory (the courier job gives it; also after a restart load). It has an item volume (3000) so it must fit the carrier's storage; `LF_CivilianJob.GiveCargo` fails and the run does not start if it does not. Drawing a weapon puts it away (the vanilla hand swap) instead of dropping it; the player takes it back with its slot key. Test `jobs/parcel-hand-tool` (the job gives a hand tool with id `parcel` that goes into a quick slot and the hands). The mesh's own collider (`UBX_PostParcel`, `ItemFireView` in `PostParcel.xob.meta`) still
+  needs a Workbench reimport to match. Test: `items/carry-meshes`. A hand-carried item and the parcel stay in a living carrier's hands: `SCR_CharacterControllerComponent.ShouldGadgetBeDropped` refuses the engine drop (sprint, stance) for a hand-carry gadget or a `LF_ParcelComponent`, so only a drop action, a drawn weapon or a downed or dead carrier lets go (#920; the hand-carry storage also takes a carry gadget back to the hands when the engine lowers it). A parcel that leaves a slot for the ground (`LF_ParcelComponent` listens to its own `InventoryItemComponent` slot change, so it works as a hand tool or in the pack) gets a small faint warm marker light at its foot (`LF_ParcelComponent`, every machine; visible at night, barely by day), the dropper gets a toast, and the server lifts it onto the probed ground if it sank. Tests: `jobs/parcel-carry`, `jobs/parcel-collision`, `jobs/parcel-hand-tool`. Fuel cargo is
   `{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et` and
   the drop consumes it. The taxi fare uses the rank vehicle
   `{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et` and does
@@ -93,7 +93,7 @@
   restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
   inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
   re-checks everything when the action runs.
-- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots). Carry pose (#619, reworked in the parcel fix): the jerrycan graph hung the parcel 0.44 m below the hand (its grip point is at the canister's handle, the parcel mesh is centred on its origin), so it dangled at knee height through the legs, and it played canister sounds. The parcel is back on `player_carry` (box in front of the body, arms on it, clear of the legs). Weapon-slot hand-tool equip is the follow-up slice #1846.
+- ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots). Carry pose (#619, reworked in the parcel fix): the jerrycan graph hung the parcel 0.44 m below the hand (its grip point is at the canister's handle, the parcel mesh is centred on its origin), so it dangled at knee height through the legs, and it played canister sounds. The parcel was put back on `player_carry` for a while (box beside the arms, a stopgap); since #1846 it is a core hand tool held with the wrench graph (see the cargo row).
 
 ### `LF_JobManager` — `Feature/Jobs/LF_JobManager.c`
 - ✅ `GetGatherReward` and `GetProcessReward` stay 0 unless a job scope calls
@@ -217,3 +217,9 @@
 - ✅ The cooldown survives a restart (M1-10): the save holds seconds since the
   last collection, because world time starts over.
 
+### `LF_LicenceDesk` — `Feature/License/LF_LicenceDesk.c` (#1766)
+- ✅ The firearm permit is sold at a licence desk: fee in carried cash (`licences.permitFee`), a clean
+  record (wanted level 0, no open crime report) and the licence's gate at application and collection,
+  issued at the desk one in-game day later (`licences.permitWaitDays`). On-duty police revoke it with
+  a player interaction. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
+  `e2e/licence-desk` (the open application and a revoke across `wt e2e`).

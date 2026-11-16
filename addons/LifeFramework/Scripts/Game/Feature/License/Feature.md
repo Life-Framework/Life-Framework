@@ -49,8 +49,18 @@ in-world document; a license is another document you carry.
   (`catalogue/gun-counter` caught it). A new body gets the initial licences, then its saved ones
   (`LF_Progression.ApplyToCharacter`).
 - `FIREARM_PERMIT` (#988): a civilian permit an outlet's gate asks for (the gun counter's M9), and
-  the licence that makes carrying a `licensed` catalogue item lawful. No desk sells it yet;
-  `/licence <NAME>` grants one in dev worlds and to administrators (`LF_LicenceGrantCommand.c`).
+  the licence that makes carrying a `licensed` catalogue item lawful. `/licence <NAME>` grants one in
+  dev worlds and to administrators (`LF_LicenceGrantCommand.c`).
+- **Licence desk** (#1766, `LF_LicenceDesk.c`, `LF_LicenceDeskAction.c`, prefab
+  `Prefabs/Props/Commercial/LF_LicenceDesk.et`): a player applies for the firearm permit in person.
+  Refused while wanted, with an open crime report, below the licence's gate, or short of the fee
+  (`licences.permitFee`, core default 250, carried cash). An application takes the fee once and is an
+  account flag `permit_due:<in-game minute>` in the progression store; after `licences.permitWaitDays`
+  (default 1) in-game days the player collects the permit at the desk, the record checked again. The
+  wait runs on the in-game clock, which vanilla persistence saves; a clock set back waits one term,
+  never longer. On-duty police revoke the permit (and any open application) with the "Revoke firearm
+  permit" player interaction (`LF_LicenceRevokeRole`). The desk stands in GridWorld cell c0r5; the
+  town desk is a later town pass.
 
 ## Dependencies
 
