@@ -1,0 +1,87 @@
+// Grid cell c2r6 for npcs: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_npcs_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 47 0 95
+}
+SCR_DestructibleEntity Grid_npcs_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 57 0 95
+ angleY 270
+}
+SCR_DestructibleEntity Grid_npcs_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 57 0 100
+ angleY 270
+}
+SCR_DestructibleEntity Grid_npcs_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 57 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_npcs_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 52 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_npcs_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 47 0 105
+ angleY 90
+}
+SCR_DestructibleEntity Grid_npcs_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 47 0 100
+ angleY 90
+}
+GenericEntity Grid_npcs_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:npcs"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 56.4 0.505 94.2
+ angleY 180
+}
+GenericEntity NPCStation {
+ coords 52 0 100
+ angleY 180
+ {
+  LF_NpcBaseEntity NPC_TestDebug : "{216B50107167553C}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_1.et" {
+   components {
+    CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+     Identity Identity "{5A4B0B84AF44A913}" {
+      Name "Test"
+      Surname "Citizen"
+     }
+    }
+   }
+   coords 0 0 -1.1
+  }
+  GenericEntity NPCTableItems {
+   coords 0 0.9 0.7
+   {
+    $grp GenericEntity : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
+     NPCIDCard_Debug {
+      coords 0 0 0
+     }
+    }
+   }
+  }
+   $grp SCR_DestructibleEntity : "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et" {
+    {
+     coords 0 0 0.7
+   }
+  }
+
+  GameEntity : "{EC645B2E2123131F}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_blue.et" {
+   components {
+    SCR_BaseInteractiveLightComponent "{58C4C3C542898CFB}" {
+     m_bGradualLightning 0
+     m_fLV 2.6
+     m_eInitialLightState LIT
+    }
+   }
+   coords 0 0.9 0.7
+  }
+ }
+}
+LF_DebugAreaBoundary : "{AF76315F0A38D270}Prefabs/Debug/EL_DebugAreaBoundary.et" {
+ coords 52 0 100
+ m_vSize 4 1 4
+}
