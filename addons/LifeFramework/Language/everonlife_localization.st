@@ -5049,6 +5049,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Mejora de categoría"
      Comment "Hint title when the character's overall standing rises (replaces an arcade LEVEL UP)"
     }
+    CustomStringTableItem "{97F1EFC77490B5D8}" {
+     Id "LF-LicenceDesk_Action"
+     Target_en_us "Apply for a firearm permit"
+     Comment "Action on the licence desk: apply for, ask after, or collect the firearm permit (#1766)."
+    }
+    CustomStringTableItem "{E9A7C4196D8A1F1A}" {
+     Id "LF-LicenceDesk_AlreadyHeld"
+     Target_en_us "You already hold a firearm permit."
+     Comment "Licence desk: the player already has the permit."
+    }
+    CustomStringTableItem "{619FB3011CA41817}" {
+     Id "LF-LicenceDesk_Applied"
+     Target_en_us "Application taken. Your permit will be ready in about %1 hours. Come back to this desk to collect it."
+     Comment "Licence desk: the fee was paid and the application filed. %1 = in-game hours until collection."
+    }
+    CustomStringTableItem "{F6A22E21A8F71D11}" {
+     Id "LF-LicenceDesk_Closed"
+     Target_en_us "The licence desk cannot help you right now."
+     Comment "Licence desk: an internal failure; the server log names it."
+    }
+    CustomStringTableItem "{A23456CB32ABE45B}" {
+     Id "LF-LicenceDesk_Issued"
+     Target_en_us "Here is your firearm permit. A licensed gun counter will now serve you."
+     Comment "Licence desk: the permit is handed over."
+    }
+    CustomStringTableItem "{CA534EEB7372271B}" {
+     Id "LF-LicenceDesk_NoCash"
+     Target_en_us "Refused: the fee is %1 in cash."
+     Comment "Licence desk refusal: not enough carried cash. %1 = the fee, formatted."
+    }
+    CustomStringTableItem "{4CCA58108F1D9635}" {
+     Id "LF-LicenceDesk_NotAllowed"
+     Target_en_us "Refused: you do not meet the permit's requirements."
+     Comment "Licence desk refusal: the licence's own gate (system off, whitelist or job level)."
+    }
+    CustomStringTableItem "{2B4D41863E39B001}" {
+     Id "LF-LicenceDesk_OpenCrime"
+     Target_en_us "Refused: there is an open crime report against you."
+     Comment "Licence desk refusal: the player has an open crime report."
+    }
+    CustomStringTableItem "{038334177B74D9AA}" {
+     Id "LF-LicenceDesk_RevokeAction"
+     Target_en_us "Revoke firearm permit"
+     Comment "Player interaction for an on-duty officer facing a permit holder (#1766)."
+    }
+    CustomStringTableItem "{52621FF26C08BFD3}" {
+     Id "LF-LicenceDesk_Revoked"
+     Target_en_us "The {police} revoked your firearm permit."
+     Comment "Toast to the player whose permit an officer revoked."
+    }
+    CustomStringTableItem "{3A50CE3C5AB1EC75}" {
+     Id "LF-LicenceDesk_RevokedOfficer"
+     Target_en_us "Firearm permit revoked."
+     Comment "Toast to the officer after revoking a permit."
+    }
+    CustomStringTableItem "{7F3E30C72AFD4269}" {
+     Id "LF-LicenceDesk_Title"
+     Target_en_us "Licence desk"
+     Comment "Notification title for every licence desk answer (#1766)."
+    }
+    CustomStringTableItem "{CAE386363D4BEF98}" {
+     Id "LF-LicenceDesk_Waiting"
+     Target_en_us "Your permit is not ready yet. Come back in about %1 hours."
+     Comment "Licence desk: the application is still being processed. %1 = in-game hours left."
+    }
+    CustomStringTableItem "{9BA33F2D2CD65A73}" {
+     Id "LF-LicenceDesk_Wanted"
+     Target_en_us "Refused: you are wanted by the {police}."
+     Comment "Licence desk refusal: the player's wanted level is above zero."
+    }
     CustomStringTableItem "{C8CAEB5DF24A1E79}" {
      Id "LF-License_CriminalBlackmarket_Desc"
      Target_en_us "You know someone in the back room: illegal weapons, vehicles and clothing."

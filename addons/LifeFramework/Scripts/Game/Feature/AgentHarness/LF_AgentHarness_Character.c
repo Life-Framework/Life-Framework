@@ -368,6 +368,13 @@ modded class SCR_ChimeraCharacter
 		}
 
 		string crime = LF_WorldReset.RunAll("harness resetplayer", true);
+		// A named amount holds: the playtest top-up tick would otherwise refill it to its target
+		// mid-proof (#1855). A reset without an amount hands the cash back to the top-up.
+		if (cash >= 0)
+			LF_DebugMoneyTopUp.HoldCash(uid);
+		else
+			LF_DebugMoneyTopUp.ReleaseCash(uid);
+
 		if (cash >= 0)
 		{
 			int have = LF_MoneyUtils.GetCash(this);

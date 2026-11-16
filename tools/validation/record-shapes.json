@@ -1,5 +1,5 @@
 {
-  "saveVersion": 34,
+  "saveVersion": 36,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -36,7 +36,9 @@
     "caseboard": "LF_CaseBoardRow",
     "buildstamp": "LF_SaveStampRecord",
     "vehiclestate": "LF_VehicleStateRow",
-    "heldground": "LF_HeldGroundRow"
+    "heldground": "LF_HeldGroundRow",
+    "itemstolen": "LF_StorageItemStolenRecord",
+    "convictions": "LF_ConvictionRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -453,6 +455,23 @@
         "string m_sHolderOrgId",
         "int m_iHoldSeconds",
         "int m_iHoldPoints"
+      ]
+    },
+    "LF_StorageItemStolenRecord": {
+      "since": 35,
+      "fields": [
+        "string m_sOwnerKey",
+        "string m_sSlot",
+        "int m_iItemCount",
+        "array<int> m_aStolen"
+      ]
+    },
+    "LF_ConvictionRow": {
+      "since": 36,
+      "fields": [
+        "string m_sPlayerUid",
+        "int m_iDay",
+        "int m_iCount"
       ]
     }
   }
