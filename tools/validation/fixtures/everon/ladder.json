@@ -1,0 +1,8 @@
+{
+  "kind": "ranks",
+  "minCount": 2,
+  "ranks": [
+    { "index": 0, "id": "patrol", "fineCap": 1000 },
+    { "index": 1, "id": "senior", "fineCap": 5000 }
+  ]
+}
