@@ -189,8 +189,10 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_EventBus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPackOverlay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPhaseRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventPlayersNearby(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventPreconditions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventScenePlan(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventSceneSpawn(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventShell(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventWaypoints(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);
@@ -401,6 +403,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceApplyCooldownGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplyPlaytimeGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PoliceContactStamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceRankPermissions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankTable(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceRosterNotice(), LF_TestTier.LOGIC);
