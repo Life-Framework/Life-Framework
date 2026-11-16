@@ -3,7 +3,7 @@
 Design spike, 2026-11-17, for the maintainer to review. It plans a modded in-game map for the real Everon
 world: point-of-interest icons, areas on the risk gradient, waypoints and shared marks, a map that fills
 in as you play, filters, a legend and search. Nothing is built yet. The slice cards in section 8 are
-listed, not created; they are cut once the questions in section 9 are answered.
+created under the epic #2223; the questions in section 9 are answered (decisions D-M1 to D-M14).
 
 Read with the world bible ([`docs/everon/world-bible.md`](../everon/world-bible.md)) and the Everon
 world plan (`docs/architecture/everon-world.md`, PR #2199). Decisions D1 to D8 there apply here; D2
@@ -169,7 +169,7 @@ placed with `SCR_MapEntity.WorldToScreen` on `OnMapPan` and `OnMapZoom`, culled 
 
 Recommended: the fence is `HIDDEN`. After a player meets Vince (the fence's first sale, or a contact
 tells them), it becomes a **personal** pencil mark in their own discovery set, never shared by the
-server to anyone else (Q5).
+server to anyone else (D-M5).
 
 ## 2. Areas
 
@@ -223,9 +223,9 @@ a level (D2).
   `LF_Waypoint.Mark("map", label, pos)`. The town board card and the map share it: a board waypoint
   shows on the map, and a map waypoint shows the existing HUD marker.
 - **Drawn as** a pencil circle with a cross, and a faint straight bearing line from the player while
-  the map is open *only if* the player can know where they are (Q2).
+  the map is open *only if* the player can know where they are (D-M2).
 - **Route display**: none generated. A 1989 driver reads the map. The vanilla pencil (`SCR_MapDrawingUI`)
-  lets a player draw their own route. A road-following route is a later item ("road atlas", Q8).
+  lets a player draw their own route. A road-following route is a later item ("road atlas", D-M8).
 
 ### Personal marks
 
@@ -234,7 +234,7 @@ a level (D2).
   refuses `RPC_AskAddStaticMarker` on the server (logged), and a modded `SCR_MapMarkersUI` places every
   marker local.
 - Icons and colours come from our `LF_MapMarkerConfig.conf` (pencil set, section 1).
-- **Saved per character**, up to 20 (Q11). On spawn the server sends them back by owner RPC and the
+- **Saved per character**, up to 20 (D-M11). On spawn the server sends them back by owner RPC and the
   client inserts them as local vanilla markers.
 
 ### Shared marks
@@ -294,7 +294,7 @@ about this is saved by the map: it is the header's `m_aLF_LiveStates`.
 | Visited | The full ink icon | Standing within the place's radius (20 m, a kind may set more) |
 
 `PUBLIC` kinds start visited-equivalent. The arrival square's civic places become "heard of" at the
-end of the arrival chain, when the clerk marks them on your map (Q3). A "Tourist map of Everon" item
+end of the arrival chain, when the clerk marks them on your map (D-M3). A "Tourist map of Everon" item
 (pack, sold at the kiosk) marks every live `DISCOVER` place as heard of, for players who want the
 whole island at once.
 
@@ -313,14 +313,14 @@ The client never decides alone, so a modified client cannot fill its map from th
 rows of character record key, place id, state (heard or visited). Keyed by character, so a character
 wipe resets it. A row for a place that is not live or no longer exists is kept and reapplied when it
 comes back. Size: about 100 places x 128 characters, under 300 KB at the full island, and most players
-know far fewer. The org's knowledge is not shared (Q12).
+know far fewer. The org's knowledge is not shared (D-M12).
 
 **On join** the server sends the player's known set in one owner RPC (an array of ids plus a bit per
 id, about 2 KB at the full island), then increments.
 
 ## 5. Filters, legend, search, and what replaces GPS
 
-- **The map needs the paper map.** Vanilla already ties the map to the gadget item; keep it (Q1). The
+- **The map needs the paper map.** Vanilla already ties the map to the gadget item; keep it (D-M1). The
   general store sells it, not only the gun store. Lose it, buy another.
 - **Legend and filters**: a UI kit paper sheet on the left edge of the map (the map key, as printed
   maps have). One line per category with its icon and a tick box; a line each for areas, my marks and
@@ -335,7 +335,7 @@ id, about 2 KB at the full island), then increments.
   vanilla already ships (`SCR_MapCompassUI`, ruler, watch). Public **map boards** (the town board's
   sibling) show a "you are here" sticker.
 - **The HUD waypoint stays** (#1801): one marker over the target with the distance. It is the only
-  "GPS-like" aid, and it shows only what the player chose (Q9).
+  "GPS-like" aid, and it shows only what the player chose (D-M9).
 
 ## 6. Integration
 
@@ -370,80 +370,124 @@ id, about 2 KB at the full island), then increments.
 The thing to avoid is vanilla's networked static marker path for anything shared: it broadcasts every
 mark to every client and writes all of them into every join.
 
-## 8. Slice cards (not created)
+## 8. Slice cards
 
-Parent: a new epic "The Everon map" under M5, beside the world epic #2201. Created with `tools\cli slice
-new` once section 9 is answered. Every card owns its files outright; shared append-only files
-(localization, `docs/features/*.md`, the test registry, persistence registration) are excepted as the
-card rules allow. New code lives in `Feature/Map/` (core) unless a card says otherwise.
+Parent: the epic "The Everon map: places, areas, marks and discovery" (#2223, M5), beside the world epic
+#2201. The cards are cut as sub-issues of it (`tools\cli slice list 2223`). Every card owns its files
+outright; shared append-only files (localization, `docs/features/*.md`, the test registry, persistence
+registration) are excepted as the card rules allow. New code lives in `Feature/Map/` (core) unless a
+card says otherwise.
+
+### Fast loop: emulator first, game last
+
+Map work must not need a game boot to iterate (maintainer, 2026-11-16). Card M0 is an offline map
+emulator, and every other card's acceptance is cut to it.
+
+- **`tools\cli map render [--place saint-philippe|--bbox x0,z0,x1,z1] [--zoom N] [--as new|known|police|org:<id>] [--night]`**
+  draws the map to a PNG in about 1 to 2 s with no game and no Workbench. `--html` writes a variant with
+  hover for fast review.
+- **Base layer:** Everon's map raster, extracted once from the game paks (found with `api grep` and
+  `game_read`: the map's `.edds` and the `MapDescriptor` data) and cached in the gitignored `tmp/` or
+  `~/.life-framework`, never committed. With no usable raster, the fallback draws roads, buildings and
+  contours from `docs/everon/catalog-buildings.json` and the terrain.
+- **Overlays read the same confs and data the game reads:** the POI conf plus the pack overlay, the
+  area and zone data, the imageset quads and the visibility rules. The emulator and the game cannot
+  drift because there is one source.
+- **Rules are written once.** Visibility, cluster, min-zoom, area style and discovery are pure
+  functions. Each has a node function (`tools/map/rules/<rule>.mjs`) and an Enforce twin, and both run
+  the same case table (`Configs/Map/Rules/<rule>.cases.json`): the card's LOGIC test and a node
+  selftest, so a mismatch fails.
+- **Iterating** means emulator renders plus LOGIC tests (pure script, about 10 s). Layout and imageset
+  checks use `wb_preview` on a pool machine, not a game session. M3's icons are checked in the emulator.
+- **One final in-game `map-shots` proof per visual card (M4, M6, M14, M16, M19), only at the end.** The
+  session harness is card M0b and takes the emulator's `--place`, `--bbox` and `--zoom`, so the two
+  pictures frame the same view.
+- **M18 stays an in-game PERF test.** Every visual card depends on M0.
 
 In build order. Cards on one line of the "parallel" column can run at once.
 
 | Key | Card | Type, tier, model | Depends on | Parallel with |
 |---|---|---|---|---|
-| M0 | Map harness: a `map open|close|pan x z zoom` harness verb and a `map-shots` proof that photographs the open map | tooling, T2, sonnet | none | M2, M3, M5 |
-| M1 | Map plumbing: the game mode gets `SCR_MapConfigComponent` and `SCR_MapMarkerManagerComponent`; our `LF_MapFullscreen.conf` inherits vanilla's minus the Conflict, task-list and military pieces | system, T2, sonnet | M0 | M2, M3, M5 |
-| M2 | POI data: `LF_MapPoiConfig`, `LF_MapPois` (reads `LF_Places`, applies visibility), core conf, pack overlay stub | system, T2, sonnet | none | M0, M3, M5 |
-| M3 | Icon set: core placeholder and the 1989 pack imageset (pictograms, pencil marks, pins, hatch textures) | visual, T1, sonnet | none | M0, M2, M5 |
-| M4 | POI layer: `LF_MapPlacesUI`, clusters by zoom, hover card, Set waypoint; native `MapItem` probe | capability, T2, sonnet | M1, M2, M3 | M6, M7 |
-| M5 | Area data: `LF_MapAreaComponent` (polygon or circle, style), `LF_MapAreas` merging it with `LF_Zones` | system, T2, sonnet | none | M0, M2, M3 |
-| M6 | Area layer: `LF_MapAreasUI` canvas fills, hatches, dashed outlines, labels; theme `map-*` tokens | capability, T2, sonnet | M1, M3, M5 | M4, M7 |
-| M7 | Waypoint on the map: right-click to set, board waypoint drawn, the pencil-circle mark | capability, T2, sonnet | M1 | M4, M6 |
-| M8 | Personal marks saved: networked placing off (modded sync component), pencil icon list, payload `mapmarks`, restore on spawn | system, T2, opus (persistence) | M1, M3 | M9 |
-| M9 | Share core: `LF_MapShares`, `LF_MapShareComponent` owner RPCs, audiences, membership changes, spawn resend, expiry | system, T2, opus (replication) | M1 | M8 |
-| M10 | Dispatch marks: calls become police and medic shared marks, taken and closed states | capability, T2, sonnet | M9 | M11, M12 |
-| M11 | Taxi fare and job stop marks | capability, T2, sonnet | M9, M7 | M10, M12 |
-| M12 | Org marks: rank right, cap 20, payload `orgmarks` | capability, T2, opus (persistence) | M9 | M10, M11 |
-| M13 | Discovery core: `LF_MapKnown`, `RpcAsk_Discover` with the server check, payload `mapknown`, join sync, `Hear` for board, clerk and quests | system, T2, opus (persistence, replication) | M2 | M8 to M12 |
-| M14 | Discovery on the map: unknown hidden, heard of faded, visited full; the clerk's arrival marks; the tourist map item (pack) | capability, T2, sonnet | M4, M13 | M15 |
-| M15 | Event areas and story places as `EVERYONE` shares with a timer | capability, T2, sonnet | M6, M9 | M14 |
-| M16 | Legend, filters and search sheet (UI kit) | capability, T2, sonnet | M4, M6 | M14, M15 |
-| M17 | Town pipeline hook: template slots name their POI kind, `town check` fails a slot with none | tooling, T0, sonnet | M2, #2202 | anything after M2 |
-| M18 | Map performance gate: a PERF test with 400 POIs, 40 areas and 128 synthetic share recipients | tooling, T2, sonnet | M4, M6, M9 | M16 |
-| M19 | Saint-Philippe on the map: the square's town line, safe zone, the POI overlay rows and labels; `look` and `map-shots` pictures | town, T1, sonnet | M14, M16, P2 (the arrival slot, everon-world.md) | none |
+| M0 (#2227) | Map emulator: `tools\cli map render` with the base layer, overlays read from the game's confs, the rule loader, PNG and an HTML hover variant | tooling, T2, sonnet | none | M2, M5 |
+| M0b (#2228) | Session harness (final proofs only): a `map open|close|pan x z zoom` harness verb and a `map-shots` proof that photographs the open map | tooling, T2, sonnet | M0 | M1, M3 |
+| M1 (#2229) | Map plumbing: the game mode gets `SCR_MapConfigComponent` and `SCR_MapMarkerManagerComponent`; our `LF_MapFullscreen.conf` inherits vanilla's minus the Conflict, task-list and military pieces | system, T2, sonnet | M0 | M0b, M2, M3, M5 |
+| M2 (#2230) | POI data: `LF_MapPoiConfig`, `LF_MapPois` (reads `LF_Places`, applies visibility; node twin and case table), core conf, pack overlay stub | system, T2, sonnet | none | M0, M5 |
+| M3 (#2231) | Icon set: core placeholder and the 1989 pack imageset (pictograms, pencil marks, pins, hatch textures), checked in the emulator | visual, T1, sonnet | M0 | M0b, M1, M2, M5 |
+| M4 (#2232) | POI layer: `LF_MapPlacesUI`, clusters by zoom, hover card, Set waypoint; native `MapItem` probe | capability, T2, sonnet | M0, M0b, M1, M2, M3 | M6, M7 |
+| M5 (#2233) | Area data: `LF_MapAreaComponent` (polygon or circle, style), `LF_MapAreas` merging it with `LF_Zones` (node twin and case table) | system, T2, sonnet | none | M0, M2 |
+| M6 (#2234) | Area layer: `LF_MapAreasUI` canvas fills, hatches, dashed outlines, labels; theme `map-*` tokens | capability, T2, sonnet | M0, M0b, M1, M3, M5 | M4, M7 |
+| M7 (#2235) | Waypoint on the map: right-click to set, board waypoint drawn, the pencil-circle mark | capability, T2, sonnet | M1 | M4, M6 |
+| M8 (#2236) | Personal marks saved: networked placing off (modded sync component), pencil icon list, payload `mapmarks`, restore on spawn | system, T2, opus (persistence) | M1, M3 | M9 |
+| M9 (#2237) | Share core: `LF_MapShares`, `LF_MapShareComponent` owner RPCs, audiences, membership changes, spawn resend, expiry | system, T2, opus (replication) | M1 | M8 |
+| M10 (#2238) | Dispatch marks: calls become police and medic shared marks, taken and closed states | capability, T2, sonnet | M9 | M11, M12 |
+| M11 (#2239) | Taxi fare and job stop marks | capability, T2, sonnet | M9, M7 | M10, M12 |
+| M12 (#2240) | Org marks: rank right, cap 20, payload `orgmarks` | capability, T2, opus (persistence) | M9 | M10, M11 |
+| M13 (#2241) | Discovery core: `LF_MapKnown`, `RpcAsk_Discover` with the server check, payload `mapknown`, join sync, `Hear` for board, clerk and quests (node twin and case table) | system, T2, opus (persistence, replication) | M2 | M8 to M12 |
+| M14 (#2242) | Discovery on the map: unknown hidden, heard of faded, visited full; the clerk's arrival marks; the tourist map item (pack) | capability, T2, sonnet | M0, M0b, M4, M13 | M15 |
+| M15 (#2243) | Event areas and story places as `EVERYONE` shares with a timer | capability, T2, sonnet | M6, M9 | M14 |
+| M16 (#2244) | Legend, filters and search sheet (UI kit) | capability, T2, sonnet | M0, M0b, M4, M6 | M14, M15 |
+| M17 (#2245) | Town pipeline hook: template slots name their POI kind, `town check` fails a slot with none | tooling, T1, sonnet | M2, #2202 (note) | anything after M2 |
+| M18 (#2246) | Map performance gate: an in-game PERF test with 400 POIs, 40 areas and 128 synthetic share recipients | tooling, T2, sonnet | M4, M6, M9 | M16 |
+| M19 (#2247) | Saint-Philippe on the map: the square's town line, safe zone, the POI overlay rows and labels | town, T1, sonnet | M0, M0b, M14, M16, P2 (note) | none |
+
+Sequencing (D-M14): M0 to M7 land before the island cutover. M17 waits for #2202 and M19 for P2 (the
+arrival slot, `everon-world.md`, not yet cut); the card notes say so, and they are not machine
+dependencies because neither is a card of this epic.
 
 ### The cards
 
-Each is at most 45 min and 60 calls. `owns` lists the files; `acceptance` is written first and seen red.
+Each is at most 45 min and 60 calls. `owns` lists the files; `acceptance` is written first and seen
+red. The cards as created carry the full field list; this is the summary.
 
-**M0. Map harness.** owns: `Feature/Map/LF_MapHarness.c` (a `modded class LF_AgentHarnessVerbs`),
-`agent-box/proofs/map-shots.mjs`. acceptance: proof `map-shots` on `--mission everon --profile full`
-writes three PNGs (the island, Saint-Philippe, the square). machines: full-profile. Notes: the spike
-found that the harness `input` verb refuses `GadgetMap` on both the node and the game side, and that
-`hold PaperMap_01_folded` does open the map; the verb holds the map, then pans with
-`SCR_MapEntity.ZoomPanSmooth`. Depends on: none.
+**M0. Map emulator.** owns: `tools/commands/map.mjs`, `tools/map/lib/**`, `tools/map/render/**`,
+`tools/map/rules/index.mjs`, `tools/map/map-render.selftest.mjs`. acceptance: the selftest renders the
+island, Saint-Philippe and the square at zoom 4, checks size and a few pixels, a render under 3 s with
+the raster cached, and the fallback layer still draws with the cache removed. The rule loader imports
+whichever rule modules exist; each rule file belongs to the card that writes its Enforce twin. Over the
+limit: ship the PNG, say SPLIT for the HTML variant. Depends on: none.
+
+**M0b. Session harness (final proofs only).** owns: `Feature/Map/LF_MapHarness.c` (a `modded class
+LF_AgentHarnessVerbs`), `agent-box/proofs/map-shots.mjs`. acceptance: proof `map-shots` on `--mission
+everon --profile full` writes three PNGs (the island, Saint-Philippe, the square). machines:
+full-profile. Notes: the spike found that the harness `input` verb refuses `GadgetMap` on both the node
+and the game side, and that `hold PaperMap_01_folded` does open the map; the verb holds the map, then
+pans with `SCR_MapEntity.ZoomPanSmooth`. Depends on: M0.
 
 **M1. Map plumbing.** owns: `Prefabs/MP/Modes/Roleplay/GameMode_Roleplay.et`,
 `Configs/Map/LF_MapFullscreen.conf` (+ meta), `Configs/Map/LF_MapMarkerConfig.conf` (+ meta),
-`Tests/LF_Test_MapConfig.c`. acceptance: test
-`LF_Test_MapConfig` (WORLD: the game mode has both components and the gadget config resolves to ours);
-proof `map-shots` shows town names and roads. Notes: check the inherited component GUIDs against
-`GameMode_Base.et`; never a second component of the same class. Depends on: M0.
+`Tests/LF_Test_MapConfig.c`. acceptance: test `LF_Test_MapConfig` (WORLD: the game mode has both
+components and the gadget config resolves to ours). Notes: check the inherited component GUIDs against
+`GameMode_Base.et`; never a second component of the same class. Town names and roads are seen in the
+emulator and the visual cards' final shots. Depends on: M0.
 
 **M2. POI data.** owns: `Feature/Map/LF_MapPoi*.c`, `Configs/Map/LF_MapPois.conf` (+ meta),
-`LF_Everon1989/Configs/Map/LF_MapPois_Everon1989.conf` (+ meta), `Tests/LF_Test_MapPois.c`.
-acceptance: test `LF_Test_MapPois` (LOGIC: fixture places of three kinds; one public, one discover,
-one hidden; the visible list for a fresh player, a player who heard of one, and a police player).
-Depends on: none.
+`LF_Everon1989/Configs/Map/LF_MapPois_Everon1989.conf` (+ meta), `Tests/LF_Test_MapPois.c`,
+`Configs/Map/Rules/visibility.cases.json`, `tools/map/rules/visibility.mjs`. acceptance: test
+`LF_Test_MapPois` (LOGIC: fixture places of three kinds; one public, one discover, one hidden; the
+visible list for a fresh player, a player who heard of one, and a police player), the same cases
+through the node twin. Depends on: none.
 
 **M3. Icon set.** owns: `UI/Imagesets/LF_MapIcons*`, `LF_Everon1989/UI/Imagesets/LF_MapIcons*`,
-`UI/Textures/Map/*`. acceptance: fixture `UI/Imagesets/LF_MapIcons.imageset` lists every quad the
-POI conf names (`validate-ui-kit` gains the check). machines: a Workbench pool machine (`ui-image`).
-Depends on: none.
+`UI/Textures/Map/*`. acceptance: fixture `UI/Imagesets/LF_MapIcons.imageset` lists every quad the POI
+conf names (`validate-ui-kit` gains the check); the icons are checked with `map render`, the imageset
+with `wb_preview`. machines: none (texture work through `ui-image` on a pool machine). Depends on: M0.
 
 **M4. POI layer.** owns: `Feature/Map/LF_MapPlacesUI.c`, `UI/Layouts/Map/LF_MapPoi*.layout` (+ meta),
-`Tests/LF_Test_MapPlacesLayout.c`. acceptance: test `LF_Test_MapPlacesLayout` (LOGIC: cluster and
-min-zoom rules for given zoom levels); proof `map-shots` with the square's fixture places. Notes:
-measure the native `MapItem` route against widgets; record the numbers in this doc. Depends on: M1, M2, M3.
+`Tests/LF_Test_MapPlacesLayout.c`, `Configs/Map/Rules/cluster.cases.json`,
+`tools/map/rules/cluster.mjs`. acceptance: test `LF_Test_MapPlacesLayout` (LOGIC: cluster and min-zoom
+rules for given zoom levels, same cases through the node twin); one final `map-shots` proof with the
+square's fixture places. Notes: measure the native `MapItem` route against widgets; record the numbers
+in this doc. Depends on: M0, M0b, M1, M2, M3.
 
-**M5. Area data.** owns: `Feature/Map/LF_MapArea*.c`, `Tests/LF_Test_MapAreas.c`. acceptance: test
-`LF_Test_MapAreas` (LOGIC: a polygon, a circle and a box zone become outline vertex lists; safe and
-lawless zones get their style from the rule). Depends on: none.
+**M5. Area data.** owns: `Feature/Map/LF_MapArea*.c`, `Tests/LF_Test_MapAreas.c`,
+`Configs/Map/Rules/areas.cases.json`, `tools/map/rules/areas.mjs`. acceptance: test `LF_Test_MapAreas`
+(LOGIC: a polygon, a circle and a box zone become outline vertex lists; safe and lawless zones get
+their style from the rule), same cases through the node twin. Depends on: none.
 
 **M6. Area layer.** owns: `Feature/Map/LF_MapAreasUI.c`, `Configs/UI/LF_UITheme.conf` map tokens (one
 row block), `Tests/LF_Test_MapAreasDraw.c`. acceptance: test `LF_Test_MapAreasDraw` (LOGIC: the canvas
-commands for a fixture area at two zooms); proof `map-shots` over the grid's safe and lawless cells.
-Depends on: M1, M3, M5.
+commands for a fixture area at two zooms); `map render` over the grid's safe and lawless cells; one
+final `map-shots` proof. Depends on: M0, M0b, M1, M3, M5.
 
 **M7. Waypoint on the map.** owns: `Feature/Map/LF_MapWaypointUI.c`, `Tests/LF_Test_MapWaypoint.c`.
 acceptance: test `LF_Test_MapWaypoint` (LOGIC: a map click marks `LF_Waypoint` with id `map`; a board
@@ -473,14 +517,16 @@ risk: persistence. acceptance: test `LF_Test_OrgMapMarks` (PERSISTENCE: an offic
 member without the right is refused, round trip, cap 20). Depends on: M9.
 
 **M13. Discovery core.** owns: `Feature/Map/LF_MapKnown*.c`, `Tests/LF_Test_MapKnown.c`,
-`Tests/LF_Test_MapKnownPersist.c`. risk: persistence, replication. acceptance: tests `LF_Test_MapKnown`
-(LOGIC: a visit out of range is refused, rate limit, hear then visit) and `LF_Test_MapKnownPersist`
-(PERSISTENCE: round trip, a dark place's row survives). Depends on: M2.
+`Tests/LF_Test_MapKnownPersist.c`, `Configs/Map/Rules/discovery.cases.json`,
+`tools/map/rules/discovery.mjs`. risk: persistence, replication. acceptance: tests `LF_Test_MapKnown`
+(LOGIC: a visit out of range is refused, rate limit, hear then visit; same cases through the node twin)
+and `LF_Test_MapKnownPersist` (PERSISTENCE: round trip, a dark place's row survives). Depends on: M2.
 
 **M14. Discovery on the map.** owns: `Feature/Map/LF_MapPlacesKnown.c` (a modded `LF_MapPlacesUI` hook),
 `Feature/TownBoard/LF_TownBoardMapKnown.c`, `LF_Everon1989/Prefabs/Items/LF_TouristMap.et` (+ meta),
 `Tests/LF_Test_MapPlacesKnown.c`. acceptance: test `LF_Test_MapPlacesKnown` (the three states render
-as hidden, faded, full; a board card read marks heard of). Depends on: M4, M13.
+as hidden, faded, full; a board card read marks heard of); `map render --as new|known` while iterating,
+one final `map-shots` proof. Depends on: M0, M0b, M4, M13.
 
 **M15. Event areas.** owns: `Feature/Events/LF_EventMapShare.c`, `Tests/LF_Test_EventMapShare.c`.
 acceptance: test `LF_Test_EventMapShare` (an event start adds an `EVERYONE` row with its area; its end
@@ -488,61 +534,42 @@ removes it). Depends on: M6, M9.
 
 **M16. Legend, filters, search.** owns: `Feature/Map/LF_MapLegendUI.c`, `UI/Layouts/Map/LF_MapLegend.layout`
 (+ meta), `Tests/LF_Test_MapSearch.c`. acceptance: test `LF_Test_MapSearch` (only known places match;
-a category filter hides its POIs); proof `map-shots` with the legend open. machines: full-profile.
-Depends on: M4, M6.
+a category filter hides its POIs); layout with `wb_preview`; one final `map-shots` proof with the
+legend open. machines: session. Depends on: M0, M0b, M4, M6.
 
 **M17. Town pipeline hook.** owns: `tools/town/lib/poi-check.mjs`, `tools/town/poi-check.selftest.mjs`.
-acceptance: the selftest (a slot whose front kind has no POI row fails `town check`). Depends on: M2,
-#2202.
+acceptance: the selftest (a slot whose front kind has no POI row fails `town check`). Depends on: M2;
+starts after #2202 has merged.
 
 **M18. Map performance gate.** owns: `Tests/LF_Test_PerfMap.c`. acceptance: test `LF_Test_PerfMap`
-(PERF: POI and area layout for 400 POIs and 40 areas under 1 ms; share fan-out to 128 synthetic players
-under 2 ms). Depends on: M4, M6, M9.
+(PERF, in game: POI and area layout for 400 POIs and 40 areas under 1 ms; share fan-out to 128
+synthetic players under 2 ms). Depends on: M4, M6, M9.
 
 **M19. Saint-Philippe on the map.** type: town; runs in a `town-draft-saint-philippe-square-map`
-worktree. owns: the town line and map areas entity in `Place_saint-philippe-square.layer` (with the
-arrival slot's agent's agreement, or after it merges), the Saint-Philippe rows of the pack POI overlay.
-acceptance: proof `map-shots` on the island header shows the square's POIs and the town line; `town check
-saint-philippe-square` green. Depends on: M14, M16, P2.
+worktree. owns: the town line and map areas entity in the place layer
+`MainWorld_Layers/Place_saint-philippe.layer`, and the Saint-Philippe rows of the pack POI overlay
+(`LF_MapPois_SaintPhilippe.conf`). acceptance: `map render --place saint-philippe` while iterating; one
+final proof `map-shots` on the island header shows the square's POIs and the town line; `town check
+saint-philippe-square` green. Depends on: M0, M0b, M14, M16; starts after P2 (the arrival slot).
 
-## 9. Questions for the maintainer
+## 9. Decided (maintainer, 2026-11-16): accept all recommendations
 
-1. **Does the map need the paper map item?** Recommend yes, as vanilla does. It is in the welcome gift.
-   Sell it at the general store too, not only the gun store, and keep it cheap.
-2. **"You are here" on the paper map?** Recommend no. The compass, the road signs and the public map
-   boards (with a "you are here" sticker) do that job in 1989. If you want it, it can come from an item
-   later (a "road atlas" for cars).
-3. **What does a new player know?** Recommend: town names, roads and the public civic places (town hall,
-   bank, police, clinic, fuel, taxi) from the start; the clerk marks the square's shops as "heard of" at
-   the end of the arrival chain; everything else fills in by visiting or being told.
-4. **The "heard of" state.** Recommend three states (unknown, heard of, visited), with heard-of places a
-   faded pencil "?". It gives the town board, the clerk and NPCs something to hand out, which is the
-   Division feel without fog of war.
-5. **The fence and other underworld places.** Recommend never public. A player who has met the fence
-   gets a private pencil mark; it is never shared by the server, and an org can share it by hand as an
-   org mark (their choice, their risk).
-6. **Lawless ground on the map.** Recommend always shown, red hatched, to everyone, as soon as its state
-   is live. The bible's rule is that a player always knows which band they are in; a hidden lawless zone
-   breaks it.
-7. **Vanilla shared player markers.** Recommend off. Personal marks are local and saved; sharing goes
-   through orgs, police and taxi only. Public markers on an RP server are spam and a cheat channel.
-8. **Route display.** Recommend no generated route in this epic. The waypoint, the HUD marker and the
-   pencil are enough for 1989. A road-following route can come later with an item.
-9. **The HUD waypoint marker (#1801).** Recommend keeping it as the only GPS-like aid, shown only for
-   the target the player chose, with no compass bar or minimap.
-10. **Dispatch marks: who sees what?** Recommend per service: police calls to police on duty, medic calls
-    to medics on duty. Off-duty officers see nothing.
-11. **Personal and org mark caps, and the 24 h world reset.** Recommend 20 personal marks per character
-    and 20 per org, both kept across the world reset (they are the player's knowledge, not world state).
-    Dispatch, taxi, job and event marks do not survive a restart.
-12. **Does discovery belong to the character or the org?** Recommend the character only. Org members
-    share places by hand with org marks.
-13. **Map board and paper map together.** Recommend both: the board on the square (world plan Q7) draws
-    the same data for everyone and gets "you are here"; the paper map is the player's own copy that
-    fills in.
-14. **Epic placement.** Recommend a new epic "The Everon map" under M5, with M0 to M7 before the state 0
-    cutover (players should not see today's unconfigured map on the island), and M8 onwards through M5
-    and M6.
+The maintainer answered "Accept all" to the 14 questions. Each answer is a one-line decision.
+
+- **D-M1. Paper map item:** yes, as vanilla does; in the welcome gift and sold at the general store too, kept cheap.
+- **D-M2. "You are here" on the paper map:** no. Compass, road signs and the public map boards (with a "you are here" sticker) do that job; a road atlas item can add it later.
+- **D-M3. What a new player knows:** town names, roads and the public civic places (town hall, bank, police, clinic, fuel, taxi); the clerk marks the square's shops as "heard of" at the end of the arrival chain; the rest fills in by visiting or being told.
+- **D-M4. "Heard of":** three states (unknown, heard of, visited); heard-of places are a faded pencil "?".
+- **D-M5. The fence and other underworld places:** never public; a player who has met the fence gets a private pencil mark, never shared by the server; an org can share it by hand as an org mark.
+- **D-M6. Lawless ground:** always shown, red hatched, to everyone, from the moment its state is live.
+- **D-M7. Vanilla shared player markers:** off. Personal marks are local and saved; sharing goes through orgs, police and taxi only.
+- **D-M8. Route display:** no generated route in this epic; the waypoint, the HUD marker and the pencil are enough.
+- **D-M9. The HUD waypoint marker (#1801):** kept as the only GPS-like aid, shown only for the target the player chose, with no compass bar or minimap.
+- **D-M10. Dispatch marks:** per service: police calls to police on duty, medic calls to medics on duty; off-duty officers see nothing.
+- **D-M11. Mark caps and the 24 h reset:** 20 personal marks per character and 20 per org, both kept across the world reset; dispatch, taxi, job and event marks do not survive a restart.
+- **D-M12. Discovery belongs to the character only;** org members share places by hand with org marks.
+- **D-M13. Map board and paper map:** both; the board on the square draws the same data for everyone with "you are here", the paper map is the player's own copy that fills in.
+- **D-M14. Epic placement:** a new epic "The Everon map" under M5 (#2223), with M0 to M7 before the state 0 cutover and M8 onwards through M5 and M6.
 
 ## Research notes
 
