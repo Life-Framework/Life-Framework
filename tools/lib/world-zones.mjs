@@ -10,6 +10,7 @@
 // Pure functions, no I/O except where a function says it reads the tree. Used by
 // tools/commands/grid.mjs, tools/validation/validate-world-zones.mjs, agent-box/place-audit.mjs,
 // tools/validation/validate-player-props.mjs and tools/visual/look.mjs.
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { CORE_ADDON, GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
@@ -231,4 +232,30 @@ export function lookArea(entry) {
   const c = { ...cellBounds(p.col, p.row) };
   const front = { north: 0, east: 90, south: 180, west: 270 }[gapSide(c).side];
   return { name: `grid-${entry.slug}`, x: (c.x0 + c.x1) / 2, y: 0, z: (c.z0 + c.z1) / 2, radius: 8, front };
+}
+
+// The claims origin/main holds, read from git, so a second worktree sees a cell the first one took
+// after this branch was cut (every worktree has its own copy of tools/grid/cells/). Fetches
+// origin/main first (bounded to 20 s) unless { fetch: false }. A failed fetch is not fatal: it is
+// `note`, and the claims come from the last origin/main this clone has; no origin/main is no claims.
+export function mainClaims(root, { fetch = true, ref = "origin/main" } = {}) {
+  const git = (args, timeout = 20000) => spawnSync("git", args, { cwd: root, encoding: "utf8", timeout });
+  let note = "";
+  if (fetch) {
+    const f = git(["fetch", "--quiet", "origin", "main"]);
+    if (f.status !== 0) note = `could not fetch origin/main (${String(f.stderr || f.error?.message || "timed out").trim().split("\n")[0]}); using the last one this clone has`;
+  }
+  const ls = git(["ls-tree", "--name-only", "-r", ref, "--", `${CELLS_DIR}/`]);
+  if (ls.status !== 0) return { claims: [], note: note || `no ${ref} here; claims on main were not checked` };
+  const claims = [];
+  for (const file of ls.stdout.split(/\r?\n/).filter((f) => f.endsWith(".json"))) {
+    const show = git(["show", `${ref}:${file}`]);
+    if (show.status !== 0) continue;
+    try {
+      claims.push({ file, ...JSON.parse(show.stdout) });
+    } catch (e) {
+      claims.push({ file, error: String(e.message || e) });
+    }
+  }
+  return { claims, note };
 }
