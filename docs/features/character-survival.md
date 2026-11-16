@@ -89,7 +89,7 @@
 - ✅ 1989 Everon drinks impair (#2003): the pack overlay `LF_Everon1989/Configs/Survival/LF_DrinkImpairment_Everon1989.conf`
   (listed in the pack mission header) adds a row per drink prefab GUID. Beer: 12 points, linear over 10 min, cap 45.
   Moonshine, the strongest: 40 points (one bottle reaches the full sway of #1920), exponential over 20 min, cap 90.
-  Pack data only; the core table still ships no rows. Checked by `tools/validation/pack-drinks-impair-selftest.mjs` (a core test cannot name pack files); the overlay mechanics: `survival/drink-impairment-table`.
+  Pack data only; the core table still ships no rows. Test: `everon/drinks-impair` (pack test, run under the pack header); the overlay mechanics: `survival/drink-impairment-table`.
 
 ### `LF_ImpairmentView` — `Feature/Survival/LF_ImpairmentView.c` (#1920)
 - ✅ While the owner's replicated impairment level is above zero their view sways and
