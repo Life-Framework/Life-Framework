@@ -14,3 +14,6 @@
 
 ### `LF_RaceHud` — `Feature/Racing/LF_RaceHud.c` (#1924, 2026-11-16)
 - ⚠️ During a race each racer sees a panel with lap, next checkpoint, place and time; the server sends it to the racer's own client only when lap, checkpoint or place change. Tests: `racing/race-hud` (LOGIC); two-player look manual.
+
+### Test race track — `Worlds/GridWorld/GridWorld_Layers/Grid_race_track.layer` (#1926, 2026-11-16)
+- ⚠️ Debug-grid cell `c0r6`, not a village track: a start sign (`Props/Racing/LF_RaceStartSign.et`, "Enter the race" on course `test_track`), three checkpoint posts (`LF_RaceCheckpoint.et`, ids `race_track_cp_1`..`3`, radius 1.4 m), a cone and a tyre pile from base-game props (the base-game rally-tape prefab does not spawn in GridWorld, so tape is a follow-up), and a plate stand-in for the record board (`grid:race-records`; the results board is a later slice). The core course file `Props/Racing/LF_RaceCourses_TestTrack.conf` (fee 10, one entrant minimum, 20 s lobby, winner takes the pot) is loaded by the sign directly. Look: `tools\cli look grid:race-track`.

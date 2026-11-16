@@ -362,8 +362,14 @@ class LF_SpawnLogic : SCR_SpawnLogic
 			return;
 		}
 
+		// Read and clear the new-character mark once the body exists: a spawn that failed above
+		// leaves it for the retry. True on a character's first spawn only (#1964).
+		bool firstSpawn = LF_FirstSpawn.Consume(characterPersistenceId);
+
 		OnCharacterCreated(playerId, characterPersistenceId, character);
 		HandoverToPlayer(playerId, character);
+		if (firstSpawn)
+			OnFirstSpawn(playerId, characterPersistenceId, character);
 
 		// The signed-up delivery job (kept across death and restarts) goes on the new body. After the
 		// hand-over: the job component reads the player id from the body its player controls.
@@ -437,6 +443,14 @@ class LF_SpawnLogic : SCR_SpawnLogic
 
 		// A body whose content a pack removed still spawns, from a default body (#965).
 		return LF_SaveIds.SpawnablePrefab(activeCharacter.GetPrefab(), m_aDefaultCharacterPrefabs);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Called once per character, after the hand-over of its first spawn. Never after a death, a
+	//! rejoin or a restart. The hook for first-spawn-only rules such as the first night (#1758).
+	protected void OnFirstSpawn(int playerId, string characterPersistenceId, IEntity character)
+	{
+		LF_Debug.Info("Spawn", "player " + playerId + " spawned " + characterPersistenceId + " for the first time");
 	}
 
 	//------------------------------------------------------------------------------------------------
