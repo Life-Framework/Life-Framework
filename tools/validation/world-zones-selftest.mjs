@@ -368,6 +368,12 @@ try {
     const found = worktreeClaims(mainTree);
     ok(found.claims.length === 1 && found.claims[0].slug === "building-bank" && found.claims[0].worktree === "Life-Framework-ws-building-bank" && found.claims[0].branch === "ws/building-bank" && JSON.stringify(found.claims[0].span) === "[2,2]", `worktreeClaims reads the sibling's uncommitted claim, not this tree's (got ${JSON.stringify(found.claims)})`);
     ok(worktreeClaims(sibTree).claims.length === 0, "a worktree does not read its own claims as a sibling's");
+    // Windows CI hands over the 8.3 short form of the temp dir (RUNNER~1) while git prints the long one
+    if (process.platform === "win32") {
+      const q = spawnSync("powershell", ["-NoProfile", "-Command", `(New-Object -ComObject Scripting.FileSystemObject).GetFolder('${sibTree}').ShortPath`], { encoding: "utf8" });
+      const short = String(q.stdout || "").trim();
+      if (q.status === 0 && short && short.toLowerCase() !== sibTree.toLowerCase()) ok(worktreeClaims(short).claims.length === 0, `a worktree given by its 8.3 short path (${short}) does not read its own claims as a sibling's`);
+    }
 
     let g = await run3("place", "police-station-kit", "--span", "2x2", "--dry", "--no-fetch");
     const m = g.out.map((l) => /-> cell (c\d+r\d+)/.exec(l)?.[1]).find(Boolean);

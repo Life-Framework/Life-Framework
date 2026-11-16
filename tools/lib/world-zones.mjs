@@ -262,7 +262,8 @@ export function mainClaims(root, { fetch = true, ref = "origin/main" } = {}) {
 const canon = (p) => {
   let r = resolve(p);
   try {
-    r = realpathSync(r);
+    // .native expands Windows 8.3 short names (RUNNER~1 in CI temp), which git prints in long form
+    r = realpathSync.native(r);
   } catch {
     // a missing folder keeps its resolved name
   }
