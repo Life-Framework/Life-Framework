@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6C3B1E8A4F2D9705}Configs/Tests/LF_Test_RelocatedWalkFixture.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

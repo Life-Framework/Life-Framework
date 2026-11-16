@@ -1,0 +1,62 @@
+// #2174: a proof route for the relocated arrival scene on vanilla Everon (navmesh, SCR_AIWorld_Eden):
+// a lawn between a dirt track and the village road, NE of the spawn point. Test world only; the pack's
+// event stays off and a session turns it on with `eventscene start` (agent-box/proofs/relocated-walk-proof.mjs).
+GenericEntity RelocatedWalk_Spawn_0 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "relocated_arrival"
+   m_iOrder 0
+  }
+ }
+ coords 4527.8 16.3 10588.7
+ angleY 20
+}
+GenericEntity RelocatedWalk_Waypoint_0 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "relocated_arrival"
+   m_iOrder 0
+  }
+ }
+ coords 4531.9 16.3 10600.7
+ angleY 20
+}
+GenericEntity RelocatedWalk_Waypoint_1 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "relocated_arrival"
+   m_iOrder 1
+  }
+ }
+ coords 4537.2 16.3 10614.2
+ angleY 20
+}
+GenericEntity RelocatedWalk_Waypoint_2 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "relocated_arrival"
+   m_iOrder 2
+  }
+ }
+ coords 4544.0 16.2 10626.3
+ angleY 20
+}
+GenericEntity RelocatedWalk_Waypoint_3 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "relocated_arrival"
+   m_iOrder 3
+  }
+ }
+ coords 4568.1 16.4 10620.9
+ angleY 20
+}
+GenericEntity RelocatedWalk_Target : "{F716FD32069F2BE8}Prefabs/Systems/Events/LF_EventMarker_Target.et" {
+ components {
+  LF_EventWaypointComponent "{E01299EF5C4B8221}" {
+   m_sSceneId "relocated_arrival"
+  }
+ }
+ coords 4576.2 16.8 10631.6
+ angleY 20
+}
