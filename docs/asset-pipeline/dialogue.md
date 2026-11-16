@@ -174,6 +174,9 @@ It is reached by id only once the pack's index overlay lists it and the NPC pref
 - One voice per NPC. Say why you picked it in the spec's `voice.why`.
 - `settings` are ElevenLabs voice settings. The clerk uses stability 0.55, similarity 0.75,
   style 0.15. Changing them regenerates every line.
+- `settings` also takes `speed` (0.7 to 1.2): the old man on the bench reads at 0.85, the night-shift worker at 0.9.
+  The four Everon speakers (clerk, café owner, old man, night-shift worker) each have their own library voice and
+  settings (#1015); `voice.why` in each spec names the pick. A voice in `docs/credits.md` reads "Voice generated with ElevenLabs".
 
 ## A line with a Piper voice (free)
 

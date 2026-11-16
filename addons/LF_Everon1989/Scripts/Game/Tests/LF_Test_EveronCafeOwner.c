@@ -3,8 +3,8 @@
 //! #1961 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the café owner Odile Marchand
 //! has a voiced conversation about the zone and the move, and three useful pointers (work, the clerk, the handbook).
 //! Every line has a caption key that resolves, a sound event and a length with a mouth envelope; every reply
-//! has its text; the conversation is playable and ends. The dialogue is pack content, voiced with Piper
-//! en_US-ljspeech (never lessac or libritts_r).
+//! has its text; the conversation is playable and ends. The dialogue is pack content, voiced with ElevenLabs
+//! (voice Mariva Viva Muse, tools/assets/dialogue/cafe_owner).
 class LF_Test_EveronCafeOwner : LF_Test
 {
 	static const ResourceName CAFE_OWNER = "{8A8B0025C1E0037F}Configs/Dialogue/LF_Dialogue_CafeOwner.conf";
