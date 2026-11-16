@@ -79,10 +79,25 @@
   }
  },
  "items": {
+  "Prefabs/Weapons/Handguns/M9/Handgun_M9.et": {
+   "size": [0.035, 0.141, 0.219],
+   "center": [-0.001, 0.039],
+   "mesh": "{1E38513800383D64}Assets/Weapons/Handguns/M9/M9_body.xob"
+  },
+  "Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et": {
+   "size": [0.189, 0.023, 0.259],
+   "center": [0, -0.005],
+   "mesh": "{E443663E5241622A}Assets/Items/Equipment/Maps/Map_Paper_01/Map_Paper_01_folded.xob"
+  },
   "Prefabs/Items/Drinks/AppleJuice.et": {
    "size": [0.083, 0.259, 0.081],
    "center": [-0.002, 0],
    "mesh": "{240D853DBB045D05}Assets/Props/Civilian/BeerBottle_01/BeerBottle_01.xob"
+  },
+  "Prefabs/Items/Equipment/Binoculars/Binoculars_B8/Binoculars_B8.et": {
+   "size": [0.162, 0.054, 0.116],
+   "center": [0, -0.013],
+   "mesh": "{8838D0FE9D8142AE}Assets/Items/Equipment/Binoculars/Binoculars_B8/Binoculars_B8.xob"
   },
   "Prefabs/Items/Food/LF_DriedMeat.et": {
    "size": [0.258, 0.048, 0.301],
@@ -94,10 +109,20 @@
    "center": [-0.001, 0.003],
    "mesh": "{30664C42D09E1831}Assets/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.xob"
   },
+  "Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et": {
+   "size": [0.175, 0.077, 0.245],
+   "center": [0, 0],
+   "mesh": "{C5B3D5A8D3F18C3A}Assets/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_item.xob"
+  },
   "Prefabs/Items/Food/RowanBerries.et": {
    "size": [0.067, 0.043, 0.059],
    "center": [0.002, -0.002],
    "mesh": "{B09DB5A4E4B8AD7B}Assets/Items/Food/Rowan Berries/RowanBerries.xob"
+  },
+  "Prefabs/Items/Equipment/Compass/Compass_Adrianov.et": {
+   "size": [0.055, 0.02, 0.101],
+   "center": [0, -0.007],
+   "mesh": "{1094AFEF74D8E3E9}Assets/Items/Equipment/Compass/Compass_Adrianov/Compass_Adrianov.xob"
   },
   "Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et": {
    "size": [0.075, 0.028, 0.074],
@@ -108,6 +133,16 @@
    "size": [0.171, 0.03, 0.088],
    "center": [0.001, 0],
    "mesh": "{A47ED22E6647430A}Assets/Items/Food/ArmyCrackers_Soviet_01.xob"
+  },
+  "Prefabs/Weapons/Rifles/VZ58/Rifle_VZ58P.et": {
+   "size": [0.062, 0.166, 0.619],
+   "center": [0.011, 0.203],
+   "mesh": "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
+  },
+  "Prefabs/Characters/HeadGear/Hat_Ushanka_01/Hat_Ushanka_01_folded.et": {
+   "size": [0.196, 0.151, 0.235],
+   "center": [0.002, -0.001],
+   "mesh": "{BBC6689096468CAE}Assets/Characters/HeadGear/Hat_Ushanka_01/Hat_Ushanka_01_item.xob"
   },
   "Prefabs/Items/Drinks/WaterBottle.et": {
    "size": [0.063, 0.215, 0.063],
@@ -123,6 +158,21 @@
    "size": [0.218, 0.06, 0.069],
    "center": [0, 0],
    "mesh": "{AC449262EE17E21B}Assets/Items/Medicine/Gauze_02/Gauze_02_package.xob"
+  },
+  "Prefabs/Weapons/Rifles/M14/Rifle_M21.et": {
+   "size": [0.075, 0.194, 1.116],
+   "center": [0.006, 0.272],
+   "mesh": "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+  },
+  "Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_brown.et": {
+   "size": [0.295, 0.053, 0.214],
+   "center": [0.005, 0.004],
+   "mesh": "{21D4DB3CA0B5913F}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_item.xob"
+  },
+  "Prefabs/Weapons/Handguns/PM/Handgun_PM.et": {
+   "size": [0.031, 0.129, 0.162],
+   "center": [-0.002, 0.033],
+   "mesh": "{6F3FF53AF2AB04B3}Assets/Weapons/Handguns/PM/PM_body.xob"
   },
   "Prefabs/Items/Food/Plum.et": {
    "size": [0.046, 0.063, 0.044],
@@ -148,11 +198,16 @@
    "size": [0.091, 0.04, 0.094],
    "center": [-0.003, 0.009],
    "mesh": "{A833815CADDECDC8}Assets/Items/Medicine/Tourniquet_01/Tourniquet_US_01/Tourniquet_US_01_rolledup.xob"
+  },
+  "Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_red.et": {
+   "size": [0.295, 0.053, 0.214],
+   "center": [0.005, 0.004],
+   "mesh": "{21D4DB3CA0B5913F}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_item.xob"
   }
  },
  "racks": {
   "LF_WeaponRackCabinet_Display": {
-   "prefab": "Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et",
+   "prefab": "{12BFA4BF5A703816}Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et",
    "from": "Prefabs/Props/Military/Arsenal/WeaponRacks/FIA/WeaponRackCabinetArsenal_FIA.et",
    "slots": [
     {
@@ -248,7 +303,7 @@
    ]
   },
   "LF_WeaponRackStand_Display": {
-   "prefab": "Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et",
+   "prefab": "{96114332715F34A3}Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et",
    "from": "Prefabs/Props/Military/Arsenal/WeaponRacks/FIA/WeaponRackStandArsenal_FIA.et",
    "slots": [
     {
