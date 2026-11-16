@@ -9,6 +9,8 @@
 //          --world <path> (override the world; the proof for a failed load)  --keep (leave Workbench's raw output)  --force (skip the RAM gate)  --wait (queue behind a Workbench build)
 //          --budget s (base budget before the per-shot part: 90 fresh, 150 through the server; raise it on a slow box)
 //          --serve (use the look server, starting one) --fresh (never use it); look serve [--status|--stop [--remove]]
+//          --interior x,y,z (one area: shoot from INSIDE a building; x,y,z is the room's centre on the floor, --radius the
+//          room's reach, default 6): four eye-level views from the room's sides, no oblique or top, close-ups of that floor only
 //
 // One hidden Workbench (LF-Agents desktop) opens DebugWorld, enters play mode with a free
 // camera, takes every shot and exits: about 10 s of start-up and 0.5 s per shot, no server,
@@ -50,7 +52,7 @@ export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 export function parseArgs(argv) {
   const flags = {};
   const pos = [];
-  const valued = new Set(["world", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget", "machine"]);
+  const valued = new Set(["world", "interior", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget", "machine"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith("--")) pos.push(a);
@@ -103,6 +105,14 @@ export function resolveGridAll(areas, radius, { root = ROOT } = {}) {
   return cells.map((c) => resolveArea(`grid:${c.slug}`, areas, radius, { root }));
 }
 
+// --interior x,y,z: the area re-centred on a room (x, z on the floor, y the floor height) so shotsFor stands inside it.
+// "128,3.4,96" or "128 3.4 96". The room's reach is the radius (default 6 m).
+export function resolveInterior(area, spec, radius) {
+  const m = /^\s*(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)\s*$/.exec(String(spec));
+  if (!m) throw new Error(`--interior wants x,y,z (the room's centre on its floor), got "${spec}"`);
+  return { ...area, name: `${area.name}-interior`, x: Number(m[1]), y: Number(m[2]), z: Number(m[3]), radius: radius ?? 6, interior: true };
+}
+
 // The one world a look opens (docs/architecture/three-worlds.md): GridWorld for grid: areas, the playtest world
 // (the pack town when the pack is here) for every town area. A run opens one world, so the two cannot mix.
 export function worldOfAreas(areas) {
@@ -126,7 +136,8 @@ export function closeSet(world, area, limit) {
   const near = world
     .filter((e) => prefabOf(e) && !SKIP_NAMES.test(e.name) && !SKIP_LAYERS.test(e.layer) && !SKIP_PREFABS.test(prefabOf(e)))
     .map((e) => ({ ...e, dist: Math.hypot(e.x - area.x, e.z - area.z) }))
-    .filter((e) => e.dist <= area.radius);
+    .filter((e) => e.dist <= area.radius)
+    .filter((e) => !area.interior || Math.abs((e.y ?? 0) - area.y) <= 2.2); // one floor of the building
   const rank = (e) => (e.actions?.length ? 0 : e.name ? 1 : 2);
   near.sort((a, b) => rank(a) - rank(b) || a.dist - b.dist);
   const out = [];
@@ -147,6 +158,23 @@ export function shotsFor(area, world, opts = {}) {
   const front = area.front ?? 180;
   const out = [];
   const add = (kind, label, line, extra = {}) => out.push({ name: `${slug}__${kind}`, area: area.name, kind, label, line: line.replace("NAME", `${slug}__${kind}`), ...extra });
+
+  // Inside a room (area.interior, --interior): the wide and three more views stand at eye level 0.7 R from the centre on
+  // the four sides, looking at the centre (a ray to it that a wall stops counts as not clear, so the next candidate wins).
+  // No oblique, no top: from outside they only show the roof. The target's height is the floor's (area.y), not the ground's.
+  if (area.interior) {
+    const ring = (az) => [cand(az, R * 0.7, 1.5), cand(az, R * 0.5, 1.5), cand(az, R * 0.85, 1.6)].join(",");
+    [0, 90, 180, 270].forEach((off, i) => {
+      const az = (front + off) % 360;
+      add(i === 0 ? "wide" : `in${String(az).padStart(3, "0")}`, i === 0 ? "wide (inside)" : `inside, from ${az} deg`, `shot NAME ${area.x} ${area.y} ${area.z} 1.1 0.9 ${ring(az)}`);
+    });
+    closeSet(world, area, opts.close ?? DEFAULTS.close).forEach((e, i) => {
+      const az = e.dist > 1 ? (Math.atan2(area.x - e.x, area.z - e.z) * 180) / Math.PI : front;
+      const label = e.name || baseOf(e);
+      add(`c${String(i + 1).padStart(2, "0")}_${safe(label).slice(0, 40)}`, label, `close NAME ${e.name || "-"} ${e.x} ${e.y} ${e.z} ${r1(az)}`, { entity: { name: e.name, prefab: prefabOf(e), layer: e.layer, x: e.x, y: e.y, z: e.z, scale: e.scale, actions: e.actions?.length ?? 0 } });
+    });
+    return out;
+  }
 
   // Wide: from the side players approach, eye level first, then higher and to the sides.
   const wide = [];
@@ -593,6 +621,10 @@ async function run(args) {
       itemNotes = plan.notes;
     } else {
       areas = args.pos[0] === "all" ? all.map((a) => ({ ...a })) : args.pos.flatMap((p) => (p === "grid:all" ? resolveGridAll(all, radius) : [resolveArea(p, all, radius)]));
+      if (args.flags.interior !== undefined) {
+        if (areas.length !== 1) throw new Error("--interior shoots one room: give exactly one area");
+        areas = [resolveInterior(areas[0], args.flags.interior, radius)];
+      }
       worldOfAreas(areas); // refuses grid: and town targets in one run before anything starts
     }
   } catch (e) {
@@ -887,6 +919,31 @@ export async function selftest() {
     }
   }
   {
+    // --interior: a room is shot from inside. red-proof: 2026-11-17 written before resolveInterior and the area.interior
+    // branch existed: the selftest threw "resolveInterior is not defined"; with only the resolver the shots were still the
+    // exterior wide (target `-`, oblique and top kinds). Both failed, then passed.
+    const room = resolveInterior({ name: "grid-first-night-room", x: 123, y: 0, z: 94, radius: 24, front: 0, world: "grid" }, "127.5,3.4,96", undefined);
+    ok(room.interior === true && room.x === 127.5 && room.y === 3.4 && room.z === 96 && room.radius === 6 && room.name === "grid-first-night-room-interior" && room.world === "grid", `interior area ${JSON.stringify(room)}`);
+    ok(resolveInterior(room, "1 2 3", 4).radius === 4 && resolveInterior(room, "1 2 3", 4).z === 3, "interior with spaces and --radius");
+    let bad = false;
+    try {
+      resolveInterior(room, "127,96", undefined);
+    } catch (e) {
+      bad = /x,y,z/.test(e.message);
+    }
+    ok(bad, "--interior with two numbers was not refused");
+    const roomWorld = [
+      { name: "Bed", layer: "G.layer", actions: [], x: 130, y: 3.4, z: 92, prefab: "Prefabs/Medic/Bed.et" },
+      { name: "Lobby_Desk", layer: "G.layer", actions: [], x: 128, y: 0, z: 96, prefab: "Prefabs/Props/Desk.et" },
+    ];
+    const inside = shotsFor(room, roomWorld, { close: 12 });
+    ok(inside.map((s) => s.kind).join(" ") === "wide in090 in180 in270 c01_Bed", `interior kinds: ${inside.map((s) => s.kind).join(" ")}`);
+    ok(inside[0].line.startsWith("shot grid-first-night-room-interior__wide 127.5 3.4 96 1.1 0.9 0:4.2:1.5,"), `interior wide line: ${inside[0].line.slice(0, 80)}`);
+    ok(!inside.some((s) => /^ob|^top$/.test(s.kind)), "an interior look planned an oblique or a top view");
+    ok(shotsFor({ ...room, interior: false }, roomWorld, { close: 0 })[0].line.includes(" - 96 "), "the exterior wide lost its ground-height target");
+    ok(parseArgs(["grid:x", "--interior", "1,2,3"]).flags.interior === "1,2,3", "--interior did not take its value");
+  }
+  {
     // Zoned targets (docs/architecture/world-zones.md): town:<area> refuses an area inside the grid; grid:<slug> needs a claim.
     let refused = false;
     try {
@@ -1051,7 +1108,7 @@ export async function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | town:<area> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
+const USAGE = "usage: tools\\cli look <area | town:<area> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--interior x,y,z] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);

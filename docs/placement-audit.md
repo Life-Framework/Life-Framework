@@ -14,6 +14,7 @@ tools\cli audit placement --layer Street_Hospital.layer,Signs.layer
 tools\cli audit placement --annex               also the debug annex (the old test stations south-west of town)
 tools\cli audit placement --from tmp/place-audit/out.txt   re-rank the last measurements (records.json beside it), no server
 tools\cli audit placement --strict              exit 1 when anything in the town is flagged (a pre-filming gate); the debug grid never fails it (docs/architecture/world-zones.md)
+tools\cli audit placement --grid --strict       GridWorld at the grid bar (on the ground, reachable); clean since 2026-11-17 (#1814), so any finding fails it. `wt gate`/`ci` run it when a GridWorld layer or a prefab changes, the main guard after every merge
 tools\cli audit selftest                        the Node checks on fixtures (also in tools\cli validate)
 ```
 
