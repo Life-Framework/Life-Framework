@@ -610,7 +610,7 @@ class LF_PoliceRanks
 		LF_SerialComponent stamp = LF_SerialComponent.Cast(issued.FindComponent(LF_SerialComponent));
 		if (stamp)
 		{
-			string serial = LF_FenceSerials.Issue(uid, prefab);
+			string serial = LF_FenceSerials.Issue(uid, prefab, offer.m_sOutlet);
 			if (serial.IsEmpty() || !stamp.SetSerial(serial))
 				LF_Debug.Error("Ranks", string.Format("issued %1 to %2 without a serial", offer.m_sItem, uid));
 		}
