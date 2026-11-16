@@ -105,6 +105,10 @@
     "permitWaitDays": 1,
     "permitConvictionDays": 7
   },
+  "logoutBody": {
+    "windowSeconds": 300,
+    "downedWindowSeconds": 600
+  },
   "organizations": {
     "foundingFee": 500,
     "nameMin": 3,

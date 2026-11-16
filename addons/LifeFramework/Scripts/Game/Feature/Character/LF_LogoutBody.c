@@ -39,6 +39,7 @@ class LF_LogoutBodyListener : Managed
 
 //------------------------------------------------------------------------------------------------
 //! Owner config, section "logoutBody".
+[BaseContainerProps(configRoot: true)]
 class LF_LogoutBodyConfig
 {
 	static const string SECTION = "logoutBody";

@@ -34,6 +34,8 @@ class LF_Test_LogoutBody : LF_Test
 
 		ctx.True(LF_LogoutBody.HasBody(UID), "the logout leaves a body");
 		ctx.True(LF_LogoutBody.IsLoggedOut(body), "the body carries the Logged out tag");
+		ctx.EqualStr(UID, LF_LogoutBody.UidOfBody(body), "the body knows its owner");
+		ctx.EqualStr(UID + " (logged out)", LF_Knockout.Uid(body), "a knockout log names the body's owner, not npc");
 		ctx.Equal(1, CountInSnapshot(LF_TestCarriedInventoryKit.WATER_PREFAB), "the snapshot holds the water bottle");
 
 		// 2. Loot: the water bottle leaves the body, and the snapshot with it.
