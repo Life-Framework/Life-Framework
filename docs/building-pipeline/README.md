@@ -195,7 +195,10 @@ ArchBuilder's own material colours, not the game's textures: the game look is ch
    - `tools\cli audit placement --strict` on its layer (the dedicated server loads the prefab);
    - in one `session up --profile full`: every door set of `<Name>_Base.et` is offered by the F key, opens, leaves a
      doorway a character wide clear at 0.5, 1.0 and 1.6 m (traces), and closes, with a picture shut and open; the four
-     sides, the street corner and the hall from inside;
+     sides, the street corner and the hall from inside. A building made from a vanilla one (`vanilla` block) keeps the
+     vanilla door sets on the model's sockets, with no coordinates to walk to, so the door walk is skipped (it prints
+     `doors: skipped`) and its `proof.json` carries the proof. The world loader reads a placement's turn from `angleY`
+     only: write `angleY 180`, not `angles 0 180 0`, or every proof point lands on the wrong side;
    - the building's own scenario, `tools/buildings/<slug>/proof.json`, in the same session.
 
    Pictures land in `tmp/buildings/<slug>/proof/`; the last line is `SUMMARY building-proof ok|fail`. `--no-session`

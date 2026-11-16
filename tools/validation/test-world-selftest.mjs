@@ -2,12 +2,20 @@
 // minimal world Worlds/TestLogic, anything else boots DebugWorld, the tier parser agrees with the
 // generated registry, the TestLogic runner is flagged, and the chosen world changes the pass
 // cache key. Does not boot the game.
-// inputs: tools/lib/test-world.mjs, tools/lib/worlds.mjs, tools/test/world-pins.json, tools/lib/test-cache.mjs, tools/validation/test-world-selftest.mjs, addons/LifeFramework/Scripts/Game/Tests, addons/LifeFramework/Worlds/TestLogic
+// inputs: tools/lib/test-world.mjs, tools/lib/test-shards.mjs, tools/lib/worlds.mjs, tools/test/world-pins.json, tools/test/town-tests.json, tools/lib/test-cache.mjs, tools/validation/test-world-selftest.mjs, addons/LifeFramework/Scripts/Game/Tests, addons/LifeFramework/Worlds/TestLogic
 //
 // red-proof: 2026-11-14, each break run through LF_TEST_WORLD_MODULE=<broken copy>:
 //   the fast-tier branch never taken        -> FAIL "--tier fast boots TestLogic";
 //   the not-LOGIC guard on --only removed    -> FAIL "--only with one WORLD test boots DebugWorld" (+3 more);
 //   GetName() strings not mapped to a tier   -> FAIL "a real GetName() string resolves (tests/logic-world)".
+// red-proof (#1895, town tests leave the suite), 2026-11-16: checks 2e and 2f first ran against the module
+// as it stood before the town list (no `town` or `townRun` in planLegs, no readTown, townLeg or
+// town-tests.json): 10 FAIL lines, among them
+//   --tier all drops a town test from every leg (it was still in the GridWorld leg);
+//   --tier all with no pins is one GridWorld leg without the town tests (it was one leg, classes null);
+//   --town is one PLAYTEST_WORLD leg with the town tests (it was the ordinary GridWorld + DebugWorld plan);
+//   tools/test/town-tests.json reads as a list of 12 (got undefined).
+// Green after the change: test-world-selftest: OK.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
@@ -115,13 +123,65 @@ check(/^SUMMARY test ok tier=all legs=2 passed=13 failed=0 total=13\b/.test(fn("
 const realPins = fn("readPins")(root);
 const realNames = fn("testNames")(root) ?? {};
 const realTiers = tw.testTiers(root);
-check(Array.isArray(realPins) && realPins.length > 0, "tools/test/world-pins.json reads as a non-empty list");
+check(Array.isArray(realPins), "tools/test/world-pins.json reads as a list (it ends empty when the last test gains grid fixtures)");
 for (const p of realPins ?? []) {
   check(typeof p.reason === "string" && p.reason.length > 5, `pin ${p.name} has a reason`);
   const cls = realNames[p.name] ?? (realTiers[p.name] ? p.name : undefined);
   check(!!cls, `pin ${p.name} names a registered test`);
   check(cls && (realTiers[cls] === "WORLD" || realTiers[cls] === "PERSISTENCE"), `pin ${p.name} is a WORLD or PERSISTENCE test (got ${cls && realTiers[cls]})`);
 }
+
+// 2e. The town tests (tools/test/town-tests.json) are about the town itself, so no suite run carries
+// them; `test --town` runs them in one boot of the playtest world.
+const regT = [...registry, { cls: "LF_Test_T", tier: "WORLD" }, { cls: "LF_Test_U", tier: "PERSISTENCE" }];
+const namesT = { ...names, "unit/t": "LF_Test_T", "unit/u": "LF_Test_U" };
+const tiersT = { ...tiers, LF_Test_T: "WORLD", "unit/t": "WORLD", LF_Test_U: "PERSISTENCE", "unit/u": "PERSISTENCE" };
+const town = [{ name: "unit/t", reason: "reads the town" }, { name: "unit/u", reason: "reads the town" }];
+const tlegs = (o) => fn("planLegs")({ tiers: tiersT, names: namesT, registry: regT, pins, town, env, ...o });
+l = tlegs({ tier: "all" });
+check(l?.length === 2 && l[0].world === worlds.GRID_WORLD && eq(l[0].classes, ["LF_Test_A", "LF_Test_B", "LF_Test_P"]) && l[1].world === worlds.PLAYTEST_WORLD && eq(l[1].classes, ["LF_Test_Q"]), `--tier all drops a town test from every leg (got ${show(l)})`);
+l = tlegs({ tier: "all", pins: [] });
+check(l?.length === 1 && l[0].world === worlds.GRID_WORLD && eq(l[0].classes, ["LF_Test_A", "LF_Test_B", "LF_Test_P", "LF_Test_Q"]), `--tier all with no pins is one GridWorld leg without the town tests, and no DebugWorld leg (got ${show(l)})`);
+l = tlegs({ tier: "persistence", pins: [] });
+check(l?.length === 1 && l[0].world === worlds.GRID_WORLD && eq(l[0].classes, ["LF_Test_P"]), `--tier persistence drops a PERSISTENCE town test (got ${show(l)})`);
+l = tlegs({ tier: "all", town: [], pins: [] });
+check(l?.length === 1 && l[0].world === worlds.GRID_WORLD && l[0].classes === null, `an empty town list changes nothing (got ${show(l)})`);
+l = tlegs({ tier: "all", townRun: true });
+check(l?.length === 1 && l[0].world === worlds.PLAYTEST_WORLD && eq(l[0].classes, ["LF_Test_T", "LF_Test_U"]), `--town is one PLAYTEST_WORLD leg with the town tests, and nothing else (got ${show(l)})`);
+l = tlegs({ tier: "all", townRun: true, env: off });
+check(l?.length === 1 && l[0].world === worlds.PLAYTEST_WORLD && eq(l[0].classes, ["LF_Test_T", "LF_Test_U"]), `--town ignores LF_TEST_GRID_WORLD=0 (got ${show(l)})`);
+l = tlegs({ tier: "all", only: ["unit/t"], pins: [] });
+check(l?.length === 1 && l[0].world === worlds.PLAYTEST_WORLD && eq(l[0].classes, ["LF_Test_T"]), `--only <town test> is one PLAYTEST_WORLD leg (got ${show(l)})`);
+l = tlegs({ tier: "all", only: ["LF_Test_B", "unit/t"], pins: [] });
+check(l?.length === 2 && eq(l[0].classes, ["LF_Test_B"]) && l[1].world === worlds.PLAYTEST_WORLD && eq(l[1].classes, ["LF_Test_T"]), `--only <WORLD>,<town test> splits (got ${show(l)})`);
+l = tlegs({ tier: "all", env: off, pins: [] });
+check(l?.length === 1 && l[0].world === undefined && l[0].classes === null, `LF_TEST_GRID_WORLD=0 is the rollback: one DebugWorld boot of everything (got ${show(l)})`);
+l = tlegs({ tier: "fast", pins: [] });
+check(l?.length === 1 && l[0].world === tw.LOGIC_WORLD && l[0].classes === null, `--tier fast is untouched by the town list (got ${show(l)})`);
+const tl = fn("townLeg")({ names: namesT, town });
+check(tl?.world === worlds.PLAYTEST_WORLD && eq(tl.classes, ["LF_Test_T", "LF_Test_U"]), `townLeg is the PLAYTEST_WORLD leg of the list (got ${JSON.stringify(tl)})`);
+
+// 2f. The real list: each town test is registered, WORLD or PERSISTENCE, not also pinned, and the
+// shard registry (what ci, wt gate and a sharded --tier all run) leaves it out.
+const realTown = fn("readTown")(root);
+const realPinClasses = new Set((realPins ?? []).map((p) => realNames[p.name] ?? p.name));
+const wantTown = ["signs/coverage", "e2e/narrative-loop", "e2e/pass1-write-save", "e2e/roadmap-contraband", "e2e/roadmap-jailbreak", "e2e/roadmap-jailing", "roadmap/contraband", "roadmap/escort", "roadmap/hideout", "roadmap/jailbreak", "roadmap/jailing", "roadmap/jailing-save"];
+check(Array.isArray(realTown) && realTown.length === 12, `tools/test/town-tests.json reads as a list of 12 (got ${realTown?.length})`);
+check(eq((realTown ?? []).map((p) => p.name).sort(), [...wantTown].sort()), "the town list names the 12 tests of slice #1895");
+const shardsMod = await import(pathToFileURL(join(here, "..", "lib", "test-shards.mjs")).href);
+const suiteRegistry = shardsMod.readRegistry(root);
+const suiteClasses = new Set(suiteRegistry.map((x) => x.cls));
+for (const p of realTown ?? []) {
+  check(typeof p.reason === "string" && p.reason.length > 5, `town test ${p.name} has a reason`);
+  const cls = realNames[p.name] ?? (realTiers[p.name] ? p.name : undefined);
+  check(!!cls, `town test ${p.name} names a registered test`);
+  check(cls && (realTiers[cls] === "WORLD" || realTiers[cls] === "PERSISTENCE"), `town test ${p.name} is a WORLD or PERSISTENCE test (got ${cls && realTiers[cls]})`);
+  check(cls && !realPinClasses.has(cls), `town test ${p.name} is not also in world-pins.json`);
+  check(cls && !suiteClasses.has(cls), `town test ${p.name} is not in the shard registry that ci and wt gate run`);
+}
+const townClasses = new Set((realTown ?? []).map((p) => realNames[p.name] ?? p.name));
+const realLegs = fn("planLegs")({ tier: "all", tiers: realTiers, names: realNames, registry: suiteRegistry, pins: realPins, town: realTown, env }) ?? [];
+check(realLegs.length > 0 && realLegs.every((x) => (x.classes ?? []).length > 0 && !x.classes.some((c) => townClasses.has(c))), "the real --tier all plan has no town test in any leg");
 
 // 3. The parser agrees with the generated registry on the real tests.
 const real = tw.testTiers(root);

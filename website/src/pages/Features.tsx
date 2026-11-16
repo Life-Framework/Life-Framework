@@ -103,8 +103,8 @@ const SYSTEMS: System[] = [
         text: "An on-duty medic within about two metres of a downed player can pick Revive. They get up with a sliver of health and keep what they carry.",
       },
       {
-        head: "Drag, carry, load",
-        text: "A downed body can be dragged, carried, put down or loaded into a vehicle.",
+        head: "Load into a vehicle",
+        text: "A downed body is loaded straight from where it lies: stand beside it with a vehicle's cargo seat within reach and pick Load into vehicle. A medic's bed delivery takes the body lying beside them. There is no carry or drag.",
       },
       {
         head: "Hospital and ambulance",
@@ -150,6 +150,10 @@ const SYSTEMS: System[] = [
       {
         head: "Police armory",
         text: "The armory cabinet at the station opens to the fence keycard or a charge, and always radios every on-duty officer. The weapons inside carry serials booked to whoever took them.",
+      },
+      {
+        head: "Taser",
+        text: "The station desk holds a taser. Fired within about ten metres it drops the target into the real down state: the body ragdolls and falls, cannot move or shoot for eight seconds, then wakes lying prone instead of snapping upright. An NPC falls on his back and gets up.",
       },
     ],
     shot: { file: "271/fence-list", alt: "The fence's list of tools with prices and an order slip." },
@@ -199,7 +203,19 @@ const SYSTEMS: System[] = [
     facts: [
       {
         head: "General store",
-        text: "Goods stand on the counter as real items. Picking one up by hand tags it unpaid. The price list still works and checks stock before it takes your cash. An empty line refuses the sale.",
+        text: "A walk-in village shop: goods stand on the shelves as real items and are paid for at the till inside. Walking out unpaid trips the bell box on the shop front and the shopkeeper shouts after you. The price list still sells over the counter.",
+      },
+      {
+        head: "Drug store",
+        text: "A pharmacy on the north row of the main street, under the vanilla DROGERIE fascia: self-serve aspirin, gauze and tourniquets, a pharmacist in a white coat behind the counter, and a dispensary that sells morphine and saline to licensed medics only.",
+      },
+      {
+        head: "Supermarket",
+        text: "A walk-in supermarket with gondolas, coolers and three tills. Goods come off the shelves and are paid for at a till; walking out unpaid sets the alarm going, calls police dispatch and raises the wanted level.",
+      },
+      {
+        head: "Town board",
+        text: "A cork board of eight index cards on the spawn square: work, shops, bank, police recruitment, hospital, car lot, organizations and rules. Each card says where its place is, and Set waypoint marks it on screen with the distance.",
       },
       {
         head: "Spawn square",
