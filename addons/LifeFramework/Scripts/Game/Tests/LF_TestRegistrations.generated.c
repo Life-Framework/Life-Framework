@@ -425,6 +425,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Revive(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveCprGraph(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Roadblock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_Bank(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Roadmap_BankWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_BankPersistence(), LF_TestTier.PERSISTENCE);

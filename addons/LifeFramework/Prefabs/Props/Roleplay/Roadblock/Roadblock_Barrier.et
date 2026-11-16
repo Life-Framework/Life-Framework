@@ -1,0 +1,23 @@
+GenericEntity : "{64C9C1D1C2C1B38D}Prefabs/Props/Infrastructure/Roadblocks/RoadBlock_01.et" {
+ ID "1731A5D160EF98F7"
+ components {
+  ActionsManagerComponent "{A0E756EE356F68E7}" {
+   ActionContexts {
+    UserActionContext "{5803D719D9B4025F}" {
+     ContextName "default"
+     Position PointInfo "{3AAD3581F3CC0D49}" {
+      Offset 0 0.4 0
+     }
+     Radius 2.2
+    }
+   }
+   additionalActions {
+    LF_RoadblockPickUpAction "{3C79FF2A77AECFB8}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+ }
+}
