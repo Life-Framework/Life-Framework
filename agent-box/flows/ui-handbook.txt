@@ -1,0 +1,14 @@
+# Handbook (#1773): pause menu, Handbook button, the second page, its title on screen, Back closes it.
+# Run on a spawned character (the registration form is not open): flow ui-intake first on a fresh profile.
+pausemenu open
+wait 800
+shot ui handbook_pause
+click HandbookButton
+wait-text Pick a page to read.
+shot ui handbook_list
+click HandbookPage1_Action
+wait-text Where to find the rules
+shot ui handbook_page
+input MenuBack
+wait 600
+ui text

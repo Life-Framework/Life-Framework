@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6A19C3E85B027D4F}Configs/Tests/LF_Test_WelcomeGiftOverlay.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

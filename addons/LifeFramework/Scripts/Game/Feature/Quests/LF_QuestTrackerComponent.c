@@ -436,7 +436,13 @@ class LF_QuestTrackerComponent : ScriptComponent
 			LF_QuestRewards.HandIdCard(owner, LF_QuestRewards.AccountOf(owner));
 
 		// A giver hands the reward over: the player hears it land in their pockets.
-		if (def.m_iRewardMoney > 0 || def.m_bRewardIdCard || (def.m_aRewardItems && !def.m_aRewardItems.IsEmpty()))
+		// The quest's own items, then the welcome gift a pack gives it (LF_WelcomeGiftTable).
+		array<ResourceName> giftItems = {};
+		if (def.m_aRewardItems)
+			giftItems.Copy(def.m_aRewardItems);
+		LF_WelcomeGiftTable.ItemsOf(def.m_sQuestId, giftItems);
+
+		if (def.m_iRewardMoney > 0 || def.m_bRewardIdCard || !giftItems.IsEmpty())
 			LF_PlayerInteraction.PlayHandoverSound(owner, HANDOVER_SOUND);
 
 		if (def.m_fRewardXp > 0)
@@ -448,7 +454,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 				LF_JobLevels.AddXp(uid, JobOf(def), Math.Round(def.m_fRewardXp), "quest " + def.m_sQuestId);
 		}
 
-		if (def.m_aRewardItems)
+		if (!giftItems.IsEmpty())
 		{
 			SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(owner);
 			if (!inventory)
@@ -457,7 +463,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 			EntitySpawnParams spawnParams();
 			spawnParams.Transform[3] = owner.GetOrigin();
 
-			foreach (ResourceName prefab : def.m_aRewardItems)
+			foreach (ResourceName prefab : giftItems)
 			{
 				if (prefab.IsEmpty())
 					continue;

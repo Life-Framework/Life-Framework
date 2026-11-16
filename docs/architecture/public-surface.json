@@ -9,6 +9,7 @@
     "LF_DrinkImpairmentConfig",
     "LF_EvidenceConfig",
     "LF_GarageConfig",
+    "LF_HandbookConfig",
     "LF_IncidentConfig",
     "LF_ItemCatalogueConfig",
     "LF_JobsConfig",
@@ -43,6 +44,7 @@
     "LF_UIThemeConfig",
     "LF_VehiclePricesConfig",
     "LF_WantedPostersConfig",
+    "LF_WelcomeGiftConfig",
     "LF_WitnessConfig",
     "LF_ZoneConfig"
   ],

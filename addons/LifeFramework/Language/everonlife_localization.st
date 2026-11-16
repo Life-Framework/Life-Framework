@@ -4008,6 +4008,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Grace period"
      Comment "Toast title for the new-character grace refusal."
     }
+    CustomStringTableItem "{B0C49E2CC5A91698}" {
+     Id "LF-Handbook_Close"
+     Target_en_us "Close"
+     Comment "Handbook screen: the button that puts the handbook away (#1773)."
+    }
+    CustomStringTableItem "{137851841CD11F98}" {
+     Id "LF-Handbook_Contents"
+     Target_en_us "Back to the pages"
+     Comment "Handbook screen: the button on a page that returns to the list of pages (#1773)."
+    }
+    CustomStringTableItem "{D2E4378EDC9C7624}" {
+     Id "LF-Handbook_Empty"
+     Target_en_us "The handbook has no pages yet."
+     Comment "Handbook screen: shown when no page can be read (#1773)."
+    }
+    CustomStringTableItem "{B368DC21838D0FEE}" {
+     Id "LF-Handbook_PauseButton"
+     Target_en_us "Handbook"
+     Comment "Pause menu: the button that opens the handbook (#1773)."
+    }
+    CustomStringTableItem "{29A96057080889A7}" {
+     Id "LF-Handbook_Pick"
+     Target_en_us "Pick a page to read."
+     Comment "Handbook screen: the line above the list of pages (#1773)."
+    }
+    CustomStringTableItem "{5B3900D36A58CBE9}" {
+     Id "LF-Handbook_Read"
+     Target_en_us "Read"
+     Comment "Handbook screen: the button on a page row in the list (#1773)."
+    }
     CustomStringTableItem "{37A4E1474FFDB190}" {
      Id "LF-Handbook_ReadBody1"
      Target_en_us "The handbook is a short set of pages. Each page covers one topic and you can come back to it at any time."
@@ -4032,6 +4062,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Handbook_RulesTitle"
      Target_en_us "Where to find the rules"
      Comment "Handbook page title: where the server rules live."
+    }
+    CustomStringTableItem "{2B856ABF8687043C}" {
+     Id "LF-Handbook_Title"
+     Target_en_us "HANDBOOK"
+     Comment "Printed heading of the handbook screen (#1773)."
     }
     CustomStringTableItem "{9306F928F7A81EBC}" {
      Id "LF-Heist_Armory_Open"
