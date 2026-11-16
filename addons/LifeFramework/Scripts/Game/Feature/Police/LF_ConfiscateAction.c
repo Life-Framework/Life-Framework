@@ -78,13 +78,14 @@ class LF_ConfiscateAction : ScriptedUserAction
 		// offence filed, whether or not they are wanted.
 		array<string> itemOffences = {};
 		string suspectUid = LF_Utils.GetPlayerUID(LF_PlayerInteraction.PlayerIdOf(pOwnerEntity));
-		goodsSeized += LF_ItemSearch.SearchAndSeize(pOwnerEntity, suspectUid, LF_EntityBuyerFacts.Of(pOwnerEntity), LF_ItemCatalogueConfig.Get(), itemOffences);
+		array<string> seizedLines = {};
+		goodsSeized += LF_ItemSearch.SearchAndSeize(pOwnerEntity, suspectUid, LF_EntityBuyerFacts.Of(pOwnerEntity), LF_ItemCatalogueConfig.Get(), itemOffences, seizedLines);
 
 		LF_PlayerAccount suspect = LF_PoliceUtils.GetAccountForEntity(pOwnerEntity);
 		if (!suspect || suspect.GetWantedLevel() <= 0)
 		{
 			if (goodsSeized > 0)
-				LF_Utils.NotifyEntity(pUserEntity, "#LF-Search_Found", "#EL-Police_Title", 3.0);
+				NotifySeized(pUserEntity, pOwnerEntity, seizedLines);
 			else
 				LF_Utils.NotifyEntity(pUserEntity, "#LF-Search_Clean", "#EL-Police_Title", 3.0);
 
@@ -139,6 +140,18 @@ class LF_ConfiscateAction : ScriptedUserAction
 		}
 		LF_Utils.NotifyEntity(pUserEntity, "#EL-Police_Action", "#EL-Police_Title", 3.0);
 		if (goodsSeized > 0)
-			LF_Utils.NotifyEntity(pUserEntity, "#LF-Search_Found", "#EL-Police_Title", 3.0);
+			NotifySeized(pUserEntity, pOwnerEntity, seizedLines);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: tells the officer what the search seized (#2154). Chain goods carry no item line, so a
+	//! search that took only those keeps the plain "contraband found" toast.
+	protected static void NotifySeized(IEntity officer, IEntity suspect, notnull array<string> seizedLines)
+	{
+		string text = LF_ItemSearch.SeizedText(LF_Utils.GetPlayerName(suspect), seizedLines);
+		if (text.IsEmpty())
+			text = "#LF-Search_Found";
+
+		LF_Utils.NotifyEntity(officer, text, "#EL-Police_Title", 4.0);
 	}
 };
