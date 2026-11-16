@@ -1,5 +1,5 @@
 {
-  "saveVersion": 36,
+  "saveVersion": 37,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -38,7 +38,8 @@
     "vehiclestate": "LF_VehicleStateRow",
     "heldground": "LF_HeldGroundRow",
     "itemstolen": "LF_StorageItemStolenRecord",
-    "convictions": "LF_ConvictionRow"
+    "convictions": "LF_ConvictionRow",
+    "firstspawns": "LF_FirstSpawnRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -472,6 +473,12 @@
         "string m_sPlayerUid",
         "int m_iDay",
         "int m_iCount"
+      ]
+    },
+    "LF_FirstSpawnRow": {
+      "since": 37,
+      "fields": [
+        "string m_sCharacterId"
       ]
     }
   }
