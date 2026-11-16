@@ -80,6 +80,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChessGame(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChessMoves(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ChessScreenLayout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChessTable(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChopShopPayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPlacedCar(), LF_TestTier.WORLD);
@@ -258,6 +259,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutStashFind(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HoldUp(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HospitalRejoinPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HospitalBillOnce(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalBedPick(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalWard(), LF_TestTier.WORLD);
