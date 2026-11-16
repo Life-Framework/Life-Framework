@@ -31,7 +31,7 @@ How it sits with the rest of the project:
 5. [Systems map](#systems-map)
 6. [People and factions](#people-and-factions)
 7. [Phasing](#phasing)
-8. [Open questions](#open-questions)
+8. [Decided questions](#decided-questions)
 
 ## The premise
 
@@ -80,7 +80,7 @@ island has a limited supply of each.
 | Fishing and the port | The harbour towns and the coves | Fishing (planned), dock loading, parcel and fuel runs to the quays |
 | Farming | Orchards, collective farms, pasture villages | Fruit picking (exists), farm plots (exist), working the land (M8) |
 | Industry | Warehouse districts and the state factory (M6) | Factory shifts, processing (exists), haulage |
-| Mining and quarrying | The quarry and the hills | Miner (exists), the lawless quarry (exists) |
+| Mining and quarrying | The quarry and the hills | Miner (exists); the quarry is policed until M7 |
 | Services | Every town | Taxi, fuel delivery, parcel courier (exist), shop work |
 | Tourism | The mountain hotel and the coast | Hostel and hotel staff, guide work (ideas, not planned) |
 | The underworld | The edges of towns, coves, barns and the old military sites | Theft, robbery, illicit chains, fencing, smuggling (M7) |
@@ -146,9 +146,9 @@ says how, borrowing layout and pacing ideas from three well-made game worlds.
 | What it does well | What it becomes on Everon |
 |---|---|
 | Safe houses: a secure base in each district where you resupply | The hostel, then your own room or house (M8), and the town squares (safe zones, which exist). For an organisation, its hideout |
-| The Dark Zone: high reward, open PvP, you can lose what you carry | Lawless ground. The rule set already exists (the lawless quarry). The old military sites and the parked Zone idea are the big ones. Better yields and contraband, no police protection, and you can be robbed of everything you carry |
+| The Dark Zone: high reward, open PvP, you can lose what you carry | Lawless ground, from M7 only (the whole island is policed until the gang chapter). The rule set already exists. The old military sites and the parked Zone idea are the candidates. Better yields and contraband, no police protection, and you can be robbed of everything you carry |
 | Control points: hold a spot, the area changes | Turf (M7): an organisation that holds a place gets something concrete there, such as the fence's best prices, a cut of a chain or a safe stash |
-| The map fills in as you play | Places light up chapter by chapter on the server's map board, and a player learns the island by working it. The town board and the clerk point you to what is open |
+| The map fills in as you play | Places light up chapter by chapter on the in-game map ([`everon-map.md`](../architecture/everon-map.md)) and on the board on the square, and a player learns the island by working it. The town board and the clerk point you to what is open |
 
 **Two more that fit.**
 
@@ -179,16 +179,16 @@ Unlocks work two ways (maintainer, 2026-11-16):
 | Criminal record | Committed crimes | Yes (the fence: drill after 3 crimes, charge after 5, keycard after 8) | The fence's back room, the chop shop, the hideout machines |
 | Organisation | Founding or joining one | Yes | Hideout, shared stash, turf (M7) |
 | Story step | Finishing a story chapter beat | Yes (quest signals) | A townsperson's favour, a door that opens after The state factory |
-| Reputation (standing) | Legal work up, crime down | **No.** A design hook only | Shop terms, the landlord's trust, better factory shifts |
+| Reputation (standing) | Work for a faction (town, police, underworld) | **M6** (decided): a small system per faction | Mainly better jobs and better pay; later shop terms and the landlord's trust |
 
 **Map states.** Five states, one per stage of the roadmap. Each lists what is live server-wide.
 
 | State | Ships with | Places live | Systems that come online |
 |---|---|---|---|
 | **0. The first town** | M5: Arrival, The relocated, Armed and dressed | The first location: its square, town hall, hostel, café, police station, clinic, bank and ATM, general store and clothing counter, gun counter, fuel station, a barn on the edge for the fence | Arrival chain, hostel first night, catalogue and outlets, licence desk, starter jobs (parcel, taxi, fuel), safe zone, payphones, robberies, the fence |
-| **1. The roads and the evenings** | M5: Evenings in the village, On patrol | The first location's outskirts and the roads to the nearest towns; a pub or hall; a dirt track; a quarry or orchard within a short drive | Chess, range, hall, drunk effect, dirt race, roadblocks and spike strips, named places on the dispatch board, the lawless quarry |
+| **1. The roads and the evenings** | M5: Evenings in the village, On patrol | The first location's outskirts and the roads to the nearest towns; a pub or hall; a dirt track; a quarry or orchard within a short drive | Chess, range, hall, drunk effect, dirt race, roadblocks and spike strips, named places on the dispatch board, the quarry as a policed work site |
 | **2. The working island** | M6 Making a living | The second town (the work town), the nearest harbour, an orchard village, a scrapyard | State factory, market board, supermarket, clothing store, the bank proper (transfers), routes, scrap and salvage, fishing |
-| **3. The contested island** | M7 Power and turf | Lawless ground at the old military sites, smuggling coves, the prison, turf points in the villages | Gangs and turf, convoy, the big heist, laundering, prison work, detectives |
+| **3. The contested island** | M7 Power and turf | The first lawless ground (old military sites, chosen with the gang chapter), smuggling coves, the prison, turf points in the villages | Gangs and turf, convoy, the big heist, laundering, prison work, detectives |
 | **4. The whole island** | M8 Roots | Every village with houses for sale or rent, farms, dachas, garages | Housing, farming, garages and lockers, neighbours |
 
 How a place comes online:
@@ -200,7 +200,7 @@ How a place comes online:
    maintainer.
 5. The audit and the pictures validate it.
 
-The chapter's release note names the places that opened, and the map board in the hub marks them.
+The chapter's release note names the places that opened, and the in-game map and the board on the square mark them.
 
 ### Coherence once complete
 
@@ -211,12 +211,11 @@ The chapter's release note names the places that opened, and the map board in th
 - **Spokes** are the specialised towns. The work town (warehouses, the factory). The harbour towns
   (fishing, the docks, smuggling by night). The farm villages (orchards, plots, housing). The coast (the
   lighthouse, coves, the hotel).
-- **The edge** is lawless: the old military sites, the quarry, the Zone if it returns.
+- **The edge** becomes lawless in M7: the old military sites, and the Zone if it returns. Until then the whole island is policed (maintainer, 2026-11-16).
 
-Which town is the hub is part of the first-location decision below. It can be the first location, or the
-first location can be a smaller start that leads to the hub.
+The hub is Saint-Philippe, which is also the first location (decided 2026-11-16).
 
-**The risk gradient.** Four bands, from the square outwards. A player always knows which band they are
+**The risk gradient.** Three bands until M7, from the square outwards, and a fourth from the gang chapter on. A player always knows which band they are
 in from what they see: the safe-zone board, the police car, the lawless sign and HUD cue.
 
 | Band | Where | Rules | Reward |
@@ -224,7 +223,7 @@ in from what they see: the safe-zone board, the police car, the lawless sign and
 | Safe | Town squares, the hostel, the clinic | Safe zone: no harm within the radius (exists) | None; this is where you rest and meet |
 | Policed | Town streets and main roads | Normal law; police patrol, roadblocks, witnesses | Legal pay, shops |
 | Countryside | Farms, small villages, back roads, coves | Law applies, but help is far away and police are rare | Gathering, illicit chains, quiet robberies |
-| Lawless | The quarry, the old military sites, the Zone | Lawless zone rules (exist): no wanted level for violence, police do not respond | Best yields, contraband, rare stock; you can lose all you carry |
+| Lawless (from M7) | Old military sites chosen with the gang chapter, the Zone if it returns | Lawless zone rules (exist): no wanted level for violence, police do not respond | Best yields, contraband, rare stock; you can lose all you carry |
 
 **Resource and job geography.** Why a player crosses the island:
 
@@ -232,7 +231,7 @@ in from what they see: the safe-zone board, the police car, the lawless sign and
 |---|---|---|---|
 | Orchards and farms | Apples, vegetables, farm plots | Processing (jam, cider), the market | Raw goods go to the hub and the factory |
 | Harbours and coves | Fish, dock cargo | The fish counter, the supermarket | Fresh goods inland; contraband in by night |
-| Quarry and hills | Stone, ore | Processing, the factory | Haulage by truck; lawless risk |
+| Quarry and hills | Stone, ore | Processing, the factory | Haulage by truck; lawless risk from M7 |
 | The work town | Factory goods, warehouse stock | Shops across the island | Deliveries out to every town |
 | The hub | Services: bank, licences, market | | Everyone comes back to bank and trade |
 | The old military sites | Salvage, rare stock | The fence, the scrapyard | High risk, high reward |
@@ -243,7 +242,7 @@ in from what they see: the safe-zone board, the police car, the lawless sign and
    10 to 15 minutes by car.
 2. **The coast loop.** Hub, then the harbour, then the coves, then the lighthouse, and back on the coast
    road. Fishing by day, smuggling by night.
-3. **The edge loop.** The countryside, then lawless ground, then the fence or the chop shop. Never through
+3. **The edge loop.** The countryside (lawless ground from M7), then the fence or the chop shop. Never through
    the hub with hot goods.
 
 **Spacing.** No stretch of road should go more than about two minutes' drive without something on it. Use
@@ -454,7 +453,7 @@ harbour.
 | Place (game id) | Proposed role | State |
 |---|---|---|
 | The mountain hotel (`MountainHotel_01_green`) | The first-night hostel, wherever the start is (decision in [the first night](../roadmap/m5-first-night.md)) | 0 |
-| The quarry | Mining job and the lawless quarry (both exist in the playtest town) | 1 |
+| The quarry | Mining job, a policed work site until M7 (the lawless rule set exists in the playtest town) | 1 |
 | Fisherman's Bay, Goat Bay | Fishing spots, cove smuggling | 2–3 |
 | Coal Harbour | Bulk cargo, haulage routes | 2 |
 | Hospital Harbour | Marks where the hospital stands; the medics' boat access | 0–2 (with the hospital town) |
@@ -463,8 +462,8 @@ harbour.
 | Black Lake | Fishing and an evening spot; a dirt race venue | 1–2 |
 | Calvary Hill, the cemetery | Story beats (The anniversary, M8); an evening walk | 4 |
 | Briars | Countryside hideout candidate | 3 |
-| The airbase (the airport north-east of Saint-Philippe, 4901, 11787, if it is the same site) | Lawless ground: salvage, rare stock, the Dark Zone equivalent. If Saint-Philippe is the start, its nearness puts high risk close to new players, so the scout decides between this site and the military harbour | 3 |
-| The military harbour, Benac base | Lawless ground, the heist or convoy's end point | 3 |
+| The airbase (the airport north-east of Saint-Philippe, 4901, 11787, if it is the same site) | Lawless ground from M7: salvage, rare stock, the Dark Zone equivalent. It is close to new players at the hub, so it is the last site to turn lawless | 3 |
+| The military harbour, Benac base | Lawless ground from M7, the heist or convoy's end point | 3 |
 
 ## Systems map
 
@@ -499,7 +498,7 @@ Each system, its home and its status. "Exists" means it is in the framework toda
 | Fence (Vince) | A barn on the edge of the first location | Exists |
 | Chop shop | A countryside barn | Exists (M2) |
 | Illicit chains (moonshine, others) | Sheds, barns, coves | Exist; more chains later |
-| Lawless zones | The quarry; military sites | Exists (rule set); more ground M7 |
+| Lawless zones | Military sites, from M7 | Exists (rule set); none on the island before M7 |
 | Organisations and hideouts | Registry at the town hall; hideout buildings | Exist |
 | Gangs and turf | Villages and the edge | M7; **gap:** no territory system yet |
 | Convoy job | Work town to the hub, or the coast | M7; needs the AI route driver (Backlog) |
@@ -511,8 +510,8 @@ Each system, its home and its status. "Exists" means it is in the framework toda
 | Housing | Every town and village | M8 (A place of your own) |
 | Garages and lockers | Hub and the larger towns | M8 |
 | Vehicles and plates | Car dealer, registry at the town hall | Exist |
-| Reputation (standing) | Everywhere | **Gap:** a design hook, no system or milestone |
-| Public transport between towns | Roads | **Gap:** the bus is in Backlog; the taxi is the only service |
+| Reputation (standing) | Everywhere | M6: per faction, unlocks better jobs and pay |
+| Public transport between towns | Roads | Taxis and cars for now; the bus (#1793) is reviewed when the state-2 cards are cut |
 | Tourism work | The hotel and the coast | **Gap:** not planned |
 
 ## People and factions
@@ -557,25 +556,22 @@ places them on the map.
 M5's chapters ship on the playtest town first and move to Everon when the first location is fitted out.
 The planning doc (`docs/architecture/everon-world.md`) owns that switch.
 
-## Open questions
+## Decided questions
 
-The world questions for the maintainer. Each has a recommendation.
+The maintainer answered the world questions on 2026-11-16:
 
-1. **The first location?** Recommend A, Saint-Philippe, with only the square block fitted in state 0
-   ([candidates](#where-the-story-starts)).
-2. **Is the hub the same town as the first location?** Recommend yes, and keep the dock and outer
-   districts for state 2, so the "big city" moment still happens.
-3. **Reputation.** The gates table needs it, and the roadmap has no milestone for it. Recommend a small
-   standing system in M6 (legal work raises it, convictions lower it), used first by shops and the
-   landlord.
-4. **Travel without the bus.** Recommend making the taxi job and the taxi service call the island's
-   public transport in M5, and reviewing the bus (#1793) when state 2 opens a second town.
-5. **Fishing has no system.** Recommend adding Fishing as a chapter in M6 Making a living, since every
-   harbour role depends on it.
-6. **Lawless ground.** Which sites, and when? Recommend the quarry in state 1 (it exists), the airbase in
-   state 3, and the Zone kept parked until the M5 playtests end, as decided.
-7. **The map board.** Recommend a physical map board in the hub that marks the live places, filled from
-   pack data, instead of any map UI.
-8. **Public page.** This PR puts this file on the website as "World of Everon", so it shows the
-   candidates while the choice is open. Recommend leaving it up: the community can follow the decision.
-   Say if it should wait until the first location is chosen.
+1. **The first location** is Saint-Philippe, square first. The dock and the outer districts open in M6.
+   Morton is the fallback if scouting shows the square lacks buildings.
+2. **The hub** is the same town, Saint-Philippe.
+3. **Reputation** is a small system in M6, per faction (town, police, underworld). It is jobs-first: it
+   mainly unlocks better jobs and better pay.
+4. **Travel** is by taxi and car for now. The bus (#1793) is reviewed when a second town opens.
+5. **Fishing** is a chapter in M6 Making a living.
+6. **No lawless zones yet.** The whole island stays policed until the gang chapter in M7.
+7. **The map** is a fully modded in-game map with waypoints, areas, POI icons and system markers
+   ([`everon-map.md`](../architecture/everon-map.md)). The board on the square stays as well.
+8. **Buildings.** A vanilla town house is converted where one fits (hostel, town hall, police). A
+   purpose-built building goes on a free plot near the square only where nothing fits.
+9. **The public page** stays up.
+
+The execution plan and its cards are in [`everon-world.md`](../architecture/everon-world.md).
