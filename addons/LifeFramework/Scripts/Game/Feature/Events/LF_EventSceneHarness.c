@@ -12,7 +12,12 @@ class LF_EventSceneHarness
 	static const string REFUSED_NOT_LOADED = "refused: the fixture conf does not load";
 	static const string REFUSED_WRONG_ROOT = "refused: the fixture is not an LF_EventsConfig";
 
+	//! The control walker stands this far behind the spawn marker, clear of the scene's line.
+	static const float CONTROL_BEHIND_M = 3;
+
 	protected static ResourceName s_sFixture;
+	protected static EntityID s_ControlId = EntityID.INVALID;
+	protected static vector s_vControlTarget;
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: applies `fixture` over the event list and runs it. `hour` >= 0 forces the shell's hour.
@@ -91,7 +96,7 @@ class LF_EventSceneHarness
 
 		int walking = walk.m_aWalkers.Count() - walk.CountArrived() - walk.CountTimedOut();
 		line = string.Format("%1, walking %2, arrived %3, timed out %4, %5 s", line, walking, walk.CountArrived(), walk.CountTimedOut(), walk.m_fElapsed);
-		return line + AiText(walk);
+		return line + AiText(walk) + ControlText();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -133,51 +138,59 @@ class LF_EventSceneHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Diagnosis: activates the walk's group and every agent and pins them to full LOD.
-	static string Kick()
+	//! Control for a walk that does not move (#2174): spawns `prefab` (a stock vanilla civilian) beside
+	//! the running scene's first spawn marker, in its own vanilla group with one move waypoint on the
+	//! scene target, the same spawn and group calls the walk uses. Status reports how far it got.
+	static string Control(ResourceName prefab)
 	{
-		LF_EventSceneWalk walk = LF_EventSceneWalk.Active();
+		LF_EventSceneCrew crew = LF_EventSceneSpawn.Running();
+		if (!crew || prefab.IsEmpty())
+			return "refused: control needs a running scene and a {GUID} prefab";
+
+		array<IEntity> spawns = {};
+		IEntity target = LF_EventWaypointComponent.FindTarget(crew.m_sSceneId);
+		if (LF_EventWaypointComponent.FindSpawns(crew.m_sSceneId, spawns) == 0 || !target)
+			return "refused: the scene has no spawn marker or target placed";
+
+		vector transform[4];
+		spawns[0].GetWorldTransform(transform);
+		IEntity person = LF_Utils.SpawnEntityPrefab(prefab, transform[3] - transform[2] * CONTROL_BEHIND_M, spawns[0].GetYawPitchRoll());
+		if (!person)
+			return "refused: the control prefab did not spawn";
+
+		AIGroup group = AIGroup.Cast(LF_Utils.SpawnEntityPrefab(LF_EventSceneWalk.GROUP_PREFAB, person.GetOrigin()));
+		AIWaypoint waypoint = AIWaypoint.Cast(LF_Utils.SpawnEntityPrefab(LF_EventSceneWalk.MOVE_WAYPOINT_PREFAB, target.GetOrigin()));
+		if (!group || !waypoint)
+			return "refused: the control's group or waypoint did not spawn";
+
+		waypoint.SetCompletionRadius(LF_EventSceneWalk.ARRIVE_M);
+		group.AddWaypoint(waypoint);
+		AIControlComponent control = AIControlComponent.Cast(person.FindComponent(AIControlComponent));
+		if (!control || !control.GetControlAIAgent())
+			return "refused: the control has no AI agent";
+
+		control.ActivateAI();
+		group.AddAgent(control.GetControlAIAgent());
+		s_ControlId = person.GetID();
+		s_vControlTarget = target.GetOrigin();
+		string line = string.Format("control %1 spawned at %2, %3 m from the target", prefab, person.GetOrigin(), vector.DistanceXZ(person.GetOrigin(), s_vControlTarget));
+		LF_Debug.Info(FEATURE, "eventscene: " + line);
+		return "ok: " + line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The control's distance to the target, "" when none was spawned.
+	static string ControlText()
+	{
 		BaseWorld world = GetGame().GetWorld();
-		if (!walk || !world || walk.m_aWalkers.IsEmpty())
-			return "refused: no walk";
+		if (!world || s_ControlId == EntityID.INVALID)
+			return "";
 
-		AIGroup group = AIGroup.Cast(world.FindEntityByID(walk.m_GroupId));
-		if (!group)
-			return "refused: no group";
+		IEntity person = world.FindEntityByID(s_ControlId);
+		if (!person)
+			return "; control gone";
 
-		group.ActivateAI();
-		group.SetPermanentLOD(0);
-		// The faction of the first walker, so the group is not factionless.
-		string factionKey = "";
-		SCR_AIGroup scrGroup = SCR_AIGroup.Cast(group);
-		IEntity first = GetGame().GetWorld().FindEntityByID(walk.m_aWalkers[0].m_Id);
-		if (first)
-		{
-			FactionAffiliationComponent affiliation = FactionAffiliationComponent.Cast(first.FindComponent(FactionAffiliationComponent));
-			if (affiliation && affiliation.GetAffiliatedFaction())
-				factionKey = affiliation.GetAffiliatedFaction().GetFactionKey();
-		}
-		if (scrGroup && !factionKey.IsEmpty() && GetGame().GetFactionManager())
-			scrGroup.SetFaction(GetGame().GetFactionManager().GetFactionByKey(factionKey));
-
-		// Re-issue the waypoints so the group's behaviour picks them up again.
-		array<AIWaypoint> waypoints = {};
-		group.GetWaypoints(waypoints);
-		foreach (AIWaypoint waypoint : waypoints)
-			group.RemoveWaypoint(waypoint);
-		foreach (AIWaypoint waypoint : waypoints)
-			group.AddWaypoint(waypoint);
-
-		array<AIAgent> agents = {};
-		group.GetAgents(agents);
-		foreach (AIAgent agent : agents)
-		{
-			agent.ActivateAI();
-			agent.SetPermanentLOD(0);
-		}
-
-		LF_Debug.Info(FEATURE, string.Format("eventscene: kicked the walk's group (%1, faction '%2', %3 waypoint(s)) and %4 agent(s)", group.ClassName(), factionKey, waypoints.Count(), agents.Count()));
-		return string.Format("ok: kicked %1 faction '%2' %3 waypoint(s)", group.ClassName(), factionKey, waypoints.Count()) + AiText(walk);
+		return string.Format("; control at %1, %2 m from the target", person.GetOrigin(), vector.DistanceXZ(person.GetOrigin(), s_vControlTarget));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -190,6 +203,7 @@ class LF_EventSceneHarness
 	static void ResetStatics()
 	{
 		s_sFixture = "";
+		s_ControlId = EntityID.INVALID;
 	}
 }
 
@@ -212,7 +226,7 @@ class LF_EventSceneHarness_StaticResetHook : LF_StaticResetHook
 
 //------------------------------------------------------------------------------------------------
 //! Harness `eventscene start <{GUID}fixture.conf> [hour]` | `eventscene status [eventId]` |
-//! `eventscene stop`. The server runs each under the dev gate (as `eventjip` does).
+//! `eventscene control <{GUID}prefab>` | `eventscene stop`. The server runs each under the dev gate (as `eventjip` does).
 modded class LF_AgentHarnessVerbs
 {
 	override bool Handle(LF_AgentCommand cmd)
@@ -221,10 +235,10 @@ modded class LF_AgentHarnessVerbs
 			return super.Handle(cmd);
 
 		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
-		bool known = cmd.Arg1 == "start" || cmd.Arg1 == "status" || cmd.Arg1 == "stop" || cmd.Arg1 == "kick";
+		bool known = cmd.Arg1 == "start" || cmd.Arg1 == "status" || cmd.Arg1 == "stop" || cmd.Arg1 == "control";
 		if (!known || !character)
 		{
-			LF_AgentHarness.Answer(cmd.Id, "error", "usage: eventscene start <{GUID}fixture.conf> [hour] | status [eventId] | kick | stop (needs a character)");
+			LF_AgentHarness.Answer(cmd.Id, "error", "usage: eventscene start <{GUID}fixture.conf> [hour] | status [eventId] | control <{GUID}prefab> | stop (needs a character)");
 			return true;
 		}
 
@@ -273,8 +287,8 @@ modded class SCR_ChimeraCharacter
 			detail = LF_EventSceneHarness.Start(arg, hour);
 		else if (action == "stop")
 			detail = LF_EventSceneHarness.Stop();
-		else if (action == "kick")
-			detail = LF_EventSceneHarness.Kick();
+		else if (action == "control")
+			detail = LF_EventSceneHarness.Control(arg);
 		else
 			detail = LF_EventSceneHarness.Status(arg);
 

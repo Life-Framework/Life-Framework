@@ -10,13 +10,16 @@ import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 //                                                      the spawn) and two overview pictures (top: north up), to lay a route
 //   relocated-walk-proof [out]                         eventscene start with the pack fixture at 06:00,
 //                                                      then status every 3 s; pictures mid-walk and at
-//                                                      the target; PASS when every walker arrived
+//                                                      the target; PASS when every walker arrived.
+//                                                      --control adds a vanilla civilian on the same route
 // The route is the scene markers in Worlds/CoreOnEveron/CoreOnEveron_Layers/RelocatedWalk.layer.
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const LAYER = join(ROOT, "addons", "LifeFramework", "Worlds", "CoreOnEveron", "CoreOnEveron_Layers", "RelocatedWalk.layer");
 const FIXTURE = "{6C3B1E8A4F2D9705}Configs/Tests/LF_Test_RelocatedWalkFixture.conf";
 const SPAWN = [4471.854, 10535.136];
 const WALK_BUDGET_S = 330;
+// The control walker: vanilla, CIV faction, no LF prefab in between.
+const CONTROL_PREFAB = "{11EB9A0D2A5899EA}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_DenimJacket_1.et";
 
 // Scene markers of the layer: role (Waypoint|Spawn|Target), order, position.
 export function readMarkers(text) {
@@ -77,8 +80,8 @@ async function survey(args) {
 
 async function walk(args) {
   args = [...args];
-  const kick = args.includes("--kick");
-  args = args.filter((a) => a !== "--kick");
+  const control = args.includes("--control");
+  args = args.filter((a) => a !== "--control");
   const out = args[0] ? resolve(String(args[0])) : "";
   if (!existsSync(LAYER)) {
     console.log(`relocated-walk: no route layer at ${LAYER}`);
@@ -123,10 +126,10 @@ async function walk(args) {
       on({ verb: "capture", mode: "world", name: "walk_spawn", x: spawn.x, y: spawn.y + 1, z: spawn.z, ox: 7, oy: 1.8, oz: 7, hour: 12 }, 25000);
       shots.spawn = true;
     }
-    // --kick (diagnosis): activate the group and its agents and pin them to full LOD once.
-    if (kick && !shots.kicked && spawned > 0 && elapsed >= 6) {
-      on({ verb: "eventscene", words: ["kick"] }, 10000);
-      shots.kicked = true;
+    // --control: a stock vanilla civilian on the same route in its own group, once.
+    if (control && !shots.control && spawned > 0) {
+      on({ verb: "eventscene", words: ["control", CONTROL_PREFAB] }, 10000);
+      shots.control = true;
     }
     if (!shots.mid && walking > 0 && elapsed >= 25) {
       // The middle of the route, from the side, a little above eye height.
@@ -150,7 +153,7 @@ async function walk(args) {
 
 export default {
   name: "relocated-walk-proof",
-  usage: "relocated-walk-proof [out] [--kick] | survey [x,z] [radius] [out]   (run in a --mission everon --profile full session)",
+  usage: "relocated-walk-proof [out] [--control] | survey [x,z] [radius] [out]   (run in a --mission everon --profile full session)",
   run: (ctx) => {
     const args = ctx?.args ?? [];
     return args[0] === "survey" ? survey(args.slice(1)) : walk(args);
