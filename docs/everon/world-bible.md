@@ -148,7 +148,7 @@ says how, borrowing layout and pacing ideas from three well-made game worlds.
 | Safe houses: a secure base in each district where you resupply | The hostel, then your own room or house (M8), and the town squares (safe zones, which exist). For an organisation, its hideout |
 | The Dark Zone: high reward, open PvP, you can lose what you carry | Lawless ground, from M7 only (the whole island is policed until the gang chapter). The rule set already exists. The old military sites and the parked Zone idea are the candidates. Better yields and contraband, no police protection, and you can be robbed of everything you carry |
 | Control points: hold a spot, the area changes | Turf (M7): an organisation that holds a place gets something concrete there, such as the fence's best prices, a cut of a chain or a safe stash |
-| The map fills in as you play | Places light up chapter by chapter on the in-game map ([`everon-map.md`](../architecture/everon-map.md)) and on the board on the square, and a player learns the island by working it. The town board and the clerk point you to what is open |
+| The map fills in as you play | Places light up chapter by chapter on the in-game map (the in-game map design, in progress) and on the board on the square, and a player learns the island by working it. The town board and the clerk point you to what is open |
 
 **Two more that fit.**
 
@@ -569,7 +569,7 @@ The maintainer answered the world questions on 2026-11-16:
 5. **Fishing** is a chapter in M6 Making a living.
 6. **No lawless zones yet.** The whole island stays policed until the gang chapter in M7.
 7. **The map** is a fully modded in-game map with waypoints, areas, POI icons and system markers
-   ([`everon-map.md`](../architecture/everon-map.md)). The board on the square stays as well.
+   (the in-game map design, in progress). The board on the square stays as well.
 8. **Buildings.** A vanilla town house is converted where one fits (hostel, town hall, police). A
    purpose-built building goes on a free plot near the square only where nothing fits.
 9. **The public page** stays up.
