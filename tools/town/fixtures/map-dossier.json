@@ -1,0 +1,1180 @@
+{
+ "schema": 1,
+ "place": {
+  "name": "Sample Square",
+  "key": null,
+  "kind": "town",
+  "source": "fixture",
+  "slug": "sample-square",
+  "x": 1000,
+  "y": 12.4,
+  "z": 2000
+ },
+ "radius": 200,
+ "generated": {
+  "at": "2026-11-16T00:00:00.000Z",
+  "tool": "hand-written fixture in the scout's schema 1 (tools/scout/scout.mjs buildDossier)",
+  "command": "none",
+  "gameBuild": "fixture",
+  "world": "none"
+ },
+ "nearbyPlaces": [],
+ "summary": {
+  "buildings": 18,
+  "byType": {
+   "house-town": 7,
+   "shop-clothes": 1,
+   "shop-drug": 1,
+   "shop-general": 1,
+   "kiosk": 1,
+   "house-village": 2,
+   "pub": 1,
+   "chapel": 1,
+   "fuel-station": 1,
+   "garage": 1,
+   "farm-building": 1
+  },
+  "freePlots": 3
+ },
+ "terrain": {
+  "notes": []
+ },
+ "mainStreet": {
+  "road": "Sample street",
+  "roadId": "r01",
+  "buildingsAlong": 8,
+  "at": [
+   1000,
+   2000
+  ],
+  "runs": "E"
+ },
+ "roads": [
+  {
+   "id": "r01",
+   "name": "Sample street",
+   "cls": "asphalt",
+   "points": [
+    [
+     800,
+     1992
+    ],
+    [
+     1000,
+     1992
+    ],
+    [
+     1200,
+     1992
+    ]
+   ],
+   "length": 400
+  }
+ ],
+ "junctions": [],
+ "buildings": [
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/House_Town_Sample_A.et",
+   "path": "Prefabs/Structures/Sample/House_Town_Sample_A.et",
+   "stem": "House_Town_Sample_A",
+   "type": "house-town",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 1012,
+   "y": 12.4,
+   "z": 2014,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 18.4,
+   "bearing": "NE",
+   "footprint": {
+    "source": "measure",
+    "w": 14,
+    "d": 10,
+    "h": 7,
+    "area": 140,
+    "cx": 1012,
+    "cz": 2014,
+    "corners": [
+     [
+      1005,
+      2009
+     ],
+     [
+      1019,
+      2009
+     ],
+     [
+      1019,
+      2019
+     ],
+     [
+      1005,
+      2019
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 1012,
+     "y": 12.5,
+     "z": 2009,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b01"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/House_Town_Sample_Closed.et",
+   "path": "Prefabs/Structures/Sample/House_Town_Sample_Closed.et",
+   "stem": "House_Town_Sample_Closed",
+   "type": "house-town",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 990,
+   "y": 12.4,
+   "z": 1981,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 21.5,
+   "bearing": "SW",
+   "footprint": {
+    "source": "measure",
+    "w": 12,
+    "d": 10,
+    "h": 7,
+    "area": 120,
+    "cx": 990,
+    "cz": 1981,
+    "corners": [
+     [
+      984,
+      1976
+     ],
+     [
+      996,
+      1976
+     ],
+     [
+      996,
+      1986
+     ],
+     [
+      984,
+      1986
+     ]
+    ]
+   },
+   "interior": {
+    "value": "no",
+    "basis": "no door entity found"
+   },
+   "entrances": [],
+   "id": "b02"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/ShopHouse_Sample_clothes.et",
+   "path": "Prefabs/Structures/Sample/ShopHouse_Sample_clothes.et",
+   "stem": "ShopHouse_Sample_clothes",
+   "type": "shop-clothes",
+   "civic": true,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 980,
+   "y": 12.4,
+   "z": 2015,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 25,
+   "bearing": "NW",
+   "footprint": {
+    "source": "measure",
+    "w": 10,
+    "d": 8,
+    "h": 7,
+    "area": 80,
+    "cx": 980,
+    "cz": 2015,
+    "corners": [
+     [
+      975,
+      2011
+     ],
+     [
+      985,
+      2011
+     ],
+     [
+      985,
+      2019
+     ],
+     [
+      975,
+      2019
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 980,
+     "y": 12.5,
+     "z": 2011,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b03"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/House_Town_Sample_C.et",
+   "path": "Prefabs/Structures/Sample/House_Town_Sample_C.et",
+   "stem": "House_Town_Sample_C",
+   "type": "house-town",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 976,
+   "y": 12.4,
+   "z": 2014,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 27.8,
+   "bearing": "NW",
+   "footprint": {
+    "source": "measure",
+    "w": 12,
+    "d": 10,
+    "h": 7,
+    "area": 120,
+    "cx": 976,
+    "cz": 2014,
+    "corners": [
+     [
+      970,
+      2009
+     ],
+     [
+      982,
+      2009
+     ],
+     [
+      982,
+      2019
+     ],
+     [
+      970,
+      2019
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 976,
+     "y": 12.5,
+     "z": 2009,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b04"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/House_Town_Sample_B.et",
+   "path": "Prefabs/Structures/Sample/House_Town_Sample_B.et",
+   "stem": "House_Town_Sample_B",
+   "type": "house-town",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 1030,
+   "y": 12.4,
+   "z": 1996,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 30.3,
+   "bearing": "E",
+   "footprint": {
+    "source": "measure",
+    "w": 12,
+    "d": 9,
+    "h": 7,
+    "area": 108,
+    "cx": 1030,
+    "cz": 1996,
+    "corners": [
+     [
+      1024,
+      1991.5
+     ],
+     [
+      1036,
+      1991.5
+     ],
+     [
+      1036,
+      2000.5
+     ],
+     [
+      1024,
+      2000.5
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 1030,
+     "y": 12.5,
+     "z": 1991.5,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b05"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/ShopHouse_Sample_drug.et",
+   "path": "Prefabs/Structures/Sample/ShopHouse_Sample_drug.et",
+   "stem": "ShopHouse_Sample_drug",
+   "type": "shop-drug",
+   "civic": true,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 1026,
+   "y": 12.4,
+   "z": 2022,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 34.1,
+   "bearing": "NE",
+   "footprint": {
+    "source": "measure",
+    "w": 9,
+    "d": 8,
+    "h": 7,
+    "area": 72,
+    "cx": 1026,
+    "cz": 2022,
+    "corners": [
+     [
+      1021.5,
+      2018
+     ],
+     [
+      1030.5,
+      2018
+     ],
+     [
+      1030.5,
+      2026
+     ],
+     [
+      1021.5,
+      2026
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 1026,
+     "y": 12.5,
+     "z": 2018,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b06"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/ShopHouse_Sample_general.et",
+   "path": "Prefabs/Structures/Sample/ShopHouse_Sample_general.et",
+   "stem": "ShopHouse_Sample_general",
+   "type": "shop-general",
+   "civic": true,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 966,
+   "y": 12.4,
+   "z": 1998,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 34.1,
+   "bearing": "W",
+   "footprint": {
+    "source": "measure",
+    "w": 12,
+    "d": 8,
+    "h": 7,
+    "area": 96,
+    "cx": 966,
+    "cz": 1998,
+    "corners": [
+     [
+      960,
+      1994
+     ],
+     [
+      972,
+      1994
+     ],
+     [
+      972,
+      2002
+     ],
+     [
+      960,
+      2002
+     ]
+    ]
+   },
+   "interior": {
+    "value": "unknown",
+    "basis": "no door entity found, but this type is built to be entered: look at it (`look --interior`)"
+   },
+   "entrances": [],
+   "id": "b07"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/House_Town_Sample_D.et",
+   "path": "Prefabs/Structures/Sample/House_Town_Sample_D.et",
+   "stem": "House_Town_Sample_D",
+   "type": "house-town",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 1036,
+   "y": 12.4,
+   "z": 2018,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 40.2,
+   "bearing": "NE",
+   "footprint": {
+    "source": "measure",
+    "w": 11,
+    "d": 9,
+    "h": 7,
+    "area": 99,
+    "cx": 1036,
+    "cz": 2018,
+    "corners": [
+     [
+      1030.5,
+      2013.5
+     ],
+     [
+      1041.5,
+      2013.5
+     ],
+     [
+      1041.5,
+      2022.5
+     ],
+     [
+      1030.5,
+      2022.5
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 1036,
+     "y": 12.5,
+     "z": 2013.5,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b08"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/Kiosk_Sample.et",
+   "path": "Prefabs/Structures/Sample/Kiosk_Sample.et",
+   "stem": "Kiosk_Sample",
+   "type": "kiosk",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 1004,
+   "y": 12.4,
+   "z": 1954,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 46.2,
+   "bearing": "S",
+   "footprint": {
+    "source": "measure",
+    "w": 3,
+    "d": 3,
+    "h": 7,
+    "area": 9,
+    "cx": 1004,
+    "cz": 1954,
+    "corners": [
+     [
+      1002.5,
+      1952.5
+     ],
+     [
+      1005.5,
+      1952.5
+     ],
+     [
+      1005.5,
+      1955.5
+     ],
+     [
+      1002.5,
+      1955.5
+     ]
+    ]
+   },
+   "interior": {
+    "value": "no",
+    "basis": "no door entity found"
+   },
+   "entrances": [],
+   "id": "b09"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/House_Town_Sample_E.et",
+   "path": "Prefabs/Structures/Sample/House_Town_Sample_E.et",
+   "stem": "House_Town_Sample_E",
+   "type": "house-town",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 958,
+   "y": 12.4,
+   "z": 1970,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 51.6,
+   "bearing": "SW",
+   "footprint": {
+    "source": "measure",
+    "w": 10,
+    "d": 8,
+    "h": 7,
+    "area": 80,
+    "cx": 958,
+    "cz": 1970,
+    "corners": [
+     [
+      953,
+      1966
+     ],
+     [
+      963,
+      1966
+     ],
+     [
+      963,
+      1974
+     ],
+     [
+      953,
+      1974
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 958,
+     "y": 12.5,
+     "z": 1966,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b10"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/House_Village_Sample.et",
+   "path": "Prefabs/Structures/Sample/House_Village_Sample.et",
+   "stem": "House_Village_Sample",
+   "type": "house-village",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 1052,
+   "y": 12.4,
+   "z": 1966,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 62.1,
+   "bearing": "SE",
+   "footprint": {
+    "source": "measure",
+    "w": 9,
+    "d": 8,
+    "h": 7,
+    "area": 72,
+    "cx": 1052,
+    "cz": 1966,
+    "corners": [
+     [
+      1047.5,
+      1962
+     ],
+     [
+      1056.5,
+      1962
+     ],
+     [
+      1056.5,
+      1970
+     ],
+     [
+      1047.5,
+      1970
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 1052,
+     "y": 12.5,
+     "z": 1962,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b11"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/House_Town_Sample_F.et",
+   "path": "Prefabs/Structures/Sample/House_Town_Sample_F.et",
+   "stem": "House_Town_Sample_F",
+   "type": "house-town",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 1060,
+   "y": 12.4,
+   "z": 2038,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 71,
+   "bearing": "NE",
+   "footprint": {
+    "source": "measure",
+    "w": 10,
+    "d": 8,
+    "h": 7,
+    "area": 80,
+    "cx": 1060,
+    "cz": 2038,
+    "corners": [
+     [
+      1055,
+      2034
+     ],
+     [
+      1065,
+      2034
+     ],
+     [
+      1065,
+      2042
+     ],
+     [
+      1055,
+      2042
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 1060,
+     "y": 12.5,
+     "z": 2034,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b12"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/Pub_Sample.et",
+   "path": "Prefabs/Structures/Sample/Pub_Sample.et",
+   "stem": "Pub_Sample",
+   "type": "pub",
+   "civic": true,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 1020,
+   "y": 12.4,
+   "z": 2086,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 88.3,
+   "bearing": "N",
+   "footprint": {
+    "source": "measure",
+    "w": 16,
+    "d": 11,
+    "h": 7,
+    "area": 176,
+    "cx": 1020,
+    "cz": 2086,
+    "corners": [
+     [
+      1012,
+      2080.5
+     ],
+     [
+      1028,
+      2080.5
+     ],
+     [
+      1028,
+      2091.5
+     ],
+     [
+      1012,
+      2091.5
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 1020,
+     "y": 12.5,
+     "z": 2080.5,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b13"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/Chapel_Sample.et",
+   "path": "Prefabs/Structures/Sample/Chapel_Sample.et",
+   "stem": "Chapel_Sample",
+   "type": "chapel",
+   "civic": true,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 920,
+   "y": 12.4,
+   "z": 2062,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 101.2,
+   "bearing": "NW",
+   "footprint": {
+    "source": "measure",
+    "w": 7,
+    "d": 5,
+    "h": 7,
+    "area": 35,
+    "cx": 920,
+    "cz": 2062,
+    "corners": [
+     [
+      916.5,
+      2059.5
+     ],
+     [
+      923.5,
+      2059.5
+     ],
+     [
+      923.5,
+      2064.5
+     ],
+     [
+      916.5,
+      2064.5
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 920,
+     "y": 12.5,
+     "z": 2059.5,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b14"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/House_Village_Ruin.et",
+   "path": "Prefabs/Structures/Sample/House_Village_Ruin.et",
+   "stem": "House_Village_Ruin",
+   "type": "house-village",
+   "civic": false,
+   "home": true,
+   "ruin": true,
+   "name": "",
+   "x": 940,
+   "y": 12.4,
+   "z": 1910,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 108.2,
+   "bearing": "SW",
+   "footprint": {
+    "source": "measure",
+    "w": 8,
+    "d": 8,
+    "h": 7,
+    "area": 64,
+    "cx": 940,
+    "cz": 1910,
+    "corners": [
+     [
+      936,
+      1906
+     ],
+     [
+      944,
+      1906
+     ],
+     [
+      944,
+      1914
+     ],
+     [
+      936,
+      1914
+     ]
+    ]
+   },
+   "interior": {
+    "value": "no",
+    "basis": "a ruin"
+   },
+   "entrances": [],
+   "id": "b15"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/FuelStation_Sample.et",
+   "path": "Prefabs/Structures/Sample/FuelStation_Sample.et",
+   "stem": "FuelStation_Sample",
+   "type": "fuel-station",
+   "civic": true,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 1130,
+   "y": 12.4,
+   "z": 1950,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 139.3,
+   "bearing": "E",
+   "footprint": {
+    "source": "measure",
+    "w": 12,
+    "d": 8,
+    "h": 7,
+    "area": 96,
+    "cx": 1130,
+    "cz": 1950,
+    "corners": [
+     [
+      1124,
+      1946
+     ],
+     [
+      1136,
+      1946
+     ],
+     [
+      1136,
+      1954
+     ],
+     [
+      1124,
+      1954
+     ]
+    ]
+   },
+   "interior": {
+    "value": "yes",
+    "basis": "1 door entity below the building"
+   },
+   "entrances": [
+    {
+     "prefab": "{0000000000000000}Prefabs/Structures/Doors/Door_Sample.et",
+     "x": 1130,
+     "y": 12.5,
+     "z": 1946,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.4
+    }
+   ],
+   "id": "b16"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/Garage_Sample.et",
+   "path": "Prefabs/Structures/Sample/Garage_Sample.et",
+   "stem": "Garage_Sample",
+   "type": "garage",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 1144,
+   "y": 12.4,
+   "z": 2040,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 149.5,
+   "bearing": "E",
+   "footprint": {
+    "source": "measure",
+    "w": 7,
+    "d": 6,
+    "h": 7,
+    "area": 42,
+    "cx": 1144,
+    "cz": 2040,
+    "corners": [
+     [
+      1140.5,
+      2037
+     ],
+     [
+      1147.5,
+      2037
+     ],
+     [
+      1147.5,
+      2043
+     ],
+     [
+      1140.5,
+      2043
+     ]
+    ]
+   },
+   "interior": {
+    "value": "no",
+    "basis": "no door entity found"
+   },
+   "entrances": [],
+   "id": "b17"
+  },
+  {
+   "prefab": "{0000000000000000}Prefabs/Structures/Sample/Barn_Sample.et",
+   "path": "Prefabs/Structures/Sample/Barn_Sample.et",
+   "stem": "Barn_Sample",
+   "type": "farm-building",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 850,
+   "y": 12.4,
+   "z": 2060,
+   "yaw": 0,
+   "facing": "N",
+   "scale": 1,
+   "distance": 161.6,
+   "bearing": "W",
+   "footprint": {
+    "source": "measure",
+    "w": 14,
+    "d": 9,
+    "h": 7,
+    "area": 126,
+    "cx": 850,
+    "cz": 2060,
+    "corners": [
+     [
+      843,
+      2055.5
+     ],
+     [
+      857,
+      2055.5
+     ],
+     [
+      857,
+      2064.5
+     ],
+     [
+      843,
+      2064.5
+     ]
+    ]
+   },
+   "interior": {
+    "value": "no",
+    "basis": "no door entity found"
+   },
+   "entrances": [],
+   "id": "b18"
+  }
+ ],
+ "props": [],
+ "propCounts": {},
+ "freePlots": {
+  "plots": [
+   {
+    "id": "p1",
+    "x": 890,
+    "z": 1940,
+    "width": 30,
+    "depth": 24,
+    "area": 720,
+    "ground": {
+     "min": 12.1,
+     "max": 12.9
+    },
+    "nearestRoad": {
+     "name": "Sample street",
+     "distance": 9
+    },
+    "nearestBuilding": null,
+    "distance": 125.3
+   },
+   {
+    "id": "p2",
+    "x": 1008,
+    "z": 1920,
+    "width": 22,
+    "depth": 18,
+    "area": 396,
+    "ground": {
+     "min": 12.1,
+     "max": 12.9
+    },
+    "nearestRoad": {
+     "name": "Sample street",
+     "distance": 9
+    },
+    "nearestBuilding": null,
+    "distance": 80.4
+   },
+   {
+    "id": "p3",
+    "x": 1070,
+    "z": 2004,
+    "width": 14,
+    "depth": 12,
+    "area": 168,
+    "ground": {
+     "min": 12.1,
+     "max": 12.9
+    },
+    "nearestRoad": {
+     "name": "Sample street",
+     "distance": 9
+    },
+    "nearestBuilding": null,
+    "distance": 70.1
+   }
+  ],
+  "note": "fixture"
+ },
+ "pictures": [],
+ "notes": [
+  "Invented place and numbers: a fixture for tools/validation/town-map-selftest.mjs. No real Everon coordinate."
+ ]
+}

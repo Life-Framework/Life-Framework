@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "kind": "town",
+  "about": "Slots of a town place (docs/architecture/everon-world.md 3.2). Tooling data: no coordinates and no place names. `needs` is what a building must offer; `places` are the LF_Places kinds the core system looks for once the slot is fitted.",
+  "slots": [
+    {
+      "id": "arrival", "required": true, "kit": "arrival", "host": "building",
+      "needs": { "interior": "required", "minArea": 90, "prefer": "large", "maxDistance": 80, "types": ["municipal-office", "house-town", "house-village", "villa", "hotel"] },
+      "places": ["Spawn", "Clerk", "LicenceDesk"]
+    },
+    {
+      "id": "hostel", "required": true, "kit": "hostel", "host": "building",
+      "needs": { "interior": "required", "minArea": 80, "prefer": "large", "maxDistance": 110, "types": ["hotel", "house-town", "villa", "house-village"] },
+      "places": ["HostelBed"]
+    },
+    {
+      "id": "cafe", "required": true, "kit": "cafe", "host": "building",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 90, "types": ["pub", "shop-*", "house-town"] },
+      "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "pub", "stem": "PubVillage_E_2L01_V1" }] },
+      "places": ["CafeTable"]
+    },
+    {
+      "id": "bank", "required": true, "kit": "bank", "host": "building",
+      "needs": { "interior": "required", "minArea": 70, "prefer": "near", "maxDistance": 100, "types": ["house-town", "municipal-office", "villa", "house-village"] },
+      "places": ["BankVault", "BankCounter"]
+    },
+    {
+      "id": "police", "required": true, "kit": "police", "host": "building",
+      "needs": { "interior": "required", "minArea": 80, "prefer": "near", "maxDistance": 110, "types": ["villa", "house-town", "municipal-office", "house-village"] },
+      "places": ["JailCell", "PoliceDesk", "Armoury"]
+    },
+    {
+      "id": "clinic", "required": true, "kit": "clinic", "host": "building",
+      "needs": { "interior": "required", "minArea": 70, "prefer": "near", "maxDistance": 130, "types": ["shop-drug", "house-town", "villa", "house-village"] },
+      "places": ["HospitalSite", "MedicDesk"]
+    },
+    {
+      "id": "general-store", "required": true, "kit": "general-store", "host": "building",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 100, "types": ["shop-general", "shop-*", "house-town"] },
+      "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "shop-general", "stem": "ShopHouse_E_2I01t_clothesstore" }] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "clothing", "required": true, "kit": "clothing", "host": "building",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 100, "types": ["shop-clothes", "shop-*", "house-town"] },
+      "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "shop-clothes", "stem": "ShopHouse_E_2I01t_clothesstore" }] },
+      "places": ["ClothingCounter"]
+    },
+    {
+      "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 110, "types": ["shop-*", "house-town", "house-village"] },
+      "places": ["GunCounter"]
+    },
+    {
+      "id": "fuel", "required": true, "kit": "fuel", "host": "building",
+      "needs": { "interior": "optional", "minArea": 40, "prefer": "far", "types": ["fuel-station"] },
+      "plot": { "minWidth": 16, "minDepth": 14, "prefabs": [{ "type": "fuel-station", "stem": "FuelStation_E_01_building" }] },
+      "places": ["FuelTill"]
+    },
+    {
+      "id": "fence", "required": true, "kit": "fence", "host": "building",
+      "needs": { "interior": "optional", "minArea": 25, "prefer": "far", "types": ["farm-building", "garage", "shed", "industrial-shed", "house-addon"] },
+      "plot": { "minWidth": 12, "minDepth": 10, "prefabs": [{ "type": "garage", "stem": "HouseAddon_Garage_E_01" }] },
+      "places": ["FenceYard"]
+    },
+    {
+      "id": "board", "required": true, "kit": "board", "host": "street",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 60 },
+      "places": ["TownBoard", "MapBoard"]
+    },
+    {
+      "id": "taxi", "required": false, "kit": "taxi", "host": "street",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 70 },
+      "places": ["TaxiRank"]
+    },
+    {
+      "id": "parcel", "required": false, "kit": "parcel", "host": "building",
+      "needs": { "interior": "optional", "minArea": 8, "prefer": "near", "maxDistance": 100, "types": ["kiosk", "shop-*"] },
+      "plot": { "minWidth": 6, "minDepth": 6, "prefabs": [{ "type": "kiosk", "stem": "NewspaperBooth_E_01_redwhite" }] },
+      "places": ["ParcelDepot"]
+    }
+  ]
+}
