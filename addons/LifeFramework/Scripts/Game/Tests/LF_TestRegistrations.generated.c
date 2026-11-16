@@ -74,6 +74,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CharacterSlotsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CharactersPerAccount(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ChessGame(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChessMoves(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPlacedCar(), LF_TestTier.WORLD);
