@@ -52,9 +52,10 @@ class LF_Test_ImpairmentView : LF_Test
 
 		LF_ImpairmentView.SetDebugLevel(55);
 		ctx.True(LF_ImpairmentView.ViewLevel(10) == 55, "a pinned level wins over the replicated one");
-		array<string> done = {};
-		LF_StaticReset.RunBuckets(done, true);
-		ctx.True(done.Contains("LF_ImpairmentView"), "the world-end reset covers the view");
+		// Listing only: running every feature's world-end reset here wipes the placed-entity registries the later
+		// WORLD tests read (the 35 failures that got #2011 reverted). The view's own reset runs below.
+		ctx.True(LF_StaticReset.Registered().Contains("LF_ImpairmentView"), "the world-end reset covers the view");
+		LF_ImpairmentView.ResetStatics();
 		ctx.True(LF_ImpairmentView.ViewLevel(10) == 10, "the reset drops the pin");
 	}
 }
