@@ -62,3 +62,10 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Data:** `LF_EventsConfig.m_aModules` of `LF_EventModuleRef` (id + `.conf`), core and pack overlays merged by id. The `.conf` root class picks the kind: `LF_EventPrecondition` condition, `LF_EventAbort` abort, `LF_EventScene` scene operation (`LF_EventSceneOperation`).
 - **Rules:** a bad ref is logged and skipped, so its phase holds. A scene stages once per phase run and keeps its phase busy until its walkers have left out of sight.
 - **Proof:** `events/module-loader` (WORLD), `everon/arrival-event` (pack leg).
+
+## Scene from a fixture in a session (#2173)
+
+- **Player sees:** nothing; a harness verb for proofs.
+- **Owner and side:** `LF_EventSceneHarness` on the server, asked by the `eventscene` harness verb through the character's dev-gated RPC (like `eventjip`).
+- **Data:** a fixture `.conf` of root `LF_EventsConfig`, laid over `LF_EventOverlay.Get()` like a pack overlay; `[hour]` goes to `LF_EventShell.ForceHour`.
+- **Proof:** `events/scene-harness` (WORLD): applies a fixture, the event starts at the forced hour, refuses no conf, a missing conf and a wrong root, and `stop` restores the list.
