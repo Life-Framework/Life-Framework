@@ -456,9 +456,21 @@ async function verify(cwd, v, deps, { say, step, fail, log, inline = false }) {
 
 // node:https with no agent, not fetch (a fetch origin left open at exit trips a libuv assertion on Windows;
 // tools/host/commands/remote.mjs). 20 s bound.
+// The Workshop page is CDN-cached: right after a publish it showed the old version for minutes while a
+// cache-busted fetch showed the new one. Every request carries a timestamp query and no-cache headers.
+export function cacheBustedRequest(url, now = Date.now()) {
+  const u = new URL(url);
+  u.searchParams.set("t", String(now));
+  return {
+    url: u.href,
+    headers: { "User-Agent": "LifeFramework-release-tool", "Cache-Control": "no-cache", Pragma: "no-cache" },
+  };
+}
+
 function httpsText(url, timeoutMs = 20000) {
   return new Promise((ok, no) => {
-    const q = httpsGet(url, { agent: false, timeout: timeoutMs, headers: { "User-Agent": "LifeFramework-release-tool" } }, (s) => {
+    const req = cacheBustedRequest(url);
+    const q = httpsGet(req.url, { agent: false, timeout: timeoutMs, headers: req.headers }, (s) => {
       if (s.statusCode >= 300 && s.statusCode < 400 && s.headers.location) {
         s.resume();
         return httpsText(new URL(s.headers.location, url).href, timeoutMs).then(ok, no);
