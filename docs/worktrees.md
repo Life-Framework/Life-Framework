@@ -176,6 +176,15 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    `build`, `test --no-build --tier all`, `audit placement --strict`, `e2e --pre-move 502ebf39 --mission playtest`.
    All pass: `green`. A red step reruns at the same head; a pass on the rerun is a flake
    (`tmp/logs/main-guard-flakes.log`), red twice bisects and reverts.
+   **The suite bisect matches the failing-test set (#2052).** At a red head the guard records the failing test names
+   and FAIL lines (`suite red set:` in the log, `failing` and `failLines` in `lastResult`). The bisect reruns just
+   those tests at each candidate and counts a commit as red only when it fails one of them; another test failing there,
+   or a test that does not exist yet, is green for the set. So an earlier merge that broke different tests (#2011,
+   twice) is never blamed. When no single merge explains the set it stops: the culprit fails only some of the tests
+   (the rest fail from a later merge), or none of them fail at the newest merge (a flake or another cause). The log
+   gets a `mixed causes: ...` line, the head's `main-guard/suite` status says `red: suite failed; mixed causes ...`,
+   and nothing is reverted. A suite red with no readable test name is not reverted either. Build, audit and e2e keep
+   red/green. A compile break and a machine exit (logoff, budget kill) are handled as before.
    **Stage 2b, the town tests (warn-only).** The 12 tests of `tools/test/town-tests.json` (the roadmap scenarios, the
    narrative loop, the sign coverage) are not in the suite: `test --tier all`, `ci`, `wt gate` and `wt ship` skip them.
    After the suite goes `green`, the guard runs them once as their own stage, `test --no-build --town` (one boot of the
@@ -195,7 +204,9 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    comment on #N, its issues reopened as `regression`, one line to the staff webhook (`LF_STAFF_WEBHOOK_URL` or
    `"mainGuard": { "webhookUrl" }` in `lf.local.json`).
 
-Never reverted: a revert; a merge that was on main when the guard first started; a PR twice; **a placement audit red**
+The placement steps are `audit placement --strict` (town findings warn) and `audit placement --grid --strict` (GridWorld; clean since #1814, any finding is red).
+
+Never reverted: a revert; a merge that was on main when the guard first started; a PR twice; **a placement audit red, town or grid**
 (town layout findings warn on every branch, #1872: the guard opens a fix-card issue instead); **a `town-maintainer-*`
 PR for anything but a compile break** (a test or audit failure gets a fix card). It never pushes `main`.
 `LF_MAIN_GUARD=0` stops the worker. Log: `tmp/logs/main-guard.log`.

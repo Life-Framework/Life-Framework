@@ -10,6 +10,7 @@ export const STEPS = [
   { name: "build", args: ["build"], recheck: () => ["build"] },
   { name: "suite", args: ["test", "--no-build", "--tier", "all"], recheck: (failing) => (failing.length ? ["test", "--no-build", "--no-cache", "--only", failing.join(",")] : ["test", "--no-build", "--no-cache", "--tier", "all"]) },
   { name: "placement audit", args: ["audit", "placement", "--strict"], recheck: () => ["audit", "placement", "--strict"] },
+  { name: "grid placement audit", args: ["audit", "placement", "--grid", "--strict"], recheck: () => ["audit", "placement", "--grid", "--strict"] },
   { name: "pre-move e2e", args: PRE_MOVE, recheck: () => PRE_MOVE },
 ];
 
@@ -78,6 +79,59 @@ export function failingTests(text) {
     if (m) out.add(m[1].replace(/[:,]$/, ""));
   }
   return [...out];
+}
+
+// The FAIL lines of a run, as recorded at the red head (the "check lines" beside the test names): a log line per
+// failing test or check, trimmed, at most `max`.
+export function failLines(text, max = 12) {
+  const out = [];
+  for (const line of String(text ?? "").split(/\r?\n/)) {
+    if (/\bFAIL\b/.test(line)) out.push(line.trim().slice(0, 200));
+    if (out.length >= max) break;
+  }
+  return out;
+}
+
+// Which of the recorded failing tests `failed` (what one probe run failed) hits. A probe that fails other tests,
+// or fails with no parseable test line (a test that does not exist yet, a test-plan problem), hits nothing.
+export function setHits(set, failed) {
+  const want = new Set(set ?? []);
+  return [...new Set(failed ?? [])].filter((n) => want.has(n));
+}
+
+// The suite bisect (#2052). Red/green alone blamed the earliest red commit even when it failed other tests than
+// today's (#2011, twice). Here a commit is red only when it fails one of the recorded tests `set` (the failing tests
+// at the red head). probe(c) -> the failing test names of one run of `set` at c.
+// Returns { culprit, tested, hits, missing, stop }. `stop` is a reason string when the guard must not revert:
+//   - no candidate fails any recorded test (a different set: nothing is blamed),
+//   - the earliest merge that fails them explains only part of the set (mixed causes: a later merge breaks the rest).
+// The last candidate is assumed red by the bisect (the head failed twice), so a culprit it did not run is probed at
+// the end; a last candidate that is not the head itself is probed first.
+export async function bisectBySet(list, set, probe, { head = null } = {}) {
+  const hits = new Map();
+  const none = (stop) => ({ culprit: null, tested: [], hits, missing: [...set], stop });
+  if (!list.length) return none("no merge since the last green head to blame");
+  const last = list[list.length - 1];
+  if (head && last.sha !== head) {
+    const h = setHits(set, await probe(last));
+    hits.set(last.sha, h);
+    if (!h.length) return none(`mixed causes: none of the failing tests (${set.slice(0, 3).join(", ")}) fail at the newest merge ${last.sha.slice(0, 8)}`);
+  }
+  const b = await bisect(list, async (c) => {
+    if (hits.has(c.sha)) return hits.get(c.sha).length > 0;
+    const h = setHits(set, await probe(c));
+    hits.set(c.sha, h);
+    return h.length > 0;
+  });
+  // The bisect assumes its last candidate red without running it; the blame is only as good as that run, so an
+  // untested culprit is probed now, and a pass there (a flake, or another cause) blames nothing.
+  if (b.culprit && !hits.has(b.culprit.sha)) hits.set(b.culprit.sha, setHits(set, await probe(b.culprit)));
+  const got = b.culprit ? hits.get(b.culprit.sha) : [];
+  if (b.culprit && !got.length) return { ...b, culprit: null, hits, missing: [...set], stop: `mixed causes: none of the failing tests (${set.slice(0, 3).join(", ")}) fail at ${b.culprit.sha.slice(0, 8)} on the bisect rerun` };
+  const missing = set.filter((n) => !got.includes(n));
+  const r = { ...b, hits, missing, stop: null };
+  if (b.culprit && missing.length) r.stop = `mixed causes: ${b.culprit.sha.slice(0, 8)} (${String(b.culprit.subject ?? "").slice(0, 50)}) fails only ${got.join(", ")}; ${missing.slice(0, 3).join(", ")} fail from another merge`;
+  return r;
 }
 
 // May the guard revert this merge? Never a revert, never a merge from before the guard started, never one with
@@ -177,7 +231,7 @@ export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;
 // Returns the reason when the guard must open a fix card instead, or null.
 export function fixCardInstead(c, step) {
   if (!c || step === "compile") return null;
-  if (step === "placement audit") return "a placement audit finding is fixed forward, never reverted (town layout warns, #1872)";
+  if (step === "placement audit" || step === "grid placement audit") return "a placement audit finding is fixed forward, never reverted (town layout warns, #1872)";
   const br = c.branch || branchOfMerge(c.subject);
   if (MAINTAINER_BRANCH.test(br)) return `#${prOfMerge(c.subject)} is the maintainer's town edit (${br}); only a compile break reverts it`;
   return null;
