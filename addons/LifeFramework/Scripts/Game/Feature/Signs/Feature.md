@@ -111,3 +111,14 @@ debug text every editor frame while the sign is in view (`_WB_AfterWorldUpdate`,
 right-click menu has Edit sign text (opens `LF_Signs.conf`) and Reload sign text. BuildFace
 does run in edit mode, but the faces still draw blank there, so the editor does not build them.
 Guide: `docs/tooling/sign-editing.md`.
+
+## Board provider (#1945)
+
+One board component for every server-answered board: `LF_BoardProvider` (a kind: `GetKind`,
+`GetReadAction`, server `Answer(playerId)`, client `Paint(answer)`), registered by a
+`modded class LF_BoardProviderSet` in the feature's own file, found through `LF_BoardProviders`.
+The read is one RPC pair on `SCR_PlayerController` (`LF_AskBoard(kind)` ->
+`RpcAsk_LF_Board`; server checks the kind exists and the reader stands at the provider's read
+action; `RpcDo_LF_ShowBoard` carries `LF_BoardAnswer`: a flag plus flat text and int arrays).
+Nothing is cached: an answer is built per read and dropped after painting. The wanted board is
+the first kind (`LF_WantedBoardProvider`, kind `wanted`, #758). Test `boards/provider`.

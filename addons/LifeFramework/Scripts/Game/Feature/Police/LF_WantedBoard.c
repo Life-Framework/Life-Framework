@@ -10,6 +10,10 @@
 class LF_WantedBoard
 {
 	static const string FEATURE = "WantedBoard";
+	//! The board kind the wanted board registers under (LF_BoardProviders).
+	static const string KIND = "wanted";
+	//! Texts per poster in a board answer: name, offence, clothing, vehicle, place.
+	static const int POSTER_FIELDS = 5;
 	static const string READ_ACTION = "LF_WantedBoardReadAction";
 	static const string STARS_ON = "*";
 	static const string STARS_OFF = "-";
@@ -73,22 +77,18 @@ class LF_WantedBoard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server body of the read RPC. The reader must stand at a board; the server finds it, the
-	//! client names nothing.
+	//! Server body of the read: the shared board read (LF_BoardProviders) for the wanted kind. The
+	//! reader must stand at a board; the server finds it, the client names nothing.
 	static void ServerRead(SCR_PlayerController controller)
 	{
-		if (!controller)
-			return;
+		LF_BoardProviders.ServerRead(controller, KIND);
+	}
 
-		int playerId = controller.GetPlayerId();
-		IEntity reader = controller.GetControlledEntity();
-		
-		if (!reader || !LF_ActionSite.IsNear(reader.GetOrigin(), LF_PoliceConfig.BoardReadDistance(), READ_ACTION))
-		{
-			LF_Debug.Warn(FEATURE, string.Format("board read refused for player %1: not at a wanted board", playerId));
-			return;
-		}
-
+	//------------------------------------------------------------------------------------------------
+	//! Server: the answer for one reader, built fresh per read: the posters this reader may see and,
+	//! for an officer, the dispatch log under them.
+	static LF_BoardAnswer BuildAnswer(int playerId)
+	{
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		LF_PlayerAccount account;
 		if (accounts)
@@ -116,7 +116,78 @@ class LF_WantedBoard
 		}
 
 		LF_Debug.Info(FEATURE, string.Format("board read by player %1: police=%2 posters=%3 dispatches=%4", playerId, police, count, dispatches.Count()));
-		controller.LF_ShowWantedBoard(police, names, offences, clothing, vehicles, places, levels, dispatches);
+		return Pack(police, names, offences, clothing, vehicles, places, levels, dispatches);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The poster arrays and the dispatch log as one flat answer: per poster POSTER_FIELDS texts (name,
+	//! offence, clothing, vehicle, place) in m_aTexts and its level in m_aNumbers; the dispatch entries
+	//! follow the posters in m_aTexts.
+	static LF_BoardAnswer Pack(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels, array<string> dispatches)
+	{
+		LF_BoardAnswer answer = new LF_BoardAnswer();
+		answer.m_bPrivileged = police;
+		int count;
+		if (offences)
+			count = offences.Count();
+
+		bool sizesMatch = names && clothing && vehicles && places && levels && names.Count() == count && clothing.Count() == count && vehicles.Count() == count && places.Count() == count && levels.Count() == count;
+		if (!sizesMatch)
+		{
+			LF_Debug.Error(FEATURE, "board answer has no posters: poster arrays differ in size");
+			count = 0;
+		}
+
+		for (int i = 0; i < count; i++)
+		{
+			answer.m_aTexts.Insert(names[i]);
+			answer.m_aTexts.Insert(offences[i]);
+			answer.m_aTexts.Insert(clothing[i]);
+			answer.m_aTexts.Insert(vehicles[i]);
+			answer.m_aTexts.Insert(places[i]);
+			answer.m_aNumbers.Insert(levels[i]);
+		}
+
+		if (dispatches)
+			answer.m_aTexts.InsertAll(dispatches);
+
+		return answer;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client, no UI: the poster arrays and dispatch entries out of an answer (the inverse of Pack). A
+	//! text array shorter than its posters need yields no posters.
+	static void Unpack(notnull LF_BoardAnswer answer, notnull array<string> names, notnull array<string> offences, notnull array<string> clothing, notnull array<string> vehicles, notnull array<string> places, notnull array<int> levels, notnull array<string> dispatches)
+	{
+		names.Clear();
+		offences.Clear();
+		clothing.Clear();
+		vehicles.Clear();
+		places.Clear();
+		levels.Clear();
+		dispatches.Clear();
+		int count = answer.m_aNumbers.Count();
+		if (answer.m_aTexts.Count() < count * POSTER_FIELDS)
+		{
+			LF_Debug.Error(FEATURE, string.Format("board answer dropped: %1 posters need %2 texts, got %3", count, count * POSTER_FIELDS, answer.m_aTexts.Count()));
+			return;
+		}
+
+		for (int i = 0; i < count; i++)
+		{
+			int at = i * POSTER_FIELDS;
+			names.Insert(answer.m_aTexts[at]);
+			offences.Insert(answer.m_aTexts[at + 1]);
+			clothing.Insert(answer.m_aTexts[at + 2]);
+			vehicles.Insert(answer.m_aTexts[at + 3]);
+			places.Insert(answer.m_aTexts[at + 4]);
+			levels.Insert(answer.m_aNumbers[i]);
+		}
+
+		for (int line = count * POSTER_FIELDS; line < answer.m_aTexts.Count(); line++)
+		{
+			dispatches.Insert(answer.m_aTexts[line]);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -293,31 +364,25 @@ class LF_WantedBoard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client: the server's answer arrived; open the card of posters.
-	static void OpenCard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels, array<string> dispatches = null)
+	//! Client: logs the posters and dispatch lines an opened card shows (the server's answer was
+	//! painted by LF_WantedBoardProvider.Paint and opened by LF_BoardProviders.Open).
+	static void LogCard(notnull LF_BoardAnswer answer)
 	{
-		if (!OpenParts(BuildParts(police, names, offences, clothing, vehicles, places, levels, dispatches)))
-			return;
-
-
-		int count;
-		if (offences)
-			count = offences.Count();
-
-		LF_Debug.Info(FEATURE, string.Format("wanted card open: police=%1 posters=%2", police, count));
-		if (dispatches)
+		array<string> names = {};
+		array<string> offences = {};
+		array<string> clothing = {};
+		array<string> vehicles = {};
+		array<string> places = {};
+		array<int> levels = {};
+		array<string> dispatches = {};
+		Unpack(answer, names, offences, clothing, vehicles, places, levels, dispatches);
+		LF_Debug.Info(FEATURE, string.Format("wanted card open: police=%1 posters=%2", answer.m_bPrivileged, offences.Count()));
+		foreach (int line, string entry : dispatches)
 		{
-			foreach (int line, string entry : dispatches)
-			{
-				LF_Debug.Info(FEATURE, string.Format("dispatch line %1: %2", line, entry));
-			}
+			LF_Debug.Info(FEATURE, string.Format("dispatch line %1: %2", line, entry));
 		}
 
-		bool sizesMatch = names && clothing && vehicles && places && levels && names.Count() == count && clothing.Count() == count && vehicles.Count() == count && places.Count() == count && levels.Count() == count;
-		if (!sizesMatch)
-			return;
-
-		for (int i = 0; i < count; i++)
+		for (int i = 0; i < offences.Count(); i++)
 		{
 			LF_Debug.Info(FEATURE, string.Format("poster %1: name='%2' offence=%3 level=%4 clothing='%5' vehicle='%6' place='%7'", i, names[i], offences[i], levels[i], clothing[i], vehicles[i], places[i]));
 		}
@@ -331,6 +396,55 @@ class LF_WantedBoard
 
 		s_Screen.Close();
 		s_Screen = null;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The wanted board as a board kind (LF_BoardProviders): the server answers with the posters this
+//! reader may see, the client paints them.
+class LF_WantedBoardProvider : LF_BoardProvider
+{
+	override string GetKind()
+	{
+		return LF_WantedBoard.KIND;
+	}
+
+	override string GetReadAction()
+	{
+		return LF_WantedBoard.READ_ACTION;
+	}
+
+	override LF_BoardAnswer Answer(int playerId)
+	{
+		return LF_WantedBoard.BuildAnswer(playerId);
+	}
+
+	override array<ref LF_UIPart> Paint(notnull LF_BoardAnswer answer)
+	{
+		array<string> names = {};
+		array<string> offences = {};
+		array<string> clothing = {};
+		array<string> vehicles = {};
+		array<string> places = {};
+		array<int> levels = {};
+		array<string> dispatches = {};
+		LF_WantedBoard.Unpack(answer, names, offences, clothing, vehicles, places, levels, dispatches);
+		return LF_WantedBoard.BuildParts(answer.m_bPrivileged, names, offences, clothing, vehicles, places, levels, dispatches);
+	}
+
+	override void OnOpened(notnull LF_BoardAnswer answer)
+	{
+		LF_WantedBoard.LogCard(answer);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+modded class LF_BoardProviderSet
+{
+	override void Collect(notnull array<ref LF_BoardProvider> providers)
+	{
+		super.Collect(providers);
+		providers.Insert(new LF_WantedBoardProvider());
 	}
 }
 
@@ -410,53 +524,8 @@ class LF_WantedBoardReadAction : ScriptedUserAction
 
 		LF_WantedBoard.SetPendingBoard(pOwnerEntity.GetID());
 		if (m_sService.IsEmpty())
-			controller.LF_AskWantedBoard();
+			controller.LF_AskBoard(LF_WantedBoard.KIND);
 		else
 			controller.LF_AskServiceBoard(m_sService);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! Wanted board bridge on the player controller (owned by the reader from join).
-modded class SCR_PlayerController
-{
-	//------------------------------------------------------------------------------------------------
-	//! Client: ask the server for the posters of the board this player stands at.
-	void LF_AskWantedBoard()
-	{
-		if (Replication.IsServer())
-			RpcAsk_LF_WantedBoard();
-		else
-			Rpc(RpcAsk_LF_WantedBoard);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server: send this player the posters.
-	void LF_ShowWantedBoard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels, array<string> dispatches)
-	{
-		if (LF_IsLocalController())
-			RpcDo_LF_ShowWantedBoard(police, names, offences, clothing, vehicles, places, levels, dispatches);
-		else
-			Rpc(RpcDo_LF_ShowWantedBoard, police, names, offences, clothing, vehicles, places, levels, dispatches);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_WantedBoard()
-	{
-		LF_WantedBoard.ServerRead(this);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_LF_ShowWantedBoard(bool police, array<string> names, array<string> offences, array<string> clothing, array<string> vehicles, array<string> places, array<int> levels, array<string> dispatches)
-	{
-		if (!GetGame().GetWorkspace())
-		{
-			LF_Debug.Error(LF_WantedBoard.FEATURE, "wanted card not opened: no workspace on this machine");
-			return;
-		}
-
-		LF_WantedBoard.OpenCard(police, names, offences, clothing, vehicles, places, levels, dispatches);
 	}
 }

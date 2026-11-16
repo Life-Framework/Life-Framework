@@ -7,6 +7,10 @@
 // the grid:<slug> sign id; validate-world-zones reports two claims on one cell, a grid prop outside
 // its cell, a claim with no layer and a grid layer with no claim; the guard fails a slice that edits
 // a town layer (core or pack) and passes a town- pass, a baselined branch and a grid layer edit.
+// Open PR claims (2026-11-16): grid place and list skip or show a cell an OPEN PR claims, validate only warns
+// (gh stubbed, the reader injected).
+// red-proof: with tools/commands/grid.mjs reverted to its pre-fix text (no open-PR reader) this printed 6 FAILs, from
+// "grid place avoids a cell an open PR claims" to "grid list flags two open PRs on one cell" (2026-11-16); fixed, it passes.
 // red-proof: with checkGuard's town- test made always true (`TOWN_PASS.test(slug) || true`) this printed
 // "FAIL a slice that edits Street_Hospital.layer is refused" and exited 1 (2026-11-15); restored, it passes.
 
@@ -16,7 +20,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
 import { main as gridMain, yardLayer } from "../commands/grid.mjs";
-import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, gapSide, inGrid, layerOfSlug, lookArea, mainClaims as mainClaimsOf, rowLine, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
+import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, gapSide, inGrid, layerOfSlug, lookArea, mainClaims as mainClaimsOf, openPrClaims, rowLine, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
 import { checkClaims, checkFreeze, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
 
 let failed = 0;
@@ -170,6 +174,95 @@ try {
     ok(e.some((x) => /signs\.json/.test(x) && /c2r4/.test(x) && /origin\/main/.test(x) && /orgs/.test(x)), `a claim on a cell origin/main gives to another slice is reported (${e.join("; ")})`);
   } finally {
     rmSync(r3, { recursive: true, force: true });
+  }
+}
+
+// ---- claims in flight: open PRs count as taken (#2014 `jobs` and #2016 `shooting-range` both took c0r6)
+{
+  const dir = mkdtempSync(join(tmpdir(), "lf-grid-pr-"));
+  try {
+    const cache = join(dir, "cache.json");
+    const calls = [];
+    const gh = (cmd, args) => {
+      calls.push(args.join(" "));
+      if (args[0] === "pr") {
+        return { status: 0, stdout: JSON.stringify([
+          { number: 2014, headRefName: "ws/jobs", headRefOid: "aaa", files: [{ path: `${CELLS_DIR}/jobs.json` }, { path: "docs/features/jobs.md" }] },
+          { number: 2016, headRefName: "ws/shooting-range", headRefOid: "bbb", files: [{ path: `${CELLS_DIR}/shooting-range.json` }] },
+          { number: 2017, headRefName: "ws/gone", headRefOid: "ccc", files: [{ path: `${CELLS_DIR}/gone.json` }] },
+          { number: 2018, headRefName: "ws/tools-only", headRefOid: "ddd", files: [{ path: "tools/x.mjs" }] },
+        ]) };
+      }
+      const m = args[args.length - 1].match(/cells\/(.+)\.json\?ref=/);
+      if (m[1] === "gone") return { status: 1, stdout: "", stderr: "404" }; // the PR deletes its claim (grid free)
+      return { status: 0, stdout: mainClaim(m[1], "c0r6") };
+    };
+    let t = 1000;
+    const read = (extra = {}) => openPrClaims(dir, { run: gh, cacheFile: cache, now: () => t, ...extra });
+    let r = read();
+    ok(r.claims.length === 2 && r.claims.every((c) => c.cell === "c0r6") && r.claims.some((c) => c.slug === "jobs" && c.pr === 2014 && c.branch === "ws/jobs") && r.claims.some((c) => c.slug === "shooting-range" && c.pr === 2016), `open PR claims are read with their PR numbers (got ${JSON.stringify(r.claims)})`);
+    ok(r.note === "" && !r.cached, "a clean read has no note");
+    const n = calls.length;
+    t += 30000;
+    r = read();
+    ok(r.cached && calls.length === n && r.claims.length === 2, "a second read inside the TTL is served from the cache with no gh calls");
+    ok(read({ exclude: { branch: "ws/jobs" } }).claims.map((c) => c.slug).join() === "shooting-range", "the caller's own PR is left out");
+    t += 61000;
+    r = read();
+    ok(!r.cached && calls.length > n, "an expired cache asks GitHub again");
+    const none = openPrClaims(dir, { run: () => ({ status: null, error: new Error("spawn gh ENOENT") }), cacheFile: join(dir, "none.json") });
+    ok(none.claims.length === 0 && /could not read the claims of open PRs/.test(none.note) && /ENOENT/.test(none.note), `no gh is a note, not a throw (got ${none.note})`);
+    const junk = openPrClaims(dir, { run: () => ({ status: 0, stdout: "not json" }), cacheFile: join(dir, "junk.json") });
+    ok(junk.claims.length === 0 && junk.note !== "", "an unreadable gh answer is a note, not a throw");
+
+    // grid place and list through the injected reader (the same seam `gh` plugs into)
+    const root4 = join(dir, "tree");
+    put(root4, `${GRID_LAYERS}/Annex.layer`, "");
+    const natural2 = allocate("race-probe");
+    const inFlight = { claims: [{ file: `${CELLS_DIR}/other-pr.json`, slug: "other-pr", cell: natural2.id, pr: 99, branch: "ws/other-pr" }], note: "" };
+    const realLog2 = console.log;
+    const run2 = async (reader, ...argv) => {
+      const out = [];
+      console.log = (...a) => out.push(a.join(" "));
+      try {
+        return { code: await gridMain(argv, { root: root4, openPrClaims: () => reader }), out };
+      } finally {
+        console.log = realLog2;
+      }
+    };
+    let g = await run2(inFlight, "place", "race-probe", "--dry", "--no-fetch");
+    ok(g.code === 0 && !g.out.some((l) => l.includes(`-> cell ${natural2.id} `)), `grid place avoids a cell an open PR claims (${natural2.id}); got ${g.out.join(" | ")}`);
+    g = await run2(inFlight, "place", "race-probe", "--dry", "--no-fetch", "--cell", natural2.id);
+    ok(g.code === 1 && g.out.some((l) => /open PR #99/.test(l)), `grid place --cell refuses a cell an open PR claims (${g.out.join(" | ")})`);
+    g = await run2({ claims: [{ ...inFlight.claims[0], slug: "race-probe" }], note: "" }, "place", "race-probe", "--dry", "--no-fetch");
+    ok(g.code === 1 && g.out.some((l) => /open PR #99/.test(l) && /race-probe/.test(l)), `grid place refuses a slug an open PR already claims (${g.out.join(" | ")})`);
+    g = await run2({ claims: [], note: "could not read the claims of open PRs (spawn gh ENOENT); cells claimed in flight were not checked" }, "place", "race-probe", "--dry", "--no-fetch");
+    ok(g.code === 0 && g.out.some((l) => /warning: could not read the claims of open PRs/.test(l)) && g.out.some((l) => l.includes(`-> cell ${natural2.id} `)), `no gh: a warning, and the claim still goes ahead (${g.out.join(" | ")})`);
+    g = await run2(inFlight, "list", "--no-fetch");
+    ok(g.out.some((l) => /other-pr/.test(l) && /open PR #99/.test(l) && l.includes(natural2.id)), `grid list shows the in-flight claim with its PR number (${g.out.slice(0, 4).join(" | ")})`);
+    g = await run2({ claims: [{ ...inFlight.claims[0], cell: "c1r1" }, { file: "x", slug: "twin", cell: "c1r1", pr: 100, branch: "ws/twin" }], note: "" }, "list", "--no-fetch");
+    ok(g.out.some((l) => /twin/.test(l) && /CLASH with other-pr/.test(l)), `grid list flags two open PRs on one cell (${g.out.join(" | ")})`);
+    // offline: --no-fetch with no injected reader never calls gh
+    const quiet = console.log;
+    console.log = () => {};
+    try {
+      g = await gridMain(["list", "--no-fetch"], { root: root4 });
+    } finally {
+      console.log = quiet;
+    }
+    ok(g === 0, "grid list --no-fetch is offline and still works");
+
+    // validate: another open PR's claim is a warning, never an error
+    const root5 = join(dir, "tree5");
+    put(root5, `${CELLS_DIR}/signs.json`, claim("signs", "c2r4"));
+    put(root5, `${GRID_LAYERS}/${layerOfSlug("signs")}`, yardLayer("signs", { id: "c2r4", col: 2, row: 4, ...cellBounds(2, 4) }, P));
+    const other = { file: `${CELLS_DIR}/orgs.json`, slug: "orgs", cell: "c2r4", pr: 77, branch: "ws/orgs" };
+    const v = checkClaims(root5, { prClaims: [other] });
+    ok(v.errors.length === 0 && v.warnings.length === 1 && /#77/.test(v.warnings[0]) && /orgs/.test(v.warnings[0]) && /c2r4/.test(v.warnings[0]), `a cell another open PR claims is a warning, not an error (${JSON.stringify(v)})`);
+    ok(checkClaims(root5, { prClaims: [{ ...other, slug: "signs" }, { ...other, cell: "c3r3" }] }).warnings.length === 0, "the same slug, or another cell, in an open PR warns nothing");
+    ok(checkClaims(root5).warnings.length === 0, "without open PR claims the check is as before");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
 }
 

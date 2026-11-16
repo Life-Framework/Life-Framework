@@ -762,7 +762,7 @@ class LF_PoliceConfig
 				if (!prefab.IsEmpty())
 					return prefab;
 
-				LF_Debug.Error("Dispatch", string.Format("alarm kind '%1' has no prefab; the plain siren sounds", resolved));
+				LF_Debug.Warn("Dispatch", string.Format("alarm kind '%1' has no prefab; the plain siren sounds", resolved));
 			}
 		}
 

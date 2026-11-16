@@ -75,7 +75,17 @@
   The owner reads `LF_CharacterSurvivalComponent.GetReplicatedImpairment()`, an
   owner-only RplProp bumped on a 5-point change, start or end. Logs
   `[LFDebug:Impairment]`. Test: `survival/impairment`.
-- ⚠️ No drink prefab carries the effect yet: the beer wiring is a later #1011 slice.
+- ✅ A drink's numbers come from a table (#2002): `LF_DrinkImpairmentTable` reads
+  `Configs/Survival/LF_DrinkImpairment.conf`, rows keyed by the drink's prefab GUID
+  (strength, duration, curve, cap), and a pack overlays rows with the override verbs
+  (`m_sOp` add, replace, patch, remove) like any other list. The core file ships no
+  rows; `LF_ConsumableEffectImpair` uses the row for the consumed item's exact prefab
+  and its own attributes when there is none. A row naming a prefab that does not load
+  logs `LF_Debug.Error` (`[LFDebug:Impairment]`) and is skipped. Pack-only: no owner
+  `config.json` section yet. Test: `survival/drink-impairment-table`.
+- ✅ `BeerBottle.et` and `Moonshine.et` (`Prefabs/Items/Drinks/`, #2001) are `Drink_Base` drinks that carry the
+  effect at its defaults (no table row yet); the engine takes one consumable effect per item, so they restore no
+  thirst. Test: `drinks/alcohol`.
 
 ### `LF_ImpairmentView` — `Feature/Survival/LF_ImpairmentView.c` (#1920)
 - ✅ While the owner's replicated impairment level is above zero their view sways and

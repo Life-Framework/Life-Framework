@@ -11,6 +11,12 @@ argument, and `place on|against|ground` aimed at a grid entity, resolve to GridW
 other layer name is a DebugWorld or pack-town layer. Only a town-placement pass places in town
 (`docs/architecture/world-zones.md`).
 
+The audit follows the target: a command that writes or moves a `Grid_*.layer` entity lists GridWorld's own
+layers, boots GridWorld and judges at the grid bar, exactly as `tools\cli audit placement --grid` does (props
+stand on the ground and are reachable; no roads, no town doors, no overlap or tilt verdicts). Any other layer
+is audited in the playtest world as before. In the grid a prop counts as floating by its bounds bottom and as sunk only when its pivot is under too, as the audit has it (a label sign's pole goes into the gravel mound by its cell). One command works in one world; a mix is refused. So
+`grid place` and `place on|against|ground --layer Grid_<slug>.layer` need no `--no-verify`.
+
 Do not type coordinates into a `.layer` for a prop. Every failure in the table below came from a
 typed number that nobody could see.
 

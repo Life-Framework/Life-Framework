@@ -42,8 +42,12 @@ tools\cli look grid:<slug>             the look pictures of that cell, from its 
    another slice merged still avoids that slice's cell (#1905 and #1906 both took c2r4 when each only
    looked at its own tree). It refuses a slug `origin/main` already claims. `--no-fetch` (also on
    `grid list`) reads the `origin/main` the clone already has; a failed fetch prints a note and goes on.
-   Two slices that claim before either merges can still pick one cell; `validate-world-zones` catches
-   that (below).
+   Claims in flight count as taken too: `place` and `grid list` read the claim files of every OPEN PR
+   (`gh pr list`, cached 60 s in the OS temp dir; #2014 and #2016 both took c0r6 because a PR's claim is
+   not on `origin/main` until it merges). `list` shows them with their PR numbers and flags two open
+   PRs on one cell. No `gh` or token prints a warning and goes on; `--no-fetch` skips it (offline).
+   A claim made before the other slice's PR is open (a worktree not yet shipped) can still clash; `validate-world-zones`
+   catches that (below).
 2. Writes `Grid_<slug>.layer` with the cell's yard: a 10 m net-fence square, 1 m in from the cell's
    edges, built from seven 5 m runs. Half the side facing the annex centre is left open as the way
    in, and a pole-plate sign stands just outside that gap. The sign id is `grid:<slug>`, and
@@ -68,9 +72,12 @@ stand inside its own cell.
   cannot share a cell: each layer's entities must stand inside its own claim's cell, and claims are unique;
 - a claim names a cell `origin/main` gives to another slug (read from git; CI fetches `origin/main`, a
   local `validate` uses the one the clone has);
+  (a cell another OPEN PR claims is only a warning, read with `gh` in CI: a flake never blocks a merge);
 - a claim has no layer in `GridWorld_Layers/`, or a `Grid_*.layer` there has no claim;
 - a grid layer places anything outside its cell;
 - a `Grid_*.layer` is in `DebugWorld_Layers/` (the grid lives in GridWorld).
+
+`validate-grid-world` adds one rule: every entity in a GridWorld legacy layer stands in a claimed cell. Police, Crimes, Jobs and NPCs (#1811) each moved into their own cell (`police`, `crimes`, `jobs`, `npcs`) with their entity names unchanged, and their free-standing layers are deleted. The legacy layers still free-standing are listed in `PENDING` in that file; a slice that moves one removes its line.
 
 ## The frame
 

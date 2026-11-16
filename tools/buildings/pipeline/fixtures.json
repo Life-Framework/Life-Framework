@@ -89,6 +89,11 @@
    "center": [0, -0.005],
    "mesh": "{E443663E5241622A}Assets/Items/Equipment/Maps/Map_Paper_01/Map_Paper_01_folded.xob"
   },
+  "Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et": {
+   "size": [0.315, 0.075, 0.339],
+   "center": [-0.023, -0.055],
+   "mesh": "{694E923474190369}Assets/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_item.xob"
+  },
   "Prefabs/Items/Drinks/AppleJuice.et": {
    "size": [0.083, 0.259, 0.081],
    "center": [-0.002, 0],
@@ -99,17 +104,52 @@
    "center": [0, -0.013],
    "mesh": "{8838D0FE9D8142AE}Assets/Items/Equipment/Binoculars/Binoculars_B8/Binoculars_B8.xob"
   },
+  "Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et": {
+   "size": [0.472, 0.067, 0.388],
+   "center": [0, 0],
+   "mesh": "{66AF096B6E4442E5}Assets/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_item.xob"
+  },
   "Prefabs/Items/Food/LF_DriedMeat.et": {
    "size": [0.258, 0.048, 0.301],
    "center": [-0.019, -0.002],
    "mesh": "{6073CC0058821B73}Assets/Items/Food/Meat_01_Dry.xob"
+  },
+  "Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_01.et": {
+   "size": [0.227, 0.036, 0.239],
+   "center": [0.001, -0.005],
+   "mesh": "{5724B377D6EA0F2D}Assets/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_Item_01.xob"
+  },
+  "Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_beige.et": {
+   "size": [0.41, 0.071, 0.365],
+   "center": [-0.004, 0.02],
+   "mesh": "{1241A6F5FBC636BA}Assets/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_item.xob"
   },
   "Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et": {
    "size": [0.07, 0.107, 0.042],
    "center": [-0.001, 0.003],
    "mesh": "{30664C42D09E1831}Assets/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.xob"
   },
+  "Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et": {
+   "size": [0.296, 0.095, 0.333],
+   "center": [-0.026, -0.001],
+   "mesh": "{7DBFC7CDF314C5D2}Assets/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_item.xob"
+  },
   "Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et": {
+   "size": [0.175, 0.077, 0.245],
+   "center": [0, 0],
+   "mesh": "{C5B3D5A8D3F18C3A}Assets/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_item.xob"
+  },
+  "Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et": {
+   "size": [0.296, 0.095, 0.333],
+   "center": [-0.026, -0.001],
+   "mesh": "{7DBFC7CDF314C5D2}Assets/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_item.xob"
+  },
+  "Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_DarkBlue.et": {
+   "size": [0.41, 0.071, 0.365],
+   "center": [-0.004, 0.02],
+   "mesh": "{1241A6F5FBC636BA}Assets/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_item.xob"
+  },
+  "Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_lightgrey.et": {
    "size": [0.175, 0.077, 0.245],
    "center": [0, 0],
    "mesh": "{C5B3D5A8D3F18C3A}Assets/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_item.xob"
@@ -129,15 +169,15 @@
    "center": [0.006, -0.003],
    "mesh": "{11637F1DB22C2F9D}Assets/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01/Tourniquet_USSR_01_rolledup.xob"
   },
+  "Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V2.et": {
+   "size": [0.396, 0.111, 0.425],
+   "center": [0.007, -0.001],
+   "mesh": "{F580E58C97E7D683}Assets/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_item.xob"
+  },
   "Prefabs/Items/Food/LF_Crackers.et": {
    "size": [0.171, 0.03, 0.088],
    "center": [0.001, 0],
    "mesh": "{A47ED22E6647430A}Assets/Items/Food/ArmyCrackers_Soviet_01.xob"
-  },
-  "Prefabs/Weapons/Rifles/VZ58/Rifle_VZ58P.et": {
-   "size": [0.062, 0.166, 0.619],
-   "center": [0.011, 0.203],
-   "mesh": "{EB3FA38F920D4615}Assets/Weapons/Rifles/VZ58/VZ58_body.xob"
   },
   "Prefabs/Characters/HeadGear/Hat_Ushanka_01/Hat_Ushanka_01_folded.et": {
    "size": [0.196, 0.151, 0.235],
@@ -154,6 +194,11 @@
    "center": [-0.001, 0.001],
    "mesh": "{4B7F315DD3774443}Assets/Items/Medicine/FieldDressing_01/FieldDressing_US_01/FieldDressing_US_01.xob"
   },
+  "Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_black_V1.et": {
+   "size": [0.476, 0.081, 0.417],
+   "center": [-0.002, -0.053],
+   "mesh": "{3B76B43FE1866AC4}Assets/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_item.xob"
+  },
   "Prefabs/Items/Medicine/Gauze_02/Gauze_02.et": {
    "size": [0.218, 0.06, 0.069],
    "center": [0, 0],
@@ -169,6 +214,11 @@
    "center": [0.005, 0.004],
    "mesh": "{21D4DB3CA0B5913F}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_item.xob"
   },
+  "Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et": {
+   "size": [0.295, 0.053, 0.214],
+   "center": [0.005, 0.004],
+   "mesh": "{21D4DB3CA0B5913F}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_item.xob"
+  },
   "Prefabs/Weapons/Handguns/PM/Handgun_PM.et": {
    "size": [0.031, 0.129, 0.162],
    "center": [-0.002, 0.033],
@@ -178,6 +228,11 @@
    "size": [0.046, 0.063, 0.044],
    "center": [0.001, 0.002],
    "mesh": "{3EB653D9ECE9E4E9}Assets/Items/Food/Plum/Plum.xob"
+  },
+  "Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et": {
+   "size": [0.268, 0.252, 0.318],
+   "center": [-0.012, 0.005],
+   "mesh": "{D5447CC93DF5ACE3}Assets/Characters/Footwear/CombatBoots_Soviet_01/CombatBoots_Soviet_01_item.xob"
   },
   "Prefabs/Items/Medicine/AspirinBottle.et": {
    "size": [0.073, 0.13, 0.076],
@@ -194,6 +249,11 @@
    "center": [0, 0.001],
    "mesh": "{9EF00D573FC5604A}Assets/Items/Medicine/Gauze_01/Gauze_01_packed.xob"
   },
+  "Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_yellow.et": {
+   "size": [0.3, 0.09, 0.342],
+   "center": [0.001, -0.018],
+   "mesh": "{89EAA1D318413C8A}Assets/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_item.xob"
+  },
   "Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et": {
    "size": [0.091, 0.04, 0.094],
    "center": [-0.003, 0.009],
@@ -203,6 +263,11 @@
    "size": [0.295, 0.053, 0.214],
    "center": [0.005, 0.004],
    "mesh": "{21D4DB3CA0B5913F}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_item.xob"
+  },
+  "Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_blue.et": {
+   "size": [0.175, 0.077, 0.245],
+   "center": [0, 0],
+   "mesh": "{C5B3D5A8D3F18C3A}Assets/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_item.xob"
   }
  },
  "racks": {
