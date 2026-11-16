@@ -439,7 +439,7 @@ async function voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, co
     if (m && !spoken[m[1]]) { unlinkSync(join(sdir, f)); log(`  removed ${f} (line no longer in the dialogue)`); }
   }
   for (const lineId of Object.keys(prov.lines)) if (!spoken[lineId]) delete prov.lines[lineId];
-  prov.voice = { id: spec.voice.id, name: spec.voice.name, source: spec.voice.public_owner_id ? "voice library" : "premade" };
+  prov.voice = { id: spec.voice.id, name: spec.voice.name, source: piper.isPiper(spec.voice) ? "piper" : spec.voice.public_owner_id ? "voice library" : "premade" };
   writeFileSync(provenanceFile(root, id), JSON.stringify(prov, null, 2) + "\n");
 
   const acp = join(addon, acpRes(spec));
