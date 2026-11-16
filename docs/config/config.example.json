@@ -96,7 +96,9 @@
       "POLICE_FINE": {
         "requiresWhitelist": false
       }
-    }
+    },
+    "permitFee": 250,
+    "permitWaitDays": 1
   },
   "organizations": {
     "foundingFee": 500,

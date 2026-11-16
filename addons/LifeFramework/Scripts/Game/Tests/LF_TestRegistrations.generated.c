@@ -168,6 +168,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DutyPay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_E2E_CashSlotSwap(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_ContentIds(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_E2E_LicenceDesk(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_Narrative(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_E2E_SaveStateWrite(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_SaveStateVerify(), LF_TestTier.PERSISTENCE);
@@ -278,6 +279,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LawlessHud(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Ledger(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LedgerPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_LicenceDesk(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicensePlateFormat(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LicensePlateParenting(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicenseWhitelist(), LF_TestTier.LOGIC);
