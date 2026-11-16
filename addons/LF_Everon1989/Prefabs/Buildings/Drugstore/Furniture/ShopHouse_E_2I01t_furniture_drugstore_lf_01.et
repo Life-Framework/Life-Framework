@@ -615,10 +615,11 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.281 0.311 4.165
    angleY 178.144
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "DE1AEDDA016A0801"
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E6C8883A1D2C8725"
    coords -1.295 0.311 3.529
    angleY 91.102
+   scale 0.55
   }
   GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
    ID "AD408337AD5AEE89"
@@ -650,25 +651,28 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.292 1.28 4.173
    angleY 177.644
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "41A14CB0044B91B8"
-   coords -1.291 1.28 3.706
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E69CD1EB1DFCCA35"
+   coords -1.291 1.280 3.706
    angleY 105.979
+   scale 0.42
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "15F186A4FBB64502"
-   coords -1.285 1.28 3.536
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6134191AD061E74"
+   coords -1.285 1.280 3.536
    angleY 82.133
   }
-  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
-   ID "D225063E247EB68D"
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E67BFA2024BE0D23"
    coords -1.306 1.773 4.307
    angleY 89.979
+   scale 0.5
   }
-  GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
-   ID "6F1C8479714A1628"
-   coords -1.303 1.773 3.7
+  GenericEntity : "{46A95C6081A28586}Prefabs/Props/Industrial/Pallets/MarsBox_01_white.et" {
+   ID "E6B8259DC9220AEB"
+   coords -1.303 1.773 3.700
    angleY 88.422
+   scale 0.28
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
    ID "B032463C88DC94F9"
@@ -680,30 +684,33 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.258 2.791 4.182
    angleY 180.257
   }
-  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "6C496B01D307483E"
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "E6DE601F038735A1"
    coords -1.257 2.791 3.558
    angleY 90
+   scale 0.5
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
    ID "1FBAE946998C9E89"
    coords -1.274 0.311 5.617
    angleY 177.849
   }
-  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "273F940331210B05"
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "E6AFC38964C5CD6A"
    coords -1.302 0.311 5.016
    angleY 90
+   scale 0.5
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
    ID "38D6FAA90DC00DFE"
    coords -1.279 0.787 5.616
    angleY 181.722
   }
-  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
-   ID "02783063842C78F2"
-   coords -1.295 0.787 5.03
+  GenericEntity : "{46A95C6081A28586}Prefabs/Props/Industrial/Pallets/MarsBox_01_white.et" {
+   ID "E6145FE0AE63A9C6"
+   coords -1.295 0.787 5.030
    angleY 93.458
+   scale 0.28
   }
   GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
    ID "70A5185916C95D01"
@@ -720,35 +727,40 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.341 1.324 5.843
    angleY 93.312
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "43B1BBFCE031B121"
-   coords -1.292 1.28 5.602
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E6A68140EBA829C2"
+   coords -1.292 1.280 5.602
    angleY 78.125
+   scale 0.42
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "47BB89147A164E89"
-   coords -1.279 1.28 5.432
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E6A3B24084BBCFBA"
+   coords -1.279 1.280 5.432
    angleY 83.491
+   scale 0.42
   }
-  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
-   ID "96829ADC2B8D930E"
-   coords -1.281 1.28 5.009
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E63A6E018AA7AA92"
+   coords -1.281 1.280 5.009
    angleY 86.719
+   scale 0.5
   }
-  GenericEntity : "{70954459AE89D9E4}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_blue_V1.et" {
-   ID "14B2CC334B3274D6"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6997DD9E9D136C8"
    coords -1.275 1.773 5.693
    angleY 87.965
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "A556645558337863"
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "E6EE0C079917DDFF"
    coords -1.306 1.773 5.308
    angleY 92.339
+   scale 0.45
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "519DA84FDBDEE50F"
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "E68DCE56F296869C"
    coords -1.302 1.773 4.935
    angleY 95.964
+   scale 0.415
   }
   GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
    ID "0DE819854068AA57"
@@ -765,19 +777,19 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.241 2.791 5.099
    angleY 98.98
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "8A96B327552675B7"
-   coords 5.545 0.311 -2.61
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E671AEF278A313A9"
+   coords 5.545 0.311 -2.610
    angleY -86.722
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "22EA01650010598E"
-   coords 5.546 0.311 -2.44
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6E1555D7DD7DD85"
+   coords 5.546 0.311 -2.440
    angleY -94.657
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "B9BE8AA4FE97018E"
-   coords 5.554 0.311 -2.27
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E69BA83CA22DFC67"
+   coords 5.554 0.311 -2.270
    angleY -112.373
   }
   GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
@@ -785,19 +797,21 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.558 0.787 -2.514
    angleY -2.012
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "C42D1EC6030545C2"
-   coords 5.55 1.28 -2.777
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E651A282995725E1"
+   coords 5.550 1.280 -2.777
    angleY -101.275
+   scale 0.42
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "AD092DDB32D55430"
-   coords 5.548 1.28 -2.607
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E6A3E3A4BEB34CFE"
+   coords 5.548 1.280 -2.607
    angleY -86.217
+   scale 0.42
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "C33FE09ED95D25CF"
-   coords 5.529 1.28 -2.437
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E69F2246FDB97152"
+   coords 5.529 1.280 -2.437
    angleY -94.818
   }
   GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
@@ -815,28 +829,30 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.595 1.324 -2.182
    angleY -83.707
   }
-  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
-   ID "EE87EDED8BB3899E"
-   coords 5.56 1.773 -2.643
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E646406825727E8F"
+   coords 5.560 1.773 -2.643
    angleY -92.285
+   scale 0.5
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "CF4504D50D9E2D51"
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "E62DB582D6263ED3"
    coords 5.562 1.773 -2.333
    angleY -91.6
+   scale 0.402
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "431236CDF679B35A"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E648929B438F7C49"
    coords 5.559 1.773 -2.163
    angleY -93.85
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "B0CB0BFB17CEE63A"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6C5E604B34B212C"
    coords 5.566 2.266 -2.388
    angleY -107.86
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D57188606E1A27B3"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E617F19A890B077C"
    coords 5.537 2.266 -2.218
    angleY -111.515
   }
@@ -845,35 +861,38 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.5 2.791 -2.526
    angleY -2.444
   }
-  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "4B24567D3C34E20A"
-   coords 5.519 0.311 -1.55
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "E6DF358BD4658485"
+   coords 5.519 0.311 -1.550
    angleY -90
+   scale 0.5
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "29B22210700B1D6A"
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E6839BF126610A9A"
    coords 5.527 0.311 -1.028
    angleY -94.414
+   scale 0.55
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "7FA325BC020757CB"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E680BD72875C6CA3"
    coords 5.542 0.787 -1.682
    angleY -69.509
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "B7D6760DBEFAEA73"
-   coords 5.54 0.787 -1.512
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6466554BD0768A8"
+   coords 5.540 0.787 -1.512
    angleY -82.932
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "FDE8C5B31B3AB3A8"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E621924B489C26F8"
    coords 5.526 0.787 -1.342
    angleY -87.414
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "0A2859513D863896"
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "E64138265DE73280"
    coords 5.548 0.787 -1.172
    angleY -81.659
+   scale 0.42
   }
   GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
    ID "73A44A025CFA4938"
@@ -895,30 +914,35 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.569 0.853 -0.909
    angleY -92.496
   }
-  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
-   ID "4DB7B6FCBB49F434"
-   coords 5.517 1.28 -1.596
+  GenericEntity : "{46A95C6081A28586}Prefabs/Props/Industrial/Pallets/MarsBox_01_white.et" {
+   ID "E617B3761648802E"
+   coords 5.517 1.280 -1.596
    angleY -93.778
+   scale 0.28
   }
-  GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
-   ID "31A4665095919483"
-   coords 5.544 1.28 -1.16
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E60F1DCA5CF17977"
+   coords 5.544 1.280 -1.160
    angleY -87.316
+   scale 0.5
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "518AFFB198E73D70"
-   coords 5.555 1.28 -0.839
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "E69FBF0F9564254D"
+   coords 5.555 1.280 -0.839
    angleY -93.593
+   scale 0.426
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "14021B00D1B5F234"
-   coords 5.544 1.28 -0.669
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E6C2B1FD92778DD7"
+   coords 5.544 1.280 -0.669
    angleY -91.955
+   scale 0.412
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "CA8AA1B5AE5A8215"
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E65AE6EBE79205DE"
    coords 5.534 1.773 -1.529
    angleY -89.263
+   scale 0.55
   }
   GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
    ID "276A4C9BB12DF70B"
@@ -930,15 +954,17 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.571 1.795 -1.017
    angleY -94.122
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "770AC6E3A5BFCCE8"
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E6BCB7AA66C6AE38"
    coords 5.516 2.266 -1.713
    angleY -99.649
+   scale 0.405
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "D00A82326E01BF25"
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E6A4EF399D9F97DA"
    coords 5.539 2.266 -1.543
    angleY -96.764
+   scale 0.427
   }
   GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
    ID "FB1053698D5E36E2"
@@ -950,75 +976,83 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.508 2.791 -1.498
    angleY -2.546
   }
-  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "70F0FA7DABD2ABC7"
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "E6B3EDF9F1328259"
    coords 5.505 2.791 -0.869
    angleY -90
+   scale 0.5
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "CBFEB0730EACE61F"
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E65ACBD98FDD3219"
    coords 5.525 0.311 0.627
    angleY -89.487
+   scale 0.45
   }
-  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "310B7133AD42C434"
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "E62AB42FEFC4B090"
    coords 5.551 0.311 1.146
    angleY -90
+   scale 0.5
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "D148DA9521C649F8"
    coords 5.533 0.787 0.759
    angleY 0.096
   }
-  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
-   ID "16ECBB332F39308D"
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E6E9410D43B36771"
    coords 5.524 0.787 1.353
    angleY -93.977
+   scale 0.5
   }
-  GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
-   ID "2358BD0019B95AC1"
-   coords 5.543 1.28 0.599
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E6587642113285BB"
+   coords 5.543 1.280 0.599
    angleY -89.434
+   scale 0.5
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "3DE636C5815A7A8E"
-   coords 5.553 1.28 0.924
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E613DEE8D79EA030"
+   coords 5.553 1.280 0.924
    angleY -105.525
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "3409343D011F1C41"
-   coords 5.548 1.28 1.094
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E63B785C25BF574E"
+   coords 5.548 1.280 1.094
    angleY -110.15
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "C8575F5301B36B2E"
-   coords 5.518 1.28 1.264
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E603AAAADD279D8D"
+   coords 5.518 1.280 1.264
    angleY -99.762
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "8D47ED6DD74F7525"
-   coords 5.519 1.28 1.434
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6B8CA6F499A444C"
+   coords 5.519 1.280 1.434
    angleY -113.812
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "8986AE82E3FE7BB8"
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E648A597477920C5"
    coords 5.526 1.773 0.517
    angleY -86.757
+   scale 0.397
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "2AED77FBAA0AFF89"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6D344D5BD6E7C71"
    coords 5.519 1.773 0.687
    angleY -97.455
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "859366AADE12E90A"
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E6D66E713FC63205"
    coords 5.529 1.773 0.917
    angleY -97.117
+   scale 0.433
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "795117B68321AEC3"
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E608F3424E1160C9"
    coords 5.548 1.773 1.087
    angleY -92.158
+   scale 0.43
   }
   GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
    ID "2761B46EC5773572"
@@ -1045,15 +1079,17 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.549 2.266 0.766
    angleY -1.507
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "3A9B0C4440E8994E"
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E6AC328C97C28FB5"
    coords 5.533 2.266 1.237
    angleY -99.141
+   scale 0.416
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "ABF6235DC86050D9"
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E6F512F2F1D15F31"
    coords 5.526 2.266 1.407
    angleY -91.538
+   scale 0.414
   }
   GenericEntity : "{148E2BA12B48CFBA}Prefabs/Props/Furniture/PlantRoom_04.et" {
    ID "7C796AA788DDD6B7"
@@ -1065,28 +1101,30 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.491 2.791 1.13
    angleY 2.2
   }
-  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "35B90E137FA41590"
-   coords 5.541 0.311 4.97
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "E6B1E2F4A4C13AAA"
+   coords 5.541 0.311 4.970
    angleY -90
+   scale 0.5
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "F847F7FD7EA4C4CD"
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E64479510606C17B"
    coords 5.534 0.311 5.488
    angleY -87.552
+   scale 0.55
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "1AFD9D5CFE9627EA"
-   coords 5.55 0.787 4.792
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6E36BA4DE5956A4"
+   coords 5.550 0.787 4.792
    angleY -87.395
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "40E376F5E7B90C2C"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E65840DFFE1D2E5B"
    coords 5.539 0.787 4.962
    angleY -76.475
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "A6447562D325C599"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E602F311EA5F2267"
    coords 5.532 0.787 5.132
    angleY -67.857
   }
@@ -1100,24 +1138,25 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.587 0.809 5.385
    angleY -83.306
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "8D2B44AC16138C1B"
-   coords 5.53 1.28 4.835
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6C3286869A7C084"
+   coords 5.530 1.280 4.835
    angleY -114.102
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "0AB7F73ED83FB50F"
-   coords 5.542 1.28 5.005
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E6814FB88025A3E0"
+   coords 5.542 1.280 5.005
    angleY -82.896
+   scale 0.42
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "BB1602D3D86EEF01"
-   coords 5.537 1.28 5.175
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E62C02AF4DD157F3"
+   coords 5.537 1.280 5.175
    angleY -78.387
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "097BEC147698CB7C"
-   coords 5.526 1.28 5.345
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E627D8C863ECA95C"
+   coords 5.526 1.280 5.345
    angleY -69.301
   }
   GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
@@ -1135,30 +1174,32 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.583 1.324 5.597
    angleY -94.121
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "2E5C76ED0118D7CF"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6426E4C5B1B29DA"
    coords 5.524 1.773 4.823
    angleY -82.286
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "6619107612557449"
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E6FB172A48FFC991"
    coords 5.522 1.773 4.993
    angleY -77.471
+   scale 0.42
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "FA4627D2F39B93BF"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6A3C1630AD54171"
    coords 5.547 1.773 5.163
    angleY -69.685
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "A9E59670BA74722C"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6BAF92704712F07"
    coords 5.518 1.773 5.364
    angleY -86.055
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "7FD07C6A9046149E"
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "E6BE5C856C7E85BE"
    coords 5.535 1.773 5.534
    angleY -84.771
+   scale 0.401
   }
   GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
    ID "D1DAF93895ECE6B5"
@@ -1195,99 +1236,105 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.481 2.791 5.024
    angleY 0.334
   }
-  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "4CD17C1424283E6B"
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "E66021819B77BE77"
    coords 5.494 2.791 5.659
    angleY -90
+   scale 0.5
   }
-  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "7970BE44E4450FA7"
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "E650186E36CAF40D"
    coords 1.207 0.311 -2.722
+   scale 0.5
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "E711A091B50860C3"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6E49177B1626B1A"
    coords 1.574 0.311 -2.746
    angleY -18.722
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D126E148297AE1A1"
-   coords 1.744 0.311 -2.76
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6AC0D1299676275"
+   coords 1.744 0.311 -2.760
    angleY -17.238
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "47F209D414B52300"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E67F7316A5B65966"
    coords 1.914 0.311 -2.731
    angleY 6.456
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "9EE4EA282206C49A"
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E691F702FEF58A31"
    coords 1.193 0.787 -2.761
    angleY 0.017
+   scale 0.55
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "33580E6A659B3C4A"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E69183C349B856B2"
    coords 1.559 0.787 -2.743
    angleY -9.006
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "EE22CB4E423FC973"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6D7EF1A6A2E9A6A"
    coords 1.729 0.787 -2.748
    angleY 8.295
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "F17E69A827D8DAAE"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E628E626D6D470FB"
    coords 1.899 0.787 -2.742
    angleY -14.305
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "A7C3868425BAEE07"
-   coords 1.039 1.28 -2.747
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6A4BF7B96E726D5"
+   coords 1.039 1.280 -2.747
    angleY -9.438
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D8CD550D954D99D1"
-   coords 1.209 1.28 -2.751
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E638C3E9ED31C4F0"
+   coords 1.209 1.280 -2.751
    angleY 15.027
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D30DB7BCDF7C5C05"
-   coords 1.379 1.28 -2.748
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6543C52C0C88279"
+   coords 1.379 1.280 -2.748
    angleY 23.421
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "BFD232BD92D1D2F8"
-   coords 1.601 1.28 -2.738
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E61C6F7F7E3862B6"
+   coords 1.601 1.280 -2.738
    angleY 14.23
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "8DB9B993B3835EE6"
-   coords 1.771 1.28 -2.75
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6EF9377CF2CF9FB"
+   coords 1.771 1.280 -2.750
    angleY 19.395
   }
-  GenericEntity : "{70954459AE89D9E4}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_blue_V1.et" {
-   ID "632BB6E494E8F430"
-   coords 2 1.28 -2.736
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E68A07938B22E49C"
+   coords 2.000 1.280 -2.736
    angleY -1.655
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "18ED3485D2114E4A"
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "E6530C8E60801E05"
    coords 1.196 1.773 -2.752
    angleY -0.673
+   scale 0.42
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "35FB989BA2C33CC7"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E68E2155310FBDDD"
    coords 1.366 1.773 -2.742
    angleY -2.2
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "ECCC8311D85FF847"
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E607B7F8549F1B7C"
    coords 1.604 1.773 -2.754
    angleY 8.92
+   scale 0.43
   }
-  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
-   ID "379641F84443226A"
+  GenericEntity : "{46A95C6081A28586}Prefabs/Props/Industrial/Pallets/MarsBox_01_white.et" {
+   ID "E6D2D09E9298CBD5"
    coords 1.946 1.773 -2.756
    angleY 2.061
+   scale 0.28
   }
   GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
    ID "6A31481C6616CC06"
@@ -1324,45 +1371,48 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 1.665 2.791 -2.705
    angleY 90.573
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "BFB8388671680BA9"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E65813F0BA45BD9C"
    coords 2.469 0.311 -2.779
    angleY -12.096
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "855252AE9DB8D46B"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E610AD6F7CBADD04"
    coords 2.639 0.311 -2.774
    angleY -15.444
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "348B429416D7AB40"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6392CAB473773F1"
    coords 2.809 0.311 -2.799
    angleY -5.958
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "8854F46EF2A6CBB8"
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E6DFC2388F476D79"
    coords 2.753 0.787 -2.795
    angleY 0.7
+   scale 0.55
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
    ID "58D24E8186C5EA6E"
    coords 2.743 1.28 -2.775
    angleY 89.423
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "A1BB80DA7600CA93"
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E6F2D783CA050B92"
    coords 2.451 1.773 -2.775
    angleY 22.061
+   scale 0.42
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "2203CA667DB5EA79"
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6032B9EFA7CC888"
    coords 2.621 1.773 -2.796
    angleY 9.379
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "E67836E55035A301"
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E6720AD5F668557C"
    coords 3.024 1.773 -2.805
    angleY -8.671
+   scale 0.381
   }
   GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
    ID "5AE6950E5EE816E9"
@@ -1374,178 +1424,207 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.692 2.791 -2.767
    angleY 91.95
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "5552322E65D40E29"
-   coords 1.094 0.301 5.68
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E6137E1E0E1A3AB2"
+   coords 1.094 0.301 5.680
    angleY -4.822
+   scale 0.39
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "8A4A92D67B26E1C0"
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E661CD7248378FF7"
    coords 1.264 0.301 5.648
    angleY -11.575
+   scale 0.428
   }
-  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
-   ID "E426C6DDD3C0018B"
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E6DF81FBC27EEEB5"
    coords 1.571 0.301 5.672
    angleY 1.164
+   scale 0.5
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "74388A45C61F11F5"
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E647CFCC977DA3E3"
    coords 1.889 0.301 5.665
    angleY -6.74
+   scale 0.413
   }
-  GenericEntity : "{70954459AE89D9E4}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_blue_V1.et" {
-   ID "2F33ADE38613ADFC"
-   coords 2.117 0.301 5.68
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E6253EF353E44970"
+   coords 2.117 0.301 5.680
    angleY 7.941
+   scale 0.398
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "AA468DCC6CAC36BB"
-   coords 2.351 0.301 5.65
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E66E846CA16259D3"
+   coords 2.351 0.301 5.650
    angleY -1.338
+   scale 0.432
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "63856E835AD8255B"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E628A31FA4E1FF2D"
    coords 2.521 0.301 5.655
    angleY 11.963
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "16C3D7C187BB52CF"
-   coords 2.87 0.301 5.652
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E61217053A97835C"
+   coords 2.870 0.301 5.652
    angleY -2.498
+   scale 0.55
   }
-  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
-   ID "4204DB1BF3DD7145"
-   coords 3.03 0.301 5.119
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E60B4FC48AC82BB2"
+   coords 3.030 0.301 5.119
    angleY 178.414
+   scale 0.5
   }
-  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
-   ID "2C74AFA788B04FE0"
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E616833D87B90B2F"
    coords 2.596 0.301 5.114
    angleY 182.347
+   scale 0.5
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "0DBB65C3442FBF01"
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E656A4CB863E1DB2"
    coords 2.145 0.301 5.111
    angleY 175.265
+   scale 0.45
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "0F35ECEAE99059BF"
-   coords 1.65 0.301 5.099
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E67C895079BA94ED"
+   coords 1.650 0.301 5.099
    angleY 175.237
+   scale 0.45
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "005952E4AF22B53E"
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E67EAFEFF5D3BD8E"
    coords 1.304 0.301 5.122
    angleY 183.457
+   scale 0.403
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "CA26B855292B3B87"
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E61529F29427AAAF"
    coords 1.267 0.301 3.189
    angleY -2.758
+   scale 0.55
   }
-  GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
-   ID "2F604E3090FBF9B2"
+  GenericEntity : "{46A95C6081A28586}Prefabs/Props/Industrial/Pallets/MarsBox_01_white.et" {
+   ID "E61B54A4A43B79FC"
    coords 1.756 0.301 3.198
    angleY 3.67
+   scale 0.28
   }
-  GenericEntity : "{70954459AE89D9E4}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_blue_V1.et" {
-   ID "D9A53847B33B0736"
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "E6F6ACE0D9015A2A"
    coords 2.073 0.301 3.184
    angleY 0.291
+   scale 0.396
   }
-  GenericEntity : "{70954459AE89D9E4}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_blue_V1.et" {
-   ID "EA43F0EC96595593"
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "E6786119059D2DD7"
    coords 2.243 0.301 3.209
    angleY -10.349
+   scale 0.39
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "36F1EF7904944191"
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "E6688897F6630E56"
    coords 2.467 0.301 3.183
    angleY -6.191
+   scale 0.438
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "0724C9556A92248D"
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E645CF62FE562679"
    coords 2.833 0.301 3.186
    angleY 0.967
+   scale 0.55
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "CAB83A01FBC8BACA"
-   coords 3.165 0.301 2.62
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E62A5ECE1959BA06"
+   coords 3.165 0.301 2.620
    angleY 174.593
+   scale 0.399
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "D563AEBE989C27E3"
-   coords 2.995 0.301 2.62
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E63F5EB9A6EAB673"
+   coords 2.995 0.301 2.620
    angleY 178.155
+   scale 0.428
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "68CB07F1B3A9E80E"
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "E6B38B9277F872A5"
    coords 2.644 0.301 2.622
    angleY 184.934
+   scale 0.45
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "EE0914BD096DB5B2"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E61F5A1C3AB86D12"
    coords 2.261 0.301 2.628
    angleY 173.766
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "F09B732A2F34386F"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E621F543384AD8B9"
    coords 2.091 0.301 2.648
    angleY 172.399
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "848FBE529191E2C2"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6F48BC88533C37E"
    coords 1.715 0.301 2.654
    angleY 168.511
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "87722DE8A6450860"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6F82A450852D7AB"
    coords 1.545 0.301 2.642
    angleY 169.715
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "198C80D3F75E78BE"
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E666DD147D69D689"
    coords 1.322 0.301 2.623
    angleY 185.726
+   scale 0.428
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "9656A0E079F06888"
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E6BCCFF2477854CB"
    coords 5.504 0.301 2.495
    angleY -86.553
+   scale 0.45
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "E2AAD5AD6825425D"
-   coords 5.487 0.301 3
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E6DF9D6B9756AD8E"
+   coords 5.487 0.301 3.000
    angleY -90.038
+   scale 0.55
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "21E949414760C23A"
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E6D53582BC813560"
    coords 5.494 0.301 3.367
    angleY -91.607
+   scale 0.414
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "0879D10B2882CD80"
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E668235BD5C65FDD"
    coords 5.482 0.301 3.537
    angleY -90.126
+   scale 0.436
   }
-  GenericEntity : "{3CA97284021FFEF0}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_green_V1.et" {
-   ID "94DC741FD2B2112A"
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E6BF9C4A0EE0FF96"
    coords 5.492 0.301 3.742
    angleY -83.403
+   scale 0.39
   }
-  GenericEntity : "{70954459AE89D9E4}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_blue_V1.et" {
-   ID "77B2B2E15E2D4DF2"
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E658DD4DCE9ACD25"
    coords 5.481 0.301 3.944
    angleY -87.126
+   scale 0.383
   }
-  GenericEntity : "{70954459AE89D9E4}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_blue_V1.et" {
-   ID "F11A6E299273EFEB"
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E6D2323DC4A9A66E"
    coords 5.511 0.301 4.114
    angleY -92.859
+   scale 0.404
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "B664F3A005645A73"
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6EF6B83F52013C1"
    coords 5.477 0.301 4.331
    angleY -88.7
   }
@@ -1598,9 +1677,9 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.85 1.238 -0.7
    angleY 20
   }
-  GenericEntity : "{70954459AE89D9E4}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_blue_V1.et" {
-   ID "DDEDB4FECEA2217D"
-   coords 3.55 1.238 -0.72
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6B999E4C507BED6"
+   coords 3.550 1.238 -0.720
    angleY 160
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
@@ -1688,13 +1767,13 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 1.1 1.229 7.05
    angleY 80
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "37C48D912B6B9F08"
-   coords 1.6 0.799 7
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6BB90D033564C6C"
+   coords 1.600 0.799 7.000
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "23BE5A79AD549F2C"
-   coords 1.75 0.799 7.1
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E681F45B4F327FEB"
+   coords 1.750 0.799 7.100
    angleY 40
   }
   GenericEntity : "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et" {
@@ -1702,10 +1781,11 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 3.1 0.799 7.05
    angleY 30
   }
-  GenericEntity : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
-   ID "B9A07E09ADC40E72"
-   coords 3.65 0.799 7
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "E69658B18064A060"
+   coords 3.650 0.799 7.000
    angleY 190
+   scale 0.45
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "DD61E4FC96AB6BE7"
@@ -1848,18 +1928,385 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 4.3 0 8.7
    angleY 8
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "450C89D9F0BB3445"
-   coords 4.1 0.223 8.7
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E6B8FCBE5EE7DA5F"
+   coords 4.100 0.223 8.700
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "8872C8040BE2C615"
-   coords 4.3 0.223 8.65
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "E63A39CB45B5AA3E"
+   coords 4.300 0.223 8.650
    angleY 30
   }
   GenericEntity : "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et" {
    ID "13B7A6FBACA81F88"
    coords 4.55 0.223 8.7
+  }
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E6484778C4843699"
+   coords 1.198 0.627 5.664
+   angleY 4.688
+   scale 0.381
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E607282C367E670D"
+   coords 1.383 0.627 5.688
+   angleY -3.248
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E66264B34A6D1612"
+   coords 1.619 0.627 5.674
+   angleY 6.673
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6CDF728DF7129A1"
+   coords 1.809 0.627 5.662
+   angleY 5.9
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E605B9FDEC876EC7"
+   coords 1.983 0.627 5.681
+   angleY -0.344
+   scale 0.422
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E671AAC1BF51217F"
+   coords 2.210 0.627 5.679
+   angleY -3.4
+  }
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E649114AED3D768F"
+   coords 2.388 0.627 5.665
+   angleY 3.365
+   scale 0.407
+  }
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E67F0CC9E5F591ED"
+   coords 2.615 0.627 5.661
+   angleY 3.385
+   scale 0.39
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6D657474AA65EFB"
+   coords 2.798 0.627 5.681
+   angleY -5.319
+  }
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E620328B0D686662"
+   coords 3.004 0.627 5.675
+   angleY -0.225
+   scale 0.382
+  }
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E644CC5B3C430A61"
+   coords 1.183 0.627 5.100
+   angleY 175.644
+   scale 0.436
+  }
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E66A9A6A0108F4A2"
+   coords 1.418 0.627 5.117
+   angleY 174.265
+   scale 0.433
+  }
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E6C2AC8BDD27F33D"
+   coords 1.592 0.627 5.087
+   angleY 181.259
+   scale 0.44
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6F50AF93B9CEF08"
+   coords 1.804 0.627 5.086
+   angleY 175.757
+  }
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E60992410F08F9D3"
+   coords 2.015 0.627 5.110
+   angleY 181.937
+   scale 0.437
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E626A5AB4ADF209E"
+   coords 2.210 0.627 5.111
+   angleY 179.065
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E66EC91140E98DED"
+   coords 2.414 0.627 5.120
+   angleY 173.167
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6AC40C544F0B5AE"
+   coords 2.589 0.627 5.088
+   angleY 183.878
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6F6C8CF3599BBB7"
+   coords 2.781 0.627 5.108
+   angleY 180.374
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E645661394CA8DF6"
+   coords 2.982 0.627 5.091
+   angleY 179.687
+  }
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E6A5D2BE2B1FD9B2"
+   coords 1.211 0.627 3.214
+   angleY -0.527
+   scale 0.415
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6FFFE7210217408"
+   coords 1.381 0.627 3.188
+   angleY 2.905
+  }
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "E6DA272F4C56A56D"
+   coords 1.593 0.627 3.184
+   angleY 6.552
+   scale 0.383
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E637858182BA5C76"
+   coords 1.786 0.627 3.198
+   angleY -5.105
+  }
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E6698556E8B8558D"
+   coords 2.017 0.627 3.218
+   angleY 0.492
+   scale 0.419
+  }
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "E6D2AC103D75C6E9"
+   coords 2.207 0.627 3.196
+   angleY 1.513
+   scale 0.436
+  }
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E6A42C503BE01DF9"
+   coords 2.404 0.627 3.202
+   angleY -1.776
+   scale 0.385
+  }
+  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
+   ID "E673298763C10EDC"
+   coords 2.590 0.627 3.187
+   angleY -5.819
+   scale 0.39
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E6DF45FDC14D94AC"
+   coords 2.786 0.627 3.195
+   angleY -4.279
+   scale 0.413
+  }
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E698E4337A1B705B"
+   coords 3.010 0.627 3.184
+   angleY -4.448
+   scale 0.394
+  }
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "E625476C1AAEE635"
+   coords 1.246 1.376 2.709
+   angleY 181.246
+   scale 0.418
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E6A68806457CA255"
+   coords 1.543 1.376 2.692
+   angleY 180.275
+  }
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "E6F904AE36187529"
+   coords 1.859 1.376 2.692
+   angleY 174.242
+   scale 0.401
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "E684DAAF0386A7F7"
+   coords 2.150 1.376 2.706
+   angleY 180.431
+  }
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E697726811301453"
+   coords 2.444 1.376 2.713
+   angleY 173.357
+   scale 0.386
+  }
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "E695ACEBA0C2FD3F"
+   coords 2.736 1.376 2.719
+   angleY 184.045
+   scale 0.389
+  }
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "E62920A497BC99EE"
+   coords 3.058 1.376 2.718
+   angleY 178.98
+   scale 0.415
+  }
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E6DEAAFE6070488A"
+   coords 1.150 1.630 5.390
+   angleY 94.911
+   scale 0.5
+  }
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E61C8D3AE5DB12B6"
+   coords 1.542 1.630 5.390
+   angleY 91.498
+   scale 0.5
+  }
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E6368103F9455C53"
+   coords 1.881 1.630 5.390
+   angleY 79.224
+   scale 0.436
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E6550393CBF62221"
+   coords 2.214 1.630 5.390
+   angleY 87.043
+   scale 0.419
+  }
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E6831BA7FE6739A8"
+   coords 2.592 1.630 5.390
+   angleY 88.92
+   scale 0.381
+  }
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E6DA83ABAA64BB24"
+   coords 2.985 1.630 5.390
+   angleY 80.299
+   scale 0.472
+  }
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "E64455D2D99BE4EA"
+   coords 1.150 1.630 2.916
+   angleY 84.929
+   scale 0.478
+  }
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "E666F4D288C64D85"
+   coords 1.516 1.630 2.916
+   angleY 98.133
+   scale 0.428
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "E62A803370AA9D74"
+   coords 1.912 1.630 2.916
+   angleY 103.533
+   scale 0.393
+  }
+  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
+   ID "E669599FFA176344"
+   coords 2.280 1.630 2.916
+   angleY 85.955
+   scale 0.391
+  }
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E61C95746CDAD108"
+   coords 2.698 1.630 2.916
+   angleY 94.357
+   scale 0.396
+  }
+  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
+   ID "E6A40E255D1D0163"
+   coords 3.079 1.630 2.916
+   angleY 104.913
+   scale 0.5
+  }
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E6EA24FA877EE9B6"
+   coords 0.620 0.199 5.400
+   angleY 90
+   scale 0.8
+  }
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "E6FEA8DD31385B27"
+   coords 0.620 0.544 5.400
+   angleY 85
+   scale 0.75
+  }
+  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
+   ID "E64EDF4849115B79"
+   coords 0.620 0.199 2.900
+   angleY 90
+   scale 0.8
+  }
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "E668D29EA5221881"
+   coords 0.620 0.544 2.900
+   angleY 85
+   scale 0.75
+  }
+  GenericEntity : "{D5C3CF5996B43A27}Prefabs/Props/Civilian/BasketWicker_01.et" {
+   ID "E6B10DF75A93233E"
+   coords 3.640 0.199 5.400
+   scale 0.9
+  }
+  GenericEntity : "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et" {
+   ID "E6BC276EAE962296"
+   coords 3.640 0.199 2.900
+   angleY 30
+  }
+  GenericEntity : "{9C231B6AC1BD0A26}Prefabs/Props/Civilian/Broom_01.et" {
+   ID "E6322059220B0A3A"
+   coords 0.550 0.199 7.800
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "E629EC1FA1AE2425"
+   coords 0.800 0.199 7.650
+  }
+  LightEntity {
+   ID "E661E9AF7263E621"
+   coords 2.2 3.4 2.6
+   Color 0.95 0.95 1 1
+   LV 0.25
+   ClipEV -10
+   Radius 10
+   NearPlane 0.45
+   DistanceAttenuation 0.8
+  }
+  LightEntity {
+   ID "E63CBAFB4923848D"
+   coords 2.2 3.2 2.6
+   angles 90 0 0
+   Color 0.95 0.95 1 1
+   LV 2
+   ClipEV -10
+   Type Spot
+   Radius 8
+   NearPlane 0.35
+   SpotAngle 150
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "E65E10B525D44486"
+   coords 2.2 3.4 6.4
+   Color 0.95 0.95 1 1
+   LV 0.25
+   ClipEV -10
+   Radius 10
+   NearPlane 0.45
+   DistanceAttenuation 0.8
+  }
+  LightEntity {
+   ID "E65AEB07C2379848"
+   coords 2.2 3.2 6.4
+   angles 90 0 0
+   Color 0.95 0.95 1 1
+   LV 2
+   ClipEV -10
+   Type Spot
+   Radius 8
+   NearPlane 0.35
+   SpotAngle 150
+   LensFlareType Disabled
   }
  }
 }
