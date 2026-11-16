@@ -175,6 +175,15 @@ It is reached by id only once the pack's index overlay lists it and the NPC pref
 - `settings` are ElevenLabs voice settings. The clerk uses stability 0.55, similarity 0.75,
   style 0.15. Changing them regenerates every line.
 
+## A line with a Piper voice (free)
+
+A line may carry its own `"voice": {"engine": "piper", "id": "en_US-ljspeech-high"}`. The stage then makes it with Piper
+(MIT, offline, `toolscli film-make --setup` installs it into `tools/film/.tts`): no key, no characters, no budget.
+The same block as the dialogue's top-level `voice` gives every line Piper (the Everon clerk, #1959: one voice per character); a single-line voice is for a mixed dialogue, which sounds like two people, so avoid it for one NPC. Only licence-safe voices are accepted
+(`tools/assets/pipeline/piper.mjs`: `en_US-ljspeech-high` and `-medium`, trained on public-domain LJ Speech); `lessac`, `libritts_r`
+and any voice fine-tuned from them are refused (docs/credits.md "Voice-over"). Each line's provenance in `elevenlabs.json`
+records `"engine": "piper"`. Credit the voice in `docs/credits.md`. The clerk's welcome (#1959) is the worked example.
+
 ## Key and cost
 
 - The key is read at call time from `~/.life-framework/elevenlabs-key` (`LF_ELEVENLABS_KEY_FILE`

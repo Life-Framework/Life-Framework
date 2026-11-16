@@ -69,6 +69,51 @@ StringTable {
      Target_en_us "There. Your name is in the register, and this is your identity card. Keep it on you. The police may ask to see it."
      Comment "Pack patch of the clerk dialogue's line register (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{2FC26FA7E5CB2E7E}" {
+     Id "LF-Dialogue_ClerkEveron_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{531F8A96028F39C5}" {
+     Id "LF-Dialogue_ClerkEveron_SayGoon"
+     Target_en_us "Go on, please."
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{0DB420D21A350315}" {
+     Id "LF-Dialogue_ClerkEveron_SayLost"
+     Target_en_us "I have lost my identity card."
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{3AC37252874BE98F}" {
+     Id "LF-Dialogue_ClerkEveron_SayNew"
+     Target_en_us "I am new in Everon."
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{2F6724F43C01C743}" {
+     Id "LF-Dialogue_ClerkEveron_SayNext"
+     Target_en_us "What should I do now?"
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{2267C33EA00A76DD}" {
+     Id "LF-Dialogue_ClerkEveron_SayReady"
+     Target_en_us "I understand. What now?"
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{ACD9BE6C92AE3B95}" {
+     Id "LF-Dialogue_ClerkEveron_WelcomePapers"
+     Target_en_us "Welcome to Everon. First, your papers. Form R-89 is the relocation form, and I will file it under your name. Your identity card comes with it."
+     Comment "Pack patch of the clerk dialogue's line welcome_papers (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{3C9568D582BE124D}" {
+     Id "LF-Dialogue_ClerkEveron_WelcomeRoom"
+     Target_en_us "You sleep at the hostel tonight. The dormitory is upstairs, and any free bunk is yours. It is plain, but it is warm."
+     Comment "Pack patch of the clerk dialogue's line welcome_room (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{001D205C4B5E0B1A}" {
+     Id "LF-Dialogue_ClerkEveron_WelcomeTown"
+     Target_en_us "The town expects honest work and quiet nights. Greet your neighbours, pay what you owe, and ask the police if you are ever lost."
+     Comment "Pack patch of the clerk dialogue's line welcome_town (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
     CustomStringTableItem "{B938C64F01A44D1B}" {
      Id "LF-Dialogue_ClerkEveron_WorkErrand"
      Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."

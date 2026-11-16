@@ -138,7 +138,7 @@ Music and ambience generated with ElevenLabs.
 
 | Asset | Tool | Source | Terms | Recorded in |
 |---|---|---|---|---|
-| Town clerk's spoken lines (`Sounds/Dialogue/clerk/*.wav`) | ElevenLabs text-to-speech, voices generated with ElevenLabs; voice "JC" from the voice library | https://elevenlabs.io | The maintainer's paid plan (Starter): commercial use allowed, no attribution required; use in the project and published builds per `docs/decisions.md` 2026-11-13 | `tools/assets/dialogue/clerk/elevenlabs.json` (request ids, voice, model, text), `tools/assets/dialogue/clerk/dialogue.json` |
+| Town clerk's spoken lines: all thirteen, the old arrival lines and the newcomer's welcome (`LF_Everon1989/Sounds/Dialogue/clerk_everon/*.wav`) | Piper `en_US-ljspeech-high` (see Voice-over below), Piper MIT, voice trained on LJ Speech | https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/ljspeech/high | Public domain dataset; free to use, no attribution required. Voice: Piper en_US-ljspeech (LJ Speech, public domain). Replaced the earlier ElevenLabs "JC" recordings on 2026-11-17 (one voice per character); no ElevenLabs audio of the clerk remains. `lessac` and `libritts_r` are not used | `tools/assets/dialogue/clerk_everon/elevenlabs.json` (each line's engine, voice, text, hash; the file name predates Piper), `tools/assets/dialogue/clerk_everon/dialogue.json` |
 
 ## Music
 

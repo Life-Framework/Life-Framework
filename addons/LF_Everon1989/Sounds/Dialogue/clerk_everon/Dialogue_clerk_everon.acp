@@ -288,6 +288,72 @@ AudioClass {
    outState 35851
    outStatePort 79879
   }
+  SoundClass {
+   id 112649
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_PAPERS"
+   version 5
+   tl 680 2800
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 215058
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 113673
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_ROOM"
+   version 5
+   tl 680 3080
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 216082
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 114697
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_TOWN"
+   version 5
+   tl 680 3360
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 217106
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
  }
  mixers {
   MixerClass {
@@ -338,6 +404,18 @@ AudioClass {
       }
       ConnectionClass connection {
        id 111625
+       port 65
+      }
+      ConnectionClass connection {
+       id 112649
+       port 65
+      }
+      ConnectionClass connection {
+       id 113673
+       port 65
+      }
+      ConnectionClass connection {
+       id 114697
        port 65
       }
      }
@@ -850,6 +928,147 @@ AudioClass {
     23 0
    }
   }
+  ShaderClass {
+   id 215058
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_PAPERS"
+   version 5
+   tl 432 2800
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 317444
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 216082
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_ROOM"
+   version 5
+   tl 432 3080
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 318468
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 217106
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_TOWN"
+   version 5
+   tl 432 3360
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 319492
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
  }
  amplitudes {
   AmplitudeClass : "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf" {
@@ -1002,6 +1221,42 @@ AudioClass {
     }
    }
   }
+  BankLocalClass {
+   id 317444
+   name "DLG_CLERK_EVERON_WELCOME_PAPERS"
+   version 7
+   tl 150 2800
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{6D00708C3626DE06}Sounds/Dialogue/clerk_everon/clerk_everon_welcome_papers.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 318468
+   name "DLG_CLERK_EVERON_WELCOME_ROOM"
+   version 7
+   tl 150 3080
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{9777AE555DED067A}Sounds/Dialogue/clerk_everon/clerk_everon_welcome_room.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 319492
+   name "DLG_CLERK_EVERON_WELCOME_TOWN"
+   version 7
+   tl 150 3360
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{0F6C3DAAB1A69E2E}Sounds/Dialogue/clerk_everon/clerk_everon_welcome_town.wav"
+    }
+   }
+  }
  }
  spatialities {
   SpatialityClass : "{68C6E66C2A370788}Sounds/_SharedData/Configs/Spatiality/Spatiality_Signal_Update.conf" {
@@ -1076,6 +1331,18 @@ AudioClass {
       }
       ConnectionClass connection {
        id 111625
+       port 5
+      }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
        port 5
       }
      }
@@ -1153,6 +1420,18 @@ AudioClass {
        id 111625
        port 5
       }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -1226,6 +1505,18 @@ AudioClass {
       }
       ConnectionClass connection {
        id 111625
+       port 5
+      }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
        port 5
       }
      }

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{51924080CFFD0D01}Configs/NpcOutfits/LF_Outfit_Relocated_Coat.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
