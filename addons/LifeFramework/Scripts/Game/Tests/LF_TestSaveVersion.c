@@ -6,5 +6,5 @@
 //------------------------------------------------------------------------------------------------
 class LF_TestSaveVersion
 {
-	static const int CURRENT = 36;
+	static const int CURRENT = 37;
 }

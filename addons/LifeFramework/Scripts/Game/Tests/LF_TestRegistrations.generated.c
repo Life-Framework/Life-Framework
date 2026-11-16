@@ -50,6 +50,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BanRecord(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_BedDelivery(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BillDebt(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_BlackMarketOutlet(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BleedOut(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BleedOutRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BoardProvider(), LF_TestTier.LOGIC);
@@ -214,6 +215,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_FirstAid(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_FirstAidRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FirstPlayerPolice(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_FirstSpawn(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_FirstSpawnPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_FormatAbbreviate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FuelClerkDialogue(), LF_TestTier.WORLD);
@@ -253,6 +256,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_IdCardRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IdentityFallback(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Impairment(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ImpairmentView(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagged(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_IncidentGmQuery(), LF_TestTier.LOGIC);
@@ -391,6 +395,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Prefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PrefabSlots(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PrefabSlotsSwapSpawn(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PricedSignProvider(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ProgressionRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ProgressionOldSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_QuantityStack(), LF_TestTier.WORLD);
@@ -425,6 +430,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Revive(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveAnim(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveCprGraph(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_Roadblock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_Bank(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Roadmap_BankWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roadmap_BankPersistence(), LF_TestTier.PERSISTENCE);

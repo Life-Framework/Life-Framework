@@ -1,0 +1,87 @@
+// Grid cell c0r6 for race-track: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_race_track_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 23 0 95
+}
+SCR_DestructibleEntity Grid_race_track_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 28 0 95
+}
+SCR_DestructibleEntity Grid_race_track_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 33 0 95
+ angleY 270
+}
+SCR_DestructibleEntity Grid_race_track_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 33 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_race_track_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 28 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_race_track_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 23 0 105
+ angleY 90
+}
+SCR_DestructibleEntity Grid_race_track_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 23 0 100
+ angleY 90
+}
+GenericEntity Grid_race_track_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:race-track"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 33.8 0.505 104.4
+ angleY 90
+}
+GenericEntity Grid_race_track_R0_2 : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+ coords 25.499 0.002 100
+ angleY 90
+}
+GenericEntity Grid_race_track_R0_3 : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
+ coords 25.497 0 103.003
+ angleY 90
+}
+GenericEntity Grid_race_track_R1_1 : "{3ABBDEDECCCEB041}Prefabs/Props/Racing/LF_RaceCheckpoint.et" {
+ components {
+  LF_RaceCheckpointComponent "{A7BA2D19ECC11C06}" {
+   m_sCheckpointId "race_track_cp_1"
+  }
+ }
+ coords 27.999 0.002 97
+ angleY 90
+}
+GenericEntity Grid_race_track_R1_2 : "{3ABBDEDECCCEB041}Prefabs/Props/Racing/LF_RaceCheckpoint.et" {
+ components {
+  LF_RaceCheckpointComponent "{A7BA2D19ECC11C06}" {
+   m_sCheckpointId "race_track_cp_2"
+  }
+ }
+ coords 27.999 0.002 100
+ angleY 90
+}
+GenericEntity Grid_race_track_R1_3 : "{3ABBDEDECCCEB041}Prefabs/Props/Racing/LF_RaceCheckpoint.et" {
+ components {
+  LF_RaceCheckpointComponent "{A7BA2D19ECC11C06}" {
+   m_sCheckpointId "race_track_cp_3"
+  }
+ }
+ coords 27.999 0.002 103
+ angleY 90
+}
+GenericEntity Grid_race_track_R2_1 : "{FA7E269E563ADB3D}Prefabs/Props/Racing/LF_RaceStartSign.et" {
+ coords 30.498 0.505 97
+ angleY 90
+}
+GenericEntity Grid_race_track_R2_2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:race-records"
+  }
+ }
+ coords 30.498 0.505 103
+ angleY 90
+}

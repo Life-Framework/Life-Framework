@@ -34,6 +34,24 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A pack test (a pack's Scripts/Game/Tests, registered by its generated
+	//! LF_PackTestRegistrations.generated.c). It runs only when named (-Only): a tier run skips it, and
+	//! `tools\cli test` names it in the pack leg, which boots under the pack's mission header so its
+	//! config overlays apply (docs/architecture/three-worlds.md "Pack test leg").
+	void RegisterPack(LF_Test test, LF_TestTier tier)
+	{
+		test.SetPackTest(true);
+		Register(test, tier);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Empty in the core. A pack's generated registry overrides it (modded class LF_TestManager) and
+	//! calls RegisterPack for each of its tests; the core never names a pack test.
+	protected void RegisterPackTests()
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Restricts the next run to these tests, matched by class name or GetName().
 	//! Set by LF_TestRunnerComponent for `tools\cli test --only`. The run then
 	//! ignores tiers, reports tier=only, and fails every name that matched nothing.
@@ -173,6 +191,13 @@ class LF_TestManager
 				if (skip)
 				{
 					PrintFormat("[LFTEST] SKIP %1 (tier=%2, %3 run)", EscapeXml(test.GetName()), TierName(test.Tier()), tierName);
+					continue;
+				}
+
+				// A pack test needs the pack's mission header; only the pack leg (which names it) has that.
+				if (test.IsPackTest())
+				{
+					PrintFormat("[LFTEST] SKIP %1 (pack test: runs only in the pack leg, under the pack header)", EscapeXml(test.GetName()));
 					continue;
 				}
 			}
@@ -330,6 +355,7 @@ class LF_TestManager
 	{
 		m_aTests.Clear();
 		LF_TestRegistrations.RegisterAll(this);
+		RegisterPackTests();
 	}
 
 	//------------------------------------------------------------------------------------------------

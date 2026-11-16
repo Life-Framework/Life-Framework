@@ -35,7 +35,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions. The written version is that list's length (36). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns. The written version is that list's length (37). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -213,6 +213,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("heldground");
 		order.Insert("itemstolen");
 		order.Insert("convictions");
+		order.Insert("firstspawns");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -246,7 +247,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 36);
+		context.WriteValue("version", 37);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -698,6 +699,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_ConvictionRow> convictionRows = LF_ConvictionRecord.ExportAll();
 			context.Write(convictionRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 conviction row(s)", convictionRows.Count()));
+		}
+		else if (payload == "firstspawns")
+		{
+			// Characters created and not yet spawned (#1964), keyed by character persistence id.
+			array<ref LF_FirstSpawnRow> firstSpawnRows = LF_FirstSpawn.ExportAll();
+			context.Write(firstSpawnRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 first-spawn mark(s)", firstSpawnRows.Count()));
 		}
 		else
 		{
@@ -1249,6 +1257,21 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("conviction rows failed to read, every record starts clean");
+			}
+		}
+		else if (payload == "firstspawns")
+		{
+			// A version 1-36 save never reaches this payload: no character is marked, so every
+			// character in it is an existing one and never spawns as new.
+			array<ref LF_FirstSpawnRow> firstSpawnRows = new array<ref LF_FirstSpawnRow>();
+			if (context.Read(firstSpawnRows))
+			{
+				int firstSpawnsApplied = LF_FirstSpawn.ApplyAll(firstSpawnRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 first-spawn mark(s)", firstSpawnsApplied, firstSpawnRows.Count()));
+			}
+			else
+			{
+				ReadFailed("first-spawn marks failed to read, no character counts as new");
 			}
 		}
 		else

@@ -242,6 +242,11 @@ class LF_Test_ShopRefusalReasons : LF_Test
 		int funds = price / 2;
 		LF_MoneyUtils.AddCash(buyer, funds);
 
+		// The back room is the gated back_room outlet (#1762): hold its licence so the till reaches the cash check.
+		LF_LicenseManagerComponent licences = LF_Component<LF_LicenseManagerComponent>.Find(buyer);
+		if (licences)
+			licences.UnlockLicense(LF_ELicenseType.CRIMINAL_WEAPONS, true);
+
 		int money;
 		string missing;
 		ctx.Equal(LF_EShopRefusal.NOT_ENOUGH_CASH, shop.Buy(M9_PREFAB, 1, buyer, money, missing), "half the price says the cash is short");

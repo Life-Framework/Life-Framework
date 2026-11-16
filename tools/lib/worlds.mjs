@@ -24,6 +24,13 @@ export const PLAYTEST_PACK_WORLD = "Worlds/Everon1989Town/Everon1989Town.ent";
 // The mission header that boots GRID_WORLD (session --mission grid, from W3 on).
 export const GRID_MISSION = "{7C1F4A92D03E6B58}Missions/LF_GridWorld.conf";
 
+// The pack test leg's header: GridWorld under the flagship's header, so the pack's config overlays
+// apply. It inherits LF_Everon1989.conf (one overlay list) and is hidden from Scenarios.
+export const PACK_TEST_MISSION = "{3626CFA069A75D46}Missions/LF_Everon1989_Test.conf";
+// Where a pack keeps its tests, and the registry `regen-tests` writes there for them.
+export const PACK_TESTS_DIR = "Scripts/Game/Tests";
+export const PACK_TEST_REGISTRY = "LF_PackTestRegistrations.generated.c";
+
 // "Worlds/X/X.ent" -> "Worlds/X/X_Layers"
 export const layersOf = (world) => world.replace(/\/([^/]+)\.ent$/, "/$1_Layers");
 

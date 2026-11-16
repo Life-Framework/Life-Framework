@@ -7916,6 +7916,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Too far away to revive them."
      Comment "Revive refusal: out of range."
     }
+  CustomStringTableItem "{BABA49E2440A6362}" {
+   Id "LF-Roadblock_Deploy"
+   Target_en_us "Deploy roadblock"
+   Comment "Action on the folded roadblock kit: lays the barrier and cones across the road in front of the officer (#1941)."
+  }
+  CustomStringTableItem "{3655F9540576258C}" {
+   Id "LF-Roadblock_Description"
+   Target_en_us "Folding roadblock kit: a barrier and four cones. Drop it at the roadside and deploy it across the road; pick any piece up to fold the set away. On-duty {police} only."
+   Comment "Inventory description of the police roadblock kit."
+  }
+  CustomStringTableItem "{986CA09EB5046245}" {
+   Id "LF-Roadblock_Name"
+   Target_en_us "Roadblock kit"
+   Comment "Inventory name of the police roadblock kit (#1941)."
+  }
+  CustomStringTableItem "{333125FDBDB896DE}" {
+   Id "LF-Roadblock_PickUp"
+   Target_en_us "Pick up roadblock"
+   Comment "Action on a piece of a deployed roadblock: folds the whole set back into the officer inventory."
+  }
+  CustomStringTableItem "{440F14D84078D338}" {
+   Id "LF-Roadblock_PoliceOnly"
+   Target_en_us "Only an on-duty officer can handle the roadblock kit."
+   Comment "Toast and greyed-out reason when someone who is not on-duty police tries the roadblock kit."
+  }
     CustomStringTableItem "{94A1952EED77A6E8}" {
      Id "LF-RobHold_ClerkBeg"
      Target_en_us "Please, I am not a hero. I will not call anyone, I swear it. Just take it."

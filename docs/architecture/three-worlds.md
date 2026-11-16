@@ -20,8 +20,9 @@ slice cards are on GitHub (label `slice`); this page covers the design and the o
 | `test --tier fast`, `--only`/`--red` of LOGIC tests | 1 (as today, `tools/lib/test-world.mjs`) |
 | `test --tier all`, `--only`/`--red` with any WORLD or PERSISTENCE test | 2. Tests named in `tools/test/world-pins.json` boot 3 in a second run until that list is empty. The town tests (`tools/test/town-tests.json`) are in no tier run |
 | `test --town` | 3, one boot, the 12 town tests only (below). `--only <town test>` boots 3 too |
-| `ci`, `wt gate`, `wt ship` suite | as `--tier all`, without the town tests |
-| `e2e` | one pair of boots per world (#1993): 2 for the grid-fixture persistence tests, 3 for the town tests (below). `--pre-move` keeps the town pair only |
+| Pack tests (`--tier all`, `--tier persistence`, or named with `--only`/`--red`) | 2 under the pack test header, one more boot (below). Never under `--tier fast`, `--core-only`, `--world` or `--town` |
+| `ci`, `wt gate`, `wt ship` suite | as `--tier all`, without the town tests; the pack leg runs after the shards |
+| `e2e` | one pair of boots per world (#1993): 2 for the grid-fixture persistence tests, 3 for the town tests (below), 2 under the pack test header for PERSISTENCE pack tests. `--pre-move` keeps the town pair only |
 | `host` | 3 (the playtest mission) |
 | `session up` (default `--mission debug`) | 3, as today. `--mission grid` boots 2 |
 | `grid place`, `grid list`, `grid free`, `place --layer Grid_*` | 2 |
@@ -64,6 +65,34 @@ is unchanged); only where they run changes:
 - **Pins.** Their 12 entries left `tools/test/world-pins.json`; a test is a pin or a town test, never both
   (`test-world-selftest`). Every other pin ends in the grid-fixture cards P1 to P4; the list is empty
   when the last of them lands, and this page then says so.
+
+## Pack test leg: pack data proved in game
+
+A core test cannot name a pack file (`validate-addon-boundary`), and the grid boots no pack header, so
+the pack's config overlays never applied in a test run. Pack data (a race course, a drink's values, a
+shop's prices) was checked by node selftests reading `.conf` text, which shows nothing about what the
+game loads. The pack test leg closes that gap:
+
+- **Where the tests live.** `addons/LF_Everon1989/Scripts/Game/Tests/LF_Test_*.c`, one class per file
+  extending `LF_Test`, with `// tier:` and `// red-proof:` lines as in the core. They may name pack files.
+  `validate-addon-boundary` allows these files and nothing else in the pack: a pack test file declares
+  only `LF_Test_*` classes, and the core still never names a pack class.
+- **Registration.** `tools\cli regen-tests` writes `LF_PackTestRegistrations.generated.c` beside them: a
+  `modded class LF_TestManager` that overrides `RegisterPackTests()` and calls `RegisterPack()` for each.
+  The core registry is untouched. The runner skips a pack test unless it is named (`[LFTEST] SKIP ...
+  pack test`), so no core leg runs one by accident.
+- **The header.** `Missions/LF_Everon1989_Test.conf` inherits `LF_Everon1989.conf` (the same overlay list,
+  manifest and flags), boots GridWorld (its test runner) and is hidden from Scenarios. `worlds.mjs`
+  `PACK_TEST_MISSION` names it.
+- **The leg.** `planLegs` (`packLeg`, `tools/lib/test-world.mjs`) adds one boot on that header for the pack
+  tests of `--tier all` (every one but PERF) or `--tier persistence`, and for those an `--only`/`--red`
+  names; a mixed `--only` splits into the core legs plus the pack leg. A sharded run (`ci`, `wt gate`)
+  runs the pack leg after the shards. `planE2eLegs` gives PERSISTENCE pack tests a save and reload pair
+  on the same header. `pack-test-leg-selftest` proves the plan, the boundary and the header.
+- **The first one.** `everon/drinks-impair` (`LF_Test_EveronDrinksImpair`, #2003) asserts that the moonshine
+  and beer rows apply over the neutral core table under the pack header. It replaced
+  `pack-drinks-impair-selftest.mjs`. The townsfolk test of #1960 waits for a pack-side grid layer: its
+  NPCs are pack prefabs, which the core GridWorld cannot place.
 
 One table of world paths, `tools/lib/worlds.mjs` (`TEST_WORLD`, `GRID_WORLD`, `PLAYTEST_WORLD`,
 `gridLayersDir()`), replaces the paths each tool spells out on its own today (`addons.mjs`
