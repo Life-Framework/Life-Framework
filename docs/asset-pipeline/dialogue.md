@@ -155,6 +155,15 @@ tools\cli asset dialogue clerk_everon               write Configs/Dialogue/LF_Di
   checks the file still matches the json.
 - The Everon pack's clerk is the worked example (`tools/assets/dialogue/clerk_everon/`).
 
+## A pack's own full dialogue
+
+A dialogue that patches no core one but belongs to a pack (the old man on the bench, #1962) is a normal
+`dialogue.json` with `"addon": "LF_Everon1989"` and no `patches`. The stage writes its `.conf`, recordings
+and audio project into that pack and its captions into the pack's `Language/*.st`; the core table is only read
+for keys that already exist. Its `voice` may be Piper (`{"engine": "piper", "id": "en_US-ljspeech-high"}`, free,
+ljspeech only). A pack conf that names a speaker and a start is read whole by `validate-dialogue-patch`.
+It is reached by id only once the pack's index overlay lists it and the NPC prefab carries `LF_DialogueComponent`.
+
 ## Voices
 
 - `GET /v1/voices` lists the account's voices; the premade ones are American and British.

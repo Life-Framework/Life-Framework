@@ -188,6 +188,8 @@ under "Hard-coded flagship values in script".
 | `UI/LF_UITheme.conf` | split | The theme shape (`LF_UIThemeRecord`, the reader) is core; the 1989 paper, brass and phosphor values are the flagship's look, kept as the core default until the M3 move. A pack overlay patches a theme by id (#966) |
 | `Dialogue/LF_DialogueIndex.conf` | core | The dialogue registry (#957): id to file; a pack overlay adds, replaces or removes an id |
 | `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`): the Everon wording and the voiced lines, listed in the pack's mission header |
+| `Dialogue/LF_Dialogue_OldMan.conf` (in `LF_Everon1989`) | pack | The old man on the bench: a pack's own full dialogue (`tools/assets/dialogue/old_man/`, #1962), voiced; flavour of this server, so the core knows nothing of it |
+| `Sounds/Dialogue/old_man/` (in `LF_Everon1989`) | pack | His five recordings (Piper ljspeech) and audio project (#1962) |
 | `Sounds/Dialogue/clerk_everon/` (in `LF_Everon1989`) | pack | The clerk's thirteen recordings and audio project (the ten from #323 batch 4, moved out of the core's `Sounds/Dialogue/clerk/`, and the three welcome lines of #1959), all Piper en_US-ljspeech (#1959) |
 | `Dialogue/LF_Dialogue_CafeOwner.conf` (in `LF_Everon1989`) | pack | The café owner Odile Marchand's own dialogue (#1961, `tools/assets/dialogue/cafe_owner/`): the zone, the move and three pointers. Pack content: it names the story and the town's places. Not yet in the dialogue index (follow-up with her talk action) |
 | `Sounds/Dialogue/cafe_owner/` (in `LF_Everon1989`) | pack | The café owner's seven recordings and audio project (#1961, Piper en_US-ljspeech) |

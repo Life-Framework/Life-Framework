@@ -194,6 +194,51 @@ StringTable {
      Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
+    CustomStringTableItem "{AA83C29649EB0D96}" {
+     Id "LF-Dialogue_OldMan_Bye"
+     Target_en_us "Go well. Come and sit with me again some time."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{EE06F137A9E223A3}" {
+     Id "LF-Dialogue_OldMan_Greet"
+     Target_en_us "Sit down a minute. Everyone is in a hurry these days. I only watch the square."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{22873025BE77ACB7}" {
+     Id "LF-Dialogue_OldMan_Move"
+     Target_en_us "The first winter was hard. But the island people brought us wood and soup, and nobody asked what we had left behind. That is how you start again."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{EC42A63E9256573A}" {
+     Id "LF-Dialogue_OldMan_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
+    CustomStringTableItem "{98D9AB69AB1E7F3A}" {
+     Id "LF-Dialogue_OldMan_SayMove"
+     Target_en_us "What was the move like?"
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
+    CustomStringTableItem "{2FA08445AB21D4F7}" {
+     Id "LF-Dialogue_OldMan_SayStart"
+     Target_en_us "Where should I start here?"
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
+    CustomStringTableItem "{6D010E5A1CFA729E}" {
+     Id "LF-Dialogue_OldMan_SayZone"
+     Target_en_us "Do you remember the zone?"
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
+    CustomStringTableItem "{8670E0234E8438C0}" {
+     Id "LF-Dialogue_OldMan_Start"
+     Target_en_us "Read the town board on the square. It shows where everything is. Then see the clerk, right beside it. He was kind to us, and he will be kind to you."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{B7F1FD0AA8489C85}" {
+     Id "LF-Dialogue_OldMan_Zone"
+     Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
     CustomStringTableItem "{5AFB8F50443E2D63}" {
      Id "LF-Handbook_Everon_CrimeBody1"
      Target_en_us "Hold up a shop, break into a vault or force a door and the police are told. Your wanted level goes up, and they come looking for you. You leave marks at the scene, and officers read them."
@@ -1913,6 +1958,11 @@ StringTable {
      Id "LF-Townsfolk_NightShift_Role"
      Target_en_us "Night-shift worker"
      Comment "Townsfolk (The relocated, #1960): what Rémi Duval does, the role line under the name."
+    }
+    CustomStringTableItem "{6D2E8B41F07A93C5}" {
+     Id "LF-Townsfolk_OldMan_Name"
+     Target_en_us "Gaspard Lenoir"
+     Comment "Townsfolk (The relocated, #1962): the speaker name over the old man's dialogue."
     }
     CustomStringTableItem "{1F9CFB4C2CC31B69}" {
      Id "LF-Townsfolk_OldMan_Role"

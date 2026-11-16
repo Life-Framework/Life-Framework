@@ -18,7 +18,6 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFil
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { stringTable } from "../assets/pipeline/addon.mjs";
 import * as patchTool from "../assets/pipeline/dialogue-patch.mjs";
 import * as dlg from "../assets/pipeline/dialogue.mjs";
 import * as eleven from "../assets/pipeline/elevenlabs.mjs";
@@ -253,16 +252,15 @@ export async function main() {
       ok(problems.length === 0, `${id}: dialogue.json has problems: ${problems.join(" | ")}`);
       const stale = dlg.staleLines(ROOT, s, prov);
       ok(stale.length === 0, `${id}: these lines were reworded or are missing their recording: ${stale.join(", ")} (${fix})`);
-      // A pack's own dialogue (#1961, no `patches`) lives in its pack and its table, not the core's.
-      const home = s.addon ? `addons/${s.addon}` : ADDON;
-      const table = s.addon ? new Map([...real, ...dlg.parseStrings(readFileSync(stringTable(ROOT, s), "utf8"))]) : real;
       for (const [rel, text] of Object.entries(dlg.expectedFiles(ROOT, s, prov))) {
+        // A pack's full dialogue (#1962) lives in its pack, not the core.
+        const home = s.addon && s.addon !== "LifeFramework" ? join("addons", s.addon) : ADDON;
         const file = join(ROOT, home, rel);
         ok(existsSync(file) && readFileSync(file, "utf8") === text, `${id}: ${home}/${rel} does not match dialogue.json (${fix})`);
       }
-      for (const e of dlg.stringEntries(s)) ok(table.get(e.id) === e.text.replace(/"/g, '\\"'), `${id}: string ${e.id} does not match dialogue.json (${fix})`);
+      for (const e of dlg.stringEntries(s)) ok(real.get(e.id) === e.text.replace(/"/g, '\\"'), `${id}: string ${e.id} does not match dialogue.json (${fix})`);
       const total = Object.values(prov.lines).reduce((n, l) => n + (l.chars_total || 0), 0);
-      if (s.text_only) ok(!existsSync(join(ROOT, home, dlg.soundDir(s))), `${id}: a text_only dialogue ships no ${dlg.soundDir(s)} folder (its recordings belong to the pack that voices it)`);
+      if (s.text_only) ok(!existsSync(join(ROOT, ADDON, dlg.soundDir(s))), `${id}: a text_only dialogue ships no ${dlg.soundDir(s)} folder (its recordings belong to the pack that voices it)`);
       else ok(total <= s.budget_chars, `${id}: ${total} characters spent, over its budget of ${s.budget_chars}`);
     }
   }

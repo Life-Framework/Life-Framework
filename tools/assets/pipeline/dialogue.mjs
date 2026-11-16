@@ -25,7 +25,7 @@ import { spawnSync } from "node:child_process";
 import * as eleven from "./elevenlabs.mjs";
 import * as piper from "./piper.mjs";
 import { freshGuid, readGuid } from "./meta.mjs";
-import { addonFlag, addonOf, addonProblems, assertBoundary, guidsInUse, stringTable, withAddon } from "./addon.mjs";
+import { CORE, addonFlag, addonOf, addonProblems, assertBoundary, guidsInUse, isCore, stringTable, withAddon } from "./addon.mjs";
 import { acpText as soundAcpText } from "./sound.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -488,10 +488,13 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
     return runVoicedPatch(root, full, { dryRun, force, fetchImpl, ffmpeg, convert, log, piperRun }, patch);
   }
   const addon = join(root, ADDON(spec));
-  const stFile = stringTable(root, spec);
+  // A full dialogue of a pack (#1962) writes its captions to the pack's own table; the core table is read for existing keys only.
+  const ownPack = !isCore(spec);
+  const stFile = stringTable(root, ownPack ? { addon: CORE } : spec);
   if (!existsSync(stFile)) throw new Error(`${ADDON(spec)} has no ${stFile}; a pack's string table does not exist yet (core-pack-inventory.md, #325)`);
   const stText = readFileSync(stFile, "utf8");
-  const packFile = packStringFile(root);
+  const packFile = ownPack ? (await import("./dialogue-patch.mjs")).patchStringFile(root, { addon: addonOf(spec) }) : packStringFile(root);
+  if (ownPack && !packFile) throw new Error(`${ADDON(spec)} has no Language/*.st; the pack's string table does not exist yet (core-pack-inventory.md, #325)`);
   const packText = packFile ? readFileSync(packFile, "utf8") : "";
   const known = parseStrings(stText);
   for (const [k, v] of parseStrings(packText)) known.set(k, v);
@@ -511,12 +514,10 @@ export async function run(root, id, { dryRun = false, force = "", fetchImpl, ffm
   if (!existsSync(conf + ".meta")) writeFileSync(conf + ".meta", simpleMeta(confRes(spec), freshGuid(guidsInUse(root)), "CONFResourceClass"));
   for (const [rel, text] of Object.entries(expectedFiles(root, spec, stage.prov))) writeFileSync(join(addon, rel), text);
   // A line whose key lives in the pack's table (its flavour text) is written there; the core keeps its neutral row.
-  const inPack = new Set(parseStrings(packText).keys());
   const entries = stringEntries(spec);
-  // A pack's own dialogue (#1961) writes into the pack table, which is also the pack file: one table, one write.
-  const sameTable = packFile && resolve(packFile) === resolve(stFile);
-  const newSt = upsertStrings(stText, sameTable ? entries : entries.filter((e) => !inPack.has(e.id)));
-  const newPack = packFile && !sameTable ? upsertStrings(packText, entries.filter((e) => inPack.has(e.id))) : packText;
+  const inPack = ownPack ? new Set(entries.map((e) => e.id)) : new Set(parseStrings(packText).keys());
+  const newSt = upsertStrings(stText, entries.filter((e) => !inPack.has(e.id)));
+  const newPack = packFile ? upsertStrings(packText, entries.filter((e) => inPack.has(e.id))) : packText;
   const stChanged = newSt !== stText || newPack !== packText;
   if (newSt !== stText) writeFileSync(stFile, newSt);
   if (newPack !== packText) writeFileSync(packFile, newPack);
