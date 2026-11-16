@@ -1,3 +1,4 @@
+// red-proof: observed 2026-11-16 (#1891), `tools\cli test --no-build --no-cache --only <the 10 classes>` on GridWorld before the grid fixtures: 10 of 15 failed on `... resolves in the DebugWorld` (Shop_GeneralStore_Debug, Shop_BlackMarket_Debug, FenceNpc are town entities); on Grid_shops_till fixtures 15 of 15 pass.
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_StoreShoplift,...`: LF_Stores.Shoplift without LF_WantedReports.Identify failed `- the report names the thief`; in the same run Pay leaving the tags failed `- exactly one shopper is caught walking out (expected 1, got 2)`; restored, green.
 
 // tier: WORLD
@@ -14,8 +15,8 @@ class LF_Test_StoreShoplift : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity counter = GetGame().GetWorld().FindEntityByName(LF_Test_StoreShelf.STORE_COUNTER);
-		ctx.NotNull(counter, "the general store counter resolves in the DebugWorld");
+		IEntity counter = GetGame().GetWorld().FindEntityByName(LF_Test_StoreShelf.GRID_STORE);
+		ctx.NotNull(counter, "the general store counter resolves in the GridWorld");
 		if (!counter)
 			return;
 
