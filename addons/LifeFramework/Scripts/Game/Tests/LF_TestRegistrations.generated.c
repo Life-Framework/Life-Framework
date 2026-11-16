@@ -190,6 +190,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_E2EInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventBus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPackOverlay(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventPhaseJip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventPhaseRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPlayersNearby(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventPreconditions(), LF_TestTier.LOGIC);
