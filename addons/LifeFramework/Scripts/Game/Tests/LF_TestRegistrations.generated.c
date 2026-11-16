@@ -259,6 +259,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutStashFind(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HoldUp(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HospitalRejoinPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HospitalBillOnce(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalBedPick(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HospitalWard(), LF_TestTier.WORLD);
