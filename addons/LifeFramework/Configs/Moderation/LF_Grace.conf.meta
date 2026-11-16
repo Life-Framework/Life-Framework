@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D9E1D9BFA17BD167}Configs/Moderation/LF_Grace.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

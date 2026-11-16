@@ -3998,6 +3998,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Wait %1 seconds"
      Comment "Gather refused: the resource is restocking. %1 = seconds"
     }
+    CustomStringTableItem "{73D0C4773B5E967E}" {
+     Id "LF-Grace_Refused"
+     Target_en_us "A new arrival is under a short grace: no hold-up, robbery or arrest for now."
+     Comment "Toast when a hold-up, robbery or arrest is refused because a character is in its new-character grace."
+    }
+    CustomStringTableItem "{A97CA5DA23A8F11C}" {
+     Id "LF-Grace_Title"
+     Target_en_us "Grace period"
+     Comment "Toast title for the new-character grace refusal."
+    }
     CustomStringTableItem "{37A4E1474FFDB190}" {
      Id "LF-Handbook_ReadBody1"
      Target_en_us "The handbook is a short set of pages. Each page covers one topic and you can come back to it at any time."
