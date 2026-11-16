@@ -59,8 +59,8 @@
       "event": "SOUND_LF_ALARM_STORE_LP",
       "project": "Store",
       "bus": "sfx",
-      "range": "reload60",
-      "volume_db": -12,
+      "range": "voice70",
+      "volume_db": -8,
       "loop": true,
       "prompt": "A small 1980s corner shop till buzzer alarm: one flat nasal electric buzz from a small plastic box, on for half a second then off for half a second, repeating evenly at a constant level, modest in volume. Recorded indoors in a small room, dry, no voice, no music, no bell, no siren.",
       "duration_seconds": 5,
@@ -75,7 +75,7 @@
       "pick": [
         4
       ],
-      "reason": "One held buzz again. Take 1 has the flattest level and the lowest seam of the three (5.1%, take 3 24.5%), so take 4 chops it into 500 ms on, 500 ms off: the slow flat buzz of a till buzzer, clearly slower and plainer than the fuel pulses; seam 0.0%."
+      "reason": "One held buzz again. Take 1 has the flattest level and the lowest seam of the three (5.1%, take 3 24.5%), so take 4 chops it into 500 ms on, 500 ms off: the slow flat buzz of a till buzzer, clearly slower and plainer than the fuel pulses; seam 0.0%. SUPERSEDED 2026-11-16: the committed store sample is no longer this take. The maintainer asked for the electronic two-tone alarm a retail shop has, so Samples/Alarm_Robbery_LF_ALARM_STORE_LP_01.wav is synthesised by tools/assets/retail-alarm/synth.mjs (1400/1000 Hz, 350 ms each, 4 cycles, no generation, no credits). The generation above stays here as the record of the buzzer."
     },
     {
       "id": "van",

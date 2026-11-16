@@ -87,6 +87,8 @@ class LF_Test_StoreShoplift : LF_Test
 		ctx.Equal(0, LF_WantedReports.CountFor(honestKey), "the shopper who paid has no report");
 		ctx.Equal(calls + 1, LF_Dispatch.CallCount(), "dispatch was called once");
 		ctx.True(LF_Dispatch.ActiveAlarmCount() > alarmsBefore, "the alarm sounds at the store");
+		ctx.EqualStr("store", store.GetAlarmKind(), "a store sets off the retail alarm kind unless its prefab says otherwise");
+		ctx.True(LF_PoliceConfig.AlarmPrefabFor(store.GetAlarmKind(), LF_WantedReports.OFFENCE_SHOPLIFTING, false) != LF_PoliceConfig.AlarmPrefab(false), "the shoplift alarm is the store's own, not the plain siren");
 		LF_DispatchRecord last = LF_Dispatch.Last();
 		if (last)
 			ctx.EqualStr(LF_WantedReports.OFFENCE_SHOPLIFTING, last.m_sOffence, "the call names shoplifting");

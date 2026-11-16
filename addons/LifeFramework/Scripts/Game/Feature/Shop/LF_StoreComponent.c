@@ -57,6 +57,9 @@ class LF_StoreComponent : ScriptComponent
 	[Attribute("120", UIWidgets.Auto, "Seconds between restocks. 0 never restocks")]
 	protected int m_iRestockSeconds;
 
+	[Attribute("store", UIWidgets.EditBox, "Alarm kind a shoplifter walking out sets off (an LF_AlarmKind id in LF_Police.conf): store is the retail two-tone alarm, bank the bell. Empty uses the plain siren")]
+	protected string m_sAlarmKind;
+
 	[Attribute("300", UIWidgets.Auto, "Seconds a shopper whose unpaid goods came back after a restart or a logout has to come back and pay. After that, carrying them outside the store is shoplifting")]
 	protected int m_iRestoredGraceSeconds;
 
@@ -159,6 +162,13 @@ class LF_StoreComponent : ScriptComponent
 	string GetStoreKey()
 	{
 		return m_sStoreKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The alarm kind this store sounds when a shopper walks out with unpaid goods.
+	string GetAlarmKind()
+	{
+		return m_sAlarmKind;
 	}
 
 	//------------------------------------------------------------------------------------------------
