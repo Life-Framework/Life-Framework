@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A7F9A615B1CB8531}Configs/Events/LF_Condition_RelocatedDawn.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
