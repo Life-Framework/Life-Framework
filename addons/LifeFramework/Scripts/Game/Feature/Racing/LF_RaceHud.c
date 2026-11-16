@@ -634,3 +634,47 @@ class LF_RaceHud_StaticResetHook : LF_StaticResetHook
 		LF_RaceHud.ResetStatics();
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! racehud show <lap/laps> <cp/cps> <place/racers> <ms> | end | state: the panel on this client,
+//! fed the same way the owner RPC feeds it (agent-box/proofs/racehud-proof.mjs).
+modded class LF_AgentHarnessVerbs
+{
+	override bool Handle(LF_AgentCommand cmd)
+	{
+		if (cmd.Verb != "racehud")
+			return super.Handle(cmd);
+
+		if (cmd.Arg1 == "show")
+		{
+			array<string> lap = {};
+			array<string> cp = {};
+			array<string> place = {};
+			cmd.Arg2.Split("/", lap, true);
+			cmd.Arg3.Split("/", cp, true);
+			cmd.Arg4.Split("/", place, true);
+			if (lap.Count() != 2 || cp.Count() != 2 || place.Count() != 2)
+			{
+				LF_AgentHarness.Answer(cmd.Id, "error", "usage: racehud show <lap/laps> <cp/cps> <place/racers> <ms>");
+				return true;
+			}
+
+			LF_RaceHudState state = new LF_RaceHudState();
+			state.m_iLap = lap[0].ToInt();
+			state.m_iLaps = lap[1].ToInt();
+			state.m_iCheckpoint = cp[0].ToInt();
+			state.m_iCheckpoints = cp[1].ToInt();
+			state.m_iPlace = place[0].ToInt();
+			state.m_iRacers = place[1].ToInt();
+			state.m_bFinished = state.m_iCheckpoint == 0;
+			LF_RaceHud.Show(state, cmd.Arg5.ToInt());
+		}
+		else if (cmd.Arg1 == "end")
+		{
+			LF_RaceHud.End();
+		}
+
+		LF_AgentHarness.Answer(cmd.Id, "ok", LF_RaceHud.Describe());
+		return true;
+	}
+}
