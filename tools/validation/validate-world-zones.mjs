@@ -6,6 +6,8 @@
 // 1. Grid claims. Each tools/grid/cells/<slug>.json names a cell of the lattice, no two claim one
 //    cell, each has its GridWorld_Layers/Grid_<slug>.layer, each Grid_*.layer has a claim, and every
 //    entity a grid layer places stands inside its own cell (a feature never sprawls past its fence).
+//    The frame (tools/grid/lattice.mjs, claim frame.json with cell "lattice") is the one claim that spans the
+//    lattice: its entities need only stand inside the lattice rectangle.
 //    A Grid_*.layer in DebugWorld_Layers fails: the grid lives in GridWorld. A claim on a cell that
 //    origin/main gives to another slug fails too (two slices cut before either merged; #1905 and #1906
 //    both took c2r4): the claims come from git, fetched in CI.
@@ -28,6 +30,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { FRAME_CELL, isFrameClaim, latticeRect } from "../grid/lattice.mjs";
 import { DEBUG_LAYERS, GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, mainClaims, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
 
 export const BASELINE = "tools/validation/zone-guard-baseline.json";
@@ -72,6 +75,19 @@ export function checkClaims(root, { mainClaims: onMain = [] } = {}) {
       continue;
     }
     if (c.slug !== base) errors.push(`${c.file}: slug "${c.slug}" does not match the file name`);
+    if (isFrameClaim(c)) {
+      if (c.cell !== FRAME_CELL) errors.push(`${c.file}: the frame's cell is "${FRAME_CELL}"`);
+      const frameFile = join(root, GRID_LAYERS, layerOfSlug(c.slug));
+      if (!existsSync(frameFile)) {
+        errors.push(`${c.file}: ${GRID_LAYERS}/${layerOfSlug(c.slug)} is missing (node tools/grid/lattice.mjs write)`);
+        continue;
+      }
+      const r = latticeRect();
+      for (const e of topLevelCoords(readFileSync(frameFile, "utf8"))) {
+        if (e.x < r.x0 - 0.5 || e.x > r.x1 + 0.5 || e.z < r.z0 - 0.5 || e.z > r.z1 + 0.5) errors.push(`${layerOfSlug(c.slug)}: ${e.name} at ${e.x},${e.z} is outside the lattice (x ${r.x0}..${r.x1}, z ${r.z0}..${r.z1})`);
+      }
+      continue;
+    }
     const p = parseCellId(c.cell);
     if (!p) {
       errors.push(`${c.file}: cell "${c.cell}" is not in the lattice (c0r0 to c6r6)`);
