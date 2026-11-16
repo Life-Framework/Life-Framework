@@ -144,6 +144,9 @@ modded class LF_LogoutBody
 		Recapture(record);
 		s_mBodies.Remove(uid);
 		Watch(body, false);
+		// The body is the player's character again: clear the replicated Logged out flag, or every client
+		// (a late joiner too) keeps tracking it and a later release of control would show the tag.
+		LF_LogoutBodyTag.Mark(body, false);
 		LF_Debug.Info(FEATURE, string.Format("logout body of %1 taken back by its player", uid));
 		return body;
 	}
