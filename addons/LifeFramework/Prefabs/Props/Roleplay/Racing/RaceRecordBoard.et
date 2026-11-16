@@ -1,0 +1,22 @@
+GenericEntity : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ ID "1F7E0AD43DE5CB69"
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "grid:race-records"
+  }
+  ActionsManagerComponent "{6E065C9694DC3BE5}" {
+   ActionContexts {
+    UserActionContext "{360C30155120CB67}" {
+     Radius 1.5
+    }
+   }
+   additionalActions + {
+    LF_RaceBoardReadAction "{5E01F4FA6834649A}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+}
