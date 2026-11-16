@@ -168,6 +168,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DownedRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrillLeftBeside(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrillLeftSize(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DrinkImpairmentTable(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DutyDeskActions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyPay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_E2E_CashSlotSwap(), LF_TestTier.PERSISTENCE);
@@ -399,6 +400,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuizHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuizPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_RaceCourse(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RangeTargets(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RateLimit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RecipeChains(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RegistrationRules(), LF_TestTier.LOGIC);
