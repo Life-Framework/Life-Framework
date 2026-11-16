@@ -849,7 +849,10 @@ it, picks a lane and a budget, and prints one line per outcome.
   driven by an older harness is not mistaken for idle. A session being driven is
   never touched.
 - **Runtime budget.** A test run is killed when it exceeds its budget (clock
-  starts at the server's ready line; boot has its own `bootBudgetS`, 30 s):
+  starts at the server's ready line; boot has its own `bootBudgetS`, 30 s, for DebugWorld and the small
+  test worlds; any other `--world` boots a big map and gets 150 s (`CoreOnEveron`, 1.1M entities), doubled up to 600 s
+  while that world's recent runs on that machine timed out, times `budgetMultiplier`; `--boot-budget <s>` overrides,
+  and the remote leg works it out from `--world` itself, #1700):
   3 times the p95 of that machine's last 30 passing runs of the kind, never under
   30 s; until it has 5 passes, seeded: `--only` 30 s, `fast` 45 s, `all` 90 s,
   `persistence` 120 s, `e2e` 120 s per pass, times the machine's
@@ -891,8 +894,10 @@ to door). The `hostname` key makes the entry the local machine when the CLI runs
 and the RAM (and, on the laptop, below its heat hold). A machine that is down when the request arrives stays in it and
 is probed again every 10 s while it waits (2026-11-14: two 2-client requests arrived while the laptop was off, went to
 this PC and queued there pinned for 58 and 11 minutes while the laptop came back with free lanes). The chosen machine's
-own `up` runs without `--wait`: a lost race there exits 75 (`LANE_BUSY_CODE`) and the request queues again for
-any machine, keeping its age. `--machine local` (or `--machine <name>`) pins it. The remote session's clients start
+own `up` runs without `--wait`: a lost race there exits 75 (`LANE_BUSY_CODE`) and the request queues again
+(that machine is skipped while another can take it, and refusals back off 3 s doubling to 60 s, #1699), keeping its age. The
+router sends the machine's lane counts to its leg (`LF_POOL_THIS_LANES`): the run folder on lf-cloud has no
+`lf.local.json`, so without it the leg counted this PC's 2 session lanes where the router counted 9. `--machine local` (or `--machine <name>`) pins it. The remote session's clients start
 on the laptop's desktop. Everything that drives them follows the session there: `harness.mjs`, `session.mjs
 state`, `reset`, `join`, `roster`, `film` and every proof verb run in the run folder over ssh (`--local` keeps
 one on this PC), and a path of this worktree among a proof's arguments (an out dir) is mapped into the run folder

@@ -131,18 +131,31 @@ async function walk(args) {
       on({ verb: "eventscene", words: ["control", CONTROL_PREFAB] }, 10000);
       shots.control = true;
     }
-    if (!shots.mid && walking > 0 && elapsed >= 25) {
+    // The route goes out once all six have spawned (about 15 s), so mid-route is about 25 s later.
+    if (!shots.mid && walking > 0 && elapsed >= 40) {
       // The middle of the route, from the side, a little above eye height.
       const mid = route[Math.floor(route.length / 2)];
       on({ verb: "capture", mode: "world", name: "walk_mid", x: mid.x, y: mid.y + 1, z: mid.z, ox: 14, oy: 4, oz: 10, hour: 12 }, 25000);
       on({ verb: "capture", mode: "world", name: "walk_mid_close", x: mid.x, y: mid.y + 1, z: mid.z, ox: 6, oy: 1.6, oz: 4, hour: 12 }, 25000);
       shots.mid = true;
     }
+    // The walk stops the moment it is over; the status then carries its result, and the family
+    // still stands at the target until the despawn delay, so the arrival pictures go now.
+    const over = /walk over: (\d+) reached the target, (\d+) timed out/.exec(s);
+    if (over) {
+      arrived = Number(over[1]);
+      spawned = arrived + Number(over[2]);
+      break;
+    }
     if (spawned > 0 && arrived >= spawned && walking === 0) break;
     if (/no scene running/.test(s) && (Date.now() - t0) / 1000 > 60) break;
   }
-  on({ verb: "capture", mode: "world", name: "walk_target", x: target.x, y: target.y + 1, z: target.z, ox: 10, oy: 4, oz: 8, hour: 12 }, 25000);
-  on({ verb: "capture", mode: "world", name: "walk_target_close", x: target.x, y: target.y + 1, z: target.z, ox: 4, oy: 1.6, oz: 3, hour: 12 }, 25000);
+  // From the south-west, across the open lawn: the north-east side of the target is a bush.
+  on({ verb: "capture", mode: "world", name: "walk_target", x: target.x, y: target.y + 1, z: target.z, ox: -9, oy: 3.5, oz: -11, hour: 12 }, 25000);
+  on({ verb: "capture", mode: "world", name: "walk_target_close", x: target.x, y: target.y + 1, z: target.z, ox: -5, oy: 1.7, oz: -6, hour: 12 }, 25000);
+  // Top view over the target (image up is north-west): where the family stands when the walk ends.
+  // Last: the free camera carries over to the next capture.
+  on({ verb: "capture", mode: "world", name: "walk_target_top", x: target.x, y: target.y, z: target.z, ox: 0, oy: 35, oz: -0.1, hour: 12, free: true }, 25000);
   shots.target = true;
 
   console.log(`relocated-walk: last status: ${last}`);

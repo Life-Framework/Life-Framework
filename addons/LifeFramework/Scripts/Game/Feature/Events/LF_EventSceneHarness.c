@@ -92,7 +92,12 @@ class LF_EventSceneHarness
 		string line = string.Format("%1 scene %2: %3 spawned", head, crew.m_sSceneId, crew.m_aPeople.Count());
 		LF_EventSceneWalk walk = LF_EventSceneWalk.Active();
 		if (!walk || walk.m_Crew != crew)
+		{
+			if (!LF_EventSceneWalk.LastOver().IsEmpty())
+				return string.Format("%1, not walking (walk over: %2)", line, LF_EventSceneWalk.LastOver());
+
 			return line + ", not walking";
+		}
 
 		int walking = walk.m_aWalkers.Count() - walk.CountArrived() - walk.CountTimedOut();
 		line = string.Format("%1, walking %2, arrived %3, timed out %4, %5 s", line, walking, walk.CountArrived(), walk.CountTimedOut(), walk.m_fElapsed);

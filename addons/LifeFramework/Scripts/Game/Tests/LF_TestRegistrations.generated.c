@@ -204,6 +204,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_EventShell(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventShellPersist(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventWalkArrival(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventWalkRouteWait(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventWaypoints(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceLockerPersist(), LF_TestTier.PERSISTENCE);
@@ -389,6 +390,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PhotoIdCardsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PhotoIdCardWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PickaxeCount(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlaceLiveState(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Placement(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacementAim(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacementAudit(), LF_TestTier.WORLD);

@@ -57,6 +57,6 @@ GenericEntity RelocatedWalk_Target : "{F716FD32069F2BE8}Prefabs/Systems/Events/L
    m_sSceneId "relocated_arrival"
   }
  }
- coords 4576.2 16.8 10631.6
+ coords 4571.6 16.4 10625.4
  angleY 20
 }

@@ -1,0 +1,1798 @@
+{
+ "group": "retail",
+ "generated": "2026-11-16",
+ "items": [
+  {
+   "guid": "E214337C6E1931C5",
+   "path": "Prefabs/Props/Commercial/CounterShop_01.et",
+   "res": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+   "name": "Shop counter (wood)",
+   "category": "counter",
+   "sizeM": [
+    1.5,
+    1.12,
+    1.04
+   ],
+   "surfaces": [
+    0.2,
+    0.7,
+    0.78,
+    1.04
+   ],
+   "everonWorldCount": 28,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 6,
+    "Saint Pierre": 5,
+    "Morton": 2,
+    "Montignac": 3
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Main sales counter for a shop; 1.04 m top for goods/till, lower 0.70 and 0.78 m ledges on the customer side. Put CashierShop_01 on top."
+  },
+  {
+   "guid": "51D31AB07AE3C1C7",
+   "path": "Prefabs/Props/Commercial/CashierShop_01.et",
+   "res": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et",
+   "name": "Cash register (till)",
+   "category": "till",
+   "sizeM": [
+    0.6,
+    0.51,
+    0.5
+   ],
+   "surfaces": [
+    0.11,
+    0.4,
+    0.5
+   ],
+   "everonWorldCount": 30,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 7,
+    "Saint Pierre": 5,
+    "Morton": 2,
+    "Montignac": 3
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Till prop that sits on a counter top (0.51 m tall); no cash-register action in the prefab, any buy flow is LF script. Destructible."
+  },
+  {
+   "guid": "A1C9DEEA040208BF",
+   "path": "Prefabs/Props/Services/Post/CounterPostOffice_01_window.et",
+   "res": "{A1C9DEEA040208BF}Prefabs/Props/Services/Post/CounterPostOffice_01_window.et",
+   "name": "Post office counter, window section",
+   "category": "counter",
+   "sizeM": [
+    1.51,
+    0.48,
+    1.86
+   ],
+   "surfaces": [
+    0.06,
+    0.74,
+    0.91,
+    1.86
+   ],
+   "everonWorldCount": 12,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 2,
+    "Saint Pierre": 2,
+    "Morton": 2,
+    "Montignac": 2
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Teller counter with glass window (1.86 m tall); fits post office, bank-style or ticket desk."
+  },
+  {
+   "guid": "3FBD5D218E2877D4",
+   "path": "Prefabs/Props/Services/Post/CounterPostOffice_01_corner.et",
+   "res": "{3FBD5D218E2877D4}Prefabs/Props/Services/Post/CounterPostOffice_01_corner.et",
+   "name": "Post office counter, corner section",
+   "category": "counter",
+   "sizeM": [
+    1.22,
+    1.16,
+    1.86
+   ],
+   "surfaces": [
+    0.06,
+    0.4,
+    0.86,
+    0.91,
+    0.96,
+    1.86
+   ],
+   "everonWorldCount": 6,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 1,
+    "Saint Pierre": 1,
+    "Morton": 1,
+    "Montignac": 1
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Corner piece of the post office counter; combine with the window section for an L-shaped service desk."
+  },
+  {
+   "guid": "6CD34D6526429EEC",
+   "path": "Prefabs/Props/Furniture/BarTable_01.et",
+   "res": "{6CD34D6526429EEC}Prefabs/Props/Furniture/BarTable_01.et",
+   "name": "Bar counter (long)",
+   "category": "bar",
+   "sizeM": [
+    2.28,
+    0.98,
+    1.19
+   ],
+   "surfaces": [
+    0.64,
+    0.79,
+    0.95,
+    1.04
+   ],
+   "everonWorldCount": 23,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 4,
+    "Saint Pierre": 2,
+    "Morton": 2,
+    "Montignac": 2
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "2.28 m bar counter with 1.04 m top; put BarTap_01, GlassBeer and bottles on it."
+  },
+  {
+   "guid": "1C571A35EF9F2217",
+   "path": "Prefabs/Props/Furniture/BarTap_01.et",
+   "res": "{1C571A35EF9F2217}Prefabs/Props/Furniture/BarTap_01.et",
+   "name": "Beer tap (bar font)",
+   "category": "bar",
+   "sizeM": [
+    0.85,
+    0.48,
+    0.57
+   ],
+   "surfaces": [
+    1.38,
+    1.58
+   ],
+   "everonWorldCount": 23,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 4,
+    "Saint Pierre": 2,
+    "Morton": 2,
+    "Montignac": 2
+   },
+   "hasAction": true,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Stands on the bar top; ActionsManagerComponent holds one 'default' UserActionContext and no action entries, so no working pour action in the prefab."
+  },
+  {
+   "guid": "13B4C532861B9DE2",
+   "path": "Prefabs/Props/Commercial/BeerKegMetal_01.et",
+   "res": "{13B4C532861B9DE2}Prefabs/Props/Commercial/BeerKegMetal_01.et",
+   "name": "Metal beer keg",
+   "category": "bar",
+   "sizeM": [
+    0.57,
+    0.58,
+    0.65
+   ],
+   "surfaces": [
+    0.64
+   ],
+   "everonWorldCount": 176,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 40,
+    "Saint Pierre": 16,
+    "Morton": 12,
+    "Montignac": 15
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Back-bar/cellar prop with flat 0.64 m top; a _lines variant (1 placed) is counted in the total."
+  },
+  {
+   "guid": "3F23DA7ACAC0ED90",
+   "path": "Prefabs/Props/Civilian/GlassBeer_01/GlassBeer_01.et",
+   "res": "{3F23DA7ACAC0ED90}Prefabs/Props/Civilian/GlassBeer_01/GlassBeer_01.et",
+   "name": "Beer glass (mug)",
+   "category": "bar",
+   "sizeM": [
+    0.15,
+    0.1,
+    0.16
+   ],
+   "surfaces": [],
+   "everonWorldCount": 100,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 10,
+    "Saint Pierre": 10,
+    "Morton": 10,
+    "Montignac": 10
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Loose prop for bar top and tables."
+  },
+  {
+   "guid": "5377EE9A760462BE",
+   "path": "Prefabs/Props/Civilian/GlassBeer_01/GlassBeer_02.et",
+   "res": "{5377EE9A760462BE}Prefabs/Props/Civilian/GlassBeer_01/GlassBeer_02.et",
+   "name": "Beer glass (slim)",
+   "category": "bar",
+   "sizeM": [
+    0.07,
+    0.07,
+    0.16
+   ],
+   "surfaces": [],
+   "everonWorldCount": 56,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 6,
+    "Saint Pierre": 6,
+    "Morton": 6,
+    "Montignac": 6
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Loose prop for bar top and tables."
+  },
+  {
+   "guid": "8FE6D62204173656",
+   "path": "Prefabs/Props/Civilian/BeerBottle_01_group.et",
+   "res": "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et",
+   "name": "Beer bottle group",
+   "category": "bar",
+   "sizeM": [
+    0.44,
+    0.32,
+    0.28
+   ],
+   "surfaces": [
+    0.17,
+    0.27
+   ],
+   "everonWorldCount": 673,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 100,
+    "Saint Pierre": 56,
+    "Morton": 40,
+    "Montignac": 64
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Group of bottles (0.44 x 0.32 m) for bar shelves, fridge tops, market stalls."
+  },
+  {
+   "guid": "88FAE04EF7115814",
+   "path": "Prefabs/Props/Civilian/BeerBottle_01_green.et",
+   "res": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+   "name": "Beer bottle (single)",
+   "category": "bar",
+   "sizeM": [
+    0.08,
+    0.08,
+    0.26
+   ],
+   "surfaces": [],
+   "everonWorldCount": 949,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 157,
+    "Saint Pierre": 90,
+    "Morton": 58,
+    "Montignac": 82
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Single bottle; count sums green/brown/slava/base and empty_green/empty_brown variants for bar clutter."
+  },
+  {
+   "guid": "84BC93D7A303F53B",
+   "path": "Prefabs/Props/Civilian/SodaBottle_01.et",
+   "res": "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et",
+   "name": "Soda bottle",
+   "category": "other",
+   "sizeM": [
+    0.18,
+    0.14,
+    0.36
+   ],
+   "surfaces": [],
+   "everonWorldCount": 27,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 8,
+    "Saint Pierre": 4,
+    "Morton": 2,
+    "Montignac": 3
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Single bottle for shop shelves and fridge tops."
+  },
+  {
+   "guid": "BC77A0CE72611DC3",
+   "path": "Prefabs/Props/Furniture/Stool_01.et",
+   "res": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+   "name": "Stool (wood)",
+   "category": "bar",
+   "sizeM": [
+    0.41,
+    0.41,
+    0.5
+   ],
+   "surfaces": [
+    0.39,
+    0.5
+   ],
+   "everonWorldCount": 105,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 11,
+    "Saint Pierre": 7,
+    "Morton": 3,
+    "Montignac": 6
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Bar/counter stool, 0.50 m seat; static, no destruction component; no sit action."
+  },
+  {
+   "guid": "D023942ECEA592ED",
+   "path": "Prefabs/Props/Furniture/Stool_02.et",
+   "res": "{D023942ECEA592ED}Prefabs/Props/Furniture/Stool_02.et",
+   "name": "Stool (variant 2)",
+   "category": "bar",
+   "sizeM": [
+    0.45,
+    0.47,
+    0.51
+   ],
+   "surfaces": [
+    0.5,
+    0.51
+   ],
+   "everonWorldCount": 38,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 7,
+    "Saint Pierre": 5,
+    "Morton": 2,
+    "Montignac": 4
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Second stool design, 0.51 m seat; destructible, no sit action."
+  },
+  {
+   "guid": "B60865AB934AB9A6",
+   "path": "Prefabs/Props/Furniture/StoolPiano_01.et",
+   "res": "{B60865AB934AB9A6}Prefabs/Props/Furniture/StoolPiano_01.et",
+   "name": "Round stool",
+   "category": "bar",
+   "sizeM": [
+    0.56,
+    0.56,
+    0.5
+   ],
+   "surfaces": [
+    0.5
+   ],
+   "everonWorldCount": 187,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 23,
+    "Saint Pierre": 12,
+    "Morton": 7,
+    "Montignac": 11
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Round 0.50 m stool; works as a bar stool visually, no sit action."
+  },
+  {
+   "guid": "FF8BD8E8A95DB3D2",
+   "path": "Prefabs/Props/Furniture/Fridge_01.et",
+   "res": "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et",
+   "name": "Fridge (tall)",
+   "category": "fridge",
+   "sizeM": [
+    0.81,
+    0.71,
+    1.87
+   ],
+   "surfaces": [
+    0.03,
+    1.41,
+    1.83,
+    1.86
+   ],
+   "everonWorldCount": 428,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 75,
+    "Saint Pierre": 41,
+    "Morton": 22,
+    "Montignac": 41
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.87 m tall fridge, 0.81 m wide; decorative, no open action; top at 1.83 m."
+  },
+  {
+   "guid": "BBF415EE68294A4E",
+   "path": "Prefabs/Props/Furniture/FridgeSmall_01.et",
+   "res": "{BBF415EE68294A4E}Prefabs/Props/Furniture/FridgeSmall_01.et",
+   "name": "Fridge (small)",
+   "category": "fridge",
+   "sizeM": [
+    0.71,
+    0.74,
+    1
+   ],
+   "surfaces": [
+    0.06,
+    1
+   ],
+   "everonWorldCount": 44,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 9,
+    "Saint Pierre": 3,
+    "Morton": 4,
+    "Montignac": 4
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Under-counter fridge, 1.0 m top for bottles or a till."
+  },
+  {
+   "guid": "9A0A7B399D8AEEA0",
+   "path": "Prefabs/Props/Civilian/Freezer_01.et",
+   "res": "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et",
+   "name": "Chest freezer",
+   "category": "fridge",
+   "sizeM": [
+    0.7,
+    0.75,
+    0.85
+   ],
+   "surfaces": [
+    0.84
+   ],
+   "everonWorldCount": 36,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 7,
+    "Saint Pierre": 5,
+    "Morton": 2,
+    "Montignac": 4
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "0.85 m chest freezer, no destruction component; for butcher/grocery back rooms."
+  },
+  {
+   "guid": "613F68B39D0A4A64",
+   "path": "Prefabs/Props/Commercial/CoolingBoxShop_01.et",
+   "res": "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et",
+   "name": "Open shop chiller",
+   "category": "fridge",
+   "sizeM": [
+    1.94,
+    1.13,
+    1.21
+   ],
+   "surfaces": [
+    0.06,
+    0.6,
+    0.62,
+    0.65,
+    0.87,
+    1.21
+   ],
+   "everonWorldCount": 15,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 2,
+    "Saint Pierre": 2,
+    "Morton": 2,
+    "Montignac": 2
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.94 m wide open display chiller with inner levels at 0.60 and 0.87 m; drinks and dairy in a grocery."
+  },
+  {
+   "guid": "B7669B7F8B7923F6",
+   "path": "Prefabs/Props/Commercial/ShelfShop_01.et",
+   "res": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+   "name": "Shop shelf unit (wide, wood)",
+   "category": "shelf",
+   "sizeM": [
+    2.48,
+    0.56,
+    1.5
+   ],
+   "surfaces": [
+    0.1,
+    0.43,
+    0.82,
+    1.18,
+    1.43
+   ],
+   "everonWorldCount": 137,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 31,
+    "Saint Pierre": 24,
+    "Morton": 13,
+    "Montignac": 18
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "2.48 m wide, 5 boards (0.10/0.43/0.82/1.18/1.43 m); destruction disabled; the main grocery shelf."
+  },
+  {
+   "guid": "8B2C4E871E57D6A4",
+   "path": "Prefabs/Props/Commercial/ShelfShop_02/ShelfShop_02.et",
+   "res": "{8B2C4E871E57D6A4}Prefabs/Props/Commercial/ShelfShop_02/ShelfShop_02.et",
+   "name": "Shop wall shelf (6 boards)",
+   "category": "shelf",
+   "sizeM": [
+    1.18,
+    0.2,
+    1.13
+   ],
+   "surfaces": [
+    0.02,
+    0.24,
+    0.45,
+    0.67,
+    0.88,
+    1.13
+   ],
+   "everonWorldCount": 17,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 2,
+    "Saint Pierre": 2,
+    "Morton": 2,
+    "Montignac": 2
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.18 m wide but only 0.2 m deep, 6 boards 0.02 to 1.13 m; good behind-counter back shelf."
+  },
+  {
+   "guid": "1065C90B9F7DED81",
+   "path": "Prefabs/Props/Commercial/ShelfShop_02/ShelfShop_02_small.et",
+   "res": "{1065C90B9F7DED81}Prefabs/Props/Commercial/ShelfShop_02/ShelfShop_02_small.et",
+   "name": "Shop wall shelf (small)",
+   "category": "shelf",
+   "sizeM": [
+    0.52,
+    0.2,
+    1.01
+   ],
+   "surfaces": [
+    0.02,
+    1.01
+   ],
+   "everonWorldCount": 1,
+   "usedInTowns": [],
+   "townCounts": {},
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "0.52 m wide, 1.01 m tall; filler or end cap."
+  },
+  {
+   "guid": "D6E93EF9D3232D16",
+   "path": "Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+   "res": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+   "name": "Universal shelf (wide, 2.6 m tall)",
+   "category": "shelf",
+   "sizeM": [
+    1.45,
+    0.49,
+    2.59
+   ],
+   "surfaces": [
+    0.11,
+    0.59,
+    1.08,
+    1.57,
+    2.07,
+    2.59
+   ],
+   "everonWorldCount": 173,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 35,
+    "Saint Pierre": 26,
+    "Morton": 19,
+    "Montignac": 20
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.45 m wide, 6 boards up to 2.59 m; walk-in aisle unit."
+  },
+  {
+   "guid": "1E84244AFD39A88E",
+   "path": "Prefabs/Props/Commercial/ShelfUniversal_01_narrow.et",
+   "res": "{1E84244AFD39A88E}Prefabs/Props/Commercial/ShelfUniversal_01_narrow.et",
+   "name": "Universal shelf (narrow)",
+   "category": "shelf",
+   "sizeM": [
+    1.02,
+    0.49,
+    2.59
+   ],
+   "surfaces": [
+    0.11,
+    0.59,
+    1.09,
+    1.58,
+    2.07,
+    2.59
+   ],
+   "everonWorldCount": 28,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "townCounts": {
+    "Saint Philippe": 5,
+    "Saint Pierre": 1,
+    "Morton": 3
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.02 m wide, same 6 levels; aisle end or small shop."
+  },
+  {
+   "guid": "F1141DB8B7FA9B9A",
+   "path": "Prefabs/Props/Commercial/ShelfUniversal_01_corner.et",
+   "res": "{F1141DB8B7FA9B9A}Prefabs/Props/Commercial/ShelfUniversal_01_corner.et",
+   "name": "Universal shelf (corner)",
+   "category": "shelf",
+   "sizeM": [
+    1.14,
+    1.15,
+    2.59
+   ],
+   "surfaces": [
+    0.11,
+    0.59,
+    1.09,
+    1.57,
+    2.07,
+    2.59,
+    2.6
+   ],
+   "everonWorldCount": 11,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre"
+   ],
+   "townCounts": {
+    "Saint Philippe": 4,
+    "Saint Pierre": 2
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.14 x 1.15 m corner unit joining two shelf walls."
+  },
+  {
+   "guid": "A84A73E9D9D4B20E",
+   "path": "Prefabs/Props/Furniture/Shelf_01.et",
+   "res": "{A84A73E9D9D4B20E}Prefabs/Props/Furniture/Shelf_01.et",
+   "name": "Wall shelf (single board)",
+   "category": "shelf",
+   "sizeM": [
+    0.9,
+    0.26,
+    0.26
+   ],
+   "surfaces": [
+    0.02
+   ],
+   "everonWorldCount": 495,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 98,
+    "Saint Pierre": 52,
+    "Morton": 29,
+    "Montignac": 49
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "0.9 m wall board 0.26 m deep; bottle or spice row."
+  },
+  {
+   "guid": "208028C4307E3772",
+   "path": "Prefabs/Props/Furniture/ShelfDecorative_01_barewood.et",
+   "res": "{208028C4307E3772}Prefabs/Props/Furniture/ShelfDecorative_01_barewood.et",
+   "name": "Decorative shelf unit (bare wood)",
+   "category": "shelf",
+   "sizeM": [
+    1.1,
+    0.2,
+    2.3
+   ],
+   "surfaces": [
+    0.02,
+    0.4,
+    1.11,
+    1.85,
+    2.3
+   ],
+   "everonWorldCount": 501,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 103,
+    "Saint Pierre": 67,
+    "Morton": 32,
+    "Montignac": 57
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.1 x 0.2 x 2.3 m, boards at 0.40/1.11/1.85/2.30 m; boutique or gift shop; heavily used in houses."
+  },
+  {
+   "guid": "081107D1147FDBE0",
+   "path": "Prefabs/Props/Furniture/ShelfOld_01_small.et",
+   "res": "{081107D1147FDBE0}Prefabs/Props/Furniture/ShelfOld_01_small.et",
+   "name": "Old shelf (small)",
+   "category": "shelf",
+   "sizeM": [
+    0.73,
+    0.2,
+    0.55
+   ],
+   "surfaces": [
+    0.4
+   ],
+   "everonWorldCount": 114,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 6,
+    "Saint Pierre": 2,
+    "Morton": 4,
+    "Montignac": 2
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "0.73 m shelf with one 0.40 m board; old-style shop or workshop."
+  },
+  {
+   "guid": "F6CF869062E6EDB0",
+   "path": "Prefabs/Props/Furniture/Rack_01_Long.et",
+   "res": "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et",
+   "name": "Metal storage rack (long)",
+   "category": "shelf",
+   "sizeM": [
+    2.47,
+    0.76,
+    2.19
+   ],
+   "surfaces": [
+    0.43,
+    0.9,
+    1.4,
+    1.88
+   ],
+   "everonWorldCount": 370,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 72,
+    "Saint Pierre": 33,
+    "Morton": 12,
+    "Montignac": 36
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "2.47 x 0.76 x 2.19 m, 4 levels (0.43/0.90/1.40/1.88 m); stockroom, hardware or warehouse shop."
+  },
+  {
+   "guid": "1CA1A9D19D7C8445",
+   "path": "Prefabs/Props/Furniture/Rack_01_Short.et",
+   "res": "{1CA1A9D19D7C8445}Prefabs/Props/Furniture/Rack_01_Short.et",
+   "name": "Metal storage rack (short)",
+   "category": "shelf",
+   "sizeM": [
+    1.86,
+    0.75,
+    2.19
+   ],
+   "surfaces": [
+    0.43,
+    0.89,
+    1.4,
+    1.87
+   ],
+   "everonWorldCount": 227,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 41,
+    "Saint Pierre": 20,
+    "Morton": 6,
+    "Montignac": 21
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.86 m wide, 4 levels; stockroom."
+  },
+  {
+   "guid": "60315717A8C131A8",
+   "path": "Prefabs/Props/Furniture/Rack_02_brown.et",
+   "res": "{60315717A8C131A8}Prefabs/Props/Furniture/Rack_02_brown.et",
+   "name": "Large warehouse rack",
+   "category": "shelf",
+   "sizeM": [
+    4.1,
+    1.4,
+    3.98
+   ],
+   "surfaces": [
+    0.39,
+    1.59,
+    2.79,
+    3.99
+   ],
+   "everonWorldCount": 223,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 43,
+    "Saint Pierre": 36,
+    "Morton": 10,
+    "Montignac": 14
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "4.1 x 1.4 x 4.0 m, 4 levels at 0.39/1.59/2.79/3.99 m; wholesale/warehouse; count includes the _blue variant."
+  },
+  {
+   "guid": "619DB0302E0696DC",
+   "path": "Prefabs/Props/Furniture/Bookshelf_02/Bookshelf_02.et",
+   "res": "{619DB0302E0696DC}Prefabs/Props/Furniture/Bookshelf_02/Bookshelf_02.et",
+   "name": "Bookshelf with glass doors",
+   "category": "display",
+   "sizeM": [
+    1.4,
+    0.71,
+    2
+   ],
+   "surfaces": [
+    0.81,
+    1.02,
+    1.12,
+    1.21,
+    1.59,
+    1.93,
+    2
+   ],
+   "everonWorldCount": 106,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 15,
+    "Saint Pierre": 4,
+    "Morton": 5,
+    "Montignac": 6
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.4 x 0.71 x 2.0 m; glass doors are child prefabs Bookshelf_02_glass_01/02 (106 each); bookshop or glass display cabinet look."
+  },
+  {
+   "guid": "A924939DC9CB318C",
+   "path": "Prefabs/Props/Commercial/CabinetCardFile_01/CabinetCardFile_01_grey.et",
+   "res": "{A924939DC9CB318C}Prefabs/Props/Commercial/CabinetCardFile_01/CabinetCardFile_01_grey.et",
+   "name": "Card file cabinet (grey)",
+   "category": "display",
+   "sizeM": [
+    0.47,
+    0.72,
+    1.44
+   ],
+   "surfaces": [
+    0.08,
+    0.11,
+    0.41,
+    0.43,
+    0.73,
+    0.76,
+    1.06,
+    1.09,
+    1.39,
+    1.44
+   ],
+   "everonWorldCount": 248,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 57,
+    "Saint Pierre": 36,
+    "Morton": 17,
+    "Montignac": 18
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "0.47 x 0.72 x 1.44 m drawer cabinet; _green and _Base variants counted; shop back office."
+  },
+  {
+   "guid": "D8B83A318AE3611E",
+   "path": "Prefabs/Props/Commercial/MarketStand_01.et",
+   "res": "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et",
+   "name": "Market stand (open table)",
+   "category": "stall",
+   "sizeM": [
+    2.53,
+    1.29,
+    1.03
+   ],
+   "surfaces": [
+    0.28,
+    1,
+    1.02,
+    1.03
+   ],
+   "everonWorldCount": 39,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 7,
+    "Montignac": 5
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "2.53 x 1.29 m stall with tops at 1.0 m and 0.28 m; destruction disabled; produce or crafts."
+  },
+  {
+   "guid": "2DAC8D663D5F3E2E",
+   "path": "Prefabs/Props/Commercial/MarketStand_01_Umbrella.et",
+   "res": "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et",
+   "name": "Market stand with umbrella",
+   "category": "stall",
+   "sizeM": [
+    2.39,
+    2.43,
+    2.8
+   ],
+   "surfaces": [
+    0.03
+   ],
+   "everonWorldCount": 73,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 10,
+    "Saint Pierre": 12,
+    "Morton": 2,
+    "Montignac": 7
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Same stall under a 2.8 m umbrella; weather-covered; destruction disabled."
+  },
+  {
+   "guid": "EA34FD3A068E550A",
+   "path": "Prefabs/Props/Commercial/NewspaperStand_01.et",
+   "res": "{EA34FD3A068E550A}Prefabs/Props/Commercial/NewspaperStand_01.et",
+   "name": "Newspaper stand",
+   "category": "stall",
+   "sizeM": [
+    0.5,
+    0.4,
+    2.02
+   ],
+   "surfaces": [
+    0.02,
+    0.04
+   ],
+   "everonWorldCount": 46,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 11,
+    "Saint Pierre": 8,
+    "Morton": 3,
+    "Montignac": 3
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "0.5 x 0.4 x 2.0 m street rack; newsagent or kiosk front."
+  },
+  {
+   "guid": "B300963815A0AFAF",
+   "path": "Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et",
+   "res": "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et",
+   "name": "Shop scale",
+   "category": "till",
+   "sizeM": [
+    0.32,
+    0.57,
+    0.85
+   ],
+   "surfaces": [
+    0.19
+   ],
+   "everonWorldCount": 12,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 4,
+    "Saint Pierre": 3,
+    "Morton": 1,
+    "Montignac": 1
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Weigh scale for a counter top (0.85 m tall); butcher or greengrocer."
+  },
+  {
+   "guid": "0AD82C027CC4F5CB",
+   "path": "Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_green.et",
+   "res": "{0AD82C027CC4F5CB}Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_green.et",
+   "name": "Shopping basket",
+   "category": "other",
+   "sizeM": [
+    0.33,
+    0.46,
+    0.17
+   ],
+   "surfaces": [
+    0.16
+   ],
+   "everonWorldCount": 270,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 53,
+    "Saint Pierre": 46,
+    "Morton": 30,
+    "Montignac": 38
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Hand basket; count sums green, red and Base variants; stack near the door."
+  },
+  {
+   "guid": "EEC781AC391B7400",
+   "path": "Prefabs/Props/Commercial/ShoppingCart_01.et",
+   "res": "{EEC781AC391B7400}Prefabs/Props/Commercial/ShoppingCart_01.et",
+   "name": "Shopping cart",
+   "category": "other",
+   "sizeM": [
+    0.55,
+    0.88,
+    1.11
+   ],
+   "surfaces": [
+    0.2,
+    0.56
+   ],
+   "everonWorldCount": 42,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 6,
+    "Saint Pierre": 6,
+    "Morton": 6,
+    "Montignac": 6
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Trolley 0.55 x 0.88 x 1.11 m; entrance or car park."
+  },
+  {
+   "guid": "D5C3CF5996B43A27",
+   "path": "Prefabs/Props/Civilian/BasketWicker_01.et",
+   "res": "{D5C3CF5996B43A27}Prefabs/Props/Civilian/BasketWicker_01.et",
+   "name": "Wicker basket",
+   "category": "other",
+   "sizeM": [
+    0.65,
+    0.63,
+    0.52
+   ],
+   "surfaces": [
+    0.44
+   ],
+   "everonWorldCount": 776,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 80,
+    "Saint Pierre": 45,
+    "Morton": 21,
+    "Montignac": 45
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Decorative produce basket (0.52 m tall) for stalls; _wood variant counted."
+  },
+  {
+   "guid": "E4416C4C6938BEEE",
+   "path": "Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et",
+   "res": "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et",
+   "name": "Wooden crate 1 m",
+   "category": "other",
+   "sizeM": [
+    1,
+    1.01,
+    1.01
+   ],
+   "surfaces": [
+    0.03,
+    0.11,
+    1.01
+   ],
+   "everonWorldCount": 11,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "townCounts": {
+    "Saint Philippe": 5
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1 m crate with 1.01 m top; produce plinth or stock; 1x1x2 and 1x15x3 sizes also exist (not counted)."
+  },
+  {
+   "guid": "ABA40158860E5B6B",
+   "path": "Prefabs/Props/Crates/Crate_01_brown.et",
+   "res": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
+   "name": "Small produce crate",
+   "category": "other",
+   "sizeM": [
+    0.61,
+    0.41,
+    0.23
+   ],
+   "surfaces": [
+    0.01
+   ],
+   "everonWorldCount": 3568,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 625,
+    "Saint Pierre": 260,
+    "Morton": 158,
+    "Montignac": 257
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "0.61 x 0.41 x 0.23 m crate; count sums colour variants green/orange/white/yellow/ivory/base; stack on stalls."
+  },
+  {
+   "guid": "51B08BDA20AF8FF7",
+   "path": "Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+   "res": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+   "name": "Pallet box",
+   "category": "other",
+   "sizeM": [
+    1.14,
+    1.32,
+    1.01
+   ],
+   "surfaces": [
+    0.13,
+    0.14,
+    0.15
+   ],
+   "everonWorldCount": 493,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 80,
+    "Saint Pierre": 50,
+    "Morton": 18,
+    "Montignac": 24
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.14 x 1.32 x 1.01 m stock pallet box for back rooms."
+  },
+  {
+   "guid": "EB66EE2298D16D18",
+   "path": "Prefabs/Props/Civilian/SackTruck_01.et",
+   "res": "{EB66EE2298D16D18}Prefabs/Props/Civilian/SackTruck_01.et",
+   "name": "Sack truck (hand trolley)",
+   "category": "other",
+   "sizeM": [
+    0.61,
+    0.52,
+    1.22
+   ],
+   "surfaces": [],
+   "everonWorldCount": 390,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 67,
+    "Saint Pierre": 23,
+    "Morton": 13,
+    "Montignac": 29
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Delivery trolley; back-of-shop clutter."
+  },
+  {
+   "guid": "E23822E8E7F4A2DA",
+   "path": "Prefabs/Props/Civilian/BreadSlicer_01_orange.et",
+   "res": "{E23822E8E7F4A2DA}Prefabs/Props/Civilian/BreadSlicer_01_orange.et",
+   "name": "Bread slicer",
+   "category": "till",
+   "sizeM": [
+    0.44,
+    0.43,
+    0.25
+   ],
+   "surfaces": [
+    0.04
+   ],
+   "everonWorldCount": 26,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 7,
+    "Saint Pierre": 4,
+    "Morton": 2,
+    "Montignac": 3
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Bakery counter appliance (0.25 m tall); sits on the counter."
+  },
+  {
+   "guid": "BE5D837410B95C7A",
+   "path": "Prefabs/Props/Commercial/SignPub_01_V1.et",
+   "res": "{BE5D837410B95C7A}Prefabs/Props/Commercial/SignPub_01_V1.et",
+   "name": "Pub sign",
+   "category": "sign",
+   "sizeM": [
+    0.69,
+    0.59,
+    1.01
+   ],
+   "surfaces": [],
+   "everonWorldCount": 31,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 6,
+    "Saint Pierre": 4,
+    "Morton": 2,
+    "Montignac": 2
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "0.69 x 0.59 x 1.01 m pub sign; fixed graphic, no text swap."
+  },
+  {
+   "guid": "B3B2276014D9454C",
+   "path": "Prefabs/Props/Commercial/SignPub_01_Eden_FoodMarket_V1.et",
+   "res": "{B3B2276014D9454C}Prefabs/Props/Commercial/SignPub_01_Eden_FoodMarket_V1.et",
+   "name": "Food market sign (Eden)",
+   "category": "sign",
+   "sizeM": [
+    0.69,
+    0.59,
+    1.01
+   ],
+   "surfaces": [],
+   "everonWorldCount": 12,
+   "usedInTowns": [
+    "Montignac"
+   ],
+   "townCounts": {
+    "Montignac": 2
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Fixed Food Market sign; V2 counted too; over a grocery."
+  },
+  {
+   "guid": "0D032741DBBA35BC",
+   "path": "Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V8.et",
+   "res": "{0D032741DBBA35BC}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V8.et",
+   "name": "Notice poster A4",
+   "category": "sign",
+   "sizeM": [
+    0.21,
+    0,
+    0.3
+   ],
+   "surfaces": [],
+   "everonWorldCount": 25,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 3,
+    "Saint Pierre": 1,
+    "Morton": 2,
+    "Montignac": 2
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Representative of the Notice_A4_Horizontal/Vertical V1-V9 and PosterSingle series; paper notice dressing on shop walls; 0.21 x 0.30 m."
+  },
+  {
+   "guid": "53506DCB398C7EBE",
+   "path": "Prefabs/Props/Furniture/Table_01.et",
+   "res": "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et",
+   "name": "Table (large)",
+   "category": "other",
+   "sizeM": [
+    1.59,
+    1.18,
+    0.92
+   ],
+   "surfaces": [
+    0.9
+   ],
+   "everonWorldCount": 544,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 86,
+    "Saint Pierre": 42,
+    "Morton": 29,
+    "Montignac": 43
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.59 x 1.18 m table with 0.90 m top; deli or tasting table."
+  },
+  {
+   "guid": "00C9C0860D1D8A84",
+   "path": "Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_DarkWood.et",
+   "res": "{00C9C0860D1D8A84}Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_DarkWood.et",
+   "name": "Small table",
+   "category": "other",
+   "sizeM": [
+    0.7,
+    0.7,
+    0.7
+   ],
+   "surfaces": [
+    0.49,
+    0.7
+   ],
+   "everonWorldCount": 713,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 99,
+    "Saint Pierre": 53,
+    "Morton": 27,
+    "Montignac": 44
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "0.7 m table; count sums LightWood and Base variants; pub tables."
+  },
+  {
+   "guid": "AC98FF880BD0F2C2",
+   "path": "Prefabs/Props/Furniture/Chair_01/Chair_01_base.et",
+   "res": "{AC98FF880BD0F2C2}Prefabs/Props/Furniture/Chair_01/Chair_01_base.et",
+   "name": "Chair (basic)",
+   "category": "other",
+   "sizeM": [
+    0.47,
+    0.56,
+    1.02
+   ],
+   "surfaces": [
+    0.51
+   ],
+   "everonWorldCount": 1346,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 215,
+    "Saint Pierre": 119,
+    "Morton": 67,
+    "Montignac": 128
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Pub or cafe chair with 0.51 m seat; count sums base, white, blue, yellow, red."
+  },
+  {
+   "guid": "1AB7A2C69A30391D",
+   "path": "Prefabs/Props/Furniture/CoatRack_01.et",
+   "res": "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et",
+   "name": "Coat rack",
+   "category": "other",
+   "sizeM": [
+    0.56,
+    0.57,
+    1.97
+   ],
+   "surfaces": [
+    1.91
+   ],
+   "everonWorldCount": 524,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 87,
+    "Saint Pierre": 34,
+    "Morton": 20,
+    "Montignac": 37
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Hanging prop for a clothing store; CoatRack_02..05 variants not counted."
+  },
+  {
+   "guid": "B16FF595DD1EE501",
+   "path": "Prefabs/Props/Services/Post/PostOfficeBox_01_Stand.et",
+   "res": "{B16FF595DD1EE501}Prefabs/Props/Services/Post/PostOfficeBox_01_Stand.et",
+   "name": "Post office box stand",
+   "category": "other",
+   "sizeM": [
+    0.78,
+    0.43,
+    1.71
+   ],
+   "surfaces": [
+    1.47
+   ],
+   "everonWorldCount": 11,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "townCounts": {
+    "Saint Philippe": 3,
+    "Saint Pierre": 2,
+    "Morton": 2
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Free-standing PO box 0.78 x 0.43 x 1.71 m; destruction disabled."
+  }
+ ]
+}
