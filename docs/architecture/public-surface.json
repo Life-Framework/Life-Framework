@@ -9,6 +9,7 @@
     "LF_DrinkImpairmentConfig",
     "LF_EvidenceConfig",
     "LF_GarageConfig",
+    "LF_HandbookConfig",
     "LF_IncidentConfig",
     "LF_ItemCatalogueConfig",
     "LF_JobsConfig",

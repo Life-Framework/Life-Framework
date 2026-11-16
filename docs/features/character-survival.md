@@ -254,3 +254,5 @@
   courier is still signed up and starts a new run. `LF_LicenseManagerComponent` is not on
   `Character_Roleplay.et`, so licences persist only once a prefab carries it.
 
+### Logged-out tag — `Feature/Character/LF_LogoutBodyTag.c` (#1974, 2026-11-16)
+- A logged-out player's body (#1973) shows a small "Logged out" label over it to everyone within 12 m. The server flags the body (`SCR_ChimeraCharacter.LF_IsLoggedOut`, an RplProp), so a late joiner sees it too; the label goes when the body dies, despawns or its player rejoins. Tests: `character/logout-body-tag` (LOGIC); two-client and late-joiner session proof pending.

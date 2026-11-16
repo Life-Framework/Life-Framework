@@ -190,6 +190,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_EventPhaseRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPreconditions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventScenePlan(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventShell(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventWaypoints(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceLockerPersist(), LF_TestTier.PERSISTENCE);
@@ -314,6 +315,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LockpickVehicleWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LoggingChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutBody(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_LogoutBodyTag(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LogoutRule(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_M4ConfigSections(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);
