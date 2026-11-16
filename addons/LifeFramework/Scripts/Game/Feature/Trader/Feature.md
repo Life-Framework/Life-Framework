@@ -51,7 +51,7 @@ banked.
   delete-then-pay not atomic, stacks sell as one item, wrong "not tradable"
   return code, black-market check likely fails open.
 - `LF_OpenTraderAction` — the interaction entry point.
-- Prefabs: `Prefabs/Trader/UniversalTrader.et`, `Prefabs/Trader/BlackMarketTrader.et`.
+- Prefabs: `Prefabs/Trader/UniversalTrader.et`. The black market is no longer a trader prefab: it is the `black_market` catalogue outlet (#1762).
 
 ## Dependencies
 

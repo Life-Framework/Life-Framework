@@ -170,21 +170,21 @@ class LF_SignComponent : ScriptComponent
 	//! or the offer is missing; the board then shows nothing rather than a stale price.
 	protected LF_SignDef PricedSign(LF_SignDef sign)
 	{
-		LF_VehicleLotComponent lot = LF_VehicleLotComponent.FindLot(m_sPriceLotShopId);
-		if (!lot)
+		LF_BoardAnswer answer = LF_PricedSignProvider.AnswerFor(m_sPriceLotShopId, m_PriceVehicle);
+		if (!answer)
 		{
-			LF_Debug.Error("Signs", string.Format("price board '%1' finds no vehicle lot '%2'", m_sSignId, m_sPriceLotShopId));
+			LF_Debug.Error("Signs", string.Format("price board '%1': no price for %2 at lot '%3'", m_sSignId, m_PriceVehicle, m_sPriceLotShopId));
 			return null;
 		}
 
-		LF_VehicleOffer offer = lot.GetOffer(m_PriceVehicle);
-		if (!offer)
-		{
-			LF_Debug.Error("Signs", string.Format("price board '%1': lot '%2' has no offer for %3", m_sSignId, m_sPriceLotShopId, m_PriceVehicle));
-			return null;
-		}
+		return PricedFrom(sign, answer);
+	}
 
-		return LF_SignCatalog.WithTitle(sign, LF_SignCatalog.PricedTitle(sign.m_sTitle, offer.GetNameKey(), offer.GetPrice()));
+	//------------------------------------------------------------------------------------------------
+	//! The config sign with its title filled from a priced-sign answer (the lot's name and price).
+	static LF_SignDef PricedFrom(LF_SignDef sign, notnull LF_BoardAnswer answer)
+	{
+		return LF_SignCatalog.WithTitle(sign, LF_PricedSignProvider.Title(sign.m_sTitle, answer));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -867,5 +867,75 @@ class LF_SignComponent : ScriptComponent
 	{
 		ClearFace();
 		super.OnDelete(owner);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The priced sign as a board kind (#1946, chapter #1014): the read of a vehicle lot's price list
+//! goes through the board provider, so the record board and stall boards can follow. The answer is
+//! built per read and not cached, so a changed price in the lot's config is a changed board. The
+//! face is painted on each client from the lot's own config, so nothing crosses the network and the
+//! kind names no read action: LF_BoardProviders.ServerRead refuses a client that asks for it.
+class LF_PricedSignProvider : LF_BoardProvider
+{
+	static const string KIND = "priced";
+
+	override string GetKind()
+	{
+		return KIND;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The answer for one sign: the offer's name key, then its price. Null, with an error, when the lot
+	//! or the offer is missing (the sign adds which board it was), so the board shows nothing
+	//! rather than a stale price.
+	static LF_BoardAnswer AnswerFor(string lotShopId, ResourceName vehicle)
+	{
+		LF_VehicleLotComponent lot = LF_VehicleLotComponent.FindLot(lotShopId);
+		if (!lot)
+		{
+			LF_Debug.Error("Signs", string.Format("price board finds no vehicle lot '%1'", lotShopId));
+			return null;
+		}
+
+		LF_VehicleOffer offer = lot.GetOffer(vehicle);
+		if (!offer)
+		{
+			LF_Debug.Error("Signs", string.Format("price board: lot '%1' has no offer for %2", lotShopId, vehicle));
+			return null;
+		}
+
+		LF_BoardAnswer answer = new LF_BoardAnswer();
+		answer.m_aTexts.Insert(offer.GetNameKey());
+		answer.m_aNumbers.Insert(offer.GetPrice());
+		return answer;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sign's title: its title format filled from an answer (%1 the car name, %2 the grouped price).
+	static string Title(string format, notnull LF_BoardAnswer answer)
+	{
+		if (answer.m_aTexts.IsEmpty() || answer.m_aNumbers.IsEmpty())
+			return format;
+
+		return LF_SignCatalog.PricedTitle(format, answer.m_aTexts[0], answer.m_aNumbers[0]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override array<ref LF_UIPart> Paint(notnull LF_BoardAnswer answer)
+	{
+		array<ref LF_UIPart> parts = {};
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Price", Title("%1 %2", answer)));
+		return parts;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+modded class LF_BoardProviderSet
+{
+	override void Collect(notnull array<ref LF_BoardProvider> providers)
+	{
+		super.Collect(providers);
+		providers.Insert(new LF_PricedSignProvider());
 	}
 }

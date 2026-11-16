@@ -491,14 +491,18 @@ class LF_Lockpick
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_Lockpick's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Lockpick_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Lockpick_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_Lockpick");
-		if (apply)
-			LF_Lockpick.ResetStatics();
+		return "LF_Lockpick";
+	}
+
+	override void Apply()
+	{
+		LF_Lockpick.ResetStatics();
 	}
 }

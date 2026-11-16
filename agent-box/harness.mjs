@@ -361,6 +361,8 @@ export function buildLine(id, spec) {
     return `${line} ${seconds}`;
   }
   if (spec.verb === "scene" || spec.verb === "camera") return `${id} ${spec.verb} ${spec.args}`;
+  // A feature verb (a modded LF_AgentHarnessVerbs): its words after the verb go to the game as they are.
+  if (/^[a-z][a-z0-9]*$/.test(spec.verb) && Array.isArray(spec.words)) return `${id} ${spec.verb} ${spec.words.join(" ")}`.trim();
   throw new Error(`unknown verb: ${spec.verb}`);
 }
 

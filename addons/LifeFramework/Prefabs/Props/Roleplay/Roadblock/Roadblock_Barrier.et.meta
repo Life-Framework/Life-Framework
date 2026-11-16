@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{632CA19AC4EEAE93}Prefabs/Trader/BlackMarketTrader.et"
+ Name "{23BFE33133831ECE}Prefabs/Props/Roleplay/Roadblock/Roadblock_Barrier.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }
@@ -8,8 +8,6 @@ MetaFileClass {
   EntityTemplateResourceClass XBOX_SERIES : PC {
   }
   EntityTemplateResourceClass PS4 : PC {
-  }
-  EntityTemplateResourceClass PS5 : PC {
   }
   EntityTemplateResourceClass HEADLESS : PC {
   }

@@ -254,14 +254,18 @@ class LF_NpcStunScan : Managed
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_NpcStun's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_NpcStun_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_NpcStun_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_NpcStun");
-		if (apply)
-			LF_NpcStun.ResetStatics();
+		return "LF_NpcStun";
+	}
+
+	override void Apply()
+	{
+		LF_NpcStun.ResetStatics();
 	}
 }

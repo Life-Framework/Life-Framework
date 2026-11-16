@@ -418,17 +418,35 @@ class LF_PhoneLineComponent : ScriptComponent
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_PhoneComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PhoneComponent_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PhoneComponent_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_PhoneComponent");
-		if (apply)
-			LF_PhoneComponent.ResetStatics();
-		done.Insert("LF_PhoneLineComponent");
-		if (apply)
-			LF_PhoneLineComponent.ResetStatics();
+		return "LF_PhoneComponent";
+	}
+
+	override void Apply()
+	{
+		LF_PhoneComponent.ResetStatics();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_PhoneLineComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PhoneLineComponent_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PhoneLineComponent_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_PhoneLineComponent";
+	}
+
+	override void Apply()
+	{
+		LF_PhoneLineComponent.ResetStatics();
 	}
 }

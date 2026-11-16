@@ -344,14 +344,18 @@ class LF_PrefabSlots
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_PrefabSlots's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PrefabSlots_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PrefabSlots_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_PrefabSlots");
-		if (apply)
-			LF_PrefabSlots.ResetStatics();
+		return "LF_PrefabSlots";
+	}
+
+	override void Apply()
+	{
+		LF_PrefabSlots.ResetStatics();
 	}
 }

@@ -161,14 +161,18 @@ class LF_DayCycleSave
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_DayCycleSave's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_DayCycleSave_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_DayCycleSave_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_DayCycleSave");
-		if (apply)
-			LF_DayCycleSave.ResetStatics();
+		return "LF_DayCycleSave";
+	}
+
+	override void Apply()
+	{
+		LF_DayCycleSave.ResetStatics();
 	}
 }
