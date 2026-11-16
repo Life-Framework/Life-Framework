@@ -99,14 +99,18 @@ class LF_NpcHitZone : SCR_HitZone
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_NpcDamage's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_NpcDamage_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_NpcDamage_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_NpcDamage");
-		if (apply)
-			LF_NpcDamage.ResetStatics();
+		return "LF_NpcDamage";
+	}
+
+	override void Apply()
+	{
+		LF_NpcDamage.ResetStatics();
 	}
 }

@@ -146,14 +146,18 @@ class LF_TownBoardSheet
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
-modded class LF_StaticResetHooks
+//! World-end reset of LF_TownBoardSheet's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_TownBoardSheet_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_TownBoardSheet_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_TownBoardSheet");
-		if (apply)
-			LF_TownBoardSheet.ResetStatics();
+		return "LF_TownBoardSheet";
+	}
+
+	override void Apply()
+	{
+		LF_TownBoardSheet.ResetStatics();
 	}
 }

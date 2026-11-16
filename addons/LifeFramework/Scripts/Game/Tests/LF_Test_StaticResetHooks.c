@@ -1,11 +1,14 @@
 // red-proof: 2026-11-16 `tools\cli test --no-build --red LF_Test_StaticResetHooks` (lf-cloud) skipped the
 // listing (RedProof) and every assertion failed: "red: LF_Session registers its reset hook" ... RED-OK
 // "RED PROOF OK (all 1 listed test(s) fail with the hook on)". Green on the migrated hooks (--only, 2 passed).
+// #2034: on main c32a9ee9 (123 modded layers) `--only LF_Test_StaticResetHooks` crashed with VME "Stack overflow" in
+// LF_StaticResetHooks.Run (logs_2026-11-16_10-08-33); on the flat registry it passed (128 hooks, logs_2026-11-16_10-09-15).
 
 // tier: LOGIC
 //! World-end static reset is registered per feature (Core/LF_StaticReset.c holds no list): every
-//! owning file adds a `modded class LF_StaticResetHooks`, and the chain reaches all of them. Listing
-//! runs with apply false, so the test resets nothing. Spot checks cover a Core file that sorts before
+//! owning file adds an LF_StaticResetHook subclass that registers itself from a static initializer,
+//! and LF_StaticReset walks the flat array (#2034: the old modded chain overflowed the stack at about
+//! 123 layers). Listing runs no hook, so the test resets nothing. Spot checks cover a Core file that sorts before
 //! LF_StaticReset.c (LF_Places, Core/Config/LF_ConfigStream), files with two hooked classes, and
 //! the last entry the central list had (LF_PoliceRosterNotice).
 class LF_Test_StaticResetHooks : LF_Test
@@ -21,7 +24,7 @@ class LF_Test_StaticResetHooks : LF_Test
 		if (!RedProof())
 			done = LF_StaticReset.Registered();
 
-		ctx.True(done.Count() >= 109, string.Format("every migrated feature reset is registered (%1 hooks)", done.Count()));
+		ctx.True(done.Count() >= 120, string.Format("every migrated feature reset is registered (%1 hooks)", done.Count()));
 
 		array<string> expect = {"LF_Places", "LF_ConfigStream", "LF_EventBus", "LF_Breach", "LF_Payphone", "LF_ServiceCallDispatch", "LF_StaffRelay", "LF_Session", "LF_PoliceRosterNotice", "LF_WorldReset"};
 		foreach (string cls : expect)

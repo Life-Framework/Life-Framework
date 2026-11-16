@@ -331,13 +331,18 @@ class LF_RaceCourses
 }
 
 //------------------------------------------------------------------------------------------------
-modded class LF_StaticResetHooks
+//! World-end reset of LF_RaceCourses's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_RaceCourses_StaticResetHook : LF_StaticResetHook
 {
-	override void Run(notnull array<string> done, bool apply)
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_RaceCourses_StaticResetHook());
+
+	override string Owner()
 	{
-		super.Run(done, apply);
-		done.Insert("LF_RaceCourses");
-		if (apply)
-			LF_RaceCourses.Reload();
+		return "LF_RaceCourses";
+	}
+
+	override void Apply()
+	{
+		LF_RaceCourses.Reload();
 	}
 }
