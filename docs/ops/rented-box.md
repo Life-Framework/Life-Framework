@@ -209,3 +209,20 @@ per-host page of #379.
 | Port forwarding and firewall panel | |
 | Backups the host keeps itself, and how long | |
 | Support route and its response time | |
+
+## 0grind: the scheduled restart (incident 2026-11-16)
+
+The mod closes the game cleanly at the times in `restarts` (06:00 and 18:00). A clean exit is not a failure, so
+0grind's Restart on Failure leaves the service stopped. The panel Workflow `Scheduled restart start`
+(trigger Schedule, step `armareforger_service_start`; the start does nothing while the server is up) brings it
+back. On 2026-11-16 the 06:00 close left the server stopped for about 6 hours until a manual start at 12:03.
+
+Cause: the Workflow's schedule is stored in UTC (the panel converts the browser's local time), and the box
+clock and every log timestamp are UTC. The times had been entered as 06:02 and 18:02 local, stored as 05:02
+and 17:02 UTC, so the start fired an hour before the close and nothing started the server after it.
+
+Fix (API, no code): `PATCH /armareforger/298627/workflows/21202e40-01bb-42b7-9b56-260ed5f44cce` with
+`trigger_options.schedules` at 06:02, 06:07, 18:02 and 18:07 UTC, all weekdays. The second time after each
+close is a retry. Enter Workflow times in UTC; verify with `GET .../workflows/<id>`, whose `next` is epoch
+seconds. After any restart-time change in `restarts`, change the Workflow to match. The workflow endpoints are
+the panel's and not in 0grind's API page; the token and allowed-IP rules are the same.

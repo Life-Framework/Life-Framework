@@ -374,6 +374,13 @@
           "type": "boolean",
           "description": "A jail sentence counts down while the prisoner is offline. Off: only online time is served",
           "default": false
+        },
+        "contactWindowSeconds": {
+          "type": "integer",
+          "description": "Seconds after police contact (a stop, a search, a chase report) in which logging out wanted is jailed like a cuffed logout. 0 turns the rule off",
+          "default": 120,
+          "minimum": 0,
+          "maximum": 3600
         }
       },
       "additionalProperties": false,
