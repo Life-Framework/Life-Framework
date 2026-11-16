@@ -688,16 +688,17 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! \return The configured loadout for the faction, or null when none is configured.
 	LF_FactionLoadout GetFactionLoadout(LF_Faction faction)
 	{
+		// A civilian's loadout is the catalogue's starting kit when it has one (#1767).
 		if (!m_aFactionCharacterItems)
-			return null;
+			return LF_FactionLoadout.WithStartingKit(null, faction);
 
 		foreach (LF_FactionLoadout factionLoadout : m_aFactionCharacterItems)
 		{
 			if (factionLoadout && factionLoadout.m_eFaction == faction)
-				return factionLoadout;
+				return LF_FactionLoadout.WithStartingKit(factionLoadout, faction);
 		}
 
-		return null;
+		return LF_FactionLoadout.WithStartingKit(null, faction);
 	}
 
 	//------------------------------------------------------------------------------------------------

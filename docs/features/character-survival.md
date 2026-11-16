@@ -65,6 +65,19 @@
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
   values `> 0`.
 
+### `LF_Impairment` and `LF_ConsumableEffectImpair` — `Feature/Survival/` (#1919)
+- ✅ Any consumable can carry `LF_ConsumableEffectImpair` (strength, duration,
+  `LINEAR` or `EXPONENTIAL` curve, stack cap). Use on the server adds a dose to the
+  drinker's level (0-100), held in memory per character id by `LF_Impairment`.
+  Linear falls to zero over the duration; exponential halves every fifth of it.
+  Doses stack up to the cap. The survival tick decays it; death or the body being
+  deleted clears it, and so does a restart (persisting is not built, off by default).
+  The owner reads `LF_CharacterSurvivalComponent.GetReplicatedImpairment()`, an
+  owner-only RplProp bumped on a 5-point change, start or end. Logs
+  `[LFDebug:Impairment]`. Test: `survival/impairment`.
+- ⚠️ No drink prefab carries the effect yet and nothing reads the level: the screen
+  effect and the beer wiring are later #1011 slices.
+
 ### `LF_SurvivalStatsSaveData` — `Feature/Survival/Persistence/`
 - ✅ Save/apply round-trip re-clamps through setters (corrupt save sanitized).
 - ⚠️ `Equals` uses exact float `==` (no epsilon).
@@ -106,6 +119,12 @@
   `session.mjs downed-proof` proves it on a 2-client session plus a late joiner.
 
 ### Death & Respawn — `Feature/Character/Spawning/`
+- 🔧 (2026-11-16, #1767; merged, in-dev) **A fresh civilian can spawn in a catalogue starting kit.**
+  When the item catalogue has offers under the `starting_kit` outlet, `LF_SpawnLogic.GetFactionLoadout(CIVILIAN)`
+  returns a loadout built from them (`LF_FactionLoadout.WithStartingKit`, `LF_StartingKit.Resolve`):
+  `clothing` items go to loadout slots, every other category is carried. It replaces the game mode's
+  civilian loadout whole, including its starting cash; with no such outlet the game mode's loadout
+  applies unchanged. Other roles (the police kit) never read it. Proof: `catalogue/starting-kit` (LOGIC).
 - ✅ **Death is defined** (verified 2026-08-30): the dead body stays in the
   world with everything it carried — it is never deleted by the spawn flow and
   is only removed by a server restart or world cleanup.
