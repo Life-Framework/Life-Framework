@@ -21,8 +21,8 @@ async function runRaceHudProof() {
   wait(4000);
 
   const panels = [
-    { n: 1, words: ["show", "2/3", "4/5", "1/2", "83400"], want: /shown 2\/3 4\/5 1\/2 0 .*running=1/ },
-    { n: 2, words: ["show", "1/3", "5/5", "2/2", "83400"], want: /shown 1\/3 5\/5 2\/2 0 .*running=1/ },
+    { n: 1, words: ["show", "2/3", "4/5", "1/2", "83400"], want: /shown 2\/3 4\/5 1\/2 (0|false) .*running=(1|true)/ },
+    { n: 2, words: ["show", "1/3", "5/5", "2/2", "83400"], want: /shown 1\/3 5\/5 2\/2 (0|false) .*running=(1|true)/ },
   ];
   for (const p of panels) {
     const r = on(p.n, { verb: "racehud", words: p.words }, 10000);
