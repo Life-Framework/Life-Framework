@@ -786,6 +786,31 @@ it, picks a lane and a budget, and prints one line per outcome.
   edit. Measured 2026-11-10 on this 15.6 GB PC: server plus one client 1.3 GB, the second client
   +0.8 GB; with ~3.8 GB free and nothing running a 2-client full session (2.3 GB) fits, a second
   one does not.
+- **RAM admission by measured peaks (2026-11-16, `tools/lib/pool-ram.mjs`).** The gate above compared free
+  RAM once, at the start, with hand-set reserves, and the 15.2 GB laptop still fell under its floor with a session, a
+  Workbench rdb refresh and the main guard's suite together. Causes and fixes:
+  - *Reserves below real peaks.* Each job kind now reserves a measured peak per world class (`small` = every world but
+    Everon, `island` = `CoreOnEveron`): server 0.7 GB, client 1.2 GB (lowspec 1.1), test 0.8 GB, **Everon island
+    server 2.5 GB plus 2.9 GB per client**, **Workbench 3.7 GB** (the seeds). A test now reserves its server too; it used to
+    reserve only the floor and could land 0.8 GB under it. The pool.json reserves stay as a lower bound.
+  - *Observed peaks.* Every scan notes each ArmaReforger process's highest working set; when it ends, that is one sample
+    for its kind and world, in `tmp/wt/pool-peaks.json` (newest 40). With 3 or more samples the reserve is their p90, never
+    under the configured number; fewer, the seed. `pool status` prints the current peaks (`*` = seed).
+  - *Everything is counted.* The gate scans every `ArmaReforger*` process on the machine (here with one PowerShell call, kept
+    4 s; on a pool machine in the same ssh read, and in the slot holder's own gate): a Workbench (rdb refresh, look,
+    compile, the user's editor), the guard's servers and anything started outside the pool. What each still has to grow to
+    its peak (peak less the larger of its working set and the highest one seen; nothing once its private bytes reach the
+    peak, i.e. loaded and merely paged out) is subtracted from free RAM before a job is admitted. The pool's own lock
+    reserves count only for a job's first 45 s, before its processes exist, so nothing is counted twice.
+  - *Peak, not the start reading.* A job starts only when free RAM less that growth less its own peak stays at or over
+    `minFreeMb`; else it queues (`free RAM 2.8 GB minus 3.0 GB peak for the session ... would be under 1.5 GB`).
+  - *One island at a time.* An island session also needs room for a second peak while another island server or client runs,
+    so two never start where only the first one's visible memory fits. `session up --mission everon` (and a remote one)
+    tells the gate its world.
+  A trimmed idle session counts for the peak it can regrow to: safe on the laptop, and the reason a queued job may now wait
+  for an idle session's 3-5 min reap instead of starting beside it. Selftests: `tools/validation/pool-ram-selftest.mjs`
+  (full machine queues, island refused, small test admitted, Workbench counted); `pool-selftest` pins its RAM with
+  `LF_POOL_TEST_FREE_MB` so this PC's real load never decides it.
 - **Backfill without starvation.** A job that tried and cannot start for RAM or a lane is passed
   by the jobs behind it that can start now (a lowspec 1-client session goes while a full 2-client
   one waits for RAM). Once the waiting job has waited `starveMin` (20) minutes it holds its place:

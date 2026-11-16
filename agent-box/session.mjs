@@ -1159,7 +1159,7 @@ async function routeMachine(cmd, rest) {
   for (;;) {
     let target;
     try {
-      target = await pool.chooseSessionMachine(ROOT, { clients, profile, waitMs: Math.max(0, deadline - Date.now()), priority: prio, meta: { clients, profile } });
+      target = await pool.chooseSessionMachine(ROOT, { clients, profile, waitMs: Math.max(0, deadline - Date.now()), priority: prio, meta: { clients, profile, world: args.includes("--mission") ? args[args.indexOf("--mission") + 1] : undefined } });
     } catch (e) {
       if (!e.refusal) throw e;
       console.log(`session: ${e.message}`);

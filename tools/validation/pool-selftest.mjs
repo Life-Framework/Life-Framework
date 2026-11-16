@@ -101,6 +101,8 @@ process.env.LOCALAPPDATA = join(ISO, "home", "AppData", "Local");
 process.env.USERPROFILE = join(ISO, "home");
 delete process.env.LF_SESSION_DIR;
 process.chdir(join(ISO, "cwd"));
+// This PC's real RAM and processes (a Workbench, the user's world editor) must not decide a selftest (pool-ram.mjs).
+process.env.LF_POOL_TEST_FREE_MB = process.env.LF_POOL_TEST_FREE_MB || "12000";
 const guard = isolatePool({ deny: [REAL_HUB, join(REAL_REPO, "tmp", "wt"), REAL_SESSION_BASE], label: "pool-selftest" });
 
 // This PC may really be short of disk; the gate under test is exercised with explicit numbers below.
@@ -357,7 +359,8 @@ try {
     const lane1 = q.lanesFor(lanes, "test")[0];
     const blocked = {};
     check(pool.tryLocal(rdir, lanes, lane1, {}, { freeMb: 900, blocked }) === null && !!blocked.ram, "RAM gate: a second server started with 0.9 GB free");
-    const t1 = pool.tryLocal(rdir, lanes, lane1, { slug: "t" }, { freeMb: 4000 });
+    // the young session lock above counts by its peak (server 0.7 + client 1.2 GB), not the 1 MB the env reserve overrides name
+    const t1 = pool.tryLocal(rdir, lanes, lane1, { slug: "t" }, { freeMb: 6000 });
     check(!!t1 && pool.heldLocalSlot() === t1 && t1.port === 2002, "test lane slot: wrong lock, port, or not recorded as held");
     if (t1) t1.release();
     check(pool.heldLocalSlot() === null, "release did not clear the held slot");
@@ -828,7 +831,7 @@ const dir0 = () => {
   // The 15 GB laptop with one 2-client session up and 2.8 GB free: a second full 2-client session would
   // breach the floor; a lowspec 1-client one fits once 4.5 GB is free.
   const v2 = pool.remoteSessionVerdict(laptop, st, settings, { clients: 2, profile: "full" });
-  check(!v2.ok && v2.lane && /would be under/.test(v2.ram) && v2.needMb === 3800, `the laptop was over-committed by a second 2-client session (${JSON.stringify(v2)})`);
+  check(!v2.ok && v2.lane && /would be under/.test(v2.ram) && v2.needMb === 4600, `the laptop was over-committed by a second 2-client session (${JSON.stringify(v2)})`);
   check(pool.remoteSessionVerdict(laptop, { ...st, freeMb: 4500 }, settings, { clients: 1, profile: "lowspec" }).ok, "a lowspec 1-client session that fits the laptop was refused");
   check(pool.remoteSessionVerdict(laptop, null, settings).down === true, "an unreadable laptop is not reported down");
   const allBusy = { ...st, locks: { "server-2001": { pid: 1, alive: true }, "server-2011": { pid: 2, alive: true }, "server-2021": { pid: 3, alive: true } } };
@@ -840,7 +843,7 @@ const dir0 = () => {
   const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
   const hc = pool.holderConfig(tdir, laptop, snap, { purpose: "test only", settings });
   check(hc.slots.map((x) => x.lock).join() === "server-test-1,server-test-2,server-test-3", `remote tests do not try every test lane (${hc.slots.map((x) => x.lock).join()})`);
-  check(hc.ram?.floorMb === 1500 && hc.ram.locks.length === 6 && hc.ram.reserveMb === 0, "the holder carries no RAM gate");
+  check(hc.ram?.floorMb === 1500 && hc.ram.locks.length === 6 && hc.ram.reserveMb === 800, "the holder carries no RAM gate (a test reserves its server peak)");
   check(pool.holderConfig(tdir, laptop, snap, { slots: 0, purpose: "session", settings }).slots.length === 0, "a sync-only holder takes a lock");
   rmSync(tdir, { recursive: true, force: true });
   // The holder's RAM gate itself, in PowerShell, against a fake lock dir.
@@ -1190,7 +1193,7 @@ const dir0 = () => {
     check(starved.every((r) => r.room === false), "a machine under the floor was reported to have room");
     const gate = (freeMb, blocked = {}) => pool.tryLocal(mroot, { ...local, lanes: null, slots: 1 }, { lock: "server-test-1", index: 1, port: 2002 }, { slug: "starved", purpose: "test only" }, { freeMb, blocked });
     const bl = {};
-    check(gate(400, bl) === null && !!bl.ram && bl.needMb === stt.minFreeMb, "the first local lane started a test at 0.4 GB free");
+    check(gate(400, bl) === null && !!bl.ram && bl.needMb === stt.minFreeMb + stt.testReserveMb, "the first local lane started a test at 0.4 GB free");
     const roomy = gate(4000);
     check(!!roomy, "the first local lane refused a test with 4 GB free");
     roomy?.release();

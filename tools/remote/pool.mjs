@@ -29,6 +29,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
 import * as q from "../lib/pool-queue.mjs";
+import * as pr from "../lib/pool-ram.mjs";
 import * as gc from "../lib/session-gc.mjs";
 import * as rt from "../lib/rt-gc.mjs";
 import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionBase, sessionDirOf } from "../lib/session-lease.mjs";
@@ -568,6 +569,94 @@ function otherSessionLanes(root, m, except) {
   return out;
 }
 
+// ---------------------------------------------------------------- RAM admission (tools/lib/pool-ram.mjs)
+
+// The ArmaReforger processes of this PC (Workbench, servers, clients, started by the pool or not),
+// read with one PowerShell call and kept for 4 s so a burst of lane tries scans once. null when the
+// scan fails (the gate then falls back to lock-based pending only).
+let scanCache = null;
+export function localScan({ now = Date.now(), run } = {}) {
+  if (scanCache && now - scanCache.at < 4000) return scanCache.procs;
+  let procs = null;
+  try {
+    const r = run ? run() : spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", pr.PS_PROC_SCAN], { windowsHide: true, encoding: "utf8", timeout: 15000 });
+    if (r.status === 0) procs = pr.parseScan(r.stdout ?? "");
+  } catch {}
+  scanCache = { at: now, procs };
+  return procs;
+}
+
+// The recorded peaks of this PC's hub, after noting the live processes (a process that has ended
+// leaves one observed peak sample behind).
+function localPeaks(root, procs, tag = "local", profile = "full") {
+  try {
+    return procs ? pr.recordLive(wt.hubDirOf(root), procs, { profile, tag }) : pr.readPeaks(wt.hubDirOf(root));
+  } catch {
+    return {};
+  }
+}
+
+// The kind and world of what a lane job will run: a session (server + clients), a host or serve
+// (a server only), a test (one test server), by the meta its lock carries.
+function jobSpec(meta) {
+  const purpose = String(meta?.purpose ?? "");
+  const world = pr.worldClass(meta?.world);
+  if (purpose === "session") return { kind: "session", clients: meta.clients ?? 1, profile: meta.profile ?? "full", world };
+  if (laneKind(purpose) === "session") return { kind: "session", clients: 0, profile: "full", world };
+  return { kind: "test", world };
+}
+
+// LF_POOL_TEST_FREE_MB (a selftest seam): this PC reads as that much free RAM with no other process
+// running, so a selftest never depends on what the PC it runs on is doing.
+function ramSeamMb() {
+  const n = Number(process.env.LF_POOL_TEST_FREE_MB);
+  return n > 0 ? n : 0;
+}
+
+// This PC's RAM verdict for a job on lane lock `except`. opts.freeMb / opts.procs are test seams: with
+// opts.freeMb and no opts.procs nothing is scanned.
+export function localAdmission(root, m, except, meta, settings, opts = {}) {
+  const seam = ramSeamMb();
+  const procs = opts.procs !== undefined ? opts.procs : opts.freeMb !== undefined || seam ? [] : localScan();
+  const peaks = opts.peaks ?? localPeaks(root, procs, "local", meta?.profile ?? "full");
+  const seen = opts.procs === undefined && procs?.length ? pr.withSeenMax(wt.hubDirOf(root), procs) : procs;
+  const spec = jobSpec(meta);
+  const reserveMb = pr.jobReserveMb(settings, peaks, spec);
+  const infos = [];
+  for (const lock of q.allLaneLocks(m)) {
+    if (lock === except) continue;
+    const info = readJson(localLockFile(root, lock), null);
+    if (info && pidAlive(info.pid)) infos.push(info);
+  }
+  // With a scan, the pool's own jobs are counted through their processes once those exist, and by their
+  // reserve only in the seconds before; without one, by the old boot windows.
+  const pendingMb = (procs ? pr.lockGapMb(infos, settings, peaks) : otherSessionLanes(root, m, except).reduce((n, s) => n + s.pendingMb, 0) + localBootingTestsMb(root, m, except, settings)) + (Number(opts.aheadMb) || 0);
+  const growthMb = procs ? pr.unrealisedMb(seen, peaks, meta?.profile ?? "full") : 0;
+  return pr.admit({
+    freeMb: opts.freeMb ?? (seam || Math.round(freemem() / 1048576)),
+    minFreeMb: settings.minFreeMb,
+    reserveMb,
+    pendingMb,
+    growthMb,
+    island: spec.kind === "session" && spec.world === pr.ISLAND,
+    islandRunning: procs ? pr.islandCount(procs) : 0,
+    what: spec.kind === "session" ? "the session" : "the test",
+  });
+}
+
+// One line for `pool status`: the peak each job kind reserves (GB), measured p90 or seed.
+export function peaksLine(root) {
+  try {
+    const peaks = pr.readPeaks(wt.hubDirOf(root));
+    const t = pr.peakTable(peaks);
+    const n = (key) => (Array.isArray(peaks[key]) ? peaks[key].length : 0);
+    const gb = (key) => `${(t[key] / 1024).toFixed(1)}${n(key) >= pr.MIN_SAMPLES ? "" : "*"}`;
+    return `RAM peaks (GB, p90 of observed runs, * = seed): server ${gb("server:small")} / island ${gb("server:island")}, client ${gb("client:small")} / island ${gb("client:island")}, test ${gb("test:small")}, Workbench ${gb("workbench:small")}`;
+  } catch {
+    return "RAM peaks: unreadable";
+  }
+}
+
 // The slot this process holds on this PC (set by tryLocal, cleared on release):
 // cli.mjs reads the lane's port from it when it boots the server.
 let heldHere = null;
@@ -601,12 +690,10 @@ export function tryLocal(root, m, lane, meta, opts = {}) {
     } else stopLocalOrphans(info.root);
   }
   const settings = poolSettings(root);
-  // A session reserves its own memory (the first one on the machine too: it must fit what is free),
-  // and every start counts the sessions still booting, whose memory free RAM does not show yet.
-  const others = otherSessionLanes(root, m, name);
-  const reserveMb = meta?.purpose === "session" ? q.sessionReserveMb(settings, meta.clients ?? 1, meta.profile ?? "full") : 0;
-  const pendingMb = others.reduce((n, s) => n + s.pendingMb, 0) + localBootingTestsMb(root, m, name, settings) + (Number(opts.aheadMb) || 0);
-  const verdict = () => q.ramVerdict({ running: runningLocalServers(root, m), freeMb: opts.freeMb ?? Math.round(freemem() / 1048576), minFreeMb: settings.minFreeMb, reserveMb, pendingMb });
+  // Every start (a test too) reserves its measured peak, and counts what the running ArmaReforger
+  // processes of every kind (Workbench, the main guard, other pool jobs) still grow into
+  // (docs/worktrees.md "RAM admission").
+  const verdict = () => localAdmission(root, m, name, meta, settings, opts);
   let ram = opts.noRam ? { ok: true } : verdict();
   // Before refusing for RAM, trim what idle sessions hold resident and look again (not under test seams).
   if (!ram.ok && opts.freeMb === undefined && !opts.noTrim && trimLiveSessions(root, m) > 0) ram = verdict();
@@ -713,16 +800,37 @@ if ($cfg.ram -and $slots.Count -gt 0) {
   $os = Get-CimInstance Win32_OperatingSystem
   $free = [int]($os.FreePhysicalMemory / 1024)
   $running = 0; $pending = 0
+  # With the measured peaks (cfg.ram.peaks) the pool's own jobs count by their processes once those exist, so
+  # a lock counts by its reserve only for its first 45 s; without them, the old boot windows.
+  $sWin = 180; $tWin = [int]$cfg.ram.testBootS
+  if ($cfg.ram.peaks) { $sWin = 45; $tWin = 45 }
   foreach ($n in @($cfg.ram.locks)) {
     $f = Join-Path $ld ($n + '.lock')
     if (-not (Test-Path -LiteralPath $f)) { continue }
     try { $h = [IO.File]::ReadAllText($f) | ConvertFrom-Json } catch { continue }
     if (-not (Test-Alive $h.pid)) { continue }
     $running++
-    if ($h.purpose -eq 'session') { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt 180) { $c = 1; if ($h.clients) { $c = [int]$h.clients }; $pending += $cfg.ram.serverMb + $cfg.ram.clientMb * $c } } catch {} }
-    elseif ($h.purpose -and $cfg.ram.testMb) { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt [int]$cfg.ram.testBootS) { $pending += [int]$cfg.ram.testMb } } catch {} }
+    if ($h.purpose -eq 'session') { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt $sWin) { $c = 1; if ($h.clients) { $c = [int]$h.clients }; $pending += $cfg.ram.serverMb + $cfg.ram.clientMb * $c } } catch {} }
+    elseif ($h.purpose -and $cfg.ram.testMb) { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt $tWin) { $pending += [int]$cfg.ram.testMb } } catch {} }
   }
-  $need = $cfg.ram.reserveMb + $pending + $cfg.ram.floorMb + [int]$cfg.ram.aheadMb
+  # What every ArmaReforger process on the box (Workbench, guard, other pool jobs, the user's own) still grows
+  # into: its kind's peak less the working set it holds now. A second island job also needs both peaks.
+  $growth = 0; $islands = 0
+  if ($cfg.ram.peaks) {
+    foreach ($p in @(Get-CimInstance Win32_Process -Filter "Name LIKE 'ArmaReforger%'")) {
+      $c = [string]$p.CommandLine; $nm = [string]$p.Name; $k = $null
+      if ($nm -like '*Workbench*') { $k = 'workbench' } elseif ($nm -like 'ArmaReforgerServer*') { $k = 'server' } elseif ($nm -like 'ArmaReforgerSteam*') { $k = 'client' }
+      if (-not $k) { continue }
+      $w = 'small'; if ($c -match 'CoreOnEveron') { $w = 'island'; if ($k -ne 'workbench') { $islands++ } }
+      $key = $k + ':' + $w
+      $pk = 0; try { $pk = [int]$cfg.ram.peaks.$key } catch {}
+      $ws = [int]($p.WorkingSetSize / 1MB)
+      $pv = [int]($p.PrivatePageCount / 1MB)
+      if ($pk -gt $ws -and $pv -lt $pk) { $growth += ($pk - $ws) }
+    }
+  }
+  $need = $cfg.ram.reserveMb + $pending + $growth + $cfg.ram.floorMb + [int]$cfg.ram.aheadMb
+  if ($cfg.ram.island -and $islands -gt 0) { $need += $cfg.ram.reserveMb }
   # Only a lane that is free (or stale) makes RAM the reason; all lanes taken is plain busy.
   $anyFree = $false
   foreach ($s in $slots) { $h = $null; try { $h = [IO.File]::ReadAllText((Join-Path $ld ($s.lock + '.lock'))) | ConvertFrom-Json } catch {}; if (-not $h -or -not (Test-Alive $h.pid)) { $anyFree = $true } }
@@ -1141,11 +1249,19 @@ export function slugFor(root) {
   return wt.slugOfRoot(root) || root.replace(/[\\/]+$/, "").split(/[\\/]/).pop().replace(/^Life-Framework-ws-/, "").toLowerCase().replace(/[^a-z0-9-]/g, "-");
 }
 
+// The peak a job reserves in the holder's gate: a session its server and one client, a test its test
+// server (the floor used to be all a test left itself).
+function holderReserveMb(root, settings, purpose, world) {
+  const peaks = pr.readPeaks(wt.hubDirOf(root));
+  if (laneKind(purpose) === "session") return pr.jobReserveMb(settings, peaks, { kind: "session", clients: 1, profile: "full", world });
+  return pr.jobReserveMb(settings, peaks, { kind: "test", world });
+}
+
 // slots: how many of the machine's lanes of this kind the holder may try (all of them by default;
 // 0 = no lock, sync only). ram: the RAM gate the holder applies there before it takes a lock.
 // Burst starts (q.burstAdmit): aheadMb, the reserves of the starts in flight ahead of this one, goes
 // into that gate; freeLocks + position rotate the slots so starts in flight spread over the free lanes.
-export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = "", settings = poolSettings(root), aheadMb = 0, freeLocks = null, position = 0 } = {}) {
+export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = "", settings = poolSettings(root), aheadMb = 0, freeLocks = null, position = 0, world } = {}) {
   const laneCount = lanesFor(m, laneKind(purpose)).length;
   if (slots === undefined) slots = laneCount;
   const slug = slugFor(root);
@@ -1169,7 +1285,7 @@ export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = 
     candidates: [...new Set([snap.sha, snap.head, last, base].filter(Boolean))],
     slots: q.rotateSlots(slotList, freeLocks, position),
     dir: remoteRunDir(m, slug, 1, suffix),
-    ram: { ...(m.thermalLog ? { thermal: { dir: m.thermalLog, holdC: m.thermalHoldC } } : {}), locks: q.allLaneLocks(m), floorMb: settings.minFreeMb, reserveMb: laneKind(purpose) === "session" ? q.sessionReserveMb(settings, 1, "full") : 0, serverMb: settings.sessionReserveServerMb, clientMb: settings.sessionReserveClientMb, testMb: settings.testReserveMb, testBootS: settings.testBootS, aheadMb: Math.max(0, Math.round(Number(aheadMb) || 0)) },
+    ram: { ...(m.thermalLog ? { thermal: { dir: m.thermalLog, holdC: m.thermalHoldC } } : {}), locks: q.allLaneLocks(m), floorMb: settings.minFreeMb, reserveMb: holderReserveMb(root, settings, purpose, world), island: laneKind(purpose) === "session" && pr.worldClass(world) === pr.ISLAND, peaks: pr.peakTable(pr.readPeaks(wt.hubDirOf(root))), serverMb: settings.sessionReserveServerMb, clientMb: settings.sessionReserveClientMb, testMb: settings.testReserveMb, testBootS: settings.testBootS, aheadMb: Math.max(0, Math.round(Number(aheadMb) || 0)) },
   };
 }
 
@@ -1770,7 +1886,7 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
           }
           continue;
         }
-        const v = remoteSessionVerdict(m, st.state, settings, { clients, profile, now });
+        const v = remoteSessionVerdict(m, st.state, settings, { clients, profile, now, world: meta.world, peaks: remotePeaks(root, m, st.state) });
         if (v.ok) {
           forgetQueued(root, slug);
           return m;
@@ -2323,6 +2439,7 @@ export function remoteState(m) {
     `$ld = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\locks'`,
     `foreach ($n in @(${names.map(tb.psQuote).join(",")})) { $f = Join-Path $ld ($n + '.lock'); if (Test-Path -LiteralPath $f) { $raw = [IO.File]::ReadAllText($f).Trim(); $alive = $false; try { $i = $raw | ConvertFrom-Json; $alive = [bool](Get-Process -Id $i.pid -ErrorAction SilentlyContinue) } catch {}; Write-Host \"lf-pool: lock $n $alive $raw\" } else { Write-Host \"lf-pool: lock $n free\" } }`,
     "$os = Get-CimInstance Win32_OperatingSystem; Write-Host \"lf-pool: ram $([int]($os.FreePhysicalMemory / 1024)) $([int]($os.TotalVisibleMemorySize / 1024))\"",
+    pr.PS_PROC_SCAN,
     ...(m.thermalLog ? [`$thermDir = ${tb.psQuote(m.thermalLog)}`, PS_THERMAL, "if ($thermC -ne $null) { Write-Host ('lf-pool: thermal ' + $thermC.ToString([Globalization.CultureInfo]::InvariantCulture)) }"] : []),
   ].join("\n");
   const r = tb.sshPs(m.host, ps, { timeout: PROBE_TIMEOUT_MS, connectTimeout: 4 });
@@ -2346,7 +2463,10 @@ export function parseRemoteState(text) {
       totalMb = Number(rm[2]);
     }
   }
-  return { locks, freeMb, totalMb, thermalC };
+  // The ArmaReforger processes there (Workbench, servers, clients: the pool's or not); null when the box
+  // answered without the scan lines (an older holder), so its gate falls back to lock-based pending.
+  const procs = freeMb !== null ? pr.parseScan(text) : null;
+  return { locks, freeMb, totalMb, thermalC, procs };
 }
 
 function remoteLocks(m) {
@@ -2379,11 +2499,13 @@ export function orderMachines(root, machines, settings, opts = {}) {
 export function rankedMachines(root, machines, settings, { reserveMb = 0, stateOf = () => null, localFreeMb } = {}) {
   const views = machines.map((m) => {
     if (m.via === "local") {
-      const pendingMb = otherSessionLanes(root, m, null).reduce((n, s) => n + s.pendingMb, 0);
+      // A scan counts what every running process still grows into (a Workbench loading included).
+      const procs = localFreeMb !== undefined || ramSeamMb() ? null : localScan();
+      const pendingMb = procs ? pr.unrealisedMb(procs, pr.readPeaks(wt.hubDirOf(root))) : otherSessionLanes(root, m, null).reduce((n, s) => n + s.pendingMb, 0);
       return { name: m.name, freeMb: localFreeMb ?? Math.round(freemem() / 1048576), pendingMb, multiplier: m.budgetMultiplier };
     }
     const st = stateOf(m);
-    const pendingMb = st ? remotePendingMb(settings, Object.values(st.locks ?? {}).filter((i) => i?.alive)) : 0;
+    const pendingMb = st ? (st.procs ? pr.unrealisedMb(st.procs, pr.readPeaks(wt.hubDirOf(root))) : remotePendingMb(settings, Object.values(st.locks ?? {}).filter((i) => i?.alive))) : 0;
     return { name: m.name, freeMb: st?.freeMb ?? null, pendingMb, multiplier: m.budgetMultiplier };
   });
   return q.rankMachines(views, { minFreeMb: settings.minFreeMb, reserveMb, roomyMb: settings.roomyMb });
@@ -2420,16 +2542,49 @@ export function remotePendingMb(settings, infos, now = Date.now()) {
   return q.bootingMb(infos.filter((i) => i?.alive), settings, now);
 }
 
+// The recorded peaks, after noting the processes a remote scan saw (an ended one leaves a sample).
+export function remotePeaks(root, m, st) {
+  try {
+    if (!st?.procs) return pr.readPeaks(wt.hubDirOf(root));
+    const peaks = pr.recordLive(wt.hubDirOf(root), st.procs, { tag: m.name });
+    st.procs = pr.withSeenMax(wt.hubDirOf(root), st.procs, m.name);
+    return peaks;
+  } catch {
+    return {};
+  }
+}
+
+// A remote machine's RAM verdict for a job (kind session|test, world): its measured peak, what the
+// scanned processes there still grow into (Workbench, guard, other pool jobs), and the pool's lock
+// jobs in their first seconds. st is remoteState's answer.
+export function remoteAdmission(m, st, settings, { kind = "session", clients = 1, profile = "full", world, now = Date.now(), peaks = {}, infos } = {}) {
+  const procs = st.procs ?? null;
+  const live = infos ?? Object.values(st.locks ?? {}).filter((i) => i?.alive);
+  const spec = { kind, clients, profile, world: pr.worldClass(world) };
+  const reserveMb = pr.jobReserveMb(settings, peaks, spec);
+  const pendingMb = procs ? pr.lockGapMb(live, settings, peaks, now) : remotePendingMb(settings, live, now);
+  return pr.admit({
+    freeMb: st.freeMb,
+    minFreeMb: settings.minFreeMb,
+    reserveMb,
+    pendingMb,
+    growthMb: procs ? pr.unrealisedMb(procs, peaks, profile) : 0,
+    island: kind === "session" && spec.world === pr.ISLAND,
+    islandRunning: procs ? pr.islandCount(procs) : 0,
+    what: kind === "session" ? "the session" : "the test",
+  });
+}
+
 // Whether a session (clients, profile) may start on a remote right now: a free session lane and
 // the same RAM verdict its own `session up` will apply there. { ok, lane, ram?, needMb? }.
-export function remoteSessionVerdict(m, st, settings, { clients = 1, profile = "full", now = Date.now() } = {}) {
+export function remoteSessionVerdict(m, st, settings, { clients = 1, profile = "full", world, peaks = {}, now = Date.now() } = {}) {
   if (!st) return { ok: false, lane: false, down: true };
   const lane = lanesFor(m, "session").some((l) => !st.locks[l.lock] || !st.locks[l.lock].alive);
   if (!lane) return { ok: false, lane: false };
   if (Number.isFinite(st.thermalC) && st.thermalC >= (m.thermalHoldC ?? 90)) return { ok: false, lane: true, ram: `${st.thermalC} °C, at or over its ${m.thermalHoldC ?? 90} °C hold`, hot: st.thermalC };
   if (!Number.isFinite(st.freeMb)) return { ok: true, lane: true };
   const infos = Object.values(st.locks).filter((i) => i?.alive);
-  const v = q.ramVerdict({ running: infos.length, freeMb: st.freeMb, minFreeMb: settings.minFreeMb, reserveMb: q.sessionReserveMb(settings, clients, profile), pendingMb: remotePendingMb(settings, infos, now) });
+  const v = remoteAdmission(m, st, settings, { kind: "session", clients, profile, world, now, peaks, infos });
   return v.ok ? { ok: true, lane: true } : { ok: false, lane: true, ram: v.reason, needMb: v.needMb };
 }
 
@@ -2587,6 +2742,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
   }
   const diskGb = gc.freeDiskGb(sessionBase());
   console.log(statusLine(root)); // the Workbench limit of this PC (tools/lib/wb-lock.mjs)
+  console.log(peaksLine(root)); // the peaks the RAM gate reserves (tools/lib/pool-ram.mjs)
   console.log(`disk: ${diskGb === null ? "unknown" : `${diskGb.toFixed(1)} GB free`} on the session volume (floor ${settings.minFreeDiskGb} GB; session folders older than ${settings.sessionKeepHours} h are removed on the next session or test start)`);
   const promoteMs = settings.promoteMin * 60000;
   const starveMs = settings.starveMin * 60000;

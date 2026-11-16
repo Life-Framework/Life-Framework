@@ -14,11 +14,14 @@ import { freemem } from "node:os";
 import { loadMachines as poolLoad } from "../remote/pool.mjs";
 import * as tb from "../remote/testbox.mjs";
 import { DEFAULTS, rankMachines } from "./pool-queue.mjs";
+import { SEED_PEAKS_MB } from "./pool-ram.mjs";
 import * as wbLock from "./wb-lock.mjs";
 
-// One headless Workbench compile or build at its peak (measured about 2 GB; 2026-11-14 it died after
-// 6 s with 1.5 GB free). The floor (minFreeMb) comes on top: need = reserve + floor.
-export const WB_RESERVE_MB = 2250;
+// One headless Workbench compile, build or rdb refresh at its peak: 3.7 GB measured on the laptop
+// 2026-11-16 (2.25 GB before; it died after 6 s with 1.5 GB free on 2026-11-14). The floor (minFreeMb)
+// comes on top: need = reserve + floor. The number is the pool's seed in pool-ram.mjs, which the pool
+// gate counts for every running Workbench too.
+export const WB_RESERVE_MB = SEED_PEAKS_MB["workbench:small"];
 // A Workbench step that ends this fast without a verdict did not compile anything.
 export const EARLY_DEATH_S = 60;
 // Exit code of `ci --wb-only` when the Workbench died early on a machine short of RAM: an
