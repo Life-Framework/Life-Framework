@@ -44,7 +44,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
-import { GRID_MISSION } from "../tools/lib/worlds.mjs";
+import { EVERON_WORLD, GRID_MISSION } from "../tools/lib/worlds.mjs";
 import { addonsArgs, CORE_PLAYTEST_MISSION, launchAddons, launchAddonsFor, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
 import { sessionA2sPort } from "../tools/lib/pool-queue.mjs";
@@ -88,9 +88,12 @@ export const SESSION_DEFINE = "LF_SESSION_IDENTITY";
 // Opens the harness gate on the playtest mission (LF_DevGate.HarnessBuild).
 // Only a session passes it; tools\cli host start never does.
 export const HARNESS_DEFINE = "LF_HARNESS";
-export const MISSIONS = ["debug", "playtest", "grid", "template"];
+export const MISSIONS = ["debug", "playtest", "grid", "everon", "template"];
 // `--mission grid` boots GridWorld (the flat annex world for WORLD tests and grid cells) through its header
 // Missions/LF_GridWorld.conf, a bare world like debug: no harness define. `debug` still boots the town.
+// `--mission everon` boots Worlds/CoreOnEveron (vanilla Everon, its navmesh and an SCR_AIWorld): the world where
+// vanilla AI walks (#2174). Its game mode keeps dev tools shut, so the session opens the harness gate with the
+// harness define, as playtest does. Its test layers hold only proof routes, never town content.
 // `--mission template` boots the example server folder (server/example, #295): the scenario and mods
 // server.json names, the owner config.json it ships; clients join like the playtest mission (harness gate open).
 // `--mission template-<variant>` boots tools/server-template/variants/<variant>/server.json instead (#297):
@@ -109,7 +112,7 @@ export function parseMission(args) {
 // ("remote script source code checksum does not match").
 export function defineArgs(mission = "debug") {
   const args = ["-scrDefine", SESSION_DEFINE];
-  if (mission === "playtest" || isTemplateMission(mission)) args.push("-scrDefine", HARNESS_DEFINE);
+  if (mission === "playtest" || mission === "everon" || isTemplateMission(mission)) args.push("-scrDefine", HARNESS_DEFINE);
   return args;
 }
 
@@ -221,7 +224,7 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
   // engine refuses -config together with -addons, so the file's two lists become -server and -addons.
   const tpl = isTemplateMission(mission) ? templateLaunch(ROOT, templateVariant(mission)) : null;
   const args = [
-    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : mission === "grid" ? GRID_MISSION : SERVER_WORLD,
+    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : mission === "grid" ? GRID_MISSION : mission === "everon" ? EVERON_WORLD : SERVER_WORLD,
     "-addonsDir", addonsDir,
     ...addonsArgs(tpl ? tpl.addons : addons),
     "-profile", profile,
@@ -555,6 +558,16 @@ export function selftestSession() {
   } catch {
     failures.push("--mission grid was refused");
   }
+  // #2174: --mission everon boots CoreOnEveron (no header), where vanilla AI has a navmesh, with the harness gate open.
+  // red-proof: 2026-11-16 written before the mission existed: "--mission everon was refused" failed, then passed.
+  try {
+    if (parseMission(["--mission", "everon"]) !== "everon") failures.push("parseMission everon");
+  } catch {
+    failures.push("--mission everon was refused");
+  }
+  const es = serverArgs({ addonsDir: "A", profile: "SP", mission: "everon" });
+  if (es[1] !== EVERON_WORLD || !/CoreOnEveron\.ent$/.test(es[1])) failures.push("--mission everon does not boot CoreOnEveron");
+  if (!es.includes(HARNESS_DEFINE) || !clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "everon" }).includes(HARNESS_DEFINE)) failures.push("--mission everon does not open the harness gate (its game mode keeps dev tools shut)");
   const gs = serverArgs({ addonsDir: "A", profile: "SP", mission: "grid" });
   const gc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "grid" });
   if (gs[0] !== "-server" || gs[1] !== GRID_MISSION || !/LF_GridWorld.conf$/.test(gs[1])) failures.push("--mission grid does not run LF_GridWorld.conf");
@@ -1331,7 +1344,7 @@ export async function usageText() {
   const proofs = [...(await loadProofs()).values()];
   const verbs = proofs.map((p) => p.usage + (p.film ? " [--film]" : ""));
   return [
-    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest|grid|template|template-core-only] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
+    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest|grid|everon|template|template-core-only] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
     `proof verbs (agent-box/proofs/<verb>.mjs): ${verbs.join(" | ")}`,
   ].join("\n");
 }
@@ -1421,7 +1434,7 @@ async function relayToSession(cmd, rest, ptr) {
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
-    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|grid|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|grid|everon|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
     return 0;
   }
   {

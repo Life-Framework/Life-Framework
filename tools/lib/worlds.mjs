@@ -18,6 +18,9 @@ export const PACK_ADDON = "LF_Everon1989";
 export const TEST_WORLD = "Worlds/TestLogic/TestLogic.ent";
 export const GRID_WORLD = "Worlds/GridWorld/GridWorld.ent";
 export const PLAYTEST_WORLD = "Worlds/DebugWorld/DebugWorld.ent";
+// Vanilla Everon with only the core game mode, a spawn point, the test runner and an SCR_AIWorld (navmesh,
+// roads): where vanilla AI walks. session --mission everon boots it (#2174).
+export const EVERON_WORLD = "Worlds/CoreOnEveron/CoreOnEveron.ent";
 // The pack world that is a SubScene of PLAYTEST_WORLD and holds the pack town's layers.
 export const PLAYTEST_PACK_WORLD = "Worlds/Everon1989Town/Everon1989Town.ent";
 

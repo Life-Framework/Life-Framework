@@ -31,6 +31,9 @@ class LF_EventSceneWalk
 	static const int TICK_MS = 1000; // lf-fixed: progress check resolution only; the plan sets the time budget
 	//! A walker this close to the target has arrived; the AI waypoints complete at the same radius.
 	static const float ARRIVE_M = 3; // lf-fixed: a little over a walking group's spread at a waypoint
+	//! Once the AI group has finished its route, its members stop in formation around the leader:
+	//! a walker this close to the target has arrived with it (#2174: six stopped 1 to 11 m out).
+	static const float FORMATION_ARRIVE_M = 15; // lf-fixed: a six-person formation's spread around its leader
 	//! Getting this much further along the route counts as progress.
 	static const float PROGRESS_M = 0.5; // lf-fixed: well under a second of walking
 	//! A walker that makes no progress this long is stuck.
@@ -242,6 +245,29 @@ class LF_EventSceneWalk
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Arrival rule. A walker that passed every waypoint arrives within ARRIVE_M of the target (standing
+	//! near the target is not the walk). Once the AI group has completed its last waypoint, the group
+	//! stops in formation around its leader, so any member within FORMATION_ARRIVE_M has arrived.
+	static bool HasArrived(bool passedEveryWaypoint, float toTargetM, bool groupDone)
+	{
+		if (groupDone)
+			return toTargetM <= FORMATION_ARRIVE_M;
+
+		return passedEveryWaypoint && toTargetM <= ARRIVE_M;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The walk's AI group exists, was given the route and has completed every waypoint of it.
+	protected bool IsGroupDone(notnull BaseWorld world)
+	{
+		if (m_aAiWaypoints.IsEmpty())
+			return false;
+
+		AIGroup group = AIGroup.Cast(world.FindEntityByID(m_GroupId));
+		return group && !group.GetCurrentWaypoint();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	vector Target()
 	{
 		return m_aRoute[m_aRoute.Count() - 1];
@@ -302,6 +328,7 @@ class LF_EventSceneWalk
 			return;
 
 		vector target = Target();
+		bool groupDone = IsGroupDone(world);
 		foreach (int index, LF_EventSceneWalker walker : m_aWalkers)
 		{
 			if (walker.m_bArrived || (walker.m_bTimedOut && !walker.m_bDespawnPending))
@@ -327,9 +354,8 @@ class LF_EventSceneWalk
 			while (walker.m_iNext < m_aRoute.Count() - 1 && Passed(at, walker.m_iNext))
 				walker.m_iNext++;
 
-			// Only a walker that passed every waypoint arrives: standing near the target is not the walk.
 			float toTarget = vector.DistanceXZ(at, target);
-			if (walker.m_iNext == m_aRoute.Count() - 1 && toTarget <= ARRIVE_M)
+			if (HasArrived(walker.m_iNext == m_aRoute.Count() - 1, toTarget, groupDone))
 			{
 				walker.m_bArrived = true;
 				LF_Debug.Info(FEATURE, string.Format("scene %1 walker %2 reached the target after %3 s", m_Crew.m_sSceneId, index, walker.m_fWalked));
