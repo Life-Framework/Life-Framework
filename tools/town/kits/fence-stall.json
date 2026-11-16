@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "kit": "fence-stall",
+  "system": "fence",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_fence_shop_2.layer",
+    "group": "FenceStall_*,Grid_fence_shop_2_Sign",
+    "origin": "FenceStall_Grid",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -4.402,
+        0
+      ],
+      "max": [
+        0,
+        8.371
+      ]
+    },
+    "front": "-x",
+    "counters": [],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "fence-shop-2-sign",
+      "name": "Grid_fence_shop_2_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -4.402,
+        0.505,
+        8.371
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"grid:fence-shop-2\"",
+            "m_vRimColor": "0.1 0.1 0.1",
+            "m_vPaintColor": "0.95 0.78 0.1",
+            "m_vTextColor": "0.1 0.1 0.1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-stall-grid",
+      "name": "FenceStall_Grid",
+      "prefab": "{4855AC571C89CA6D}Prefabs/Props/Commercial/LF_FenceStall.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "+x",
+      "floor": "f0"
+    }
+  ]
+}

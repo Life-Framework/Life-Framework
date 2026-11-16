@@ -1,0 +1,224 @@
+{
+  "schema": 1,
+  "kit": "drugstore",
+  "system": "store",
+  "source": {
+    "file": "addons/LF_Everon1989/Prefabs/Buildings/Drugstore/Drugstore_Store.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local",
+    "also": [
+      "addons/LF_Everon1989/Prefabs/Buildings/Drugstore/ShopHouse_E_2I01t_drugstore_lf.et",
+      "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers/Village_Buildings.layer"
+    ]
+  },
+  "scope": "building",
+  "building": {
+    "mode": "override",
+    "via": "{9090774B54A3747C}Prefabs/Buildings/Drugstore/ShopHouse_E_2I01t_drugstore_lf.et",
+    "vanilla": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et"
+  },
+  "store": {
+    "prefab": "{BD40585C1FC1DCCF}Prefabs/Buildings/Drugstore/Drugstore_Store.et",
+    "config": [
+      {
+        "component": "LF_ShopComponent",
+        "set": {},
+        "blocks": [
+          "m_aShopItems"
+        ]
+      },
+      {
+        "component": "LF_StoreComponent",
+        "set": {
+          "m_sStoreKey": "\"everon_drugstore\"",
+          "m_vBoundaryCenter": "2.08 0 -0.45",
+          "m_vBoundaryHalf": "3.75 0 7.9",
+          "m_iRestockSeconds": "300"
+        },
+        "blocks": [
+          "m_aLines"
+        ]
+      },
+      {
+        "component": "ActionsManagerComponent",
+        "set": {},
+        "blocks": [
+          "ActionContexts",
+          "additionalActions"
+        ]
+      }
+    ]
+  },
+  "anchoring": {
+    "floorY": 0.199,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.199
+      }
+    ],
+    "footprint": {
+      "source": "store-boundary",
+      "min": [
+        -1.67,
+        -8.35
+      ],
+      "max": [
+        5.83,
+        7.45
+      ]
+    },
+    "front": "-x",
+    "counters": [
+      {
+        "id": "counter-shop-01",
+        "wall": "free",
+        "edgeGap": 3.24
+      },
+      {
+        "id": "cashier-shop-01",
+        "wall": "free",
+        "edgeGap": 2.83
+      },
+      {
+        "id": "lf-pharmacy-counter",
+        "wall": "free",
+        "edgeGap": 2.43
+      }
+    ],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "sign-commercial-01-drugstore",
+      "prefab": "{44A1CCEB43D989CA}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_Drugstore.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -0.05,
+        1.412,
+        -0.159
+      ],
+      "yaw": 180,
+      "from": "ShopHouse_E_2I01t_drugstore_lf.et",
+      "config": [
+        {
+          "component": "Hierarchy",
+          "set": {
+            "PivotID": "\"socket_win_420x275_01\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "shop-house-e-2-i01t-furniture-drugstore-lf-01",
+      "prefab": "{1D49EA09388829EB}Prefabs/Buildings/Drugstore/Furniture/ShopHouse_E_2I01t_furniture_drugstore_lf_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "from": "ShopHouse_E_2I01t_drugstore_lf.et",
+      "wall": "free",
+      "floor": "all"
+    },
+    {
+      "id": "electricity-box-small-01",
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "role": "alarm",
+      "verb": "against wall",
+      "offset": [
+        4.9,
+        2.6,
+        8.08
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_AlarmMountComponent",
+          "set": {
+            "m_vOffset": "0 0.167 0.065",
+            "m_fReach": "10"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0"
+    },
+    {
+      "id": "counter-shop-01",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        1.57,
+        0.199,
+        -0.323
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cashier-shop-01",
+      "prefab": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et",
+      "role": "till",
+      "verb": "on counter-shop-01",
+      "offset": [
+        1.16,
+        1.238,
+        -0.325
+      ],
+      "yaw": 180,
+      "floor": "f0"
+    },
+    {
+      "id": "lf-pharmacy-counter",
+      "prefab": "{E66CFB8EA2048E05}Prefabs/Props/Commercial/LF_PharmacyCounter.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        3.4,
+        0.199,
+        -0.323
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ShopComponent",
+          "set": {
+            "m_sOutletId": "\"pharmacy_counter\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "village-drugstore-pharmacist",
+      "name": "Village_Drugstore_Pharmacist",
+      "prefab": "{87E1270978227F3A}Prefabs/Characters/Npcs/LF_Npc_Pharmacist.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        3.1,
+        0.199,
+        -1.25
+      ],
+      "yaw": 0,
+      "class": "LF_NpcBaseEntity",
+      "from": "Village_Buildings.layer",
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
