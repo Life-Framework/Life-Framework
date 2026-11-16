@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6C9DAB144B0FB1DE}Sounds/Dialogue/night_shift/Dialogue_night_shift.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

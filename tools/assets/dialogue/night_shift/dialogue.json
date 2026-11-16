@@ -1,0 +1,45 @@
+{
+  "id": "night_shift",
+  "name": "NightShift",
+  "speaker_key": "#LF-Townsfolk_NightShift_Name",
+  "addon": "LF_Everon1989",
+  "voice": {
+    "engine": "piper",
+    "id": "en_US-ljspeech-high",
+    "name": "LJ Speech (Piper)",
+    "why": "One voice per character (lead decision, 2026-11-17). Piper en_US-ljspeech-high is trained on LJ Speech, public domain, so it is licence-safe for public builds. A tired man at the end of a shift: the lines are short and slow (length_scale 1.1).",
+    "length_scale": 1.1
+  },
+  "budget_chars": 3000,
+  "hear_range_m": 10,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        { "text": "zone", "next": "zone" },
+        { "text": "move", "next": "move" },
+        { "text": "work", "next": "work" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "zone", "line": "about_zone", "options_from": "greet" },
+    { "id": "move", "line": "about_move", "options_from": "greet" },
+    { "id": "work", "line": "about_work", "options_from": "greet" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Evening. Or morning, I lose track on nights. You are one of the new families, yes? Sit if you like." },
+    "about_zone": { "text": "I worked near the Zone before they moved us. Twelve kilometres from the reactor. They told us three days. That was three years ago. I still keep my house key." },
+    "about_move": { "text": "They gave us one bus and one suitcase each. The island is quiet, and the quiet is hard at first. But nobody asks you to leave in the middle of dinner." },
+    "about_work": { "text": "If you need wages, read the town board on the square. It lists who is hiring. And the clerk's office has a bed upstairs, for the first nights. Ask the clerk." },
+    "bye": { "text": "Good night. Walk safe." }
+  },
+  "replies": {
+    "zone": "You worked near the Zone?",
+    "move": "How was the move?",
+    "work": "Is there work for me?",
+    "bye": "Goodbye."
+  }
+}
