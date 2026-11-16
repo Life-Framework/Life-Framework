@@ -11,6 +11,13 @@
   heist target, `LF_Hospital` till and cabinet origin, the hideout door (no
   longer needs an entity name). Tests `places/registry`,
   `places/unnamed-door`.
+- ✅ **Live map states** (2026-11-16, #2208, D14): `LF_MissionHeader.m_aLF_LiveStates` lists the
+  live map states (plain numbers; the pack says what each means) and an `LF_PlaceComponent` has
+  `m_iLiveState` (default -1, always live). A place whose state is not listed does not register in
+  `LF_Places`, so its systems stay dark and players see vanilla terrain, and it logs one
+  `[LFDebug:Places] dark: ...` info line. An empty list, or no `LF_MissionHeader`, makes every
+  state live, so the playtest town and the test worlds are unchanged. Logic in
+  `Core/LF_PlaceLiveState.c`. Test `places/live-state`.
 
 ### `LF_GameModeRoleplay` — `Scripts/Game/Core/LF_GameModeRoleplay.c`
 - ✅ Lazy-creates `LF_CharacterCreationManager`, `LF_ATMManager`,

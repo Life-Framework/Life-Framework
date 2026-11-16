@@ -32,6 +32,9 @@ class LF_MissionHeader : SCR_MissionHeader
 	[Attribute("", UIWidgets.ResourceNamePicker, desc: "The pack's manifest (.conf of class LF_PackManifest): its id and the core versions it supports. When the running core is outside that range the core logs one error and loads none of this mission's config overlays. Empty: no check (#963).", params: "conf")]
 	ResourceName m_LF_PackManifest;
 
+	[Attribute("", UIWidgets.Auto, desc: "Map states that are live (D14, #2208). An LF_PlaceComponent with a map state outside this list stays dark: it does not register in LF_Places, so its systems have no place there. Empty: every state is live (the playtest town and the test worlds). The pack says what each number means.")]
+	ref array<int> m_aLF_LiveStates;
+
 	//------------------------------------------------------------------------------------------------
 	//! \return the running mission's header when it is an LF_MissionHeader, else null.
 	static LF_MissionHeader GetCurrent()
