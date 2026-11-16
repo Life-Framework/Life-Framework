@@ -1,13 +1,14 @@
 # World zones: the debug grid and the town
 
-Maintainer decision, 2026-11-15 (`docs/decisions.md`). DebugWorld has two zones, each with its own
-look bar and its own writers. The code is `tools/lib/world-zones.mjs`; the CLI is `tools\cli grid`;
+Maintainer decision, 2026-11-15 (`docs/decisions.md`). The grid and the town have separate look bars
+and writers, and since the three-worlds move (`docs/architecture/three-worlds.md`) separate worlds:
+the grid lives in GridWorld, the town in DebugWorld and the pack world. The code is `tools/lib/world-zones.mjs`; the CLI is `tools\cli grid`;
 the guard is `tools/validation/validate-world-zones.mjs`.
 
 | | Debug grid | Town |
 |---|---|---|
-| Where | The net-fenced annex south-west of the village, x 20..112, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79) | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
-| Layers | `DebugWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), and the legacy annex layers (`Annex`, `Crimes`, `HousesKeys`, `Jobs`, `NPCs`, `PRFeatures`, `Police`, `Tests`, `WhitelistChat`, `Shops`) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
+| Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..112, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
+| Layers | `GridWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), and the legacy annex layers there (`Annex`, `Crimes`, `HousesKeys`, `Jobs`, `NPCs`, `PRFeatures`, `Police`, `Tests`, `WhitelistChat`, `Shops`) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
 | For | Testing a system: one feature per cell, easy to find, easy to film for a proof | Players and videos: a real 1989 village |
 | Look bar | Low. Debug-looking props, stand-ins and a test sign are fine. Things still stand on the ground and are reachable | Full polish bar (`.claude/skills/polish/SKILL.md`, `docs/style-guide.md`): NPCs dressed for their job and standing inside their building, furniture under a roof, boards on walls, nothing debug-looking |
 | Who writes | Any slice, through `tools\cli grid place` only, inside its own cell | Only a town-placement pass: a worktree whose slug starts with `town-` |
@@ -46,7 +47,9 @@ tools\cli look grid:<slug>             the look pictures of that cell, from its 
    per feature, never a central list (golden rule 10).
 4. Puts the prefabs in a row inside the yard, facing the gap, through `tools\cli place arrange row`:
    the same offline checks, ground probe and audit as any placement. A layer needs no registration;
-   DebugWorld loads every file in `DebugWorld_Layers/`.
+   GridWorld loads every file in `GridWorld_Layers/`. `grid list` and the blocked-cell check read
+   GridWorld's layers, and `place --layer Grid_*` and `place on|against|ground` find and write
+   `Grid_*` layers there (`GRID_LAYERS` in `tools/lib/world-zones.mjs`).
 
 Each later `grid place <slug> <prefab>...` adds the next row. A cell has three rows, from the back
 towards the gap. To put a prop on a table, against the yard fence, and so on, use the `place`
@@ -56,8 +59,18 @@ stand inside its own cell.
 `validate-world-zones` checks the claims on every validate. It fails when:
 
 - two claims name one cell (the second slice runs `grid free` and `grid place` again);
-- a claim has no layer, or a `Grid_*.layer` has no claim;
-- a grid layer places anything outside its cell.
+- a claim has no layer in `GridWorld_Layers/`, or a `Grid_*.layer` there has no claim;
+- a grid layer places anything outside its cell;
+- a `Grid_*.layer` is in `DebugWorld_Layers/` (the grid lives in GridWorld).
+
+## The annex freeze
+
+The legacy annex exists in both worlds until slice W6 deletes it from DebugWorld. To keep the two
+copies from drifting, `validate-world-zones` also fails a branch that adds or changes an entity inside
+the annex rectangle (x 18..114, z 18..114) in any DebugWorld layer. It compares each entity's text
+with the merge base with `origin/main`; deleting is allowed, which is what W6 does. The edit belongs
+in the copy in `GridWorld_Layers/`. The freeze applies to every branch, `town-` passes included; the
+town guard below is unchanged.
 
 ## The guard
 
@@ -80,11 +93,37 @@ with the next town pass, or the slice asks the lead for a `town-` worktree.
 
 | Check | Town | Grid |
 |---|---|---|
-| `tools\cli audit placement --strict` | Fails on any flagged entity | Not measured by default. With `--annex` its rows are listed, and `--strict` ignores them |
-| `validate-player-props` | Fails on a new `*_Debug` name or `/Debug/` prefab, in the DebugWorld village and the pack town world (the baseline is today's debt and never grows) | Not checked |
+| `tools\cli audit placement --strict` | A flagged entity is a **warning on every branch**, never a failure | Fails on a flagged entity in a non-town layer the branch adds or moves (`--annex --hard-layer <layers>`, which `wt gate` passes from the diff); a grid layer the branch did not touch only warns |
+| `validate-prop-on-surface` | A prop overhanging a surface in a town layer is a **warning on every branch** | A finding in a grid layer or a prefab still fails |
+| `validate-town-manifest`, `validate-road-ids` | Warn on every branch (they read only town layers; a normal PR cannot change one) | Not checked |
+| `validate-player-props` | Warns on a new `*_Debug` name or `/Debug/` prefab, in the DebugWorld village and the pack town world (the baseline is today's debt and never grows) | Not checked |
 | `polish` checklist | Every line holds (`.claude/skills/polish/SKILL.md`) | Only "It sits on its surface" and "can be reached on foot"; one `look grid:<slug>` picture in the PR |
 | `tools\cli place` | The full set of checks | The full set of checks (they measure physics, not taste) |
 | `look` | `look <area>` or `look town:<area>`; `town:` refuses an area inside the grid | `look grid:<slug>` |
+
+## Tests do not read the town
+
+Maintainer direction, 2026-11-15: tests must not fail because he moved things in the town; most of
+where things stand is arbitrary, so it is not written down. A test, harness proof or flow, the town
+manifest, the harness selftest or a validator never quotes a town entity name and never writes a
+position on the town. `validate-no-town-layout-asserts` enforces it (rules and escape hatch in its
+header); `tools/validation/town-layout-baseline.json` is the debt and only shrinks. What to write
+instead:
+
+- a fixture in the grid (`toolscli grid place`) or a prefab the test spawns and deletes;
+- a test-owned stand-in for a town fact (`LF_Zones.RegisterCircle` for a safe zone);
+- a contract that must hold wherever things stand: find it by component, `LF_Places`, a sign id or
+  the actions it carries, and measure from what was found.
+
+The town manifest (`agent-box/town.mjs`) keeps its contracts (each site offers its actions, has a
+sign with a card) and only warns about distances, on every branch.
+
+**The town never blocks anyone** (maintainer rule, 2026-11-15; #1867 left the chop shop's `Workbench_Vice_01` 0.41 m
+above its bench and failed every other PR). The town is hand-edited, so every layout finding on a town entity
+is a warning on every branch: `tools/lib/town-findings.mjs` splits a finding by the layer it blames, and
+`tools/lib/world-checks.mjs` (`TOWN_LAYOUT_CHECKS`) lists the checks that read only town layers.
+`validate-world-zones` stays hard: a normal branch that changes a town layer still fails. Proof:
+`tools/validation/town-warn-selftest.mjs`.
 
 ## The town-placement pass at chapter close
 
@@ -121,7 +160,7 @@ through them. None of them moves in the PR that set up the zones.
 | 7 | `Roadmap_Test_Till`, `Roadmap_Test_Till_Counter` (Street_TillTest) | 244.5, 230.5 | A test till on a shop counter in the open: a test spot, which belongs in a grid cell | none |
 | 8 | `Roadmap_Impound_Desk` (Street_Vehicles) | 246.0, 269.0 | A desk in the car lot; it belongs in a lot office or the police station | none |
 | 9 | `Roadmap_Job_Depot` (Street_Jobs) | 155.2, 256.3 | A post-office counter in the street; it belongs in a depot or the post office | none |
-| 10 | `SquareClerkDesk` (pack Village_Dressing) | 136.0, 243.5 | The clerk's desk in the open square | none |
+| 10 | ~~`SquareClerkDesk` (pack Village_Dressing)~~ | 136.0, 243.5 | Done (town-arrival-desk): the desk and chair are gone; `Quest_Clerk` stands behind `SquareRegistryCounter` under `SquareRegistryParasol`, with the `Sign_Registry` board (REGISTRY OFFICE) beside it, facing the spawn | `arrival-desk/arrival-desk-after.png` |
 | 11 | `Roadmap_Police_WantedBoard`, `Roadmap_Police_DispatchBoard` (Street_Police) | 235..238, 242.9 | Free-standing boards in front of the police villa; they belong on a wall inside | none |
 | 12 | `Roadmap_Bank_RobKit` (Street_Bank) | 196.7, 258.5 | A debug-looking kit stand by the bank (baselined in `player-props-baseline.json`) | none |
 | 13 | `Roadmap_ChopShop` (Street_ChopShop) | 322.0, 300.0 | The chop bench in the open; it belongs in the garage | none |
@@ -131,8 +170,9 @@ through them. None of them moves in the PR that set up the zones.
 Two more notes for the first pass:
 
 - `Shops.layer` is a legacy annex layer, so the guard and `validate-player-props` treat it as grid.
-  Its general store (`Shop_GeneralStore_Debug`, the till and radio on it, near 179, 244) stands in
-  town. The town pass either moves the store into a real shop building and renames the layer's town
-  part, or moves the debug store into a grid cell.
+  Its general store (`Shop_GeneralStore_Debug`, the till, radio, clerk and alarm box) stands in town:
+  since town-general-store (2026-11-15) inside the village shop house (`Village_GeneralStore`, pack
+  `GeneralStore.et`, near 180.6, 233.6). Renaming the layer's town part is still open; the store
+  stays a core entity because the suite boots the core world.
 - The farm stand, the market stalls and the job stands outdoors are where such things belong; the
   scan listed them and they are not on the backlog.

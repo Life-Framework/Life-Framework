@@ -1,0 +1,49 @@
+GenericEntity : "{DAEBE5DD34859027}Prefabs/Props/Commercial/LF_Mannequin.et" {
+ ID "4592387D8752BC8A"
+ {
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "E0BC782AD668E8B2"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{6F223F9465D881DF}Assets/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01.xob"
+    }
+   }
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "ED2E654554243836"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{31E885287C626DFD}Assets/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01.xob"
+     Materials {
+      MaterialAssignClass "{38A847925F79D298}" {
+       SourceMaterial "Pants_Trousers_01"
+       AssignedMaterial "{C760D35602B68424}Assets/Characters/Uniforms/Pants_Trousers_01/Data/Pants_Trousers_01_DarkBrown.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "E5CD6FE2C95E839B"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{591954AAE7A6DA14}Assets/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01.xob"
+     Materials {
+      MaterialAssignClass "{73D5266F4FC85021}" {
+       SourceMaterial "Hat_FlatCap_01"
+       AssignedMaterial "{C2B7559303D0C6DC}Assets/Characters/HeadGear/Hat_FlatCap_01/Data/Hat_FlatCap_01_DarkGray.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "A126290BD96AF018"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{349EF65230313C3E}Assets/Characters/Footwear/CombatBoots_Soviet_01/CombatBoots_Soviet_01.xob"
+    }
+   }
+  }
+ }
+}

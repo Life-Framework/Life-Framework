@@ -21,7 +21,19 @@
 // `boards` indexes their boards, lowest first (the stage prints those too). Optional per line:
 // `per_board` (at most this many copies on a board), `rows`, `max` (default: one per shelf point),
 // `restock` (default: a sixth of max), `start`.
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+//
+// A building made from a vanilla one (spec.vanilla, no ArchBuilder export) has no shop furniture of its
+// own, so the store block places it, and two more kinds of row exist (gun store, #1143 follow-up):
+//   "fixtures": [ { "prefab": "{GUID}Prefabs/...et", "at": [x, y, z], "yaw": 90, "why": "..." } ]
+//       children of the store prefab; `pick` counts them with the furniture prefab's own.
+//   a line with "display": true stands its item in a display rack's slots (fixtures.json `racks`, read
+//       from the vanilla arsenal rack): { "item", "display": true, "fixture": "LF_WeaponRackCabinet_Display",
+//       "pick": [0], "kind": "long", "slots": [0, 1] }. The copy is the item's model on a plain entity:
+//       it can be looked at, never picked up or taken, and it is no stock (the counter sells it).
+//   "counters": [ { "prefab": "{GUID}...et with LF_ShopComponent", "at", "yaw", "outlet": "gun_counter" } ]
+//       a counter child whose LF_ShopComponent sells that item catalogue outlet over the counter, behind
+//       the outlet's gates (FIREARM_PERMIT on the gun counter). The outlet must have offers.
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,9 +42,46 @@ import { freshGuid, readGuid } from "../../assets/pipeline/meta.mjs";
 import { itemKey } from "./fixtures.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(HERE, "..", "..", "..");
 const MEASURED = JSON.parse(readFileSync(join(HERE, "fixtures.json"), "utf8"));
 export const FIXTURES = MEASURED.fixtures;
 export const ITEMS = MEASURED.items;
+export const RACKS = MEASURED.racks ?? {};
+
+// The files of a building, addon-relative: ArchBuilder's <name>.et / _Base / Furniture/<name>_furniture_01,
+// or, for spec.vanilla, our prefab inheriting the vanilla base and its optional furniture prefab.
+export function buildingFiles(spec) {
+  const pd = spec.prefab_dir;
+  const v = spec.vanilla;
+  const files = v
+    ? { building: `${pd}/${v.building}.et`, base: v.base, furniture: v.furniture ? `${pd}/${v.furniture}.et` : null }
+    : { building: `${pd}/${spec.name}.et`, base: `${pd}/${spec.name}_Base.et`, furniture: `${pd}/Furniture/${spec.name}_furniture_01.et` };
+  return { ...files, store: spec.store ? `${pd}/${spec.store.prefab || `${spec.name}_Store`}.et` : null };
+}
+
+// Every addon dir under addons/ (core and packs).
+const addonDirs = (root) => readdirSync(join(root, "addons"), { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => join(root, "addons", d.name));
+
+// The GUID of the LF_ShopComponent a counter prefab carries ({GUID}path in any addon), or null.
+export function shopComponentGuid(ref, root = ROOT) {
+  const path = itemKey(ref);
+  for (const dir of addonDirs(root)) {
+    const f = join(dir, path);
+    if (existsSync(f)) return /^\s*LF_ShopComponent "\{([0-9A-F]{16})\}"/m.exec(readFileSync(f, "utf8"))?.[1] ?? null;
+  }
+  return null;
+}
+
+// The outlet ids that have offers in any addon's item catalogue (Configs/Catalogue/*.conf).
+export function catalogueOutlets(root = ROOT) {
+  const out = new Set();
+  for (const dir of addonDirs(root)) {
+    const cat = join(dir, "Configs", "Catalogue");
+    if (!existsSync(cat)) continue;
+    for (const f of readdirSync(cat).filter((n) => n.endsWith(".conf"))) for (const m of readFileSync(join(cat, f), "utf8").matchAll(/m_sOutlet "([^"]+)"/g)) out.add(m[1]);
+  }
+  return out;
+}
 // A shelf point is written this far above the board; the store's spawn trace starts a little higher.
 const HINT = 0.03;
 const TILL_CONTEXT_UP = 0.25;
@@ -110,14 +159,69 @@ export function slotsOf(f, board, item, { perBoard = BOARD_CAP, rows = MAX_ROWS 
   return out;
 }
 
+const REF = /^\{[0-9A-F]{16}\}Prefabs\/[^"]+\.et$/;
+const v3 = (a) => Array.isArray(a) && a.length === 3 && a.every((n) => Number.isFinite(n));
+const deg = (a) => +((((a % 360) + 540) % 360) - 180).toFixed(3);
+
+// The spec's store.fixtures as children ({ name, ref, at, yaw, placed }), checked into problems.
+export function placedFixtures(store, problems = []) {
+  return (store.fixtures || []).flatMap((f, i) => {
+    if (!REF.test(f.prefab || "") || !v3(f.at)) {
+      problems.push(`store.fixtures[${i}]: prefab must be "{GUID}Prefabs/...et" and at [x, y, z]`);
+      return [];
+    }
+    return [{ name: f.prefab.split("/").pop().replace(/\.et$/, ""), ref: f.prefab, at: f.at, yaw: f.yaw ?? 0, placed: i }];
+  });
+}
+
+// A display line: the item's model at the picked racks' slots of one kind. Returns [{ at, angles }].
+// A slot's angles are the rack's own (pitch, yaw, roll); the rack's yaw adds to the slot's.
+export function displayPoints(rack, slots, pickIdx, list, l, at, problems) {
+  const kind = l.kind || "long";
+  const ofKind = slots.filter((s) => s.kind === kind);
+  const want = l.slots ?? ofKind.map((_, i) => i);
+  const out = [];
+  for (const p of pickIdx) {
+    const f = list[p];
+    if (!f) {
+      problems.push(`${at}: pick ${p}, but there are ${list.length} ${l.fixture}`);
+      continue;
+    }
+    for (const k of want) {
+      const s = ofKind[k];
+      if (!s) {
+        problems.push(`${at}: ${l.fixture} has ${ofKind.length} ${kind} slot(s), not slot ${k}`);
+        continue;
+      }
+      out.push({ at: toBuilding(f, s.at), angles: [s.angles[0], deg(s.angles[1] + f.yaw), s.angles[2]] });
+    }
+  }
+  return out;
+}
+
 // What the store prefab holds, from the spec and the exported furniture. problems empty = usable.
-export function storePlan(store, furnitureText, fixtures = FIXTURES, items = ITEMS) {
+// opts: { racks, shopGuid(ref), outlets } (the defaults read fixtures.json and the addons).
+export function storePlan(store, furnitureText, fixtures = FIXTURES, items = ITEMS, { racks = RACKS, shopGuid = shopComponentGuid, outlets = null } = {}) {
   const problems = [];
-  const children = readChildren(furnitureText);
+  const placed = placedFixtures(store, problems);
+  const children = [...readChildren(furnitureText), ...placed];
   const lines = [];
+  const display = [];
   for (const [i, l] of (store.lines || []).entries()) {
     const at = `store.lines[${i}]`;
-    if (!/^\{[0-9A-F]{16}\}Prefabs\/[^"]+\.et$/.test(l.item || "")) problems.push(`${at}: item must be "{GUID}Prefabs/...et", not ${l.item}`);
+    if (!REF.test(l.item || "")) problems.push(`${at}: item must be "{GUID}Prefabs/...et", not ${l.item}`);
+    if (l.display) {
+      const rack = racks[l.fixture];
+      const item = items[itemKey(l.item)];
+      if (!rack) problems.push(`${at}: no rack slots for ${l.fixture} in tools/buildings/pipeline/fixtures.json (racks); a display line stands in a display rack`);
+      else if (!item?.mesh) problems.push(`${at}: no measured model for ${itemKey(l.item)}; run tools\\cli fixtures`);
+      else {
+        const points = displayPoints(rack, rack.slots, l.pick || [], fixturesOf(children, l.fixture), l, at, problems);
+        if (!points.length) problems.push(`${at}: no display slots (pick and slots)`);
+        display.push({ item: l.item, mesh: item.mesh, points });
+      }
+      continue;
+    }
     const data = fixtures[l.fixture];
     if (!data) {
       problems.push(`${at}: no board measurements for ${l.fixture} in tools/buildings/pipeline/fixtures.json`);
@@ -147,10 +251,24 @@ export function storePlan(store, furnitureText, fixtures = FIXTURES, items = ITE
     lines.push({ item: l.item, max, restock: l.restock ?? Math.max(1, Math.round(max / 6)), start: l.start ?? -1, slots });
   }
   const tills = children.filter((c) => c.name === (store.till || "CashierShop_01")).map((c) => [c.at[0], c.at[1] + TILL_CONTEXT_UP, c.at[2]].map((v) => +v.toFixed(3)));
-  if (!tills.length) problems.push(`the export placed no ${store.till || "CashierShop_01"} to pay at`);
+  if (!tills.length && lines.length) problems.push(`the export placed no ${store.till || "CashierShop_01"} to pay at`);
   if (!store.key) problems.push("store.key is empty: the saved stock is matched by it");
   alarmProblems(store.alarm, problems);
-  return { lines, tills, problems, children };
+  const counters = [];
+  const known = outlets ?? (store.counters?.length ? catalogueOutlets() : new Set());
+  for (const [i, c] of (store.counters || []).entries()) {
+    const at = `store.counters[${i}]`;
+    if (!REF.test(c.prefab || "") || !v3(c.at)) {
+      problems.push(`${at}: prefab must be "{GUID}Prefabs/...et" and at [x, y, z]`);
+      continue;
+    }
+    if (!/^[a-z0-9_]+$/.test(c.outlet || "")) problems.push(`${at}: outlet must be an item catalogue outlet id such as gun_counter`);
+    else if (!known.has(c.outlet)) problems.push(`${at}: no item catalogue offer names the outlet ${c.outlet} (LF_ItemCatalogue.conf m_aOffers)`);
+    const guid = shopGuid(c.prefab);
+    if (!guid) problems.push(`${at}: ${itemKey(c.prefab)} carries no LF_ShopComponent to sell over`);
+    counters.push({ prefab: c.prefab, at: c.at, yaw: c.yaw ?? 0, outlet: c.outlet, shop: guid });
+  }
+  return { lines, display, counters, placed, tills, problems, children };
 }
 
 // The store prefab text. Component GUIDs are derived from the slug, so a rerun writes the same file.
@@ -222,10 +340,58 @@ export function storePrefab(slug, store, plan, buildingRef) {
     "   }",
     "  }",
     " }",
-    ...alarmChild(slug, store.alarm, g),
+    ...childList([...alarmChild(slug, store.alarm, g), ...placedChildren(slug, plan), ...displayChildren(slug, plan, g), ...counterChildren(slug, plan, g)]),
     "}",
     "",
   ].join("\n");
+}
+
+const childList = (rows) => (rows.length ? [" {", ...rows, " }"] : []);
+const at3 = (v) => v.map(num).join(" ");
+
+// store.fixtures: the vanilla prop (or our display rack) itself.
+function placedChildren(slug, plan) {
+  return (plan.placed || []).flatMap((f) => [
+    `  GenericEntity : "${f.ref}" {`,
+    `   ID "${hex16(`${slug}|store|fixture|${f.placed}|${f.ref}`)}"`,
+    `   coords ${at3(f.at)}`,
+    ...(f.yaw ? [`   angleY ${num(f.yaw)}`] : []),
+    "  }",
+  ]);
+}
+
+// Display lines: the item's model on a plain entity (no inventory item, no pickup action, no physics).
+function displayChildren(slug, plan, g) {
+  return (plan.display || []).flatMap((d, i) =>
+    d.points.flatMap((p, k) => [
+      "  GenericEntity {",
+      `   ID "${hex16(`${slug}|store|display|${i}|${k}`)}"`,
+      "   components {",
+      `    MeshObject "${g(`display${i}_${k}`)}" {`,
+      `     Object "${d.mesh}"`,
+      "    }",
+      "   }",
+      `   coords ${at3(p.at)}`,
+      `   angles ${at3(p.angles)}`,
+      "  }",
+    ]),
+  );
+}
+
+// Counters: the counter prefab with its LF_ShopComponent (overridden by its GUID) set to the outlet.
+function counterChildren(slug, plan, g) {
+  return (plan.counters || []).flatMap((c, i) => [
+    `  GenericEntity : "${c.prefab}" {`,
+    `   ID "${hex16(`${slug}|store|counter|${i}`)}"`,
+    "   components {",
+    `    LF_ShopComponent "{${c.shop}}" {`,
+    `     m_sOutletId "${c.outlet}"`,
+    "    }",
+    "   }",
+    `   coords ${at3(c.at)}`,
+    ...(c.yaw ? [`   angleY ${num(c.yaw)}`] : []),
+    "  }",
+  ]);
 }
 
 // store.alarm: { "prefab": "{GUID}Prefabs/...et", "at": [x, y, z], "yaw": 180, "offset": [x, y, z], "reach": 10 }.
@@ -236,7 +402,6 @@ function alarmChild(slug, alarm, g) {
   if (!alarm) return [];
   const vec = (v) => v.map(num).join(" ");
   return [
-    " {",
     `  GenericEntity : "${alarm.prefab}" {`,
     `   ID "${hex16(`${slug}|store|alarmbox`)}"`,
     "   components {",
@@ -248,7 +413,6 @@ function alarmChild(slug, alarm, g) {
     `   coords ${vec(alarm.at)}`,
     ...(alarm.yaw ? [`   angleY ${num(alarm.yaw)}`] : []),
     "  }",
-    " }",
   ];
 }
 
@@ -273,25 +437,30 @@ export async function stageStore(ctx) {
     return { skipped: true };
   }
   const addon = addonPath(root, spec);
-  const furniture = join(addon, spec.prefab_dir, "Furniture", `${spec.name}_furniture_01.et`);
-  const building = `${spec.prefab_dir}/${spec.name}.et`;
-  if (!existsSync(furniture)) throw new Error(`no ${furniture}; run the import stage`);
+  const files = buildingFiles(spec);
+  const furniture = files.furniture && join(addon, files.furniture);
+  const building = files.building;
+  // A vanilla-based building may have no furniture prefab of its own: the store places the shop fittings.
+  if (furniture && !existsSync(furniture)) throw new Error(`no ${furniture}; ${spec.vanilla ? "write the furniture prefab spec.vanilla.furniture names" : "run the import stage"}`);
   const buildingGuid = readGuid(join(addon, `${building}.meta`));
   if (!buildingGuid) throw new Error(`no GUID for ${building}`);
-  const plan = storePlan(store, readFileSync(furniture, "utf8"));
+  const plan = storePlan(store, furniture ? readFileSync(furniture, "utf8") : "");
   for (const name of new Set((store.lines || []).map((l) => l.fixture))) {
     console.log(`        ${name} (pick by index):`);
-    console.log(`          boards, lowest first: ${(FIXTURES[name]?.boards ?? []).map((b, i) => `${i}: y ${b.y}`).join(", ")}`);
+    if (RACKS[name]) console.log(`          slots: ${RACKS[name].slots.map((s, i) => `${i}: ${s.kind}`).join(", ")}`);
+    else console.log(`          boards, lowest first: ${(FIXTURES[name]?.boards ?? []).map((b, i) => `${i}: y ${b.y}`).join(", ")}`);
     fixturesOf(plan.children, name).forEach((f, i) => console.log(`          ${String(i).padStart(2)}  ${f.at.map(num).join(" ")}  yaw ${f.yaw}, front at ${toBuilding(f, [0, 0, 0.5]).map(num).join(" ")}`));
   }
   for (const p of plan.problems) console.log(`FAIL  ${p}`);
   if (plan.problems.length) throw new Error(`${plan.problems.length} store check(s) failed`);
-  const rel = `${spec.prefab_dir}/${store.prefab || `${spec.name}_Store`}.et`;
+  const rel = files.store;
   const abs = join(addon, rel);
   const guid = readGuid(`${abs}.meta`) || freshGuid(guidsInUse(root));
   writeFileSync(abs, storePrefab(slug, store, plan, `{${buildingGuid}}${building}`));
   if (!existsSync(`${abs}.meta`)) writeFileSync(`${abs}.meta`, prefabMeta(guid, rel));
   for (const l of plan.lines) console.log(`        ${l.item.replace(/^.*\//, "")}: ${l.slots.length} shelf point(s), max ${l.max}, restock ${l.restock}`);
-  console.log(`store: {${guid}}${rel}; key ${store.key}, ${plan.lines.length} line(s), ${plan.tills.length} till(s)`);
-  return { prefab: `{${guid}}${rel}`, lines: plan.lines.length, slots: plan.lines.reduce((n, l) => n + l.slots.length, 0), tills: plan.tills.length };
+  for (const d of plan.display) console.log(`        ${d.item.replace(/^.*\//, "")}: display only, ${d.points.length} rack slot(s)`);
+  for (const c of plan.counters) console.log(`        counter ${c.prefab.replace(/^.*\//, "")} at ${at3(c.at)}: outlet ${c.outlet}`);
+  console.log(`store: {${guid}}${rel}; key ${store.key}, ${plan.lines.length} line(s), ${plan.display.length} display line(s), ${plan.placed.length} fitting(s), ${plan.counters.length} counter(s), ${plan.tills.length} till(s)`);
+  return { prefab: `{${guid}}${rel}`, lines: plan.lines.length, slots: plan.lines.reduce((n, l) => n + l.slots.length, 0), tills: plan.tills.length, display: plan.display.length, counters: plan.counters.length };
 }

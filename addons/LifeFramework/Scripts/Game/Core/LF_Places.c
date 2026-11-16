@@ -48,6 +48,23 @@ class LF_Places
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Registers entity as kind/id only when no live entity holds the key: the first of several
+	//! props that share an id (two safe zone signs) stands for it, and the rest are skipped without
+	//! an error. For places a reader only needs to find, never for a persistence key.
+	//! \return true when entity now holds the key.
+	static bool Claim(string kind, string id, IEntity entity)
+	{
+		if (kind.IsEmpty() || id.IsEmpty() || !entity)
+			return false;
+
+		IEntity held = Find(kind, id);
+		if (held && held != entity)
+			return false;
+
+		return Register(kind, id, entity);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return The live entity placed as kind/id, or null when none is placed (logic tests, a map
 	//! without that place). A stale entry is dropped.
 	static IEntity Find(string kind, string id)
@@ -157,5 +174,18 @@ class LF_Places
 			return null;
 
 		return GetGame().GetWorld().FindEntityByID(id);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of this file's statics (Core/LF_StaticReset.c runs every feature's hook).
+modded class LF_StaticResetHooks
+{
+	override void Run(notnull array<string> done, bool apply)
+	{
+		super.Run(done, apply);
+		done.Insert("LF_Places");
+		if (apply)
+			LF_Places.ResetStatics();
 	}
 }

@@ -10,11 +10,16 @@
 //   offlineProblems road test inverted  -> FAIL offline: a sign on the carriageway is refused
 //   setTransform writing every depth    -> FAIL edit: a child's coords stay
 //   judge without the gap test          -> FAIL judge: a base 0.2 m above its support fails
+// red-proof: 2026-11-16, place against on House_Town_E_2I01 (the fix reverted, the new checks failed, then restored):
+//   againstWall taking the farthest hit as the face -> FAIL against: a recessed door behind the prop is uneven
+//   againstWall sampling the floor at the wall plane -> FAIL against: a ledge at the wall plane does not lift the prop
 // red-proof: 2026-11-12, one line broken per move bug (#833 follow-up), each restored after its FAIL was seen:
 //   setTransform ignoring `scale`       -> FAIL edit: --scale on a move writes the scale line
 //   excludeOf returning item.name only  -> FAIL exclude: an unnamed moved entity is excluded by prefab and spot
 //   onGround raising a tree by its roots (2026-11-14, #924) -> FAIL ground: a tree's pivot stands on the ground, its roots below
 //   judge resting a tree on its bounds base (2026-11-14, #924) -> FAIL judge: a tree whose roots go 0.51 m below the ground
+//   onGround raising a building by its foundation (2026-11-16, town-arrival-desk; the code before the fix)
+//     -> FAIL ground: a building's pivot (its floor) stands on the ground, its foundation below
 import { checkEntities } from "../actions/prop-on-surface.mjs";
 import { obbPenetration } from "../../agent-box/place-audit.mjs";
 import { PlaceError, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, judge, modelOf, offlineProblems, onGround, restOn, rot, rowCentres, excludeOf, setTransform, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
@@ -114,6 +119,20 @@ const flatFloor = Array.from({ length: 31 }, (_, k) => ({ dist: k * 0.2, y: 0 })
   const hung = againstWall({ rays: wallRays(() => 2), floors: flatFloor, prop: board, yaw: 0, n, hang: 1.4 });
   ok(near(hung.y, 1.8) && near(hung.along + 0.02, 2 - TOL.wallGap), "against: --hang puts the bottom at that height, flush");
   refuses(() => againstWall({ rays: wallRays(() => 2), floors: flatFloor.map((f) => (f.dist > 1.5 ? { ...f, y: 0.3 } : f)), prop: locker, yaw: 0, n }), /floor under the prop/, "against: a step under the prop is refused");
+  // House_Town_E_2I01 facade (2026-11-16): the wall at 2 m, a door set back 0.22 m across a third of the rays. The
+  // farthest hit made the door the face and the wall "something in front".
+  const sign = { bounds: { min: [-0.6, 0, -0.02], max: [0.6, 0.8, 0.02] }, scale: 1 };
+  const ownWall = (dAt) => wallRays(dAt).map((r) => ({ ...r, own: Number.isFinite(r.d) }));
+  const doorAt = (lat, h) => (lat > 0.2 && h > 0.2 ? 2.22 : 2);
+  refuses(() => againstWall({ rays: ownWall(doorAt), floors: flatFloor, prop: sign, yaw: 0, n }), /not flat/, "against: a recessed door behind the prop is uneven, not 'something in front'");
+  const offDoor = againstWall({ rays: ownWall(doorAt), floors: flatFloor, prop: sign, yaw: 0, n, allowUneven: true });
+  ok(near(offDoor.along + 0.02, 2 - TOL.wallGap), "against: --allow-uneven past a recessed door stands at the wall, not the door");
+  const clearOfDoor = againstWall({ rays: ownWall((lat, h) => (lat > 0.5 ? 2.22 : 2)).filter((r) => r.lat <= 0.34), floors: flatFloor, prop: sign, yaw: 0, n });
+  ok(near(clearOfDoor.along + 0.02, 2 - TOL.wallGap), "against: a prop clear of the door finds the wall");
+  refuses(() => againstWall({ rays: wallRays((lat, h) => (h < 1.5 ? 0.3 : 2)).map((r) => ({ ...r, own: r.d === 2 })), floors: flatFloor, prop: locker, yaw: 0, n }), /stands between/, "against: another entity across the rays is still in front of the target");
+  // The wall's own ledge at its plane (the east wall: a 0.66 m plinth edge at the face) is not the floor.
+  const ledge = againstWall({ rays: wallRays(() => 2), floors: flatFloor.map((f) => (Math.abs(f.dist - 2) < 0.01 ? { ...f, y: 0.66 } : f)), prop: sign, yaw: 0, n });
+  ok(near(ledge.y, 0), "against: a ledge at the wall plane does not lift the prop off the floor (got " + ledge.y + ")");
   const house = { x: 10, y: 0, z: 10, yaw: 30, scale: 1, bounds: { min: [-5, 0, -4], max: [5, 6, 4] } };
   const f = faceNormal(house, { near: [10 + rot(30, 0, 7)[0], 10 + rot(30, 0, 7)[1]] });
   ok(near(f.n[0], Math.sin(Math.PI / 6)) && near(f.n[1], Math.cos(Math.PI / 6)), "against: a turned building's face normal is its own axis");
@@ -127,6 +146,8 @@ const flatFloor = Array.from({ length: 31 }, (_, k) => ({ dist: k * 0.2, y: 0 })
   ok(near(g.y, 2.6), "ground: the mesh base, not the pivot, stands on the ground");
   const rowan = { name: "Market_Tree_1", prefab: "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et", bounds: { min: [-2, -0.394, -2.4], max: [2.3, 6, 2] }, scale: 1.3 };
   ok(near(onGround({ samples: [{ y: 0 }, { y: 0 }, { y: 0 }, { y: 0 }, { y: 0 }], prop: rowan }).y, 0), "ground: a tree's pivot stands on the ground, its roots below (#924)");
+  const booth = { name: "SquareRegistryBooth", prefab: "{DD59BEBA94390C10}Prefabs/Structures/Commercial/Booth/NewspaperBooth_E_01/NewspaperBooth_E_01_grey.et", bounds: { min: [-2.21, -1.059, -2.641], max: [1.922, 3.07, 2.36] }, scale: 1 };
+  ok(near(onGround({ samples: [{ y: 0 }, { y: 0 }, { y: 0 }, { y: 0 }, { y: 0 }], prop: booth }).y, 0), "ground: a building's pivot (its floor) stands on the ground, its foundation below");
   refuses(() => onGround({ samples: [{ y: 0 }, { y: 0 }, { y: 0.4 }, { y: 0 }, { y: 0.4 }], prop: tree }), /not level/, "ground: a kerb under the footprint is refused");
 }
 

@@ -9,6 +9,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { loadScenario, scenarioProblems } from "./scenario.mjs";
+import { buildingFiles } from "./store-slots.mjs";
 
 // Prefab paths of Everon's own buildings, the ones a new building is compared with.
 export const EVERON_BUILDING = /^Prefabs\/Structures\/(Houses|Commercial|Industrial|Civic|Cultural|Military|Agriculture)\//;
@@ -18,7 +19,8 @@ const NEAR_M = 150;
 const MAX_NEIGHBOURS = 6;
 
 export function placedPrefabs(spec) {
-  return [spec.store?.prefab, spec.name].filter(Boolean).map((n) => `${spec.prefab_dir}/${n}.et`);
+  const f = buildingFiles(spec);
+  return [f.store, f.building].filter(Boolean);
 }
 
 export function findPlacement(world, spec, entity) {

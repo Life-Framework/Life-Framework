@@ -195,7 +195,10 @@ ArchBuilder's own material colours, not the game's textures: the game look is ch
    - `tools\cli audit placement --strict` on its layer (the dedicated server loads the prefab);
    - in one `session up --profile full`: every door set of `<Name>_Base.et` is offered by the F key, opens, leaves a
      doorway a character wide clear at 0.5, 1.0 and 1.6 m (traces), and closes, with a picture shut and open; the four
-     sides, the street corner and the hall from inside;
+     sides, the street corner and the hall from inside. A building made from a vanilla one (`vanilla` block) keeps the
+     vanilla door sets on the model's sockets, with no coordinates to walk to, so the door walk is skipped (it prints
+     `doors: skipped`) and its `proof.json` carries the proof. The world loader reads a placement's turn from `angleY`
+     only: write `angleY 180`, not `angles 0 180 0`, or every proof point lands on the wrong side;
    - the building's own scenario, `tools/buildings/<slug>/proof.json`, in the same session.
 
    Pictures land in `tmp/buildings/<slug>/proof/`; the last line is `SUMMARY building-proof ok|fail`. `--no-session`
@@ -294,6 +297,56 @@ run; never edit it by hand.
 - `alarm` (optional): `{ "prefab": "{GUID}Prefabs/...et", "at": [x, y, z], "yaw": 180, "offset": [x, y, z], "reach": 10 }`,
   a child entity (a bell box on the shop front) with `LF_AlarmMountComponent`: a walk-out's site alarm, raised at the
   store's origin, sounds on it. `reach` must cover the box's distance from the store's origin (at most 12 m).
+
+### A store in a vanilla building
+
+A shop does not need an ArchBuilder export: a spec with a `vanilla` block (and no `archbuilder` block) names our own
+prefab that inherits a base-game building, the way the vanilla variants (`ShopHouse_E_2I01t_foodstore.et`) add windows,
+doors, a furniture child and a sign to their `_Base`. `generate` to `import` are not needed and pass at once (no
+ArchBuilder, no Blender); `prefab` checks that our prefab inherits `vanilla.base`, that our files have their `.meta`,
+and that every base-game reference in them is a real path with its real GUID; `store` writes the store prefab on top.
+`budget` is optional (`min_doors` counts the door sets our prefab adds). `building plan` and `building proof` read the
+same files.
+
+```json
+{
+  "slug": "gun-store", "name": "GunStore", "red_line": "pack", "addon": "LF_Everon1989",
+  "concept": "...", "prefab_dir": "Prefabs/Buildings/GunStore",
+  "vanilla": {
+    "base": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et",
+    "building": "ShopHouse_E_2I01t_gunstore",
+    "furniture": "Furniture/ShopHouse_E_2I01t_furniture_gunstore_01"
+  },
+  "store": { "prefab": "GunStore_Store", "key": "everon_gunstore", "fixtures": [], "counters": [], "lines": [] }
+}
+```
+
+Three store rows matter most for such a building (all optional, any store can use them):
+
+- `fixtures`: `[{ "prefab": "{GUID}Prefabs/...et", "at": [x, y, z], "yaw": 90, "why": "..." }]`, shop fittings (shelves,
+  a counter, a till, a display rack) written as children of the store prefab. `pick` counts them together with the
+  furniture prefab's own children, so a line can stand goods on a shelf placed here, and a `CashierShop_01` placed here is
+  a till.
+- A **display-only** line, `{ "item": "{GUID}...et", "display": true, "fixture": "LF_WeaponRackCabinet_Display",
+  "pick": [0], "kind": "long", "slots": [0, 1, 2] }`: the item's model stands in a display rack's slots. The copy is a
+  plain entity with the item's `MeshObject` only, so it can be looked at and never picked up or taken; it is no stock and
+  not on the till's list (sell it over a counter). Racks: `LF_WeaponRackCabinet_Display` and `LF_WeaponRackStand_Display`
+  (core prefabs that land with the gun store), the FIA arsenal racks' models without the arsenal, service point and faction components, so they hand out
+  nothing. Their slots (`racks` in `fixtures.json`, 10 `long` upright slots each, the cabinet also `pistol` and `other`)
+  are read by `tools\cli fixtures` from the vanilla racks' `SCR_WeaponRackSlotEntity` children; `kind` picks long,
+  pistol or other, `slots` indexes those (default all of that kind). A display line's item needs its model measured
+  (`items[...].mesh`, also from `tools\cli fixtures`).
+- `counters`: `[{ "prefab": "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et", "at": [x, y, z], "yaw": 180,
+  "outlet": "gun_counter" }]`, a counter child whose own `LF_ShopComponent` (overridden by its GUID) has
+  `m_sOutletId` set: it sells that item-catalogue outlet's offers over the counter, behind their gates (the
+  `FIREARM_PERMIT` on `gun_counter`). The prefab must carry `LF_ShopComponent` and the outlet must have offers in an
+  `LF_ItemCatalogue.conf`.
+
+A licensed counter has its own proof step in `proof.json` (`tools/buildings/pipeline/scenario.mjs`):
+`{ "permit": { "licence": "FIREARM_PERMIT", "look": [x,y,z], "from": [dx,dy,dz], "rows": [0, 3], "items": ["Handgun_M9",
+"Magazine_9x19_M9_15rnd_Ball"] } }`. A buyer with cash and no licence orders those price-list rows and is refused (the
+slip must say "Not without a ..."); the harness `licence` verb then sends the `/licence` request (dev worlds and harness
+builds only) and the same order is paid; the server log must show the refusal, the grant and `bought item=` for each item.
 
 ## Not done yet
 

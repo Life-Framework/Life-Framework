@@ -1,3 +1,528 @@
+$grp GenericEntity {
+ Market_Tarp_Veg {
+  components {
+   MeshObject "{52AE82368499B365}" {
+    Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
+    Materials {
+     MaterialAssignClass "{599EE14E7A2CA415}" {
+      SourceMaterial "Flag_1_2"
+      AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
+     }
+    }
+   }
+  }
+  coords 199.509 2.54 233.117
+  angles 0 90 98
+  scale 2
+ }
+ Market_Tarp_Fruit {
+  components {
+   MeshObject "{52AE82368499B365}" {
+    Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
+    Materials {
+     MaterialAssignClass "{599EE14E7A2CA415}" {
+      SourceMaterial "Flag_1_2"
+      AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
+     }
+    }
+   }
+  }
+  coords 208.509 2.54 233.117
+  angles 0 90 98
+  scale 2
+ }
+ Market_Tarp_Juice {
+  components {
+   MeshObject "{52AE82368499B365}" {
+    Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
+    Materials {
+     MaterialAssignClass "{599EE14E7A2CA415}" {
+      SourceMaterial "Flag_1_2"
+      AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
+     }
+    }
+   }
+  }
+  coords 217.509 2.54 233.117
+  angles 0 90 98
+  scale 2
+ }
+ Market_Tarp_North1 {
+  components {
+   MeshObject "{52AE82368499B365}" {
+    Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
+    Materials {
+     MaterialAssignClass "{599EE14E7A2CA415}" {
+      SourceMaterial "Flag_1_2"
+      AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
+     }
+    }
+   }
+  }
+  coords 203.509 2.54 240.617
+  angles 0 90 82
+  scale 2
+ }
+ Market_Tarp_North2 {
+  components {
+   MeshObject "{52AE82368499B365}" {
+    Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
+    Materials {
+     MaterialAssignClass "{599EE14E7A2CA415}" {
+      SourceMaterial "Flag_1_2"
+      AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
+     }
+    }
+   }
+  }
+  coords 213.509 2.54 240.617
+  angles 0 90 82
+  scale 2
+ }
+}
+$grp StaticModelEntity {
+ Market_Post_Veg_B1 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 195.609 1.46 232.217
+ }
+ Market_Post_Veg_F1 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 195.609 1.314 234.017
+  scale 0.9
+ }
+ Market_Post_Veg_B2 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 199.209 1.46 232.217
+ }
+ Market_Post_Veg_F2 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 199.209 1.314 234.017
+  scale 0.9
+ }
+ Market_Post_Fruit_B1 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 204.609 1.46 232.217
+ }
+ Market_Post_Fruit_F1 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 204.609 1.314 234.017
+  scale 0.9
+ }
+ Market_Post_Fruit_B2 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 208.209 1.46 232.217
+ }
+ Market_Post_Fruit_F2 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 208.209 1.314 234.017
+  scale 0.9
+ }
+ Market_Post_Juice_B1 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 213.609 1.46 232.217
+ }
+ Market_Post_Juice_F1 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 213.609 1.314 234.017
+  scale 0.9
+ }
+ Market_Post_Juice_B2 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 217.209 1.46 232.217
+ }
+ Market_Post_Juice_F2 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 217.209 1.314 234.017
+  scale 0.9
+ }
+ Market_Post_North1_B1 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 199.609 1.46 241.517
+ }
+ Market_Post_North1_F1 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 199.609 1.314 239.717
+  scale 0.9
+ }
+ Market_Post_North1_B2 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 203.209 1.46 241.517
+ }
+ Market_Post_North1_F2 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 203.209 1.314 239.717
+  scale 0.9
+ }
+ Market_Post_North2_B1 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 209.609 1.46 241.517
+ }
+ Market_Post_North2_F1 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 209.609 1.314 239.717
+  scale 0.9
+ }
+ Market_Post_North2_B2 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 213.209 1.46 241.517
+ }
+ Market_Post_North2_F2 {
+  components {
+   MeshObject "{56DE7C8DCD0F4E0A}" {
+    Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
+   }
+  }
+  coords 213.209 1.314 239.717
+  scale 0.9
+ }
+}
+$grp Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
+ {
+  coords 324 0 219
+ }
+ {
+  coords 326 0 219
+ }
+ {
+  coords 328 0 219
+ }
+ {
+  coords 330 0 219
+ }
+ {
+  coords 332 0 219
+ }
+ {
+  coords 334 0 219
+ }
+}
+$grp SCR_DestructibleEntity : "{0DB0D75A16764A2C}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_pink.et" {
+ {
+  coords 103 0 255.5
+ }
+ {
+  coords 191.6 0 257.2
+ }
+ {
+  coords 271.6 0 257.3
+ }
+}
+$grp GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
+ {
+  coords 108 0 234.5
+ }
+ {
+  coords 128 0 234.5
+ }
+ {
+  coords 108 0 265.5
+ }
+ {
+  coords 128 0 265.5
+ }
+ {
+  coords 140 0 245.5
+ }
+ {
+  coords 140 0 254.5
+ }
+ {
+  coords 146 0 255.4
+ }
+ {
+  coords 168 0 255.4
+ }
+ {
+  coords 204.5 0 255.4
+ }
+ {
+  coords 245.5 0 255.4
+ }
+ {
+  coords 275 0 255.4
+ }
+ {
+  coords 299 0 255.4
+ }
+ {
+  coords 330 0 255.4
+ }
+ {
+  coords 360 0 255.4
+ }
+ {
+  coords 390 0 255.4
+ }
+ {
+  coords 166 0 244.6
+ }
+ {
+  coords 176.5 0.231 244.6
+ }
+ {
+  coords 252 0 244.6
+ }
+ {
+  coords 316.5 0 244.6
+ }
+ {
+  coords 335 0 244.6
+ }
+ {
+  coords 365 0 244.6
+ }
+}
+$grp GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+ {
+  coords 299.5 0 235
+ }
+ {
+  coords 474 0 331
+ }
+ {
+  coords 311.4 0 242.5
+  angles 0 10 0
+ }
+}
+$grp GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ {
+  coords 165 0 225.5
+ }
+ {
+  coords 331.5 0 263.5
+  angles 0 90 0
+ }
+}
+$grp Tree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ {
+  coords 122 0 304
+ }
+ {
+  coords 122 0 316
+ }
+ {
+  coords 136 0 316
+ }
+ {
+  coords 130 0 322
+ }
+ {
+  coords 136 0 304
+ }
+}
+$grp SCR_DestructibleEntity : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
+ {
+  coords 122.4 0 268.6
+ }
+ {
+  coords 157.6 0 258
+ }
+ {
+  coords 294.6 0 257.6
+ }
+ {
+  coords 320.8 0 242.6
+ }
+ {
+  coords 349.5 0 242.7
+ }
+ {
+  coords 340 0 257.4
+ }
+}
+GenericEntity : "{24388E37E11BA18F}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_red.et" {
+ coords 226.5 0 243.6
+}
+Vehicle Market_Delivery_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et" {
+ coords 220.975 -0.001 235.951
+ angles 0 -46.899 0
+}
+$grp GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ {
+  coords 175.4 0 242.8
+ }
+ {
+  coords 175.4 0.28 242.8
+ }
+ {
+  coords 185.6 0 243
+  angles 0 10 0
+ }
+ {
+  coords 185.6 0.28 243
+  angles 0 10 0
+ }
+ Market_Box_1 {
+  coords 195.297 0 232.603
+  angles 0 8 0
+ }
+ Market_Box_3 {
+  coords 208.952 0 232.503
+  angles 0 90 0
+ }
+ Market_Box_4 {
+  coords 209.602 0 232.503
+  angles 0 90 0
+ }
+ Market_Box_2 {
+  coords 195.347 0 233.102
+  angles 0 -4 0
+ }
+ {
+  coords 210.665 1.024 239.769
+ }
+ {
+  coords 211.219 1.024 239.769
+ }
+ {
+  coords 211.774 1.024 239.769
+ }
+ {
+  coords 212.329 1.024 239.769
+ }
+}
+$grp SCR_DestructibleEntity : "{2D4B21B9086F6AFB}Prefabs/Structures/Infrastructure/Waterworks/HydrantStreet_01/HydrantStreet_01.et" {
+ {
+  coords 170.6 0 255.8
+ }
+ {
+  coords 313 0 256
+ }
+}
+SCR_DestructibleEntity SquareRegistryParasol : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
+ coords 136.777 -0.001 240.257
+ angles 0 114.8 0
+}
+$grp SCR_DestructibleEntity : "{403A3EB785E80867}Prefabs/Structures/Walls/Wooden/WoodenFence_02/WoodenFence_02_4m.et" {
+ {
+  coords 323 0 216
+ }
+ {
+  coords 327 0 216
+ }
+ {
+  coords 331 0 216
+ }
+ {
+  coords 335 0 216
+ }
+}
+$grp SCR_DestructibleEntity : "{419130031F0009C9}Prefabs/Structures/Walls/Brick/BrickWall_01/BrickWall_01_4m.et" {
+ {
+  coords 302 0 241.5
+ }
+ {
+  coords 307.3 0 241.5
+ }
+ {
+  coords 311.3 0 241.5
+ }
+}
+$grp SCR_DestructibleEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ {
+  coords 104 0 292
+ }
+ {
+  coords 108 0 292
+ }
+ {
+  coords 112 0 292
+ }
+ {
+  coords 116 0 292
+ }
+ {
+  coords 120 0 292
+ }
+ {
+  coords 124 0 292
+ }
+ {
+  coords 128 0 292
+ }
+ {
+  coords 132 0 292
+ }
+ {
+  coords 136 0 292
+ }
+}
 SCR_DestructibleBuildingEntity : "{4D6D06CAD0439114}Prefabs/Structures/Cultural/Fountains/Fountain_01.et" {
  components {
   LF_AmbientEmitterComponent "{D64DEA311EE6BD59}" {
@@ -10,961 +535,513 @@ SCR_DestructibleBuildingEntity : "{4D6D06CAD0439114}Prefabs/Structures/Cultural/
  }
  coords 113 0 250
 }
-SCR_DestructibleBuildingEntity Village_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
- coords 129.8 0 240.5
- angleY 90
-}
-GenericEntity : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 104 0 239
-}
-GenericEntity : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 122 0 239
-}
-GenericEntity : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 104 0 261
- angleY 180
-}
-GenericEntity : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 122 0 261
- angleY 180
-}
-Tree : "{C46F2709EDF643D4}Prefabs/Vegetation/Tree/t_tilia_cordata/t_tilia_cordata_3s.et" {
- coords 98 0 236
-}
-Tree : "{C46F2709EDF643D4}Prefabs/Vegetation/Tree/t_tilia_cordata/t_tilia_cordata_3s.et" {
- coords 98 0 264
-}
-Tree : "{C46F2709EDF643D4}Prefabs/Vegetation/Tree/t_tilia_cordata/t_tilia_cordata_3s.et" {
- coords 132 0 236
-}
-Tree : "{C46F2709EDF643D4}Prefabs/Vegetation/Tree/t_tilia_cordata/t_tilia_cordata_3s.et" {
- coords 132 0 264
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 108 0 234.5
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 128 0 234.5
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 108 0 265.5
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 128 0 265.5
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 140 0 245.5
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 140 0 254.5
-}
-SCR_DestructibleBuildingEntity : "{97380F89AA02D20B}Prefabs/Structures/Infrastructure/Bus/BusShed_E_01/BusShed_E_01_blue.et" {
- coords 147 0 243.6
-}
-SCR_DestructibleEntity : "{B16FF595DD1EE501}Prefabs/Props/Services/Post/PostOfficeBox_01_Stand.et" {
- coords 150.5 0 256.2
- angleY 180
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 146 0 255.4
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 168 0 255.4
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 204.5 0 255.4
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 245.5 0 255.4
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 275 0 255.4
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 299 0 255.4
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 330 0 255.4
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 360 0 255.4
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 390 0 255.4
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 166 0 244.6
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 176.5 0.231 244.6
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 252 0 244.6
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 316.5 0 244.6
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 335 0 244.6
-}
-GenericEntity : "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et" {
- coords 365 0 244.6
-}
-GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
- coords 299.5 0 235
-}
-GenericEntity : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords 312.5 0 302
-}
-GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
- coords 474 0 331
-}
-Tree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
- coords 122 0 304
-}
-Tree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
- coords 122 0 316
-}
-Tree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
- coords 136 0 316
-}
-Tree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
- coords 130 0 322
-}
-Tree : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
- coords 136 0 304
-}
-Tree : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
- coords 112 0 306
-}
-Tree : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
- coords 108 0 296
-}
-SCR_DestructibleEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
- coords 104 0 292
-}
-SCR_DestructibleEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
- coords 108 0 292
-}
-SCR_DestructibleEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
- coords 112 0 292
-}
-SCR_DestructibleEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
- coords 116 0 292
-}
-SCR_DestructibleEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
- coords 120 0 292
-}
-SCR_DestructibleEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
- coords 124 0 292
-}
-SCR_DestructibleEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
- coords 128 0 292
-}
-SCR_DestructibleEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
- coords 132 0 292
-}
-SCR_DestructibleEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
- coords 136 0 292
-}
-Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
- coords 376 0 222
-}
-Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
- coords 380 0 212
-}
-Tree : "{DE7FC095F656695C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_3s.et" {
- coords 388 0 205
-}
-Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
- coords 398 0 210
-}
-Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
- coords 404 0 220
-}
-Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
- coords 410 0 206
-}
-Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
- coords 418 0 214
-}
-Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
- coords 384 0 196
-}
-Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
- coords 396 0 192
-}
-Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
- coords 408 0 196
-}
-Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
- coords 420 0 200
-}
-Tree : "{DE7FC095F656695C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_3s.et" {
- coords 372 0 205
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 366 0 262
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 372 0 238
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 150 0 285
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 200 0 285
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 250 0 284
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 330 0 222
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 262 0 222
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 196 0 224
-}
-Tree : "{63DC62906A5917F3}Prefabs/Vegetation/Tree/t_populus_nigra/t_populus_nigra_3s.et" {
- coords 70 0 230
-}
-Tree : "{63DC62906A5917F3}Prefabs/Vegetation/Tree/t_populus_nigra/t_populus_nigra_3s.et" {
- coords 70 0 270
-}
-Tree : "{63DC62906A5917F3}Prefabs/Vegetation/Tree/t_populus_nigra/t_populus_nigra_3s.et" {
- coords 86 0 280
-}
-Tree : "{63DC62906A5917F3}Prefabs/Vegetation/Tree/t_populus_nigra/t_populus_nigra_3s.et" {
- coords 88 0 222
-}
-GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
- coords 106.3 0 239.2
-}
-GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
- coords 119.7 0 260.8
-}
-SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 103 0 244.5
-}
-SCR_DestructibleEntity : "{0DB0D75A16764A2C}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_pink.et" {
- coords 103 0 255.5
-}
-SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 123.5 0 256.8
-}
-SCR_DestructibleBuildingEntity : "{F0E03780C850866F}Prefabs/Structures/Commercial/PosterColumn_01.et" {
- coords 138.5 0 238.2
-}
-GenericEntity : "{8592F599B94DC833}Prefabs/Structures/Civilian/MessageBoard/Filled/MessageBoardSmall_01_pole_filled_V1.et" {
- coords 137.6 0 257.4
- angleY 180
-}
-GenericEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
- coords 113.6 0 268.6
-}
-GenericEntity : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
- coords 122.4 0 268.6
-}
-GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
- coords 110.8 0 263.3
- angleY 90
-}
-GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
- coords 113.2 0 263.3
- angleY 270
-}
-GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- coords 126.5 0 271
-}
-GenericEntity : "{7FCD4E7C25D886A8}Prefabs/Structures/Signs/Traffic/SignBusStop_01.et" {
- coords 150.4 0 245.8
-}
-GenericEntity : "{8DDA73869B957E58}Prefabs/Structures/Civilian/MessageBoard/Filled/MessageBoardSmall_01_pole_filled_V3.et" {
- coords 143.4 0 243.9
-}
-GenericEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
- coords 152.8 0 257.6
-}
-GenericEntity : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
- coords 157.6 0 258
-}
-SCR_DestructibleEntity : "{CECA6D57E2CAB7A8}Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et" {
- coords 162.5 0 257
-}
-SCR_DestructibleEntity : "{2D4B21B9086F6AFB}Prefabs/Structures/Infrastructure/Waterworks/HydrantStreet_01/HydrantStreet_01.et" {
- coords 170.6 0 255.8
-}
-GenericEntity : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
- components {
-  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
-   m_bIsLocked 1
-  }
+GenericEntity SquareRegistry_Typewriter : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et" {
+ coords 136.053 1.037 241.17
+ angles 0 114.8 0
+}
+$grp GenericEntity : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ {
+  coords 312.5 0 302
  }
- coords 162.4 0 245.2
- angleY 90
-}
-GenericEntity : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
- coords 150.5 0 221
+ {
+  coords 313.6 0 242.6
+ }
+ Market_PalletBox {
+  coords 218.103 0.021 232.401
+  angles 0 90 0
+ }
 }
 GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" {
  coords 152.4 0 220
 }
-GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
- coords 165 0 225.5
+$grp Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
+ {
+  coords 366 0 262
+ }
+ {
+  coords 372 0 238
+ }
+ {
+  coords 150 0 285
+ }
+ {
+  coords 200 0 285
+ }
+ {
+  coords 250 0 284
+ }
+ {
+  coords 330 0 222
+ }
+ {
+  coords 262 0 222
+ }
+ {
+  coords 196 0 224
+ }
+ {
+  coords 229 0 288
+ }
+ {
+  coords 286 0 293
+ }
+ {
+  coords 356 0 286
+ }
+ {
+  coords 276 0 219
+ }
+ {
+  coords 304 0 222
+ }
 }
-GenericEntity : "{FEB4961C91993C22}Prefabs/Structures/Civilian/DogHouse_01.et" {
- coords 157 0 223.5
- angleY 30
+$grp GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
+ {
+  coords 106.3 0 239.2
+ }
+ {
+  coords 119.7 0 260.8
+ }
+ {
+  coords 172.4 0 243.4
+ }
+ {
+  coords 228.6 0 243.6
+ }
+ {
+  coords 256 0 256.9
+ }
+ {
+  coords 297 0 256.7
+ }
+ Market_Bin {
+  coords 217.62 0 240.911
+  angles 0 -90 0
+ }
 }
-GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
- coords 172.4 0 243.4
+$grp Tree : "{63DC62906A5917F3}Prefabs/Vegetation/Tree/t_populus_nigra/t_populus_nigra_3s.et" {
+ {
+  coords 70 0 230
+ }
+ {
+  coords 70 0 270
+ }
+ {
+  coords 86 0 280
+ }
+ {
+  coords 88 0 222
+ }
 }
-GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 175.4 0 242.8
+GenericEntity Market_Sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 196.306 0.03 241.893
+ angles 0 20 0
 }
-GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 175.4 0.28 242.8
+$grp GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
+ {
+  coords 110.8 0 263.3
+  angles 0 90 0
+ }
+ {
+  coords 113.2 0 263.3
+  angles 0 270 0
+ }
 }
-GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 183.2 0 243
+$grp Tree : "{6C788B70DF94793B}Prefabs/Vegetation/Tree/t_salix_fragilis/t_salix_fragilis_2s.et" {
+ {
+  coords 342 0 293
+ }
+ {
+  coords 250 0 218
+ }
+}
+GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+ coords 330.6 0 232.4
+ angles 0 40 0
+}
+$grp GenericEntity : "{72E42BEAFED9B5A7}Prefabs/Props/Garbage/Bins/GarbageContainer_01.et" {
+ {
+  coords 186 0 229
+ }
+ {
+  coords 298.6 0 263
+  angles 0 90 0
+ }
+}
+$grp SCR_DestructibleEntity : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
+ Market_PriceBoard_1 {
+  components {
+   LF_SignComponent "{DF6A14A1AD2B41F0}" {
+    m_sSignId "traders"
+   }
+  }
+  coords 203.994 0.007 233.803
+ }
+ Market_PriceBoard_2 {
+  components {
+   LF_SignComponent "{DF6A14A1AD2B41F0}" {
+    m_sSignId "traders"
+   }
+  }
+  coords 212.989 0.007 233.837
+ }
+}
+$grp GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ {
+  coords 126.5 0 271
+ }
+ {
+  coords 286.4 0 238.2
+ }
+ {
+  coords 287.2 0 238.6
+ }
+ {
+  coords 309.4 0 242.8
+ }
+}
+GenericEntity : "{7FCD4E7C25D886A8}Prefabs/Structures/Signs/Traffic/SignBusStop_01.et" {
+ coords 150.4 0 245.8
+}
+GenericEntity Pub_Terrace_Table : "{7FFE600A194D73B1}Prefabs/Props/Furniture/TableOld_01/TableOld_01_Base.et" {
+ coords 121.994 0.003 287.077
+}
+$grp GenericEntity : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
+ {
+  coords 150.5 0 221
+ }
+ {
+  coords 332 0 229
+ }
+}
+$grp SCR_DestructibleEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
+ {
+  coords 113.6 0 268.6
+ }
+ {
+  coords 152.8 0 257.6
+ }
+ {
+  coords 290.676 0.001 258.2
+ }
+ {
+  coords 315 0 242.6
+ }
+ {
+  coords 343.2 0 242.7
+ }
+ {
+  coords 317 0 257.4
+ }
+}
+GenericEntity : "{8592F599B94DC833}Prefabs/Structures/Civilian/MessageBoard/Filled/MessageBoardSmall_01_pole_filled_V1.et" {
+ coords 129.4 0 257.4
+ angles 0 180 0
+}
+GenericEntity SquareRegistry_FileStack : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+ coords 135.886 1.04 240.849
+ angles 0 114.8 0
+}
+GenericEntity : "{8DDA73869B957E58}Prefabs/Structures/Civilian/MessageBoard/Filled/MessageBoardSmall_01_pole_filled_V3.et" {
+ coords 143.4 0 243.9
+}
+SCR_DestructibleBuildingEntity Village_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 129.8 0 240.5
+ angles 0 90 0
+}
+SCR_DestructibleBuildingEntity : "{97380F89AA02D20B}Prefabs/Structures/Infrastructure/Bus/BusShed_E_01/BusShed_E_01_blue.et" {
+ coords 147 0 243.6
+}
+$grp GenericEntity : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
+ {
+  coords 224 0 238.2
+  angles 0 80 0
+ }
+ SquareLuggageCart {
+  coords 124.5 0 240.5
+  angles 0 20 0
+ }
+ Market_Handcart {
+  coords 207.876 0.003 237.6
+  angles 0 90 0
+ }
+}
+$grp Tree : "{A975A81D02F4862C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_2s.et" {
+ {
+  coords 376 0 222
+ }
+ {
+  coords 380 0 212
+ }
+ {
+  coords 398 0 210
+ }
+ {
+  coords 404 0 220
+ }
+ {
+  coords 410 0 206
+ }
+ {
+  coords 418 0 214
+ }
+ {
+  coords 384 0 196
+ }
+ {
+  coords 396 0 192
+ }
+ {
+  coords 408 0 196
+ }
+ {
+  coords 420 0 200
+ }
+}
+$grp GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ {
+  coords 183.2 0 243
+ }
+ {
+  coords 183.5 0.3 243
+ }
+ {
+  coords 201.169 1.027 240.611
+ }
+ {
+  coords 201.829 1.027 240.611
+ }
+}
+$grp Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
+ {
+  coords 216 0 292
+ }
+ {
+  coords 276 0 287
+ }
+ {
+  coords 140 0 219
+ }
+ {
+  coords 347 0 220
+ }
+ {
+  coords 352 0 256.6
+ }
+ {
+  coords 300 0 245.3
+ }
+ Market_Tree_1 {
+  coords 193.2 0 229.093
+  angles 0 73 0
+  scale 1.3
+ }
+ Market_Tree_2 {
+  coords 202.339 0 228.694
+  angles 0 146 0
+  scale 1.3
+ }
+ Market_Tree_3 {
+  coords 210.998 0 228.445
+  angles 0 -141 0
+  scale 1.3
+ }
+ Market_Tree_4 {
+  coords 219.66 0 228.698
+  angles 0 -68 0
+  scale 1.3
+ }
+ Market_Tree_5 {
+  coords 189.646 0 242.478
+  angles 0 -55 0
+  scale 1.3
+ }
+ Market_Tree_6 {
+  coords 219.809 0 242.799
+  angles 0 6 0
+  scale 1.3
+ }
 }
 GenericEntity : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
  coords 183.9 0 243.1
- angleY 15
+ angles 0 15 0
 }
-GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 183.5 0.3 243
+Tree : "{AED5759B653DF6D0}Prefabs/Vegetation/Bush/b_rosa_canina_1s.et" {
+ coords 357.5 0 241.8
 }
-GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 185.6 0 243
- angleY 10
+SCR_DestructibleEntity : "{B16FF595DD1EE501}Prefabs/Props/Services/Post/PostOfficeBox_01_Stand.et" {
+ coords 150.5 0 256.2
+ angles 0 180 0
 }
-GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 185.6 0.28 243
- angleY 10
+GenericEntity SquareRegistry_OpenFile : "{B3C782D689A52412}Prefabs/Props/Civilian/FileOffice_01_Open.et" {
+ coords 136.272 1.039 241.669
+ angles 0 114.8 0
 }
-GenericEntity : "{72E42BEAFED9B5A7}Prefabs/Props/Garbage/Bins/GarbageContainer_01.et" {
- coords 186 0 229
-}
-SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 172.3 0 257.2
-}
-SCR_DestructibleEntity : "{0DB0D75A16764A2C}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_pink.et" {
- coords 191.6 0 257.2
-}
-GenericEntity : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
- coords 224 0 238.2
- angleY 80
-}
-GenericEntity : "{24388E37E11BA18F}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_red.et" {
- coords 226.5 0 243.6
-}
-GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
- coords 228.6 0 243.6
-}
-SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 252.6 0 257.3
-}
-SCR_DestructibleEntity : "{0DB0D75A16764A2C}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_pink.et" {
- coords 271.6 0 257.3
-}
-SCR_DestructibleEntity : "{CECA6D57E2CAB7A8}Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et" {
- coords 273.6 0 256.9
-}
-GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
- coords 256 0 256.9
-}
-GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- coords 286.4 0 238.2
-}
-GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- coords 287.2 0 238.6
-}
-GenericEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
- coords 283.2 0 257.6
-}
-GenericEntity : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
- coords 294.6 0 257.6
-}
-GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
- coords 297 0 256.7
-}
-GenericEntity : "{72E42BEAFED9B5A7}Prefabs/Props/Garbage/Bins/GarbageContainer_01.et" {
- coords 298.6 0 263
- angleY 90
-}
-SCR_DestructibleEntity : "{2D4B21B9086F6AFB}Prefabs/Structures/Infrastructure/Waterworks/HydrantStreet_01/HydrantStreet_01.et" {
- coords 313 0 256
-}
-GenericEntity : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et" {
- components {
-  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
-   m_bIsLocked 1
-  }
+$grp GenericEntity : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ {
+  coords 104 0 239
  }
- coords 324 0 244.8
- angleY 90
+ {
+  coords 122 0 239
+ }
+ {
+  coords 104 0 261
+  angles 0 180 0
+ }
+ {
+  coords 122 0 261
+  angles 0 180 0
+ }
+ Market_Bench_W {
+  coords 193.243 0.002 238.501
+  angles 0 90 0
+ }
+ Market_Bench_E {
+  coords 217.557 0.002 238.499
+  angles 0 -90 0
+ }
+ Bank_Bench {
+  coords 184.001 0.002 254.957
+  angles 0 180 0
+ }
 }
-GenericEntity : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+$grp Tree : "{C46F2709EDF643D4}Prefabs/Vegetation/Tree/t_tilia_cordata/t_tilia_cordata_3s.et" {
+ {
+  coords 98 0 236
+ }
+ {
+  coords 98 0 264
+ }
+ {
+  coords 132 0 236
+ }
+ {
+  coords 132 0 264
+ }
+}
+GenericEntity Pub_Terrace_Radio : "{C6AF6D2D6EA3CBF9}Prefabs/Atmosphere/LF_Radio_Pub.et" {
+ coords 122.002 0.903 287.074
+}
+$grp Tree : "{C98A6C1C2372354E}Prefabs/Vegetation/Bush/b_corylus_avellana_1.et" {
+ {
+  coords 357.5 0 258.5
+ }
+ {
+  coords 312 0 231
+ }
+}
+$grp SCR_DestructibleEntity : "{CECA6D57E2CAB7A8}Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et" {
+ {
+  coords 162.5 0 257
+ }
+ {
+  coords 273.6 0 256.9
+ }
+}
+$grp Tree : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
+ {
+  coords 112 0 306
+ }
+ {
+  coords 108 0 296
+ }
+}
+$grp Tree : "{D6EC31A48403A52A}Prefabs/Vegetation/Bush/b_sambucus_nigra_1.et" {
+ {
+  coords 309.5 0 258.5
+ }
+ {
+  coords 361 0 229
+ }
+}
+$grp SCR_DestructibleEntity : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
+ Market_Stall_Veg {
+  coords 197.359 -0.003 233.467
+ }
+ Market_Stall_Fruit {
+  coords 206.359 -0.003 233.467
+ }
+ Market_Stall_Juice {
+  coords 215.359 -0.003 233.467
+ }
+ Market_Stall_North_1 {
+  coords 201.359 -0.003 240.267
+ }
+ Market_Stall_North_2 {
+  coords 211.359 -0.003 240.267
+ }
+}
+$grp Tree : "{DE7FC095F656695C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abies_3s.et" {
+ {
+  coords 388 0 205
+ }
+ {
+  coords 372 0 205
+ }
+}
+Vehicle "6ADEF2BE6C61A45A" : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1
   }
  }
  coords 337.5 0 255.3
- angleY 270
+ angles 0 270 0
 }
-GenericEntity : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et" {
+Vehicle "6ADEF2BE6C61B8F1" : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIsLocked 1
+  }
+ }
+ coords 324 0 244.8
+ angles 0 90 0
+}
+Vehicle "6ADEF2BE6C614ADD" : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et" {
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1
   }
  }
  coords 354 0 244.8
- angleY 270
+ angles 0 270 0
 }
-GenericEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
- coords 315 0 242.6
+GenericEntity SquareRegistryCounter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 136.167 0 241.315
+ angles 0 114.8 0
 }
-GenericEntity : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
- coords 320.8 0 242.6
+SCR_DestructibleBuildingEntity : "{F0E03780C850866F}Prefabs/Structures/Commercial/PosterColumn_01.et" {
+ coords 138.5 0 238.2
 }
-GenericEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
- coords 343.2 0 242.7
-}
-GenericEntity : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
- coords 349.5 0 242.7
-}
-GenericEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
- coords 317 0 257.4
-}
-GenericEntity : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
- coords 340 0 257.4
-}
-GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
- coords 331.5 0 263.5
- angleY 90
-}
-GenericEntity : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
- coords 332 0 229
-}
-GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
- coords 330.6 0 232.4
- angleY 40
-}
-SCR_DestructibleEntity : "{403A3EB785E80867}Prefabs/Structures/Walls/Wooden/WoodenFence_02/WoodenFence_02_4m.et" {
- coords 323 0 216
-}
-SCR_DestructibleEntity : "{403A3EB785E80867}Prefabs/Structures/Walls/Wooden/WoodenFence_02/WoodenFence_02_4m.et" {
- coords 327 0 216
-}
-SCR_DestructibleEntity : "{403A3EB785E80867}Prefabs/Structures/Walls/Wooden/WoodenFence_02/WoodenFence_02_4m.et" {
- coords 331 0 216
-}
-SCR_DestructibleEntity : "{403A3EB785E80867}Prefabs/Structures/Walls/Wooden/WoodenFence_02/WoodenFence_02_4m.et" {
- coords 335 0 216
-}
-Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
- coords 324 0 219
-}
-Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
- coords 326 0 219
-}
-Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
- coords 328 0 219
-}
-Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
- coords 330 0 219
-}
-Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
- coords 332 0 219
-}
-Tree : "{014BBD51756DB620}Prefabs/Vegetation/Vegetables/CabbageCrop_01.et" {
- coords 334 0 219
-}
-Tree : "{D6EC31A48403A52A}Prefabs/Vegetation/Bush/b_sambucus_nigra_1.et" {
- coords 309.5 0 258.5
-}
-Tree : "{C98A6C1C2372354E}Prefabs/Vegetation/Bush/b_corylus_avellana_1.et" {
- coords 357.5 0 258.5
-}
-Tree : "{AED5759B653DF6D0}Prefabs/Vegetation/Bush/b_rosa_canina_1s.et" {
- coords 357.5 0 241.8
-}
-Tree : "{C98A6C1C2372354E}Prefabs/Vegetation/Bush/b_corylus_avellana_1.et" {
- coords 312 0 231
-}
-Tree : "{D6EC31A48403A52A}Prefabs/Vegetation/Bush/b_sambucus_nigra_1.et" {
- coords 361 0 229
-}
-Tree : "{F89B942712FD22D6}Prefabs/Vegetation/Tree/t_carpinus_betulus/t_carpinus_betulus_2s.et" {
- coords 205 0 289
-}
-Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 216 0 292
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 229 0 288
-}
-Tree : "{F89B942712FD22D6}Prefabs/Vegetation/Tree/t_carpinus_betulus/t_carpinus_betulus_2s.et" {
- coords 263 0 290
-}
-Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 276 0 287
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 286 0 293
-}
-Tree : "{6C788B70DF94793B}Prefabs/Vegetation/Tree/t_salix_fragilis/t_salix_fragilis_2s.et" {
- coords 342 0 293
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 356 0 286
-}
-Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 140 0 219
-}
-Tree : "{F89B942712FD22D6}Prefabs/Vegetation/Tree/t_carpinus_betulus/t_carpinus_betulus_2s.et" {
- coords 150 0 214
-}
-Tree : "{6C788B70DF94793B}Prefabs/Vegetation/Tree/t_salix_fragilis/t_salix_fragilis_2s.et" {
- coords 250 0 218
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 276 0 219
-}
-Tree : "{F89B942712FD22D6}Prefabs/Vegetation/Tree/t_carpinus_betulus/t_carpinus_betulus_2s.et" {
- coords 290 0 216
-}
-Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 347 0 220
-}
-Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
- coords 304 0 222
-}
-Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 352 0 256.6
-}
-Tree : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 300 0 245.3
-}
-GenericEntity SquareClerkDesk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
- coords 136 0 243.5
- angleY 90
-}
-GenericEntity SquareClerkChair : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
- coords 137.4 0 243.5
- angleY 270
-}
-GenericEntity SquareLuggageCart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
- coords 124.5 0 240.5
- angleY 20
-}
-SCR_DestructibleEntity : "{419130031F0009C9}Prefabs/Structures/Walls/Brick/BrickWall_01/BrickWall_01_4m.et" {
- coords 302 0 241.5
-}
-SCR_DestructibleEntity : "{419130031F0009C9}Prefabs/Structures/Walls/Brick/BrickWall_01/BrickWall_01_4m.et" {
- coords 307.3 0 241.5
-}
-SCR_DestructibleEntity : "{419130031F0009C9}Prefabs/Structures/Walls/Brick/BrickWall_01/BrickWall_01_4m.et" {
- coords 311.3 0 241.5
-}
-GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- coords 309.4 0 242.8
-}
-GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
- coords 311.4 0 242.5
- angleY 10
-}
-GenericEntity : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords 313.6 0 242.6
-}
-GenericEntity Pub_Terrace_Table : "{7FFE600A194D73B1}Prefabs/Props/Furniture/TableOld_01/TableOld_01_Base.et" {
- coords 121.994 0.003 287.077
-}
-GenericEntity Pub_Terrace_Radio : "{C6AF6D2D6EA3CBF9}Prefabs/Atmosphere/LF_Radio_Pub.et" {
- coords 122.002 0.903 287.074
-}
-SCR_DestructibleEntity Market_Stall_Veg : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
- coords 197.359 -0.003 233.467
-}
-SCR_DestructibleEntity Market_Stall_Fruit : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
- coords 206.359 -0.003 233.467
-}
-SCR_DestructibleEntity Market_Stall_Juice : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
- coords 215.359 -0.003 233.467
-}
-Tree Market_Tree_1 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 193.2 0 229.093
- angleY 73
- scale 1.3
-}
-Tree Market_Tree_2 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 202.339 0 228.694
- angleY 146
- scale 1.3
-}
-Tree Market_Tree_3 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 210.998 0 228.445
- angleY -141
- scale 1.3
-}
-Tree Market_Tree_4 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 219.66 0 228.698
- angleY -68
- scale 1.3
-}
-GenericEntity Market_Bench_W : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 193.243 0.002 238.501
- angleY 90
-}
-GenericEntity Market_Bin : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et" {
- coords 217.62 0 240.911
- angleY -90
-}
-GenericEntity Market_Box_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 195.297 0 232.603
- angleY 8
-}
-GenericEntity Market_PalletBox : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords 218.103 0.021 232.401
- angleY 90
-}
-GenericEntity Market_Bench_E : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 217.557 0.002 238.499
- angleY -90
-}
-GenericEntity Market_Box_3 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 208.952 0 232.503
- angleY 90
-}
-GenericEntity Market_Box_4 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 209.602 0 232.503
- angleY 90
-}
-GenericEntity Market_Box_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 195.347 0 233.102
- angleY -4
-}
-Tree Market_Tree_5 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 189.646 0 242.478
- angleY -55
- scale 1.3
-}
-Tree Market_Tree_6 : "{AA557A5ECB3DF0B1}Prefabs/Vegetation/Tree/t_sorbus_aucuparia/t_sorbus_aucuparia_2s.et" {
- coords 219.809 0 242.799
- angleY 6
- scale 1.3
-}
-SCR_DestructibleEntity Market_Stall_North_1 : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
- coords 201.359 -0.003 240.267
-}
-SCR_DestructibleEntity Market_Stall_North_2 : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
- coords 211.359 -0.003 240.267
-}
-GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 201.169 1.027 240.611
-}
-GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 201.829 1.027 240.611
-}
-GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 210.665 1.024 239.769
-}
-GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 211.219 1.024 239.769
-}
-GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 211.774 1.024 239.769
-}
-GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 212.329 1.024 239.769
-}
-GenericEntity Market_Handcart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
- coords 207.876 0.003 237.6
- angleY 90
-}
-SCR_DestructibleEntity Market_PriceBoard_1 : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
- components {
-  LF_SignComponent "{DF6A14A1AD2B41F0}" {
-   m_sSignId "traders"
-  }
+$grp Tree : "{F89B942712FD22D6}Prefabs/Vegetation/Tree/t_carpinus_betulus/t_carpinus_betulus_2s.et" {
+ {
+  coords 205 0 289
  }
- coords 203.299 0.006 236.6
-}
-SCR_DestructibleEntity Market_PriceBoard_2 : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
- components {
-  LF_SignComponent "{DF6A14A1AD2B41F0}" {
-   m_sSignId "traders"
-  }
+ {
+  coords 263 0 290
  }
- coords 213.499 0.006 236.6
-}
-Vehicle Market_Delivery_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et" {
- coords 223.3 -0.18 235.195
-}
-GenericEntity Market_Sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
- coords 196.306 0.03 241.893
- angleY 20
-}
-GenericEntity Bank_Bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 184.001 0.002 254.957
- angleY 180
-}
-GenericEntity Market_Tarp_Veg {
- components {
-  MeshObject "{52AE82368499B365}" {
-   Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
-   Materials {
-    MaterialAssignClass "{599EE14E7A2CA415}" {
-     SourceMaterial "Flag_1_2"
-     AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
-    }
-   }
-  }
+ {
+  coords 150 0 214
  }
- coords 199.509 2.54 233.117
- angleY 90
- angleZ 98
- scale 2
-}
-StaticModelEntity Market_Post_Veg_B1 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
+ {
+  coords 290 0 216
  }
- coords 195.609 1.46 232.217
 }
-StaticModelEntity Market_Post_Veg_F1 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
+$grp SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ {
+  coords 103 0 244.5
  }
- coords 195.609 1.314 234.017
- scale 0.9
+ {
+  coords 123.5 0 256.8
+ }
+ {
+  coords 172.3 0 257.2
+ }
+ {
+  coords 252.6 0 257.3
+ }
 }
-StaticModelEntity Market_Post_Veg_B2 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 199.209 1.46 232.217
-}
-StaticModelEntity Market_Post_Veg_F2 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 199.209 1.314 234.017
- scale 0.9
-}
-GenericEntity Market_Tarp_Fruit {
- components {
-  MeshObject "{52AE82368499B365}" {
-   Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
-   Materials {
-    MaterialAssignClass "{599EE14E7A2CA415}" {
-     SourceMaterial "Flag_1_2"
-     AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
-    }
-   }
-  }
- }
- coords 208.509 2.54 233.117
- angleY 90
- angleZ 98
- scale 2
-}
-StaticModelEntity Market_Post_Fruit_B1 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 204.609 1.46 232.217
-}
-StaticModelEntity Market_Post_Fruit_F1 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 204.609 1.314 234.017
- scale 0.9
-}
-StaticModelEntity Market_Post_Fruit_B2 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 208.209 1.46 232.217
-}
-StaticModelEntity Market_Post_Fruit_F2 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 208.209 1.314 234.017
- scale 0.9
-}
-GenericEntity Market_Tarp_Juice {
- components {
-  MeshObject "{52AE82368499B365}" {
-   Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
-   Materials {
-    MaterialAssignClass "{599EE14E7A2CA415}" {
-     SourceMaterial "Flag_1_2"
-     AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
-    }
-   }
-  }
- }
- coords 217.509 2.54 233.117
- angleY 90
- angleZ 98
- scale 2
-}
-StaticModelEntity Market_Post_Juice_B1 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 213.609 1.46 232.217
-}
-StaticModelEntity Market_Post_Juice_F1 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 213.609 1.314 234.017
- scale 0.9
-}
-StaticModelEntity Market_Post_Juice_B2 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 217.209 1.46 232.217
-}
-StaticModelEntity Market_Post_Juice_F2 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 217.209 1.314 234.017
- scale 0.9
-}
-GenericEntity Market_Tarp_North1 {
- components {
-  MeshObject "{52AE82368499B365}" {
-   Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
-   Materials {
-    MaterialAssignClass "{599EE14E7A2CA415}" {
-     SourceMaterial "Flag_1_2"
-     AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
-    }
-   }
-  }
- }
- coords 203.509 2.54 240.617
- angleY 90
- angleZ 82
- scale 2
-}
-StaticModelEntity Market_Post_North1_B1 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 199.609 1.46 241.517
-}
-StaticModelEntity Market_Post_North1_F1 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 199.609 1.314 239.717
- scale 0.9
-}
-StaticModelEntity Market_Post_North1_B2 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 203.209 1.46 241.517
-}
-StaticModelEntity Market_Post_North1_F2 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 203.209 1.314 239.717
- scale 0.9
-}
-GenericEntity Market_Tarp_North2 {
- components {
-  MeshObject "{52AE82368499B365}" {
-   Object "{94F7CE276B05E84B}Assets/Props/Fabric/Flags/Flag_1_2.xob"
-   Materials {
-    MaterialAssignClass "{599EE14E7A2CA415}" {
-     SourceMaterial "Flag_1_2"
-     AssignedMaterial "{362AC46447DBE58B}Assets/Props/Fabric/Flags/Data/Flag_1_2_Red.emat"
-    }
-   }
-  }
- }
- coords 213.509 2.54 240.617
- angleY 90
- angleZ 82
- scale 2
-}
-StaticModelEntity Market_Post_North2_B1 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 209.609 1.46 241.517
-}
-StaticModelEntity Market_Post_North2_F1 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 209.609 1.314 239.717
- scale 0.9
-}
-StaticModelEntity Market_Post_North2_B2 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 213.209 1.46 241.517
-}
-StaticModelEntity Market_Post_North2_F2 {
- components {
-  MeshObject "{56DE7C8DCD0F4E0A}" {
-   Object "{1C94962391186ACE}Assets/Structures/Walls/Pole/PoleFence_01_Pole.xob"
-  }
- }
- coords 213.209 1.314 239.717
- scale 0.9
+GenericEntity : "{FEB4961C91993C22}Prefabs/Structures/Civilian/DogHouse_01.et" {
+ coords 157 0 223.5
+ angles 0 30 0
 }

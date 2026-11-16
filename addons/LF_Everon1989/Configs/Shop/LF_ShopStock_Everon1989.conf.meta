@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{0FC8BA3ABD321B83}Configs/Shop/LF_ShopStock_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

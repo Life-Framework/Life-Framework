@@ -64,6 +64,16 @@ export function setBoxes(dirs, sessionId) {
 // The session a command to these boxes is addressed to: { id } (empty id for
 // Workbench and default profiles), or { error } when the live session in the
 // shared session dir belongs to another checkout or is not running.
+// Three worlds (docs/architecture/three-worlds.md): a proof that walks to an annex fixture (an Annex_* entity) runs
+// on GridWorld, so it asks for `session up --mission grid`; town proofs keep the default. Returns "" when the
+// running session booted the wanted mission, else the one line the proof prints before it fails.
+export function missionProblem(session, want) {
+  if (!session || session.stoppedAt) return `no running session: \`tools\\cli session up --mission ${want}\` first`;
+  const have = session.mission || "debug";
+  if (have === want) return "";
+  return `this proof needs \`session up --mission ${want}\` (its fixtures are in that world); the running session is --mission ${have}`;
+}
+
 export function addressFor(boxes, root = ROOT, lookup = sessionForBox) {
   if (!boxes) return { id: "" };
   if (sessionOverride !== undefined) return { id: sessionOverride || "" };
@@ -175,6 +185,13 @@ export function buildLine(id, spec) {
     if (!/^[\x20-\x7E]{1,400}$/.test(text) || text.trim() !== text) throw new Error(`chat text must be 1 to 400 printable ASCII characters with no edge spaces: ${JSON.stringify(spec.text)}`);
     if (spec.channel && !/^(admin|global|local|ooc)$/.test(spec.channel)) throw new Error(`chat channel must be admin, global, local or ooc: ${spec.channel}`);
     return `${id} chat ${spec.channel ? `${spec.channel} ` : ""}${text}`;
+  }
+  if (spec.verb === "licence") {
+    // licence <NAME>: this client asks for one licence by its LF_ELicenseType name, the request the
+    // /licence chat command sends (LF_AskLicenceGrant). The server's dev gate decides; the verdict is the
+    // server log line `/licence: player N granted NAME`.
+    if (!/^[A-Z][A-Z0-9_]{1,63}$/.test(spec.name ?? "")) throw new Error(`licence needs an LF_ELicenseType name such as FIREARM_PERMIT: ${spec.name}`);
+    return `${id} licence ${spec.name}`;
   }
   if (spec.verb === "staffapprove") {
     // staffapprove <uid>: approve that account's open police application through LF_PoliceApplicationStaff.ApproveByUid
@@ -1018,8 +1035,8 @@ function selftest() {
   const shop = findPad(list, "Shop_GeneralStore_Debug");
   if (!shop || shop.actions[0] !== "LF_ShopAction") throw new Error("Shop_GeneralStore_Debug missing from layer catalog");
   // $grp members carry world coords; children add their parent's (village layout,
-  // docs/roadmap/m1-25-village.md).
-  if (shop.x !== 179 || shop.z !== 244.3) throw new Error(`shop coords ${shop.x} ${shop.z}`);
+  // docs/roadmap/m1-25-village.md). The general store counter stands inside the village shop house (general-store).
+  if (shop.x !== 180.57 || shop.z !== 233.627) throw new Error(`shop coords ${shop.x} ${shop.z}`);
   const apple = findPad(list, "AppleTradeContainer");
   // AppleTrader 206.359 0 233.467 (the fruit stall, #924) plus the container's -0.29 1.027 -0.478.
   if (!apple || Math.abs(apple.x - 206.069) > 0.001 || Math.abs(apple.z - 232.989) > 0.001) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
@@ -1308,15 +1325,15 @@ function selftest() {
     { name: "Roadmap_Vehicle_Lot", x: 243, y: 0, z: 120 },
   ]);
   if (wideStreet.oz <= 0) throw new Error("the release street wide shot stays on +Z");
-  // The live village: every street site has a neighbour within 30 m, and the
-  // contraband pickup is the one site out of town.
-  // Roadmap_Convoy_Drop_Near is the debug-mode alternative drop (#616), a test aid beside the pickup, not a village site.
-  const placedStreet = roadmapSites(ROOT).filter((site) => site.name !== "Roadmap_Convoy_Drop_Near");
-  const placedRows = judgeStreet(placedStreet.map((site) => ({ ...site, look: `X@${site.name}`, mesh: "ok", menu: null })));
-  const strays = placedRows.filter((row) => !row.ok).map((row) => `${row.name} ${row.distanceM} m`);
-  if (strays.length) throw new Error(`street sites more than 30 m from the rest: ${strays.join(", ")}`);
-  const pickup = placedRows.find((row) => row.name === "Roadmap_Convoy_Start");
-  if (!pickup || pickup.distanceM < 60) throw new Error("the contraband pickup stands out of town");
+  // The live village is not asserted here: the maintainer places the town by hand, so where a site
+  // stands is his call (validate-no-town-layout-asserts). judgeStreet is covered on fixture rows above.
+  // Three worlds (W5, #1807): a proof that walks to an annex fixture asks for the grid mission and says so when the session booted another world.
+  // red-proof: 2026-11-16 written before missionProblem existed: the selftest threw "missionProblem is not defined", then these cases passed.
+  if (missionProblem({ mission: "grid" }, "grid") !== "") throw new Error("a grid session was refused for a grid proof");
+  if (!/session up --mission grid/.test(missionProblem({ mission: "debug" }, "grid"))) throw new Error("a town session was accepted for a grid proof");
+  if (!/session up --mission grid/.test(missionProblem({}, "grid"))) throw new Error("a session record with no mission (the town default) was accepted for a grid proof");
+  if (!/no running session/.test(missionProblem(null, "grid"))) throw new Error("no session was accepted");
+  if (!/no running session/.test(missionProblem({ mission: "grid", stoppedAt: "2026-11-16T00:00:00Z" }, "grid"))) throw new Error("a stopped session was accepted");
   townSelftest();
   console.log("selftest ok");
   return 0;
@@ -1327,13 +1344,6 @@ function selftest() {
 function townSelftest() {
   const real = checkTown(ROOT);
   if (!real.ok) throw new Error(`town manifest does not resolve against the layers: ${real.errors.join("; ")}`);
-  const spawn = real.rows.find((row) => row.site.id === "spawn");
-  if (!spawn || spawn.place.layer !== "Gamemode.layer") throw new Error("spawn must resolve to the Spawn_Town placement");
-  if (!spawn.sign || spawn.signIssues.length) throw new Error(`the town map must stand within 8 m of the spawn: ${spawn.signIssues.join("; ")}`);
-  const mining = real.rows.find((row) => row.site.id === "mining");
-  if (!mining || !mining.sign || mining.sign.name !== "LF_MiningSign_Debug" || mining.signIssues.length) {
-    throw new Error(`the mining sign must be found within 8 m with a card: ${mining && mining.signIssues.join("; ")}`);
-  }
   if (manifestErrors({ ...TOWN, sites: [{ id: "a", entity: "A", actions: [], sign: null, step: 1, x: 3 }] }).length !== 1) {
     throw new Error("a manifest site with a position must be rejected");
   }
@@ -1368,6 +1378,11 @@ function townSelftest() {
   const strings = new Map([["T-A_Title", "Site A"]]);
   if (signCard("a", catalog, strings).blank || signCard("a", catalog, strings).title !== "Site A") throw new Error("a #key title resolves");
   if (!signCard("blank", catalog, strings).blank) throw new Error("a card whose only section is an unknown key is blank");
+  // The pack's signs load beside the core's: an added sign is there, a patch keeps the core fields it does not name.
+  // red-proof 2026-11-16: with the core-only loader, "registry" was missing and this threw.
+  const packCatalog = loadSignCatalog(ROOT);
+  if (!packCatalog.has("registry")) throw new Error("the catalog holds the pack's added sign (registry)");
+  if (!packCatalog.get("hospital")?.m_sTitle || !packCatalog.get("hospital")?.m_sImage) throw new Error("a pack patch keeps the core title and adds its field (hospital)");
   const manifest = {
     requireSigns: false,
     signRadiusM: 8,
@@ -1380,26 +1395,35 @@ function townSelftest() {
     ],
   };
   const soft = checkTown(ROOT, { manifest, world, catalog, strings });
-  if (!soft.errors.some((error) => error.startsWith("far:") && error.includes("80 m from the nearest other site"))) {
-    throw new Error(`a site 80 m away must fail: ${soft.errors.join("; ")}`);
+  // Distances are the maintainer's layout: a site 80 m away warns and never fails.
+  // red-proof 2026-11-16: before the warn-only change this threw "a site 80 m away only warns".
+  if (soft.errors.some((error) => error.includes("nearest other site")) || !soft.warnings.some((w) => w.startsWith("far: layout:") && w.includes("80 m from the nearest other site"))) {
+    throw new Error(`a site 80 m away only warns: ${soft.errors.join("; ")}`);
   }
   if (soft.errors.some((error) => error.includes("sign"))) throw new Error("requireSigns false: sign problems are warnings");
   const outskirts = checkTown(ROOT, { manifest: { ...manifest, sites: manifest.sites.map((site) => (site.id === "far" ? { ...site, outskirts: true } : site)) }, world, catalog, strings });
-  if (outskirts.errors.some((error) => error.startsWith("far:") && error.includes("nearest other site"))) {
+  if (outskirts.warnings.some((warning) => warning.startsWith("far:") && warning.includes("nearest other site"))) {
     throw new Error("an outskirts site is exempt from the neighbour rule");
   }
+  if (!judgeTownRow({ entity: "Site_Far", actions: ["LF_Far"], look: "LF_Far@Site_Far", mesh: "ok", neighbourM: 80 }, manifest).ok) throw new Error("a play-mode row 80 m out only warns");
   if (!judgeTownRow({ entity: "Site_Far", actions: ["LF_Far"], look: "LF_Far@Site_Far", mesh: "ok", neighbourM: 80, outskirts: true }, manifest).ok) {
     throw new Error("an outskirts row passes at 80 m");
   }
   const pending = (id, text) => soft.warnings.some((warning) => warning.startsWith(`${id}: sign: pending`) && warning.includes(text));
   if (!pending("nosign", "no missing sign placed")) throw new Error(`missing sign must be sign: pending: ${soft.warnings.join("; ")}`);
-  if (!pending("b", "9 m away")) throw new Error("a sign 9 m away is too far");
+  if (!soft.warnings.some((w) => w.startsWith("b: layout:") && w.includes("9 m away"))) throw new Error("a sign 9 m away is a layout warning");
   if (!pending("far", "Read card is blank")) throw new Error("a blank card must be reported");
   if (soft.warnings.some((warning) => warning.startsWith("a:"))) throw new Error("a sign 3 m away with a card passes");
   const strict = checkTown(ROOT, { manifest: { ...manifest, requireSigns: true }, world, catalog, strings });
-  for (const [id, text] of [["nosign", "no missing sign placed"], ["far", "Read card is blank"], ["b", "9 m away"]]) {
+  for (const [id, text] of [["nosign", "no missing sign placed"], ["far", "Read card is blank"]]) {
     if (!strict.errors.some((error) => error.startsWith(`${id}:`) && error.includes(text))) throw new Error(`requireSigns true must fail ${id}`);
   }
+  if (strict.errors.some((error) => error.includes("m away"))) throw new Error("a far sign never fails, even with requireSigns");
+  // A renamed town entity resolves by the actions it carries, with a warning (the maintainer renames by hand).
+  const renamed = resolveSite({ id: "x", entity: "Site_Renamed", actions: ["LF_B"] }, world);
+  if (!renamed.ok || renamed.name !== "Site_B" || !renamed.warnings?.[0]?.includes("resolved by its actions")) throw new Error("a renamed site resolves by its actions");
+  const gone = resolveSite({ id: "x", entity: "Site_Gone", actions: ["LF_Nobody"] }, world);
+  if (gone.ok) throw new Error("a site whose actions nothing carries fails");
   const twice = resolveSite({ id: "x", entity: "Site_A", actions: [] }, [...world, world[0]]);
   if (twice.ok || !twice.errors[0].includes("placed 2 times")) throw new Error("a site must resolve to exactly one entity");
   const lacking = resolveSite({ id: "x", entity: "Site_A", actions: ["LF_Other"] }, world);

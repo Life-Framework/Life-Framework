@@ -61,6 +61,7 @@ for (const [p, k] of [
   ["addons/LifeFramework/Language/everonlife_localization.en_us.conf", "regen-localization"],
   ["addons/LifeFramework/Language/everonlife_localization.st", "string-table"],
   ["docs/features.md", "markdown"],
+  ["docs/features/money-economy.md", "markdown"],
   ["docs/debug-log-triage.md", "markdown"],
   ["tools/validation/enforce-lint-baseline.json", "lint-baseline"],
   [SCRIPT, null],

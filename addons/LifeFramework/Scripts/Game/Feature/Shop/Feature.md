@@ -134,3 +134,16 @@ type; no per-map scripting. See `docs/design.md` §4.
 - **Data:** keys `LF-Shop_Open_BackRoom`, `LF-BackRoom_DoorShut`, `LF-Shop_RefuseClosed`,
   `LF-Shop_Hint_General`, `LF-Sign_BlackMarket_*`; nothing persists (a restart reopens the room).
 - **Proof:** `shop/back-room-door` (LOGIC), `node agent-box/session.mjs back-room-door-proof`.
+
+## Shopkeeper NPCs and stocked shops (fence)
+
+- **Player sees:** at the fence, *Talk* and *Browse goods* side by side; in his talk, *Show me what you've
+  got.* opens the same price list. Lines he buys show *We pay $X* with a *Sell for $X* key.
+- **Pattern:** an NPC with `LF_ShopComponent` puts `LF_ShopAction` in its talk context (role NPCs: `RoleTalk`).
+  Role talk adds the reply itself (`LF_ShopkeeperTalk.BrowseOption`); an authored dialogue adds an option with
+  condition and action `OpenShop` and no next node.
+- **Stock:** `m_sStockId` names an `LF_ShopStock` in `LF_ShopStockConfig`; the core file is empty and a pack
+  overlay (listed in its mission header) fills it. Items carry their price and crime threshold; `m_Buyback` lists
+  goods it buys and whether it takes anything flagged by `LF_StolenGoods`, at `m_fFraction` (0..1) of the price
+  table's buy price. The server reads all of it per trade.
+- **Stall:** `Prefabs/Props/Commercial/LF_FenceStall.et`, a workbench with props and one Browse goods action.

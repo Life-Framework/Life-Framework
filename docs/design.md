@@ -302,5 +302,5 @@ fantasy.
 8. **Localized** - keys, not literals.
 9. **Tested** - LOGIC tests for rules; WORLD or manual steps as scope requires
    ([roadmap/testing/README.md](./roadmap/testing/README.md)).
-10. **Documented** - contract updated in [features.md](./features.md) when the
+10. **Documented** - contract updated in [features/](./features/) (one file per area; features.md is the generated index) when the
     implementation lands.

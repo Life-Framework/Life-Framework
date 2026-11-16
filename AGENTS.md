@@ -30,7 +30,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `addons/LifeFramework/Worlds/DebugWorld/` | Test world. `DebugWorld.ent` is 0 bytes on purpose; content is in `DebugWorld_Layers/*.layer` |
 | `tools/` | `cli` (one entry point), `validation/`, `test/`, `merge/`, `actions/`, `street/` |
 | `agent-box/` | Player-equivalent checks on a rendering Workbench (`agent-box/README.md`) |
-| `docs/` | `features.md` (what each system does), `debug-log-triage.md`, `worktrees.md`, `setup.md`, `persistence.md`, `roadmap/` |
+| `docs/` | `features/<area>.md` (what each system does; `features.md` is the generated index), `debug-log-triage.md`, `worktrees.md`, `setup.md`, `persistence.md`, `roadmap/` |
 | `website/` | life-framework.org: Vite + React site built from `docs/` and GitHub issues; own `package.json`; deploys from `main` to Cloudflare Pages (`website/README.md`) |
 
 ## Golden rules
@@ -58,7 +58,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
    `tools\cli regen-localization`, which sorts it by Id so string PRs merge on GitHub). Layouts reference `#Key`. Core text is neutral: place
    names and flavour copy go in the pack table (`LF_Everon1989/Language/`), and a pack key
    with the same Id overrides the core row (`validate-core-place-names`).
-8. **Update `docs/features.md` in the same change** that alters a feature.
+8. **Update the area's `docs/features/<area>.md` in the same change** that alters a feature. `docs/features.md` is a generated index (`tools\cli regen-features`); never add rows to it.
    Append or edit only your rows; the merge driver keeps rows both sides
    append and stops with conflict markers when both edit the same line.
 9. **Classify every new resource core or pack with the red line**
@@ -72,8 +72,13 @@ agent per area. `tools\cli usage` shows where the tokens went.
    `LF_Places` (core-vs-pack.md "Map independence"). Tests keep annex names.
 10. **Shared registries are per-feature files; never append to a central list.**
     A proof verb is `agent-box/proofs/<verb>.mjs`; a bus event is in
-    `Feature/<Area>/LF_<Area>Events.c` (`validate-registries` enforces both); a
-    new CLI command is `tools/commands/<name>.mjs`.
+    `Feature/<Area>/LF_<Area>Events.c`; a world-end static reset is a
+    `modded class LF_StaticResetHooks` in the owning class's file (`Core/LF_StaticReset.c`
+    lists nothing); a harness verb is a `modded class LF_AgentHarnessVerbs` in its
+    feature (`LF_AgentHarness.Dispatch` is frozen). `validate-registries` enforces all
+    four; `tools\cli heal-hotspots <slug>` moves an old branch's StaticReset and
+    `docs/features.md` edits to their new files. A new CLI command is
+    `tools/commands/<name>.mjs`.
 11. **What a player sees is looked at before it ships.** `tools\cli look <area>`
     (`look item <prefab>`, or `wb_preview` for one resource) before and after, the
     `polish` checklist against the pictures, and the pair embedded in the PR
@@ -92,11 +97,11 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | Command | Does |
 |---|---|
 | `tools\cli status` | Toolchain and MCP state |
-| `tools\cli lead [--prs N]` / `lead prune-safe [--dry-run]` | The lead's one-screen dispatch view in about 10 s: M2 and M3 issues by state, open PRs (conflicting first, with a generated-only hint), worktrees (active, idle, merged-prunable by GitHub PR, orphans, disk), pool machines (slow or down ones kept, a RAM-floor warning) and queue, the ship queue, accounts and slices when those commands exist. `prune-safe` prunes only worktrees whose PR is MERGED, clean, idle and unlocked, never forced (`docs/worktrees.md` "Lead view") |
+| `tools\cli lead [--prs N]` / `lead prune-safe [--dry-run]` | The lead's one-screen dispatch view in about 10 s: M2 and M3 issues by state, open PRs (conflicting first, with a generated-only hint), worktrees (active, idle, merged-prunable by GitHub PR, orphans, disk), pool machines (slow or down ones kept, a RAM-floor warning) and queue, accounts and slices when those commands exist. `prune-safe` prunes only worktrees whose PR is MERGED, clean, idle and unlocked, never forced (`docs/worktrees.md` "Lead view") |
 | `tools\cli wt new <slug> [--wait]` | Create worktree `Life-Framework-ws-<slug>` on `ws/<slug>` with its own ports; claims a ready warm checkout (about 2 s) when the pool has one (`wt warm`, `docs/worktrees.md` "Fast `wt new`") |
 | `tools\cli feature new <Area> <Name> [--kind logic\|world\|ui\|item] [--issue N]` | Scaffold a feature: script, tests with red-proof slots, session proof, string rows, docs rows, `tmp/pr-body-<slug>.md` and `tmp/feature-<name>.md` (the ordered checklist). `feature check` lists the `TODO(scaffold)` markers left |
 | `tools\cli evidence <issue> before\|after <area\|png>` / `... table` | Keep `look` pictures in `website/public/docs-images/<issue>/` and print the before and after markdown for the PR |
-| `tools\cli validate [--full\|--all]` | The repo checks in `tools/validation/` whose declared inputs changed since their last green run in this worktree (it says how many it skipped). The default also skips the Workbench compile (`validate-scripts.ps1`). `--all` runs every check; `--full`, `ci` and a T2 `wt gate`/`wt ship` run every check plus the compile |
+| `tools\cli validate [--full\|--all]` | The repo checks in `tools/validation/` whose declared inputs changed since their last green run in this worktree (it says how many it skipped). The default also skips the Workbench compile (`validate-scripts.ps1`). `--all` runs every check; `--full`, `ci` and `wt gate` run every check plus the compile |
 | `tools\cli test --no-build --tier fast\|all\|persistence` | Boot DebugWorld, run the `LF_Test` suite; exit code is pass/fail; a compile error fails it |
 | `tools\cli test --no-build --only <LF_Test_Class\|name\|LF_Test_File>[,...]` | Run just those tests (the iteration loop); prints `SUMMARY tier=only` |
 | `tools\cli test --no-build --red <LF_Test_Class\|name\|LF_Test_File>[,...]` | Batched red proof: ONE boot, each test's `RedProof()` hook on; exit 0 only if every listed test FAILED, else names the hollow ones; prints `SUMMARY tier=red` |
@@ -106,7 +111,9 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
 | `tools\cli logs <pattern>` | Grep the newest server `console.log` |
 | `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
-| `tools\cli wt gate <slug>` / `wt ship <slug> [--refs N] [--body-file F]` | The gate for the diff's tier / push, PR, then the ship queue: main merged once, the tiered `ci --remote` on a pool machine, auto-merge only on a pass. Ship runs a preflight (merge-tree, `validate` of changed inputs), pushes and **returns once queued**; `wt ship-status <slug>` is one line, `wait ship <slug>` blocks up to 540 s with one SUMMARY line (exit 2: run again), `--wait` blocks the old way (docs/worktrees.md "Async ship"). Tiers (`docs/worktrees.md` "Gate tiers"): T0 no `addons/` change, `validate --all`; T1 values changed in place in a `.conf`, `.st`, `.layout` or a number in an `.et`, static validate, config static, LOGIC tests plus the tests naming the touched files, no compile, build or full suite; T2 anything else or `--full-gate`, validate --full + build + full suite. Ship first checks the PR body (`tools/lib/pr-quality.mjs`): a body file for an `addons/` change, `## Manual testing`, an embedded picture for a player-visible change, no open finding in `tmp/review-<slug>.md`. `--refs N` puts `Refs #N` in the body; `--closes N` is the same and merging never closes an issue |
+| `tools\cli wt ship <slug> [--refs N] [--body-file F]` | No pre-merge gate (maintainer, 2026-11-15). PR body checks (`tools/lib/pr-quality.mjs`: a body file for an `addons/` change, `## Manual testing`, a picture for a player-visible change, no open finding in `tmp/review-<slug>.md`), a seconds-long preflight (merge-tree, `validate` of changed inputs), push, PR, `gh pr merge --auto --merge` at once; a branch GitHub calls behind gets main merged in and pushed again. GitHub's `validate` is the only pre-merge check (docs/worktrees.md "Ship"). `--refs N` puts `Refs #N` in the body; merging never closes an issue |
+| `tools\cli wt gate <slug>` | Optional manual gate for the diff's tier (`tools/lib/gate-tier.mjs`); not part of ship |
+| `tools\cli main-guard start\|stop\|status` | The gate, on main after the merge: the Workbench compile first on each new head (a red compile is bisected and reverted at once), then build, full suite, placement audit and e2e (flake rule: red twice). Each head's `compiled-ok`/`green`/`red` is in `tmp/wt/main-guard-state.json` and a `main-guard` commit status. `wt new` and `world-sync` pin to the newest `compiled-ok` commit (`--unchecked-main` / `--unchecked` override); `promote --confirm` needs `green` (docs/worktrees.md "Main guard") |
 | `toolscli playtest checklist [--all] [--budget 60]` / `playtest verdicts <file>` | One playtest session for many `needs-playtest` issues: collects the `## Manual testing` steps of their merged PRs, drops repeats, orders them as a walking route (two-player, restart and JIP marked), estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass/fail box per issue, the fixed smoke list (`docs/playtest/smoke-list.md`) first. Default is the top hour: open M2 chapter and epic work first, then big player flows, polish last; one line can cover several issues. `verdicts` reads the ticked file and PRINTS the `gh` label and comment commands; the maintainer or lead runs them, agents never do |
 | `tools\cli promote [--to sha] [--confirm]` | Human step: list PRs merged to `main` since `stable` and write the checklist; `--confirm` fast-forwards `stable` (`docs/worktrees.md` "Release gates"). Agents never run it |
 | `tools\cli call <tool> '<json>'\|@file` | Call an MCP tool (`api_search`, `game_read`, ...) |
@@ -114,7 +121,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 
 **Compact output.** Heavy commands (`validate`, `test`, `session up`, `look`, `wt gate|ship`, `asset run`, `harness.mjs flow`, proof verbs) print one `SUMMARY <cmd> ok|fail ... log=<path>` line and only the failing items with file:line; the full transcript is the log file in `tmp/logs/`. Never pipe them through `tail`/`Select-Object`. `--verbose` prints everything (`docs/agent-budget.md` "Compact command output").
 
-**Test and session queue.** Just run `test`, `e2e`, or `session up` as before; the pool queues itself (tests have their own lane beside sessions, runs get a time budget from history) and prints one line per outcome, so read it. `TIMEOUT after Ns` means the run hung and was killed; pass `--budget <s>` only for a known-long run. **Never pin** (`--local`, `--machine`): the pool sends a run to the machine with the most RAM headroom (this PC's RAM is often short), a pin prints a warning when another machine has room, and `ci`, `wt gate` and `wt ship` (suite and placement audit) never pin. Sessions flow like a river, a lane is held only while it is used: idle 3 min while a job waits, or 5 min with nobody waiting, closes a session; any harness command resets the clock, `session.mjs lease [min]` holds it. A session older than 10 min while another session request queues gets a one-line warning on its next harness or session command and is closed 2 min later (`session up --hold <min>`, at most 20, for a known-long job). A gate holds a test lane only for the suite run, never during `validate --full` or the build. Development-track and spike work runs with `--priority low` (`wt new <slug> --priority low` records it). Details: `docs/worktrees.md` "Lanes, priority, leases, budgets".
+**Test and session queue.** Just run `test`, `e2e`, or `session up` as before; the pool queues itself (tests have their own lane beside sessions, runs get a time budget from history) and prints one line per outcome, so read it. `TIMEOUT after Ns` means the run hung and was killed; pass `--budget <s>` only for a known-long run. **Never pin** (`--local`, `--machine`): the pool sends a run to the machine with the most RAM headroom (this PC's RAM is often short), a pin prints a warning when another machine has room, and `ci` and `wt gate` never pin. Sessions flow like a river, a lane is held only while it is used: idle 3 min while a job waits, or 5 min with nobody waiting, closes a session; any harness command resets the clock, `session.mjs lease [min]` holds it. A session older than 10 min while another session request queues gets a one-line warning on its next harness or session command and is closed 2 min later (`session up --hold <min>`, at most 20, for a known-long job). A gate holds a test lane only for the suite run, never during `validate --full` or the build. Development-track and spike work runs with `--priority low` (`wt new <slug> --priority low` records it). Details: `docs/worktrees.md` "Lanes, priority, leases, budgets".
 
 **Session profiles.** `session up` defaults to `--profile lowspec` (640x360, lowest textures; the pool reserves less RAM for it and trims idle sessions before it refuses one), which is right for any proof that reads logs and harness results. Shots, `shots area`, filming, `journey` and a session proof whose images go in a PR (UI, motion, a second player) use `--profile full` (`docs/worktrees.md` "Session profiles").
 
@@ -158,7 +165,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   cover the rest. Each extra merge re-runs validate and the suite for nothing.
   `wt ship` merges main only when `git merge-tree` reports a conflict. The
   generated and append-only files (string table, language confs, test
-  registry, `features.md`, `debug-log-triage.md`, the enforce-lint baseline)
+  registry, `docs/features/*.md`, `debug-log-triage.md`, the enforce-lint baseline)
   have merge drivers in `tools/merge/`, so they do not count as conflicts.
 - After your PR is up, `tools\cli prs status`; the maintainer/lead runs `prs heal`.
 
@@ -182,7 +189,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
 - Loop: `tools\cli test --no-build --only <LF_Test_Class>` (~10 s) until green, one `--red` run for the new tests, then `--tier all` once at the end.
 - Persistence tests go through public mutators and accessors only. In-session
   round trips prove nothing about restarts; use `wt e2e` or a real restart.
-- **Pass cache.** `test` (and the suite inside `ci`, `wt gate`, `wt ship`) reuses a pass whose key matches: `addons/` (tracked and untracked), its `resourceDatabase.rdb`, `tools/test/`, the selection, the addon list and the server build. A failure is never reused; persistence tier, `--red`, `dev`, `e2e` and the placement audit always run (`docs/worktrees.md` "Pass cache").
+- **Pass cache.** `test` (and the suite inside `ci`, `wt gate`) reuses a pass whose key matches: `addons/` (tracked and untracked), its `resourceDatabase.rdb`, `tools/test/`, the selection, the addon list and the server build. A failure is never reused; persistence tier, `--red`, `dev`, `e2e` and the placement audit always run (`docs/worktrees.md` "Pass cache").
 - Wait with one blocking call: run `test`, `e2e`, `session up` or `session wait` in the foreground with a timeout up to 600000 ms; never `sleep`/`until` loops, Monitor, ScheduleWakeup or status polls (`docs/agent-budget.md`). A subagent or delegated task is never woken by a background run, so ending its turn while one runs ends the task unfinished; run in the foreground (timeout up to 600000 ms) or call `t3_background_wait` before ending the turn.
 - A rule that keeps getting broken becomes a check: `tools\cli validate` runs every script in `tools/validation/`.
 
@@ -295,7 +302,7 @@ what the human's promotion checklist shows. `docs/worktrees.md` "Release gates".
 
 ## Verification ladder
 
-1. `tools\cli validate`: cheap, run it constantly. `validate --full` (adds the Workbench compile for every platform) runs in `wt gate`/`wt ship`.
+1. `tools\cli validate`: cheap, run it constantly. `validate --full` (adds the Workbench compile for every platform) runs in `wt gate` and in the main guard after every merge.
 2. The `LF_Test` suite in your worktree: `--only` or `--tier fast` while iterating, `--tier all` once before calling work done.
 3. Drive the real path: DebugWorld play mode or `node agent-box/harness.mjs flow <name>`.
    For how a place looks, `tools\cli look <area>` first (pictures in about 25 s, no session); a session only for UI, motion, a second player, sound or filming; PR pictures come from `look` too (`docs/visual-testing.md`).

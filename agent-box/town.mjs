@@ -5,7 +5,7 @@
 // manifest edit. `checkTown` is the offline half: it runs in selftest and in
 // `tools\cli validate`. `report town` (report.mjs) is the play-mode half.
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { loadWorld } from "./layers.mjs";
 
@@ -25,6 +25,9 @@ import { loadWorld } from "./layers.mjs";
 //   when     the player state the actions need ("an on-duty officer"). The
 //            report walks as a civilian, so play mode reports a missing
 //            action there as a warning ("needs <when>"), not a failure
+//   signRadiusM optional per-site override of signRadiusM, for a site whose anchor entity
+//            stands off its sign by design (the maintainer's 2026-11 layout: the car lot
+//            is a row of cars and the sign stands at its street corner)
 //   outskirts true for a site that stands off the street by design (farm,
 //            quarry, the contraband barn out of town): the neighbour rule skips
 //            it (docs/roadmap/m1-25-village.md)
@@ -35,16 +38,16 @@ export const TOWN = {
   sites: [
     // The civilian town spawn on the square. The other spawn points (mine,
     // police) are elsewhere, and their centre is not a place a player stands.
-    { id: "spawn", entity: "Spawn_Town", actions: [], sign: "town_map", step: 4 },
-    // Arrival step 1 on the square (QuestGiver_Clerk, M1-18); the town map board beside him explains it.
-    { id: "clerk", entity: "Quest_Clerk", actions: ["LF_QuestAction"], sign: "town_map", step: 5 },
+    { id: "spawn", entity: "Spawn_Town", actions: [], sign: "town_map", step: 4, signRadiusM: 12 },
+    // Arrival step 1 on the square (QuestGiver_Clerk, M1-18): behind the registry counter, the REGISTRY OFFICE board beside him.
+    { id: "clerk", entity: "Quest_Clerk", actions: ["LF_QuestAction"], sign: "registry", step: 5 },
     { id: "post_office", entity: "Roadmap_Job_Depot", actions: ["LF_JobSignUpAction", "LF_JobStartRunAction"], sign: "post_office", step: 6 },
     { id: "job_drop", entity: "Roadmap_Job_Drop", actions: ["LF_JobDropoffAction"], sign: null, step: 7 },
     { id: "traders", entity: "TraderChainCounter", actions: ["LF_OpenTraderAction"], sign: "traders", step: 7 },
     { id: "atm", entity: "ATM_Debug", actions: ["LF_ATMAction"], sign: "atm", step: 8 },
     { id: "general_store", entity: "Shop_GeneralStore_Debug", actions: ["LF_ShopAction"], sign: "general_store", step: 9 },
     { id: "black_market", entity: "Shop_BlackMarket_Debug", actions: ["LF_ShopAction"], sign: "black_market", step: 9 },
-    { id: "vehicle_lot", entity: "Roadmap_Vehicle_Lot", actions: ["LF_VehicleBuyAction"], sign: "vehicle_lot", step: 10 },
+    { id: "vehicle_lot", entity: "Roadmap_Vehicle_Lot", actions: ["LF_VehicleBuyAction"], sign: "vehicle_lot", step: 10, signRadiusM: 22 },
     // The till is robbed through its attendant's dialogue with a weapon drawn (#936); its world action is retired.
     { id: "fuel_station", entity: "Roadmap_Fuel_Clerk", actions: ["LF_DialogueTalkAction"], sign: "fuel_station", step: 11, when: "the robbery reply needs a weapon drawn" },
     { id: "hospital_till", entity: "Roadmap_Hospital_Till", actions: ["LF_RobAction"], sign: null, step: 11 },
@@ -97,6 +100,7 @@ export function manifestErrors(manifest) {
     if (!Array.isArray(site?.actions)) errors.push(`${label}: actions must be a list`);
     if (site?.sign !== null && (typeof site?.sign !== "string" || !site.sign)) errors.push(`${label}: sign is an LF_Signs.conf id or null`);
     if (!Number.isInteger(site?.step)) errors.push(`${label}: step must be a journey step number`);
+    if ("signRadiusM" in (site || {}) && !(site.signRadiusM > 0)) errors.push(`${label}: signRadiusM must be a positive number`);
     if ("when" in (site || {}) && (typeof site.when !== "string" || !site.when)) errors.push(`${label}: when names the player state its actions need`);
     if ("x" in (site || {}) || "z" in (site || {}) || "coords" in (site || {})) {
       errors.push(`${label}: positions come from the layers, not the manifest`);
@@ -110,11 +114,23 @@ function samePrefab(a, b) {
 }
 
 // One site against the placed entities. Returns the position the report uses.
+// The entity name is only the preferred anchor: the maintainer renames town entities by hand, so a
+// site whose name is gone resolves to the placed entity that carries all its actions, with a
+// warning. The contract is that the town offers those actions, not what the entity is called.
 export function resolveSite(site, world) {
   const errors = [];
   if (site.entity) {
     const hits = world.filter((entity) => entity.name === site.entity);
-    if (!hits.length) return { ok: false, errors: [`${site.entity} is not in any DebugWorld layer`] };
+    if (!hits.length && site.actions?.length) {
+      const carriers = world.filter((entity) => site.actions.every((action) => entity.actions?.includes(action)));
+      if (carriers.length) {
+        const hit = carriers[0];
+        const more = carriers.length > 1 ? ` (and ${carriers.length - 1} more)` : "";
+        const warnings = [`${site.entity} is not placed; resolved by its actions to ${hit.name || "an unnamed entity"} in ${hit.layer}${more}`];
+        return { ok: true, errors: [], warnings, name: hit.name, layer: hit.layer, x: hit.x, y: hit.y, z: hit.z, count: carriers.length };
+      }
+    }
+    if (!hits.length) return { ok: false, errors: [`${site.entity} is not in any DebugWorld layer and nothing placed carries ${site.actions?.join(", ") || "its actions"}`] };
     if (hits.length > 1) {
       const where = hits.map((hit) => hit.layer).join(", ");
       return { ok: false, errors: [`${site.entity} is placed ${hits.length} times (${where})`] };
@@ -184,7 +200,18 @@ export function parseSignConfig(text) {
 export function loadSignCatalog(root) {
   const file = join(root, "addons", "LifeFramework", "Configs", "Signs", "LF_Signs.conf");
   if (!existsSync(file)) return new Map();
-  return parseSignConfig(readFileSync(file, "utf8"));
+  const catalog = parseSignConfig(readFileSync(file, "utf8"));
+  // The flagship pack loads beside the core (tools/lib/addons.mjs) and adds or patches signs
+  // (`m_sOp "add"|"patch"`); a patch only replaces the fields it names.
+  const packDir = join(root, "addons", "LF_Everon1989", "Configs", "Signs");
+  if (existsSync(packDir)) {
+    for (const name of readdirSync(packDir).filter((n) => n.endsWith(".conf")).sort()) {
+      for (const [id, def] of parseSignConfig(readFileSync(join(packDir, name), "utf8"))) {
+        catalog.set(id, def.m_sOp === "patch" && catalog.has(id) ? { ...catalog.get(id), ...def } : def);
+      }
+    }
+  }
+  return catalog;
 }
 
 // What the Read card shows, resolved the way LF_SignCatalog.Resolve does. A
@@ -214,18 +241,22 @@ export function nearestSign(signId, point, world) {
 
 // Sign problems for one resolved site. `card` may be the live Read card
 // verdict ("blank" or "ok") from play mode; otherwise the config decides.
+// `far` holds the distance note (a sign farther than radiusM). Where a sign stands is the
+// maintainer's call, so it is a warning everywhere and never joins `issues`.
 export function signIssues(site, point, world, catalog, strings, radiusM, live = {}) {
-  if (!site.sign) return { issues: [], sign: null };
+  if (!site.sign) return { issues: [], far: [], sign: null };
+  radiusM = site.signRadiusM ?? radiusM;
   const sign = nearestSign(site.sign, point, world);
   const issues = [];
+  const far = [];
   if (!sign) issues.push(`no ${site.sign} sign placed`);
-  else if (sign.distanceM > radiusM) issues.push(`${site.sign} sign is ${sign.distanceM} m away (max ${radiusM})`);
+  else if (sign.distanceM > radiusM) far.push(`${site.sign} sign is ${sign.distanceM} m away (max ${radiusM})`);
   const card = signCard(site.sign, catalog, strings);
   if (!card.found) issues.push(`${site.sign} is not in LF_Signs.conf`);
   else if (card.blank) issues.push(`${site.sign} Read card is blank`);
   if (live.read === false && sign) issues.push(`look does not offer Read on ${sign.name || "the sign"}`);
   if (live.card === "blank" && card.found && !card.blank) issues.push(`${site.sign} Read card shows blank in play`);
-  return { issues, sign, card };
+  return { issues, far, sign, card };
 }
 
 export function nearestNeighbour(index, points) {
@@ -238,8 +269,9 @@ export function nearestNeighbour(index, points) {
 }
 
 // Offline check: every site resolves to placed entities with the expected
-// actions, sits within neighbourM of another site, and has its sign (or a
-// pending warning while requireSigns is false).
+// actions and has its sign (or a pending warning while requireSigns is false).
+// Distances are layout, which the maintainer owns: a site more than neighbourM from
+// the rest, or a sign farther than its radius, is a warning, never an error.
 export function checkTown(root, { manifest = TOWN, world, catalog, strings } = {}) {
   const errors = [];
   const warnings = [];
@@ -252,16 +284,19 @@ export function checkTown(root, { manifest = TOWN, world, catalog, strings } = {
   const placed = rows.filter((row) => row.place.errors.length === 0 || row.place.x != null);
   for (const row of rows) {
     for (const error of row.place.errors) errors.push(`${row.site.id}: ${error}`);
+    for (const warning of row.place.warnings || []) warnings.push(`${row.site.id}: ${warning}`);
   }
   for (const row of placed) {
     const index = placed.indexOf(row);
     row.neighbourM = nearestNeighbour(index, placed.map((item) => item.place));
     if (row.neighbourM > manifest.neighbourM && !row.site.outskirts) {
-      errors.push(`${row.site.id}: ${row.neighbourM} m from the nearest other site (max ${manifest.neighbourM})`);
+      warnings.push(`${row.site.id}: layout: ${row.neighbourM} m from the nearest other site (max ${manifest.neighbourM})`);
     }
     const signed = signIssues(row.site, row.place, world, catalog, strings, manifest.signRadiusM);
     row.sign = signed.sign;
     row.signIssues = signed.issues;
+    row.signFar = signed.far;
+    for (const note of signed.far) warnings.push(`${row.site.id}: layout: ${note}`);
     for (const issue of signed.issues) {
       if (manifest.requireSigns) errors.push(`${row.site.id}: ${issue}`);
       else warnings.push(`${row.site.id}: sign: pending (${issue})`);
@@ -322,7 +357,8 @@ export function judgeTownRow(row, { requireSigns = TOWN.requireSigns, neighbourM
     if (!widgets || !shot) failures.push("menu is blank");
   }
   if (row.mesh === "white" || row.mesh === "missing") failures.push("site is white or missing");
-  if (Number(row.neighbourM) > neighbourM && !row.outskirts) failures.push(`more than ${neighbourM} m from its nearest neighbour`);
+  if (Number(row.neighbourM) > neighbourM && !row.outskirts) warnings.push(`layout: more than ${neighbourM} m from its nearest neighbour`);
+  for (const note of row.signFar || []) warnings.push(`layout: ${note}`);
   for (const issue of row.signIssues || []) {
     if (requireSigns) failures.push(`sign: ${issue}`);
     else warnings.push(`sign: pending (${issue})`);

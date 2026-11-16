@@ -11,8 +11,8 @@ import { arrive, clientBox, clientSees, clientSeesPeer, parseState, sessionDir }
 // .HijackDamageHandling -> LF_Stun.TryHit), which finds the taser in client 1's hands. The harness
 // cannot aim or pull a trigger (`input` takes menu actions only), so a fired dart reaching the
 // target stays a manual step.
-const TASER = "Roadmap_Police_Taser";
-const DESK = "Roadmap_Police_Desk";
+export const TASER = "Roadmap_Police_Taser";
+export const DESK = "Roadmap_Police_Desk";
 const PREVIEWS = ["{6D583A40C5C5C150}Prefabs/Weapons/Handguns/Taser/Handgun_Taser.et", "{22DC576156907CBF}Prefabs/Weapons/Handguns/Taser/Magazine_Taser.et", "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et"];
 const STUN_SECONDS = 8; // LF_StunWeaponComponent.m_fStunSeconds on Handgun_Taser.et
 

@@ -1,6 +1,6 @@
 // red-proof: Observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_HoldUp`: asserting two incident rows instead of one failed `one hold-up logs one incident (expected 2, got 1)`; restored.
 
-// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
+// tier: WORLD
 //! incident/holdup: one hold-up publishes one intent that the incident log records (actor, target,
 //! position, zone); out of range, no weapon, and the cooldown are refused and record nothing.
 class LF_Test_HoldUp : LF_Test
@@ -22,9 +22,12 @@ class LF_Test_HoldUp : LF_Test
 		array<ref LF_IncidentRecord> before = LF_IncidentLog.ExportAll();
 		LF_IncidentLog.ResetStatics();
 		LF_IncidentLog.Install();
+		// The test owns its safe zone, so it holds wherever the town plaza stands (validate-no-town-layout-asserts).
+		vector plaza = "1000 0 1000";
+		LF_Zones.RegisterCircle("test-holdup-safe", LF_ZoneRule.SAFE, plaza, 10);
 
 		// One hold-up, one intent row with actor, target and where.
-		ctx.Equal(LF_EHoldUp.OK, LF_HoldUp.Attempt("actor-1", "target-1", Vector(115, 0, 250), 1.2, true, 1000), "a hold-up goes through");
+		ctx.Equal(LF_EHoldUp.OK, LF_HoldUp.Attempt("actor-1", "target-1", plaza, 1.2, true, 1000), "a hold-up goes through");
 		ctx.Equal(1, LF_IncidentLog.Count(), "one hold-up logs one incident");
 		array<ref LF_IncidentRecord> rows = LF_IncidentLog.Query(vector.Zero, -1, 0, -1, LF_IncidentConfig.KIND_HOLDUP);
 		ctx.Equal(1, rows.Count(), "the row is a holdup");
@@ -38,9 +41,10 @@ class LF_Test_HoldUp : LF_Test
 		// Refusals record nothing.
 		ctx.Equal(LF_EHoldUp.OUT_OF_RANGE, LF_HoldUp.Attempt("actor-2", "target-1", Vector(0, 0, 0), 9, true, 1000), "out of range is refused");
 		ctx.Equal(LF_EHoldUp.NO_WEAPON, LF_HoldUp.Attempt("actor-2", "target-1", Vector(0, 0, 0), 1, false, 1000), "no weapon is refused");
-		ctx.Equal(LF_EHoldUp.COOLDOWN, LF_HoldUp.Attempt("actor-1", "target-2", Vector(115, 0, 250), 1, true, 1005), "the same actor inside the cooldown is refused");
+		ctx.Equal(LF_EHoldUp.COOLDOWN, LF_HoldUp.Attempt("actor-1", "target-2", plaza, 1, true, 1005), "the same actor inside the cooldown is refused");
 		ctx.Equal(1, LF_IncidentLog.Count(), "refused hold-ups left the log at one row");
 
+		LF_Zones.Unregister("test-holdup-safe");
 		LF_IncidentLog.ResetStatics();
 		LF_IncidentLog.ApplyAll(before);
 	}

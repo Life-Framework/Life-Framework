@@ -32,11 +32,14 @@ const norm = (p) => String(p).replace(/\\/g, "/");
 // Prose under docs/ (docs/worktrees.md, docs/architecture/*.md ...). Two PRs that both edit one, or only
 // append to it, are not made to wait for each other: a text conflict shows at merge time (the worker's
 // merge of origin/<base>, then GitHub's mergeable state, then `prs heal`), and no gate result depends on it.
+// Every other markdown file too (Feature/<Area>/Feature.md, READMEs): the lf-markdown driver merges
+// rows both sides add, and nothing a gate runs reads them. #1852 waited for #1850 on Medic/Feature.md.
 export function docsText(path) {
-  return /^docs\/.+\.md$/i.test(norm(path));
+  return /\.md$/i.test(norm(path));
 }
 
-// The files two PRs both change, driver-merged files and docs/**/*.md left out.
+// The files two PRs both change, driver-merged files and markdown left out. Only real code or resource
+// overlaps serialize.
 export function overlap(a = [], b = []) {
   const skip = (p) => driverMerged(p) || docsText(p);
   const set = new Set(a.map(norm).filter((p) => !skip(p)));
@@ -118,15 +121,22 @@ export function pickRunnable(entries, { slots = 1, lightSlots = DEFAULT_LIGHT, n
   return { start, wait };
 }
 
-// Main moved while the gate ran (mainFiles: what the new main commits changed). Re-gate only when they
-// change a file the PR changes, or a generated file; otherwise the gated head goes up as is and GitHub's
-// required validate check covers the combination.
-export function regateDecision({ prFiles = [], mainFiles = [], attempts = 1, maxAttempts = 3 }) {
+// Main moved while the gate ran, or before the merge (mainFiles: what the new main commits changed). Re-gate
+// only on overlap. `deps` is tools/lib/regate-overlap.mjs dependentOverlap(): the PR's own files plus what
+// depends on them (feature folder, shared Core, a prefab or config referenced by GUID, a class named across
+// the two sides). Without it (the texts could not be read) the old file-level rule stands: a file the PR changes,
+// or any generated file. No overlap: the gated head goes up as is and GitHub's required validate check and the
+// main guard (tools/main-guard.mjs) cover the combination.
+export function regateDecision({ prFiles = [], mainFiles = [], attempts = 1, maxAttempts = 3, deps = null }) {
   if (!mainFiles.length) return { regate: false, why: "main did not move during the gate" };
-  const shared = overlap(prFiles, mainFiles); // driver-merged docs both sides append to do not count
-  const gen = [...new Set(mainFiles.map(norm))].filter(generated);
-  const why = shared.length ? `main changed ${shared.length} file(s) this PR changes (${shared.slice(0, 3).join(", ")})` : gen.length ? `main changed generated file(s) (${gen.slice(0, 2).join(", ")})` : null;
-  if (!why) return { regate: false, why: `main moved (${mainFiles.length} file(s)), none shared with this PR or generated; pushing the gated head` };
+  let why;
+  if (deps) why = deps.overlap ? `main overlaps this PR: ${(deps.reasons ?? []).slice(0, 3).join("; ") || "unspecified"}` : null;
+  else {
+    const shared = overlap(prFiles, mainFiles); // driver-merged docs both sides append to do not count
+    const gen = [...new Set(mainFiles.map(norm))].filter(generated);
+    why = shared.length ? `main changed ${shared.length} file(s) this PR changes (${shared.slice(0, 3).join(", ")})` : gen.length ? `main changed generated file(s) (${gen.slice(0, 2).join(", ")})` : null;
+  }
+  if (!why) return { regate: false, why: `main moved (${mainFiles.length} file(s)), no overlap with this PR's files or their dependents; merging the gated head` };
   if (attempts >= maxAttempts) return { regate: false, why: `${why}, but ${attempts} gates ran already; pushing, GitHub's validate check covers it`, capped: true };
   return { regate: true, why };
 }

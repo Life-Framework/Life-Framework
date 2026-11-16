@@ -25,6 +25,7 @@ import { findReparsePoints, recycleWorktree, removeWorktree, safeRemoveTree } fr
 import { localSetting } from "./lib/local-config.mjs";
 import { ADDONS } from "./lib/addons.mjs";
 import { sessionDirOf } from "./lib/session-lease.mjs";
+import * as pinLib from "./lib/guard-pin.mjs";
 
 const IS_WIN = process.platform === "win32";
 const GH_ON_PATH = IS_WIN ? "gh.cmd" : "gh";
@@ -456,7 +457,15 @@ export function checkBaseName(base) {
   if (!/^[A-Za-z0-9][A-Za-z0-9._/-]*$/.test(base) || base.includes("..")) throw new Error(`invalid base branch '${base}'`);
 }
 
-export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = true } = {}) {
+function defaultPin(root) {
+  try {
+    return pinLib.resolveChecked(root, { hub: hubDirOf(root), remoteLookups: 15 });
+  } catch {
+    return null;
+  }
+}
+
+export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = true, unchecked = false, resolvePin = defaultPin } = {}) {
   checkBaseName(base);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
     throw new Error(`invalid slug '${slug}': lowercase letters, digits and single hyphens only`);
@@ -476,6 +485,18 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
     throw new Error(`base branch origin/${base} does not exist; push it first`);
   }
   const lockWait = Math.max(waitMs, 120000);
+  // main: start from the newest commit the main guard marked compiled-ok or green, never an unchecked head
+  // (--unchecked-main overrides). No checked commit found: origin/main, with a note.
+  let start = "origin/" + base;
+  let pinned = null;
+  let pinNote = null;
+  if (base === "main" && !unchecked) {
+    const p = resolvePin(root);
+    if (p) {
+      start = p.sha;
+      pinned = p.sha.slice(0, 8) + " (" + p.status + ", " + p.behind + " commit(s) behind origin/main)";
+    } else pinNote = "no compiled-ok commit from the main guard found; based on origin/main";
+  }
 
   // Phase 1, locked: reserve the slug and its ports, then either claim a warm
   // tree and create the branch, or register a fresh worktree without checking
@@ -497,11 +518,11 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
     if (existsSync(dir)) throw new Error(`directory already exists: ${dir}`);
     claimed = warm ? takeWarm(root, state, slug) : null;
     if (claimed) {
-      const br = git(root, ["branch", branch, `origin/${base}`]);
+      const br = git(root, ["branch", branch, start]);
       // A throw here skips the state write, so the warm tree stays ready.
       if (br.status !== 0) throw new Error(`git branch ${branch} failed: ${br.stderr || br.stdout}`);
     } else {
-      addFreshNoCheckout(root, dir, branch, base, false);
+      addFreshNoCheckout(root, dir, branch, base, false, start);
     }
     ports = allocatePorts(state);
     state.worktrees[slug] = {
@@ -555,16 +576,16 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
   }, { waitMs: lockWait });
   mark("finish", t2);
   kickWarmFill(root);
-  return { slug, path: dir, branch, ports, base, priority, warm: fromWarm, ms: Date.now() - t0, lockMs, phases };
+  return { slug, path: dir, branch, ports, base, pinned, pinNote, priority, warm: fromWarm, ms: Date.now() - t0, lockMs, phases };
 }
 
 // `git worktree add --no-checkout`: registers the worktree and its branch
 // (same upstream tracking as `worktree add -b <branch> origin/<base>`) without
 // writing the files, which `git reset --hard` does afterwards, unlocked.
-function addFreshNoCheckout(root, dir, branch, base, branchExists) {
+function addFreshNoCheckout(root, dir, branch, base, branchExists, start = `origin/${base}`) {
   const args = branchExists
     ? ["worktree", "add", "--no-checkout", dir, branch]
-    : ["worktree", "add", "--no-checkout", dir, "-b", branch, `origin/${base}`];
+    : ["worktree", "add", "--no-checkout", dir, "-b", branch, start];
   const add = git(root, args);
   if (add.status !== 0) throw new Error(`git worktree add failed: ${add.stderr || add.stdout}`);
 }
@@ -1041,14 +1062,42 @@ export function commitSubjects(root, range) {
   return res.status === 0 ? res.stdout.split(/\r?\n/).filter(Boolean) : [];
 }
 
-export function createPrGh(root, { head, title, body, base = "main" }) {
-  const gh = ghBin();
-  const res = run(gh, ["pr", "create", "--base", base, "--head", head, "--title", title, "--body", body], { cwd: root });
+// The body always goes through a file: a generated body (a world ship's change list) runs to tens of KB, and as a
+// command-line argument it fails with spawnSync ENAMETOOLONG on Windows (~32 KB limit). The file lives in
+// <root>/tmp (scratch, gitignored) under a unique name and is removed afterwards. `deps` is for the selftest.
+export function withBodyFile(root, body, fn, tag = "pr-body-gh") {
+  const dir = join(root, "tmp");
+  mkdirSync(dir, { recursive: true });
+  const file = join(dir, `${tag}-${process.pid}-${Date.now()}.md`);
+  writeFileSync(file, String(body ?? ""), "utf8");
+  try {
+    return fn(file);
+  } finally {
+    rmSync(file, { force: true });
+  }
+}
+
+export function createPrGh(root, { head, title, body, base = "main" }, deps = {}) {
+  const gh = deps.gh ?? ghBin();
+  const exec = deps.run ?? run;
+  const res = withBodyFile(root, body, (file) => exec(gh, ["pr", "create", "--base", base, "--head", head, "--title", title, "--body-file", file], { cwd: root }));
   if (res.status !== 0) throw new Error(`gh pr create failed: ${res.stderr || res.stdout}`);
   const out = res.stdout.trim();
   const url = (out.match(/https?:\/\/\S+/i) || [])[0] || out.split(/\r?\n/).pop();
   const number = parseInt((url.match(/\/pull\/(\d+)/) || [])[1], 10);
   return { url, number };
+}
+
+// The body of PR #number, or null when gh cannot read it.
+export function prBodyGh(root, number) {
+  const res = run(ghBin(), ["pr", "view", String(number), "--json", "body", "--jq", ".body"], { cwd: root });
+  return res.status === 0 ? res.stdout.replace(/\r?\n$/, "") : null;
+}
+
+// Replaces the body of PR #number (through --body-file, like createPrGh).
+export function setPrBodyGh(root, number, body) {
+  const res = withBodyFile(root, body, (file) => run(ghBin(), ["pr", "edit", String(number), "--body-file", file], { cwd: root }));
+  if (res.status !== 0) throw new Error(`gh pr edit failed: ${res.stderr || res.stdout}`);
 }
 
 // The open PR for a head branch, or null. Lets a re-run of `wt ship` reuse it.

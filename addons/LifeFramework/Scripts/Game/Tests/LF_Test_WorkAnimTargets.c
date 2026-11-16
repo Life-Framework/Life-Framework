@@ -1,7 +1,8 @@
-// red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_WorkAnimTargets` with the van-box start expectation changed to starts + 2 failed `- drilling the van box starts the work animation (expected 3, got 2)`. Restored; green.
+// red-proof: 2026-11-16 the old test failed in the main guard suite at 58aa54c8 (`- the drill opens the van box`) once #1847 made the drill a hand tool; `test --red LF_Test_WorkAnimTargets` (RedProof skips holding the drill) fails `- the held drill starts on the van box`.
 // tier: WORLD
 //! work/anim-targets (#513 follow-up): the working pose also starts for a locked vehicle's lockpick
-//! attempt and for the drill on the cash van box, not only the door and the bank vault. Drives the
+//! attempt, not only the door and the bank vault. The cash van box drill is a hand tool (#1847):
+//! holding it starts the timed drill and no pose. Drives the
 //! real Begin/Rob paths with a fixture character; broadcasts are silenced, the test counts the
 //! starts the server decided.
 class LF_Test_WorkAnimTargets : LF_Test
@@ -51,16 +52,24 @@ class LF_Test_WorkAnimTargets : LF_Test
 		LF_Lockpick.s_fRollOverride = -1;
 		carLock.SetLocked(wasLocked);
 
-		// The cash van box: a drill opens it and the robber works the lock.
+		// The cash van box: the drill is a hand tool since #1847, so holding it starts the timed
+		// drill and no work pose (the push fought the held gadget).
 		string vanId = "work-anim-van-box";
 		LF_Bank.Configure(vanId, 3, 400, 0, 0, 0);
 		LF_Bank.ConfigureTools(vanId, "drill,charge", 0);
 		LF_Bank.ConfigureHeist(vanId, LF_BankLoot.KIND_BAGS, "", LF_WantedReports.OFFENCE_CASH_VAN, false, -1, 0);
 		ctx.Equal(1, LF_InventoryUtils.AddAmount(worker, LF_Bank.DRILL_PREFAB, 1), "the worker carries a drill");
+		IEntity drill = LF_HandTool.Carried(worker, LF_VaultDrill.TOOL_ID);
+		ctx.NotNull(drill, "the carried drill is a hand tool");
+		if (!RedProof())
+			LF_TestVaultDrillFixture.Hold(worker, drill, true);
+
 		int starts = LF_WorkAnim.GetStartCount();
-		ctx.True(LF_Bank.Rob(vanId, "test-anim-van", worker, 0), "the drill opens the van box");
-		ctx.Equal(starts + 1, LF_WorkAnim.GetStartCount(), "drilling the van box starts the work animation");
-		LF_WorkAnim.End(worker, "test done");
+		ctx.True(LF_Bank.Rob(vanId, "test-anim-van", worker, 0), "the held drill starts on the van box");
+		ctx.True(LF_VaultDrill.IsDrilling(vanId), "the van box is being drilled");
+		ctx.Equal(starts, LF_WorkAnim.GetStartCount(), "the held drill plays no work pose");
+		LF_VaultDrill.Cancel(vanId, "test done");
+		LF_TestVaultDrillFixture.Hold(worker, drill, false);
 
 		LF_Bank.Restock(vanId);
 		LF_TestCharacterFixture.Delete(worker);

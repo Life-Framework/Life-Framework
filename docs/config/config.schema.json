@@ -440,6 +440,11 @@
           "minimum": 1,
           "maximum": 10
         },
+        "testUnlockAll": {
+          "type": "boolean",
+          "description": "TESTING ONLY, never on a live server. Opens every whitelist-gated job (police roster, playtime, application) to every player so a tester can clock in. A dedicated server ignores it unless the mission header allows it; the flagship config must not set it",
+          "default": false
+        },
         "tracks": {
           "type": "object",
           "description": "Job level ladders: the XP thresholds of each job. Records are an object keyed by a stable key. The key is the job id (CIVILIAN, DELIVERY, FARMER, ...). A job no shipped track has adds one, which must set levelThresholds; an existing key changes only the fields given. The level is 1 plus the thresholds a character's XP has reached, so a changed table reaches existing saves.",

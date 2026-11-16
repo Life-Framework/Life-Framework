@@ -294,6 +294,31 @@ StringTable {
      Target_en_us "Civil Registry of Everon, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
     }
+    CustomStringTableItem "{0238B801ABD1D07C}" {
+     Id "LF-Shop_Desc_GunCounter"
+     Target_en_us "Rifles, pistols and ammunition for permit holders; scopes, holsters and pouches for anyone."
+     Comment "Pack override of the core gun counter description (price list subtitle) for the Everon 1989 gun store."
+    }
+    CustomStringTableItem "{88A40BFFEF7CB897}" {
+     Id "LF-Shop_Desc_PharmacyCounter"
+     Target_en_us "Morphine and saline, for licensed medics only."
+     Comment "Shop description of the drug store pharmacy counter (outlet pharmacy_counter)."
+    }
+    CustomStringTableItem "{B1BC977506FDDA48}" {
+     Id "LF-Shop_Name_PharmacyCounter"
+     Target_en_us "Dispensary"
+     Comment "Shop name of the drug store pharmacy counter: the item catalogue outlet pharmacy_counter, morphine and saline behind the medic licence."
+    }
+    CustomStringTableItem "{53F9E5EEA5C98E4E}" {
+     Id "LF-Shop_Open_GunCounter"
+     Target_en_us "Buy guns and ammunition"
+     Comment "Pack override of the core gun counter action: in the Everon 1989 gun store the counter sells rifles, pistols, magazines, scopes, holsters and pouches, not only a handgun."
+    }
+    CustomStringTableItem "{7729AC333C1E6567}" {
+     Id "LF-Shop_Open_PharmacyCounter"
+     Target_en_us "Ask the pharmacist"
+     Comment "Action prompt at the drug store pharmacy counter: opens the price list of the restricted medicines."
+    }
     CustomStringTableItem "{4C78A1A01E9D8559}" {
      Id "LF-Sign_Atm_How"
      Target_en_us "Talk to the teller, then Deposit or Withdraw."
@@ -711,7 +736,7 @@ StringTable {
     }
     CustomStringTableItem "{9A2459E811183285}" {
      Id "LF-Sign_GeneralStore_How"
-     Target_en_us "Browse the store at the counter|Then *Buy* or *Sell*"
+     Target_en_us "Take what you want off the shelves and *Pay* at the till|Or buy and sell over the counter"
      Comment "Sign card for the general store counter, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{E011AD948E4F1AAC}" {
@@ -733,6 +758,31 @@ StringTable {
      Id "LF-Sign_GeneralStore_What"
      Target_en_us "Food and supplies."
      Comment "Sign card for the general store counter, What section."
+    }
+    CustomStringTableItem "{E78F26E6B9E7D646}" {
+     Id "LF-Sign_GunStore_How"
+     Target_en_us "Guns, magazines, scopes and holsters: *Buy guns and ammunition* at the gun counter|Hats and field gear: take them off the wall shelves and *Pay for goods* at the till on the counter"
+     Comment "Sign card for the gun store, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{FED7197CFC22F228}" {
+     Id "LF-Sign_GunStore_Needs"
+     Target_en_us "A firearm permit for guns and ammunition. The counter refuses the order without one."
+     Comment "Sign card for the gun store, You need section."
+    }
+    CustomStringTableItem "{7B2783518336052C}" {
+     Id "LF-Sign_GunStore_Next"
+     Target_en_us "The rifles in the cabinet and the window are for show: order them at the counter."
+     Comment "Sign card for the gun store, Next section."
+    }
+    CustomStringTableItem "{F7A24BC184133EB5}" {
+     Id "LF-Sign_GunStore_Title"
+     Target_en_us "Gunsmith"
+     Comment "Title of the fascia sign over the gun store window on the main street (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Gunsmith."
+    }
+    CustomStringTableItem "{DDD223CF06D5D4AC}" {
+     Id "LF-Sign_GunStore_What"
+     Target_en_us "Sporting rifles, pistols and ammunition for permit holders. Binoculars, compasses, maps and hunters' hats for anyone."
+     Comment "Sign card for the gun store, What section."
     }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
@@ -1129,6 +1179,26 @@ StringTable {
      Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
      Comment "Quarry info board, What section."
     }
+    CustomStringTableItem "{6FE6312861E955B2}" {
+     Id "LF-Sign_Registry_How"
+     Target_en_us "Talk to the clerk at the counter. New in town: say so, and you are handed your card. A lost card is replaced for a fee."
+     Comment "Sign card for the registry office, How section."
+    }
+    CustomStringTableItem "{0BBD169F316A1F68}" {
+     Id "LF-Sign_Registry_Next"
+     Target_en_us "The town board on the square shows the shops, the post office and the bank."
+     Comment "Sign card for the registry office, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{42E4A0CDC7A4C7CC}" {
+     Id "LF-Sign_Registry_Title"
+     Target_en_us "Registry office"
+     Comment "Title of the sign beside the town clerk's counter on the spawn square. Printed on the plate and shown in the prompt as Read: Registry office."
+    }
+    CustomStringTableItem "{A76A30792191E10C}" {
+     Id "LF-Sign_Registry_What"
+     Target_en_us "The town clerk registers new arrivals and issues the identity card."
+     Comment "Sign card for the registry office (the town clerk, arrival chain), What section."
+    }
     CustomStringTableItem "{2AFCEED3736DE810}" {
      Id "LF-Sign_Rules_Next"
      Target_en_us "Take a complaint to staff after the scene, not during it. This is an alpha: the world can be wiped, with 24 hours' notice."
@@ -1313,6 +1383,181 @@ StringTable {
      Id "LF-Sign_VehicleLot_What"
      Target_en_us "Cars and trucks for sale. Each comes locked, with one key and its own plates."
      Comment "Sign card for the vehicle lot counter, What section."
+    }
+    CustomStringTableItem "{08E024031EF25E98}" {
+     Id "LF-TownBoard_Title"
+     Target_en_us "Everon town board"
+     Comment "Header printed across the top of the town board on the square."
+    }
+    CustomStringTableItem "{FB1FC150BA9CFE1B}" {
+     Id "LF-TownCard_Bank_Category"
+     Target_en_us "Bank"
+     Comment "Town board card (bank): category."
+    }
+    CustomStringTableItem "{57314E9DCB06DBD0}" {
+     Id "LF-TownCard_Bank_Detail"
+     Target_en_us "Talk to the teller, then *Deposit* or *Withdraw*|Cash you carry stays on your body if you die; money in the bank is safe|A vehicle over $500 is paid from the account"
+     Comment "Town board card (bank): detail sheet text."
+    }
+    CustomStringTableItem "{C1302AEFB910B90A}" {
+     Id "LF-TownCard_Bank_Line"
+     Target_en_us "Bank your pay with the teller. Banked money stays yours."
+     Comment "Town board card (bank): one line on the card."
+    }
+    CustomStringTableItem "{E09CB077B4DDB5CA}" {
+     Id "LF-TownCard_Bank_Place"
+     Target_en_us "Bank teller"
+     Comment "Town board card (bank): name of the place in the where line."
+    }
+    CustomStringTableItem "{1AAD706A70F92792}" {
+     Id "LF-TownCard_Bank_Title"
+     Target_en_us "Keep your money safe"
+     Comment "Town board card (bank): card title."
+    }
+    CustomStringTableItem "{ECE54C3B0636F415}" {
+     Id "LF-TownCard_Cars_Category"
+     Target_en_us "Cars"
+     Comment "Town board card (cars): category."
+    }
+    CustomStringTableItem "{96AE648CE800B877}" {
+     Id "LF-TownCard_Cars_Detail"
+     Target_en_us "*Buy vehicle* at the counter; it waits for you on the lot|S105 $1000, UAZ $2500, van $4000|Anything over $500 is paid from your bank account|Keep it at the garage so it is still yours after a restart"
+     Comment "Town board card (cars): detail sheet text."
+    }
+    CustomStringTableItem "{80A4EACE013653FB}" {
+     Id "LF-TownCard_Cars_Line"
+     Target_en_us "Cars and trucks for sale, each with its own key and plates."
+     Comment "Town board card (cars): one line on the card."
+    }
+    CustomStringTableItem "{3DAF249A70C31274}" {
+     Id "LF-TownCard_Cars_Title"
+     Target_en_us "Vehicle lot"
+     Comment "Town board card (cars): card title."
+    }
+    CustomStringTableItem "{F756D3AE390FEE94}" {
+     Id "LF-TownCard_Hospital_Category"
+     Target_en_us "Hospital"
+     Comment "Town board card (hospital): category."
+    }
+    CustomStringTableItem "{A0F8B368DFFA9091}" {
+     Id "LF-TownCard_Hospital_Detail"
+     Target_en_us "*Clock in* at the duty desk for the medic kit|A medic can *Revive* a downed patient and bring them to a bed|Treatment bills are paid in cash at the desk"
+     Comment "Town board card (hospital): detail sheet text."
+    }
+    CustomStringTableItem "{A054EE91DBE51289}" {
+     Id "LF-TownCard_Hospital_Line"
+     Target_en_us "Clock in as a medic, or pay a treatment bill at the desk."
+     Comment "Town board card (hospital): one line on the card."
+    }
+    CustomStringTableItem "{7FDA4F1CF582AFAA}" {
+     Id "LF-TownCard_Hospital_Place"
+     Target_en_us "Hospital"
+     Comment "Town board card (hospital): name of the place in the where line."
+    }
+    CustomStringTableItem "{E11BF514478D9956}" {
+     Id "LF-TownCard_Hospital_Title"
+     Target_en_us "Medics and treatment"
+     Comment "Town board card (hospital): card title."
+    }
+    CustomStringTableItem "{8BA71674F74C751F}" {
+     Id "LF-TownCard_Orgs_Category"
+     Target_en_us "Organizations"
+     Comment "Town board card (organisations): category."
+    }
+    CustomStringTableItem "{705D5E5AF6A6E2B2}" {
+     Id "LF-TownCard_Orgs_Detail"
+     Target_en_us "At the organization desk: *Found organization*, then invite your members|Keep a shared fund and buy a processing slot|The walled hideout yard up the alley opens for members only"
+     Comment "Town board card (organisations): detail sheet text."
+    }
+    CustomStringTableItem "{1A83AB0AA90B5EC0}" {
+     Id "LF-TownCard_Orgs_Line"
+     Target_en_us "Register an organization, share a fund, open a hideout."
+     Comment "Town board card (organisations): one line on the card."
+    }
+    CustomStringTableItem "{8CBC1F1C256D60B5}" {
+     Id "LF-TownCard_Orgs_Title"
+     Target_en_us "Start a crew"
+     Comment "Town board card (organisations): card title."
+    }
+    CustomStringTableItem "{43D58C6A3657CB6C}" {
+     Id "LF-TownCard_Police_Category"
+     Target_en_us "Police"
+     Comment "Town board card (police): category."
+    }
+    CustomStringTableItem "{1EA2FAD3C5642AC7}" {
+     Id "LF-TownCard_Police_Detail"
+     Target_en_us "At the duty desk: *Apply to the police*|Once you are on the roster, *Clock in* for the uniform and *Draw kit* at the armory|Duty pays $30 a minute|Wanted people go to the jail yard behind the station"
+     Comment "Town board card (police): detail sheet text."
+    }
+    CustomStringTableItem "{D8038010B55B05AE}" {
+     Id "LF-TownCard_Police_Line"
+     Target_en_us "Join the roster, clock in at the station, keep the street safe."
+     Comment "Town board card (police): one line on the card."
+    }
+    CustomStringTableItem "{687B20E68A019E97}" {
+     Id "LF-TownCard_Police_Title"
+     Target_en_us "The police are recruiting"
+     Comment "Town board card (police): card title."
+    }
+    CustomStringTableItem "{6B1F2E88521A7E2A}" {
+     Id "LF-TownCard_Rules_Category"
+     Target_en_us "Rules"
+     Comment "Town board card (rules): category."
+    }
+    CustomStringTableItem "{5746E8387DB640D9}" {
+     Id "LF-TownCard_Rules_Detail"
+     Target_en_us "Hurt someone only for a reason your character has|With a gun on you, comply, then report it|After a death, forget what led to it|The full rules are on the board beside this one"
+     Comment "Town board card (rules): detail sheet text."
+    }
+    CustomStringTableItem "{7375D17098A6DF55}" {
+     Id "LF-TownCard_Rules_Line"
+     Target_en_us "No random violence. Comply at gunpoint. A new life after a death."
+     Comment "Town board card (rules): one line on the card."
+    }
+    CustomStringTableItem "{B4FB395E7706C938}" {
+     Id "LF-TownCard_Rules_Title"
+     Target_en_us "Town rules"
+     Comment "Town board card (rules): card title."
+    }
+    CustomStringTableItem "{80C3470CDDD10B50}" {
+     Id "LF-TownCard_Shops_Category"
+     Target_en_us "Shops"
+     Comment "Town board card (shops): category."
+    }
+    CustomStringTableItem "{1F9B4466F2F38518}" {
+     Id "LF-TownCard_Shops_Detail"
+     Target_en_us "*Buy* or *Sell* at the general store counter|The market stalls next door buy fruit and goods for cash|Apples and plums grow in the farm orchard east of the village"
+     Comment "Town board card (shops): detail sheet text."
+    }
+    CustomStringTableItem "{8FD857354C5AA276}" {
+     Id "LF-TownCard_Shops_Line"
+     Target_en_us "Food and supplies. The market stalls buy what you gather."
+     Comment "Town board card (shops): one line on the card."
+    }
+    CustomStringTableItem "{5F866D445512A0D6}" {
+     Id "LF-TownCard_Shops_Title"
+     Target_en_us "Store and market"
+     Comment "Town board card (shops): card title."
+    }
+    CustomStringTableItem "{C9558D7D09BA4A0A}" {
+     Id "LF-TownCard_Work_Category"
+     Target_en_us "Work"
+     Comment "Town board card (work): category printed in red at the top of the card."
+    }
+    CustomStringTableItem "{DCC13D1E658AD23C}" {
+     Id "LF-TownCard_Work_Detail"
+     Target_en_us "At the counter: *Take courier work*, then *Pick up parcel*|Carry it to the drop and *Complete the run*|A courier run pays $40; fuel and taxi work open at higher work levels|Out of work? *Collect benefit* at the same counter"
+     Comment "Town board card (work): detail sheet text. | separates list items; *word* is printed in the accent colour and names an action the player sees."
+    }
+    CustomStringTableItem "{D5BCB9C32D672356}" {
+     Id "LF-TownCard_Work_Line"
+     Target_en_us "Deliver parcels for the post office. Paid in cash."
+     Comment "Town board card (work): one line on the card."
+    }
+    CustomStringTableItem "{82FD9D6087457BC9}" {
+     Id "LF-TownCard_Work_Title"
+     Target_en_us "Couriers wanted"
+     Comment "Town board card (work): card title; the prompt reads Read: <title>."
     }
     CustomStringTableItem "{AEFD273B4E3FE2B7}" {
      Id "LF_Everon1989_AlphaNotice"

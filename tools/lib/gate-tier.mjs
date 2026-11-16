@@ -4,14 +4,24 @@
 //   T1  data only: existing values changed in place in a .conf, .st, .layout or a number in an .et.
 //       validate (static), the config harness static stage, the placement gate, and ONE boot of the
 //       LOGIC tests plus every test whose source names the touched file, config class, GUID or string key.
-//   T2  everything else: the full gate (Workbench compile + build, the whole suite, core only, config
-//       sessions, placement audit).
+//   T1w a maintainer hand edit (docs/worktrees.md "Maintainer world edits"): on a town-maintainer-* branch,
+//       only modified .layer files whose entities were moved, or added / removed from prefabs already in use
+//       (tools/lib/world-diff.mjs). validate (static), the placement audit on the touched layers, and the
+//       tests that name a touched layer or entity (a failing test is a warning here, only a compile error or a
+//       run that judged nothing blocks: tools/lib/world-test-judge.mjs). Reported as tier 1 with `world` set.
+//   T2  everything else. Slim (`slim: true`) unless the diff hits a risk class (tools/lib/gate-risk.mjs:
+//       persistence, money, RPC, GUID/.meta, addon boundary/.gproj, an interrogate file): validate --full with
+//       the Workbench compile, plus the LOGIC tier; the main guard runs the rest after the merge. With a risk
+//       class (`risk` lists them) or --full-gate: the full gate (compile + build, the whole suite, core only,
+//       config sessions, placement audit, pre-move e2e).
 //
 // Conservative by construction: a file is T1 only when its base and head texts have the same number of
 // lines, every line that holds a brace is unchanged (so the block structure is identical), and every
 // changed line keeps its key and changes only a scalar value of the kind its file type allows. Anything
 // else, including any file this module cannot read, makes the whole change T2.
 // Pure functions; proven offline by tools/validation/gate-tier-selftest.mjs.
+
+import { riskClasses, splitPatches } from "./gate-risk.mjs";
 
 const GUID = /\{[0-9A-Fa-f]{16}\}/;
 const NUM = /^-?(\d+(\.\d*)?|\.\d+)(e[-+]?\d+)?$/i;
@@ -84,11 +94,23 @@ export function dataOnlyProblem(path, before, after, ids = []) {
 
 // files: [{ path, status: "M"|"A"|"D"|"R"|"?"..., before, after }]. Returns
 // { tier: 0|1|2, reasons: [string], data: [paths], ids: [string-table Ids] }.
-export function classify(files, { forceFull = false } = {}) {
-  if (forceFull) return { tier: 2, reasons: ["--full-gate"], data: [], ids: [] };
+// `branch` and `worldEdit` enable T1w: worldEdit(layerFiles) returns null when the layer changes are a hand
+// edit the fast tier may take (tools/lib/world-diff.mjs handEditProblem), else the reason; it may also set
+// `touched` on the result through its second argument.
+export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;
+
+export function classify(files, { forceFull = false, branch = null, worldEdit = null, review = [] } = {}) {
+  if (forceFull) return { tier: 2, slim: false, risk: [], reasons: ["--full-gate"], data: [], ids: [] };
   const game = files.filter((f) => f.path.startsWith("addons/"));
   if (!game.length) return { tier: 0, reasons: ["nothing under addons/ changed"], data: [], ids: [] };
-  const reasons = [];
+  let refused = null;
+  if (branch && MAINTAINER_BRANCH.test(branch) && worldEdit && game.every((f) => f.status === "M" && f.path.endsWith(".layer"))) {
+    const extra = {};
+    const why = worldEdit(game, extra);
+    if (!why) return { tier: 1, world: true, reasons: [`maintainer hand edit: ${game.length} layer(s), moved / added / removed entities of existing prefabs only`], data: game.map((f) => f.path), ids: [], touched: extra.touched ?? [] };
+    refused = `not a T1w hand edit: ${why}`;
+  }
+  const reasons = refused ? [refused] : [];
   const data = [];
   const ids = [];
   for (const f of game) {
@@ -105,7 +127,12 @@ export function classify(files, { forceFull = false } = {}) {
     if (p) reasons.push(`${f.path}: ${p}`);
     else data.push(f.path);
   }
-  if (reasons.length) return { tier: 2, reasons, data, ids: [...new Set(ids)] };
+  if (reasons.length) {
+    // T2: slim unless a risk class keeps the full gate (tools/lib/gate-risk.mjs).
+    const risk = riskClasses(files, { review });
+    const why = risk.length ? risk.map((r) => `full gate (${r.cls}): ${r.why}`) : ["slim: no persistence, money, RPC, GUID, boundary or interrogate change"];
+    return { tier: 2, slim: risk.length === 0, risk: risk.map((r) => r.cls), reasons: [...why, ...reasons], data, ids: [...new Set(ids)] };
+  }
   return { tier: 1, reasons: [`data only: ${data.length} file(s) change values in place`], data, ids: [...new Set(ids)] };
 }
 
@@ -149,33 +176,83 @@ export function selectTests(tests, tokens) {
 }
 
 export function tierLine(c) {
-  const name = ["T0 (no game files)", "T1 (data only)", "T2 (full gate)"][c.tier];
+  const name = c.world ? "T1w (maintainer world edit)" : c.tier === 2 && c.slim ? "T2s (slim: validate --full + LOGIC)" : ["T0 (no game files)", "T1 (data only)", "T2 (full gate)"][c.tier];
   return `gate tier ${name}: ${c.reasons.slice(0, 6).join("; ")}${c.reasons.length > 6 ? `; +${c.reasons.length - 6} more` : ""}`;
 }
 
-// Reads the change set of a worktree against the merge base with origin/<base>, uncommitted and
-// untracked files included. `git(args)` returns { status, stdout }; `read(path)` the working file or null.
-export function collectDiff({ git, read, base }) {
+// What the branch's own change is measured against: the merge base with origin/<base>, moved up to the newest
+// <base> commit the branch has merged in. A synced branch (world-sync, wt ship) carries merges of main; when the
+// local origin/<base> ref is older than the main it last merged, the plain merge base is behind that merge and
+// everything main changed since leaks into the "branch diff" (docs, scripts), so a maintainer's layer edit stops
+// being T1w. The tree diff against the newest merged main commit is exactly the branch's own delta.
+// `git(args)` returns { status, stdout }. Null when there is no merge base.
+const MAIN_MERGE = /^Merge (?:remote-tracking branch '|branch '|origin\/|tag ')?(?:origin\/)?(main|master|m\d+)\b/i;
+export function ownBase(git, base) {
   const mb = git(["merge-base", `origin/${base}`, "HEAD"]);
   if (mb.status !== 0) return null;
-  const ref = mb.stdout.trim();
+  let ref = mb.stdout.trim();
+  const log = git(["log", "--first-parent", "--merges", "-n", "40", "--format=%H%x09%P%x09%s", "HEAD"]);
+  if (log.status !== 0) return ref;
+  for (const line of log.stdout.split(/\r?\n/).filter(Boolean)) {
+    const [, parents, subject] = line.split("\t");
+    const second = (parents || "").split(" ")[1];
+    if (!second || !MAIN_MERGE.test(subject || "")) continue;
+    // Newest main merge wins; it only counts when it is ahead of the plain merge base.
+    if (second !== ref && git(["merge-base", "--is-ancestor", ref, second]).status === 0) ref = second;
+    break;
+  }
+  return ref;
+}
+
+// Reads the change set of a worktree against ownBase (the merge base with origin/<base>, up to the main the
+// branch last merged), uncommitted and untracked files included. `git(args)` returns { status, stdout };
+// `read(path)` the working file or null.
+export function collectDiff({ git, read, base }) {
+  const ref = ownBase(git, base);
+  if (!ref) return null;
   const ns = git(["diff", "--name-status", "-M", ref]);
   if (ns.status !== 0) return null;
+  // -U0 patches of the game files, for the slim-gate risk rules (gate-risk.mjs). Unreadable: none, and a
+  // changed script then counts as "unreadable" (full gate).
+  const pd = git(["diff", "-U0", "-M", ref, "--", "addons"]);
+  const patches = pd.status === 0 ? splitPatches(pd.stdout) : {};
   const files = [];
   for (const line of ns.stdout.split(/\r?\n/).filter(Boolean)) {
     const parts = line.split("\t");
     const status = parts[0][0];
     const path = parts[parts.length - 1];
     const f = { path, status };
-    if (status === "M" && path.startsWith("addons/") && T1_EXT.includes(ext(path))) {
+    if (status === "M" && path.startsWith("addons/") && (T1_EXT.includes(ext(path)) || ext(path) === ".layer")) {
       const s = git(["show", `${ref}:${path}`]);
       f.before = s.status === 0 ? s.stdout : null;
       f.after = read(path);
+    }
+    if (path.startsWith("addons/")) {
+      if (patches[path] !== undefined) f.patch = patches[path];
+      if (ext(path) === ".c") {
+        if (status !== "A" && f.before === undefined) {
+          const s = git(["show", `${ref}:${parts[1]}`]);
+          f.before = s.status === 0 ? s.stdout : null;
+        }
+        if (status !== "D" && f.after === undefined) f.after = read(path);
+      }
     }
     files.push(f);
   }
   const un = git(["ls-files", "--others", "--exclude-standard"]);
   if (un.status !== 0) return null;
-  for (const p of un.stdout.split(/\r?\n/).filter(Boolean)) files.push({ path: p, status: "?" });
+  for (const p of un.stdout.split(/\r?\n/).filter(Boolean)) {
+    const f = { path: p, status: "?" };
+    // An untracked script: its whole text is the change.
+    if (p.startsWith("addons/") && ext(p) === ".c") {
+      const t = read(p);
+      if (typeof t === "string") {
+        const ls = t.replace(/\r\n/g, "\n").split("\n");
+        f.after = t;
+        f.patch = [`@@ -0,0 +1,${ls.length} @@`, ...ls.map((l) => `+${l}`)].join("\n");
+      }
+    }
+    files.push(f);
+  }
   return files;
 }

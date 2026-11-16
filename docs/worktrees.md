@@ -101,7 +101,7 @@ tools\cli wt list               # who's working, ports, dirty/merged state
 tools\cli wt test <slug>        # run the LFTEST suite in that worktree
 tools\cli wt dev <slug>         # fast loop in that worktree (no build)
 tools\cli wt gate <slug>        # validate --full + build + test (tier=all)
-tools\cli wt ship <slug>        # push -> PR -> ship queue (merge main, gate on the pool) -> auto-merge
+tools\cli wt ship <slug>        # preflight -> push -> PR -> auto-merge (main guard checks main after)
 tools\cli wt prune <slug>       # remove a merged worktree + branch
 ```
 
@@ -128,37 +128,76 @@ Worktrees cut from and ship to `main` by default. For a long-lived branch such a
 - `tools\cli wt sync-base m3 [--source main]` opens a PR that merges `origin/main` into `m3` from a `ws/sync-m3-<stamp>` worktree (merge drivers resolve generated files; any other conflict stops with the file list). It never force-pushes; prune the sync worktree after the merge.
 - The `validate` workflow runs on every `pull_request` (no branch filter), so PRs into `m3` get it. Making `validate` a required check on `m3` is a GitHub branch-protection setting, not done by the tooling.
 
-### Gate tiers
+### Ship (no pre-merge gate)
 
-`wt gate` and `wt ship` (and the ship queue, which runs `wt ship`) pick the gate from the diff
-against the merge base with `origin/<base>`, uncommitted and untracked files included
-(`tools/lib/gate-tier.mjs`, proven by `tools/validation/gate-tier-selftest.mjs`):
+Maintainer decision 2026-11-15: the pre-merge ship gate is gone. GitHub's required `validate` check is the only
+gate before a merge; the main guard (next section) checks `main` after it.
 
-| Tier | When | Runs |
-|---|---|---|
-| T0 | nothing under `addons/` changed (docs, website, tools) | `validate --all` |
-| T1 | data only: every changed `addons/` file is a modified `.conf`, `.st`, `.layout` or `.et` whose values changed in place | `validate` (static), the config harness static stage, the placement gate, and one test boot: every LOGIC test plus every test whose source names a touched file's stem, its GUID, its config class or a changed string key |
-| T2 | anything else | `validate --full` + build, the full suite and the core-only pass, the config harness sessions, the placement gate |
+`tools\cli wt ship <slug> [--refs N] [--body-file F]` (`tools/lib/ship-direct.mjs`, `ship-direct-selftest.mjs`):
 
-T1 is decided line by line, and anything unclear is T2. A file is data-only when its base and
-head have the same line count, every line holding a brace is unchanged (same blocks, same
-component and widget GUIDs), and each changed line keeps its key and swaps one scalar value with no
-`{GUID}` in it. Per type: `.conf` and `.layout` any number, vector, quoted string or word
-(`Text "#Key"`, `Color 1 0.8 0.8 1`, `m_iPrice 7`); `.et` numbers and vectors only; `.st`
-only `Target_*` text and `Comment`; a language `.conf` never its `Ids` block. `ID`, `Id`,
-`Name`, `Parent` and prefab keys are identities, never values.
+1. Refuses a dirty tree, a branch with no commits beyond `origin/<base>`, and a body that fails the PR checks
+   (`tools/lib/pr-quality.mjs`: a body file for an `addons/` change, `## Manual testing`, a picture for a visible change,
+   no open finding in `tmp/review-<slug>.md`).
+2. Preflight, seconds: `git merge-tree` against `origin/<base>` (a conflict outside the driver-merged files stops it; a
+   driver-only conflict merges main in here) and `validate` of the changed inputs. `--no-preflight` skips it.
+3. Pushes, opens the PR (or reuses the open one) and runs `gh pr merge --auto --merge` at once. If GitHub refuses
+   because the branch is behind ("Base branch was modified", not up to date) or reports it `BEHIND`, ship merges
+   `origin/<base>` in, pushes again and retries.
+4. Prints `SUMMARY ship ok|fail`, then `PR <url>, head <sha>`. No queue, no pool lane, no wait.
 
-Always T2: a `.c` file, a `.meta`, an added, deleted, renamed or untracked file under `addons/`,
-a `.layer`/`.ent`, a binary asset, a changed resource reference, a `.conf` that **adds or removes
-a key** (the key can switch on a code path its default never ran, and an equal line count is how the
-classifier knows the blocks did not move), and a `.et` string value or component change.
+`--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
+<slug>` stays as an optional manual check (tiers in `tools/lib/gate-tier.mjs`, `gate-risk.mjs`). The ship queue
+(`tools/ship-queue.mjs`), `wt ship-status`, `wait ship` and the tier selection in ship are retired; their code stays
+on disk until someone deletes it.
 
-T1 skips the build because `test --no-build` loads the addons from source; the build only
-packages. `ci --tiered` classifies again in the worktree and falls back to the full gate when the
-diff is no longer data-only. Measured 2026-11-14 on a one-value `.conf` change (`m_iPrice 500 -> 505`), same worktree, warm rdb:
-T2 (`--full-gate`) 630 s (compile + build 390 s on lf-cloud, both suite passes about 2 min, config
-sessions about 2 min); T1 112 s (validate 49 s, one boot of 267 tests 57 s); T0 44 s. Both T1 runs in
-that measurement failed on the related test that asserts the changed value.
+### Main guard
+
+The gate now runs on `main`, after the merge (`tools/main-guard.mjs`, rules in `tools/lib/main-guard.mjs`, proven by
+`main-guard-selftest.mjs` and `main-guard-compile-selftest.mjs`). One worker on one machine (the laptop); heavy runs go
+through the pool at `--priority high`.
+
+```sh
+toolscli main-guard start | stop | status   # status is also a line in `toolscli lead`
+```
+
+1. **Stage 1, compile first.** On a new `origin/main` head (batched to one run per 3 min) it runs the Workbench compile
+   (`ci --wb-only --compile-only`, on a pool machine with the `workbench` cap) in `Life-Framework-ws-main-guard-compile`.
+   Pass: the head is `compiled-ok`. Fail: no recheck (a compile error is deterministic); it bisects the first-parent
+   PR merges since the last `compiled-ok` head and reverts the culprit at once. Exit 3 or 4 (no machine, Workbench died
+   short of RAM) is no verdict; it tries again next tick.
+2. **Stage 2, the rest**, on the newest `compiled-ok` head, at most every 10 min, in `Life-Framework-ws-main-guard-run`:
+   `build`, `test --no-build --tier all`, `audit placement --strict`, `e2e --pre-move 502ebf39 --mission playtest`.
+   All pass: `green`. A red step reruns at the same head; a pass on the rerun is a flake
+   (`tmp/logs/main-guard-flakes.log`), red twice bisects and reverts.
+   **Stage 2b, the town tests (warn-only).** The 12 tests of `tools/test/town-tests.json` (the roadmap scenarios, the
+   narrative loop, the sign coverage) are not in the suite: `test --tier all`, `ci`, `wt gate` and `wt ship` skip them.
+   After the suite goes `green`, the guard runs them once as their own stage, `test --no-build --town` (one boot of the
+   playtest world), and posts the commit status `main-guard/town` (success or failure). A red town stage never bisects,
+   reruns or reverts, and never changes `main-guard/suite`; it is a line in `tmp/logs/main-guard.log` and a fix-card
+   issue. The lead also runs `tools\cli test --no-build --town` before `promote`. Maintainer decision, 2026-11-16 (#1895);
+   the guard wiring is #1901, until it lands the lead's run is the only one.
+3. **Verdicts, on GitHub.** Each head gets commit statuses every machine reads through `gh`: `main-guard/compile`
+   (success = `compiled-ok`, failure = compile red) and `main-guard/suite` (success = `green`, failure = red).
+   `<hub>/main-guard-state.json` on the guard machine is only a cache, used when GitHub has no verdict or `gh` fails
+   (`tools/lib/guard-pin.mjs`). `main-guard status` on any machine prints who runs the guard, main's head verdict
+   and the newest checked commit, all from GitHub.
+   **One guard:** the worker holds a lease, the `main-guard/lease` status on the repository's root commit ("held
+   <host> <pid> <time>", renewed every 5 min, stale after 30). `start` and the worker refuse while another machine
+   holds a fresh lease; `stop` releases it.
+4. **Reverts.** `git revert -m 1` on `ws/revert-pr<N>-guard`, a PR `Revert #N (main guard: <what>)` with auto-merge, a
+   comment on #N, its issues reopened as `regression`, one line to the staff webhook (`LF_STAFF_WEBHOOK_URL` or
+   `"mainGuard": { "webhookUrl" }` in `lf.local.json`).
+
+Never reverted: a revert; a merge that was on main when the guard first started; a PR twice; **a placement audit red**
+(town layout findings warn on every branch, #1872: the guard opens a fix-card issue instead); **a `town-maintainer-*`
+PR for anything but a compile break** (a test or audit failure gets a fix card). It never pushes `main`.
+`LF_MAIN_GUARD=0` stops the worker. Log: `tmp/logs/main-guard.log`.
+
+**What reads the verdicts.** `wt new` bases a worktree on the newest `compiled-ok` (or `green`) commit of
+`origin/main`, not the raw head (`--unchecked-main` overrides; with no checked commit it falls back to `origin/main`
+and says so). `world sync` pulls the maintainer's worktree only up to that commit and prints how far behind the head it
+is. `promote --confirm` needs `green` on the exact commit; `release --confirm` runs the full suite itself.
+
 
 ## Release gates (`stable`, `promote`)
 
@@ -185,161 +224,6 @@ a `fail [ ]` box per issue. The default is the top hour; `--all` lists everythin
 section, and only a regression in an already-verified feature blocks promotion. After the pass,
 `tools\cli playtest verdicts <file>` reads the ticked file and prints the `gh` commands (verified or regression label, a
 comment, close on pass). It runs none of them: the maintainer or lead reviews and runs them. Agents never do.
-
-## Auto-merge
-
-`wt ship <slug> [--refs N] [--body-file F]` goes through the ship queue (next section). The steps
-below are the old local path, still used with `--no-queue` (or `LF_SHIP_QUEUE=0`, or without `gh`):
-
-1. Refuses a dirty tree or a branch with no commits beyond `origin/main`.
-2. Merges `origin/main` only when `git merge-tree` reports a conflict (the
-   merge drivers in `tools/merge/` then resolve the generated files). A clean
-   branch ships as is.
-3. Runs the gate for the diff's tier ("Gate tiers" below). T2 is never incremental (see "Incremental validate" below): `validate --full` (with the Workbench compile) + headless
-   build + `test` tier=all. T0 (nothing under `addons/`) runs plain `validate --all` and never waits for a
-   pool slot. T1 (values changed in place) skips the compile, build and full suite. `--full-gate` forces T2 (`wt gate` follows the same rule); the gate prints the tier and why, and ship adds it to the PR body under `## Gate`. After the suite,
-   a branch that touches a `.layer`, a `Prefabs` `.et` or LF_Utils/spawn code also runs
-   `audit placement --strict` (queued like `test`); anything flagged and not in the allowlist fails the
-   gate, and it prints the entities with the allowlist fix hint (`docs/placement-audit.md`).
-4. Pushes `ws/<slug>`, opens the PR (or reuses the open one on a re-run).
-   `--refs N` (or `--closes N`, same thing) starts the body with `Refs #N`, and any `Closes/Fixes/Resolves #N` in the body is rewritten to `Refs #N` (merging never closes an issue); `--body-file F` supplies the
-   body (keep it in `<worktree>/tmp/`).
-5. Queues `gh pr merge --auto --merge`: GitHub merges once the required
-   `validate` check and reviews pass, and deletes the branch.
-6. Prints `PR <url>, head <sha>`.
-
-`--pr-only` stops after step 4. If the gate fails or the merge of main
-conflicts, the ship stops with a message; fix, commit, and re-run the same
-command. Do not merge `origin/main` by hand unless GitHub reports the PR
-`CONFLICTING` or you need code from main.
-
-## Ship queue
-
-About fifteen agents ship at once. With a local gate each `wt ship` ran `validate --full`, a build and the
-suite on this PC, and often twice: main moved during the gate, GitHub reported the PR `CONFLICTING`, the
-agent merged main and gated again. The ship queue (`tools/ship-queue.mjs`, rules in
-`tools/lib/ship-queue.mjs`) is one merge train for the repo:
-
-1. `wt ship <slug>` checks the tree and the PR body as before, pushes `ws/<slug>`, opens the PR (or reuses
-   it, switching off an auto-merge left from an earlier ship, so the push cannot land ungated) and adds it
-   to the queue (`tmp/wt/ship-queue.json` in the main checkout). It starts the worker when none runs.
-2. The worker takes queued PRs in FIFO order. For each it merges `origin/<base>` into the worktree **once**
-   (`prs heal`'s `healMerge`: the `tools/merge/` drivers, then regeneration of the test registry, language
-   confs and credits; a conflict outside those files fails the entry), then runs `ci --remote --tiered` there
-   (`--full-gate` drops `--tiered`; a data-only diff gets the T1 gate, "Gate tiers" below, else the full gate):
-   the Workbench compile and build on the pool machine with the `workbench` cap that ranks first by
-   free RAM after a Workbench reserve, weighted by speed (`tools/lib/wb-gate.mjs`, "Workbench limit and
-   the remote gate"; `wt ship --remote <name>` / `--machine <name>` replaces `--remote`), the suite, core-only run and placement audit on pool test lanes. A branch
-   that changes nothing under `addons/` runs `validate --all` instead, as `wt gate` does. After a remote
-   build, `ci` copies the run folder's fresh `resourceDatabase.rdb` home when the worktree's is stale,
-   so the suite does not refresh it with a headless Workbench on this PC (that took 10 min per addon,
-   one worktree at a time behind the hub build lock, in the first queue run).
-3. **Re-gate rule.** When the gate passes, the worker fetches again. If main moved, it re-gates only
-   when the new main commits change a file the PR changes, or a generated file (the test registry, a
-   language conf, the string table). Driver-merged docs (`docs/features.md`, `docs/debug-log-triage.md`,
-   the lint baseline) do not count. Otherwise it pushes the gated head as is, and GitHub's required
-   `validate` check covers the combination. After three gates it pushes regardless.
-4. Pass: push, `gh pr merge --auto --merge`. Fail: a PR comment with the failing lines of the log and
-   its path, the entry is marked failed, and the queue moves on. Fix, commit, `wt ship` again.
-   A gate the pool could not run (no machine answered ssh, a test shard placed nowhere with 0 tests)
-   is not the PR's fault: the entry goes back to its place in the queue and retries after 3 min, at
-   most twice, then fails like any gate.
-   A queue write is bookkeeping and never fails a gate. On Windows the rename of `ship-queue.json.tmp`
-   throws EPERM/EBUSY/EACCES while a `ship-queue status` or `wait` has the file open, so
-   `tools/lib/atomic-file.mjs` retries it (10 tries over about 1 s); the worker's `update` then retries
-   the whole read-modify-write, and if that still fails it logs `queue write ... the gate result is kept`
-   in the worker log instead of failing the PR. A read that keeps failing throws rather than returning an
-   empty queue. The session lease, test cache, shard history, pool tickets and look-serve state use the
-   same helper. `ship-queue-eperm-selftest.mjs` holds the file open from a child process to prove it.
-
-**Stale rdb refresh when this PC is busy (the fallback).** A stale `resourceDatabase.rdb` is registered by a
-headless Workbench: ~15 s per addon, but it queued 10-50 min behind the hub `build` lock and this PC's one
-Workbench slot. The rule, in order (see "Sync" in "Test pool"): a run headed for a pool machine with the `rdb`
-cap refreshes in that machine's own run folder and never here; everything else refreshes on this PC, and
-this fallback (`refreshOnPool` in `tools/cli.mjs`, `chooseRefresh` in `tools/lib/wb-gate.mjs`, built on
-`chooseGate`) covers it: a local run (`build`, `serve`, `session up`, `rdb`, a gate), a run headed for a
-machine without the `rdb` cap (lf-cloud) or pinned to this PC, and a lane given back to refresh. When this
-PC's Workbench slot is busy or queued for, its `build` lock is held, or its free RAM is under a Workbench's
-need (`WB_RESERVE_MB` plus `minFreeMb`), and a machine with the `rdb` and `workbench` caps has a free
-Workbench slot AND the RAM, the refresh runs there: the run folder gets the snapshot, `rdb --local`
-refreshes in it (taking one of that machine's Workbench slots, so the next caller sees it busy), and
-`pullRemoteRdb` (the #1227 copy-back) copies the rdb home. No such machine (never one `chooseGate` would only
-queue on), or any failure, and the local refresh runs, queuing for the slot and the build lock; `rdb
---budget <s>` (`LF_RDB_WAIT_S`, default 900 s, spent once per process across addons and the Workbench slot, it prints the holder: `tools/lib/lock-wait.mjs`) bounds that wait, and when it runs out the
-refresh tries an `rdb`-cap machine once more. It never routes from inside a pool run folder
-(`tmp/pool-owner.json`). It logs `rdb: ... refresh on <where>: <why>` and `rdb: refreshed on <machine> in N s`
-or `resource database refreshed on <host> in N s`. `LF_RDB_REFRESH_WHERE=local` never goes remote, `=pool`
-tries a machine first even when this PC is free; `LF_RDB_REFRESH=0` turns the refresh off.
-`tools/validation/rdb-refresh-where-selftest.mjs` proves the decision.
-
-**Parallel gates.** Up to N Workbench gates run at once, N being `"shipQueue": { "parallel": N }` in
-`pool.json` or in the `pool` key of `lf.local.json` (the local value wins), else the sum of the Workbench
-limits of the ssh machines with the `workbench` cap: each machine's own `"workbenchLimit"` in its
-`pool.machines` entry (1 when unset; lf-cloud has 2). This PC is not counted. A queued PR starts only when
-no running gate and no earlier waiting PR changes a file it changes. Driver-merged docs and any
-`docs/**/*.md` do not count (two PRs that edit `docs/worktrees.md` gate side by side; a text conflict
-shows at the merge of main, in GitHub's mergeable state, or in `prs heal`), so PRs on disjoint files
-gate side by side on different machines and overlapping ones keep their order.
-
-**Gates with no Workbench take no slot.** A PR that changes nothing under `addons/` runs `validate --all`
-only (tier T0, "Gate tiers"), needs no Workbench and does not wait for a slot; it counts against
-`"shipQueue": { "light": N }` instead (default 4). The entry's `tier` (0|1|2) and `builds` fields are the
-hook for the data-only tier T1: `tier: 1` takes a Workbench slot only when `builds` is true. The worker
-sets them once `ci --tiered` has classified the merged diff (`needsWorkbench` in `tools/lib/ship-queue.mjs`).
-
-**Waiting.** See "Async ship" below: `wt ship` returns once the PR is queued. `wt ship --wait` blocks
-until the gate passed or failed and prints `SUMMARY ship ok|fail <slug> PR #N gate <s>, in queue <s> ...
-log=<path>` (exit 0 on pass); `tools\cli ship-queue wait <slug>` does the same for a queued slug (gives
-up after 3 h with exit 2, the gate keeps going). `ship-queue status` and `pool status`
-show what gates, what waits and why, and the last few results; `ship-queue cancel <slug>` drops a
-waiting entry. A re-ship of a waiting slug replaces its entry and keeps its place; one whose gate runs
-is refused until it ends. The worker logs to `tmp/logs/ship-queue-worker.log`, each gate to
-`tmp/logs/ship-<slug>-<stamp>.log`; a gate is killed after 100 min, an idle worker exits after 3 min,
-and a worker that died leaves its running entries to be re-queued by the next one.
-
-### Async ship
-
-A queued gate takes 15-90 min (PR #1250: validate --full about 15 min, the Workbench build on lf-cloud about
-5, the sharded suite, then GitHub; 86 min in all). An agent's shell call is capped at 10 min, so a blocking
-`wt ship` went to the background, the agent sat in wait loops, ended its turn mid-ship and went idle. Now
-`wt ship <slug>` returns in about a minute or two (preflight, push, PR, enqueue) and the gate runs in the queue worker:
-
-1. **Preflight, here, before the push** (`--no-preflight` skips it): the clean-tree and PR-body checks as
-   before, `git merge-tree` against `origin/<base>` (a conflict in a driver-merged file is left to the
-   worker's merge; any other conflicted file stops the ship with the merge command to run), then
-   `validate` of the checks whose inputs changed (incremental, no Workbench compile). A red check costs
-   seconds here instead of a queue slot and a gate.
-2. **Push, PR, enqueue.** Auto-merge is off on the PR (an earlier ship's auto-merge is switched off first).
-   `wt ship` prints `SUMMARY ship queued <slug> PR #N position ... log=<path>` and exits 0.
-3. **The gate runs detached** in the ship-queue worker (the steps above). Its state goes to three places:
-   the queue file, `<worktree>/tmp/ship-status.json` (the status line and the entry, on every change), and
-   a `ship-gate` commit status on the PR head (pending while queued or gating, success on the pushed head,
-   failure with the reason, error when cancelled), so `gh pr checks` and the PR page show it.
-4. **Pass:** the worker pushes and enables auto-merge; GitHub merges once the required `validate` check
-   is green. **Fail:** the PR gets a comment with the failing lines and the log path, `ship-gate` goes
-   red with the reason, auto-merge stays off.
-
-**Why auto-merge, not a required status, guards the merge.** Branch protection on `main` requires only
-the `validate` Actions check. Making `ship-gate` required would block every PR that does not go through the
-queue (`wt sync-base`, `--no-queue`, a human's PR, website-only work). The worker is the only thing that
-turns auto-merge on for a queued PR, and `prs heal` skips any PR with a live ship-queue entry (it would
-otherwise merge main into the same worktree and switch auto-merge on before the gate passed).
-
-**Checking and waiting** (both read the queue in the main checkout, from any worktree):
-
-```sh
-tools\cli wt ship-status <slug>            # one line: ship-status <slug> queued|running|passed|failed PR #N: ... log=<path>
-tools\cli wait ship <slug> [--budget 540]  # blocks up to the budget; one SUMMARY line; exit 0 passed, 1 failed, 2 still going
-```
-
-`wait ship` defaults to 540 s, under the 10 min tool cap: run it in the foreground and run it again on exit 2.
-`wt ship-status` exits 1 only when the gate failed or the slug is unknown. `wt ship --wait` (or
-`LF_SHIP_WAIT=1`) keeps the old blocking ship for a human at a terminal.
-
-**What an agent does while the gate runs.** It may start the next stacked PR (a new worktree from
-`origin/main`, or `--base` on its own branch when it needs the unmerged code). It reports
-"shipped, gate running" with the PR URL, and before its final report runs `wt ship-status` (or
-`wait ship`): passed means "merged, in-dev" once GitHub merges, failed means fix, commit, `wt ship` again.
 
 ## Keeping PRs moving (`prs`)
 
@@ -648,6 +532,15 @@ check, so a gate right after a green `--tier all` reuses it.
   machine with that build). The machine is not in it: a gate already accepts a
   pass from any pool machine, and `LF_Test_PerfBudget` is calibrated per
   machine. Docs and the rest of `tools/` are not in it.
+- **The gate trusts the agent's own run.** The gate's test step asks the cache for the pass its own run would
+  produce, so an agent that ran `toolscli test --no-build --tier all` on the exact tree being gated
+  (same addons incl. untracked, rdb, `tools/test`, addon list and server build; main not moved over them) is not run
+  again: the gate prints `test: reused agent pass <key>` and the usual `CACHED pass` line. `ci`'s sharded suite
+  checks the cache per pass (normal and core-only; it did not before) and stores a merged pass under the
+  whole-run key. The slim gate's LOGIC step (`--tier fast`) is also answered by an `all` pass of the same tree
+  (`lookupCovering` in `tools/lib/test-cache.mjs`); never the other way round, never an `--only` or core-only
+  pass for a different selection, never a failure, a timeout or a `--red` run. A stored record whose own inputs
+  differ from the ones asked for is not trusted. A pass a queue gate recorded is called a `gate pass` in the line.
 - **What is stored**: passes only (exit 0, `failed=0`), written to a temp file
   and renamed. A failure, a timeout or a no-verdict run is never stored; a
   corrupt or unreadable file is a miss.
@@ -658,7 +551,7 @@ check, so a gate right after a green `--tier all` reuses it.
 - `runs.jsonl` rows of a cacheable run carry `cacheKey` (16 hex), so the hit rate
   can be counted later.
 
-### Test world (LOGIC runs)
+### Test world (LOGIC and GridWorld runs)
 
 A run whose every selected test is LOGIC boots the minimal world
 `Worlds/TestLogic/TestLogic.ent` instead of DebugWorld (`tools/lib/test-world.mjs`):
@@ -671,11 +564,20 @@ LOGIC test never reads (about 2.4 s on lf-cloud, 1.5 s on the laptop).
   `--red` when every name resolves to a LOGIC test (class name or `GetName()`,
   read from the `// tier:` lines). `test` prints `test: world
   Worlds/TestLogic/TestLogic.ent (<reason>)`.
-- **DebugWorld as before**: `--tier all`, `--tier persistence`, an `--only` list
-  with any WORLD, PERSISTENCE or unknown name, `e2e`, `ci`, `wt gate`.
-- **Override**: `--world <path>` always wins (`--world
+- **Routed to GridWorld** (`Worlds/GridWorld/GridWorld.ent`, #1804): `--tier all`,
+  `--tier persistence`, an `--only`/`--red` list with any WORLD, PERSISTENCE or
+  unknown name, and so the suite inside `ci`, `wt gate` and `wt ship`.
+- **Pinned to DebugWorld**: a test listed in `tools/test/world-pins.json` (name and
+  reason) still reads the town. When the selection holds one, the run splits into
+  two boots: GridWorld without the pins, then DebugWorld with only them (`test: leg
+  1/2 ...`). The two results merge into one `SUMMARY test ok|fail tier=... legs=2`
+  line and one exit code; each leg has its own pass cache entry. Remove a pin when
+  its test gains grid fixtures.
+- **DebugWorld as before**: `--tier perf`, `e2e`, `host`, sessions.
+- **Override**: `--world <path>` always wins and never splits (`--world
   Worlds/DebugWorld/DebugWorld.ent` for the old behaviour); `LF_TEST_LOGIC_WORLD=0`
-  turns the routing off.
+  turns the LOGIC routing off, `LF_TEST_GRID_WORLD=0` sends WORLD and PERSISTENCE
+  runs back to DebugWorld with no split.
 - **Mis-tiered tests fail loudly.** In TestLogic a WORLD or PERSISTENCE test fails
   as `FAIL <name> (wrong world)`; a failing LOGIC test prints `hint: <name> ran in
   the minimal LOGIC world ...; if it needs world content, its tier is WORLD`. A
@@ -1385,6 +1287,34 @@ untracked files under `addons/` or `tools/`.
 (`gh auth login`). The REST API fallback works with a `GITHUB_TOKEN` env var
 instead.
 
+## Maintainer world edits
+
+The maintainer edits DebugWorld by hand in Workbench in his own worktree (`Life-Framework-ws-town-maintainer-edits`,
+branch `ws/town-maintainer-edits`). When he says done, the lead runs, from the main checkout on that PC:
+
+```sh
+toolscli world diff --wt town-maintainer-edits          # what changed, one line per entity, NOISE apart (under 3 s)
+toolscli world ship --wt town-maintainer-edits --dry-run
+toolscli world ship --wt town-maintainer-edits          # one SUMMARY line; then toolscli wt ship-status town-maintainer-edits
+```
+
+- **diff** (`tools/lib/world-diff.mjs`) matches entities by name, or by prefab plus parent path when unnamed, children
+  included, and prints MOVED (old -> new coords and angles, metres), ADDED, REMOVED or PROP CHANGED (the property).
+  NOISE is what a Workbench save rewrites without changing anything: the BSP line in `default.layer`, a block at
+  another file position, `angleY 180` written as `angles 0 180 0`, an explicit `GenericEntity` prefix dropped,
+  whitespace. `--json` for tools.
+- **ship** refuses while Workbench's window title shows unsaved changes (`*`; Workbench keeps no lock file per
+  unsaved edit) and warns while it runs. It refuses `addons/` changes other than layers, restores noise-only
+  layers to the merge base, commits the rest (the worktree's git identity, or `--author`), runs `validate`,
+  `audit placement --layer <touched>` and the tests that name a touched layer or entity, adds each audit finding
+  on an entity the maintainer touched to `agent-box/place-audit-allow.json` with the reason "maintainer hand
+  placement (world ship)" (listed in the PR body), then runs `wt ship` with a body generated from the diff.
+- **Gate tier T1w** ("Gate tiers"): the queue gates such a branch with static validate, the placement audit on the
+  touched layers and the layer-named tests (a failing test warns, it does not block). A property or component change, a new layer, a prefab no layer used
+  before or any other `addons/` file makes it T2.
+- `toolscli world sync` is the other half (`tools/lib/world-sync.mjs`, a separate change).
+- Agents never touch the maintainer's worktree; the proofs run on fixtures (`tools/test/fixtures/world-diff/`).
+
 ## Keeping your world editor safe
 
 - The main checkout stays clean; agents never run heavy commands there (CLI
@@ -1396,6 +1326,55 @@ instead.
 - Merge your own local `main` work first: agent worktrees branch from
   `origin/main`, so uncommitted or unpushed changes in your checkout are not
   visible to agents until you push.
+
+## Maintainer world edits
+
+The maintainer hand-edits DebugWorld in Workbench, in his own worktree (`ws/town-maintainer-edits`) on the lead's PC, with
+uncommitted `.layer` edits at any time. `toolscli world-sync` keeps that worktree level with `origin/main` without losing
+or mangling them. (Other tools for this workflow add their own `###` subsections under this heading.)
+
+### What blocks a world ship, what warns
+
+`world ship` and the T1w gate run `validate --world`: only the checks that read `.layer` files (`tools/lib/world-checks.mjs`, about a dozen, a few seconds), not all of them. **Blocks:** a layer parse error, a missing or unknown prefab GUID, a duplicate GUID, `validate-world-zones` (an edit outside town layers), a script compile error (or a test run that printed no SUMMARY and so judged nothing). **Warns** (listed under `## Layout warnings` in the PR body, never blocking): a failing layer-named test (each failing assertion and its test, under `## Test warnings (maintainer layout)`; a maintainer's edit is never blocked by a test, `tools/lib/world-test-judge.mjs`), the town manifest's sign distances and neighbour rule, the village-name and fixture checks, the player-props and road-id checks, and the placement audit's findings. On a `town-maintainer-*` branch a plain `validate` (CI's included) demotes the same layout checks to `WARN`. Selftests: `tools/validation/world-checks-selftest.mjs`, `tools/validation/world-test-judge-selftest.mjs`.
+
+Every check that reads `.layer` files is classified in `tools/lib/world-checks.mjs` (`HARD_CHECKS`, `LAYOUT_CHECKS`, or `LAYER_READERS_KEPT_HARD` with its reason); `world-checks-selftest` fails on a new layer-reading check that is none of them. The placement-audit part of `agent-box-selftest` (every vanilla prefab a layer places has a row in `tools/place/prefab-bounds.json`) counts only prefabs an entity is declared from (`Class Name : "{GUID}path.et" {`), never a `Prefab` property such as an NPC's loadout-slot clothing, and on a `town-maintainer-*` branch a missing row prints `WARN` instead of failing (`tools/lib/layer-prefabs.mjs`).
+
+### Warn-only gate and the tier of a synced branch
+
+On any `town-maintainer-*` branch the `ci` placement audit (full gate, T1 and T1w) and the layout checks of `validate` are warn-only: they print `WARN`, record their findings in `tmp/gate-warnings.json`, and the ship queue replaces a `## Gate warnings (maintainer layout)` section in the PR body after each passing gate (`tools/lib/gate-warnings.mjs`). The ci test step (full, sharded, core-only, T2s slim and T1) is warn-only too: a failing test prints `WARN`, is recorded under the `tests` check in `tmp/gate-warnings.json` and listed in the PR body (`demoteTests`, judged by `tools/lib/world-test-judge.mjs`); a script compile error or a run with no `SUMMARY` line still blocks. A hard check (parse, GUIDs, world zones, compile) still blocks. The tier is judged on the branch's own change: `ownBase` (`tools/lib/gate-tier.mjs`) is the merge base with `origin/main`, moved up to the newest main the branch merged (`world-sync`, `wt ship`), so main's files never count as the maintainer's, even with a stale local ref. When a hand edit is refused as T1w (a property change, a prefab no layer used), the tier line says so ("not a T1w hand edit: ..."), and that edit takes the full gate with the audit still warn-only. A `world ship` body is cut at 60 KB with a "+N more" line (the whole list is `world diff`); `gh pr create` and `gh pr edit` always read the body from `--body-file`. Proof: `tools/validation/maintainer-gate-selftest.mjs`.
+
+### Keeping it level with main (`world-sync`)
+
+```sh
+toolscli world-sync [--wt <slug>] [--dry-run] [--force]     # default --wt town-maintainer-edits; run on the PC that has it
+toolscli world-sync --watch-hint                            # prints the line the lead runs at each check-in (no daemon)
+```
+
+Engine: `tools/lib/world-sync.mjs` (`syncWorktree(dir, { dryRun, force })`); the CLI entry is `tools/commands/world-sync.mjs`.
+Selftest: `tools/validation/world-sync-selftest.mjs` (temp repos). Never run it against his worktree from another machine.
+
+1. Fetches `origin main`, lists what main changed since the merge base and what he changed locally (staged, unstaged,
+   untracked, and committed but not on main).
+2. **No overlap:** fast-forward, or a merge commit when he has commits main lacks. The working tree and index move with
+   `git read-tree -m -u` (the engine under a fast-forward), so every local edit is carried across; afterwards the unstaged
+   and staged diffs and every dirty file must be byte-identical or the run counts as failed.
+3. **Both sides changed a `.layer`:** that file is *held* (`held: you and main both changed X`) and stays exactly as it is.
+   If main renamed it, the other half of the rename is held too, so the world never gets two copies. Everything else main
+   changed is pulled into the working tree and **staged, with HEAD unmoved** (history is never told the held file was
+   merged; a rerun is stable and reports `pulled=0` until he commits the layer and a normal merge settles it).
+4. **Both sides changed any other file:** *blocked*, nothing changes, exit 2. Commit or set that file aside, then run again.
+5. **Workbench open on that worktree** (a process whose command line holds the worktree path): still syncs, then prints one
+   line to reload the world (File > Reload, or reopen it). `reload-workbench=yes` in the summary.
+6. Never `reset --hard`, `--force`, `checkout --` on a modified file, or a stash. Before the first write the dirty files are
+   copied under the git dir; any error after that puts HEAD, the index and the files back, deletes the copy and exits 1
+   (`state-restored=yes`). If the restore itself cannot be proven, the copy is kept and the message names it.
+
+```
+SUMMARY world-sync ok pulled=12 files held=1 (Street_Jobs.layer) reload-workbench=yes
+SUMMARY world-sync blocked pulled=0 files held=0 blocked=1 (notes.md) reload-workbench=no
+```
+
+Exit 0 ok (held files still count as ok), 2 blocked, 1 error. `--force` only lets it sync a branch that is not `ws/*`.
 
 ## Cleanup
 

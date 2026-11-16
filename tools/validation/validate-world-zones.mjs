@@ -1,12 +1,16 @@
 // tools/validation/validate-world-zones.mjs
 // inputs: always
 //
-// The two DebugWorld zones (docs/architecture/world-zones.md).
+// The world zones (docs/architecture/world-zones.md, three-worlds.md).
 //
 // 1. Grid claims. Each tools/grid/cells/<slug>.json names a cell of the lattice, no two claim one
-//    cell, each has its DebugWorld_Layers/Grid_<slug>.layer, each Grid_*.layer has a claim, and every
+//    cell, each has its GridWorld_Layers/Grid_<slug>.layer, each Grid_*.layer has a claim, and every
 //    entity a grid layer places stands inside its own cell (a feature never sprawls past its fence).
-// 2. Zone guard. A branch may change a town layer (a DebugWorld village layer, or a layer of the pack
+//    A Grid_*.layer in DebugWorld_Layers fails: the grid lives in GridWorld.
+// 2. Annex freeze. Until slice W6 deletes the annex from DebugWorld, no branch adds or changes an
+//    entity inside the annex rectangle (x 18..114, z 18..114) in a DebugWorld layer; the copy in
+//    GridWorld is the one to edit. Deleting is allowed. Entities are compared with the merge base.
+// 3. Zone guard. A branch may change a town layer (a DebugWorld village layer, or a layer of the pack
 //    world Everon1989Town) only when it is a town-placement pass: its worktree slug starts with
 //    `town-` (branch ws/town-<chapter>). Slices put their world props in a grid cell with
 //    `tools\cli grid place`. Branches that existed when the guard landed are listed in
@@ -14,14 +18,15 @@
 //    The branch is GITHUB_HEAD_REF in CI, else the checked-out branch; main and a detached HEAD
 //    outside CI are not checked. The change set is the diff against the merge base with origin/main,
 //    untracked files included.
-// red-proof: tools/validation/grid-selftest.mjs plants a slice that edits Street_Hospital.layer, two
-// claims on one cell and a grid prop outside its cell, and asserts each is reported.
+// red-proof: tools/validation/world-zones-selftest.mjs plants a slice that edits Street_Hospital.layer,
+// two claims on one cell, a grid prop outside its cell, a Grid_ layer in DebugWorld and a changed annex
+// entity in DebugWorld, and asserts each is reported.
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEBUG_LAYERS, allCells, cellBounds, layerOfSlug, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
+import { DEBUG_LAYERS, GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
 
 export const BASELINE = "tools/validation/zone-guard-baseline.json";
 export const TOWN_PASS = /^town-/;
@@ -66,9 +71,9 @@ export function checkClaims(root) {
     else seen.set(c.cell, c.file);
     const layer = layerOfSlug(c.slug);
     if (c.layer !== layer) errors.push(`${c.file}: layer should be ${layer}`);
-    const file = join(root, DEBUG_LAYERS, layer);
+    const file = join(root, GRID_LAYERS, layer);
     if (!existsSync(file)) {
-      errors.push(`${c.file}: ${DEBUG_LAYERS}/${layer} is missing (tools\\cli grid place ${c.slug} writes it)`);
+      errors.push(`${c.file}: ${GRID_LAYERS}/${layer} is missing (tools\\cli grid place ${c.slug} writes it)`);
       continue;
     }
     const b = cellBounds(p.col, p.row);
@@ -78,14 +83,69 @@ export function checkClaims(root) {
       }
     }
   }
-  const dir = join(root, DEBUG_LAYERS);
   const claimed = new Set(claims.map((c) => layerOfSlug(c.slug ?? "")));
-  if (existsSync(dir)) {
-    for (const f of readdirSync(dir).filter((n) => /^Grid_.*\.layer$/.test(n))) {
-      if (!claimed.has(f)) errors.push(`${DEBUG_LAYERS}/${f}: no claim in tools/grid/cells/ (write grid layers with tools\\cli grid place)`);
+  const gridDir = join(root, GRID_LAYERS);
+  if (existsSync(gridDir)) {
+    for (const f of readdirSync(gridDir).filter((n) => /^Grid_.*\.layer$/.test(n))) {
+      if (!claimed.has(f)) errors.push(`${GRID_LAYERS}/${f}: no claim in tools/grid/cells/ (write grid layers with tools\\cli grid place)`);
+    }
+  }
+  const debugDir = join(root, DEBUG_LAYERS);
+  if (existsSync(debugDir)) {
+    for (const f of readdirSync(debugDir).filter((n) => /^Grid_.*\.layer$/.test(n))) {
+      errors.push(`${DEBUG_LAYERS}/${f}: a Grid_ layer belongs in ${GRID_LAYERS}/ (the grid lives in GridWorld; tools\\cli grid place writes it there)`);
     }
   }
   return { errors, claims: claims.length, cells: allCells().length };
+}
+
+// Top-level entities of a layer with their exact text: [{ name, x, z, text }] (x, z null without coords).
+export function topLevelBlocks(text) {
+  const out = [];
+  let depth = 0;
+  let cur = null;
+  for (const line of String(text).split("\n")) {
+    const t = line.trim();
+    if (depth === 0 && /\{\s*$/.test(t)) {
+      const m = /^[A-Za-z_][A-Za-z0-9_]*\s+([A-Za-z_][A-Za-z0-9_]*)\s*:/.exec(t) || /^([A-Za-z_][A-Za-z0-9_]*)\s*:/.exec(t);
+      cur = { name: m ? m[1] : t, x: null, z: null, lines: [] };
+    }
+    if (cur) {
+      cur.lines.push(line);
+      if (depth === 1) {
+        const c = /^coords\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)/.exec(t);
+        if (c) {
+          cur.x = Number(c[1]);
+          cur.z = Number(c[3]);
+        }
+      }
+    }
+    depth += (t.match(/\{/g) || []).length - (t.match(/\}/g) || []).length;
+    if (cur && depth === 0) {
+      out.push({ name: cur.name, x: cur.x, z: cur.z, text: cur.lines.join("\n") });
+      cur = null;
+    }
+  }
+  return out;
+}
+
+// The annex freeze on a change set: { files: [path], baseText(path) -> text|null at the merge base,
+// nowText(path) -> text|null in the tree } -> { errors }. Only DebugWorld layers are checked. An entity
+// inside the annex rectangle whose exact text is not in the base layer is new or changed.
+export function checkFreeze({ files, baseText, nowText }) {
+  const errors = [];
+  for (const f of files) {
+    const path = f.replace(/\\/g, "/");
+    if (!path.endsWith(".layer") || !path.startsWith(`${DEBUG_LAYERS}/`)) continue;
+    const now = nowText(path);
+    if (now == null) continue; // deleted: W6 removes annex entities
+    const base = new Set(topLevelBlocks(baseText(path) ?? "").map((b) => b.text));
+    for (const b of topLevelBlocks(now)) {
+      if (b.x == null || !inAnnexRect(b.x, b.z) || base.has(b.text)) continue;
+      errors.push(`${path}: ${b.name} at ${b.x},${b.z} is new or changed inside the annex rectangle in DebugWorld. The annex is frozen there (docs/architecture/three-worlds.md); edit its copy in ${GRID_LAYERS}/ instead`);
+    }
+  }
+  return { errors };
 }
 
 // The guard on a change set: { branch, files: [path], baseline: [branch] } -> { skipped?, town, errors }.
@@ -121,7 +181,15 @@ if (isMain) {
   const baseline = existsSync(join(root, BASELINE)) ? JSON.parse(readFileSync(join(root, BASELINE), "utf8")).branches : [];
   const files = changedFiles(root);
   const guard = files ? checkGuard({ branch, files, baseline }) : { skipped: "no merge base with origin/main", town: [], errors: [] };
-  const errors = [...claims.errors, ...guard.errors];
+  const mb = files ? (git(root, ["merge-base", "origin/main", "HEAD"]) || "").trim() : "";
+  const freeze = mb && branch !== "main" && branch !== "HEAD"
+    ? checkFreeze({
+        files,
+        baseText: (path) => git(root, ["show", `${mb}:${path}`]),
+        nowText: (path) => (existsSync(join(root, path)) ? readFileSync(join(root, path), "utf8") : null),
+      })
+    : { errors: [] };
+  const errors = [...claims.errors, ...freeze.errors, ...guard.errors];
   if (errors.length) {
     console.log("validate-world-zones: FAIL");
     for (const e of errors) console.log(`  ${e}`);
