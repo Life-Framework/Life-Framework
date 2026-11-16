@@ -1,6 +1,6 @@
 // tools\cli grid: one debug-grid cell per feature in the GridWorld annex (docs/architecture/world-zones.md).
 //
-//   grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--dry] [--no-verify] [--no-fetch]
+//   grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--pack] [--dry] [--no-verify] [--no-fetch]
 //   grid list [--no-fetch]
 //   grid free <slug>
 //
@@ -19,6 +19,10 @@
 // read tools/grid/cells/*.json of every other worktree of this clone (`git worktree list --porcelain`, no
 // network, so `--no-fetch` keeps it), treat those cells as taken and name the worktree in the clash.
 //
+// A pack cell (--pack, or any prefab under addons/LF_Everon1989/) writes its layer to the pack's grid world
+// (LF_Everon1989/Worlds/Everon1989Grid, a SubScene of GridWorld) and records "pack": true in the claim; the cell
+// still comes from the one lattice (docs/architecture/world-zones.md "Pack cells").
+//
 // `place` claims a cell for the feature (deterministic: the first usable cell from a hash of the
 // slug; `--span 3x2` takes a block of cells for a big item: the claim file gets "span": [3, 2] and one yard goes
 // round the whole block), writes GridWorld_Layers/Grid_<slug>.layer with the cell's fenced yard (a 5 m gap facing
@@ -27,13 +31,14 @@
 // `tools\cli place arrange row` (offline checks, ground probe, audit). Each later call for the same
 // slug adds the next row, three rows in all. `free` deletes the layer and the claim.
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { CELL, isFrameClaim } from "../grid/lattice.mjs";
 import { loadWorld } from "../../agent-box/layers.mjs";
 import { withSpawn } from "../grid/cell-spawn.mjs";
 import {
-  CELLS_DIR, GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, claimCellIds, claimRect, entityPrefix, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, worktreeClaims, yardPlan, yawAlong,
+  CELLS_DIR, GRID_LAYERS, PACK_GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, claimCellIds, claimRect, entityPrefix, gridLayersOfClaim, isPackPrefab, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, worktreeClaims, yardPlan, yawAlong,
 } from "../lib/world-zones.mjs";
+import { gridLayerDirs } from "../lib/worlds.mjs";
 
 export const help = "grid place <slug> [<prefab>...] | grid list | grid free <slug>   a debug-grid cell per feature in the GridWorld annex: fenced yard, label sign, props placed and audited (docs/architecture/world-zones.md)";
 
@@ -41,8 +46,28 @@ export const FENCE = { cls: "SCR_DestructibleEntity", ref: "{57873EAF69D5450E}Pr
 export const SIGN = { cls: "GenericEntity", ref: "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et", component: "{026619B31213409D}", baseY: 0.505 };
 export const SIGN_PREFIX = "grid:"; // LF_SignCatalog.GridLabel turns grid:<slug> into the plate's title
 
-// Every entity of GridWorld's layers (the legacy annex stations and the grid layers); none when the folder is missing.
-const gridEnts = (root) => (existsSync(join(root, GRID_LAYERS)) ? loadWorld(root, join(root, GRID_LAYERS)) : []);
+// Every entity of GridWorld's layers (the legacy annex stations and the grid layers) and of the pack's grid world
+// (Everon1989Grid: the pack cells); none when the folders are missing.
+const gridEnts = (root) => {
+  const dirs = gridLayerDirs(root).filter((d) => existsSync(d));
+  return dirs.length ? loadWorld(root, dirs) : [];
+};
+
+// Pack routing (docs/architecture/world-zones.md "Pack cells"): a cell is a PACK cell when it is asked for with --pack, when
+// its claim already says so, or when a prefab it places lives under addons/LF_Everon1989/. Its layer then goes to
+// the pack's grid world and the claim records "pack": true. A claimed cell keeps its world.
+export function packRouting(root, { entry = null, flags = {}, prefabs = [] } = {}) {
+  const packPrefabs = prefabs.filter((p) => isPackPrefab(root, p));
+  if (entry) {
+    const pack = entry.pack === true;
+    if (!pack && (flags.pack || packPrefabs.length)) {
+      const why = flags.pack ? "--pack asks for the pack" : `${packPrefabs[0]} is pack content`;
+      return { pack, error: `${entry.slug} is a core cell (its layer is in GridWorld_Layers) but ${why}. A core layer must not name a pack prefab: run tools\\cli grid free ${entry.slug}, then grid place ${entry.slug} again (a pack prefab or --pack picks the pack grid world)` };
+    }
+    return { pack };
+  }
+  return { pack: Boolean(flags.pack) || packPrefabs.length > 0, auto: !flags.pack && packPrefabs.length > 0 };
+}
 
 const num = (v) => {
   const r = Math.round(v * 1000) / 1000;
@@ -80,9 +105,10 @@ export function yardLayer(slug, cell, { rot, yawForFacing, parseHeading }) {
 }
 
 export function registryText(entry) {
-  const { slug, cell, layer, rows, created, span } = entry;
+  const { slug, cell, layer, rows, created, span, pack } = entry;
   const multi = Array.isArray(span) && (span[0] !== 1 || span[1] !== 1);
-  return `${JSON.stringify(multi ? { slug, cell, span, layer, rows, created } : { slug, cell, layer, rows, created }, null, 2)}\n`;
+  const base = multi ? { slug, cell, span, layer, rows, created } : { slug, cell, layer, rows, created };
+  return `${JSON.stringify(pack === true ? { ...base, pack: true } : base, null, 2)}\n`;
 }
 
 // A grid map: one character per cell, north at the top. `#` blocked, `.` free, a letter per claim.
@@ -152,7 +178,7 @@ function list(root, flags, ctx = {}) {
   console.log(`grid: ${claims.length} cell(s) claimed (${extra.length} only on origin/main, ${inFlight.length} in open PRs, ${inTrees.length} in other worktrees), ${free} free (${CELLS_DIR}/)`);
   claims.forEach((c, i) => {
     const b = claimRect(c);
-    const layer = join(root, GRID_LAYERS, layerOfSlug(c.slug));
+    const layer = join(root, gridLayersOfClaim(c), layerOfSlug(c.slug));
     const n = existsSync(layer) ? (readFileSync(layer, "utf8").match(/^\S.* : "\{/gm) || []).length : 0;
     const mine = new Set(claimCellIds(c));
     const clash = inFlight.includes(c) || inTrees.includes(c) ? claims.filter((x) => x !== c && claimCellIds(x).some((id) => mine.has(id))).map((x) => x.slug) : [];
@@ -160,7 +186,7 @@ function list(root, flags, ctx = {}) {
     const tail = inFlight.includes(c)
       ? `claimed in open PR #${c.pr} (${c.branch}), not merged yet${clashText}`
       : inTrees.includes(c) ? `claimed in worktree ${c.worktree} (${c.branch || "detached"}), not pushed yet${clashText}`
-      : extra.includes(c) ? "claimed on origin/main, not merged here yet" : `${n} entities, ${c.rows ?? 0}/3 rows`;
+      : extra.includes(c) ? "claimed on origin/main, not merged here yet" : `${n} entities, ${c.rows ?? 0}/3 rows${c.pack ? ", pack cell" : ""}`;
     console.log(`  ${String.fromCharCode(97 + (i % 26))} ${c.slug.padEnd(28)} ${`${c.cell}${b && b.w * b.h > 1 ? `+${b.w}x${b.h}` : ""}`.padEnd(6)} ${b ? `x ${b.x0}..${b.x1} z ${b.z0}..${b.z1}` : "bad cell"}  ${tail}${c.error ? `  ERROR ${c.error}` : ""}`);
   });
   console.log(mapText(claims, ents));
@@ -172,13 +198,15 @@ function list(root, flags, ctx = {}) {
 function free(root, slug) {
   if (!slug) return usage();
   const reg = join(root, CELLS_DIR, `${slug}.json`);
-  const layer = join(root, GRID_LAYERS, layerOfSlug(slug));
-  if (!existsSync(reg) && !existsSync(layer)) {
+  const claim = existsSync(reg) ? readCells(root).find((c) => c.slug === slug) : null;
+  const dirs = claim ? [gridLayersOfClaim(claim)] : [GRID_LAYERS, PACK_GRID_LAYERS];
+  const layerFiles = dirs.map((d) => join(root, d, layerOfSlug(slug))).filter((f) => existsSync(f));
+  if (!existsSync(reg) && !layerFiles.length) {
     console.log(`grid: ${slug} has no cell`);
     return 1;
   }
-  for (const f of [reg, layer]) if (existsSync(f)) unlinkSync(f);
-  console.log(`grid: freed ${slug} (deleted ${CELLS_DIR}/${slug}.json and ${layerOfSlug(slug)})`);
+  for (const f of [reg, ...layerFiles]) if (existsSync(f)) unlinkSync(f);
+  console.log(`grid: freed ${slug} (deleted ${CELLS_DIR}/${slug}.json and ${layerOfSlug(slug)}${claim?.pack ? " from the pack grid world" : ""})`);
   return 0;
 }
 
@@ -192,8 +220,14 @@ async function place(root, args, flags, ctx = {}) {
   const claims = readCells(root);
   const regFile = join(root, CELLS_DIR, `${slug}.json`);
   const layerName = layerOfSlug(slug);
-  const layerFile = join(root, GRID_LAYERS, layerName);
   let entry = claims.find((c) => c.slug === slug) ?? null;
+  const route = packRouting(root, { entry, flags, prefabs });
+  if (route.error) {
+    console.log(`grid: ${route.error}`);
+    return 1;
+  }
+  const layersDir = route.pack ? PACK_GRID_LAYERS : GRID_LAYERS;
+  const layerFile = join(root, layersDir, layerName);
   const ents = gridEnts(root);
   let fresh = false;
   let span = [1, 1];
@@ -247,23 +281,25 @@ async function place(root, args, flags, ctx = {}) {
     }
     entry = { slug, cell: cell.id, layer: layerName, rows: 0, created: new Date().toISOString().slice(0, 10) };
     if (span[0] !== 1 || span[1] !== 1) entry.span = span;
+    if (route.pack) entry.pack = true;
     fresh = true;
   }
   const cell = claimRect(entry);
   if (!cell) throw new Error(`${slug}'s claim (cell ${entry.cell}, span ${JSON.stringify(entry.span ?? [1, 1])}) is not a block of the lattice`);
-  console.log(`grid: ${slug} -> cell ${cell.id}${cell.w * cell.h > 1 ? ` +${cell.w}x${cell.h}` : ""} (x ${cell.x0}..${cell.x1}, z ${cell.z0}..${cell.z1}, gap ${yardPlan(cell).gap.side})${fresh ? " (new)" : ""}`);
+  console.log(`grid: ${slug} -> cell ${cell.id}${cell.w * cell.h > 1 ? ` +${cell.w}x${cell.h}` : ""} (x ${cell.x0}..${cell.x1}, z ${cell.z0}..${cell.z1}, gap ${yardPlan(cell).gap.side})${fresh ? " (new)" : ""}${route.pack ? ` [pack cell${route.auto ? `: ${prefabs.find((p) => isPackPrefab(root, p))} is pack content` : ""}]` : ""}`);
   if (flags.dry) {
-    if (fresh) console.log(`  would write ${GRID_LAYERS}/${layerName} (the fence runs and the label sign) and ${CELLS_DIR}/${slug}.json`);
+    if (fresh) console.log(`  would write ${layersDir}/${layerName} (the fence runs and the label sign) and ${CELLS_DIR}/${slug}.json`);
     const line = prefabs.length ? rowLine(cell, entry.rows ?? 0) : null;
     if (line) console.log(`  would place ${prefabs.length} prop(s) in row ${entry.rows ?? 0}: ${line.a.join(",")} to ${line.b.join(",")}, facing ${line.facing}`);
     console.log("grid: dry run, nothing written.");
     return 0;
   }
+  if (fresh || !existsSync(layerFile)) mkdirSync(dirname(layerFile), { recursive: true });
   if (fresh || !existsSync(layerFile)) writeFileSync(layerFile, withSpawn(yardLayer(slug, cell, P), slug, yardPlan(cell)));
   if (fresh) {
     mkdirSync(join(root, CELLS_DIR), { recursive: true });
     writeFileSync(regFile, registryText(entry));
-    console.log(`  wrote ${GRID_LAYERS}/${layerName} (yard and sign ${entityPrefix(slug)}_Sign) and ${CELLS_DIR}/${slug}.json`);
+    console.log(`  wrote ${layersDir}/${layerName} (yard and sign ${entityPrefix(slug)}_Sign) and ${CELLS_DIR}/${slug}.json`);
   }
   let code = 0;
   if (prefabs.length) {
@@ -291,7 +327,7 @@ async function place(root, args, flags, ctx = {}) {
 }
 
 function usage() {
-  console.log("usage: tools\\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--dry] [--no-verify] [--no-fetch]\n       tools\\cli grid list [--no-fetch]\n       tools\\cli grid free <slug>\n(docs/architecture/world-zones.md)");
+  console.log("usage: tools\\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--pack] [--dry] [--no-verify] [--no-fetch]\n       tools\\cli grid list [--no-fetch]\n       tools\\cli grid free <slug>\n(docs/architecture/world-zones.md)");
   return 1;
 }
 

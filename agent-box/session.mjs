@@ -44,7 +44,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
-import { EVERON_WORLD, GRID_MISSION, ISLAND_MISSION } from "../tools/lib/worlds.mjs";
+import { EVERON_WORLD, GRID_MISSION, ISLAND_MISSION, PACK_ADDON, PACK_GRID_MISSION, hasPackGridLayers } from "../tools/lib/worlds.mjs";
 import { addonsArgs, CORE_PLAYTEST_MISSION, launchAddons, launchAddonsFor, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
 import { laneRefusalBackoffMs, sessionA2sPort } from "../tools/lib/pool-queue.mjs";
@@ -101,6 +101,13 @@ export const MISSIONS = ["debug", "playtest", "grid", "everon", "island", "templ
 // server.json names, the owner config.json it ships; clients join like the playtest mission (harness gate open).
 // `--mission template-<variant>` boots tools/server-template/variants/<variant>/server.json instead (#297):
 // the same file with only mods and scenarioId swapped, e.g. template-core-only boots the core with no pack.
+
+// The header `--mission grid` boots: GridWorld's own (LF_GridWorld.conf), or, when the pack is loaded and holds a
+// pack cell (LF_Everon1989/Worlds/Everon1989Grid), the pack's header whose world is that SubScene of GridWorld, so
+// every Grid_ layer loads, the pack's included (docs/architecture/world-zones.md "Pack cells").
+export function gridMissionFor(addons = launchAddons(), root = ROOT) {
+  return addons.includes(PACK_ADDON) && hasPackGridLayers(root) ? PACK_GRID_MISSION : GRID_MISSION;
+}
 
 export function parseMission(args) {
   const i = args.indexOf("--mission");
@@ -227,7 +234,7 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
   // engine refuses -config together with -addons, so the file's two lists become -server and -addons.
   const tpl = isTemplateMission(mission) ? templateLaunch(ROOT, templateVariant(mission)) : null;
   const args = [
-    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : mission === "grid" ? GRID_MISSION : mission === "everon" ? EVERON_WORLD : mission === "island" ? ISLAND_MISSION : SERVER_WORLD,
+    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : mission === "grid" ? gridMissionFor(addons) : mission === "everon" ? EVERON_WORLD : mission === "island" ? ISLAND_MISSION : SERVER_WORLD,
     "-addonsDir", addonsDir,
     ...addonsArgs(tpl ? tpl.addons : addons),
     "-profile", profile,
@@ -581,9 +588,16 @@ export function selftestSession() {
   const is = serverArgs({ addonsDir: "A", profile: "SP", mission: "island" });
   if (is[0] !== "-server" || is[1] !== ISLAND_MISSION || !/LF_EveronIsland\.conf$/.test(is[1])) failures.push("--mission island does not run LF_EveronIsland.conf");
   if (!is.includes(HARNESS_DEFINE) || !clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "island" }).includes(HARNESS_DEFINE)) failures.push("--mission island does not open the harness gate");
-  const gs = serverArgs({ addonsDir: "A", profile: "SP", mission: "grid" });
+  const gs = serverArgs({ addonsDir: "A", profile: "SP", mission: "grid", addons: ["LifeFramework"] });
   const gc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "grid" });
   if (gs[0] !== "-server" || gs[1] !== GRID_MISSION || !/LF_GridWorld.conf$/.test(gs[1])) failures.push("--mission grid does not run LF_GridWorld.conf");
+  // Pack cells: with the pack loaded and a pack cell in the tree, --mission grid boots the pack's grid header; the pack
+  // test header is that one and its world is Everon1989Grid. A core-only launch never sees the pack world.
+  // red-proof: 2026-11-16 written before gridMissionFor existed: the pack case ran LF_GridWorld.conf and failed.
+  const gp = serverArgs({ addonsDir: "A", profile: "SP", mission: "grid", addons: ["LifeFramework", PACK_ADDON] });
+  const want = hasPackGridLayers(ROOT) ? PACK_GRID_MISSION : GRID_MISSION;
+  if (gp[1] !== want) failures.push(`--mission grid with the pack loaded runs ${gp[1]}, wanted ${want}`);
+  if (gridMissionFor(["LifeFramework"], ROOT) !== GRID_MISSION) failures.push("--mission grid on a core-only launch must stay on LF_GridWorld.conf");
   if (gs.includes(HARNESS_DEFINE) || gc.includes(HARNESS_DEFINE)) failures.push("--mission grid carries the harness define (it is the bare world like debug)");
   if (serverArgs({ addonsDir: "A", profile: "SP" })[1] !== SERVER_WORLD) failures.push("the default mission no longer boots the town");
   if (harnessFlagProblem(["--admin-client", "1"], "grid", 1) === "") failures.push("--admin-client was accepted on the grid mission, where it does nothing");

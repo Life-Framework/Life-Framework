@@ -23,7 +23,7 @@ import { loadWorld } from "./layers.mjs";
 import { boundsGapVerdict, layerEntityPrefabs } from "../tools/lib/layer-prefabs.mjs";
 import { judgeStrict } from "../tools/lib/town-findings.mjs";
 import { layerFile, townWorld, worldLayerDirs } from "../tools/lib/addons.mjs";
-import { GRID_WORLD, gridLayersDir } from "../tools/lib/worlds.mjs";
+import { gridLayerDirs, gridWorldFor } from "../tools/lib/worlds.mjs";
 import { BUDGET, cellBudget, worldFindings } from "./place-budget.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -470,7 +470,7 @@ export const inAnnex = (e) => e.x < 110 && e.z < 120;
 
 export function auditRecords({ layers, area, areas, annex, grid } = {}) {
   // --grid: every entity of GridWorld's own layers (all of it is annex); the town is not read.
-  let recs = grid ? loadWorld(ROOT, gridLayersDir(ROOT)).filter((e) => !SKIP_LAYERS.has(e.layer)) : loadWorld(ROOT).filter((e) => !SKIP_LAYERS.has(e.layer) && (annex || !inAnnex(e)));
+  let recs = grid ? loadWorld(ROOT, gridLayerDirs(ROOT)).filter((e) => !SKIP_LAYERS.has(e.layer)) : loadWorld(ROOT).filter((e) => !SKIP_LAYERS.has(e.layer) && (annex || !inAnnex(e)));
   if (layers) recs = recs.filter((e) => layers.includes(e.layer));
   if (area) {
     const a = areas.find((x) => x.name === area);
@@ -495,7 +495,7 @@ export function inputText(records, extra = [], circle = TOWN) {
 // other test run (the machine with the RAM headroom takes it; `tools\cli test` ships the input list up
 // and brings out.txt back); only an interactive caller that wants the quick local loop pins it (local).
 export function auditTestArgs({ local = false, grid = false } = {}) {
-  return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", grid ? GRID_WORLD : townWorld(), ...(local ? ["--local"] : []), "--verbose"];
+  return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", grid ? gridWorldFor(ROOT) : townWorld(), ...(local ? ["--local"] : []), "--verbose"];
 }
 
 // One boot of the dedicated test server: LF_Test_PlacementAuditTown measures `records` and traces the

@@ -14,7 +14,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
-import { CORE_ADDON, GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
+import { CORE_ADDON, GRID_WORLD, PACK_ADDON, PACK_GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
 import { CELL, GRID_CENTRE, GRID_FENCE, allCells, cellBounds, cellId, claimCellIds, claimRect, claimSpan, isFrameClaim, parseCellId } from "../grid/lattice.mjs";
 
 // The lattice constants and cell maths live in tools/grid/lattice.mjs (with the grid frame).
@@ -23,6 +23,12 @@ export { CELL, GRID_CENTRE, allCells, cellBounds, cellId, claimCellIds, claimRec
 export const DEBUG_LAYERS = `addons/${CORE_ADDON}/${layersOf(PLAYTEST_WORLD)}`;
 // Where Grid_<slug>.layer files are written and claims are checked: GridWorld, not the playtest world.
 export const GRID_LAYERS = `addons/${CORE_ADDON}/${layersOf(GRID_WORLD)}`;
+// Where a PACK cell's Grid_<slug>.layer lives: the pack's own grid world, a SubScene of GridWorld
+// (docs/architecture/world-zones.md "Pack cells"). The claim says `"pack": true`.
+export const PACK_GRID_LAYERS = `addons/${PACK_ADDON}/${layersOf(PACK_GRID_WORLD)}`;
+// The repo-relative folder holding a claim's grid layer, and the file.
+export const gridLayersOfClaim = (claim) => (claim && claim.pack === true ? PACK_GRID_LAYERS : GRID_LAYERS);
+export const gridLayerPath = (root, claim) => join(root, gridLayersOfClaim(claim), layerOfSlug(claim.slug));
 export const PACK_TOWN_LAYERS = "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers";
 export const CELLS_DIR = "tools/grid/cells";
 
@@ -48,6 +54,18 @@ export const LEGACY_ANNEX = new Set([
 export const SYSTEM_LAYERS = new Set(["default", "Gamemode", "Factions"]);
 
 export const SLUG_RX = /^[a-z0-9][a-z0-9-]{1,40}$/;
+// A prefab argument of `grid place` (a `{GUID}path`, a path under an addon, or a bare name) is PACK content when its file
+// exists under the pack addon and not under the core; that routes the cell to the pack grid world.
+export function isPackPrefab(root, arg) {
+  let p = String(arg).replace(/\\/g, "/").replace(/^\{[0-9A-Fa-f]{16}\}/, "").replace(/^.*addons\/(LifeFramework|LF_Everon1989)\//, "");
+  if (!p.endsWith(".et")) p = `${p}.et`;
+  const under = (addon, rel) => existsSync(join(root, "addons", addon, ...rel.split("/")));
+  if (p.includes("/")) return under(PACK_ADDON, p) && !under(CORE_ADDON, p);
+  const find = (dir) => readdirSync(dir, { withFileTypes: true }).some((e) => (e.isDirectory() ? find(join(dir, e.name)) : e.name === p));
+  const packPrefabs = join(root, "addons", PACK_ADDON, "Prefabs");
+  const corePrefabs = join(root, "addons", CORE_ADDON, "Prefabs");
+  return existsSync(packPrefabs) && find(packPrefabs) && !(existsSync(corePrefabs) && find(corePrefabs));
+}
 export const layerOfSlug = (slug) => `Grid_${slug.replace(/-/g, "_")}.layer`;
 // The slug is in the claim file (its `layer` field); a layer name maps back only with dashes unknown.
 // Entity names written into a grid layer: Grid_<slug with _>_<n>.
@@ -67,7 +85,7 @@ export function zoneOfPath(path) {
   const p = String(path).replace(/\\/g, "/");
   if (!p.endsWith(".layer")) return null;
   const base = p.slice(p.lastIndexOf("/") + 1);
-  if (p.startsWith(`${DEBUG_LAYERS}/`) || p.startsWith(`${GRID_LAYERS}/`)) return zoneOfLayer(base, "debug");
+  if (p.startsWith(`${DEBUG_LAYERS}/`) || p.startsWith(`${GRID_LAYERS}/`) || p.startsWith(`${PACK_GRID_LAYERS}/`)) return zoneOfLayer(base, "debug");
   if (p.startsWith(`${PACK_TOWN_LAYERS}/`)) return zoneOfLayer(base, "pack");
   return null;
 }
