@@ -24,3 +24,18 @@
   Tested by `LF_Test_ChessGame`: fool's mate is mate for black, `Qf7` into the corner is a stalemate
   draw, an out-of-turn move is refused, resignation gives the other side the game. Not yet: a
   draw by agreement, repetition or the fifty-move rule, a clock, and the table that seats players.
+
+### `LF_ChessTableComponent` and `LF_ChessScreen` — `Feature/Chess/` (#1934, chapter #1011)
+- 🧪 A chess table two players sit at and play. `Prefabs/Props/Chess/LF_ChessTable.et` (a base-game
+  small table) carries `LF_ChessTableComponent` and the "Play chess" action. The server holds the
+  only game (`LF_ChessTable`: seats plus an `LF_ChessGame`): the first player to sit plays white, the
+  second black, anyone after that watches. The board is a UI-kit sheet of eight KEYS rows; click a
+  piece of your colour, then where it goes (a pawn on the last rank becomes a queen). The move goes to
+  the server as `RpcAsk_LF_ChessMove` on the player controller, which takes the player from the
+  controller and refuses a watcher, the wrong seat, out of turn, illegal moves and askers farther than
+  6 m. The position reaches every machine, late joiners included, as a FEN string in an `RplProp`
+  with the seats, result and last move. Closing the board, walking more than 4 m away or leaving the
+  server holds the seat for 30 s; after that the absent side resigns. Sitting at a finished game sets
+  up a new one. One table stands in GridWorld cell `chess-table`.
+  Tested by `LF_Test_ChessTable`. Not yet: a 3D board and pieces on the table, a sit pose on stools,
+  a draw offer, clocks, and the grace period as a server setting.
