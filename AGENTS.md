@@ -20,6 +20,8 @@ agent type has a tool-call budget; past it the agent writes
 `tmp/handoff-<slug>.md` and ends with a `RESUME` line. A town-wide job is one
 agent per area. `tools\cli usage` shows where the tokens went.
 
+**Starter packs.** `tools\cli brief building|slice|map|town|grid` prints one page of exact commands and known traps for that kind of work (`docs/starter-packs/`); read it instead of the docs it points to.
+
 ## Repo map
 
 | Path | What lives there |
