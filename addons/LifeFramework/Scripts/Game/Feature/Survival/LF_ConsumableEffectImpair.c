@@ -1,5 +1,7 @@
 //! A consumable effect that impairs the drinker for a while (#1919). Put it on any consumable
-//! beside LF_ConsumableEffectSurvival; the server adds a dose through LF_Impairment.
+//! beside LF_ConsumableEffectSurvival; the server adds a dose through LF_Impairment. The numbers
+//! below are the defaults: a row in the drink table (LF_DrinkImpairmentTable, #2002) for the
+//! consumed item's prefab wins over them, so a pack tunes a drink without editing its prefab.
 [BaseContainerProps()]
 class LF_ConsumableEffectImpair : SCR_ConsumableEffectBase
 {
@@ -28,6 +30,22 @@ class LF_ConsumableEffectImpair : SCR_ConsumableEffectBase
 			return;
 		}
 
-		survival.ApplyImpairment(m_fStrength, m_fDurationSeconds, m_eCurve, m_fCap);
+		LF_DrinkImpairmentRow dose = ResolveDose(item);
+		survival.ApplyImpairment(dose.m_fStrength, dose.m_fDurationSeconds, dose.m_eCurve, dose.m_fCap);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The dose for the item: its table row when the table has one, else this component's values.
+	LF_DrinkImpairmentRow ResolveDose(IEntity item)
+	{
+		LF_DrinkImpairmentRow own = LF_DrinkImpairmentRow.Make(ResourceName.Empty, m_fStrength, m_fDurationSeconds, m_eCurve, m_fCap);
+		if (!item || !item.GetPrefabData())
+			return own;
+
+		LF_DrinkImpairmentRow row = LF_DrinkImpairmentTable.Find(item.GetPrefabData().GetPrefabName());
+		if (!row)
+			return own;
+
+		return row;
 	}
 }

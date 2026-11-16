@@ -339,7 +339,11 @@
   raises wanted (till, vehicle and weapon robbery, breach, hospital till) calls
   `LF_Dispatch.Report` (M1-20), which calls `LF_WantedReports.Report`. It records the offence and a description of the
   suspect at that moment: clothing display names, the vehicle they sit in, and
-  the nearest sign title within `m_fPlaceRadius` (else a 100 m grid square).
+  the nearest sign title within `m_fPlaceRadius`, else the nearest map town or
+  landmark (`LF_NamedPlaces.Nearest`, #1944, WORLD `police/dispatch-names-place`:
+  "bank robbery, Saint Philippe"), else a 100 m grid square. The place is stored as a
+  localization key and localized where each board and radio line is built; the
+  core holds no place names.
   An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)
   catches it in the act and the report is identified at once. Showing your own
   ID card to an on-duty officer (`LF_ShowIDAction`) identifies every open
@@ -577,3 +581,13 @@
 - ⚠️ Not persisted: a deployed strip is gone after a restart. The road-network alignment did not run in
   DebugWorld (no AI road network there); the strip follows the officer's facing.
 
+
+### `LF_ConvictionRecord` — `Feature/Police/LF_ConvictionRecord.c` (#1914, 2026-11-16)
+- 🧪 Every arrest (`LF_OnArrested` on the bus) stamps the player uid with the in-game day (the game
+  clock's date as a day number, `DayOrdinal`) and counts it. `IsRecent(uid, days)` answers "convicted
+  in the last N in-game days?" (the stamp day counts as day 0, so a window of 3 is the stamp day and
+  the two after it); the firearm permit desk (#1766) refuses an application on it, with the window
+  from `LF_LicencesConfig`. Server only, never replicated. Saved as the `convictions` payload (save
+  version 36); vanilla persistence restores the clock, so a stamp keeps its age across a restart.
+  A stamp dated after today (an admin set the clock back) still counts as recent. Pin test
+  `police/conviction-record` (also the `wt e2e` restart proof).
