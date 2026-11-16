@@ -88,6 +88,7 @@
   it, a self-kill, a destroyed vehicle, and (config
   `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
   wanted suspect. Each decision logs `[LFDebug:Murder]`. No automatic ban.
+- 🧪 (2026-11-16) **Killing a logged-out body is murder of that player (#2103).** The body (`LF_LogoutBody`) has no controlling player, so its kill arrives with `victimPlayerId` 0. `LF_Murder.VictimUid` / `VictimIsPlayer` resolve it through `LF_LogoutBody.UidOfBody`: the victim is the account's uid, the `LF_OnPlayerKilled` event is published with it, and the officer exemption reads that account's wanted level. A plain NPC stays an NPC. Test `crime/murder-logout-body`.
 - ✅ **Zone rule sets as data** (#755, #1077; tests `zones/rules`, `zones/ruleset-backcompat`, `zones/conf-off`). `LF_ZoneRuleSet` and `LF_ZoneConfig` members carry no initializers, so a `.conf` value of 0 is read as 0 (an initializer used to win); script builds one with `CreateDefault`. `LF_Zones.conf`
   holds a per-rule table `m_aRuleSets` of `LF_ZoneRuleSet` (rule, blocksPlayerDamage, suppressesWanted,
   allowsRobbery, allowsVehicleTheft, allowsWeaponDraw, fineMultiplier, copsEnter). Shipped: SAFE blocks
