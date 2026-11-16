@@ -84,8 +84,11 @@
   logs `LF_Debug.Error` (`[LFDebug:Impairment]`) and is skipped. Pack-only: no owner
   `config.json` section yet. Test: `survival/drink-impairment-table`.
 - ✅ `BeerBottle.et` and `Moonshine.et` (`Prefabs/Items/Drinks/`, #2001) are `Drink_Base` drinks that carry the
-  effect at its defaults (no table row yet); the engine takes one consumable effect per item, so they restore no
-  thirst. Test: `drinks/alcohol`.
+  effect at its defaults (no table row yet). Test: `drinks/alcohol`.
+- ✅ A drink quenches and impairs in one sip (#2159): the engine takes one consumable effect per item, so
+  `LF_ConsumableEffectImpair` carries `m_fThirstRestore` and calls `LF_CharacterSurvivalComponent.Drink` itself
+  (nothing when the Survival system is off). The amount lives in the prefab, not the impairment table: beer 10,
+  moonshine 3 (water restores 25). Test: `drinks/quenches`.
 - ✅ 1989 Everon drinks impair (#2003): the pack overlay `LF_Everon1989/Configs/Survival/LF_DrinkImpairment_Everon1989.conf`
   (listed in the pack mission header) adds a row per drink prefab GUID. Beer: 12 points, linear over 10 min, cap 45.
   Moonshine, the strongest: 40 points (one bottle reaches the full sway of #1920), exponential over 20 min, cap 90.

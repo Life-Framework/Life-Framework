@@ -16,6 +16,7 @@ GenericEntity : "{693D54F74C95B3D6}Prefabs/Items/Drinks/Drink_Base.et" {
   }
   SCR_ConsumableItemComponent "{5AD2A3AD8402632B}" {
    m_ConsumableEffect LF_ConsumableEffectImpair "{89685898B29F4A24}" {
+    m_fThirstRestore 3
    }
   }
   MeshObject "{5A4ACD10B8DA304F}" {
