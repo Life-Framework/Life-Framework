@@ -60,11 +60,16 @@ point; the slip is where the gate's answer is printed.
   instead of the game mode's civilian loadout (`LF_StartingKit.Resolve`, `LF_FactionLoadout.WithStartingKit`).
   Items of category `clothing` are worn, the rest are carried; gates are not read, nobody buys the kit.
   No offers under it, the game mode's loadout applies. Proof: `catalogue/starting-kit` (LOGIC).
-- **Proof:** `catalogue/outlets` (LOGIC, `LF_Test_ItemCatalogue`), `catalogue/gun-counter` (WORLD, `LF_Test_GunCounter`: the annex counter refuses without the permit and sells with it), `item-catalogue-selftest.mjs`.
+- **Stock and restock (#1064):** an offer's `stock` (0 is no limit) and `restockSeconds` (0 is no restock
+  until the server restarts; default 600) are owner and overlay fields like the gates.
+  `LF_CatalogueStock` counts each offer on its own in server memory: `LF_ShopComponent.Buy` refuses a
+  sale beyond what is left with `OUT_OF_STOCK`, takes only the units delivered, and the first sale from a
+  full shelf starts the restock clock; when it is due the shelf is full again. Nothing is saved, so a
+  restart refills every outlet. The price list does not show the count yet.
+- **Proof:** `catalogue/stock` (LOGIC, `LF_Test_CatalogueStock`), `catalogue/starting-kit` (LOGIC, `LF_Test_StartingKit`), `catalogue/outlets` (LOGIC, `LF_Test_ItemCatalogue`), `catalogue/gun-counter` (WORLD, `LF_Test_GunCounter`: the annex counter refuses without the permit and sells with it), `item-catalogue-selftest.mjs`.
 
 ## Not yet (follow-ups of #988)
 
-- Stock and restock per offer: #1064.
 - The black market, back room, fence and the `Prefabs/Weapons/` price rule onto outlets: #1065.
 - The police armory issuing from its outlet by rank: #1066.
 - Police search and seizure reading the legality flags: #1067.
