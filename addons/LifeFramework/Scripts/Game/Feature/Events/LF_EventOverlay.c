@@ -222,8 +222,66 @@ class LF_EventOverlay
 			config.m_aEvents = new array<ref LF_EventDef>();
 
 		int changed = LF_ConfigOverlay.ApplyContainerList(new LF_EventDefList(config.m_aEvents), root, "m_aEvents", source, claims);
-		LF_Debug.Info(FEATURE, string.Format("events: pack overlay %1 changed %2 event(s)", source, changed));
+		int modules = MergeModules(config, root, source);
+		LF_Debug.Info(FEATURE, string.Format("events: pack overlay %1 changed %2 event(s) and %3 module(s)", source, changed, modules));
 		return changed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Adds an overlay's module refs (#2137). A ref whose id a lower layer has replaces it (logged).
+	//! \return How many refs the overlay brought.
+	static int MergeModules(notnull LF_EventsConfig config, notnull BaseContainer root, string source)
+	{
+		BaseContainerList list = root.GetObjectArray("m_aModules");
+		if (!list)
+			return 0;
+
+		if (!config.m_aModules)
+			config.m_aModules = new array<ref LF_EventModuleRef>();
+
+		int merged;
+		for (int i = 0; i < list.Count(); i++)
+		{
+			BaseContainer entry = list.Get(i);
+			if (!entry)
+				continue;
+
+			LF_EventModuleRef added = LF_EventModuleRef.Cast(BaseContainerTools.CreateInstanceFromContainer(entry));
+			if (!added || added.m_sId.IsEmpty())
+			{
+				LF_Debug.Error(FEATURE, string.Format("events: pack overlay %1 has a module entry with no id; skipped", source));
+				continue;
+			}
+
+			merged++;
+			int existing = FindModule(config, added.m_sId);
+			if (existing < 0)
+			{
+				config.m_aModules.Insert(added);
+				continue;
+			}
+
+			LF_Debug.Warn(FEATURE, string.Format("events: pack overlay %1 replaces module %2", source, added.m_sId));
+			config.m_aModules.Set(existing, added);
+		}
+
+		return merged;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return the index of the module ref with this id, or -1.
+	static int FindModule(notnull LF_EventsConfig config, string id)
+	{
+		if (!config.m_aModules)
+			return -1;
+
+		foreach (int i, LF_EventModuleRef entry : config.m_aModules)
+		{
+			if (entry && entry.m_sId == id)
+				return i;
+		}
+
+		return -1;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -11,6 +11,14 @@ class LF_EventOperation : Managed
 	{
 		return false;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while what Run started is still under way (a scene on stage, #2137). The phase that names
+	//! a busy operation does not advance: its conditions count as not holding.
+	bool Busy()
+	{
+		return false;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -34,7 +42,8 @@ class LF_EventShellRun : Managed
 //! Module ids: a phase's m_aModules names condition, abort and operation modules registered here
 //! (RegisterCondition / RegisterAbort / RegisterOperation). Conditions are AND-ed, aborts OR-ed,
 //! operations run in order. An id nobody registered is logged once and counts as a condition that
-//! does not hold, so a typo holds the phase instead of rushing it.
+//! does not hold, so a typo holds the phase instead of rushing it. A busy operation holds its phase
+//! too. At game start LF_EventModuleLoader registers the modules the config lists (#2137).
 //!
 //! Start: an idle event that is not cooling down starts when its FIRST phase's conditions hold, so
 //! the first phase's conditions are also the event's start gate. A running phase advances when its
@@ -69,7 +78,11 @@ class LF_EventShell
 			return;
 
 		if (!s_aRuns)
-			Use(LoadConfig());
+		{
+			LF_EventsConfig config = LoadConfig();
+			Use(config);
+			LF_EventModuleLoader.RegisterFrom(config);
+		}
 
 		s_bRunning = true;
 		GetGame().GetCallqueue().CallLater(TickNow, TICK_MS, true);
@@ -200,7 +213,21 @@ class LF_EventShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Removes a module of any kind by id (tests, a feature that shuts down). eturn true when one was removed.
+	//! \return the operation module registered under `id`, or null.
+	static LF_EventOperation FindOperation(string id)
+	{
+		return Operations().Get(id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true when a condition, abort or operation is registered under `id`.
+	static bool IsRegistered(string id)
+	{
+		return Conditions().Contains(id) || Aborts().Contains(id) || Operations().Contains(id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removes a module of any kind by id (tests, a feature that shuts down). \return true when one was removed.
 	static bool Unregister(string id)
 	{
 		bool removed = Conditions().Contains(id) || Aborts().Contains(id) || Operations().Contains(id);
@@ -365,6 +392,10 @@ class LF_EventShell
 					conditions.Insert(condition);
 					continue;
 				}
+				// A busy operation (a scene still on stage) holds its phase.
+				LF_EventOperation operation = Operations().Get(id);
+				if (operation && operation.Busy())
+					return false;
 				if (!Aborts().Contains(id) && !Operations().Contains(id))
 				{
 					WarnUnknown(id, phase.m_sName);
