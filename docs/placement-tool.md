@@ -163,6 +163,18 @@ that slips through still meets the audit there.
   probed on, the date), sorted by mesh path, so two branches that each probed a surface merge as two
   added lines. `place probe <surface>` refreshes an entry after a mesh changes.
 
+## Sizing a block on the grid: `grid place <slug> <prefab>`
+
+`toolscli grid place <slug> <prefab>` (docs/architecture/world-zones.md "One command for a building") reuses this tool
+instead of a second bounds reader: `prefabInfo` gives the bounds, the scale and the entity class (the prefab's root class,
+`SCR_DestructibleBuildingEntity` for a vanilla building); `tools/lib/game-prefab.mjs` `resolvePrefab` turns a bare name such as
+`Villa_E_2I01` into its `{GUID}path` (the paks carry no `.meta`, so `place` alone refuses a vanilla name no layer uses yet). The
+grid command sizes the block from `footprintRect` at yaw 0 and 90 (`ceil((footprint + 4 m) / 12)` per axis), claims it, then calls
+`place ground <block centre> <ref> --layer Grid_<slug>.layer --yaw <Y> --y-hint 0 --name Grid_<slug>_Main`: `ground` puts the
+footprint **centre** at that point whatever the mesh's pivot offset, probes the ground, runs the offline checks and the audit, and
+writes the entity with the class read from the prefab. `grid place ... --dry` prints the sizing and writes nothing; it runs no
+probe, so it needs no pool machine. The audit that follows is `audit placement --grid --strict --layer Grid_<slug>.layer`.
+
 ## Failure classes (2026-11 trailer review, PRs #740 to #743)
 
 | Failure | Root cause | Caught by |

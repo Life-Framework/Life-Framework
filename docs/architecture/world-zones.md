@@ -42,15 +42,48 @@ anywhere inside the block, and every cell of it counts as claimed for `grid list
 open-PR and `origin/main` clash checks and `validate-world-zones`. A 3 x 2 block is 36 x 24 m: a 33 x 19 m hotel fits.
 
 ```
-tools\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--dry] [--no-verify]
+toolscli grid place <slug> <prefab>  [--dry] [--margin M] [--front +z] [--cell cXrY] [--span WxH] [--centre]   one building, sized
+toolscli grid place <slug> [<prefab>...] [--name N] [--rows] [--dry] [--no-verify]                          rows of props
 tools\cli grid list                    claims, free cells, and a map (north up)
 tools\cli grid free <slug>             delete the feature's grid layer and its claim
 tools\cli look grid:<slug>             the look pictures of that cell, from its gap
 ```
 
-`grid place` for a new slug:
+**One command for a building: `grid place <slug> <prefab>`.** Name a vanilla or addon prefab (`MunicipalOffice_E_01`,
+`Villa_E_2I01`, a path or a `{GUID}path`) and the command does the sizing, the claim and the placement
+(`tools/grid/autosize.mjs`; no coordinates, no `sed`):
 
-1. Picks the cell: the first usable, unclaimed cell in lattice order, starting from a hash of the slug
+1. **Bounds.** The same reader `toolscli place` uses (`prefabInfo`: the measured list, else the mesh's `.xob` header from
+   the paks, offline, no Workbench): footprint, height, the footprint centre's offset from the pivot (a MunicipalOffice's
+   is 0.36, 0.56 m; a Villa's pivot is 1.4 m off its centre), and the entity class read from the prefab's root
+   (`SCR_DestructibleBuildingEntity` for the vanilla buildings), never hard-coded.
+2. **Span.** `ceil((footprint + margin) / 12)` per axis, margin 4 m by default (2 m each side from the block's edge, 1 m
+   inside the yard fence; `--margin M`). It tries yaw 0/180 and yaw 90/270 and takes the smaller block; of two blocks of the same
+   size it takes the one whose front can face the yard's gap. A 15.3 x 12.7 m villa is 2x2, a 1 m crate 1x1, a 24 x 17.8 m
+   municipal office 3x2 or 2x3, a 30 x 6 m long house 3x1 or 1x3. Height does not change the span.
+3. **Claim.** The first free block of that size, from the slug's hash, against this worktree, `origin/main`, open PRs and
+   sibling worktrees (spans included). No fit prints what it tried and the largest free block (`no free 3x3 block ... the
+   largest free block is 2x2 cells (24 x 24 m) at c10r0`) and writes nothing. It does **not** grow the lattice
+   (`tools/grid/lattice.mjs` `CELL.cols` is a separate change).
+4. **Place.** A block of two cells or more (or `--centre`) gets the building: the footprint centred in the block, the yaw (0, 90,
+   180 or 270) whose front (`+z`, `--front -z|+x|-x` for a mesh with another front) faces the gap, the ground height from
+   `place ground`'s probe rays, then the placement audit of the whole cell (`audit placement --grid --strict --layer Grid_<slug>.layer`).
+   If the place tool refuses the building (not level, overlap), the claim this call made and its yard are removed so no half-claimed
+   block is left; `--force`, `--margin`, `--span` or `--cell` and run it again. A block of one cell keeps the row of props below
+   (a crate is not a building); `--rows` forces the rows for any prefab.
+5. **`--dry`** prints the bounds, the sizes the two orientations need, the block, the yaw, the pivot and the entity class, and writes nothing.
+   `--span` and `--cell` still override the sizing (a span too small for the prefab is refused with what it needs).
+
+```
+grid: MunicipalOffice_E_01 {363A616E6C64BB7F}Prefabs/.../MunicipalOffice_E_01.et (SCR_DestructibleBuildingEntity): footprint 24.06 x 17.76 m, height 20.61 m (base -5.8 m from the pivot), footprint centre 0.36, 0.56 m (x, z) from the pivot
+  sizing with a 4 m walk-around margin: 3x2 at yaw 0/180, 2x3 at yaw 90/270
+grid: town-hall -> cell c11r4 +2x3 (x 154..178, z 70..106, gap west) (new)
+  would place SCR_DestructibleBuildingEntity Grid_town_hall_Main (MunicipalOffice_E_01): footprint centre 166 88, pivot x 166.558 z 87.642, angleY 270; front (+z) faces the west gap; y from the ground probe
+```
+
+`grid place` for a new slug (the rows of props; a building takes the path above):
+
+1. Picks the cell (with one prefab it first sizes the block as above): the first usable, unclaimed cell in lattice order, starting from a hash of the slug
    (FNV-1a modulo the 77 cells), so the same slug gets the same cell on every machine. `--cell` asks for a
    particular free cell. "Unclaimed" is read from this worktree **and from `origin/main`**: `place`
    fetches `origin/main` and treats its `tools/grid/cells/` claims as taken, so a slice cut before
