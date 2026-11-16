@@ -7,6 +7,7 @@ class LF_RobAction : ScriptedUserAction
 	static const string REFUSED_POLICE = "robbery refused: not enough police on duty";
 	static const string REFUSED_PAYOUT = "robbery refused: payout is not configured";
 	static const string REFUSED_OFF = "robbery refused: the Robbery system is off";
+	static const string REFUSED_GRACE = "robbery refused: the robber is in its grace period";
 	//! The system id (LF_Systems, #960): till, weapon and vehicle robbery and the till hold.
 	static const string SYSTEM = "Robbery";
 
@@ -196,6 +197,10 @@ class LF_RobAction : ScriptedUserAction
 	{
 		if (IsCooldownActive(lastRobTimeMs, cooldownSeconds, nowMs))
 			return REFUSED_COOLDOWN;
+
+		// A new character is in its grace (#1780): it may not rob, so protection is not a licence.
+		if (LF_Grace.Protects(playerUid))
+			return REFUSED_GRACE;
 
 		LF_PlayerAccount account = FindAccount(playerUid);
 		if (!account)
@@ -442,6 +447,8 @@ class LF_RobAction : ScriptedUserAction
 
 		if (paid > 0)
 			LF_Utils.NotifyEntity(pUserEntity, "#EL-Stole_Money", "#EL-Robbery_Successful", 3.0, paid.ToString());
+		else if (s_sLastRefusal == REFUSED_GRACE)
+			LF_Grace.Notify(pUserEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------
