@@ -10,7 +10,7 @@
 //   LF_ChessTable            the seats and the game, pure script (the test drives it with a clock)
 //   LF_ChessTableComponent   the table entity: replicated state, the server tick, the asks
 //   LF_ChessSitAction        "Play chess" on the table: sit (or watch when both seats are taken)
-//   SCR_PlayerController     the client-to-server asks (a client may only RPC its own controller)
+//   SCR_PlayerController     the asks to the server and the board opening on the owner
 
 //------------------------------------------------------------------------------------------------
 //! The seats and the game of one table. No entity, no replication: the owner passes the clock.
@@ -263,7 +263,8 @@ class LF_ChessTableComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
-		if (!Replication.IsServer())
+		// No game in the Workbench editor world, only in play.
+		if (!GetGame().InPlayMode() || !Replication.IsServer())
 			return;
 
 		m_Table = new LF_ChessTable();
@@ -452,8 +453,8 @@ class LF_ChessTableComponent : ScriptComponent
 }
 
 //------------------------------------------------------------------------------------------------
-//! "Play chess" on the table. Runs on the performer's client (opens the board) and on the server
-//! (takes a seat). Both seats taken: the board opens to watch.
+//! "Play chess" on the table. The server takes a seat for the player and opens the board on the
+//! player's machine. Both seats taken: the board opens to watch.
 class LF_ChessSitAction : ScriptedUserAction
 {
 	//------------------------------------------------------------------------------------------------
@@ -479,14 +480,19 @@ class LF_ChessSitAction : ScriptedUserAction
 			return;
 		}
 
-		if (Replication.IsServer())
-		{
-			int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pUserEntity);
-			table.ServerSit(playerId);
-		}
+		// The server seats the player and opens the board on the player's own machine.
+		if (!Replication.IsServer())
+			return;
 
-		if (pUserEntity == LF_Utils.GetLocalCharacter())
-			LF_ChessScreen.Open(pOwnerEntity);
+		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pUserEntity);
+		table.ServerSit(playerId);
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
+		if (!controller)
+		{
+			LF_Debug.Error(LF_ChessTable.FEATURE, string.Format("board not opened: no controller for player %1", playerId));
+			return;
+		}
+		controller.LF_OpenChessBoard(LF_NetworkUtils.GetRplId(pOwnerEntity));
 	}
 }
 
@@ -495,6 +501,29 @@ class LF_ChessSitAction : ScriptedUserAction
 //! never from the payload, and the table re-checks seat, turn, rules and reach.
 modded class SCR_PlayerController
 {
+	//------------------------------------------------------------------------------------------------
+	//! Server: open the board of the table with RplId `table` on this player's machine.
+	void LF_OpenChessBoard(RplId table)
+	{
+		if (GetGame().GetPlayerController() == this)
+			RpcDo_LF_OpenChessBoard(table);
+		else
+			Rpc(RpcDo_LF_OpenChessBoard, table);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_LF_OpenChessBoard(RplId table)
+	{
+		IEntity entity = LF_NetworkUtils.FindEntityByRplId(table);
+		if (!entity)
+		{
+			LF_Debug.Error(LF_ChessTable.FEATURE, "board not opened: the table is not in this client's world");
+			return;
+		}
+		LF_ChessScreen.Open(entity);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Client: play `move` ("e2e4", "e7e8q") at the table with RplId `table`.
 	void LF_AskChessMove(RplId table, string move)

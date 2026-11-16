@@ -134,6 +134,13 @@ class LF_ChessScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: forget the open board (its widgets went with the world).
+	static void ResetStatics()
+	{
+		s_Screen = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected LF_ChessTableComponent Table()
 	{
 		return LF_ChessTableComponent.Of(GetGame().GetWorld().FindEntityByID(m_TableId));
@@ -297,5 +304,22 @@ class LF_ChessScreen
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (controller && LocalSeat(component) != LF_ChessTable.SEAT_NONE)
 			controller.LF_AskChessStand(m_TableRpl);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ChessScreen's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_ChessScreen_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ChessScreen_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_ChessScreen";
+	}
+
+	override void Apply()
+	{
+		LF_ChessScreen.ResetStatics();
 	}
 }
