@@ -219,6 +219,11 @@
    "center": [0.005, 0.004],
    "mesh": "{21D4DB3CA0B5913F}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_item.xob"
   },
+  "Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et": {
+   "size": [0.295, 0.053, 0.214],
+   "center": [0.005, 0.004],
+   "mesh": "{21D4DB3CA0B5913F}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_item.xob"
+  },
   "Prefabs/Weapons/Handguns/PM/Handgun_PM.et": {
    "size": [0.031, 0.129, 0.162],
    "center": [-0.002, 0.033],
@@ -263,6 +268,11 @@
    "size": [0.295, 0.053, 0.214],
    "center": [0.005, 0.004],
    "mesh": "{21D4DB3CA0B5913F}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_item.xob"
+  },
+  "Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_blue.et": {
+   "size": [0.175, 0.077, 0.245],
+   "center": [0, 0],
+   "mesh": "{C5B3D5A8D3F18C3A}Assets/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_item.xob"
   }
  },
  "racks": {

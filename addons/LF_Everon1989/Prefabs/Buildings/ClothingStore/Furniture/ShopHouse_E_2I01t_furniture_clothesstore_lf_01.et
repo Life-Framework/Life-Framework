@@ -535,5 +535,103 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.2 0 8.7
    angleY 20
   }
+  GenericEntity : "{9235921E3FFE47C7}Prefabs/Props/Furniture/LightCeiling_01_on.et" {
+   ID "2B4D01C04FCE36DF"
+   coords 2.7 4 5.6
+  }
+  GenericEntity : "{9235921E3FFE47C7}Prefabs/Props/Furniture/LightCeiling_01_on.et" {
+   ID "A244D4DCCFAF3DA2"
+   coords 1.5 3.99 -0.3
+  }
+  GenericEntity : "{9235921E3FFE47C7}Prefabs/Props/Furniture/LightCeiling_01_on.et" {
+   ID "9D9C2A8901335D7A"
+   coords 2.7 3.99 1.8
+  }
+  GenericEntity : "{2B6D16419B500A87}Prefabs/Props/Furniture/Carpet_02.et" {
+   ID "3086FBF886A5ED69"
+   coords 2.75 0.199 6.8
+   angleY 90
+  }
+  GenericEntity : "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et" {
+   ID "885CD02BE411F3D9"
+   coords 5.3 0.199 7
+  }
+  GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
+   ID "02A586812023C0F3"
+   coords 5.765 1.2 6.4
+   angleY -90
+  }
+  GenericEntity : "{DD918C2BCC564E9D}Prefabs/Props/Decorations/Paintings/PaintingBig_01_V4.et" {
+   ID "8369BD565BAECA04"
+   coords -1.535 2.35 4.4
+   angleY 90
+  }
+  GenericEntity : "{43E4EEB4CDBBFE34}Prefabs/Props/Commercial/Posters/PosterSingle_27x41_01_RadioEveron.et" {
+   ID "C018FCDE11F92D1C"
+   coords -1.535 1.6 6.4
+   angleY 90
+  }
+  GenericEntity : "{D51E223FD6EDB039}Prefabs/Props/Furniture/ClockWall_01.et" {
+   ID "3D435C3FAD704D51"
+   coords 2.3 2.6 -3.015
+  }
+  GenericEntity : "{C3973010F42EB6A0}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V3.et" {
+   ID "B21BC3828A875E72"
+   coords 0.9 1.7 -2.995
+  }
+  GenericEntity : "{7480053B4EE198D3}Prefabs/Props/Commercial/Posters/PosterSingle_A3_Insurance_V1.et" {
+   ID "57690E2BF9AA1698"
+   coords 4.6 1.7 -2.995
+  }
+  GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+   ID "5B2884E2AE5D37EC"
+   coords 1.75 1.238 -0.25
+   angleY 180
+  }
+  GenericEntity : "{A5E64994411BA6A0}Prefabs/Props/Civilian/Pen_01/Pen_01_base.et" {
+   ID "AAF7D44F136FF47C"
+   coords 1.98 1.245 -0.2
+   angleY 25
+  }
+  GenericEntity : "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et" {
+   ID "CAFEE0E5B8FEF2A3"
+   coords 2.1 1.238 -0.65
+   angleY 200
+  }
+  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
+   ID "05F272AF39CE1C8A"
+   coords 1 1.238 -0.75
+  }
+  GenericEntity : "{1D9FA80D3742DBD6}Prefabs/Props/Civilian/SewingMachine_01.et" {
+   ID "7EB932E7D49120C9"
+   coords 0 0.199 -2.5
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "24171C082A81C130"
+   coords -0.95 0.199 -2.5
+  }
+  GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
+   ID "E51E440BD316C7ED"
+   coords -0.95 0.624 -2.5
+   angleY 10
+  }
+  GenericEntity : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
+   ID "76B945B659552E8E"
+   coords 2.6 0.199 -1.15
+  }
+  GenericEntity : "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et" {
+   ID "2F62AF994CA871A2"
+   coords 2.7 0 8.45
+  }
+  GenericEntity : "{CBADF2BB9A4BD3DD}Prefabs/Props/Decorations/Paintings/PaintingBig_01_V9.et" {
+   ID "5FCF786D617F87A3"
+   coords 5.765 2.45 4.6
+   angleY -90
+  }
+  GenericEntity : "{A08D6C886BE1B004}Prefabs/Props/Decorations/Paintings/PaintingSmall_01_V3.et" {
+   ID "0DC3CFC2430BD458"
+   coords 5.765 2.4 2
+   angleY -90
+  }
  }
 }

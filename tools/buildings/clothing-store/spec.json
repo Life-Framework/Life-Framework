@@ -92,56 +92,56 @@
         "fixture": "ShelfShop_01",
         "pick": [2],
         "boards": [0],
-        "per_board": 5
+        "per_board": 6
       },
       {
         "item": "{86E0117B630414B5}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V2.et",
         "fixture": "ShelfShop_01",
         "pick": [2],
         "boards": [1],
-        "per_board": 5
+        "per_board": 6
       },
       {
-        "item": "{D8D9EE7F3966589E}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_red.et",
+        "item": "{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et",
         "fixture": "ShelfShop_01",
         "pick": [2],
         "boards": [2],
-        "per_board": 6
+        "per_board": 8
       },
       {
-        "item": "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et",
+        "item": "{DD565E2C7E00A5BB}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_blue.et",
         "fixture": "ShelfShop_01",
         "pick": [1],
         "boards": [3],
-        "per_board": 6
+        "per_board": 8
       },
       {
         "item": "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et",
         "fixture": "ShelfShop_01",
         "pick": [1],
         "boards": [0],
-        "per_board": 5
+        "per_board": 6
       },
       {
         "item": "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et",
         "fixture": "ShelfShop_01",
         "pick": [1],
         "boards": [1],
-        "per_board": 5
+        "per_board": 6
       },
       {
         "item": "{CF185061C5C13DBF}Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_yellow.et",
         "fixture": "ShelfShop_01",
         "pick": [1],
         "boards": [2],
-        "per_board": 5
+        "per_board": 6
       },
       {
         "item": "{4F71E7468E78DDD2}Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_01.et",
         "fixture": "ShelfShop_01",
         "pick": [2],
         "boards": [3],
-        "per_board": 6
+        "per_board": 8
       },
       {
         "item": "{27162F1F6EE6581A}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et",
@@ -155,35 +155,37 @@
         "fixture": "ShelfShop_01",
         "pick": [0],
         "boards": [1],
-        "per_board": 5
+        "per_board": 6
       },
       {
         "item": "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et",
         "fixture": "ShelfShop_01",
         "pick": [0],
         "boards": [2],
-        "per_board": 4
+        "per_board": 6
       },
       {
         "item": "{6FEB0D9130EC400E}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_lightgrey.et",
         "fixture": "ShelfShop_01",
         "pick": [0],
         "boards": [3],
-        "per_board": 6
+        "per_board": 8
       },
       {
         "item": "{AE93D885FDF713D4}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_black_V1.et",
         "fixture": "CounterShop_01",
         "pick": [1],
         "boards": [2],
-        "per_board": 3
+        "per_board": 6,
+        "rows": 2
       },
       {
         "item": "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et",
         "fixture": "CounterShop_01",
         "pick": [2],
         "boards": [2],
-        "per_board": 3
+        "per_board": 6,
+        "rows": 2
       }
     ]
   }
