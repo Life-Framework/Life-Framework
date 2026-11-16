@@ -289,6 +289,31 @@ StringTable {
      Target_en_us "Keep disputes out of the streets: settle it in character if you can, otherwise ask staff. Harassing or stalking another player is not roleplay."
      Comment "The rule shown after a wrong answer to safezone (#915)."
     }
+    CustomStringTableItem "{7C3E91A05B48D2F6}" {
+     Id "LF-Rank_Cadet"
+     Target_en_us "Cadet"
+     Comment "Police rank title of the 1989 ladder (#1769); the maintainer confirms the copy."
+    }
+    CustomStringTableItem "{B30F6A8D5E2C9147}" {
+     Id "LF-Rank_Lieutenant"
+     Target_en_us "Lieutenant"
+     Comment "Police rank title of the 1989 ladder (#1769); the maintainer confirms the copy."
+    }
+    CustomStringTableItem "{1F8A4D62C9E073B5}" {
+     Id "LF-Rank_Patrol"
+     Target_en_us "Patrol Officer"
+     Comment "Police rank title of the 1989 ladder (#1769); the maintainer confirms the copy."
+    }
+    CustomStringTableItem "{A6D05B3F81E7C294}" {
+     Id "LF-Rank_SeniorPatrol"
+     Target_en_us "Senior Patrol Officer"
+     Comment "Police rank title of the 1989 ladder (#1769); the maintainer confirms the copy."
+    }
+    CustomStringTableItem "{4E92C7B18D3A5F60}" {
+     Id "LF-Rank_Sergeant"
+     Target_en_us "Sergeant"
+     Comment "Police rank title of the 1989 ladder (#1769); the maintainer confirms the copy."
+    }
     CustomStringTableItem "{254C4DE569D25E07}" {
      Id "LF-Reg_Title"
      Target_en_us "Civil Registry of Everon, Form R-89"
