@@ -253,6 +253,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_IdCardRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IdentityFallback(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Impairment(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ImpairmentView(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagged(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_IncidentGmQuery(), LF_TestTier.LOGIC);
@@ -391,6 +392,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Prefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PrefabSlots(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PrefabSlotsSwapSpawn(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PricedSignProvider(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ProgressionRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ProgressionOldSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_QuantityStack(), LF_TestTier.WORLD);
