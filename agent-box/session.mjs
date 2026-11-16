@@ -1156,10 +1156,15 @@ async function routeMachine(cmd, rest) {
   const prio = args.indexOf("--priority") === -1 ? undefined : args[args.indexOf("--priority") + 1];
   const legArgs = args.filter((a) => a !== "--wait");
   const deadline = Date.now() + waitMs;
+  // Machines whose own `up` refused (LANE_BUSY): not asked again until the backoff passes (#1699).
+  const refused = new Map();
+  let refusals = 0;
   for (;;) {
     let target;
     try {
-      target = await pool.chooseSessionMachine(ROOT, { clients, profile, waitMs: Math.max(0, deadline - Date.now()), priority: prio, meta: { clients, profile, world: args.includes("--mission") ? args[args.indexOf("--mission") + 1] : undefined } });
+      const nowMs = Date.now();
+      const avoid = new Set([...refused].filter(([, until]) => until > nowMs).map(([name]) => name));
+      target = await pool.chooseSessionMachine(ROOT, { clients, profile, waitMs: Math.max(0, deadline - Date.now()), priority: prio, meta: { clients, profile, world: args.includes("--mission") ? args[args.indexOf("--mission") + 1] : undefined }, avoid });
     } catch (e) {
       if (!e.refusal) throw e;
       console.log(`session: ${e.message}`);
@@ -1176,9 +1181,13 @@ async function routeMachine(cmd, rest) {
     const code = target.via === "local" ? runLocalUp(legArgs) : await upOnRemote(pool, target, legArgs, clients, ptr);
     const again = code === pool.LANE_BUSY_CODE || code === UP_MACHINE_GONE;
     if (!again || waitMs <= 0 || Date.now() > deadline) return { code: code === UP_MACHINE_GONE ? 1 : code };
-    console.log(`session: ${code === UP_MACHINE_GONE ? `${target.name} went away` : `lost the race for a lane on ${target.name}`}; queuing again for any machine`);
-    // A lane that looked free and was not: give the holder a moment before asking again.
-    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 3000);
+    // A lane that looked free and was not: back off (3 s, doubling to 60 s) and ask another machine first,
+    // so a machine that keeps refusing cannot spin the request (and the log) in a tight loop.
+    const busy = code === pool.LANE_BUSY_CODE;
+    const backoffMs = busy ? pool.laneRefusalBackoffMs(++refusals) : 3000;
+    if (busy) refused.set(target.name, Date.now() + backoffMs * 2);
+    console.log(`session: ${code === UP_MACHINE_GONE ? `${target.name} went away` : `lost the race for a lane on ${target.name}`}; queuing again${busy ? ` (another machine first, ${Math.round(backoffMs / 1000)} s backoff)` : " for any machine"}`);
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, backoffMs);
   }
 }
 
@@ -1212,7 +1221,7 @@ async function upOnRemote(pool, target, args, clients, ptr) {
   // (testbox.syncToSlot); only for one without, this PC's headless Workbench refreshes it first.
   const tb = await import("../tools/remote/testbox.mjs");
   if (!tb.refreshesRdb(target)) spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "rdb"], { windowsHide: true, stdio: "inherit", cwd: ROOT });
-  const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", "--machine", "local", ...args], onSlot: (rDir) => writePtr(rDir) });
+  const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", "--machine", "local", ...args], onSlot: (rDir) => writePtr(rDir), env: { [pool.LANES_ENV]: pool.lanesEnvFor(target) } });
   if (r.code === 0) {
     writePtr(r.rDir);
     return 0;

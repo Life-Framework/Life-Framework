@@ -3340,7 +3340,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
   let slot;
   const inShardGroup = !!process.env.LF_SHARD_GROUP;
   try {
-    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority, budget: opts.budget, waitMs: opts.waitMs });
+    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority, budget: opts.budget, world: opts.world, bootBudget: opts.bootBudget, waitMs: opts.waitMs });
   } catch (e) {
     // A slice that only tried remote lanes for a short while: ask again with this PC allowed.
     if (inShardGroup && opts.waitMs) return { shardWait: "local" };
@@ -3363,7 +3363,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     rdbForSlot(root, slot);
     if (!slot.local) {
       // --no-cache: the box runs what it was sent; this side owns the cache.
-      const args = ["test", "--no-build", "--local", "--no-cache", "--tier", tier, ...(only.length ? [red ? "--red" : exact ? "--only-classes" : "--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
+      const args = ["test", "--no-build", "--local", "--no-cache", "--tier", tier, ...(only.length ? [red ? "--red" : exact ? "--only-classes" : "--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : []), ...(slot.bootS && opts.world ? ["--boot-budget", String(slot.bootS)] : [])];
       // The placement audit (agent-box/place-audit.mjs) hands its input list in through
       // LF_PLACE_AUDIT_IN and reads out.txt from the test profile: both travel with a remote run.
       const auditIn = process.env.LF_PLACE_AUDIT_IN;
@@ -3391,6 +3391,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     if (tookLocal) shards.dropLocal(root);
     slot.release();
     if (cacheKey) extra.cacheKey = cacheKey.slice(0, 16);
+    if (opts.world) extra.world = opts.world;
     if (!slot.inherited) pool.recordRun(root, slot, { purpose, code, extra });
   }
 }
@@ -3433,6 +3434,7 @@ function shardPassThrough(opts) {
   if (opts.any) out.push("--any");
   if (opts.priority) out.push("--priority", opts.priority);
   if (opts.budget) out.push("--budget", String(opts.budget));
+  if (opts.bootBudget) out.push("--boot-budget", String(opts.bootBudget));
   if (opts.force) out.push("--force");
   return out;
 }
@@ -4146,6 +4148,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 --old-build stamps boot 1's save as game build 1.8.0.13 (#980);
                                 --content-ids runs the three-boot stable-id proof instead (#965);
                                 --cash-swap runs the two-boot cash slot swap proof (#1130)
+  --boot-budget <s>             boot budget for a test run (default: 30 s for DebugWorld, 150 s or more for a big --world such as CoreOnEveron)
   --budget <s>                  run-time budget for a known-long test/e2e run (default: learned from the pool's history)
   --priority high|normal|low    on test, e2e, dev, ci, session up, wt gate/ship: queue order in the pool
                                 (default normal; LF_PRIORITY or 'wt new --priority' set a worktree default)
@@ -4269,6 +4272,12 @@ function remoteFlags(list) {
     const n = Number(b);
     if (!(n > 0)) throw new Error(`--budget must be a number of seconds (got '${b}')`);
     out.budget = n;
+  }
+  const bb = argValue(list, "--boot-budget");
+  if (bb !== null) {
+    const n = Number(bb);
+    if (!(n > 0)) throw new Error(`--boot-budget must be a number of seconds (got '${bb}')`);
+    out.bootBudget = n;
   }
   if (list.includes("--remote")) {
     const v = argValue(list, "--remote");

@@ -18,6 +18,7 @@
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
 //   7. burst starts (#1195): N queued runs start together on N free lanes, in queue order, behind the RAM of the
 //      starts in flight; a granted ticket stops blocking; atomic lane locks across racing holders; one snapshot per burst.
+// red-proof 2026-11-17 (pool-budget-lanes, #1700 #1699), each broken alone: with the boot budget flat 30 s (the old budgetsFor) "CoreOnEveron still gets the 30 s boot budget that killed it (#1700)"; with LF_POOL_THIS_LANES ignored (the old loadMachines) "the leg on lf-cloud still sees 2 session lane(s), the router counted 9 (#1699; this PC: 2)"; with withoutAvoided returning every machine "an avoided machine was still ranked"; with a flat 3 s retry "the lane refusal backoff is 3000,3000,3000,3000,3000,3000".
 // red-proof 2026-11-14 (run-overhead rdb): with rdbPlan ignoring staleness (the old syncToSlot) "a stale rdb is sent to a machine that refreshes its own".
 // red-proof 2026-11-14 (run-overhead lane folders), each broken alone: psCheckout without the shared clean "only a shared folder is cleaned after the checkout"; holderConfig with shared = false "remote test lanes do not run in the lane's shared folder".
 // red-proof 2026-11-14 (pool-rt-gc), each broken alone: with the rt gc sort reversed (newest idle first) "rt gc removes the wrong folders or in the wrong order: Life-Framework-rt-b,Life-Framework-rt-a,Life-Framework-rt-oldest"; with the live-lock keep rule off "rt gc removes the wrong folders or in the wrong order: ...oldest,Life-Framework-rt-locked,..." (a locked folder was chosen).
@@ -784,6 +785,46 @@ try {
   rmSync(join(dir, "tmp", "wt.json"));
   check(pool.resolvePriority(dir) === "normal", "default priority is not normal");
   check(pool.budgetsFor(dir, { name: "local", budgetMultiplier: 1 }, "test only").bootS === 30, "boot budget is not 30 s");
+  // 5c. boot budget by world (#1700): DebugWorld keeps 30 s, a big world (CoreOnEveron streams 1.1M entities) gets room,
+  // a world that timed out gets double, --boot-budget wins, and the pool machine works it out from --world alone.
+  const lm = { name: "local", budgetMultiplier: 1 };
+  check(pool.budgetsFor(dir, lm, "test fast", undefined, { world: "Worlds/DebugWorld/DebugWorld.ent" }).bootS === 30, "DebugWorld lost its small 30 s boot budget");
+  check(pool.budgetsFor(dir, lm, "test fast", undefined, { world: "Worlds/TestLogic/TestLogic.ent" }).bootS === 30 && pool.budgetsFor(dir, lm, "test fast", undefined, { world: "Worlds/GridWorld/GridWorld.ent" }).bootS === 30, "the small test worlds lost their 30 s boot budget");
+  check(pool.budgetsFor(dir, lm, "test fast", undefined, { world: "Worlds/CoreOnEveron/CoreOnEveron.ent" }).bootS >= 150, "CoreOnEveron still gets the 30 s boot budget that killed it (#1700)");
+  check(pool.budgetsFor(dir, { name: "lf-testbox", budgetMultiplier: 2 }, "test fast", undefined, { world: "Worlds/CoreOnEveron/CoreOnEveron.ent" }).bootS === 300, "the machine multiplier does not scale the big-world boot budget");
+  check(q.bootBudgetSeconds([], { world: "Worlds/SomeNewMap/SomeNewMap.ent", machine: "local" }).bootS === q.BIG_WORLD_BOOT_S, "an unknown --world did not get the big-world boot budget");
+  check(q.bootBudgetSeconds([], { world: "{3626CFA069A75D46}Missions/LF_Everon1989_Test.conf", machine: "local" }).world === "LF_Everon1989_Test", "a {GUID}path mission header was not reduced to its name");
+  check(q.bootBudgetSeconds([], { world: "Worlds/CoreOnEveron/CoreOnEveron.ent", machine: "local", override: 400 }).bootS === 400, "--boot-budget does not override");
+  const eveTimeout = [{ purpose: "test fast", machine: "local", world: "Worlds/CoreOnEveron/CoreOnEveron.ent", result: "timeout" }];
+  check(q.bootBudgetSeconds(eveTimeout, { world: "Worlds/CoreOnEveron/CoreOnEveron.ent", machine: "local" }).bootS === 300, "a world that timed out did not get a doubled boot budget");
+  check(q.bootBudgetSeconds(eveTimeout, { world: "Worlds/DebugWorld/DebugWorld.ent", machine: "local" }).bootS === 30 && q.bootBudgetSeconds(eveTimeout, { world: "Worlds/CoreOnEveron/CoreOnEveron.ent", machine: "other" }).bootS === 150, "a timeout loosened another world's or machine's boot budget");
+  check(q.bootBudgetSeconds([{ machine: "local", world: "Worlds/CoreOnEveron/CoreOnEveron.ent", result: "timeout" }, ...Array.from({ length: 5 }, () => ({ machine: "local", world: "Worlds/CoreOnEveron/CoreOnEveron.ent", result: "timeout" }))], { world: "Worlds/CoreOnEveron/CoreOnEveron.ent", machine: "local", base: 400 }).bootS === q.BOOT_CAP_S, "the boot budget has no cap");
+  // 5d. a session leg on a pool machine uses that machine's lanes (#1699): the router sends LF_POOL_THIS_LANES.
+  {
+    const legMachine = { name: "lf-cloud", via: "ssh", lanes: { test: 6, session: 9 } };
+    const env = pool.lanesEnvFor(pool.loadMachines(dir).find((x) => x.via === "local") ? { ...legMachine, lanes: { test: 6, session: 9 } } : legMachine);
+    check(JSON.parse(env).session === 9, "lanesEnvFor does not carry the session lane count");
+    const before = pool.lanesFor(pool.loadMachines(dir).find((x) => x.via === "local"), "session").length;
+    process.env[pool.LANES_ENV] = env;
+    try {
+      const mine = pool.loadMachines(dir).find((x) => x.via === "local");
+      check(pool.lanesFor(mine, "session").length === 9 && pool.lanesFor(mine, "test").length === 6, `the leg on lf-cloud still sees ${pool.lanesFor(mine, "session").length} session lane(s), the router counted 9 (#1699; this PC: ${before})`);
+      check(pool.lanesFor(mine, "session").map((l) => l.port).join() !== pool.lanesFor(mine, "session").slice(0, 2).map((l) => l.port).join(), "the nine session lanes have no ports of their own");
+      process.env[pool.LANES_ENV] = "not json";
+      check(pool.lanesFor(pool.loadMachines(dir).find((x) => x.via === "local"), "session").length === before, "a broken LF_POOL_THIS_LANES changed the lane count");
+    } finally {
+      delete process.env[pool.LANES_ENV];
+    }
+    check(pool.lanesFor(pool.loadMachines(dir).find((x) => x.via === "local"), "session").length === before, "LF_POOL_THIS_LANES leaked past its test");
+  }
+  // 5e. a machine that refused the request is not asked again at once, and the refusals back off (#1699).
+  {
+    const ms = [{ name: "local" }, { name: "lf-cloud" }];
+    check(q.withoutAvoided(ms, new Set(["lf-cloud"])).map((m) => m.name).join() === "local", "an avoided machine was still ranked");
+    check(q.withoutAvoided(ms, new Set(["lf-cloud", "local"])).length === 2 && q.withoutAvoided(ms, undefined).length === 2, "avoiding every machine left none to ask");
+    const steps = [1, 2, 3, 4, 5, 9].map((n) => q.laneRefusalBackoffMs(n));
+    check(steps.join() === "3000,6000,12000,24000,48000,60000", `the lane refusal backoff is ${steps.join()}`);
+  }
   // A pool entry whose "hostname" is this machine's is the local machine there (the box's own lanes), the PC's entry is dropped.
   writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
   const selfView = pool.loadMachines(dir);
