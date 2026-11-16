@@ -8,7 +8,9 @@
 // [LFTEST]   - a new officer jails a wanted robber
 // LF_Jail logged "arrest refused: rank 0 is below the arrest rank 1". Restored to 0; green.
 
-// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
+// GridWorld (#1893): passes as it stands on 2026-11-16 (`--only LF_Test_PoliceRankPermissions --world Worlds/GridWorld/GridWorld.ent`);
+// it sets its own cell origin (LF_Jail.SetCellOrigin) and needs no town station.
+// tier: WORLD (LF_Jail moves real bodies and syncs the placed cell; LOGIC runs on any map, #1047)
 class LF_Test_PoliceRankPermissions : LF_Test
 {
 	override string GetName()
