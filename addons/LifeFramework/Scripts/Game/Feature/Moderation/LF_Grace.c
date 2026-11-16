@@ -1,9 +1,15 @@
 //------------------------------------------------------------------------------------------------
 //! The grace period setting (Configs/Moderation/LF_Grace.conf). A missing or broken file logs once
-//! and leaves the grace off.
+//! and leaves the grace off. The owner's "grace" section sets the minutes over the .conf (#1779):
+//!   "grace": { "minutes": 30 }
 [BaseContainerProps(configRoot: true)]
 class LF_GraceConfig
 {
+	//! The owner config.json section this class reads (LF_ConfigService).
+	static const string SECTION = "grace";
+	static const int MINUTES_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int MINUTES_MAX = 600;	// lf-fixed: the schema limit, ten hours
+
 	static const ResourceName CONFIG_PATH = "{D9E1D9BFA17BD167}Configs/Moderation/LF_Grace.conf";
 
 	protected static ref LF_GraceConfig s_Config;
@@ -36,6 +42,18 @@ class LF_GraceConfig
 				s_Config = LF_GraceConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 				if (!s_Config)
 					LF_Debug.Error(LF_Grace.FEATURE, string.Format("grace config has an unexpected root class, grace is off: %1", CONFIG_PATH));
+			}
+
+			if (s_Config)
+			{
+				LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
+				if (reader)
+				{
+					array<string> ownerKeys = {"minutes"};
+					reader.WarnUnknownKeys(ownerKeys);
+					reader.ReadInt("minutes", s_Config.m_iMinutes, MINUTES_MIN, MINUTES_MAX);
+					LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("grace: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+				}
 			}
 		}
 
