@@ -54,3 +54,13 @@ GenericEntity Grid_community_hall_R2_3 : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/
 GenericEntity Grid_community_hall_Radio : "{16C2DFD610CC7AFB}Prefabs/Atmosphere/LF_Radio.et" {
  coords 52.002 0.915 51.994
 }
+GenericEntity Grid_community_hall_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "community-hall"
+  }
+ }
+ coords 49.5 0 57.7
+ angleY 180
+}

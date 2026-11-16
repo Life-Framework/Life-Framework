@@ -73,3 +73,13 @@ GenericEntity Grid_test_fixtures_JailCell : "{AA32D528D592E54C}Prefabs/Police/EL
  }
  coords 42.5 0 64
 }
+GenericEntity Grid_test_fixtures_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "test-fixtures"
+  }
+ }
+ coords 45.7 0 66.5
+ angleY 270
+}

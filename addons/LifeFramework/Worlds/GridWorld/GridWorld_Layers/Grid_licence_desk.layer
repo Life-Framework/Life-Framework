@@ -41,3 +41,13 @@ GenericEntity LicenceDesk_Grid : "{0970D6C0210F9612}Prefabs/Props/Commercial/LF_
  coords 25.695 0 88.754
  angleY 90
 }
+GenericEntity Grid_licence_desk_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "licence-desk"
+  }
+ }
+ coords 33.7 0 90.5
+ angleY 270
+}

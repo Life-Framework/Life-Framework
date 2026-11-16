@@ -18,6 +18,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { frameSpawnLines } from "./cell-spawn.mjs";
 
 // Cells: an 11 x 7 lattice of 12 m squares from 22,22 (2 m inside the annex fence). Each cell holds a
 // 10 m fenced yard (1 m in from its edges) with a 5 m gap on the side facing the annex centre.
@@ -185,6 +186,7 @@ export function framePlan(states) {
       out.push({ name, x, z, lines: [`${GRAVEL.cls} ${name} : "${GRAVEL.ref}" {`, ` coords ${num(x)} ${GRAVEL.y} ${num(z)}`, ` scale ${GRAVEL.scale}`, "}"] });
     }
   }
+  out.push(frameSpawnLines());
   out.push({ name: MAP_BOARD, x: BOARD_AT[0], z: BOARD_AT[1], lines: signBlock(MAP_BOARD, boardLabel(states), BOARD_AT, YAW.north, COLOURS.board) });
   return out;
 }

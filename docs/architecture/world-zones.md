@@ -68,9 +68,10 @@ tools\cli look grid:<slug>             the look pictures of that cell, from its 
    in, and a pole-plate sign stands just outside that gap. The sign id is `grid:<slug>`, and
    `LF_SignCatalog.GridLabel` prints the slug on the plate (`police-gates` reads POLICE GATES). It is
    not a string-table key, because the grid is a test zone.
-3. Records the claim in `tools/grid/cells/<slug>.json` (slug, cell, layer, rows used, date): one file
+3. Adds `Grid_<slug>_Spawn` (#1813, `tools/grid/cell-spawn.mjs`): a `LF_PlaceComponent` of kind `GridCell`, id = slug, in the corridor at the gap facing the yard. `/grid <slug>` and `teleport grid:<slug>` move a player there; `node tools/grid/cell-spawn.mjs --backfill` adds it to a cell that lacks one.
+4. Records the claim in `tools/grid/cells/<slug>.json` (slug, cell, layer, rows used, date): one file
    per feature, never a central list (golden rule 10).
-4. Puts the prefabs in a row inside the yard, facing the gap, through `tools\cli place arrange row`:
+5. Puts the prefabs in a row inside the yard, facing the gap, through `tools\cli place arrange row`:
    the same offline checks, ground probe and audit as any placement. A layer needs no registration;
    GridWorld loads every file in `GridWorld_Layers/`. `grid list` and the blocked-cell check read
    GridWorld's layers, and `place --layer Grid_*` and `place on|against|ground` find and write
