@@ -12,8 +12,8 @@ FrameWidgetClass "{4D05600C49666678}" {
     OffsetLeft 24
     PositionY 0
     OffsetTop 0
-    SizeX 340
-    OffsetRight -364
+    SizeX 520
+    OffsetRight -544
     SizeY 360
     OffsetBottom -360
    }
