@@ -556,6 +556,15 @@ class LF_ShopComponent : ScriptComponent
 		if (store && !store.CanSupply(prefab, units))
 			return LF_EShopRefusal.OUT_OF_STOCK;
 
+		// An outlet offer can carry its own stock (#1064); a sale beyond what is left is refused.
+		int nowMs = GetGame().GetWorld().GetWorldTime();
+		LF_OutletOffer stockOffer = StockOffer(prefab);
+		if (!LF_CatalogueStock.CanSupply(stockOffer, units, nowMs))
+		{
+			LF_Debug.Info(LF_ItemCatalogue.FEATURE, string.Format("buy refused (out of stock) outlet=%1 item=%2 qty=%3", m_sOutletId, prefab, units));
+			return LF_EShopRefusal.OUT_OF_STOCK;
+		}
+
 		int removed = LF_MoneyUtils.RemoveAmount(buyer, totalPrice, "shop-buy");
 		if (removed != totalPrice)
 		{
@@ -572,6 +581,7 @@ class LF_ShopComponent : ScriptComponent
 		}
 
 		int added = LF_InventoryUtils.AddAmount(buyer, prefab, units);
+		LF_CatalogueStock.Take(stockOffer, added, nowMs);
 		if (added == units)
 		{
 			charged = totalPrice;
@@ -701,6 +711,17 @@ class LF_ShopComponent : ScriptComponent
 		earned = LF_ShopRules.StackTradeTotal(unitPrice, removed);
 		LF_Debug.Info("Shop", string.Format("sold item=%1 qty=%2 price=%3 stock=%4 flagged=%5", prefab, removed, earned, m_sStockId, flaggedOnly));
 		return LF_EShopRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The live offer this counter sells the prefab under, or null for a shop that is no outlet.
+	protected LF_OutletOffer StockOffer(ResourceName prefab)
+	{
+		if (m_sOutletId.IsEmpty())
+			return null;
+
+		LF_CatalogueItem entry;
+		return LF_ItemCatalogue.OfferFor(LF_ItemCatalogueConfig.Get(), m_sOutletId, prefab, entry);
 	}
 
 	//------------------------------------------------------------------------------------------------
