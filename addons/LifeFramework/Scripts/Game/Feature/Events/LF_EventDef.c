@@ -15,6 +15,9 @@ class LF_EventDef : LF_ConfigRecord
 	[Attribute("600", UIWidgets.Auto, "Seconds after the event ends (done, timed out or aborted) before it may start again", params: "0 604800")]
 	float m_fCooldownSeconds;
 
+	[Attribute("0", UIWidgets.CheckBox, "Off by default: the shell runs only an event a server or pack turns on (a pack patch sets m_bEnabled 1)")]
+	bool m_bEnabled;
+
 	//------------------------------------------------------------------------------------------------
 	static LF_EventDef Make(string eventId, notnull array<ref LF_EventPhase> phases, float cooldownSeconds)
 	{
@@ -26,6 +29,8 @@ class LF_EventDef : LF_ConfigRecord
 			def.m_aPhases.Insert(phase);
 		}
 		def.m_fCooldownSeconds = cooldownSeconds;
+		// Built in code (tests, a module that owns its event): meant to run.
+		def.m_bEnabled = true;
 		return def;
 	}
 
