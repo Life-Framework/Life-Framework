@@ -14,7 +14,8 @@
 //   - spec.lights[]: ceiling lights { at, color, lv, radius, angle } as an inline LightEntity, the same
 //     recipe as the building pipeline's lighting preset (tools/buildings/pipeline/lighting.mjs): the base
 //     game's Lamp_LightEntity_base is off by day, a plain LightEntity is always on. Optional `lamp` puts a
-//     vanilla fixture mesh at the same point.
+//     vanilla fixture mesh at the same point. `type: "Point"` with `attenuation` is the base game's ambient fill
+//     (LightCeiling_01_on's LightAmbient): a downlight's spot never reaches the ceiling, a point light does.
 // Prefab paths are resolved to {GUID}path from the game's own resource database (pipeline/gamedb.mjs).
 import { readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
@@ -168,6 +169,61 @@ export function shelfStock(furnitureText, fixtures, items) {
   return out;
 }
 
+// ---- overstock on top of the wall units, price cards on the board edges -----------------------
+// spec.dress.tops: { "<fixture>": [pick, ...] }: a unit that reaches 2.6 m has the cartons and crates of the
+// next delivery on its top (the room has 1.1 m to the ceiling above them), as a village shop keeps them.
+// Each unit gets one to three cartons from a seeded roll; plain props, never items.
+const TOP = { y: 2.592 + 0.005, depth: [0.02, 0.47], width: { ShelfUniversal_01_wide: [-1.445, 0], ShelfUniversal_01_Base: [-1.025, 0] } };
+export function shelfTops(furnitureText) {
+  const ch = readChildren(furnitureText);
+  const out = [];
+  for (const [name, picks] of Object.entries(spec.dress?.tops ?? {})) {
+    const list = fixturesOf(ch, name);
+    const [x0, x1] = TOP.width[name] ?? [-1, 0];
+    for (const p of picks) {
+      const f = list[p];
+      if (!f) throw new Error(`dress.tops: ${name} has ${list.length} instances, not pick ${p}`);
+      const r = rng(`top|${name}|${p}`);
+      const n = Math.max(1, Math.floor((x1 - x0) / 0.72));
+      const w = (x1 - x0) / n;
+      for (let i = 0; i < n; i++) {
+        const cx = x0 + w * (i + 0.5) + (r() - 0.5) * 0.04;
+        const box = 1 + Math.floor(r() * 9);
+        const yaw = 90 + Math.round((r() - 0.5) * 10);
+        out.push({ seed: `top|${name}|${p}|${i}`, prefab: P.box(box), at: toBuilding(f, [cx, TOP.y, 0.25 + (r() - 0.5) * 0.03]), yaw: +(f.yaw + yaw).toFixed(1), kind: "overstock" });
+        if (r() < 0.45) out.push({ seed: `top|${name}|${p}|${i}|up`, prefab: P.box(1 + Math.floor(r() * 9)), at: toBuilding(f, [cx + (r() - 0.5) * 0.05, TOP.y + 0.43, 0.25 + (r() - 0.5) * 0.03]), yaw: +(f.yaw + yaw + Math.round((r() - 0.5) * 16)).toFixed(1), kind: "overstock" });
+      }
+    }
+  }
+  return out;
+}
+
+// spec.dress.cards: { fixture, picks, boards, prefab, scale, pitch }: a strip of small price cards on the front
+// edge of each listed board, one every "step" m, turned the way the unit faces. Posters are flat and face +z in
+// the unit's own space, so the card stands just off the board's front edge, a little under its top.
+export function priceCards(furnitureText, fixtures) {
+  const ch = readChildren(furnitureText);
+  const out = [];
+  for (const c of spec.dress?.cards ?? []) {
+    const list = fixturesOf(ch, c.fixture);
+    const boards = fixtures[c.fixture].boards;
+    for (const p of c.picks) {
+      const f = list[p];
+      if (!f) throw new Error(`dress.cards: ${c.fixture} has ${list.length} instances, not pick ${p}`);
+      for (const bi of c.boards) {
+        const b = boards[bi];
+        const r = rng(`card|${c.fixture}|${p}|${bi}`);
+        let k = 0;
+        for (let x = b.x[0] + 0.2; x < b.x[1] - 0.15; x += c.step ?? 0.3) {
+          const v = c.variants[Math.floor(r() * c.variants.length)];
+          out.push({ seed: `card|${c.fixture}|${p}|${bi}|${k++}`, prefab: v, at: toBuilding(f, [x, b.y - (c.drop ?? 0.03), b.z[1] + (c.out ?? 0.012)]), yaw: +f.yaw.toFixed(1), scale: c.scale ?? 0.2, kind: "price-card" });
+        }
+      }
+    }
+  }
+  return out;
+}
+
 // ---- hand-placed dressing and lights --------------------------------------------------------
 function dressing() {
   return (spec.dressing ?? []).map((d, i) => ({ seed: `dress|${i}|${d.prefab}|${d.at.join(",")}`, ...d, kind: "dressing" }));
@@ -180,6 +236,25 @@ function lights() {
     out.push({ seed: `light|${i}`, light: l, kind: "light" });
   }
   return out;
+}
+
+// ---- doors stay clear ---------------------------------------------------------------------------
+// spec.doors.leaves lists the ground-floor doors (centre x,z; `wall` is the axis the wall runs along;
+// `half` is half the opening). A prop whose centre stands inside the leaf pushed 1 m out each way (plus a
+// 0.15 m margin for its own size) is a blocked door, as the placement audit counts it; a flat mat
+// (`walkable`) is fine. Furniture-prefab children are not audited, so the generator checks them itself.
+export function doorClashes(entities) {
+  const bad = [];
+  for (const d of spec.doors?.leaves ?? []) {
+    const along = d.half + 0.15;
+    const out = 1.15;
+    const [hx, hz] = d.wall === "x" ? [along, out] : [out, along];
+    for (const e of entities) {
+      if (e.light || e.walkable || !e.at || e.at[1] > 2.4 || e.at[1] < -0.5) continue;
+      if (Math.abs(e.at[0] - d.at[0]) <= hx && Math.abs(e.at[2] - d.at[1]) <= hz) bad.push(`${e.prefab.split("/").pop()} at ${e.at.join(",")} blocks the ${d.name}`);
+    }
+  }
+  return bad;
 }
 
 // ---- writing --------------------------------------------------------------------------------
@@ -203,9 +278,11 @@ function text(e) {
       `   Color ${l.color ?? "1 0.96 0.88 1"}`,
       `   LV ${l.lv ?? 6}`,
       "   ClipEV -10",
-      `   Type ${l.type ?? "Spot"}`,
+      // a Point light is the base game's default LightEntity type, which its own prefabs leave unwritten
+      ...((l.type ?? "Spot") === "Spot" ? ["   Type Spot"] : []),
       `   Radius ${l.radius ?? 7}`,
-      "   NearPlane 0.3",
+      ...(l.attenuation !== undefined ? [`   DistanceAttenuation ${l.attenuation}`] : []),
+      `   NearPlane ${l.near ?? 0.3}`,
       ...((l.type ?? "Spot") === "Spot" ? [`   SpotAngle ${l.angle ?? 140}`] : []),
       "   LensFlareType Disabled",
       "  }",
@@ -233,7 +310,7 @@ export async function build() {
   const items = { ...ITEMS };
   const { measureOne } = await import("../../commands/measure.mjs");
   for (const l of spec.layer_store.lines) if (!items[itemKey(l.item)]) items[itemKey(l.item)] = itemOf((await measureOne(ROOT, l.item, { minSize: 0.05 })).bounds);
-  const entities = [...shelfStock(stripped, fixtures, items), ...dressing(), ...lights()];
+  const entities = [...shelfStock(stripped, fixtures, items), ...shelfTops(stripped), ...priceCards(stripped, fixtures), ...dressing(), ...lights()];
   const at = stripped.lastIndexOf("\n }\n}");
   if (at < 0) throw new Error("no child list in the furniture prefab");
   const body = entities.map(text).join("\n");
