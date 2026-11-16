@@ -51,7 +51,7 @@ point; the slip is where the gate's answer is printed.
   sell price is above its price, every offer names a listed item.
 - **Core defaults** (one example per outlet type): `gun_counter` sells the M9 behind `FIREARM_PERMIT`,
   `clothing_rack` sells a green raincoat (hides the build), `police_armory` sells the M16A2 to an
-  on-duty officer of rank 1 (senior) or more. The annex has one gun counter
+  on-duty officer of rank 1 (senior) or more, free and serialled (`issue`, `issuePrefab`, #1763). The annex has one gun counter
   (`Prefabs/Props/Commercial/LF_GunCounter.et`, `Annex_GunCounter`); the armory and the rack are
   config only.
 - **Testing a licence:** `/licence FIREARM_PERMIT` in chat grants the caller one licence by name

@@ -1240,6 +1240,11 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "That fine is above your rank"
      Comment "Fine refused because it is above the officer's rank cap"
     }
+    CustomStringTableItem "{5F2C8E1B7D4A9306}" {
+     Id "EL-Rank_IssueNeedsRank"
+     Target_en_us "The armory issues that from the rank of %1"
+     Comment "Toast: the armory refused an item because the officer's rank is below the offer's. %1 = the rank title that may draw it."
+    }
     CustomStringTableItem "{C91A4E7700B10011}" {
      Id "EL-Rank_Patrol"
      Target_en_us "Patrol Officer"

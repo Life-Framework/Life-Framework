@@ -213,7 +213,8 @@ class LF_Test_Roadmap_RanksWorld : LF_Test
 
 		ctx.True(drawAction.CanBePerformedScript(senior), "on-duty senior can use the armory action");
 		drawAction.PerformAction(armory, senior);
-		ctx.Equal(1, HeldCount(senior, LF_PoliceRanks.LONG_GUN), "higher rank receives Rifle_M16A2.et");
+		// The armory outlet issues the serialled twin of the M16A2 (#1763).
+		ctx.Equal(1, HeldCount(senior, "{1E06C1BB38AFB556}Prefabs/Items/Police/LF_ArmoryM16.et"), "higher rank receives the armory's serialled Rifle_M16A2");
 		ctx.Equal(0, HeldCount(senior, LF_PoliceRanks.SIDEARM), "the higher rank does not receive the sidearm");
 	}
 
