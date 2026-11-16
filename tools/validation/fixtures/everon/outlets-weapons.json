@@ -1,0 +1,85 @@
+[
+ {
+  "kind": "outlets",
+  "outlet": "gun_counter",
+  "offers": [
+   { "item": "pistol_starter", "present": false },
+   { "item": "mag_starter_6rnd", "present": false },
+   { "item": "pistol_pm", "licence": "FIREARM_PERMIT", "price": 350 },
+   { "item": "mag_pm_8rnd", "licence": "FIREARM_PERMIT", "price": 15 },
+   { "item": "rifle_m21", "licence": "FIREARM_PERMIT" },
+   { "item": "pistol_m9", "present": false },
+   { "item": "mag_m9_15rnd", "present": false },
+   { "item": "rifle_vz58p", "present": false },
+   { "item": "mag_vz58_30rnd", "present": false },
+   { "item": "rifle_ak74", "present": false },
+   { "item": "rifle_aks74u", "present": false },
+   { "item": "rifle_m16a2", "present": false }
+  ]
+ },
+ {
+  "kind": "outlets",
+  "outlet": "police_armory",
+  "offers": [
+   { "item": "pistol_m9", "job": "POLICE", "minRank": 0 },
+   { "item": "rifle_m16a2", "job": "POLICE", "minRank": 1 },
+   { "item": "rifle_aks74u", "job": "POLICE", "minRank": 2, "price": 3200 },
+   { "item": "mag_ak74_30rnd", "job": "POLICE", "minRank": 2, "price": 45 },
+   { "item": "rifle_ak74", "present": false },
+   { "item": "rifle_vz58p", "present": false },
+   { "item": "pistol_starter", "present": false }
+  ]
+ },
+ {
+  "kind": "outlets",
+  "outlet": "black_market",
+  "offers": [
+   { "item": "pistol_pm", "licence": "CRIMINAL_WEAPONS" },
+   { "item": "mag_pm_8rnd", "licence": "CRIMINAL_WEAPONS" },
+   { "item": "rifle_ak74", "licence": "CRIMINAL_WEAPONS", "price": 2600 },
+   { "item": "mag_ak74_30rnd", "licence": "CRIMINAL_WEAPONS", "price": 45 },
+   { "item": "rifle_vz58p", "licence": "CRIMINAL_WEAPONS", "price": 1800 },
+   { "item": "mag_vz58_30rnd", "licence": "CRIMINAL_WEAPONS", "price": 40 },
+   { "item": "pistol_m9", "present": false },
+   { "item": "pistol_starter", "present": false },
+   { "item": "rifle_m21", "present": false },
+   { "item": "rifle_aks74u", "present": false }
+  ]
+ },
+ {
+  "kind": "outlets",
+  "outlet": "gun_counter",
+  "offers": [
+   { "item": "mg_m240", "present": false },
+   { "item": "mg_m249", "present": false },
+   { "item": "mg_m60", "present": false },
+   { "item": "mg_pkm", "present": false },
+   { "item": "mg_rpk74", "present": false },
+   { "item": "mg_uk59", "present": false }
+  ]
+ },
+ {
+  "kind": "outlets",
+  "outlet": "police_armory",
+  "offers": [
+   { "item": "mg_m240", "present": false },
+   { "item": "mg_m249", "present": false },
+   { "item": "mg_m60", "present": false },
+   { "item": "mg_pkm", "present": false },
+   { "item": "mg_rpk74", "present": false },
+   { "item": "mg_uk59", "present": false }
+  ]
+ },
+ {
+  "kind": "outlets",
+  "outlet": "black_market",
+  "offers": [
+   { "item": "mg_m240", "present": false },
+   { "item": "mg_m249", "present": false },
+   { "item": "mg_m60", "present": false },
+   { "item": "mg_pkm", "present": false },
+   { "item": "mg_rpk74", "present": false },
+   { "item": "mg_uk59", "present": false }
+  ]
+ }
+]
