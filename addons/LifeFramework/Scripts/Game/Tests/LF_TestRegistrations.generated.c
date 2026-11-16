@@ -113,6 +113,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfZeroConfigs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConsumableEffectLoads(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ContentReload(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ConvictionRecord(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CoreOnlyBoot(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CounterRefusalText(), LF_TestTier.LOGIC);
@@ -160,6 +161,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Dispatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DispatchAlarm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DispatchArea(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DispatchNamesPlace(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DoorLock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Downed(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DownedPatient(), LF_TestTier.LOGIC);
@@ -247,6 +249,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_IdCardRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IdentityFallback(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Impairment(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ImpairmentView(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagged(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_IncidentGmQuery(), LF_TestTier.LOGIC);
