@@ -1,0 +1,17 @@
+{
+  "about": "Fuel station shell (before pass 1): the forecourt from the street, the pumps, the shop, the workshop and the kiosk, by day and at night. Points are station space (tools/buildings/pipeline/scenario.mjs): this station keeps the vanilla composition's frame, so its street front is -z (spec.json host.front), x runs along the forecourt, the slab top is at y 0.2.",
+  "session": { "profile": "full", "mission": "grid" },
+  "steps": [
+    { "shot": "warmup", "look": [0, 2.0, 2.5], "from": [0, 2.5, -20], "wait": 6000, "why": "the first frames after a teleport draw the station before it streams in" },
+    { "do": { "verb": "time", "hour": 14 }, "wait": 1500 },
+    { "shot": "street", "look": [0, 2.0, 2.5], "from": [0, 2.5, -20] },
+    { "shot": "forecourt", "look": [-2.8, 1.2, -0.7], "from": [3, 0.8, -8], "why": "both pumps under their canopies" },
+    { "shot": "shop_front", "look": [7.2, 1.6, 1.2], "from": [-1, -0.2, -6] },
+    { "shot": "shop", "look": [7.2, 1.3, 3.8], "from": [0.2, 0.3, -2.2], "why": "the sales room from its door: counter and till spot" },
+    { "shot": "workshop", "look": [2.1, 1.2, 4.6], "from": [-2.4, 0.4, -1.3] },
+    { "shot": "kiosk", "look": [-7.5, 1.2, 4.6], "from": [1.6, 0.4, -1.3] },
+    { "do": { "verb": "time", "hour": 22 }, "wait": 2000 },
+    { "shot": "night_street", "look": [0, 2.0, 2.5], "from": [0, 2.5, -20] },
+    { "shot": "night_shop", "look": [7.2, 1.3, 3.8], "from": [0.2, 0.3, -2.2] }
+  ]
+}

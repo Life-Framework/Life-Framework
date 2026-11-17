@@ -1,0 +1,22 @@
+SCR_DestructibleBuildingEntity : "{0B1B8B16E7E9481F}Prefabs/Structures/Commercial/Pubs/PubVillage_E_2L01/PubVillage_E_2L01_Base.et" {
+ ID "F0DBA538AC2A0552"
+ {
+  GenericEntity : "{1640D989C1C57739}Prefabs/Buildings/Pub/Furniture/Pub_furniture_01.et" {
+   ID "58E4DB556B4B8BDC"
+   coords 0 0 0
+  }
+  $grp GenericEntity : "{EF9AC1132797202D}Prefabs/Structures/BuildingParts/Signs/SignWall3D_01/SignWall3D_Pub_01.et" {
+   {
+    ID "57028C376DDF6044"
+    coords 1.007 3.907 -9.114
+    angles 0 180 0
+   }
+   {
+    ID "58EABE8456D371C6"
+    coords 7.998 3.217 -1.436
+    angles 0 90 0
+    scale 0.714
+   }
+  }
+ }
+}
