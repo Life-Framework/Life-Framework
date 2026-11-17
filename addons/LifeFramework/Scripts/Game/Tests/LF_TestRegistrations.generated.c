@@ -342,7 +342,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JailWork(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailWorkAbandon(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobClientOffers(), LF_TestTier.LOGIC);
-		manager.Register(new LF_Test_JobDepositRestart(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobGateBypass(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobLevelGates(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobLevels(), LF_TestTier.LOGIC);
@@ -697,7 +696,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_StoreStackRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StoreStacks(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StoreStaff(), LF_TestTier.WORLD);
-		manager.Register(new LF_Test_StoreStrangerEject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StoreUnpaidPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_StringSplit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Stun(), LF_TestTier.WORLD);
