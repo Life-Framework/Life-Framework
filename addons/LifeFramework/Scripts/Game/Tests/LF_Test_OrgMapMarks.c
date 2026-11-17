@@ -83,8 +83,8 @@ class LF_Test_OrgMapMarks : LF_Test
 		facts.Set(P_OUTSIDER, OUTSIDER, "", "");
 
 		// An officer adds two marks; the members get them, the outsider nothing.
-		string first = LF_OrgMapMarks.Add(OFFICER, 1200, 3400, 1, 2, "  stash by the mill  ", 100);
-		string second = LF_OrgMapMarks.Add(OFFICER, 1300, 3500, 0, 0, "meet", 110);
+		string first = LF_OrgMapMarks.Add(OFFICER, 120, 340, 1, 2, "  stash by the mill  ", 100);
+		string second = LF_OrgMapMarks.Add(OFFICER, 130, 350, 0, 0, "meet", 110);
 		ctx.EqualStr(LF_OrgMapMarks.KeyOf(orgId, 1), first, "the first mark is serial 1");
 		ctx.EqualStr(LF_OrgMapMarks.KeyOf(orgId, 2), second, "the second mark is serial 2");
 		ctx.Equal(2, LF_OrgMapMarks.CountOf(orgId), "the organization holds two marks");
@@ -134,7 +134,7 @@ class LF_Test_OrgMapMarks : LF_Test
 		if (loaded.Count() > 0)
 		{
 			ctx.EqualStr("stash by the mill", loaded[0].m_sText, "the text is trimmed and kept");
-			ctx.Equal(1200, loaded[0].m_iX, "the position is kept");
+			ctx.Equal(120, loaded[0].m_iX, "the position is kept");
 		}
 
 		// Idempotent re-apply; a bad and a repeated row are skipped; the cap holds on load.
@@ -173,7 +173,7 @@ class LF_Test_OrgMapMarks : LF_Test
 		{
 			string e2eKey = LF_OrgMapMarks.KeyOf(e2eOrg.GetId(), 1);
 			if (!LF_OrgMapMarks.Has(e2eKey))
-				LF_OrgMapMarks.Add(E2E_FOUNDER, 640, 480, 0, 0, "e2e", LF_MapShares.Now() + 1000);
+				LF_OrgMapMarks.Add(E2E_FOUNDER, 400, 300, 0, 0, "e2e", LF_MapShares.Now() + 1000);
 			ctx.True(LF_OrgMapMarks.Has(e2eKey), "the save boot recorded the e2e org mark");
 		}
 	}

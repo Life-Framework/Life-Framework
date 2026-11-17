@@ -4,14 +4,15 @@
 //!
 //! BINDING. Server only: SetHouseIdentifier is the runtime path (a key-making or purchase flow),
 //! m_sDebugIdentifier is the editor path (map maker binds a key to a whole house lineage). The
-//! item display name is rewritten to "House Key [<id>]" so players can tell keys apart.
+//! inventory name "House Key [<id>]" is read per item from the replicated identifier by
+//! LF_KeyItemUIInfo (#2470); the prefab's shared UIInfo is never written.
 //!
 //! STACKING. The HouseKeyItem prefab sets LF_QuantityComponent.m_iMaxQuantity to 1, so keys
 //! never combine: CanCombine is prefab-based and would merge keys bound to different houses
 //! into one stack.
 //!
-//! PERSISTENCE GAP. The bound identifier is in-session state on the item; the house save/load
-//! contract in LF_HouseSaveData.c covers lock state, not key bindings.
+//! PERSISTENCE. A carried key's identifier is saved with the carried snapshot (LF_StorageSnapshot,
+//! the "itemkeys" payload) and bound again when the key is restored (#2410).
 //------------------------------------------------------------------------------------------------
 [ComponentEditorProps(category: "EveronLife/Feature/Houses", description: "Binds an item to the house it opens.")]
 class LF_KeyComponentClass : ScriptComponentClass
@@ -71,18 +72,5 @@ class LF_KeyComponent : ScriptComponent
 
 		m_sHouseIdentifier = identifier;
 		Replication.BumpMe();
-		UpdateDisplayName();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void UpdateDisplayName()
-	{
-		InventoryItemComponent inventoryItem = LF_Component<InventoryItemComponent>.Find(GetOwner());
-		if (!inventoryItem)
-			return;
-
-		UIInfo uiInfo = inventoryItem.GetUIInfo();
-		if (uiInfo)
-			uiInfo.SetName("House Key [" + m_sHouseIdentifier + "]");
 	}
 }

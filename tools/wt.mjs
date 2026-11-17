@@ -53,7 +53,28 @@ export function run(cmd, args, opts = {}) {
   }
   res.stdout = res.stdout ?? "";
   res.stderr = res.stderr ?? "";
+  // A process ended by a signal has status null: report it as a failure that says so, never as an empty one.
+  if (res.status === null) {
+    res.status = 1;
+    res.stderr += `${res.stderr && !res.stderr.endsWith("\n") ? "\n" : ""}${cmd} was ended by ${res.signal ?? "a signal"}`;
+  }
   return res;
+}
+
+// One line saying what a finished run printed and how it ended, for an error message. The old
+// `(res.stderr || res.stdout).trim()` was empty when git failed without a word (a signal, a spawn
+// error, a hook that only set an exit code), which left a CI failure with nothing to read.
+export function describeRun(res) {
+  const parts = [];
+  if (res.error) parts.push(`spawn error ${res.error.code ?? ""} ${res.error.message}`.replace(/\s+/g, " "));
+  if (res.signal) parts.push(`ended by ${res.signal}`);
+  parts.push(`exit ${res.status ?? "none"}`);
+  const err = String(res.stderr ?? "").trim();
+  const out = String(res.stdout ?? "").trim();
+  if (err) parts.push(`stderr: ${err}`);
+  if (out) parts.push(`stdout: ${out}`);
+  if (!err && !out) parts.push("no output");
+  return parts.join("; ");
 }
 
 export function git(root, args) {

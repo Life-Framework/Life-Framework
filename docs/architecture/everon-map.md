@@ -103,11 +103,16 @@ What this means for us:
 A POI is **a live `LF_Places` entry whose kind has a row in the POI table**. Nothing else feeds it.
 
 ```
-LF_PlaceComponent (kind, id) ──> LF_Places (every machine) ──> LF_MapPois (client) ──> LF_MapPlacesUI
+LF_PlaceComponent (kind, id) ──> LF_Places (public kinds: every machine; private: server) ──> LF_MapPois (client) ──> LF_MapPlacesUI
                                                  ^                    ^
                                      #2208 live states       LF_MapPoiConfig rows (core default + pack overlay)
 ```
 
+- **Private kinds stay on the server (#2492).** A kind whose row is not `PUBLIC` never registers in a
+  client's `LF_Places`. The server sends each player, to their own controller, the private places the
+  visibility rule gives them (`LF_MapPrivatePlaces`), on the join sync and whenever what they know or
+  their duty changes; discovery is the server's own scan (`LF_MapDiscoverScan`). `LF_MapPois` on a client
+  draws its public places plus that set.
 - `Configs/Map/LF_MapPois.conf`, class `LF_MapPoiConfig`, one `LF_MapPoiKind` row per place kind:
   `m_sKind` (the `LF_Places` kind, e.g. `Bank`, `Hospital`, `PoliceStation`), `m_sCategory` (`civic`,
   `shop`, `work`, `law`, `health`, `travel`, `story`, `underworld`), `m_sIcon` (imageset quad),

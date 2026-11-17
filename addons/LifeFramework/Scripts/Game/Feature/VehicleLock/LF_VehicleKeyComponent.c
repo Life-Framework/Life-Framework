@@ -4,8 +4,8 @@
 //!
 //! BINDING. Server only: BindToVehicleIdentifier / SetVehicleIdentifier are the runtime path
 //! (a key-making or purchase flow), m_sDebugIdentifier is the editor path (map maker binds a key
-//! to a whole prefab lineage). The item display name is rewritten to "Vehicle Key [<id>]" so
-//! players can tell keys apart.
+//! to a whole prefab lineage). The inventory name "Vehicle Key [<id>]" is read per item from the
+//! replicated identifier by LF_KeyItemUIInfo (#2470); the prefab's shared UIInfo is never written.
 //!
 //! PERSISTENCE. The item's own identifier is session state. LF_VehicleOwnership stores the key
 //! id on the vehicle record and, when the item is gone after a restart, spawns a key bound to
@@ -79,18 +79,5 @@ class LF_VehicleKeyComponent : ScriptComponent
 
 		m_sVehicleIdentifier = identifier;
 		Replication.BumpMe();
-		UpdateDisplayName();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void UpdateDisplayName()
-	{
-		InventoryItemComponent inventoryItem = LF_Component<InventoryItemComponent>.Find(GetOwner());
-		if (!inventoryItem)
-			return;
-
-		UIInfo uiInfo = inventoryItem.GetUIInfo();
-		if (uiInfo)
-			uiInfo.SetName("Vehicle Key [" + m_sVehicleIdentifier + "]");
 	}
 }

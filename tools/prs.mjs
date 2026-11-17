@@ -161,7 +161,7 @@ function regenCredits(wtPath, pre, base, regenerate) {
   if (wt.git(wtPath, ["status", "--porcelain"]).stdout.trim()) {
     wt.git(wtPath, ["add", "-A"]);
     const c = wt.git(wtPath, ["commit", "--amend", "--no-edit"]);
-    if (c.status !== 0) return { ran: true, error: `credits regen commit failed: ${(c.stderr || c.stdout).trim()}` };
+    if (c.status !== 0) return { ran: true, error: `credits regen commit failed: ${wt.describeRun(c)}` };
   }
   return { ran: true };
 }
@@ -241,7 +241,7 @@ export function healMerge(wtPath, { base = "origin/main", regenerate = regenerat
     wt.git(wtPath, ["merge", "--abort"]);
     return { status: "needs-human", reason, conflicted: paths, pre };
   };
-  if (conflicted.length === 0) return abort(`merge failed: ${(merge.stderr || merge.stdout).trim()}`, []);
+  if (conflicted.length === 0) return abort(`merge failed: ${wt.describeRun(merge)}`, []);
   const human = conflicted.filter((p) => conflictKind(p) === null);
   if (human.length) return abort("conflicts outside generated and driver-merged files", human);
   const ordered = [...conflicted].sort((a, b) => KIND_ORDER.indexOf(conflictKind(a)) - KIND_ORDER.indexOf(conflictKind(b)));
@@ -262,7 +262,7 @@ export function healMerge(wtPath, { base = "origin/main", regenerate = regenerat
   }
   if (unmergedPaths(wtPath).length) return abort("unmerged paths remain after resolution", unmergedPaths(wtPath));
   const commit = wt.git(wtPath, ["commit", "--no-edit"]);
-  if (commit.status !== 0) return abort(`merge commit failed: ${(commit.stderr || commit.stdout).trim()}`, conflicted);
+  if (commit.status !== 0) return abort(`merge commit failed: ${wt.describeRun(commit)}`, conflicted);
   const head = wt.git(wtPath, ["rev-parse", "HEAD"]).stdout.trim();
   return verify({ status: "healed", conflicted: [], resolved: conflicted, pre, head });
 }
@@ -273,7 +273,7 @@ export function healMerge(wtPath, { base = "origin/main", regenerate = regenerat
 export function predictConflicts(repo, ours, theirs = "origin/main") {
   const res = wt.git(repo, ["merge-tree", "--write-tree", "--name-only", "--no-messages", ours, theirs]);
   if (res.status === 0) return [];
-  if (res.status !== 1) throw new Error(`git merge-tree failed: ${(res.stderr || res.stdout).trim()}`);
+  if (res.status !== 1) throw new Error(`git merge-tree failed: ${wt.describeRun(res)}`);
   return res.stdout.split(/\r?\n/).slice(1).map((s) => s.trim()).filter(Boolean);
 }
 
@@ -299,7 +299,7 @@ function gh(root, args) {
 
 export function listWsPrs(root) {
   const res = gh(root, ["pr", "list", "--state", "open", "--limit", "100", "--json", PR_FIELDS]);
-  if (res.status !== 0) throw new Error(`gh pr list failed: ${(res.stderr || res.stdout).trim()}`);
+  if (res.status !== 0) throw new Error(`gh pr list failed: ${wt.describeRun(res)}`);
   return JSON.parse(res.stdout || "[]").filter((p) => p.headRefName.startsWith("ws/"));
 }
 
@@ -404,7 +404,7 @@ function addTempWorktree(root, pr) {
   const dir = join(dirname(wt.mainRootOf(root)), `Life-Framework-heal-${pr.number}`);
   if (existsSync(dir)) throw new Error(`temp worktree dir already exists: ${dir}`);
   const add = wt.git(root, ["worktree", "add", "--detach", dir, pr.headRefOid]);
-  if (add.status !== 0) throw new Error(`git worktree add failed: ${(add.stderr || add.stdout).trim()}`);
+  if (add.status !== 0) throw new Error(`git worktree add failed: ${wt.describeRun(add)}`);
   return dir;
 }
 
@@ -423,7 +423,7 @@ function alignWithPr(wtPath, pr) {
   if (local === pr.headRefOid) return null;
   if (wt.gitOk(wtPath, ["merge-base", "--is-ancestor", local, pr.headRefOid])) {
     const ff = wt.git(wtPath, ["merge", "--ff-only", pr.headRefOid]);
-    return ff.status === 0 ? null : `fast-forward to the PR head failed: ${(ff.stderr || ff.stdout).trim()}`;
+    return ff.status === 0 ? null : `fast-forward to the PR head failed: ${wt.describeRun(ff)}`;
   }
   return `worktree HEAD ${local.slice(0, 7)} has commits the PR (${pr.headRefOid.slice(0, 7)}) does not; the agent has unpushed work`;
 }
@@ -467,7 +467,7 @@ function healOne(root, pr, { dryRun, log, validateOnly = false }) {
     }
     if (m.status !== "up-to-date") {
       const push = pushBranch(dir, pr.headRefName);
-      if (push.status !== 0) return { kind: "attention", msg: `push failed (not forced): ${(push.stderr || push.stdout).trim()}` };
+      if (push.status !== 0) return { kind: "attention", msg: `push failed (not forced): ${wt.describeRun(push)}` };
     }
     const am = gh(root, ["pr", "merge", String(pr.number), "--auto", "--merge"]);
     const amOut = (am.stdout + am.stderr).trim();

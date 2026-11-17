@@ -63,6 +63,9 @@ class LF_ChainStepDef
 	[Attribute(defvalue: "0", UIWidgets.ComboBox, "Licence the worker must hold. UNEMPLOYED (everyone has it) means no licence gate", "", ParamEnumArray.FromEnum(LF_ELicenseType))]
 	LF_ELicenseType m_eLicense;
 
+	[Attribute("0", UIWidgets.CheckBox, "The outputs of this step are chain goods for an officer search even when it is not the last step (#2441: the bottle, once a pack step follows)")]
+	bool m_bGoods;
+
 	[Attribute("0", UIWidgets.Auto, "Minimum job level in m_sLevelJob. 0 means no level gate")]
 	int m_iMinLevel;
 

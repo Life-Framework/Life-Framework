@@ -17,7 +17,10 @@ enum LF_ERequestKind
 	SPAWN,		//!< Building placement, give item or cash, arrest: spawns or moves an entity
 	INVENTORY,	//!< Quantity split and transfer from the inventory screen
 	CRIME,		//!< Starting a crime that runs on (a held robbery, LF_RobHold)
-	CHESS		//!< Chess moves and standing up from a table (its own bucket: a game must not eat the phone's)
+	CHESS,		//!< Chess moves and standing up from a table (its own bucket: a game must not eat the phone's)
+	QUEST,		//!< Quest menu, converse and sign asks and dialogue start and reply (the open-giver ask recounts the inventory)
+	TICKET,		//!< Police ticket requests (its own bucket; the limit is police config, LF_RateLimit.AllowWith)
+	MAP			//!< Personal map marks sync and save (its own bucket: the phone and the board must not eat a respawn's mark restore)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -47,10 +50,14 @@ class LF_RateLimiter
 
 	protected ref map<int, ref LF_RateBucket> m_mBuckets = new map<int, ref LF_RateBucket>();
 
+	//! Bucket keys give each player this many kind slots; LF_ERequestKind must stay below it.
+	static const int KINDS_PER_PLAYER = 16; // lf-fixed: key layout, not a gameplay knob
+
 	//------------------------------------------------------------------------------------------------
+	//! The key packs the kind into the low three bits: LF_ERequestKind holds at most 8 values.
 	static int Key(int playerId, LF_ERequestKind kind)
 	{
-		return playerId * 8 + kind;
+		return playerId * KINDS_PER_PLAYER + kind;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -158,6 +165,12 @@ class LF_RateLimit
 	// lf-fixed: anti-spam floor; blitz moves and a stand-up are well under six in five seconds
 	static const int CHESS_WINDOW_MS = 5000;
 	static const int CHESS_BURST = 6; // lf-fixed: see CHESS_WINDOW_MS
+	// lf-fixed: anti-spam floor; the dialogue ignores input for 350 ms after each line, so eight asks in two seconds is a script
+	static const int QUEST_WINDOW_MS = 2000;
+	static const int QUEST_BURST = 8; // lf-fixed: see QUEST_WINDOW_MS
+	// lf-fixed: anti-spam floor; the client batches mark edits into one save per 2 s, plus one sync per respawn
+	static const int MAP_WINDOW_MS = 5000;
+	static const int MAP_BURST = 4; // lf-fixed: see MAP_WINDOW_MS
 
 	protected static ref LF_RateLimiter s_Limiter;
 
@@ -173,6 +186,8 @@ class LF_RateLimit
 			case LF_ERequestKind.INVENTORY: return INVENTORY_WINDOW_MS;
 			case LF_ERequestKind.CRIME: return CRIME_WINDOW_MS;
 			case LF_ERequestKind.CHESS: return CHESS_WINDOW_MS;
+			case LF_ERequestKind.QUEST: return QUEST_WINDOW_MS;
+			case LF_ERequestKind.MAP: return MAP_WINDOW_MS;
 		}
 
 		return SPAWN_WINDOW_MS;
@@ -190,6 +205,8 @@ class LF_RateLimit
 			case LF_ERequestKind.INVENTORY: return INVENTORY_BURST;
 			case LF_ERequestKind.CRIME: return CRIME_BURST;
 			case LF_ERequestKind.CHESS: return CHESS_BURST;
+			case LF_ERequestKind.QUEST: return QUEST_BURST;
+			case LF_ERequestKind.MAP: return MAP_BURST;
 		}
 
 		return SPAWN_BURST;
@@ -202,6 +219,21 @@ class LF_RateLimit
 	//! \return true when the request may proceed.
 	static bool Allow(int playerId, LF_ERequestKind kind, string request, bool notify = true)
 	{
+		return AllowWith(playerId, kind, request, WindowMs(kind), Burst(kind), notify);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Allow with a window and burst the caller supplies (a limit that is configuration, not a floor
+	//! of this file), counted against the real tick clock.
+	static bool AllowWith(int playerId, LF_ERequestKind kind, string request, int windowMs, int burst, bool notify = true)
+	{
+		return AllowWithAt(playerId, kind, request, System.GetTickCount(), windowMs, burst, notify);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! AllowWith with the clock passed in, so a test can drive the window.
+	static bool AllowWithAt(int playerId, LF_ERequestKind kind, string request, int nowMs, int windowMs, int burst, bool notify = true)
+	{
 		// A client can only RPC on what it owns (its controller or controlled character), so a
 		// request with no player is server-local. Counting it would pool every such caller into
 		// one bucket and refuse them for each other.
@@ -212,7 +244,7 @@ class LF_RateLimit
 			s_Limiter = new LF_RateLimiter();
 
 		int refusedBefore;
-		LF_ERateVerdict verdict = s_Limiter.Take(playerId, kind, System.GetTickCount(), WindowMs(kind), Burst(kind), refusedBefore);
+		LF_ERateVerdict verdict = s_Limiter.Take(playerId, kind, nowMs, windowMs, burst, refusedBefore);
 		string kindName = typename.EnumToString(LF_ERequestKind, kind);
 		if (refusedBefore > 0)
 			LF_Debug.Warn(FEATURE, string.Format("player %1 %2: %3 more request(s) refused in the last window", playerId, kindName, refusedBefore));
@@ -222,7 +254,7 @@ class LF_RateLimit
 
 		if (verdict == LF_ERateVerdict.REJECT)
 		{
-			LF_Debug.Warn(FEATURE, string.Format("%1 refused: player %2 is over the %3 limit (%4 per %5 ms)", request, playerId, kindName, Burst(kind), WindowMs(kind)));
+			LF_Debug.Warn(FEATURE, string.Format("%1 refused: player %2 is over the %3 limit (%4 per %5 ms)", request, playerId, kindName, Math.Max(burst, 1), windowMs));
 			if (notify)
 				LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-RateLimit_Title", "#LF-RateLimit_Slow", 3.0, LF_ENotificationType.WARNING);
 		}

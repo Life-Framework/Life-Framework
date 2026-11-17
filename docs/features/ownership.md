@@ -44,7 +44,7 @@
   `node agent-box/session.mjs org [--shot]`.
 - ✅ (2026-11-12, #750a) Ranks are a ladder with a rights bitmask
   (`LF_OrgRights`; bit = `LF_EOrganizationPermission`: withdraw, invite, kick,
-  buy upgrade, manage ranks, and the reserved declare war, use stash, manage
+  buy upgrade, manage ranks, use stash, and the reserved declare war, manage
   territory, spend fund). A new organization gets founder (every right), officer
   (invite, kick, stash) and member (stash); an invite joins on the bottom rung.
   Face to face, a member with manage ranks sees "Promote in <org>" on a member
@@ -79,8 +79,34 @@
   and an editor-bound `LF_KeyComponent` now set the INIT event mask, as `LF_LockComponent` and
   `LF_VehicleKeyComponent` do. Before, a building never got its identifier or synced its doors, and
   an editor-bound house key (`HouseKey_Matching_Debug`) stayed unbound.
-- ⚠️ A keyed open unlocks the door for everyone with no way to relock; lock state and identifiers
-  are not saved (#2410).
+- ✅ **A keyed open keeps the lock** (#2410, WORLD `houses/keyed-open-keeps-lock`): the owner and a
+  key holder pass a locked house door and the door stays locked, so a stranger after them is still
+  refused. The server decides in `SCR_DoorUserAction.CanBePerformedScript` (`LF_LockComponent.UserMayEnter`);
+  the owner's character key is replicated on the door so a client's prompt matches. Only
+  `LF_HouseManagerComponent.SetHouseLocked` changes a house's lock, and it re-syncs a door a breach or a
+  lockpick opened. A door left open now closes itself (#2472).
+- ✅ **Lock and unlock at the door** (#2471, WORLD `houses/lock-action`): `LF_HouseLockAction` on
+  `EL_Door_Base.et` offers `#LF-HouseLock_Lock` / `#LF-HouseLock_Unlock` to the owner and to a carried
+  key holder (`LF_LockComponent.UserMayEnter`); a stranger does not see it. The server re-checks and
+  refuses a forged request with `[LFDebug:Houses]`, then flips the house through
+  `LF_HouseManagerComponent.SetHouseLocked` (saved, mirrored on every door). Not offered on a hideout
+  door, on a door with no house manager, or while Houses is off.
+- ✅ **A locked house door left open can be closed and closes itself** (#2472, WORLD `houses/door-auto-close`):
+  on a locked house anyone may close an open door, only the owner or a key holder opens it (the server
+  re-checks in `PerformAction`), and the server closes a door left open after `LF_HouseDoorClose` delay
+  (the owner's `houses.doorCloseDelaySeconds`, default 20 s, 0 turns it off, over 600 clamps to 600 with a warning;
+  `/configreload` applies it to the next door that opens, #2505, WORLD `houses/door-delay-config`). An unlocked house's door and a
+  hideout door are untouched; the lock never changes.
+- ✅ **Lock state, owner and carried keys survive a restart** (#2410, PERSISTENCE `houses/registry-persist`,
+  `houses/carried-key-persist`, `wt e2e`): `LF_Houses` keeps one row per house with a stable identifier
+  (the editor identifier, or `BindIdentifier`) in the `houses` payload (save version 46); a carried house
+  key keeps the house it opens in the `itemkeys` payload (version 47). A house with no editor identifier
+  gets a per-boot id and is not saved (logged). Nothing assigns an owner in play yet (purchase flow).
+- ✅ **Every house and car key shows its own name on every client** (#2470, WORLD `houses/key-item-name`):
+  `LF_KeyItemUIInfo` (an `SCR_InventoryUIInfo` on `HouseKeyItem.et` and `VehicleKey.et`, so `LF_PoliceCarKey.et` too)
+  builds "House Key [id]" / "Vehicle Key [id]" per item from the replicated identifier (`#LF-ItemName_HouseKeyOf`,
+  `#LF-ItemName_VehicleKeyOf`); nothing writes the shared prefab `UIInfo` any more. A late joiner gets the identifier with
+  the item. An unbound key shows the plain prefab name. No save change.
 
 ### `LF_Hideout` — `Feature/Hideouts/` (verified 2026-10-11)
 - ✅ One building owned by one organization. Members unlock
@@ -110,8 +136,8 @@
   gets the inventory, anyone else hears a refusal sound and gets the
   `#LF-HideoutStash_NotMember` toast, and the refusal is logged
   (`stash refused: not a member`). The server also refuses a non-member moving an
-  item out (`HandleAccessValidation`) or in (`CanStoreItem`). Membership is the
-  only key: an open or breached door does not open the stash.
+  item out (`HandleAccessValidation`) or in (`CanStoreItem`). Membership and the
+  rank's stash right (`USE_STASH`) are the key: an open or breached door does not open the stash.
 - ✅ Stash contents survive a restart through `LF_PersistentStorageComponent`
   keyed `hideout:Roadmap_Hideout` (not an entity id), so the stash keeps its
   items wherever the layer places it. See the placed-storage row under Carried
@@ -123,3 +149,13 @@
   `#EL-Hideout_NoUpgrade`, `#EL-Hideout_Process`, `#LF-HideoutStash_Name`,
   `#LF-HideoutStash_Desc`, `#LF-HideoutStash_Title`, `#LF-HideoutStash_NotMember`.
 
+- ✅ **Organisations review fixes (2026-11-17, `docs/reviews/2026-11-17-orgs.md`).** The seven ledger
+  requests and the ledger reply now have a listen-host path (#2525): the host's own ask calls its
+  handler and the reply is applied directly when the server owns the character. The ledger no longer
+  sells extra storage or the parked vehicle (`LF_OrganizationManager.IsUpgradeWired`): nothing reads
+  those flags, so a crafted request burned the fund for nothing. A deposit that would pass the fund's
+  int ceiling is refused (the cash goes back). The stash checks the rank's `USE_STASH` right, which
+  the rank config could already take off. A hideout gate saved open queues the relock sweep on load,
+  so a restart no longer leaves it open for anyone. Tests `organization/upgrade-unwired`,
+  `organization/fund-overflow`, `hideout/stash-right`, `hideout/load-relock` (LOGIC). The lease that
+  never ends is #2533.

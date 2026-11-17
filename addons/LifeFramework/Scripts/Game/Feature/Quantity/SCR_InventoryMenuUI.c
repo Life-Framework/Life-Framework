@@ -498,12 +498,18 @@ modded class SCR_InventoryMenuUI
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override protected void Action_CloseInventory()
+	//! Every close path (the close action, Escape, death) ends here. It used to add the listeners a
+	//! second time, so each open and close left four more on the dead menu.
+	override void OnMenuClose()
 	{
-		super.Action_CloseInventory();
+		super.OnMenuClose();
 
-		GetGame().GetInputManager().AddActionListener("LF_Inventory_MoveQuantity", EActionTrigger.UP, LF_OnMoveQuantityPressed);
-		GetGame().GetInputManager().AddActionListener("LF_Inventory_MoveQuantity", EActionTrigger.DOWN, LF_OnMoveQuantityPressed);
+		InputManager input = GetGame().GetInputManager();
+		if (!input)
+			return;
+
+		input.RemoveActionListener("LF_Inventory_MoveQuantity", EActionTrigger.UP, LF_OnMoveQuantityPressed);
+		input.RemoveActionListener("LF_Inventory_MoveQuantity", EActionTrigger.DOWN, LF_OnMoveQuantityPressed);
 	}
 
 	//------------------------------------------------------------------------------------------------
