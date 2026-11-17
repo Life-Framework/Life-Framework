@@ -534,6 +534,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RobustnessWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roles(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RolesWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SafeTypes(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SafeZone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SamePrefab(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SaveAliases(), LF_TestTier.WORLD);
