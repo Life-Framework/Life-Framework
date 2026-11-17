@@ -210,6 +210,13 @@ modded class SCR_ChimeraCharacter
 	//! \param value Action payload (amount, wanted level, faction id, ...).
 	void LF_AskDebugAction(LF_EDebugAction action, int value)
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_DebugAction(action, value);
+			return;
+		}
+
 		Rpc(RpcAsk_LF_DebugAction, action, value);
 	}
 
