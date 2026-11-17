@@ -233,8 +233,12 @@
     (`LF_ShopManagerComponent.GetSellPrice`) times `cargoDepositPercent` (100), or `cargoDepositFallback` (50) when the
     shop list has no price. A player short of it gets no run and no cargo (toast `#LF-Job_NeedDeposit`). A delivery returns it
     once; abandoning forfeits it, so start, abandon, start, abandon costs the cargo's value each loop (the cargo is not taken
-    back). A taxi fare has no cargo and no deposit. A restart ends the run and the held deposit is not returned (the cargo item
-    stays in the inventory and sells for about the deposit). Ledger reasons `job-deposit`, `job-deposit-back`.
+    back). A taxi fare has no cargo and no deposit. A restart ends the run, and the deposit it held is given back to the
+    player's bank account on the load (save version 49, payload `jobdeposits`, one `LF_JobDepositRow` per run holding a deposit;
+    `LF_CivilianJob.ExportDeposits` / `ApplyDeposits`, test `jobs/deposit-restart`, proof `wt e2e`), so a restart never takes a
+    player's money; the cargo item stays in the inventory too. The bank takes it because the player may be offline when the
+    server loads. A run still live in the session (a re-applied load) keeps its own deposit and gets no second one. Ledger reasons
+    `job-deposit`, `job-deposit-back`.
   - *Distance and time.* `BeginRun` records where and when the run started. `LF_CivilianJob.Dropoff` (the one call behind
     `LF_JobDropoffAction`) pays only at a placed drop (`LF_JobSiteComponent` site DROP), at least `runMinDistance` (300 m,
     straight line) from the start, after at least `runMinTimeFraction` (0.6) of the expected driving time, which is the

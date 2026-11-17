@@ -5068,6 +5068,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "SERVED. Released."
      Comment "Stamp printed on a sentence slip when the sentence ends."
     }
+    CustomStringTableItem "{5D1E7A3C9B20F486}" {
+     Id "LF-JailSlip_Unnamed"
+     Target_en_us "unknown"
+     Comment "Sentence slip: the prisoner name when the prisoner has no character name. Never the platform uid."
+    }
     CustomStringTableItem "{04A2CD75730658F5}" {
      Id "LF-JailWork_BadConfig"
      Target_en_us "This job is not set up."
