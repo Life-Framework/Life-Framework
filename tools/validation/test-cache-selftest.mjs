@@ -18,10 +18,10 @@
 //   "tools/test" dropped from KEY_PATHS  -> FAIL "a changed test-e2e.ps1";
 //   lookup accepting code != 0           -> FAIL "a stored timeout (code 124) is never a hit".
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync, appendFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readdirSync, readFileSync, writeFileSync, appendFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const here = fileURLToPath(new URL(".", import.meta.url));
 const modPath = process.env.LF_TEST_CACHE_MODULE || join(here, "..", "lib", "test-cache.mjs");
@@ -39,7 +39,7 @@ const write = (root, rel, text) => {
   writeFileSync(f, text);
 };
 
-const base = mkdtempSync(join(tmpdir(), "lf-test-cache-"));
+const base = scratchDir("lf-test-cache-");
 const repo = join(base, "main");
 const other = join(base, "other");
 try {

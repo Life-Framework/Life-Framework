@@ -9,10 +9,10 @@
 // with Test-StillRegistered always true "a worktree pruned mid-scan is not an error" failed; both restored.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, name) => {
@@ -27,7 +27,7 @@ if (process.platform !== "win32") {
 const ps1 = resolve(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "validate-worktrees.ps1");
 const realGit = spawnSync("where", ["git"], { encoding: "utf8", windowsHide: true }).stdout.split(/\r?\n/).find((l) => /git\.exe$/i.test(l.trim()))?.trim();
 
-const base = mkdtempSync(join(tmpdir(), "lf-vwt-"));
+const base = scratchDir("lf-vwt-");
 try {
   const fx = join(base, "main");
   mkdirSync(fx);

@@ -1,12 +1,12 @@
 // Proves the test-shard split and merge (tools/lib/test-shards.mjs) on fixtures. Does not boot the game.
 // inputs: tools/lib/test-cache.mjs, tools/lib/test-shards.mjs, tools/validation/test-shards-selftest.mjs, addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c
 // red-proof 2026-11-15 (#1703 gate "shard 1: no SUMMARY (exit 0); its 568 test(s) have no verdict", a re-queued gate answered by the pass cache): with parseShardOutput not reading the CACHED line "a CACHED pass line is the slice's verdict (summary=false 0/0)".
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as s from "../lib/test-shards.mjs";
 import * as tc from "../lib/test-cache.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -93,7 +93,7 @@ const log = [
 const t = s.parseTimes(log, ["LF_Test_A", "LF_Test_B", "LF_Test_C"]);
 check(t && t.LF_Test_A === 0.25 && t.LF_Test_B === 2 && t.LF_Test_C === 0.05, `parseTimes reads gaps (${JSON.stringify(t)})`);
 check(s.parseTimes(log, ["LF_Test_A", "LF_Test_B"]) === null, "parseTimes refuses a log whose START count differs");
-const dir = mkdtempSync(join(tmpdir(), "lf-shards-"));
+const dir = scratchDir("lf-shards-");
 try {
   const file = s.historyFile(dir);
   s.saveHistory(file, { LF_Test_A: 1 });

@@ -46,6 +46,7 @@
   `LF_CanManipulateOwned` also refuses a storage whose owner has a locked
   `LF_VehicleLockComponent` or `LF_LockComponent` (`LF_IsStorageOwnerLocked`).
   Pin test `security/locked-storage-refused`. A living character stops the owner climb, so a player seated in a locked car still splits and merges their own items; the check honours the `VehicleLock` switch (#2411).
+- ✅ **Restricted storages apply their own rule** (#2585, merged, in-dev): a split or transfer changes a stack in place, so a storage's `CanStoreItem` and `HandleAccessValidation` never run. `LF_CanManipulateOwned` asks `LF_AllowsRestrictedStorage` (declared in `Core/LF_RestrictedStorageGate.c`) for every container around the stack: a hideout stash takes members only (`Hideouts/LF_HideoutStashQuantityGate.c`, logs `[LFDebug:Hideout] stash <id> kept ...`), a trader crate refuses everyone (`Trader/LF_TraderCrateGuard.c`), and a downed or logout body follows `m_bDownedCanBeSearched` (`Medic/LF_Downed.c`). Pin test `hideout/stash-quantity`.
 
 ### Hand-Carry — `Feature/Character/Inventory/HandCarry/`
 - ✅ `LF_HandInventoryStorageComponent` state machine

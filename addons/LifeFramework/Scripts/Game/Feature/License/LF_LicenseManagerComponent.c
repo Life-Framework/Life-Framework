@@ -122,6 +122,17 @@ class LF_LicenseGate
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The words a player reads when this licence's gate refuses them (#2700); empty when
+	//! \param level (their level in the licence's job) meets it. Never carries a number.
+	static string RefusalKey(LF_ELicenseType licenseType, int catalogMinLevel, int level)
+	{
+		string job;
+		int minLevel;
+		Resolve(licenseType, catalogMinLevel, job, minLevel);
+		return LF_JobLevelWords.Refusal(job, level, minLevel);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server only: whether the character's job level meets the licence's gate. Logs a refusal.
 	//! Job XP lives on the server (LF_JobLevels); a client has none, so a client call refuses
 	//! instead of answering from an empty store. The server re-checks every unlock.
@@ -543,8 +554,8 @@ class LF_LicenseManagerComponent : ScriptComponent
 			int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(owner);
 			if (playerId <= 0) return false;
 			
-			string playerUID = SCR_PlayerIdentityUtils.GetPlayerIdentityId(playerId);
-			if (!playerUID) return false;
+			string playerUID = LF_Utils.GetAccountUID(playerId);
+			if (playerUID.IsEmpty()) return false;
 
 			LF_EJobType whitelistJob = GetLicenseWhitelistJob(licenseType);
 			if (whitelistJob != LF_EJobType.UNEMPLOYED && !LF_WhitelistManager.IsWhitelistedForJob(playerUID, whitelistJob))
@@ -616,12 +627,20 @@ class LF_LicenseManagerComponent : ScriptComponent
 				return false;
 
 			if (!LF_LicenseGate.Allows(LF_Utils.GetPlayerUID(owner), licenseType, config.m_iMinLevelRequired))
+			{
+				string job;
+				int minLevel;
+				LF_LicenseGate.Resolve(licenseType, config.m_iMinLevelRequired, job, minLevel);
+				string words = LF_JobLevelWords.Refusal(job, LF_JobLevels.LevelOf(LF_Utils.GetPlayerUID(owner), job), minLevel);
+				if (!words.IsEmpty())
+					LF_Utils.NotifyEntity(owner, words, "#LF-License_Refused_Title", 4.0);
 				return false;
+			}
 			
 			// Verificar whitelist si es necesario
 			if (config.m_bRequiresWhitelist)
 			{
-				string playerUID = LF_Utils.GetPlayerUID(owner);
+				string playerUID = LF_Utils.GetAccountUID(owner);
 				LF_EJobType whitelistJob = GetLicenseWhitelistJob(licenseType);
 				if (whitelistJob == LF_EJobType.UNEMPLOYED)
 				{

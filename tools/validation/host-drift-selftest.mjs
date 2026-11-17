@@ -8,11 +8,11 @@
 // red-proof: before tools/host/drift.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/drift.mjs'" (2026-11-15).
 
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FLAGSHIP = join(ROOT, "tools", "validation", "fixtures", "host-drift", "flagship");
@@ -21,7 +21,7 @@ const { main } = await import(pathToFileURL(join(ROOT, "tools", "host", "command
 
 const failures = [];
 const fail = (m) => failures.push(m);
-const base = mkdtempSync(join(tmpdir(), "lf-host-drift-"));
+const base = scratchDir("lf-host-drift-");
 
 // A host dir whose live files start as a copy of the flagship fixture; `edit` changes them.
 let n = 0;

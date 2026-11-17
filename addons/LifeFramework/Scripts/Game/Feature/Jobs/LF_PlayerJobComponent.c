@@ -193,8 +193,8 @@ class LF_PlayerJobComponent : ScriptComponent
 			if (!owner)
 				return false;
 			
-			string playerUID = LF_Utils.GetPlayerUID(owner);
-			if (!LF_WhitelistManager.IsWhitelistedForJob(playerUID, jobType))
+			string accountUid = LF_Utils.GetAccountUID(owner);
+			if (!LF_WhitelistManager.IsWhitelistedForJob(accountUid, jobType))
 			{
 				SCR_HintManagerComponent.ShowCustomHint(
 					WidgetManager.Translate("#LF-Job_NotWhitelisted"),

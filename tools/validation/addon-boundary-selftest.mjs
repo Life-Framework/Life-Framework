@@ -9,10 +9,10 @@
 // printed "FAIL core prefab references a pack GUID: expected
 // /references pack GUID \{AB12CD34EF567890\}/" and exited 1 (2026-11-08).
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { checkBoundary, CORE, PACK } from "./validate-addon-boundary.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const PACK_PREFAB_GUID = "AB12CD34EF567890";
 const PACK_PROJECT_GUID = "B1E84D5687E11724";
@@ -25,7 +25,7 @@ function put(root, path, text) {
 }
 
 function cleanTree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-boundary-"));
+  const root = scratchDir("lf-boundary-");
   put(root, `${CORE}/${CORE}.gproj`, `GameProject {\n ID "${CORE}"\n GUID "${CORE_PROJECT_GUID}"\n Dependencies {\n  "58D0FB3206B6F859"\n }\n}\n`);
   put(root, `${CORE}/Prefabs/Props/Signs/LF_Sign_Board.et`, `GenericEntity {\n ID "1"\n}\n`);
   put(root, `${CORE}/Prefabs/Props/Signs/LF_Sign_Board.et.meta`, `MetaFileClass {\n Name "{1111111111111111}Prefabs/Props/Signs/LF_Sign_Board.et"\n}\n`);

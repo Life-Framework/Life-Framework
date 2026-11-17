@@ -7,15 +7,15 @@
 // red-proof: before tools/host/commands/say.mjs existed `host say` printed the usage line and
 // exited 1: "FAIL host say did not write the file" (2026-11-15).
 
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readFileSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const CLI = join(ROOT, "tools", "cli.mjs");
-const dir = mkdtempSync(join(tmpdir(), "lf-host-say-"));
+const dir = scratchDir("lf-host-say-");
 const FILE = join(dir, "profile", "LifeFramework", "host_say.txt");
 let failed = 0;
 

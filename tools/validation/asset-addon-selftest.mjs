@@ -10,8 +10,7 @@
 //   guidsInUse scanning only the core                  -> FAIL guid: a fresh GUID is never one the pack or the core holds
 //   run() without the state.addon comparison           -> FAIL run: a changed target runs the import again and keeps the generator's result
 //   creditPath returning the bare path                 -> FAIL credits: a pack asset's row names its addon
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { ADDON_STAGES, STAGES, run, specProblems } from "../assets/pipeline/asset.mjs";
@@ -20,6 +19,7 @@ import { writeAssetMetas } from "../assets/pipeline/meta.mjs";
 import { creditRow } from "../assets/pipeline/source.mjs";
 import { KINDS } from "../assets/pipeline/kinds.mjs";
 import { writePrefabs } from "../assets/pipeline/prefab.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const PACK = "LF_Everon1989";
 const PACK_GUID = "AAAAAAAAAAAAAAAA";
@@ -44,7 +44,7 @@ export async function main() {
     console.log = () => {};
     try { return await fn(...a); } finally { console.log = log; }
   };
-  const tmp = mkdtempSync(join(tmpdir(), "lf-asset-addon-selftest-"));
+  const tmp = scratchDir("lf-asset-addon-selftest-");
   let n = 0;
   // A repo with the core, the pack, and one pack resource the core must never name.
   const fakeRoot = () => {

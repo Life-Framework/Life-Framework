@@ -11,14 +11,14 @@
 // when listed for reopen"; renderProblem returning null always failed "another tree rendered: refused".
 
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, statSync, writeFileSync, readFileSync, existsSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, statSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { idleVerdict, lookStartVerdict, mirrorMode, phaseText, renderProblem, requestNeedsRam, samePairProblem, timeline, LOOK_IDLE_MIN } from "../lib/look-job.mjs";
 import { parseWbState } from "../lib/wb-gate.mjs";
 import { parseArgs, remoteLookArgs, targetProblem } from "../visual/look.mjs";
 import { classifyChange, mirrorViewer, viewerAt } from "../visual/look-serve.mjs";
 import { reapRemoteLookServer } from "../remote/pool.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (name, ok) => {
@@ -76,7 +76,7 @@ check("classifyChange delegates the same rule", classifyChange({ from: "a", to: 
 
 // ---- the in-place viewer write, on a real repo
 const git = (cwd, ...a) => spawnSync("git", ["-C", cwd, "-c", "user.name=t", "-c", "user.email=t@t", ...a], { encoding: "utf8" });
-const tmp = mkdtempSync(join(tmpdir(), "lf-look-job-"));
+const tmp = scratchDir("lf-look-job-");
 const repo = join(tmp, "repo");
 const viewer = join(tmp, "viewer");
 mkdirSync(join(repo, "addons", "A"), { recursive: true });
