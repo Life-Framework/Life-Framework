@@ -80,13 +80,13 @@ then use the town; the grid cells stay as test spots.
 
 | Tier | What | Gate |
 |---|---|---|
-| T0 | Docs, tooling with a selftest | validate (`wt ship` runs only validate when `addons/` is untouched) |
-| T1 | Data: configs, strings, prefab values | light gate: validate plus the targeted test |
-| T2 | Code | full gate (`wt ship`: validate --full, build, suite) |
-| T2 + risk | Persistence, replication, money, inventory | full gate, and an independent reviewer (`lf-hard`, **interrogate**) reads the diff before merge |
+| T0 | Docs, tooling with a selftest | validate |
+| T1 | Data: configs, strings, prefab values | the targeted `--only` tests |
+| T2 | Code | the targeted `--only` tests, then one `test --no-build --tier all` |
+| T2 + risk | Persistence, replication, money, inventory | T2, and an independent reviewer (`lf-hard`, **interrogate**) reads the diff before merge |
 
-Today `wt ship` still runs the full gate for any `addons/` change, T1
-included; a T1 ship mode is a follow-up. Visible work gets one `look` picture
+There is no pre-merge gate (2026-11-15): `wt ship` runs `validate` of changed inputs, pushes and turns
+auto-merge on; the main guard compiles and runs the suite after the merge. Visible work gets one `look` picture
 in the PR: `look grid:<slug>` for a slice at the grid's low bar, `look <area>`
 before and after for the town pass, at the full polish bar. Polish nitpicks become
 follow-up issues; they never block the merge.

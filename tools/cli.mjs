@@ -64,7 +64,7 @@ import { addonsArgs, addonsDirArgs, addonDir, flagshipMission, gprojOf, launchAd
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
-import { cmdPrs } from "./prs.mjs";
+import { cmdPrs, healMerge as healMergeSync } from "./prs.mjs";
 import { cmdPromote } from "./promote.mjs";
 import { runRelease } from "./release/release.mjs";
 import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
@@ -5204,7 +5204,7 @@ async function wtSyncBaseCmd(args) {
 
 async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody }) {
   const draft = flags.includes("--draft"); // a draft PR, auto-merge never requested
-  const { shipDirect } = await import("./lib/ship-direct.mjs");
+  const { shipDirect, shipMergeBase } = await import("./lib/ship-direct.mjs");
   const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
   const body = refsBody(customBody ?? [`Automated ship from worktree \`${slug}\`.`, "", "## Commits", ...subjects.map((x) => `- ${x}`)].join("\n"), closes);
   const gh = (a) => wt.run(wt.ghBin(), a, { cwd: wtRoot });
@@ -5213,7 +5213,7 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
     mergeTree: () => wt.git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", `origin/${base}`]),
     mergeBase: () => {
       wt.git(wtRoot, ["fetch", "origin", "--prune"]);
-      wt.wtSync(ROOT, slug);
+      shipMergeBase(wtRoot, base, healMergeSync, (l) => console.log(l));
     },
     validate: () => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1,
     push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
@@ -5266,8 +5266,19 @@ async function wtShipCmd(args) {
   }
   const dirty = wt.git(wtRoot, ["status", "--porcelain"]).stdout.trim();
   if (dirty) {
-    console.log(`FAIL  worktree ${slug} has uncommitted changes; commit before shipping`);
-    return 1;
+    const commitMsg = argValue(flags, "--commit");
+    if (!commitMsg) {
+      const files = dirty.split(/\r?\n/);
+      console.log(`FAIL  worktree ${slug} has ${files.length} uncommitted change(s): ${files.slice(0, 6).map((l) => l.trim()).join(", ")}${files.length > 6 ? ", ..." : ""}; commit them, or re-run with --commit "<subject>" to commit everything (git add -A) and ship in one step`);
+      return 1;
+    }
+    wt.git(wtRoot, ["add", "-A"]);
+    const c = wt.git(wtRoot, ["commit", "-q", "-m", commitMsg]);
+    if (c.status !== 0) {
+      console.log(`FAIL  --commit: git commit failed (the pre-commit hook names what to fix): ${String(c.stdout + c.stderr).trim().split(/\r?\n/).slice(0, 4).join(" | ")}`);
+      return 1;
+    }
+    console.log(`ship: committed ${dirty.split(/\r?\n/).length} change(s) as "${commitMsg}"`);
   }
   let customBody = null;
   if (bodyFile) {
