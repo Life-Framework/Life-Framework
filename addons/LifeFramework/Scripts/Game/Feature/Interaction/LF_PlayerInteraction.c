@@ -218,10 +218,14 @@ class LF_PlayerInteraction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the decision every action re-runs. Tells the user why on a refusal.
-	protected static bool ServerAllows(IEntity user, IEntity target, string what)
+	//! Server: the decision every action re-runs. Tells the user why on a refusal. A cuffed user may
+	//! only talk (`cuffedMay`); cash, items and role actions are refused (#2417).
+	protected static bool ServerAllows(IEntity user, IEntity target, string what, bool cuffedMay = false)
 	{
 		if (!Replication.IsServer())
+			return false;
+
+		if (!cuffedMay && LF_CuffEnforcement.Refuse(user, what))
 			return false;
 
 		LF_EInteractionRefusal refusal = CheckPair(user, target);
@@ -292,7 +296,7 @@ class LF_PlayerInteraction
 	//! Server: target learns user's name. The target's machine shows it when they look at user.
 	static bool Introduce(IEntity user, IEntity target, int gestureId)
 	{
-		if (!ServerAllows(user, target, "introduce"))
+		if (!ServerAllows(user, target, "introduce", true))
 			return false;
 
 		string userUid = LF_Utils.GetPlayerUID(user);

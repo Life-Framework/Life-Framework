@@ -136,6 +136,20 @@ class LF_JailEscort
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The prisoner reached a cell (LF_Jail.Imprison): ends their hold and frees their seat.
+	//! Returns true when a hold was dropped.
+	static bool Drop(string prisonerUid)
+	{
+		if (prisonerUid.IsEmpty() || !s_mHolds || !s_mHolds.Contains(prisonerUid))
+			return false;
+
+		ClearSeat(prisonerUid);
+		s_mHolds.Remove(prisonerUid);
+		Note(string.Format("escort ended %1: in the cell", prisonerUid));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int GetTickSteps()
 	{
 		return s_iTickSteps;

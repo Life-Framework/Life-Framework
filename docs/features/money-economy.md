@@ -176,6 +176,25 @@
   `LF_TraderManagerComponent.GetUnitValue` / `CanAccessBlackMarket`
   (extracted 2026-11-07; the lookup now skips a null row instead of crashing),
   pinned by `trader/sell-rules` (LOGIC; red-proof observed 2026-11-08).
+- ✅ (2026-11-17, #2407) **The sale resolves on the server.** The `InsertItem`
+  override runs on the client that drags the item, where `AddCash` is refused
+  (server state), so on a dedicated server every sale bounced. Now a client's
+  drag only forwards a request: `SCR_PlayerController.LF_RequestTraderSale`
+  sends `RpcAsk_LF_TraderSale(itemRplId, traderRplId)` (`Reliable`,
+  `RplRcver.Server`), and `LF_TraderSale.Sell` (`Feature/Trader/LF_TraderSale.c`)
+  does the work. The seller is the controller's own character, never a payload
+  field. Server checks for a client request: the trader entity carries
+  `LF_TraderManagerComponent`, the seller is within `LF_TraderSale.REACH` (5 m),
+  the item is in the seller's inventory (`Contains`), the price comes from the
+  trader's `m_aTradableItems`, the black-market gate holds; then pay, then
+  delete (clawed back if the delete fails). A refusal toasts the seller
+  (`#LF-Trader_SaleRefused`) and logs `[LFDebug:Trader] sale refused (<why>)`.
+  The listen host's own drag and server code call the same `Sell` directly
+  (no reach/carried check: the inventory UI there enforces them). The seller is
+  now the inventory manager's owner, not `pStorageFrom.GetOwner()`. Test:
+  `trader/server-sale` (WORLD). Not yet: a move into the crate that bypasses
+  `InsertItem` (a vicinity move) still lands the item unpaid; proven only on a
+  host so far, the dedicated-server steps are in the PR's manual testing.
 - ⚠️ Unguarded `pStorageFrom.GetOwner()` (null crash); null `m_aTradableItems`
   foreach crash; delete-then-pay not atomic; `RETCODE_ITEM_TOO_BIG` used for
   "not tradable"; black-market check fails closed but is only cache-keyed.

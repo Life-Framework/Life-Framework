@@ -66,7 +66,7 @@
 
 ### `LF_RateLimit` — `Core/LF_RateLimit.c` (#693b, 2026-11-12)
 - ✅ Server-side request rate limit, per player and per request kind (`LF_ERequestKind`
-  PURCHASE, TRAVEL, COMMS, SPAWN, INVENTORY): a fixed window admits a small burst
+  PURCHASE, TRAVEL, COMMS, SPAWN, INVENTORY, CRIME, CHESS; chess 6 per 5 s, its own bucket, #2405): a fixed window admits a small burst
   (purchases 4 per 2 s, travel 2 per 10 s, comms 3 per 5 s, spawn or move 4 per 1 s,
   inventory 8 per 1 s; named `// lf-fixed:` constants until the #278 config service lands).
   The first refusal in a window logs `[LFDebug:RateLimit]` Warn and toasts the player
@@ -418,3 +418,5 @@
   master `SetHealth(0)` still bypasses it (vanilla's own invulnerability rule). Test
   `world/fitted-building-indestructible` (DebugWorld spawns two garages; on CoreOnEveron it uses two
   real buildings near the map's middle).
+
+- **World-end resets (#2415):** the dev Game Master, character-creation manager and offers, pick/registration/ID-request/ledger sheets, vehicle records and plates, garage and organization config, and the whitelist now register `LF_StaticResetHook`s. The dev Game Master hook takes its handler off `SCR_EditorManagerCore` and a grant re-checks the dev-tools gate, so a production world loaded after a dev world grants no EDIT. A disconnect forgets the player's pick/register offers. Tests `moderation/dev-gm-reset`, `character/creation-reset`, `vehicle/state-reset`, `whitelist/static-reset`, `organization/static-reset`, `ui/sheet-static-reset`.

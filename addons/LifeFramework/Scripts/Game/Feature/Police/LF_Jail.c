@@ -300,6 +300,13 @@ class LF_Jail
 			return false;
 		}
 
+		// An officer never jails themself: every arrest path (action, menu, escort) meets here.
+		if (officerUid == prisonerUid)
+		{
+			LF_Debug.Warn("Jail", string.Format("arrest refused: %1 cannot arrest themself", officerUid));
+			return false;
+		}
+
 		LF_PlayerAccount officer = accounts.GetAccount(officerUid);
 		if (!LF_PoliceUtils.IsOnDutyOfficer(officer))
 		{
@@ -361,6 +368,9 @@ class LF_Jail
 		if (seconds > 0)
 			sentence.m_bServing = true;
 		Sentences().Set(prisonerUid, sentence);
+		// The escort ends at the cell door, whichever path made the arrest. A hold left active
+		// outlives the sentence and turns the freed player's next logout into a custody escape.
+		LF_JailEscort.Drop(prisonerUid);
 		IEntity body = MoveToCell(prisonerUid, standIn);
 		if (body)
 			sentence.m_BodyId = body.GetID();

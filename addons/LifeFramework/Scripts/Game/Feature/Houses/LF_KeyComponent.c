@@ -28,6 +28,16 @@ class LF_KeyComponent : ScriptComponent
 	protected string m_sHouseIdentifier;
 
 	//------------------------------------------------------------------------------------------------
+	//! A ScriptComponent gets EOnInit only when it asks for it. Without this an editor-bound house key
+	//! (m_sDebugIdentifier) stayed unbound and opened nothing. Same as LF_VehicleKeyComponent.
+	override void OnPostInit(IEntity owner)
+	{
+		super.OnPostInit(owner);
+		if (!m_sDebugIdentifier.IsEmpty())
+			SetEventMask(owner, EntityEvent.INIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void EOnInit(IEntity owner)
 	{
 		super.EOnInit(owner);

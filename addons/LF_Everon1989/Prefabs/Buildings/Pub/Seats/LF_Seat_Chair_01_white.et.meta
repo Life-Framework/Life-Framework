@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{1A8B1A9666D0C6CB}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_white.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

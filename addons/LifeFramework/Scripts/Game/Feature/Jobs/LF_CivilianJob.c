@@ -18,6 +18,23 @@ class LF_JobWorker : Managed
 	bool m_bActive;
 	int m_iPaidTotal;
 	LF_EJobType m_eActiveJob;
+	//! Where and when the active run started (set by LF_CivilianJob.BeginRun). A run with no start
+	//! on record pays nothing.
+	vector m_vRunStart;
+	float m_fRunStartedAt;
+	bool m_bRunTimed;
+	//! Cash held against the cargo of the active run: returned on delivery, kept on abandon.
+	int m_iDeposit;
+}
+
+//------------------------------------------------------------------------------------------------
+//! How BeginRun ended.
+enum LF_ERunStart
+{
+	STARTED,
+	REFUSED,
+	NO_DEPOSIT,
+	NO_CARGO
 }
 
 //------------------------------------------------------------------------------------------------
@@ -29,6 +46,18 @@ class LF_CivilianJob
 	static const int PAY_PARCEL = 40;
 	static const int PAY_FUEL = 60;
 	static const int PAY_TAXI = 80;
+
+	//! The reason keys the drop-off refusal shows (Language/everonlife_localization.st).
+	static const string KEY_TOO_CLOSE = "#LF-Job_TooClose";
+	static const string KEY_TOO_FAST = "#LF-Job_TooFast";
+	static const string KEY_NO_PASSENGER = "#LF-Job_NoPassenger";
+	static const string KEY_NOT_DROP = "#LF-Job_NotADrop";
+	static const string KEY_NO_RUN = "#EL-Job_NoActiveRun";
+	static const string KEY_NEED_DEPOSIT = "#LF-Job_NeedDeposit";
+
+	//! The ledger reasons of a deposit taken, given back and kept.
+	static const string REASON_DEPOSIT = "job-deposit";
+	static const string REASON_DEPOSIT_BACK = "job-deposit-back";
 
 	//! The prefab slot (#1128): The courier parcel.
 	static const string SLOT_PARCEL = "courier_parcel";
@@ -519,12 +548,377 @@ class LF_CivilianJob
 
 		worker.m_bActive = true;
 		worker.m_eActiveJob = job;
+		worker.m_bRunTimed = false;
+		worker.m_iDeposit = 0;
 		LF_Debug.Log("Jobs", string.Format("run started %1 job %2", playerUid, typename.EnumToString(LF_EJobType, job)));
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Pays the active run once and grants job XP. A second call pays nothing.
+	//! Records where and when the active run started; the drop-off is measured against it.
+	static void RecordRunStart(string playerUid, vector position, float now)
+	{
+		if (playerUid.IsEmpty())
+			return;
+
+		LF_JobWorker worker = Worker(playerUid);
+		worker.m_vRunStart = position;
+		worker.m_fRunStartedAt = now;
+		worker.m_bRunTimed = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The cash held against the active run's cargo.
+	static int GetDeposit(string playerUid)
+	{
+		if (playerUid.IsEmpty())
+			return 0;
+
+		return Worker(playerUid).m_iDeposit;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Records the cash held against the active run's cargo (the caller has taken it from the player).
+	static void RecordDeposit(string playerUid, int amount)
+	{
+		if (playerUid.IsEmpty())
+			return;
+
+		Worker(playerUid).m_iDeposit = Math.Max(0, amount);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes the deposit off the run's record so it is handed back once.
+	//! \return The amount to give back; 0 when none is held or it was already returned.
+	static int ReleaseDeposit(string playerUid)
+	{
+		if (playerUid.IsEmpty())
+			return 0;
+
+		LF_JobWorker worker = Worker(playerUid);
+		int amount = worker.m_iDeposit;
+		worker.m_iDeposit = 0;
+		return amount;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The nearest a drop-off may be to where a run started, in metres (jobs config).
+	static float RunMinDistance()
+	{
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (!config)
+			return LF_JobsConfig.DEFAULT_RUN_MIN_DISTANCE;
+
+		return config.m_fRunMinDistance;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float RunMinTimeFraction()
+	{
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (!config)
+			return LF_JobsConfig.DEFAULT_RUN_MIN_TIME_FRACTION;
+
+		return config.m_fRunMinTimeFraction;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float RunRoadSpeed()
+	{
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (!config)
+			return LF_JobsConfig.DEFAULT_RUN_ROAD_SPEED;
+
+		return config.m_fRunRoadSpeed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the least time a run of this straight-line distance may take, a share of the expected
+	//! driving time (distance over the road speed).
+	//! \return Seconds; 0 when the road speed is not positive.
+	static float MinRunSeconds(float distance, float roadSpeed, float fraction)
+	{
+		if (roadSpeed <= 0)
+			return 0;
+
+		return distance / roadSpeed * fraction;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the deposit for cargo from its shop sell price. A negative price (the shop list is not
+	//! configured) uses the fallback base.
+	static int DepositAmount(int sellPrice, int percent, int fallback)
+	{
+		if (percent <= 0)
+			return 0;
+
+		int basis = sellPrice;
+		if (basis < 0)
+			basis = fallback;
+
+		float scaled = basis;
+		scaled = scaled * percent / 100;
+		return Math.Round(scaled);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The deposit a run of this job takes at the start: the cargo's shop sell price scaled by the
+	//! jobs config. A job with no cargo (the taxi) takes none.
+	static int DepositFor(LF_EJobType job)
+	{
+		if (!HasCargo(job))
+			return 0;
+
+		int percent = LF_JobsConfig.DEFAULT_CARGO_DEPOSIT_PERCENT;
+		int fallback = LF_JobsConfig.DEFAULT_CARGO_DEPOSIT_FALLBACK;
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (config)
+		{
+			percent = config.m_iCargoDepositPercent;
+			fallback = config.m_iCargoDepositFallback;
+		}
+
+		int sellPrice = -1;
+		LF_ShopManagerComponent shop = LF_ShopManagerComponent.GetInstance();
+		if (shop)
+			sellPrice = shop.GetSellPrice(PrefabFor(job));
+
+		return DepositAmount(sellPrice, percent, fallback);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the active run may be paid at a drop at `dropPos` at world time `now`: the drop is at
+	//! least the configured distance from the run's start, the run took at least the configured share
+	//! of the expected driving time at road speed, and a taxi fare has a seated passenger.
+	//! \param[in] passengers Other players seated in the driver's vehicle (only a taxi fare reads it).
+	//! \return "" when the run pays, else the reason key to show. A run with no start on record is refused.
+	static string DropoffRefusal(string playerUid, vector dropPos, float now, int passengers)
+	{
+		if (playerUid.IsEmpty())
+			return KEY_NO_RUN;
+
+		LF_JobWorker worker = Worker(playerUid);
+		if (!worker.m_bActive)
+			return KEY_NO_RUN;
+
+		if (!worker.m_bRunTimed)
+		{
+			LF_Debug.Error("Jobs", string.Format("drop-off refused: %1's run has no recorded start", playerUid));
+			return KEY_NO_RUN;
+		}
+
+		float distance = vector.Distance(worker.m_vRunStart, dropPos);
+		if (distance < RunMinDistance())
+		{
+			LF_Debug.Log("Jobs", string.Format("drop-off refused for %1: %2 m from the start, %3 m needed", playerUid, distance, RunMinDistance()));
+			return KEY_TOO_CLOSE;
+		}
+
+		float elapsed = now - worker.m_fRunStartedAt;
+		float needed = MinRunSeconds(distance, RunRoadSpeed(), RunMinTimeFraction());
+		if (elapsed < needed)
+		{
+			LF_Debug.Log("Jobs", string.Format("drop-off refused for %1: %2 s on the run, %3 s needed", playerUid, elapsed, needed));
+			return KEY_TOO_FAST;
+		}
+
+		if (worker.m_eActiveJob == LF_EJobType.TAXI && passengers < 1)
+		{
+			LF_Debug.Log("Jobs", string.Format("drop-off refused for %1: the fare has no passenger", playerUid));
+			return KEY_NO_PASSENGER;
+		}
+
+		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Other players seated in the vehicle the driver sits in; 0 on foot.
+	static int CountPassengers(IEntity driver)
+	{
+		ChimeraCharacter character = ChimeraCharacter.Cast(driver);
+		if (!character || !character.IsInVehicle())
+			return 0;
+
+		CompartmentAccessComponent access = character.GetCompartmentAccessComponent();
+		if (!access)
+			return 0;
+
+		BaseCompartmentSlot own = access.GetCompartment();
+		if (!own)
+			return 0;
+
+		IEntity vehicle = own.GetVehicle();
+		if (!vehicle)
+			return 0;
+
+		BaseCompartmentManagerComponent seats = BaseCompartmentManagerComponent.Cast(vehicle.FindComponent(BaseCompartmentManagerComponent));
+		if (!seats || !GetGame().GetPlayerManager())
+			return 0;
+
+		int driverId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(driver);
+		array<BaseCompartmentSlot> slots = {};
+		seats.GetCompartments(slots);
+		int passengers;
+		foreach (BaseCompartmentSlot slot : slots)
+		{
+			IEntity occupant = slot.GetOccupant();
+			if (!occupant || occupant == driver)
+				continue;
+
+			int occupantId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(occupant);
+			if (occupantId > 0 && occupantId != driverId)
+				passengers++;
+		}
+
+		return passengers;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Whether the entity is a placed drop-off (an LF_JobSiteComponent of site DROP).
+	static bool IsDropSite(IEntity site)
+	{
+		if (!site)
+			return false;
+
+		LF_JobSiteComponent marker = LF_Component<LF_JobSiteComponent>.Find(site);
+		return marker && marker.GetSite() == LF_EJobSite.DROP;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: starts a run for a player. Signs the start (position, time) on the run, takes the cargo
+	//! deposit from the player's cash and hands over the cargo. Nothing is kept when a step fails: a
+	//! player short of the deposit gets no run and no cargo.
+	//! \param[out] deposit The deposit this job asks (for the toast).
+	static LF_ERunStart BeginRun(IEntity user, string uid, LF_EJobType job, float now, out int deposit)
+	{
+		deposit = 0;
+		if (uid.IsEmpty() || !user)
+		{
+			LF_Debug.Error("Jobs", "start refused: no player or no account id");
+			return LF_ERunStart.REFUSED;
+		}
+
+		if (!StartRun(uid, job))
+			return LF_ERunStart.REFUSED;
+
+		deposit = DepositFor(job);
+		if (deposit > 0)
+		{
+			if (LF_MoneyUtils.GetCash(user) < deposit)
+			{
+				LF_Debug.Log("Jobs", string.Format("start refused for %1: the %2 deposit is not in cash", uid, deposit));
+				CancelRun(uid);
+				return LF_ERunStart.NO_DEPOSIT;
+			}
+
+			int taken = LF_MoneyUtils.TakeCash(user, deposit, REASON_DEPOSIT);
+			if (taken != deposit)
+			{
+				LF_Debug.Warn("Jobs", string.Format("start refused for %1: took %2 of the %3 deposit, the rest is given back", uid, taken, deposit));
+				if (taken > 0)
+					LF_MoneyUtils.GiveCash(user, taken, REASON_DEPOSIT_BACK);
+
+				CancelRun(uid);
+				return LF_ERunStart.NO_DEPOSIT;
+			}
+
+			RecordDeposit(uid, deposit);
+			LF_Debug.Log("Jobs", string.Format("deposit %1 taken from %2", deposit, uid));
+		}
+
+		RecordRunStart(uid, user.GetOrigin(), now);
+		if (!GiveCargo(user, job))
+		{
+			GiveDepositBack(user, uid);
+			CancelRun(uid);
+			return LF_ERunStart.NO_CARGO;
+		}
+
+		return LF_ERunStart.STARTED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the drop-off of the active run at a placed drop site. Refused (0) unless the site is a
+	//! drop and DropoffRefusal passes; then takes the cargo, pays the run, returns the deposit and
+	//! hands over the cash.
+	//! \param[out] refusal The reason key when the drop is refused for a rule, else "".
+	//! \return The pay of the run, or 0 when nothing was paid.
+	static int Dropoff(IEntity user, string uid, IEntity site, float now, out string refusal)
+	{
+		refusal = string.Empty;
+		if (uid.IsEmpty() || !user)
+		{
+			LF_Debug.Error("Jobs", "drop-off refused: no player or no account id");
+			refusal = KEY_NO_RUN;
+			return 0;
+		}
+
+		if (!HasActiveRun(uid))
+		{
+			refusal = KEY_NO_RUN;
+			return 0;
+		}
+
+		if (!IsDropSite(site))
+		{
+			LF_Debug.Error("Jobs", "drop-off refused: the entity is not a placed drop-off (needs an LF_JobSiteComponent of site DROP)");
+			refusal = KEY_NOT_DROP;
+			return 0;
+		}
+
+		LF_EJobType finished = GetActiveJob(uid);
+		int passengers;
+		if (finished == LF_EJobType.TAXI)
+			passengers = CountPassengers(user);
+
+		refusal = DropoffRefusal(uid, site.GetOrigin(), now, passengers);
+		if (!refusal.IsEmpty())
+			return 0;
+
+		if (!TakeCargo(user, finished))
+			return 0;
+
+		int paid = CompleteRun(uid);
+		if (paid <= 0)
+			return 0;
+
+		GiveDepositBack(user, uid);
+		HandCash(user, paid);
+		return paid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hands the run's deposit back to the player once.
+	protected static void GiveDepositBack(IEntity user, string playerUid)
+	{
+		int amount = ReleaseDeposit(playerUid);
+		if (amount <= 0)
+			return;
+
+		int given = LF_MoneyUtils.GiveCash(user, amount, REASON_DEPOSIT_BACK);
+		if (given != amount)
+			LF_Debug.Warn("Jobs", string.Format("deposit back short: gave %1 of %2 (player %3)", given, amount, playerUid));
+		else
+			LF_Debug.Log("Jobs", string.Format("deposit %1 returned to %2", amount, playerUid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ends a run that never got going (a failed start): no pay, no forfeit, the caller has already
+	//! handed any deposit back.
+	protected static void CancelRun(string playerUid)
+	{
+		LF_JobWorker worker = Worker(playerUid);
+		worker.m_bActive = false;
+		worker.m_eActiveJob = LF_EJobType.UNEMPLOYED;
+		worker.m_bRunTimed = false;
+		worker.m_iDeposit = 0;
+		LF_JobMapMarks.OnStopDone(playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pays the active run once and grants job XP. A second call pays nothing. This is the payout
+	//! only: the drop-off rules (distance, time, passenger) are Dropoff's, and the deposit is the
+	//! caller's to return (ReleaseDeposit).
 	static int CompleteRun(string playerUid)
 	{
 		if (playerUid.IsEmpty())
@@ -544,6 +938,7 @@ class LF_CivilianJob
 		LF_EJobType finished = worker.m_eActiveJob;
 		worker.m_bActive = false;
 		worker.m_eActiveJob = LF_EJobType.UNEMPLOYED;
+		worker.m_bRunTimed = false;
 		worker.m_iPaidTotal = worker.m_iPaidTotal + amount;
 
 		LF_JobLevels.Award(playerUid, LF_JobLevels.ACTION_DELIVERY_RUN);
@@ -553,7 +948,8 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Ends the active run with no pay.
+	//! Ends the active run with no pay. The cargo deposit is kept (forfeited): the player keeps the
+	//! cargo, and the deposit is what it is worth.
 	static bool AbandonRun(string playerUid)
 	{
 		if (playerUid.IsEmpty())
@@ -569,9 +965,13 @@ class LF_CivilianJob
 			return false;
 		}
 
+		int forfeited = worker.m_iDeposit;
 		worker.m_bActive = false;
 		worker.m_eActiveJob = LF_EJobType.UNEMPLOYED;
-		LF_Debug.Log("Jobs", string.Format("run abandoned by %1, no pay", playerUid));
+		worker.m_bRunTimed = false;
+		worker.m_iDeposit = 0;
+		LF_Debug.Log("Jobs", string.Format("run abandoned by %1, no pay, deposit %2 kept", playerUid, forfeited));
+		LF_JobMapMarks.OnStopDone(playerUid);
 		return true;
 	}
 
