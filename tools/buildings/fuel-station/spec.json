@@ -1,0 +1,54 @@
+{
+  "slug": "fuel-station",
+  "name": "Fuel station",
+  "concept": "The Saint-Philippe fuel station, 1989: the vanilla FuelStation_E_01 forecourt fitted whole. Two canopies with a pump each over the slab, the shop building (b107) with a sales room and till at the west end and a workshop and store behind the long glazing, and the kiosk (b97) as the attendant's hut. This card is the shell: the station as an LF pack prefab with its vanilla furniture flattened and its repeats cut; pass 1 fits the till, the attendant and the lights.",
+  "red_line": "pack",
+  "addon": "LF_Everon1989",
+  "prefab_dir": "Prefabs/Buildings/FuelStation",
+  "vanilla": {
+    "base": "{9269BD1B6BF3A441}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/FuelStation_E_01_V1.et",
+    "building": "{00FD2B4A0BDEC271}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_building.et",
+    "kiosk": "{627FE49D4DC922AE}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_building_small.et"
+  },
+  "host": {
+    "prefab": "FuelStation",
+    "town": "saint-philippe",
+    "dossier": ["b107", "b97"],
+    "world_xz": [4616.6, 10658.7],
+    "front": "-z",
+    "front_note": "The station keeps the vanilla composition's frame: the pumps and the shop door face -z. proof.json points are in this frame; grid place uses --front -z.",
+    "footprint": { "min": [-15.49, -1.43], "max": [15.49, 6.4] },
+    "parts": {
+      "building": { "at": [3.25, 0.245, 3.372], "yaw": 180 },
+      "kiosk": { "at": [-7.477, 0.331, 4.156], "yaw": 180 },
+      "pumps": [[-8.105, 0, -0.769], [2.541, 0, -0.643]]
+    }
+  },
+  "rooms": [
+    { "id": "shop", "part": "building", "x": [-5.44, -2.44], "z": [-2.6, 2.25], "station_centre": [7.19, 0.35, 3.55], "role": "sales room: the vanilla counter and cash register (the fuel till goes here in pass 1), newspaper stand, posters, armchair" },
+    { "id": "workshop", "part": "building", "x": [-2.44, 4.8], "z": [-2.6, 0.4], "station_centre": [2.07, 0.35, 4.47], "role": "workshop and store: racks, crates, gas bottles, jerrycans, paint" },
+    { "id": "kiosk", "part": "kiosk", "x": [-2.14, 2.06], "z": [-1.8, 1.2], "station_centre": [-7.48, 0.43, 4.46], "role": "attendant's hut: shelf, tool rack, jerrycans, stepladder" }
+  ],
+  "interactables": [
+    "fuel till (LF_FuelTill_Attended) on the shop counter, pass 1",
+    "fuel clerk (LF_FuelClerk, dialogue LF_Dialogue_FuelClerk), pass 1",
+    "pumps: the vanilla tankpistol pumps with the existing ambient pump (LF_AmbientFuelPump, LF_FuelPumpHum), pass 1",
+    "site alarm (LF_SiteAlarm_Fuel), pass 1"
+  ],
+  "budget": {
+    "size": "medium",
+    "lights": 6,
+    "shadow_casters": 1,
+    "decor_entities": 300,
+    "physics_props": 0,
+    "per_frame_scripts": 0,
+    "check": "tools\\cli perf building addons/LF_Everon1989/Prefabs/Buildings/FuelStation/FuelStation.et --size medium"
+  },
+  "scripts": {
+    "shell": "node tools/buildings/fuel-station/prune.mjs",
+    "proof": "tools/buildings/fuel-station/proof.json"
+  },
+  "counts": {
+    "shell": { "entities": 90, "lights": 0, "shadow_casters": 0, "vanilla_props_kept": { "building": "44/56", "kiosk": "18/24" } }
+  }
+}
