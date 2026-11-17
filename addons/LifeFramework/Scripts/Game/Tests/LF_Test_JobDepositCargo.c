@@ -3,7 +3,7 @@
 // tier: LOGIC
 //! A restart refunds a held cargo deposit and takes that run's cargo out of the player's saved carried
 //! snapshot, so the player never keeps both (#2481). A cargo no longer carried is just refunded; a stack
-//! loses one; a fuel run takes a fuel can, not a parcel; a version 49 row (no job) looks for either kind.
+//! loses one; a fuel run takes a fuel can, not a parcel; a row whose job is unknown looks for either kind.
 class LF_Test_JobDepositCargo : LF_Test
 {
 	protected static const string COURIER = "job-cargo-courier";
@@ -70,12 +70,7 @@ class LF_Test_JobDepositCargo : LF_Test
 		rows.Insert(LF_JobRunRow.Create(DROPPER, 150, LF_EJobType.PARCEL));
 		rows.Insert(LF_JobRunRow.Create(STACKER, 150, LF_EJobType.PARCEL));
 		rows.Insert(LF_JobRunRow.Create(TANKER, 90, LF_EJobType.FUEL_DELIVERY));
-		array<ref LF_JobDepositRow> legacy = {};
-		legacy.Insert(LF_JobDepositRow.Create(LEGACY, 90));
-		foreach (LF_JobRunRow legacyRow : LF_CivilianJob.RowsFromLegacy(legacy))
-		{
-			rows.Insert(legacyRow);
-		}
+		rows.Insert(LF_JobRunRow.Create(LEGACY, 90, LF_EJobType.UNEMPLOYED));
 
 		int refunded = 0;
 		if (!RedProof())
@@ -97,8 +92,8 @@ class LF_Test_JobDepositCargo : LF_Test
 		ctx.Equal(1, Held(TANKER, parcel), "a fuel run leaves a parcel the player carries");
 		ctx.Equal(0, Held(TANKER, fuel), "a fuel run takes the fuel can");
 
-		ctx.Equal(590, atm.GetAccount(LEGACY).GetBalance(), "a version 49 deposit is refunded");
-		ctx.Equal(0, Held(LEGACY, fuel), "a version 49 row with no job still finds the fuel can");
+		ctx.Equal(590, atm.GetAccount(LEGACY).GetBalance(), "a run whose job is unknown is refunded");
+		ctx.Equal(0, Held(LEGACY, fuel), "a row with no known job still finds the fuel can");
 
 		foreach (string cleanup : uids)
 		{

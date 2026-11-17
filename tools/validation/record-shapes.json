@@ -1,5 +1,5 @@
 {
-  "saveVersion": 50,
+  "saveVersion": 49,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -51,7 +51,6 @@
     "houses": "LF_HouseLockRecord",
     "itemkeys": "LF_StorageItemKeyRecord",
     "graceclock": "LF_GraceClockRow",
-    "jobdeposits": "LF_JobDepositRow",
     "jobruns": "LF_JobRunRow"
   },
   "records": {
@@ -603,15 +602,8 @@
         "int m_iSeconds"
       ]
     },
-    "LF_JobDepositRow": {
-      "since": 49,
-      "fields": [
-        "string m_sPlayerUid",
-        "int m_iAmount"
-      ]
-    },
     "LF_JobRunRow": {
-      "since": 50,
+      "since": 49,
       "fields": [
         "string m_sPlayerUid",
         "int m_iAmount",

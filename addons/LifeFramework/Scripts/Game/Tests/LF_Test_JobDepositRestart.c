@@ -1,7 +1,7 @@
 // red-proof: #2408 follow-up. `--red` skips the refund (ApplyDeposits is not called), so 'the restart gives
 // the held deposit back to the bank' fails. On the unfixed code ExportDeposits and ApplyDeposits did not exist
 // (nothing was saved, the deposit stayed taken); the restart proof is `wt e2e` (pass 2 reads the bank).
-// Observed 2026-11-18 `--red LF_Test_StoreStrangerEject,LF_Test_JobDepositRestart`: RED PROOF OK (expected 650, got 500). Restart proof: `tools/cli wt e2e fix-review-followups`, bank 500 -> 650 (boot save version 49). #2481: rows are LF_JobRunRow (jobruns, save version 50); re-observed 2026-11-18 `--red`: RED-OK jobs/deposit-restart (17 assertions); the cargo half is LF_Test_JobDepositCargo.
+// Observed 2026-11-18 `--red LF_Test_StoreStrangerEject,LF_Test_JobDepositRestart`: RED PROOF OK (expected 650, got 500). Restart proof: `tools/cli wt e2e fix-review-followups`, bank 500 -> 650 (boot save version 49). #2481: rows are LF_JobRunRow (jobruns, save version 49; the separate jobdeposits payload never shipped); re-observed 2026-11-18 `--red`: RED-OK jobs/deposit-restart (17 assertions); the cargo half is LF_Test_JobDepositCargo.
 // tier: LOGIC
 //! A server restart ends a cargo run; the deposit it held goes back to the player's bank account on
 //! the load instead of being kept. In-session round trip of the rows only: the restart itself is `wt e2e`.

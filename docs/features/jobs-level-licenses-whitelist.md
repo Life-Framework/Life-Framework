@@ -234,13 +234,12 @@
     shop list has no price. A player short of it gets no run and no cargo (toast `#LF-Job_NeedDeposit`). A delivery returns it
     once; abandoning forfeits it, so start, abandon, start, abandon costs the cargo's value each loop (the cargo is not taken
     back). A taxi fare has no cargo and no deposit. A restart ends the run, and the deposit it held is given back to the
-    player's bank account on the load (save version 50, payload `jobruns`, one `LF_JobRunRow` per run holding a deposit: uid, amount and
+    player's bank account on the load (save version 49, payload `jobruns`, one `LF_JobRunRow` per run holding a deposit: uid, amount and
     job; `LF_CivilianJob.ExportDeposits` / `ApplyDeposits`, tests `jobs/deposit-restart` and `jobs/deposit-cargo`, proof `wt e2e`), so a
     restart never takes a player's money. The run's cargo goes with it (#2481): before the refund the load takes one parcel or fuel can
     (the job's own) out of the player's saved carried snapshot (`LF_CivilianJob.StripSavedCargo`), so the deposit and the cargo are
     never both kept; a cargo no longer carried (dropped, lost at death) is just refunded. The log says which
-    (`[LFDebug:Jobs] restart ended the run of ...`). A version 49 save (rows without the job, payload `jobdeposits`) strips either
-    kind. The bank takes the money because the player may be offline when the
+    (`[LFDebug:Jobs] restart ended the run of ...`). The bank takes the money because the player may be offline when the
     server loads. A run still live in the session (a re-applied load) keeps its own deposit and gets no second one. Ledger reasons
     `job-deposit`, `job-deposit-back`.
   - *Distance and time.* `BeginRun` records where and when the run started. `LF_CivilianJob.Dropoff` (the one call behind

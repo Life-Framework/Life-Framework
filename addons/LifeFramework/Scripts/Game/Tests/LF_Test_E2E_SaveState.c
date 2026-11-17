@@ -57,7 +57,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	static const string PLAYTIME_UID = "e2e-playtime-account";
 	//! Grace clock (#2443, "graceclock" payload, save version 48): 7 minutes of one character's own play.
 	static const string GRACE_KEY = "e2e-grace-character";
-	//! Held cargo deposit (#2408, "jobdeposits" payload, save version 49): a courier mid-run with 150 held.
+	//! Held cargo deposit (#2408, #2481, "jobruns" payload, save version 49): a courier mid-run with 150 held.
 	static const string DEPOSIT_UID = "e2e-deposit-courier";
 	static const int DEPOSIT_HELD = 150;
 	//! Job levels (#749, "joblevels" payload, save version 28): XP in three jobs, one of which
@@ -376,7 +376,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		SeedOrgLadder(ctx);
 
 #ifndef LF_E2E_LEGACY_SAVE
-		// A cargo run in progress holds a deposit ("jobruns" payload, save version 50, #2408, #2481): the
+		// A cargo run in progress holds a deposit ("jobruns" payload, save version 49, #2408, #2481): the
 		// restart ends the run, and the load must give the deposit back to the bank (500 + 150 after) and
 		// take the parcel the courier still carries out of the saved inventory (never both).
 		atmManager.CreateAccount(DEPOSIT_UID);
@@ -580,10 +580,19 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	//------------------------------------------------------------------------------------------------
 	//! #2408 after the restart: the run a courier was on is over, and the deposit it held is in the bank
 	//! (500 banked + 150 held), not kept, and the parcel it carried is gone from the saved inventory (#2481).
-	//! A save older than "jobdeposits" held none.
+	//! A save older than "jobruns" (a --legacy-save, or the --pre-move ref build, whose pass 1 never wrote
+	//! the courier) holds no run and no deposit: the restart leaves none.
 	protected void VerifyJobDeposit(LF_TestContext ctx)
 	{
 		string uid = LF_Test_E2E_SaveStateWrite.DEPOSIT_UID;
+		if (LF_SaveStamp.BootSaveVersion() < LF_PersistenceComponentSerializer.PayloadSinceVersion("jobruns"))
+		{
+			ctx.False(LF_CivilianJob.HasActiveRun(uid), "e2e a save older than jobruns has no run in progress after the restart");
+			ctx.Equal(0, LF_CivilianJob.GetDeposit(uid), "e2e a save older than jobruns holds no deposit after the restart");
+			LF_Debug.Info("Jobs", string.Format("e2e restart: boot save version %1 predates jobruns, no deposit to refund", LF_SaveStamp.BootSaveVersion()));
+			return;
+		}
+
 #ifdef LF_E2E_LEGACY_SAVE
 		ctx.False(LF_CivilianJob.HasActiveRun(uid), "e2e the version 23 save has no run in progress");
 #else

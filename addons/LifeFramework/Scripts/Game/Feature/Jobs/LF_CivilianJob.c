@@ -621,21 +621,6 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A version 49 save held the deposit without the job: each row becomes a run row whose job is
-	//! unknown, so the load looks for any cargo the player carried.
-	static array<ref LF_JobRunRow> RowsFromLegacy(notnull array<ref LF_JobDepositRow> legacy)
-	{
-		array<ref LF_JobRunRow> rows = new array<ref LF_JobRunRow>();
-		foreach (LF_JobDepositRow old : legacy)
-		{
-			if (old)
-				rows.Insert(LF_JobRunRow.Create(old.m_sPlayerUid, old.m_iAmount, LF_EJobType.UNEMPLOYED));
-		}
-
-		return rows;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The cargo prefabs a saved run may have left on the player: the job's own, or both when unknown.
 	protected static void CargoPrefabsOf(int job, notnull array<ResourceName> prefabs)
 	{
