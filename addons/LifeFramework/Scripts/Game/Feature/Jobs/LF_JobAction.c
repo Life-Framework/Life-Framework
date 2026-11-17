@@ -183,22 +183,25 @@ class LF_JobStartRunAction : ScriptedUserAction
 			return;
 		}
 
-		if (!LF_CivilianJob.StartRun(uid, m_eJob))
-			return;
-
-		if (!LF_CivilianJob.GiveCargo(pUserEntity, m_eJob))
+		// The cargo deposit comes off the player's cash first; a player short of it gets no run and no cargo.
+		int deposit;
+		LF_ERunStart started = LF_CivilianJob.BeginRun(pUserEntity, uid, m_eJob, LF_JobGuards.Now(), deposit);
+		if (started == LF_ERunStart.NO_DEPOSIT)
 		{
-			LF_CivilianJob.AbandonRun(uid);
+			LF_Utils.NotifyEntity(pUserEntity, LF_CivilianJob.KEY_NEED_DEPOSIT, LF_CivilianJob.NameKey(m_eJob), 6.0, deposit.ToString());
 			return;
 		}
+
+		if (started != LF_ERunStart.STARTED)
+			return;
 
 		// The nearest drop goes on the map and the waypoint (LF_JobMapMarks; a taxi run gets none).
 		LF_JobMapMarks.OnRunStarted(uid, m_eJob, pUserEntity.GetOrigin());
 
 		// A first-time courier does not know where the drop is; the toast says.
-		string started = LF_CivilianJob.RunStartedKey(m_eJob);
-		if (!started.IsEmpty())
-			LF_Utils.NotifyEntity(pUserEntity, started, LF_CivilianJob.NameKey(m_eJob), 8.0);
+		string startedKey = LF_CivilianJob.RunStartedKey(m_eJob);
+		if (!startedKey.IsEmpty())
+			LF_Utils.NotifyEntity(pUserEntity, startedKey, LF_CivilianJob.NameKey(m_eJob), 8.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -250,16 +253,16 @@ class LF_JobDropoffAction : ScriptedUserAction
 			return;
 		}
 
+		// The rules (a placed drop, the distance, the time, a taxi's passenger) and the payout are one call.
 		LF_EJobType finished = LF_CivilianJob.GetActiveJob(uid);
-		if (!LF_CivilianJob.TakeCargo(pUserEntity, finished))
-			return;
-
 		int levelBefore = LF_CivilianJob.GetLevel(uid);
-		int paid = LF_CivilianJob.CompleteRun(uid);
+		string refusal;
+		int paid = LF_CivilianJob.Dropoff(pUserEntity, uid, pOwnerEntity, LF_JobGuards.Now(), refusal);
+		if (!refusal.IsEmpty())
+			LF_Utils.NotifyEntity(pUserEntity, refusal, LF_CivilianJob.NameKey(finished), 5.0);
+
 		if (paid <= 0)
 			return;
-
-		LF_CivilianJob.HandCash(pUserEntity, paid);
 
 		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(pUserEntity);
 		if (jobs)
@@ -319,10 +322,14 @@ class LF_JobAbandonAction : ScriptedUserAction
 		}
 
 		LF_EJobType finished = LF_CivilianJob.GetActiveJob(uid);
+		int forfeited = LF_CivilianJob.GetDeposit(uid);
 		if (!LF_CivilianJob.AbandonRun(uid))
 			return;
 
-		LF_Utils.NotifyEntity(pUserEntity, "#EL-Job_Abandoned", LF_CivilianJob.NameKey(finished), 4.0);
+		if (forfeited > 0)
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-Job_AbandonedDeposit", LF_CivilianJob.NameKey(finished), 5.0, forfeited.ToString());
+		else
+			LF_Utils.NotifyEntity(pUserEntity, "#EL-Job_Abandoned", LF_CivilianJob.NameKey(finished), 4.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

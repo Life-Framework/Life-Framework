@@ -484,19 +484,28 @@
   patrol". A refusal logs `[LFDebug:Police]` and toasts the promoter `#EL-Rank_PromoteNeedsHigher`. The armory
   action's server check (`CanPromote`) hides Promote from a rank that can promote nobody;
   the nearest-officer pick prefers someone the promoter may promote. Test: `police/promote-rung`.
+- 🔨 **The station Promote action finds officers in play** (#2416, in-dev): `FindLowerRankNearby` read only bodies
+  tied by `BindOfficer`, which only tests call, so every real promote was refused "no lower-rank officer nearby". It
+  now lists the connected players (`LF_PromoteCandidates`: each controlled body's account id and position) within
+  `PROMOTE_RADIUS` (5 m). Test: `police/promote-finds-players`.
 - 🔨 The flagship kit (#1942, merged, in-dev; `LF_PoliceKit_Everon1989.conf`, listed after the ladder in the
   mission header): the pack overlay restates each rung's `m_aKit`. Patrol (index 0) draws the M9 and the spike strip;
   senior and every rung above draw the M16, the spike strip and the roadblock kit (`LF_Roadblocks.KIT`, added to the
   station catalog in `LF_PoliceRanks.Catalog`, since a kit line outside it is not issued). A civilian cannot draw.
   Test: `police/everon-kit`.
-- ✅ **One armory draw per duty shift** (2026-11-07): a draw
-  that hands out any kit line marks the account; a second draw logs
-  `draw refused: <uid> already drew a kit this shift` and shows
-  `#EL-Rank_AlreadyDrawn`. `OnDutyChanged` clears the mark. Test:
-  `security/police-abuse`.
+- 🔨 **One issued kit per officer, two hours apart, saved** (#2416, in-dev; replaces the 2026-11-07 per-shift
+  draw mark, which clocking out and in reset). `LF_ArmoryKits` books each kit's serialled lines (the M9, the M16)
+  to the officer's account (all its characters share one book) with the issue time (`System.GetUnixTime`). While any serial is out, the armory action issues
+  nothing: an officer carrying the kit hands it in (the items are removed, `#EL-Rank_KitReturned` or
+  `#EL-Rank_KitPartReturned`); with none of it carried the first use warns `#EL-Rank_KitOutstanding` and a second
+  use within 15 s reports it lost (each serial logged `[LFDebug:Armory] <uid> reported serial <s> lost`,
+  `#EL-Rank_KitReportedLost`). A new kit also waits `armoryCooldownMinutes` (police config, 120) of real time after
+  the last issue (`#EL-Rank_DrawCooldown`). The book is the `armorykits` payload (save version 45), so clock-out and
+  restart keep both. Plain lines (spike strip, roadblock kit) carry no serial and are not booked. Tests:
+  `police/armory-kit-cap`, `police/armory-kit-turn-in`, `police/armory-cooldown-persist` (with a `wt e2e` reload
+  check).
 - ✅ Rank, on-duty seconds, and unpaid duty seconds survive a restart (M1-10,
   `progression` payload, save version 7).
-- ⚠️ The shift draw mark is session state, so a restart allows one more draw.
 - ✅ **Arrest and escort are config, open to every officer** (2026-11-08, #165):
   `LF_PoliceConfig` (`{916BDC092C01B7D1}Configs/Police/LF_Police.conf`) sets the
   lowest rank that may arrest (`m_iArrestMinRank`) and escort
@@ -669,4 +678,10 @@
   release point in the hall and no door target; no `EL_JailDoor`, which would hang a second door in the villa's doorway.
   Breach and jailbreak on that cell need the villa door to carry `LF_BreachTarget` (#2373).
 - ✅ **Map area data** (#2233, epic #2223, test `map/areas`; node twin `tools/map/rules/areas.mjs`). `LF_MapAreas` (`Feature/Map/LF_MapAreas.c`) turns an area into an outline vertex list: a polygon is its points, a circle a 32-gon, a box its four corners turned by yaw the way `LF_ZoneArea.Contains` turns it, a polyline corridor a mitred strip. `Collect` merges every `LF_Zones` zone that has a style (SAFE and LAWLESS draw; NORMAL draws nothing) with the map-only areas (`LF_MapAreaComponent`: town line, gated, custom; a polygon local to the entity, or a circle). Styles are tokens for the `map-*` theme rows (M6). The outline, centroid, style and rule cases are one table, `Configs/Map/Rules/areas.cases.json`, that the Enforce test and the emulator's node rule both run; `LF_MapAreaCases.generated.c` carries it as script because the game cannot read a loose `.json` from an addon (`node tools/map/rules/areas.mjs --gen` rewrites it; the selftest fails when stale). `LF_Zones.GetAll()` is the one hook in the zone service. Nothing draws yet (M6).
+- 🔧 **Crime review fixes** (2026-11-17, `docs/reviews/2026-11-17-crime.md`, merged, in-dev):
+  - **Till robbery with no room for the cash.** `LF_RobAction.CommitRobbery` now refuses with `REFUSED_NO_ROOM` when the robber's inventory takes none of the cash. It starts no till cooldown, adds no wanted and calls no dispatch, and the robber gets the toast `#LF-Robbery_NoRoom`. Test `crime/rob-no-room`.
+  - **Chop-shop COLLECT.** COLLECT pays first. A short payment is rolled back and refused (`NO_ROOM`, `#LF-Chop_NoRoom`), and the car stays. COLLECT also refuses while someone sits in the car (`LF_ChopShopRules.CheckCollect`). Test `chopshop/collect-guard`.
+  - **Escort holds.** `LF_Jail.Imprison` ends the prisoner's escort hold (`LF_JailEscort.Drop`) on every arrest path. Before this, a freed prisoner's next logout counted as escaping custody. Test `jail/escort-drop`.
+  - **Self-arrest.** `LF_Jail.Arrest` refuses when the officer is the prisoner. The police-menu arrest RPC now runs the same `LF_PlayerInteraction.CheckPair` and grace gate as the in-world arrest action, so the menu cannot arrest yourself, a dead player or a new character. Test `jail/self-arrest`.
+  - **Jail work after a logout.** The jail-work timer carries the prisoner's uid, so a prisoner who logs out mid-task is no longer refused as BUSY after rejoining. Test `jail/work-abandon`.
 - ✅ **Fence workshop yard, pass 1 BUILD** (#2302, shell #2301, epic #2201; pack). `FenceYard.et` (Workshop_01 main plus the side annex) stands in pack grid cell c14r4 (2x2, `Grid_fence_yard.layer`). The front is a plain garage; the fence's stall (`LF_FenceStall`, stock `fence`) and the fence (`LF_Fence`) are in the annex back room, written by `tools/buildings/fence-yard/fitout.mjs` (`--check` for drift) with the room lights (`FenceYard_Kit.et`: 3 shadowless lights). No sign, string or map place names the fence (D-M5). No stash (the only stash system is the org hideout's) and no car bay (Crime has none for a fence). No script or save change.

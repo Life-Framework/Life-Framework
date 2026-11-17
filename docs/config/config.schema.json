@@ -472,6 +472,41 @@
           "minimum": 0,
           "maximum": 86400
         },
+        "runMinDistance": {
+          "type": "number",
+          "description": "Delivery run: the drop-off must be at least this many metres (straight line) from where the run started, or the run pays nothing",
+          "default": 300,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "runMinTimeFraction": {
+          "type": "number",
+          "description": "Delivery run: the run must take at least this share of the expected driving time (distance over the road speed), or it pays nothing",
+          "default": 0.6,
+          "minimum": 0,
+          "maximum": 1
+        },
+        "runRoadSpeed": {
+          "type": "number",
+          "description": "Delivery run: road speed in metres per second used to work out the expected driving time of a run",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cargoDepositPercent": {
+          "type": "integer",
+          "description": "Delivery cargo deposit: percent of the cargo's shop sell price taken at the start of a run. It is returned on delivery and kept when the run is abandoned. 0 turns the deposit off",
+          "default": 100,
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "cargoDepositFallback": {
+          "type": "integer",
+          "description": "Delivery cargo deposit: the deposit base when the shop price list has no sell price for the cargo",
+          "default": 50,
+          "minimum": 0,
+          "maximum": 1000000
+        },
         "jobXpFirstLevel": {
           "type": "integer",
           "description": "Delivery career before job tracks: XP from level 1 to 2. Read only to migrate a version 7-27 save's career onto the DELIVERY job; set it to what this server used",
@@ -1176,6 +1211,13 @@
           "default": 168,
           "minimum": 0,
           "maximum": 100000
+        },
+        "armoryCooldownMinutes": {
+          "type": "integer",
+          "description": "Minutes of real time between two armory kits for one officer. Saved, so clocking out and a restart do not reset it. At least 1: the spike strip and roadblock kit carry no serial, so only the cooldown limits them",
+          "default": 120,
+          "minimum": 1,
+          "maximum": 1440
         }
       },
       "additionalProperties": false,
