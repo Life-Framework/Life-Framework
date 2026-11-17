@@ -132,3 +132,65 @@ Effect on the laptop's admission (RAM a running job counts for, or a new one res
 Left on, with a reason: the NVIDIA App overlay (0.36-0.42 GB; it respawns from its container, so it needs the NVIDIA
 App's own "Overlay off" setting, a GUI step for the maintainer), Steam (a client needs it), Defender (already excludes
 our folders).
+
+## What each change freed (2026-11-17)
+
+"Freed" is RAM the admission no longer reserves for a job that does not need it, or RAM a process no longer holds.
+
+| change | PR | freed | where |
+|---|---|---|---|
+| Workbench reserve from the laptop's own peaks (3.7 to 2.54 GB) | #2344 | 1.16 GB per look start | laptop |
+| rdb/compile Workbench as a `tool` (1.3 GB instead of 2.54-3.7) | #2344 | 1.2-2.4 GB while one loads | laptop |
+| island clients and client profiles classified; small client p90 no longer island-inflated | #2344 | 0.5-0.8 GB per small session client | laptop |
+| island client growth counted at the island peak | #2344 | none (closes an under-reserve: crash risk) | both |
+| test servers record `test:*` peaks (the reserve can now follow the measured 0.70-0.76 GB) | #2344 | up to 0.05-0.1 GB per test, once samples exist | both |
+| orphan game/Workbench reaping | #2350 | 0 today (no orphans seen); 0.7-2.6 GB per hung server or Workbench it catches | both |
+| validate fan-out fits over the floor | #2352 | 0.16-0.8 GB at a validate's peak when free RAM is short | this PC |
+| Windows Search, telemetry, Phone Link off | (box config) | ~0.3 GB | laptop |
+| MCP servers per agent | (none needed) | 0: no claude process starts one | - |
+
+### Effective lanes
+
+What fits at each machine's median free RAM in the 15-minute window, over the 1.5 GB floor, with the pool's lane caps
+(laptop 3 test, 2 session; this PC 2 and 2):
+
+| machine | median free | before | after |
+|---|---|---|---|
+| laptop | 4.9 GB (look viewer resident) | 3 tests, **or** 1 small full session (0.7 + 2.0), **no look** (needs 5.2 GB: the 132 s wait in #2268) | 3 tests, **or** 1 small full session (0.7 + 1.2) plus 1 test, **or** 1 look (needs 4.0 GB) |
+| laptop, look viewer closed | ~7.4 GB | 3 tests + 1 small session | 3 tests + 1 small session + room for a look |
+| this PC | 2.1 GB | 0 (a test needs 2.3 GB free) | 0; with the Defender and OneDrive suggestions above (~1.5 GB): 1-2 tests or 1 lowspec session |
+
+This PC stays the bottleneck: agents (0.2 GB each) and the user's apps hold it, and nothing in the pool's control
+frees enough for a game server there. The pool already sends work to the machine with the most headroom (never pin).
+
+## Not done, and why
+
+- **Trimming idle processes' working sets.** Windows trims under pressure already, and the admission counts a trimmed
+  process at the peak it can regrow to (`unrealisedMb`), so a trim admits no extra job; trimming a game process also
+  stalls it when it pages back in.
+- **Lower Workbench texture settings for non-PR looks.** The look viewer loads `LF_Everon1989.gproj` (core plus pack)
+  at 2.5-2.65 GB. Whether a Workbench profile setting lowers that is unmeasured; it is slice card 3 below rather than a
+  guessed engine setting.
+- **The smallest world a test needs** was already the default (`docs/worktrees.md` "Test world"): LOGIC runs boot
+  TestLogic (0.70 GB), WORLD and PERSISTENCE runs boot GridWorld (0.76 GB), only pins boot DebugWorld.
+
+## Bigger work: slice cards
+
+1. **Shared warm test server per machine** (lf-hard, 45 min). Every test run boots its own server (0.7-0.76 GB, 10-30 s).
+   A resident TestLogic server per machine that takes the next worktree's LOGIC selection (scripts compile at boot, so this
+   needs a restart whenever the scripts differ; see docs/worktrees.md "Live reload") removes the boot and lets
+   LOGIC runs from several worktrees share one 0.7 GB. Acceptance: two worktrees' `--tier fast` runs back to back on
+   one server process, results identical to separate boots.
+2. **Test batching across worktrees** (lf-builder, 45 min). Queued `--only` runs with the same pack, world and build
+   could run in one boot with a per-worktree result split. Needs the same addon-per-run question as card 1; start with
+   runs from the same base commit and an identical `addons/` tree hash (the pass-cache key already computes it).
+3. **Look viewer memory** (lf-builder, 30 min). Measure the viewer with a profile whose engine settings lower texture
+   quality and view distance, for looks without `--pr`; also measure a core-only `.gproj` for grid looks that use no
+   pack resource. Acceptance: peak WS before and after in this file; switch only if pictures stay usable.
+4. **Thin CLI wrapper** (lf-builder, 30 min). The compact-output parent (`tools/lib/quiet-run.mjs`) loads the whole CLI
+   module graph (about 50 MB) and then only waits for its child. An entry that decides quiet-or-not before importing
+   the CLI saves about 25-30 MB per waiting `look`, `test` or `session up` (8-10 wait at once on this PC: 0.2-0.3 GB).
+5. **Look restart churn** (lf-hard, 45 min). In the window the laptop's look viewer restarted 7 times in 15 minutes
+   (each look comes from another worktree with added or deleted addon files: `mirrorMode` restart). Each restart is a
+   1.2 GB to 2.6 GB climb and the 100 s Workbench slot wait in #2268. A mirror that adds new files without a restart
+   when Workbench never loaded them would keep one viewer warm.

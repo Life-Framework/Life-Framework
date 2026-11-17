@@ -42,7 +42,9 @@ export const SEED_PEAKS_MB = {
   "test:small": 800,
   "test:island": 2500,
   "workbench:small": 3700,
-  "workbench:island": 3700,
+  // A look Workbench on the pack's island (MainWorld, play mode) streams Everon like a server and a client in one
+  // process: seeded at the island session's 2.5 + 2.9 GB until real samples come in (#2347).
+  "workbench:island": 5400,
   // A Workbench that is not the look viewer (rdb refresh, compile, pack): measured 2026-11-17 on the laptop at
   // 1.0-1.2 GB working set, against 2.5-2.65 GB for the look viewer (docs/architecture/ram-budget.md).
   "workbench:small:tool": 1300,
@@ -55,7 +57,8 @@ export const MIN_SAMPLE_MB = 200;
 
 export function worldClass(world) {
   const w = String(world ?? "");
-  return w === ISLAND || /CoreOnEveron/i.test(w) || /^everon$/i.test(w.trim()) ? ISLAND : SMALL;
+  // CoreOnEveron (vanilla Everon plus the core mode), the pack's MainWorld (a SubScene of Eden), Eden itself.
+  return w === ISLAND || /CoreOnEveron|(^|[/}])MainWorld\.ent$|(^|\/)Eden\.ent$/i.test(w) || /^(everon|island)$/i.test(w.trim()) ? ISLAND : SMALL;
 }
 
 export function peakKey(kind, world = SMALL, profile) {

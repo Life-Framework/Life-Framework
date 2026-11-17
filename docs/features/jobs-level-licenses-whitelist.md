@@ -225,3 +225,5 @@
   a player interaction, but only once the holder is cuffed (`LF_Restraint`; #1916): the
   interaction stays hidden and the server's `Revoke` refuses and logs for a free player. Test `licence/revoke-cuffs`. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
   `e2e/licence-desk` (the open application, a revoke and a conviction that still blocks the permit across `wt e2e`).
+
+- **Map marks (#2239):** a fare destination and a delivery stop become a shared mark plus the waypoint for their player, cleared when the run completes (`Feature/Jobs/LF_JobMapMarks.c`, `docs/features/map.md`; test `jobs/job-map-marks`). The marks are driven by `OnFareAccepted`/`OnStop`; nothing in the run code calls them until fares and stops exist.

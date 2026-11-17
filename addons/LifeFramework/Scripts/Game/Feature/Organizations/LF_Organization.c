@@ -33,7 +33,7 @@ enum LF_EOrganizationPermission
 	DECLARE_WAR,
 	//! Reserved: the hideout stash still opens for every member.
 	USE_STASH,
-	//! Reserved for territory (#751).
+	//! Territory (#751, reserved) and the organization's shared map marks (LF_OrgMapMarks, #2240).
 	MANAGE_TERRITORY,
 	//! Reserved: spending the fund on something other than an upgrade.
 	SPEND_FUND
@@ -1114,6 +1114,7 @@ class LF_OrganizationManager : Managed
 		LF_Organization org = LF_Organization.CreateNew(orgId, name.Trim(), founderCharacterId);
 		instance.m_mOrganizations.Set(orgId, org);
 		instance.m_mMembership.Set(founderCharacterId, orgId);
+		LF_OrgMapMarks.RefreshCharacter(founderCharacterId);
 		LF_Debug.Log("Organizations", string.Format("created org=%1 name=%2 founder=%3", orgId, org.GetName(), founderCharacterId));
 		return org;
 	}
@@ -1152,6 +1153,7 @@ class LF_OrganizationManager : Managed
 		}
 
 		GetInstance().m_mMembership.Set(targetCharacterId, orgId);
+		LF_OrgMapMarks.RefreshCharacter(targetCharacterId);
 		LF_Debug.Log("Organizations", string.Format("invite org=%1 member=%2", orgId, targetCharacterId));
 		return true;
 	}
@@ -1200,6 +1202,7 @@ class LF_OrganizationManager : Managed
 		}
 
 		GetInstance().m_mMembership.Remove(targetCharacterId);
+		LF_OrgMapMarks.RefreshCharacter(targetCharacterId);
 		LF_Debug.Log("Organizations", string.Format("kick org=%1 member=%2", orgId, targetCharacterId));
 		return true;
 	}
@@ -1300,6 +1303,7 @@ class LF_OrganizationManager : Managed
 		}
 
 		GetInstance().m_mMembership.Remove(characterId);
+		LF_OrgMapMarks.RefreshCharacter(characterId);
 		LF_Debug.Log("Organizations", string.Format("leave org=%1 member=%2", org.GetId(), characterId));
 		return true;
 	}
@@ -1338,6 +1342,7 @@ class LF_OrganizationManager : Managed
 			return false;
 
 		GetInstance().m_mMembership.Set(characterId, orgId);
+		LF_OrgMapMarks.RefreshCharacter(characterId);
 		LF_Debug.Log("Organizations", string.Format("direct join org=%1 member=%2 rank=%3", orgId, characterId, rankId));
 		return true;
 	}
@@ -1355,6 +1360,7 @@ class LF_OrganizationManager : Managed
 			return false;
 
 		GetInstance().m_mMembership.Remove(characterId);
+		LF_OrgMapMarks.RefreshCharacter(characterId);
 		LF_Debug.Log("Organizations", string.Format("direct leave org=%1 member=%2", org.GetId(), characterId));
 		return true;
 	}

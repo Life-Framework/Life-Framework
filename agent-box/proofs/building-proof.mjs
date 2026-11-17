@@ -102,9 +102,11 @@ async function runSlug(args) {
   const addonDir = join(ROOT, "addons", spec.addon || "LifeFramework");
   const files = buildingFiles(spec);
   const prefabs = [files.store, files.building].filter(Boolean);
-  const world = loadWorld(ROOT);
   const named = flag(args, "--entity");
-  const place = world.find((e) => (named ? e.name === named : prefabs.some((p) => (e.prefab || "").endsWith(p))));
+  const match = (e) => (named ? e.name === named : prefabs.some((p) => (e.prefab || "").endsWith(p)));
+  // A kit in a grid claim (core GridWorld or the pack's Everon1989Grid) is not in the default world's layers.
+  const { gridLayerDirs } = await import("../../tools/lib/worlds.mjs");
+  const place = loadWorld(ROOT).find(match) || loadWorld(ROOT, gridLayerDirs(ROOT)).find(match);
   if (!place) {
     console.log(`building-proof: FAIL  ${named || prefabs.join(" or ")} is not placed in any world layer (tools\\cli place ground)`);
     return 1;

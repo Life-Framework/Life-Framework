@@ -1,17 +1,18 @@
 // The town hall's fit-out: lights, the lit facade lamp, wall dressing, stocked counters and the clutter of an office
 // that is used. Only base-game props, all static (no physics, no scripts, nothing pickable).
 //
-//   node tools/buildings/town-hall/shell.mjs [--pass 1|2] [--check]    writes the building, the pruned vanilla set and this block
-//   node tools/buildings/town-hall/decor.mjs [--pass 1|2]              prints the budget this block spends
+//   node tools/buildings/town-hall/shell.mjs [--pass 1|2|3] [--check]    writes the building, the pruned vanilla set and this block
+//   node tools/buildings/town-hall/decor.mjs [--pass 1|2|3]              prints the budget this block spends
 //
 // Passes (the PR shows each): BUILD is the pruned vanilla set alone (pass 0); POLISH 1 (pass 1) lights every room and
 // lamps the facade, dresses the walls, stocks the counter and signs the rooms; POLISH 2 (pass 2) adds the lived-in
-// clutter and the night mood. A row's `pass` says which pass adds it; `--pass N` writes every row up to N.
+// clutter and the night mood; the A pass (pass 3) fits and lights the first floor. A row's `pass` says which pass adds it;
+// `--pass N` writes every row up to N.
 //
 // Budget (docs/architecture/performance.md, a LARGE building): at most 500 entities, 10 lights, 2 shadow casters and
 // no point light that casts one; static props only, no physics, replication or per-frame script on decoration. This
-// building spends 6 lights, none casting a shadow: two corridor lights, the counter spot and the waiting-bench light
-// (short range), the first-floor light and the facade light. Every LightEntity row sets CastShadow explicitly (unset
+// building spends 9 lights, none casting a shadow: two corridor lights, the counter spot and the waiting-bench light
+// (short range), the facade light, and on the first floor the landing, the hall's west end and the two offices (pass 3). Every LightEntity row sets CastShadow explicitly (unset
 // means on). Pass 1 stood a vanilla lit lamp on the facade; its light leaves CastShadow unset and the prop carries
 // replication, so pass 2 swaps it for a plain static lamp mesh and a light of our own. The ceiling lamp meshes glow
 // through an emissive cover material, which costs no light.
@@ -24,6 +25,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gameVfs, readText } from "../../lib/game-prefab.mjs";
 import { gameDb } from "../pipeline/gamedb.mjs";
+import { snapItems } from "../pipeline/surface.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 export const ID_PREFIX = "DC1F";
@@ -59,11 +61,16 @@ const P = {
   pot: "Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et",
   bench: "Prefabs/Props/Furniture/BenchOffice_01/BenchOffice_01_Base.et",
   box: "Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et",
+  tube: "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et",
+  typewriter: "Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_Base.et",
 };
+// The emissive tube cover (the same material prune.mjs puts on the ground-floor tubes); a `lit` row gets it.
+const LIT = ["LampFluorescent_02_cover", "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"];
 
 const items = []; // { pass, path, x, y, z, yaw, scale, lit }
 const lights = []; // { pass, x, y, z, angles, color, lv, radius, angle, type, shadow }
-const put = (pass, path, x, y, z, yaw = 0, scale = 1, until = 9) => items.push({ pass, path, x, y, z, yaw, scale, until });
+// y is a hint: decorBlock snaps every prop onto the top under it (tools/buildings/pipeline/surface.mjs); `o.on` names a support.
+const put = (pass, path, x, y, z, yaw = 0, scale = 1, until = 9, o = {}) => items.push({ pass, path, x, y, z, yaw, scale, until, ...o });
 const spot = (pass, x, y, z, o = {}) => lights.push({ pass, type: "Spot", x, y, z, angles: "-90 0 0", color: "1 0.86 0.64 1", lv: 5.5, radius: 6.5, angle: 130, shadow: false, ...o });
 const glow = (pass, x, y, z, o = {}) => lights.push({ pass, type: "Point", x, y, z, color: "1 0.88 0.68 1", lv: 2.4, radius: 5, shadow: false, ...o });
 
@@ -102,10 +109,10 @@ put(2, P.coatRack, -1.3, F, 5.7, 90);
 put(2, P.bin, 4.4, F, 7.0);
 put(2, P.carpet, 0.2, F, 4.6, 0, 0.9);
 put(2, P.stool, 5.6, F, 3.2, 40);
-put(2, P.frame, 9.4, 1.106, 3.6, 200);
-put(2, P.radio, 9.9, 1.106, 3.0, 190);
+put(2, P.frame, 9.4, 1.106, 3.95, 200); // the clerk desks behind the counter are cut (prune.mjs), so the props stand on the counter
+put(2, P.radio, 9.95, 1.106, 3.95, 190);
 put(2, P.fileStack, 5.0, 1.106, 3.7, 15);
-put(2, P.deskLamp, 6.9, 1.106, 3.7, 160);
+put(2, P.deskLamp, 6.9, 1.106, 3.95, 160);
 put(2, P.box, 10.2, F, 2.4, 20, 0.6);
 put(2, P.box, 10.2, F + 0.21, 2.4, 70, 0.6);
 put(2, P.noticeH1, 10.8, 1.5, 6.3, -90, 0.9);
@@ -114,6 +121,42 @@ put(2, P.floorLamp, 4.6, F, 6.0);
 put(2, P.pot, -2.4, 0, 8.8);
 put(2, P.pot, 2.4, 0, 8.8);
 put(2, P.bench, -3.0, 0, 9.0, 0);
+
+// ---- A PASS, part 1 (pass 3, #2309): the first floor fitted and lit. prune.mjs drops the vanilla first-floor
+// ceiling tubes (LampFluorescent_02), so the floor read as one dark room under the landing light. Each office gets a
+// ceiling tube with the emissive cover (`lit`) and one short fill light; the desks (Desk_01 pivots at a corner, top
+// 4.903) get the paper of a working registry. Desk centres: the east block (6.38, 4.43), (4.67, 5.17), (6.37, 5.25),
+// (3.0, 4.31); the west desk (-6.09, 5.8). The front wall's inner face is z 7.3 (the vanilla clock), yaw 180.
+const TUBE = 7.297; // the vanilla tube height on the first floor (the lamp's pivot is its top)
+const T = 4.903; // the measured Desk_01 top (3.997 + 0.906); the snap keeps each prop on it
+put(3, P.tube, -7.6, TUBE, 4.6, 90, 1, 9, { lit: true }); // the west office
+put(3, P.tube, 4.6, TUBE, 4.8, 0, 1, 9, { lit: true }); // the east office, over the desk block
+put(3, P.tube, 7.4, TUBE, 4.8, 0, 1, 9, { lit: true });
+put(3, P.tube, -4.5, TUBE, -1.0, 0, 1, 9, { lit: true }); // the hall (z -3 to 1.1, windows on the courtyard), dark past the landing at night
+put(3, P.tube, 4.5, TUBE, -1.0, 0, 1, 9, { lit: true });
+glow(3, -7.4, 7.0, 4.8, { lv: 2.4, radius: 5 }); // the west office
+glow(3, 5.6, 7.0, 4.8, { lv: 2.6, radius: 6 }); // the east office
+glow(3, -4.5, 7.0, -1.0, { lv: 2.2, radius: 6 }); // the west end of the hall; the landing light covers the east
+
+// The east office desk block: a registry that is half way through the morning.
+put(3, P.typewriter, 6.3, T, 4.45, 180);
+put(3, P.fileStack, 6.95, T, 4.3, 170);
+put(3, P.fileOpen, 4.6, T, 5.2, 5);
+put(3, P.pen, 4.95, T, 5.05, 60);
+put(3, P.phone, 3.95, T, 5.3, 20);
+put(3, P.deskLamp, 6.9, T, 5.4, -10);
+put(3, P.notebook, 6.1, T, 5.25, -15);
+put(3, P.frame, 2.5, T, 4.2, 160);
+put(3, P.fileStack, 3.4, T, 4.35, 190);
+// The west desk: the licence officer's paperwork.
+put(3, P.deskLamp, -6.05, T, 6.4, 90);
+put(3, P.fileOpen, -6.1, T, 5.6, 95);
+put(3, P.radio, -6.15, T, 5.3, 80);
+// Floors and the front wall.
+put(3, P.plant, 9.9, F1, 6.8);
+put(3, P.bin, 3.3, F1, 6.6);
+put(3, P.paintingBig9, 8.6, 6.0, 7.3, 180, 0.9);
+put(3, P.noticeH3, -8.6, 5.6, 7.3, 180, 0.9);
 
 // ---------------------------------------------------------------------------------------------------
 const hex16 = (s) => ID_PREFIX + createHash("sha1").update(s).digest("hex").slice(0, 12).toUpperCase();
@@ -127,7 +170,10 @@ export function budget(pass) {
 }
 
 // The decor block (child entities of the furniture prefab) for every row up to `pass`.
-export async function decorBlock(pass) {
+export async function decorBlock(pass, fixed = []) {
+  const snap = await snapItems(items.filter((i) => i.pass <= pass && (i.until ?? 9) >= pass), { fixed });
+  console.log(`decor: ${snap.summary}`);
+  if (process.argv.includes("--report")) for (const c of snap.changes) console.log(`  ${c.path.split("/").pop().replace(".et", "")} y ${c.from} -> ${c.to} (on ${c.on})`);
   const vfs = await gameVfs();
   const db = gameDb();
   if (!db) throw new Error("the game's resource database is not readable here (ENFUSION_GAME_PATH)");
@@ -150,6 +196,10 @@ export async function decorBlock(pass) {
     if (it.scale !== 1) lines.push(`   scale ${num(it.scale)}`);
     lines.push(`   coords ${num(it.x)} ${num(it.y)} ${num(it.z)}`);
     if (it.yaw) lines.push(`   angleY ${num(it.yaw)}`);
+    if (it.lit) {
+      const id = hex16(`town-hall|decor|lit|${i}`);
+      lines.push("   components {", '    MeshObject "{5872F0EB7FA40561}" {', "     Materials {", `      MaterialAssignClass "{${id}}" {`, `       SourceMaterial "${LIT[0]}"`, `       AssignedMaterial "${LIT[1]}"`, "      }", "     }", "    }", "   }");
+    }
     lines.push("  }");
     rows.push(lines.join("\n"));
   });
@@ -165,7 +215,7 @@ export async function decorBlock(pass) {
 }
 
 if (process.argv[1] && process.argv[1].endsWith("decor.mjs")) {
-  const pass = Number(process.argv[process.argv.indexOf("--pass") + 1] || 2);
+  const pass = process.argv.includes("--pass") ? Number(process.argv[process.argv.indexOf("--pass") + 1]) : 3;
   const b = budget(pass);
   console.log(`decor pass ${pass}: ${b.props} prop(s) + ${b.lightRows} light row(s), ${b.lights} dynamic light(s) (${b.shadows} shadow caster(s))`);
 }

@@ -37,6 +37,7 @@ import * as rt from "../lib/rt-gc.mjs";
 import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionBase, sessionDirOf } from "../lib/session-lease.mjs";
 import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
+import { reapOrphansThrottled } from "../lib/ram.mjs";
 import { trimProcs } from "../lib/ws-trim.mjs";
 import { statusLine } from "../lib/wb-lock.mjs";
 import { setMachineHostnameForTest } from "../lib/machine-locks.mjs";
@@ -1890,6 +1891,10 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
       if (now - lastReap > 10000) {
         lastReap = now;
         reapIdleSessions(root, all.filter((x) => x.via === "local"), tickets, settings);
+        // Game and Workbench processes no lane, session or look owns (tools/lib/ram.mjs), each machine every 10 min.
+        try {
+          reapOrphansThrottled(wt.hubDirOf(root), all, { sshPs: tb.sshPs });
+        } catch {}
       }
       // A machine that was down (or came back) counts again within a probe window.
       if (now - lastProbe > (opts.reprobeMs ?? 10000)) {
@@ -2504,6 +2509,8 @@ export function remoteState(m) {
   const ps = [
     `$ld = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\locks'`,
     `foreach ($n in @(${names.map(tb.psQuote).join(",")})) { $f = Join-Path $ld ($n + '.lock'); if (Test-Path -LiteralPath $f) { $raw = [IO.File]::ReadAllText($f).Trim(); $alive = $false; try { $i = $raw | ConvertFrom-Json; $alive = [bool](Get-Process -Id $i.pid -ErrorAction SilentlyContinue) } catch {}; Write-Host \"lf-pool: lock $n $alive $raw\" } else { Write-Host \"lf-pool: lock $n free\" } }`,
+    // Free space of the drive holding the worktrees (lead's DISK block); a failure prints nothing.
+    `try { $dr = Get-PSDrive -Name ((Split-Path -Qualifier ${tb.psQuote(m.root)}).TrimEnd(':')) -ErrorAction Stop; Write-Host ('lf-pool: disk ' + ([math]::Round($dr.Free / 1GB, 1)).ToString([Globalization.CultureInfo]::InvariantCulture)) } catch {}`,
     "$os = Get-CimInstance Win32_OperatingSystem; Write-Host \"lf-pool: ram $([int]($os.FreePhysicalMemory / 1024)) $([int]($os.TotalVisibleMemorySize / 1024))\"",
     pr.PS_PROC_SCAN,
     // The box's own measured peaks (its look, rdb and holder jobs record there), one JSON line.
@@ -2522,12 +2529,15 @@ export function parseRemoteState(text) {
   let totalMb = null;
   let thermalC = null;
   let peaks = null;
+  let diskGb = null;
   for (const l of String(text).split(/\r?\n/)) {
     if (l.startsWith("lf-pool: peaks ")) {
       const v = readJsonText(l.slice("lf-pool: peaks ".length).trim());
       if (v && typeof v === "object" && !Array.isArray(v) && Object.keys(v).length) peaks = v;
       continue;
     }
+    const dk = /^lf-pool: disk (-?[\d.]+)$/.exec(l.trim());
+    if (dk) diskGb = Number(dk[1]);
     const th = /^lf-pool: thermal ([\d.]+)$/.exec(l.trim());
     if (th) thermalC = Number(th[1]);
     const t = l.trim();
@@ -2542,7 +2552,7 @@ export function parseRemoteState(text) {
   // The ArmaReforger processes there (Workbench, servers, clients: the pool's or not); null when the box
   // answered without the scan lines (an older holder), so its gate falls back to lock-based pending.
   const procs = freeMb !== null ? pr.parseScan(text) : null;
-  return { locks, freeMb, totalMb, thermalC, procs, peaks, gpuProbe: parseProbe(text), heartbeat: (/^lf-gpu-hb: (.*)$/m.exec(String(text)) ?? [])[1] ?? null };
+  return { locks, freeMb, totalMb, thermalC, diskGb, procs, peaks, gpuProbe: parseProbe(text), heartbeat: (/^lf-gpu-hb: (.*)$/m.exec(String(text)) ?? [])[1] ?? null };
 }
 
 function remoteLocks(m) {
@@ -2771,6 +2781,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     for (const m of machines.filter((x) => x.via === "ssh")) {
       if (probe(root, m).reachable) reapRemoteIdleSessions(root, m, settings, { waiting: tickets.some((t) => (t.lane ?? "session") === "session" && (t.machines ?? []).includes(m.name)) });
     }
+    reapOrphansThrottled(wt.hubDirOf(root), machines.filter((x) => x.via === "local" || probe(root, x).reachable), { sshPs: tb.sshPs });
   } catch (e) {
     console.log(`WARN  pool: idle-session check failed (${String(e?.message ?? e).split("\n")[0]})`);
   }
@@ -3045,7 +3056,7 @@ export function poolSnapshot(root, m, report = () => {}) {
   const settings = poolSettings(root);
   const rows = m.lanes ? [...lanesFor(m, "session"), ...lanesFor(m, "test")] : lanesFor(m, "test");
   const gb = (mb) => Math.round((mb / 1024) * 10) / 10;
-  const snap = { name: m.name, health: "?", freeGb: null, totalGb: null, floorGb: gb(settings.minFreeMb), tempC: null, lanes: m.lanes ? m.lanes.test + m.lanes.session : m.slots, busy: 0 };
+  const snap = { name: m.name, via: m.via, health: "?", freeGb: null, totalGb: null, diskGb: null, floorGb: gb(settings.minFreeMb), tempC: null, lanes: m.lanes ? m.lanes.test + m.lanes.session : m.slots, busy: 0 };
   const h = probe(root, m, { fresh: true });
   snap.health = healthWord(h).replace(/\s*\(.*\)$/, "");
   report({ ...snap });
@@ -3053,6 +3064,7 @@ export function poolSnapshot(root, m, report = () => {}) {
   if (m.via === "local") {
     snap.freeGb = gb(Math.round(freemem() / 1048576));
     snap.totalGb = gb(Math.round(totalmem() / 1048576));
+    snap.diskGb = wt.freeDiskGbAt(wt.mainRootOf(root));
     snap.busy = rows.filter((l) => {
       const info = readJson(localLockFile(root, l.lock), null);
       return info && pidAlive(info.pid);
@@ -3065,6 +3077,7 @@ export function poolSnapshot(root, m, report = () => {}) {
         snap.totalGb = gb(st.totalMb);
       }
       if (Number.isFinite(st.thermalC)) snap.tempC = st.thermalC;
+      if (Number.isFinite(st.diskGb)) snap.diskGb = st.diskGb;
       snap.busy = rows.filter((l) => st.locks[l.lock]?.alive).length;
     } else {
       snap.health = "slow";

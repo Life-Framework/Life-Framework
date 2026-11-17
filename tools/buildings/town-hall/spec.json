@@ -17,11 +17,19 @@
   },
   "grid": {
     "claim": "tools/grid/cells/town-hall.json",
-    "layer": "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_town_hall.layer",
+    "layer": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_town_hall.layer",
     "entity": "TownHall",
-    "stage": "tools/buildings/town-hall/stage/",
-    "note": "The layer names pack prefabs, so it is not committed to the core addon until the pack grid layers land (the lead, 2026-11-16): node tools/buildings/town-hall/looks.mjs --stage copies it from stage/ into GridWorld for a look, --unstage removes it before validate or ship. The building entity's coords and angleY in it are the only world numbers; every point below is building space (front +z)."
+    "note": "A pack grid cell (`grid place town-hall --cell c11r2 --span 3x2 --pack`, #2277). The building row and its extras (clerk, board, registry sign, arrival point) were carried over unchanged from the stage/ copy reviewed in PR #2259. The building entity's coords and angleY in it are the only world numbers; every point below is building space (front +z)."
   },
+  "floaters_allow": [
+    { "match": "DC1FDD4DBB258BC2", "why": "On a vanilla desk whose rotation is written as `angles 0 177 0` / `angles 0 89 0`: surface.mjs prefabChildren reads only angleY, so building check puts the desk at yaw 0 and finds nothing under the prop. The prop stands at the measured desk top 4.903 (follow-up issue filed)." },
+    { "match": "DC1FD1BADA32AE22", "why": "On a vanilla desk whose rotation is written as `angles 0 177 0` / `angles 0 89 0`: surface.mjs prefabChildren reads only angleY, so building check puts the desk at yaw 0 and finds nothing under the prop. The prop stands at the measured desk top 4.903 (follow-up issue filed)." },
+    { "match": "DC1F94CE3764A18F", "why": "On a vanilla desk whose rotation is written as `angles 0 177 0` / `angles 0 89 0`: surface.mjs prefabChildren reads only angleY, so building check puts the desk at yaw 0 and finds nothing under the prop. The prop stands at the measured desk top 4.903 (follow-up issue filed)." },
+    { "match": "DC1F5B30B89A5092", "why": "On a vanilla desk whose rotation is written as `angles 0 177 0` / `angles 0 89 0`: surface.mjs prefabChildren reads only angleY, so building check puts the desk at yaw 0 and finds nothing under the prop. The prop stands at the measured desk top 4.903 (follow-up issue filed)." },
+    { "match": "DC1F48E5FE044BD3", "why": "On a vanilla desk whose rotation is written as `angles 0 177 0` / `angles 0 89 0`: surface.mjs prefabChildren reads only angleY, so building check puts the desk at yaw 0 and finds nothing under the prop. The prop stands at the measured desk top 4.903 (follow-up issue filed)." },
+    { "match": "DC1FE95CF267CED6", "why": "On a vanilla desk whose rotation is written as `angles 0 177 0` / `angles 0 89 0`: surface.mjs prefabChildren reads only angleY, so building check puts the desk at yaw 0 and finds nothing under the prop. The prop stands at the measured desk top 4.903 (follow-up issue filed)." },
+    { "match": "DC1F9DD7CCFB2BDD", "why": "On a vanilla desk whose rotation is written as `angles 0 177 0` / `angles 0 89 0`: surface.mjs prefabChildren reads only angleY, so building check puts the desk at yaw 0 and finds nothing under the prop. The prop stands at the measured desk top 4.903 (follow-up issue filed)." }
+  ],
   "rooms": [
     { "id": "arrival-corridor", "floor": 0, "box": [-2.0, -3.0, 4.6, 7.6], "use": "arrival point (spawn marker TownHall_ArrivalPoint), town board TownHall_Board, entrance doors" },
     { "id": "registry-counter", "floor": 0, "box": [4.8, 1.5, 10.9, 4.1], "use": "the registry clerk TownHall_Clerk behind the post counter; the licence desk is the counter window at x 9.1" },
@@ -44,7 +52,8 @@
       { "name": "counter", "at": [7.8, 0.2, 2.8], "radius": 4 },
       { "name": "waiting", "at": [7.4, 0.2, 6.0], "radius": 4 },
       { "name": "stair", "at": [1.2, 0.2, -2.0], "radius": 4 },
-      { "name": "first-floor", "at": [0, 4.0, 1.0], "radius": 5 }
+      { "name": "first-floor", "at": [0, 4.0, 1.0], "radius": 5 },
+      { "name": "east-office", "at": [5.0, 4.0, 6.2], "radius": 3 }
     ],
     "hours": [14, 22]
   }
