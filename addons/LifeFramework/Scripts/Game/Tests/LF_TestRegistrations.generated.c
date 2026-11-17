@@ -634,7 +634,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SaveAliases(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SaveHeldContent(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SaveNewerVersion(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_SaveRefusedOnDamage(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_SaveStampPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_SaveStopsAfterFailedRead(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_AutosaveSelection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelectionBitmask(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelectionNewest(), LF_TestTier.LOGIC);
@@ -696,6 +698,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SpikeStripCap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SpikeStripPreview(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SpikeStripRefund(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelayInstall(), LF_TestTier.LOGIC);
