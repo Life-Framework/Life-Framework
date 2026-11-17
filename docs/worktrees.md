@@ -275,6 +275,12 @@ from <ref>`). The string-table driver refuses a side it cannot parse whole
 and writes git's line merge with exit 1 instead. `merge-content-selftest`
 merges real branches and compares the result byte for byte (#1154, #1161).
 
+The registry driver (`regen-generated.mjs`) reads the three sides' test sources with one `ls-tree` per side and one
+`git cat-file --batch`, never a git child per file: on a loaded laptop a spawn costs about 230 ms, and the old per-file
+`git show` (about 2300 children for 760 tests) ran past the 240 s backstop on every merge, in `git merge` and in
+`wt ship`'s merge alike. `LF_MERGE_DRIVER_TRACE=<file>` appends `<ms> <command>` per child process, which is how to
+see where a slow merge goes; `merge-drivers-selftest` caps the git children at 12.
+
 - **`DIRTY` or `BEHIND`, worktree not LIVE.** In its worktree (or a temporary
   detached `Life-Framework-heal-<n>` worktree at the PR head when it is gone,
   removed afterwards with the junction-safe helper) it merges `origin/main` with
