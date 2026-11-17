@@ -275,16 +275,15 @@
 - ✅ **Jailbreak** (#235, LOGIC `roadmap/jailbreak`, WORLD `e2e/roadmap-jailbreak`, `session.mjs jailbreak-proof`). A serving prisoner who is outside the cell volume while `Roadmap_Jail_Door` is open has escaped: `LF_Jail.NoteEscape` (called each cell tick) reports it once through `LF_Dispatch.Report` as `#LF-Offence_JailBreak` (so `LF_OnCrimeCommitted` is on the bus, the board and pager carry it) and leaves the sentence and wanted level alone; going back inside re-arms it. The door reuses `LF_Breach` (arm, stay open until police repair). **Fixed:** `m_bDebugLocked` was never applied (the component asked for no init event), so the placed jail door started unlocked; `LF_LockComponent` now sets the INIT mask and applies it, and the per-component `m_bStartLocked` workarounds (jail, breach, lockpick) are gone. Harness verb `charge` hands the player a breach charge (dev gate). No save change.
 
 
-### `LF_PoliceMenu` — `Feature/Police/LF_PoliceMenu.c`
-- ✅ `ArrestPlayer` is the client-side entry point. The wanted list
-  left the menu in M1-11: wanted people are on the station wanted board. The
-  remote fine (`RpcAsk_LF_PoliceFine`, `FinePlayer`, the Fine button) is gone
-  (M1-19): a fine is a paper ticket written face to face (`LF_FineTicket*`).
-  The duty NPC's menu shows only Close (#2509): the blank Search and Arrest
-  buttons are removed, not built. `ArrestPlayer` stays for the wanted-list sheet
-  to call; `LF_Test_PoliceMenuNoDeadButtons` holds the layout and focus ring to
-  working buttons.
-- ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
+### `Feature/Police/LF_PoliceMenu.c` (arrest RPC and `LF_PoliceUtils`)
+- ✅ The duty NPC has no menu (#2535). The `LF_PoliceMenu` menu class, its layout,
+  the `PoliceMenu` preset and `LF_OpenPoliceMenuAction` are gone: duty is the duty
+  desk (`LF_DutyAction`), the wanted list is the station board, a fine is a paper
+  ticket (`LF_FineTicket*`), and #2509 had already removed the blank Search and
+  Arrest buttons, leaving a sheet with only Close. `PoliceDutyNPC.et` stays as a
+  DebugWorld prop with no actions; `LF_Test_PoliceDutyNpcNoMenu` holds that. The
+  arrest RPC and `LF_PoliceUtils` stay for the planned wanted-list sheet.
+- ✅ **Client→server bridge works** (verified 2026-08-30): the arrest request goes
   through `SCR_ChimeraCharacter.LF_AskPoliceArrest`, and the server
   handler `RpcAsk_LF_PoliceArrest` validates on-duty officer and wanted
   target before acting. Arrest also requires the configured

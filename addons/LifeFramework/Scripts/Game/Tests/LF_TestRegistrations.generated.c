@@ -530,7 +530,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceCallPay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceContactStamp(), LF_TestTier.LOGIC);
-		manager.Register(new LF_Test_PoliceMenuNoDeadButtons(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PoliceDutyNpcNoMenu(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PolicePromoteRung(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceRankPermissions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankTable(), LF_TestTier.LOGIC);

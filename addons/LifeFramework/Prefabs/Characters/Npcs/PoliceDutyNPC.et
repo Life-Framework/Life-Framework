@@ -7,26 +7,5 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
     Surname "Duty"
    }
   }
-  ActionsManagerComponent "{5A4B13A9811FB113}" {
-   ActionContexts + {
-    UserActionContext "{44B338DEF6C1C3FB}" {
-     ContextName "Duty"
-     Position PointInfo "{DFBF0A2E09D45988}" {
-      PivotID "Spine5"
-     }
-     Radius 0.6
-    }
-   }
-   additionalActions + {
-    LF_OpenPoliceMenuAction "{8CC2DDEDDEB10C07}" {
-     ParentContextList {
-      "Duty"
-     }
-     UIInfo UIInfo "{495F504D3F69EA28}" {
-      Name "Open Police Menu"
-     }
-    }
-   }
-  }
  }
 }
