@@ -199,7 +199,7 @@
   `BumpMe` only on change. Late joiners get the values with the snapshot.
   `GetState(entity)` answers from the account on the server and from the
   replica on a client. Consumers: `LF_RobAction`, `LF_DutyAction`,
-  `LF_ConfiscateAction`, `LF_OpenPoliceMenuAction`, `LF_ArmoryDrawAction`,
+  `LF_ConfiscateAction`, `LF_ArmoryDrawAction`,
   `LF_RankPromoteAction`, `LF_BreachRepairAction`, and (since 2026-11-08) the
   jail actions: arrest, escort, escort-arrest, put in and take out of a
   vehicle. Before that their offers read the server-only account, so on a

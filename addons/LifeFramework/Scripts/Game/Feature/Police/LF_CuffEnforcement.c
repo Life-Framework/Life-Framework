@@ -167,7 +167,7 @@ class LF_CuffEnforcement
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Asks once. eturn True while the character is still cuffed in a driver's seat (try again).
+	//! Asks once. \return True while the character is still cuffed in a driver's seat (try again).
 	protected static bool PutOut(EntityID characterId)
 	{
 		if (!GetGame() || !GetGame().GetWorld())

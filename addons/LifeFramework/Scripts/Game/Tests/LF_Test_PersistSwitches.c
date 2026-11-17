@@ -128,7 +128,7 @@ class LF_Test_PersistSwitches : LF_Test
 		ctx.Equal(0, carried.m_aItems[2].m_iParent, "the pouch, moved up two places, still sits in the backpack");
 		ctx.Equal(2, carried.m_aItems[3].m_iParent, "the apple in the pouch follows the pouch to its new place");
 		ctx.Equal(0, LF_StorageSnapshot.Get(OWNER_B, LF_StorageSnapshot.SLOT_CARRIED).CountPrefab(cash), "every character's carried cash is gone");
-		ctx.Equal(30, LF_StorageSnapshot.Get(OWNER_A, DUTY_SLOT).CountPrefab(cash), "a locker snapshot keeps its cash");
+		ctx.Equal(0, LF_StorageSnapshot.Get(OWNER_A, DUTY_SLOT).CountPrefab(cash), "a duty locker snapshot loses its cash too (#2547)");
 
 		ctx.Equal(0, LF_StorageSnapshot.StripPrefab(LF_StorageSnapshot.SLOT_CARRIED, cash), "a second pass removes nothing");
 	}

@@ -258,7 +258,7 @@ class LF_Lockpick
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn True when the pick action should be listed on this target: a pick target that is locked.
+	//! \return True when the pick action should be listed on this target: a pick target that is locked.
 	static bool ShowsPick(IEntity target)
 	{
 		return target && LF_Component<LF_LockpickTargetComponent>.Find(target) != null && IsLockKnown(target) && IsLocked(target);
