@@ -1110,10 +1110,10 @@ export function withBodyFile(root, body, fn, tag = "pr-body-gh") {
   }
 }
 
-export function createPrGh(root, { head, title, body, base = "main" }, deps = {}) {
+export function createPrGh(root, { head, title, body, base = "main", draft = false }, deps = {}) {
   const gh = deps.gh ?? ghBin();
   const exec = deps.run ?? run;
-  const res = withBodyFile(root, body, (file) => exec(gh, ["pr", "create", "--base", base, "--head", head, "--title", title, "--body-file", file], { cwd: root }));
+  const res = withBodyFile(root, body, (file) => exec(gh, ["pr", "create", "--base", base, "--head", head, "--title", title, "--body-file", file, ...(draft ? ["--draft"] : [])], { cwd: root }));
   if (res.status !== 0) throw new Error(`gh pr create failed: ${res.stderr || res.stdout}`);
   const out = res.stdout.trim();
   const url = (out.match(/https?:\/\/\S+/i) || [])[0] || out.split(/\r?\n/).pop();

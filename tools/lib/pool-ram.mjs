@@ -43,6 +43,9 @@ export const SEED_PEAKS_MB = {
   "test:island": 2500,
   "workbench:small": 3700,
   "workbench:island": 3700,
+  // A Workbench that is not the look viewer (rdb refresh, compile, pack): measured 2026-11-17 on the laptop at
+  // 1.0-1.2 GB working set, against 2.5-2.65 GB for the look viewer (docs/architecture/ram-budget.md).
+  "workbench:small:tool": 1300,
 };
 export const MIN_SAMPLES = 3;
 export const MAX_SAMPLES = 40;
@@ -57,6 +60,7 @@ export function worldClass(world) {
 
 export function peakKey(kind, world = SMALL, profile) {
   const w = world === ISLAND ? ISLAND : SMALL;
+  if (kind === "workbench" && profile === "tool") return "workbench:small:tool";
   return profile && kind === "client" && w === SMALL && profile !== "full" ? `${kind}:${w}:${profile}` : `${kind}:${w}`;
 }
 
@@ -91,26 +95,63 @@ export function jobReserveMb(settings, peaks, { kind, clients = 1, profile = "fu
 
 // ---------------------------------------------------------------- process scan
 
-// PowerShell that prints one "lf-pool: proc <kind> <pid> <workingSetMb> <island 0|1> <privateMb>" line per
-// ArmaReforger process (private = committed bytes, which a working-set trim does not shrink): workbench (a Workbench exe), client (the game, a -client launch or the Steam
-// exe), server (a dedicated server; a test server is one). Run here or over ssh; same output.
-export const PS_PROC_SCAN = String.raw`
-Get-CimInstance Win32_Process -Filter "Name LIKE 'ArmaReforger%'" | ForEach-Object {
-  $c = [string]$_.CommandLine; $n = [string]$_.Name
-  $k = $null
-  if ($n -like '*Workbench*') { $k = 'workbench' } elseif ($n -like 'ArmaReforgerServer*') { $k = 'server' } elseif ($n -like 'ArmaReforgerSteam*') { $k = 'client' }
-  if ($k) { $i = 0; if ($c -match 'CoreOnEveron') { $i = 1 }; Write-Host ("lf-pool: proc " + $k + " " + $_.ProcessId + " " + [int]($_.WorkingSetSize / 1MB) + " " + $i + " " + [int]($_.PrivatePageCount / 1MB)) }
+// PowerShell that defines Get-LfArmaRows [$procs]: one row per ArmaReforger process (the live ones, or the
+// Win32_Process-shaped objects given, which is how pool-ram-selftest feeds it command lines) { k, id, ws, isl, priv, prof }, the
+// one classification the pool's scan (PS_PROC_SCAN) and the box holder's gate (pool.mjs PS_RAM_GATE) share.
+//   k     workbench | server | test (a server whose -profile is <checkout>\server\profile\test) | client
+//   isl   1 for an island process: CoreOnEveron on its command line, or a client whose session folder
+//         (-profile <dir>\clientN) is the one of a CoreOnEveron server (<dir>\server); a client joins by
+//         address, so its own command line never names the world
+//   ws    working set MB; priv: committed (private) MB, which a working-set trim does not shrink
+//   prof  client: full | lowspec (-maxFPS 15, agent-box/session-profile.mjs); workbench: look (the look
+//         viewer: LF_VisualShotsPlugin or a visual-serve profile) | tool (rdb, compile, pack); else -
+// Before 2026-11-17 a test server counted as a session server, an island client as a small one and a client's
+// profile was the one of the job being admitted, so test peaks were never recorded and island clients were
+// counted 1.2 GB low.
+export const PS_PROC_ROWS = String.raw`
+function Get-LfArmaRows($all) {
+  if ($null -eq $all) { $all = @(Get-CimInstance Win32_Process -Filter "Name LIKE 'ArmaReforger%'") }
+  $isl = @{}
+  foreach ($p in $all) { $c = [string]$p.CommandLine; if ($p.Name -like 'ArmaReforgerServer*' -and $c -match 'CoreOnEveron' -and $c -match '-profile\s+"?([^"]+?)\Wserver"?(\s|$)') { $isl[$matches[1].ToLower()] = $true } }
+  foreach ($p in $all) {
+    $c = [string]$p.CommandLine; $n = [string]$p.Name; $k = $null; $prof = '-'
+    if ($n -like '*Workbench*') { $k = 'workbench'; $prof = 'tool'; if ($c -match 'LF_VisualShotsPlugin|visual-serve') { $prof = 'look' } }
+    elseif ($n -like 'ArmaReforgerServer*') { $k = 'server'; if ($c -match '-profile\s+"?[^"]*?\Wprofile\Wtest"?(\s|$)') { $k = 'test' } }
+    elseif ($n -like 'ArmaReforgerSteam*') { $k = 'client'; $prof = 'full'; if ($c -match '-maxFPS\s+15(\s|$)') { $prof = 'lowspec' } }
+    if (-not $k) { continue }
+    $i = 0; if ($c -match 'CoreOnEveron') { $i = 1 }
+    if ($k -eq 'client' -and $c -match '-profile\s+"?([^"]+?)\Wclient\d+"?(\s|$)') { if ($isl[$matches[1].ToLower()]) { $i = 1 } }
+    [pscustomobject]@{ k = $k; id = $p.ProcessId; ws = [int]($p.WorkingSetSize / 1MB); isl = $i; priv = [int]($p.PrivatePageCount / 1MB); prof = $prof }
+  }
 }
 `;
 
-// [{ kind, pid, wsMb, world, privMb }] from PS_PROC_SCAN output.
+// PowerShell that prints one "lf-pool: proc <kind> <pid> <workingSetMb> <island 0|1> <privateMb> <profile>" line
+// per ArmaReforger process (Get-LfArmaRows). Run here or over ssh; same output.
+export const PS_PROC_SCAN = PS_PROC_ROWS + String.raw`
+Get-LfArmaRows | ForEach-Object { Write-Host ("lf-pool: proc " + $_.k + " " + $_.id + " " + $_.ws + " " + $_.isl + " " + $_.priv + " " + $_.prof) }
+`;
+
+// [{ kind, pid, wsMb, world, privMb?, profile? }] from PS_PROC_SCAN output (an older scan sends no private
+// bytes or profile; a test server then reads as a server, as it did).
 export function parseScan(text) {
   const out = [];
   for (const l of String(text ?? "").split(/\r?\n/)) {
-    const m = /^lf-pool: proc (workbench|server|client) (\d+) (\d+) ([01])(?: (\d+))?$/.exec(l.trim());
-    if (m) out.push({ kind: m[1], pid: Number(m[2]), wsMb: Number(m[3]), world: m[4] === "1" ? ISLAND : SMALL, ...(m[5] !== undefined ? { privMb: Number(m[5]) } : {}) });
+    const m = /^lf-pool: proc (workbench|server|client|test) (\d+) (\d+) ([01])(?: (\d+))?(?: (\S+))?$/.exec(l.trim());
+    if (!m) continue;
+    const p = { kind: m[1], pid: Number(m[2]), wsMb: Number(m[3]), world: m[4] === "1" ? ISLAND : SMALL };
+    if (m[5] !== undefined) p.privMb = Number(m[5]);
+    if (m[6] && m[6] !== "-") p.profile = m[6];
+    out.push(p);
   }
   return out;
+}
+
+// The profile a process's peak is keyed by: what the scan saw on it, else (an older scan) for a client
+// the profile of the job asking.
+function procProfile(p, profile) {
+  if (p.profile) return p.profile;
+  return p.kind === "client" ? profile : undefined;
 }
 
 // Memory the running processes will still take that the free-RAM reading does not show yet (MB): for
@@ -122,7 +163,7 @@ export function parseScan(text) {
 export function unrealisedMb(procs, peaks, profile = "full") {
   let mb = 0;
   for (const p of procs ?? []) {
-    const peak = peakMb(peaks, p.kind, p.world, p.kind === "client" ? profile : undefined);
+    const peak = peakMb(peaks, p.kind, p.world, procProfile(p, profile));
     if (Number(p.privMb) >= peak) continue;
     mb += Math.max(0, peak - Math.max(Number(p.wsMb) || 0, Number(p.maxMb) || 0));
   }
@@ -135,9 +176,9 @@ export function withSeenMax(hubDir, procs, tag = "local") {
   return (procs ?? []).map((p) => (seen[p.pid]?.maxMb ? { ...p, maxMb: seen[p.pid].maxMb } : p));
 }
 
-// The processes counted as island-sized: an island server or client, or a Workbench.
+// The processes counted as island-sized: an island server, test server or client.
 export function islandCount(procs) {
-  return (procs ?? []).filter((p) => p.world === ISLAND && (p.kind === "server" || p.kind === "client")).length;
+  return (procs ?? []).filter((p) => p.world === ISLAND && (p.kind === "server" || p.kind === "client" || p.kind === "test")).length;
 }
 
 // ---------------------------------------------------------------- admission
@@ -228,7 +269,7 @@ export function trackPeaks(prevLive, procs, peaks, profile = "full") {
   const now = new Set((procs ?? []).map((p) => p.pid));
   for (const p of procs ?? []) {
     const prev = prevLive?.[p.pid];
-    live[p.pid] = { kind: p.kind, world: p.world, profile: p.kind === "client" ? profile : undefined, maxMb: Math.max(Number(p.wsMb) || 0, prev?.maxMb ?? 0) };
+    live[p.pid] = { kind: p.kind, world: p.world, profile: procProfile(p, profile), maxMb: Math.max(Number(p.wsMb) || 0, prev?.maxMb ?? 0) };
   }
   let out = peaks;
   let recorded = 0;
@@ -249,6 +290,16 @@ export function recordLive(hubDir, procs, { profile = "full", tag = "local" } = 
   writeJson(liveFile(hubDir, tag), t.live);
   if (t.recorded) writeJson(peaksFile(hubDir), t.peaks);
   return t.peaks;
+}
+
+// One machine's peaks: its own measured key (MIN_SAMPLES or more, from its own hub's pool-peaks.json) wins over
+// the same key here. A pool machine records the processes it runs itself (look, rdb, the jobs its holder
+// starts); this PC only sees them through its scans. own null: base as it is.
+export function mergePeaks(base, own) {
+  if (!own || typeof own !== "object") return base ?? {};
+  const out = { ...(base ?? {}) };
+  for (const [key, list] of Object.entries(own)) if (Array.isArray(list) && list.length >= MIN_SAMPLES) out[key] = list;
+  return out;
 }
 
 // A compact { key: p90 } of the peaks, for the PowerShell holder's config and `pool status`.
