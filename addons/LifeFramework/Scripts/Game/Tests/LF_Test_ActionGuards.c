@@ -37,3 +37,20 @@ class LF_Test_ActionGuards : LF_Test
 		ctx.False(LF_ProcessAction.IsRecipeConfigured(inputs, outputs), "zero-output recipe is rejected");
 	}
 };
+
+//------------------------------------------------------------------------------------------------
+//! Self-registration (LF_TestRegistration.c): this file is the whole of adding this test.
+class LF_TestRegistration_ActionGuards : LF_TestRegistration
+{
+	protected static bool s_bRegistered = LF_TestManager.Enqueue(new LF_TestRegistration_ActionGuards());
+
+	override LF_TestTier Tier()
+	{
+		return LF_TestTier.LOGIC;
+	}
+
+	override LF_Test Create()
+	{
+		return new LF_Test_ActionGuards();
+	}
+}
