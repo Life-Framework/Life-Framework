@@ -58,6 +58,13 @@ class LF_RegistrationForm
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: forget the open form (the world takes its screen down).
+	static void ResetStatics()
+	{
+		s_Form = null;
+	}
+
+//------------------------------------------------------------------------------------------------
 	static LF_UIScreen Current()
 	{
 		if (!s_Form)
@@ -126,5 +133,22 @@ class LF_RegistrationForm
 	protected static void Reopen(SCR_PlayerController controller)
 	{
 		Open(controller, "#LF-Reg_MustSign");
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_RegistrationForm's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_RegistrationForm_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_RegistrationForm_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_RegistrationForm";
+	}
+
+	override void Apply()
+	{
+		LF_RegistrationForm.ResetStatics();
 	}
 }
