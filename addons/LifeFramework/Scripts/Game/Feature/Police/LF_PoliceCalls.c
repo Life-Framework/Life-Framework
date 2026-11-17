@@ -9,6 +9,10 @@ class LF_PoliceCall : Managed
 	//! Where the suspect was reported: the report's place text (a sign title key or "grid X-Z"),
 	//! read at runtime, never a coded coordinate.
 	string m_sSite;
+	//! Where the crime was filed (#2578), when the report knew it: the waypoint uses it before the site
+	//! text, so a site named only by a map label still gets one. Session only, like the whole list.
+	vector m_vPosition;
+	bool m_bHasPosition;
 	//! The lowest police rank that may take the call.
 	int m_iMinRank;
 	//! The officer who took it; empty while the call is open.
@@ -114,7 +118,8 @@ class LF_PoliceCalls
 			return;
 		}
 
-		Post(KIND_FINE, busEvent.m_sPlayerUid, reports[reports.Count() - 1].m_sPlace, LF_PoliceRanks.PATROL);
+		LF_WantedReportRecord newest = reports[reports.Count() - 1];
+		Post(KIND_FINE, busEvent.m_sPlayerUid, newest.m_sPlace, LF_PoliceRanks.PATROL, newest.m_bHasPosition, newest.m_vPosition);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -125,7 +130,7 @@ class LF_PoliceCalls
 			return;
 
 		Waiting().RemoveItem(busEvent.m_sPlayerUid);
-		Post(KIND_FINE, busEvent.m_sPlayerUid, busEvent.m_sPlace, LF_PoliceRanks.PATROL);
+		Post(KIND_FINE, busEvent.m_sPlayerUid, busEvent.m_sPlace, LF_PoliceRanks.PATROL, busEvent.m_bHasPosition, busEvent.m_vPosition);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -146,7 +151,7 @@ class LF_PoliceCalls
 	//------------------------------------------------------------------------------------------------
 	//! Server: posts a call. One open call per suspect: a second post for the same suspect returns the open one.
 	//! \return The call, or null when the suspect is empty, the rank is off the ladder or the list is full.
-	static LF_PoliceCall Post(string kind, string suspectUid, string site, int minRank)
+	static LF_PoliceCall Post(string kind, string suspectUid, string site, int minRank, bool hasPosition = false, vector position = vector.Zero)
 	{
 		if (suspectUid.IsEmpty() || kind.IsEmpty())
 		{
@@ -177,6 +182,8 @@ class LF_PoliceCalls
 		call.m_sKind = kind;
 		call.m_sSuspectUid = suspectUid;
 		call.m_sSite = site;
+		call.m_bHasPosition = hasPosition;
+		call.m_vPosition = position;
 		call.m_iMinRank = minRank;
 		calls.Insert(call);
 		LF_Debug.Info(FEATURE, string.Format("call #%1 %2 posted for %3 at '%4', rank %5", call.m_iId, kind, suspectUid, site, minRank));
