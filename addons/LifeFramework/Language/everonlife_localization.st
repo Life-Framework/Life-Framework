@@ -8696,6 +8696,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You brought them back."
      Comment "Toast to the medic after a revive."
     }
+    CustomStringTableItem "{F0336D48D1263225}" {
+     Id "LF-Revive_MedicDown"
+     Target_en_us "You cannot help anyone while you are down."
+     Comment "Revive refusal: the medic is downed or dead."
+    }
     CustomStringTableItem "{7A30C5E1D49B6B01}" {
      Id "LF-Revive_NoItem"
      Target_en_us "You need a field dressing to revive someone."
