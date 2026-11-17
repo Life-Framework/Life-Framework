@@ -615,6 +615,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_RejoinSafeSpot(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_RemovedTomatoSkip(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_ReputationRules(), LF_TestTier.LOGIC;
+		// self-registered: new LF_Test_ReputationWipe(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ResidentTimetable(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_RestartClose(), LF_TestTier.LOGIC;
 		manager.Register(new LF_Test_RestartBankSurvivesConnect(), LF_TestTier.LOGIC);
