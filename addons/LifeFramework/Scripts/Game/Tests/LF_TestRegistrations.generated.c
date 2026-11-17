@@ -796,6 +796,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UIThemeTokens(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIWorldEndReset(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UnemploymentBenefit(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VaultChargeFuse(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VaultDoorSwing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VaultDrillAction(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VaultDrillCancel(), LF_TestTier.WORLD);
