@@ -5,7 +5,7 @@
 // order-proof (#2699): a name-sorted --tier all run failed this test. LF_Test_BreachChargeExploit
 // left a character's vest and jacket at <75,0,75> and LF_Test_Siren left a police vehicle with its
 // cargo props; both tests now delete what they spawn. Items a body carries are skipped
-// (e2e/pass1-write-save keeps three bodies alive on purpose). Green with this test last and in
+// (the save-write test keeps three bodies alive on purpose). Green with this test last and in
 // full name order.
 class LF_Test_DebugWorldCollision : LF_Test
 {
