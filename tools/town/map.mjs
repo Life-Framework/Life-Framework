@@ -14,6 +14,7 @@
 // a fixture; the CLI part at the bottom only reads and writes files.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
+import { typeIndex, unknownTypes } from "../scout/types.mjs";
 
 export const help = "map <slug> [--template town|village] [--dossier f] [--out f] [--force] | --check   propose a slot -> building/plot mapping from the scout dossier; --check refuses an incomplete one";
 
@@ -57,6 +58,7 @@ export function checkTemplate(t) {
     if (!s?.needs || typeof s.needs !== "object") out.push(`${at}: needs is missing`);
     else if (!["required", "optional"].includes(s.needs.interior)) out.push(`${at}: needs.interior must be required or optional`);
     if (!Array.isArray(s?.places)) out.push(`${at}: places must be a list of LF_Places kinds`);
+    if (Array.isArray(s?.needs?.types)) for (const u of unknownTypes(s.needs.types)) out.push(`${at}: type '${u}' is not a scout building type or alias (tools/scout/types.mjs)`);
     if (s?.host === "plot" && !s?.plot) out.push(`${at}: a plot slot needs a plot block`);
   }
   walk(t, "", (key, value, path) => {
@@ -102,13 +104,9 @@ function roadDistance(road, x, z) {
   return best;
 }
 
-const typeMatch = (types, type) => {
-  for (let i = 0; i < types.length; i++) {
-    const t = types[i];
-    if (t === type || (t.endsWith("*") && type.startsWith(t.slice(0, -1)))) return i;
-  }
-  return -1;
-};
+// The index of the first wanted type the building satisfies, or -1. The names resolve through the scout's one vocabulary
+// (tools/scout/types.mjs TYPE_ALIASES), so a template and a dossier meet whichever form each uses.
+const typeMatch = (types, b) => typeIndex(types, b.type, b.stem);
 
 // Pure: does a door at ground level exist? A building with no door entity passes (its interior is unverified anyway).
 const groundDoor = (b) => !b.entrances.length || b.entrances.some((e) => e.y - b.y <= 1.5);
@@ -119,7 +117,7 @@ function eligible(b, slot) {
   if (b.ruin) return "a ruin";
   if (n.interior === "required" && b.interior.value === "no") return "no interior";
   if (n.groundFloor && !groundDoor(b)) return "no ground-level door";
-  if (n.types && typeMatch(n.types, b.type) < 0) return `type ${b.type} is not one of ${n.types.join(", ")}`;
+  if (n.types && typeMatch(n.types, b) < 0) return `type ${b.type} is not one of ${n.types.join(", ")}`;
   if (n.minArea && b.footprint.area < n.minArea) return `footprint ${b.footprint.area} m2 is under ${n.minArea}`;
   if (n.maxDistance && b.distance > n.maxDistance) return `${b.distance} m from the centre, over ${n.maxDistance}`;
   if (n.minDistance && b.distance < n.minDistance) return `${b.distance} m from the centre, under ${n.minDistance}`;
@@ -132,7 +130,7 @@ function score(b, slot, ctx) {
   const why = [];
   let type = 0.5;
   if (n.types) {
-    const i = typeMatch(n.types, b.type);
+    const i = typeMatch(n.types, b);
     type = 1 - (0.6 * i) / Math.max(1, n.types.length);
     why.push(`type ${b.type}${i === 0 ? " (first choice)" : ""}`);
   }
@@ -390,6 +388,19 @@ function parseArgs(args) {
   return { flags, pos };
 }
 
+// Pure: which template a place uses, and why. The flag wins; then the template an existing mapping was made for (the
+// reviewed mapping is what --check must hold the place to, whatever the gazetteer called the place); then the template
+// the dossier was scouted for (`scout --template`); then the gazetteer kind when it is a template name; else town.
+export function chooseTemplate({ flag, mapping, dossier } = {}) {
+  const isKind = (k) => typeof k === "string" && SLUG_RX.test(k);
+  if (isKind(flag)) return { kind: flag, source: "--template" };
+  if (isKind(mapping?.template)) return { kind: mapping.template, source: "the mapping's template" };
+  if (isKind(dossier?.place?.template)) return { kind: dossier.place.template, source: "the dossier's template" };
+  const k = dossier?.place?.kind;
+  if (k === "town" || k === "village") return { kind: k, source: "the dossier's place kind" };
+  return { kind: "town", source: "the default" };
+}
+
 const readJson = (file, what) => {
   if (!existsSync(file)) throw new Error(`${what} not found: ${file}`);
   try {
@@ -415,7 +426,16 @@ export async function main(args, { root }) {
   const out = resolve(root, flags.out || join(placeDir, "mapping.json"));
   try {
     const dossier = readJson(dossierFile, "dossier");
-    const kind = flags.template || (typeof dossier.place?.kind === "string" && /^(town|village)$/.test(dossier.place.kind) ? dossier.place.kind : "town");
+    // An existing mapping names its template; a --check, or a proposal that re-reads one, follows it (--template still wins).
+    let existing = null;
+    if (existsSync(out)) {
+      try {
+        existing = JSON.parse(readFileSync(out, "utf8"));
+      } catch {
+        existing = null;
+      }
+    }
+    const { kind, source } = chooseTemplate({ flag: flags.template, mapping: existing, dossier });
     const template = loadTemplate(kind, root);
     if (flags.check) {
       const mapping = readJson(out, "mapping");
@@ -426,7 +446,7 @@ export async function main(args, { root }) {
         return 1;
       }
       const n = Object.values(mapping.slots).filter((e) => e.building || e.plot).length;
-      console.log(`SUMMARY town-map check ok ${slug}: ${n} slot(s) mapped, every required slot of ${kind} has a home; ${relative(root, out)}`);
+      console.log(`SUMMARY town-map check ok ${slug}: ${n} slot(s) mapped, every required slot of ${kind} (${source}) has a home; ${relative(root, out)}`);
       return 0;
     }
     if (existsSync(out) && !flags.force && !flags.dry) {
@@ -446,7 +466,7 @@ export async function main(args, { root }) {
       console.log(`  ${id.padEnd(14)} ${to}`);
     }
     const missing = mapping.missing ?? [];
-    console.log(`SUMMARY town-map ok ${slug}: template ${kind}, ${Object.values(mapping.slots).filter((e) => e.building || e.plot).length}/${template.slots.length} slots mapped, ${missing.length ? `INCOMPLETE (${missing.join(", ")} unmapped; --check will fail)` : "complete"}${flags.dry ? "" : `; ${relative(root, out)}`}`);
+    console.log(`SUMMARY town-map ok ${slug}: template ${kind} (${source}), ${Object.values(mapping.slots).filter((e) => e.building || e.plot).length}/${template.slots.length} slots mapped, ${missing.length ? `INCOMPLETE (${missing.join(", ")} unmapped; --check will fail)` : "complete"}${flags.dry ? "" : `; ${relative(root, out)}`}`);
     return 0;
   } catch (e) {
     console.log(`SUMMARY town-map fail ${slug}: ${e.message}`);

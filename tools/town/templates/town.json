@@ -5,61 +5,61 @@
   "slots": [
     {
       "id": "arrival", "required": true, "kit": "arrival", "host": "building",
-      "needs": { "interior": "required", "minArea": 90, "prefer": "large", "maxDistance": 80, "types": ["municipal-office", "house-town", "house-village", "villa", "hotel"] },
+      "needs": { "interior": "required", "minArea": 90, "prefer": "large", "maxDistance": 80, "types": ["government", "townhouse", "house", "villa", "hotel"] },
       "places": ["Spawn", "Clerk", "LicenceDesk"]
     },
     {
       "id": "hostel", "required": true, "kit": "hostel", "host": "building",
-      "needs": { "interior": "required", "minArea": 80, "prefer": "large", "maxDistance": 110, "types": ["hotel", "house-town", "villa", "house-village"] },
+      "needs": { "interior": "required", "minArea": 80, "prefer": "large", "maxDistance": 110, "types": ["hotel", "townhouse", "villa", "house"] },
       "places": ["HostelBed"]
     },
     {
       "id": "cafe", "required": true, "kit": "cafe", "host": "building",
-      "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 90, "types": ["pub", "shop-*", "house-town"] },
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 90, "types": ["pub", "shop", "townhouse"] },
       "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "pub", "stem": "PubVillage_E_2L01_V1" }] },
       "places": ["CafeTable"]
     },
     {
       "id": "bank", "required": true, "kit": "bank", "host": "building",
-      "needs": { "interior": "required", "minArea": 70, "prefer": "near", "maxDistance": 100, "types": ["house-town", "municipal-office", "villa", "house-village"] },
+      "needs": { "interior": "required", "minArea": 70, "prefer": "near", "maxDistance": 100, "types": ["townhouse", "government", "villa", "house"] },
       "places": ["BankVault", "BankCounter"]
     },
     {
       "id": "police", "required": true, "kit": "police", "host": "building",
-      "needs": { "interior": "required", "minArea": 80, "prefer": "near", "maxDistance": 110, "types": ["villa", "house-town", "municipal-office", "house-village"] },
+      "needs": { "interior": "required", "minArea": 80, "prefer": "near", "maxDistance": 110, "types": ["police", "villa", "townhouse", "government", "house"] },
       "places": ["JailCell", "PoliceDesk", "Armoury"]
     },
     {
       "id": "clinic", "required": true, "kit": "clinic", "host": "building",
-      "needs": { "interior": "required", "minArea": 70, "prefer": "near", "maxDistance": 130, "types": ["shop-drug", "house-town", "villa", "house-village"] },
+      "needs": { "interior": "required", "minArea": 70, "prefer": "near", "maxDistance": 130, "types": ["shop-drug", "townhouse", "villa", "house"] },
       "places": ["HospitalSite", "MedicDesk"]
     },
     {
       "id": "general-store", "required": true, "kit": "general-store", "host": "building",
-      "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 100, "types": ["shop-general", "shop-*", "house-town"] },
-      "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "shop-general", "stem": "ShopHouse_E_2I01t_clothesstore" }] },
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 100, "types": ["shop-general", "shop", "townhouse"] },
+      "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "shop", "stem": "ShopHouse_E_2I01t_clothesstore" }] },
       "places": ["StoreCounter"]
     },
     {
       "id": "clothing", "required": true, "kit": "clothing", "host": "building",
-      "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 100, "types": ["shop-clothes", "shop-*", "house-town"] },
-      "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "shop-clothes", "stem": "ShopHouse_E_2I01t_clothesstore" }] },
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 100, "types": ["shop-clothes", "shop", "townhouse"] },
+      "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "shop", "stem": "ShopHouse_E_2I01t_clothesstore" }] },
       "places": ["ClothingCounter"]
     },
     {
       "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building",
-      "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 110, "types": ["shop-*", "house-town", "house-village"] },
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 110, "types": ["shop", "townhouse", "house"] },
       "places": ["GunCounter"]
     },
     {
       "id": "fuel", "required": true, "kit": "fuel", "host": "building",
-      "needs": { "interior": "optional", "minArea": 40, "prefer": "far", "types": ["fuel-station"] },
-      "plot": { "minWidth": 16, "minDepth": 14, "prefabs": [{ "type": "fuel-station", "stem": "FuelStation_E_01_building" }] },
+      "needs": { "interior": "optional", "minArea": 40, "prefer": "far", "types": ["fuel"] },
+      "plot": { "minWidth": 16, "minDepth": 14, "prefabs": [{ "type": "fuel", "stem": "FuelStation_E_01_building" }] },
       "places": ["FuelTill"]
     },
     {
       "id": "fence", "required": true, "kit": "fence", "host": "building",
-      "needs": { "interior": "optional", "minArea": 25, "prefer": "far", "types": ["farm-building", "garage", "shed", "industrial-shed", "house-addon"] },
+      "needs": { "interior": "optional", "minArea": 25, "prefer": "far", "types": ["farm", "farm-small", "garage", "shed", "industrial"] },
       "plot": { "minWidth": 12, "minDepth": 10, "prefabs": [{ "type": "garage", "stem": "HouseAddon_Garage_E_01" }] },
       "places": ["FenceYard"]
     },
@@ -75,7 +75,7 @@
     },
     {
       "id": "parcel", "required": false, "kit": "parcel", "host": "building",
-      "needs": { "interior": "optional", "minArea": 8, "prefer": "near", "maxDistance": 100, "types": ["kiosk", "shop-*"] },
+      "needs": { "interior": "optional", "minArea": 8, "prefer": "near", "maxDistance": 100, "types": ["kiosk", "shop"] },
       "plot": { "minWidth": 6, "minDepth": 6, "prefabs": [{ "type": "kiosk", "stem": "NewspaperBooth_E_01_redwhite" }] },
       "places": ["ParcelDepot"]
     }
