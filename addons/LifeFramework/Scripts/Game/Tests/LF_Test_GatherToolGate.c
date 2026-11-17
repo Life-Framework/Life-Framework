@@ -18,7 +18,7 @@ class LF_TestGatherToolRecorder : LF_EventSubscriber
 
 class LF_Test_GatherToolGate : LF_Test
 {
-	protected const string SHOVEL = "Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.et";
+	protected const string SHOVEL = "{0619993AE6CDBF85}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.et";
 	protected const string SPADE = "Prefabs/Tools/Spade_Steel.et";
 	protected const string PICKAXE = "Prefabs/Tools/Pickaxe.et";
 
