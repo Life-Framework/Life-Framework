@@ -170,3 +170,13 @@
   returns no page. The dev-gated test sign's Leave refuses with `OTHER_ORG` (`#LF-TestOrgSign_OtherOrg`) unless the
   player's org is the sign's own "Test Organisation", so it can never strip a real org of its founder. Test
   `organizations/ledger-rate` (LOGIC).
+- 🧪 **A hideout lease ends with its organisation's last member** (#2571, part of #2533, merged, in-dev):
+  when the last member leaves or is kicked (`LF_OrganizationManager.Leave`, `LeaveDirect`, `Kick`) the
+  organisation publishes `LF_OnOrganizationEmptied` (`Feature/Organizations/LF_OrganizationsEvents.c`)
+  and `LF_Hideout` releases every site it leases (`ReleaseAllOf`, logged
+  `[LFDebug:Hideout] released hideout=… reason=organization emptied: …`). There is no disband verb
+  (#2415), so this is the disband; the organisation record stays on the register. `PushLock` now writes
+  the lock's house identifier on every push, empty included: a released door reads *Unowned* to everyone
+  (`LF_HideoutDoorRules.View`), former members no longer see *Open*, and an empty id matches no house in
+  `LF_HouseLockAction`. The `org_base` place goes with the lease and another organisation can lease the
+  site. Test `hideout/lease-empty-org` (WORLD). An inactivity expiry is H3 and a voluntary release verb H2 (#2533).
