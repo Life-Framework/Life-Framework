@@ -2247,7 +2247,7 @@ export async function acquireSlot(root, opts = {}) {
       let order = machines;
       try {
         const st = poolSettings(root);
-        order = orderMachines(root, machines, st, { reserveMb: kind === "session" ? q.sessionReserveMb(st, 1, "full") : 0, stateOf: (x) => (usable(x) ? remoteStateCached(x) : null) });
+        order = orderMachines(root, machines, st, { preferLocal: !!opts.preferLocal, reserveMb: kind === "session" ? q.sessionReserveMb(st, 1, "full") : 0, stateOf: (x) => (usable(x) ? remoteStateCached(x) : null) });
       } catch {}
       for (const m of order) {
         // A machine that is down for this run neither blocks nor counts as waited on.
@@ -2521,7 +2521,12 @@ export function remoteStateCached(m, { ttlMs = 8000, downTtlMs = 30000, now = Da
 // sessions still booting there, less the job's reserve. One machine: as given.
 export function orderMachines(root, machines, settings, opts = {}) {
   if (machines.length < 2) return machines;
-  return rankedMachines(root, machines, settings, opts).map((r) => machines.find((m) => m.name === r.name));
+  let rows = rankedMachines(root, machines, settings, opts);
+  // opts.preferLocal: a short job takes this PC first while it has room (q.preferRoomy); the pool
+  // still falls through to the others when this PC has none.
+  const here = machines.find((m) => m.via === "local");
+  if (opts.preferLocal && here) rows = q.preferRoomy(rows, here.name);
+  return rows.map((r) => machines.find((m) => m.name === r.name));
 }
 
 // The rows of q.rankMachines for these machines ({ name, room, headroomMb, score }, best first).

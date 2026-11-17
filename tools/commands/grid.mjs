@@ -1,6 +1,6 @@
 // tools\cli grid: one debug-grid cell per feature in the GridWorld annex (docs/architecture/world-zones.md).
 //
-//   grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--pack] [--dry] [--no-verify] [--no-fetch]
+//   grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--pack] [--margin M] [--front +z] [--rows] [--centre] [--dry] [--no-verify] [--no-fetch]
 //   grid list [--no-fetch]
 //   grid free <slug>
 //
@@ -23,6 +23,13 @@
 // (LF_Everon1989/Worlds/Everon1989Grid, a SubScene of GridWorld) and records "pack": true in the claim; the cell
 // still comes from the one lattice (docs/architecture/world-zones.md "Pack cells").
 //
+// One prefab on a new slug is sized for you (tools/grid/autosize.mjs): the bounds come from the placement tool's
+// reader (the .xob header, offline), the span is ceil((footprint + 4 m) / 12) per axis for whichever of the two
+// orientations needs the smaller block, the first free block of that size is claimed, and a block of two cells or
+// more gets the building itself: its class read from the prefab, its footprint centred in the block, its front
+// facing the yard's gap, stood on the ground through `place ground` and audited. `--dry` prints all of it and
+// writes nothing. `--span` and `--cell` still override; several prefabs, or `--rows`, keep the rows of props.
+//
 // `place` claims a cell for the feature (deterministic: the first usable cell from a hash of the
 // slug; `--span 3x2` takes a block of cells for a big item: the claim file gets "span": [3, 2] and one yard goes
 // round the whole block), writes GridWorld_Layers/Grid_<slug>.layer with the cell's fenced yard (a 5 m gap facing
@@ -35,12 +42,14 @@ import { dirname, join } from "node:path";
 import { CELL, isFrameClaim } from "../grid/lattice.mjs";
 import { loadWorld } from "../../agent-box/layers.mjs";
 import { withSpawn } from "../grid/cell-spawn.mjs";
+import { MARGIN, blockText, chooseYaw, footprintOf, largestFree, noFitMessage, pivotAt, spanOptions } from "../grid/autosize.mjs";
+import { resolvePrefab } from "../lib/game-prefab.mjs";
 import {
-  CELLS_DIR, GRID_LAYERS, PACK_GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, claimCellIds, claimRect, entityPrefix, gridLayersOfClaim, isPackPrefab, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, worktreeClaims, yardPlan, yawAlong,
+  CELLS_DIR, GRID_LAYERS, PACK_GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, claimCellIds, claimRect, entityPrefix, gapSide, gridLayersOfClaim, isPackPrefab, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, worktreeClaims, yardPlan, yawAlong,
 } from "../lib/world-zones.mjs";
 import { gridLayerDirs } from "../lib/worlds.mjs";
 
-export const help = "grid place <slug> [<prefab>...] | grid list | grid free <slug>   a debug-grid cell per feature in the GridWorld annex: fenced yard, label sign, props placed and audited (docs/architecture/world-zones.md)";
+export const help = "grid place <slug> <prefab> [--dry] (a building: sized from its bounds, claimed, centred, front to the gap) | grid place <slug> [<prefab>...] | grid list | grid free <slug>   a debug-grid cell per feature in the GridWorld annex: fenced yard, label sign, props placed and audited (docs/architecture/world-zones.md)";
 
 export const FENCE = { cls: "SCR_DestructibleEntity", ref: "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" };
 export const SIGN = { cls: "GenericEntity", ref: "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et", component: "{026619B31213409D}", baseY: 0.505 };
@@ -131,7 +140,7 @@ function parse(argv) {
     const a = argv[i];
     if (a.startsWith("--")) {
       const k = a.slice(2);
-      out.flags[k] = ["name", "cell", "span"].includes(k) ? argv[++i] : true;
+      out.flags[k] = ["name", "cell", "span", "margin", "front"].includes(k) ? argv[++i] : true;
     } else out._.push(a);
   }
   return out;
@@ -210,6 +219,25 @@ function free(root, slug) {
   return 0;
 }
 
+// A prefab's real bounds through the placement tool's reader (prefabInfo: the measured list, else the .xob header
+// in the paks, offline). { ref: "{GUID}path", info } or null with a printed reason. The context's `readPrefab` is the selftest's seam.
+async function readPrefab(root, P, arg, ctx) {
+  if (ctx.readPrefab) return ctx.readPrefab(arg);
+  try {
+    const r = await resolvePrefab(root, arg);
+    if (!r.ref) throw new Error(`no GUID known for ${r.path}`);
+    const info = P.prefabInfo(P.ROOT, r.path);
+    if (!info.bounds) throw new Error(`${r.path} has no mesh the tool can measure (${info.error || "no MeshObject in its chain"})`);
+    return { ref: r.ref, info };
+  } catch (e) {
+    console.log(`grid: cannot size ${arg}: ${e.message}`);
+    return null;
+  }
+}
+
+const nameOf = (ref) => String(ref).split("/").pop().replace(/.et$/, "");
+const r2 = (n) => Math.round(n * 100) / 100;
+
 async function place(root, args, flags, ctx = {}) {
   const [slug, ...prefabs] = args;
   if (!slug || !SLUG_RX.test(slug)) {
@@ -231,6 +259,17 @@ async function place(root, args, flags, ctx = {}) {
   const ents = gridEnts(root);
   let fresh = false;
   let span = [1, 1];
+  // One prefab on a new slug is measured and sized (the span, the block and the yaw come from its bounds).
+  const margin = flags.margin == null ? MARGIN : Number(flags.margin);
+  if (!Number.isFinite(margin) || margin < 0) throw new Error(`--margin ${flags.margin} is not a number of metres (default ${MARGIN})`);
+  const front = flags.front === true || flags.front == null ? "+z" : String(flags.front);
+  const auto = !entry && prefabs.length === 1 && !flags.rows ? await readPrefab(root, P, prefabs[0], ctx) : null;
+  const opts = auto ? spanOptions(P, auto.info.bounds, auto.info.scale, margin) : null;
+  if (auto) {
+    const f = footprintOf(P, auto.info.bounds, auto.info.scale, 0);
+    console.log(`grid: ${nameOf(auto.ref)} ${auto.ref} (${auto.info.cls}): footprint ${r2(f.w)} x ${r2(f.d)} m, height ${r2(f.height)} m (base ${r2(f.base)} m from the pivot), footprint centre ${r2(f.mid[0])}, ${r2(f.mid[1])} m (x, z) from the pivot`);
+    console.log(`  sizing with a ${margin} m walk-around margin: ${opts.map((o) => `${o.span[0]}x${o.span[1]} at yaw ${o.yaw}/${(o.yaw + 180) % 360}`).join(", ")}`);
+  }
   if (!entry) {
     const { onMain } = mainView(root, flags, claims);
     const dup = onMain.find((c) => c.slug === slug);
@@ -254,29 +293,49 @@ async function place(root, args, flags, ctx = {}) {
     const takenInPr = new Map(inFlight.flatMap((c) => claimCellIds(c).map((id) => [id, c])));
     const takenInTrees = new Map(inTrees.flatMap((c) => claimCellIds(c).map((id) => [id, c])));
     const taken = new Set([...claims.flatMap(claimCellIds), ...takenOnMain.keys(), ...takenInPr.keys(), ...takenInTrees.keys()]);
-    const sp = /^([0-9]+)x([0-9]+)$/.exec(flags.span === true ? "" : String(flags.span ?? "1x1"));
-    if (!sp) throw new Error(`--span ${flags.span} is not cols x rows, like 3x2`);
-    span = [Number(sp[1]), Number(sp[2])];
+    const cellOf = (id) => allCells().find((c) => c.id === id);
+    const blocked = (id, e) => blockers(cellOf(id), e).length > 0;
+    const whyNot = (id) => {
+      const owner = takenOnMain.get(id);
+      const pr = takenInPr.get(id);
+      const wt = takenInTrees.get(id);
+      return [...(owner ? [`claimed on origin/main by ${owner}`] : pr ? [`claimed by ${pr.slug} in open PR #${pr.pr}`] : wt ? [`claimed by ${wt.slug} in worktree ${wt.worktree} (${wt.branch || "detached"}), not pushed yet`] : taken.has(id) ? ["claimed"] : []), ...blockers(cellOf(id), ents)];
+    };
+    const sized = auto && flags.span == null; // no --span: the bounds say how big
+    if (flags.span != null) {
+      const sp = /^([0-9]+)x([0-9]+)$/.exec(flags.span === true ? "" : String(flags.span));
+      if (!sp) throw new Error(`--span ${flags.span} is not cols x rows, like 3x2`);
+      span = [Number(sp[1]), Number(sp[2])];
+    }
     let cell;
     if (flags.cell) {
       if (!parseCellId(flags.cell)) throw new Error(`--cell ${flags.cell} is not a cell (c0r0 to c${CELL.cols - 1}r${CELL.rows - 1})`);
+      if (sized) span = (opts.find((o) => claimRect({ cell: flags.cell, span: o.span })) ?? opts[0]).span;
       cell = claimRect({ cell: flags.cell, span });
       if (!cell) throw new Error(`--cell ${flags.cell} --span ${span.join("x")} leaves the lattice (${CELL.cols} x ${CELL.rows} cells)`);
-      const why = [];
-      for (const id of claimCellIds({ cell: flags.cell, span })) {
-        const owner = takenOnMain.get(id);
-        const pr = takenInPr.get(id);
-        const wt = takenInTrees.get(id);
-        const c1 = allCells().find((c) => c.id === id);
-        for (const w of [...(owner ? [`claimed on origin/main by ${owner}`] : pr ? [`claimed by ${pr.slug} in open PR #${pr.pr}`] : wt ? [`claimed by ${wt.slug} in worktree ${wt.worktree} (${wt.branch || "detached"}), not pushed yet`] : taken.has(id) ? ["claimed"] : []), ...blockers(c1, ents)]) why.push(`${id}: ${w}`);
-      }
+      const why = claimCellIds({ cell: flags.cell, span }).flatMap((id) => whyNot(id).map((w) => `${id}: ${w}`));
       if (why.length) {
         console.log(`grid: cell ${cell.id} is not free: ${why.join("; ")}`);
         return 1;
       }
+    } else if (sized) {
+      // The smallest block first; among blocks of the same area (the two orientations), the one whose front can face the gap.
+      for (const area of [...new Set(opts.map((o) => o.area))]) {
+        const found = opts.filter((o) => o.area === area).map((o) => ({ o, rect: allocate(slug, { ents, taken, span: o.span }) })).filter((x) => x.rect);
+        if (!found.length) continue;
+        const pick = found.find((x) => chooseYaw(P, { bounds: auto.info.bounds, scale: auto.info.scale, margin, front, block: x.rect, out: gapSide(x.rect).out })?.faces) ?? found[0];
+        cell = pick.rect;
+        span = pick.o.span;
+        break;
+      }
+      if (!cell) {
+        console.log(noFitMessage(opts, largestFree({ taken, ents, blocked })));
+        return 1;
+      }
     } else cell = allocate(slug, { ents, taken, span });
     if (!cell) {
-      console.log("grid: no free cell left; free one with tools\\cli grid free <slug> (grid list shows them)");
+      const big = largestFree({ taken, ents, blocked });
+      console.log(span[0] * span[1] > 1 && big ? `grid: no free ${blockText(span[0], span[1])} block. The largest free block is ${blockText(big.w, big.h)} at ${big.id}; free a claim with tools\\cli grid free <slug>` : "grid: no free cell left; free one with tools\\cli grid free <slug> (grid list shows them)");
       return 1;
     }
     entry = { slug, cell: cell.id, layer: layerName, rows: 0, created: new Date().toISOString().slice(0, 10) };
@@ -286,11 +345,27 @@ async function place(root, args, flags, ctx = {}) {
   }
   const cell = claimRect(entry);
   if (!cell) throw new Error(`${slug}'s claim (cell ${entry.cell}, span ${JSON.stringify(entry.span ?? [1, 1])}) is not a block of the lattice`);
-  console.log(`grid: ${slug} -> cell ${cell.id}${cell.w * cell.h > 1 ? ` +${cell.w}x${cell.h}` : ""} (x ${cell.x0}..${cell.x1}, z ${cell.z0}..${cell.z1}, gap ${yardPlan(cell).gap.side})${fresh ? " (new)" : ""}${route.pack ? ` [pack cell${route.auto ? `: ${prefabs.find((p) => isPackPrefab(root, p))} is pack content` : ""}]` : ""}`);
+  const gap = yardPlan(cell).gap;
+  console.log(`grid: ${slug} -> cell ${cell.id}${cell.w * cell.h > 1 ? ` +${cell.w}x${cell.h}` : ""} (x ${cell.x0}..${cell.x1}, z ${cell.z0}..${cell.z1}, gap ${gap.side})${fresh ? " (new)" : ""}${route.pack ? ` [pack cell${route.auto ? `: ${prefabs.find((p) => isPackPrefab(root, p))} is pack content` : ""}]` : ""}`);
+  // A block of two cells or more (or --centre) gets the building itself, centred, front to the gap; one cell keeps the rows of props.
+  let building = null;
+  if (auto && fresh) {
+    const y = chooseYaw(P, { bounds: auto.info.bounds, scale: auto.info.scale, margin, front, block: cell, out: gap.out });
+    if (!y) {
+      const need = opts.map((o) => `${o.span[0]}x${o.span[1]}`).join(" or ");
+      console.log(`grid: ${nameOf(auto.ref)} does not fit ${cell.w}x${cell.h} cells with a ${margin} m margin (it needs ${need}); give a bigger --span, or lower --margin`);
+      return 1;
+    }
+    if (cell.w * cell.h > 1 || flags.centre) building = { ...y, ...pivotAt(cell, y.fp), name: flags.name ?? `${entityPrefix(slug)}_Main` };
+  }
   if (flags.dry) {
     if (fresh) console.log(`  would write ${layersDir}/${layerName} (the fence runs and the label sign) and ${CELLS_DIR}/${slug}.json`);
-    const line = prefabs.length ? rowLine(cell, entry.rows ?? 0) : null;
-    if (line) console.log(`  would place ${prefabs.length} prop(s) in row ${entry.rows ?? 0}: ${line.a.join(",")} to ${line.b.join(",")}, facing ${line.facing}`);
+    if (building) {
+      console.log(`  would place ${auto.info.cls} ${building.name} (${nameOf(auto.ref)}): footprint centre ${num(building.centre[0])} ${num(building.centre[1])}, pivot x ${num(building.pivot[0])} z ${num(building.pivot[1])}, angleY ${num(building.yaw)}; ${building.faces ? `front (${front}) faces the ${gap.side} gap` : `front (${front}) cannot face the ${gap.side} gap in this block and turns as near as a right angle allows`}; y from the ground probe`);
+    } else {
+      const line = prefabs.length ? rowLine(cell, entry.rows ?? 0) : null;
+      if (line) console.log(`  would place ${prefabs.length} prop(s) in row ${entry.rows ?? 0}: ${line.a.join(",")} to ${line.b.join(",")}, facing ${line.facing}`);
+    }
     console.log("grid: dry run, nothing written.");
     return 0;
   }
@@ -302,13 +377,23 @@ async function place(root, args, flags, ctx = {}) {
     console.log(`  wrote ${layersDir}/${layerName} (yard and sign ${entityPrefix(slug)}_Sign) and ${CELLS_DIR}/${slug}.json`);
   }
   let code = 0;
-  if (prefabs.length) {
+  const pass = ["no-verify", "keep", "force"].filter((k) => flags[k]).map((k) => `--${k}`);
+  if (building) {
+    const argv = ["ground", `${num(building.centre[0])},${num(building.centre[1])}`, auto.ref, "--layer", layerName, "--yaw", num(building.yaw), "--y-hint", "0", "--name", building.name, ...pass];
+    console.log(`  tools\\cli place ${argv.join(" ")}`);
+    code = await (ctx.placeMain ?? P.main)(argv);
+    if (code !== 0 && fresh && !flags.keep) {
+      // This call made the claim: a building that would not stand leaves no half-claimed block behind.
+      for (const f of [regFile, layerFile]) if (existsSync(f)) unlinkSync(f);
+      console.log(`grid: the building was not placed, so the claim ${slug} (${cell.id}) and its yard were removed; fix what the place tool says (--force, --margin, --span, --cell) and run it again`);
+      return code;
+    }
+  } else if (prefabs.length) {
     const line = rowLine(cell, entry.rows ?? 0);
     if (!line) {
       console.log(`grid: ${slug}'s cell has its three rows; move a prop with tools\\cli place --move, or free the cell and start again`);
       return 1;
     }
-    const pass = ["no-verify", "keep", "force"].filter((k) => flags[k]).map((k) => `--${k}`);
     const name = flags.name ?? `${entityPrefix(slug)}_R${entry.rows ?? 0}`;
     const argv = ["arrange", "row", line.a.map(num).join(","), line.b.map(num).join(","), ...prefabs, "--layer", layerName, "--facing", line.facing, "--y-hint", "0", "--name", name, ...pass];
     console.log(`  tools\\cli place ${argv.join(" ")}`);
@@ -319,21 +404,29 @@ async function place(root, args, flags, ctx = {}) {
     }
   }
   if (fresh && !flags["no-verify"] && code === 0) {
-    console.log(`  auditing the label sign`);
-    code = await P.main(["verify", `${entityPrefix(slug)}_Sign`]);
+    // A building: the placement audit of the whole layer (yard, sign, building) on GridWorld, strict; else the sign alone.
+    console.log(building ? `  auditing the cell (audit placement --grid --strict --layer ${layerName})` : "  auditing the label sign");
+    code = await (ctx.auditMain ?? defaultAudit(P))(building ? ["audit-layer", layerName] : ["verify", `${entityPrefix(slug)}_Sign`]);
   }
   if (code === 0) console.log(`grid: done. tools\\cli look grid:${slug} for the picture.`);
   return code;
 }
 
+// The audit step: `place verify` for the sign, the placement audit on one grid layer (strict) for a building.
+const defaultAudit = (P) => async (verify) => {
+  if (verify[0] === "verify") return P.main(verify);
+  const A = await import("../../agent-box/place-audit.mjs");
+  return A.main(["placement", "--grid", "--layer", verify[1], "--strict"]);
+};
+
 function usage() {
-  console.log("usage: tools\\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--pack] [--dry] [--no-verify] [--no-fetch]\n       tools\\cli grid list [--no-fetch]\n       tools\\cli grid free <slug>\n(docs/architecture/world-zones.md)");
+  console.log("usage: tools\\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--pack] [--margin M] [--front +z] [--rows] [--centre] [--dry] [--no-verify] [--no-fetch]\n       tools\\cli grid list [--no-fetch]\n       tools\\cli grid free <slug>\n(docs/architecture/world-zones.md)");
   return 1;
 }
 
-// `openPrClaims(root)` and `worktreeClaims(root)` in the context replace the `gh` and `git worktree` readers (the selftest's seam).
-export async function main(argv, { root, openPrClaims: prReader, worktreeClaims: treeReader }) {
-  const ctx = { openPrClaims: prReader, worktreeClaims: treeReader };
+// `openPrClaims(root)`, `worktreeClaims(root)`, `readPrefab(arg)`, `placeMain(argv)` and `auditMain(argv)` in the context replace the `gh`, `git worktree`, bounds, place-tool and audit steps (the selftest's seam).
+export async function main(argv, { root, openPrClaims: prReader, worktreeClaims: treeReader, readPrefab: prefabReader, placeMain, auditMain }) {
+  const ctx = { openPrClaims: prReader, worktreeClaims: treeReader, readPrefab: prefabReader, placeMain, auditMain };
   const [sub, ...rest] = argv;
   const { _: args, flags } = parse(rest);
   try {

@@ -113,7 +113,10 @@ export function readResource(root, rel) {
   if (textCache.has(key)) return textCache.get(key);
   const local = addonFileOf(root, key);
   let text = null;
+  // The pack addon (LF_Everon1989) holds prefabs of its own (a building, its furniture) that a grid cell places.
+  const packFile = join(root, "addons", "LF_Everon1989", ...key.split("/"));
   if (existsSync(local) && statSync(local).isFile()) text = readFileSync(local, "utf8");
+  else if (existsSync(packFile) && statSync(packFile).isFile()) text = readFileSync(packFile, "utf8");
   else if (pak()?.exists(key)) text = pak().readTextFile(key);
   textCache.set(key, text);
   return text;

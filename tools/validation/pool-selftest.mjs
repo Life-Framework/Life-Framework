@@ -19,6 +19,7 @@
 //   7. burst starts (#1195): N queued runs start together on N free lanes, in queue order, behind the RAM of the
 //      starts in flight; a granted ticket stops blocking; atomic lane locks across racing holders; one snapshot per burst.
 // red-proof 2026-11-17 (pool-budget-lanes, #1700 #1699), each broken alone: with the boot budget flat 30 s (the old budgetsFor) "CoreOnEveron still gets the 30 s boot budget that killed it (#1700)"; with LF_POOL_THIS_LANES ignored (the old loadMachines) "the leg on lf-cloud still sees 2 session lane(s), the router counted 9 (#1699; this PC: 2)"; with withoutAvoided returning every machine "an avoided machine was still ranked"; with a flat 3 s retry "the lane refusal backoff is 3000,3000,3000,3000,3000,3000".
+// red-proof 2026-11-16 (place-probe-pool): with `local: true` back in place.mjs serverRun "probe: the server run goes through the pool and is not hard-local" (place-tool-selftest); with preferRoomy unused "a probe does not take this PC while it has room".
 // red-proof 2026-11-14 (run-overhead rdb): with rdbPlan ignoring staleness (the old syncToSlot) "a stale rdb is sent to a machine that refreshes its own".
 // red-proof 2026-11-14 (run-overhead lane folders), each broken alone: psCheckout without the shared clean "only a shared folder is cleaned after the checkout"; holderConfig with shared = false "remote test lanes do not run in the lane's shared folder".
 // red-proof 2026-11-14 (pool-rt-gc), each broken alone: with the rt gc sort reversed (newest idle first) "rt gc removes the wrong folders or in the wrong order: Life-Framework-rt-b,Life-Framework-rt-a,Life-Framework-rt-oldest"; with the live-lock keep rule off "rt gc removes the wrong folders or in the wrong order: ...oldest,Life-Framework-rt-locked,..." (a locked folder was chosen).
@@ -1290,6 +1291,12 @@ const dir0 = () => {
       check(tb.remoteFilePlan("C:/LF/x").uploads.length === 0 && tb.remoteFilePlan("C:/LF/x").env.length === 0, "a run without files got file steps");
       // the same any-choice that takes a roomy remote for the suite takes it for the audit
       check(names(pool.resolveMachines(mroot, { mode: "any" })) === "local,lf-testbox" && order(400, 6000) === "lf-testbox,local", "the audit's any-choice does not pick the machine with room");
+      // The placement probe (tools/place/place.mjs serverRun) asks for "any, this PC first while it has room":
+      // never --local. Roomy PC goes first even when the laptop scores higher; a starved PC goes after the laptop.
+      check(pa.auditTestArgs({ preferLocal: true }).includes("--prefer-local") && !pa.auditTestArgs({ preferLocal: true }).includes("--local"), `the probe's test args pin it to this PC or drop the pool (${pa.auditTestArgs({ preferLocal: true }).join(" ")})`);
+      check(order(2500, 6000, { preferLocal: true }) === "local,lf-testbox", `a probe does not take this PC while it has room (${order(2500, 6000, { preferLocal: true })})`);
+      check(order(400, 6000, { preferLocal: true }) === "lf-testbox,local", `a probe stays on this PC under the RAM floor (${order(400, 6000, { preferLocal: true })})`);
+      check(JSON.stringify(q.preferRoomy([{ name: "b", room: true }, { name: "a", room: true }, { name: "c", room: false }], "a").map((r) => r.name)) === '["a","b","c"]' && JSON.stringify(q.preferRoomy([{ name: "b", room: true }, { name: "a", room: false }], "a").map((r) => r.name)) === '["b","a"]', "preferRoomy does not move only a roomy PC to the front");
     }
     rmSync(mroot, { recursive: true, force: true });
   }

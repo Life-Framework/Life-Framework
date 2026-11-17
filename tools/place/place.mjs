@@ -856,8 +856,11 @@ export function parseRays(outText) {
 export function serverRun(rayLines = [], { grid = false, measure = measureTown } = {}) {
   mkdirSync(TMP, { recursive: true });
   const records = grid ? auditRecords({ grid: true }) : auditRecords({ annex: true });
-  // The interactive placement loop stays on this PC (a probe is seconds; a remote run adds a sync).
-  const run = measure(records, { outDir: TMP, extra: rayLines, local: true, grid });
+  // The probe goes through the pool like `test` (RAM admission, FIFO queue, a run budget). This PC goes first
+  // while it has room (a probe is seconds; another machine adds a sync); under the RAM floor the pool sends it
+  // to the machine with headroom, carrying in.txt up and out.txt back. Never pinned (`local: true` timed out
+  // under the RAM floor, 2026-11-16).
+  const run = measure(records, { outDir: TMP, extra: rayLines, preferLocal: true, grid });
   if (run.outText == null) throw new PlaceError("the test server wrote no measurements (lines above). Run it from a worktree; `tools\\cli test --no-build --only LF_Test_PlacementAuditTown` shows why");
   const { rays, doors } = parseRays(run.outText);
   // doors.json is the town's door cache (loadDoors); GridWorld's doors must not replace it.

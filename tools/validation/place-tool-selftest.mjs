@@ -32,6 +32,7 @@ import { join } from "node:path";
 import { checkEntities } from "../actions/prop-on-surface.mjs";
 import { isKind, obbPenetration } from "../../agent-box/place-audit.mjs";
 import { GRID_LAYERS, PACK_GRID_LAYERS } from "../lib/world-zones.mjs";
+import { auditTestArgs } from "../../agent-box/place-audit.mjs";
 import { PlaceError, ROOT, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, gridWorldOf, judge, modelOf, offlineProblems, onGround, restOn, rot, rowCentres, excludeOf, serverRun, setTransform, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
 
 let failed = 0;
@@ -297,6 +298,10 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
   const seen = {};
   const grid = serverRun([], { grid: true, measure: boot(seen) });
   ok(seen.opts?.grid === true, "grid audit: the boot is told it is GridWorld");
+  // The probe asks the pool (this PC first while it has room); it is never pinned to this PC (2026-11-16: a hard
+  // local pin timed out under the RAM floor).
+  ok(seen.opts?.local !== true && seen.opts?.preferLocal === true, `probe: the server run goes through the pool and is not hard-local (${JSON.stringify({ local: seen.opts?.local, preferLocal: seen.opts?.preferLocal })})`);
+  ok(!auditTestArgs({ preferLocal: true }).includes("--local") && auditTestArgs({ preferLocal: true }).includes("--prefer-local"), "probe: the test args ask the pool with --prefer-local, no --local pin");
   ok(grid.records.length > 0 && grid.records.every((r) => gridNames.has(r.layer)), "grid audit: the list is GridWorld's own layers (no town layer)");
   // A plain prop: buildings and vegetation are judged by their pivot anyway, which would hide the pole case below.
   const target = grid.records.find((r) => r.name && /^Grid_/.test(r.layer) && !isKind(r, "building") && !isKind(r, "vegetation"));

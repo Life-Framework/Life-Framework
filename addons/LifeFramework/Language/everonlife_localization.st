@@ -5897,6 +5897,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Taser cartridge"
      Comment "Inventory name of the taser's single-shot cartridge."
     }
+    CustomStringTableItem "{06BAB63766610E3E}" {
+     Id "LF-MapPoi_Bank"
+     Target_en_us "Bank"
+     Comment "Map POI kind name (#2230): the bank."
+    }
+    CustomStringTableItem "{9FA312C17AB06C17}" {
+     Id "LF-MapPoi_Hospital"
+     Target_en_us "Clinic"
+     Comment "Map POI kind name (#2230): the hospital or clinic."
+    }
+    CustomStringTableItem "{83D5FBD46034ADAD}" {
+     Id "LF-MapPoi_PoliceArmoury"
+     Target_en_us "{Police} armoury"
+     Comment "Map POI kind name (#2230): the police armoury, shown to officers only."
+    }
+    CustomStringTableItem "{02A346FCF31764FE}" {
+     Id "LF-MapPoi_PoliceStation"
+     Target_en_us "{Police} station"
+     Comment "Map POI kind name (#2230): the police station."
+    }
+    CustomStringTableItem "{B00FE6F8C70CF970}" {
+     Id "LF-MapPoi_Workplace"
+     Target_en_us "Workplace"
+     Comment "Map POI kind name (#2230): a job site."
+    }
     CustomStringTableItem "{3C71B0A2D4E5F612}" {
      Id "LF-Medic_Downed"
      Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
