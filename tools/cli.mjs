@@ -38,6 +38,7 @@
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
+import { areaConcurrency } from "./lib/validate-concurrency.mjs";
 import "./lib/quiet-gate.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -651,8 +652,9 @@ function toolEnv() {
 const FULL_ONLY = new Set(["validate-scripts.ps1"]);
 
 // Checks are independent read-only scripts, so they run concurrently (most of
-// their time is PowerShell start-up). Output is printed in file order.
-const AREA_CONCURRENCY = Math.max(8, Math.min(12, os.cpus().length));
+// their time is PowerShell start-up), fewer at once when free RAM is short (tools/lib/validate-concurrency.mjs).
+// Output is printed in file order.
+const AREA_CONCURRENCY = areaConcurrency(os.cpus().length, Math.round(os.freemem() / 1048576));
 
 function invokeScriptAsync(full, opts = {}) {
   let cmd = process.execPath;
