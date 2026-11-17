@@ -134,6 +134,8 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 
 	//! Payloads (the account and bank prefix included) that failed to read in the last store read.
 	protected static int s_iReadFailures;
+	//! Payloads the last store read did not apply because an earlier one failed to read (#2489).
+	protected static int s_iSkippedAfterFailure;
 	//! True when the last store read lost data (#980): autosave is paused so the next autosave does not
 	//! overwrite the save on disk with what is left. A clean re-apply clears it.
 	protected static bool s_bLoadDamaged;
@@ -143,6 +145,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	static int GetReadFailures()
 	{
 		return s_iReadFailures;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Payloads the last store read did not apply because an earlier one failed to read.
+	static int GetSkippedAfterFailure()
+	{
+		return s_iSkippedAfterFailure;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -166,6 +175,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		s_bLoadDamaged = false;
 		s_iReadFailures = 0;
+		s_iSkippedAfterFailure = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -207,6 +217,14 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
 		return order.Find(payload) + 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The payload names in save order, for tests that build a save by hand.
+	//! \param[out] order Empty array filled with the payload names in save order.
+	static void GetPayloadOrder(notnull array<string> order)
+	{
+		RegisterPersistencePayloads(order);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -370,6 +388,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		s_bStoreLoaded = true;
 		s_iReadFailures = 0;
+		s_iSkippedAfterFailure = 0;
 		LF_SaveStamp.ResetForLoad();
 		LF_SaveIds.BeginLoad();
 		array<string> order = new array<string>();
@@ -397,24 +416,45 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			ReadFailed("account records failed to read, leaving live accounts untouched");
 		}
 
-		array<ref LF_BankAccountRecord> bankRecords = new array<ref LF_BankAccountRecord>();
-		if (context.Read(bankRecords))
+		// #2489: the store is read positionally (binary), so after one failed read every later read
+		// can be misaligned, and one that happens to succeed would replace live state with what it
+		// misread. Stop at the first failure: what came before is applied, the rest keeps live state.
+		if (s_iReadFailures > 0)
 		{
-			LF_ATMManager.ApplyAll(bankRecords);
-			LF_Debug.Log("Persistence", string.Format("applied %1 bank account record(s)", bankRecords.Count()));
+			s_iSkippedAfterFailure++;
 		}
 		else
 		{
-			ReadFailed("bank records failed to read, leaving live balances untouched");
+			array<ref LF_BankAccountRecord> bankRecords = new array<ref LF_BankAccountRecord>();
+			if (context.Read(bankRecords))
+			{
+				LF_ATMManager.ApplyAll(bankRecords);
+				LF_Debug.Log("Persistence", string.Format("applied %1 bank account record(s)", bankRecords.Count()));
+			}
+			else
+			{
+				ReadFailed("bank records failed to read, leaving live balances untouched");
+			}
 		}
 
+		int reached = 0;
 		for (int index = 0; index < order.Count(); index++)
 		{
 			if (index >= version)
 				break;
 
+			if (s_iReadFailures > 0)
+				break;
+
 			ReadPersistencePayload(persistence, context, order.Get(index));
+			reached++;
 		}
+
+		if (s_iReadFailures > 0)
+			s_iSkippedAfterFailure += Math.Min(version, order.Count()) - reached;
+
+		if (s_iSkippedAfterFailure > 0)
+			LF_Debug.Error("Persistence", string.Format("save load stopped at the first failed read: %1 later payload(s) not applied, they keep their live state (a positional read past a failure is misaligned)", s_iSkippedAfterFailure));
 
 		// A newer build wrote this save: what it holds past this list cannot be read, and saving
 		// over it would drop that. Damaged, so autosave pauses and the save on disk is kept.
@@ -462,7 +502,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (s_iReadFailures > 0)
 		{
 			s_bLoadDamaged = true;
-			LF_Debug.Error("Persistence", string.Format("save load damaged: %1 payload(s) failed to read (save version %2, game build %3, running %4). Autosave is paused so the save on disk is not overwritten; stop the server and restore the newest backup (tools/cli host restore, docs/ops/game-updates.md)", s_iReadFailures, version, build, running));
+			LF_Debug.Error("Persistence", string.Format("save load damaged: %1 payload(s) failed to read, %2 not applied after it (save version %3, game build %4, running %5). Saving is refused so the save on disk is not overwritten; stop the server and restore the newest backup (tools/cli host restore, docs/ops/game-updates.md)", s_iReadFailures, s_iSkippedAfterFailure, version, build, running));
 			return;
 		}
 

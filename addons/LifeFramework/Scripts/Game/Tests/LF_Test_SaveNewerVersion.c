@@ -1,4 +1,5 @@
-// red-proof: 2026-11-17 `tools\cli test --no-build --red LF_Test_SaveNewerVersion,LF_Test_PersistStoreStaticReset`: RED PROOF OK, with the version left at the current one `the save claims the newer version (expected 49, got 48)`, `the unread newer payloads count as a read failure` and `a newer save pauses autosave so it is not overwritten` fail. Green with the fix (--only).
+// red-proof: 2026-11-17 `tools\cli test --no-build --red LF_Test_SaveNewerVersion,LF_Test_PersistStoreStaticReset`: RED PROOF OK, with the version left at the current one `the save claims the newer version (expected 49, got 48)`, `the unread newer payloads count as a read failure` and `a newer save pauses autosave so it is not overwritten` fail. Green with the fix (--only). #2517: the save is now written at the newer version directly; under --red
+// the version stays current and `the unread newer payloads count as a read failure` fails.
 // tier: PERSISTENCE
 //! A save written by a newer build (a rollback, or a merge the main guard reverted after it saved)
 //! carries a version above this build's payload list. Its known payloads still load, but the load
@@ -6,7 +7,6 @@
 class LF_Test_SaveNewerVersion : LF_Test
 {
 	protected static const string UID = "newer-save-bank-uid";
-	protected static const string DIGITS = "0123456789";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -41,15 +41,18 @@ class LF_Test_SaveNewerVersion : LF_Test
 			return;
 
 		SetBank(UID, 310);
+
+		// The newer build appended one payload and raised the version by one. Built through the real
+		// payload writers, not by editing the save text: in a full suite the edited text came back cut to
+		// about 8 KB and no longer parsed (#2517).
+		int newer = LF_TestSaveVersion.CURRENT + 1;
+		if (RedProof())
+			newer = LF_TestSaveVersion.CURRENT;
+
 		JsonSaveContext saveContext = new JsonSaveContext(false);
-		LF_PersistenceComponentSerializer.SerializeStore(persistence, saveContext);
+		WriteStoreAtVersion(persistence, saveContext, newer);
 		string saved = saveContext.SaveToString();
 		SetBank(UID, 4);
-
-		// The newer build appended one payload and raised the version by one.
-		int newer = LF_TestSaveVersion.CURRENT + 1;
-		if (!RedProof())
-			saved = WithVersion(saved, newer);
 
 		JsonLoadContext header = new JsonLoadContext(false);
 		ctx.True(header.LoadFromString(saved), "the newer save parses");
@@ -66,33 +69,27 @@ class LF_Test_SaveNewerVersion : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The save text with its "version" number replaced.
-	protected static string WithVersion(string saved, int version)
+	//! Every payload this build has, under a save header that claims another version. SaveContext.Write
+	//! keys each value by the variable's name in JSON, so the prefix carries the serializer's names.
+	protected static void WriteStoreAtVersion(notnull LF_PersistenceComponent persistence, notnull SaveContext saveContext, int version)
 	{
-		int key = saved.IndexOf("\"version\"");
-		if (key < 0)
-			return saved;
+		saveContext.WriteValue("version", version);
+		array<ref LF_PlayerAccountRecord> accountRecords = LF_PlayerAccountManager.ExportAll();
+		if (!accountRecords)
+			accountRecords = new array<ref LF_PlayerAccountRecord>();
 
-		int start = -1;
-		int end = -1;
-		for (int i = key + 9; i < saved.Length(); i++)
+		saveContext.Write(accountRecords);
+		array<ref LF_BankAccountRecord> bankRecords = LF_ATMManager.ExportAll();
+		if (!bankRecords)
+			bankRecords = new array<ref LF_BankAccountRecord>();
+
+		saveContext.Write(bankRecords);
+		array<string> order = new array<string>();
+		LF_PersistenceComponentSerializer.GetPayloadOrder(order);
+		foreach (string payload : order)
 		{
-			string c = saved.Get(i);
-			bool digit = DIGITS.Contains(c);
-			if (digit && start < 0)
-				start = i;
-
-			if (!digit && start >= 0)
-			{
-				end = i;
-				break;
-			}
+			LF_PersistenceComponentSerializer.WritePersistencePayload(persistence, saveContext, payload);
 		}
-
-		if (start < 0 || end < 0)
-			return saved;
-
-		return saved.Substring(0, start) + version.ToString() + saved.Substring(end, saved.Length() - end);
 	}
 
 	//------------------------------------------------------------------------------------------------
