@@ -122,18 +122,6 @@ const label = (e) => e.id || e.name || baseName(e.path);
 
 // ---- parsing a written prefab or layer back into entities ----------------------------------------------------------
 
-// A block's rotation, whichever way it is written: `angleY 177.3` (and `angleX`/`angleZ`), or the base game's
-// `angles 0 177.271 0` (pitch yaw roll). A turn written as `angles` is as real as one written as `angleY`; reading only
-// angleY put a rotated desk at yaw 0 and reported the props on it as floating (#2367). `angleY` wins when both are present.
-export function turnOf(props) {
-  const a = props.angles ? String(props.angles).trim().split(/\s+/).map(Number) : null;
-  const num = (v) => (Number.isFinite(v) ? v : 0);
-  const pitch = num(props.angleX != null ? Number(props.angleX) : a?.[0]);
-  const roll = num(props.angleZ != null ? Number(props.angleZ) : a?.[2]);
-  const yaw = props.angleY != null ? num(Number(props.angleY)) : num(a?.[1]);
-  return { yaw, tilted: Boolean(pitch || roll) };
-}
-
 // Every entity with a prefab and coords under a furniture prefab or a layer: { id, name, path, x, y, z, yaw, scale, tilted }.
 // A child's coords are relative to its parent entity, as in the engine.
 export function prefabChildren(text) {
@@ -150,8 +138,7 @@ export function prefabChildren(text) {
         continue;
       }
       const c = k.props.coords.trim().split(/\s+/).map(Number);
-      const turn = turnOf(k.props);
-      const yaw = turn.yaw;
+      const yaw = Number(k.props.angleY || 0);
       const [dx, dz] = par ? rot(par.yaw, c[0], c[2]) : [c[0], c[2]];
       const path = prefabOf(k.header) || grp || null;
       const head = k.header.replace(/^\$grp\s+/, "").replace(/:\s*".*$/, "").trim().split(/\s+/);
@@ -166,7 +153,7 @@ export function prefabChildren(text) {
         z: (par ? par.z : 0) + dz,
         yaw: (par ? par.yaw : 0) + yaw,
         scale: k.props.scale ? Number(k.props.scale) : null,
-        tilted: turn.tilted,
+        tilted: Boolean(Number(k.props.angleX || 0) || Number(k.props.angleZ || 0)),
       };
       out.push(ent);
       visit(k, ent, null);

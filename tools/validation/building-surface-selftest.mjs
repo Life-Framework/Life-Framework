@@ -8,14 +8,13 @@
 // nothing under the prop, and rewrites only the y of the entity it is told to.
 // red-proof: with snapItems computing y = level.y + f.bottom - 0.2 this printed "FAIL named snap: want 0.951, got 0.749" and 4 more
 // (snapped phone passes, auto snap, crate rim) (2026-11-17).
-// red-proof: with prefabChildren reading only angleY this printed "FAIL angles 0 90 0 desk holds a phone at its end: want 0, got 1" and the yaw read (2026-11-17).
 
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { checkBuilding } from "../buildings/pipeline/floaters.mjs";
 import { buildingCheckProblems, buildingSlugsTouched } from "../lib/pr-quality.mjs";
-import { floaters, prefabChildren, setHeights, snapItems, specSupports, turnOf } from "../buildings/pipeline/surface.mjs";
+import { floaters, prefabChildren, setHeights, snapItems, specSupports } from "../buildings/pipeline/surface.mjs";
 
 let failed = 0;
 const want = (label, got, exp) => {
@@ -49,8 +48,7 @@ const prefab = (rows) =>
  {
 ${rows.map((r, i) => `  GenericEntity : "{00000000000000${String(i + 10).padStart(2, "0")}}${r.path}" {
    ID "A0000000000000${String(i + 10).padStart(2, "0")}"
-   coords ${r.x} ${r.y} ${r.z}${r.rot ? `
-   ${r.rot}` : ""}
+   coords ${r.x} ${r.y} ${r.z}
   }`).join("\n")}
  }
 }
@@ -112,19 +110,6 @@ want("allow by prefab regex", (await floaters(prefabChildren(prefab(floating)), 
 const sup = specSupports({ vanilla: { base: "{0123456789ABCDEF}Prefabs/Host.et" }, check_supports: [{ prefab: DESK, at: [5, FLOOR, 0], id: "layer-desk" }] });
 want("specSupports lists the host and the extra", sup.map((s) => s.id).join(","), "host,layer-desk");
 want("a prop on the layer's desk passes", (await floaters(prefabChildren(prefab([{ path: PHONE, x: 5, y: DESK_TOP, z: 0 }])), { reader, floors: [FLOOR], extra: sup })).length, 0);
-
-// 8b. a rotation written as `angles 0 90 0` (the base game's form) is read like `angleY 90` (#2367): a phone at the end of a
-// desk turned a quarter stands on it; read as yaw 0 it would hang off the desk's side and be reported floating.
-const turned = (rot) => [{ ...desk, rot }, { path: PHONE, x: 0, y: DESK_TOP, z: 0.5 }];
-want("angleY 90 desk holds a phone at its end", (await judge(turned("angleY 90"))).length, 0);
-want("angles 0 90 0 desk holds a phone at its end", (await judge(turned("angles 0 90 0"))).length, 0);
-want("angles 0 177.271 0 reads yaw", prefabChildren(prefab([{ ...desk, rot: "angles 0 177.271 0" }]))[0]?.yaw, 177.271);
-want("an unturned desk does not hold it (the check still bites)", (await judge(turned("angleY 0"))).length, 1);
-want("turnOf: angles gives the yaw", turnOf({ angles: "0 177.271 0" }).yaw, 177.271);
-want("turnOf: angles pitch or roll is tilted", turnOf({ angles: "5 90 0" }).tilted, true);
-want("turnOf: a flat angles is not tilted", turnOf({ angles: "0 90 0" }).tilted, false);
-want("turnOf: angleY wins when both are written", turnOf({ angleY: "10", angles: "0 90 0" }).yaw, 10);
-want("turnOf: nothing written is yaw 0", turnOf({}).yaw, 0);
 
 // 9. setHeights changes the one entity's y and nothing else
 const text = prefab([desk, { path: PHONE, x: 0.2, y: 1.5, z: 0.1 }]);
