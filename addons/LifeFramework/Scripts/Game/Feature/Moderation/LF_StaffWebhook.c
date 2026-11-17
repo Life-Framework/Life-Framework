@@ -22,6 +22,11 @@ class LF_StaffWebhook
 	//! Receives the result of each POST. Stateless, so one instance serves every request.
 	protected static ref LF_StaffWebhookResult s_Result;
 
+	//! Requests in flight. The engine does not own a callback, so a local one could be freed before
+	//! the answer and success or error would never fire (#2414). A finished request leaves the list.
+	protected static ref array<ref RestCallback> s_aPending;
+	static const int MAX_PENDING = 32; // lf-fixed: a bound on a list that only a dead network can fill
+
 	//------------------------------------------------------------------------------------------------
 	//! Sends one line to the staff channel. Server only by contract: relays call it from server code.
 	static void Send(string text)
@@ -86,25 +91,116 @@ class LF_StaffWebhook
 		RestCallback callback = new RestCallback();
 		callback.SetOnSuccess(s_Result.OnSuccess);
 		callback.SetOnError(s_Result.OnError);
+		Hold(callback);
 		context.POST(callback, path, BuildPayload(text));
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The JSON body for one line: {"content":"<text>"} with the text escaped and cut to MAX_TEXT.
+	//! Keeps a request's callback alive until its answer arrives; the oldest goes when the list is full.
+	protected static void Hold(notnull RestCallback callback)
+	{
+		if (!s_aPending)
+			s_aPending = new array<ref RestCallback>();
+
+		if (s_aPending.Count() >= MAX_PENDING)
+			s_aPending.RemoveOrdered(0);
+
+		s_aPending.Insert(callback);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lets go of a callback whose answer arrived.
+	static void Release(RestCallback callback)
+	{
+		if (!s_aPending || !callback)
+			return;
+
+		int idx = s_aPending.Find(callback);
+		if (idx >= 0)
+			s_aPending.Remove(idx);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many requests wait for an answer.
+	static int PendingCount()
+	{
+		if (!s_aPending)
+			return 0;
+
+		return s_aPending.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: holds a callback as Post does, without a request.
+	static void HoldForTest(notnull RestCallback callback)
+	{
+		Hold(callback);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The JSON body for one line: {"content":"<text>"} with the text cut to MAX_TEXT bytes and escaped.
 	static string BuildPayload(string text)
 	{
-		string body = text;
-		if (body.Length() > MAX_TEXT)
-			body = body.Substring(0, MAX_TEXT);
+		return "{\"content\":\"" + EscapeJson(CutUtf8(text, MAX_TEXT)) + "\"}";
+	}
 
-		// Backslash first, so the escapes added below are not escaped again.
-		body.Replace("\\", "\\\\");
-		body.Replace("\"", "\\\"");
-		body.Replace("\n", "\\n");
-		body.Replace("\r", "\\r");
-		body.Replace("\t", "\\t");
-		return "{\"content\":\"" + body + "\"}";
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the text cut to at most maxBytes bytes, never inside a multi-byte UTF-8 character (a
+	//! cut in the middle leaves an invalid sequence the receiver may refuse).
+	static string CutUtf8(string text, int maxBytes)
+	{
+		if (text.Length() <= maxBytes)
+			return text;
+
+		int end = maxBytes;
+		// A continuation byte is 10xxxxxx: step back to the lead byte of the character the cut would split.
+		while (end > 0 && IsContinuationByte(text.ToAscii(end)))
+			end--;
+
+		return text.Substring(0, end);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsContinuationByte(int value)
+	{
+		// ToAscii may give a byte above 127 as a negative number.
+		if (value < 0)
+			value += 256;
+
+		return value >= 128 && value < 192;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: JSON string escapes. Backslash and quote, the short forms for newline, return and tab,
+	//! and a six-character unicode escape for every other control character below 0x20 (a raw one
+	//! makes the body invalid JSON).
+	static string EscapeJson(string text)
+	{
+		string hex = "0123456789abcdef";
+		string result = string.Empty;
+		int length = text.Length();
+		for (int i = 0; i < length; i++)
+		{
+			string character = text.Substring(i, 1);
+			int code = text.ToAscii(i);
+			if (character == "\\")
+				result += "\\\\";
+			else if (character == "\"")
+				result += "\\\"";
+			else if (character == "\n")
+				result += "\\n";
+			else if (character == "\r")
+				result += "\\r";
+			else if (character == "\t")
+				result += "\\t";
+			else if (code >= 0 && code < 32)
+				result += "\\u00" + hex.Substring(code / 16, 1) + hex.Substring(code % 16, 1);
+			else
+				result += character;
+		}
+
+		return result;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -163,12 +259,14 @@ class LF_StaffWebhookResult
 	//------------------------------------------------------------------------------------------------
 	void OnSuccess(RestCallback cb)
 	{
+		LF_StaffWebhook.Release(cb);
 		LF_Debug.Info(LF_StaffWebhook.FEATURE, "StaffWebhook: posted");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void OnError(RestCallback cb)
 	{
+		LF_StaffWebhook.Release(cb);
 		int code = 0;
 		if (cb)
 			code = cb.GetHttpCode();

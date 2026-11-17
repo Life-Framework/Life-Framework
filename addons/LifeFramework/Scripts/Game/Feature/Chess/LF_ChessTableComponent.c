@@ -22,12 +22,15 @@ class LF_ChessTable
 	static const int SEAT_BLACK = 1;
 	//! A seated player who stood up keeps the seat this long; then the game is resigned for them.
 	static const int GRACE_MS = 30000; // lf-fixed: table etiquette, long enough to fetch a drink; a server setting is a follow-up
+	//! A finished game stays on the board for its two players this long; then a third player may clear it.
+	static const int RESULT_HOLD_MS = 60000; // lf-fixed: long enough to read the result and ask for a rematch; a server setting is a follow-up
 
 	protected ref LF_ChessGame m_Game = new LF_ChessGame();
 	protected int m_iWhiteId;
 	protected int m_iBlackId;
 	protected int m_iWhiteLeftMs = -1;
 	protected int m_iBlackLeftMs = -1;
+	protected int m_iOverMs = -1;
 
 	//------------------------------------------------------------------------------------------------
 	LF_ChessGame GetGame()
@@ -71,8 +74,10 @@ class LF_ChessTable
 
 	//------------------------------------------------------------------------------------------------
 	//! Takes a seat: the player's own seat again (ends a grace period), else white, else black.
-	//! SEAT_NONE when both seats are held by others. A finished game is cleared for a new one first.
-	int Sit(int playerId)
+	//! SEAT_NONE when both seats are held by others. A finished game is cleared for a new one first,
+	//! but not while both seats are still held by its players: a bystander must not wipe their result
+	//! (#2405); once RESULT_HOLD_MS has passed since the last move, anyone may.
+	int Sit(int playerId, int nowMs)
 	{
 		if (playerId <= 0)
 		{
@@ -95,7 +100,15 @@ class LF_ChessTable
 		}
 
 		if (m_Game.IsOver())
+		{
+			if (m_iWhiteId != 0 && m_iBlackId != 0 && !ResultHoldOver(nowMs))
+			{
+				LF_Debug.Info(FEATURE, string.Format("player %1 found a finished game held by its players; watching", playerId));
+				return SEAT_NONE;
+			}
+
 			NewGame();
+		}
 
 		if (m_iWhiteId == 0)
 		{
@@ -164,7 +177,7 @@ class LF_ChessTable
 	//------------------------------------------------------------------------------------------------
 	//! Plays a move for the player. Refused (logged, nothing changes) for a player not seated, while
 	//! the other seat is empty, out of turn, illegal, or once the game is over.
-	bool Move(int playerId, string name)
+	bool Move(int playerId, string name, int nowMs)
 	{
 		int seat = SeatOf(playerId);
 		if (seat == SEAT_NONE)
@@ -177,7 +190,23 @@ class LF_ChessTable
 			LF_Debug.Warn(FEATURE, string.Format("move %1 refused: waiting for an opponent", name));
 			return false;
 		}
-		return m_Game.TryMove(seat == SEAT_WHITE, name);
+		if (!m_Game.TryMove(seat == SEAT_WHITE, name))
+			return false;
+
+		if (m_Game.IsOver())
+			m_iOverMs = nowMs;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True once the finished game's players have had RESULT_HOLD_MS. A game over with no stamp
+	//! (never reached through Move) is not held.
+	bool ResultHoldOver(int nowMs)
+	{
+		if (m_iOverMs < 0)
+			return true;
+
+		return nowMs < m_iOverMs || nowMs - m_iOverMs >= RESULT_HOLD_MS;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -217,6 +246,7 @@ class LF_ChessTable
 	protected void NewGame()
 	{
 		m_Game = new LF_ChessGame();
+		m_iOverMs = -1;
 		if (m_iWhiteLeftMs >= 0)
 			FreeSeat(SEAT_WHITE);
 		if (m_iBlackLeftMs >= 0)
@@ -345,8 +375,10 @@ class LF_ChessTableComponent : ScriptComponent
 			LF_Debug.Error(LF_ChessTable.FEATURE, "sit asked off the server");
 			return LF_ChessTable.SEAT_NONE;
 		}
-		int seat = m_Table.Sit(playerId);
-		Publish();
+		int seat = m_Table.Sit(playerId, NowMs());
+		// A refused sit changed nothing: do not rebuild the FEN and bump seven props for a watcher.
+		if (seat != LF_ChessTable.SEAT_NONE)
+			Publish();
 		return seat;
 	}
 
@@ -369,7 +401,7 @@ class LF_ChessTableComponent : ScriptComponent
 			LF_Debug.Error(LF_ChessTable.FEATURE, "move asked off the server");
 			return false;
 		}
-		if (!m_Table.Move(playerId, name))
+		if (!m_Table.Move(playerId, name, NowMs()))
 			return false;
 
 		m_sLastMove = name;
@@ -440,6 +472,14 @@ class LF_ChessTableComponent : ScriptComponent
 	protected void OnStateRpl()
 	{
 		m_OnChanged.Invoke(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: counts one chess ask against the player's own chess bucket, apart from the phone's
+	//! COMMS bucket (#2405). The asks go through here so a test can drive the real kind.
+	static bool AllowAsk(int playerId, string request, bool notify = true)
+	{
+		return LF_RateLimit.Allow(playerId, LF_ERequestKind.CHESS, request, notify);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -543,7 +583,7 @@ modded class SCR_PlayerController
 			LF_Debug.Warn(LF_ChessTable.FEATURE, "move ask refused: malformed move");
 			return;
 		}
-		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.COMMS, "chess move"))
+		if (!LF_ChessTableComponent.AllowAsk(GetPlayerId(), "chess move"))
 			return;
 
 		LF_ChessTableComponent component = LF_ChessFindTable(table);
@@ -572,7 +612,7 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_ChessStand(RplId table)
 	{
-		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.COMMS, "chess stand up"))
+		if (!LF_ChessTableComponent.AllowAsk(GetPlayerId(), "chess stand up"))
 			return;
 
 		LF_ChessTableComponent component = LF_ChessFindTable(table);

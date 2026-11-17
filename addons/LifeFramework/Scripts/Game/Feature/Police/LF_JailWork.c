@@ -191,21 +191,33 @@ class LF_JailWork
 		if (workSeconds < 1)
 			workSeconds = 1;
 
-		Busy().Insert(uid);
+		Reserve(uid);
 		LF_WorkAnim.Begin(worker, spot.GetOrigin(), kind, workSeconds);
-		GetGame().GetCallqueue().CallLater(Finish, workSeconds * 1000, false, worker, spot.GetOrigin(), jobId, secondsOff, cooldown);
+		GetGame().GetCallqueue().CallLater(Finish, workSeconds * 1000, false, uid, worker, spot.GetOrigin(), jobId, secondsOff, cooldown);
 		LF_Debug.Info(FEATURE, string.Format("jail work %1 started by %2 (%3 s)", jobId, uid, workSeconds));
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void Finish(IEntity worker, vector spot, string jobId, float secondsOff, float cooldown)
+	//! Server: marks the prisoner as working one task (Begin; the tests use it to stand in for one).
+	static void Reserve(string uid)
 	{
-		if (!worker)
-			return;
+		if (!uid.IsEmpty() && Busy().Find(uid) < 0)
+			Busy().Insert(uid);
+	}
 
-		string uid = LF_Utils.GetPlayerUid(worker);
+	//------------------------------------------------------------------------------------------------
+	//! Server: the work timer ran out. The uid travels with the timer: a prisoner who logged out
+	//! mid-task has no entity left, and must not stay busy (refused every task) after rejoining.
+	static void Finish(string uid, IEntity worker, vector spot, string jobId, float secondsOff, float cooldown)
+	{
 		Busy().RemoveItem(uid);
+		if (!worker)
+		{
+			LF_Debug.Info(FEATURE, string.Format("jail work %1 dropped for %2: the worker is gone", jobId, uid));
+			return;
+		}
+
 		LF_WorkAnim.End(worker, "jail work finished");
 
 		bool alive = true;

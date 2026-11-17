@@ -139,7 +139,9 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 			m_MapEntity.WorldToScreen(world[0], world[2], screenX, screenY, true);
 			WorkspaceWidget workspace = GetGame().GetWorkspace();
 			array<float> segments = {};
-			LF_MapWaypoint.BuildMark(workspace.DPIUnscale(screenX), workspace.DPIUnscale(screenY), MARK_RADIUS, segments);
+			// Canvas commands take screen pixels as WorldToScreen gives them (unscaling put the mark 1.5 times
+			// too far from the corner at 720p, the map proof pass); the radius is reference units, so scale it.
+			LF_MapWaypoint.BuildMark(screenX, screenY, workspace.DPIScale(MARK_RADIUS), segments);
 			for (int i = 0; i + 3 < segments.Count(); i += 4)
 			{
 				LineDrawCommand line = new LineDrawCommand();

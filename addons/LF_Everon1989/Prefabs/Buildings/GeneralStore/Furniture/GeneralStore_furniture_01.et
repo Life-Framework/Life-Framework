@@ -3017,7 +3017,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
    ID "D035607BBAFCC9E9"
-   coords -1.263 3.226 4.274
+   coords -1.263 3.204 4.274
    angleY -170
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
@@ -3027,7 +3027,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
    ID "D01248FD3A5E98E8"
-   coords -1.262 3.226 3.545
+   coords -1.262 3.206 3.545
    angleY -173
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
@@ -3042,7 +3042,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
    ID "D0086A3BF818795E"
-   coords -1.244 3.226 4.995
+   coords -1.244 3.205 4.995
    angleY -178
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
@@ -3052,7 +3052,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
    ID "D097EA8DF7A845E3"
-   coords 1.23 3.226 -2.691
+   coords 1.23 3.205 -2.691
    angleY 91
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
@@ -3067,7 +3067,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{F3421D70839BA998}Prefabs/Props/Crates/CardboardBox/CardboardBox_04.et" {
    ID "D0A524B490ACA99C"
-   coords 5.485 3.226 -1.525
+   coords 5.485 3.204 -1.525
    angleY -5
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
@@ -3077,7 +3077,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "D09FB0D70628D77B"
-   coords 5.494 3.226 -0.796
+   coords 5.494 3.205 -0.796
    angleY 1
   }
   GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
@@ -3087,7 +3087,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
    ID "D0E7C13E560CD09C"
-   coords 5.491 3.226 4.957
+   coords 5.491 3.205 4.957
    angleY -5
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
@@ -3107,7 +3107,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
    ID "D0C424C7A7D2B935"
-   coords 5.497 3.226 -2.441
+   coords 5.497 3.204 -2.441
    angleY 6
   }
   GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
@@ -3766,8 +3766,8 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    angleY 40
   }
   GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "D02385C3E312ACEA"
-   coords 1.55 1.24 0.12
+   ID "D0A8CFAB32E07BA3"
+   coords 1.55 1.24 0.02
    angleY 170
   }
   GenericEntity : "{DABF434E7B1BECD2}Prefabs/Props/Commercial/Posters/PosterSingle_A1_Cans_V1.et" {
@@ -3819,7 +3819,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "D08964BFB365DEBB"
-   coords 3.8 0.631 -2.72
+   coords 3.8 0.609 -2.72
    angleY -20
   }
   GenericEntity : "{00C9C0860D1D8A84}Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_DarkWood.et" {
@@ -3918,12 +3918,12 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
    ID "D0E7EF0608EA2649"
-   coords 1.95 1.034 1.8
+   coords 1.95 1.005 1.8
    angleY 10
   }
   GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
-   ID "D0EA84067DCA6FA0"
-   coords 2.22 1.034 1.78
+   ID "D0DA82B58B581025"
+   coords 2.22 0.6 1.78
    angleY -15
   }
   GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
@@ -3965,12 +3965,12 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "D0037D6A48414A4C"
-   coords 3.36 0.631 -7.55
+   coords 3.36 0.609 -7.55
    angleY 94
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
    ID "D0E81A6B3350CFF3"
-   coords 3.34 1.063 -7.55
+   coords 3.34 1.018 -7.55
    angleY 86
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
@@ -3980,7 +3980,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
    ID "D0E289A2F5AF54EB"
-   coords 5.42 0.631 -7.55
+   coords 5.42 0.607 -7.55
    angleY 88
   }
   GenericEntity : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
@@ -4005,7 +4005,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
    ID "D07BC56C91BAF907"
-   coords 5.2 0.631 -6.4
+   coords 5.2 0.609 -6.4
    angleY 80
   }
   LightEntity {

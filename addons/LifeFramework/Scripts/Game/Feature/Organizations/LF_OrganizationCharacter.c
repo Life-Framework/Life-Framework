@@ -9,42 +9,91 @@ modded class SCR_ChimeraCharacter
 	//------------------------------------------------------------------------------------------------
 	void LF_AskOrganizationView()
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_OrganizationView();
+			return;
+		}
+
 		Rpc(RpcAsk_LF_OrganizationView);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void LF_AskOrganizationCreate(string name)
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_OrganizationCreate(name);
+			return;
+		}
+
 		Rpc(RpcAsk_LF_OrganizationCreate, name);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void LF_AskOrganizationDeposit(int amount)
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_OrganizationDeposit(amount);
+			return;
+		}
+
 		Rpc(RpcAsk_LF_OrganizationDeposit, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void LF_AskOrganizationWithdraw(int amount)
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_OrganizationWithdraw(amount);
+			return;
+		}
+
 		Rpc(RpcAsk_LF_OrganizationWithdraw, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void LF_AskOrganizationBuy(int upgrade)
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_OrganizationBuy(upgrade);
+			return;
+		}
+
 		Rpc(RpcAsk_LF_OrganizationBuy, upgrade);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void LF_AskOrganizationLeave()
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_OrganizationLeave();
+			return;
+		}
+
 		Rpc(RpcAsk_LF_OrganizationLeave);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void LF_AskOrganizationLease()
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_OrganizationLease();
+			return;
+		}
+
 		Rpc(RpcAsk_LF_OrganizationLease);
 	}
 
@@ -154,7 +203,7 @@ modded class SCR_ChimeraCharacter
 	//------------------------------------------------------------------------------------------------
 	//! Server: a request while Organizations is off (#1074) is refused with the caption, and the ledger
 	//! page the player may still have open shows it.
-	//! eturn true when the request was refused.
+	//! \return true when the request was refused.
 	protected bool LF_RefuseOrganizationsOff(string request)
 	{
 		if (!LF_Systems.Refuses(LF_OrgRules.SYSTEM, "organization " + request))
@@ -246,7 +295,27 @@ modded class SCR_ChimeraCharacter
 		}
 
 		// No hasOrg argument: a registered name is never empty, so the name says it (Rpc takes eight).
+		// A listen host owns its own character and an Owner RPC to itself has no wire hop, so the
+		// page is applied directly there (as LF_CharacterATMComponent.ReplyResult does).
+		if (LF_OwnsOrganizationLedger())
+		{
+			RpcDo_LF_OrganizationLedger(name, fund, rights, processing, lease, members, rank, notice);
+			return;
+		}
+
 		Rpc(RpcDo_LF_OrganizationLedger, name, fund, rights, processing, lease, members, rank, notice);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True on the machine that owns this character: the listen host for its own character. A
+	//! dedicated server owns no player's character, so it replies over the wire.
+	protected bool LF_OwnsOrganizationLedger()
+	{
+		RplComponent rpl = RplComponent.Cast(FindComponent(RplComponent));
+		if (!rpl)
+			return false;
+
+		return rpl.IsOwner();
 	}
 
 	//------------------------------------------------------------------------------------------------

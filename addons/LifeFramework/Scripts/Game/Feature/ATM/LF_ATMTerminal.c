@@ -151,7 +151,7 @@ class LF_ATMTerminal
 			m_Screen.BindHotkey("LF_Keypad" + digit.ToString(), "Key" + digit.ToString() + "Button");
 		}
 
-		m_Screen.BindHotkey("LF_KeypadBack", BACK);
+		m_Screen.BindHotkey(LF_UIBack.KEYPAD_BACK, BACK);
 		m_Screen.BindHotkey("LF_KeypadClear", CLEAR);
 		m_Screen.CloseOnDeath();
 		m_Screen.CloseWhenUncontrolled();

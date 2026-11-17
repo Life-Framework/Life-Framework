@@ -73,6 +73,10 @@ class LF_HideoutState : Managed
 	//! Banked points, 0 to LF_OrgConfig.HeldGroundMaxPoints().
 	int m_iHoldPoints;
 
+	//! Runtime only, never saved: the organization this site's door is registered for as its base
+	//! (LF_Places "org_base", #2504); "" = none registered.
+	string m_sBaseOrgId;
+
 	//------------------------------------------------------------------------------------------------
 	void ResetHeldGround()
 	{
@@ -102,16 +106,33 @@ class LF_Hideout
 	static const string PLACE_KIND_ORG_HIDEOUT = "OrgHideout";
 	static const string PLACE_ID_ORG_HIDEOUT = "primary";
 
+	//! A door a member opened is relocked once no member stands this close to it (checked every sweep).
+	static const float RELOCK_RADIUS_M = 40;	// lf-fixed: door safety radius, not a balance knob
+	static const int RELOCK_SWEEP_MS = 15000;	// lf-fixed: sweep period of the relock check
+
 	protected static ref map<string, ref LF_HideoutState> s_mHideouts;
 	protected static string s_sLastRefusal;
+	protected static bool s_bRelockScheduled;
 
 	//! Character id of an entity no player controls (a test fixture). A player always resolves
 	//! through the account, never through this map.
 	protected static ref map<EntityID, string> s_mBoundCharacters;
 
 	//------------------------------------------------------------------------------------------------
+	//! World end (LF_Hideout_StaticResetHook): forgets every lease, bound fixture and the relock timer
+	//! so a same-process world reload starts empty. The next world's doors bind their sites again.
+	static void ResetStatics()
+	{
+		CancelRelockSweep();
+		s_sLastRefusal = "";
+		s_mBoundCharacters = null;
+		s_mHideouts = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void Reset()
 	{
+		CancelRelockSweep();
 		s_sLastRefusal = "";
 		s_mBoundCharacters = null;
 		if (!s_mHideouts)
@@ -329,7 +350,109 @@ class LF_Hideout
 		state.m_bLocked = false;
 		PushLock(state);
 		LF_Debug.Log("Hideout", string.Format("door unlocked hideout=%1 character=%2", hideoutId, characterId));
+		ScheduleRelockSweep();
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: relocks a site's door when no member of the owning organization stands within
+	//! RELOCK_RADIUS_M of it, so a door a member opened does not stay open for everyone once they leave.
+	//! \param membersNear Members in reach of the door; a negative number counts them in the world.
+	//! \return True when the door was relocked.
+	static bool RelockIfAbandoned(string hideoutId, int membersNear = -1)
+	{
+		if (!Server())
+			return false;
+
+		LF_HideoutState state = Find(hideoutId);
+		if (!state || state.m_bLocked || state.m_sOrganizationId.IsEmpty())
+			return false;
+
+		if (membersNear < 0)
+			membersNear = CountMembersNear(state);
+
+		if (membersNear > 0)
+			return false;
+
+		state.m_bLocked = true;
+		PushLock(state);
+		LF_Debug.Info("Hideout", string.Format("door relocked hideout=%1: no member is near it", hideoutId));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Members of the site's owner standing within RELOCK_RADIUS_M of its door, counted on the server.
+	protected static int CountMembersNear(LF_HideoutState state)
+	{
+		IEntity door = LF_Places.Find(PLACE_KIND_DOOR, state.m_sHideoutId);
+		PlayerManager players = GetGame().GetPlayerManager();
+		LF_Organization org = LF_OrganizationManager.Get(state.m_sOrganizationId);
+		if (!door || !players || !org)
+			return 0;
+
+		array<int> playerIds = {};
+		players.GetPlayers(playerIds);
+		int near;
+		foreach (int playerId : playerIds)
+		{
+			IEntity body = players.GetPlayerControlledEntity(playerId);
+			if (!body || vector.Distance(body.GetOrigin(), door.GetOrigin()) > RELOCK_RADIUS_M)
+				continue;
+
+			string characterId = CharacterIdOf(body);
+			if (!characterId.IsEmpty() && org.IsMember(characterId))
+				near++;
+		}
+
+		return near;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void ScheduleRelockSweep()
+	{
+		if (s_bRelockScheduled || !GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		s_bRelockScheduled = true;
+		GetGame().GetCallqueue().CallLater(RelockSweep, RELOCK_SWEEP_MS, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while a relock sweep is queued (tests read it).
+	static bool IsRelockScheduled()
+	{
+		return s_bRelockScheduled;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void CancelRelockSweep()
+	{
+		if (s_bRelockScheduled && GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(RelockSweep);
+
+		s_bRelockScheduled = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One pass over the open doors; it schedules itself again while any door stays open.
+	protected static void RelockSweep()
+	{
+		s_bRelockScheduled = false;
+		if (!s_mHideouts)
+			return;
+
+		bool stillOpen;
+		foreach (string hideoutId, LF_HideoutState state : s_mHideouts)
+		{
+			if (!state || state.m_bLocked || state.m_sOrganizationId.IsEmpty())
+				continue;
+
+			if (!RelockIfAbandoned(hideoutId))
+				stillOpen = true;
+		}
+
+		if (stillOpen)
+			ScheduleRelockSweep();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -381,8 +504,8 @@ class LF_Hideout
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: whether the character may use the hideout stash. Membership of the owning
-	//! organization is the only key: the door's lock state (breached or open) does not matter.
+	//! Server: whether the character may use the hideout stash. Membership of the owning organization
+	//! and the rank's stash right are the key: the door's lock state (breached or open) does not matter.
 	static bool AllowsStash(string characterId, string hideoutId, bool report)
 	{
 		if (!Server())
@@ -404,6 +527,15 @@ class LF_Hideout
 		{
 			if (report)
 				Refuse("stash refused: not a member");
+			return false;
+		}
+
+		// The rank's stash right (LF_EOrganizationPermission.USE_STASH): every shipped rung has it, and an
+		// owner who takes it off a rank in the config shuts that rank out of the stash.
+		if (!org.Allows(characterId, LF_EOrganizationPermission.USE_STASH))
+		{
+			if (report)
+				Refuse("stash refused: the rank lacks the stash right");
 			return false;
 		}
 
@@ -461,6 +593,8 @@ class LF_Hideout
 			}
 		}
 
+		set<string> loaded = new set<string>();
+		bool anyOpen = false;
 		foreach (LF_HideoutRecord record : records)
 		{
 			if (!record)
@@ -472,10 +606,35 @@ class LF_Hideout
 				continue;
 			}
 
+			loaded.Insert(record.m_sHideoutId);
 			LF_HideoutState state = Ensure(record.m_sHideoutId);
 			state.m_sOrganizationId = record.m_sOrganizationId;
 			state.m_bLocked = record.m_bLocked;
 			PushLock(state);
+			if (!state.m_bLocked)
+				anyOpen = true;
+		}
+
+		// A gate saved open has no member at it after a restart; only TryUnlock started the sweep, so it
+		// stayed open for anyone until a member next used it. The sweep relocks it once nobody is near.
+		if (anyOpen)
+			ScheduleRelockSweep();
+
+		// Idempotent: a site leased live but absent from the save is unleased by this load, as a
+		// fresh load would have left it.
+		if (!s_mHideouts)
+			return;
+
+		foreach (string leasedId, LF_HideoutState leased : s_mHideouts)
+		{
+			if (!leased || leased.m_sOrganizationId.IsEmpty() || loaded.Contains(leasedId))
+				continue;
+
+			LF_Debug.Info("Hideout", string.Format("load released hideout=%1: the save has no lease for it", leasedId));
+			leased.m_sOrganizationId = "";
+			leased.m_bLocked = true;
+			leased.ResetHeldGround();
+			PushLock(leased);
 		}
 	}
 
@@ -640,6 +799,8 @@ class LF_Hideout
 		if (!door)
 			return;
 
+		SyncOrgBase(state, door);
+
 		LF_LockComponent lock = LF_Component<LF_LockComponent>.Find(door);
 		if (!lock)
 			return;
@@ -659,6 +820,39 @@ class LF_Hideout
 		}
 
 		lock.SetLocked(state.m_bLocked);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A leased hideout is its organization's base for placement (#2504): the door is registered in
+	//! LF_Places as "org_base" under the organization id, and the place goes when the lease does. Runs
+	//! from PushLock, so every lease change, load and door bind keeps it right, and is idempotent.
+	//! Server only. An organization that leases a second site takes its base over (last lease wins).
+	protected static void SyncOrgBase(notnull LF_HideoutState state, notnull IEntity door)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		string baseKind = LF_PlacementZones.ORG_BASE_KIND;
+		if (!state.m_sBaseOrgId.IsEmpty() && state.m_sBaseOrgId != state.m_sOrganizationId)
+		{
+			if (LF_Places.Find(baseKind, state.m_sBaseOrgId) == door)
+				LF_Places.Unregister(baseKind, state.m_sBaseOrgId);
+
+			state.m_sBaseOrgId = "";
+		}
+
+		if (state.m_sOrganizationId.IsEmpty() || state.m_sBaseOrgId == state.m_sOrganizationId)
+			return;
+
+		IEntity held = LF_Places.Find(baseKind, state.m_sOrganizationId);
+		if (held && held != door)
+		{
+			LF_Debug.Info("Hideout", string.Format("base of org=%1 moves to hideout=%2: the last lease wins", state.m_sOrganizationId, state.m_sHideoutId));
+			LF_Places.Unregister(baseKind, state.m_sOrganizationId);
+		}
+
+		if (LF_Places.Register(baseKind, state.m_sOrganizationId, door))
+			state.m_sBaseOrgId = state.m_sOrganizationId;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -725,5 +919,22 @@ class LF_Hideout
 
 		Refuse("rejected: not the server");
 		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Hideout's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Hideout_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Hideout_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Hideout";
+	}
+
+	override void Apply()
+	{
+		LF_Hideout.ResetStatics();
 	}
 }

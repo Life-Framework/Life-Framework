@@ -205,3 +205,20 @@ class LF_ATMManager : Managed
 		return false;
 	}
 };
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ATMManager's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_ATMManager_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ATMManager_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_ATMManager";
+	}
+
+	override void Apply()
+	{
+		LF_ATMManager.Reset();
+	}
+}

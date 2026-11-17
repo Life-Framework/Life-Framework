@@ -40,6 +40,10 @@ processing upgrade are kept at the desk.
   `LF_OrgHideoutLease` — the yard lease.
 - `LF_OrgReplication` — the organization copy on each character for the offer side.
 - `LF_OrgInviteRole` — the `org_invite` handler. `LF_OrgLedger` — the page.
+- `LF_OrgMapMarks` — org map marks (#2240): members with `MANAGE_TERRITORY` place up to 20
+  marks for the org, shared through `LF_MapShares` (ORG audience), saved in `orgmarks` (save
+  version 44). Every membership change calls `LF_OrgMapMarks.RefreshCharacter` so the player's
+  map gains or loses the marks at once (`docs/features/map.md`).
 
 ## Iteration path
 

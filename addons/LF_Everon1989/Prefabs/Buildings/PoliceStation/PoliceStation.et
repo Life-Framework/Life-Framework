@@ -1,0 +1,22 @@
+SCR_DestructibleBuildingEntity : "{29CABA57BEA2A188}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police_Base.et" {
+ ID "F0DBA538AC2A0552"
+ {
+  GenericEntity {
+   ID "55747253E98008E1"
+   {
+    GenericEntity {
+     ID "568ABA4FA880CC91"
+     components {
+      DoorComponent "{221C667A9F7D4B69}" {
+       AngleRange -95
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{0F5E8DAB572CA160}Prefabs/Buildings/PoliceStation/Furniture/PoliceStation_furniture_01.et" {
+   ID "5854C08497298AAE"
+   coords 0 0 0
+  }
+ }
+}

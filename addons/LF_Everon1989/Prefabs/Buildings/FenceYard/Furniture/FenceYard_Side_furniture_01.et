@@ -1,0 +1,68 @@
+GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {
+ ID "56A8CBB92342240A"
+ {
+  GenericEntity : "{00C9C0860D1D8A84}Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_DarkWood.et" {
+   ID "5856DEABC1ACBF47"
+   coords -1.134 0.19 -1.723
+  }
+  GenericEntity : "{031D97E9F59383C5}Prefabs/Props/Furniture/CurtainsWindow_01/CurtainsWindow_01_big_base.et" {
+   ID "5856DEABC1ACB8CF"
+   coords -0.728 1.661 2.141
+   angles 0 180 0
+  }
+  GenericEntity : "{031D97E9F59383C5}Prefabs/Props/Furniture/CurtainsWindow_01/CurtainsWindow_01_big_base.et" {
+   ID "5856DEABC1ACB8FC"
+   coords 1.085 1.652 -2.142
+  }
+  GenericEntity : "{0692BB439764BB1E}Prefabs/Props/Civilian/Notebook_01_base.et" {
+   ID "5856DEABC1ACB892"
+   coords -1.023 0.89 -1.849
+   angles 0 -105 0
+  }
+  GenericEntity : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et" {
+   ID "5856DEABC1ACBFD5"
+   coords 0.199 1.15 1.587
+   angles 0 180 0
+  }
+  GenericEntity : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+   ID "5856DEABC1ACBFB7"
+   coords -0.682 0.19 1.876
+   angles 0 180 0
+  }
+  GenericEntity : "{7E08142AFFDE045E}Prefabs/Props/Furniture/CabinetMetal_02.et" {
+   ID "5856DEABC1ACBF09"
+   coords 2.271 0.19 0.03
+   angles 0 -90 0
+  }
+  GenericEntity : "{881E9EBD4F7EA444}Prefabs/Structures/BuildingParts/Heating/StoveColumn_01_green.et" {
+   ID "5856DEABC1ACBE63"
+   coords -1.908 0.19 -1.687
+  }
+  GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
+   ID "5856DEABC1ACB886"
+   coords -1.175 0.19 -1.723
+  }
+  GenericEntity : "{910424AC5CABE800}Prefabs/Props/Garbage/Bins/BinInterior_01_red.et" {
+   ID "5856DEABC1ACB8DD"
+   coords -1.974 0.19 0.66
+  }
+  GenericEntity : "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et" {
+   ID "5856DEABC1ACBFFE"
+   coords -2.253 1.393 0.428
+   angles 0 90 0
+  }
+  GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
+   ID "5856DEABC1ACB8AD"
+   coords -0.348 3.169 0.116
+  }
+  GenericEntity : "{CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et" {
+   ID "5856DEABC1ACBF53"
+   coords -0.418 0.19 -1.691
+  }
+  GenericEntity : "{E56F1B739B9792C4}Prefabs/Props/Civilian/Ashtray_01_Full_green.et" {
+   ID "5856DEABC1ACBF7A"
+   coords -1.137 0.89 -1.572
+   angles 0 0 0
+  }
+ }
+}

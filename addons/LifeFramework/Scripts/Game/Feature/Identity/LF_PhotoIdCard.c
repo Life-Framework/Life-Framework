@@ -61,6 +61,9 @@ class LF_PhotoIdCard
 	//! Printed before the running number: "EV 000042".
 	static const string NUMBER_PREFIX = "EV ";
 	static const int NUMBER_DIGITS = 6;	// lf-fixed: the printed field's width
+	//! Where numbering resumes when the saved registry could not be read (NoteRegistryUnreadable).
+	//! Past any count a server prints, so no number a card carries from before is issued again.
+	static const int UNREADABLE_FLOOR = 500000;	// lf-fixed: half the 6-digit field
 
 	protected static ref array<ref LF_PhotoIdRow> s_aRows;
 	protected static int s_iLastSequence;
@@ -241,6 +244,17 @@ class LF_PhotoIdCard
 		}
 
 		return s_aRows.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The saved registry failed to read (#2413). Its rows are gone, so the highest number printed
+	//! is unknown; numbering from 1 would give a new holder the number an old card still carries, and
+	//! that card would then print as the new holder. Numbering resumes past UNREADABLE_FLOOR instead.
+	//! An old card's number matches no row: it reads as unregistered, never as someone else.
+	static void NoteRegistryUnreadable()
+	{
+		s_iLastSequence = Math.Max(s_iLastSequence, UNREADABLE_FLOOR);
+		LF_Debug.Error(FEATURE, string.Format("the saved card registry could not be read: cards printed before this boot read as unregistered, new cards number from %1", FormatNumber(s_iLastSequence + 1)));
 	}
 
 	//------------------------------------------------------------------------------------------------

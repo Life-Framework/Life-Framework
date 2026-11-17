@@ -1,0 +1,20 @@
+{
+  "about": "Hostel (shell card #2289): the street front, then each room of spec.json from its door, by day and at night. Points are building space (tools/buildings/pipeline/scenario.mjs); the front faces +z, x runs along the facade, the ground floor stands at y 0.3 and the first floor at y 4.1. The camera stands at look + from and faces look. No interactables yet: the reception desk, bunks and lockers come in pass 1 and add their shots here.",
+  "session": { "profile": "full", "mission": "grid" },
+  "steps": [
+    { "shot": "warmup", "look": [0, 3.0, 6.6], "from": [-6, -1.4, 12], "wait": 6000, "why": "the first frames after a teleport draw the building before it streams in" },
+    { "do": { "verb": "time", "hour": 14 }, "wait": 1500 },
+    { "shot": "street", "look": [0, 3.0, 6.6], "from": [-6, -1.4, 12] },
+    { "shot": "front", "look": [0, 5.0, 6.6], "from": [0, -3.2, 22] },
+    { "shot": "reception", "look": [4.6, 1.2, 2.8], "from": [-3.0, 0.4, 2.2], "why": "the common room from the hall: sofa, TV, desk" },
+    { "shot": "kitchen", "look": [6.3, 1.2, -3.5], "from": [-1.8, 0.4, 1.6] },
+    { "shot": "washroom", "look": [1.7, 1.2, -3.8], "from": [1.6, 0.4, 1.5] },
+    { "shot": "luggage", "look": [-4.6, 1.2, 0.0], "from": [3.2, 0.4, 3.0], "why": "the old workshop, cleared for the luggage hall" },
+    { "shot": "dorm_west", "look": [-4.6, 5.0, 1.8], "from": [3.0, 0.4, 2.4] },
+    { "shot": "dorm_east", "look": [4.6, 5.0, 2.8], "from": [-3.0, 0.4, 2.2] },
+    { "do": { "verb": "time", "hour": 22 }, "wait": 2000 },
+    { "shot": "night_street", "look": [0, 3.0, 6.6], "from": [-6, -1.4, 12] },
+    { "shot": "night_reception", "look": [4.6, 1.2, 2.8], "from": [-3.0, 0.4, 2.2] },
+    { "shot": "night_dorm_west", "look": [-4.6, 5.0, 1.8], "from": [3.0, 0.4, 2.4] }
+  ]
+}

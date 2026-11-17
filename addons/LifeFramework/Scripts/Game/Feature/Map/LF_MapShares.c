@@ -1,12 +1,14 @@
 //------------------------------------------------------------------------------------------------
 //! One shared map mark (everon-map.md section 3, "Shared marks"). Server side; the wire carries its
-//! plain fields only (LF_MapShareComponent), never the audience or the expiry.
+//! plain fields only (LF_MapShareComponent), never the audience or the expiry. A row may also carry an
+//! area: a circle of m_iAreaRadius metres around its position, drawn in the LF_MapAreaStyle m_iAreaStyle
+//! (radius 0 is no area). The client registers it in LF_MapAreas beside the mark (LF_MapShareAreas).
 class LF_MapShareRow : Managed
 {
 	//! The owning system's stable key: dispatch:<callId>, org:<orgId>:<n>, taxi:<fareId>, event:<eventId>.
 	string m_sKey;
 	LF_EMapShareAudience m_eAudience;
-	//! Character id (PLAYER), service (ROLE: police, medic), org id (ORG); unused for EVERYONE.
+	//! Character record key (PLAYER, LF_Utils.GetPlayerUID), service (ROLE: police, medic), org id (ORG); unused for EVERYONE.
 	string m_sAudienceId;
 	//! World x and z in metres.
 	int m_iX;
@@ -18,6 +20,9 @@ class LF_MapShareRow : Managed
 	string m_sText;
 	//! World seconds; 0 never expires.
 	float m_fExpires;
+	//! Optional area around the position: radius in metres (0 none) and an LF_MapAreaStyle id.
+	int m_iAreaRadius;
+	int m_iAreaStyle;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_MapShareRow Make(string key, LF_EMapShareAudience audience, string audienceId, int x, int z, int icon, int colour, string text, float expires)
@@ -33,6 +38,15 @@ class LF_MapShareRow : Managed
 		row.m_sText = text;
 		row.m_fExpires = expires;
 		return row;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gives the row an area (a circle around its position). eturn the row, so it chains off Make.
+	LF_MapShareRow WithArea(int radius, LF_MapAreaStyle style)
+	{
+		m_iAreaRadius = radius;
+		m_iAreaStyle = style;
+		return this;
 	}
 }
 
@@ -80,14 +94,23 @@ class LF_MapShareGameFacts : LF_MapShareFacts
 		if (!accounts)
 			return null;
 
-		LF_PlayerAccount account = accounts.GetAccount(playerId);
+		return MemberOf(playerId, accounts.GetAccount(playerId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The member for one account. m_sUid is the active character's record key (LF_Utils.GetPlayerUID,
+	//! the key PLAYER rows are put under by the job marks); the organization is looked up by the
+	//! character id, which is what organizations list members under. An account's first character has
+	//! the account uid as its record key and a different character id, so using the character id as
+	//! m_sUid matched no PLAYER row: job and fare marks and their waypoints never reached a first
+	//! character (review 2026-11-17).
+	static LF_MapShareMember MemberOf(int playerId, LF_PlayerAccount account)
+	{
 		if (!account)
 			return null;
 
-		string uid = account.GetPersistentId();
-		LF_PlayerCharacter character = account.GetActiveCharacter();
-		if (character)
-			uid = character.GetId();
+		string uid = account.GetActiveCharacterKey();
+		string characterId = LF_OrgMapMarks.CharacterIdOfAccount(account);
 
 		array<string> roles = {};
 		if (account.IsOnDuty() && account.GetFaction() == LF_Faction.POLICE)
@@ -97,7 +120,7 @@ class LF_MapShareGameFacts : LF_MapShareFacts
 			roles.Insert(LF_MapShares.ROLE_MEDIC);
 
 		string orgId;
-		LF_Organization org = LF_OrganizationManager.GetByCharacter(uid);
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
 		if (org)
 			orgId = org.GetId();
 
@@ -179,6 +202,10 @@ class LF_MapShares
 	protected static ref LF_MapShareFacts s_Facts;
 	protected static ref LF_MapShareSpawnSubscriber s_Subscriber;
 	protected static bool s_bSweeping;
+	//! Players already warned about being over SEND_CAP, until they drop under it.
+	protected static ref map<int, bool> s_mOverCap;
+	//! How many over-cap warnings were logged since the last reset (a test seam).
+	protected static int s_iCapWarnings;
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: subscribe to spawns and start the expiry and membership sweep. Safe to call again.
@@ -218,6 +245,8 @@ class LF_MapShares
 		s_mDelivered = null;
 		s_Sink = null;
 		s_Facts = null;
+		s_mOverCap = null;
+		s_iCapWarnings = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -268,6 +297,13 @@ class LF_MapShares
 
 		if (row.m_sText.Length() > TEXT_CAP)
 			row.m_sText = row.m_sText.Substring(0, TEXT_CAP);
+
+		if (row.m_iAreaRadius != 0 && !LF_MapShareRules.AreaValid(row.m_iAreaRadius, row.m_iAreaStyle))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("share %1 area dropped: radius %2 style %3 is not drawable", row.m_sKey, row.m_iAreaRadius, row.m_iAreaStyle));
+			row.m_iAreaRadius = 0;
+			row.m_iAreaStyle = 0;
+		}
 
 		EnsureTables();
 		if (!s_mRows.Contains(row.m_sKey))
@@ -428,6 +464,7 @@ class LF_MapShares
 		foreach (int playerId : gone)
 		{
 			s_mDelivered.Remove(playerId);
+			s_mOverCap.Remove(playerId);
 		}
 
 		foreach (int playerId : players)
@@ -443,6 +480,13 @@ class LF_MapShares
 			return 0;
 
 		return s_mRows.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many over-cap warnings were logged since the last reset.
+	static int CapWarnings()
+	{
+		return s_iCapWarnings;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -476,8 +520,12 @@ class LF_MapShares
 		wanted.Clear();
 		LF_MapShareMember member = Facts().Of(playerId);
 		if (!member)
+		{
+			s_mOverCap.Remove(playerId);
 			return;
+		}
 
+		bool over;
 		foreach (string key : s_aOrder)
 		{
 			LF_MapShareRow row = s_mRows.Get(key);
@@ -486,12 +534,33 @@ class LF_MapShares
 
 			if (wanted.Count() >= SEND_CAP)
 			{
-				LF_Debug.Warn(FEATURE, string.Format("player %1 is in more than %2 shares: the rest wait", playerId, SEND_CAP));
-				return;
+				over = true;
+				break;
 			}
 
 			wanted.Insert(key);
 		}
+
+		NoteOverCap(playerId, over);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The over-cap warning is logged when a player first goes over the cap, not on every sweep; dropping
+	//! under it arms it again.
+	protected static void NoteOverCap(int playerId, bool over)
+	{
+		if (!over)
+		{
+			s_mOverCap.Remove(playerId);
+			return;
+		}
+
+		if (s_mOverCap.Contains(playerId))
+			return;
+
+		s_mOverCap.Set(playerId, true);
+		s_iCapWarnings++;
+		LF_Debug.Warn(FEATURE, string.Format("player %1 is in more than %2 shares: the rest wait", playerId, SEND_CAP));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -518,6 +587,9 @@ class LF_MapShares
 
 		if (!s_mDelivered)
 			s_mDelivered = new map<int, ref array<string>>();
+
+		if (!s_mOverCap)
+			s_mOverCap = new map<int, bool>();
 	}
 
 	//------------------------------------------------------------------------------------------------

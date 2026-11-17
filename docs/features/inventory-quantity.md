@@ -45,7 +45,7 @@
 - ✅ **Locked owners refused** (verified 2026-11-07):
   `LF_CanManipulateOwned` also refuses a storage whose owner has a locked
   `LF_VehicleLockComponent` or `LF_LockComponent` (`LF_IsStorageOwnerLocked`).
-  Pin test `security/locked-storage-refused`.
+  Pin test `security/locked-storage-refused`. A living character stops the owner climb, so a player seated in a locked car still splits and merges their own items; the check honours the `VehicleLock` switch (#2411).
 
 ### Hand-Carry — `Feature/Character/Inventory/HandCarry/`
 - ✅ `LF_HandInventoryStorageComponent` state machine
