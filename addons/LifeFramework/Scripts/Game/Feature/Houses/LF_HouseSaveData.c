@@ -1,39 +1,44 @@
 //------------------------------------------------------------------------------------------------
-//! Persisted form of a house's lock state.
+//! Persisted form of a house's lock state and owner: one row of the "houses" payload
+//! (LF_PersistenceComponentSerializer, LF_Houses.ExportAll / ApplyAll).
 //!
-//! STABLE KEY. m_sHouseIdentifier identifies the house: editor-set on the building or generated
-//! at spawn (see LF_HouseManagerComponent). Doors of the house carry the same identifier on
-//! their LF_LockComponent, so a key bound to it matches every door. Never a session-local
-//! EntityID: a restart re-resolves the building, and a record whose building is "not there" is
-//! rejected by IsValidFor rather than applied to the wrong house.
+//! STABLE KEY. m_sHouseIdentifier identifies the house: the editor identifier set on the building
+//! (LF_HouseManagerComponent.m_sDebugIdentifier) or one bound at runtime with BindIdentifier. Doors
+//! of the house carry the same identifier on their LF_LockComponent, so a key bound to it matches
+//! every door. Never a session-local EntityID: a restart re-resolves the building by identifier,
+//! and a row whose building is "not there" waits in LF_Houses until it registers.
 //!
-//! SAVE/LOAD CONTRACT. Export/Apply live on LF_HouseManagerComponent (public API):
-//! ExportLockState() copies the live state into a record; ApplyLockState(record) re-applies it
-//! idempotently through the manager's mutator and rejects records that do not match this house.
+//! OWNER. m_sOwnerKey is the owner's character key (LF_Houses.CharacterKeyOf), empty for none.
 //!
-//! VERSIONING follows the repo serializer pattern (see LF_PersistenceComponentSerializer): a
-//! future ScriptedComponentSerializer writes VERSION first, then the record fields, positionally.
-//! Binding that serializer into Configs/Systems/Persistence/LifeFramework.conf and proving a
-//! real save-reload round trip (PERSISTENCE tier) is the follow-up; until then lock state is
-//! in-session, same as the vehicle lock.
+//! SHAPE. Append-only (docs/persistence.md "Record shapes"): a new field goes at the end.
 //------------------------------------------------------------------------------------------------
-class LF_HouseLockRecord
+class LF_HouseLockRecord : Managed
 {
 	static const int VERSION = 1;
 
 	string m_sHouseIdentifier;
 	bool m_bLocked;
+	string m_sOwnerKey;
 
 	//------------------------------------------------------------------------------------------------
 	//! \param houseIdentifier The stable identifier of the house.
 	//! \param locked The house-wide lock state.
+	//! \param ownerKey Character key of the owner, empty for none.
 	//! \return A fully populated house lock record.
-	static LF_HouseLockRecord Create(string houseIdentifier, bool locked)
+	static LF_HouseLockRecord Create(string houseIdentifier, bool locked, string ownerKey = "")
 	{
 		LF_HouseLockRecord record();
 		record.m_sHouseIdentifier = houseIdentifier;
 		record.m_bLocked = locked;
+		record.m_sOwnerKey = ownerKey;
 		return record;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return A copy, so a stored row never aliases a caller's record.
+	LF_HouseLockRecord Copy()
+	{
+		return Create(m_sHouseIdentifier, m_bLocked, m_sOwnerKey);
 	}
 
 	//------------------------------------------------------------------------------------------------

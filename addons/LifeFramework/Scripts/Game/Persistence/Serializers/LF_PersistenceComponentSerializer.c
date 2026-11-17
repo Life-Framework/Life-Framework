@@ -31,11 +31,13 @@
 //! vehicle records in LF_VehicleOwnership as [NonSerialized()] fields, keyed by vehicle id.
 //! Held ground (holder, hold seconds, banked points per hideout; #751) rides beside the hideout
 //! leases on LF_HideoutState, keyed by hideout id.
+//! House lock state and owner (#2410) live in LF_Houses, keyed by the stable house identifier. The
+//! house each carried key opens rides beside the snapshots in LF_StorageSnapshot ("itemkeys").
 //!
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits. The written version is that list's length (45). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys. The written version is that list's length (47). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -102,6 +104,10 @@
 //! organization starts with an empty shared map.
 //! A version 44 save includes the org map marks and has no armory book (#2416): every officer may draw
 //! a kit at once, with nothing outstanding.
+//! A version 45 save includes the armory book and has no house rows (#2410): every house loads with
+//! its editor lock state and no owner, which is what that build had (it never saved houses).
+//! A version 46 save includes the house rows and has no house keys (#2410): a carried house key comes
+//! back unbound, which is what that build did.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -236,6 +242,8 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("mapmarks");
 		order.Insert("orgmarks");
 		order.Insert("armorykits");
+		order.Insert("houses");
+		order.Insert("itemkeys");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -269,7 +277,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 45);
+		context.WriteValue("version", 47);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -786,6 +794,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_ArmoryKitRow> armoryRows = LF_ArmoryKits.ExportAll();
 			context.Write(armoryRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 armory book row(s)", armoryRows.Count()));
+		}
+		else if (payload == "houses")
+		{
+			// Lock state and owner of every house with a stable identifier (#2410), keyed by identifier.
+			array<ref LF_HouseLockRecord> houseRows = LF_Houses.ExportAll();
+			context.Write(houseRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 house row(s)", houseRows.Count()));
+		}
+		else if (payload == "itemkeys")
+		{
+			// Written after carried, like itemserials: the house each carried key opens (#2410).
+			array<ref LF_StorageItemKeyRecord> keyRows = LF_StorageSnapshot.ExportItemKeys();
+			context.Write(keyRows);
+			LF_Debug.Log("Persistence", string.Format("saved house keys of %1 snapshot(s)", keyRows.Count()));
 		}
 		else
 		{
@@ -1464,6 +1486,36 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("armory book failed to read, every officer starts with no kit out and no cooldown");
+			}
+		}
+		else if (payload == "houses")
+		{
+			// A version 1-45 save never reaches this payload: every house keeps its editor state.
+			array<ref LF_HouseLockRecord> houseRows = new array<ref LF_HouseLockRecord>();
+			if (context.Read(houseRows))
+			{
+				LF_SaveIds.ResolveHouses(houseRows);
+				int housesApplied = LF_Houses.ApplyAll(houseRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 house row(s), %2 to a live house", houseRows.Count(), housesApplied));
+			}
+			else
+			{
+				ReadFailed("house rows failed to read, leaving live houses untouched");
+			}
+		}
+		else if (payload == "itemkeys")
+		{
+			// A version 1-46 save never reaches this payload: restored house keys stay unbound.
+			array<ref LF_StorageItemKeyRecord> keyRows = new array<ref LF_StorageItemKeyRecord>();
+			if (context.Read(keyRows))
+			{
+				LF_SaveIds.ResolveItemKeys(keyRows);
+				int keysMatched = LF_StorageSnapshot.ApplyItemKeys(keyRows);
+				LF_Debug.Log("Persistence", string.Format("applied house keys to %1 of %2 snapshot(s)", keysMatched, keyRows.Count()));
+			}
+			else
+			{
+				ReadFailed("house keys failed to read, restored house keys stay unbound");
 			}
 		}
 		else
