@@ -640,6 +640,157 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "DC1F3AE919C9D3EC"
    coords -3 0 9
   }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "DC1FD43CF317C549"
+   coords -7.6 7.297 4.6
+   angleY 90
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{DC1F6B285304517A}" {
+       SourceMaterial "LampFluorescent_02_cover"
+       AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "DC1FCCA782A0C36D"
+   coords 4.6 7.297 4.8
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{DC1FE09ED3962EEA}" {
+       SourceMaterial "LampFluorescent_02_cover"
+       AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "DC1F7DDE46B4CCAF"
+   coords 7.4 7.297 4.8
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{DC1F5449B55D7144}" {
+       SourceMaterial "LampFluorescent_02_cover"
+       AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "DC1F51EA6D147607"
+   coords -4.5 7.297 -1
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{DC1F5D123F550643}" {
+       SourceMaterial "LampFluorescent_02_cover"
+       AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+   ID "DC1FC466B4796D4B"
+   coords 4.5 7.297 -1
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{DC1F597EE4F5A92B}" {
+       SourceMaterial "LampFluorescent_02_cover"
+       AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{666D9AE790BA141C}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_Base.et" {
+   ID "DC1FDD4DBB258BC2"
+   coords 6.3 4.903 4.45
+   angleY 180
+  }
+  GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+   ID "DC1FD1BADA32AE22"
+   coords 6.95 4.903 4.3
+   angleY 170
+  }
+  GenericEntity : "{B3C782D689A52412}Prefabs/Props/Civilian/FileOffice_01_Open.et" {
+   ID "DC1FC058CDDD86BE"
+   coords 4.6 4.903 5.2
+   angleY 5
+  }
+  GenericEntity : "{A5E64994411BA6A0}Prefabs/Props/Civilian/Pen_01/Pen_01_base.et" {
+   ID "DC1F731D737E7CBB"
+   coords 4.95 4.903 5.05
+   angleY 60
+  }
+  GenericEntity : "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et" {
+   ID "DC1F2F74A7A4653E"
+   coords 3.95 4.903 5.3
+   angleY 20
+  }
+  GenericEntity : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
+   ID "DC1FF101D8F47B47"
+   coords 6.9 4.903 5.4
+   angleY -10
+  }
+  GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+   ID "DC1FDC668A4BDE14"
+   coords 6.1 4.903 5.25
+   angleY -15
+  }
+  GenericEntity : "{E558F8B85096CAA4}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01_V3.et" {
+   ID "DC1F94CE3764A18F"
+   coords 2.5 4.903 4.2
+   angleY 160
+  }
+  GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+   ID "DC1F5B30B89A5092"
+   coords 3.4 4.903 4.35
+   angleY 190
+  }
+  GenericEntity : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
+   ID "DC1F48E5FE044BD3"
+   coords -6.05 4.903 6.4
+   angleY 90
+  }
+  GenericEntity : "{B3C782D689A52412}Prefabs/Props/Civilian/FileOffice_01_Open.et" {
+   ID "DC1FE95CF267CED6"
+   coords -6.1 4.903 5.6
+   angleY 95
+  }
+  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
+   ID "DC1F9DD7CCFB2BDD"
+   coords -6.15 4.903 5.3
+   angleY 80
+  }
+  GenericEntity : "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et" {
+   ID "DC1F4C18C2E8E64E"
+   coords 9.9 4 6.8
+  }
+  GenericEntity : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
+   ID "DC1FF0739855186D"
+   coords 3.3 4 6.6
+  }
+  GenericEntity : "{CBADF2BB9A4BD3DD}Prefabs/Props/Decorations/Paintings/PaintingBig_01_V9.et" {
+   ID "DC1F63041676E57E"
+   scale 0.9
+   coords 8.6 6 7.3
+   angleY 180
+  }
+  GenericEntity : "{C3973010F42EB6A0}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V3.et" {
+   ID "DC1F5B4B91241B6E"
+   scale 0.9
+   coords -8.6 5.6 7.3
+   angleY 180
+  }
   LightEntity {
    ID "DC1F1454725C3BC2"
    coords -0.5 3.4 5.6
@@ -654,9 +805,9 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   LightEntity {
    ID "DC1F6B1AEB3FEC11"
-   coords 0.4 3.4 1.4
+   coords 0.2 3.4 3
    Color 1 0.88 0.68 1
-   LV 3
+   LV 3.2
    ClipEV -10
    Type Point
    Radius 6.5
@@ -710,6 +861,42 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ClipEV -10
    Type Point
    Radius 7.5
+   NearPlane 0.3
+   CastShadow 0
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "DC1F164BCD8938D5"
+   coords -7.4 7 4.8
+   Color 1 0.88 0.68 1
+   LV 2.4
+   ClipEV -10
+   Type Point
+   Radius 5
+   NearPlane 0.3
+   CastShadow 0
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "DC1F6845E221857E"
+   coords 5.6 7 4.8
+   Color 1 0.88 0.68 1
+   LV 2.6
+   ClipEV -10
+   Type Point
+   Radius 6
+   NearPlane 0.3
+   CastShadow 0
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "DC1F3271316CE3D9"
+   coords -4.5 7 -1
+   Color 1 0.88 0.68 1
+   LV 2.2
+   ClipEV -10
+   Type Point
+   Radius 6
    NearPlane 0.3
    CastShadow 0
    LensFlareType Disabled
