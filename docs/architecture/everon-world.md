@@ -185,6 +185,11 @@ supplies every coordinate the later steps use. No step types a coordinate.
   `prefab`, only where no vanilla building fits, D9), or `none` with a reason. `tools\cli town map <slug>`
   proposes one by scoring the dossier's buildings against the slot needs. The lead approves it (D10): a
   reviewed PR that holds only that file. Nothing is placed before it merges.
+  Building types are one vocabulary: the catalog's and scout's (`tools/scout/types.mjs`), which the templates'
+  `needs.types` use too; `TYPE_ALIASES` there resolves the older names (`municipal-office`, `house-town`, `shop-*`,
+  `fuel-station`) and `TYPE_REFINEMENTS` picks a kind of shop by its prefab stem. The template is `--template`, else the
+  one the place's mapping names (`mapping.template`, so a village the gazetteer calls `other` still checks as a village),
+  else the dossier's (`scout --template town|village`), else `town`.
 - **Core stays map-independent.** The mapping is tooling data. What reaches the game is the fitted
   layer: entities with `LF_PlaceComponent` and the feature components that register in `LF_Places`. The
   core never reads the mapping.

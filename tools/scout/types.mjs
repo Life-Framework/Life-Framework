@@ -48,6 +48,77 @@ export const COUNTED_TYPES = new Set(["port", "waterworks"]);
 export const CIVIC_TYPES = new Set(BUILDING_RULES.filter(([, , f]) => f.civic).map(([, t]) => t));
 export const HOME_TYPES = new Set(BUILDING_RULES.filter(([, , f]) => f.home).map(([, t]) => t));
 
+// ------------------------------------------------------------------ one vocabulary for typing and templates
+// The building types above are THE vocabulary: the catalog, the scout dossier and the town templates
+// (tools/town/templates/*.json, `needs.types`) all name a building by one of them. Older names (the first templates
+// wrote municipal-office, house-town, shop-*, fuel-station) and the finer names a human reaches for resolve here instead of
+// in a second list; a template or a hand-written dossier may use either form and they still meet (tools/town/map.mjs).
+// alias -> the canonical types it stands for, in preference order.
+export const TYPE_ALIASES = {
+  "municipal-office": ["government"],
+  "town-hall": ["government"],
+  "police-station": ["police"],
+  "house-town": ["townhouse"],
+  "house-village": ["house"],
+  "cottage": ["house", "farmhouse"],
+  "shop-general": ["shop"],
+  "shop-clothes": ["shop"],
+  "shop-drug": ["shop"],
+  "shop-modern": ["shop"],
+  "fuel-station": ["fuel"],
+  "farm-building": ["farm", "farm-small", "farmhouse"],
+  "industrial-shed": ["industrial"],
+  "house-addon": ["shed", "garage"],
+};
+
+export const CANONICAL_TYPES = new Set(BUILDING_RULES.map(([, t]) => t));
+
+// Pure: the canonical building types a name stands for ([] when it is neither canonical nor an alias). A trailing `*`
+// ("shop-*") is a family: its base, every alias that starts with that prefix.
+export function canonicalTypes(name) {
+  const n = String(name || "");
+  if (n.endsWith("*")) {
+    const prefix = n.slice(0, -1);
+    const base = prefix.replace(/-$/, "");
+    const out = new Set(canonicalTypes(base));
+    for (const [alias, to] of Object.entries(TYPE_ALIASES)) if (alias.startsWith(prefix)) for (const t of to) out.add(t);
+    return [...out];
+  }
+  if (CANONICAL_TYPES.has(n)) return [n];
+  return TYPE_ALIASES[n] ? [...TYPE_ALIASES[n]] : [];
+}
+
+// A refinement is an alias that names a KIND of one canonical type, told apart by the prefab's stem (the dossier types every
+// vanilla shop "shop"; its stem says clothes, drugstore or household goods). A refinement matches a building whose type is the
+// refinement itself (a hand-written dossier) or whose type is the canonical one and whose stem says so.
+export const TYPE_REFINEMENTS = {
+  "shop-clothes": { type: "shop", stem: /clothes|cloth/i },
+  "shop-drug": { type: "shop", stem: /drug|pharm/i },
+  "shop-general": { type: "shop", stem: /household|general|grocer|ShopModern/i },
+};
+
+// Pure: the index of the first wanted type (a template's `types`) that the building satisfies, or -1.
+// Both sides resolve to canonical types, so "municipal-office" in a template finds a "government" building and
+// "government" finds a hand-written "municipal-office" one; a name this table does not know still matches itself.
+// `stem` (optional) lets a refinement such as shop-drug pick the drugstore among the shops.
+export function typeIndex(wanted, buildingType, stem = "") {
+  const have = new Set([String(buildingType), ...canonicalTypes(buildingType)]);
+  for (let i = 0; i < wanted.length; i++) {
+    const w = String(wanted[i]);
+    if (w === buildingType) return i;
+    const ref = TYPE_REFINEMENTS[w];
+    if (ref) {
+      if (have.has(ref.type) && ref.stem.test(String(stem))) return i;
+      continue;
+    }
+    for (const t of canonicalTypes(w)) if (have.has(t)) return i;
+  }
+  return -1;
+}
+
+// Pure: the names in a list of wanted types that resolve to nothing (a typo in a template).
+export const unknownTypes = (wanted) => wanted.filter((w) => canonicalTypes(w).length === 0).map(String);
+
 // A prop worth listing in a dossier, by prefab path. [regex, kind].
 export const PROP_RULES = [
   [/\/Naval\/.*(Pier|Jetty|Quay|Dock|Slip)|\/(Pier|Jetty)[A-Za-z]*_\d/i, "pier-or-dock"],
@@ -89,6 +160,7 @@ export function classify(prefab) {
 // The rules as a printable table (tools\cli scout types).
 export function typeTable() {
   const rows = BUILDING_RULES.map(([re, type, f]) => ({ type, kind: "building", civic: !!f.civic, home: !!f.home, path: re.source.replace(/\\\//g, "/").replace(/\\/g, "") }));
+  const aliases = Object.entries(TYPE_ALIASES).map(([alias, to]) => ({ type: alias, kind: "alias", civic: false, home: false, path: `= ${to.join(", ")}` }));
   const props = PROP_RULES.map(([re, kind]) => ({ type: kind, kind: "prop", civic: false, home: false, path: re.source.replace(/\\\//g, "/").replace(/\\/g, "") }));
-  return [...rows, ...props];
+  return [...rows, ...aliases, ...props];
 }
