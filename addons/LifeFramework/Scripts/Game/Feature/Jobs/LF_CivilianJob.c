@@ -602,6 +602,53 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: the deposit each active run holds right now, one row per player. A run is
+	//! session state and is not saved, but the cash taken for it must not vanish with a restart.
+	static array<ref LF_JobDepositRow> ExportDeposits()
+	{
+		array<ref LF_JobDepositRow> rows = new array<ref LF_JobDepositRow>();
+		if (!s_mWorkers)
+			return rows;
+
+		foreach (string playerUid, LF_JobWorker worker : s_mWorkers)
+		{
+			if (worker && worker.m_bActive && worker.m_iDeposit > 0)
+				rows.Insert(LF_JobDepositRow.Create(playerUid, worker.m_iDeposit));
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: a restart ended every saved run, so each saved deposit goes back to the
+	//! player's bank account (their account may be offline: the bank does not need a body). A player
+	//! whose run is live in this session (a re-applied load) keeps the live deposit and gets no
+	//! second one. The saved bank balances load first, so the credit is never overwritten.
+	//! \return How many deposits were given back.
+	static int ApplyDeposits(notnull array<ref LF_JobDepositRow> rows)
+	{
+		int refunded = 0;
+		foreach (LF_JobDepositRow row : rows)
+		{
+			if (!row || row.m_sPlayerUid.IsEmpty() || row.m_iAmount <= 0)
+				continue;
+
+			if (HasActiveRun(row.m_sPlayerUid) && GetDeposit(row.m_sPlayerUid) > 0)
+			{
+				LF_Debug.Log("Jobs", string.Format("saved deposit %1 of %2 not refunded: the run is live in this session", row.m_iAmount, row.m_sPlayerUid));
+				continue;
+			}
+
+			LF_BankAccount bank = LF_ATMManager.GetOrCreate(row.m_sPlayerUid);
+			bank.Deposit(row.m_iAmount, REASON_DEPOSIT_BACK);
+			refunded++;
+			LF_Debug.Info("Jobs", string.Format("restart ended the run of %1: deposit %2 refunded to the bank", row.m_sPlayerUid, row.m_iAmount));
+		}
+
+		return refunded;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return The nearest a drop-off may be to where a run started, in metres (jobs config).
 	static float RunMinDistance()
 	{

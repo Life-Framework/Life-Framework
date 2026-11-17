@@ -37,7 +37,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock. The written version is that list's length (48). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobdeposits. The written version is that list's length (49). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -110,6 +110,8 @@
 //! back unbound, which is what that build did.
 //! A version 47 save includes the house keys and has no grace clocks (#2443): every character it holds
 //! is seeded with its account's playtime (LF_GraceCharacterClock.SeedFromAccounts), what the grace read then.
+//! A version 48 save includes the grace clocks and has no held job deposits (#2408): a run's deposit
+//! was not saved, which is what that build did (a restart kept it).
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -247,6 +249,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("houses");
 		order.Insert("itemkeys");
 		order.Insert("graceclock");
+		order.Insert("jobdeposits");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -280,7 +283,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 48);
+		context.WriteValue("version", 49);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -824,6 +827,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			context.Write(graceRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 grace clock(s)", graceRows.Count()));
 		}
+		else if (payload == "jobdeposits")
+		{
+			// Cargo deposits held against runs in progress (#2408): a restart ends the run, so the load gives them back.
+			array<ref LF_JobDepositRow> depositRows = LF_CivilianJob.ExportDeposits();
+			context.Write(depositRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 held job deposit(s)", depositRows.Count()));
+		}
 		else
 		{
 			LF_Debug.Error("Persistence", string.Format("save skipped unknown payload '%1'", payload));
@@ -1289,6 +1299,8 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("identity card rows failed to read; carried cards print again at the next spawn");
+				// The rows, and with them the highest number printed, are gone: do not number from 1 (#2413).
+				LF_PhotoIdCard.NoteRegistryUnreadable();
 			}
 		}
 		else if (payload == "caseboard")
@@ -1547,6 +1559,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 				// Seed as an old save would, so a cut-off save never gives every veteran a fresh grace.
 				ReadFailed("grace clocks failed to read, seeding each character from its account playtime");
 				LF_GraceCharacterClock.SeedFromAccounts();
+			}
+		}
+		else if (payload == "jobdeposits")
+		{
+			// A version 1-48 save never reaches this payload: it held no deposits (runs took none).
+			array<ref LF_JobDepositRow> depositRows = new array<ref LF_JobDepositRow>();
+			if (context.Read(depositRows))
+			{
+				int refunded = LF_CivilianJob.ApplyDeposits(depositRows);
+				LF_Debug.Info("Persistence", string.Format("gave back %1 held job deposit(s) of %2 row(s) to the bank", refunded, depositRows.Count()));
+			}
+			else
+			{
+				ReadFailed("held job deposits failed to read, the deposits are not refunded");
 			}
 		}
 		else

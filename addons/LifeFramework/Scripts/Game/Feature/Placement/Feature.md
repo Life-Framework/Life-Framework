@@ -112,3 +112,21 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Proof:** `placement/policy-who` (LOGIC: each rule refuses the wrong player with its own reason and toast and passes
   the right one; the shipped table keeps the strip and the roadblock police-only). House and organization facts are
   filled from plain values in the test; reading a live house or organization for a player stays a manual step.
+
+## Where each kind may go (#2447)
+
+- **Player sees:** a refusal toast under "Placing" for a kind with a zone: "only on a road", "only inside a property you
+  own or hold a key to", or "only at your organization's base". A house owner places a chair in their own house and is
+  refused in the neighbour's.
+- **Owner and side:** `LF_PlacementZones.Judge` is pure over `LF_PlacementWhereFacts`; `Gather` fills it for the proposed
+  spot (not the player's feet): the AI road network for `ROADS_ONLY` (a road line within 6 m), the live house nearest the
+  spot within 30 m for `OWNED_PROPERTY` (owner key or a key in the inventory, so the neighbour's house is the neighbour's),
+  and `LF_Places` kind `org_base` (id = the organization id) for `ORG_BASE`. `LF_PlacementPolicy.ZoneAt` runs it; the server's
+  `LF_PlacementService.Confirm` and `LF_PlacementCompositions.Confirm` ask it after the reach check (a five-line hook each),
+  so the ghost does not go red for a zone yet. The log line is `refused: <uid> <reason> (zone <WHERE>)`.
+- **Data:** the policy entry's `m_eWhere` (`ANYWHERE` default) and `m_fBaseRadius` (`ORG_BASE`, default 30 m). Core ships no
+  zoned kind: a server's rules are pack data. Nothing registers an `org_base` place yet, so an `ORG_BASE` kind is refused
+  until a base component does. Strings `#LF-Placement_NeedRoad`, `_NeedProperty`, `_NeedBase`. Nothing persists.
+- **Proof:** `placement/policy-where` (WORLD: two bound neighbouring houses, a chair-like kind refused in the neighbour's and
+  allowed in the owner's or with a key; a roads-only kind refused off the road by the real probe on DebugWorld, allowed on a
+  road by the pure rule; the base rule's cases). The road probe on real Everon roads is a manual step.

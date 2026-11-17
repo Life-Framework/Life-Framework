@@ -84,7 +84,13 @@
   refused. The server decides in `SCR_DoorUserAction.CanBePerformedScript` (`LF_LockComponent.UserMayEnter`);
   the owner's character key is replicated on the door so a client's prompt matches. Only
   `LF_HouseManagerComponent.SetHouseLocked` changes a house's lock, and it re-syncs a door a breach or a
-  lockpick opened. No in-world lock/unlock action yet, and a door the owner opened stays open (#2435).
+  lockpick opened. A door the owner opened stays open (#2435).
+- ✅ **Lock and unlock at the door** (#2471, WORLD `houses/lock-action`): `LF_HouseLockAction` on
+  `EL_Door_Base.et` offers `#LF-HouseLock_Lock` / `#LF-HouseLock_Unlock` to the owner and to a carried
+  key holder (`LF_LockComponent.UserMayEnter`); a stranger does not see it. The server re-checks and
+  refuses a forged request with `[LFDebug:Houses]`, then flips the house through
+  `LF_HouseManagerComponent.SetHouseLocked` (saved, mirrored on every door). Not offered on a hideout
+  door, on a door with no house manager, or while Houses is off.
 - ✅ **Lock state, owner and carried keys survive a restart** (#2410, PERSISTENCE `houses/registry-persist`,
   `houses/carried-key-persist`, `wt e2e`): `LF_Houses` keeps one row per house with a stable identifier
   (the editor identifier, or `BindIdentifier`) in the `houses` payload (save version 46); a carried house
