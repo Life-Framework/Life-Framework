@@ -374,7 +374,7 @@
   non-police account pay nothing. Unpaid seconds are session state: a restart
   during a shift drops that shift's pay, it never pays twice.
 - 🔨 **Duty pay and rank count only a capped, connected shift** (#2416, in-dev). `LF_PoliceRanks.SettleDutyAt` counts at
-  most `dutyShiftMaxMinutes` (police config, 120) of one clock-in for pay and rank (`ShiftCredit`); the clock runs on
+  most `dutyShiftMaxSeconds` (police config, 10800 = 3 h; 0 = no cap, #2622) of one clock-in for pay and rank (`ShiftCredit`); the clock runs on
   uncounted until the officer clocks out and in again, so an AFK officer earns at most one capped shift per visit to
   the desk. A disconnect settles and stops the clock (`LF_PoliceRanks.OnPlayerLeft`, from `OnPlayerDisconnected`): the
   officer stays on duty with the body and kit, but the time away is never counted. `OnPlayerReturned` (on spawn) starts
@@ -382,7 +382,8 @@
   server restart. The cap applies to every duty role (police and medic). Log `[LFDebug:Ranks] shift cap reached`,
   `duty clock stopped`, `duty clock resumed`. Not tracked: whether a connected officer is moving (no activity signal
   exists), so an officer who stays connected but idle earns up to the cap. The shift's counted seconds are session
-  state: a server restart gives a fresh cap. Test `police/duty-shift-cap`.
+  state: a server restart gives a fresh cap. The cap log fires once per shift. Tests `police/duty-shift-cap`,
+  `police/duty-clock-disconnect`.
 - 🔨 **An expired trial ends the shift** (#2416, in-dev). `LF_PoliceTrialSweep` runs on the server every
   `trialSweepSeconds` (60): it expires trials (`ExpireTrials`), then clocks out each connected on-duty officer whose
   trial ended unpromoted and who may no longer clock in (`LF_PoliceApplications.TrialExpiredFor`, roster check), through

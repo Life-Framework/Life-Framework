@@ -1246,12 +1246,12 @@
           "minimum": 1,
           "maximum": 1440
         },
-        "dutyShiftMaxMinutes": {
+        "dutyShiftMaxSeconds": {
           "type": "integer",
-          "description": "Most minutes of one duty shift that count for duty pay and rank. Past it the clock runs on unpaid until the officer clocks out and in again, so an officer who walked away from the game stops earning. A disconnect also stops the clock",
-          "default": 120,
-          "minimum": 5,
-          "maximum": 1440
+          "description": "Most seconds of one duty shift that count for duty pay and rank; 0 means no cap. Past it the clock runs on unpaid until the officer clocks out and in again, so an officer who walked away from the game stops earning. A disconnect also stops the clock",
+          "default": 10800,
+          "minimum": 0,
+          "maximum": 86400
         },
         "trialSweepSeconds": {
           "type": "integer",

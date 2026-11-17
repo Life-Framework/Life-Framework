@@ -201,6 +201,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DrillLeftSize(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DrinkImpairmentTable(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DrinkQuenches(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DutyClockDisconnect(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyDeskActions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyPay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DutyShiftCap(), LF_TestTier.LOGIC);
