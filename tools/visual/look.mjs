@@ -3,10 +3,13 @@
 //
 //   tools\cli look <area | x,z> [more areas]     shots, contact.jpg and index.json per area in tmp/look/<area>/
 //   tools\cli look all                           every area of agent-box/areas.json in one Workbench run, plus overview.jpg
+//   tools\cli look place:<place>/<slot>          a fitted town slot on the pack's island (MainWorld), viewpoints from the
+//                                                place's dossier and mapping (tools/visual/look-place.mjs); add
+//                                                --interior auto for the ground floor inside
 //   tools\cli look selftest                      the Node checks (plan, status, PNG stats, flags); no Workbench
 //   flags: --edit (the World Editor view instead of play mode)  --close N (close-ups per area, default 12; 0 = none)
 //          --radius m  --hour h (local solar time, default 14)  --settle ms  --out dir  --measure (peak RAM)
-//          --world <path> (override the world; the proof for a failed load)  --keep (leave Workbench's raw output)  --force (skip the RAM gate)  --wait (queue behind a Workbench build)
+//          --world <path|island> (override the world; island = the pack's MainWorld; the proof for a failed load)  --keep (leave Workbench's raw output)  --force (skip the RAM gate)  --wait (queue behind a Workbench build)
 //          --budget s (base budget before the per-shot part: 90 fresh, 150 through the server; raise it on a slow box)
 //          --serve (use the look server, starting one) --fresh (never use it); look serve [--status|--stop [--remove]]
 //          --dump <radius> [--dumpstep m] (tools\cli scout: besides the pictures, every entity within radius of each area as
@@ -30,7 +33,8 @@ import { quietSpawn } from "../lib/quiet-launch.mjs";
 import * as tb from "../remote/testbox.mjs";
 import { townWorld } from "../lib/addons.mjs";
 import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
-import { GRID_WORLD, PACK_GRID_WORLD, gridLayerDirs, gridWorldFor } from "../lib/worlds.mjs";
+import { GRID_WORLD, ISLAND_WORLD, PACK_GRID_WORLD, gridLayerDirs, gridWorldFor, islandLayersDir } from "../lib/worlds.mjs";
+import { PLACE_RX, resolvePlace } from "./look-place.mjs";
 import { lookStartVerdict, phaseText, requestNeedsRam, timeline } from "../lib/look-job.mjs";
 import * as poolRam from "../lib/pool-ram.mjs";
 import { SEED_PEAKS_MB } from "../lib/pool-ram.mjs";
@@ -39,6 +43,8 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PLUGIN = join(ROOT, "tools", "visual", "wb", "LF_VisualShotsPlugin.c");
 const WORLD = townWorld(); // the pack world (a SubScene of DebugWorld that holds the village) when the pack is here
 const BOOT_BUDGET_S = 90;
+// The island (MainWorld: all of Everon) loads and enters play far slower: scout measured 96 s on a busy pool machine.
+const ISLAND_BOOT_BUDGET_S = 210;
 // What a look needs free on a machine to start a Workbench; the pool floor (minFreeMb) comes on top when it chooses one.
 // The pool's Workbench peak (tools/lib/pool-ram.mjs: 3.7 GB measured on the laptop 2026-11-16; the p90 of the
 // observed peaks once there are samples). The look no longer carries a number of its own (it was 1.9 GB + 0.3).
@@ -49,6 +55,9 @@ export const ENV_SHORT_CODE = 4;
 // How long a look queues for a machine (RAM or a Workbench slot) before it gives up: LF_LOOK_WAIT_S.
 const waitBudgetS = () => (Number(process.env.LF_LOOK_WAIT_S) > 0 ? Number(process.env.LF_LOOK_WAIT_S) : 1200);
 const SERVE_BUDGET_S = 150;
+const ISLAND_SERVE_BUDGET_S = 270;
+// The world a look opens from its flags: --world island is the pack's MainWorld; else the path given, or null.
+export const worldFlag = (w) => (typeof w !== "string" ? null : /^island$/i.test(w) ? ISLAND_WORLD : w);
 // Seconds per phase of this process's look (slot wait, RAM wait, build lock, Workbench start, world, shots, collect); printed and kept in index.json.
 const TL = timeline();
 
@@ -81,6 +90,8 @@ export const GRID_PLACES = {
 
 // "hospital" -> the areas.json entry; "262,255" -> an ad-hoc area. A grid: area carries world "grid" (GridWorld).
 export function resolveArea(arg, areas, radius, { root = ROOT } = {}) {
+  // place:<place>/<slot> is a town slot on the pack's island, resolved from the place's dossier and mapping.
+  if (PLACE_RX.test(String(arg))) return resolvePlace(arg, root, radius);
   // grid:<slug> is a debug-grid cell (tools/grid/cells/<slug>.json) or a named GridWorld place; town:<area> is an
   // areas.json area that must lie in the town zone (docs/architecture/world-zones.md).
   const zoned = /^(grid|town):(.+)$/.exec(String(arg));
@@ -116,6 +127,11 @@ export function resolveGridAll(areas, radius, { root = ROOT } = {}) {
 // --interior x,y,z: the area re-centred on a room (x, z on the floor, y the floor height) so shotsFor stands inside it.
 // "128,3.4,96" or "128 3.4 96". The room's reach is the radius (default 6 m).
 export function resolveInterior(area, spec, radius) {
+  // auto: the room a place: target carries (its ground floor, from the dossier).
+  if (String(spec) === "auto" || spec === true) {
+    if (!area.room) throw new Error("--interior auto needs a place:<place>/<slot> target (it reads the room from the dossier); else give x,y,z");
+    return { ...area, name: `${area.name}-interior`, x: area.room.x, y: area.room.y, z: area.room.z, radius: radius ?? area.room.radius, interior: true };
+  }
   const m = /^\s*(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)\s*$/.exec(String(spec));
   if (!m) throw new Error(`--interior wants x,y,z (the room's centre on its floor), got "${spec}"`);
   return { ...area, name: `${area.name}-interior`, x: Number(m[1]), y: Number(m[2]), z: Number(m[3]), radius: radius ?? 6, interior: true };
@@ -125,6 +141,9 @@ export function resolveInterior(area, spec, radius) {
 // (the pack town when the pack is here) for every town area. A run opens one world, so the two cannot mix.
 export function worldOfAreas(areas) {
   const grid = areas.filter((a) => a.world === "grid").length;
+  const island = areas.filter((a) => a.world === "island").length;
+  if (island && island !== areas.length) throw new Error("a look opens one world: place: targets (the island, MainWorld) and other areas need separate runs");
+  if (island) return ISLAND_WORLD;
   if (grid && grid !== areas.length) throw new Error("a look opens one world: grid: targets (GridWorld) and town areas (the playtest world) need separate runs");
   // A pack cell (claim "pack": true) lives in the pack's grid world, a SubScene of GridWorld that holds the core cells too.
   if (grid && areas.some((a) => a.world === "grid" && a.pack)) return PACK_GRID_WORLD;
@@ -527,7 +546,7 @@ export function compileErrors(logFile) {
 
 // null when a Workbench fits in free RAM now (idle sessions are trimmed first), else the reason.
 // waitS > 0: queue for the RAM (re-read every 15 s) instead of refusing at once.
-async function ramShort(force, waitS = 0) {
+async function ramShort(force, waitS = 0, world = undefined) {
   if (force) return null;
   const pool = await import("../remote/pool.mjs");
   const wt = await import("../wt.mjs");
@@ -546,7 +565,7 @@ async function ramShort(force, waitS = 0) {
     } catch {}
     const st = serve.readServeState(ROOT);
     const seen = procs?.length ? poolRam.withSeenMax(hub, procs) : procs;
-    return lookStartVerdict({ state: { freeMb: Math.round(freemem() / 1048576), procs: seen }, settings, peaks, residentPid: st?.pid ?? null });
+    return lookStartVerdict({ state: { freeMb: Math.round(freemem() / 1048576), procs: seen }, settings, peaks, residentPid: st?.pid ?? null, world: poolRam.worldClass(world) });
   };
   for (;;) {
     let v = verdict();
@@ -604,7 +623,7 @@ async function freshRun(exe, profile, raw, plan, shots, opts, args, areas) {
     mkdirSync(injected, { recursive: true });
     cpSync(PLUGIN, join(injected, "LF_VisualShotsPlugin.c"));
     // A dump asks the editor world for every entity near each area (about 40 s on the laptop for a village), then the shots follow.
-    const budgetS = num(args.flags.budget, BOOT_BUDGET_S) + (opts.dump ? 60 * areas.length : 0) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
+    const budgetS = num(args.flags.budget, poolRam.worldClass(opts.world || worldOfAreas(areas)) === poolRam.ISLAND ? ISLAND_BOOT_BUDGET_S : BOOT_BUDGET_S) + (opts.dump ? 60 * areas.length : 0) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
     console.log(`look: ${shots.length} shot(s) of ${areas.length} area(s), ${opts.edit ? "edit" : "play"} mode, hidden Workbench (budget ${budgetS} s)`);
     return await runWorkbench(exe, profile, budgetS, args.flags.measure === true);
   } finally {
@@ -612,6 +631,20 @@ async function freshRun(exe, profile, raw, plan, shots, opts, args, areas) {
     try {
       if (existsSync(injected) && readdirSync(injected).length === 0) rmSync(injected, { recursive: false });
     } catch {}
+  }
+}
+
+// The world a look will open (its --world, else its areas'), or null for `look item` / a target that does not resolve.
+export function lookWorldOf(args, { root = ROOT } = {}) {
+  if (worldFlag(args.flags.world)) return worldFlag(args.flags.world);
+  if (args.pos[0] === "item") return null;
+  try {
+    const all = JSON.parse(readFileSync(join(root, "agent-box", "areas.json"), "utf8")).areas;
+    const radius = args.flags.radius === undefined ? undefined : num(args.flags.radius, undefined);
+    const areas = args.pos[0] === "all" ? all : args.pos.flatMap((p) => (p === "grid:all" ? resolveGridAll(all, radius, { root }) : [resolveArea(p, all, radius, { root })]));
+    return worldOfAreas(areas);
+  } catch {
+    return null;
   }
 }
 
@@ -677,8 +710,11 @@ async function run(args) {
     console.log(`FAIL  ${e.message}`);
     return 2;
   }
-  const world = itemPerArea ? null : loadWorld(ROOT, [GRID_WORLD, PACK_GRID_WORLD].includes(worldOfAreas(areas)) ? gridLayerDirs(ROOT) : undefined);
-  const opts = { dump: args.flags.dump === undefined ? null : { radius: num(args.flags.dump, undefined), step: num(args.flags.dumpstep, 5) }, world: typeof args.flags.world === "string" ? args.flags.world : undefined, edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
+  const areaWorld = itemPerArea ? null : worldOfAreas(areas);
+  // Close-ups come from the layers of the world opened: the grid's, the island's Place_* layers, else the playtest world's.
+  const layerDirs = [GRID_WORLD, PACK_GRID_WORLD].includes(areaWorld) ? gridLayerDirs(ROOT) : areaWorld === ISLAND_WORLD ? (existsSync(islandLayersDir(ROOT)) ? [islandLayersDir(ROOT)] : []) : undefined;
+  const world = itemPerArea ? null : loadWorld(ROOT, layerDirs);
+  const opts = { dump: args.flags.dump === undefined ? null : { radius: num(args.flags.dump, undefined), step: num(args.flags.dumpstep, 5) }, world: worldFlag(args.flags.world) ?? undefined, edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
   const perArea = itemPerArea ?? areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
   for (const n of itemNotes) console.log(`look: ${n}`);
   const shots = perArea.flatMap((p) => p.shots);
@@ -689,13 +725,16 @@ async function run(args) {
   // Routed here by routeLook: a short machine hands the look back at once (ENV_SHORT_CODE) so another is tried.
   // Pinned here (--local, or the pool machine a router sent it to): queue for the RAM instead of refusing.
   const envFail = args.routed ? ENV_SHORT_CODE : 3;
-  const ramGate = () => TL.span("ram-wait", () => ramShort(args.flags.force === true, args.routed ? 0 : waitBudgetS()));
+  const lookWorld = opts.world || areaWorld;
+  const island = poolRam.worldClass(lookWorld) === poolRam.ISLAND;
+  const ramGate = () => TL.span("ram-wait", () => ramShort(args.flags.force === true, args.routed ? 0 : waitBudgetS(), lookWorld));
 
   // A live look server (tools\cli look serve) takes the plan; `look item` stays on the fresh path (its spawned
   // prefabs are not proven through the server). --serve starts one when none is up; --fresh never uses it.
   const serve = await import("./look-serve.mjs");
   const useServer = !itemPerArea && !args.flags.fresh && (args.flags.serve === true || serve.serverUp(ROOT));
-  if (!useServer) {
+  // An island request to a live server is gated too: the resident grows to the island peak when it opens MainWorld.
+  if (!useServer || requestNeedsRam(serve.serverUp(ROOT), lookWorld)) {
     const ram = await ramGate();
     if (ram) {
       console.log(`${args.routed ? "look: not here:" : "FAIL "} ${ram}`);
@@ -726,7 +765,7 @@ async function run(args) {
   try {
     if (useServer) {
       // A request includes leaving play, maybe a reopen, and entering play again: about 10 s on a PC, a minute on lf-cloud.
-      const budgetS = num(args.flags.budget, SERVE_BUDGET_S) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
+      const budgetS = num(args.flags.budget, island ? ISLAND_SERVE_BUDGET_S : SERVE_BUDGET_S) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
       let ramMsg = null;
       // A throw in the server path (git, file system) is one more reason to fall back, never a failed look.
       const r = await serve.serveLook(ROOT, {
@@ -956,6 +995,34 @@ export async function selftest() {
       mixed = /one world/.test(e.message);
     }
     ok(mixed, "a grid: and a town area in one look were not refused");
+    // place:<place>/<slot> (#2347): a town slot on the island, from the fixture place's dossier and mapping. A draft's
+    // pictures were sky because look opened DebugWorld; the plan must name the island world, its front the entrance.
+    // red-proof: 2026-11-17 with the island branch of worldOfAreas left out this printed "look selftest FAIL: a place: plan must open the pack's MainWorld".
+    {
+      const { placeArea } = await import("./look-place.mjs");
+      const fixDir = join(ROOT, "tools", "town", "fixtures");
+      const placeData = { dossier: JSON.parse(readFileSync(join(fixDir, "map-dossier.json"), "utf8")), mapping: JSON.parse(readFileSync(join(fixDir, "check-place", "complete", "mapping.json"), "utf8")) };
+      const arr = placeArea(placeData, "sample-square", "arrival");
+      ok(arr.world === "island" && arr.x === 1012 && arr.z === 2014 && arr.front === 180 && arr.radius >= 14, `place arrival resolved to ${JSON.stringify(arr)}`);
+      const board = placeArea(placeData, "sample-square", "board");
+      ok(board.front === 0, `a building with no known entrance faces its yaw (+z at yaw 0), got ${board.front}`);
+      ok(worldOfAreas([arr]) === "Worlds/MainWorld/MainWorld.ent" && planText(shotsFor(arr, [], { close: 0 }), [arr]).startsWith("world Worlds/MainWorld/MainWorld.ent\n"), "a place: plan must open the pack's MainWorld");
+      ok(/ - 2014 /.test(shotsFor(arr, [], { close: 0 })[0].line), "a place: wide must take its ground height from the terrain (ty -)");
+      const inside = resolveInterior(arr, "auto");
+      ok(inside.interior && inside.y === 12.4 && inside.x === 1012 && inside.radius >= 4 && inside.radius <= 8, `--interior auto: ${JSON.stringify(inside)}`);
+      let refused = 0;
+      for (const bad of [() => placeArea(placeData, "sample-square", "nope"), () => resolveInterior(area, "auto"), () => worldOfAreas([arr, area])]) {
+        try {
+          bad();
+        } catch {
+          refused++;
+        }
+      }
+      ok(refused === 3, `an unmapped slot, --interior auto off a place, and a place mixed with a town area must refuse (${refused}/3)`);
+      ok(worldFlag("island") === "Worlds/MainWorld/MainWorld.ent" && worldFlag("Worlds/X/X.ent") === "Worlds/X/X.ent" && worldFlag(undefined) === null, "worldFlag");
+      ok(poolRam.worldClass("Worlds/MainWorld/MainWorld.ent") === "island" && poolRam.worldClass("Worlds/DebugWorld/DebugWorld.ent") === "small", "the island world must reserve the island Workbench peak");
+      ok(poolRam.peakMb({}, "workbench", "island") > poolRam.peakMb({}, "workbench", "small"), "the island Workbench seed must exceed the small one");
+    }
     // grid:all is every claimed cell; with no claim it is an error, not an empty run.
     const root = mkdtempSync(join(tmpdir(), "look-grid-"));
     try {
@@ -1165,7 +1232,7 @@ export async function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | town:<area> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--interior x,y,z] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh|--cold] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
+const USAGE = "usage: tools\\cli look <area | town:<area> | place:<place>/<slot> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--world <path|island>] [--edit] [--close N] [--radius m] [--interior x,y,z|auto] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh|--cold] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);
@@ -1259,7 +1326,13 @@ async function routeLook(args, argv) {
   const settings = pool.poolSettings(ROOT);
   const machine = typeof args.flags.machine === "string" ? args.flags.machine : null;
   const waitS = waitBudgetS();
-  const reserveMb = poolRam.peakMb(poolRam.readPeaks((await import("../wt.mjs")).hubDirOf(ROOT)), "workbench"); // the pool's measured Workbench peak
+  // The pool's measured Workbench peak for the world it opens: an island look (place:, --world island) reserves the island peak.
+  const lookWorld = lookWorldOf(args);
+  const peaks = poolRam.readPeaks((await import("../wt.mjs")).hubDirOf(ROOT));
+  const reserveMb = poolRam.peakMb(peaks, "workbench", poolRam.worldClass(lookWorld));
+  // What a resident look Workbench already holds: a small-world peak, so an island request still needs the difference.
+  const residentMb = poolRam.peakMb(peaks, "workbench", poolRam.SMALL);
+  if (poolRam.worldClass(lookWorld) === poolRam.ISLAND) console.log(`look: island world ${lookWorld}: reserving ${reserveMb} MB for the Workbench`);
   const warmWanted = !args.flags.cold && !args.flags.fresh && args.pos[0] !== "item";
   const tried = [];
   const t0 = Date.now();
@@ -1271,7 +1344,7 @@ async function routeLook(args, argv) {
       view = (await import("../lib/wb-route.mjs")).workbenchMachines(ROOT, { mode: "any", machine }); // this PC only with the workbench cap
       // A box whose resident look Workbench is up takes a warm look with no new RAM: it already holds its peak
       // (look-job.requestNeedsRam), so its free RAM counts that much more for this look.
-      if (warmWanted) for (const r of view.remotes) if (r.state?.lookServer && !requestNeedsRam(true)) r.state = { ...r.state, freeMb: (r.state.freeMb ?? 0) + reserveMb };
+      if (warmWanted) for (const r of view.remotes) if (r.state?.lookServer) r.state = { ...r.state, freeMb: (r.state.freeMb ?? 0) + (requestNeedsRam(true, lookWorld) ? Math.min(residentMb, reserveMb) : reserveMb) };
       c = wbGate.chooseGate({ ...view, machine, exclude: tried, reserveMb, minFreeMb: settings.minFreeMb, roomyMb: settings.roomyMb });
       if (c.where !== "wait") break;
       if (Date.now() - t0 > waitS * 1000) {

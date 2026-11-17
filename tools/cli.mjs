@@ -38,6 +38,7 @@
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
+import { areaConcurrency } from "./lib/validate-concurrency.mjs";
 import "./lib/quiet-gate.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -651,8 +652,9 @@ function toolEnv() {
 const FULL_ONLY = new Set(["validate-scripts.ps1"]);
 
 // Checks are independent read-only scripts, so they run concurrently (most of
-// their time is PowerShell start-up). Output is printed in file order.
-const AREA_CONCURRENCY = Math.max(8, Math.min(12, os.cpus().length));
+// their time is PowerShell start-up), fewer at once when free RAM is short (tools/lib/validate-concurrency.mjs).
+// Output is printed in file order.
+const AREA_CONCURRENCY = areaConcurrency(os.cpus().length, Math.round(os.freemem() / 1048576));
 
 function invokeScriptAsync(full, opts = {}) {
   let cmd = process.execPath;
@@ -4257,10 +4259,11 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   asset new <slug> --kind weapon|gadget|deployable --prompt "..." | run <slug> [--from s] [--only s] [--force] | status | doctor | selftest
                                 roadmap item to asset: Meshy generation (paid, capped per asset), headless Blender clean-up,
                                 Workbench import, prefab scaffold; resumable per stage in tmp/assets/<slug>/ (docs/asset-pipeline/README.md)
-  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] [--serve|--fresh] | item <prefab|slug> [--states ground,inventory] | selftest
+  look <area | x,z | all | place:<place>/<slot>> [--world island] [--interior auto] [--edit] [--close N] [--hour h] [--measure] [--wait] [--serve|--fresh] | item <prefab|slug> [--states ground,inventory] | selftest
                                 area pictures with no session: a hidden Workbench plays DebugWorld, shoots a wide,
                                 three obliques, a top view and close-ups, and writes tmp/look/<area>/contact.jpg
-                                (about 20 s; a few seconds through a live look server; docs/visual-testing.md)
+                                (about 20 s; a few seconds through a live look server; docs/visual-testing.md);
+                                place:<place>/<slot> shoots a fitted town slot on the island (MainWorld, about 2-4 min)
   look serve [--status | --stop [--remove]]
                                 one Workbench for every worktree's looks, on the Life-Framework-look-viewer checkout;
                                 each look is served from a snapshot of the caller's worktree, stops after 10 min idle
