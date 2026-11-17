@@ -36,6 +36,30 @@ class LF_MapPoiAudience
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Adds the services the packed account state (LF_AccountStateBits) is on duty in. The map's two
+	//! audience builders (LF_MapPlacesUI, LF_MapPlacesKnown) never added a role, so a ROLE kind such as
+	//! the police armoury was hidden from on-duty police too (review 2026-11-17).
+	void AddRolesFromState(int state)
+	{
+		if (LF_AccountStateBits.IsOnDutyPolice(state))
+			AddRole(LF_MapShares.ROLE_POLICE);
+
+		if (LF_MedicDuty.IsOnDutyState(state))
+			AddRole(LF_MapShares.ROLE_MEDIC);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the local player's audience, the roles from their replicated account state and the
+	//! places their character knows.
+	static LF_MapPoiAudience Local()
+	{
+		LF_MapPoiAudience audience = new LF_MapPoiAudience();
+		audience.AddRolesFromState(LF_AccountReplication.GetState(LF_Utils.GetLocalCharacter()));
+		LF_MapKnown.FillAudience(audience);
+		return audience;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	array<string> GetRoles()
 	{
 		return m_aRoles;

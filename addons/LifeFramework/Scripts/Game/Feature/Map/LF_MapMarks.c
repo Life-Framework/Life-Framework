@@ -263,6 +263,16 @@ class LF_MapMarks
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: may this player's mark sync or save go ahead? Its own rate bucket (LF_ERequestKind.MAP), not
+	//! the shared COMMS one: three phone or board asks in five seconds used to drop the respawn's restore
+	//! or the last save, and the next upload then overwrote the stored marks with the client's (maybe
+	//! empty) map (review 2026-11-17).
+	static bool AllowAsk(int playerId, string request, bool notify = true)
+	{
+		return LF_RateLimit.Allow(playerId, LF_ERequestKind.MAP, request, notify);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Both sides: a networked marker add was refused (D-M7: vanilla shared markers are off).
 	static void RefuseNetworked(string where)
 	{
