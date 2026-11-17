@@ -9,11 +9,11 @@
 //   7. without --game the verbs are listed, not run.
 // red-proof: written before `--game` existed (the B5 PASS and B4 FAIL checks failed); then with the missing-verb branch
 // returning FAIL, "B6 is BLOCKED by #1303" failed, and with the exit code ignoring FAIL, "the FAIL exits 1" failed. Restored.
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { main, sheetBeats } from "../commands/opening.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIX = join(HERE, "fixtures", "opening-game");
@@ -22,7 +22,7 @@ const check = (ok, msg) => {
   if (!ok) failures.push(msg);
 };
 
-const tmp = mkdtempSync(join(tmpdir(), "lf-opening-game-"));
+const tmp = scratchDir("lf-opening-game-");
 const calls = join(tmp, "calls.txt");
 process.env.LF_FIXTURE_CALLS = calls;
 const capture = async (args) => {

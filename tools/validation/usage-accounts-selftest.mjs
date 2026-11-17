@@ -21,11 +21,11 @@
 // active count dropped from the score, "FAIL usage-accounts: same plan, same headroom: fewer active agents wins: a != b". Later turns, same day: with the reopened check forced false it printed "FAIL usage-accounts: no reset
 // logged, but a turn after the hit: reopened: ... != 0"; with hit + 5 h used even when a reset is logged, "FAIL
 // usage-accounts: logged reset passed, no turn after: not limited: ... != 0".
-import { mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { analyze, accountLine, availableAt, clusterHits, main, mergeAccounts, parseWindow, pickAccount, pickLine, scanRemote } from "../agents/usage-accounts.mjs";
 import { cost, maskEmail, scanConfigDir } from "../agents/usage-scan.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const eq = (got, want, msg) => {
@@ -37,7 +37,7 @@ const near = (got, want, msg) => {
 
 const NOW = Date.parse("2026-11-14T18:00:00Z");
 const at = (hhmm) => `2026-11-14T${hhmm}:00Z`;
-const home = mkdtempSync(join(tmpdir(), "lf-usage-accounts-"));
+const home = scratchDir("lf-usage-accounts-");
 const turn = (id, ts, usage, extra = {}) => JSON.stringify({ type: "assistant", timestamp: ts, message: { id, role: "assistant", model: "claude-opus-5-5", usage: { output_tokens: 0, ...usage }, content: [] }, ...extra });
 const synth = (id, ts) => turn(id, ts, { input_tokens: 0, output_tokens: 0 }, {}).replace("claude-opus-5-5", "<synthetic>");
 const limitHit = (id, ts, resetsAt, type) =>

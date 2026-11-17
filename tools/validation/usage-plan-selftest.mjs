@@ -11,15 +11,18 @@
 //      "plan usage unavailable (why)" line, never a throw;
 //   5. the token never appears: not in the success line, not in any error line, not in the saved samples file, and
 //      redact() strips a token-shaped string and a Bearer header; an expired token makes no request at all;
-//   6. samples are added at most every 3 min and dropped after 48 h.
-// red-proof: 2026-11-17, four breaks, each caught: redact() returning its input printed "FAIL usage-plan: network
+//   6. samples are added at most every 3 min and dropped after 48 h;
+//   7. which login is read: with no ~/.claude-gaming (the laptop) Gaming reads ~/.claude and Personal is "not here";
+//      credential sources are tried in order (file, then Credential Manager; a fake source stands in), an unreadable
+//      one is skipped, and the Credential Manager reader decodes a UTF-16LE or UTF-8 blob without leaking on failure.
+// red-proof: 2026-11-17, four breaks (plus for 7: accountDir gaming always ~/.claude-gaming printed "FAIL usage-plan: one login: Gaming reads ~/.claude"; the source loop stopping at the first source printed "falls through to the second source"), each caught: redact() returning its input printed "FAIL usage-plan: network
 // error text with the token in it: secret leaked"; the week projection using the 5h rate printed "FAIL usage-plan:
 // projected at reset: 30 != 198"; the over-pace branch removed from advise() printed "FAIL usage-plan: over pace: kind:
 // on != over"; the 4 h look-back removed printed "FAIL usage-plan: a sample older than 4 h is not used: 5 != 2".
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { addSample, advise, burnRate, clock, fetchPlanUsage, normalize, pace, planFor, planLine, readCredentials, redact, SAMPLE_KEEP_MS } from "../agents/usage-plan.mjs";
+import { accountDir, addSample, advise, burnRate, clock, fetchPlanUsage, normalize, pace, planFor, planLine, readCredentials, readCredman, redact, SAMPLE_KEEP_MS } from "../agents/usage-plan.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const eq = (got, want, msg) => {
@@ -178,7 +181,7 @@ const sample = (agoH, five, week, plan0, agents = null) => ({ t: NOW - agoH * H,
 }
 
 // ---- 4/5. fail soft and secrets, through planFor with a temp home
-const home = mkdtempSync(join(tmpdir(), "lf-usage-plan-"));
+const home = scratchDir("lf-usage-plan-");
 const cfg = join(home, ".claude-gaming");
 mkdirSync(cfg, { recursive: true });
 const writeCreds = (expiresAt) => writeFileSync(join(cfg, ".credentials.json"), JSON.stringify({ claudeAiOauth: { accessToken: SECRET, refreshToken: REFRESH, expiresAt, scopes: ["user:profile"] } }));
@@ -251,6 +254,59 @@ writeCreds(NOW + 5 * H);
   eq(list.length, 2, "a reading 4 min later is kept");
   list = addSample(list, { t: NOW + SAMPLE_KEEP_MS + 10 * 60e3, week: 4 }, NOW + SAMPLE_KEEP_MS + 10 * 60e3);
   eq(list.length, 1, "readings older than 48 h are dropped");
+}
+
+// ---- 7. where the login is read from (2026-11-17: the laptop has no ~/.claude-gaming; Gaming's login is ~/.claude)
+{
+  const oauth = (tok, exp) => ({ claudeAiOauth: { accessToken: tok, refreshToken: REFRESH, expiresAt: exp } });
+  // account dirs: two-login machine (the PC) vs one-login machine (the laptop)
+  const two = scratchDir("lf-usage-two-");
+  const one = scratchDir("lf-usage-one-");
+  mkdirSync(join(two, ".claude-gaming"));
+  eq(accountDir("gaming", two), join(two, ".claude-gaming"), "two logins: Gaming dir");
+  eq(accountDir("personal", two), join(two, ".claude"), "two logins: Personal dir");
+  eq(accountDir("gaming", one), join(one, ".claude"), "one login: Gaming reads ~/.claude");
+  eq(accountDir("personal", one), null, "one login: no Personal");
+  // the laptop end to end: credentials only in ~/.claude, read through the real file source
+  mkdirSync(join(one, ".claude"));
+  writeFileSync(join(one, ".claude", ".credentials.json"), JSON.stringify(oauth(SECRET, NOW + 5 * H)));
+  const lap = await planFor("gaming", { home: one, now: NOW, agents: 1, fetchImpl: async () => okRes(REPLY) });
+  eq(lap.ok, true, "laptop layout: Gaming reads ~/.claude");
+  lacks(JSON.stringify(lap), SECRET, "laptop layout result");
+  const pers = await planFor("personal", { home: one, now: NOW, agents: 0, fetchImpl: async () => okRes(REPLY) });
+  has(pers.line, "Personal: plan usage unavailable (no Personal login on this machine", "laptop layout: Personal");
+  // sources: the first with a token wins; a fake source stands in for the Credential Manager
+  const fake = (j) => () => j;
+  const boom = () => { throw new Error(`cannot read ${SECRET}`); };
+  const from = (sources) => readCredentials("x", NOW, { sources });
+  eq(from([fake(null), fake(oauth("TOKEN-FROM-STORE-2", NOW + H))]).token, "TOKEN-FROM-STORE-2", "falls through to the second source");
+  eq(from([fake(oauth("TOKEN-FROM-FILE-1", NOW + H)), fake(oauth("TOKEN-FROM-STORE-2", NOW + H))]).token, "TOKEN-FROM-FILE-1", "the file source wins");
+  eq(from([boom, fake(oauth("TOKEN-FROM-STORE-2", NOW + H))]).token, "TOKEN-FROM-STORE-2", "an unreadable source is skipped");
+  eq(from([fake(null), fake(null)]).error, "no .credentials.json (not signed in with OAuth here)", "nothing anywhere");
+  eq(from([boom]).error, "credentials file unreadable", "only an unreadable source");
+  lacks(from([boom]).error, SECRET, "the unreadable error");
+  eq(from([fake({ claudeAiOauth: {} })]).error, "no OAuth access token in the credentials", "a source with no token");
+  eq(from([fake(oauth("TOKEN-FROM-STORE-2", NOW - H))]).expired, true, "an expired token from a store is flagged");
+  // through planFor with a fake credential source: the token reaches the request, never the line
+  let bearer = "";
+  const viaStore = await planFor("gaming", { home: two, now: NOW, agents: 1, sources: [fake(null), fake(oauth(SECRET, NOW + H))], fetchImpl: async (u, init) => { bearer = init.headers.Authorization; return okRes(REPLY); } });
+  eq(viaStore.ok, true, "fake store: ok");
+  eq(bearer, `Bearer ${SECRET}`, "fake store: token sent");
+  lacks(JSON.stringify(viaStore), SECRET, "fake store result");
+  // the Credential Manager reader decodes a UTF-16LE blob (what cmdkey writes) and a UTF-8 one, and never leaks on failure
+  const blob = (text, enc) => ({ status: 0, stdout: Buffer.from(text, enc).toString("base64") });
+  const json = JSON.stringify(oauth(SECRET, NOW + H));
+  eq(readCredman("t", { run: () => blob(json, "utf16le") }).claudeAiOauth.accessToken, SECRET, "credman UTF-16LE blob");
+  eq(readCredman("t", { run: () => blob(json, "utf8") }).claudeAiOauth.accessToken, SECRET, "credman UTF-8 blob");
+  eq(readCredman("t", { run: () => ({ status: 0, stdout: "" }) }), null, "credman: no entry");
+  try {
+    readCredman("t", { run: () => ({ status: 1, stdout: SECRET, stderr: SECRET }) });
+    failures.push("readCredman did not throw on a failed run");
+  } catch (e) {
+    lacks(e.message, SECRET, "credman failure message");
+  }
+  rmSync(two, { recursive: true, force: true });
+  rmSync(one, { recursive: true, force: true });
 }
 
 rmSync(home, { recursive: true, force: true });

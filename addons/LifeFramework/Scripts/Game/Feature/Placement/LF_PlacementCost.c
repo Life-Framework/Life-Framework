@@ -282,7 +282,7 @@ class LF_PlacementCost
 	//------------------------------------------------------------------------------------------------
 	//! Forgets charges whose placement is gone without a pick-up (a roadblock that expired, a strip
 	//! that was destroyed): no refund, so the list never outgrows what stands in the world.
-	//! eturn how many it forgot.
+	//! \return how many it forgot.
 	static int Prune()
 	{
 		BaseWorld world = GetGame().GetWorld();

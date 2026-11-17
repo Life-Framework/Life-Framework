@@ -198,7 +198,7 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! \param locked Current lock state.
-	//! eturn The action label for what the action would do next.
+	//! \return The action label for what the action would do next.
 	static string ActionLabelKey(bool locked)
 	{
 		if (locked)
@@ -222,7 +222,7 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	//! lock, records it, plays the sound and tells the user.
 	//! \param user The character asking.
 	//! \param source "menu" or "key", for the log.
-	//! eturn True when the lock changed.
+	//! \return True when the lock changed.
 	bool TryToggleBy(IEntity user, string source)
 	{
 		if (LF_Systems.Refuses("VehicleLock", "lock toggle"))

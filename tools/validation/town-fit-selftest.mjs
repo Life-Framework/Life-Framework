@@ -21,10 +21,10 @@
 // red-proof: before verifySteps existed (audit and look steps inline in main, the audit on no world, `look` on a bare x,z) this threw "fitMod.verifySteps is not a function" (2026-11-17).
 // red-proof: with the kit rows' yaw ignored (anchor yaw 0) this printed "FAIL shop row fit-display is not where kit apply puts it" (2026-11-16).
 
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "town", "fixtures");
@@ -188,7 +188,7 @@ check(!self.ok, "a slot already fitted on origin/main was fitted again");
 }
 
 // ---- dry writes nothing
-const out = mkdtempSync(join(tmpdir(), "lf-fit-"));
+const out = scratchDir("lf-fit-");
 try {
   const code = await fitMod.main(["sample-square", "shop", "--dry", "--no-fetch", "--dossier", join(FIX, "map-dossier.json"), "--mapping", join(FIX, "fit-mapping.json"), "--template-file", join(FIX, "fit-template.json"), "--kits-dir", FIX, "--out-dir", out], { root: ROOT, run: noGit });
   check(code === 0, `fit --dry exited ${code}`);

@@ -16,8 +16,11 @@ class LF_InventoryUtils
 		if (!item)
 			return false;
 
-		// Intenta insertar el ítem en el inventario principal
-		if (storageManager.TryInsertItem(item))
+		// The server's own insert: a restricted storage (hideout stash) takes this carrier-less item (#2584).
+		LF_ServerInsertScope.Begin();
+		bool inserted = storageManager.TryInsertItem(item);
+		LF_ServerInsertScope.End();
+		if (inserted)
 			return true;
 
 		// Si falla, elimina el ítem para evitar leaks

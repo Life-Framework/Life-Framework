@@ -7,8 +7,7 @@
 //   writePrefabs without the prefab-<kind>.mjs dispatch  -> FAIL gadget: the prefab stage writes the gadget scaffold
 //   checkReport with the pistol tolerances for a gadget  -> FAIL gadget: a gadget 10 % off its length is flagged
 //   no tools/assets/handcuffs/meshy.json (before it was written) -> FAIL gadget: the handcuffs record their accepted Meshy generation id
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { checkReport } from "../assets/pipeline/checks.mjs";
@@ -16,6 +15,7 @@ import { KINDS } from "../assets/pipeline/kinds.mjs";
 import { DEFAULT_HAND, VANILLA, gadgetPrefab, previewDistance } from "../assets/pipeline/prefab-gadget.mjs";
 import { writePrefabs } from "../assets/pipeline/prefab.mjs";
 import { parse } from "../assets/pipeline/xob.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -61,7 +61,7 @@ export async function main() {
 
   // ---- the prefab stage dispatches to prefab-gadget.mjs and writes once ----------------------------
   {
-    const root = mkdtempSync(join(tmpdir(), "lf-asset-gadget-"));
+    const root = scratchDir("lf-asset-gadget-");
     const addon = join(root, "addons", "LifeFramework");
     const s = spec();
     mkdirSync(join(addon, s.asset_dir), { recursive: true });

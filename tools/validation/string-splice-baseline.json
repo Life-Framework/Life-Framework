@@ -1,0 +1,26 @@
+{
+ "LifeFramework/Scripts/Game/Core/Config/LF_ConfigMigration.c::StampVersion::splice": {
+  "count": 2,
+  "reason": "REAL BUG: splices schemaVersion into the config JSON with Substring + concatenation; config text past 8191 chars loses its tail at the first migration (#2626 follow-up 1 fixes it; delete this entry then)."
+ },
+ "LifeFramework/Scripts/Game/Core/Config/LF_ConfigMigration.c::StampVersion::tail": {
+  "count": 1,
+  "reason": "REAL BUG: `rest` is the tail of the whole config JSON, cut at 8191 chars; the same fix as the splice entries above (#2626 follow-up 1)."
+ },
+ "LifeFramework/Scripts/Game/Core/Config/LF_ContentReload.c::Find::splice": {
+  "count": 1,
+  "reason": "Upper-cases the first letter of a reload verb (an ops command word of a few chars) and rejoins the rest to name a class."
+ },
+ "LifeFramework/Scripts/Game/Feature/Terms/LF_TermBook.c::Expand::splice": {
+  "count": 1,
+  "reason": "Appends the tail of a localised term template after its last placeholder; a template is hundreds of chars, so unbounded only if one passes 8191 (enforce-string-limits.md site 8)."
+ },
+ "LifeFramework/Scripts/Game/Feature/Terms/LF_TermBook.c::Placeholder::splice": {
+  "count": 1,
+  "reason": "Lower-cases the first letter of a placeholder name (a term id of a few chars) and rejoins the rest."
+ },
+ "LifeFramework/Scripts/Game/Feature/Terms/LF_TermBook.c::Capitalise::splice": {
+  "count": 1,
+  "reason": "Upper-cases the first letter of one term text and rejoins the rest; a term text is a phrase, bounded in practice (enforce-string-limits.md site 8)."
+ }
+}

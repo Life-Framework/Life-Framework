@@ -135,6 +135,7 @@
     "priceParkedVehicle": 750,
     "deskRange": 5,
     "heldGroundMaxPoints": 1000,
+    "hideoutLeaseIdleDays": 14,
     "rankDefaults": {
       "officer": {
         "withdraw": true
@@ -187,7 +188,7 @@
     "applyRejectCooldownHours": 72,
     "trialHours": 168,
     "armoryCooldownMinutes": 120,
-    "dutyShiftMaxMinutes": 120,
+    "dutyShiftMaxSeconds": 10800,
     "trialSweepSeconds": 60,
     "ticketRateWindowSeconds": 10,
     "ticketRateBurst": 3,

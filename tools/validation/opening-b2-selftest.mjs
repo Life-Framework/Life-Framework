@@ -14,17 +14,17 @@
 // red-proof: before tools/playtest/opening/b2-start.mjs existed every case printed "FAIL ... no BEAT line" (2026-11-15); with the
 // password branch of b2-start.mjs narrowed to `if (whole)`, "case 2: an empty password gives password FAIL" failed. Restored.
 
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "opening-b2");
 const SCRIPT = join(ROOT, "tools", "playtest", "opening", "b2-start.mjs");
 const FAKE_CLI = join(FIX, "fake-cli.mjs");
-const scratch = mkdtempSync(join(tmpdir(), "lf-b2-"));
+const scratch = scratchDir("lf-b2-");
 const ORDER = "start,save-loaded,server-name,password,join-wrong-password,join-right-password,watch";
 
 let failed = 0;

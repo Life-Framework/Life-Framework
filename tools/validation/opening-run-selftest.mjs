@@ -10,11 +10,11 @@
 //   6. the parsing helpers: BEAT lines, the aggregate status, the sheet's beats and verbs.
 // red-proof: written before tools/commands/opening.mjs existed (the import failed); then with the FAIL-to-exit-1 line removed,
 // "a fixture FAIL exits 1" failed, and with blockedBy returning [], "B9 is blocked by #1413, #1274" failed. Restored.
-import { existsSync, mkdtempSync, readFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { aggregate, blockedBy, main, parseBeatLines, sheetBeats } from "../commands/opening.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIX = join(HERE, "fixtures", "opening-run");
@@ -38,7 +38,7 @@ check(sheet.find((b) => b.beat === "B8").verbs.join() === "restart-cycle", "B8 n
 check(sheet.find((b) => b.beat === "B1").title === "Desk: go or no-go before opening", "the title drops the minutes");
 check(sheet.find((b) => b.beat === "B8").title === "The clean restart and the reload", "the title drops the markers");
 
-const tmp = mkdtempSync(join(tmpdir(), "lf-opening-"));
+const tmp = scratchDir("lf-opening-");
 const capture = async (args) => {
   const out = [];
   const [log, err] = [console.log, console.error];
