@@ -7,12 +7,12 @@
 //   materials.py apply leaving roughness as Meshy gave it -> FAIL materials: plastic roughness stays 0.75..0.85
 //   DEFAULT_MATERIALS without its metallic_above region   -> FAIL materials: a spec with no block is plastic with Meshy's metal kept
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { blenderExe } from "../assets/pipeline/asset.mjs";
 import { CLASSES, materialProblems, resolveMaterials } from "../assets/pipeline/materials.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -41,7 +41,7 @@ export async function main() {
 
   const exe = blenderExe();
   if (existsSync(exe)) {
-    const dir = mkdtempSync(join(tmpdir(), "lf-materials-selftest-"));
+    const dir = scratchDir("lf-materials-selftest-");
     const job = join(dir, "plan.json");
     const height = resolveMaterials(spec("spike-strip"));
     height.regions = [{ class: "spike_steel", above_height_m: 0.05 }];

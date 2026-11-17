@@ -4,10 +4,11 @@
 // It also proves the beat script's judge (b7-restart.mjs) on fixture logs.
 // inputs: tools/playtest/opening/**, tools/validation/opening-b7-selftest.mjs, tools/validation/fixtures/opening-b7/**
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const script = join(root, "tools", "playtest", "opening", "b7-restart-setup.mjs");
@@ -21,7 +22,7 @@ const check = (ok, what, detail = "") => {
 };
 const run = (args) => spawnSync(process.execPath, [script, ...args], { encoding: "utf8", windowsHide: true });
 
-const scratch = mkdtempSync(join(tmpdir(), "lf-b7-"));
+const scratch = scratchDir("lf-b7-");
 try {
   // A scratch profile whose config has the real schedule, a fixed 06:00 and 18:00, plus other sections.
   const profile = join(scratch, "profile");

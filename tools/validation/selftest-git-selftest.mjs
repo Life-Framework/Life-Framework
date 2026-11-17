@@ -8,25 +8,28 @@
 //      false instead of failing the check (Windows only: elsewhere a held folder deletes fine);
 //   3. describeRun says exit code, signal and output for every way a process can end, so a message is never empty;
 //   4. the validate runner's note for a failing check that printed nothing.
+//   5. runGit: a silent failure (rev-parse -q of a missing ref) comes back with SILENT-GIT evidence and a traced re-run;
+//      one that is silent only once (a flaky script) is re-run to a pass; a leaked GIT_DIR / GIT_INDEX_FILE cannot
+//      steer a scratch repo (red: the leak child fails without the LEAKED scrub, the flaky script fails without the re-run).
 // red-proof (2026-11-17): under the hostile config the plain git child's commit exits nonzero (the gpg program is
 //   missing) where the hermetic child's exits 0 on main; safeRemoveTree on the held folder throws EBUSY where
 //   removeScratch removes it once the holder exits. Both are asserted above, so each fixture is its own red.
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { describeRun, removeScratch } from "../lib/selftest-git.mjs";
+import { describeRun, removeScratch, runGit } from "../lib/selftest-git.mjs";
 import { silentFailureNote } from "../lib/silent-failure.mjs";
 import { safeRemoveTree } from "../link-safety.mjs";
 import * as wt from "../wt.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);
 };
 const helperUrl = pathToFileURL(join(import.meta.dirname, "..", "lib", "selftest-git.mjs")).href;
-const root = mkdtempSync(join(tmpdir(), "lf-selftest-git-"));
+const root = scratchDir("lf-selftest-git-");
 
 try {
   // 1. A hostile machine config.
@@ -57,6 +60,57 @@ try {
   check(plain.commit !== 0, `plain git unexpectedly committed under the hostile config (${JSON.stringify(plain)}); the fixture proves nothing`);
   const pinned = child(true, join(root, "pinned"));
   check(pinned.commit === 0 && pinned.branch === "main", `hermetic git did not commit on main under the hostile config: ${JSON.stringify(pinned)}`);
+
+  // 1b. A parent process's GIT_DIR / GIT_INDEX_FILE must not steer a scratch repo (validate runs under hooks).
+  {
+    const repo = join(root, "leak");
+    mkdirSync(repo);
+    const code = [
+      `import { spawnSync } from "node:child_process";`,
+      `const { useHermeticGit } = await import(${JSON.stringify(helperUrl)}); useHermeticGit();`,
+      `const g = (...a) => spawnSync("git", a, { cwd: ${JSON.stringify(repo)}, encoding: "utf8", windowsHide: true });`,
+      `g("init", "-q");`,
+      `const c = g("commit", "-q", "--allow-empty", "-m", "x");`,
+      `console.log(JSON.stringify({ commit: c.status, top: g("rev-parse", "--show-toplevel").stdout.trim() }));`,
+    ].join("\n");
+    const leaky = { ...process.env, GIT_DIR: join(root, "elsewhere.git"), GIT_INDEX_FILE: join(root, "elsewhere.index"), GIT_WORK_TREE: root };
+    const r = spawnSync(process.execPath, ["--input-type=module", "-e", code], { encoding: "utf8", windowsHide: true, env: leaky });
+    let out;
+    try {
+      out = JSON.parse(r.stdout.trim().split("\n").at(-1));
+    } catch {
+      out = { error: describeRun(r) };
+    }
+    check(out.commit === 0 && String(out.top).replaceAll("\\", "/").endsWith("/leak"), `leaked GIT_DIR/GIT_INDEX_FILE steered the scratch repo: ${JSON.stringify(out)}`);
+  }
+
+  // 1c. runGit: a real silent failure (rev-parse -q --verify of a missing ref) is reported with evidence, and a
+  // failure that is silent only the first time (a flake) is re-run and passes.
+  {
+    const repo = join(root, "silent");
+    mkdirSync(repo);
+    spawnSync("git", ["init", "-q"], { cwd: repo, windowsHide: true });
+    spawnSync("git", ["commit", "-q", "--allow-empty", "-m", "base"], { cwd: repo, windowsHide: true });
+    const realError = console.error;
+    const seen = [];
+    console.error = (...a) => seen.push(a.join(" "));
+    let real, flaky;
+    try {
+      real = runGit(repo, ["rev-parse", "-q", "--verify", "refs/heads/lf-nope"], { retries: 1 });
+      const flag = join(root, "flaky.flag");
+      const script = join(root, "flaky.mjs");
+      writeFileSync(script, `import { existsSync, writeFileSync } from "node:fs";
+if (!existsSync(${JSON.stringify(flag)})) { writeFileSync(${JSON.stringify(flag)}, "x"); process.exit(1); }
+console.log("ok");
+`);
+      flaky = runGit(repo, [], { command: [process.execPath, script] });
+    } finally {
+      console.error = realError;
+    }
+    check(real.status !== 0 && String(real.stderr).includes("SILENT-GIT"), `a silent git failure carries no evidence: ${describeRun(real)}`);
+    check(seen.some((l) => l.includes("SILENT-GIT") && l.includes("traced re-run")), "the silent failure printed no traced re-run to stderr");
+    check(flaky.status === 0 && String(flaky.stdout).includes("ok"), `runGit did not re-run a silent first failure: ${describeRun(flaky)}`);
+  }
 
   // 2. A held scratch folder (a process whose working directory is inside it holds it on Windows).
   if (process.platform === "win32") {

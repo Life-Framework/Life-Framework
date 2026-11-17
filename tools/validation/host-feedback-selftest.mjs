@@ -10,11 +10,11 @@
 // Case 9 (#1728, question and playtest labels) failed before classify() knew them: "FAIL  dry-run kinds
 //   got: \"bug,feature,bug,bug\" want: \"bug,feature,question,playtest\"" (2026-11-16).
 
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "host-feedback");
@@ -89,7 +89,7 @@ const quoted = /^gh issue create --title "([^]*)" --body-file "tmp\/feedback\/d\
 if (!quoted || /["$`\\]/.test(quoted[1]) || !quoted[1].includes("it's")) fail(`gh command not safely quoted: ${cmd}`);
 
 // 7. the command, end to end through the CLI
-const out = mkdtempSync(join(tmpdir(), "lf-host-feedback-"));
+const out = scratchDir("lf-host-feedback-");
 try {
   const host = (...args) => {
     const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "host", "feedback", ...args], { cwd: ROOT, encoding: "utf8", timeout: 60000, windowsHide: true });
@@ -134,7 +134,7 @@ if (!lib.answerLine) fail("feedback.mjs does not export answerLine for question 
 const pt = dry.drafts.find((d) => d.kind === "playtest");
 if (pt && !pt.body.includes("### Findings")) fail("the playtest draft lacks a Findings section");
 for (const d of dry.drafts) if (/\b(Rook|Mara|Dex|Ivy|Tomas)\b|\d{17,20}/.test(d.title + d.body)) fail(`dry-run draft "${d.title}" carries a name or id`);
-const dryOut = mkdtempSync(join(tmpdir(), "lf-host-feedback-dry-"));
+const dryOut = scratchDir("lf-host-feedback-dry-");
 try {
   const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "host", "feedback", join(FIX, "dryrun-export.txt"), "--out", dryOut], { cwd: ROOT, encoding: "utf8", timeout: 60000, windowsHide: true });
   const o = `${r.stdout ?? ""}${r.stderr ?? ""}`;

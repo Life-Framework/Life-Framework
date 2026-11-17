@@ -1,6 +1,13 @@
 // `tools\cli usage --plan [--account gaming|personal|all] [--json]`: the REAL plan utilization (the numbers
 // Claude Code's /usage screen shows), a pace against the week, and advice on how many more agents to start.
 //
+// Which login is read: a machine with a ~/.claude-gaming dir (the PC) has Gaming there and Personal in ~/.claude.
+// A machine without it (the laptop) is signed in to Gaming in ~/.claude, so Gaming reads that dir and Personal is
+// "not here" (2026-11-17: the laptop printed "no .credentials.json" because Gaming looked in a ~/.claude-gaming that
+// does not exist there). Credentials are <dir>/.credentials.json first; on Windows a Credential Manager entry
+// ("Claude Code-credentials", the same JSON) is the fallback for ~/.claude. Claude Code 2.1.326 on the laptop still
+// writes the file and `cmdkey /list` holds no Claude entry, so the Credential Manager read is only a safety net.
+//
 // Where the numbers come from (read from Claude Code 2.1.319's bundle, not guessed): GET
 // https://api.anthropic.com/api/oauth/usage with `Authorization: Bearer <OAuth access token>`, `anthropic-beta:
 // oauth-2025-04-20`. The token is in <config dir>/.credentials.json (claudeAiOauth.accessToken; the scope
@@ -12,9 +19,10 @@
 // Every error text goes through redact(). An expired token is NOT refreshed here (a refresh rotates the
 // refresh token and would log the real Claude Code out); it is said plainly and the next Claude Code run
 // on that account refreshes it.
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { LAPTOP, scanRemote } from "./usage-accounts.mjs";
 import { scanConfigDir } from "./usage-scan.mjs";
 
@@ -43,17 +51,66 @@ export function redact(text, secrets = []) {
   return s.replace(/\b(sk-ant-[A-Za-z0-9_-]{6,})[A-Za-z0-9_-]*/g, "<redacted>").replace(/(Bearer\s+)[A-Za-z0-9._~+/=-]{12,}/gi, "$1<redacted>");
 }
 
-// { token, refreshToken, expiresAt } or { error }. The dir is a Claude config dir (~/.claude-gaming).
-export function readCredentials(dir, now = Date.now()) {
+export const CREDMAN_TARGET = "Claude Code-credentials";
+
+// A credential source is (dir) -> the parsed credentials JSON ({ claudeAiOauth }) | null (nothing there); it throws
+// when what is there cannot be read.
+export function fileSource(dir) {
   const file = join(dir, ".credentials.json");
-  if (!existsSync(file)) return { error: "no .credentials.json (not signed in with OAuth here)" };
-  let o;
+  return existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null;
+}
+
+// Windows Credential Manager generic credential -> its blob parsed as JSON, or null. CredReadW through PowerShell
+// (-EncodedCommand, so no quoting trouble); the blob stays in this process and is never printed.
+const CREDREAD_PS = `$ErrorActionPreference='Stop'
+Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;public class LFCred{[DllImport("advapi32.dll",CharSet=CharSet.Unicode,SetLastError=true)]public static extern bool CredReadW(string t,int ty,int f,out IntPtr p);[DllImport("advapi32.dll")]public static extern void CredFree(IntPtr p);[StructLayout(LayoutKind.Sequential,CharSet=CharSet.Unicode)]public struct C{public int Flags;public int Type;public string TargetName;public string Comment;public long LastWritten;public int Size;public IntPtr Blob;public int Persist;public int AttrCount;public IntPtr Attrs;public string Alias;public string User;}public static byte[] Read(string t){IntPtr p;if(!CredReadW(t,1,0,out p))return null;C c=(C)Marshal.PtrToStructure(p,typeof(C));byte[] b=new byte[c.Size];Marshal.Copy(c.Blob,b,0,c.Size);CredFree(p);return b;}}'
+$b=[LFCred]::Read($env:LF_CRED_TARGET)
+if($b -ne $null){[Console]::Out.Write([Convert]::ToBase64String($b))}`;
+
+export function readCredman(target, { run = spawnSync } = {}) {
+  const r = run("powershell.exe", ["-NoProfile", "-NonInteractive", "-EncodedCommand", Buffer.from(CREDREAD_PS, "utf16le").toString("base64")], { encoding: "utf8", timeout: 15000, windowsHide: true, env: { ...process.env, LF_CRED_TARGET: target } });
+  if (r.error || r.status !== 0) throw new Error("credential manager unreadable");
+  const b64 = String(r.stdout || "").trim();
+  if (!b64) return null;
+  const buf = Buffer.from(b64, "base64");
+  // cmdkey stores UTF-16LE; other writers store UTF-8
   try {
-    o = JSON.parse(readFileSync(file, "utf8")).claudeAiOauth;
-  } catch (e) {
-    return { error: "credentials file unreadable" };
+    return JSON.parse(buf.length > 1 && buf[1] === 0 ? buf.toString("utf16le") : buf.toString("utf8"));
+  } catch {
+    throw new Error("credential manager entry is not JSON"); // a JSON.parse message can quote the text
   }
-  if (!o || !o.accessToken) return { error: "no OAuth access token in the credentials" };
+}
+
+// Only for the default Claude dir (~/.claude) on Windows, and only reached when the file source had nothing.
+export function credmanSource(dir, home = homedir()) {
+  if (process.platform !== "win32" || resolve(dir) !== resolve(join(home, ".claude"))) return null;
+  return readCredman(CREDMAN_TARGET);
+}
+
+// { token, refreshToken, expiresAt } or { error }. The dir is a Claude config dir. The first source with a token wins.
+export function readCredentials(dir, now = Date.now(), { sources = [fileSource, credmanSource] } = {}) {
+  let o = null;
+  let seen = false;
+  let unreadable = false;
+  for (const src of sources) {
+    let j;
+    try {
+      j = src(dir);
+    } catch {
+      unreadable = true;
+      continue;
+    }
+    if (!j) continue;
+    seen = true;
+    if (j.claudeAiOauth && j.claudeAiOauth.accessToken) {
+      o = j.claudeAiOauth;
+      break;
+    }
+  }
+  if (!o) {
+    if (seen) return { error: "no OAuth access token in the credentials" };
+    return { error: unreadable ? "credentials file unreadable" : "no .credentials.json (not signed in with OAuth here)" };
+  }
   if (o.expiresAt && o.expiresAt <= now + 30e3) return { error: "OAuth token expired (it refreshes the next time Claude Code runs on this account)", token: o.accessToken, refreshToken: o.refreshToken, expired: true };
   return { token: o.accessToken, refreshToken: o.refreshToken, expiresAt: o.expiresAt || null };
 }
@@ -268,13 +325,20 @@ const ACCOUNTS = {
   personal: { label: "Personal", dir: ".claude", id: "claudeAgent" },
 };
 
+// The config dir holding the account's login on THIS machine, or null (see the header).
+export function accountDir(key, home = homedir()) {
+  const twoLogins = existsSync(join(home, ".claude-gaming"));
+  if (key === "gaming") return join(home, twoLogins ? ".claude-gaming" : ".claude");
+  return twoLogins ? join(home, ".claude") : null;
+}
+
 // Active Claude sessions on the account: PC logs written in the last 10 min, plus the laptop for Gaming.
 async function activeAgents(key, { home, now, laptop, timeoutMs }) {
   const acct = ACCOUNTS[key];
   let n = 0;
   let note = "";
   try {
-    const sc = await scanConfigDir({ dir: join(home, acct.dir), home, lookbackMs: 15 * 60e3, now });
+    const sc = await scanConfigDir({ dir: accountDir(key, home) || join(home, acct.dir), home, lookbackMs: 15 * 60e3, now });
     n += sc.active || 0;
   } catch {
     return { n: null, note: "agent count unavailable" };
@@ -294,7 +358,12 @@ export async function planFor(key, opts = {}) {
   const home = opts.home ?? homedir();
   const secrets = [];
   try {
-    const cred = readCredentials(join(home, acct.dir), now);
+    const dir = accountDir(key, home);
+    if (!dir) {
+      const why = "no Personal login on this machine (its only Claude login is Gaming's)";
+      return { account: key, label: acct.label, ok: false, error: why, line: unavailableLine(acct.label, why) };
+    }
+    const cred = readCredentials(dir, now, opts.sources ? { sources: opts.sources } : undefined);
     if (cred.token) secrets.push(cred.token, cred.refreshToken);
     if (cred.error) return { account: key, label: acct.label, ok: false, error: cred.error, line: unavailableLine(acct.label, cred.error) };
     const raw = await (opts.fetchPlan || fetchPlanUsage)({ token: cred.token, refreshToken: cred.refreshToken, timeoutMs: opts.timeoutMs ?? 8000, fetchImpl: opts.fetchImpl });

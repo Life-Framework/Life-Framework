@@ -9,12 +9,12 @@
 // "L1.bad.c: expected 1 L1 finding(s), got 0" and exited 1; with the L4 cleanup
 // check removed it printed "L4.good.c: expected no findings, got L4@3"; restored,
 // it prints "enforce-lint-selftest: OK (8 rules red on bad, green on good, ratchet holds)".
-import { mkdtempSync, mkdirSync, copyFileSync, writeFileSync, readdirSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, copyFileSync, writeFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { lint, compare, toBaseline, RULES } from "../enforce-lint.mjs";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixtures = join(here, "fixtures", "enforce-lint");
@@ -23,7 +23,7 @@ const fixtures = join(here, "fixtures", "enforce-lint");
 const EXPECT = { L1: 1, L2: 7, L3: 2, L4: 1, L5: 1, L6: 3, L7: 1, L8: 1, L9: 3 };
 
 function runFixture(name) {
-  const tmp = mkdtempSync(join(tmpdir(), "lf-enforce-lint-"));
+  const tmp = scratchDir("lf-enforce-lint-");
   try {
     const addon = join(tmp, "LifeFramework");
     const scripts = join(addon, "Scripts", "Game");

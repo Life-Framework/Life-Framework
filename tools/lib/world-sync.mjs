@@ -24,6 +24,7 @@ import { createHash } from "node:crypto";
 import { existsSync, lstatSync, mkdirSync, readFileSync, readlinkSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { tmpdir } from "node:os";
+import { wtDirFor } from "./local-config.mjs";
 
 const BIG = 1 << 30;
 
@@ -416,5 +417,5 @@ export function watchHint(slug = DEFAULT_SLUG) {
 }
 
 export function worktreeDirFor(mainRoot, slug) {
-  return join(dirname(resolve(mainRoot)), `Life-Framework-ws-${slug}`);
+  return wtDirFor(resolve(mainRoot), slug);
 }

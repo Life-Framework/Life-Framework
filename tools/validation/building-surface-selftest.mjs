@@ -9,12 +9,12 @@
 // red-proof: with snapItems computing y = level.y + f.bottom - 0.2 this printed "FAIL named snap: want 0.951, got 0.749" and 4 more
 // (snapped phone passes, auto snap, crate rim) (2026-11-17).
 
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { checkBuilding } from "../buildings/pipeline/floaters.mjs";
 import { buildingCheckProblems, buildingSlugsTouched } from "../lib/pr-quality.mjs";
 import { floaters, prefabChildren, setHeights, snapItems, specSupports } from "../buildings/pipeline/surface.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const want = (label, got, exp) => {
@@ -123,7 +123,7 @@ want("setHeights rewrote the y", edited.text.includes("coords 0.2 0.951 0.1"), t
 want("setHeights left the desk", edited.text.includes(`coords 0 ${FLOOR} 0`), true);
 
 // 10. the command over a building on disk: a spec, its prefabs, the floor from the spec
-const root = mkdtempSync(join(tmpdir(), "lf-building-check-"));
+const root = scratchDir("lf-building-check-");
 mkdirSync(join(root, "tools", "buildings", "shop"), { recursive: true });
 mkdirSync(join(root, "addons", "LF_Pack", "Prefabs", "Buildings", "Shop", "Furniture"), { recursive: true });
 writeFileSync(join(root, "tools", "buildings", "shop", "spec.json"), JSON.stringify({ slug: "shop", addon: "LF_Pack", prefab_dir: "Prefabs/Buildings/Shop", floors: [FLOOR] }));
@@ -146,7 +146,7 @@ want("an unrelated PR runs nothing", buildingCheckProblems({ files: ["docs/x.md"
 // 12. a building placed at 0, 90 and -90 degrees whose fit-out rows are in a grid layer: the rows are carried into the building's
 // frame (its coords, its yaw in `angleY` or in `angles`, its raised plot), so a phone on a desk the prefab holds passes and one hovering fails
 const rotated = (name, angle, form, extra = "") => {
-  const dir = mkdtempSync(join(tmpdir(), `lf-building-rot-${name}-`));
+  const dir = scratchDir(`lf-building-rot-${name}-`);
   mkdirSync(join(dir, "tools", "buildings", "rot"), { recursive: true });
   mkdirSync(join(dir, "addons", "LF_Pack", "Prefabs", "Buildings", "Rot", "Furniture"), { recursive: true });
   mkdirSync(join(dir, "layers"), { recursive: true });
@@ -200,7 +200,7 @@ ${rows}
 }
 `;
 const two = (shopRows) => {
-  const dir = mkdtempSync(join(tmpdir(), "lf-building-two-"));
+  const dir = scratchDir("lf-building-two-");
   const base = join(dir, "addons", "LF_Pack", "Prefabs", "Buildings", "Two");
   mkdirSync(join(base, "Furniture"), { recursive: true });
   mkdirSync(join(dir, "tools", "buildings", "two"), { recursive: true });

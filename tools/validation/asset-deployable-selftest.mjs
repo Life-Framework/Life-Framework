@@ -8,13 +8,13 @@
 //   itemPrefab with a fresh ActionsManager GUID      -> FAIL prefab: the item overrides Item_Base's actions by GUID
 //   writeDeployablePrefabs ignoring the variant      -> FAIL scaffold: the item carries the folded model
 //   logProblems without the not-built-yet filter     -> FAIL log: a sibling's not-yet-built .meta is not a problem
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { logProblems } from "../assets/pipeline/import.mjs";
 import { KINDS } from "../assets/pipeline/kinds.mjs";
 import { deployableProblems, deployedPrefab, itemPrefab, props, writeDeployablePrefabs } from "../assets/pipeline/prefab-deployable.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 export async function main() {
   let failed = 0;
@@ -80,7 +80,7 @@ export async function main() {
 
   // ---- scaffold: both files from an import, the folded model on the item -------------------------
   {
-    const root = mkdtempSync(join(tmpdir(), "lf-deployable-selftest-"));
+    const root = scratchDir("lf-deployable-selftest-");
     const addon = join(root, "addons", "LifeFramework");
     const dir = join(root, "tmp", "assets", "strip");
     const assetDir = "Assets/Props/Roleplay/Strip";

@@ -47,6 +47,8 @@ agent per area. `tools\cli usage` shows where the tokens went.
 4. **Binary assets are plain blobs** marked `-text` in `.gitattributes`.
    Text is LF in the repo and in every checkout (`* text=auto eol=lf`; `.cmd`/`.bat`
    stay CRLF). Generators write LF; scripts that patch files need not handle `\r\n`.
+   A lone CR byte in a text file is a bug: a `\return` in a doc comment written through a shell
+   becomes CR plus `eturn` and splits the comment. `validate-no-lone-cr` fails it.
 5. **All classes are `LF_`; tests are `LF_Test_*`.** The `EL_` to `LF_` rename
    landed 2026-11-09 (#334). The real EveronLife mod (`EL_`) can load on the same
    server, so an `EL_` name can collide. `validate-no-el-prefix.mjs` rejects any
@@ -198,6 +200,10 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
 - **A node selftest that builds a scratch git repo** calls `useHermeticGit()` and cleans up with `removeScratch()`
   (`tools/lib/selftest-git.mjs`): no machine git config, a fixed identity and branch, no auto-gc holding the folder
   (EBUSY on the Windows CI runner), and a failure message that says the exit code and what git printed (`describeRun`).
+- **A node selftest's temp folder comes from `scratchDir(prefix)`** (`tools/lib/scratch.mjs`), never a bare
+  `mkdtempSync(join(tmpdir(), ...))`: it is removed when the process ends, even on a failed check or `process.exit`.
+  400,000 leaked `lf-*` folders (18 GB) piled up on lf-testbox in a week (#2589); `selftest-scratch-selftest` fails a
+  bare call. `toolscli tmp-sweep [--hours N] [--dry-run]` deletes older `lf-*` leftovers.
 - Persistence tests go through public mutators and accessors only. In-session
   round trips prove nothing about restarts; use `wt e2e` or a real restart.
 - **Pass cache.** `test` (and the suite inside `ci`, `wt gate`) reuses a pass whose key matches: `addons/` (tracked and untracked), its `resourceDatabase.rdb`, `tools/test/`, the selection, the addon list and the server build. A failure is never reused; persistence tier, `--red`, `dev`, `e2e` and the placement audit always run (`docs/worktrees.md` "Pass cache").
@@ -221,6 +227,11 @@ bug for each one; they transfer here because the engine is the same.
 - **No ternary operator.** `cond ? a : b` is a compile error. Write `if/else`.
 - **No null-coalescing operator.** Initialize in the declaration or guard with
   `if (!x)`.
+- **`Substring` and `string.Format` cut at 8191 chars, silently.** Rebuilding a
+  long string (a save, a config, a payload) with `a.Substring(..) + b` loses its
+  tail with no error; join pieces under 8 KB with `+` or write through a JSON
+  context. `validate-string-splice` fails a new site; a bounded one is marked
+  `// lf-bounded: <why>` (the baseline only shrinks).
 - **Strong refs (`ref`) for Managed classes.** A Managed field not marked `ref`
   is garbage-collected at end of frame. Put `ref` on BOTH the collection and
   its elements: `ref array<ref LF_Foo>`, `ref map<string, ref LF_Foo>`.

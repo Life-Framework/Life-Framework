@@ -291,6 +291,10 @@ class LF_ConfigStream
 
 		// How long a locked house's open door stays open (#2505, server): the next door that opens reads it.
 		LF_HousesConfig.Reload();
+
+		// Locker rent, grace and reclaim fee (#2658, server).
+		LF_LockerConfig.Reload();
+
 		LF_QuizConfig.Reload();
 		LF_QuizBank.Reload();
 

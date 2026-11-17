@@ -14,11 +14,11 @@
 //   checkWav without the rate test            -> FAIL wav: a 44.1 kHz file is flagged
 //   acpText linking the shader to bank id + 1 -> FAIL acp: every link names a node the project has
 //   acpText dropping the loop properties      -> FAIL acp: a loop's bank loops forever and fades out
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import * as sound from "../assets/pipeline/sound.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const ADDON = join(ROOT, "addons", "LifeFramework");
@@ -67,7 +67,7 @@ export async function main() {
 
   // ---- key, cap, record and resume ---------------------------------------------------------------
   {
-    const root = mkdtempSync(join(tmpdir(), "lf-sound-selftest-"));
+    const root = scratchDir("lf-sound-selftest-");
     mkdirSync(join(root, "tools", "assets", "buzzer"), { recursive: true });
     const file = sound.soundsFile(root, "buzzer");
     const keyFile = join(root, "key");
