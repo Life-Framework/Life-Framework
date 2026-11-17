@@ -186,6 +186,12 @@
   missing file is a first run and saving stays allowed. A later good `Load`
   clears the flag.
 - ⚠️ Getter returns the live internal array (callers can mutate without logging).
+- ✅ **A remove before the first load still removes** (2026-11-17 property review, LOGIC
+  `whitelist/remove-before-load`): `RemoveFactionWhitelist` and `RemoveJobWhitelist` load the
+  file first. They returned false on an empty cache, so a police trial that expired on the first
+  duty desk use after a restart was marked expired while the officer stayed on the roster.
+- ⚠️ `!wadd` stores nothing since the Police/Medic lists left `GameMode_Roleplay.et` but still
+  reports the grant; the job whitelist is checked by character key and never written (#2412).
 
 ### `AdminChatChannel` — `Feature/Chat/AdminChatChannel.c`
 - ✅ **Server re-checks the admin role** (verified 2026-11-07):

@@ -235,8 +235,10 @@ class LF_WhitelistManager
 	//! Remove player from faction whitelist (admin command)
 	static bool RemoveFactionWhitelist(string playerUID, LF_EFactionType factionType)
 	{
+		// Load first: a remove before anything read the file (a trial expiring right after a restart)
+		// found no cache, returned false, and the officer stayed in the file.
 		if (!s_mFactionWhitelist)
-			return false;
+			Initialize();
 		
 		array<LF_EFactionType> playerFactions = s_mFactionWhitelist.Get(playerUID);
 		if (!playerFactions)
@@ -256,8 +258,10 @@ class LF_WhitelistManager
 	//! Remove player from job whitelist (admin command)
 	static bool RemoveJobWhitelist(string playerUID, LF_EJobType jobType)
 	{
+		// Load first: a remove before anything read the file (a trial expiring right after a restart)
+		// found no cache, returned false, and the officer stayed in the file.
 		if (!s_mJobWhitelist)
-			return false;
+			Initialize();
 		
 		array<LF_EJobType> playerJobs = s_mJobWhitelist.Get(playerUID);
 		if (!playerJobs)

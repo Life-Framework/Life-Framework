@@ -70,6 +70,18 @@
   member on their rank. PERSISTENCE `org/rights-persist`; `wt e2e` carries a
   founder, a promoted officer and a member across the restart.
 
+- ✅ **World-end reset** (2026-11-17 property review): `LF_OrganizationManager_StaticResetHook` drops the
+  singleton, so a world loaded after another in one process no longer keeps the last world's
+  organizations, members and funds (checked by `map/org-marks-character-id`).
+
+### Houses — `Feature/Houses/`
+- ✅ **Init runs** (2026-11-17 property review, WORLD `houses/identifier-init`): `LF_HouseManagerComponent`
+  and an editor-bound `LF_KeyComponent` now set the INIT event mask, as `LF_LockComponent` and
+  `LF_VehicleKeyComponent` do. Before, a building never got its identifier or synced its doors, and
+  an editor-bound house key (`HouseKey_Matching_Debug`) stayed unbound.
+- ⚠️ A keyed open unlocks the door for everyone with no way to relock; lock state and identifiers
+  are not saved (#2410).
+
 ### `LF_Hideout` — `Feature/Hideouts/` (verified 2026-10-11)
 - ✅ One building owned by one organization. Members unlock
   `Roadmap_Hideout_Door` at `213 0 120`. A non-member is refused and the
