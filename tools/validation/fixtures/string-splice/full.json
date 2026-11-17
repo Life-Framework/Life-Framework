@@ -1,0 +1,6 @@
+{
+ "LifeFramework/Scripts/Game/Core/LF_SpliceBad.c::Stamp::splice": { "count": 2, "reason": "fixture: planted splice" },
+ "LifeFramework/Scripts/Game/Core/LF_SpliceBad.c::Append::splice": { "count": 1, "reason": "fixture: planted += tail" },
+ "LifeFramework/Scripts/Game/Core/LF_SpliceBad.c::Rest::tail": { "count": 1, "reason": "fixture: planted payload tail" },
+ "LifeFramework/Scripts/Game/Core/LF_SpliceBad.c::Wrap::format": { "count": 1, "reason": "fixture: planted payload Format" }
+}
