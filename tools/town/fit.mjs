@@ -53,7 +53,7 @@ const guidOf = (...parts) => createHash("sha1").update(parts.join("|")).digest("
 export function anchorFor(building, kit) {
   const x = building.footprint?.cx ?? building.x;
   const z = building.footprint?.cz ?? building.z;
-  const y = building.y;
+  const y = r3(building.y + (building.firstFloor ?? 0)); // the scout's first-floor height above the building origin
   const byaw = building.yaw ?? 0;
   const front = FRONT[kit.anchoring?.front];
   const ent = (building.entrances ?? []).find((e) => e.side === "front") ?? (building.entrances ?? [])[0];

@@ -44,6 +44,7 @@ try {
   process.exit(1);
 }
 
+const r3 = (n) => Math.round(n * 1000) / 1000;
 const dossier = JSON.parse(readFileSync(join(FIX, "map-dossier.json"), "utf8"));
 const mapping = JSON.parse(readFileSync(join(FIX, "fit-mapping.json"), "utf8"));
 const template = JSON.parse(readFileSync(join(FIX, "fit-template.json"), "utf8"));
@@ -91,6 +92,10 @@ const allowed = new Set([...expect.map((r) => r.coords.join(" ")), plan.anchor.m
 for (const m of text.matchAll(/^\s*coords (.+)$/gm)) check(allowed.has(m[1].trim()), `a coords line ${m[1].trim()} is neither the marker nor a kit row`);
 const typed = await fitMod.main(["sample-square", "shop", "--x", "1", "--z", "2", "--dry"], { root: ROOT });
 check(typed === 2, `a coordinate flag was accepted (exit ${typed})`);
+
+// The scout dossier gives the first floor's height above the building origin: the kit stands on it.
+const raised = fitMod.anchorFor({ ...b03, firstFloor: 0.1 }, kit);
+check(raised.y === r3(b03.y + 0.1), `the anchor ignored firstFloor (${raised.y})`);
 
 // ---- the claim
 const claim = plan.claim;
