@@ -404,6 +404,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapPlacesLayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPoiRoleAudience(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPois(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapPrivateEntitled(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapPrivateRegistry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MapSearch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareAreas(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareMemberKey(), LF_TestTier.LOGIC);
