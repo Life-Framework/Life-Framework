@@ -1,5 +1,5 @@
 {
-  "saveVersion": 53,
+  "saveVersion": 54,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -55,7 +55,8 @@
     "leaseidle": "LF_HideoutIdleRow",
     "properties": "LF_PropertyRecord",
     "placements": "LF_PlacementRow",
-    "reputation": "LF_ReputationRow"
+    "reputation": "LF_ReputationRow",
+    "orgwars": "LF_OrgWarRecord"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -658,6 +659,22 @@
         "string m_sCharacterKey",
         "string m_sFaction",
         "int m_iPoints"
+      ]
+    },
+    "LF_OrgWarRecord": {
+      "since": 54,
+      "fields": [
+        "int m_iVersion",
+        "string m_sWarId",
+        "string m_sDeclarerOrgId",
+        "string m_sTargetOrgId",
+        "LF_EOrgWarState m_eState",
+        "int m_iDeclaredAt",
+        "int m_iAcceptedAt",
+        "int m_iEndsAt",
+        "int m_iAnswerWindowSec",
+        "int m_iCooldownSec",
+        "int m_iCooldownUntil"
       ]
     }
   }
