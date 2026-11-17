@@ -1,0 +1,206 @@
+// Grid cell c23r0 for clinic: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_clinic_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 299 0 23
+}
+SCR_DestructibleEntity Grid_clinic_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 303.4 0 23
+}
+SCR_DestructibleEntity Grid_clinic_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 307.8 0 23
+}
+SCR_DestructibleEntity Grid_clinic_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 312.2 0 23
+}
+SCR_DestructibleEntity Grid_clinic_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 316.6 0 23
+}
+SCR_DestructibleEntity Grid_clinic_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_clinic_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 27.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_clinic_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 31.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_clinic_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 36.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_clinic_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 40.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_clinic_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_clinic_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 316.6 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_clinic_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 312.2 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_clinic_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 307.8 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_clinic_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 303.4 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_clinic_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 299 0 45
+ angleY 90
+}
+SCR_DestructibleEntity Grid_clinic_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 299 0 40.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_clinic_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 299 0 36.2
+ angleY 90
+}
+GenericEntity Grid_clinic_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:clinic"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 298.2 0.505 23.6
+ angleY -90
+}
+GenericEntity Grid_clinic_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "clinic"
+  }
+ }
+ coords 298.3 0 27.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_clinic_Main : "{DA36267A788CB005}Prefabs/Buildings/Clinic/Clinic_Kit.et" {
+ coords 309.94 0.05 34.013
+ angleY -90
+}
+LF_NpcBaseEntity Clinic_Doctor : "{C001B9088678C653}Prefabs/Characters/Npcs/Outfits/LF_Npc_Medic_1.et" {
+ coords 309.59 0.31 41.063
+ angleY -90
+}
+GenericEntity Clinic_Till {
+ components {
+  MeshObject "{8F3A1C2D4B5E6071}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{8F3A1C2D4B5E6072}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{8F3A1C2D4B5E6073}" {
+   ActionContexts {
+    UserActionContext "{8F3A1C2D4B5E6074}" {
+     ContextName "default"
+     Position PointInfo "{8F3A1C2D4B5E6075}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_RobAction "{8F3A1C2D4B5E6076}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8F3A1C2D4B5E6077}" {
+      Name "#EL-Hospital_RobTill"
+     }
+     m_iMoneyAmount 200
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+  RplComponent "{8F3A1C2D4B5E6078}" {
+   Enabled 1
+  }
+  LF_HospitalTillComponent "{8F3A1C2D4B5E6079}" {
+   m_sTargetId "Clinic_Till"
+   m_iPayout 200
+   m_fCooldown 60
+   m_iMinPolice 0
+  }
+ }
+ Flags 0x403 0
+ coords 308.59 0.31 39.463
+ angleY -90
+}
+GenericEntity Clinic_Cabinet {
+ components {
+  MeshObject "{91C4E0A7B2D34819}" {
+   Object "{3169A0CB357D3854}Assets/Props/Furniture/CupboardOld_01/CupboardOld_01_medium.xob"
+  }
+  RigidBody "{91C4E0A7B2D3481A}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_LockComponent "{91C4E0A7B2D34810}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{91C4E0A7B2D34811}" {
+   ActionContexts {
+    UserActionContext "{91C4E0A7B2D34812}" {
+     ContextName "default"
+     Position PointInfo "{91C4E0A7B2D34813}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_HospitalCabinetAction "{91C4E0A7B2D34814}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{91C4E0A7B2D34815}" {
+      Name "#EL-Hospital_BreachCabinet"
+     }
+    }
+    LF_BreachRepairAction "{91C4E0A7B2D34816}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{91C4E0A7B2D3481B}" {
+   Enabled 1
+  }
+  LF_BreachTargetComponent "{91C4E0A7B2D34817}" {
+   m_sTargetId "Clinic_Cabinet"
+   m_fFuseSeconds 0
+  }
+  LF_HospitalCabinetComponent "{91C4E0A7B2D34818}" {
+   m_sTargetId "Clinic_Cabinet"
+   m_aLootPrefabs {
+    "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
+    "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
+    "{00E36F41CA310E2A}Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et"
+    "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 308.89 0.31 37.213
+ angleY -90
+}

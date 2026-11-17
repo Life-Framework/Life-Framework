@@ -1,0 +1,207 @@
+GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {
+ ID "56A8CBB92342240A"
+ {
+  GenericEntity : "{01E3612B337477CC}Prefabs/Props/Civilian/CoatHook_01.et" {
+   ID "5B18BE720DF26C6C"
+   coords -5.478 1.767 -1.874
+   angles 0 90 0
+  }
+  GenericEntity : "{0692BB439764BB1E}Prefabs/Props/Civilian/Notebook_01_base.et" {
+   ID "5B18BE720DF26F73"
+   coords -3.152 1.541 -2.306
+   angles 0 78.754 0
+  }
+  GenericEntity : "{0E43D5546330841F}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01_tool_01.et" {
+   ID "5B18BE720DF26F50"
+   coords 0.407 0.239 -2.208
+  }
+  GenericEntity : "{0E43D5546330841F}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01_tool_01.et" {
+   ID "5B18BE720DF26FA7"
+   coords 0.407 0.239 -2.017
+  }
+  GenericEntity : "{10C5A45290A9EEED}Prefabs/Props/Industrial/GasTank_01_blue.et" {
+   ID "5B18BE720DF26F8D"
+   coords -1.147 0.1 0.307
+   angles 0 131.216 0
+  }
+  GenericEntity : "{1E84244AFD39A88E}Prefabs/Props/Commercial/ShelfUniversal_01_narrow.et" {
+   ID "5B18BE720DF26F9C"
+   coords 0.203 0.1 0.404
+   angles 0 180 0
+  }
+  GenericEntity : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+   ID "5B18BE720DF26FED"
+   coords -1.263 0.1 -0.086
+  }
+  GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+   ID "5B18BE720DF26E27"
+   coords -1.204 0.729 -2.204
+   angles 0 90 0
+  }
+  GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+   ID "5B18BE720DF26E33"
+   coords 0.043 2.274 -2.163
+   angles 0 90 0
+  }
+  GenericEntity : "{43E4EEB4CDBBFE34}Prefabs/Props/Commercial/Posters/PosterSingle_27x41_01_RadioEveron.et" {
+   ID "5E0670E4DF30D326"
+   coords -2.907 1.989 2.283
+   angles 0 180 0
+   scale 1.25
+  }
+  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+   ID "5B18BE720DF26E4B"
+   coords 0.795 1.253 -2.251
+  }
+  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+   ID "5B18BE720DF26E56"
+   coords 0.122 1.253 -2.251
+   angles 0 -66.873 0
+  }
+  GenericEntity : "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et" {
+   ID "5B18BE720DF26E83"
+   coords -5.074 1.139 -0.838
+   angles 0 174.268 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "5B18BE720DF26E8F"
+   coords 4.141 0.1 -2.52
+   angles 0 90 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "5B18BE720DF26E9B"
+   coords -1.779 0.1 0.208
+  }
+  GenericEntity : "{6435D97D7A23D208}Prefabs/Props/Crates/Crate_01_white.et" {
+   ID "5B18BE720DF26EFF"
+   coords 1.702 0.1 -0.984
+  }
+  GenericEntity : "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et" {
+   ID "5B18BE720DF26ECA"
+   coords 1.893 0.1 -1.917
+  }
+  GenericEntity : "{7251C9DFEC27E1AB}Prefabs/Props/Furniture/Shelf_01_long.et" {
+   ID "5B18BE720DF26EDB"
+   coords -5.412 1.971 -1.979
+   angles 0 90 0
+   scale 0.79
+  }
+  GenericEntity : "{7A63E9272B714EC7}Prefabs/Props/Civilian/AshtrayStreet_01.et" {
+   ID "5B18BE720DF26D25"
+   coords 1.629 0.1 -0.45
+   angles 0 51.31 0
+  }
+  GenericEntity : "{7A63E9272B714EC7}Prefabs/Props/Civilian/AshtrayStreet_01.et" {
+   ID "5B18BE720DF26D32"
+   coords 1.658 0.1 -0.128
+  }
+  GenericEntity : "{7E5A4578657283E6}Prefabs/Props/Industrial/GasTank_02_red.et" {
+   ID "5B18BE720DF26D3E"
+   coords -0.792 0.1 0.215
+  }
+  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
+   ID "5B18BE720DF26D09"
+   coords -2.887 1.436 2.294
+   angles 0 -180 0
+  }
+  GenericEntity : "{8B67CE440E86A16A}Prefabs/Props/Commercial/Posters/PosterSingle_A1_Moto_V5.et" {
+   ID "5E0670E4DF30D340"
+   coords -5.463 2.117 -0.466
+   angles 0 90 0
+  }
+  GenericEntity : "{9C231B6AC1BD0A26}Prefabs/Props/Civilian/Broom_01.et" {
+   ID "5B18BE720DF26D66"
+   coords 3.341 0.107 -2.49
+   angles 5.442 0 0
+  }
+  GenericEntity : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+   ID "5B18BE720DF26D42"
+   coords 1.915 0.906 -2.054
+   angles 0 5.997 0
+  }
+  GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
+   ID "5B18BE720DF26D4F"
+   coords -0.936 3.22 -0.977
+  }
+  GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
+   ID "5B18BE720DF26D54"
+   coords -3.936 3.22 -0.977
+  }
+  GenericEntity : "{B653EB7C7BEA285D}Prefabs/Props/Commercial/Posters/PosterSingle_A1_Moto_V2.et" {
+   ID "5E0670E4DF30D338"
+   coords -4.647 2.098 -2.632
+  }
+  GenericEntity : "{B68D3829D4442F80}Prefabs/Props/Civilian/RadioSmall_01_Base.et" {
+   ID "5B18BE720DF26DA1"
+   coords -5.373 1.984 -1.687
+   angles 0 84.858 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "5B18BE720DF26DB3"
+   coords 1.691 0.1 0.197
+   scale 0.73
+  }
+  GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
+   ID "5B18BE720DF26D8A"
+   coords -2.687 1.541 -2.397
+  }
+  GenericEntity : "{C67A378521482995}Prefabs/Props/Furniture/Rack_03.et" {
+   ID "5B18BE720DF26D96"
+   coords 1.212 0.1 -2.564
+  }
+  GenericEntity : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
+   ID "5B18BE720DF26D9C"
+   coords 2.665 0.1 -2.281
+  }
+  GenericEntity : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
+   ID "5B18BE720DF26DE8"
+   coords -0.225 0.1 0.097
+   angles 0 90 0
+  }
+  GenericEntity : "{CC8D07933AD0B07E}Prefabs/Props/Industrial/GasTank_01_red.et" {
+   ID "5B18BE720DF26DF5"
+   coords -1.481 0.1 0.256
+  }
+  GenericEntity : "{CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et" {
+   ID "5B18BE720DF26DC2"
+   coords -5.03 0.1 -2.228
+   angles 0 90 0
+  }
+  GenericEntity : "{D7EEBCFB81A67398}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_GasStation.et" {
+   ID "5B18BE720DF26DCD"
+   coords 3.193 2.639 0.621
+   scale 0.85
+  }
+  GenericEntity : "{DA07DF9CC72EA773}Prefabs/Props/Commercial/Posters/PosterSingle_A1_Moto_V1.et" {
+   ID "5E0670E4DF30D398"
+   coords -3.169 2.098 -2.617
+   angles 0 -1.317 0
+  }
+  GenericEntity : "{DACF7DE206313E97}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_01.et" {
+   ID "5B18BE720DF26DDA"
+   coords 3.049 0.1 -0.553
+  }
+  GenericEntity : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+   ID "5B18BE720DF26C26"
+   coords -4.679 0.1 -0.645
+   angles 0 1.016 0
+  }
+  GenericEntity : "{EA34FD3A068E550A}Prefabs/Props/Commercial/NewspaperStand_01.et" {
+   ID "5B18BE720DF26C3D"
+   coords -5.271 0.087 0.794
+   angles 0 92.42 0
+  }
+  GenericEntity : "{EB66EE2298D16D18}Prefabs/Props/Civilian/SackTruck_01.et" {
+   ID "5B18BE720DF26C0A"
+   coords 2.621 0.1 -1.587
+  }
+  GenericEntity : "{F737777FF0A566D5}Prefabs/Props/Commercial/CabinetCardFile_01/CabinetCardFile_01_Base.et" {
+   ID "5B18BE720DF26C10"
+   coords -2.674 0.1 -2.339
+  }
+  GenericEntity : "{F737777FF0A566D5}Prefabs/Props/Commercial/CabinetCardFile_01/CabinetCardFile_01_Base.et" {
+   ID "5B18BE720DF26C1D"
+   coords -3.152 0.1 -2.339
+  }
+ }
+}

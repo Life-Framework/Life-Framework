@@ -59,6 +59,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BreachEvidence(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CarriedInventoryRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CarriedInventoryDeathNoDupe(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_CarriedPropCull(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CarriedPropHang(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CarriedSerialPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CarriedStolenPersist(), LF_TestTier.PERSISTENCE);
@@ -170,6 +171,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Dispatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DispatchAlarm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DispatchArea(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DispatchMapMarks(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DispatchNamesPlace(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DoorLock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Downed(), LF_TestTier.WORLD);
@@ -345,6 +347,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapConfig(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MapKnown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapKnownPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_MapKnownSyncGate(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapMarksPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_MapPlacesLayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPois(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShares(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapWaypoint(), LF_TestTier.LOGIC);
@@ -372,6 +377,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OpsEventsContract(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_OrgMapMarks(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_OrgRegistry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_OrgRights(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE);

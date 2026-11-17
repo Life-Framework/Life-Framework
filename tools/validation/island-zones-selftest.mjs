@@ -5,13 +5,18 @@
 // on the fixture places in tools/town/fixtures/check-place/ (an invented place from map-dossier.json, no real coordinate): a complete
 // place, a missing required slot, a mapped slot without layer and claim, an entity outside its footprint, a double claim, a slot whose
 // layer lacks the kind it promises, a layer over the performance budget, and a branch that is not a town-draft. Each case's
-// expect.json lists the messages that must appear (substrings); a case with ok true must have no error at all.
+// expect.json lists the messages that must appear (substrings); a case with ok true must have no error at all. Each case runs twice:
+// with `complete` (town check --complete, town ready: every mapped slot fitted) against the top-level expectations, and partial
+// (validate-island-zones, plain town check: slots are fitted one draft at a time) against `partial`, or the top level when it has none.
+// The one-slot-draft case is PR #2347's shape: only arrival fitted, which a draft must pass and --complete must refuse.
 // Also: the map POI-kind slot check (#2245: `checkSlotPois` against the POI table) fails a slot with no front kind or a kind with no row;
 // the claim's `destruction.mode: "needs-hook"` is a warning and never an error; the per-place limits within 60 m;
 // the guard lets a town-draft branch change only its own layer; the repo as it stands passes validate-island-zones.
 // red-proof: before tools/town/check.mjs existed this printed "FAIL cannot load tools/town/check.mjs: ERR_MODULE_NOT_FOUND" (2026-11-17).
 // red-proof: with the footprint test left out of checkClaimsAndFootprints() this printed "FAIL outside-footprint: no error contains 'Fit_shop_Stray stands 26 m outside building b03'" (2026-11-17).
 
+// red-proof: before the partial rule (#2347) this printed "FAIL missing-layer-claim [partial]: expected pass, got fail: slot shop: no claim ..." and the
+// same for one-slot-draft [partial] (2026-11-17).
 // red-proof: with the POI-kind call left out of checkPlace() this printed "FAIL complete: a slot with no poi should fail the POI check" and "FAIL complete: a front kind with no POI row should fail" (2026-11-17).
 
 import { spawnSync } from "node:child_process";
@@ -50,7 +55,7 @@ const has = (list, sub) => list.some((m) => m.includes(sub));
 
 // ------------------------------------------------------------------ the fixture places
 const names = existsSync(CASES) ? readdirSync(CASES, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort() : [];
-check(names.length >= 8, `check-place holds ${names.length} case(s), expected at least 8`);
+check(names.length >= 11, `check-place holds ${names.length} case(s), expected at least 11`);
 for (const name of names) {
   const dir = join(CASES, name);
   const expect = JSON.parse(readFileSync(join(dir, "expect.json"), "utf8"));
@@ -69,11 +74,15 @@ for (const name of names) {
     fail(`${name}: cannot load the case: ${e.message}`);
     continue;
   }
-  const r = checkPlace(data, { resolve: resolve_ });
-  check(r.ok === expect.ok, `${name}: expected ${expect.ok ? "pass" : "fail"}, got ${r.ok ? "pass" : "fail"}: ${r.errors.join(" | ")}`);
-  if (expect.ok) check(r.errors.length === 0, `${name}: expected no error, got ${r.errors.join(" | ")}`);
-  for (const sub of expect.errors ?? []) check(has(r.errors, sub), `${name}: no error contains '${sub}' (errors: ${r.errors.join(" | ") || "none"})`);
-  for (const sub of expect.warnings ?? []) check(has(r.warnings, sub), `${name}: no warning contains '${sub}' (warnings: ${r.warnings.join(" | ") || "none"})`);
+  for (const [mode, exp] of [["complete", expect], ["partial", expect.partial ?? expect]]) {
+    const r = checkPlace(data, { resolve: resolve_, complete: mode === "complete" });
+    const tag = `${name} [${mode}]`;
+    check(r.ok === exp.ok, `${tag}: expected ${exp.ok ? "pass" : "fail"}, got ${r.ok ? "pass" : "fail"}: ${r.errors.join(" | ")}`);
+    if (exp.ok) check(r.errors.length === 0, `${tag}: expected no error, got ${r.errors.join(" | ")}`);
+    for (const sub of exp.errors ?? []) check(has(r.errors, sub), `${tag}: no error contains '${sub}' (errors: ${r.errors.join(" | ") || "none"})`);
+    for (const sub of exp.warnings ?? []) check(has(r.warnings, sub), `${tag}: no warning contains '${sub}' (warnings: ${r.warnings.join(" | ") || "none"})`);
+    for (const sub of exp.notes ?? []) check(has(r.notes, sub), `${tag}: no note contains '${sub}' (notes: ${r.notes.join(" | ") || "none"})`);
+  }
   const cj = join(dir, "case.json");
   if (existsSync(cj)) {
     const c = JSON.parse(readFileSync(cj, "utf8"));

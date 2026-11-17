@@ -12,7 +12,8 @@ export const isBehindRefusal = (text) => BEHIND.test(String(text ?? ""));
 // deps: mergeTree() -> {status, stdout, stderr}; mergeBase() -> throws on failure; validate() -> exit code;
 // push() -> {status, stdout, stderr}; findPr() -> pr|null; createPr() -> pr; autoMerge(n) -> {status, stdout, stderr};
 // mergeState(n) -> "BEHIND"|"DIRTY"|...; log(line).
-export async function shipDirect(deps, { base = "main", slug = "?", preflight = true, retries = 2 } = {}) {
+// draft: the PR is opened as a draft and auto-merge is never planned (town-draft and maintainer-review PRs).
+export async function shipDirect(deps, { base = "main", slug = "?", preflight = true, retries = 2, draft = false } = {}) {
   const log = deps.log ?? (() => {});
   const fail = (why) => { log(`FAIL  ${why}`); return { code: 1, why }; };
   if (preflight) {
@@ -31,11 +32,15 @@ export async function shipDirect(deps, { base = "main", slug = "?", preflight = 
   if (push.status !== 0) return fail(`push: ${String(push.stderr || push.stdout).trim()}`);
   let pr;
   try {
-    pr = deps.findPr() ?? deps.createPr();
+    pr = deps.findPr() ?? deps.createPr({ draft });
   } catch (e) {
     return fail(`PR creation: ${e.message}`);
   }
   log(`PR: ${pr.url}`);
+  if (draft) {
+    log(`ship: draft PR, auto-merge not requested; mark it ready and merge it when it is approved.`);
+    return { code: 0, pr, draft: true };
+  }
   for (let attempt = 0; ; attempt++) {
     const am = deps.autoMerge(pr.number);
     const text = `${am.stdout ?? ""}\n${am.stderr ?? ""}`;
