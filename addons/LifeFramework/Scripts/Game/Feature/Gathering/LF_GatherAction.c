@@ -39,6 +39,10 @@ class LF_GatherAction : ScriptedUserAction
 
 	protected string m_sDisplayName;
 
+	//! Node row of the last catalog apply, and the speed factor of the tool the user held at the last check.
+	protected ref LF_ResourceNodeDef m_Node;
+	protected float m_fToolSpeed = 1.0;
+
 	//------------------------------------------------------------------------------------------------
 	// User has performed the action
 	// play a pickup sound and then add the correct amount to the users inventory
@@ -77,6 +81,7 @@ class LF_GatherAction : ScriptedUserAction
 		{
 			inventoryManager.RpcAsk_PlaySound(LF_NetworkUtils.GetRplId(pUserEntity), "SOUND_PICK_UP");
 			LF_Debug.Log("Gathering", string.Format("gathered %1 x%2", m_GatherItemPrefab, added));
+			LF_EventBus.Publish(LF_OnGathered.Create(LF_Utils.GetPlayerUID(pUserEntity), m_sNodeId, LF_GatherTools.JobFamily(m_Node), m_GatherItemPrefab, added, ToolSpeedFor(pUserEntity)));
 
 			// Notify job manager for reward
 			LF_JobManager jobManager = LF_JobManager.GetInstance();
@@ -168,15 +173,33 @@ class LF_GatherAction : ScriptedUserAction
 
 		if (!LF_HasGatherTool(user))
 		{
-			if (m_CheckInventoryForToolRequirement)
-				SetCannotPerformReason("#LF-Gather_RequiresItem");
-			else
-				SetCannotPerformReason("#LF-Gather_RequiresItemInHands");
+			SetCannotPerformReason(LF_GatherTools.RefusalKey(m_Node, m_CheckInventoryForToolRequirement));
 			return false;
 		}
 
+		m_fToolSpeed = ToolSpeedFor(user);
 		return true;
  	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A better tool shortens the hold: the engine adds the time slice to the progress, so a speed
+	//! factor above 1 makes the same hold finish sooner (#2706).
+	override float GetActionProgressScript(float fProgress, float timeSlice)
+	{
+		return fProgress + timeSlice * m_fToolSpeed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Speed factor of the tool the user holds for this node: 1 when the node needs no tool.
+	protected float ToolSpeedFor(IEntity user)
+	{
+		if (!LF_GatherTools.NeedsTool(m_Node))
+			return 1.0;
+		float speed = LF_GatherTools.Speed(m_Node, LF_GatherTools.HeldTool(user, m_Node, m_CheckInventoryForToolRequirement));
+		if (speed <= 0)
+			return 1.0;
+		return speed;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server-side gate mirroring the client checks: cooldown and remaining gathers first,
@@ -198,6 +221,8 @@ class LF_GatherAction : ScriptedUserAction
 	//! anywhere in inventory when m_CheckInventoryForToolRequirement is set).
 	protected bool LF_HasGatherTool(IEntity user)
 	{
+		if (LF_GatherTools.NeedsTool(m_Node))
+			return !LF_GatherTools.HeldTool(user, m_Node, m_CheckInventoryForToolRequirement).IsEmpty();
 		return HasToolIn(user, m_GatherToolRequirement, m_CheckInventoryForToolRequirement);
 	}
 
@@ -244,6 +269,7 @@ class LF_GatherAction : ScriptedUserAction
 			return false;
 		}
 
+		m_Node = node;
 		m_GatherItemPrefab = node.m_ItemPrefab;
 		m_GatherAmount = node.m_iYield;
 		m_GatherToolRequirement = node.m_ToolPrefab;

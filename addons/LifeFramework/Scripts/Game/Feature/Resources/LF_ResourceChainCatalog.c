@@ -31,6 +31,12 @@ class LF_ResourceNodeDef
 	[Attribute(ResourceName.Empty, UIWidgets.ResourcePickerThumbnail, "Tool required in hand. Empty means no tool", "et")]
 	ResourceName m_ToolPrefab;
 
+	[Attribute("", UIWidgets.Object, "Better tools this node also accepts, each with a speed factor (#2706)")]
+	ref array<ref LF_GatherToolRow> m_aTools;
+
+	[Attribute("", UIWidgets.EditBox, "Job family the gather is filed under: MINING, DIGGING, FORAGING (#2706)")]
+	string m_sJobFamily;
+
 	[Attribute("0", UIWidgets.Auto, "Gathers a spot holds. 0 means unlimited. With m_fRegrowMs set this is the stock cap, otherwise the gathers before the cooldown")]
 	int m_iMaxGathers;
 

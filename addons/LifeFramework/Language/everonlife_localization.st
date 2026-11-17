@@ -4158,6 +4158,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Picked clean. More in about %1 min."
      Comment "Toast when a gather spot is out of stock. %1 = minutes until the next one grows back (#2409)"
     }
+    CustomStringTableItem "{8D3B6F20A4C17E95}" {
+     Id "LF-Gather_NeedPickaxe"
+     Target_en_us "You need a pickaxe to mine this"
+     Comment "Gather refused: a rock, no pickaxe held (#2706)"
+    }
+    CustomStringTableItem "{5C1E0A7D9B2F4E61}" {
+     Id "LF-Gather_NeedShovel"
+     Target_en_us "You need a shovel to dig here"
+     Comment "Gather refused: a digging spot, no shovel held (#2706)"
+    }
     CustomStringTableItem "{44A28FD4E95EA8C3}" {
      Id "LF-Gather_RequiresItem"
      Target_en_us "Requires the right tool"
