@@ -124,7 +124,8 @@
     "shell": "node tools/buildings/bank/shell.mjs",
     "decor": "node tools/buildings/bank/decor.mjs",
     "stage": "node tools/buildings/bank/stage.mjs",
-    "proof": "tools/buildings/bank/proof.json"
+    "proof": "tools/buildings/bank/proof.json",
+    "looks": "node tools/buildings/bank/looks.mjs"
   },
   "counts": {
     "build": {
@@ -149,5 +150,71 @@
       "match": "557D9771ADA29FF5",
       "why": "the MoneyStack inside the cash bag (a child of LF_MoneyBag, carried with it)"
     }
-  ]
+  ],
+  "looks": {
+    "about": "node tools/buildings/bank/looks.mjs [--set exterior|rooms|all] [--hour 14|22] [--only names] [--run] turns these building-space centres into toolscli look calls (grid:bank, or --interior x,y,z in world space)",
+    "exterior": true,
+    "rooms": [
+      {
+        "name": "hall",
+        "at": [
+          0.2,
+          1.053,
+          3.8
+        ],
+        "radius": 4
+      },
+      {
+        "name": "manager",
+        "at": [
+          5.3,
+          1.053,
+          3.9
+        ],
+        "radius": 4,
+        "day": true
+      },
+      {
+        "name": "stairhall",
+        "at": [
+          -3.75,
+          1.053,
+          2.2
+        ],
+        "radius": 4
+      },
+      {
+        "name": "corridor",
+        "at": [
+          3.9,
+          1.053,
+          0
+        ],
+        "radius": 4
+      },
+      {
+        "name": "vault",
+        "at": [
+          5.2,
+          1.053,
+          -3.1
+        ],
+        "radius": 4
+      },
+      {
+        "name": "upstairs",
+        "at": [
+          3.8,
+          4.254,
+          5.1
+        ],
+        "radius": 4,
+        "day": true
+      }
+    ],
+    "hours": [
+      14,
+      22
+    ]
+  }
 }

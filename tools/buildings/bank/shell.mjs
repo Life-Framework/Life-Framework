@@ -85,8 +85,10 @@ async function main() {
   const root = /^(GenericEntity : "[^"]+" \{\n ID "[0-9A-F]+")/.exec(vFurniture)?.[1];
   if (!root) throw new Error("cannot read the vanilla furniture root");
   const kept = entities(vFurniture).filter(keep);
-  const decorPath = join(dirname(fileURLToPath(import.meta.url)), "decor.out.txt");
-  const decor = existsSync(decorPath) ? readFileSync(decorPath, "utf8").trimEnd() : "";
+  // decor.mjs's block (IDs BA4C) is kept as it stands, so a shell re-run or --check leaves the dressing alone.
+  const furniturePath = join(DIR, FURNITURE);
+  const current = existsSync(furniturePath) ? readFileSync(furniturePath, "utf8") : "";
+  const decor = (current.match(/^ {2}\w+(?: : "[^"]+")? \{\n {3}ID "BA4C[0-9A-F]+"\n[\s\S]*?\n {2}\}$/gm) ?? []).join("\n");
   const litGuid = db?.guidOf(LAMP_LIT);
   if (!litGuid) throw new Error(`no GUID for ${LAMP_LIT} in the game's resource database`);
   const idOf = (e) => e.node.lines.find((l) => l.startsWith("ID ")) ?? "";

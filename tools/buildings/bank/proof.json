@@ -2,7 +2,7 @@
   "about": "Bank: the street, the fascia, the bell box and the door lamp, the stair hall, the banking hall (counters, slip desk, queue tape, clock), the manager's office, the corridor with the vault door, the vault room and the first floor, by day and at night; then the robbery: the rob kit is taken, the vault door is drilled (the bell box alarms, the wanted level rises) and the cash bag is on the vault room floor. Points are building space (tools/buildings/pipeline/scenario.mjs); the front faces +z, x runs along the facade, the ground floor is at y 1.053, the first floor at 4.254.",
   "session": {
     "profile": "full",
-    "mission": "playtest"
+    "mission": "grid"
   },
   "steps": [
     {

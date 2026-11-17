@@ -43,7 +43,7 @@ export const P = {
   bookshelf: "Prefabs/Props/Furniture/Bookshelf_01/Bookshelf_01.et",
   benchOut: "Prefabs/Props/Furniture/BenchWooden_03.et",
   pot: "Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et",
-  corkBoard: "Prefabs/Props/Civilian/NoticeBoardCork_01_posters.et",
+  corkBoard: "Prefabs/Props/Civilian/NoticeBoardCork_01.et",
   wallMap: "Prefabs/Props/Civilian/WallMap_01.et",
   extinguisher: "Prefabs/Props/Civilian/FireExtinguisher_01.et",
   fan: "Prefabs/Props/Civilian/Fan_01.et",
@@ -92,14 +92,17 @@ put(P.plant, 2.2, F, 3.4, 0);
 put(P.bin, -1.95, F, 1.6, 0);
 // walls: the clock and rates board on the corridor wall, notices, a map of the island and pictures on the side walls
 // (the hall door is at x -1.41..-0.5 on that wall, so everything hangs east of it)
-put(P.clock, 0.0, F + 2.0, 1.34, 0);
-put(P.corkBoard, 1.25, F + 0.75, 1.36, 0); // the rates board
-put(P.insurance, 2.3, F + 1.5, 1.34, 0, { scale: 0.9 });
-put(P.radioPoster, -2.27, F + 1.5, 3.0, 90);
-put(P.noticeV, -2.27, F + 1.5, 2.2, 90, { scale: 0.9 });
-put(P.wallMap, 2.58, F + 0.9, 2.9, -90);
-put(P.paintingBig, 2.58, F + 1.8, 5.4, -90);
-put(P.noticeV2, 2.58, F + 1.45, 1.75, -90, { scale: 0.9 });
+put(P.clock, 0.0, F + 2.0, 1.4, 0);
+put(P.corkBoard, 1.25, F + 0.75, 1.42, 0); // the rates board, its notices pinned on
+put(P.noticeH, 0.85, F + 1.35, 1.43, 0);
+put(P.noticeV, 1.3, F + 1.3, 1.43, 0);
+put(P.noticeV2, 1.7, F + 1.35, 1.43, 0);
+put(P.insurance, 2.25, F + 1.5, 1.4, 0, { scale: 0.9 });
+put(P.radioPoster, -2.2, F + 1.5, 3.0, 90);
+put(P.noticeV, -2.2, F + 1.5, 2.2, 90, { scale: 0.9 });
+put(P.wallMap, 2.42, F + 0.9, 2.9, 90); // the map's face is on its -z side: turned the other way from the posters
+put(P.paintingBig, 2.42, F + 1.8, 5.4, -90);
+put(P.noticeV2, 2.42, F + 1.45, 1.8, -90, { scale: 0.9 });
 
 // ---- Manager's office ----
 put(P.carpet, 5.3, F, 4.1, 0);
@@ -118,7 +121,7 @@ put(P.ledgers, 6.35, F + 1, 4.1, 0, { on: "mdesk" });
 put(P.frame, 6.62, F + 1, 4.3, 250, { on: "mdesk" });
 put(P.ashtray, 6.15, F + 1, 4.3, 0, { on: "mdesk" });
 put(P.painting2, 7.7, F + 1.7, 3.6, -90);
-put(P.noticeH, 4.6, F + 1.6, 1.34, 0, { scale: 0.9 });
+put(P.noticeH, 4.6, F + 1.6, 1.4, 0, { scale: 0.9 });
 put(P.insurance, 7.7, F + 1.5, 2.3, -90, { scale: 0.9 });
 
 // ---- Vault room: safe-deposit walls down both long sides, the cash trolley at the back, a counting table ----
@@ -132,13 +135,15 @@ put(P.pen, 5.75, F + 0.7, -2.8, 60, { on: "count" });
 
 // ---- The corridor by the vault door: a fire extinguisher, the strongroom notice, a chair for the guard ----
 put(P.extinguisher, 2.4, F, -1.2, 0);
-put(P.noticeV, 5.6, F + 1.6, -1.36, 0, { scale: 0.9 });
+put(P.noticeV, 5.6, F + 1.6, -1.3, 0, { scale: 0.9 });
 put(P.chair, 6.8, F, 0.6, 180);
 put(P.ashtray, 7.3, F, 0.75, 0);
 
 // ---- Stair hall (street door, steps up to the floor): a notice board, opening hours, a plant at the top ----
-put(P.corkBoard, -2.67, F + 0.6, 2.2, -90);
-put(P.noticeV2, -4.84, F + 1.4, 2.3, 90, { scale: 0.9 });
+put(P.corkBoard, -2.6, F + 0.6, 2.2, -90);
+put(P.noticeV, -2.61, F + 1.2, 2.5, -90);
+put(P.noticeH, -2.61, F + 1.25, 1.95, -90);
+put(P.noticeV2, -4.8, F + 1.4, 2.3, 90, { scale: 0.9 });
 put(P.plant, -4.45, F, 1.65, 0);
 put(P.bin, -3.0, F, 1.6, 0);
 
@@ -159,8 +164,9 @@ put(P.box, -3.9, F1, -3.7, 15, { id: "box1" });
 put(P.box, -3.85, F1 + 0.4, -3.7, 40, { on: "box1" });
 put(P.box, 0.4, F1, -4.1, 0);
 put(P.fan, 7.1, F1 + 1, 5.4, 200, { on: "515ED7A4C7009476" });
-put(P.wallMap, 1.0, F1 + 0.95, 1.34, 0);
-put(P.corkBoard, 5.0, F1 + 0.6, 1.36, 0);
+put(P.wallMap, 1.0, F1 + 0.95, 1.4, 0);
+put(P.corkBoard, 5.0, F1 + 0.6, 1.42, 0);
+put(P.noticeH, 4.7, F1 + 1.2, 1.43, 0);
 
 // ---- The pavement: a bench, a planter either side of the door, a bin ----
 put(P.benchOut, 1.2, 0, 7.6, 180);
@@ -180,7 +186,7 @@ glow(-3.75, F + 2.6, 2.6, { lv: 5, radius: 6.5 }); // the stair hall and the str
 // The vault: LF_BankVault_RoomDoor (bank_room) on the corridor face of the vault room's doorway. Its origin is the
 // front's centre and the door hinges 1.271 m to its right, so x 3.785 centres the door on the doorway (x 3.92); the
 // door's back sinks into the wall. The leaf swings into the corridor; 55 degrees keeps it off the far wall.
-export const vault = { x: 3.785, y: F, z: -1.17, yaw: 0, id: "bank_vault", swing: 55 };
+export const vault = { x: 3.785, y: F, z: -1.02, yaw: 0, id: "bank_vault", swing: 55 };
 export const kit = {
   alarmBox: { x: 0.07, y: 3.0, z: 6.58, yaw: 0 }, // the pier between the hall's two windows
   sign: { x: -3.4, y: 3.95, z: 6.61, yaw: 0 }, // over the street door, above the stair-hall window

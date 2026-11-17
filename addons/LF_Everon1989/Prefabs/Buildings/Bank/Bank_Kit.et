@@ -11,7 +11,7 @@ SCR_DestructibleBuildingEntity : "{F550115D39FD56BA}Prefabs/Buildings/Bank/Bank.
      m_sVaultId "bank_vault"
     }
    }
-   coords 3.785 1.053 -1.17
+   coords 3.785 1.053 -1.02
   }
   GenericEntity : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
    ID "DE3FF9CB9A04A0D8"
