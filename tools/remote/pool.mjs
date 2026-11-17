@@ -2501,6 +2501,8 @@ export function remoteState(m) {
   const ps = [
     `$ld = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\locks'`,
     `foreach ($n in @(${names.map(tb.psQuote).join(",")})) { $f = Join-Path $ld ($n + '.lock'); if (Test-Path -LiteralPath $f) { $raw = [IO.File]::ReadAllText($f).Trim(); $alive = $false; try { $i = $raw | ConvertFrom-Json; $alive = [bool](Get-Process -Id $i.pid -ErrorAction SilentlyContinue) } catch {}; Write-Host \"lf-pool: lock $n $alive $raw\" } else { Write-Host \"lf-pool: lock $n free\" } }`,
+    // Free space of the drive holding the worktrees (lead's DISK block); a failure prints nothing.
+    `try { $dr = Get-PSDrive -Name ((Split-Path -Qualifier ${tb.psQuote(m.root)}).TrimEnd(':')) -ErrorAction Stop; Write-Host ('lf-pool: disk ' + ([math]::Round($dr.Free / 1GB, 1)).ToString([Globalization.CultureInfo]::InvariantCulture)) } catch {}`,
     "$os = Get-CimInstance Win32_OperatingSystem; Write-Host \"lf-pool: ram $([int]($os.FreePhysicalMemory / 1024)) $([int]($os.TotalVisibleMemorySize / 1024))\"",
     pr.PS_PROC_SCAN,
     PS_GPU_PROBE,
@@ -2516,7 +2518,10 @@ export function parseRemoteState(text) {
   let freeMb = null;
   let totalMb = null;
   let thermalC = null;
+  let diskGb = null;
   for (const l of String(text).split(/\r?\n/)) {
+    const dk = /^lf-pool: disk (-?[\d.]+)$/.exec(l.trim());
+    if (dk) diskGb = Number(dk[1]);
     const th = /^lf-pool: thermal ([\d.]+)$/.exec(l.trim());
     if (th) thermalC = Number(th[1]);
     const t = l.trim();
@@ -2531,7 +2536,7 @@ export function parseRemoteState(text) {
   // The ArmaReforger processes there (Workbench, servers, clients: the pool's or not); null when the box
   // answered without the scan lines (an older holder), so its gate falls back to lock-based pending.
   const procs = freeMb !== null ? pr.parseScan(text) : null;
-  return { locks, freeMb, totalMb, thermalC, procs, gpuProbe: parseProbe(text), heartbeat: (/^lf-gpu-hb: (.*)$/m.exec(String(text)) ?? [])[1] ?? null };
+  return { locks, freeMb, totalMb, thermalC, diskGb, procs, gpuProbe: parseProbe(text), heartbeat: (/^lf-gpu-hb: (.*)$/m.exec(String(text)) ?? [])[1] ?? null };
 }
 
 function remoteLocks(m) {
@@ -3034,7 +3039,7 @@ export function poolSnapshot(root, m, report = () => {}) {
   const settings = poolSettings(root);
   const rows = m.lanes ? [...lanesFor(m, "session"), ...lanesFor(m, "test")] : lanesFor(m, "test");
   const gb = (mb) => Math.round((mb / 1024) * 10) / 10;
-  const snap = { name: m.name, health: "?", freeGb: null, totalGb: null, floorGb: gb(settings.minFreeMb), tempC: null, lanes: m.lanes ? m.lanes.test + m.lanes.session : m.slots, busy: 0 };
+  const snap = { name: m.name, via: m.via, health: "?", freeGb: null, totalGb: null, diskGb: null, floorGb: gb(settings.minFreeMb), tempC: null, lanes: m.lanes ? m.lanes.test + m.lanes.session : m.slots, busy: 0 };
   const h = probe(root, m, { fresh: true });
   snap.health = healthWord(h).replace(/\s*\(.*\)$/, "");
   report({ ...snap });
@@ -3042,6 +3047,7 @@ export function poolSnapshot(root, m, report = () => {}) {
   if (m.via === "local") {
     snap.freeGb = gb(Math.round(freemem() / 1048576));
     snap.totalGb = gb(Math.round(totalmem() / 1048576));
+    snap.diskGb = wt.freeDiskGbAt(wt.mainRootOf(root));
     snap.busy = rows.filter((l) => {
       const info = readJson(localLockFile(root, l.lock), null);
       return info && pidAlive(info.pid);
@@ -3054,6 +3060,7 @@ export function poolSnapshot(root, m, report = () => {}) {
         snap.totalGb = gb(st.totalMb);
       }
       if (Number.isFinite(st.thermalC)) snap.tempC = st.thermalC;
+      if (Number.isFinite(st.diskGb)) snap.diskGb = st.diskGb;
       snap.busy = rows.filter((l) => st.locks[l.lock]?.alive).length;
     } else {
       snap.health = "slow";

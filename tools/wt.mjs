@@ -26,6 +26,7 @@ import { localSetting } from "./lib/local-config.mjs";
 import { ADDONS } from "./lib/addons.mjs";
 import { sessionDirOf } from "./lib/session-lease.mjs";
 import * as pinLib from "./lib/guard-pin.mjs";
+import { refuseMessage } from "./lib/disk-guard.mjs";
 import { isMachineWide, machineLockDir } from "./lib/machine-locks.mjs";
 
 const IS_WIN = process.platform === "win32";
@@ -257,11 +258,19 @@ export function markerPath(root) {
   return join(root, "tmp", "wt.json");
 }
 
-// priority (pool queue order: high|normal|low) is kept across rewrites.
+// priority (pool queue order: high|normal|low) is kept across rewrites. The file is written only when its content
+// changes: `wt list` reconciles every worktree, and rewriting all the markers made each worktree look freshly
+// touched, so `lead prune-safe` pruned nothing (2026-11-17). Returns true when it wrote.
 export function writeMarker(wtRoot, slug, priority) {
-  mkdirSync(join(wtRoot, "tmp"), { recursive: true });
   const keep = priority ?? readMarker(wtRoot)?.priority;
-  writeFileSync(markerPath(wtRoot), JSON.stringify(keep ? { slug, priority: keep } : { slug }) + "\n", "utf8");
+  const text = JSON.stringify(keep ? { slug, priority: keep } : { slug }) + "\n";
+  const p = markerPath(wtRoot);
+  try {
+    if (readFileSync(p, "utf8") === text) return false; // unchanged: leave the mtime alone
+  } catch { /* no marker yet */ }
+  mkdirSync(join(wtRoot, "tmp"), { recursive: true });
+  writeFileSync(p, text, "utf8");
+  return true;
 }
 
 export function readMarker(root) {
@@ -497,7 +506,7 @@ function defaultPin(root) {
   }
 }
 
-export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = true, unchecked = false, resolvePin = defaultPin } = {}) {
+export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = true, unchecked = false, resolvePin = defaultPin, freeGb = freeDiskGbAt } = {}) {
   checkBaseName(base);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
     throw new Error(`invalid slug '${slug}': lowercase letters, digits and single hyphens only`);
@@ -509,6 +518,9 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
   const main = mainRootOf(root);
   const branch = `ws/${slug}`;
   const dir = join(dirname(main), `Life-Framework-ws-${slug}`);
+  // A checkout that runs the drive dry fails half way and leaves a broken tree: refuse before touching anything.
+  const tooFull = refuseMessage(freeGb(dirname(main)), "the drive holding the worktrees");
+  if (tooFull) throw new Error(tooFull);
   // Fetch outside the lock: it is network time, and concurrent fetches are safe
   // (a ref-lock clash leaves the refs a moment older, as before).
   git(root, ["fetch", "origin", "--prune"]);
