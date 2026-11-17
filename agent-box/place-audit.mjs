@@ -864,6 +864,10 @@ function islandSelftest(fail) {
   const run = (...a) => spawnSync(process.execPath, [fileURLToPath(import.meta.url), "placement", ...a], { encoding: "utf8", windowsHide: true, timeout: 60000 });
   const none = run("--world", "MainWorld", "--layer", "Place_no_such_layer.layer");
   if (none.status !== 1 || !/no entity in Place_no_such_layer\.layer/.test(none.stdout)) fail(`island audit: a layer that selects nothing exited ${none.status}: ${none.stdout}`);
+  // The test server boots MainWorld alone: with no LF_TestRunner in the island's layers it never runs LF_Test_PlacementAuditTown, so
+  // no out.txt is written and the audit waits for the 10 minute kill (2026-11-17, #2394 proof run).
+  const runner = readdirSync(islandLayersDir(ROOT)).filter((n) => n.endsWith(".layer")).some((n) => readFileSync(join(islandLayersDir(ROOT), n), "utf8").includes("LF_TestRunnerComponent"));
+  if (!runner) fail("island audit: MainWorld_Layers has no LF_TestRunner, so the test server never runs the audit");
   const bad = run("--world", "Elsewhere");
   if (bad.status !== 1 || !/not one it audits/.test(bad.stdout)) fail(`island audit: an unknown world was accepted (${bad.status})`);
 }
