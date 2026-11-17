@@ -102,7 +102,7 @@ export async function main(argv, { root }) {
   for (const c of Z.readCells(root)) {
     if (c.error || isFrameClaim(c)) continue;
     const rect = Z.claimRect(c);
-    const file = join(root, Z.GRID_LAYERS, Z.layerOfSlug(c.slug));
+    const file = Z.gridLayerPath(root, c);
     if (!rect || !existsSync(file)) continue;
     const text = readFileSync(file, "utf8");
     const next = withSpawn(text, c.slug, Z.yardPlan(rect));

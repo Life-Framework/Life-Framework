@@ -9,6 +9,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { findBlocks, num, parseConf, str, vecXZ } from "./conf.mjs";
+import { STYLES } from "../rules/areas.mjs";
 import { DEFAULT_WORLD, loadPlaces } from "./places.mjs";
 
 const CONF_DIRS = ["addons/LifeFramework/Configs/Map", "addons/LF_Everon1989/Configs/Map"];
@@ -19,7 +20,7 @@ const fixturePoiOf = (b) => {
   const [x, z] = vecXZ(b.props.Pos ?? "0 0 0");
   return { id: str(b.props.Id, b.name), name: str(b.props.Name), kind: str(b.props.Kind, "PLACE").toUpperCase(), access: str(b.props.Access, "PUBLIC"), x, z, minZoom: num(b.props.MinZoom, 3), heardOf: num(b.props.HeardOf, 0) === 1 };
 };
-const areaOf = (b) => {
+const fixtureAreaOf = (b) => {
   const a = { id: str(b.props.Id, b.name), name: str(b.props.Name), style: str(b.props.Style, "NORMAL").toUpperCase(), shape: str(b.props.Shape, "CIRCLE").toUpperCase() };
   if (a.shape === "POLYGON") {
     const t = (b.props.Points || []).map(Number);
@@ -37,14 +38,33 @@ const confFiles = (root, dir, prefix) => {
   return existsSync(d) ? readdirSync(d).filter((n) => n.startsWith(prefix) && n.endsWith(".conf")).sort().map((n) => join(d, n)) : [];
 };
 
-function readAll(root, name, cls, mk) {
+// One row of LF_MapAreas.conf (class LF_MapAreaRow, members as the game reads them) as the renderer draws it. Points
+// are world "x y z" strings; the name is the row's label, else the style's own label ("Safe zone"), else empty (a
+// town line carries none: the vanilla town name is already on the map).
+const rowAreaOf = (b, text) => {
+  const style = str(b.props.m_eStyle, "CUSTOM").toUpperCase();
+  const label = str(b.props.m_sLabel) || STYLES[style]?.labelKey || "";
+  const a = { id: str(b.props.m_sId), name: label.startsWith("#") ? text(label) : label, style, shape: str(b.props.m_eShape, "POLYGON").toUpperCase() };
+  if (a.shape === "CIRCLE") {
+    [a.x, a.z] = vecXZ(b.props.m_vCentre ?? "0 0 0");
+    a.radius = num(b.props.m_fRadius, 30);
+  } else {
+    a.points = (b.props.m_aPoints || []).map((p) => vecXZ(p));
+  }
+  return a;
+};
+
+/** The area rows: { id -> area }, core LF_MapAreas.conf then each pack overlay LF_MapAreas*.conf, same Id replaces. */
+export function loadAreas(root, text = () => "") {
   const rows = new Map();
   for (const d of CONF_DIRS) {
-    const f = join(root, d, name);
-    if (!existsSync(f)) continue;
-    for (const b of findBlocks(parseConf(readFileSync(f, "utf8")), cls)) {
-      const r = mk(b);
-      rows.set(r.id, r);
+    for (const f of confFiles(root, d, "LF_MapAreas")) {
+      for (const b of findBlocks(parseConf(readFileSync(f, "utf8")), "LF_MapAreaRow")) {
+        const r = rowAreaOf(b, text);
+        if (!r.id) continue;
+        if (str(b.props.m_sOp) === "remove") rows.delete(r.id);
+        else rows.set(r.id, r);
+      }
     }
   }
   return rows;
@@ -103,13 +123,13 @@ export function joinPois(kinds, places, text = () => "") {
  * kind: nothing is drawn, and the caller says so), and info has the world, the counts and the unjoined kinds.
  */
 export function loadOverlay(root, opts = {}) {
-  const a = readAll(root, "LF_MapAreas.conf", "LF_MapArea", areaOf);
+  const a = loadAreas(root, loadStrings(root));
   const info = { world: opts.world || DEFAULT_WORLD, places: 0, pois: 0, dark: 0, unjoined: {}, files: 0, kinds: 0, dupes: 0 };
   if (opts.fixture) {
     const p = new Map();
     const fx = parseConf(readFileSync(join(root, FIXTURE), "utf8"));
     for (const b of findBlocks(fx, "LF_MapPoi")) { const r = fixturePoiOf(b); p.set(r.id, r); }
-    for (const b of findBlocks(fx, "LF_MapArea")) { const r = areaOf(b); a.set(r.id, r); }
+    for (const b of findBlocks(fx, "LF_MapArea")) { const r = fixtureAreaOf(b); a.set(r.id, r); }
     return { pois: [...p.values()], areas: [...a.values()], source: "fixture", info };
   }
   const kinds = loadKinds(root);

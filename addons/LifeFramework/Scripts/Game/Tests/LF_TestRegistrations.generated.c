@@ -59,6 +59,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BreachEvidence(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CarriedInventoryRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CarriedInventoryDeathNoDupe(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_CarriedPropHang(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CarriedSerialPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CarriedStolenPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_Carry(), LF_TestTier.WORLD);
@@ -338,6 +339,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LogoutBodyWake(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutRule(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_M4ConfigSections(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapAreaConf(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapAreas(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapConfig(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MapPois(), LF_TestTier.LOGIC);

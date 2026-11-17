@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A0BBA1E9FC408F08}Worlds/Everon1989Grid/Everon1989Grid.ent"
+ Configurations {
+  ENTResourceClass PC {
+  }
+  ENTResourceClass XBOX_ONE : PC {
+  }
+  ENTResourceClass XBOX_SERIES : PC {
+  }
+  ENTResourceClass PS4 : PC {
+  }
+  ENTResourceClass HEADLESS : PC {
+  }
+ }
+}
