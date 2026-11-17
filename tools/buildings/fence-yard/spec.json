@@ -10,26 +10,94 @@
     "annex": "{F9F2F6D2BD65B719}Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Side.et",
     "building": "FenceYard",
     "annex_building": "FenceYard_Side",
-    "furniture": ["Furniture/FenceYard_furniture_01", "Furniture/FenceYard_Side_furniture_01"]
+    "furniture": [
+      "Furniture/FenceYard_furniture_01",
+      "Furniture/FenceYard_Side_furniture_01"
+    ]
   },
   "host": {
     "prefab": "Workshop_01_Main",
     "building_id": "b33",
     "annex_id": "b36",
-    "world_xz": [4546.2, 10670],
+    "world_xz": [
+      4546.2,
+      10670
+    ],
     "yaw": -11,
     "town": "saint-philippe",
     "slot": "fence-yard",
     "front": "+z",
-    "footprint": { "min": [-6.19, -9.15], "max": [5.96, 3.91] },
+    "footprint": {
+      "min": [
+        -6.19,
+        -9.15
+      ],
+      "max": [
+        5.96,
+        3.91
+      ]
+    },
     "floor_y": 0.19,
-    "annex": { "x": -3.26, "z": -6.45, "yaw": -90, "why": "b36 relative to b33 in the main building's space, pushed 0.16 m back to clear the main's back wall collider" }
+    "annex": {
+      "x": -3.26,
+      "z": -6.45,
+      "yaw": -90,
+      "why": "b36 relative to b33 in the main building's space, pushed 0.16 m back to clear the main's back wall collider"
+    }
   },
   "rooms": [
-    { "id": "bay", "floor": 0, "x": [-0.4, 5.9], "z": [-3.6, 3.6], "role": "the open workshop bay behind the industrial door: workbenches, vice, tyre pile, fuel drums, the concrete mixer; the public face of the yard" },
-    { "id": "office", "floor": 0, "x": [-5.9, -0.6], "z": [-0.6, 3.6], "role": "the mechanic's office and parts counter by the front door: card files, wall map, crates" },
-    { "id": "wc", "floor": 0, "x": [-3.4, -0.6], "z": [-3.6, -0.8], "role": "washroom and coat hooks: sink, mirror, towel rack, first-aid box" },
-    { "id": "backroom", "floor": "annex", "x": [-6.0, -0.5], "z": [-8.9, -4.0], "role": "the fence's back room in the annex: the stall, the fence NPC, the stove and the armchair; never signed, never on the map" }
+    {
+      "id": "bay",
+      "floor": 0,
+      "x": [
+        -0.4,
+        5.9
+      ],
+      "z": [
+        -3.6,
+        3.6
+      ],
+      "role": "the open workshop bay behind the industrial door: workbenches, vice, tyre pile, fuel drums, the concrete mixer; the public face of the yard"
+    },
+    {
+      "id": "office",
+      "floor": 0,
+      "x": [
+        -5.9,
+        -0.6
+      ],
+      "z": [
+        -0.6,
+        3.6
+      ],
+      "role": "the mechanic's office and parts counter by the front door: card files, wall map, crates"
+    },
+    {
+      "id": "wc",
+      "floor": 0,
+      "x": [
+        -3.4,
+        -0.6
+      ],
+      "z": [
+        -3.6,
+        -0.8
+      ],
+      "role": "washroom and coat hooks: sink, mirror, towel rack, first-aid box"
+    },
+    {
+      "id": "backroom",
+      "floor": "annex",
+      "x": [
+        -6,
+        -0.5
+      ],
+      "z": [
+        -8.9,
+        -4
+      ],
+      "role": "the fence's back room in the annex: the stall, the fence NPC, the stove and the armchair; never signed, never on the map"
+    }
   ],
   "interactables": [
     "fence NPC (LF_Fence.et, back room)",
@@ -44,14 +112,54 @@
     "decor_entities": 150,
     "physics_props": 0,
     "per_frame_scripts": 0,
-    "check": "tools\\cli perf building FenceYard --size small"
+    "check": "toolscli perf building FenceYard --size small"
   },
   "scripts": {
     "shell": "node tools/buildings/fence-yard/prune.mjs",
     "check": "node tools/buildings/fence-yard/prune.mjs --check",
-    "proof": "tools/buildings/fence-yard/proof.json"
+    "proof": "tools/buildings/fence-yard/proof.json",
+    "fitout": "node tools/buildings/fence-yard/fitout.mjs",
+    "fitout_check": "node tools/buildings/fence-yard/fitout.mjs --check"
   },
   "counts": {
-    "shell": { "entities": 63, "lights": 0, "shadow_casters": 0, "vanilla_props": "workshop 29 of 42, annex 14 of 18" }
+    "shell": {
+      "entities": 63,
+      "lights": 0,
+      "shadow_casters": 0,
+      "vanilla_props": "workshop 29 of 42, annex 14 of 18"
+    },
+    "pass1": {
+      "entities": 67,
+      "lights": 3,
+      "shadow_casters": 0,
+      "grade": "C"
+    }
+  },
+  "fence": {
+    "stall": {
+      "prefab": "{4855AC571C89CA6D}Prefabs/Props/Commercial/LF_FenceStall.et",
+      "room": "backroom",
+      "stock": "fence",
+      "system": "LF_ShopComponent m_bFence (Crime fence; reference kit grid cell fence-shop-2)"
+    },
+    "npc": {
+      "prefab": "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.et",
+      "room": "backroom"
+    },
+    "rows": "Grid_fence_yard.layer FenceYard_Stall, FenceYard_Fence (fitout.mjs)",
+    "not_fitted": {
+      "stash": "the only stash system is the org hideout stash (LF_HideoutStash, members of the hideout's owner only); a fence yard has no hideout lease, so none is placed",
+      "car_bay": "Crime has no fence car bay (the chop bench is its own site); the bay stays a plain garage"
+    }
+  },
+  "grid": {
+    "cell": "c14r4",
+    "span": [
+      2,
+      2
+    ],
+    "main": "Grid_fence_yard_Main",
+    "yaw": -90,
+    "why": "--span 2x2 by hand: the autosize fix that counts the annex (#2376) was reverted by the main guard, so autosize still sees 2x1"
   }
 }

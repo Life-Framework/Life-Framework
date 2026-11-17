@@ -2751,10 +2751,10 @@ GenericEntity GridMarker_c14r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c14r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:fence-yard"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 190.5 0.505 73.5
@@ -2769,19 +2769,19 @@ GenericEntity GridMarker_c15r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 202.5 0.505 71.5
+ coords 213.5 0.505 71.5
  angleY 180
 }
 GenericEntity GridPlate_c15r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:fence-yard"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 202.5 0.505 73.5
+ coords 213.5 0.505 73.5
  angleY 180
 }
 GenericEntity GridMarker_c16r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -3351,10 +3351,10 @@ GenericEntity GridMarker_c14r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c14r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:fence-yard"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 190.5 0.505 85.5
@@ -3369,19 +3369,19 @@ GenericEntity GridMarker_c15r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 202.5 0.505 83.5
+ coords 213.5 0.505 83.5
  angleY 180
 }
 GenericEntity GridPlate_c15r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:fence-yard"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 202.5 0.505 85.5
+ coords 213.5 0.505 85.5
  angleY 180
 }
 GenericEntity GridMarker_c16r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -6680,46 +6680,6 @@ StaticModelEntity GridPath_r5_70 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 188.67 0.025 82
  scale 0.3
 }
-StaticModelEntity GridPath_r5_71 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 191.07 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_72 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 193.47 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_73 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 195.87 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_74 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 198.27 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_75 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 200.67 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_76 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 203.07 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_77 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 205.47 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_78 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 207.87 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_79 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 210.27 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_80 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 212.67 0.025 82
- scale 0.3
-}
 StaticModelEntity GridPath_r5_81 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 215.07 0.025 82
  scale 0.3
@@ -7353,7 +7313,7 @@ GenericEntity Grid_frame_Spawn {
 GenericEntity GridMapBoard : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:map c0r0 chess-table, c1r0 pr-features, c2r0 whitelist-chat, c3r0 shops-till, c4r0 crimes, c5r0 zones-spawn, c6r0 first-night, c7r0 bank-heist, c8r0 bank-heist, c9r0 hideout, c10r0 jail, c11r0 bank, c12r0 bank, c14r0 hostel, c15r0 hostel, c17r0 pub, c18r0 pub, c20r0 fuel-station, c21r0 fuel-station, c22r0 fuel-station, c23r0 clinic, c24r0 clinic, c0r1 roadblock, c1r1 retheme-proof, c3r1 police-station-kit, c4r1 police-station-kit, c5r1 hospital, c6r1 chain-barrels, c7r1 chopshop, c8r1 lockpick-cars, c9r1 cash-van, c10r1 cash-van, c11r1 bank, c12r1 bank, c14r1 hostel, c15r1 hostel, c17r1 pub, c18r1 pub, c23r1 clinic, c24r1 clinic, c0r2 jobs, c1r2 event-scene, c2r2 community-hall, c3r2 police-station-kit, c4r2 police-station-kit, c5r2 hospital, c6r2 impound, c7r2 police-desk, c8r2 police-desk, c9r2 dispatch, c10r2 convoy, c11r2 town-hall, c12r2 town-hall, c13r2 town-hall, c0r3 houses-keys, c1r3 test-fixtures, c6r3 vehicle-lot, c7r3 job-depot, c8r3 job-depot, c9r3 zone-signs, c10r3 zone-signs, c11r3 town-hall, c12r3 town-hall, c13r3 town-hall, c18r3 pack-fixture, c0r4 shooting-range, c1r4 fence-shop-2, c2r4 orgs-vehicles, c6r4 vehicle-lot, c7r4 apple-chain, c8r4 apple-chain, c9r4 org-desk, c10r4 atm, c0r5 licence-desk, c1r5 everon-outlets, c2r5 signs-board-quests, c7r5 first-night-room, c8r5 first-night-room, c9r5 first-night-room, c10r5 furnace, c0r6 race-track, c1r6 police, c2r6 npcs, c5r6 wanted-posters, c7r6 first-night-room, c8r6 first-night-room, c9r6 first-night-room, c10r6 gun-counter"
+   m_sSignId "grid:map c0r0 chess-table, c1r0 pr-features, c2r0 whitelist-chat, c3r0 shops-till, c4r0 crimes, c5r0 zones-spawn, c6r0 first-night, c7r0 bank-heist, c8r0 bank-heist, c9r0 hideout, c10r0 jail, c11r0 bank, c12r0 bank, c14r0 hostel, c15r0 hostel, c17r0 pub, c18r0 pub, c20r0 fuel-station, c21r0 fuel-station, c22r0 fuel-station, c23r0 clinic, c24r0 clinic, c0r1 roadblock, c1r1 retheme-proof, c3r1 police-station-kit, c4r1 police-station-kit, c5r1 hospital, c6r1 chain-barrels, c7r1 chopshop, c8r1 lockpick-cars, c9r1 cash-van, c10r1 cash-van, c11r1 bank, c12r1 bank, c14r1 hostel, c15r1 hostel, c17r1 pub, c18r1 pub, c23r1 clinic, c24r1 clinic, c0r2 jobs, c1r2 event-scene, c2r2 community-hall, c3r2 police-station-kit, c4r2 police-station-kit, c5r2 hospital, c6r2 impound, c7r2 police-desk, c8r2 police-desk, c9r2 dispatch, c10r2 convoy, c11r2 town-hall, c12r2 town-hall, c13r2 town-hall, c0r3 houses-keys, c1r3 test-fixtures, c6r3 vehicle-lot, c7r3 job-depot, c8r3 job-depot, c9r3 zone-signs, c10r3 zone-signs, c11r3 town-hall, c12r3 town-hall, c13r3 town-hall, c18r3 pack-fixture, c0r4 shooting-range, c1r4 fence-shop-2, c2r4 orgs-vehicles, c6r4 vehicle-lot, c7r4 apple-chain, c8r4 apple-chain, c9r4 org-desk, c10r4 atm, c14r4 fence-yard, c15r4 fence-yard, c0r5 licence-desk, c1r5 everon-outlets, c2r5 signs-board-quests, c7r5 first-night-room, c8r5 first-night-room, c9r5 first-night-room, c10r5 furnace, c14r5 fence-yard, c15r5 fence-yard, c0r6 race-track, c1r6 police, c2r6 npcs, c5r6 wanted-posters, c7r6 first-night-room, c8r6 first-night-room, c9r6 first-night-room, c10r6 gun-counter"
    m_vRimColor 0.1 0.1 0.1
    m_vPaintColor 0.95 0.95 0.9
    m_vTextColor 0.05 0.05 0.05
