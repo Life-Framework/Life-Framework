@@ -5922,6 +5922,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Workplace"
      Comment "Map POI kind name (#2230): a job site."
     }
+    CustomStringTableItem "{DC7EEF1A69D6A983}" {
+     Id "LF-MapWaypoint_Label"
+     Target_en_us "Waypoint"
+     Comment "Map: name of the waypoint a player set by right-clicking the map (shown under the marker and by the pencil circle)."
+    }
     CustomStringTableItem "{71DFE7C94DAE37F2}" {
      Id "LF-Map_AreaGated"
      Target_en_us "Restricted"

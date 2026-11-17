@@ -24,7 +24,7 @@ slice cards are on GitHub (label `slice`); this page covers the design and the o
 | `ci`, `wt gate`, `wt ship` suite | as `--tier all`, without the town tests; the pack leg runs after the shards |
 | `e2e` | one pair of boots per world (#1993): 2 for the grid-fixture persistence tests, 3 for the town tests (below), 2 under the pack test header for PERSISTENCE pack tests. `--pre-move` keeps the town pair only |
 | `host` | 3 (the playtest mission) |
-| `session up` (default `--mission debug`) | 3, as today. `--mission grid` boots 2 |
+| `session up` (default `--mission debug`) | 3, as today. `--mission grid` boots 2, or the pack grid world (a SubScene of 2 that adds the pack's cells) when the pack is loaded and a pack cell exists |
 | `grid place`, `grid list`, `grid free`, `place --layer Grid_*` | 2 |
 | `look grid:<slug>`, `look grid:all` | 2 |
 | `look <area>`, `look town:<area>` | 3 |
@@ -86,13 +86,19 @@ game loads. The pack test leg closes that gap:
   `PACK_TEST_MISSION` names it.
 - **The leg.** `planLegs` (`packLeg`, `tools/lib/test-world.mjs`) adds one boot on that header for the pack
   tests of `--tier all` (every one but PERF) or `--tier persistence`, and for those an `--only`/`--red`
-  names; a mixed `--only` splits into the core legs plus the pack leg. A sharded run (`ci`, `wt gate`)
+  names; a mixed `--only` splits into the core legs plus the pack leg, and each leg runs only the names
+  that belong to it (a core leg never falls back to the whole tier, #2276); a name that matches no test
+  stops the run with exit 2 (`splitSelection`, `test-selection-selftest`). A sharded run (`ci`, `wt gate`)
   runs the pack leg after the shards. `planE2eLegs` gives PERSISTENCE pack tests a save and reload pair
   on the same header. `pack-test-leg-selftest` proves the plan, the boundary and the header.
 - **The first one.** `everon/drinks-impair` (`LF_Test_EveronDrinksImpair`, #2003) asserts that the moonshine
   and beer rows apply over the neutral core table under the pack header. It replaced
   `pack-drinks-impair-selftest.mjs`. The townsfolk test of #1960 waits for a pack-side grid layer: its
-  NPCs are pack prefabs, which the core GridWorld cannot place.
+  NPCs are pack prefabs, which the core GridWorld cannot place; the pack grid world below now holds such a layer.
+- **The pack grid world.** The header's `World` is `LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid.ent`, a SubScene of GridWorld
+  (as `Everon1989Town` is of DebugWorld) that adds the pack's `Grid_<slug>.layer` files (cells that place pack prefabs, such as a
+  building fit-out), so the pack leg, `session up --mission grid` with the pack loaded and `look grid:<pack cell>` see them. A pack layer in
+  `GridWorld_Layers` would break the core/pack red line, so the pack's cells never go there (`world-zones.md` "Pack cells").
 
 One table of world paths, `tools/lib/worlds.mjs` (`TEST_WORLD`, `GRID_WORLD`, `PLAYTEST_WORLD`,
 `gridLayersDir()`), replaces the paths each tool spells out on its own today (`addons.mjs`
