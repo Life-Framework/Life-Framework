@@ -25,11 +25,60 @@ enum LF_ERaceJoin
 }
 
 //------------------------------------------------------------------------------------------------
-//! One racer in one race. The body is re-resolved by uid at every use; the stored id is only the
-//! fallback for a body that has no player (a test fixture).
+//! How the runner sees the players: the live PlayerManager. A test installs a subclass with a
+//! synthetic population (LF_RaceRunner.SetPlayers) to count and time the lookups at 128 players.
+class LF_RacePlayers : Managed
+{
+	//------------------------------------------------------------------------------------------------
+	bool Available()
+	{
+		return GetGame() && GetGame().GetPlayerManager();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void GetPlayers(notnull array<int> outIds)
+	{
+		outIds.Clear();
+		if (Available())
+			GetGame().GetPlayerManager().GetPlayers(outIds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string UidOf(int playerId)
+	{
+		return LF_Utils.GetPlayerUID(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	IEntity ControlledBy(int playerId)
+	{
+		if (!Available())
+			return null;
+
+		return GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int PlayerOf(IEntity body)
+	{
+		if (!body || !Available())
+			return 0;
+
+		return GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(body);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One racer in one race. The body is re-resolved at every use through the racer's cached player
+//! id, checked with one uid compare (#2404); the stored body id is only the fallback for a body
+//! that has no player (a test fixture).
 class LF_RaceEntrant
 {
 	string m_sUid;
+	//! The player this racer was last seen as; 0 when unknown. Checked against the uid at every use.
+	int m_iPlayerId;
+	//! World ms before which a racer with no online player is not looked up again.
+	float m_fRescanAtMs;
 	EntityID m_BodyId = EntityID.INVALID;
 	int m_iFee;
 	ref LF_RaceProgress m_Progress = new LF_RaceProgress();
@@ -129,8 +178,14 @@ class LF_RaceRunner
 	//! How often the server checks racers against their next checkpoint.
 	static const int TICK_MS = 250; // lf-fixed: detection cadence tied to the default 12 m checkpoint radius
 
+	//! How often a racer with no online player is looked up again by a full player scan.
+	static const int RESCAN_MS = 1000; // lf-fixed: lookup cadence for an offline racer, not gameplay tuning
+
 	protected static ref map<string, ref LF_RaceInstance> s_mRaces;
 	protected static ref LF_RaceClock s_Clock;
+	protected static ref LF_RacePlayers s_Players;
+	//! Full player scans since the last reset (a perf and regression counter).
+	protected static int s_iScans;
 	protected static bool s_bTicking;
 	protected static int s_iSerial;
 
@@ -150,6 +205,29 @@ class LF_RaceRunner
 			s_Clock = new LF_RaceClock();
 
 		return s_Clock;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static LF_RacePlayers Players()
+	{
+		if (!s_Players)
+			s_Players = new LF_RacePlayers();
+
+		return s_Players;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: the population the runner sees; null goes back to the live PlayerManager.
+	static void SetPlayers(LF_RacePlayers players)
+	{
+		s_Players = players;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Full player scans since the last reset.
+	static int GetScanCount()
+	{
+		return s_iScans;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -278,6 +356,7 @@ class LF_RaceRunner
 		LF_RaceEntrant entrant = new LF_RaceEntrant();
 		entrant.m_sUid = uid;
 		entrant.m_BodyId = body.GetID();
+		entrant.m_iPlayerId = Players().PlayerOf(body);
 		entrant.m_iFee = fee;
 		race.m_aEntrants.Insert(entrant);
 		race.m_iPot = race.m_iPot + fee;
@@ -583,23 +662,16 @@ class LF_RaceRunner
 	//! body the racer entered with (a fixture has no player).
 	protected static IEntity ResolveBody(LF_RaceEntrant entrant)
 	{
-		PlayerManager players = GetGame().GetPlayerManager();
-		if (players)
+		LF_RacePlayers players = Players();
+		int playerId = PlayerIdOf(entrant);
+		if (playerId > 0)
 		{
-			array<int> ids = {};
-			players.GetPlayers(ids);
-			foreach (int playerId : ids)
-			{
-				if (LF_Utils.GetPlayerUID(playerId) != entrant.m_sUid)
-					continue;
+			// Online: the controlled body if it lives, never the corpse the racer entered with.
+			IEntity controlled = players.ControlledBy(playerId);
+			if (IsAlive(controlled))
+				return controlled;
 
-				// Online: the controlled body if it lives, never the corpse the racer entered with.
-				IEntity controlled = players.GetPlayerControlledEntity(playerId);
-				if (IsAlive(controlled))
-					return controlled;
-
-				return null;
-			}
+			return null;
 		}
 
 		if (entrant.m_BodyId == EntityID.INVALID || !GetGame().GetWorld())
@@ -610,10 +682,48 @@ class LF_RaceRunner
 			return null;
 
 		// A body some other player now controls is not this racer's.
-		if (players && players.GetPlayerIdFromControlledEntity(entered) > 0)
+		if (players.PlayerOf(entered) > 0)
 			return null;
 
 		return entered;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The racer's online player id, or 0. The cached id costs one uid compare; only a miss scans the
+	//! players, and a racer found offline is scanned for again at most once per RESCAN_MS (#2404).
+	protected static int PlayerIdOf(notnull LF_RaceEntrant entrant)
+	{
+		LF_RacePlayers players = Players();
+		if (!players.Available())
+			return 0;
+
+		if (entrant.m_iPlayerId > 0)
+		{
+			if (players.UidOf(entrant.m_iPlayerId) == entrant.m_sUid)
+				return entrant.m_iPlayerId;
+
+			entrant.m_iPlayerId = 0;
+			entrant.m_fRescanAtMs = 0;
+		}
+
+		float now = NowMs();
+		if (entrant.m_fRescanAtMs > now)
+			return 0;
+
+		s_iScans++;
+		array<int> ids = {};
+		players.GetPlayers(ids);
+		foreach (int playerId : ids)
+		{
+			if (players.UidOf(playerId) != entrant.m_sUid)
+				continue;
+
+			entrant.m_iPlayerId = playerId;
+			return playerId;
+		}
+
+		entrant.m_fRescanAtMs = now + RESCAN_MS;
+		return 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -748,6 +858,8 @@ class LF_RaceRunner
 
 		s_mRaces = null;
 		s_Clock = null;
+		s_Players = null;
+		s_iScans = 0;
 	}
 }
 

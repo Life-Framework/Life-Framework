@@ -104,6 +104,12 @@
 - Amplitude is `max * (level / fullLevel)^power`, zero at level 0, capped at the maximum
   (`LF_ImpairmentViewConfig`: full level 40, power 1.5, max 1.6 degrees yaw, pitch 60%).
   Script defaults, no `.conf` yet. Test: `survival/impairment-view`.
+- ✅ Cost at 128 players (#2404): the frame is armed only on the local controlled body, and only while it
+  sways or has an offset left to unwind. A level change (the owner-only RplProp callback, or the
+  server on a listen host), a control change (`SCR_PlayerController.OnControlledEntityChanged`) or the
+  harness pin arms it; the frame clears itself once the sway is unwound. Before, every survival
+  component armed `EOnFrame` on every rendering client, proxies included (127 early-return calls a
+  frame per client at 128 players). Tests `survival/impairment-view-frame`, `perf/life-128`.
 - Harness `impair <0-100|off>` pins the local view level for a session proof.
 
 ### `LF_SurvivalStatsSaveData` — `Feature/Survival/Persistence/`
@@ -265,3 +271,6 @@
 
 ### Medic and hospital statics reset at world end (life review, 2026-11-17)
 - ✅ `LF_TreatmentBills`, `LF_ReviveAnim` and `LF_HospitalRespawn` (with `LF_NewLifeRule`) register an `LF_StaticResetHook`. Their reset functions had been called only from tests, so a Workbench play restart or a mission change kept the last world's bills, pending wakes and wristbands. It also left the debt-sweep, wristband and CPR-watch flags set, so those timers never started again. Test: `medic/reset-hooks` (LOGIC). Review: `docs/reviews/2026-11-17-life.md`.
+
+### Loading a downed player is not for bystanders (#2405, life review 2026-11-17)
+- ✅ `m_bCarryAnyone` now defaults to off: only an on-duty medic or on-duty police may load a downed player into a vehicle (`LF_Carry.MayCarry`, server and the client's offer). A stretcher vehicle (`m_aStretcherVehicles`, its seat pauses the bleed-out, #262) takes an on-duty medic only, whatever the config (`LF_Carry.MayUseVehicle`). In any other vehicle the patient bleeds out as normal. On a stretcher the bleed-out stays paused but the give-up clock runs (`LF_BleedOut.Advance` -> `LF_AdvanceDownedFor`), so a seated player can always give up. Refusal text `LF-Carry_NotAllowedDuty`. Tests `medic/carry`, `medic/bleed-out`. ⚠️ Not covered: an on-duty medic who leaves a patient on a stretcher keeps the bleed-out paused.

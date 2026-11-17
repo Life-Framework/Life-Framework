@@ -16,7 +16,8 @@ enum LF_ERequestKind
 	COMMS,		//!< Service board and other comms reads or posts
 	SPAWN,		//!< Building placement, give item or cash, arrest: spawns or moves an entity
 	INVENTORY,	//!< Quantity split and transfer from the inventory screen
-	CRIME		//!< Starting a crime that runs on (a held robbery, LF_RobHold)
+	CRIME,		//!< Starting a crime that runs on (a held robbery, LF_RobHold)
+	CHESS		//!< Chess moves and standing up from a table (its own bucket: a game must not eat the phone's)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -154,6 +155,9 @@ class LF_RateLimit
 	// lf-fixed: anti-spam floor; a held robbery takes half a minute, two starts in ten seconds is already a retry
 	static const int CRIME_WINDOW_MS = 10000;
 	static const int CRIME_BURST = 2; // lf-fixed: see CRIME_WINDOW_MS
+	// lf-fixed: anti-spam floor; blitz moves and a stand-up are well under six in five seconds
+	static const int CHESS_WINDOW_MS = 5000;
+	static const int CHESS_BURST = 6; // lf-fixed: see CHESS_WINDOW_MS
 
 	protected static ref LF_RateLimiter s_Limiter;
 
@@ -168,6 +172,7 @@ class LF_RateLimit
 			case LF_ERequestKind.SPAWN: return SPAWN_WINDOW_MS;
 			case LF_ERequestKind.INVENTORY: return INVENTORY_WINDOW_MS;
 			case LF_ERequestKind.CRIME: return CRIME_WINDOW_MS;
+			case LF_ERequestKind.CHESS: return CHESS_WINDOW_MS;
 		}
 
 		return SPAWN_WINDOW_MS;
@@ -184,6 +189,7 @@ class LF_RateLimit
 			case LF_ERequestKind.SPAWN: return SPAWN_BURST;
 			case LF_ERequestKind.INVENTORY: return INVENTORY_BURST;
 			case LF_ERequestKind.CRIME: return CRIME_BURST;
+			case LF_ERequestKind.CHESS: return CHESS_BURST;
 		}
 
 		return SPAWN_BURST;

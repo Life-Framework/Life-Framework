@@ -49,3 +49,7 @@
   The kit itself is untouched (the row-width fix for other screens is #2080).
   Tested by `LF_Test_ChessScreenLayout` (red with the fit skipped: 50 px padding, glyph present).
   Not yet seen in a session picture: the grid-world session did not start on the pool (see the PR).
+
+### Chess griefing fixes (#2405, life review 2026-11-17)
+- ✅ Chess asks (move, stand up) have their own rate bucket, `LF_ERequestKind.CHESS` (6 per 5 s, `LF_ChessTableComponent.AllowAsk`), so a game no longer eats the phone's COMMS bucket and a phone call no longer blocks a move. Test `chess/rate-bucket`.
+- ✅ A bystander cannot wipe a finished game. With both seats held and the game over, `LF_ChessTable.Sit` refuses a third player (they watch) until `RESULT_HOLD_MS` (60 s) after the last move; the two players keep their seats, and a free seat still starts a new game for a newcomer. A refused sit no longer re-publishes the table's RplProps. Test `chess/result-hold`.

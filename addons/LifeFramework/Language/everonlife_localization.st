@@ -2226,9 +2226,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Comment "Load refusal: no vehicle with a free passenger seat nearby."
     }
     CustomStringTableItem "{7A30C5E1D49B6A05}" {
-     Id "LF-Carry_NotAllowed"
-     Target_en_us "Only a {medic} on duty can move them."
-     Comment "Carry refusal: config limits it to medics."
+     Id "LF-Carry_NotAllowedDuty"
+     Target_en_us "Only a {medic} or {police} on duty can move them."
+     Comment "Carry refusal: config limits it to medics and police."
     }
     CustomStringTableItem "{7A30C5E1D49B6A0B}" {
      Id "LF-Carry_NotDowned"
@@ -8305,6 +8305,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Restrain_NotOfficer"
      Target_en_us "Only an on-duty officer can do that."
      Comment "Cuff refusal: the player is not clocked in as police."
+    }
+    CustomStringTableItem "{7C2E91A5D3B04F68}" {
+     Id "LF-Restrain_NotWhileCuffed"
+     Target_en_us "Not while in handcuffs."
+     Comment "Toast to a cuffed player whose request the server refused: a robbery, a lockpick, a driver's seat, giving cash or an item."
     }
     CustomStringTableItem "{1069F4CF50C7B5A1}" {
      Id "LF-Restrain_Release"
