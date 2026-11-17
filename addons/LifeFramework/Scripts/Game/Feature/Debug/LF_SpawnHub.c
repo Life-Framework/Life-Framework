@@ -251,6 +251,13 @@ modded class SCR_ChimeraCharacter
 	//------------------------------------------------------------------------------------------------
 	void LF_AskSpawnHubTravel(string pointId)
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_SpawnHubTravel(pointId);
+			return;
+		}
+
 		Rpc(RpcAsk_LF_SpawnHubTravel, pointId);
 	}
 
