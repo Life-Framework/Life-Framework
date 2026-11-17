@@ -513,6 +513,11 @@ class LF_PlacementService
 		if (!why.IsEmpty())
 			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), why), toastKey);
 
+		// An officer's spike strips are capped: each one ticks a wheel check at 20 Hz (#2416).
+		string capProblem = LF_SpikeStrips.CapProblem(player, placeable);
+		if (!capProblem.IsEmpty())
+			return Refuse(player, capProblem, "#LF-SpikeStrip_Cap");
+
 		// Only an item on the ground or in the player's own inventory: not one in someone's car.
 		IEntity holder = LF_InventoryUtils.GetStorageHierachyRoot(item);
 		if (holder != item && holder != player)

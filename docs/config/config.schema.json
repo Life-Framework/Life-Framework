@@ -1218,6 +1218,41 @@
           "default": 120,
           "minimum": 1,
           "maximum": 1440
+        },
+        "dutyShiftMaxMinutes": {
+          "type": "integer",
+          "description": "Most minutes of one duty shift that count for duty pay and rank. Past it the clock runs on unpaid until the officer clocks out and in again, so an officer who walked away from the game stops earning. A disconnect also stops the clock",
+          "default": 120,
+          "minimum": 5,
+          "maximum": 1440
+        },
+        "trialSweepSeconds": {
+          "type": "integer",
+          "description": "Seconds between the server's checks for an on-duty officer whose trial ran out. That officer is clocked out",
+          "default": 60,
+          "minimum": 10,
+          "maximum": 3600
+        },
+        "ticketRateWindowSeconds": {
+          "type": "integer",
+          "description": "Seconds of the window in which an officer may send ticket requests (ticketRateBurst per window)",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 60
+        },
+        "ticketRateBurst": {
+          "type": "integer",
+          "description": "Ticket requests one officer may send per ticketRateWindowSeconds. More are refused",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 50
+        },
+        "spikeStripMaxPerOfficer": {
+          "type": "integer",
+          "description": "Spike strips one officer may have deployed at once. Each deployed strip checks for wheels 20 times a second",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 20
         }
       },
       "additionalProperties": false,

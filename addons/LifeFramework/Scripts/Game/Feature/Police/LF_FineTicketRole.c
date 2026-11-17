@@ -82,6 +82,16 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: counts one ticket request from playerId against the police config limit
+	//! (ticketRateBurst per ticketRateWindowSeconds). The first refusal in a window logs and toasts;
+	//! the rest are counted into one log line (LF_RateLimit).
+	//! \param nowMs A millisecond clock (System.GetTickCount on the server).
+	static bool AllowWriteRequest(int playerId, int nowMs, bool notify = true)
+	{
+		return LF_RateLimit.AllowWithAt(playerId, LF_ERequestKind.TICKET, "ticket request", nowMs, LF_PoliceConfig.TicketRateWindowMs(), LF_PoliceConfig.TicketRateBurst(), notify);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the officer wrote offenceIndex on a ticket for target. Every check again.
 	//! \return The record, or null when refused.
 	static LF_FineTicketRecord Write(IEntity officer, IEntity target, int offenceIndex)
@@ -485,6 +495,10 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_WriteTicket(RplId target, int offenceIndex)
 	{
+		// A looped client would flood the log and the toasts with refusals (#2416).
+		if (!LF_FineTicketRole.AllowWriteRequest(GetPlayerId(), System.GetTickCount()))
+			return;
+
 		IEntity suspect = LF_NetworkUtils.FindEntityByRplId(target);
 		LF_FineTicketRole.Write(GetControlledEntity(), suspect, offenceIndex);
 	}

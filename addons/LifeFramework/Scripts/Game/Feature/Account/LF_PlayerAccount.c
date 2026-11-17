@@ -14,6 +14,7 @@ class LF_PlayerAccount : Managed
 	/*protected*/ bool m_bOnDuty = false;
 	/*protected*/ bool m_bDutyClockRunning = false;
 	/*protected*/ int m_iDutyStartedAtMs = 0;
+	protected int m_iShiftSeconds = 0;
 	//! Wanted level, police rank and duty totals belong to a character (#331). This copy holds them
 	//! only while the account has no character; the first character adopts it (AddCharacter).
 	protected ref LF_CharacterStanding m_AccountStanding = new LF_CharacterStanding();
@@ -160,6 +161,27 @@ class LF_PlayerAccount : Managed
 	int GetDutyStartedAtMs()
 	{
 		return m_iDutyStartedAtMs;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds of the current duty shift already counted for pay and rank (#2416). Session state,
+	//! not saved: a clock-in starts it at 0 (LF_PoliceRanks.OnDutyChangedAt).
+	int GetShiftSeconds()
+	{
+		return m_iShiftSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void AddShiftSeconds(int seconds)
+	{
+		if (seconds > 0)
+			m_iShiftSeconds = m_iShiftSeconds + seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void ResetShiftSeconds()
+	{
+		m_iShiftSeconds = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
