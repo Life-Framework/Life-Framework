@@ -59,6 +59,7 @@ import { isTemplateMission } from "../tools/server-template/template.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
+import * as rdbCache from "./lib/rdb-cache.mjs";
 import { boxMode, missingForHostStart } from "./lib/host-box.mjs";
 import { addonsArgs, addonsDirArgs, addonDir, flagshipMission, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE, PACK, PACK_MISSION } from "./lib/addons.mjs";
 import { runPerf } from "./perf/perf-report.mjs";
@@ -1499,6 +1500,14 @@ function ensureAddonResourceDatabase(root, name) {
     return 1;
   }
   const exe = workbenchExe();
+  // A worktree that already refreshed the identical resource set left its rdb in the hub (tools/lib/rdb-cache.mjs).
+  const shared = rdbCache.open({ hub: wt.ensureHub(root), addonName: name, addonDir: addon, exe });
+  const reused = () => {
+    if (!shared?.take()) return false;
+    console.log(`resource database${tag}: reused shared rdb ${shared.key.slice(0, 8)} (no Workbench)`);
+    return true;
+  };
+  if (reused()) return 0;
   if (!existsSync(exe)) {
     console.log(`WARN  resource database stale${tag}: ${what}; Workbench not found (${exe}), cannot refresh`);
     return 1;
@@ -1511,14 +1520,24 @@ function ensureAddonResourceDatabase(root, name) {
     // One of this machine's Workbench slots, so a pool machine running this refresh shows busy to the
     // next chooseRefresh/chooseGate (tools/lib/wb-lock.mjs); the order matches cmdBuild (slot, then lock).
     // Its wait is drawn from the same budget as the build lock's (rdbBudget, lock-wait.mjs).
-    wbSlot = wbRoute.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs: rdbBudget().remaining() });
+    wbSlot = wbRoute.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs: rdbBudget().remaining(), until: shared?.has });
+    if (wbSlot.satisfied) {
+      if (reused()) return 0;
+      // The entry was stale (deleted): queue for a real slot.
+      wbSlot = wbRoute.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs: rdbBudget().remaining() });
+    }
     const lockFile = join(wt.ensureHub(root), "locks", "build.lock");
-    waitForLock({
+    const gotLock = waitForLock({
+      until: shared?.has,
       what: `the build lock for the rdb refresh${tag}`,
       budget: rdbBudget(),
       holder: () => describeHolder(lockFile),
       acquire: (waitMs) => wt.acquireLock(root, "build", { waitMs, meta: { what: `rdb refresh${tag}`, root } }),
     });
+    if (gotLock?.satisfied) {
+      if (reused()) return 0;
+      throw new Error("the build lock is held: shared rdb entry was stale");
+    }
     locked = true;
     const started = Date.now();
     const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
@@ -1537,6 +1556,7 @@ function ensureAddonResourceDatabase(root, name) {
     const after = rdbFreshness(addon);
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     if (after.missing.length === 0) {
+      shared?.store();
       console.log(`resource database${tag} refreshed on ${os.hostname()} in ${secs}s, ${started - queuedAt > 1000 ? `${Math.round((started - queuedAt) / 1000)}s queued first, ` : ""}(${after.total} resources registered)`);
       return 0;
     }

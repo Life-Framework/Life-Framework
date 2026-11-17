@@ -36,7 +36,8 @@ const isHeld = (e) => /is held/.test(String(e?.message));
 // acquire(waitMs) takes the lock or throws "... is held ..." after waitMs (wt.acquireLock). Returns
 // what acquire returned; throws "<what> is held ... gave up after N s" (still matching /is held/, the
 // cue for the pool fallback) once the budget is spent.
-export function waitForLock({ acquire, holder = () => "an unknown holder", budget, what, sliceMs = 30000, log = console.log }) {
+export function waitForLock({ acquire, holder = () => "an unknown holder", budget, what, sliceMs = 30000, log = console.log, until }) {
+  if (until?.()) return { satisfied: true };
   try {
     return acquire(0);
   } catch (e) {
@@ -47,16 +48,23 @@ export function waitForLock({ acquire, holder = () => "an unknown holder", budge
     throw new Error(`${what} is held by ${holder()}; the ${total} s wait budget is already spent, not waiting again`);
   }
   log(`waiting on ${what}: held by ${holder()}; budget ${Math.round(budget.remaining() / 1000)} s of ${total} s`);
+  // With until(), poll in short slices so a shared rdb that appears ends the wait within seconds.
+  const slice = until ? Math.min(sliceMs, 2000) : sliceMs;
+  let lastSaid = Date.now();
   for (;;) {
+    if (until?.()) return { satisfied: true };
     const left = budget.remaining();
     if (left <= 0) {
       throw new Error(`${what} is held by ${holder()}; gave up after the ${total} s wait budget`);
     }
     try {
-      return acquire(Math.min(sliceMs, left));
+      return acquire(Math.min(slice, left));
     } catch (e) {
       if (!isHeld(e)) throw e;
     }
-    if (budget.remaining() > 0) log(`still waiting on ${what} (${Math.round((budget.total - budget.remaining()) / 1000)} s of ${total} s): held by ${holder()}`);
+    if (budget.remaining() > 0 && (!until || Date.now() - lastSaid >= sliceMs)) {
+      lastSaid = Date.now();
+      log(`still waiting on ${what} (${Math.round((budget.total - budget.remaining()) / 1000)} s of ${total} s): held by ${holder()}`);
+    }
   }
 }

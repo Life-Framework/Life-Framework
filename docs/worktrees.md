@@ -32,6 +32,7 @@ harmless to your editor because the worktree is a separate directory.
   the redirect off. A holder started by older code in the old file still blocks until it ends.
   The per-worktree `(gamePort, a2sPort)` pair from `wt list` is still passed
   and is what a2s uses.
+- **Shared rdb cache** — a refresh that leaves the rdb fresh stores it in `<hub>/rdb-cache/<addon>/<key>.rdb` (key = sha1 of addon, every `path`+GUID of its `.meta` files and the Workbench exe size:mtime; 40 entries per addon, `tools/lib/rdb-cache.mjs`). The next worktree with the identical resource set copies it in (~0.4 s, verified with `rdbFreshness`) and logs `reused shared rdb <key8> (no Workbench)`; a refresh already queued for the Workbench slot or the build lock polls the cache each wait and stops waiting when the entry appears. A stale entry is deleted. `LF_RDB_CACHE=0` turns it off. `rdb-cache-selftest` proves it.
 - **Resource database** — `resourceDatabase.rdb` is gitignored and only Workbench
   writes it. `wt new`, `test`, `dev`, `serve`, `session up`, `host start`, and `wt e2e`
   copy `<main-checkout>/addons/LifeFramework/resourceDatabase.rdb` into the worktree when that
