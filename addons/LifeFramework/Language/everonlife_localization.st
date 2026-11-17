@@ -2201,9 +2201,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Comment "Load refusal: no vehicle with a free passenger seat nearby."
     }
     CustomStringTableItem "{7A30C5E1D49B6A05}" {
-     Id "LF-Carry_NotAllowed"
-     Target_en_us "Only a {medic} on duty can move them."
-     Comment "Carry refusal: config limits it to medics."
+     Id "LF-Carry_NotAllowedDuty"
+     Target_en_us "Only a {medic} or {police} on duty can move them."
+     Comment "Carry refusal: config limits it to medics and police."
     }
     CustomStringTableItem "{7A30C5E1D49B6A0B}" {
      Id "LF-Carry_NotDowned"

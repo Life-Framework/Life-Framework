@@ -271,3 +271,6 @@
 
 ### Medic and hospital statics reset at world end (life review, 2026-11-17)
 - ✅ `LF_TreatmentBills`, `LF_ReviveAnim` and `LF_HospitalRespawn` (with `LF_NewLifeRule`) register an `LF_StaticResetHook`. Their reset functions had been called only from tests, so a Workbench play restart or a mission change kept the last world's bills, pending wakes and wristbands. It also left the debt-sweep, wristband and CPR-watch flags set, so those timers never started again. Test: `medic/reset-hooks` (LOGIC). Review: `docs/reviews/2026-11-17-life.md`.
+
+### Loading a downed player is not for bystanders (#2405, life review 2026-11-17)
+- ✅ `m_bCarryAnyone` now defaults to off: only an on-duty medic or on-duty police may load a downed player into a vehicle (`LF_Carry.MayCarry`, server and the client's offer). A stretcher vehicle (`m_aStretcherVehicles`, its seat pauses the bleed-out, #262) takes an on-duty medic only, whatever the config (`LF_Carry.MayUseVehicle`). In any other vehicle the patient bleeds out as normal. On a stretcher the bleed-out stays paused but the give-up clock runs (`LF_BleedOut.Advance` -> `LF_AdvanceDownedFor`), so a seated player can always give up. Refusal text `LF-Carry_NotAllowedDuty`. Tests `medic/carry`, `medic/bleed-out`. ⚠️ Not covered: an on-duty medic who leaves a patient on a stretcher keeps the bleed-out paused.

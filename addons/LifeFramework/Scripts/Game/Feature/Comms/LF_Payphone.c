@@ -7,7 +7,8 @@ enum LF_EPayphoneResult
 	PHONE_COOLDOWN,
 	UNKNOWN_SERVICE,
 	NO_ANSWER,
-	NO_COIN
+	NO_COIN,
+	MISSED_COOLDOWN	//!< Dialled the same service again right after a call nobody answered (review 2026-11-17, #2405)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -23,12 +24,24 @@ class LF_Payphone
 	//! Seconds of the last connected call, by player uid and by phone key.
 	protected static ref map<string, float> s_mPlayerLast;
 	protected static ref map<string, float> s_mPhoneLast;
+	//! Seconds of the last unanswered dial, by player uid and service. A miss takes no coin and
+	//! stamps neither connected-call cooldown above (a miss must not block an emergency call to
+	//! another service), so it needs its own, per service.
+	protected static ref map<string, float> s_mMissLast;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_mPlayerLast = null;
 		s_mPhoneLast = null;
+		s_mMissLast = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the key of one player's dials to one service.
+	static string MissKey(string uid, string service)
+	{
+		return uid + "|" + service;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -99,12 +112,27 @@ class LF_Payphone
 			return LF_EPayphoneResult.PHONE_COOLDOWN;
 		}
 
+		// Checked before the route: Check builds the candidate list (every player) on each dial.
+		if (!s_mMissLast)
+			s_mMissLast = new map<string, float>();
+		string missKey = MissKey(uid, service);
+		float missLast;
+		if (!s_mMissLast.Find(missKey, missLast))
+			missLast = -1;
+
+		if (CooldownLeft(now, missLast, LF_ServiceCallsConfig.PlayerCooldown()) > 0)
+		{
+			LF_Debug.Info(FEATURE, string.Format("%1 refused at %2: dialled %3 again after a missed call", uid, phoneKey, service));
+			return LF_EPayphoneResult.MISSED_COOLDOWN;
+		}
+
 		LF_ServiceRoute route = LF_ServiceCalls.Check(service, players);
 		if (!route.m_bKnown)
 			return LF_EPayphoneResult.UNKNOWN_SERVICE;
 
 		if (!route.IsAnswered())
 		{
+			s_mMissLast.Set(missKey, now);
 			LF_Debug.Info(FEATURE, string.Format("%1 called %2 from %3: no answer, no coin taken", uid, service, phoneKey));
 			return LF_EPayphoneResult.NO_ANSWER;
 		}
@@ -132,6 +160,7 @@ class LF_Payphone
 		{
 			case LF_EPayphoneResult.PLAYER_COOLDOWN:
 			case LF_EPayphoneResult.PHONE_COOLDOWN:
+			case LF_EPayphoneResult.MISSED_COOLDOWN:
 				return "#LF-Payphone_Cooldown";
 			case LF_EPayphoneResult.NO_ANSWER:
 				return LF_ServiceCalls.NO_ANSWER_KEY;
