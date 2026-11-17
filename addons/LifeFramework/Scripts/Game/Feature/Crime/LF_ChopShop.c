@@ -29,7 +29,8 @@ enum LF_EChopCheck
 	WRONG_STATE,
 	TOO_FAR,
 	TOO_FAST,
-	VEHICLE_GONE
+	VEHICLE_GONE,
+	NO_ROOM
 }
 
 //------------------------------------------------------------------------------------------------
@@ -249,6 +250,21 @@ class LF_ChopShopRules
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether a stripped car may be collected (the car is deleted after this passes).
+	//! \param occupied Someone sits in the car: a keyed owner can get back in between LOAD and COLLECT.
+	//! \param paid Cash the worker's inventory took; anything short of the payout keeps the car.
+	static LF_EChopCheck CheckCollect(bool occupied, int paid, int payout)
+	{
+		if (occupied)
+			return LF_EChopCheck.OCCUPIED;
+
+		if (paid < payout)
+			return LF_EChopCheck.NO_ROOM;
+
+		return LF_EChopCheck.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string RefusalKey(LF_EChopCheck check)
 	{
 		switch (check)
@@ -262,6 +278,7 @@ class LF_ChopShopRules
 			case LF_EChopCheck.BUSY: return "#LF-Chop_Busy";
 			case LF_EChopCheck.TOO_FAR: return "#LF-Chop_TooFar";
 			case LF_EChopCheck.VEHICLE_GONE: return "#LF-Chop_Gone";
+			case LF_EChopCheck.NO_ROOM: return "#LF-Chop_NoRoom";
 		}
 
 		return string.Empty;
@@ -501,7 +518,25 @@ class LF_ChopShopComponent : ScriptComponent
 		}
 
 		string uid = LF_Utils.GetPlayerUID(user);
+		LF_EChopCheck occupiedCheck = LF_ChopShopRules.CheckCollect(LF_StolenVehicles.HasOccupant(vehicle), m_iPayout, m_iPayout);
+		if (occupiedCheck != LF_EChopCheck.NONE)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("%1: collect by %2 refused, someone sits in %3", m_sShopId, uid, m_sVehicleId));
+			return occupiedCheck;
+		}
+
+		// Pay first: a full inventory takes nothing, and the car must not go for nothing.
 		int paid = LF_MoneyUtils.AddCash(user, m_iPayout, "chopshop");
+		LF_EChopCheck payCheck = LF_ChopShopRules.CheckCollect(false, paid, m_iPayout);
+		if (payCheck != LF_EChopCheck.NONE)
+		{
+			if (paid > 0)
+				LF_MoneyUtils.RemoveCash(user, paid, "chopshop-rollback");
+
+			LF_Debug.Warn(FEATURE, string.Format("%1: collect by %2 refused, the inventory took %3 of %4; the car stays", m_sShopId, uid, paid, m_iPayout));
+			return payCheck;
+		}
+
 		int parts;
 		InventoryStorageManagerComponent inventory = LF_Component<InventoryStorageManagerComponent>.Find(user);
 		for (int i = 0; i < LF_ChopShopConfig.PartsCount(); i++)
