@@ -140,6 +140,15 @@
       "officer": {
         "withdraw": true
       }
+    },
+    "wars": {
+      "fee": 5000,
+      "answerSeconds": 600,
+      "lengthSeconds": 7200,
+      "cooldownSeconds": 86400,
+      "minMembers": 3,
+      "warKillsAreMurder": false,
+      "tagWarKills": true
     }
   },
   "persistence": {
