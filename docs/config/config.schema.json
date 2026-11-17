@@ -1253,6 +1253,20 @@
           "default": 2,
           "minimum": 1,
           "maximum": 20
+        },
+        "callReward": {
+          "type": "integer",
+          "description": "Cash an officer is paid, once, when their fine of a taken police call suspect at the call site completes the call",
+          "default": 150,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "callRadius": {
+          "type": "number",
+          "description": "Metres from a police call site within which the fine by the officer holding the call completes it",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 2000
         }
       },
       "additionalProperties": false,

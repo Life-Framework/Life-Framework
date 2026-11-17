@@ -95,11 +95,6 @@
   "text": "protected static ref array<IEntity> s_aBars = {};"
  },
  {
-  "rule": "L6",
-  "file": "Prefabs/Items/Food/RowanBerries.et",
-  "text": "Object \"{B09DB5A4E4B8AD7B}Assets/Items/Food/Rowan Berries/rowan_berries.xob\""
- },
- {
   "rule": "L9",
   "file": "Scripts/Game/Feature/Signs/LF_SignCatalog.c",
   "text": "string m_sImageName = \"full\";"

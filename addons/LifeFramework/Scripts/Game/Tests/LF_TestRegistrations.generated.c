@@ -343,6 +343,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JailWork(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailWorkAbandon(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobClientOffers(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JobDepositCargo(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JobDepositRestart(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobGateBypass(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobLevelGates(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobLevels(), LF_TestTier.LOGIC);
@@ -361,6 +363,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JumpPadSeen(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_KeyItemName(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_KeypadBackspace(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Knockout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LateIdentity(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_LawlessHud(), LF_TestTier.LOGIC);
@@ -396,11 +399,15 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapKnownSyncGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapMarksOffscreen(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapMarksPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_MapMarksRateBucket(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPlacesKnown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPlacesLayout(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapPoiRoleAudience(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPois(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapSearch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareAreas(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapShareMemberKey(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapShareNotPersonal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShares(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapWaypoint(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);
@@ -502,6 +509,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceApplyCooldownGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplyPlaytimeGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCallAccept(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceCallPay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceContactStamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PolicePromoteRung(), LF_TestTier.LOGIC);
@@ -707,6 +715,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_StoreStackRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StoreStacks(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StoreStaff(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_StoreStrangerEject(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StoreUnpaidPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_StringSplit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Stun(), LF_TestTier.WORLD);
@@ -748,9 +757,11 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UIKitClose(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIKitFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIPaperSheet(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_UISheetFit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UiSheetStaticReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIThemePack(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UIThemeTokens(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_UIWorldEndReset(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UnemploymentBenefit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VaultDoorSwing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VaultDrillAction(), LF_TestTier.WORLD);

@@ -47,8 +47,8 @@
   status line, a 3x4 keypad (CLR, 0, DEL), DEPOSIT, WITHDRAW, EXIT. Keys: mouse,
   pad focus that moves like a grid (MenuUp/Down keep the column, MenuLeft/Right
   walk a row), keyboard digits and numpad (`LF_Keypad0..9`), Backspace or pad X
-  (`LF_KeypadBack`), Delete or pad Y (`LF_KeypadClear`). The entry cannot pass
-  `MAX_TRANSACTION_AMOUNT`. Closes on EXIT, MenuBack, death, or 3.5 m from the
+  (`LF_KeypadBack`; Backspace deletes a digit and no longer closes the terminal, `ui-kit/keypad-backspace`, 2026-11-18), Delete or pad Y (`LF_KeypadClear`). The entry cannot pass
+  `MAX_TRANSACTION_AMOUNT`. Closes on EXIT, Escape or pad B, death, or 3.5 m from the
   machine. `LF_ATMAction` runs PerformAction only on the acting machine
   (`HasLocalEffectOnlyScript`) and opens only when the user is this machine's
   character (`LF_CounterAccess.IsLocalActor`).

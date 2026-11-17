@@ -7887,6 +7887,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Why you want to serve"
      Comment "Police application blank: reason."
     }
+    CustomStringTableItem "{95E584A32913873F}" {
+     Id "LF-PoliceCall_Paid"
+     Target_en_us "Call closed: {currency:sym}%1 cash"
+     Comment "Toast to the officer when fining the call's suspect at the site completes their police call; %1 is the reward"
+    }
+    CustomStringTableItem "{6EB531AC99FDCC19}" {
+     Id "LF-PoliceCall_Title"
+     Target_en_us "Call for {police}"
+     Comment "Toast title for a police call event"
+    }
     CustomStringTableItem "{57D1AD3E97B72422}" {
      Id "LF-PoliceRoster_Approved"
      Target_en_us "You are on the {Police} roster: go on duty at the station locker."
