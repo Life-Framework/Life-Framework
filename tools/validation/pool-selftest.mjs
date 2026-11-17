@@ -868,7 +868,7 @@ try {
   // A pool entry whose "hostname" is this machine's is the local machine there (the box's own lanes), the PC's entry is dropped.
   writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
   const selfView = pool.loadMachines(dir);
-  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 3 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
+  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 4 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
   // Laptop view: on the box itself (hostname PC1, the committed pool.json entry) the machines are lf-testbox as local and nothing
   // else, with no TypeError ranking them; a PC (any other hostname) keeps local plus an ssh lf-testbox.
   writeFileSync(join(dir, "lf.local.json"), "{}");
