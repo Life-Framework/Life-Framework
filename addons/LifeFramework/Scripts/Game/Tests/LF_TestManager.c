@@ -13,9 +13,6 @@ class LF_TestManager
 	protected ref array<string> m_aOnly = {};
 	protected bool m_bRed;
 	protected bool m_bLogicWorld;
-	//! Self-registered tests (LF_TestRegistration), filled from static initializers at script load.
-	//! No initializer on purpose: those may run before this class's own; Enqueue creates it on first use.
-	protected static ref array<ref LF_TestRegistration> s_aSelfRegistered;
 	//! Duplicate class names already logged, so each is logged once per process.
 	protected static ref array<string> s_aLoggedDuplicates;
 
@@ -32,22 +29,7 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Called from a test file's LF_TestRegistration static initializer (LF_TestRegistration.c).
-	//! Returns true so a static bool initializer can call it.
-	static bool Enqueue(LF_TestRegistration registration)
-	{
-		if (!registration)
-			return false;
-
-		if (!s_aSelfRegistered)
-			s_aSelfRegistered = new array<ref LF_TestRegistration>();
-
-		s_aSelfRegistered.Insert(registration);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Collects now (generated registry, self-registered merged in by class name, pack) and returns the list a run
+	//! Collects now (generated registry, attribute-discovered tests merged in by class name, pack) and returns the list a run
 	//! walks. Call it on a fresh manager: on the running singleton it would rebuild the list mid-run.
 	array<ref LF_Test> Collected()
 	{
@@ -69,6 +51,13 @@ class LF_TestManager
 	//! config overlays apply (docs/architecture/three-worlds.md "Pack test leg").
 	void RegisterPack(LF_Test test, LF_TestTier tier)
 	{
+		// A class that carries its own [LF_TestInfo(..., pack: true)] may already be collected (#2757).
+		if (HasClass(test.ClassName()))
+		{
+			LogDuplicate(test.ClassName());
+			return;
+		}
+
 		test.SetPackTest(true);
 		Register(test, tier);
 	}
@@ -376,54 +365,76 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Two sources while tests move to self-registration (#2610): the machine-generated
+	//! Two sources while tests move to attributes (#2610, #2757): the machine-generated
 	//! LF_TestRegistrations.generated.c (from each unconverted file's `// tier:` comment; `tools\cli
-	//! regen-tests`, never by hand) and the LF_TestRegistration subclasses that enqueued themselves at
-	//! script load. A class already registered is dropped (logged once).
-	//! Order: the self-registered tests are sorted by class name and merged into the generated list,
+	//! regen-tests`, never by hand) and the LF_Test descendants that carry their own LF_TestInfo
+	//! attribute (LF_TestInfo.c), found by reflection. A class already registered is dropped (logged once).
+	//! Order: the attribute tests are sorted by class name and merged into the generated list,
 	//! each before the first generated test whose class name sorts after it. The generated tests keep
-	//! their order (some still depend on it), the result does not depend on script load order, and
-	//! once every test self-registers the whole list is in class-name order.
+	//! their order (some still depend on it), the result does not depend on reflection order, and
+	//! once every test has the attribute the whole list is in class-name order.
 	protected void CollectTests()
 	{
 		m_aTests.Clear();
 		LF_TestRegistrations.RegisterAll(this);
-		MergeSelfRegistered();
+		MergeDiscovered();
 		RegisterPackTests();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void MergeSelfRegistered()
+	//! The class's own LF_TestInfo, or null. Attributes are not inherited, so a subclass of a tagged
+	//! test, or a helper base, has none and is not a test.
+	static LF_TestInfo FindInfo(typename type)
 	{
-		if (!s_aSelfRegistered || s_aSelfRegistered.IsEmpty())
-			return;
+		array<Class> attributes = {};
+		type.GetAttributes(attributes);
+		foreach (Class attribute : attributes)
+		{
+			LF_TestInfo info = LF_TestInfo.Cast(attribute);
+			if (info)
+				return info;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void MergeDiscovered()
+	{
+		array<typename> types = {};
+		typename base = LF_Test;
+		base.GetInheritedTypes(types);
 
 		map<string, ref LF_Test> byName = new map<string, ref LF_Test>();
-		map<string, LF_TestTier> tiers = new map<string, LF_TestTier>();
+		map<string, LF_TestInfo> infos = new map<string, LF_TestInfo>();
 		array<string> names = {};
-		foreach (LF_TestRegistration registration : s_aSelfRegistered)
+		foreach (typename type : types)
 		{
-			if (!registration)
+			LF_TestInfo info = FindInfo(type);
+			if (!info)
 				continue;
 
-			LF_Test test = registration.Create();
-			if (!test)
-			{
-				LF_Debug.Error("Tests", string.Format("%1.Create() returned no test; skipped", registration.ClassName()));
-				continue;
-			}
-
-			string className = test.ClassName();
+			string className = type.ToString();
 			if (byName.Contains(className) || HasClass(className))
 			{
 				LogDuplicate(className);
 				continue;
 			}
 
+			LF_Test test = LF_Test.Cast(type.Spawn());
+			if (!test)
+			{
+				LF_Debug.Error("Tests", string.Format("%1 has [LF_TestInfo] but Spawn() returned no test; skipped", className));
+				continue;
+			}
+
 			byName.Insert(className, test);
-			tiers.Insert(className, registration.Tier());
+			infos.Insert(className, info);
 			names.Insert(className);
 		}
+
+		if (names.IsEmpty())
+			return;
 
 		names.Sort();
 
@@ -439,7 +450,7 @@ class LF_TestManager
 		{
 			while (next < names.Count() && SortsBefore(names[next], g.ClassName()))
 			{
-				Register(byName.Get(names[next]), tiers.Get(names[next]));
+				RegisterDiscovered(byName.Get(names[next]), infos.Get(names[next]));
 				next++;
 			}
 
@@ -448,9 +459,16 @@ class LF_TestManager
 
 		while (next < names.Count())
 		{
-			Register(byName.Get(names[next]), tiers.Get(names[next]));
+			RegisterDiscovered(byName.Get(names[next]), infos.Get(names[next]));
 			next++;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RegisterDiscovered(LF_Test test, LF_TestInfo info)
+	{
+		test.SetPackTest(info.m_bPack);
+		Register(test, info.m_eTier);
 	}
 
 	//------------------------------------------------------------------------------------------------

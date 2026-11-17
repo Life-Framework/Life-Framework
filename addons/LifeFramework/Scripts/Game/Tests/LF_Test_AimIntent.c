@@ -3,6 +3,7 @@
 // tier: LOGIC
 //! incident/aim-throttle: sustained aim at one player logs one intent row per window; a gap or a
 //! glance restarts the streak; the cone and range are pure checks.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AimIntent : LF_Test
 {
 	override string GetName()
@@ -65,22 +66,5 @@ class LF_Test_AimIntent : LF_Test
 
 		LF_IncidentLog.ResetStatics();
 		LF_IncidentLog.ApplyAll(before);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! Self-registration (LF_TestRegistration.c): this file is the whole of adding this test.
-class LF_TestRegistration_AimIntent : LF_TestRegistration
-{
-	protected static bool s_bRegistered = LF_TestManager.Enqueue(new LF_TestRegistration_AimIntent());
-
-	override LF_TestTier Tier()
-	{
-		return LF_TestTier.LOGIC;
-	}
-
-	override LF_Test Create()
-	{
-		return new LF_Test_AimIntent();
 	}
 }

@@ -428,15 +428,20 @@ export async function runWorker(root) {
   else if (!ld.ok) { log(root, `lease refused: ${ld.why}; worker exits`); try { unlinkSync(lockPath(root)); } catch {} return 1; }
   log(root, `lease: ${lease === undefined ? "unreadable" : ld.why}`);
   pin.writeLease(dir, "held", HOST, process.pid);
-  let leaseAt = Date.now();
   writeState(root, { running: null, pid: process.pid });
-  for (;;) {
-    if (Date.now() - leaseAt > 5 * 60 * 1000) {
+  // The lease is renewed on its own timer: the loop below awaits a compile for many minutes, and a lease renewed only
+  // between ticks went 16 min stale under a live worker (#2754), which the watchdog and `lead` read as a dead guard.
+  let leaseLost = null;
+  const beat = setInterval(() => {
+    try {
       const cur = pin.readLease(dir);
-      if (cur && cur.state === "held" && cur.host !== HOST) { log(root, `lease taken by ${cur.host}; worker exits`); break; }
+      if (cur && cur.state === "held" && cur.host !== HOST) { leaseLost = cur.host; return; }
       pin.writeLease(dir, "held", HOST, process.pid);
-      leaseAt = Date.now();
-    }
+    } catch (e) { log(root, `lease renewal failed: ${e?.message ?? e}`); }
+  }, 5 * 60 * 1000);
+  beat.unref?.();
+  for (;;) {
+    if (leaseLost) { log(root, `lease taken by ${leaseLost}; worker exits`); break; }
     if (off()) { log(root, "LF_MAIN_GUARD=0: worker exits"); break; }
     if (readState(root).stop) { writeState(root, { stop: false }); log(root, "stop requested: worker exits"); break; }
     try {
@@ -474,9 +479,42 @@ export async function runWorker(root) {
     }
     await new Promise((r) => setTimeout(r, TICK_MS));
   }
+  clearInterval(beat);
   pin.writeLease(dir, "released", HOST);
   try { unlinkSync(lockPath(root)); } catch {}
   return 0;
+}
+
+// One watchdog tick (#2754), run every 5 min by the LF-MainGuardWatch scheduled task: a dead worker is started again,
+// a hung one or a crash loop only alerts. Restarts are remembered in <hub>/main-guard-watch.json (3 per hour at most).
+// Alerts go to the log and the staff webhook, at most one per 30 min.
+export async function watch(root, dryRun = false) {
+  const mr = mainRoot(root);
+  const f = join(hub(root), "main-guard-watch.json");
+  let w = {};
+  try { w = JSON.parse(readFileSync(f, "utf8")); } catch {}
+  const save = () => { try { writeFileSync(f, JSON.stringify(w, null, 2) + "\n"); } catch {} };
+  wt.git(mr, ["fetch", "origin", "--prune"]);
+  const lease = pin.readLease(mr);
+  const alive = workerAlive(root);
+  const d = mg.watchDecision({ off: off(), alive, lease, host: HOST, restarts: w.restarts ?? [] });
+  console.log(`main-guard watch: ${d.action}: ${d.why}`);
+  if (dryRun || d.action === "none") return 0;
+  log(root, `watch: ${d.action}: ${d.why}`);
+  const say = async (text) => {
+    if (Date.now() - Date.parse(w.alertAt ?? "") < 30 * 60 * 1000) return;
+    w.alertAt = now();
+    await staffLine(root, text);
+  };
+  if (d.action === "alert") { await say(`main guard watchdog: ${d.why}`); save(); return 1; }
+  w.restarts = [...(w.restarts ?? []), now()].slice(-10);
+  save();
+  const code = await main(["start"], { root });
+  const up = workerAlive(root);
+  log(root, `watch: restart ${up ? `ok (pid ${up})` : "FAILED"}`);
+  await say(up ? `main guard watchdog: the guard was down (${d.why}); restarted, pid ${up}` : `main guard watchdog: the guard was down (${d.why}) and the restart FAILED (exit ${code}); see ${logPath(root)}`);
+  save();
+  return up ? 0 : 1;
 }
 
 export async function main(args, { root }) {
@@ -522,6 +560,7 @@ export async function main(args, { root }) {
     console.log(`main-guard: check of ${sha.slice(0, 8)} requested; it runs next (${workerAlive(root) ? "worker running" : "start the guard"}). Statuses: main-guard/compile, main-guard/suite on ${sha.slice(0, 8)}`);
     return 0;
   }
+  if (sub === "watch") return watch(root, args.includes("--dry-run"));
   if (sub === "stop") {
     const pid = workerAlive(root);
     if (!pid) { console.log("main-guard: not running"); return 0; }
@@ -551,7 +590,7 @@ export async function main(args, { root }) {
     console.log(`  log ${logPath(root)}; flakes ${flakeLog(root)}`);
     return 0;
   }
-  console.log("usage: tools\\cli main-guard start | stop | status");
+  console.log("usage: tools\\cli main-guard start | stop | status | watch [--dry-run]");
   return 1;
 }
 

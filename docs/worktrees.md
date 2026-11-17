@@ -170,7 +170,7 @@ The gate now runs on `main`, after the merge (`tools/main-guard.mjs`, rules in `
 through the pool at `--priority high`.
 
 ```sh
-toolscli main-guard start | stop | status   # status is also a line in `toolscli lead`
+toolscli main-guard start | stop | status | watch   # status is also a line in `toolscli lead`
 ```
 
 1. **Stage 1, compile first.** On a new `origin/main` head (batched to one run per 3 min) it runs the Workbench compile
@@ -213,6 +213,17 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    **One guard:** the worker holds a lease, the `main-guard/lease` status on the repository's root commit ("held
    <host> <pid> <time>", renewed every 5 min, stale after 30). `start` and the worker refuse while another machine
    holds a fresh lease; `stop` releases it.
+   **Watchdog (#2754).** The worker renews the lease on its own 5-min timer (not between ticks: a long compile
+   once left it 16 min stale under a live worker). `toolscli main-guard watch [--dry-run]` is one watchdog tick: it
+   reads the lease and this machine's worker pid and restarts a dead worker with `start` (rule `watchDecision` in
+   `tools/lib/main-guard.mjs`). It never touches a live worker (a live pid with a lease over 45 min old is only
+   reported as hung), never restarts a guard that was stopped on purpose (`stop` releases the lease) or one another
+   machine runs fresh, and stops after 3 restarts in an hour (a crash loop alerts instead). Restarts and alerts go to
+   `tmp/logs/main-guard.log` and the staff webhook, at most one alert per 30 min. The laptop runs it from the
+   scheduled task `LF-MainGuardWatch` every 5 min (`C:\LF\health\CHANGES.md` has the wiring and undo). Down means
+   the lease is over 15 min old: `lead` prints `!! MAIN GUARD DOWN: main-guard down for N min; you are X commit(s)
+   behind main` and `wt new` prints the same as `WARNING:` (a live local worker with a late lease is only a warning
+   past 45 min). `main-guard-watch-selftest` proves the rule.
 4. **Reverts.** `git revert -m 1` on `ws/revert-pr<N>-guard`, a PR `Revert #N (main guard: <what>)` with auto-merge, a
    comment on #N, its issues reopened as `regression`, one line to the staff webhook (`LF_STAFF_WEBHOOK_URL` or
    `"mainGuard": { "webhookUrl" }` in `lf.local.json`).
