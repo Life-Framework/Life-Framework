@@ -38,6 +38,7 @@
 - [Illicit chains](features/illicit-chains.md)
 - [Inventory / Quantity](features/inventory-quantity.md)
 - [Jobs / Level / Licenses / Whitelist](features/jobs-level-licenses-whitelist.md)
+- [Lockers](features/lockers.md)
 - [Map emulator](features/map-emulator.md)
 - [The Everon map (epic #2223)](features/map.md)
 - [Money & Economy](features/money-economy.md)

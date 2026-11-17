@@ -385,6 +385,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LicensePlateParenting(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicenseWhitelist(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LocalIdentity(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_LockerRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LockpickDoor(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LockpickDoorWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LockpickKeepsPick(), LF_TestTier.WORLD);
