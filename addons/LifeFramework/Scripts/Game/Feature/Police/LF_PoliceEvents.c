@@ -81,3 +81,26 @@ class LF_OnFlaggedLogout : LF_Event
 		return e;
 	}
 }
+
+//! An officer wrote a fine ticket to a player (#2478). Police calls complete on it at the site.
+class LF_OnFineIssued : LF_Event
+{
+	string m_sOfficerUid;
+	//! The fined player's character key.
+	string m_sHolderUid;
+	//! Where the officer stood when the ticket was written.
+	vector m_vOfficerPosition;
+	int m_iTicketNumber;
+	int m_iAmount;
+
+	static LF_OnFineIssued Create(string officerUid, string holderUid, vector officerPosition, int ticketNumber, int amount)
+	{
+		LF_OnFineIssued e = new LF_OnFineIssued();
+		e.m_sOfficerUid = officerUid;
+		e.m_sHolderUid = holderUid;
+		e.m_vOfficerPosition = officerPosition;
+		e.m_iTicketNumber = ticketNumber;
+		e.m_iAmount = amount;
+		return e;
+	}
+}
