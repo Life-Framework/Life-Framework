@@ -370,7 +370,9 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   gate), `wt e2e`, and `e2e`. Every run prints where it ran and how long it
   waited (`pool: test all runs on lf-testbox ...; waited 0.7 s`) and a footer
   with the exit code, wait, and run time. `--local`, `--remote [name]`,
-  `--machine <name>`, and `--any` pick; `LF_TESTBOX_AUTO=0` makes the
+  `--machine <name>`, and `--any` pick; `--prefer-local` is `--any` with this PC
+  tried first while it has RAM room (the placement tool's probe uses it; a short job
+  where a sync costs more than the run); `LF_TESTBOX_AUTO=0` makes the
   default `--local`.
 - **Machines.** `tools/pool.json` lists them: `name`, `via` (`local` or
   `ssh`), `host` (ssh alias), `root` (the remote main clone), `slots`, `caps`

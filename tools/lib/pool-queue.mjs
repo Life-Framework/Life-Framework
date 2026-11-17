@@ -368,6 +368,15 @@ export function rankMachines(cands, { minFreeMb = DEFAULTS.minFreeMb, reserveMb 
   return rows.map(({ i, multiplier, ...r }) => r);
 }
 
+// A short job (a placement probe: seconds on a booted server, a sync and a download away from any other
+// machine) tries a machine with room that is this PC first, whatever the score says. rows: rankMachines
+// output; name: the PC's machine name. The rest keep their order; no room on the PC leaves the order alone.
+export function preferRoomy(rows, name) {
+  const i = rows.findIndex((r) => r.name === name && r.room === true);
+  if (i <= 0) return rows;
+  return [rows[i], ...rows.slice(0, i), ...rows.slice(i + 1)];
+}
+
 // Machines outside `have` (a ticket's machines) that have room for the job's need (MB: floor plus
 // reserve), for the pinned-job hint of `pool status`. others: [{ name, freeMb }].
 export function roomElsewhere(needMb, have, others) {
