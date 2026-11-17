@@ -51,6 +51,9 @@ class LF_EventScene
 	[Attribute("5", UIWidgets.Auto, "Seconds the walkers stay at the target before they despawn", params: "0 600")]
 	float m_fDespawnDelaySeconds;
 
+	[Attribute("120", UIWidgets.Auto, "Seconds the scene's despawn (and a timed-out walker's) waits for a player who keeps it in sight; then it goes anyway, so a watcher cannot hold the phase, the scene slot and the AI budget forever (#2406)", params: "1 3600")]
+	float m_fForceDespawnSeconds;
+
 	[Attribute("", UIWidgets.EditBox, "Optional prefab slot id of a parked vehicle (#964). Empty means none")]
 	string m_sVehicleSlot;
 
@@ -66,6 +69,7 @@ class LF_EventScene
 		scene.m_fSpawnStaggerSeconds = 2;
 		scene.m_fWalkTimeoutSeconds = 120;
 		scene.m_fDespawnDelaySeconds = 5;
+		scene.m_fForceDespawnSeconds = 120;
 		return scene;
 	}
 
@@ -98,6 +102,7 @@ class LF_EventScenePlan
 	string m_sVehicleSlot;
 	float m_fWalkTimeoutSeconds;
 	float m_fDespawnDelaySeconds;
+	float m_fForceDespawnSeconds;
 	//! How many NPCs the scene asked for before the cap trimmed it.
 	int m_iRequestedCount;
 }
@@ -141,7 +146,7 @@ class LF_EventScenePlanner
 		}
 		if (scene.m_iNpcCount < 1)
 			return "no NPCs";
-		if (scene.m_fSpawnStaggerSeconds < 0 || scene.m_fWalkTimeoutSeconds <= 0 || scene.m_fDespawnDelaySeconds < 0)
+		if (scene.m_fSpawnStaggerSeconds < 0 || scene.m_fWalkTimeoutSeconds <= 0 || scene.m_fDespawnDelaySeconds < 0 || scene.m_fForceDespawnSeconds <= 0)
 			return "a bad time";
 		return "";
 	}
@@ -201,6 +206,7 @@ class LF_EventScenePlanner
 		plan.m_sVehicleSlot = scene.m_sVehicleSlot;
 		plan.m_fWalkTimeoutSeconds = scene.m_fWalkTimeoutSeconds;
 		plan.m_fDespawnDelaySeconds = scene.m_fDespawnDelaySeconds;
+		plan.m_fForceDespawnSeconds = scene.m_fForceDespawnSeconds;
 		plan.m_bGo = true;
 
 		if (count < scene.m_iNpcCount)

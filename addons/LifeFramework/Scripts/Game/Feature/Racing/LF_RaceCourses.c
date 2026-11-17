@@ -56,6 +56,8 @@ class LF_RaceCourseList : LF_ConfigList
 		record.m_iLaps = 1;
 		record.m_iMinEntrants = 2;
 		record.m_iLobbySeconds = 60;
+		record.m_iAfkGraceSeconds = 60;
+		record.m_iSettleSeconds = 120;
 		return record;
 	}
 
@@ -107,13 +109,17 @@ class LF_RaceCourseList : LF_ConfigList
 			changed++;
 		if (container.IsVariableSetDirectly("m_iLobbySeconds") && container.Get("m_iLobbySeconds", course.m_iLobbySeconds))
 			changed++;
+		if (container.IsVariableSetDirectly("m_iAfkGraceSeconds") && container.Get("m_iAfkGraceSeconds", course.m_iAfkGraceSeconds))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iSettleSeconds") && container.Get("m_iSettleSeconds", course.m_iSettleSeconds))
+			changed++;
 		return changed;
 	}
 
 	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
 	{
 		LF_RaceCourseRecord course = LF_RaceCourseRecord.Cast(record);
-		array<string> recordKeys = {"op", "checkpoints", "laps", "entryFee", "minEntrants", "lobbySeconds", "payoutPercent"};
+		array<string> recordKeys = {"op", "checkpoints", "laps", "entryFee", "minEntrants", "lobbySeconds", "afkGraceSeconds", "settleSeconds", "payoutPercent"};
 		reader.WarnUnknownKeys(recordKeys);
 
 		array<string> checkpoints = {};
@@ -132,8 +138,10 @@ class LF_RaceCourseList : LF_ConfigList
 
 		reader.ReadInt("laps", course.m_iLaps, LF_RaceCourses.LAPS_MIN, LF_RaceCourses.LAPS_MAX);
 		reader.ReadInt("entryFee", course.m_iEntryFee, 0, LF_RaceCourses.FEE_MAX);
-		reader.ReadInt("minEntrants", course.m_iMinEntrants, 1, LF_RaceCourses.ENTRANTS_MAX);
+		reader.ReadInt("minEntrants", course.m_iMinEntrants, 1, LF_RaceRunner.MAX_ENTRANTS);
 		reader.ReadInt("lobbySeconds", course.m_iLobbySeconds, 0, LF_RaceCourses.LOBBY_MAX);
+		reader.ReadInt("afkGraceSeconds", course.m_iAfkGraceSeconds, 0, LF_RaceCourses.AFK_MAX);
+		reader.ReadInt("settleSeconds", course.m_iSettleSeconds, 0, LF_RaceCourses.SETTLE_MAX);
 	}
 
 	override string Incomplete(notnull LF_ConfigRecord record)
@@ -261,8 +269,9 @@ class LF_RaceCourses
 	static const int LAPS_MIN = 1;	// lf-fixed: the owner-file schema limit
 	static const int LAPS_MAX = 50;	// lf-fixed: the owner-file schema limit
 	static const int FEE_MAX = 1000000;	// lf-fixed: the owner-file schema limit
-	static const int ENTRANTS_MAX = 64;	// lf-fixed: the owner-file schema limit
 	static const int LOBBY_MAX = 3600;	// lf-fixed: the owner-file schema limit
+	static const int AFK_MAX = 3600;	// lf-fixed: the owner-file schema limit
+	static const int SETTLE_MAX = 3600;	// lf-fixed: the owner-file schema limit
 
 	protected static ref LF_RaceCourseBook s_Book;
 

@@ -207,6 +207,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_E2E_ShutdownSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2EInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventBus(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventForceDespawn(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventMapShare(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventModuleLoader(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventPackOverlay(), LF_TestTier.LOGIC);
@@ -349,6 +350,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobsPackOverlay(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JoinNotice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JumpPadSeen(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Knockout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LateIdentity(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_LawlessHud(), LF_TestTier.LOGIC);
@@ -512,11 +514,14 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Quiz(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuizHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuizPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_RaceAfkSettle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceBoardProp(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceCourse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceCourses(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceEveryFinisher(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceHud(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RaceLimits(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RaceLobbyLeave(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RacePathStart(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceRacerIndex(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceRecords(), LF_TestTier.PERSISTENCE);

@@ -20,3 +20,5 @@
   scoring and no firing-line indicator. `LF_Test_RangeTargets` covers the prefab, its
   signal wiring and the fold and reset timing. Needs a playtest (shoot the targets,
   watch them fall and rise, a second player sees the same).
+
+- ✅ The pad remembers a visitor only while it stands on it (#2406): `LF_JumpPadSeen` hands out a token per entity key and forgets it on exit, so the list no longer grows for the life of the server. A corpse or a downed body is not thrown (`LF_JumpPad.CanLaunch`: only `ECharacterLifeState.ALIVE`; logged `[LFDebug:JumpPad]`). Test `toys/jump-pad-seen` (LOGIC).
