@@ -197,5 +197,6 @@ export const npcs = [
   { prefab: "{5B2A1E072C8DD6B7}Prefabs/Characters/Npcs/Outfits/LF_Npc_Teller_2.et", name: "Bank_Teller_1", x: 1.7, y: F, z: 5.0, yaw: 180 },
   { prefab: "{5B2A1E072C8DD6B7}Prefabs/Characters/Npcs/Outfits/LF_Npc_Teller_2.et", name: "Bank_Teller_2", x: 0.1, y: F, z: 5.0, yaw: 180 },
 ];
-// The rob kit chest (dev gate; the robbery proof takes the drill from it): in the corridor, building space.
-export const robKit = { x: -0.4, z: 0.0, yaw: 0 };
+// The rob kit chest (dev gate): in the corridor just west of the vault door; the robbery proof stands beside it (its
+// north side is building +x, towards the door) so the rob action it uses is this bank's, not the grid's other vaults.
+export const robKit = { x: 2.0, z: 0.3, yaw: 0 };

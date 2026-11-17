@@ -242,6 +242,15 @@
       "why": "the drill works only from the hands (LF_HandTool)"
     },
     {
+      "do": {
+        "verb": "stand",
+        "entityName": "Grid_bank_Stage_RobKit",
+        "side": "n"
+      },
+      "wait": 2500,
+      "why": "the robber walks up to the vault door (the rob kit chest stands beside it)"
+    },
+    {
       "shot": "robbery_start",
       "look": [
         3.9,

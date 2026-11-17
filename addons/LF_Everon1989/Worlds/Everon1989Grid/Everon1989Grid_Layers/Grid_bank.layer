@@ -101,6 +101,6 @@ LF_NpcBaseEntity Grid_bank_Stage_Bank_Teller_2 : "{5B2A1E072C8DD6B7}Prefabs/Char
  angleY 90
 }
 GenericEntity Grid_bank_Stage_RobKit : "{6EAEEC207EBAB7C5}Prefabs/Props/Debug/LF_BankRobKitStand.et" {
- coords 165.861 1.103 33.901
+ coords 165.561 1.103 36.301
  angleY -90
 }
