@@ -46,3 +46,14 @@ button that is also a combo modifier, so holding the shoulder for the radial doe
   `Prefabs/Props/Seats/LF_Seat_*.et` inherit the base game benches and chairs. A map or pack makes any
   prop a seat by adding an `ActionsManagerComponent` with `LF_SitAction`s. Nothing persists.
 - **Proof:** as above.
+
+## Town NPCs sit and lean (#1928)
+
+- **Player sees:** residents, farmers, quarry workers and lumberjacks sit on a free chair or bench near
+  where they stand, or lean or smoke when no place is free. A taken place reads "Someone is sitting here".
+- **Owner and side:** server only. `LF_NpcLoiter` (settled by a modded `LF_NpcRoleComponent`, 4 to 8 s
+  after spawn) seats the body through `LF_SitAction.LF_SeatBody`, the same place data and loiter a
+  player's Sit uses, so the base game carries it to clients and late joiners. `Watch` (5 s) frees the seat
+  of an NPC that died, vanished or stopped loitering. The NPC does not walk to a seat: only one within 5 m.
+- **Data:** the loiter roles are a constant in `LF_NpcLoiter`; seats are found by component. Nothing persists.
+- **Proof:** `npc/loiter` (WORLD).

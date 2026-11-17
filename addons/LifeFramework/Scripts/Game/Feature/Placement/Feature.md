@@ -93,3 +93,22 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Data:** none; the distances are `lf-fixed` constants of the audit's limits.
 - **Proof:** `placement/door-probe` (WORLD: a house door spawned on open ground; spots in the swing, either side,
   and in the walk-up are blocked by "a door", 4 m in front and 2.5 m beside are clear, an excluded door does not block).
+
+## Who may place each kind (#2446)
+
+- **Player sees:** a refusal toast under "Placing" that names the rule: only on-duty police, only the owner or a key
+  holder of a house nearby, only an organization member, or "your rank is too low". The ghost's action stays hidden for a
+  player the rule refuses. The spike strip and the roadblock still need an on-duty officer.
+- **Owner and side:** `LF_PlacementPolicy.Check`, asked by `LF_PlacementService.MayPlace` and `Confirm` and by
+  `LF_PlacementCompositions.Confirm` on the server (and by the action gate on a client), instead of the hard-coded
+  `m_eWho`. `Judge` is pure over `LF_PlacementWhoFacts`; `Gather` reads the player (duty, the nearest house within
+  30 m and its owner key or a key in the inventory, the organization and rank) from Police, Houses and Organizations
+  through their public API. The log line is `refused: <uid> <reason> (rule <WHO>)`.
+- **Data:** `Configs/Placement/LF_PlacementPolicy.conf`: one entry per kind (`m_sKind`, `m_eWho`, `m_sMinRank` for
+  `ORG_MEMBER`). A kind is the placeable's `m_sKind`, else its placed prefab's file name (`SpikeStrip`,
+  `Roadblock_Barrier`), or a composition's name (`roadblock`). A kind with no entry keeps the prefab's own `m_eWho`.
+  Core ships the police entries only; a server's rules are pack data. Strings `#LF-Placement_NeedPolice`, `_NeedHouse`,
+  `_NeedOrg`, `_NeedRank`. Nothing persists.
+- **Proof:** `placement/policy-who` (LOGIC: each rule refuses the wrong player with its own reason and toast and passes
+  the right one; the shipped table keeps the strip and the roadblock police-only). House and organization facts are
+  filled from plain values in the test; reading a live house or organization for a player stays a manual step.

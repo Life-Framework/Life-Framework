@@ -161,6 +161,135 @@ class LF_Garage
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return True when the vehicle's storages hold an item beyond the prefab's own fill (the
+	//! MultiSlots a stock car spawns with, such as the S105's two field dressings). A stored
+	//! vehicle keeps no cargo: the record has no inventory and retrieve spawns a fresh prefab with
+	//! its own fill, so storing would delete everything else (#2411).
+	static bool HasCargo(IEntity vehicle)
+	{
+		if (!vehicle)
+			return false;
+
+		map<string, int> stockFill = new map<string, int>();
+		CollectStockFill(vehicle, stockFill);
+
+		array<Managed> storages = {};
+		vehicle.FindComponents(BaseInventoryStorageComponent, storages);
+		array<IEntity> items = {};
+		foreach (Managed managed : storages)
+		{
+			BaseInventoryStorageComponent storage = BaseInventoryStorageComponent.Cast(managed);
+			if (!storage)
+				continue;
+
+			items.Clear();
+			storage.GetAll(items);
+			foreach (IEntity item : items)
+			{
+				string guid = PrefabGuid(item);
+				int left = stockFill.Get(guid);
+				if (guid.IsEmpty() || left <= 0)
+					return true;
+
+				stockFill.Set(guid, left - 1);
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fills stockFill with prefab GUID -> count of the items vehicle's prefab puts in its storages.
+	protected static void CollectStockFill(notnull IEntity vehicle, notnull map<string, int> stockFill)
+	{
+		EntityPrefabData prefabData = vehicle.GetPrefabData();
+		if (!prefabData)
+			return;
+
+		Resource resource = Resource.Load(prefabData.GetPrefabName());
+		if (!resource || !resource.IsValid())
+			return;
+
+		IEntitySource source = resource.GetResource().ToEntitySource();
+		array<IEntityComponentSource> storageSources = {};
+		SCR_BaseContainerTools.FindComponentSourcesOfClass(source, BaseInventoryStorageComponent, false, storageSources);
+		foreach (IEntityComponentSource storageSource : storageSources)
+		{
+			BaseContainerList slots = storageSource.GetObjectArray("MultiSlots");
+			if (!slots)
+				continue;
+
+			for (int i, count = slots.Count(); i < count; i++)
+			{
+				BaseContainer slot = slots.Get(i);
+				BaseContainer slotTemplate = slot.GetObject("SlotTemplate");
+				if (!slotTemplate)
+					continue;
+
+				ResourceName prefab;
+				slotTemplate.Get("Prefab", prefab);
+				int numSlots = 1;
+				slot.Get("NumSlots", numSlots);
+				string guid = GuidOf(prefab);
+				if (!guid.IsEmpty())
+					stockFill.Set(guid, stockFill.Get(guid) + numSlots);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string PrefabGuid(IEntity item)
+	{
+		if (!item || !item.GetPrefabData())
+			return "";
+
+		return GuidOf(item.GetPrefabData().GetPrefabName());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "{GUID}path" -> "GUID"; empty when the name carries none.
+	protected static string GuidOf(ResourceName prefab)
+	{
+		string name = prefab;
+		int close = name.IndexOf("}");
+		if (!name.StartsWith("{") || close < 2)
+			return "";
+
+		return name.Substring(1, close - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when anyone is seated in vehicle. Storing deletes the vehicle with its children.
+	static bool HasOccupants(IEntity vehicle)
+	{
+		if (!vehicle)
+			return false;
+
+		SCR_BaseCompartmentManagerComponent compartments = SCR_BaseCompartmentManagerComponent.Cast(vehicle.FindComponent(SCR_BaseCompartmentManagerComponent));
+		if (!compartments)
+			return false;
+
+		array<IEntity> occupants = {};
+		compartments.GetOccupants(occupants);
+		return !occupants.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why vehicle cannot go into the garage as it is, as a string key; empty when it can.
+	//! Storing deletes the vehicle entity and its children, so a car that still holds items or
+	//! people is refused instead of losing them (#2411).
+	static string StoreRefusalKey(IEntity vehicle)
+	{
+		if (HasOccupants(vehicle))
+			return "#LF-Garage_Occupied";
+
+		if (HasCargo(vehicle))
+			return "#LF-Garage_EmptyCargo";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void StopAndEject(IEntity vehicle)
 	{
 		if (!vehicle)

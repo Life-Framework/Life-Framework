@@ -173,6 +173,33 @@ class LF_SitAction : SCR_LoiterUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: seat an AI body here (#1928, LF_NpcLoiter). Writes the seat data a player's Sit gets from
+	//! OnSaveActionData and performs the action for the body at once. False when someone really sits here.
+	bool LF_SeatBody(IEntity body)
+	{
+		if (!body || IsTakenByOther(body))
+			return false;
+
+		ReleaseOccupant();
+		vector seat[4];
+		GetOwner().GetWorldTransform(seat);
+		LF_Sit.SeatTransform(seat, m_vSeatOffset, m_fSeatYaw, m_targetPosition);
+		m_eLoiteringType = ELoiteringType.CUSTOM;
+		m_bHolsterWeapon = true;
+		m_isValid = true;
+		PerformAction(GetOwner(), body);
+		return IsOccupiedBy(body);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: stand an AI body up from this seat and free it.
+	void LF_StandBody(IEntity body)
+	{
+		if (IsOccupiedBy(body))
+			PerformAction(GetOwner(), body);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool LF_HasPose()
 	{
 		return m_SitAnimation != null;
