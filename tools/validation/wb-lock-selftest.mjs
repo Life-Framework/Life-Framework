@@ -6,11 +6,11 @@
 // processes failed 8/8 ("the waiter queued with one status line", "held lock shows busy"); on a stdin release, 8/8 pass.
 
 import { spawn, spawnSync } from "node:child_process";
-import { mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import * as wb from "../lib/wb-lock.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (name, ok) => {
@@ -35,7 +35,7 @@ check("FIFO: nothing free, nobody takes", !wb.mayTake(t, "a", 0).ok);
 // No wall-clock sleeps: the child holds until this process closes its stdin, and this process closes it
 // only after the waiter printed its "queued" line (the old 1500 ms holder timer let a loaded machine
 // finish the holder before the waiter started: no queued line, "held lock shows busy" false).
-const dir = mkdtempSync(join(tmpdir(), "lf-wb-lock-"));
+const dir = scratchDir("lf-wb-lock-");
 spawnSync("git", ["init", "-q", dir], { windowsHide: true });
 writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { workbenchLimit: 1 } }));
 const lib = pathToFileURL(join(import.meta.dirname, "..", "lib", "wb-lock.mjs")).href;

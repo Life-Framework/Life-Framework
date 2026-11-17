@@ -10,12 +10,12 @@
 // red-proof: before tools/host/password.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/password.mjs'" (2026-11-15).
 
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const { rotatePassword, showPassword, generatePassword } = await import(pathToFileURL(join(ROOT, "tools", "host", "password.mjs")).href);
@@ -29,7 +29,7 @@ const ADMIN_PASSWORD = "adm-Beta-9942";
 const WEBHOOK = "https://discord.com/api/webhooks/123456/SECRETTOKEN-xyz";
 const ADMIN_UID = "a1b2c3d4-0000-4000-8000-000000000001";
 
-const base = mkdtempSync(join(tmpdir(), "lf-host-password-"));
+const base = scratchDir("lf-host-password-");
 const repo = join(base, "repo");
 mkdirSync(repo, { recursive: true });
 for (const f of ["config.json", "server.json"]) cpSync(join(ROOT, "server", "flagship", f), join(repo, f));

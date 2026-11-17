@@ -7,7 +7,8 @@ enum LF_EReviveRefusal
 	NOT_DOWNED,
 	NOT_MEDIC,
 	TOO_FAR,
-	NO_ITEM
+	NO_ITEM,
+	MEDIC_DOWN
 }
 
 //------------------------------------------------------------------------------------------------
@@ -62,7 +63,17 @@ class LF_Revive
 		if (refusal == LF_EReviveRefusal.NO_ITEM)
 			return "#LF-Revive_NoItem";
 
+		if (refusal == LF_EReviveRefusal.MEDIC_DOWN)
+			return "#LF-Revive_MedicDown";
+
 		return "#LF-Revive_NotDowned";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The medic is downed, dead or has no living body.
+	static bool IsMedicDown(IEntity medic)
+	{
+		return LF_Downed.IsDowned(medic) || !LF_Utils.IsAliveState(medic);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -71,6 +82,10 @@ class LF_Revive
 	{
 		if (!medic || !patient)
 			return Decide(false, false, false, medicOnDuty, 0, 0);
+
+		// A medic who is downed or dead cannot work on anyone, whatever the duty flag says (#2624).
+		if (medic != patient && IsMedicDown(medic))
+			return LF_EReviveRefusal.MEDIC_DOWN;
 
 		return Decide(true, medic == patient, LF_Downed.IsDowned(patient), medicOnDuty, vector.Distance(medic.GetOrigin(), patient.GetOrigin()), LF_MedicConfig.Get().m_fReviveRange);
 	}

@@ -7,10 +7,10 @@
 //   once done held for settleMs" fails (600 s, the old behaviour).
 // inputs: tools/lib/wb-until.mjs, tools/validation/wb-until-selftest.mjs, tools/cli.mjs
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { killTreeSync, pidAlive, waitUntilDone } from "../lib/wb-until.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -55,7 +55,7 @@ const fake = () => {
 
 // Real process: writes its "rdb" and then hangs, as the frozen Workbench did.
 {
-  const dir = mkdtempSync(join(tmpdir(), "lf-wbuntil-"));
+  const dir = scratchDir("lf-wbuntil-");
   const rdb = join(dir, "resourceDatabase.rdb");
   try {
     const child = spawn(process.execPath, ["-e", `setTimeout(() => require("fs").writeFileSync(${JSON.stringify(rdb)}, "x"), 500); setInterval(() => {}, 1000)`], { stdio: "ignore", windowsHide: true });

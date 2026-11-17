@@ -4108,6 +4108,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 is waiting on the pad in front of the garage."
      Comment "Retrieve succeeded. %1 is the plate"
     }
+    CustomStringTableItem "{4F4F48DC707A84B4}" {
+     Id "LF-Garage_SlotsFull"
+     Target_en_us "Your garage is full: %1 vehicles at most. Retrieve one before storing another."
+     Comment "Garage store refused (#2655): the owner's stored vehicles fill every garage slot. %1 is the cap."
+    }
     CustomStringTableItem "{A1C4E87B62D94F05}" {
      Id "LF-Garage_StepOut"
      Target_en_us "Step out of the vehicle first"
@@ -7062,6 +7067,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Signed. The page is yours."
      Comment "Ledger notice line after founding."
     }
+    CustomStringTableItem "{15CA4CCA7E9E4914}" {
+     Id "LF-Org_GiveUpLease"
+     Target_en_us "Give up the lease"
+     Comment "Ledger row action: the holder gives the hideout yard lease back (#2572)."
+    }
     CustomStringTableItem "{6D53E58AC9FADED3}" {
      Id "LF-Org_Hideout"
      Target_en_us "Alley yard lease"
@@ -7102,6 +7112,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Free"
      Comment "Hideout lease status: nobody holds it."
     }
+    CustomStringTableItem "{FAF2A876ADF64AE5}" {
+     Id "LF-Org_LeaseGivenUp"
+     Target_en_us "You gave the alley yard back. Its gate is shut."
+     Comment "Ledger notice after the lease is given up (#2572)."
+    }
     CustomStringTableItem "{22205B2B89D3D298}" {
      Id "LF-Org_LeaseOurs"
      Target_en_us "Yours - members enter"
@@ -7111,6 +7126,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Org_LeaseRefused"
      Target_en_us "The lease was refused."
      Comment "Ledger notice: lease refused."
+    }
+    CustomStringTableItem "{3BCB98DA6F2D4899}" {
+     Id "LF-Org_LeaseReleaseRefused"
+     Target_en_us "Only a rank that may buy can give the lease up."
+     Comment "Toast and ledger notice when giving up the lease is refused (#2572)."
     }
     CustomStringTableItem "{717EDA57B8114856}" {
      Id "LF-Org_LeaseTaken"
@@ -8771,6 +8791,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You brought them back."
      Comment "Toast to the medic after a revive."
     }
+    CustomStringTableItem "{F0336D48D1263225}" {
+     Id "LF-Revive_MedicDown"
+     Target_en_us "You cannot help anyone while you are down."
+     Comment "Revive refusal: the medic is downed or dead."
+    }
     CustomStringTableItem "{7A30C5E1D49B6B01}" {
      Id "LF-Revive_NoItem"
      Target_en_us "You need a field dressing to revive someone."
@@ -10002,6 +10027,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-TestOrgSign_NotIn"
      Target_en_us "You are not in an organisation."
      Comment "Greyed-out reason and toast: Leave with no organisation (#934)."
+    }
+    CustomStringTableItem "{7581DEC7A2972FB8}" {
+     Id "LF-TestOrgSign_OtherOrg"
+     Target_en_us "The test sign only takes you out of the test organisation."
+     Comment "Toast: the test org sign's Leave refused because the player belongs to a different organisation (#2536)."
     }
     CustomStringTableItem "{C3D98F355E87E01F}" {
      Id "LF-TestOrgSign_Title"

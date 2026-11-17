@@ -554,8 +554,8 @@ class LF_LicenseManagerComponent : ScriptComponent
 			int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(owner);
 			if (playerId <= 0) return false;
 			
-			string playerUID = SCR_PlayerIdentityUtils.GetPlayerIdentityId(playerId);
-			if (!playerUID) return false;
+			string playerUID = LF_Utils.GetAccountUID(playerId);
+			if (playerUID.IsEmpty()) return false;
 
 			LF_EJobType whitelistJob = GetLicenseWhitelistJob(licenseType);
 			if (whitelistJob != LF_EJobType.UNEMPLOYED && !LF_WhitelistManager.IsWhitelistedForJob(playerUID, whitelistJob))
@@ -640,7 +640,7 @@ class LF_LicenseManagerComponent : ScriptComponent
 			// Verificar whitelist si es necesario
 			if (config.m_bRequiresWhitelist)
 			{
-				string playerUID = LF_Utils.GetPlayerUID(owner);
+				string playerUID = LF_Utils.GetAccountUID(owner);
 				LF_EJobType whitelistJob = GetLicenseWhitelistJob(licenseType);
 				if (whitelistJob == LF_EJobType.UNEMPLOYED)
 				{

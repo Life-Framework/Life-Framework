@@ -10,13 +10,13 @@
 // red-proof: before ready.mjs read drill-last.json the 2-day-old passing result failed with
 // "a passing 2-day-old drill-last.json was not GO: no restore drill on record" (2026-11-15).
 
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-drill-result-"));
+const tmp = scratchDir("lf-host-drill-result-");
 let failed = 0;
 function fail(msg) {
   console.log(`FAIL  ${msg}`);

@@ -21,10 +21,10 @@
 // a core prop", "a second call stays on the pack cell", "gridWorldFor picks the pack world when a pack cell exists".
 // Restored: pack-grid-selftest: OK.
 
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const here = fileURLToPath(new URL(".", import.meta.url));
 const repo = join(here, "..", "..");
@@ -74,7 +74,7 @@ async function run(argv, root) {
   return { code, out: out.join("\n") };
 }
 
-const root = mkdtempSync(join(tmpdir(), "lf-pack-grid-"));
+const root = scratchDir("lf-pack-grid-");
 try {
   // A tree with a core prop, a pack building and a pack prop.
   put(root, "addons/LifeFramework/Prefabs/Props/CoreCrate.et", "GenericEntity : \"{1111111111111111}Prefabs/Props/Base.et\" {\n}\n");
@@ -147,7 +147,7 @@ try {
   const dirs = attempt(() => fn(W, "gridLayerDirs")(root), "gridLayerDirs") ?? [];
   ok(dirs.length === 2 && dirs[0].endsWith("GridWorld_Layers") && dirs[1].endsWith("Everon1989Grid_Layers"), "gridLayerDirs lists GridWorld's folder, then the pack's");
   ok(W.gridWorldFor?.(root) === W.PACK_GRID_WORLD, "gridWorldFor picks the pack world when a pack cell exists");
-  const lone = mkdtempSync(join(tmpdir(), "lf-pack-grid-core-"));
+  const lone = scratchDir("lf-pack-grid-core-");
   try {
     mkdirSync(join(lone, Z.GRID_LAYERS), { recursive: true });
     ok(W.gridWorldFor?.(lone) === W.GRID_WORLD && W.gridLayerDirs?.(lone).length === 1, "with no pack cell the world is GridWorld and one folder is read");

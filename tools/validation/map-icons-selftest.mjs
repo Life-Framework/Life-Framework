@@ -2,10 +2,10 @@
 // inputs: tools/map/lib/icons.mjs, tools/validation/validate-ui-kit.mjs
 // red-proof: each case below breaks one rule on a fixture tree and asserts the failure line; the
 // "complete" case asserts the same tree passes, so a check that always fails or never fails is caught.
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { ATLAS, FILES, catQuad, coreQuadNames, packQuadNames, layout, iconProblems, confRows } from "../map/lib/icons.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const check = (name, ok, detail = "") => {
@@ -28,7 +28,7 @@ function put(root, rel, text) {
 
 // A complete fixture tree; `skipCore` / `skipPack` drop quads from the imageset text.
 function tree({ skipCore = [], skipPack = [] } = {}) {
-  const root = mkdtempSync(join(tmpdir(), "lf-map-icons-"));
+  const root = scratchDir("lf-map-icons-");
   const guids = { core: "AAAAAAAAAAAAAAA1", pack: "BBBBBBBBBBBBBBB2" };
   for (const side of ["core", "pack"]) {
     const f = FILES[side];
@@ -49,7 +49,7 @@ const run = (opts, confs) => { const r = tree(opts); dirs.push(r); return iconPr
 // complete tree passes; rows with and without an icon resolve
 check("complete tree passes", run({}, [conf([{ kind: "Bank", category: "civic" }, { kind: "Taxi", category: "travel", icon: "poi_Taxi" }])]).length === 0);
 // an absent imageset is "not built yet", not a failure
-{ const r = mkdtempSync(join(tmpdir(), "lf-map-icons-")); dirs.push(r); check("absent imagesets are pending, not failing", iconProblems(r, []).length === 0); }
+{ const r = scratchDir("lf-map-icons-"); dirs.push(r); check("absent imagesets are pending, not failing", iconProblems(r, []).length === 0); }
 // a missing core category quad fails
 check("missing core category quad", run({ skipCore: [catQuad("law")] }, []).some((l) => l.includes('quad "cat_law" is missing')));
 // a missing pack pictogram fails
