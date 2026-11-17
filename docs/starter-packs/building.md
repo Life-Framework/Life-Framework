@@ -45,10 +45,10 @@ room's folder (town-hall `looks.mjs --tag pass1 --run` does) or pass the PNG pat
 The bank safe is a room in the building, not the standalone `LF_BankVault.et` (that is the reserve vault).
 - Room doorway: `{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et`. Its origin is the front's centre,
   the door hinges 1.271 m to its right; the layer entity name is the vault id, so name each one uniquely.
-- Bag inside: copy `Roadmap_Bank_Bag` (`LF_MoneyBag.et` + `LF_PlaceComponent` `BankBag`, `m_sId` = the door's vault id + a MoneyStack child).
+- Bag inside: copy `Roadmap_Bank_Bag` (`LF_MoneyBag.et`, `LF_PlaceComponent` `BankBag`, `m_sId` = the door's vault id).
 - Type `bank_room` already sets the numbers (1 bag of 500, drill or charge, bank alarm, 30 s drill, no police gate); do not type them on
-  the placement (an attribute at its class default reads as unset). Shop safe: `{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et`.
-  Tiers: `docs/features/crime-police.md`; check with `test --only LF_Test_SafeTypes`.
+  the placement (an attribute at its class default reads as unset). Shop safe: `{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et`;
+  tiers in `docs/features/crime-police.md`.
 
 ## Performance (docs/architecture/performance.md covers script cost; `test --tier perf` once if you touch script)
 Report in the PR, per pass: dynamic lights, shadow casters, decorative entities. The limit is in your brief. Short-range
