@@ -23,7 +23,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync, writeSync } from "node:fs";
 import { freemem, hostname as osHostname, totalmem } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -1339,9 +1339,15 @@ export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = 
 // left that run with no remote. Now one process at a time takes it, under a lock in the worktree's
 // tmp/remote, and a snapshot taken there less than shareMs ago at the same HEAD and index is reused:
 // the worktree as it was when the burst was asked for. A failed take is retried (twice).
+// Two things made this share nothing under load (a ship gate on a busy box took 3 snapshots for 6 runs):
+// a waiter gave up on the lock after 30 s and took a private snapshot (one take under load took that long),
+// and the window ran from the END of a take, so the 5th and 6th waiter, each held up behind a git call of
+// the ones ahead, found it over 10 s old. A run now waits as long as the lock holder is alive (the lock file
+// holds its pid), and a snapshot that finished after the run asked is always its own: that is what a
+// private take would have captured.
 // opts.take / opts.now are test seams.
 export const SNAPSHOT_SHARE_MS = 10000;
-export function sharedSnapshot(root, { take = tb.snapshotCommit, now = Date.now, shareMs = SNAPSHOT_SHARE_MS, lockWaitMs = 30000 } = {}) {
+export function sharedSnapshot(root, { take = tb.snapshotCommit, now = Date.now, shareMs = SNAPSHOT_SHARE_MS, lockWaitMs = 180000 } = {}) {
   const dir = join(root, "tmp", "remote");
   mkdirSync(dir, { recursive: true });
   const lock = join(dir, "snapshot.lock");
@@ -1365,19 +1371,36 @@ export function sharedSnapshot(root, { take = tb.snapshotCommit, now = Date.now,
       }
     }
   };
+  const alive = (pid) => {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch (e) {
+      return e.code === "EPERM";
+    }
+  };
   let held = false;
-  const until = now() + lockWaitMs;
+  const askedAt = now();
+  const until = askedAt + lockWaitMs;
   while (!held) {
     try {
-      closeSync(openSync(lock, "wx"));
+      const fd = openSync(lock, "wx");
+      try {
+        writeSync(fd, String(process.pid));
+      } finally {
+        closeSync(fd);
+      }
       held = true;
     } catch (e) {
       // EPERM/EACCES/EBUSY: another process is deleting the lock right now (Windows); that is contention, not
       // a reason to go on without the lock (which skipped the shared snapshot and took a private one).
       if (!["EEXIST", "EPERM", "EACCES", "EBUSY"].includes(e.code)) break;
-      // A lock left by a process that died mid-snapshot goes after a minute.
+      // A lock left by a process that died mid-snapshot goes after a minute; one whose holder still lives
+      // is a slow take (a loaded box) and is waited for, up to ten minutes.
       try {
-        if (Date.now() - statSync(lock).mtimeMs > 60000) unlinkSync(lock);
+        const age = Date.now() - statSync(lock).mtimeMs;
+        const pid = Number.parseInt(readFileSync(lock, "utf8"), 10);
+        if (age > 600000 || (age > 60000 && !(pid > 0 && alive(pid)))) unlinkSync(lock);
       } catch {}
       if (now() > until) break;
       Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100);
@@ -1386,7 +1409,7 @@ export function sharedSnapshot(root, { take = tb.snapshotCommit, now = Date.now,
   try {
     const k = held ? key() : null;
     const hit = k ? readJson(cacheFile, null) : null;
-    if (hit?.snap?.sha && hit.head === k.head && hit.indexMs === k.indexMs && now() - hit.at >= 0 && now() - hit.at < shareMs) return hit.snap;
+    if (hit?.snap?.sha && hit.head === k.head && hit.indexMs === k.indexMs && (hit.at >= askedAt || (now() - hit.at >= 0 && now() - hit.at < shareMs))) return hit.snap;
     const snap = takeRetried();
     if (k) {
       try {
@@ -2096,6 +2119,8 @@ export async function acquireSlot(root, opts = {}) {
   const purpose = opts.purpose ?? "test";
   const mode = opts.mode ?? "any";
   const started = Date.now();
+  // opts.queuedAt (a test seam): the age the ticket carries, to prove promotion without waiting for it.
+  const queuedAt = Number(opts.queuedAt) || started;
   if (process.env[SLOT_ENV]) {
     const s = heldSlotFromEnv(root);
     s.waitedMs = 0;
@@ -2189,8 +2214,8 @@ export async function acquireSlot(root, opts = {}) {
   let stuck = "";
   let needMb;
   let grantedOn = null;
-  const ticketBody = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name), ...(opts.world ? { world: opts.world } : {}), ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}), ...(grantedOn ? { granted: grantedOn } : {}) });
-  const ticket = writeTicket(root, ticketBody());
+  const ticketBody = () => ({ pid: process.pid, at: new Date(queuedAt).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name), ...(opts.world ? { world: opts.world } : {}), ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}), ...(grantedOn ? { granted: grantedOn } : {}) });
+  const ticket = writeTicket(root, ticketBody(), queuedAt);
   let lastReap = 0;
   const lastTry = new Map();
   let degraded = false;

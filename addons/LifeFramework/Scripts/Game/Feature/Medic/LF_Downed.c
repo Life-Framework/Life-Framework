@@ -26,10 +26,16 @@ class LF_Downed
 	//! Smallest damage a lethal hit still deals (health points).
 	static const float MIN_LETHAL_CUT = 0.01;
 
+	//! Shortest gap between two absorbed-hit log lines for one body (ms).
+	static const float ABSORB_LOG_WINDOW_MS = 5000; // lf-fixed: a log-rate limit, not a game rule
+
 	protected static int s_iLethalBypass;
 	protected static bool s_bTestAllEligible;
 	protected static int s_iDownedCount;
 	protected static int s_iAbsorbedCount;
+	protected static bool s_bWakeTrace;
+	protected static int s_iAbsorbLogLines;
+	protected static int s_iDelayedLogCalls;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -38,6 +44,9 @@ class LF_Downed
 		s_bTestAllEligible = false;
 		s_iDownedCount = 0;
 		s_iAbsorbedCount = 0;
+		s_bWakeTrace = false;
+		s_iAbsorbLogLines = 0;
+		s_iDelayedLogCalls = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -95,7 +104,7 @@ class LF_Downed
 		if (decision == ABSORB)
 		{
 			s_iAbsorbedCount++;
-			LF_Debug.Info(FEATURE, string.Format("hit on downed %1 absorbed (%2)", PlayerUid(character), damage));
+			LogAbsorbed(character, damage);
 			return 0;
 		}
 
@@ -104,6 +113,24 @@ class LF_Downed
 		// still at the floor, hit again, would stay up).
 		float room = zone.GetHealth() - LF_MedicConfig.Get().m_fDownedHealthScaled * zone.GetMaxHealth();
 		return Math.Max(MIN_LETHAL_CUT, Math.Min(damage, room));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One absorbed hit. Every hit is counted; the log gets at most one line per body per
+	//! ABSORB_LOG_WINDOW_MS, carrying the hits absorbed since the last line (a body under fire
+	//! absorbs a hit per damage tick, #2404).
+	protected static void LogAbsorbed(notnull SCR_ChimeraCharacter character, float damage)
+	{
+		float now;
+		if (GetGame().GetWorld())
+			now = GetGame().GetWorld().GetWorldTime();
+
+		int hits = character.LF_TakeAbsorbLog(now, ABSORB_LOG_WINDOW_MS);
+		if (hits <= 0)
+			return;
+
+		s_iAbsorbLogLines++;
+		LF_Debug.Info(FEATURE, string.Format("%1 hit(s) on downed %2 absorbed (last %3)", hits, PlayerUid(character), damage));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -175,8 +202,10 @@ class LF_Downed
 			LF_Debug.Info(FEATURE, string.Format("wake of %1: resilience %2, blood %3, health %4, still unconscious %5", PlayerUid(character), damageManager.GetResilienceHitZone().GetHealthScaled(), damageManager.GetBloodHitZone().GetHealthScaled(), damageManager.GetDefaultHitZone().GetHealthScaled(), damageManager.LF_WantsUnconscious()));
 		}
 
-		if (GetGame().GetCallqueue())
+		// The wake is one line (above). The +1/+4/+9 s follow-up of #427 is a debug switch, off by default.
+		if (s_bWakeTrace && GetGame().GetCallqueue())
 		{
+			s_iDelayedLogCalls += 3;
 			GetGame().GetCallqueue().CallLater(LogWake, 1000, false, character, 1);
 			GetGame().GetCallqueue().CallLater(LogWake, 4000, false, character, 4);
 			GetGame().GetCallqueue().CallLater(LogWake, 9000, false, character, 9);
@@ -312,6 +341,27 @@ class LF_Downed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Debug switch: a revive also logs where the wake stands 1, 4 and 9 s later (#427). Off by default.
+	static void SetWakeTrace(bool on)
+	{
+		s_bWakeTrace = on;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Info lines the absorbed-hit path has written (tests).
+	static int GetAbsorbLogLines()
+	{
+		return s_iAbsorbLogLines;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Delayed log calls a revive has queued (tests).
+	static int GetDelayedLogCalls()
+	{
+		return s_iDelayedLogCalls;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The uid for logs and events: the player's, else "npc" for a body with no player.
 	protected static string PlayerUid(IEntity character)
 	{
@@ -357,6 +407,25 @@ modded class SCR_ChimeraCharacter
 	//! Server only: who dealt the hit that downed this character ("" when no player did).
 	protected string m_sLF_DownerUid;
 
+	//! Server only: absorbed-hit log state of the current downed spell (LF_Downed.LogAbsorbed).
+	protected float m_fLF_AbsorbLoggedAt = -1;
+	protected int m_iLF_AbsorbPending;
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: note one absorbed hit. \return The hits to put in a log line now (the ones noted since
+	//! the last line), or 0 while the last line is younger than `windowMs`.
+	int LF_TakeAbsorbLog(float nowMs, float windowMs)
+	{
+		m_iLF_AbsorbPending++;
+		if (m_fLF_AbsorbLoggedAt >= 0 && nowMs - m_fLF_AbsorbLoggedAt < windowMs)
+			return 0;
+
+		m_fLF_AbsorbLoggedAt = nowMs;
+		int hits = m_iLF_AbsorbPending;
+		m_iLF_AbsorbPending = 0;
+		return hits;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	void LF_SetDowned(bool downed, string downerUid)
 	{
@@ -374,6 +443,8 @@ modded class SCR_ChimeraCharacter
 		if (downed != m_bLF_Downed)
 		{
 			m_bLF_Downed = downed;
+			m_fLF_AbsorbLoggedAt = -1;
+			m_iLF_AbsorbPending = 0;
 			changed = true;
 		}
 
