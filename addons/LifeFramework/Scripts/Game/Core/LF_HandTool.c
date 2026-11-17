@@ -69,6 +69,9 @@ class LF_HandToolComponent : SCR_GadgetComponent
 		}
 		else
 		{
+			if (m_Holder != EntityID.INVALID)
+				LF_Debug.Log(LF_HandTool.FEATURE, string.Format("%1 left the hands: %2", GetToolId(), typename.EnumToString(EGadgetMode, mode)));
+
 			m_Holder = EntityID.INVALID;
 			LF_HandTool.NoteReleased(this);
 		}
