@@ -355,7 +355,25 @@ async function shipSection(root) {
 async function guardSection(root) {
   const g = await import("../main-guard.mjs");
   const { statusLine } = await import("../lib/main-guard.mjs");
-  return [statusLine(g.readState(root), { alive: g.workerAlive(root), off: process.env.LF_MAIN_GUARD === "0" })];
+  const lines = [statusLine(g.readState(root), { alive: g.workerAlive(root), off: process.env.LF_MAIN_GUARD === "0" })];
+  // The guard's lease on GitHub: a dead guard is a loud line, not a quiet "not running" (#2754). Async so a slow gh cannot stall lead.
+  if (process.env.LF_MAIN_GUARD !== "0") {
+    const pin = await import("../lib/guard-pin.mjs");
+    const { guardAlert } = await import("../lib/main-guard.mjs");
+    const rc = await sh("git", ["-C", root, "rev-list", "--max-parents=0", "refs/remotes/origin/main"], { cwd: root, timeout: 5000 });
+    const rootSha = rc.out.split(/\r?\n/).filter(Boolean).pop();
+    let lease;
+    if (rootSha) {
+      const r = await sh("gh", ["api", `repos/{owner}/{repo}/commits/${rootSha}/statuses?per_page=100`], { cwd: root, timeout: 15000 });
+      if (r.code === 0) { try { lease = pin.parseLease(JSON.parse(r.out).filter((x) => x.context === pin.LEASE_CTX).sort((x, y) => String(y.created_at).localeCompare(String(x.created_at)))[0]) ?? null; } catch {} }
+    }
+    let behind = null;
+    const last = g.readState(root).lastCompiled;
+    if (last) { const r = await sh("git", ["-C", root, "rev-list", "--count", `${last}..origin/main`], { cwd: root, timeout: 5000 }); if (r.code === 0 && /^\d+$/.test(r.out.trim())) behind = Number(r.out.trim()); }
+    const a = guardAlert(lease, { behind, alive: g.workerAlive(root) });
+    if (a) lines.push(`!! MAIN GUARD DOWN: ${a}`);
+  }
+  return lines;
 }
 
 // ---------------------------------------------------------------- accounts, slices (other branches; skipped until they land)
