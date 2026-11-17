@@ -164,6 +164,17 @@
   so a restart no longer leaves it open for anyone. Tests `organization/upgrade-unwired`,
   `organization/fund-overflow`, `hideout/stash-right`, `hideout/load-relock` (LOGIC). The lease that
   never ends is #2533.
+
+### `LF_PropertyConfig` — `Feature/Property/` (config only, #2647, slice P2 of #747)
+- ✅ One config, `Configs/Property/LF_Property.conf`, describes the plot catalogue (id, tier id, price), the house
+  tiers and what each build stage needs. A tier has four stages in order (excavation: work only; foundation:
+  gravel and cement bags; walls and roof: planks and bricks; doors and windows: planks and a door), each with
+  work units and a list of prefab and count requirements, plus `m_aShellPrefabs` (the vanilla prefab shown after
+  each stage). `m_iRentIntervalHours` and `m_iGraceHours` are 0 = owned outright (no rent in M8 wave 1). The core
+  ships generic example plots; 1989 plots and prices are the pack's (#808). Nothing reads it in play yet.
+  Getters (`PlotPrice`, `StageCount`, `StageWork`, `RequirementCount`, `Requirement`, `ShellPrefab`, ...) return
+  0, empty or null for an unknown id; a missing config logs `LF_Debug.Error("Property", ...)` and degrades to the
+  same defaults. Test `property/config` (LOGIC).
 - ✅ **Ledger asks are rate-limited; the test sign only leaves its own org** (#2536, review items 30 and 31 of #2415,
   merged, in-dev). View, Deposit, Withdraw, Leave and Lease now go through `LF_OrgLedgerGate` (`LF_OrganizationCharacter.c`)
   on the existing `PURCHASE` bucket, the same as founding and upgrades (View walks every member, so a spammed ask cost
