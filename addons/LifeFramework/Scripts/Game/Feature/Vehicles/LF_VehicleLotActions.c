@@ -230,7 +230,7 @@ class LF_VehicleStoreAction : ScriptedUserAction
 			return;
 		}
 
-		string refusalKey = LF_Garage.StoreRefusalKey(vehicle);
+		string refusalKey = LF_Garage.StoreRefusalKey(vehicle, vehicleId, uid);
 		if (!refusalKey.IsEmpty())
 		{
 			LF_Debug.Warn("Vehicle", string.Format("store refused: vehicle %1 is not empty (%2)", vehicleId, refusalKey));
@@ -238,7 +238,15 @@ class LF_VehicleStoreAction : ScriptedUserAction
 			return;
 		}
 
+		// A stranger in the car is put out (no keyholder is seated, checked above); a seat that stays taken keeps the car.
 		LF_Garage.StopAndEject(vehicle);
+		if (LF_Garage.HasOccupants(vehicle))
+		{
+			LF_Debug.Warn("Vehicle", string.Format("store refused: vehicle %1 still has someone seated after the eject; try again", vehicleId));
+			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#LF-Garage_Occupied", 4.0, LF_ENotificationType.WARNING);
+			return;
+		}
+
 		if (!LF_VehicleOwnership.Store(vehicleId, uid))
 		{
 			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#EL-Vehicle_NotOwner");
