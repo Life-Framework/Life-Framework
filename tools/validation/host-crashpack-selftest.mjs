@@ -16,11 +16,11 @@
 // (ERR_MODULE_NOT_FOUND, 2026-11-15); with the redaction of `password` switched off it failed with
 // "leaked secret FAKE-JOIN-PW-7731" (2026-11-15).
 
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "host-crashpack");
@@ -41,7 +41,7 @@ const SECRETS = [
   "FAKE-WEBHOOK-TOKEN",
 ];
 
-const base = mkdtempSync(join(tmpdir(), "lf-crashpack-selftest-"));
+const base = scratchDir("lf-crashpack-selftest-");
 try {
   // A host folder: <host>/server.json, <host>/profile/profile/LifeFramework/config.json, two crash backups.
   const host = join(base, "host");

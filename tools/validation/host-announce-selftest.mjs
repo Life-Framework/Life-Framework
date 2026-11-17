@@ -12,11 +12,11 @@
 // want: \"2026-11-20T12:00:00.000Z\"" and "FAIL wipe allowed 25 h after the post got: false want: true"
 // (11 case(s) failed, exit 1). The wipe guard comes from #1538.
 
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = 0;
@@ -97,7 +97,7 @@ function checkSchemaSimple(doc, schema) {
 }
 
 // 5. the command: prints, writes the row, never posts without --send
-const dir = mkdtempSync(join(tmpdir(), "lf-host-announce-"));
+const dir = scratchDir("lf-host-announce-");
 try {
   const sessions = join(dir, "sessions.json");
   writeFileSync(sessions, '{ "next": null }\n');

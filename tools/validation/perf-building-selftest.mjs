@@ -9,10 +9,10 @@
 // red-proof: with countTree counting a light as a caster only on an explicit "CastShadow 1" this printed
 // "FAIL shadow: want 3 (one explicit, two unset): want 3, got 1" (2026-11-17).
 
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { BUDGET, countTree, findBuilding, makeResolver, parseEntities, verdict } from "../perf/building-count.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const want = (label, got, exp) => {
@@ -22,7 +22,7 @@ const want = (label, got, exp) => {
   }
 };
 
-const root = mkdtempSync(join(tmpdir(), "lf-perf-building-"));
+const root = scratchDir("lf-perf-building-");
 const dir = join(root, "addons", "LF_Pack", "Prefabs", "Buildings", "Shop");
 mkdirSync(join(dir, "Furniture"), { recursive: true });
 writeFileSync(join(dir, "Shop.et"), `SCR_DestructibleBuildingEntity : "{0000000000000001}Prefabs/Vanilla/House.et" {

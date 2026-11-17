@@ -11,13 +11,13 @@
 // (2026-11-15): "FAIL restart not plain", "FAIL restart-2 not plain", "FAIL plan.delete 7, expected 12",
 // "FAIL deleted 7, want 12".
 
-import { mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync, existsSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readdirSync, rmSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-rotate-"));
+const tmp = scratchDir("lf-host-rotate-");
 let failed = 0;
 function fail(msg) {
   console.log(`FAIL  ${msg}`);

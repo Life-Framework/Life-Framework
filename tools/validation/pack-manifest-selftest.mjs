@@ -4,10 +4,10 @@
 // red-proof: with the baseline check disabled this printed "FAIL removed public name: expected
 // /was removed/" and exited 1 (2026-11-14).
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { checkPackManifest } from "./validate-pack-manifest.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 function put(root, path, text) {
   const full = join(root, path);
@@ -20,7 +20,7 @@ const manifest = (min, below) =>
 const surface = (names, deprecated = []) => JSON.stringify({ version: 1, configClasses: names, deprecated });
 
 function cleanTree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-packmanifest-"));
+  const root = scratchDir("lf-packmanifest-");
   put(root, "addons/LifeFramework/Scripts/Game/Feature/Packs/LF_PackManifest.c",
     'class LF_PackManifest\n{\n\tstatic const string CORE_VERSION = "0.1.0";\n}\nclass LF_ShopPricesConfig\n{\n}\nclass LF_InternalThing\n{\n}\n');
   put(root, "docs/architecture/public-surface.json", surface(["LF_PackManifest", "LF_ShopPricesConfig"]));
