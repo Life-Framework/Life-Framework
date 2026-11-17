@@ -265,6 +265,7 @@ controller. Every shared mark is a row:
 | `icon`, `colour` | u8 each | Indexes into the shared-mark config |
 | `text` | string, at most 32 chars | Localization key or a short player text (org marks go through the profanity filter) |
 | `expires` | world time, or 0 | Dispatch and taxi marks expire; org marks do not |
+| `areaRadius`, `areaStyle` | int16 metres (0 none, at most 5000), u8 | Optional circle around `pos` in an area style (section 2); the client draws it as a local area named after the key and removes it with the mark |
 
 - **Who receives it.** The server resolves the audience and sends `RpcDo_MapShareAdd(row)` with
   `RplRcver.Owner` on each recipient's controller. Nobody outside the audience gets a byte. Removal is

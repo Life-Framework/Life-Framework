@@ -357,6 +357,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapPlacesLayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPois(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapSearch(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapShareAreas(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShares(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapWaypoint(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);

@@ -2,9 +2,10 @@
 //! Event places on the map (card M15, #2243, everon-map.md sections 2 and 3). While an event runs its
 //! place shows to everyone: an event start puts an `EVERYONE` shared mark keyed `event:<eventId>` at
 //! the event's place (LF_EventPlace, the scene's `event_target` marker found through LF_Places) in
-//! LF_MapShares, and registers the place's radius as an EVENT-style map area (LF_MapAreas). The event's
-//! end removes both, so the picture lives exactly as long as the event. Server only; nothing is saved
-//! (an event saved mid-phase loads into cooldown, so no run, no mark: events restart).
+//! LF_MapShares, carrying the place's radius as an EVENT-style area: the share row has it on the wire, and
+//! each client draws it as a local LF_MapAreas circle beside the mark (LF_MapShareAreas). The event's
+//! end removes the row and with it the area, so the picture lives exactly as long as the event. Server
+//! only; nothing is saved (an event saved mid-phase loads into cooldown, so no run, no mark: events restart).
 //!
 //! The timer: the row carries a safety expiry (EXPIRY_SECONDS) that every phase change renews, so a
 //! mark whose event is lost without an end (a shell stopped, a crash mid-run) still leaves every map.
@@ -28,7 +29,7 @@ class LF_EventMapShare
 	protected static ref LF_EventMapShareSubscriber s_Subscriber;
 
 	//------------------------------------------------------------------------------------------------
-	//! The share key and the map area name of an event.
+	//! The share key of an event (the client names its area after it).
 	static string KeyOf(string eventId)
 	{
 		return KEY_PREFIX + eventId;
@@ -84,12 +85,16 @@ class LF_EventMapShare
 		int x = Math.Round(centre[0]);
 		int z = Math.Round(centre[2]);
 		float expires = LF_MapShares.Now() + EXPIRY_SECONDS;
+		int radius = Math.Round(LF_EventPlace.RadiusOf(eventId, phaseName));
+		if (radius <= 0)
+			LF_Debug.Warn(FEATURE, string.Format("event %1 has no radius: its mark shows without an area", eventId));
+
 		LF_MapShareRow row = LF_MapShareRow.Make(KeyOf(eventId), LF_EMapShareAudience.EVERYONE, "", x, z, ICON, COLOUR, TEXT, expires);
+		row.WithArea(radius, LF_MapAreaStyle.EVENT);
 		if (!LF_MapShares.Put(row))
 			return false;
 
 		Opened().Insert(eventId);
-		AddArea(eventId, centre, LF_EventPlace.RadiusOf(eventId, phaseName));
 		LF_Debug.Info(FEATURE, string.Format("event %1 shown to everyone at %2 %3", eventId, x, z));
 		return true;
 	}
@@ -103,7 +108,6 @@ class LF_EventMapShare
 
 		Opened().RemoveItem(eventId);
 		LF_MapShares.Remove(KeyOf(eventId));
-		LF_MapAreas.Unregister(KeyOf(eventId));
 		LF_Debug.Info(FEATURE, string.Format("event %1 off the map", eventId));
 		return true;
 	}
@@ -116,22 +120,6 @@ class LF_EventMapShare
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void AddArea(string eventId, vector centre, float radius)
-	{
-		LF_MapArea area = new LF_MapArea();
-		area.m_sName = KeyOf(eventId);
-		area.m_eStyle = LF_MapAreaStyle.EVENT;
-		area.m_sLabel = TEXT;
-		if (!LF_MapAreas.CircleOutline(centre, radius, LF_MapAreas.DEFAULT_SEGMENTS, area.m_aOutline))
-		{
-			LF_Debug.Warn(FEATURE, string.Format("event %1 has no radius: its mark shows without an area", eventId));
-			return;
-		}
-
-		LF_MapAreas.Register(area);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	protected static set<string> Opened()
 	{
 		if (!s_aOpen)
@@ -141,7 +129,7 @@ class LF_EventMapShare
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! World end (LF_StaticReset) and tests. LF_MapShares and LF_MapAreas clear their own tables.
+	//! World end (LF_StaticReset) and tests. LF_MapShares clears its own table.
 	static void ResetStatics()
 	{
 		if (s_Subscriber)
