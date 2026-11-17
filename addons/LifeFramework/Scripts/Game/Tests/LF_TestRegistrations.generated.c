@@ -405,6 +405,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapPlacesLayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPoiRoleAudience(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPois(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapPrivateEntitled(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapPrivateRegistry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MapSearch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareAreas(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareMemberKey(), LF_TestTier.LOGIC);
@@ -513,6 +515,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceCallPay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceContactStamp(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceMenuNoDeadButtons(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PolicePromoteRung(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceRankPermissions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankTable(), LF_TestTier.LOGIC);
@@ -632,7 +635,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SaveAliases(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SaveHeldContent(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SaveNewerVersion(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_SaveRefusedOnDamage(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_SaveStampPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_SaveStopsAfterFailedRead(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_AutosaveSelection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelectionBitmask(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelectionNewest(), LF_TestTier.LOGIC);
@@ -694,6 +699,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SpikeStripCap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SpikeStripPreview(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SpikeStripRefund(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelayInstall(), LF_TestTier.LOGIC);

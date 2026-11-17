@@ -189,7 +189,7 @@ class LF_SpikeStrips
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: an on-duty officer folds the strip up; the item goes into their inventory, or onto the
-	//! ground at their feet when it is full.
+	//! ground at their feet when it is full. A refundable placement charge goes back to its payer.
 	static bool PickUp(IEntity officer, IEntity strip)
 	{
 		if (!Replication.IsServer() || !officer || !strip)
@@ -219,6 +219,8 @@ class LF_SpikeStrips
 
 		int added = LF_InventoryUtils.AddAmount(officer, component.GetItemPrefab(), 1, true);
 		LF_Debug.Info(FEATURE, string.Format("picked up by %1 (into inventory %2)", LF_PoliceRanks.ResolveUid(officer), added));
+		// A priced strip gives its placement charge back once, and only to the officer who paid (#2502).
+		LF_PlacementCost.OnPickedUp(officer, strip.GetID());
 		SCR_EntityHelper.DeleteEntityAndChildren(strip);
 		return true;
 	}
