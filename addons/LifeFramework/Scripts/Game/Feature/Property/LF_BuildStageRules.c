@@ -99,11 +99,14 @@ class LF_BuildStageRules
 		array<string> prefabs = new array<string>();
 		array<int> counts = new array<int>();
 		Parse(deposited, prefabs, counts);
-		int at = prefabs.Find(prefab);
-		if (at < 0)
-			return 0;
+		int total;
+		for (int i = 0; i < prefabs.Count(); i++)
+		{
+			if (LF_Utils.SamePrefab(prefabs[i], prefab))
+				total += counts[i];
+		}
 
-		return counts[at];
+		return total;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -116,7 +119,7 @@ class LF_BuildStageRules
 		int needed;
 		foreach (LF_PropertyStageReqDef req : def.m_aRequirements)
 		{
-			if (req && req.m_Prefab == prefab && req.m_iCount > 0)
+			if (req && LF_Utils.SamePrefab(req.m_Prefab, prefab) && req.m_iCount > 0)
 				needed += req.m_iCount;
 		}
 
