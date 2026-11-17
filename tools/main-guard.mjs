@@ -175,18 +175,22 @@ async function checkHead(root, dir, head) {
     log(root, `${head.slice(0, 8)} ${step.name}: ${step.args.join(" ")}`);
     const r = await runCli(root, dir, step.args, `${head.slice(0, 8)}-${step.name.replace(/\W+/g, "-")}`);
     if (r.code === 0) continue;
-    if (mg.isEnvExit(r.code)) {
-      log(root, `${head.slice(0, 8)} ${step.name}: exit ${r.code} is the machine (logoff, shutdown or budget kill), not the commit; no recheck, no revert, retried on a later tick (log ${r.log})`);
-      writeState(root, { running: null });
+    const failing = step.name === "suite" ? mg.failingTests(r.text, testSources(dir)) : [];
+    // env (the machine died) and infra (a held lock, no Workbench slot or pool machine; #2759) are no verdict: no
+    // recheck, no bisect, no revert, no red mark; lastChecked stays, so a later tick runs this head again.
+    const v1 = mg.classifyStep(step.name, r.code, r.text, failing);
+    if (v1.verdict !== "red") {
+      log(root, `${head.slice(0, 8)} ${step.name}: ${v1.verdict.toUpperCase()} (${v1.why}), not the commit; no recheck, no revert, retried on a later tick (log ${r.log})`);
+      writeState(root, { running: null, lastResult: { head, verdict: v1.verdict, step: step.name, what: v1.why, at: now() } });
       return;
     }
-    const failing = step.name === "suite" ? mg.failingTests(r.text, testSources(dir)) : [];
     const what = failing.length ? failing.slice(0, 3).join(", ") : step.name;
     log(root, `${head.slice(0, 8)} ${step.name} RED (exit ${r.code}, ${what}); rechecking at the same head (log ${r.log})`);
     const again = await runCli(root, dir, step.recheck(failing), `${head.slice(0, 8)}-recheck`);
-    if (mg.isEnvExit(again.code)) {
-      log(root, `${head.slice(0, 8)} ${step.name} recheck: exit ${again.code} is the machine, not the commit; no revert, retried on a later tick`);
-      writeState(root, { running: null });
+    const v2 = mg.classifyStep(step.name, again.code, again.text, step.name === "suite" ? mg.failingTests(again.text, testSources(dir)) : []);
+    if (v2.verdict === "env" || v2.verdict === "infra") {
+      log(root, `${head.slice(0, 8)} ${step.name} recheck: ${v2.verdict.toUpperCase()} (${v2.why}), not the commit; no revert, retried on a later tick`);
+      writeState(root, { running: null, lastResult: { head, verdict: v2.verdict, step: step.name, what: v2.why, at: now() } });
       return;
     }
     const verdict = mg.judgeRecheck(true, again.code !== 0);
@@ -211,8 +215,9 @@ async function checkHead(root, dir, head) {
       b = await mg.bisectBySet(list, failing, async (c) => {
         checkout(dir, c.sha);
         const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
-        if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
         const failed = mg.failingTests(x.text, testSources(dir));
+        const xv = mg.classifyStep(step.name, x.code, x.text, failed);
+        if (xv.verdict === "env" || xv.verdict === "infra") throw new Error(`bisect ${c.sha.slice(0, 8)}: ${xv.verdict} (${xv.why}), not the commit; nothing is reverted`);
         const hit = mg.setHits(failing, failed);
         log(root, `  bisect ${c.sha.slice(0, 8)} ${hit.length ? `red (${hit.slice(0, 3).join(", ")})` : x.code === 0 ? "green" : `green for the set (exit ${x.code}, other failures: ${failed.slice(0, 3).join(", ") || "none parsed"})`} (${c.subject.slice(0, 60)})`);
         return failed;
@@ -221,7 +226,8 @@ async function checkHead(root, dir, head) {
       b = await mg.bisect(list, async (c) => {
         checkout(dir, c.sha);
         const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
-        if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
+        const xv = mg.classifyStep(step.name, x.code, x.text);
+        if (xv.verdict === "env" || xv.verdict === "infra") throw new Error(`bisect ${c.sha.slice(0, 8)}: ${xv.verdict} (${xv.why}), not the commit; nothing is reverted`);
         log(root, `  bisect ${c.sha.slice(0, 8)} ${x.code === 0 ? "green" : "red"} (${c.subject.slice(0, 60)})`);
         return x.code !== 0;
       });
@@ -243,6 +249,32 @@ async function checkHead(root, dir, head) {
   mark(root, dir, head, "green");
   writeState(root, { running: null, lastChecked: head, lastGreen: head, lastResult: { head, verdict: "green", at: now() } });
   log(root, `${head.slice(0, 8)} green`);
+}
+
+// The stage-2 reds the guard set on an infra refusal before #2759 (2026-11-17: 7587bfd5, a held build lock): read
+// back from the step logs, put back to compiled-ok in the hub file, and withdrawn on GitHub (main-guard/suite
+// pending), so promote and the compiled-ok pin no longer skip them. Runs at worker start and as
+// `main-guard reclassify [--dry-run]`.
+export function reclassifyInfra(root, { dryRun = false, say = (s) => log(root, s) } = {}) {
+  const logs = join(mainRoot(root), "tmp", "logs");
+  let names = [];
+  try { names = readdirSync(logs); } catch {}
+  const logsOf = (sha, step) => {
+    const pre = `main-guard-${sha.slice(0, 8)}-`;
+    const tags = [`${pre}${step.replace(/\W+/g, "-")}-`, `${pre}recheck-`];
+    return names.filter((n) => tags.some((t) => n.startsWith(t) && /^\d+\.log$/.test(n.slice(t.length)))).map((n) => { try { return readFileSync(join(logs, n), "utf8"); } catch { return ""; } });
+  };
+  const found = mg.infraRedHeads(pin.readHeads(hub(root)).heads, logsOf);
+  for (const f of found) {
+    say(`reclassify ${f.sha.slice(0, 8)}: ${f.step} red was infra (${f.why})${dryRun ? " [dry run]" : "; now compiled-ok, main-guard/suite pending"}`);
+    if (dryRun) continue;
+    pin.clearInfraRed(hub(root), f.sha, f.why);
+    const r = pin.postInfra(mainRoot(root), f.sha, f.why);
+    if (r.status !== 0) say(`  status on ${f.sha.slice(0, 8)} not posted: ${String(r.stderr || "").trim().slice(0, 160)}`);
+    const st = readState(root);
+    if (st.lastResult?.head === f.sha && st.lastResult.verdict === "red") writeState(root, { lastResult: { ...st.lastResult, verdict: "infra", note: f.why } });
+  }
+  return found;
 }
 
 function openFixCard(root, dir, c, stepName, what, failLog) {
@@ -388,6 +420,7 @@ export async function runWorker(root) {
   // The first start pins the start head: merges on main before it are never blamed. The guard has not
   // checked it, so the first run proves it (lastGreen) before anything can be bisected.
   if (!st.startHead) writeState(root, { startedAt: now(), startHead: head0, lastChecked: null, lastGreen: null, reverted: st.reverted ?? [] });
+  try { reclassifyInfra(root); } catch (e) { log(root, `reclassify failed: ${e?.message ?? e}`); }
   // One guard for the repo: the lease (main-guard/lease status on the root commit) must be free, stale or ours.
   const lease = pin.readLease(dir);
   const ld = pin.leaseDecision(lease, HOST);
@@ -511,6 +544,11 @@ export async function main(args, { root }) {
     for (let i = 0; i < 20 && !workerAlive(root); i++) await new Promise((r) => setTimeout(r, 500));
     console.log(mg.statusLine(readState(root), { alive: workerAlive(root) }));
     return workerAlive(root) ? 0 : 1;
+  }
+  if (sub === "reclassify") {
+    const found = reclassifyInfra(root, { dryRun: args.includes("--dry-run"), say: (s) => { console.log(s); log(root, s); } });
+    if (!found.length) console.log("main-guard reclassify: no red head was an infra refusal");
+    return 0;
   }
   if (sub === "check") {
     const want = args[1];

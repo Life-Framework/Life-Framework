@@ -9,7 +9,8 @@ export const PRE_MOVE = ["e2e", "--pre-move", "502ebf39", "--mission", "playtest
 
 // The full post-merge check, one step per entry. `recheck(failing)` is the cheap command that reruns only what failed.
 export const STEPS = [
-  { name: "build", args: ["build"], recheck: () => ["build"] },
+  // --wait: a build lock held by another worktree queues (900 s) instead of failing at once (#2759).
+  { name: "build", args: ["build", "--wait"], recheck: () => ["build", "--wait"] },
   { name: "suite", args: ["test", "--no-build", "--tier", "all"], recheck: (failing) => (failing.length ? ["test", "--no-build", "--no-cache", "--only", failing.join(",")] : ["test", "--no-build", "--no-cache", "--tier", "all"]) },
   { name: "placement audit", args: ["audit", "placement", "--strict"], recheck: () => ["audit", "placement", "--strict"] },
   { name: "grid placement audit", args: ["audit", "placement", "--grid", "--strict"], recheck: () => ["audit", "placement", "--grid", "--strict"] },
@@ -71,6 +72,62 @@ export function isEnvExit(code) {
 export function judgeRecheck(firstFailed, recheckFailed) {
   if (!firstFailed) return "green";
   return recheckFailed ? "red" : "flake";
+}
+
+// ---- INFRA (#2759): a step the machine refused, not one the commit failed. 2026-11-17 `build` printed only
+// "FAIL lock 'build' is held ... (a headless Workbench build is running in another worktree)", the rerun hit the
+// same lock, and "red twice" plus the bisect reverted #2369 (#2736). A refusal like that is no verdict: no recheck,
+// no bisect, no revert, no red mark; the head is retried on a later tick.
+export const INFRA_REFUSALS = [
+  [/\block\b[^\n]*\bis held\b|\bis held by\b[^\n]*(?:wait budget|gave up)/i, "a lock was held by another job"],
+  [/no free Workbench slot/i, "no free Workbench slot"],
+  [/no pool machine (?:could|with)|no reachable machine/i, "no pool machine took the job"],
+  [/session lane is held|no session lane|no lane within the wait/i, "no free lane"],
+  [/Couldn't build device list|^\s*ENV\s/i, "the Workbench died before compiling"],
+  [/Workbench not found|game install not found/i, "the toolchain is missing on the machine"],
+  [/This is the machine \(Workbench could not register/i, "the Workbench could not refresh the resource database"],
+];
+// The compiler's or the suite's own words: with any of these in the transcript the step failed, whatever else it says.
+export const REAL_FAILURE = /does not compile|Can't compile|SCRIPT\s*\(E\)|\bVME\b|\[LFTEST\] FAIL /i;
+
+// The infra refusal in a transcript, or null. With FAIL (or ENV) lines, every one of them must be a refusal: a lock
+// line beside a real finding is still red. Without any, the whole transcript is searched.
+export function infraReason(text) {
+  const t = String(text ?? "");
+  if (REAL_FAILURE.test(t)) return null;
+  const which = (s) => INFRA_REFUSALS.find(([re]) => re.test(s))?.[1] ?? null;
+  const fails = t.split(/\r?\n/).filter((l) => /^\s*(?:FAIL|ENV)\b/.test(l));
+  if (!fails.length) return which(t);
+  const whys = fails.map(which);
+  return whys.every(Boolean) ? whys[0] : null;
+}
+
+// One step result -> { verdict: ok | env | infra | red, why }. Only red may be rechecked, bisected or reverted.
+// failing: the test names parsed from a suite run (a named failing test is always red). `build` exits 3 when no
+// pool machine took it (tools/lib/wb-route.mjs): infra.
+export function classifyStep(stepName, code, text, failing = []) {
+  if (code === 0) return { verdict: "ok", why: "" };
+  if (isEnvExit(code)) return { verdict: "env", why: `exit ${code} is the machine (logoff, shutdown or budget kill)` };
+  if (failing.length) return { verdict: "red", why: "" };
+  const why = infraReason(text);
+  if (why) return { verdict: "infra", why };
+  if (stepName === "build" && code === 3 && !REAL_FAILURE.test(String(text ?? ""))) return { verdict: "infra", why: "no pool machine took the build (exit 3)" };
+  return { verdict: "red", why: "" };
+}
+
+// The red heads (stage 2 only; a compile red has its own verdict rule) whose recorded run was an infra refusal: the
+// marks the guard set before #2759. heads: { sha: { status, step } }; logsOf(sha, step) -> the transcripts of that
+// step's runs at that head (first run and recheck). Every transcript must be a refusal. -> [{ sha, step, why }]
+export function infraRedHeads(heads, logsOf) {
+  const out = [];
+  for (const [sha, h] of Object.entries(heads ?? {})) {
+    if (h?.status !== "red" || !h.step || h.step === "compile") continue;
+    const texts = logsOf(sha, h.step) ?? [];
+    if (!texts.length) continue;
+    const vs = texts.map((t) => classifyStep(h.step, 1, t));
+    if (vs.every((v) => v.verdict === "infra")) out.push({ sha, step: h.step, why: vs[0].why });
+  }
+  return out;
 }
 
 // Failing test names from a test run's output ([LFTEST] FAIL <name> ..., or the CLI's FAIL lines). The compact
@@ -190,7 +247,7 @@ export const COMPILE = ["ci", "--wb-only", "--compile-only"];
 // short of RAM (tools/lib/wb-gate.mjs ENV_SHORT_CODE): the machine failed, not the scripts.
 // A red verdict needs the compiler's own words in the transcript: any other non-zero exit (a sync that failed, a
 // Workbench that never started; 2026-11-15 an 11 s "exit 1" on lf-cloud) is no verdict, never a revert.
-export const COMPILE_ERROR = /does not compile|Can't compile|SCRIPTs*(E)/i;
+export const COMPILE_ERROR = /does not compile|Can't compile|SCRIPT\s*\(E\)/i;
 export function compileVerdict(code, text = null) {
   if (code === 0) return "ok";
   if (code === 3 || code === 4 || code == null) return "env";
