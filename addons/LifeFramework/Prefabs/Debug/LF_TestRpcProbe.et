@@ -1,0 +1,10 @@
+GenericEntity {
+ ID "D529B2BBD885D624"
+ components {
+  LF_TestRpcProbeComponent "{3D1D38A150728B2B}" {
+  }
+  RplComponent "{70CF059AE8998F4F}" {
+   Enabled 1
+  }
+ }
+}

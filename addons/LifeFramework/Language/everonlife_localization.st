@@ -5446,6 +5446,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Sin bonos activos"
      Comment "Character standing summary when there are no bonuses"
     }
+    CustomStringTableItem "{502AD651193AD12E}" {
+     Id "LF-Level_Far_Any"
+     Target_en_us "You are not experienced enough for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{3AF129B888C991B7}" {
+     Id "LF-Level_Far_Delivery"
+     Target_en_us "Do more runs first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{99637675CD655B38}" {
+     Id "LF-Level_Far_Farmer"
+     Target_en_us "You have not worked the land enough for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{1A467AE1429D59EA}" {
+     Id "LF-Level_Far_Lumberjack"
+     Target_en_us "You have not spent enough time in the forest for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{F468C3116863E4C2}" {
+     Id "LF-Level_Far_Medic"
+     Target_en_us "You are not experienced enough in medicine for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{B9DCBE4AEED66191}" {
+     Id "LF-Level_Far_Miner"
+     Target_en_us "You have not spent enough time mining for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{41FE6820DDF1221C}" {
+     Id "LF-Level_Far_Police"
+     Target_en_us "You are not experienced enough in the force for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{21C91A1344B91226}" {
+     Id "LF-Level_Near_Any"
+     Target_en_us "You are almost experienced enough for this. A little more practice first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{83D47B50E56450B1}" {
+     Id "LF-Level_Near_Delivery"
+     Target_en_us "Nearly there. A few more runs first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{96C6CD7CEE27AED3}" {
+     Id "LF-Level_Near_Farmer"
+     Target_en_us "Nearly there. A little more work in the fields first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{0001301D204BDAFA}" {
+     Id "LF-Level_Near_Lumberjack"
+     Target_en_us "Nearly there. A few more days felling timber first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{CE9DF1FD414FC63E}" {
+     Id "LF-Level_Near_Medic"
+     Target_en_us "Nearly there. A little more practice with patients first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{601CF8826758D265}" {
+     Id "LF-Level_Near_Miner"
+     Target_en_us "Nearly there. A few more shifts digging first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{01E474CC353E1714}" {
+     Id "LF-Level_Near_Police"
+     Target_en_us "Nearly there. A little more time on duty first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
     CustomStringTableItem "{2024E806595907BF}" {
      Id "LF-Level_Promoted"
      Target_en_us "Your record now reads grade %1. Your supervisor has put you down for further training."
@@ -5899,6 +5969,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Search powers"
      Target_es_es "Facultad de registro"
      Comment "Licence name: authority to search"
+    }
+    CustomStringTableItem "{61B7DF5E288DB590}" {
+     Id "LF-License_Refused_Title"
+     Target_en_us "Not yet"
+     Comment "Job-level gate refusal in words, never a number (#2700)."
     }
     CustomStringTableItem "{78705B86BC3B43C0}" {
      Id "LF-License_Unemployed_Desc"

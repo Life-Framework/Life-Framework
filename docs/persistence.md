@@ -365,7 +365,7 @@ posters go too), which resets each switched-off field in the live stores:
 
 | Switch off | Reset |
 |---|---|
-| `keepCarriedGear` | `LF_StorageSnapshot.ClearSlot` on `carried` and `civilian_stash`: every carried snapshot and every duty-desk civilian stash; the body gets the starting loadout, and an officer saved on duty gets the civilian kit at clock-out. The `police_duty` / `medic_duty` kits stay, consistent with the armory book (#2547) |
+| `keepCarriedGear` | `LF_StorageSnapshot.ClearSlot` on `carried` and `civilian_stash`: every carried snapshot and every duty-desk civilian stash; the body gets the starting loadout, and an officer saved on duty gets the civilian kit at clock-out. The `police_duty` / `medic_duty` kits stay, consistent with the armory book (#2547). `LF_ArmoryKits.ClearAllOutstanding` then clears every officer's outstanding serials, since the issued kits went with the carried gear, except a serial still in a kept snapshot (a kit stored in `police_duty`); the 2 h issue cooldown stays as saved (#2621) |
 | `keepCash` | `LF_StorageSnapshot.StripPrefab(<slot>, cash slot)` on `carried`, `civilian_stash`, `police_duty` and `medic_duty` (only the duty slots when gear is off): cash stacks that hold nothing; later items' parent indexes are remapped (#2547) |
 | `keepSurvival` | `LF_PersistenceComponent.ClearSurvivalStats()`: hunger and thirst start full |
 | `keepWanted` | `LF_PlayerAccountManager.ClearAllCharactersWanted()`: every character of every account, republished |

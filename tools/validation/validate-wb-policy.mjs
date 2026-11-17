@@ -17,7 +17,7 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // Rule 1: files that may use wb-lock's acquire functions directly.
-export const LOCK_USERS = new Set(["tools/lib/wb-lock.mjs", "tools/lib/wb-route.mjs", "tools/validation/wb-lock-selftest.mjs", "tools/validation/wb-policy-selftest.mjs"]);
+export const LOCK_USERS = new Set(["tools/lib/wb-lock.mjs", "tools/lib/wb-route.mjs", "tools/validation/wb-lock-selftest.mjs", "tools/validation/rdb-cache-selftest.mjs", "tools/validation/wb-policy-selftest.mjs"]);
 // Rule 2: files that name the executable without launching it (checks, docs of the exe path, the MCP patches).
 export const EXE_NAMERS = new Set([
   "tools/validation/validate-addon-source-isolation.ps1",
