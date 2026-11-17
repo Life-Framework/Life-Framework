@@ -1,0 +1,27 @@
+SCR_DestructibleBuildingEntity : "{AAAAAAAAAAAAAAAA}Prefabs/Structures/Commercial/Fixture/FixtureShop_Base.et" {
+ ID "0000000000000001"
+ components {
+  LF_StoreComponent "{5A4B0B84C86E4845}" {
+   m_sStoreKey "fx_two_storey"
+   m_vBoundaryCenter 2 0 1
+   m_vBoundaryHalf 4 0 6
+   m_aLines {
+    LF_StoreLine "{5D755B170F096342}" {
+     m_ItemPrefab "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et"
+     m_sSlots "1 1 1 | 2 1 1"
+    }
+   }
+  }
+ }
+ {
+  GenericEntity : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+   ID "0000000000000002"
+   coords 1.5 0.2 0
+  }
+  GenericEntity : "{0164749D6EAA4518}Prefabs/Props/Furniture/Bed_01.et" {
+   ID "0000000000000003"
+   coords -1 3.4 2
+   angleY 180
+  }
+ }
+}

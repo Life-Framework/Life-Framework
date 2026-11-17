@@ -8,16 +8,19 @@
 // for that user (the way the box starts Steam). The task is removed again once
 // the process is found; the process keeps running.
 //
-// Only used when interactiveNeeded() is true: Windows, over ssh.
+// Only used when interactiveNeeded() is true: Windows, over ssh (gpuRoute() in tools/lib/gpu-session.mjs decides).
+// With no signed-in desktop session, or one that is disconnected, it throws NoDesktopSession (one clear line) before
+// it registers anything, instead of a task that never starts a process.
 
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { join } from "node:path";
+import { NoDesktopSession, gpuRoute, machineLabel, requireDesktopSession } from "./gpu-session.mjs";
 
 const PWSH = join(process.env.SystemRoot || "C:\\Windows", "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
 
 export function interactiveNeeded() {
-  return process.platform === "win32" && !!process.env.SSH_CONNECTION && process.env.LF_SHOW_WINDOWS !== "1";
+  return gpuRoute() === "desktop-session";
 }
 
 // One Windows command-line argument, quoted the way CommandLineToArgvW reads it.
@@ -63,7 +66,8 @@ export function launchScript(exe, args, cwd, marker, taskName, timeoutSec = 60) 
 
 // Starts exe on the console user's desktop and returns its pid. Throws with the
 // helper's reason when it cannot.
-export function interactiveSpawnDetached(exe, args, { cwd = "", marker, timeoutSec = 60 } = {}) {
+export function interactiveSpawnDetached(exe, args, { cwd = "", marker, timeoutSec = 60, require = requireDesktopSession } = {}) {
+  require(); // throws NoDesktopSession: nobody signed in, or the session is disconnected
   if (!marker) throw new Error("interactiveSpawnDetached needs a marker (a command-line substring unique to this process)");
   const taskName = `LF-Interactive-${randomBytes(4).toString("hex")}`;
   const script = launchScript(exe, args, cwd, marker, taskName, timeoutSec);
@@ -75,6 +79,7 @@ export function interactiveSpawnDetached(exe, args, { cwd = "", marker, timeoutS
   });
   const out = (res.stdout || "").trim().split(/\r?\n/).pop() || "";
   const pid = Number.parseInt(out, 10);
+  if (/error no_desktop_user/.test(out)) throw new NoDesktopSession(`${machineLabel()} has no signed-in desktop session: log in once`);
   if (res.status !== 0 || !pid) throw new Error(`interactive launch failed (${taskName}): ${out || (res.stderr || "").trim() || `exit ${res.status}`}`);
   return pid;
 }

@@ -18,6 +18,8 @@
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
 //   7. burst starts (#1195): N queued runs start together on N free lanes, in queue order, behind the RAM of the
 //      starts in flight; a granted ticket stops blocking; atomic lane locks across racing holders; one snapshot per burst.
+// red-proof 2026-11-17 (pool-budget-lanes, #1700 #1699), each broken alone: with the boot budget flat 30 s (the old budgetsFor) "CoreOnEveron still gets the 30 s boot budget that killed it (#1700)"; with LF_POOL_THIS_LANES ignored (the old loadMachines) "the leg on lf-cloud still sees 2 session lane(s), the router counted 9 (#1699; this PC: 2)"; with withoutAvoided returning every machine "an avoided machine was still ranked"; with a flat 3 s retry "the lane refusal backoff is 3000,3000,3000,3000,3000,3000".
+// red-proof 2026-11-16 (place-probe-pool): with `local: true` back in place.mjs serverRun "probe: the server run goes through the pool and is not hard-local" (place-tool-selftest); with preferRoomy unused "a probe does not take this PC while it has room".
 // red-proof 2026-11-14 (run-overhead rdb): with rdbPlan ignoring staleness (the old syncToSlot) "a stale rdb is sent to a machine that refreshes its own".
 // red-proof 2026-11-14 (run-overhead lane folders), each broken alone: psCheckout without the shared clean "only a shared folder is cleaned after the checkout"; holderConfig with shared = false "remote test lanes do not run in the lane's shared folder".
 // red-proof 2026-11-14 (pool-rt-gc), each broken alone: with the rt gc sort reversed (newest idle first) "rt gc removes the wrong folders or in the wrong order: Life-Framework-rt-b,Life-Framework-rt-a,Life-Framework-rt-oldest"; with the live-lock keep rule off "rt gc removes the wrong folders or in the wrong order: ...oldest,Life-Framework-rt-locked,..." (a locked folder was chosen).
@@ -79,6 +81,9 @@ import { safeRemoveTree } from "../link-safety.mjs";
 import { isolatePool } from "../lib/pool-isolation.mjs";
 import { sessionBase } from "../lib/session-lease.mjs";
 import * as wtLib from "../wt.mjs";
+import { useHermeticGit } from "../lib/selftest-git.mjs";
+
+useHermeticGit(); // no machine git config or identity, no auto-gc beside the scratch repos (tools/lib/selftest-git.mjs)
 
 // ---- Isolation: this selftest never touches the real pool (2026-11-15: an agent reported it "closed live
 // sessions mid-run"). Every acquire runs hygieneGate, which ran the session GC on the REAL
@@ -101,6 +106,8 @@ process.env.LOCALAPPDATA = join(ISO, "home", "AppData", "Local");
 process.env.USERPROFILE = join(ISO, "home");
 delete process.env.LF_SESSION_DIR;
 process.chdir(join(ISO, "cwd"));
+// This PC's real RAM and processes (a Workbench, the user's world editor) must not decide a selftest (pool-ram.mjs).
+process.env.LF_POOL_TEST_FREE_MB = process.env.LF_POOL_TEST_FREE_MB || "12000";
 const guard = isolatePool({ deny: [REAL_HUB, join(REAL_REPO, "tmp", "wt"), REAL_SESSION_BASE], label: "pool-selftest" });
 
 // This PC may really be short of disk; the gate under test is exercised with explicit numbers below.
@@ -357,7 +364,8 @@ try {
     const lane1 = q.lanesFor(lanes, "test")[0];
     const blocked = {};
     check(pool.tryLocal(rdir, lanes, lane1, {}, { freeMb: 900, blocked }) === null && !!blocked.ram, "RAM gate: a second server started with 0.9 GB free");
-    const t1 = pool.tryLocal(rdir, lanes, lane1, { slug: "t" }, { freeMb: 4000 });
+    // the young session lock above counts by its peak (server 0.7 + client 1.2 GB), not the 1 MB the env reserve overrides name
+    const t1 = pool.tryLocal(rdir, lanes, lane1, { slug: "t" }, { freeMb: 6000 });
     check(!!t1 && pool.heldLocalSlot() === t1 && t1.port === 2002, "test lane slot: wrong lock, port, or not recorded as held");
     if (t1) t1.release();
     check(pool.heldLocalSlot() === null, "release did not clear the held slot");
@@ -549,6 +557,12 @@ try {
     delete process.env.LF_POOL_SESSION_IDLE_MIN;
     // (the reap above taskkilled `live`; this holder is a fresh process)
     const live2 = spawn(process.execPath, ["-e", "setTimeout(()=>{},60000)"], { stdio: "ignore", windowsHide: true });
+    // Wait until the holder really runs: a loaded runner can take seconds to start it, and a lock whose pid is
+    // not yet (or no longer) a live process is, by the pool's own rule, a stale lock the next acquirer takes.
+    await new Promise((resolveSpawn, rejectSpawn) => {
+      live2.once("spawn", resolveSpawn);
+      live2.once("error", rejectSpawn);
+    });
     writeFileSync(join(rLockDir, "server-2001.lock"), JSON.stringify({ pid: live2.pid, at: new Date().toISOString(), name: "server-2001", root: join(rdir, "nosuch"), slug: "other", purpose: "session" }));
     const qfile = join(rdir, "tmp", "wt", "pool", "queued.json");
     const tryUp = () => {
@@ -559,8 +573,18 @@ try {
         return "timeout";
       }
     };
-    check(tryUp() === "timeout", "a session request got a held lane");
-    const first = JSON.parse(readFileSync(qfile, "utf8")).retry.at;
+    const heldLock = () => {
+      try {
+        return readFileSync(join(rLockDir, "server-2001.lock"), "utf8");
+      } catch (e) {
+        return `unreadable (${e.code})`;
+      }
+    };
+    // The message names the holder and its lock so a failure on a loaded runner says why the lane was free.
+    const lockBefore = heldLock();
+    const firstTry = tryUp();
+    check(firstTry === "timeout", `a session request got a held lane (holder pid ${live2.pid}, alive ${wtLib.pidAlive(live2.pid)}; lock before: ${lockBefore}; after: ${heldLock()})`);
+    const first = JSON.parse(readFileSync(qfile, "utf8")).retry?.at;
     await new Promise((r) => setTimeout(r, 1100));
     check(tryUp() === "timeout" && JSON.parse(readFileSync(qfile, "utf8")).retry.at === first, "a retried session request did not keep its first age");
     const stale = JSON.parse(readFileSync(qfile, "utf8"));
@@ -781,6 +805,46 @@ try {
   rmSync(join(dir, "tmp", "wt.json"));
   check(pool.resolvePriority(dir) === "normal", "default priority is not normal");
   check(pool.budgetsFor(dir, { name: "local", budgetMultiplier: 1 }, "test only").bootS === 30, "boot budget is not 30 s");
+  // 5c. boot budget by world (#1700): DebugWorld keeps 30 s, a big world (CoreOnEveron streams 1.1M entities) gets room,
+  // a world that timed out gets double, --boot-budget wins, and the pool machine works it out from --world alone.
+  const lm = { name: "local", budgetMultiplier: 1 };
+  check(pool.budgetsFor(dir, lm, "test fast", undefined, { world: "Worlds/DebugWorld/DebugWorld.ent" }).bootS === 30, "DebugWorld lost its small 30 s boot budget");
+  check(pool.budgetsFor(dir, lm, "test fast", undefined, { world: "Worlds/TestLogic/TestLogic.ent" }).bootS === 30 && pool.budgetsFor(dir, lm, "test fast", undefined, { world: "Worlds/GridWorld/GridWorld.ent" }).bootS === 30, "the small test worlds lost their 30 s boot budget");
+  check(pool.budgetsFor(dir, lm, "test fast", undefined, { world: "Worlds/CoreOnEveron/CoreOnEveron.ent" }).bootS >= 150, "CoreOnEveron still gets the 30 s boot budget that killed it (#1700)");
+  check(pool.budgetsFor(dir, { name: "lf-testbox", budgetMultiplier: 2 }, "test fast", undefined, { world: "Worlds/CoreOnEveron/CoreOnEveron.ent" }).bootS === 300, "the machine multiplier does not scale the big-world boot budget");
+  check(q.bootBudgetSeconds([], { world: "Worlds/SomeNewMap/SomeNewMap.ent", machine: "local" }).bootS === q.BIG_WORLD_BOOT_S, "an unknown --world did not get the big-world boot budget");
+  check(q.bootBudgetSeconds([], { world: "{3626CFA069A75D46}Missions/LF_Everon1989_Test.conf", machine: "local" }).world === "LF_Everon1989_Test", "a {GUID}path mission header was not reduced to its name");
+  check(q.bootBudgetSeconds([], { world: "Worlds/CoreOnEveron/CoreOnEveron.ent", machine: "local", override: 400 }).bootS === 400, "--boot-budget does not override");
+  const eveTimeout = [{ purpose: "test fast", machine: "local", world: "Worlds/CoreOnEveron/CoreOnEveron.ent", result: "timeout" }];
+  check(q.bootBudgetSeconds(eveTimeout, { world: "Worlds/CoreOnEveron/CoreOnEveron.ent", machine: "local" }).bootS === 300, "a world that timed out did not get a doubled boot budget");
+  check(q.bootBudgetSeconds(eveTimeout, { world: "Worlds/DebugWorld/DebugWorld.ent", machine: "local" }).bootS === 30 && q.bootBudgetSeconds(eveTimeout, { world: "Worlds/CoreOnEveron/CoreOnEveron.ent", machine: "other" }).bootS === 150, "a timeout loosened another world's or machine's boot budget");
+  check(q.bootBudgetSeconds([{ machine: "local", world: "Worlds/CoreOnEveron/CoreOnEveron.ent", result: "timeout" }, ...Array.from({ length: 5 }, () => ({ machine: "local", world: "Worlds/CoreOnEveron/CoreOnEveron.ent", result: "timeout" }))], { world: "Worlds/CoreOnEveron/CoreOnEveron.ent", machine: "local", base: 400 }).bootS === q.BOOT_CAP_S, "the boot budget has no cap");
+  // 5d. a session leg on a pool machine uses that machine's lanes (#1699): the router sends LF_POOL_THIS_LANES.
+  {
+    const legMachine = { name: "lf-cloud", via: "ssh", lanes: { test: 6, session: 9 } };
+    const env = pool.lanesEnvFor(pool.loadMachines(dir).find((x) => x.via === "local") ? { ...legMachine, lanes: { test: 6, session: 9 } } : legMachine);
+    check(JSON.parse(env).session === 9, "lanesEnvFor does not carry the session lane count");
+    const before = pool.lanesFor(pool.loadMachines(dir).find((x) => x.via === "local"), "session").length;
+    process.env[pool.LANES_ENV] = env;
+    try {
+      const mine = pool.loadMachines(dir).find((x) => x.via === "local");
+      check(pool.lanesFor(mine, "session").length === 9 && pool.lanesFor(mine, "test").length === 6, `the leg on lf-cloud still sees ${pool.lanesFor(mine, "session").length} session lane(s), the router counted 9 (#1699; this PC: ${before})`);
+      check(pool.lanesFor(mine, "session").map((l) => l.port).join() !== pool.lanesFor(mine, "session").slice(0, 2).map((l) => l.port).join(), "the nine session lanes have no ports of their own");
+      process.env[pool.LANES_ENV] = "not json";
+      check(pool.lanesFor(pool.loadMachines(dir).find((x) => x.via === "local"), "session").length === before, "a broken LF_POOL_THIS_LANES changed the lane count");
+    } finally {
+      delete process.env[pool.LANES_ENV];
+    }
+    check(pool.lanesFor(pool.loadMachines(dir).find((x) => x.via === "local"), "session").length === before, "LF_POOL_THIS_LANES leaked past its test");
+  }
+  // 5e. a machine that refused the request is not asked again at once, and the refusals back off (#1699).
+  {
+    const ms = [{ name: "local" }, { name: "lf-cloud" }];
+    check(q.withoutAvoided(ms, new Set(["lf-cloud"])).map((m) => m.name).join() === "local", "an avoided machine was still ranked");
+    check(q.withoutAvoided(ms, new Set(["lf-cloud", "local"])).length === 2 && q.withoutAvoided(ms, undefined).length === 2, "avoiding every machine left none to ask");
+    const steps = [1, 2, 3, 4, 5, 9].map((n) => q.laneRefusalBackoffMs(n));
+    check(steps.join() === "3000,6000,12000,24000,48000,60000", `the lane refusal backoff is ${steps.join()}`);
+  }
   // A pool entry whose "hostname" is this machine's is the local machine there (the box's own lanes), the PC's entry is dropped.
   writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
   const selfView = pool.loadMachines(dir);
@@ -828,7 +892,7 @@ const dir0 = () => {
   // The 15 GB laptop with one 2-client session up and 2.8 GB free: a second full 2-client session would
   // breach the floor; a lowspec 1-client one fits once 4.5 GB is free.
   const v2 = pool.remoteSessionVerdict(laptop, st, settings, { clients: 2, profile: "full" });
-  check(!v2.ok && v2.lane && /would be under/.test(v2.ram) && v2.needMb === 3800, `the laptop was over-committed by a second 2-client session (${JSON.stringify(v2)})`);
+  check(!v2.ok && v2.lane && /would be under/.test(v2.ram) && v2.needMb === 4600, `the laptop was over-committed by a second 2-client session (${JSON.stringify(v2)})`);
   check(pool.remoteSessionVerdict(laptop, { ...st, freeMb: 4500 }, settings, { clients: 1, profile: "lowspec" }).ok, "a lowspec 1-client session that fits the laptop was refused");
   check(pool.remoteSessionVerdict(laptop, null, settings).down === true, "an unreadable laptop is not reported down");
   const allBusy = { ...st, locks: { "server-2001": { pid: 1, alive: true }, "server-2011": { pid: 2, alive: true }, "server-2021": { pid: 3, alive: true } } };
@@ -840,7 +904,7 @@ const dir0 = () => {
   const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
   const hc = pool.holderConfig(tdir, laptop, snap, { purpose: "test only", settings });
   check(hc.slots.map((x) => x.lock).join() === "server-test-1,server-test-2,server-test-3", `remote tests do not try every test lane (${hc.slots.map((x) => x.lock).join()})`);
-  check(hc.ram?.floorMb === 1500 && hc.ram.locks.length === 6 && hc.ram.reserveMb === 0, "the holder carries no RAM gate");
+  check(hc.ram?.floorMb === 1500 && hc.ram.locks.length === 6 && hc.ram.reserveMb === 800, "the holder carries no RAM gate (a test reserves its server peak)");
   check(pool.holderConfig(tdir, laptop, snap, { slots: 0, purpose: "session", settings }).slots.length === 0, "a sync-only holder takes a lock");
   rmSync(tdir, { recursive: true, force: true });
   // The holder's RAM gate itself, in PowerShell, against a fake lock dir.
@@ -1190,7 +1254,7 @@ const dir0 = () => {
     check(starved.every((r) => r.room === false), "a machine under the floor was reported to have room");
     const gate = (freeMb, blocked = {}) => pool.tryLocal(mroot, { ...local, lanes: null, slots: 1 }, { lock: "server-test-1", index: 1, port: 2002 }, { slug: "starved", purpose: "test only" }, { freeMb, blocked });
     const bl = {};
-    check(gate(400, bl) === null && !!bl.ram && bl.needMb === stt.minFreeMb, "the first local lane started a test at 0.4 GB free");
+    check(gate(400, bl) === null && !!bl.ram && bl.needMb === stt.minFreeMb + stt.testReserveMb, "the first local lane started a test at 0.4 GB free");
     const roomy = gate(4000);
     check(!!roomy, "the first local lane refused a test with 4 GB free");
     roomy?.release();
@@ -1246,6 +1310,12 @@ const dir0 = () => {
       check(tb.remoteFilePlan("C:/LF/x").uploads.length === 0 && tb.remoteFilePlan("C:/LF/x").env.length === 0, "a run without files got file steps");
       // the same any-choice that takes a roomy remote for the suite takes it for the audit
       check(names(pool.resolveMachines(mroot, { mode: "any" })) === "local,lf-testbox" && order(400, 6000) === "lf-testbox,local", "the audit's any-choice does not pick the machine with room");
+      // The placement probe (tools/place/place.mjs serverRun) asks for "any, this PC first while it has room":
+      // never --local. Roomy PC goes first even when the laptop scores higher; a starved PC goes after the laptop.
+      check(pa.auditTestArgs({ preferLocal: true }).includes("--prefer-local") && !pa.auditTestArgs({ preferLocal: true }).includes("--local"), `the probe's test args pin it to this PC or drop the pool (${pa.auditTestArgs({ preferLocal: true }).join(" ")})`);
+      check(order(2500, 6000, { preferLocal: true }) === "local,lf-testbox", `a probe does not take this PC while it has room (${order(2500, 6000, { preferLocal: true })})`);
+      check(order(400, 6000, { preferLocal: true }) === "lf-testbox,local", `a probe stays on this PC under the RAM floor (${order(400, 6000, { preferLocal: true })})`);
+      check(JSON.stringify(q.preferRoomy([{ name: "b", room: true }, { name: "a", room: true }, { name: "c", room: false }], "a").map((r) => r.name)) === '["a","b","c"]' && JSON.stringify(q.preferRoomy([{ name: "b", room: true }, { name: "a", room: false }], "a").map((r) => r.name)) === '["b","a"]', "preferRoomy does not move only a roomy PC to the front");
     }
     rmSync(mroot, { recursive: true, force: true });
   }

@@ -39,7 +39,7 @@ Reference:
 
 ## Engineering reference
 
-- [Performance budget](architecture/performance.md) - the 128-player cost budget, the `perf/budget-128` gate, `tools\cli perf`, measured numbers.
+- [Performance budget](architecture/performance.md) - the building and place budget (lights, shadow casters, entities, physics; sourced and measured; `tools\cli perf building`) and the 128-player server budget (`perf/budget-128`, `tools\cli perf`).
 - [Core vs pack](architecture/core-vs-pack.md) — what goes in the core addon and what goes in the flagship pack; [inventory](architecture/core-pack-inventory.md).
 - Record shapes (M3, #746): [vehicle state](architecture/record-shape-vehicle.md) (#752a) and [held ground](architecture/record-shape-held-ground.md) (#751): the sidecar payloads, their fields, save-version plan and tests.
 - [Features](features.md) — implemented behavior and fragile paths.

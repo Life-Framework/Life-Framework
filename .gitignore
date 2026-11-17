@@ -22,6 +22,8 @@ tools/mcp/*/
 # World Editor tooling for the maintainer (docs/tooling/npc-dresser.md).
 addons/LifeFramework/Scripts/WorkbenchGame/*
 !addons/LifeFramework/Scripts/WorkbenchGame/LFTools/
+# LF Fast Play plugin (docs/tooling/fast-play.md)
+!addons/LifeFramework/Scripts/WorkbenchGame/LFFastPlay/
 addons/LF_Everon1989/Scripts/WorkbenchGame/
 
 # Editor temporary files

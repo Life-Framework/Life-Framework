@@ -95,25 +95,33 @@ export function walkable(laneResults) {
 async function runSlug(args) {
   const h = await import("../harness.mjs");
   const { loadWorld } = await import("../layers.mjs");
-  const { readChildren } = await import("../../tools/buildings/pipeline/store-slots.mjs");
+  const { buildingFiles, readChildren } = await import("../../tools/buildings/pipeline/store-slots.mjs");
   const { loadScenario, runScenario, scenarioProblems, toWorld } = await import("../../tools/buildings/pipeline/scenario.mjs");
   const slug = flag(args, "--slug");
   const spec = JSON.parse(readFileSync(join(ROOT, "tools", "buildings", slug, "spec.json"), "utf8"));
   const addonDir = join(ROOT, "addons", spec.addon || "LifeFramework");
-  const prefabs = [spec.store?.prefab, spec.name].filter(Boolean).map((n) => `${spec.prefab_dir}/${n}.et`);
-  const world = loadWorld(ROOT);
+  const files = buildingFiles(spec);
+  const prefabs = [files.store, files.building].filter(Boolean);
   const named = flag(args, "--entity");
-  const place = world.find((e) => (named ? e.name === named : prefabs.some((p) => (e.prefab || "").endsWith(p))));
+  const match = (e) => (named ? e.name === named : prefabs.some((p) => (e.prefab || "").endsWith(p)));
+  // A kit in a grid claim (core GridWorld or the pack's Everon1989Grid) is not in the default world's layers.
+  const { gridLayerDirs } = await import("../../tools/lib/worlds.mjs");
+  const place = loadWorld(ROOT).find(match) || loadWorld(ROOT, gridLayerDirs(ROOT)).find(match);
   if (!place) {
     console.log(`building-proof: FAIL  ${named || prefabs.join(" or ")} is not placed in any world layer (tools\\cli place ground)`);
     return 1;
   }
   const entity = place.name;
-  const doors = readChildren(readFileSync(join(addonDir, spec.prefab_dir, `${spec.name}_Base.et`), "utf8")).filter((c) => /^DoorSet/.test(c.name));
+  // A building made from a vanilla one (spec.vanilla) hangs its door sets on the model's sockets, with no
+  // coords to walk to; they are the base game's own doors, so the door walk is skipped and the scenario proves the rest.
+  if (spec.vanilla) console.log(`doors: skipped, ${basename(files.building)} keeps the vanilla door sets on their sockets`);
+  const doors = spec.vanilla ? [] : readChildren(readFileSync(join(addonDir, files.base), "utf8")).filter((c) => /^DoorSet/.test(c.name));
   const box = (flag(args, "--box") || "").split(",").map(Number);
   const [fw, fd] = spec.budget?.footprint_m || [12, 10];
   const [x0, x1, z0, z1, ht] = box.length === 5 && box.every((v) => !Number.isNaN(v)) ? box : [-fw / 2, fw / 2, -fd / 2, fd / 2, spec.budget?.height_m || 5];
   const out = resolve(flag(args, "--out", join(ROOT, "tmp", "buildings", slug, "proof")));
+  // A capture name takes letters, digits and underscores only; a slug can have dashes (gun-store).
+  const prefix = `bp_${slug.replace(/\W/g, "_")}`;
   mkdirSync(out, { recursive: true });
   const scenario = args.includes("--no-scenario") ? null : loadScenario(ROOT, slug);
   if (scenario) {
@@ -151,7 +159,7 @@ async function runSlug(args) {
   const capture = (name, look, from) => {
     const [x, y, z] = toWorld(place, look);
     const [ox, oy, oz] = toWorld(place, from, true);
-    const r = on({ verb: "capture", mode: "world", name: `bp_${slug}_${name}`, x, y, z, ox, oy, oz }, 30000);
+    const r = on({ verb: "capture", mode: "world", name: `${prefix}_${name}`, x, y, z, ox, oy, oz }, 30000);
     keep(name, r);
     return r;
   };
@@ -222,14 +230,14 @@ async function runSlug(args) {
       const f = newestLog(join(sessionPaths(dir).server, "logs"));
       return f ? readFileSync(f, "utf8") : "";
     };
-    scen = runScenario(scenario, { on, wait, parseState, serverLog, shot: keep, place, entity, prefix: `bp_${slug}` });
+    scen = runScenario(scenario, { on, wait, parseState, serverLog, shot: keep, place, entity, prefix });
     fails.push(...scen.fails);
   }
 
   console.log(`doors: ${results.map((r) => `${r.door} offered=${+r.offered} open=${+r.opened} walkable=${+r.walkable} close=${+r.closed}`).join("; ") || "none in the base prefab"}`);
   console.log(`pictures (${pictures.length}) in ${out}: ${pictures.map((p) => basename(p)).join(", ")}`);
   if (scenario) console.log(`scenario: ${scenario.steps.length} step(s), ${(scenario.checks || []).length} check(s), ${(scenario.log || []).length} log line(s)`);
-  if (!doors.length) fails.push(`${spec.name}_Base.et has no door sets`);
+  if (!doors.length && !spec.vanilla) fails.push(`${basename(files.base)} has no door sets`);
   for (const f of fails) console.log(`FAIL  ${f}`);
   console.log(fails.length ? "building-proof: FAIL" : `building-proof: PASS (${doors.length} door(s) open and walkable, ${pictures.length} pictures${scenario ? ", the scenario passed" : ""})`);
   return fails.length ? 1 : 0;

@@ -29,6 +29,9 @@ class LF_PoliceApplyAction : ScriptedUserAction
 		if (!LF_Systems.IsEnabled("Police"))
 			return false;
 
+		if (!LF_Workplace.IsPoliceOrUnbound(GetOwner()))
+			return false;
+
 		return !LF_AccountStateBits.IsOnRoster(LF_AccountReplication.GetState(user));
 	}
 
@@ -62,6 +65,9 @@ class LF_PoliceReviewAction : ScriptedUserAction
 	override bool CanBeShownScript(IEntity user)
 	{
 		if (!LF_Systems.IsEnabled("Police"))
+			return false;
+
+		if (!LF_Workplace.IsPoliceOrUnbound(GetOwner()))
 			return false;
 
 		PlayerController pc = GetGame().GetPlayerController();

@@ -177,16 +177,16 @@ $grp SplineShapeEntity {
       coords 34.939 -24.937 -19.517
       SplinePoints {
        ShapePoint "{52346539D885C296}" {
-        Position 0.893 -0 4.894
+        Position 0.893 0 4.894
        }
        ShapePoint "{52346539D885C1A2}" {
-        Position 0.893 -0 -39.606
+        Position 0.893 0 -39.606
        }
        ShapePoint "{F212DA47102C8D68}" {
-        Position 12.393 -0 -45.106
+        Position 12.393 0 -45.106
        }
        ShapePoint "{6ADEF2AE1D97B831}" {
-        Position 58.393 -0 -45.106
+        Position 58.393 0 -45.106
        }
       }
       IsClosedSpline 0
@@ -385,6 +385,7 @@ $grp SplineShapeEntity {
     {
      RoadEntity {
       ID "556C6554AF23997E"
+      coords 0 0 1.252
       SplinePoints {
        ShapePoint "{B27538A0C30196D9}" {
         Position 0 0 0

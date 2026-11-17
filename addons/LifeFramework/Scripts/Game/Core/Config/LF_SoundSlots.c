@@ -342,3 +342,20 @@ class LF_SoundSlots
 		}
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_SoundSlots's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_SoundSlots_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_SoundSlots_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_SoundSlots";
+	}
+
+	override void Apply()
+	{
+		LF_SoundSlots.ResetStatics();
+	}
+}

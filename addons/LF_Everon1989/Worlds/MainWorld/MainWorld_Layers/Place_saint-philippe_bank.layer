@@ -1,0 +1,78 @@
+GenericEntity Fit_saint_philippe_bank_Place {
+ components {
+  LF_PlaceComponent "{9417497109F2DFA6}" {
+   m_sKind "Bank"
+   m_sId "saint-philippe.bank"
+  }
+  LF_FittedBuildingComponent "{AEAE14321BDDC0BD}" {
+  }
+ }
+ coords 4368.8 13.1 10655.9
+}
+GenericEntity Fit_saint_philippe_bank_Place_BankVault {
+ components {
+  LF_PlaceComponent "{E78A833484AC8843}" {
+   m_sKind "BankVault"
+   m_sId "saint-philippe.bank"
+  }
+ }
+ coords 4368.8 13.1 10655.9
+}
+GenericEntity Fit_saint_philippe_bank_Place_BankCounter {
+ components {
+  LF_PlaceComponent "{7A3C18C63101C808}" {
+   m_sKind "BankCounter"
+   m_sId "saint-philippe.bank"
+  }
+ }
+ coords 4368.8 13.1 10655.9
+}
+GenericEntity Fit_saint_philippe_bank_bank_furniture_01 : "{054FFEA0FE082CAE}Prefabs/Buildings/Bank/Furniture/Bank_furniture_01.et" {
+ coords 4368.8 12 10655.9
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_lf_bank_vault : "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et" {
+ components {
+  LF_BankVaultComponent "{3B1F6C0A7D2E4858}" {
+   m_sVaultId "bank_vault"
+  }
+ }
+ coords 4359.46 12.007 10650.32
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_lf_bank_vault_small_roof : "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay/BankVault/LF_BankVault_SmallRoof.et" {
+ coords 4359.518 14.907 10650.674
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_lf_money_bag : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
+ components {
+  LF_PlaceComponent "{24218E86E931E2E7}" {
+   m_sKind "BankBag"
+   m_sId "bank_vault"
+  }
+ }
+ coords 4359.218 12.497 10652.295
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ components {
+  LF_AlarmMountComponent "{9ACA0BDAD2FE2665}" {
+   m_vOffset 0 0.167 0.065
+   m_fReach 12
+  }
+ }
+ coords 4370.101 15 10648.584
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "bank"
+   m_vRimColor 0.85 0.68 0.3
+   m_vPaintColor 0.42 0.07 0.07
+   m_vTextColor 0.92 0.78 0.42
+  }
+ }
+ coords 4372.584 16.1 10649.702
+ angleY 173
+}

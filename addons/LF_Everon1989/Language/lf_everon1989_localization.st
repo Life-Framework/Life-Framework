@@ -24,6 +24,76 @@ StringTable {
      Target_en_us "Civil Registry of Everon, Residents on File"
      Comment "Character pick title on arrival, shown when an account may hold more than one character. A 1989 registry sheet."
     }
+    CustomStringTableItem "{3E9F5343A58B4851}" {
+     Id "LF-Dialogue_CafeOwner_Bye"
+     Target_en_us "Come back when you are hungry. Or lonely. It is the same to me."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{25858095EC3BC26B}" {
+     Id "LF-Dialogue_CafeOwner_Clerk"
+     Target_en_us "Before anything else, see the town clerk at the desk on the square. He keeps the register. A person who is not in it is no one at all, here."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{CF6D5EEB9B023A27}" {
+     Id "LF-Dialogue_CafeOwner_Greet"
+     Target_en_us "Come in, come in. The coffee is hot. You are new here, I can tell. Nobody walks that slowly who has lived here long."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{73190CD9164F1A41}" {
+     Id "LF-Dialogue_CafeOwner_Handbook"
+     Target_en_us "And read the handbook. It is short. It tells you what the town expects of you, and what the police will not forgive."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{CCB81BA7119C635E}" {
+     Id "LF-Dialogue_CafeOwner_Move"
+     Target_en_us "When they brought us here, the town did not know what to say. So a neighbour brought bread, and nobody asked a single question. I still use the cups. Every day. Someone has to."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{29B0A09C06BED190}" {
+     Id "LF-Dialogue_CafeOwner_SayAskClerk"
+     Target_en_us "Who should I see first?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{6DCE0D9D87E35551}" {
+     Id "LF-Dialogue_CafeOwner_SayAskHandbook"
+     Target_en_us "Is there a guide to the town?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{B866FA8A45B03DF1}" {
+     Id "LF-Dialogue_CafeOwner_SayAskHelp"
+     Target_en_us "Where should I start?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{ABCADE5737CA86E0}" {
+     Id "LF-Dialogue_CafeOwner_SayAskMove"
+     Target_en_us "What was the move like?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{F6AB13DFF09CF8A6}" {
+     Id "LF-Dialogue_CafeOwner_SayAskWork"
+     Target_en_us "Where can I find work?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{B0261E2F6F14A07D}" {
+     Id "LF-Dialogue_CafeOwner_SayAskZone"
+     Target_en_us "Where did you come from?"
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{206E3B9DD2FBF559}" {
+     Id "LF-Dialogue_CafeOwner_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the cafe_owner NPC."
+    }
+    CustomStringTableItem "{A599A26E0012B1F7}" {
+     Id "LF-Dialogue_CafeOwner_Work"
+     Target_en_us "If you need work, ask at the post office. They always need couriers. Walk fast, keep the parcels dry, and you will be paid by the end of the day."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{CFA276D036C02296}" {
+     Id "LF-Dialogue_CafeOwner_Zone"
+     Target_en_us "I came out of the zone. They told us three days. Pack what you can carry, they said, and you will be back by Friday. I took the kettle and my mother's cups. That was three years ago."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
     CustomStringTableItem "{9BFB48FA2968AE5D}" {
      Id "LF-Dialogue_ClerkEveron_AboutTown"
      Target_en_us "Everon is a small island. People here know each other, and they remember faces. Stay honest and you will do well."
@@ -69,6 +139,51 @@ StringTable {
      Target_en_us "There. Your name is in the register, and this is your identity card. Keep it on you. The police may ask to see it."
      Comment "Pack patch of the clerk dialogue's line register (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{2FC26FA7E5CB2E7E}" {
+     Id "LF-Dialogue_ClerkEveron_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{531F8A96028F39C5}" {
+     Id "LF-Dialogue_ClerkEveron_SayGoon"
+     Target_en_us "Go on, please."
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{0DB420D21A350315}" {
+     Id "LF-Dialogue_ClerkEveron_SayLost"
+     Target_en_us "I have lost my identity card."
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{3AC37252874BE98F}" {
+     Id "LF-Dialogue_ClerkEveron_SayNew"
+     Target_en_us "I am new in Everon."
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{2F6724F43C01C743}" {
+     Id "LF-Dialogue_ClerkEveron_SayNext"
+     Target_en_us "What should I do now?"
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{2267C33EA00A76DD}" {
+     Id "LF-Dialogue_ClerkEveron_SayReady"
+     Target_en_us "I understand. What now?"
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{ACD9BE6C92AE3B95}" {
+     Id "LF-Dialogue_ClerkEveron_WelcomePapers"
+     Target_en_us "Welcome to Everon. First, your papers. Form R-89 is the relocation form, and I will file it under your name. Your identity card comes with it."
+     Comment "Pack patch of the clerk dialogue's line welcome_papers (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{3C9568D582BE124D}" {
+     Id "LF-Dialogue_ClerkEveron_WelcomeRoom"
+     Target_en_us "You sleep at the hostel tonight. The dormitory is upstairs, and any free bunk is yours. It is plain, but it is warm."
+     Comment "Pack patch of the clerk dialogue's line welcome_room (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{001D205C4B5E0B1A}" {
+     Id "LF-Dialogue_ClerkEveron_WelcomeTown"
+     Target_en_us "The town expects honest work and quiet nights. Greet your neighbours, pay what you owe, and ask the police if you are ever lost."
+     Comment "Pack patch of the clerk dialogue's line welcome_town (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
     CustomStringTableItem "{B938C64F01A44D1B}" {
      Id "LF-Dialogue_ClerkEveron_WorkErrand"
      Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
@@ -79,10 +194,240 @@ StringTable {
      Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
+    CustomStringTableItem "{29B583DBF009AF66}" {
+     Id "LF-Dialogue_NightShift_AboutMove"
+     Target_en_us "They gave us one bus and one suitcase each. The island is quiet, and the quiet is hard at first. But nobody asks you to leave in the middle of dinner."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{3A926B5A26D83CD5}" {
+     Id "LF-Dialogue_NightShift_AboutWork"
+     Target_en_us "If you need wages, read the town board on the square. It lists who is hiring. And the clerk's office has a bed upstairs, for the first nights. Ask the clerk."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{5844A7CD27076B26}" {
+     Id "LF-Dialogue_NightShift_AboutZone"
+     Target_en_us "I worked near the Zone before they moved us. Twelve kilometres from the reactor. They told us three days. That was three years ago. I still keep my house key."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{6F1F8D8B72E42914}" {
+     Id "LF-Dialogue_NightShift_Bye"
+     Target_en_us "Good night. Walk safe."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{B3BFC4DA71312BAC}" {
+     Id "LF-Dialogue_NightShift_Greet"
+     Target_en_us "Evening. Or morning, I lose track on nights. You are one of the new families, yes? Sit if you like."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{D435BA49E015D84F}" {
+     Id "LF-Dialogue_NightShift_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{88229E39461B49AD}" {
+     Id "LF-Dialogue_NightShift_SayMove"
+     Target_en_us "How was the move?"
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{BCCC43C3AC789D1A}" {
+     Id "LF-Dialogue_NightShift_SayWork"
+     Target_en_us "Is there work for me?"
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{DE78ADF43EDC7C40}" {
+     Id "LF-Dialogue_NightShift_SayZone"
+     Target_en_us "You worked near the Zone?"
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{AA83C29649EB0D96}" {
+     Id "LF-Dialogue_OldMan_Bye"
+     Target_en_us "Go well. Come and sit with me again some time."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{EE06F137A9E223A3}" {
+     Id "LF-Dialogue_OldMan_Greet"
+     Target_en_us "Sit down a minute. Everyone is in a hurry these days. I only watch the square."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{22873025BE77ACB7}" {
+     Id "LF-Dialogue_OldMan_Move"
+     Target_en_us "The first winter was hard. But the island people brought us wood and soup, and nobody asked what we had left behind. That is how you start again."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{EC42A63E9256573A}" {
+     Id "LF-Dialogue_OldMan_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
+    CustomStringTableItem "{98D9AB69AB1E7F3A}" {
+     Id "LF-Dialogue_OldMan_SayMove"
+     Target_en_us "What was the move like?"
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
+    CustomStringTableItem "{2FA08445AB21D4F7}" {
+     Id "LF-Dialogue_OldMan_SayStart"
+     Target_en_us "Where should I start here?"
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
+    CustomStringTableItem "{6D010E5A1CFA729E}" {
+     Id "LF-Dialogue_OldMan_SayZone"
+     Target_en_us "Do you remember the zone?"
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
+    CustomStringTableItem "{8670E0234E8438C0}" {
+     Id "LF-Dialogue_OldMan_Start"
+     Target_en_us "Read the town board on the square. It shows where everything is. Then see the clerk, right beside it. He was kind to us, and he will be kind to you."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{B7F1FD0AA8489C85}" {
+     Id "LF-Dialogue_OldMan_Zone"
+     Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{5AFB8F50443E2D63}" {
+     Id "LF-Handbook_Everon_CrimeBody1"
+     Target_en_us "Hold up a shop, break into a vault or force a door and the police are told. Your wanted level goes up, and they come looking for you. You leave marks at the scene, and officers read them."
+     Comment "Everon handbook page crime, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{EA9B1ED2642F6852}" {
+     Id "LF-Handbook_Everon_CrimeBody2"
+     Target_en_us "A new arrival gets a short grace: no hold-up, robbery or arrest at first. After that you carry the risk."
+     Comment "Everon handbook page crime, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{9492A35C04271AAC}" {
+     Id "LF-Handbook_Everon_CrimeBody3"
+     Target_en_us "If someone points a gun at you, do as they say and report it afterwards. Your life comes first."
+     Comment "Everon handbook page crime, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{2E21092E3FE3A5D6}" {
+     Id "LF-Handbook_Everon_CrimeTitle"
+     Target_en_us "If you turn to crime"
+     Comment "Everon handbook page title: crime (#1776)."
+    }
+    CustomStringTableItem "{F3C602EA0D64403A}" {
+     Id "LF-Handbook_Everon_JobsBody1"
+     Target_en_us "Anyone may take courier work. Each run you finish counts. After a few, the post office offers fuel delivery, and after more than that, taxi work."
+     Comment "Everon handbook page jobs, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{9CC785B4852BA4F6}" {
+     Id "LF-Handbook_Everon_JobsBody2"
+     Target_en_us "The town board says who else is hiring. You sign up for a job at its own workplace, so go there in person."
+     Comment "Everon handbook page jobs, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{3BDC79E9DFB1A298}" {
+     Id "LF-Handbook_Everon_JobsBody3"
+     Target_en_us "If you are out of work and have little in the bank, the town pays a small benefit now and then."
+     Comment "Everon handbook page jobs, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{A92AF296789467C1}" {
+     Id "LF-Handbook_Everon_JobsTitle"
+     Target_en_us "Work in town"
+     Comment "Everon handbook page title: jobs (#1776)."
+    }
+    CustomStringTableItem "{9F56752F9C3CF3D7}" {
+     Id "LF-Handbook_Everon_LawBody1"
+     Target_en_us "Guns need a firearm permit. Apply at the licence desk. The permit takes some hours to be made ready, so come back to the desk to collect it. You are refused if the police want you, and the police can take a permit away."
+     Comment "Everon handbook page find-the-rules, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{1784EE3B13AB3D8B}" {
+     Id "LF-Handbook_Everon_LawBody2"
+     Target_en_us "The gun counters sell rifles, pistols and ammunition to permit holders only. Scopes, holsters and pouches are sold to anyone."
+     Comment "Everon handbook page find-the-rules, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{2EEEF5F2CB009486}" {
+     Id "LF-Handbook_Everon_LawBody3"
+     Target_en_us "Do not hurt anyone without a reason. If you are being arrested or robbed, see it through: leaving to dodge it is not allowed. When you die you forget what led to it, and you do not go after the killer."
+     Comment "Everon handbook page find-the-rules, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{0E88AD985C4C9CAF}" {
+     Id "LF-Handbook_Everon_LawBody4"
+     Target_en_us "Settle quarrels in person and in good faith. If that fails, ask staff."
+     Comment "Everon handbook page find-the-rules, paragraph 4 (#1776)."
+    }
+    CustomStringTableItem "{4EE993381103BF87}" {
+     Id "LF-Handbook_Everon_LawTitle"
+     Target_en_us "The law and the permit"
+     Comment "Everon handbook page title: find-the-rules (#1776)."
+    }
+    CustomStringTableItem "{70DD5D19ED5135AB}" {
+     Id "LF-Handbook_Everon_MedicBody1"
+     Target_en_us "The hospital treats the sick and the hurt. If you go down and no one reaches you, you wake up in the hospital with a treatment bill. Pay it in cash at the hospital desk."
+     Comment "Everon handbook page medic, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{8D9AF0769206C83F}" {
+     Id "LF-Handbook_Everon_MedicBody2"
+     Target_en_us "Medics treat people in the street and admit them to the ward. A medic needs an ambulance service ID, issued at the hospital, before going on duty. Only licensed medics may take the morphine and saline from the medic stores."
+     Comment "Everon handbook page medic, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{325BC1AC6E7EF57B}" {
+     Id "LF-Handbook_Everon_MedicBody3"
+     Target_en_us "The hospital till has an alarm. Rob it and the police are called."
+     Comment "Everon handbook page medic, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{426263BFDA51EA0F}" {
+     Id "LF-Handbook_Everon_MedicTitle"
+     Target_en_us "The hospital"
+     Comment "Everon handbook page title: medic (#1776)."
+    }
+    CustomStringTableItem "{2E69FDF258F92E02}" {
+     Id "LF-Handbook_Everon_ParcelBody1"
+     Target_en_us "Your first work is at the post office, down the street from the square. At the counter, take courier work and pick up a parcel. Carry it to the drop at the east end of the street, then complete the run."
+     Comment "Everon handbook page parcel, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{BB55531494D5F1F9}" {
+     Id "LF-Handbook_Everon_ParcelBody2"
+     Target_en_us "You are paid in cash. Cash in your pocket is lost if you die. Money in the bank is not, so put some in the cash machine on the bank wall, next to the post office."
+     Comment "Everon handbook page parcel, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{A3185217FFC81634}" {
+     Id "LF-Handbook_Everon_ParcelBody3"
+     Target_en_us "The town board on the square shows where the shops, the car lot, the police station and the organization office are."
+     Comment "Everon handbook page parcel, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{4C35BA08743F0DB1}" {
+     Id "LF-Handbook_Everon_ParcelTitle"
+     Target_en_us "Your first wages"
+     Comment "Everon handbook page title: parcel (#1776)."
+    }
+    CustomStringTableItem "{632C6A7B04F1EB50}" {
+     Id "LF-Handbook_Everon_PoliceBody1"
+     Target_en_us "The police keep order on Everon. An officer may ask to see your identity card, so keep it on you. Do as you are told and make any complaint afterwards."
+     Comment "Everon handbook page police, paragraph 1 (#1776)."
+    }
+    CustomStringTableItem "{807BD18850F35A3F}" {
+     Id "LF-Handbook_Everon_PoliceBody2"
+     Target_en_us "Officers can fine you, arrest you and send you to jail. The more crime you have on your record, the harder they look for you."
+     Comment "Everon handbook page police, paragraph 2 (#1776)."
+    }
+    CustomStringTableItem "{10EF539D0FA66DC7}" {
+     Id "LF-Handbook_Everon_PoliceBody3"
+     Target_en_us "To join the force you need an approved application. Ask at the police station. Officers start as cadets and are paid for the time they are on duty."
+     Comment "Everon handbook page police, paragraph 3 (#1776)."
+    }
+    CustomStringTableItem "{796C2DE8FB4CBE0D}" {
+     Id "LF-Handbook_Everon_PoliceTitle"
+     Target_en_us "The police"
+     Comment "Everon handbook page title: police (#1776)."
+    }
     CustomStringTableItem "{6A9E43847B4BBA58}" {
      Id "LF-ID_CardTitle"
      Target_en_us "Republic of Everon, Identity Card"
      Comment "Title of the ID card view another player holds up."
+    }
+    CustomStringTableItem "{9F32BE4E1F1F7320}" {
+     Id "LF-Item_TouristMap_Description"
+     Target_en_us "A printed tourist and road map of the island. Studying it pencils every place a visitor might look for onto your own map."
+     Comment "Tourist map (#2242): the item's inventory description."
+    }
+    CustomStringTableItem "{27B0683382098CD2}" {
+     Id "LF-Item_TouristMap_Name"
+     Target_en_us "Tourist map of Everon"
+     Comment "Tourist map (#2242): the item's name in the inventory."
+    }
+    CustomStringTableItem "{CD045ABAD59FC6B4}" {
+     Id "LF-MapPoi_Fence"
+     Target_en_us "Fence"
+     Comment "Map POI kind name (#2230): the fence. A hidden kind, never public; shown only as a personal pencil mark after the player met them."
     }
     CustomStringTableItem "{6E1A4D2B9C70F358}" {
      Id "LF-Mission_Everon1989_Details"
@@ -289,10 +634,135 @@ StringTable {
      Target_en_us "Keep disputes out of the streets: settle it in character if you can, otherwise ask staff. Harassing or stalking another player is not roleplay."
      Comment "The rule shown after a wrong answer to safezone (#915)."
     }
+    CustomStringTableItem "{7C3E91A05B48D2F6}" {
+     Id "LF-Rank_Cadet"
+     Target_en_us "Cadet"
+     Comment "Police rank title of the 1989 ladder (#1769); the maintainer confirms the copy."
+    }
+    CustomStringTableItem "{B30F6A8D5E2C9147}" {
+     Id "LF-Rank_Lieutenant"
+     Target_en_us "Lieutenant"
+     Comment "Police rank title of the 1989 ladder (#1769); the maintainer confirms the copy."
+    }
+    CustomStringTableItem "{1F8A4D62C9E073B5}" {
+     Id "LF-Rank_Patrol"
+     Target_en_us "Patrol Officer"
+     Comment "Police rank title of the 1989 ladder (#1769); the maintainer confirms the copy."
+    }
+    CustomStringTableItem "{A6D05B3F81E7C294}" {
+     Id "LF-Rank_SeniorPatrol"
+     Target_en_us "Senior Patrol Officer"
+     Comment "Police rank title of the 1989 ladder (#1769); the maintainer confirms the copy."
+    }
+    CustomStringTableItem "{4E92C7B18D3A5F60}" {
+     Id "LF-Rank_Sergeant"
+     Target_en_us "Sergeant"
+     Comment "Police rank title of the 1989 ladder (#1769); the maintainer confirms the copy."
+    }
     CustomStringTableItem "{254C4DE569D25E07}" {
      Id "LF-Reg_Title"
      Target_en_us "Civil Registry of Everon, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
+    }
+    CustomStringTableItem "{CA4D10F34DED233D}" {
+     Id "LF-Shop_Desc_ClothesShop"
+     Target_en_us "Jackets, shirts, trousers and hats in this year's colours."
+     Comment "Everon 1989 outlet counter (#1770): clothing_rack."
+    }
+    CustomStringTableItem "{0238B801ABD1D07C}" {
+     Id "LF-Shop_Desc_GunCounter"
+     Target_en_us "Rifles, pistols and ammunition for permit holders; scopes, holsters and pouches for anyone."
+     Comment "Pack override of the core gun counter description (price list subtitle) for the Everon 1989 gun store."
+    }
+    CustomStringTableItem "{CE06D40741D4A653}" {
+     Id "LF-Shop_Desc_MedicStores"
+     Target_en_us "Coats and a medical kit for the hospital staff."
+     Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
+    CustomStringTableItem "{88A40BFFEF7CB897}" {
+     Id "LF-Shop_Desc_PharmacyCounter"
+     Target_en_us "Morphine and saline, for licensed medics only."
+     Comment "Shop description of the drug store pharmacy counter (outlet pharmacy_counter)."
+    }
+    CustomStringTableItem "{B0B34427BAC15241}" {
+     Id "LF-Shop_Desc_PoliceStores"
+     Target_en_us "Uniform pieces, a radio and a flashlight for officers on duty."
+     Comment "Everon 1989 outlet counter (#1770): police_stores."
+    }
+    CustomStringTableItem "{0BFE6BABD6975286}" {
+     Id "LF-Shop_Desc_SurplusStall"
+     Target_en_us "Older army jackets, boots, canteens, binoculars and packs."
+     Comment "Everon 1989 outlet counter (#1770): surplus_stall."
+    }
+    CustomStringTableItem "{BF8187149016069E}" {
+     Id "LF-Shop_Desc_Workwear"
+     Target_en_us "Hard hats, work boots, gloves and a flashlight."
+     Comment "Everon 1989 outlet counter (#1770): workwear_counter."
+    }
+    CustomStringTableItem "{3891D91F71F15DB1}" {
+     Id "LF-Shop_Name_ClothesShop"
+     Target_en_us "Clothes shop"
+     Comment "Everon 1989 outlet counter (#1770): clothing_rack."
+    }
+    CustomStringTableItem "{D815E73D4340CE7D}" {
+     Id "LF-Shop_Name_MedicStores"
+     Target_en_us "Medic stores"
+     Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
+    CustomStringTableItem "{B1BC977506FDDA48}" {
+     Id "LF-Shop_Name_PharmacyCounter"
+     Target_en_us "Dispensary"
+     Comment "Shop name of the drug store pharmacy counter: the item catalogue outlet pharmacy_counter, morphine and saline behind the medic licence."
+    }
+    CustomStringTableItem "{787591774EE783D6}" {
+     Id "LF-Shop_Name_PoliceStores"
+     Target_en_us "Police stores"
+     Comment "Everon 1989 outlet counter (#1770): police_stores."
+    }
+    CustomStringTableItem "{4D08F861A5C58B94}" {
+     Id "LF-Shop_Name_SurplusStall"
+     Target_en_us "Army surplus stall"
+     Comment "Everon 1989 outlet counter (#1770): surplus_stall."
+    }
+    CustomStringTableItem "{9FAFCE2654A4E7E6}" {
+     Id "LF-Shop_Name_Workwear"
+     Target_en_us "Workwear counter"
+     Comment "Everon 1989 outlet counter (#1770): workwear_counter."
+    }
+    CustomStringTableItem "{AB6C9C6741E3729B}" {
+     Id "LF-Shop_Open_ClothesShop"
+     Target_en_us "Browse the clothes rack"
+     Comment "Everon 1989 outlet counter (#1770): clothing_rack."
+    }
+    CustomStringTableItem "{53F9E5EEA5C98E4E}" {
+     Id "LF-Shop_Open_GunCounter"
+     Target_en_us "Buy guns and ammunition"
+     Comment "Pack override of the core gun counter action: in the Everon 1989 gun store the counter sells rifles, pistols, magazines, scopes, holsters and pouches, not only a handgun."
+    }
+    CustomStringTableItem "{8D1EB732FECFCC26}" {
+     Id "LF-Shop_Open_MedicStores"
+     Target_en_us "Open the medic stores"
+     Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
+    CustomStringTableItem "{7729AC333C1E6567}" {
+     Id "LF-Shop_Open_PharmacyCounter"
+     Target_en_us "Ask the pharmacist"
+     Comment "Action prompt at the drug store pharmacy counter: opens the price list of the restricted medicines."
+    }
+    CustomStringTableItem "{0518C747FCA0A005}" {
+     Id "LF-Shop_Open_PoliceStores"
+     Target_en_us "Open the police stores"
+     Comment "Everon 1989 outlet counter (#1770): police_stores."
+    }
+    CustomStringTableItem "{E20C00A121F45328}" {
+     Id "LF-Shop_Open_SurplusStall"
+     Target_en_us "Browse the surplus stall"
+     Comment "Everon 1989 outlet counter (#1770): surplus_stall."
+    }
+    CustomStringTableItem "{7DBE4B7DA98E5893}" {
+     Id "LF-Shop_Open_Workwear"
+     Target_en_us "Browse workwear"
+     Comment "Everon 1989 outlet counter (#1770): workwear_counter."
     }
     CustomStringTableItem "{4C78A1A01E9D8559}" {
      Id "LF-Sign_Atm_How"
@@ -711,7 +1181,7 @@ StringTable {
     }
     CustomStringTableItem "{9A2459E811183285}" {
      Id "LF-Sign_GeneralStore_How"
-     Target_en_us "Browse the store at the counter|Then *Buy* or *Sell*"
+     Target_en_us "Take what you want off the shelves and *Pay* at the till|Or buy and sell over the counter"
      Comment "Sign card for the general store counter, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{E011AD948E4F1AAC}" {
@@ -733,6 +1203,31 @@ StringTable {
      Id "LF-Sign_GeneralStore_What"
      Target_en_us "Food and supplies."
      Comment "Sign card for the general store counter, What section."
+    }
+    CustomStringTableItem "{E78F26E6B9E7D646}" {
+     Id "LF-Sign_GunStore_How"
+     Target_en_us "Guns, magazines, scopes and holsters: *Buy guns and ammunition* at the gun counter|Hats and field gear: take them off the wall shelves and *Pay for goods* at the till on the counter"
+     Comment "Sign card for the gun store, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{FED7197CFC22F228}" {
+     Id "LF-Sign_GunStore_Needs"
+     Target_en_us "A firearm permit for guns and ammunition. The counter refuses the order without one."
+     Comment "Sign card for the gun store, You need section."
+    }
+    CustomStringTableItem "{7B2783518336052C}" {
+     Id "LF-Sign_GunStore_Next"
+     Target_en_us "The rifles in the cabinet and the window are for show: order them at the counter."
+     Comment "Sign card for the gun store, Next section."
+    }
+    CustomStringTableItem "{F7A24BC184133EB5}" {
+     Id "LF-Sign_GunStore_Title"
+     Target_en_us "Gunsmith"
+     Comment "Title of the fascia sign over the gun store window on the main street (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Gunsmith."
+    }
+    CustomStringTableItem "{DDD223CF06D5D4AC}" {
+     Id "LF-Sign_GunStore_What"
+     Target_en_us "Sporting rifles, pistols and ammunition for permit holders. Binoculars, compasses, maps and hunters' hats for anyone."
+     Comment "Sign card for the gun store, What section."
     }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
@@ -998,6 +1493,31 @@ StringTable {
      Id "LF-Sign_PoliceCases_What"
      Target_en_us "Open cases, one column each: the crime, where and when, the suspect, and the evidence pinned against it."
      Comment "Case board Read card (#148)."
+    }
+    CustomStringTableItem "{B36E6F94CE8AA8A7}" {
+     Id "LF-Sign_PoliceFront_How"
+     Target_en_us "Licences and permits: the desk in the porch|Enquiries: the front counter in the hall|Wanted notices: the board on the hall wall|Officers: the duty room, through the door between the hall benches"
+     Comment "Police station fascia sign card, How section (Everon 1989 pack). Items separated by |."
+    }
+    CustomStringTableItem "{BB9BA6C4A8677A06}" {
+     Id "LF-Sign_PoliceFront_Needs"
+     Target_en_us "Cash for a licence or permit fee"
+     Comment "Police station fascia sign card, Needs section (Everon 1989 pack)."
+    }
+    CustomStringTableItem "{3D32D85B2CC2A704}" {
+     Id "LF-Sign_PoliceFront_Next"
+     Target_en_us "Officers on duty: the patrol cars wait in the yard."
+     Comment "Police station fascia sign card, Next section (Everon 1989 pack)."
+    }
+    CustomStringTableItem "{DE2A7A265D6907E9}" {
+     Id "LF-Sign_PoliceFront_Title"
+     Target_en_us "Gendarmerie"
+     Comment "Title of the fascia sign over the police station's front door (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Gendarmerie."
+    }
+    CustomStringTableItem "{2EEE13F78C153D7D}" {
+     Id "LF-Sign_PoliceFront_What"
+     Target_en_us "The police post of Everon. Licences and permits at the porch desk, enquiries at the front counter, the wanted board in the hall."
+     Comment "Police station fascia sign card, What section (Everon 1989 pack)."
     }
     CustomStringTableItem "{1A20ADB3E49DD4E0}" {
      Id "LF-Sign_PoliceStation_How"
@@ -1333,6 +1853,211 @@ StringTable {
      Id "LF-Sign_VehicleLot_What"
      Target_en_us "Cars and trucks for sale. Each comes locked, with one key and its own plates."
      Comment "Sign card for the vehicle lot counter, What section."
+    }
+    CustomStringTableItem "{08E024031EF25E98}" {
+     Id "LF-TownBoard_Title"
+     Target_en_us "Everon town board"
+     Comment "Header printed across the top of the town board on the square."
+    }
+    CustomStringTableItem "{FB1FC150BA9CFE1B}" {
+     Id "LF-TownCard_Bank_Category"
+     Target_en_us "Bank"
+     Comment "Town board card (bank): category."
+    }
+    CustomStringTableItem "{57314E9DCB06DBD0}" {
+     Id "LF-TownCard_Bank_Detail"
+     Target_en_us "Talk to the teller, then *Deposit* or *Withdraw*|Cash you carry stays on your body if you die; money in the bank is safe|A vehicle over $500 is paid from the account"
+     Comment "Town board card (bank): detail sheet text."
+    }
+    CustomStringTableItem "{C1302AEFB910B90A}" {
+     Id "LF-TownCard_Bank_Line"
+     Target_en_us "Bank your pay with the teller. Banked money stays yours."
+     Comment "Town board card (bank): one line on the card."
+    }
+    CustomStringTableItem "{E09CB077B4DDB5CA}" {
+     Id "LF-TownCard_Bank_Place"
+     Target_en_us "Bank teller"
+     Comment "Town board card (bank): name of the place in the where line."
+    }
+    CustomStringTableItem "{1AAD706A70F92792}" {
+     Id "LF-TownCard_Bank_Title"
+     Target_en_us "Keep your money safe"
+     Comment "Town board card (bank): card title."
+    }
+    CustomStringTableItem "{ECE54C3B0636F415}" {
+     Id "LF-TownCard_Cars_Category"
+     Target_en_us "Cars"
+     Comment "Town board card (cars): category."
+    }
+    CustomStringTableItem "{96AE648CE800B877}" {
+     Id "LF-TownCard_Cars_Detail"
+     Target_en_us "*Buy vehicle* at the counter; it waits for you on the lot|S105 $1000, UAZ $2500, van $4000|Anything over $500 is paid from your bank account|Keep it at the garage so it is still yours after a restart"
+     Comment "Town board card (cars): detail sheet text."
+    }
+    CustomStringTableItem "{80A4EACE013653FB}" {
+     Id "LF-TownCard_Cars_Line"
+     Target_en_us "Cars and trucks for sale, each with its own key and plates."
+     Comment "Town board card (cars): one line on the card."
+    }
+    CustomStringTableItem "{3DAF249A70C31274}" {
+     Id "LF-TownCard_Cars_Title"
+     Target_en_us "Vehicle lot"
+     Comment "Town board card (cars): card title."
+    }
+    CustomStringTableItem "{F756D3AE390FEE94}" {
+     Id "LF-TownCard_Hospital_Category"
+     Target_en_us "Hospital"
+     Comment "Town board card (hospital): category."
+    }
+    CustomStringTableItem "{A0F8B368DFFA9091}" {
+     Id "LF-TownCard_Hospital_Detail"
+     Target_en_us "*Clock in* at the duty desk for the medic kit|A medic can *Revive* a downed patient and bring them to a bed|Treatment bills are paid in cash at the desk"
+     Comment "Town board card (hospital): detail sheet text."
+    }
+    CustomStringTableItem "{A054EE91DBE51289}" {
+     Id "LF-TownCard_Hospital_Line"
+     Target_en_us "Clock in as a medic, or pay a treatment bill at the desk."
+     Comment "Town board card (hospital): one line on the card."
+    }
+    CustomStringTableItem "{7FDA4F1CF582AFAA}" {
+     Id "LF-TownCard_Hospital_Place"
+     Target_en_us "Hospital"
+     Comment "Town board card (hospital): name of the place in the where line."
+    }
+    CustomStringTableItem "{E11BF514478D9956}" {
+     Id "LF-TownCard_Hospital_Title"
+     Target_en_us "Medics and treatment"
+     Comment "Town board card (hospital): card title."
+    }
+    CustomStringTableItem "{8BA71674F74C751F}" {
+     Id "LF-TownCard_Orgs_Category"
+     Target_en_us "Organizations"
+     Comment "Town board card (organisations): category."
+    }
+    CustomStringTableItem "{705D5E5AF6A6E2B2}" {
+     Id "LF-TownCard_Orgs_Detail"
+     Target_en_us "At the organization desk: *Found organization*, then invite your members|Keep a shared fund and buy a processing slot|The walled hideout yard up the alley opens for members only"
+     Comment "Town board card (organisations): detail sheet text."
+    }
+    CustomStringTableItem "{1A83AB0AA90B5EC0}" {
+     Id "LF-TownCard_Orgs_Line"
+     Target_en_us "Register an organization, share a fund, open a hideout."
+     Comment "Town board card (organisations): one line on the card."
+    }
+    CustomStringTableItem "{8CBC1F1C256D60B5}" {
+     Id "LF-TownCard_Orgs_Title"
+     Target_en_us "Start a crew"
+     Comment "Town board card (organisations): card title."
+    }
+    CustomStringTableItem "{43D58C6A3657CB6C}" {
+     Id "LF-TownCard_Police_Category"
+     Target_en_us "Police"
+     Comment "Town board card (police): category."
+    }
+    CustomStringTableItem "{1EA2FAD3C5642AC7}" {
+     Id "LF-TownCard_Police_Detail"
+     Target_en_us "At the duty desk: *Apply to the police*|Once you are on the roster, *Clock in* for the uniform and *Draw kit* at the armory|Duty pays $30 a minute|Wanted people go to the jail yard behind the station"
+     Comment "Town board card (police): detail sheet text."
+    }
+    CustomStringTableItem "{D8038010B55B05AE}" {
+     Id "LF-TownCard_Police_Line"
+     Target_en_us "Join the roster, clock in at the station, keep the street safe."
+     Comment "Town board card (police): one line on the card."
+    }
+    CustomStringTableItem "{687B20E68A019E97}" {
+     Id "LF-TownCard_Police_Title"
+     Target_en_us "The police are recruiting"
+     Comment "Town board card (police): card title."
+    }
+    CustomStringTableItem "{6B1F2E88521A7E2A}" {
+     Id "LF-TownCard_Rules_Category"
+     Target_en_us "Rules"
+     Comment "Town board card (rules): category."
+    }
+    CustomStringTableItem "{5746E8387DB640D9}" {
+     Id "LF-TownCard_Rules_Detail"
+     Target_en_us "Hurt someone only for a reason your character has|With a gun on you, comply, then report it|After a death, forget what led to it|The full rules are on the board beside this one"
+     Comment "Town board card (rules): detail sheet text."
+    }
+    CustomStringTableItem "{7375D17098A6DF55}" {
+     Id "LF-TownCard_Rules_Line"
+     Target_en_us "No random violence. Comply at gunpoint. A new life after a death."
+     Comment "Town board card (rules): one line on the card."
+    }
+    CustomStringTableItem "{B4FB395E7706C938}" {
+     Id "LF-TownCard_Rules_Title"
+     Target_en_us "Town rules"
+     Comment "Town board card (rules): card title."
+    }
+    CustomStringTableItem "{80C3470CDDD10B50}" {
+     Id "LF-TownCard_Shops_Category"
+     Target_en_us "Shops"
+     Comment "Town board card (shops): category."
+    }
+    CustomStringTableItem "{1F9B4466F2F38518}" {
+     Id "LF-TownCard_Shops_Detail"
+     Target_en_us "*Buy* or *Sell* at the general store counter|The market stalls next door buy fruit and goods for cash|Apples and plums grow in the farm orchard east of the village"
+     Comment "Town board card (shops): detail sheet text."
+    }
+    CustomStringTableItem "{8FD857354C5AA276}" {
+     Id "LF-TownCard_Shops_Line"
+     Target_en_us "Food and supplies. The market stalls buy what you gather."
+     Comment "Town board card (shops): one line on the card."
+    }
+    CustomStringTableItem "{5F866D445512A0D6}" {
+     Id "LF-TownCard_Shops_Title"
+     Target_en_us "Store and market"
+     Comment "Town board card (shops): card title."
+    }
+    CustomStringTableItem "{C9558D7D09BA4A0A}" {
+     Id "LF-TownCard_Work_Category"
+     Target_en_us "Work"
+     Comment "Town board card (work): category printed in red at the top of the card."
+    }
+    CustomStringTableItem "{DCC13D1E658AD23C}" {
+     Id "LF-TownCard_Work_Detail"
+     Target_en_us "At the counter: *Take courier work*, then *Pick up parcel*|Carry it to the drop and *Complete the run*|A courier run pays $40; fuel and taxi work open at higher work levels|Out of work? *Collect benefit* at the same counter"
+     Comment "Town board card (work): detail sheet text. | separates list items; *word* is printed in the accent colour and names an action the player sees."
+    }
+    CustomStringTableItem "{D5BCB9C32D672356}" {
+     Id "LF-TownCard_Work_Line"
+     Target_en_us "Deliver parcels for the post office. Paid in cash."
+     Comment "Town board card (work): one line on the card."
+    }
+    CustomStringTableItem "{82FD9D6087457BC9}" {
+     Id "LF-TownCard_Work_Title"
+     Target_en_us "Couriers wanted"
+     Comment "Town board card (work): card title; the prompt reads Read: <title>."
+    }
+    CustomStringTableItem "{3E81A47C5D0B92F6}" {
+     Id "LF-Townsfolk_CafeOwner_Name"
+     Target_en_us "Odile Marchand"
+     Comment "Townsfolk (The relocated, #1961): the café owner's name, the speaker line of her dialogue."
+    }
+    CustomStringTableItem "{6784DBE972ED4ECD}" {
+     Id "LF-Townsfolk_CafeOwner_Role"
+     Target_en_us "Café owner"
+     Comment "Townsfolk (The relocated, #1960): what Odile Marchand does, the role line under the name."
+    }
+    CustomStringTableItem "{7C3E5A19D04B82F6}" {
+     Id "LF-Townsfolk_NightShift_Name"
+     Target_en_us "Rémi Duval"
+     Comment "Townsfolk (The relocated, #1963): the night-shift worker's name over his dialogue captions."
+    }
+    CustomStringTableItem "{B0FC17DD51416582}" {
+     Id "LF-Townsfolk_NightShift_Role"
+     Target_en_us "Night-shift worker"
+     Comment "Townsfolk (The relocated, #1960): what Rémi Duval does, the role line under the name."
+    }
+    CustomStringTableItem "{6D2E8B41F07A93C5}" {
+     Id "LF-Townsfolk_OldMan_Name"
+     Target_en_us "Gaspard Lenoir"
+     Comment "Townsfolk (The relocated, #1962): the speaker name over the old man's dialogue."
+    }
+    CustomStringTableItem "{1F9CFB4C2CC31B69}" {
+     Id "LF-Townsfolk_OldMan_Role"
+     Target_en_us "Retired fisherman"
+     Comment "Townsfolk (The relocated, #1960): what Gaspard Lenoir does, the role line under the name."
     }
     CustomStringTableItem "{AEFD273B4E3FE2B7}" {
      Id "LF_Everon1989_AlphaNotice"

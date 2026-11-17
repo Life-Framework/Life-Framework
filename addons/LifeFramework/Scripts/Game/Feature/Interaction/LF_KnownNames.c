@@ -183,3 +183,20 @@ class LF_KnownNames
 		s_wRoot.SetVisible(!name.IsEmpty());
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_KnownNames's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_KnownNames_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_KnownNames_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_KnownNames";
+	}
+
+	override void Apply()
+	{
+		LF_KnownNames.ResetStatics();
+	}
+}

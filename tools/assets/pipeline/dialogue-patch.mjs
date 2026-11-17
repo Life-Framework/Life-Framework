@@ -59,6 +59,7 @@ export function patchProblems(spec, core, strings = new Map()) {
     else if (op !== "add" && !coreLines[id]) out.push(`line ${id}: ${op} names a line the core dialogue lacks`);
     if (op !== "remove") {
       if (spec.voice) out.push(...sayProblems(id, line));
+      if (line.voice && !spec.voice) out.push(`line ${id}: a line voice needs a voice (and budget_chars) on the patch`);
       else if (line.say !== undefined) out.push(`line ${id}: say needs a voice on the patch`);
       const text = (line.text || "").trim();
       if (text.length < 2 || text.length > 320) out.push(`line ${id}: text must be 2 to 320 characters`);

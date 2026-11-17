@@ -32,3 +32,6 @@ public/media/clips/
 
 # Converted from public/docs-images by scripts/gallery.mjs
 public/gallery/
+
+# Copied from docs/everon/places by scripts/live-now.mjs (the World of Everon page's Live now section)
+public/everon-live/

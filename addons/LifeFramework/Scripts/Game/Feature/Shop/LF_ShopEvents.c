@@ -11,14 +11,16 @@ class LF_OnFenceSale : LF_Event
 	string m_sPrefab;
 	int m_iQuantity;
 	int m_iPrice;
+	string m_sOutlet;	//! catalogue outlet that sold it, empty for a shop with none (#2153)
 
-	static LF_OnFenceSale Create(string buyerUid, string prefab, int quantity, int price)
+	static LF_OnFenceSale Create(string buyerUid, string prefab, int quantity, int price, string outlet = "")
 	{
 		LF_OnFenceSale e = new LF_OnFenceSale();
 		e.m_sBuyerUid = buyerUid;
 		e.m_sPrefab = prefab;
 		e.m_iQuantity = quantity;
 		e.m_iPrice = price;
+		e.m_sOutlet = outlet;
 		return e;
 	}
 }

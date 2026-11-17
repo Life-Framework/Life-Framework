@@ -34,6 +34,10 @@ point; the slip is where the gate's answer is printed.
   minimum rank (`POLICE` is an on-duty officer and the rank is the police rank index; any other job id
   is a job level, `LF_JobLevels`), an organisation right (`LF_EOrganizationPermission` name). Every gate
   that is set must pass; the refusal names the first that does not (licence, job, rank, right).
+- **Licence row:** an offer with `grantsLicence` (`m_sGrantsLicence`, an `LF_ELicenseType` name) sells no item;
+  its item id is only the row key. The counter shows the licence at the licence office fee and Pay runs the
+  office visit (`LF_LicenceDesk.VisitFor`: apply, wait, collect at the same counter). Only `FIREARM_PERMIT`
+  is issued; any other licence row is dropped at load. The Everon pack puts the permit on `gun_counter`.
 - **Legality:** `LF_ItemCatalogue.OffenceFor(item, carrier)` gives the crime catalog id for carrying an
   item: `#LF-Offence_UnlicensedItem` (licensed, no licence), `#LF-Offence_RestrictedItem` (restricted,
   no licence), `#LF-Offence_IllegalItem` (illegal), or nothing. The numbers live in
@@ -51,16 +55,25 @@ point; the slip is where the gate's answer is printed.
   sell price is above its price, every offer names a listed item.
 - **Core defaults** (one example per outlet type): `gun_counter` sells the M9 behind `FIREARM_PERMIT`,
   `clothing_rack` sells a green raincoat (hides the build), `police_armory` sells the M16A2 to an
-  on-duty officer of rank 1 (senior) or more. The annex has one gun counter
+  on-duty officer of rank 1 (senior) or more, free and serialled (`issue`, `issuePrefab`, #1763). The annex has one gun counter
   (`Prefabs/Props/Commercial/LF_GunCounter.et`, `Annex_GunCounter`); the armory and the rack are
   config only.
 - **Testing a licence:** `/licence FIREARM_PERMIT` in chat grants the caller one licence by name
   (`LF_LicenceGrantCommand.c`; administrators, dev worlds and harness builds only).
-- **Proof:** `catalogue/outlets` (LOGIC, `LF_Test_ItemCatalogue`), `catalogue/gun-counter` (WORLD, `LF_Test_GunCounter`: the annex counter refuses without the permit and sells with it), `item-catalogue-selftest.mjs`.
+- **Starting kit (#1767):** offers under the `starting_kit` outlet are what a fresh civilian spawns with,
+  instead of the game mode's civilian loadout (`LF_StartingKit.Resolve`, `LF_FactionLoadout.WithStartingKit`).
+  Items of category `clothing` are worn, the rest are carried; gates are not read, nobody buys the kit.
+  No offers under it, the game mode's loadout applies. Proof: `catalogue/starting-kit` (LOGIC).
+- **Stock and restock (#1064):** an offer's `stock` (0 is no limit) and `restockSeconds` (0 is no restock
+  until the server restarts; default 600) are owner and overlay fields like the gates.
+  `LF_CatalogueStock` counts each offer on its own in server memory: `LF_ShopComponent.Buy` refuses a
+  sale beyond what is left with `OUT_OF_STOCK`, takes only the units delivered, and the first sale from a
+  full shelf starts the restock clock; when it is due the shelf is full again. Nothing is saved, so a
+  restart refills every outlet. The price list does not show the count yet.
+- **Proof:** `catalogue/stock` (LOGIC, `LF_Test_CatalogueStock`), `catalogue/starting-kit` (LOGIC, `LF_Test_StartingKit`), `catalogue/outlets` (LOGIC, `LF_Test_ItemCatalogue`), `catalogue/gun-counter` (WORLD, `LF_Test_GunCounter`: the annex counter refuses without the permit and sells with it), `item-catalogue-selftest.mjs`.
 
 ## Not yet (follow-ups of #988)
 
-- Stock and restock per offer: #1064.
 - The black market, back room, fence and the `Prefabs/Weapons/` price rule onto outlets: #1065.
 - The police armory issuing from its outlet by rank: #1066.
 - Police search and seizure reading the legality flags: #1067.

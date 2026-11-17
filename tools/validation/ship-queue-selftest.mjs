@@ -6,6 +6,8 @@
 // the test registry and the PR was re-gated"; overlap() counting driver-merged files "two PRs that only both append
 // to docs/features.md ran in parallel (abd start)"; environmentFailure without the 0-test shard rule "shards placed nowhere
 // (exit 3, 0 tests): requeued".
+// red-proof 2026-11-16 (kill-hotspots): docsText back to /^docs/.+.md$/ printed FAIL "overlap() ignores markdown outside
+// docs/ too (Feature.md, README)".
 // red-proof 2026-11-14 (shipq-slots), each broken alone: overlap() without docsText "two PRs that both change a docs/**/*.md
 // file start together"; needsWorkbench() always true "a T0 entry starts while the only Workbench slot is held"; without its
 // tier 1 line "T1 without a build takes no slot"; normalize() in pool.mjs without workbenchLimit "loadMachines keeps a
@@ -74,7 +76,12 @@ p = sq.pickRunnable(dq.entries, { slots: 4 });
 check(["p", "q", "r"].every((x) => p.start.some((s) => s.entry.slug === x)), "two PRs that both change a docs/**/*.md file start together (docs-md-overlap)");
 check(p.wait.some((w) => w.entry.slug === "s" && /waits for r/.test(w.why)), "a shared README.md or docs/*.json still makes the later PR wait");
 check(sq.overlap(["docs/worktrees.md"], ["docs/worktrees.md"]).length === 0 && sq.overlap(["docs/x/y.MD"], ["docs/x/y.MD"]).length === 0, "overlap() ignores docs/**/*.md");
-check(sq.overlap(["website/docs/a.md"], ["website/docs/a.md"]).length === 1 && sq.overlap(["README.md"], ["README.md"]).length === 1, "overlap() still counts a .md outside docs/");
+// #1852 waited for #1850 on Medic/Feature.md: markdown anywhere is driver-merged prose, never an overlap.
+const MEDIC_DOC = "addons/LifeFramework/Scripts/Game/Feature/Medic/Feature.md";
+check(sq.overlap([MEDIC_DOC, "addons/a.c"], [MEDIC_DOC, "addons/b.c"]).length === 0 && sq.overlap(["README.md"], ["README.md"]).length === 0, "overlap() ignores markdown outside docs/ too (Feature.md, README)");
+check(sq.overlap([MEDIC_DOC, "addons/a.c"], [MEDIC_DOC, "addons/a.c"]).join() === "addons/a.c", "overlap() still counts a shared code file beside a shared Feature.md");
+// #1850 waited for #1847 on LF_StaticReset.c: with per-feature hooks two reset PRs share no file.
+check(sq.overlap(["addons/LifeFramework/Scripts/Game/Feature/Medic/LF_Revive.c", "docs/features/character-survival.md"], ["addons/LifeFramework/Scripts/Game/Feature/Police/LF_Stun.c", "docs/features/crime-police.md"]).length === 0, "two features that each register a static reset do not overlap");
 const dd = sq.regateDecision({ prFiles: ["tools/a.mjs", "docs/worktrees.md"], mainFiles: ["docs/worktrees.md"] });
 check(!dd.regate, "main editing the same docs prose file does not re-gate (GitHub's merge check catches a text conflict)");
 

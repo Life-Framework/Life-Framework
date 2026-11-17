@@ -1,0 +1,15 @@
+{
+ "schema": 1,
+ "place": "sample-square",
+ "slot": "parcel",
+ "building": "b03",
+ "kit": "fit-kit",
+ "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_sample-square_parcel.layer",
+ "kinds": [],
+ "rows": 1,
+ "destruction": {
+  "mode": "needs-hook",
+  "reason": "a vanilla building stands in the terrain; a layer cannot switch its destruction off (D15 hook)"
+ },
+ "date": "2026-11-17"
+}

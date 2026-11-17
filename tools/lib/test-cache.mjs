@@ -109,11 +109,42 @@ export function skipReason({ tier, opts = {}, env = process.env } = {}) {
 export function lookup(mainRoot, key) {
   try {
     const rec = JSON.parse(readFileSync(join(cacheDir(mainRoot), `${key}.json`), "utf8"));
-    if (!rec || rec.key !== key || rec.code !== 0 || !(rec.failed === 0 || rec.failed === undefined)) return null;
+    if (!rec || rec.key !== key || rec.code !== 0 || !(rec.failed === 0 || rec.failed === undefined) || rec.red === true) return null;
     return rec;
   } catch {
     return null;
   }
+}
+
+// What a gate may take from the agent's own run (docs/worktrees.md "Pass cache"). The gate asks for the pass
+// its own run would produce, `need` (keyInputs). The exact key answers it. A slim gate's LOGIC need
+// (tier "fast", every LOGIC test, no --only, not core-only) is also answered by an `all` pass of the same tree, rdb,
+// addon list and server build: `all` runs every LOGIC test plus the rest. Never the other way round (a `fast`
+// pass is not an `all` pass), never another selection (--only, core-only), never a failure or a --red run.
+// The stored record carries the inputs it was keyed on; a record whose inputs differ from the need is not trusted.
+export function coveringInputs(need) {
+  if (!need || need.tier !== "fast" || need.only?.length || need.coreOnly) return [];
+  return [{ via: "all", inputs: { ...need, tier: "all", world: null } }];
+}
+
+export function lookupCovering(mainRoot, need) {
+  const sameInputs = (rec, inputs) => rec?.inputs && JSON.stringify(rec.inputs) === JSON.stringify(inputs);
+  for (const { via, inputs } of [{ via: "exact", inputs: need }, ...coveringInputs(need)]) {
+    const key = cacheKey(inputs);
+    const rec = lookup(mainRoot, key);
+    if (!rec || !sameInputs(rec, inputs)) continue;
+    // the record's own summary must say what its key says: the tier, an empty --only list for `all`
+    if (rec.tier !== inputs.tier || JSON.stringify(rec.only ?? []) !== JSON.stringify(inputs.only ?? []) || rec.coreOnly) continue;
+    return { rec, key, via };
+  }
+  return null;
+}
+
+// The line a gate prints when the agent's own pass stands in for its test run.
+export function reuseNote(rec, key, need) {
+  const who = rec.by === "gate" ? "gate pass" : "agent pass";
+  const what = `tier=${rec.tier}${need && need !== rec.tier ? `, covers the ${need} need` : ""}`;
+  return `test: reused ${who} ${String(key).slice(0, 12)} (${what}; recorded ${rec.at}${rec.worktree ? ` in ${rec.worktree}` : ""}; same addons, rdb, tools/test, addon list and server build)`;
 }
 
 // Stores a pass. Never throws: a cache that cannot be written is a cache miss next time.
@@ -138,6 +169,6 @@ export function reuseLine(rec) {
 }
 
 // The summaries.jsonl row a reuse writes, so stamp readers still see a result.
-export function cachedSummary(rec, sha) {
-  return { sha, tier: rec.stampTier ?? rec.tier, passed: rec.passed ?? null, failed: 0, total: rec.total ?? null, consoleLog: rec.consoleLog ?? "", host: rec.machine ?? null, cached: true, cachedFrom: rec.at, key: rec.key };
+export function cachedSummary(rec, sha, as = null) {
+  return { sha, tier: as ?? rec.stampTier ?? rec.tier, passed: rec.passed ?? null, failed: 0, total: rec.total ?? null, consoleLog: rec.consoleLog ?? "", host: rec.machine ?? null, cached: true, cachedFrom: rec.at, key: rec.key };
 }

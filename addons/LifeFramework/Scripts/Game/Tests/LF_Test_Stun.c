@@ -68,6 +68,7 @@ class LF_Test_Stun : LF_Test
 		ctx.True(LF_Stun.IsStunned(entity), "a stale wake leaves the stun in place");
 		LF_Stun.Wake(character, token);
 		ctx.False(character.LF_IsDowned(), "the timed wake clears the downed flag");
+		LF_Knockout.Settle(character);
 		ctx.False(damage.LF_WantsUnconscious(), "the woken character is no longer held unconscious");
 		ctx.EqualFloat(healthBefore, damage.GetDefaultHitZone().GetHealthScaled(), 0.001, "the character wakes with the health it had");
 

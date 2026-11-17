@@ -9,6 +9,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { loadScenario, scenarioProblems } from "./scenario.mjs";
+import { buildingFiles } from "./store-slots.mjs";
 
 // Prefab paths of Everon's own buildings, the ones a new building is compared with.
 export const EVERON_BUILDING = /^Prefabs\/Structures\/(Houses|Commercial|Industrial|Civic|Cultural|Military|Agriculture)\//;
@@ -18,7 +19,8 @@ const NEAR_M = 150;
 const MAX_NEIGHBOURS = 6;
 
 export function placedPrefabs(spec) {
-  return [spec.store?.prefab, spec.name].filter(Boolean).map((n) => `${spec.prefab_dir}/${n}.et`);
+  const f = buildingFiles(spec);
+  return [f.store, f.building].filter(Boolean);
 }
 
 export function findPlacement(world, spec, entity) {
@@ -65,7 +67,11 @@ export async function cmdProof(root, slug, flags = []) {
     if (!ok) fails.push(msg);
   };
 
-  const world = loadWorld(root);
+  // The world layers plus the pack's grid world (a pack building's cell, tools\cli grid place --pack): a building there
+  // is audited with --grid and proved in the grid mission.
+  const { PACK_GRID_LAYERS } = await import("../../lib/world-zones.mjs");
+  const packGrid = join(root, ...PACK_GRID_LAYERS.split("/"));
+  const world = [...loadWorld(root), ...(existsSync(packGrid) ? loadWorld(root, packGrid).map((e) => ({ ...e, packGrid: true })) : [])];
   const place = findPlacement(world, spec, flag("--entity"));
   if (!place) {
     say(false, `${placedPrefabs(spec).join(" or ")} is placed in no world layer: tools\\cli place ground <x,z> <prefab> --layer <L>.layer --name <Entity>`);
@@ -109,7 +115,8 @@ export async function cmdProof(root, slug, flags = []) {
   const cli = join(root, "tools", "cli.mjs");
   const node = (args) => spawnSync(process.execPath, args, { cwd: root, stdio: "inherit", windowsHide: true }).status;
   if (!flags.includes("--skip-audit") && !fails.length) {
-    say(node([cli, "audit", "placement", "--strict", "--layer", place.layer]) === 0, `audit placement --strict --layer ${place.layer}`);
+    const audit = place.packGrid ? ["--grid", "--strict"] : ["--strict", "--layer", place.layer];
+    say(node([cli, "audit", "placement", ...audit]) === 0, `audit placement ${audit.join(" ")}`);
   }
 
   const out = join(root, "tmp", "buildings", slug, "proof");
@@ -117,7 +124,7 @@ export async function cmdProof(root, slug, flags = []) {
     const session = join(root, "agent-box", "session.mjs");
     // A DebugWorld layer boots the debug mission; anything else is the town the playtest mission loads.
     const debugLayer = existsSync(join(root, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers", place.layer));
-    const mission = flag("--mission") || scenario?.session?.mission || (debugLayer ? "debug" : "playtest");
+    const mission = flag("--mission") || (place.packGrid ? "grid" : null) || scenario?.session?.mission || (debugLayer ? "debug" : "playtest");
     const up = node([session, "up", "--profile", "full", "--mission", mission, "--wait"]);
     if (up !== 0) say(false, "session up --profile full");
     else {

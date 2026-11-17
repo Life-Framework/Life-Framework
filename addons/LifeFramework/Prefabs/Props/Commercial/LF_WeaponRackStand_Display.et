@@ -1,0 +1,14 @@
+GenericEntity {
+ ID "1E61082FF17AF429"
+ components {
+  MeshObject "{F1C8328F75DB082C}" {
+   Object "{B98BC8DC4C59B8DA}Assets/Props/Military/Camps/WeaponRackStand_01/WeaponRackStand_01.xob"
+  }
+  RigidBody "{914E110D50DA8196}" {
+   ResponseIndex "MediumDestructible"
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+}

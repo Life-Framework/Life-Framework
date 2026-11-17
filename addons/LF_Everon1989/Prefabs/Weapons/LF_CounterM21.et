@@ -1,0 +1,7 @@
+GenericEntity : "{B31929F65F0D0279}Prefabs/Weapons/Rifles/M14/Rifle_M21.et" {
+ ID "BF6BAF984322E895"
+ components {
+  LF_SerialComponent "{203628112CC95E3D}" {
+  }
+ }
+}

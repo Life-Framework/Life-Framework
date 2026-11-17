@@ -16,6 +16,7 @@
 //   expect <entity name> <slot> <prefab>      the slot's resolved Prefab now (a path suffix is enough)
 //   snapshot <entity name>         remember every slot's Prefab now
 //   expect-snapshot <entity name>  every slot is back to the snapshot (after an undo)
+//   expect-heads <entity name> <n> the NPC entity has n head children (Prefabs/Characters/Heads/) right now
 //   undo | redo                    Edit > Undo / Redo
 //   save                           save the world (its layers)
 // status.txt gets one line per step and a final `done <failed>`.
@@ -249,7 +250,20 @@ class LF_NpcDresserPlugin : WorldEditorPlugin
 
 	//------------------------------------------------------------------------------------------------
 	//! Writes the outfit into one NPC's loadout slots (or clears the overrides when `undress`). Returns the slots touched.
+	//! Every SetVariableValue / ClearVariableValue re-initialises the entity unless an edit sequence is open, and each
+	//! re-init of a character spawns its identity head again without deleting the old one: a dressed NPC grew a second
+	//! head (and a third, one per write). One sequence per NPC means one re-init, at EndEditSequence.
 	protected int DressOne(WorldEditorAPI api, IEntitySource src, map<string, ResourceName> outfit, bool undress, out string note)
+	{
+		api.BeginEditSequence(src);
+		int touched = WriteSlots(api, src, outfit, undress, note);
+		api.EndEditSequence(src);
+		return touched;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The slot writes of DressOne, always called inside its edit sequence. A write that changes nothing is skipped.
+	protected int WriteSlots(WorldEditorAPI api, IEntitySource src, map<string, ResourceName> outfit, bool undress, out string note)
 	{
 		int comp = FindLoadout(src);
 		if (comp < 0)
@@ -289,15 +303,23 @@ class LF_NpcDresserPlugin : WorldEditorPlugin
 				continue;
 			}
 
-			if (!api.SetVariableValue(src, path, "Prefab", prefab))
+			ResourceName current;
+			slots.Get(idx).Get("Prefab", current);
+			if (current != prefab && !api.SetVariableValue(src, path, "Prefab", prefab))
 			{
 				note += string.Format(" %1 write failed;", key);
 				continue;
 			}
 
 			// A slot switched off in the prefab (Npc_Default_01's Hat) would hold the garment without showing it.
-			if (slots.Get(idx).GetVarIndex("Enabled") >= 0)
-				api.SetVariableValue(src, path, "Enabled", "1");
+			BaseContainer target = slots.Get(idx);
+			if (target.GetVarIndex("Enabled") >= 0)
+			{
+				bool enabled;
+				target.Get("Enabled", enabled);
+				if (!enabled)
+					api.SetVariableValue(src, path, "Enabled", "1");
+			}
 
 			touched++;
 		}
@@ -489,6 +511,25 @@ class LF_NpcDresserPlugin : WorldEditorPlugin
 		ResourceName value;
 		slots.Get(idx).Get("Prefab", value);
 		return value;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many identity heads (Prefabs/Characters/Heads/) hang under a named NPC entity right now; -1 when unreadable
+	protected int HeadCount(WorldEditorAPI api, string entity)
+	{
+		IEntity npc = api.SourceToEntity(api.FindEntityByName(entity));
+		if (!npc)
+			return -1;
+
+		int heads;
+		for (IEntity child = npc.GetChildren(); child; child = child.GetSibling())
+		{
+			EntityPrefabData data = child.GetPrefabData();
+			if (data && data.GetPrefabName().Contains("/Heads/"))
+				heads++;
+		}
+
+		return heads;
 	}
 
 	//------------------------------------------------------------------------------------------------

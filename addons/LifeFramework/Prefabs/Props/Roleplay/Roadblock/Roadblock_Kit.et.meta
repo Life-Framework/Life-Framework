@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A317B2EFCFB528F2}Prefabs/Props/Roleplay/Roadblock/Roadblock_Kit.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -710,3 +710,20 @@ class LF_CaseBoardSubscriber : LF_EventSubscriber
 		return true;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CaseBoard's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_CaseBoard_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_CaseBoard_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_CaseBoard";
+	}
+
+	override void Apply()
+	{
+		LF_CaseBoard.ResetStatics();
+	}
+}

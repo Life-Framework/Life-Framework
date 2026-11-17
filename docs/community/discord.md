@@ -35,6 +35,7 @@ what staff apply. Update this file in the same change.
 | COMMUNITY | #playtest-feedback | Everyone | Playtest reports in the pinned template; the /playtest page links here. Created 2026-11-10. Reports become GitHub issues ([onboarding](onboarding.md)) |
 | COMMUNITY | #showcases | Trusted, Contributor, staff open posts | Forum. Everyone can reply |
 | PROJECT | #github | GitHub Actions merged-PR feed (webhook) | Read only for people |
+| PROJECT | #dev | Everyone | Contributor talk: what to work on, questions about CONTRIBUTING.md, the "good first issue" label. Code still lands only through GitHub pull requests |
 | PROJECT | #roadmap | Forum synced from GitHub by the bot | One thread per roadmap issue; everyone can reply, only the bot opens threads. Tags: the seven pillars, Needs a hand, In progress, Done |
 | CONTRIBUTORS | #contributor-signups | Staff | Visible to everyone. How to contribute through GitHub |
 | CONTRIBUTORS | #contributors | Contributor, Advisor, staff | Hidden from everyone else |

@@ -19,6 +19,7 @@ class LF_BleedOut
 	protected static float s_fLastTickMs;
 	protected static int s_iExpiredCount;
 	protected static int s_iGaveUpCount;
+	protected static bool s_bTestLoaded;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -31,6 +32,14 @@ class LF_BleedOut
 		s_fLastTickMs = 0;
 		s_iExpiredCount = 0;
 		s_iGaveUpCount = 0;
+		s_bTestLoaded = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: treat every downed character as lying on a stretcher (the seat is async in the engine).
+	static void SetTestLoaded(bool loaded)
+	{
+		s_bTestLoaded = loaded;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -135,9 +144,14 @@ class LF_BleedOut
 				continue;
 			}
 
-			// A patient lying on a stretcher (a seat of an ambulance) does not bleed out (#262).
-			if (LF_BedDelivery.IsLoaded(character))
+			// A patient lying on a stretcher (a seat of an ambulance) does not bleed out (#262). Only an
+			// on-duty medic can seat one there (LF_Carry.MayUseVehicle); any other seat bleeds as normal.
+			// The give-up clock still runs: a patient must be able to give up from the stretcher (#2405).
+			if (s_bTestLoaded || LF_BedDelivery.IsLoaded(character))
+			{
+				character.LF_AdvanceDownedFor(dt);
 				continue;
+			}
 
 			// The playtest town's practice patient waits for a medic as long as it takes.
 			if (LF_DownedPatient.IsPatient(character))
@@ -324,6 +338,13 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the downed clock runs while the bleed-out is paused, so give-up still opens.
+	void LF_AdvanceDownedFor(float dt)
+	{
+		m_fLF_DownedFor += dt;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Seconds the client believes are left; -1 when not downed. Up to SYNC_STEP_SECONDS stale.
 	int LF_GetBleedSecondsLeft()
 	{
@@ -341,5 +362,22 @@ modded class SCR_ChimeraCharacter
 	float LF_GetDownedForSeconds()
 	{
 		return m_fLF_DownedFor;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_BleedOut's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_BleedOut_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_BleedOut_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_BleedOut";
+	}
+
+	override void Apply()
+	{
+		LF_BleedOut.ResetStatics();
 	}
 }

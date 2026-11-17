@@ -283,3 +283,20 @@ class LF_WorldResetScan
 		return true;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_WorldReset's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_WorldReset_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_WorldReset_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_WorldReset";
+	}
+
+	override void Apply()
+	{
+		LF_WorldReset.ResetStatics();
+	}
+}

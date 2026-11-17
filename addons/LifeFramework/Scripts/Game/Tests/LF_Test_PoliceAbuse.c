@@ -1,10 +1,8 @@
-// red-proof: observed 2026-11-08 (tools/cli test --no-build --tier all): with the
-// HasDrawnArmoryThisShift gate in LF_PoliceRanks.Draw disabled, the run printed
-// "[LFTEST] FAIL security/police-abuse" / "- the refusal names the spent shift draw".
-// Restored, it passes (13 assertions).
+// red-proof: observed 2026-11-08 (tools/cli test --no-build --tier all) for the armory part, which
+// moved to LF_Test_ArmoryKitCap and LF_Test_ArmoryCooldownPersist (#2416). The reach checks are pure.
 
 // tier: LOGIC
-//! Police menu reach and one armory draw per duty shift. Fines are paper tickets (LF_Test_FineTicket*).
+//! Police menu reach. The armory's one-kit rule is LF_Test_ArmoryKitCap. Fines are paper tickets (LF_Test_FineTicket*).
 class LF_Test_PoliceAbuse : LF_Test
 {
 	override string GetName()
@@ -22,26 +20,5 @@ class LF_Test_PoliceAbuse : LF_Test
 		ctx.False(LF_PoliceUtils.IsWithinReach(officer, justOut), "a suspect 5.1 m away is out of reach");
 		ctx.False(LF_PoliceUtils.IsWithinReach(officer, acrossMap), "a suspect across the map is out of reach");
 		ctx.False(LF_PoliceUtils.IsTargetInReach(null, null), "a suspect with no body is out of reach");
-
-		string uid = "security-police-armory";
-		LF_PlayerAccount account = LF_PlayerAccountManager.GetOrCreate(uid);
-		account.SetFaction(LF_Faction.POLICE);
-		account.SetPoliceRank(LF_PoliceRanks.PATROL);
-		account.SetOnDuty(true);
-		LF_PoliceRanks.OnDutyChanged(account, true);
-		ctx.False(account.HasDrawnArmoryThisShift(), "a new shift has its draw available");
-
-		account.SetArmoryDrawnThisShift(true);
-		ctx.False(LF_PoliceRanks.Draw(uid, null), "a second draw in one shift refuses");
-		ctx.True(LF_PoliceRanks.GetLastError().IndexOf("already drew a kit this shift") != -1, "the refusal names the spent shift draw");
-
-		account.SetOnDuty(false);
-		LF_PoliceRanks.OnDutyChanged(account, false);
-		ctx.False(account.HasDrawnArmoryThisShift(), "going off duty resets the shift draw");
-
-		account.SetOnDuty(true);
-		LF_PoliceRanks.OnDutyChanged(account, true);
-		LF_PoliceRanks.Draw(uid, null);
-		ctx.True(LF_PoliceRanks.GetLastError().IndexOf("already drew") == -1, "the next shift passes the draw gate");
 	}
 }

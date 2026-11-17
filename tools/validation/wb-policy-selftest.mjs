@@ -37,7 +37,7 @@ const down = (name) => ({ name, caps: ["server", "workbench", "rdb"], multiplier
 const gate = (o) => chooseGate(o);
 
 // 1. chooseGate without the cap: this PC is never a candidate and never the fallback
-ok("no cap: roomy free PC is never chosen", gate({ local: pc(), remotes: [box("lf-cloud", 4000)] }).where === "lf-cloud");
+ok("no cap: roomy free PC is never chosen", gate({ local: pc(), remotes: [box("lf-cloud", 6000)] }).where === "lf-cloud");
 ok("no cap: even when the box is short, wait (not this PC)", gate({ local: pc(), remotes: [box("lf-cloud", 1000)] }).where === "wait");
 ok("no cap, nobody answers: wait, not this PC", gate({ local: pc(), remotes: [down("lf-cloud"), down("lf-testbox")] }).where === "wait");
 ok("no cap, no remotes at all: wait", gate({ local: pc(), remotes: [] }).where === "wait");

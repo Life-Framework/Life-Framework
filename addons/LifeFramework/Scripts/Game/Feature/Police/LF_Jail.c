@@ -300,6 +300,13 @@ class LF_Jail
 			return false;
 		}
 
+		// An officer never jails themself: every arrest path (action, menu, escort) meets here.
+		if (officerUid == prisonerUid)
+		{
+			LF_Debug.Warn("Jail", string.Format("arrest refused: %1 cannot arrest themself", officerUid));
+			return false;
+		}
+
 		LF_PlayerAccount officer = accounts.GetAccount(officerUid);
 		if (!LF_PoliceUtils.IsOnDutyOfficer(officer))
 		{
@@ -361,6 +368,9 @@ class LF_Jail
 		if (seconds > 0)
 			sentence.m_bServing = true;
 		Sentences().Set(prisonerUid, sentence);
+		// The escort ends at the cell door, whichever path made the arrest. A hold left active
+		// outlives the sentence and turns the freed player's next logout into a custody escape.
+		LF_JailEscort.Drop(prisonerUid);
 		IEntity body = MoveToCell(prisonerUid, standIn);
 		if (body)
 			sentence.m_BodyId = body.GetID();
@@ -935,7 +945,7 @@ class LF_Jail
 		if (!account)
 			return;
 
-		string name = playerUid;
+		string name; // never the uid: the slip replicates it to every client (#2416); empty prints "unknown"
 		LF_PlayerCharacter character = account.GetActiveCharacter();
 		if (character)
 			name = character.GetFirstName() + " " + character.GetLastName();
@@ -1142,5 +1152,22 @@ class LF_Jail
 			return;
 
 		LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", "#EL-Jail_Released", 3.0, LF_ENotificationType.SUCCESS);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Jail's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Jail_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Jail_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Jail";
+	}
+
+	override void Apply()
+	{
+		LF_Jail.ResetStatics();
 	}
 }

@@ -12,6 +12,8 @@ class LF_HeistVaultComponentClass : LF_BankVaultComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_HeistVaultComponent : LF_BankVaultComponent
 {
+	static const string DEFAULT_ACTION_NAME = "#LF-Heist_Van_Open";	// lf-fixed: mirrors the m_sActionName attribute default
+
 	[Attribute("bags", UIWidgets.EditBox, desc: "Loot kind: bags (cash van) or weapons (armory).")]
 	protected string m_sLootKind;
 
@@ -48,12 +50,21 @@ class LF_HeistVaultComponent : LF_BankVaultComponent
 			}
 		}
 
-		LF_Bank.ConfigureHeist(vaultId, m_sLootKind, loot, m_sOffence, m_bLoud, m_iStock, m_fRefillSeconds);
+		bool loud = m_bLoud;
+		if (m_Tuning && m_Tuning.m_bLoud)
+			loud = true;
+
+		LF_Bank.ConfigureHeist(vaultId, m_sLootKind, loot, m_sOffence, loud, m_iStock, m_fRefillSeconds);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override string GetActionName()
 	{
+		// The cash van's name is this attribute's default, so it counts as unset: a safe type's own
+		// name (store_box: "Crack the box safe") fills it. A name a prefab sets itself still wins.
+		if (m_sActionName == DEFAULT_ACTION_NAME && m_Tuning && !m_Tuning.m_sActionName.IsEmpty())
+			return m_Tuning.m_sActionName;
+
 		return m_sActionName;
 	}
 }

@@ -3,6 +3,12 @@
 // and the store keeps passes only and survives a corrupt file. Does not boot the game.
 // inputs: tools/lib/test-cache.mjs, tools/validation/test-cache-selftest.mjs
 //
+// red-proof 2026-11-16 (queue-regate, "reused agent pass"): run before lookupCovering existed ("tc.lookupCovering is not a function");
+// then each broken alone through LF_TEST_CACHE_MODULE: no `all`-covers-`fast` rule "did not cover the slim gate's fast need";
+// --red records accepted "a --red run was reused"; stored-inputs check dropped "a record whose stored inputs differ ... was trusted";
+// record tier check dropped "a record that says tier=fast under the all key was reused"; code check dropped "a failure was reused"; and the
+// cli wiring lines removed "runShardedTests ... never asks the pass cache".
+//
 // red-proof: 2026-11-14, each break run through LF_TEST_CACHE_MODULE=<broken copy>:
 //   `git add -A` removed from treeHashes -> FAIL on every file case (script byte, .meta, untracked file, deletion);
 //   `only` dropped from keyInputs        -> FAIL "a different --only list";
@@ -12,7 +18,7 @@
 //   "tools/test" dropped from KEY_PATHS  -> FAIL "a changed test-e2e.ps1";
 //   lookup accepting code != 0           -> FAIL "a stored timeout (code 124) is never a hit".
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readdirSync, writeFileSync, appendFileSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync, appendFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
@@ -145,6 +151,62 @@ try {
     const k = (tier) => tc.cacheKey(tc.keyInputs("unused", { ...base, tier }));
     if (new Set(["all", "fast", "persistence", "perf"].map(k)).size !== 4) failures.push("two tiers share a cache key");
     if (tc.keyInputs("unused", { ...base, tier: "all" }).v !== tc.KEY_VERSION || tc.KEY_VERSION < 2) failures.push("the key lost its version (2: `all` no longer runs the PERF tier)");
+  }
+
+  // The gate trusts the agent's own pass for the exact tree it gates (tools/lib/test-cache.mjs lookupCovering, "reused agent pass").
+  // An `all` pass answers an `all` need, and also a slim gate's LOGIC (`fast`) need; nothing else does. Never a failure or a --red run.
+  {
+    const trees = tc.treeHashes(repo);
+    const rdb = tc.rdbHashes(repo, sel.addons);
+    const need = (over = {}) => tc.keyInputs(repo, { ...sel, trees, rdb, ...over });
+    const root = join(base, "cache-agent");
+    const pass = (inputs, extra = {}) => ({ code: 0, failed: 0, passed: 9, total: 9, at: "t", tier: inputs.tier, only: inputs.only, inputs, worktree: "agent-wt", machine: "pc", by: "agent", ...extra });
+    const allIn = need({ tier: "all" });
+    const fastIn = need({ tier: "fast", world: "Worlds/TestLogic/TestLogic.ent" });
+    const kAll = tc.cacheKey(allIn);
+    // nothing recorded: a miss
+    if (tc.lookupCovering(root, allIn) !== null || tc.lookupCovering(root, fastIn) !== null) failures.push("an empty cache answered a gate need");
+    // the agent's `all` pass answers the full gate's `all` need ...
+    tc.store(root, kAll, pass(allIn));
+    const hitAll = tc.lookupCovering(root, allIn);
+    if (!hitAll || hitAll.key !== kAll || hitAll.via !== "exact") failures.push("an agent `all` pass did not answer an `all` need");
+    // ... and the slim gate's LOGIC need, for the same tree
+    const hitFast = tc.lookupCovering(root, fastIn);
+    if (!hitFast || hitFast.key !== kAll || hitFast.via !== "all") failures.push("an agent `all` pass did not cover the slim gate's `fast` need");
+    // the reverse never holds: a `fast` pass is not an `all` pass
+    const root2 = join(base, "cache-agent-fast");
+    tc.store(root2, tc.cacheKey(fastIn), pass(fastIn));
+    if (tc.lookupCovering(root2, allIn) !== null) failures.push("a `fast` pass answered an `all` need");
+    if (tc.lookupCovering(root2, fastIn)?.via !== "exact") failures.push("a `fast` pass did not answer a `fast` need");
+    // another tree, rdb, build, addon list or core-only pass: no cover
+    for (const [name, over] of [["a changed tree", { trees: { ...trees, addons: "other" } }], ["a changed rdb", { rdb: { LifeFramework: "other" } }], ["another server build", { build: "999" }], ["another addon list", { addons: ["LifeFramework", "LF_Everon1989"] }], ["a core-only need", { coreOnly: true }], ["an --only need", { only: ["LF_Test_A"] }]]) {
+      if (tc.lookupCovering(root, need({ tier: "fast", world: "Worlds/TestLogic/TestLogic.ent", ...over }))) failures.push(`${name} was covered by the agent's pass`);
+      if (tc.lookupCovering(root, need({ tier: "all", ...over }))) failures.push(`${name} was answered by the agent's pass`);
+    }
+    // a record whose stored inputs differ from the need (a key collision, a hand-edited file) is not trusted
+    const root3 = join(base, "cache-agent-forged");
+    tc.store(root3, kAll, pass({ ...allIn, build: "forged" }));
+    if (tc.lookupCovering(root3, allIn) !== null) failures.push("a record whose stored inputs differ from the need was trusted");
+    // never a failure, a timeout, a --red run or a record from an --only run
+    const root4 = join(base, "cache-agent-bad");
+    mkdirSync(tc.cacheDir(root4), { recursive: true });
+    for (const [name, extra] of [["a failure", { code: 1, failed: 2 }], ["a timeout", { code: 124 }], ["a --red run", { red: true }], ["a record with failed tests", { failed: 1 }], ["an --only record", { only: ["LF_Test_A"] }], ["a record that says tier=fast under the `all` key", { tier: "fast" }]]) {
+      writeFileSync(join(tc.cacheDir(root4), `${kAll}.json`), JSON.stringify({ ...pass(allIn, extra), key: kAll }));
+      if (tc.lookupCovering(root4, allIn) !== null || tc.lookupCovering(root4, fastIn) !== null) failures.push(`${name} was reused`);
+    }
+    // the wiring: ci's sharded suite and cmdTest ask the cache, and the merged pass is stored
+    {
+      const cli = readFileSync(join(here, "..", "cli.mjs"), "utf8");
+      const body = cli.slice(cli.indexOf("async function runShardedTests("), cli.indexOf("function stampMergedSuite("));
+      if (!body.includes("passCacheCheck(")) failures.push("runShardedTests (ci's sharded suite) never asks the pass cache");
+      if (!body.includes("passCacheStore(")) failures.push("runShardedTests never stores a merged pass");
+      if (!cli.includes("testCache.lookupCovering(")) failures.push("passCacheCheck does not use lookupCovering");
+      if (!cli.includes("by: process.env.LF_SHIP_QUEUE_JOB")) failures.push("a stored pass does not say who ran it");
+    }
+    // the log line a gate prints
+    const note = tc.reuseNote(hitFast.rec, hitFast.key, "fast");
+    if (!/reused agent pass [0-9a-f]{12}/.test(note) || !/tier=all/.test(note) || !/fast/.test(note)) failures.push(`the reuse line is not "reused agent pass <key>": ${note}`);
+    if (/reused agent pass/.test(tc.reuseNote({ ...hitAll.rec, by: "gate" }, kAll, "all"))) failures.push("a pass a queue gate recorded was called an agent pass");
   }
 } catch (e) {
   failures.push(`threw: ${e.message}`);

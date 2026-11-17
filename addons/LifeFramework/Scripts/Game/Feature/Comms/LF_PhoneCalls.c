@@ -601,3 +601,20 @@ class LF_PhonePresence : Managed
 		return LF_EPhoneEnd.NONE;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_PhoneCalls's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PhoneCalls_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PhoneCalls_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_PhoneCalls";
+	}
+
+	override void Apply()
+	{
+		LF_PhoneCalls.ResetStatics();
+	}
+}

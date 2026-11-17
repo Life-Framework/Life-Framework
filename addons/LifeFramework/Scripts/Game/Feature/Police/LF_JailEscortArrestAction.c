@@ -78,15 +78,8 @@ class LF_JailEscortArrestAction : ScriptedUserAction
 		if (!pOwnerEntity || !pUserEntity)
 			return;
 
-		string officerUid = LF_Utils.GetPlayerUid(pUserEntity);
-		string prisonerUid = LF_Utils.GetPlayerUid(pOwnerEntity);
-		if (officerUid.IsEmpty() || prisonerUid.IsEmpty())
-		{
-			LF_Debug.Error("Jail", "escort arrest refused: officer or suspect has no account id");
-			return;
-		}
-
-		LF_JailEscort.Escort(officerUid, prisonerUid);
+		// Reach and another officer's hold are judged on the server (#2542).
+		LF_JailEscort.Grab(pUserEntity, pOwnerEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------

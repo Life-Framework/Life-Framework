@@ -236,3 +236,20 @@ class LF_ShopStockRules
 		return stock.m_Buyback.m_bStolen && flaggedStolen;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ShopStockConfig's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_ShopStockConfig_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ShopStockConfig_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_ShopStockConfig";
+	}
+
+	override void Apply()
+	{
+		LF_ShopStockConfig.ResetStatics();
+	}
+}

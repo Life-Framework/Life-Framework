@@ -11,5 +11,14 @@ GenericEntity LF_TestRunner {
  coords 4471.854 21.689 10530.136
 }
 
-SCR_AIWorld AIWorld_CoreOnEveron : "Prefabs/AI/SCR_AIWorld_Eden.et" {
+SCR_AIWorld AIWorld_CoreOnEveron : "{70CCCF16487C927F}Prefabs/AI/SCR_AIWorld_Eden.et" {
+ components {
+  NavmeshWorldComponent "{5584F30E67F617AD}" {
+   NavmeshSettings NavmeshWorld "{50FC63BEBE3973C5}" {
+    NavmeshFilesConfig BaseNavmeshFilesConfig "{60B8A297F9E52831}" {
+     NavmeshFile "{AD5F99CD7C59D5E0}worlds/GameMaster/Navmeshes/GM_Eden.nmn"
+    }
+   }
+  }
+ }
 }

@@ -253,8 +253,10 @@ export async function main() {
       const stale = dlg.staleLines(ROOT, s, prov);
       ok(stale.length === 0, `${id}: these lines were reworded or are missing their recording: ${stale.join(", ")} (${fix})`);
       for (const [rel, text] of Object.entries(dlg.expectedFiles(ROOT, s, prov))) {
-        const file = join(ROOT, ADDON, rel);
-        ok(existsSync(file) && readFileSync(file, "utf8") === text, `${id}: ${ADDON}/${rel} does not match dialogue.json (${fix})`);
+        // A pack's full dialogue (#1962) lives in its pack, not the core.
+        const home = s.addon && s.addon !== "LifeFramework" ? join("addons", s.addon) : ADDON;
+        const file = join(ROOT, home, rel);
+        ok(existsSync(file) && readFileSync(file, "utf8") === text, `${id}: ${home}/${rel} does not match dialogue.json (${fix})`);
       }
       for (const e of dlg.stringEntries(s)) ok(real.get(e.id) === e.text.replace(/"/g, '\\"'), `${id}: string ${e.id} does not match dialogue.json (${fix})`);
       const total = Object.values(prov.lines).reduce((n, l) => n + (l.chars_total || 0), 0);
@@ -343,6 +345,31 @@ export async function main() {
       let message = "";
       try { await dlg.run(root, "baker_pack", { fetchImpl, convert, log: () => {}, force: "ghost" }); } catch (e) { message = e.message; }
       ok(/no such line/.test(message), "voiced patch: forcing a line the patch does not have is refused");
+
+      // A Piper line inside an ElevenLabs dialogue (#1959): free, only a licence-safe voice, the other lines untouched.
+      const piperVoice = { engine: "piper", id: "en_US-ljspeech-high", name: "LJ Speech" };
+      const withPiper = (v) => ({ ...patch(), lines: { ...patch().lines, welcome: { text: "Welcome to town. Your papers are in order.", voice: v } } });
+      const ppath = process.platform === "win32" ? "piper.exe" : "piper";
+      put(`tools/film/.tts/piper/${ppath}`, "x");
+      put("tools/film/.tts/en_US-ljspeech-high.onnx", "x");
+      ok(dlg.specProblems({ ...spec(), lines: { ...spec().lines, greet: { text: "Hi there.", voice: { engine: "piper", id: "en_US-lessac-high" } } } }, strings).some((x) => /not licence-safe/.test(x)), "piper: a lessac voice is refused");
+      ok(dlg.specProblems({ ...spec(), lines: { ...spec().lines, greet: { text: "Hi there.", voice: { engine: "piper", id: "en_US-libritts_r-medium" } } } }, strings).some((x) => /not licence-safe/.test(x)), "piper: a libritts_r voice is refused");
+      ok(dlg.specProblems({ ...spec(), lines: { ...spec().lines, greet: { text: "Hi there.", voice: { id: "other" } } } }, strings).some((x) => /own voice must be/.test(x)), "piper: a second ElevenLabs voice on a line is refused");
+      ok(patchTool.patchProblems(withPiper(piperVoice), patchTool.loadCoreSpec(root, dlg.loadSpec(root, "baker_pack")), dlg.parseStrings(ST)).length === 0, "piper: a ljspeech line passes");
+      ok(patchTool.patchProblems(withPiper({ engine: "piper", id: "en_US-lessac-high" }), patchTool.loadCoreSpec(root, dlg.loadSpec(root, "baker_pack")), dlg.parseStrings(ST)).some((x) => /not licence-safe/.test(x)), "piper: a patch with a lessac line is refused");
+      ok(dlg.lineHash(piperVoice, "Hi.") !== dlg.lineHash({ ...piperVoice, id: "en_US-ljspeech-medium" }, "Hi.") && dlg.lineHash(piperVoice, "Hi.") !== dlg.lineHash(spec().voice, "Hi."), "piper: the hash follows the engine and the voice");
+      put("tools/assets/dialogue/baker_pack/dialogue.json", JSON.stringify(withPiper(piperVoice)));
+      const spoken = [];
+      const piperRun = (bin, args, o) => { spoken.push(o.input.trim()); writeFileSync(args[args.length - 1], Buffer.alloc(2000, 3)); return { status: 0, stderr: "" }; };
+      calls.length = 0;
+      const mixed = await dlg.run(root, "baker_pack", { fetchImpl, convert, log: () => {}, piperRun });
+      ok(calls.length === 0 && mixed.chars === 0 && spoken.length === 1 && /^Welcome to town/.test(spoken[0]), `piper: only the new line is made, by Piper, and nothing is bought (eleven ${calls.length}, piper ${spoken.length})`);
+      ok(existsSync(join(pack, "Sounds/Dialogue/baker_pack/baker_pack_welcome.wav")), "piper: the line has its wav in the pack");
+      const pprov = dlg.loadProvenance(root, "baker_pack");
+      ok(pprov.lines.welcome.engine === "piper" && pprov.lines.welcome.chars_total === 0 && pprov.lines.greet.engine === undefined, "piper: the provenance says which engine made the line and that it cost nothing");
+      spoken.length = 0;
+      await dlg.run(root, "baker_pack", { fetchImpl, convert, log: () => {}, piperRun });
+      ok(spoken.length === 0 && calls.length === 0, "piper: a second run makes nothing");
     } finally {
       if (oldKeyFile === undefined) delete process.env.LF_ELEVENLABS_KEY_FILE; else process.env.LF_ELEVENLABS_KEY_FILE = oldKeyFile;
     }

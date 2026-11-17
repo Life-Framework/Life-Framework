@@ -1,0 +1,118 @@
+// Grid cell c9r3 for zone-signs: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_zone_signs_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 131 0 59
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 135.4 0 59
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 139.8 0 59
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 144.2 0 59
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 148.6 0 59
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 59
+ angleY 270
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 64
+ angleY 270
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 148.6 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 144.2 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 139.8 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 135.4 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_zone_signs_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 131 0 69
+ angleY 90
+}
+GenericEntity Grid_zone_signs_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:zone-signs"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 130.2 0.505 59.6
+ angleY -90
+}
+GenericEntity Grid_zone_signs_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "zone-signs"
+  }
+ }
+ coords 130.3 0 61.5
+ angleY 90
+}
+GenericEntity Annex_Sign_SafeZone_Spawn : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "safe_zone"
+   m_vRimColor 0.1 0.45 0.2
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.1 0.45 0.2
+  }
+ }
+ coords 136 0.505 64
+ angleY 0
+}
+GenericEntity Annex_Sign_SafeZone_East : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "safe_zone"
+   m_vRimColor 0.1 0.45 0.2
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.1 0.45 0.2
+  }
+ }
+ coords 140 0.505 64
+ angleY 0
+}
+GenericEntity Annex_Sign_Lawless_Entry : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "lawless_zone"
+   m_vRimColor 0.65 0.1 0.1
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.65 0.1 0.1
+  }
+ }
+ coords 144 0.505 64
+ angleY 0
+}
+GenericEntity Annex_Sign_Lawless_Pit : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "lawless_zone"
+   m_vRimColor 0.65 0.1 0.1
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.65 0.1 0.1
+  }
+ }
+ coords 148 0.505 64
+ angleY 0
+}

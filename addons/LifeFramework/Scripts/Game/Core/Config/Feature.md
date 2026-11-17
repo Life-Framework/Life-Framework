@@ -343,6 +343,14 @@ schema, `/config` form and reference page list them. A `config.json` that names 
   needs stays `jobs.licenceGates`. Server only; a character spawned after the change picks it up.
 - Tests: `LF_Test_ConfigSectionsA`, `LF_Test_ConfigSectionsB`, `LF_Test_ConfigSectionsBackcompat`.
 
+## Houses section (#2505)
+
+- `houses` (`LF_HousesConfig`, `Configs/Houses/LF_Houses.conf`): `doorCloseDelaySeconds` (0 to 600, default 20): how
+  long a locked house's open door stays open before `LF_HouseDoorClose` closes it; 0 turns the auto-close off. A value
+  over 600 is clamped to 600 with a warning; a negative or non-numeric value keeps the shipped 20. Server only;
+  `/configreload` drops the cached instance (`LF_ConfigStream.ApplyToFeatures`) and the next door that opens reads it.
+  Test: `LF_Test_HouseDoorDelayConfig`.
+
 ## Identity card section (#902)
 
 - `idCard` (`LF_PhotoIdCardConfig`, `Configs/Identity/LF_PhotoIdCard.conf`): `replacementFee`

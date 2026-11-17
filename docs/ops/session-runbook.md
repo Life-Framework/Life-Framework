@@ -4,9 +4,10 @@ How to run one session of the flagship server, "Life Framework | Everon 1989 (Al
 announcement to the log read afterwards. It is written so a second person can follow it with the
 maintainer away. Paste the commands as they are. Issue: #1275 (M4, ops).
 
-A command marked *(planned)* is on the M4 plan and has not merged yet. Its name is written as its
-card names it, in code font and unlinked. `tools\cli host help` lists what exists today; the
-last section says what to do until a planned command lands.
+Every command here is on `main`; `tools\cli host help` lists them with their flags. A command that
+is named but not merged yet is marked *(planned)*, and the last section says what to do then.
+`tools/validation/ops-doc-commands-selftest.mjs` fails when this page names a command `host help`
+does not list.
 
 Rules for the whole page:
 
@@ -201,7 +202,10 @@ over and when the next one is. If `tools\cli host watch` is running, an exit aft
    tools\cli host triage
    ```
 
-   Anything new and not in the triage page becomes an issue with the lines pasted in.
+   `--draft` writes `tmp/triage/<date>/<n>.md` for each new group and prints the `gh issue create`
+   commands without running them. Anything new and not in the triage page becomes an issue with
+   the lines pasted in. After a crash, `tools\cli host crashpack` zips the newest crash (dump, log
+   tail, build stamp, config with the secrets redacted) and drafts an issue body.
 
 2. **Rotate the backups.** It keeps the newest 20 plain (start, stop) backups and never touches a
    preflight, wipe, crash or replaced-by-restore backup:

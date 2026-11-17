@@ -565,3 +565,20 @@ class LF_JobLevels
 		xp = left;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_JobLevels's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_JobLevels_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_JobLevels_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_JobLevels";
+	}
+
+	override void Apply()
+	{
+		LF_JobLevels.ResetStatics();
+	}
+}

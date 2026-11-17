@@ -1,4 +1,5 @@
 // red-proof: KeySpawnOrigin returned the pad origin, so the key was created at the pad, outside the collecting player's replication range (a client could not resolve it; key and ID card moves hung on the throbber)
+// red-proof (#1892, 2026-11-16): `tools\cli test --no-build --only <the 7 slice-1892 tests> --world Worlds/GridWorld/GridWorld.ent` before Grid_orgs_vehicles.layer failed all 7 (no org hideout door, no flagged lot, no store, no impound pad); green with it.
 // tier: WORLD
 //! A collected or bought vehicle key is created at its holder, never at the pad it was collected
 //! from, and lands in the holder's inventory (maintainer playtest 2026-11-10: after an impound
@@ -29,10 +30,10 @@ class LF_Test_VehicleKeyInventory : LF_Test
 
 		int fee = LF_GarageConfig.ImpoundFee();
 		array<ref LF_VehicleRecord> before = LF_VehicleOwnership.ExportAll();
-		LF_VehicleOwnership.Register(STREET, OWNER, STREET, LF_VehicleCatalog.S105, LF_VehicleCatalog.S105_LOCKED, "roadmap-lot", PLATE, "#EL-Vehicle_S105", true);
+		LF_VehicleOwnership.Register(STREET, OWNER, STREET, LF_VehicleCatalog.S105, LF_VehicleCatalog.S105_LOCKED, "grid-lot", PLATE, "#EL-Vehicle_S105", true);
 		LF_MoneyUtils.AddCash(owner, fee);
 		string reasonKey;
-		ctx.True(LF_VehicleOwnership.CollectFromImpound(STREET, OWNER, owner, fee, "roadmap-impound", reasonKey), "the owner collects from the impound desk");
+		ctx.True(LF_VehicleOwnership.CollectFromImpound(STREET, OWNER, owner, fee, "grid-impound", reasonKey), "the owner collects from the impound desk");
 		IEntity key = LF_VehicleOwnership.GetKey(STREET);
 		ctx.True(key != null, "a key exists for the collected car");
 

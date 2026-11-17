@@ -5,6 +5,7 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { MAINTAINER_BRANCH } from "./gate-tier.mjs";
+import { judgeWorldTests, testWarningLines } from "./world-test-judge.mjs";
 
 export const GATE_WARNINGS_FILE = join("tmp", "gate-warnings.json");
 export const GATE_WARNINGS_HEADING = "## Gate warnings (maintainer layout)";
@@ -47,6 +48,28 @@ export function demotePlacement(branch, audit, record = () => {}) {
     const lines = placementFindingLines(text);
     console.log(`WARN  placement audit flagged ${lines.length || "some"} entit${lines.length === 1 ? "y" : "ies"} (exit ${code}): a warning on a maintainer branch, listed in the PR body (tmp/gate-warnings.json)`);
     record({ check: "placement audit", lines, code });
+    return 0;
+  };
+}
+
+// `run(...args)` is a ci test step (exit code). On a maintainer branch a step whose tests FAILED prints a WARN per
+// failure, hands them to record({ check: "tests", lines, code }) and exits 0, at every tier (full, slim, T1). A step that
+// judged nothing still blocks: a script compile error, or no SUMMARY line (timeout, crash, environment)
+// (tools/lib/world-test-judge.mjs). ctx: { fallbackTests, tests } (tests may be a function, read only on a failure).
+export function demoteTests(branch, run, record = () => {}, ctx = {}) {
+  if (!MAINTAINER_BRANCH.test(branch || "")) return run;
+  return async (...args) => {
+    const { code, text } = await captureStdout(() => run(...args));
+    if (!code) return code ?? 0;
+    const tests = typeof ctx.tests === "function" ? ctx.tests() : ctx.tests ?? [];
+    const verdict = judgeWorldTests({ status: code, text, fallbackTests: ctx.fallbackTests ?? [], tests });
+    if (verdict.blocks) {
+      console.log(`FAIL  tests: ${verdict.blocks}`);
+      return code;
+    }
+    const lines = testWarningLines(verdict.warnings);
+    for (const l of lines) console.log(`WARN  test failed on a maintainer branch (a warning, not blocking, listed in the PR body): ${l}`);
+    record({ check: "tests", lines, code });
     return 0;
   };
 }

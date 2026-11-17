@@ -5,16 +5,26 @@
 // from the 134 0 242.5 spawn) and the old fixed-spawn test: `reading the town board beside the clerk counts`
 // failed, then the cascade to `the welcome cash lands in the pockets (expected 250, got 0)`. With the reader
 // walking to the board found by sign id, the same layers go green.
+// red-proof: Observed 2026-11-16 with `tools\cli test --no-build --only LF_Test_ArrivalChain --world Worlds/GridWorld/GridWorld.ent` before the
+// grid cell existed: `the clerk offers step 1 (expected 'clerk', got '')`, `step 1 hands over the ID card`.
+// With the test spawning the clerk and Grid_signs_board_quests.layer placing the town_map and post_office signs, the run is green.
 // tier: WORLD
-//! The town clerk in Quests.layer runs the arrival chain end to end through the public quest
+//! The town clerk (a spawned fixture; the town's is in Quests.layer) runs the arrival chain end to end through the public quest
 //! API: talk and register, read the town board, deliver a parcel, bank cash, return. Each
 //! SIGNAL moves only its own step, a returning player is never offered the chain again, and
 //! the ID card is handed over once.
 class LF_Test_ArrivalChain : LF_Test
 {
-	// Quests.layer: Quest_Clerk stands behind the registry counter at 137.058 0 240.907. The test bodies
-	// spawn at 134 0 242.5, 3.5 m from him (GIVER_RADIUS 5). The town board is found by its sign id
-	// (not by distance to the clerk) and the reader walks to it for the read (SIGN_READ_RADIUS 6).
+	static const ResourceName CLERK_PREFAB = "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et";
+	static const ResourceName GIFT_OVERLAY = "{6A19C3E85B027D4F}Configs/Tests/LF_Test_WelcomeGiftOverlay.conf";
+	static const ResourceName GIFT_WATER = "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et";
+	static const ResourceName GIFT_APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
+
+	// The clerk is a spawned fixture, so the test works in a world with no clerk and leaves no giver behind
+	// (LF_Test_DialogueClerk spawns its own and needs the "clerk" id free). He stands 7 m from the post
+	// office sign and the test bodies 2 m from him (GIVER_RADIUS 5, SIGN_READ_RADIUS 6), so that sign is
+	// out of the reader's reach. The town board is found by its sign id through LF_Places and the reader
+	// walks to it for the read. Grid_signs_board_quests.layer places both signs.
 
 	override string GetName()
 	{
@@ -22,6 +32,25 @@ class LF_Test_ArrivalChain : LF_Test
 	}
 
 	override void Run(LF_TestContext ctx)
+	{
+		IEntity postOffice = LF_Places.Find(LF_SignComponent.PLACE_KIND, "post_office");
+		if (!postOffice)
+		{
+			ctx.Fail("the world places a post_office sign");
+			return;
+		}
+
+		IEntity clerkNpc = LF_Utils.SpawnEntityPrefab(CLERK_PREFAB, postOffice.GetOrigin() + Vector(-7, 0, -1));
+		ctx.True(clerkNpc != null, "the clerk fixture spawns");
+		if (!clerkNpc)
+			return;
+
+		RunWithClerk(ctx, clerkNpc);
+		SCR_EntityHelper.DeleteEntityAndChildren(clerkNpc);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RunWithClerk(LF_TestContext ctx, IEntity clerkNpc)
 	{
 		LF_QuestManager manager = LF_QuestManager.GetInstance();
 		ctx.EqualStr("clerk", manager.GetGiverOfQuest("arrival_register"), "the clerk offers step 1");
@@ -31,8 +60,9 @@ class LF_Test_ArrivalChain : LF_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		IEntity newcomer = LF_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "134 0 242.5", true);
-		IEntity returning = LF_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "134 0 242.5", true);
+		vector beside = clerkNpc.GetOrigin() + Vector(0, 0, -2);
+		IEntity newcomer = LF_ExploitGuardsWorldFixture.SpawnCharacter(ctx, beside, true);
+		IEntity returning = LF_ExploitGuardsWorldFixture.SpawnCharacter(ctx, beside, true);
 		if (!newcomer || !returning)
 			return;
 
@@ -71,12 +101,14 @@ class LF_Test_ArrivalChain : LF_Test
 		// Step 2 -> 3 -> 4 -> 5, each on its own signal, in order, with no trip back to the clerk.
 		// The read is checked against the reader, not the clerk (SIGN_READ_RADIUS): the player walks
 		// to the board wherever the town puts it, reads, and walks back for step 5.
-		vector boardOrigin;
-		if (!FindSignOrigin("town_map", boardOrigin))
+		IEntity board = LF_Places.Find(LF_SignComponent.PLACE_KIND, "town_map");
+		if (!board)
 		{
-			ctx.Fail("the town places a town_map sign");
+			ctx.Fail("the world places a town_map sign");
 			return;
 		}
+
+		vector boardOrigin = board.GetOrigin();
 
 		vector clerkSide = player.GetOrigin();
 		player.SetOrigin(boardOrigin);
@@ -98,45 +130,38 @@ class LF_Test_ArrivalChain : LF_Test
 		// Step 5: the clerk, in person.
 		ctx.False(tracker.RequestTurnIn("arrival_done"), "step 5 is not done before the player is back");
 		int cashBefore = LF_MoneyUtils.GetCash(player);
+		// The gift is a pack's decision (LF_WelcomeGiftTable): this test layers its own fixture rows
+		// over the table so the mechanism is proved with or without a pack header.
+		ctx.Equal(0, manager.CountItem(player, GIFT_WATER), "no gift water before the clerk's last talk");
+		LF_WelcomeGiftConfig gifts = LF_WelcomeGiftTable.Get();
+		if (!gifts)
+		{
+			ctx.Fail("the welcome gift table loads");
+			return;
+		}
+
+		Resource overlay = BaseContainerTools.LoadContainer(GIFT_OVERLAY);
+		if (!overlay || !overlay.IsValid() || !overlay.GetResource())
+		{
+			ctx.Fail("the welcome gift overlay fixture loads");
+			return;
+		}
+
+		ctx.Equal(1, gifts.ApplyContainer(overlay.GetResource().ToBaseContainer(), GIFT_OVERLAY), "the fixture sets the clerk's gift; the row naming a missing item is refused");
 		ctx.True(tracker.RequestConverse("clerk"), "back at the clerk, the talk finishes step 5");
 		ctx.True(Status(tracker, "arrival_done") == LF_EQuestStatus.TURNED_IN, "the clerk takes step 5 back");
 		ctx.False(tracker.RequestConverse("clerk"), "after the chain the clerk has nothing more to hand out");
-		ctx.Equal(cashBefore + manager.GetDefinition("arrival_done").m_iRewardMoney, LF_MoneyUtils.GetCash(player), "the welcome cash lands in the pockets");
-		ctx.True(manager.GetDefinition("arrival_done").m_iRewardMoney > 0, "the clerk gives a welcome");
+		ctx.Equal(cashBefore, LF_MoneyUtils.GetCash(player), "the welcome is a gift, not cash");
+		ctx.Equal(0, manager.GetDefinition("arrival_done").m_iRewardMoney, "step 5 rewards no money");
+		ctx.Equal(1, manager.CountItem(player, GIFT_WATER), "the welcome gift's drink lands in the pockets");
+		ctx.Equal(1, manager.CountItem(player, GIFT_APPLE), "the welcome gift's food lands in the pockets");
+		LF_WelcomeGiftTable.ResetStatics();
 
 		// After step 5 nothing else is pushed.
 		foreach (string questId, LF_QuestState state : tracker.GetTracker().GetStates())
 		{
 			ctx.True(state.GetStatus() == LF_EQuestStatus.TURNED_IN, "nothing runs after the chain: " + questId);
 		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected string m_sWantedSign;
-	protected bool m_bSignFound;
-	protected vector m_vSignOrigin;
-
-	//! Where the placed sign with this id stands, found by its LF_SignComponent, not by a coordinate.
-	protected bool FindSignOrigin(string signId, out vector origin)
-	{
-		m_sWantedSign = signId;
-		m_bSignFound = false;
-		GetGame().GetWorld().QueryEntitiesBySphere("200 0 250", 400, CollectSign);
-		origin = m_vSignOrigin;
-		return m_bSignFound;
-	}
-
-	protected bool CollectSign(IEntity entity)
-	{
-		LF_SignComponent sign = LF_SignComponent.Cast(entity.FindComponent(LF_SignComponent));
-		if (sign && sign.GetSignId() == m_sWantedSign)
-		{
-			m_bSignFound = true;
-			m_vSignOrigin = entity.GetOrigin();
-			return false;
-		}
-
-		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

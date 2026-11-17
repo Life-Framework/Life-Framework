@@ -136,3 +136,20 @@ class LF_EvidenceConfig
 		return config.m_iExpirySeconds;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_EvidenceConfig's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_EvidenceConfig_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_EvidenceConfig_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_EvidenceConfig";
+	}
+
+	override void Apply()
+	{
+		LF_EvidenceConfig.ResetStatics();
+	}
+}

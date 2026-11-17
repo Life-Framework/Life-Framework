@@ -69,7 +69,7 @@ is `--fail N`. Items marked [look] are visuals an agent cannot judge (the dedica
 
 - [ ] Hospital (262, 258): player A clocks in as medic, player B is downed and A holds *Revive*: A kneels in CPR on both screens, B wakes at 4 s; release at 2 s stands A up at once. Clip looks right on a standing medic. #512 (proven: start, play and stop logs) [look]
 - [ ] B gives up while downed (hold X after 30 s): the death title is not clipped ("You are dead"). #493 [look]
-- [ ] Player A downs B and drags then carries them, loads the body into a car: the body sits in the seat. #697
+- [ ] Player A downs B beside a car and loads the body into it: the body sits in the seat with its head on, seen by A, B and a late joiner. Drag and carry were cut 2026-11-15. #697
 - [ ] Player A shoots a civilian near the fuel station with a real gun: it dies, A is wanted for murder, the clerk takes no damage (real bullets were never exercised). #610
 - [ ] Player B hosts and A joins while a rock is half mined and a plot half grown: both show the same stage. #592, #614
 

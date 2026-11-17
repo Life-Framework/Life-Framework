@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "0F10FB81D4D28ABC"
+ components {
+  MeshObject "{5C5E8D6E83EB67F3}" {
+   Object "{2D6DB9D5AFEAB643}Assets/Props/Services/Post/CounterPostOffice_01/CounterPostOffice_01.xob"
+  }
+  RigidBody "{97AF57A1A3678601}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{CC5BFE1966090AC6}" {
+   ActionContexts {
+    UserActionContext "{571F345CD8502113}" {
+     ContextName "default"
+     Position PointInfo "{5508122A25411A4E}" {
+      Offset 0 0.9 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_LicenceDeskAction "{AD956883DEBBD4B5}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{9155E7CA4F46AFC9}" {
+      Name "#LF-LicenceDesk_Action"
+     }
+    }
+   }
+  }
+  RplComponent "{ED3A185824B50D3F}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+}

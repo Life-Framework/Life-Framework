@@ -226,3 +226,20 @@ class LF_ChainCatalog
 		return chain.FindStep(stepId);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ChainCatalog's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_ChainCatalog_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ChainCatalog_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_ChainCatalog";
+	}
+
+	override void Apply()
+	{
+		LF_ChainCatalog.ResetStatics();
+	}
+}

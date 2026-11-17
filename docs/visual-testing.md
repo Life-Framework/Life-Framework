@@ -5,10 +5,13 @@ Use the cheapest tool that can see the problem; a game session is the last step,
 
 ```
 tools\cli audit placement [--area a]     numbers, no pixels, test server, about 10 s      (docs/placement-audit.md)
+tools\cli audit placement --grid         the same on GridWorld at the grid bar: on the ground and reachable, nothing else
 tools\cli look <area | x,z> [more]       pictures, hidden Workbench, no session, about 25 s
-tools\cli look grid:<slug>              a debug-grid cell; town:<area> is an area that must lie in the town (docs/architecture/world-zones.md)
+tools\cli look grid:<slug>              a debug-grid cell, or grid:annex-gate: opens GridWorld; town:<area> is an area that must lie in the town (docs/architecture/world-zones.md)
+tools\cli look grid:all                 every claimed grid cell in one run on GridWorld, plus overview.jpg
 tools\cli look all                       every area of agent-box/areas.json in one run, about 4 min, plus overview.jpg
 tools\cli look item <prefab|slug> ...   a dropped item and its inventory camera view, no session, about 30 s
+tools\cli look <x,z[,r]> --world Worlds/CoreOnEveron/CoreOnEveron.ent [--dump m]   vanilla Everon at a coordinate; `--dump` also writes every entity, road and ground height near it as dump.txt (`tools\cli scout`, docs/everon/scout.md)
 tools\cli look serve                     one Workbench that stays up and takes every look in turn: a few seconds a look
 tools\cli call wb_preview '{"resource":"{GUID}path"}'   one resource in an open Workbench, about 2 s, PNG path returned
 tools\cli shots area <name>              pictures from a game client on a `--profile full` session (docs/agent-area-polish.md)
@@ -90,6 +93,16 @@ camera, and for each area takes a wide shot from the side players approach, thre
 view and up to 12 close-ups (interactables first, then named props, then the rest, nearest first).
 Then it exits. No server, no client, no session lane, nothing shared with another agent.
 
+**Which world.** A run opens one world (`docs/architecture/three-worlds.md`): `grid:<slug>`, `grid:annex-gate`
+and `grid:all` open `Worlds/GridWorld/GridWorld.ent`; `<area>`, `town:<area>`, `x,z`, `all` and `look item`
+open the playtest world (DebugWorld, with the pack town on top when the pack is here). One command cannot mix
+the two (`a look opens one world`); run them one after the other. `--world <path>` still wins. A grid look takes
+its close-ups from `GridWorld_Layers/`, and the plan's `world` line is checked against what Workbench opened
+(`worldProblem`), so a fallback scene is never taken for GridWorld. `audit placement --grid` measures the same
+world at the grid bar (`floating`, `sunk`, `unreachable`; the polish kinds are the town's), and
+`session up --mission grid` boots it as a server (`LF_GridWorld.conf`, no harness build). The default
+`--mission debug` still boots the town.
+
 **Where it runs.** `look` and `look item` run on the machine with the most room for a Workbench, the
 way `ci`'s Workbench steps choose (`tools/lib/wb-gate.mjs` chooseGate: live free RAM less the look's
 2.2 GB, above the pool's 1.5 GB floor, weighted by speed). This PC, lf-testbox or lf-cloud: a pool
@@ -109,6 +122,8 @@ tools\cli look bank                      tmp/look/bank/contact.jpg, index.json a
 tools\cli look bank hospital 262,255     several areas, or any x,z, in one Workbench run
 tools\cli look all                       all areas, plus tmp/look/overview.jpg (one wide per area)
 tools\cli look bank --close 0            only the five area shots
+tools\cli look grid:all --close 0        one set per claimed grid cell (docs/architecture/grid-cells.md is the picture index)
+tools\cli look grid:first-night-room --interior 127.5,3.4,96 --radius 9   from INSIDE a building: x,y,z is the room's centre on its floor; four eye-level views from the room's sides, no oblique or top, close-ups of that floor only
 tools\cli look bank --hour 19            local solar time (default 14, Clear weather)
 tools\cli look bank --edit               the World Editor view instead of play mode
 tools\cli look bank --measure            also print Workbench's peak working set
@@ -119,6 +134,19 @@ Read `contact.jpg` (sized for an agent to read in one image) and then the PNG of
 looks off. Each close-up label carries the entity's world bounds in metres and its scale factor
 when that is not 1; compare sizes between neighbours. The exit code is 1 when a shot is missing or
 Workbench timed out, never because of a flag.
+
+**What a picture shows.** A look shows the working tree: HEAD plus uncommitted and untracked
+files. Shoot "before" from a checkout without your edit (before the first edit, `git stash`, or the
+base commit), never after `dress.mjs` or any generator has already rewritten the file. Every
+`index.json` carries `inputs.addons` (the git tree of `addons/` the look was asked to show) and
+`inputs.rendered` (the tree the Workbench had on disk when it shot: the viewer checkout for the look
+server, the snapshot for a fresh Workbench); the summary prints it as `addons=<tree>`. The look fails
+when the two differ, and a routed look also fails when the box rendered another tree than this
+checkout's. `tools\cli evidence <key> after <area>` refuses a pair whose before and after show the
+same tree (`--same-inputs` for a change outside `addons/`). On 2026-11-17 PR #2364's general store
+before and after looked the same: the "before" look ran after `dress.mjs` had rewritten the prefab,
+so both pictures showed the new prefab (snapshot `f66939f0` held the 1312-line file). The look itself
+was right: the same prefab, committed in another worktree, showed its thinner shelves at once.
 
 **Flags** are printed per shot and written into the tile label and `index.json`. They are hints
 that say where to look first, not verdicts:
@@ -191,6 +219,92 @@ minutes the server exits and frees its memory. `look item` stays on the fresh pa
 
 Server-mode log lines in `console.log` under `Life-Framework-look-viewer/server/profile/visual-serve/logs/`
 start with `[LFVisual]`, like a fresh run's; `ok request <id> reload=<mode>` opens each request.
+
+### `look` on a pool machine: where the time goes, and the warm path (2026-11-16/17)
+
+`tools\cli look <area>` from a worktree on this PC (no Workbench here) runs on a pool machine. Every look prints its
+phases (`look: phases: ...`; the router adds `route-wait, sync, remote-total, copy-back`) and keeps them in `index.json`
+under `timing`. Measured on lf-testbox with three other agents looking at the same time, `look grid:gun-counter --fresh`
+(14 shots, the old path) took **300 s**:
+
+| phase | s |
+|---|---|
+| RAM wait (route-wait: no machine had room for a Workbench) | 132 |
+| the box's one Workbench slot, FIFO behind other agents' looks (slot-wait) | 100 |
+| sync to the box (run folder, bundle) | 4.7 |
+| Workbench start (wb-start) | 23.5 |
+| world load and play | 5.2 |
+| 14 shots | 11.3 |
+| collect, node start and the rest on the box | about 20 |
+| copy back | 3.0 |
+
+So the look itself is 40 to 60 s of 300; the rest is queueing behind other Workbenches. Two things were cut:
+
+- **A target that does not resolve fails before the queue.** `look grid:gunstore` says so in 0.3 s. It used to say so
+  after the slot wait (217 s, once).
+- **A routed look is warm by default.** The box runs it with `--serve`: one resident hidden Workbench per box (its
+  `Life-Framework-look-viewer` checkout) takes the plan, so the slot is held for the request, not a Workbench start. Through
+  the server the same look held the slot for **31 to 39 s** (restart 10 to 17 s when the state changed, 0.1 to 0.3 s when
+  not, world 3.3 to 5.5, shots 10 to 11.5) against about 60 s cold. `--cold` is the old path (a Workbench of its own, no
+  resident server). A warm look that gives no pictures is run once more cold on the same machine, automatically; a dead
+  or hung server inside the box already falls back to a fresh Workbench (below).
+
+What a look from **another worktree** costs is decided by what differs from the state the resident Workbench shows
+(`mirrorMode`, `tools/lib/look-job.mjs`; the viewer is the mirror):
+
+| Difference from the last request | Served as |
+|---|---|
+| nothing | `server-same`: shot as is |
+| only files outside `addons/` | `server-reopen` |
+| a modified `.layer` when `FAST_PATH_EXT` lists it (empty; `LF_LOOK_REOPEN_EXT=.layer` to probe). Only `.layer` can ever take this path (`REOPEN_SAFE_EXT`): a prefab, material, config or mesh stays loaded in Workbench across a world reopen, so it restarts whatever the variable says | `server-reopen`; the file is written **in place** (open, truncate, write: an editor's save), HEAD moves with no worktree write, because `git checkout` unlinks and recreates a file and a reopen after that crashed Workbench 4 of 4 (2026-11-14) |
+| any other addon change (added, deleted, renamed, a script, a `.meta`, the look plugin) | `server-restart`: 10 to 17 s |
+
+**Not proven (2026-11-17):** the in-place reopen. On the shared box every look between mine came from another worktree
+whose state differed by added and deleted files (a kit `.layer` removed, one added), which always restart, so no `.layer`
+edit was ever served by a reopen and `FAST_PATH_EXT` stays empty. A second look of the same cell from a different worktree
+restarts the server today (31 to 39 s of slot time); it is not a few seconds. Proving a reopen needs a quiet box: run
+`LF_LOOK_REOPEN_EXT=.layer tools\cli look grid:<cell>` after editing a `.layer` entity, three times in a row, with no other
+agent's look between.
+
+**RAM is the pool's admission** (`tools/lib/pool-ram.mjs`, docs/worktrees.md "RAM admission"), not a second gate. Starting or
+restarting the look Workbench is a `workbench` job at its measured peak (3.6 GB seed, the p90 of observed peaks once there
+are samples) plus the floor, less what every running ArmaReforger process still grows into; the resident one hands its
+working set back to its own restart. A request to a live resident server needs no new RAM, so the router counts a box that
+has one as having a peak more free for a warm look (`state.lookServer`, read with the Workbench slots in one ssh call).
+`remoteWbState` now reads `tmp\wt\locks` with the right escaping: it read `tmpwtlocks`, so the box always showed
+"0/1 busy" and the router never said "slot busy; queuing there".
+
+**Lifetime (sessions flow like a river).** The resident Workbench exits after 10 idle minutes on its own (the plugin), is
+closed by the pool after 5 (`reapRemoteLookServer`, called from the poll that closes idle sessions) and at once when a session
+request waits on that machine for RAM or a lane; never during a request (no fresh heartbeat). A test waiting for RAM does
+not trigger it yet: it waits for the 5 or 10 minutes. It never runs on this PC and never pins.
+
+**Shared server.** Looks from every worktree use the one resident Workbench on the box, in turn, so two worktrees looking
+alternately restart it each time (the third and fourth rows above). That is still one Workbench instead of one per look.
+
+### `tools\cli look place:<place>/<slot>`: a town slot on the island
+
+A town draft's slot stands on the real Everon map, which DebugWorld does not hold: there the camera found no ground
+(y -253.8) and every picture was sky (#2347). `look place:saint-philippe/arrival` opens the pack's island world
+(`Worlds/MainWorld/MainWorld.ent`, `ISLAND_WORLD` in `tools/lib/worlds.mjs`) and reads its viewpoint from the place's
+files, never a typed coordinate (`tools/visual/look-place.mjs`):
+
+- **Where:** the slot's building (or plot) in `docs/everon/places/<place>/mapping.json`, its footprint in `dossier.json`.
+- **Front:** the first known entrance seen from the footprint centre, else the building's local +z (its yaw). The wide
+  tries eye level on that side first, then look's usual fan.
+- **Ground:** the plugin's `GetSurfaceY` on the island terrain (`ty -`), so cameras stand on the street, not under it.
+- **Inside:** `--interior auto` stands on the ground floor (footprint centre, the dossier's floor height), four views.
+- **Close-ups:** the entities of the island's `Place_*` layers within the radius (the fitted kit rows).
+- `--world island` does the same for a bare `x,z`. A place: target and a town or grid area cannot share one run.
+
+**RAM.** An island Workbench streams Everon like a server and a client in one process: `workbench:island` is seeded at
+5.4 GB (`tools/lib/pool-ram.mjs`) until measured samples replace it, and the island class covers MainWorld, Eden and
+CoreOnEveron. Routing reserves that peak when it picks a machine, and an island request to a live look server is gated
+too (the resident grows to the island peak when it opens MainWorld). The boot budget is 210 s fresh, 270 s through the server.
+
+**Measured (2026-11-17, lf-testbox, through the warm server).** World and play 34.8 s, 6 shots 6.2 s. The queue was the
+cost: 565 s for the box's one Workbench slot and 966 s for the RAM gate behind other looks. Plan an island look as up to
+30 minutes of waiting and about one minute of work; batch a slot's exterior and interior in one sitting.
 
 ### `tools\cli look item`
 

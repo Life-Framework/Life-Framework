@@ -337,3 +337,20 @@ class LF_VehicleColourList : LF_ConfigList
 		return string.Empty;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_VehicleColoursConfig's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_VehicleColoursConfig_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_VehicleColoursConfig_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_VehicleColoursConfig";
+	}
+
+	override void Apply()
+	{
+		LF_VehicleColoursConfig.Reload();
+	}
+}

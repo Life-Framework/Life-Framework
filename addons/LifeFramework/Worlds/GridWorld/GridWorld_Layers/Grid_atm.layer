@@ -1,0 +1,81 @@
+// Grid cell c10r4 for atm: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_atm_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 143 0 71
+}
+SCR_DestructibleEntity Grid_atm_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 148 0 71
+}
+SCR_DestructibleEntity Grid_atm_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 71
+ angleY 270
+}
+SCR_DestructibleEntity Grid_atm_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 76
+ angleY 270
+}
+SCR_DestructibleEntity Grid_atm_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_atm_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 148 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_atm_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 143 0 81
+ angleY 90
+}
+GenericEntity Grid_atm_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:atm"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 142.2 0.505 71.6
+ angleY -90
+}
+GenericEntity Grid_atm_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "atm"
+  }
+ }
+ coords 142.3 0 73.5
+ angleY 90
+}
+GenericEntity Annex_ATM {
+ components {
+  ActionsManagerComponent "{5A4B0B84C86D5845}" {
+   ActionContexts {
+    UserActionContext "{5A4B0B84C86D5846}" {
+     ContextName "default"
+     Position PointInfo "{5A4B0B84C86D5847}" {
+      Offset 0 0.8 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ATMAction "{5A4B0B84C86D5848}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86D5849}" {
+      Name "#EL-ATM_Title"
+      Description "Gestionar cuenta bancaria"
+     }
+    }
+   }
+  }
+  RplComponent "{5A4B0B84C86D584A}" {
+   Enabled 1
+  }
+ }
+  Flags 0x403 0
+ coords 148 0 76
+ angleY 180
+}

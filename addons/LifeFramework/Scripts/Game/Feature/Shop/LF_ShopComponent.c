@@ -11,8 +11,8 @@ class LF_ShopComponent : ScriptComponent
 	[Attribute("", UIWidgets.Auto, desc: "Description of the shop")]
 	protected string m_sShopDescription;
 
-	//! Optional curated allowlist. Empty means the shop sells every priced item in the catalog.
-	[Attribute("", UIWidgets.Object, desc: "Optional curated item allowlist; empty sells every priced item")]
+	//! Curated allowlist, priced by the price rules. A shop with no list, no outlet and no stock sells nothing.
+	[Attribute("", UIWidgets.Object, desc: "Curated item allowlist. A shop with no list, no outlet and no stock sells nothing")]
 	protected ref array<ref LF_ShopItem> m_aShopItems;
 
 	//! A fence: sells only to proven criminals. Each item's threshold is its LF_ShopItem.m_iMinCrimes,
@@ -55,6 +55,25 @@ class LF_ShopComponent : ScriptComponent
 		super.OnPostInit(owner);
 		if (!m_aShopItems)
 			m_aShopItems = new array<ref LF_ShopItem>();
+
+		// A back room is an outlet (#1762): one with no outlet of its own sells the back_room offers,
+		// so every way in and out of it (list, buy, price, raid) reads the catalogue and its gates.
+		if (m_bBackRoom && m_sOutletId.IsEmpty() && m_sStockId.IsEmpty())
+			m_sOutletId = LF_BackRoomRules.OUTLET_BACK_ROOM;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a shop with these sources sells anything (#1762): a stock, an outlet or a curated list.
+	//! A shop with none sells nothing; there is no longer a "every priced item" shop.
+	static bool HasSellSource(bool hasStock, bool hasOutlet, bool hasCuratedList)
+	{
+		return hasStock || hasOutlet || hasCuratedList;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool SellsAnything()
+	{
+		return HasSellSource(!m_sStockId.IsEmpty(), !m_sOutletId.IsEmpty(), m_aShopItems && !m_aShopItems.IsEmpty());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -89,13 +108,32 @@ class LF_ShopComponent : ScriptComponent
 		}
 
 		string officerUid = LF_Utils.GetPlayerUID(officer);
-		foreach (LF_ShopItem curated : m_aShopItems)
+		if (!m_sOutletId.IsEmpty())
 		{
-			if (!curated)
-				continue;
+			// An outlet room's stock is its catalogue offers (the curated list is not read).
+			LF_ItemCatalogueConfig catalogue = LF_ItemCatalogueConfig.Get();
+			array<LF_OutletOffer> offers = {};
+			LF_ItemCatalogue.Offers(catalogue, m_sOutletId, offers);
+			foreach (LF_OutletOffer offer : offers)
+			{
+				LF_CatalogueItem entry = LF_ItemCatalogue.Item(catalogue, offer.m_sItem);
+				if (!entry)
+					continue;
 
-			LF_EvidenceLocker.LogSeizure(curated.GetItemPrefab(), m_sShopName, officerUid);
-			seized++;
+				LF_EvidenceLocker.LogSeizure(entry.m_Prefab, m_sShopName, officerUid);
+				seized++;
+			}
+		}
+		else
+		{
+			foreach (LF_ShopItem curated : m_aShopItems)
+			{
+				if (!curated)
+					continue;
+
+				LF_EvidenceLocker.LogSeizure(curated.GetItemPrefab(), m_sShopName, officerUid);
+				seized++;
+			}
 		}
 
 		LF_ShopStock raided = GetStock();
@@ -186,6 +224,11 @@ class LF_ShopComponent : ScriptComponent
 	//! Price-table buy price of a prefab (what it costs new): the base a buyback pays a share of.
 	static int StreetValue(ResourceName prefab)
 	{
+		// A catalogue item's street value is its catalogue price: weapons have no price rule (#1762).
+		LF_CatalogueItem entry = LF_ItemCatalogue.ItemByPrefab(LF_ItemCatalogueConfig.Get(), prefab);
+		if (entry)
+			return entry.m_iPrice;
+
 		LF_ShopManagerComponent manager = LF_ShopManagerComponent.GetInstance();
 		if (!manager)
 			return 0;
@@ -241,11 +284,19 @@ class LF_ShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The items this shop shows: its curated list when one is set, else every priced catalog item.
+	//! The items this shop shows: its stock, outlet or curated list; a shop with none shows nothing (#1762).
 	//! Prices always come from the price config via the manager, never from the curated list.
 	array<ref LF_ShopCatalogItem> GetShopItems()
 	{
 		array<ref LF_ShopCatalogItem> result = new array<ref LF_ShopCatalogItem>();
+
+		// No stock, no outlet, no curated list: the shop sells nothing (#1762). It used to sell every
+		// priced item, which is how a general store could have sold a rifle.
+		if (!SellsAnything())
+		{
+			LF_Debug.Warn("Shop", string.Format("shop '%1' has no stock, outlet or list; it sells nothing", m_sShopName));
+			return result;
+		}
 
 		if (!m_sStockId.IsEmpty())
 		{
@@ -298,17 +349,6 @@ class LF_ShopComponent : ScriptComponent
 			return result;
 		}
 
-		LF_ShopManagerComponent manager = LF_ShopManagerComponent.GetInstance();
-		if (!manager)
-			return result;
-
-		foreach (LF_ShopCatalogItem item : manager.GetCatalogItems())
-		{
-			if (!item || item.m_bHidden)
-				continue;
-			result.Insert(item);
-		}
-
 		return result;
 	}
 
@@ -318,6 +358,12 @@ class LF_ShopComponent : ScriptComponent
 	{
 		if (prefab.IsEmpty())
 			return false;
+
+		if (!SellsAnything())
+		{
+			LF_Debug.Warn("Shop", string.Format("shop '%1' has no stock, outlet or list; '%2' is not sold here", m_sShopName, prefab));
+			return false;
+		}
 
 		if (!m_sStockId.IsEmpty())
 		{
@@ -345,11 +391,7 @@ class LF_ShopComponent : ScriptComponent
 			return false;
 		}
 
-		LF_ShopManagerComponent manager = LF_ShopManagerComponent.GetInstance();
-		if (!manager)
-			return false;
-
-		return !manager.IsHidden(prefab);
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -495,6 +537,59 @@ class LF_ShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The live licence rows this counter shows (catalogue offers with m_sGrantsLicence); empty when the
+	//! shop has no outlet or the Catalogue system is off. Every machine.
+	void GetLicenceRows(notnull array<LF_OutletOffer> outRows)
+	{
+		outRows.Clear();
+		if (m_sOutletId.IsEmpty() || !LF_Systems.IsEnabled(LF_ItemCatalogue.SYSTEM))
+			return;
+
+		LF_ItemCatalogue.LicenceRows(LF_ItemCatalogueConfig.Get(), m_sOutletId, outRows);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a licence row at this counter, by the buyer's own account. \see ApplyForLicenceFor.
+	LF_EShopRefusal ApplyForLicence(IEntity buyer, LF_ELicenseType licence, out LF_ELicenceDesk outcome, out int minutesLeft)
+	{
+		return ApplyForLicenceFor(buyer, LF_Utils.GetPlayerUID(buyer), new LF_EntityCashWallet(buyer, LF_LicenceDesk.LEDGER_REASON, string.Empty), licence, outcome, minutesLeft);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the counter's licence row runs the licence office's visit (LF_LicenceDesk.VisitFor: the
+	//! same fee, clean-record check, licence gate, wait and collection as the desk), so a player applies
+	//! and later collects at this counter. The counter only checks that it offers the licence.
+	//! \param[out] outcome The office's answer, when this returns NONE.
+	//! \param[out] minutesLeft In-game minutes until collection (APPLIED, WAITING).
+	//! \return NONE when the office answered, else why the counter would not ask it.
+	LF_EShopRefusal ApplyForLicenceFor(IEntity buyer, string uid, notnull LF_CashWallet wallet, LF_ELicenseType licence, out LF_ELicenceDesk outcome, out int minutesLeft)
+	{
+		outcome = LF_ELicenceDesk.FAILED;
+		minutesLeft = 0;
+		if (!Replication.IsServer())
+			return LF_EShopRefusal.NO_SHOP;
+
+		if (LF_Systems.Refuses(LF_ShopRefusal.SYSTEM, "licence at " + m_sOutletId))
+			return LF_EShopRefusal.SYSTEM_OFF;
+
+		if (IsClosed(GetGame().GetWorld().GetWorldTime()))
+		{
+			LF_Debug.Info("Shop", string.Format("licence rejected (raided, shut) outlet=%1", m_sOutletId));
+			return LF_EShopRefusal.CLOSED;
+		}
+
+		if (!LF_ItemCatalogue.LicenceRowFor(LF_ItemCatalogueConfig.Get(), m_sOutletId, licence) || !LF_Systems.IsEnabled(LF_ItemCatalogue.SYSTEM))
+		{
+			LF_Debug.Warn("Shop", string.Format("licence rejected: outlet '%1' has no row for %2", m_sOutletId, typename.EnumToString(LF_ELicenseType, licence)));
+			return LF_EShopRefusal.NOT_SOLD_HERE;
+		}
+
+		outcome = LF_LicenceDesk.VisitFor(buyer, uid, wallet, minutesLeft);
+		LF_Debug.Info("Shop", string.Format("licence row at %1 for %2: %3", m_sOutletId, uid, typename.EnumToString(LF_ELicenceDesk, outcome)));
+		return LF_EShopRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: charge the buyer the config buy price and deliver the items. Only what was delivered
 	//! is charged; a partial delivery refunds the difference. The till slip shows the outcome, so
 	//! this raises no toast.
@@ -556,6 +651,15 @@ class LF_ShopComponent : ScriptComponent
 		if (store && !store.CanSupply(prefab, units))
 			return LF_EShopRefusal.OUT_OF_STOCK;
 
+		// An outlet offer can carry its own stock (#1064); a sale beyond what is left is refused.
+		int nowMs = GetGame().GetWorld().GetWorldTime();
+		LF_OutletOffer stockOffer = StockOffer(prefab);
+		if (!LF_CatalogueStock.CanSupply(stockOffer, units, nowMs))
+		{
+			LF_Debug.Info(LF_ItemCatalogue.FEATURE, string.Format("buy refused (out of stock) outlet=%1 item=%2 qty=%3", m_sOutletId, prefab, units));
+			return LF_EShopRefusal.OUT_OF_STOCK;
+		}
+
 		int removed = LF_MoneyUtils.RemoveAmount(buyer, totalPrice, "shop-buy");
 		if (removed != totalPrice)
 		{
@@ -572,12 +676,15 @@ class LF_ShopComponent : ScriptComponent
 		}
 
 		int added = LF_InventoryUtils.AddAmount(buyer, prefab, units);
+		LF_CatalogueStock.Take(stockOffer, added, nowMs);
 		if (added == units)
 		{
 			charged = totalPrice;
 			LF_Debug.Info("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, units, totalPrice));
 			if (m_bFence)
-				LF_EventBus.Publish(LF_OnFenceSale.Create(buyerUid, prefab, units, totalPrice));
+				LF_EventBus.Publish(LF_OnFenceSale.Create(buyerUid, prefab, units, totalPrice, m_sOutletId));
+			else if (IsLicensedWeaponLine(prefab))
+				LF_FenceSerials.OnWeaponSale(buyer, LF_Utils.GetPlayerUid(buyer), prefab, units, m_sOutletId);
 			return LF_EShopRefusal.NONE;
 		}
 
@@ -701,6 +808,32 @@ class LF_ShopComponent : ScriptComponent
 		earned = LF_ShopRules.StackTradeTotal(unitPrice, removed);
 		LF_Debug.Info("Shop", string.Format("sold item=%1 qty=%2 price=%3 stock=%4 flagged=%5", prefab, removed, earned, m_sStockId, flaggedOnly));
 		return LF_EShopRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the prefab is a licensed weapon this outlet sells (#2153): a weapon in the catalogue, sold
+	//! under an offer that asks for a licence (the gun counter's firearm permit). The permit is what
+	//! makes the weapon a registered one, so an unlicensed outlet (the black market, a back room) sells
+	//! it with no serial. A shop with no outlet has no catalogue category to read.
+	protected bool IsLicensedWeaponLine(ResourceName prefab)
+	{
+		LF_OutletOffer offer = StockOffer(prefab);
+		if (!offer || offer.m_sLicence.IsEmpty())
+			return false;
+
+		LF_CatalogueItem entry = LF_ItemCatalogue.ItemByPrefab(LF_ItemCatalogueConfig.Get(), prefab);
+		return entry && entry.GetCategory() == LF_EItemCategory.WEAPON;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The live offer this counter sells the prefab under, or null for a shop that is no outlet.
+	protected LF_OutletOffer StockOffer(ResourceName prefab)
+	{
+		if (m_sOutletId.IsEmpty())
+			return null;
+
+		LF_CatalogueItem entry;
+		return LF_ItemCatalogue.OfferFor(LF_ItemCatalogueConfig.Get(), m_sOutletId, prefab, entry);
 	}
 
 	//------------------------------------------------------------------------------------------------

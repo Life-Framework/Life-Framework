@@ -422,3 +422,20 @@ class LF_Cleanup
 		return Math.Round(damage.GetHealthScaled() * LF_CleanupConfig.PERCENT_MAX);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Cleanup's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Cleanup_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Cleanup_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Cleanup";
+	}
+
+	override void Apply()
+	{
+		LF_Cleanup.ResetStatics();
+	}
+}

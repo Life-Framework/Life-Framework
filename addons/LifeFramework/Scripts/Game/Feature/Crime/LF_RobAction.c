@@ -7,6 +7,9 @@ class LF_RobAction : ScriptedUserAction
 	static const string REFUSED_POLICE = "robbery refused: not enough police on duty";
 	static const string REFUSED_PAYOUT = "robbery refused: payout is not configured";
 	static const string REFUSED_OFF = "robbery refused: the Robbery system is off";
+	static const string REFUSED_GRACE = "robbery refused: the robber is in its grace period";
+	static const string REFUSED_CUFFED = "robbery refused: the robber is in handcuffs";
+	static const string REFUSED_NO_ROOM = "robbery refused: the robber's inventory took none of the cash";
 	//! The system id (LF_Systems, #960): till, weapon and vehicle robbery and the till hold.
 	static const string SYSTEM = "Robbery";
 
@@ -31,7 +34,7 @@ class LF_RobAction : ScriptedUserAction
 	[Attribute(defvalue: "0", uiwidget: UIWidgets.CheckBox, desc: "Robbed only through the attendant's dialogue (LF_RobHold): the world action is hidden and refused. The fuel station till (#936).")]
 	protected bool m_bDialogueOnly;
 
-	[Attribute(defvalue: "store", uiwidget: UIWidgets.EditBox, desc: "Alarm kind of this till's alarm (an LF_AlarmKind id in LF_Police.conf): store is the small buzzer, fuel the station's intruder alarm. Empty uses the plain siren.")]
+	[Attribute(defvalue: "store", uiwidget: UIWidgets.EditBox, desc: "Alarm kind of this till's alarm (an LF_AlarmKind id in LF_Police.conf): store is the retail two-tone alarm, fuel the station's intruder alarm. Empty uses the plain siren.")]
 	protected string m_sAlarmKind;
 
 	[Attribute(defvalue: "30", uiwidget: UIWidgets.Auto, desc: "Dialogue robbery: seconds the robber must keep the attendant at gunpoint before the till opens")]
@@ -173,6 +176,12 @@ class LF_RobAction : ScriptedUserAction
 			return 0;
 		}
 
+		if (LF_CuffEnforcement.Refuse(user, "till robbery"))
+		{
+			s_sLastRefusal = REFUSED_CUFFED;
+			return 0;
+		}
+
 		string refusal = Gate(playerUid, payout, policeOnDuty, minPolice, cooldownSeconds, lastRobTimeMs, nowMs);
 		if (!refusal.IsEmpty())
 		{
@@ -181,6 +190,13 @@ class LF_RobAction : ScriptedUserAction
 		}
 
 		int paid = PayCash(user, payout);
+		if (paid <= 0)
+		{
+			// Nothing was taken: no cooldown on the till, no wanted level, no dispatch.
+			NoteRefusal(REFUSED_NO_ROOM);
+			return 0;
+		}
+
 		outLastRobTimeMs = nowMs;
 		s_sLastRefusal = "";
 		Report(playerUid, user, policeOnDuty, alarmKind);
@@ -196,6 +212,10 @@ class LF_RobAction : ScriptedUserAction
 	{
 		if (IsCooldownActive(lastRobTimeMs, cooldownSeconds, nowMs))
 			return REFUSED_COOLDOWN;
+
+		// A new character is in its grace (#1780): it may not rob, so protection is not a licence.
+		if (LF_Grace.Protects(playerUid))
+			return REFUSED_GRACE;
 
 		LF_PlayerAccount account = FindAccount(playerUid);
 		if (!account)
@@ -442,6 +462,10 @@ class LF_RobAction : ScriptedUserAction
 
 		if (paid > 0)
 			LF_Utils.NotifyEntity(pUserEntity, "#EL-Stole_Money", "#EL-Robbery_Successful", 3.0, paid.ToString());
+		else if (s_sLastRefusal == REFUSED_GRACE)
+			LF_Grace.Notify(pUserEntity);
+		else if (s_sLastRefusal == REFUSED_NO_ROOM)
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-Robbery_NoRoom", "#EL-Stole_Money", 3.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

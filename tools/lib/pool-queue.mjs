@@ -1,6 +1,7 @@
 // Pure rules of the test pool queue (tools/remote/pool.mjs): lanes, priority
 // order with aging, the RAM gate, and the session lease. No I/O, so
 // tools/validation/pool-selftest.mjs proves them without a game.
+import { ISLAND, SEED_PEAKS_MB, worldClass } from "./pool-ram.mjs";
 
 export const PRIORITIES = ["low", "normal", "high"];
 export const DEFAULTS = {
@@ -273,7 +274,9 @@ export function burstAdmit(ahead, mine, { freeLanes, freeMb, pendingMb = 0, minF
 // test the test server's boot reserve. A ticket without a lane (an older CLI) is a session.
 export function ticketReserveMb(t, settings = {}) {
   if ((t?.lane ?? "session") === "session") return sessionReserveMb(settings, t?.clients ?? 1, t?.profile ?? "full");
-  return settings.testReserveMb ?? DEFAULTS.testReserveMb;
+  const base = settings.testReserveMb ?? DEFAULTS.testReserveMb;
+  // An island-world test (the placement audit on MainWorld) holds the island server's peak, not a small boot's.
+  return worldClass(t?.world) === ISLAND ? Math.max(base, SEED_PEAKS_MB["test:island"]) : base;
 }
 
 // Memory still booting on a machine that its free RAM does not show yet (MB), from its live lane
@@ -368,6 +371,15 @@ export function rankMachines(cands, { minFreeMb = DEFAULTS.minFreeMb, reserveMb 
   return rows.map(({ i, multiplier, ...r }) => r);
 }
 
+// A short job (a placement probe: seconds on a booted server, a sync and a download away from any other
+// machine) tries a machine with room that is this PC first, whatever the score says. rows: rankMachines
+// output; name: the PC's machine name. The rest keep their order; no room on the PC leaves the order alone.
+export function preferRoomy(rows, name) {
+  const i = rows.findIndex((r) => r.name === name && r.room === true);
+  if (i <= 0) return rows;
+  return [rows[i], ...rows.slice(0, i), ...rows.slice(i + 1)];
+}
+
 // Machines outside `have` (a ticket's machines) that have room for the job's need (MB: floor plus
 // reserve), for the pinned-job hint of `pool status`. others: [{ name, freeMb }].
 export function roomElsewhere(needMb, have, others) {
@@ -426,6 +438,11 @@ export const BUDGET_MIN_RUNS = 5;
 export const TIMEOUT_RATE_RAISE = 0.02;
 export const BOOT_BUDGET_S = 30;
 // Starting budgets (seconds) until a kind has history. e2e is per pass.
+// An island-world run (MainWorld, CoreOnEveron, the island mission) streams Everon after boot: its own seed,
+// floor and history, apart from the small-world runs of the same purpose (#2394, a 30 s history budget killed
+// an audit that needs minutes). Boot is budgeted separately (bootBudgetSeconds).
+export const ISLAND_BUDGET_S = 300;
+export const ISLAND_BUDGET_FLOOR_S = 180;
 export const DEFAULT_BUDGET_S = { "test only": 30, "test fast": 45, "test all": 90, "test all core-only": 90, "test persistence": 120, "test perf": 120, e2e: 120 };
 
 // The run-log label of a test run (runs.jsonl "purpose", the budget key, the pool status column).
@@ -463,15 +480,19 @@ export function p95(values) {
   return v.length ? v[Math.max(0, Math.ceil(0.95 * v.length) - 1)] : 0;
 }
 
+// Whether a world (path, mission header, bare name) is island-sized: the pool's world class (pool-ram.mjs).
+export const isIslandWorld = (world) => worldClass(world) === ISLAND;
+
 // Budget for one run kind on one machine, in seconds, excluding boot:
 //   3x the p95 of that machine's recent passing runs of the kind, never under
 //   the 30 s floor; a seeded default (times the machine multiplier) until it
 //   has 5 passes. A kind whose recent runs timed out more than 2% of the time
 //   gets double, so a budget that is too tight corrects itself.
 // runs: the pool's runs.jsonl records. Returns { runS, source, rate }.
-export function budgetSeconds(runs, kind, machine, { multiplier = 1, override } = {}) {
+export function budgetSeconds(runs, kind, machine, { multiplier = 1, override, world } = {}) {
   if (Number.isFinite(override) && override > 0) return { runS: Math.round(override), source: "override", rate: 0 };
-  const mine = runs.filter((r) => r.purpose === kind && r.machine === machine).slice(-50);
+  const island = isIslandWorld(world);
+  const mine = runs.filter((r) => r.purpose === kind && r.machine === machine && isIslandWorld(r.world) === island).slice(-50);
   const perPass = kind === "e2e" ? 2 : 1;
   const passes = mine.filter((r) => r.result === "pass").slice(-30).map((r) => Number(r.durS) / perPass);
   const timeouts = mine.filter((r) => r.result === "timeout").length;
@@ -479,17 +500,63 @@ export function budgetSeconds(runs, kind, machine, { multiplier = 1, override } 
   let runS;
   let source;
   if (passes.length >= BUDGET_MIN_RUNS) {
-    runS = Math.max(BUDGET_FLOOR_S, 3 * p95(passes));
+    runS = Math.max(island ? ISLAND_BUDGET_FLOOR_S : BUDGET_FLOOR_S, 3 * p95(passes));
     source = "history";
   } else {
-    runS = (DEFAULT_BUDGET_S[kind] ?? 90) * multiplier;
+    runS = island ? Math.max(ISLAND_BUDGET_S, DEFAULT_BUDGET_S[kind] ?? 0) * multiplier : (DEFAULT_BUDGET_S[kind] ?? 90) * multiplier;
     source = "default";
   }
+  if (island) source += "+island";
   if (rate > TIMEOUT_RATE_RAISE) {
     runS *= 2;
     source += "+raised";
   }
   return { runS: Math.ceil(runS), source, rate };
+}
+
+// Boot budget for one world on one machine, in seconds (#1700). DebugWorld (and no --world) boots in
+// seconds, so it keeps the small base budget. Any other world is a big map (CoreOnEveron streams ~1.1M
+// entities, over a minute on lf-cloud): it starts at WORLD_BOOT_S (the table, else BIG_WORLD_BOOT_S), and
+// a world whose recent runs on that machine timed out gets double (up to BOOT_CAP_S) so a budget that is
+// still too tight corrects itself. Times the machine multiplier; --boot-budget wins. The same function
+// runs on the pool machine itself (the remote leg gets --world), so nothing hangs on an env var travelling.
+export const BIG_WORLD_BOOT_S = 150;
+export const BOOT_CAP_S = 600;
+export const WORLD_BOOT_S = { CoreOnEveron: 150 };
+const SMALL_WORLDS = new Set(["", "DebugWorld", "GridWorld", "TestLogic", "Everon1989Town", "Everon1989Grid"]);
+
+// "Worlds/CoreOnEveron/CoreOnEveron.ent", a "{GUID}Missions/X.conf" header or a bare name -> "CoreOnEveron".
+export function worldKey(world) {
+  const s = String(world ?? "").replace(/^\{[0-9A-Fa-f]+\}/, "").replace(/\\/g, "/").trim();
+  const last = s.split("/").pop() ?? "";
+  return last.replace(/\.(ent|conf)$/i, "");
+}
+
+export function bootBudgetSeconds(runs, { world, machine, base = BOOT_BUDGET_S, multiplier = 1, override } = {}) {
+  const key = worldKey(world);
+  if (Number.isFinite(override) && override > 0) return { bootS: Math.round(override), source: "override", world: key };
+  if (SMALL_WORLDS.has(key)) return { bootS: Math.ceil(base * multiplier), source: "default", world: key };
+  let bootS = Math.max(base, WORLD_BOOT_S[key] ?? BIG_WORLD_BOOT_S) * multiplier;
+  let source = key in WORLD_BOOT_S ? "world" : "big-world";
+  const mine = runs.filter((r) => r.machine === machine && worldKey(r.world) === key).slice(-20);
+  if (mine.some((r) => r.result === "timeout")) {
+    bootS *= 2;
+    source += "+raised";
+  }
+  return { bootS: Math.min(BOOT_CAP_S, Math.ceil(bootS)), source, world: key };
+}
+
+// The machines to rank this round: those not in `avoid`, or all of them when avoiding would leave none
+// (a refused machine is the only one left: it is asked again, after the router's backoff).
+export function withoutAvoided(machines, avoid) {
+  if (!avoid || !avoid.size) return machines;
+  const keep = machines.filter((m) => !avoid.has(m.name));
+  return keep.length ? keep : machines;
+}
+
+// How long the router waits before asking again after n lane refusals in a row: 3 s, doubling, at most 60 s.
+export function laneRefusalBackoffMs(n) {
+  return Math.min(60000, 3000 * 2 ** Math.max(0, n - 1));
 }
 
 // One session request per worktree (issue #542): a retry whose earlier `session up` is still

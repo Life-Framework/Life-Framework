@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{29B9CAAFDCDCEB65}Configs/TownBoard/LF_TownBoard_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,21 @@
+{
+  "about": "Drug store: the street front (Drugstore fascia, shop window), the shop room and the counter; a shopper takes aspirin and gauze off the gondolas and pays at the till; the dispensary refuses morphine without MEDIC_ACCESS and sells it with the licence. Building space: +z is the street front; the player stands at look + from.",
+  "session": { "profile": "full", "mission": "playtest" },
+  "steps": [
+    { "shot": "warmup", "look": [2, 3, 8], "from": [-5, -1.4, 10], "wait": 6000, "why": "the first frames after a teleport draw the building before it streams in" },
+    { "shot": "street", "look": [2, 3, 8], "from": [-5, -1.4, 10] },
+    { "shot": "shop_room", "look": [2, 1, 1], "from": [0, -0.8, 5.2] },
+    { "shot": "counter", "look": [2.5, 1, -0.3], "from": [0, -0.8, 2.6] },
+    { "state": "before" },
+    { "shot": "take_aspirin", "look": [2.1, 0.9, 5.6], "from": [0, -0.7, 0.9] },
+    { "pickup": "AspirinBottle", "expect": "took item=\\S*AspirinBottle", "why": "the F key takes aspirin off the street-side gondola" },
+    { "shot": "take_gauze", "look": [2.1, 0.9, 3.2], "from": [0, -0.7, 0.85] },
+    { "pickup": "Gauze_01", "expect": "took item=\\S*Gauze_01", "why": "and a packet of gauze off the gondola facing the door" },
+    { "shot": "till", "look": [1.16, 1.1, -0.3], "from": [0, -0.9, 1.1] },
+    { "do": { "verb": "use", "className": "LF_StoreTillAction" }, "wait": 2500, "why": "pay for the shelf goods at the till" },
+    { "permit": { "licence": "MEDIC_ACCESS", "look": [3.4, 1, -0.3], "from": [0, -0.8, 1.1], "rows": [0], "items": ["MorphineInjection_01"], "cash": 500, "refused": "Not without a" } }
+  ],
+  "log": [
+    { "re": "paid \\d+ for 2 item\\(s\\)", "why": "aspirin and gauze paid at the till" }
+  ]
+}

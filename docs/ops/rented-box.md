@@ -5,9 +5,10 @@ once the trigger in step 1 is met, not before. It is host-agnostic: everything h
 Linux box. The part that depends on the host is left for the host #378 picks (the last section).
 
 How to read it: each step names a command or a file. A command that has not merged yet is in code font as its
-card names it and marked *(planned)*; when it merges, drop the mark. Run the steps in order and tick the
-box when the step's check passes. Sessions on the live server follow [game-updates](game-updates.md) for
-builds and the session runbook (O16, #1275) for a normal session.
+card names it and marked *(planned)* until it merges; `tools\cli host help` lists the merged ones, and
+`tools/validation/ops-doc-commands-selftest.mjs` fails on a merged command still marked planned. Run the
+steps in order and tick the box when the step's check passes. Sessions on the live server follow
+[game-updates](game-updates.md) for builds and the [session runbook](session-runbook.md) for a normal session.
 
 ## Decision: the alpha box
 
@@ -146,6 +147,7 @@ A drill that fails means do not open the box. Fix the cause, or keep playing on 
 - [ ] **Restart schedule.** The flagship restarts at 06:00 and 18:00 server time, with in-game warnings at 15, 5
       and 1 minute ([m4-slice-plan](../roadmap/m4-slice-plan.md), "Decisions"). The times are set in
       `server/flagship/config.json` (`restarts.times`), and the in-world warning counts down to them.
+      A restart by hand is announced first with `tools\cli host announce --at <iso time>`.
 - [ ] A scheduled restart is also a backup point: `host stop` backs up, `host start` backs up. Rotate with
       `tools\cli host prune --keep 20` (dry-run it with `--dry-run`); tagged backups (preflight, wipe, crash,
       replaced-by-restore) are never deleted.
@@ -169,7 +171,7 @@ The live `config.json` is public in this repo, so no password or webhook goes in
 - [ ] Join by `<name>:2001` from outside the network. The browser listing uses the IP and A2S port, so it needs
       step 3 too.
 - [ ] Update every place that shows the address: the Discord announcement template, the website `sessions.json`
-      *(planned, O14)*, and `docs/playtest.md`, which today says the server is one PC.
+      (written by `tools\cli host announce`), and `docs/playtest.md`, which today says the server is one PC.
 
 ## 9. Dry run, then open
 
@@ -207,3 +209,20 @@ per-host page of #379.
 | Port forwarding and firewall panel | |
 | Backups the host keeps itself, and how long | |
 | Support route and its response time | |
+
+## 0grind: the scheduled restart (incident 2026-11-16)
+
+The mod closes the game cleanly at the times in `restarts` (06:00 and 18:00). A clean exit is not a failure, so
+0grind's Restart on Failure leaves the service stopped. The panel Workflow `Scheduled restart start`
+(trigger Schedule, step `armareforger_service_start`; the start does nothing while the server is up) brings it
+back. On 2026-11-16 the 06:00 close left the server stopped for about 6 hours until a manual start at 12:03.
+
+Cause: the Workflow's schedule is stored in UTC (the panel converts the browser's local time), and the box
+clock and every log timestamp are UTC. The times had been entered as 06:02 and 18:02 local, stored as 05:02
+and 17:02 UTC, so the start fired an hour before the close and nothing started the server after it.
+
+Fix (API, no code): `PATCH /armareforger/298627/workflows/21202e40-01bb-42b7-9b56-260ed5f44cce` with
+`trigger_options.schedules` at 06:02, 06:07, 18:02 and 18:07 UTC, all weekdays. The second time after each
+close is a retry. Enter Workflow times in UTC; verify with `GET .../workflows/<id>`, whose `next` is epoch
+seconds. After any restart-time change in `restarts`, change the Workflow to match. The workflow endpoints are
+the panel's and not in 0grind's API page; the token and allowed-IP rules are the same.

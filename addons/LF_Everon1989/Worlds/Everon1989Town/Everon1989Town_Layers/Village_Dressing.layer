@@ -556,7 +556,7 @@ GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" 
 }
 $grp Tree : "{5C594649DBDD5EAE}Prefabs/Vegetation/Tree/t_betula_pendula/t_betula_pendula_2s.et" {
  {
-  coords 366 0 262
+  coords 369 0 266
  }
  {
   coords 372 0 238
@@ -722,7 +722,7 @@ $grp SCR_DestructibleEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowe
   coords 152.8 0 257.6
  }
  {
-  coords 283.2 0 257.6
+  coords 290.676 0.001 258.2
  }
  {
   coords 315 0 242.6
@@ -735,7 +735,7 @@ $grp SCR_DestructibleEntity : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowe
  }
 }
 GenericEntity : "{8592F599B94DC833}Prefabs/Structures/Civilian/MessageBoard/Filled/MessageBoardSmall_01_pole_filled_V1.et" {
- coords 137.6 0 257.4
+ coords 129.4 0 257.4
  angles 0 180 0
 }
 GenericEntity SquareRegistry_FileStack : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
@@ -924,7 +924,7 @@ GenericEntity Pub_Terrace_Radio : "{C6AF6D2D6EA3CBF9}Prefabs/Atmosphere/LF_Radio
 }
 $grp Tree : "{C98A6C1C2372354E}Prefabs/Vegetation/Bush/b_corylus_avellana_1.et" {
  {
-  coords 357.5 0 258.5
+  coords 368.6 0 259.4
  }
  {
   coords 312 0 231
@@ -979,7 +979,7 @@ $grp Tree : "{DE7FC095F656695C}Prefabs/Vegetation/Tree/t_picea_abies/t_picea_abi
   coords 372 0 205
  }
 }
-Vehicle : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+Vehicle "6ADEF2BE6C61A45A" : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1
@@ -988,7 +988,7 @@ Vehicle : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
  coords 337.5 0 255.3
  angles 0 270 0
 }
-Vehicle : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et" {
+Vehicle "6ADEF2BE6C61B8F1" : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et" {
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1
@@ -997,7 +997,7 @@ Vehicle : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_b
  coords 324 0 244.8
  angles 0 90 0
 }
-Vehicle : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et" {
+Vehicle "6ADEF2BE6C614ADD" : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et" {
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIsLocked 1

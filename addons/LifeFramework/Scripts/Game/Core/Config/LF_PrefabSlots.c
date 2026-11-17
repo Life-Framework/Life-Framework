@@ -342,3 +342,20 @@ class LF_PrefabSlots
 		}
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_PrefabSlots's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PrefabSlots_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PrefabSlots_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_PrefabSlots";
+	}
+
+	override void Apply()
+	{
+		LF_PrefabSlots.ResetStatics();
+	}
+}

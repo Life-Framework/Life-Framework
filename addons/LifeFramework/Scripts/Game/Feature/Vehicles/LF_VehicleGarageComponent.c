@@ -107,3 +107,20 @@ class LF_VehicleGarageComponent : ScriptComponent
 		return vector.Distance(vehicleOrigin, garageOrigin) <= LF_GarageConfig.GarageRadius();
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_VehicleGarageComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_VehicleGarageComponent_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_VehicleGarageComponent_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_VehicleGarageComponent";
+	}
+
+	override void Apply()
+	{
+		LF_VehicleGarageComponent.ResetStatics();
+	}
+}

@@ -1,4 +1,5 @@
 // red-proof: Observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_DisconnectJail`: `if (false)` in place of the ImprisonOnReturn call in LF_DisconnectRules.Apply failed `- the cuffed logout is jailed (expected 'jail', got 'fine')`; `if (false)` in place of `!online && clockOffline` in LF_Jail.TickOnline failed `- jailClockOffline: the away prisoner serves time (expected 30, got 50)`. Restored; green.
+// red-proof: Shard 4/4 of #1867's gate (2026-11-15) failed `- the incident log has the logout with the state and the sentence` with `LF_OnFlaggedLogout published, no subscribers` in the log: an earlier test of the shard had reset the event bus while the log stayed marked installed. Not reproducible in registry order (whole suite green on main); the fix makes the test reset the log's statics before Install().
 // tier: WORLD (needs DebugWorld's placed cell to restore after the stand-in cell)
 //! Disconnect rules (#691) on the server path with no body: a cuffed logout starts a paused
 //! sentence and adds the charge; the rejoin serves it; the fine rule takes the fine from the bank;
@@ -19,6 +20,9 @@ class LF_Test_DisconnectJail : LF_Test
 		array<ref LF_JailRecord> before = LF_Jail.ExportAll();
 		LF_Jail.Configure(60, 600, 1, 5);
 		LF_Jail.SetCellOrigin("48 0 64");
+		// Order independence: a test that reset the event bus earlier in the same shard leaves the log marked installed with no
+		// subscriber (Install() is then a no-op and the flagged logout reaches nobody). Reset it so Install() subscribes afresh.
+		LF_IncidentLog.ResetStatics();
 		LF_IncidentLog.Install();
 		LF_ConfigService.Reset();
 		LF_DisconnectConfig.Reload();
@@ -77,6 +81,7 @@ class LF_Test_DisconnectJail : LF_Test
 		LF_DisconnectConfig.Reload();
 		LF_Jail.ApplyAll(before);
 		LF_Jail.SyncPlacedCell();
+		LF_IncidentLog.ResetStatics();
 	}
 
 	protected static LF_DisconnectState Cuffed(string uid, int wanted)

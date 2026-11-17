@@ -6,6 +6,7 @@
 //! Playtest grant (maintainer, 2026-11-08): a new character owns one car in the garage and one at
 //! the impound lot, as records with keys, so both flows can be tried at once. Granted only to an
 //! owner with no vehicle, so a second call (a respawn) grants nothing.
+// red-proof (#1892, 2026-11-16): `tools\cli test --no-build --only <the 7 slice-1892 tests> --world Worlds/GridWorld/GridWorld.ent` before Grid_orgs_vehicles.layer failed all 7 (no org hideout door, no flagged lot, no store, no impound pad); green with it.
 // tier: WORLD
 class LF_Test_TestCarsGrant : LF_Test
 {
@@ -16,14 +17,12 @@ class LF_Test_TestCarsGrant : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity lotEntity = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.VEHICLE_LOT);
-		LF_VehicleLotComponent lot;
-		if (lotEntity)
-			lot = LF_Component<LF_VehicleLotComponent>.Find(lotEntity);
-
-		ctx.NotNull(lot, "DebugWorld has the car lot Annex_Vehicle_Lot");
+		LF_VehicleLotComponent lot = LF_VehicleLotComponent.FindTestCarLot();
+		ctx.NotNull(lot, "the world places a car lot flagged m_bTestCarLot (GridWorld: Grid_orgs_vehicles_Lot)");
 		if (!lot)
 			return;
+
+		IEntity lotEntity = lot.GetOwner();
 
 		array<LF_VehicleOffer> offers = {};
 		for (int i = 0; i < lot.GetOfferCount(); i++)
@@ -31,10 +30,8 @@ class LF_Test_TestCarsGrant : LF_Test
 			offers.Insert(lot.GetOfferAt(i));
 		}
 
-		LF_VehicleLotComponent testLot = LF_VehicleLotComponent.FindTestCarLot();
-		ctx.NotNull(testLot, "a placed lot is flagged m_bTestCarLot");
-		if (testLot && !offers.IsEmpty())
-			ctx.True(testLot.GetOffer(offers[0].GetPrefab()) != null, "the flagged lot sells the test cars");
+		if (!offers.IsEmpty())
+			ctx.True(lot.GetOffer(offers[0].GetPrefab()) != null, "the flagged lot sells the test cars");
 
 		string uid = "test-cars-" + System.GetTickCount().ToString();
 		ctx.Equal(2, LF_VehicleOwnership.GrantTestCars(uid, lotEntity, offers, lot.GetShopId()), "a new owner gets two test cars");
@@ -53,6 +50,6 @@ class LF_Test_TestCarsGrant : LF_Test
 
 		LF_SpawnLogic spawnLogic = LF_SpawnLogic.GetInstance();
 		if (spawnLogic)
-			ctx.True(spawnLogic.GrantsTestCars(), "the DebugWorld (playtest) game mode grants test cars");
+			ctx.True(spawnLogic.GrantsTestCars(), "the playtest game mode grants test cars");
 	}
 }

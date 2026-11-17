@@ -1,6 +1,7 @@
+// red-proof: observed 2026-11-16 (#1891), `tools\cli test --no-build --no-cache --only <the 10 classes>` on GridWorld before the grid fixtures: 10 of 15 failed on `... resolves in the DebugWorld` (Shop_GeneralStore_Debug, Shop_BlackMarket_Debug, FenceNpc are town entities); on Grid_shops_till fixtures 15 of 15 pass.
 // red-proof: Observed 2026-11-15 with `tools/cli test --no-build --red LF_Test_ShopStockRules,LF_Test_FenceStockTrade`: RED-OK shop/fence-stock-trade, leaving the M9 unflagged failed `a flagged stolen M9 is bought` and `the flagged M9 is taken`. Hook off: green.
 // tier: WORLD
-//! The DebugWorld fence trades from config: buying a lockpick charges the stock price the server
+//! The GridWorld fence trades from config: buying a lockpick charges the stock price the server
 //! reads (a changed config price changes the charge; the caller never names a price), listed
 //! stolen goods sell at the stock's share of the street value, an unlisted item sells only once it
 //! is flagged stolen, and the fence never buys back his own tools.
@@ -36,8 +37,8 @@ class LF_Test_FenceStockTrade : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity fence = GetGame().GetWorld().FindEntityByName("FenceNpc");
-		ctx.NotNull(fence, "FenceNpc resolves in the DebugWorld");
+		IEntity fence = GetGame().GetWorld().FindEntityByName("Grid_shops_till_Fence");
+		ctx.NotNull(fence, "Grid_shops_till_Fence resolves in the GridWorld");
 		LF_ShopComponent shop = LF_Component<LF_ShopComponent>.Find(fence);
 		ctx.NotNull(shop, "the fence keeps a shop");
 		if (!shop)

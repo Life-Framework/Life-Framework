@@ -26,6 +26,11 @@ What it writes: on the NPC's entity in its layer, `BaseLoadoutManagerComponent >
 touched. Slots are found by name (`Hat`, `Jacket`, `Pants`, `Boots`, `Vest`, `Back`, plus common variants),
 then by their `AreaType`.
 
+Each NPC's slot writes run inside one `BeginEditSequence`/`EndEditSequence`, and a slot already holding the
+chosen prefab (and already enabled) is not written. Every write outside a sequence re-initialises the entity,
+and each re-init of a character spawned its identity head again without removing the old one, so a dressed NPC
+showed two or more heads. `validate-npc-dresser-sequence` fails a plugin write outside a sequence.
+
 ## Presets
 
 A preset is a small `.conf` of class `LF_NpcOutfitPreset`, with a name and one prefab per slot:
@@ -64,7 +69,8 @@ tools\cli npc dress --entity Bank_Teller --preset Configs/NpcOutfits/LF_Outfit_M
 
 It starts a hidden Workbench with the plugin in plan mode (`$profile:lf-npc-dresser/plan.txt`, verbs listed
 at the top of the plugin). `--proof` snapshots the slots, dresses, reads them back, runs Edit > Undo,
-checks the snapshot, runs Edit > Redo and reads again. `--look x,z` takes `look` pictures before and after
+checks the snapshot, runs Edit > Redo and reads again; before the dress and after each of those steps it also
+expects exactly one head under the NPC (`expect-heads <entity> 1`, the identity head from `Prefabs/Characters/Heads/`). `--look x,z` takes `look` pictures before and after
 (and saves). `--remote` sends the run to a pool machine with the workbench cap. Results (status, the
 Workbench log, the layer diff, pictures) land in `tmp/npc-dress/<id>/`. It refuses the main checkout.
 

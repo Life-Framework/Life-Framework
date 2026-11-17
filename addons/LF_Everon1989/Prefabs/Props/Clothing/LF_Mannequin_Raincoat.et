@@ -1,0 +1,47 @@
+GenericEntity : "{DAEBE5DD34859027}Prefabs/Props/Commercial/LF_Mannequin.et" {
+ ID "DAF3CF9EFAFFCFD8"
+ {
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "A524A15201998977"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{5AB4AEC9CED9DB28}Assets/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01.xob"
+     Materials {
+      MaterialAssignClass "{1B0783A9FDD61221}" {
+       SourceMaterial "Jacket_Raincoat_01"
+       AssignedMaterial "{24BF726B4A89ABFB}Assets/Characters/Uniforms/Jacket_Raincoat_01/Data/Jacket_Raincoat_01_Green.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "6D65F1808DF70582"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{072925D9971BB9DB}Assets/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01.xob"
+     Materials {
+      MaterialAssignClass "{981D5F70C8169372}" {
+       SourceMaterial "Pants_Fisherman_01"
+       AssignedMaterial "{C08699D45EA0DA90}Assets/Characters/Uniforms/Pants_Fisherman_01/Data/Pants_Fisherman_01_Green.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "2176D24AE97021AD"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{49B326457951B0F6}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01.xob"
+     Materials {
+      MaterialAssignClass "{CFF05C3812971A35}" {
+       SourceMaterial "Hat_Knitted_01"
+       AssignedMaterial "{BD8F9DE2660F5639}Assets/Characters/HeadGear/Hat_Knitted_01/Data/Hat_Knitted_01_brown.emat"
+      }
+     }
+    }
+   }
+  }
+ }
+}

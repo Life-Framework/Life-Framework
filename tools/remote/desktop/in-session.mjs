@@ -7,15 +7,28 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import { gpuRoute, requireDesktopSession } from "../../lib/gpu-session.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PWSH = join(process.env.SystemRoot || "C:\\Windows", "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
 
 // True when a Workbench started from this process would land in session 0.
-export const needsDesktopSession = (env = process.env) => process.platform === "win32" && !!env.SSH_CONNECTION && env.LF_WB_INTERACTIVE !== "1";
+export const needsDesktopSession = (env = process.env) => gpuRoute({ env }) === "desktop-session";
+
+// Fail fast: prints the one line and returns false when there is no usable desktop session on this machine.
+export function desktopSessionOrSay(say = console.log, require = requireDesktopSession) {
+  try {
+    require();
+    return true;
+  } catch (e) {
+    say(`FAIL  ${e.message}`);
+    return false;
+  }
+}
 
 // Runs `node tools\cli.mjs <args>` in the desktop session; its exit code, or 3 when nobody is signed in.
-export function cliInDesktopSession(root, args, { name = "run", waitSec = 1800 } = {}) {
+export function cliInDesktopSession(root, args, { name = "run", waitSec = 1800, require = requireDesktopSession } = {}) {
+  if (!desktopSessionOrSay(console.log, require)) return 3;
   const dir = join(root, "tmp", "wb-session");
   mkdirSync(dir, { recursive: true });
   const [log, codeFile, ps1, pidFile] = ["log", "code", "ps1", "pid"].map((e) => join(dir, `${name}.${e}`));

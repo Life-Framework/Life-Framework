@@ -1,0 +1,77 @@
+FrameWidgetClass "{3519AACAB73D6BD7}" {
+ Name "LogoutBodyTagRoot"
+ Slot FrameWidgetSlot "{0030E954601A04CE}" {
+  Anchor 0 0 1 1
+ }
+ {
+  FrameWidgetClass "{1BBC63D186B70DE6}" {
+   Name "Tag"
+   Slot FrameWidgetSlot "{C8E252DA433B797B}" {
+    Anchor 0 0 0 0
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 120
+    OffsetRight -120
+    SizeY 26
+    OffsetBottom -26
+    Alignment 0.5 0.5
+   }
+   {
+    ImageWidgetClass "{DA385CFB75F3696B}" {
+     Name "Back"
+     Slot FrameWidgetSlot "{553033AD45B703BD}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 120
+      OffsetRight -120
+      SizeY 26
+      OffsetBottom -26
+     }
+     Color 0.035 0.033 0.03 0.78
+    }
+    ImageWidgetClass "{BBBA0A39D90F7CFE}" {
+     Name "Edge"
+     Slot FrameWidgetSlot "{491225E9B1BA27E8}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 23
+      OffsetTop 23
+      SizeX 120
+      OffsetRight -120
+      SizeY 3
+      OffsetBottom -26
+     }
+     Color 0.86 0.66 0.22 1
+    }
+    TextWidgetClass "{82346171316267D4}" {
+     Name "Label"
+     Slot FrameWidgetSlot "{1713BF83ACE85BC4}" {
+      Anchor 0 0 0 0
+      PositionX 4
+      OffsetLeft 4
+      PositionY 2
+      OffsetTop 2
+      SizeX 112
+      OffsetRight -116
+      SizeY 20
+      OffsetBottom -22
+     }
+     Color 0.95 0.93 0.88 1
+     Text "#LF-LogoutBodyTag_Label"
+     "Font Size" 17
+     "Min Font Size" 12
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{2E0EDFBE4C7CD1A2}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

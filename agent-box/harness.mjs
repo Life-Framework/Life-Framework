@@ -64,6 +64,16 @@ export function setBoxes(dirs, sessionId) {
 // The session a command to these boxes is addressed to: { id } (empty id for
 // Workbench and default profiles), or { error } when the live session in the
 // shared session dir belongs to another checkout or is not running.
+// Three worlds (docs/architecture/three-worlds.md): a proof that walks to an annex fixture (an Annex_* entity) runs
+// on GridWorld, so it asks for `session up --mission grid`; town proofs keep the default. Returns "" when the
+// running session booted the wanted mission, else the one line the proof prints before it fails.
+export function missionProblem(session, want) {
+  if (!session || session.stoppedAt) return `no running session: \`tools\\cli session up --mission ${want}\` first`;
+  const have = session.mission || "debug";
+  if (have === want) return "";
+  return `this proof needs \`session up --mission ${want}\` (its fixtures are in that world); the running session is --mission ${have}`;
+}
+
 export function addressFor(boxes, root = ROOT, lookup = sessionForBox) {
   if (!boxes) return { id: "" };
   if (sessionOverride !== undefined) return { id: sessionOverride || "" };
@@ -176,6 +186,19 @@ export function buildLine(id, spec) {
     if (spec.channel && !/^(admin|global|local|ooc)$/.test(spec.channel)) throw new Error(`chat channel must be admin, global, local or ooc: ${spec.channel}`);
     return `${id} chat ${spec.channel ? `${spec.channel} ` : ""}${text}`;
   }
+  if (spec.verb === "licence") {
+    // licence <NAME>: this client asks for one licence by its LF_ELicenseType name, the request the
+    // /licence chat command sends (LF_AskLicenceGrant). The server's dev gate decides; the verdict is the
+    // server log line `/licence: player N granted NAME`.
+    if (!/^[A-Z][A-Z0-9_]{1,63}$/.test(spec.name ?? "")) throw new Error(`licence needs an LF_ELicenseType name such as FIREARM_PERMIT: ${spec.name}`);
+    return `${id} licence ${spec.name}`;
+  }
+  if (spec.verb === "pausemenu") {
+    // pausemenu [open|close]: opens the pause menu the way Escape does, or puts it away (LF_HandbookScreen.c, #1773).
+    const mode = spec.mode ?? "open";
+    if (mode !== "open" && mode !== "close") throw new Error(`pausemenu mode must be open or close: ${mode}`);
+    return `${id} pausemenu ${mode}`;
+  }
   if (spec.verb === "staffapprove") {
     // staffapprove <uid>: approve that account's open police application through LF_PoliceApplicationStaff.ApproveByUid
     // (LF_HarnessStaff). The uid is the same test as the staff API's (1..64 of letters, digits, - and _).
@@ -275,7 +298,7 @@ export function buildLine(id, spec) {
   }
   if (spec.verb === "kit") {
     const step = token(spec.step, "kit step");
-    if (step === "show" || step === "hide" || step === "terminal" || step === "credits") return `${id} kit ${step}`;
+    if (step === "show" || step === "hide" || step === "terminal" || step === "credits" || step === "policeapps" || step === "policeapps_read" || step === "policeapps_approve") return `${id} kit ${step}`;
     if (step === "theme") return `${id} kit theme ${token(spec.name, "theme")}`;
     if (step === "line") return `${id} kit line ${token(spec.part, "part")} ${token(spec.text, "text")}`;
     if (step === "status") {
@@ -344,6 +367,8 @@ export function buildLine(id, spec) {
     return `${line} ${seconds}`;
   }
   if (spec.verb === "scene" || spec.verb === "camera") return `${id} ${spec.verb} ${spec.args}`;
+  // A feature verb (a modded LF_AgentHarnessVerbs): its words after the verb go to the game as they are.
+  if (/^[a-z][a-z0-9]*$/.test(spec.verb) && Array.isArray(spec.words)) return `${id} ${spec.verb} ${spec.words.join(" ")}`.trim();
   throw new Error(`unknown verb: ${spec.verb}`);
 }
 
@@ -763,6 +788,7 @@ export function runFlow(lines) {
     } else if (verb === "use") result = sendCommand({ verb: "use", className: rest[0], entityName: rest[1] });
     else if (verb === "input") result = sendCommand({ verb: "input", action: rest[0], value: rest[1] });
     else if (verb === "open") result = sendCommand({ verb: "open", menu: rest[0], mode: rest[1] });
+    else if (verb === "pausemenu") result = sendCommand({ verb: "pausemenu", mode: rest[0] });
     else if (verb === "kit") result = sendKit(rest);
     else if (verb === "layer") {
       const played = playLayer(rest[0], rest[1]);
@@ -827,7 +853,7 @@ const PRESS = {
 
 function sendKit(rest) {
   const step = rest[0];
-  if (step === "show" || step === "hide" || step === "terminal" || step === "credits") return sendCommand({ verb: "kit", step });
+  if (step === "show" || step === "hide" || step === "terminal" || step === "credits" || step === "policeapps" || step === "policeapps_read" || step === "policeapps_approve") return sendCommand({ verb: "kit", step });
   if (step === "theme") return sendCommand({ verb: "kit", step, name: rest[1] });
   if (step === "line") return sendCommand({ verb: "kit", step, part: rest[1], text: rest[2] });
   if (step === "status") {
@@ -1018,8 +1044,8 @@ function selftest() {
   const shop = findPad(list, "Shop_GeneralStore_Debug");
   if (!shop || shop.actions[0] !== "LF_ShopAction") throw new Error("Shop_GeneralStore_Debug missing from layer catalog");
   // $grp members carry world coords; children add their parent's (village layout,
-  // docs/roadmap/m1-25-village.md).
-  if (shop.x !== 179 || shop.z !== 244.3) throw new Error(`shop coords ${shop.x} ${shop.z}`);
+  // docs/roadmap/m1-25-village.md). The general store counter stands inside the village shop house (general-store).
+  if (shop.x !== 180.57 || shop.z !== 233.627) throw new Error(`shop coords ${shop.x} ${shop.z}`);
   const apple = findPad(list, "AppleTradeContainer");
   // AppleTrader 206.359 0 233.467 (the fruit stall, #924) plus the container's -0.29 1.027 -0.478.
   if (!apple || Math.abs(apple.x - 206.069) > 0.001 || Math.abs(apple.z - 232.989) > 0.001) throw new Error(`apple coords ${apple && apple.x} ${apple && apple.z}`);
@@ -1310,6 +1336,13 @@ function selftest() {
   if (wideStreet.oz <= 0) throw new Error("the release street wide shot stays on +Z");
   // The live village is not asserted here: the maintainer places the town by hand, so where a site
   // stands is his call (validate-no-town-layout-asserts). judgeStreet is covered on fixture rows above.
+  // Three worlds (W5, #1807): a proof that walks to an annex fixture asks for the grid mission and says so when the session booted another world.
+  // red-proof: 2026-11-16 written before missionProblem existed: the selftest threw "missionProblem is not defined", then these cases passed.
+  if (missionProblem({ mission: "grid" }, "grid") !== "") throw new Error("a grid session was refused for a grid proof");
+  if (!/session up --mission grid/.test(missionProblem({ mission: "debug" }, "grid"))) throw new Error("a town session was accepted for a grid proof");
+  if (!/session up --mission grid/.test(missionProblem({}, "grid"))) throw new Error("a session record with no mission (the town default) was accepted for a grid proof");
+  if (!/no running session/.test(missionProblem(null, "grid"))) throw new Error("no session was accepted");
+  if (!/no running session/.test(missionProblem({ mission: "grid", stoppedAt: "2026-11-16T00:00:00Z" }, "grid"))) throw new Error("a stopped session was accepted");
   townSelftest();
   console.log("selftest ok");
   return 0;

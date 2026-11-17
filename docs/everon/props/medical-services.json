@@ -1,0 +1,1151 @@
+{
+ "group": "medical-services",
+ "generated": "2026-11-16",
+ "items": [
+  {
+   "guid": "50801280D56B67A1",
+   "path": "Prefabs/Props/Services/Healthcare/BedMedical_01.et",
+   "res": "{50801280D56B67A1}Prefabs/Props/Services/Healthcare/BedMedical_01.et",
+   "name": "Bed, hospital",
+   "category": "medical",
+   "sizeM": [
+    1.16,
+    0.66,
+    2.5
+   ],
+   "everonWorldCount": 55,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Vanilla hospital bed model; LF already reuses its .xob in LF_HospitalBed and LF_FirstSpawnBed. The vanilla prefab itself is a static destructible mesh with no actions. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: MunicipalOffice_E_01; Saint Pierre: MunicipalOffice_E_01; Morton: MunicipalOffice_E_01; Montignac: MunicipalOffice_E_01."
+  },
+  {
+   "guid": "27EA47994266D9DD",
+   "path": "Prefabs/Props/Services/Healthcare/BinMedical_01.et",
+   "res": "{27EA47994266D9DD}Prefabs/Props/Services/Healthcare/BinMedical_01.et",
+   "name": "Medical waste bin",
+   "category": "medical",
+   "sizeM": [
+    0.41,
+    0.52,
+    0.47
+   ],
+   "everonWorldCount": 20,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Clinic corner filler; mesh only (non-destructible). Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: MunicipalOffice_E_01; Saint Pierre: MunicipalOffice_E_01; Morton: MunicipalOffice_E_01; Montignac: MunicipalOffice_E_01."
+  },
+  {
+   "guid": "452C9FF31AAF2B82",
+   "path": "Prefabs/Props/Services/Healthcare/CabinetMedical_01.et",
+   "res": "{452C9FF31AAF2B82}Prefabs/Props/Services/Healthcare/CabinetMedical_01.et",
+   "name": "Medical cabinet (double)",
+   "category": "medical",
+   "sizeM": [
+    0.9,
+    1.77,
+    0.55
+   ],
+   "everonWorldCount": 12,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Glass-front clinic cabinet; mesh only, no storage or open action, so it is set dressing. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: MunicipalOffice_E_01; Saint Pierre: MunicipalOffice_E_01; Morton: MunicipalOffice_E_01; Montignac: MunicipalOffice_E_01."
+  },
+  {
+   "guid": "31627435F2C7CBF4",
+   "path": "Prefabs/Props/Services/Healthcare/CabinetMedical_01_single.et",
+   "res": "{31627435F2C7CBF4}Prefabs/Props/Services/Healthcare/CabinetMedical_01_single.et",
+   "name": "Medical cabinet (single)",
+   "category": "medical",
+   "sizeM": [
+    0.6,
+    1.77,
+    0.55
+   ],
+   "everonWorldCount": 16,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Narrow variant of the clinic cabinet; mesh only, no storage. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: MunicipalOffice_E_01; Saint Pierre: MunicipalOffice_E_01; Morton: MunicipalOffice_E_01; Montignac: MunicipalOffice_E_01."
+  },
+  {
+   "guid": "AF87DF4E0C8C81C4",
+   "path": "Prefabs/Props/Services/Healthcare/LampMedical_01.et",
+   "res": "{AF87DF4E0C8C81C4}Prefabs/Props/Services/Healthcare/LampMedical_01.et",
+   "name": "Medical exam lamp",
+   "category": "medical",
+   "sizeM": [
+    0.48,
+    2.05,
+    0.81
+   ],
+   "everonWorldCount": 10,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Floor exam lamp; mesh only (no light component found). Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: MunicipalOffice_E_01; Saint Pierre: MunicipalOffice_E_01; Morton: MunicipalOffice_E_01; Montignac: MunicipalOffice_E_01."
+  },
+  {
+   "guid": "A67BC8B7352F5E69",
+   "path": "Prefabs/Props/Services/Healthcare/ScaleMedical_01.et",
+   "res": "{A67BC8B7352F5E69}Prefabs/Props/Services/Healthcare/ScaleMedical_01.et",
+   "name": "Medical scale",
+   "category": "medical",
+   "sizeM": [
+    0.61,
+    1.5,
+    0.52
+   ],
+   "everonWorldCount": 9,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Floor scale; mesh only, non-destructible. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: MunicipalOffice_E_01; Saint Pierre: MunicipalOffice_E_01; Morton: MunicipalOffice_E_01; Montignac: MunicipalOffice_E_01."
+  },
+  {
+   "guid": "2B6508FE121FCAC9",
+   "path": "Prefabs/Props/Medical/InfusionStand_01/InfusionStand_01.et",
+   "res": "{2B6508FE121FCAC9}Prefabs/Props/Medical/InfusionStand_01/InfusionStand_01.et",
+   "name": "IV / infusion stand",
+   "category": "medical",
+   "sizeM": [
+    0.54,
+    1.89,
+    0.52
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Not placed anywhere on vanilla Everon; mesh only. Pairs with the hospital bed."
+  },
+  {
+   "guid": "CA7A660EA7D649A0",
+   "path": "Prefabs/Props/Medical/LampSurgical_01.et",
+   "res": "{CA7A660EA7D649A0}Prefabs/Props/Medical/LampSurgical_01.et",
+   "name": "Surgical lamp",
+   "category": "medical",
+   "sizeM": [
+    0.63,
+    2.09,
+    1.36
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Surgical lamp (a LampSurgical_01_on variant exists for the lit state); unused on Everon."
+  },
+  {
+   "guid": "F06EAC6F2F97767F",
+   "path": "Prefabs/Props/Medical/MedicalScreen_01.et",
+   "res": "{F06EAC6F2F97767F}Prefabs/Props/Medical/MedicalScreen_01.et",
+   "name": "Medical monitor screen",
+   "category": "medical",
+   "sizeM": [
+    1.07,
+    2.1,
+    0.43
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Vital-signs screen; mesh only, unused on Everon."
+  },
+  {
+   "guid": "C5A56330031A28EB",
+   "path": "Prefabs/Props/Medical/SterilizerMedical_01/SterilizerMedical_01.et",
+   "res": "{C5A56330031A28EB}Prefabs/Props/Medical/SterilizerMedical_01/SterilizerMedical_01.et",
+   "name": "Instrument sterilizer",
+   "category": "medical",
+   "sizeM": [
+    0.75,
+    0.52,
+    0.63
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Low counter-top sterilizer; unused on Everon."
+  },
+  {
+   "guid": "7E4A4D680FAD3461",
+   "path": "Prefabs/Props/Medical/TableMedical_01/TableMedical_01.et",
+   "res": "{7E4A4D680FAD3461}Prefabs/Props/Medical/TableMedical_01/TableMedical_01.et",
+   "name": "Medical table",
+   "category": "medical",
+   "sizeM": [
+    1.14,
+    1.25,
+    0.58
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Instrument/exam table; a _small variant exists; unused on Everon."
+  },
+  {
+   "guid": "D9CE934146B140A7",
+   "path": "Prefabs/Props/Medical/TableMedical_01/TableMedical_01_small.et",
+   "res": "{D9CE934146B140A7}Prefabs/Props/Medical/TableMedical_01/TableMedical_01_small.et",
+   "name": "Medical table (small)",
+   "category": "medical",
+   "sizeM": [
+    0.49,
+    1.07,
+    0.57
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Narrow instrument table, non-destructible; unused on Everon."
+  },
+  {
+   "guid": "9305F7BAF1317EE0",
+   "path": "Prefabs/Props/Medical/TableSurgical_01/TableSurgical_01.et",
+   "res": "{9305F7BAF1317EE0}Prefabs/Props/Medical/TableSurgical_01/TableSurgical_01.et",
+   "name": "Surgical table",
+   "category": "medical",
+   "sizeM": [
+    1,
+    1.01,
+    2.04
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Operating table; mesh only, no lie-down action; unused on Everon."
+  },
+  {
+   "guid": "89724FB4541A7633",
+   "path": "Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum_stand_V1.et",
+   "res": "{89724FB4541A7633}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum_stand_V1.et",
+   "name": "Autoclave drum on stand",
+   "category": "medical",
+   "sizeM": [
+    0.44,
+    0.78,
+    0.4
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Sterilizer drum on stand (V1; V2 exists); unused on Everon."
+  },
+  {
+   "guid": "DD07AE4E1B3E5EE2",
+   "path": "Prefabs/Props/Furniture/FirstAidBox_01.et",
+   "res": "{DD07AE4E1B3E5EE2}Prefabs/Props/Furniture/FirstAidBox_01.et",
+   "name": "First aid box (wall)",
+   "category": "medical",
+   "sizeM": [
+    0.39,
+    0.52,
+    0.17
+   ],
+   "everonWorldCount": 386,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Wall-mounted first-aid box; very common. Mesh only: no heal action or storage, so it is decoration. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: MunicipalOffice_E_01; Saint Philippe: FireStation_E_01; Saint Pierre: MunicipalOffice_E_01; Saint Pierre: FireStation_E_01; Morton: MunicipalOffice_E_01; Montignac: FireStation_E_01; Montignac: MunicipalOffice_E_01."
+  },
+  {
+   "guid": "A1A11E5C3A29B763",
+   "path": "Prefabs/Props/Furniture/ChairDental_01/ChairDental_01.et",
+   "res": "{A1A11E5C3A29B763}Prefabs/Props/Furniture/ChairDental_01/ChairDental_01.et",
+   "name": "Dental chair",
+   "category": "medical",
+   "sizeM": [
+    0.62,
+    1.18,
+    1.6
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Part of a dental set (chair, lamp, stool), all unused on Everon; no sit action."
+  },
+  {
+   "guid": "EC19A1B3ED9D474B",
+   "path": "Prefabs/Props/Furniture/LampDental_01/LampDental_01.et",
+   "res": "{EC19A1B3ED9D474B}Prefabs/Props/Furniture/LampDental_01/LampDental_01.et",
+   "name": "Dental lamp",
+   "category": "medical",
+   "sizeM": [
+    1.16,
+    1.56,
+    1.39
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Part of the dental set; mesh only."
+  },
+  {
+   "guid": "A2B6366703E7480A",
+   "path": "Prefabs/Props/Furniture/StoolDental_01/StoolDental_01.et",
+   "res": "{A2B6366703E7480A}Prefabs/Props/Furniture/StoolDental_01/StoolDental_01.et",
+   "name": "Dental stool",
+   "category": "medical",
+   "sizeM": [
+    0.46,
+    0.86,
+    0.46
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Part of the dental set; mesh only."
+  },
+  {
+   "guid": "F0404B3895D3F80E",
+   "path": "Prefabs/Props/Military/AmmoBoxes/US/EquipmentBoxWooden_Medical_01_US.et",
+   "res": "{F0404B3895D3F80E}Prefabs/Props/Military/AmmoBoxes/US/EquipmentBoxWooden_Medical_01_US.et",
+   "name": "Medical equipment box (US)",
+   "category": "medical",
+   "sizeM": [
+    0.93,
+    0.49,
+    0.49
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "SCR_OpenStorageAction"
+   ],
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Wooden crate with a storage inventory and an Open Storage action; the only vanilla medical prop with storage besides the arsenal box."
+  },
+  {
+   "guid": "891EF8A5FB7162F1",
+   "path": "Prefabs/Props/Military/Arsenal/AmmoBoxes/US/AmmoBoxArsenal_Medical_US.et",
+   "res": "{891EF8A5FB7162F1}Prefabs/Props/Military/Arsenal/AmmoBoxes/US/AmmoBoxArsenal_Medical_US.et",
+   "name": "Medical arsenal box (US)",
+   "category": "medical",
+   "sizeM": [
+    0.93,
+    0.49,
+    0.49
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "SCR_OpenStorageAction",
+    "SCR_SaveArsenalLoadout",
+    "SCR_ResupplySelfSupportStationAction"
+   ],
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Medical arsenal crate: arsenal, resupply and save-loadout actions. Vanilla arsenal logic would bypass the LF economy; FIA and USSR variants exist."
+  },
+  {
+   "guid": "BD65F1D86388640D",
+   "path": "Prefabs/Props/Civilian/FireExtinguisher_01.et",
+   "res": "{BD65F1D86388640D}Prefabs/Props/Civilian/FireExtinguisher_01.et",
+   "name": "Fire extinguisher",
+   "category": "fire",
+   "sizeM": [
+    0.31,
+    0.66,
+    0.21
+   ],
+   "everonWorldCount": 350,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Very common; destructible with an extra hit zone; no use action (cannot be fired), so decoration only. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: FireStation_E_01; Saint Pierre: FireStation_E_01; Montignac: FireStation_E_01."
+  },
+  {
+   "guid": "FE8A959BA3E4CD10",
+   "path": "Prefabs/Props/Services/Fire/FireExtinguisherBox_01.et",
+   "res": "{FE8A959BA3E4CD10}Prefabs/Props/Services/Fire/FireExtinguisherBox_01.et",
+   "name": "Fire extinguisher wall box",
+   "category": "fire",
+   "sizeM": [
+    0.87,
+    1.82,
+    0.74
+   ],
+   "everonWorldCount": 8,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Red wall cabinet with extinguisher, Saint Philippe only; hit zone present, no action."
+  },
+  {
+   "guid": "B3E8911E396DE447",
+   "path": "Prefabs/Props/Services/Fire/FireExtinguisherBox_01_Shovel.et",
+   "res": "{B3E8911E396DE447}Prefabs/Props/Services/Fire/FireExtinguisherBox_01_Shovel.et",
+   "name": "Fire extinguisher box with shovel",
+   "category": "fire",
+   "sizeM": [
+    0.16,
+    0.84,
+    0.05
+   ],
+   "everonWorldCount": 8,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Shovel part of the extinguisher box setup; same 8 instances, Saint Philippe only."
+  },
+  {
+   "guid": "35C20E1631F85D88",
+   "path": "Prefabs/Props/Services/Fire/HydrantBox_01.et",
+   "res": "{35C20E1631F85D88}Prefabs/Props/Services/Fire/HydrantBox_01.et",
+   "name": "Hydrant box",
+   "category": "fire",
+   "sizeM": [
+    0.86,
+    0.86,
+    0.39
+   ],
+   "everonWorldCount": 49,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Fire hydrant cabinet; destructible, no hose or water action. A USSR variant (HydrantBox_USSR_01) exists but is unused on Everon. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: MunicipalOffice_E_01; Saint Pierre: MunicipalOffice_E_01; Morton: MunicipalOffice_E_01; Montignac: MunicipalOffice_E_01."
+  },
+  {
+   "guid": "575A6852D1E5CAA6",
+   "path": "Prefabs/Structures/Services/Fire/FireStation_E_01/FireStation_E_01_hose_hanger.et",
+   "res": "{575A6852D1E5CAA6}Prefabs/Structures/Services/Fire/FireStation_E_01/FireStation_E_01_hose_hanger.et",
+   "name": "Fire station hose hanger",
+   "category": "fire",
+   "sizeM": [
+    0.58,
+    8.96,
+    2.03
+   ],
+   "everonWorldCount": 4,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Tall hose-drying tower that belongs to FireStation_E_01 (8.96 m high); a building add-on, not a loose prop. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: FireStation_E_01; Saint Pierre: FireStation_E_01; Montignac: FireStation_E_01."
+  },
+  {
+   "guid": "EAD845A3675EC518",
+   "path": "Prefabs/Structures/BuildingParts/Eletrical/Firestation_siren_02.et",
+   "res": "{EAD845A3675EC518}Prefabs/Structures/BuildingParts/Eletrical/Firestation_siren_02.et",
+   "name": "Fire station siren",
+   "category": "fire",
+   "sizeM": [
+    2.06,
+    0.85,
+    1.33
+   ],
+   "everonWorldCount": 1,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Building part, 1 on Everon; mesh only (the Amplion_Siren prefab carries the sound and signal components)."
+  },
+  {
+   "guid": "AD31622B73944B43",
+   "path": "Prefabs/Props/Furniture/DeskSchool_01.et",
+   "res": "{AD31622B73944B43}Prefabs/Props/Furniture/DeskSchool_01.et",
+   "name": "School desk",
+   "category": "school",
+   "sizeM": [
+    1.53,
+    0.9,
+    0.59
+   ],
+   "everonWorldCount": 68,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Common in all four towns; destructible; no sit action. Pair with ChairSchool_01. No dedicated school building; MunicipalOffice_E_01_school variants exist."
+  },
+  {
+   "guid": "91430024EE427EF3",
+   "path": "Prefabs/Props/Furniture/ChairSchool_01.et",
+   "res": "{91430024EE427EF3}Prefabs/Props/Furniture/ChairSchool_01.et",
+   "name": "School chair",
+   "category": "school",
+   "sizeM": [
+    0.48,
+    1,
+    0.57
+   ],
+   "everonWorldCount": 67,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Loose chair; no sit action on the vanilla prefab, so seating RP needs an LF sit hook."
+  },
+  {
+   "guid": "30A3B16FEE9783B4",
+   "path": "Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et",
+   "res": "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et",
+   "name": "Chalkboard",
+   "category": "school",
+   "sizeM": [
+    2.22,
+    2.12,
+    0.36
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Present in game data but placed 0 times on Everon; an _open variant exists. Best school-room backdrop."
+  },
+  {
+   "guid": null,
+   "path": "Prefabs/Props/Furniture/Flipchart_01/Flipchart_01.et",
+   "res": null,
+   "name": "Flipchart",
+   "category": "school",
+   "sizeM": [
+    0.74,
+    1.79,
+    0.61
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Easel board for classroom or briefing use; GUID not resolvable from the pak data (use asset_search); unused on Everon."
+  },
+  {
+   "guid": "33882C61BA9F0F90",
+   "path": "Prefabs/Props/Civilian/Globe_01.et",
+   "res": "{33882C61BA9F0F90}Prefabs/Props/Civilian/Globe_01.et",
+   "name": "Globe",
+   "category": "school",
+   "sizeM": [
+    0.28,
+    0.34,
+    0.26
+   ],
+   "everonWorldCount": 143,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Desk globe, tiny."
+  },
+  {
+   "guid": "9ABAFFCBC76D824B",
+   "path": "Prefabs/Props/Civilian/NoticeBoardCork_01.et",
+   "res": "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et",
+   "name": "Cork notice board",
+   "category": "school",
+   "sizeM": [
+    1.8,
+    1.1,
+    0.02
+   ],
+   "everonWorldCount": 227,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Wall notice board; posters and filled variants exist; a place for notices or job boards. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: MunicipalOffice_E_01; Saint Philippe: FireStation_E_01; Saint Pierre: MunicipalOffice_E_01; Saint Pierre: FireStation_E_01; Morton: MunicipalOffice_E_01; Montignac: FireStation_E_01; Montignac: MunicipalOffice_E_01."
+  },
+  {
+   "guid": "678F3374CF4CC249",
+   "path": "Prefabs/Props/Furniture/BenchChurch_02/BenchChurch_02_long.et",
+   "res": "{678F3374CF4CC249}Prefabs/Props/Furniture/BenchChurch_02/BenchChurch_02_long.et",
+   "name": "Church bench long",
+   "category": "church",
+   "sizeM": [
+    4.81,
+    1.06,
+    0.7
+   ],
+   "everonWorldCount": 18,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Pew, 4.81 m. Count includes _long_front and _long_simple variants. Only in the three big churches (Saint Philippe, Morton, Montignac). Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: Church_01_red; Morton: Church_01_blue_nocellar; Montignac: Church_01_yellow."
+  },
+  {
+   "guid": "8E2331A8736ABAF4",
+   "path": "Prefabs/Props/Furniture/BenchChurch_02/BenchChurch_02_short.et",
+   "res": "{8E2331A8736ABAF4}Prefabs/Props/Furniture/BenchChurch_02/BenchChurch_02_short.et",
+   "name": "Church bench short",
+   "category": "church",
+   "sizeM": [
+    2.13,
+    1.06,
+    0.7
+   ],
+   "everonWorldCount": 36,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Pew, 2.13 m. Count includes _short_front, _short_simple and _base variants. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: Church_01_red; Morton: Church_01_blue_nocellar; Montignac: Church_01_yellow."
+  },
+  {
+   "guid": "6D9E298A75CC9188",
+   "path": "Prefabs/Props/Furniture/BenchChurch_Small_01.et",
+   "res": "{6D9E298A75CC9188}Prefabs/Props/Furniture/BenchChurch_Small_01.et",
+   "name": "Church bench small",
+   "category": "church",
+   "sizeM": [
+    2.27,
+    1.06,
+    0.69
+   ],
+   "everonWorldCount": 60,
+   "usedInTowns": [
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Small-church pew; Saint Pierre small church (ChurchSmall_E_01). Placed near (within about 0.6 x the building size of its origin; approximate): Saint Pierre: ChurchSmall_E_01."
+  },
+  {
+   "guid": "F5B5608E37C75332",
+   "path": "Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et",
+   "res": "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et",
+   "name": "Candle holder",
+   "category": "church",
+   "sizeM": [
+    0.15,
+    0.37,
+    0.15
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Decorative candle holder, unused on Everon."
+  },
+  {
+   "guid": "B85FA5885A54506B",
+   "path": "Prefabs/Structures/BuildingParts/Cultural/AltarChurch_01.et",
+   "res": "{B85FA5885A54506B}Prefabs/Structures/BuildingParts/Cultural/AltarChurch_01.et",
+   "name": "Church altar",
+   "category": "church",
+   "sizeM": [
+    8.3,
+    8.03,
+    1.3
+   ],
+   "everonWorldCount": 3,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Large altar building part (8.3 m wide, 8 m high); one per big church. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: Church_01_red; Morton: Church_01_blue_nocellar; Montignac: Church_01_yellow."
+  },
+  {
+   "guid": "3EFC4D60641C6DD8",
+   "path": "Prefabs/Structures/BuildingParts/Cultural/AltarChurch_01_small.et",
+   "res": "{3EFC4D60641C6DD8}Prefabs/Structures/BuildingParts/Cultural/AltarChurch_01_small.et",
+   "name": "Church altar (small)",
+   "category": "church",
+   "sizeM": [
+    1.88,
+    1.01,
+    0.81
+   ],
+   "everonWorldCount": 8,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Small altar / table; also used in Saint Pierre small church. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: Church_01_red; Saint Pierre: ChurchSmall_E_01; Morton: Church_01_blue_nocellar; Montignac: Church_01_yellow."
+  },
+  {
+   "guid": "F7BB38C6DC5BF74B",
+   "path": "Prefabs/Structures/BuildingParts/Cultural/OrganChurch_01.et",
+   "res": "{F7BB38C6DC5BF74B}Prefabs/Structures/BuildingParts/Cultural/OrganChurch_01.et",
+   "name": "Church organ",
+   "category": "church",
+   "sizeM": [
+    4.73,
+    5.23,
+    4.32
+   ],
+   "everonWorldCount": 3,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": true,
+   "actions": [
+    "SCR_PlayInstrument"
+   ],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Has a real user action: SCR_PlayInstrument (Prelude in C minor, 11.5 s, context Play); one per big church. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: Church_01_red; Morton: Church_01_blue_nocellar; Montignac: Church_01_yellow."
+  },
+  {
+   "guid": "811DAFCBCF0ECBEF",
+   "path": "Prefabs/Structures/BuildingParts/Cultural/ChurchFont_01_decor.et",
+   "res": "{811DAFCBCF0ECBEF}Prefabs/Structures/BuildingParts/Cultural/ChurchFont_01_decor.et",
+   "name": "Baptismal font",
+   "category": "church",
+   "sizeM": [
+    0.42,
+    0.76,
+    0.31
+   ],
+   "everonWorldCount": 5,
+   "usedInTowns": [
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Small font decor in the small church (Saint Pierre). Placed near (within about 0.6 x the building size of its origin; approximate): Saint Pierre: ChurchSmall_E_01."
+  },
+  {
+   "guid": "1F415A3F7ECBE13A",
+   "path": "Prefabs/Props/Furniture/Piano_01_brown.et",
+   "res": "{1F415A3F7ECBE13A}Prefabs/Props/Furniture/Piano_01_brown.et",
+   "name": "Piano (brown)",
+   "category": "church",
+   "sizeM": [
+    2.13,
+    1.53,
+    0.91
+   ],
+   "everonWorldCount": 113,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": true,
+   "actions": [
+    "SCR_PlayInstrument"
+   ],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Also has SCR_PlayInstrument; black variant exists. Good for pub, church and school hall."
+  },
+  {
+   "guid": "E3DC93ECBA9EAAB8",
+   "path": "Prefabs/Props/Civilian/Coffin_01.et",
+   "res": "{E3DC93ECBA9EAAB8}Prefabs/Props/Civilian/Coffin_01.et",
+   "name": "Coffin",
+   "category": "church",
+   "sizeM": [
+    0.74,
+    0.59,
+    1.98
+   ],
+   "everonWorldCount": 51,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "In church crypts (Church_01_crypt_attic); destructible. A church or funeral RP prop. Placed near (within about 0.6 x the building size of its origin; approximate): Saint Philippe: Church_01_red; Morton: Church_01_blue_nocellar; Montignac: Church_01_yellow."
+  },
+  {
+   "guid": "8F05D427252644F8",
+   "path": "Prefabs/Props/Civilian/Suitcase_01.et",
+   "res": "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et",
+   "name": "Suitcase",
+   "category": "hotel",
+   "sizeM": [
+    0.71,
+    0.48,
+    0.25
+   ],
+   "everonWorldCount": 569,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Luggage prop; destructible; no pick-up or loot action, so decoration for a hotel or station."
+  },
+  {
+   "guid": "E214337C6E1931C5",
+   "path": "Prefabs/Props/Commercial/CounterShop_01.et",
+   "res": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+   "name": "Shop counter",
+   "category": "hotel",
+   "sizeM": [
+    1.5,
+    1.04,
+    1.12
+   ],
+   "everonWorldCount": 28,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Generic counter; stand-in for a hotel reception desk since no reception prop exists."
+  },
+  {
+   "guid": "1AB7A2C69A30391D",
+   "path": "Prefabs/Props/Furniture/CoatRack_01.et",
+   "res": "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et",
+   "name": "Coat rack",
+   "category": "hotel",
+   "sizeM": [
+    0.56,
+    1.97,
+    0.57
+   ],
+   "everonWorldCount": 524,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Very common; stand-in for a hotel or reception coat stand; variants CoatRack_02 to 05."
+  },
+  {
+   "guid": "0164749D6EAA4518",
+   "path": "Prefabs/Props/Furniture/Bed_01.et",
+   "res": "{0164749D6EAA4518}Prefabs/Props/Furniture/Bed_01.et",
+   "name": "Single bed",
+   "category": "hotel",
+   "sizeM": [
+    1.13,
+    0.51,
+    2.3
+   ],
+   "everonWorldCount": 443,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Destructible; no sleep action (LF adds beds via LF_HospitalBedComponent)."
+  },
+  {
+   "guid": "8A6DD31A4FF94E48",
+   "path": "Prefabs/Props/Furniture/BedDouble_01.et",
+   "res": "{8A6DD31A4FF94E48}Prefabs/Props/Furniture/BedDouble_01.et",
+   "name": "Double bed",
+   "category": "hotel",
+   "sizeM": [
+    2.26,
+    0.9,
+    2.41
+   ],
+   "everonWorldCount": 267,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Hotel-room style bed; destructible; no sleep action."
+  },
+  {
+   "guid": "A96BFF27936E912E",
+   "path": "Prefabs/Props/Services/Police/PoliceControlPanel_01.et",
+   "res": "{A96BFF27936E912E}Prefabs/Props/Services/Police/PoliceControlPanel_01.et",
+   "name": "Police control panel",
+   "category": "other",
+   "sizeM": [
+    1.53,
+    1.13,
+    0.82
+   ],
+   "everonWorldCount": 4,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Police station console prop; mesh only here; LF has its own dispatch console prefabs."
+  },
+  {
+   "guid": "43C4AF1EEBD001CE",
+   "path": "Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_ambulance.et",
+   "res": "{43C4AF1EEBD001CE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_ambulance.et",
+   "name": "Ambulance UAZ-452",
+   "category": "vehicle",
+   "sizeM": [
+    2.29,
+    1.89,
+    4.53
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "SCR_HealSupportStationComponent",
+    "SCR_LoadCasualtySupportStationComponent",
+    "SCR_RemoveCasualtyUserAction",
+    "SCR_RefuelAtSupportStationAction",
+    "SCR_RepairAtSupportStationAction",
+    "SCR_PushVehicleAction",
+    "SCR_ToggleHandbrakeAction",
+    "SCR_EngineAction",
+    "SCR_OpenVehicleStorageAction"
+   ],
+   "hasStorage": true,
+   "destructible": null,
+   "notes": "Heal support station (range 7 m) plus load and remove-casualty actions, vehicle storage and the usual vehicle actions. Soviet-era look fits 1989 civilian use; the _FIA variant has the same components."
+  },
+  {
+   "guid": "F0EC3EFF70B174B0",
+   "path": "Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_ambulance_FIA.et",
+   "res": "{F0EC3EFF70B174B0}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_ambulance_FIA.et",
+   "name": "Ambulance UAZ-452 (FIA)",
+   "category": "vehicle",
+   "sizeM": [
+    2.29,
+    1.89,
+    4.53
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "SCR_HealSupportStationComponent",
+    "SCR_LoadCasualtySupportStationComponent",
+    "SCR_RemoveCasualtyUserAction",
+    "SCR_RefuelAtSupportStationAction",
+    "SCR_RepairAtSupportStationAction",
+    "SCR_PushVehicleAction",
+    "SCR_ToggleHandbrakeAction",
+    "SCR_EngineAction",
+    "SCR_OpenVehicleStorageAction"
+   ],
+   "hasStorage": true,
+   "destructible": null,
+   "notes": "FIA-painted UAZ-452 ambulance; inherits the heal station and load-casualty components from the base."
+  },
+  {
+   "guid": "00C9BBE426F7D459",
+   "path": "Prefabs/Vehicles/Wheeled/M998/M997_maxi_ambulance.et",
+   "res": "{00C9BBE426F7D459}Prefabs/Vehicles/Wheeled/M998/M997_maxi_ambulance.et",
+   "name": "Ambulance M997 Maxi",
+   "category": "vehicle",
+   "sizeM": [
+    2.22,
+    1.57,
+    4.8
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "SCR_HealSupportStationComponent (in ambulance box part)",
+    "SCR_LoadCasualtySupportStationComponent (in ambulance box part)",
+    "SCR_RemoveCasualtyUserAction",
+    "SCR_OpenVehicleStorageAction",
+    "SCR_RefuelAtSupportStationAction",
+    "SCR_RepairAtSupportStationAction",
+    "SCR_PushVehicleAction",
+    "SCR_ToggleHandbrakeAction",
+    "SCR_EngineAction"
+   ],
+   "hasStorage": true,
+   "destructible": null,
+   "notes": "US Humvee ambulance, 4.8 m long; the heal support station sits in its ambulance box part, with load and remove-casualty actions. LF flagship ambulance is LF_M997_Ambulance."
+  }
+ ]
+}

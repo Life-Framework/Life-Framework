@@ -1,0 +1,221 @@
+{
+ "meta": {
+  "note": "fixture for tools/validation/scout-selftest.mjs: the buildings of mini-place.dump.txt in the shape of docs/everon/catalog-buildings.json"
+ },
+ "types": {},
+ "prefabs": [
+  {
+   "res": "{AAAAAAAAAAAAAAAA}Prefabs/Structures/Cultural/Churches/Church_01_white.et",
+   "guid": "AAAAAAAAAAAAAAAA",
+   "path": "Prefabs/Structures/Cultural/Churches/Church_01_white.et",
+   "type": "church",
+   "instances": 1,
+   "footprintM": [
+    12,
+    20
+   ],
+   "areaM2": 240,
+   "heightM": 24,
+   "basementM": 0,
+   "floors": 2,
+   "floorLevelsY": [
+    0.2,
+    3.4
+   ],
+   "doorChildren": 2,
+   "enterable": true,
+   "measured": true
+  },
+  {
+   "res": "{BBBBBBBBBBBBBBBB}Prefabs/Structures/Services/Government/MunicipalOffice_E_01.et",
+   "guid": "BBBBBBBBBBBBBBBB",
+   "path": "Prefabs/Structures/Services/Government/MunicipalOffice_E_01.et",
+   "type": "government",
+   "instances": 1,
+   "footprintM": [
+    10,
+    16
+   ],
+   "areaM2": 160,
+   "heightM": 9,
+   "basementM": 0,
+   "floors": 3,
+   "floorLevelsY": [
+    0.2,
+    3.3,
+    6.4
+   ],
+   "doorChildren": 4,
+   "enterable": true,
+   "measured": true
+  },
+  {
+   "res": "{CCCCCCCCCCCCCCCC}Prefabs/Structures/Commercial/Pubs/PubVillage_E_1L01.et",
+   "guid": "CCCCCCCCCCCCCCCC",
+   "path": "Prefabs/Structures/Commercial/Pubs/PubVillage_E_1L01.et",
+   "type": "pub",
+   "instances": 1,
+   "footprintM": [
+    12,
+    8
+   ],
+   "areaM2": 96,
+   "heightM": 8,
+   "basementM": 0,
+   "floors": 1,
+   "floorLevelsY": [
+    0.2
+   ],
+   "doorChildren": 0,
+   "enterable": false,
+   "measured": true
+  },
+  {
+   "res": "{EEEEEEEEEEEEEEEE}Prefabs/Structures/Houses/Village/House_Village_E_1I01.et",
+   "guid": "EEEEEEEEEEEEEEEE",
+   "path": "Prefabs/Structures/Houses/Village/House_Village_E_1I01.et",
+   "type": "house",
+   "instances": 1,
+   "footprintM": [
+    9,
+    7
+   ],
+   "areaM2": 63,
+   "heightM": 8,
+   "basementM": 0,
+   "floors": 2,
+   "floorLevelsY": [
+    0.2,
+    2.9
+   ],
+   "doorChildren": 3,
+   "enterable": true,
+   "measured": true
+  },
+  {
+   "res": "{FFFFFFFFFFFFFFFF}Prefabs/Structures/Houses/Shed/Shed_01.et",
+   "guid": "FFFFFFFFFFFFFFFF",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_01.et",
+   "type": "shed",
+   "instances": 1,
+   "footprintM": [
+    4,
+    3
+   ],
+   "areaM2": 12,
+   "heightM": 8,
+   "basementM": 0,
+   "floors": 1,
+   "floorLevelsY": [
+    0.2
+   ],
+   "doorChildren": 1,
+   "enterable": false,
+   "measured": true
+  },
+  {
+   "res": "{GGGGGGGGGGGGGGGG}Prefabs/Structures/Ruins/House_Ruin_1I01/House_Ruin_1I01_V1.et",
+   "guid": "GGGGGGGGGGGGGGGG",
+   "path": "Prefabs/Structures/Ruins/House_Ruin_1I01/House_Ruin_1I01_V1.et",
+   "type": "ruin",
+   "instances": 1,
+   "footprintM": [
+    8,
+    6
+   ],
+   "areaM2": 48,
+   "heightM": 8,
+   "basementM": 0,
+   "floors": 0,
+   "floorLevelsY": [],
+   "doorChildren": 0,
+   "enterable": false,
+   "measured": true
+  },
+  {
+   "res": "{IIIIIIIIIIIIIIII}Prefabs/Structures/Infrastructure/Naval/Pier_Wooden_01.et",
+   "guid": "IIIIIIIIIIIIIIII",
+   "path": "Prefabs/Structures/Infrastructure/Naval/Pier_Wooden_01.et",
+   "type": "port",
+   "instances": 1,
+   "footprintM": [
+    4,
+    22
+   ],
+   "areaM2": 88,
+   "heightM": 8,
+   "basementM": 0,
+   "floors": 0,
+   "floorLevelsY": [],
+   "doorChildren": 0,
+   "enterable": false,
+   "measured": true
+  }
+ ],
+ "places": [],
+ "instances": [
+  [
+   0,
+   1020,
+   2020,
+   0,
+   0
+  ],
+  [
+   1,
+   970,
+   2030,
+   90,
+   0
+  ],
+  [
+   2,
+   1030,
+   1975,
+   180,
+   0
+  ],
+  [
+   3,
+   960,
+   1975,
+   0,
+   0
+  ],
+  [
+   3,
+   1070,
+   2030,
+   270,
+   0
+  ],
+  [
+   4,
+   940,
+   2060,
+   0,
+   0
+  ],
+  [
+   5,
+   1080,
+   1950,
+   0,
+   0
+  ],
+  [
+   6,
+   1000,
+   1915,
+   0,
+   0
+  ],
+  [
+   3,
+   5000,
+   5000,
+   0,
+   0
+  ]
+ ]
+}

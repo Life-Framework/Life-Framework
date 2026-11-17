@@ -312,7 +312,21 @@ export function requestFor(s) {
   return { path: "/v1/sound-generation?output_format=mp3_44100_128", body, timeoutMs: 180000 };
 }
 
-export async function stepGenerate(root, { again, now = new Date(), fetchImpl, settleMs = 60000 } = {}) {
+// A 429 system_busy (heavy traffic) or a 5xx is the service's, not the request's, and is not billed:
+// wait and ask again, up to 5 times, rather than lose the run.
+export async function callWithRetry(req, opts, waitMs = 30000, tries = 5) {
+  for (let n = 1; ; n++) {
+    try {
+      return await eleven.call("POST", req.path, req.body, opts);
+    } catch (e) {
+      if (n >= tries || !/HTTP (429|5\d\d)\b/.test(e.message)) throw e;
+      console.log(`  busy (try ${n} of ${tries}): ${e.message.slice(0, 120)}; waiting ${Math.round((waitMs * n) / 1000)} s`);
+      await new Promise((r) => setTimeout(r, waitMs * n));
+    }
+  }
+}
+
+export async function stepGenerate(root, { again, now = new Date(), fetchImpl, settleMs = 60000, retryMs = 30000 } = {}) {
   const rec = readRec(root);
   const problems = specProblems(rec);
   if (problems.length) throw new Error("ambience.json problems:\n  " + problems.join("\n  "));
@@ -334,7 +348,7 @@ export async function stepGenerate(root, { again, now = new Date(), fetchImpl, s
   for (const { s, n } of todo) {
     if (spentCredits(rec) + estimate(s) > rec.budget.credits) throw new Error(`${takeName(s, n)} would pass the budget: ${spentCredits(rec)} spent, about ${estimate(s)} more, cap ${rec.budget.credits}. Stop and report.`);
     const req = requestFor(s);
-    const res = await eleven.call("POST", req.path, req.body, { ...o, timeoutMs: req.timeoutMs });
+    const res = await callWithRetry(req, { ...o, timeoutMs: req.timeoutMs }, retryMs);
     const audio = Buffer.from(await res.arrayBuffer());
     if (audio.length < 4000) throw new Error(`ElevenLabs returned ${audio.length} bytes for ${takeName(s, n)}`);
     writeFileSync(join(dir, `${takeName(s, n)}.mp3`), audio);

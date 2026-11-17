@@ -1,0 +1,52 @@
+// Grid cell c10r5 for furnace: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_furnace_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 143 0 83
+}
+SCR_DestructibleEntity Grid_furnace_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 148 0 83
+}
+SCR_DestructibleEntity Grid_furnace_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 83
+ angleY 270
+}
+SCR_DestructibleEntity Grid_furnace_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 88
+ angleY 270
+}
+SCR_DestructibleEntity Grid_furnace_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furnace_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 148 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furnace_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 143 0 93
+ angleY 90
+}
+GenericEntity Grid_furnace_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:furnace"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 142.2 0.505 83.6
+ angleY -90
+}
+GenericEntity Grid_furnace_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "furnace"
+  }
+ }
+ coords 142.3 0 85.5
+ angleY 90
+}
+GenericEntity Annex_Furnace : "{B63FA2F04B5A5B00}Prefabs/Processor/Furnace.et" {
+ coords 148 0 88
+}

@@ -10,6 +10,8 @@ class LF_ParcelComponent : ScriptComponent
 	static const string MARKER_TITLE = "#LF-Parcel_DroppedTitle";
 	static const string MARKER_TEXT = "#LF-Parcel_DroppedNearby";
 	static const float REST_CLEARANCE = 0.02;
+	//! The hand tool id (`LF_HandToolComponent.m_sToolId` on LF_Parcel.et): the parcel fills the hand.
+	static const string TOOL_ID = "parcel";
 
 	protected LightEntity m_Marker;
 
@@ -148,6 +150,11 @@ class LF_ParcelComponent : ScriptComponent
 		super.OnPostInit(owner);
 
 		InventoryItemComponent item = LF_Component<InventoryItemComponent>.Find(owner);
+		// The marker follows the parcel into and out of slots wherever it is carried (hands, quick
+		// slot or pack), not through a carry component's own callback.
+		if (item)
+			item.m_OnParentSlotChangedInvoker.Insert(OnSlotChanged);
+
 		if (!item || !item.GetAttributes())
 		{
 			LF_Debug.Error("Jobs", "parcel has no item attributes; description unchanged");

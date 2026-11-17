@@ -9,7 +9,7 @@ import { measureXob } from "../lib/xob.mjs";
 
 export const help = "measure <prefab|{GUID}path|name|.xob> [more] [--surfaces] [--all] [--json] [--fresh]   model bounds and the horizontal surfaces (shelf boards, counter tops) from the .xob colliders, no game, cached";
 
-const VERSION = 1;
+const VERSION = 2;
 const r3 = (n) => (Math.round(n * 1000) / 1000).toFixed(3);
 const range = (a) => `${r3(a[0])}..${r3(a[1])}`;
 const boxText = (b) => `x ${range([b.min[0], b.max[0]])}  y ${range([b.min[1], b.max[1]])}  z ${range([b.min[2], b.max[2]])}  (${[0, 1, 2].map((k) => (b.max[k] - b.min[k]).toFixed(2)).join(" x ")} m)`;
@@ -44,17 +44,37 @@ export async function measureOne(root, arg, { minSize = 0.05 } = {}) {
   const r = await resolvePrefab(root, arg);
   const vfs = r.vfs ?? (await gameVfs().catch(() => null));
   let mesh = r.path;
+  let meshRef = r.ref;
   let scale = 1;
   let chain = [];
   if (!/\.xob$/i.test(r.path)) {
-    ({ mesh, scale, chain } = meshOf(root, vfs, r.path));
+    ({ mesh, meshRef, scale, chain } = meshOf(root, vfs, r.path));
     if (!mesh) throw new Error(`${r.path} has no MeshObject model in its chain (${chain.join(" <- ") || "unreadable"})`);
   }
   const buf = readBytes(root, vfs, mesh);
   if (!buf) throw new Error(`${mesh} (the model of ${r.path}) is in neither addons/ nor the game's paks`);
   const m = measureXob(buf, { scale, minSize });
   const files = [...chain, mesh].map((p) => addonFile(root, p)).filter(Boolean).map((file) => ({ file, stamp: stamp(file) }));
-  return { arg, path: r.path, ref: r.ref, others: r.others, mesh, scale, ...m, files };
+  return { arg, path: r.path, ref: r.ref, others: r.others, mesh, meshRef, scale, ...m, files };
+}
+
+// The same disk cache for callers that measure many prefabs in one run (building check, the decor generators): a hit costs a
+// file stamp, a miss reads the model once. Written when the process exits.
+export function measureCache(root) {
+  const build = buildStamp().buildid;
+  const cache = readCache(build);
+  let dirty = false;
+  process.on("exit", () => {
+    if (dirty) writeCache(build, cache);
+  });
+  return async (arg, minSize = 0.05) => {
+    const key = `${arg}|${minSize}`;
+    if (fresh(cache[key])) return { ...cache[key].m, cached: true };
+    const m = await measureOne(root, arg, { minSize });
+    cache[key] = { v: VERSION, files: m.files, m };
+    dirty = true;
+    return m;
+  };
 }
 
 function print(m, { surfaces }) {

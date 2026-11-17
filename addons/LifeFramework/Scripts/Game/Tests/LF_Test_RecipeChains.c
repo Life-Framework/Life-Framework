@@ -37,6 +37,6 @@ class LF_Test_RecipeChains : LF_Test
 	{
 		AssertChain(ctx, "{DD593D31D4F3DFBF}Prefabs/Items/Drugs/Coca_leaves.et", "{B854F08E28254CB8}Prefabs/Items/Drugs/Cocaine.et", "cocaine");
 		AssertChain(ctx, "{73CF2BF72525F5D5}Prefabs/Items/Food/RowanBerries.et", "{CD44DE4529F22D17}Prefabs/Items/Food/BerryJam.et", "jam");
-		AssertChain(ctx, "{2B0213949BE91F38}Prefabs/Items/Resources/EmptyBeerBottle.et", "{C3B9A61B460BE287}Prefabs/Items/Drinks/BeerBottle.et", "beer");
+		AssertChain(ctx, "{2B0213949BE91F38}Prefabs/Items/Resources/EmptyBeerBottle.et", "{4CBB1F9A04D15772}Prefabs/Items/Drinks/BeerBottle.et", "beer");
 	}
 };

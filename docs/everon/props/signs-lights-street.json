@@ -1,0 +1,1877 @@
+{
+ "group": "signs-lights-street",
+ "generated": "2026-11-16",
+ "items": [
+  {
+   "guid": "42B94F7F26F50200",
+   "path": "Prefabs/Structures/Signs/Traffic/VergePost/StoneVergePost_01.et",
+   "res": "{42B94F7F26F50200}Prefabs/Structures/Signs/Traffic/VergePost/StoneVergePost_01.et",
+   "name": "Stone verge post",
+   "category": "sign",
+   "sizeM": [
+    0.29,
+    0.29,
+    1.34
+   ],
+   "everonWorldCount": 2402,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Roadside stone marker post; counts include the _D_V1/_D_V2 variants. Plastic twin PlasticVergePost_01 (962). Cheap road-edge dressing. Not text-capable."
+  },
+  {
+   "guid": "3777B3A9231C5934",
+   "path": "Prefabs/Structures/Signs/Warnings/SignStop_01.et",
+   "res": "{3777B3A9231C5934}Prefabs/Structures/Signs/Warnings/SignStop_01.et",
+   "name": "Stop sign",
+   "category": "sign",
+   "sizeM": [
+    0.7,
+    0.09,
+    0.7
+   ],
+   "everonWorldCount": 31,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Octagon stop sign (a separate _pole prefab is the post). Baked art, no text. Place a pair with the pole for a junction."
+  },
+  {
+   "guid": "7DB5923C2B55D2E4",
+   "path": "Prefabs/Structures/Signs/Warnings/SignGiveWay_01.et",
+   "res": "{7DB5923C2B55D2E4}Prefabs/Structures/Signs/Warnings/SignGiveWay_01.et",
+   "name": "Give way sign",
+   "category": "sign",
+   "sizeM": [
+    0.9,
+    0.09,
+    0.79
+   ],
+   "everonWorldCount": 98,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Give-way triangle; sign and _pole are separate prefabs. Baked art only."
+  },
+  {
+   "guid": "4ABECE4FCE448D1C",
+   "path": "Prefabs/Structures/Signs/Warnings/SignPriorityRoad_01.et",
+   "res": "{4ABECE4FCE448D1C}Prefabs/Structures/Signs/Warnings/SignPriorityRoad_01.et",
+   "name": "Priority road sign",
+   "category": "sign",
+   "sizeM": [
+    0.68,
+    0.09,
+    0.68
+   ],
+   "everonWorldCount": 109,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Priority-road diamond; _pole is the post. Baked art only. Siblings in the same folder: NoParking, OneWay, MaxSpeed30/50, JunctionMain, Refreshments, Telephone, DeadEnd, NoPeds."
+  },
+  {
+   "guid": "401C3E17B1DE0742",
+   "path": "Prefabs/Structures/Signs/Warnings/SignPedCrossing_01.et",
+   "res": "{401C3E17B1DE0742}Prefabs/Structures/Signs/Warnings/SignPedCrossing_01.et",
+   "name": "Pedestrian crossing sign",
+   "category": "sign",
+   "sizeM": [
+    0.5,
+    0.09,
+    0.5
+   ],
+   "everonWorldCount": 45,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Pedestrian crossing square; pair with a pole. Baked art only. Good for a town-centre road."
+  },
+  {
+   "guid": "9AAB4B953C8111D8",
+   "path": "Prefabs/Structures/Signs/Warnings/SignParking_01.et",
+   "res": "{9AAB4B953C8111D8}Prefabs/Structures/Signs/Warnings/SignParking_01.et",
+   "name": "Parking sign",
+   "category": "sign",
+   "sizeM": [
+    0.5,
+    0.09,
+    0.7
+   ],
+   "everonWorldCount": 32,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Blue P parking sign; _pole separate. Baked art only."
+  },
+  {
+   "guid": "82B8692DC36D8268",
+   "path": "Prefabs/Structures/Signs/Warnings/SignBendLeft_01.et",
+   "res": "{82B8692DC36D8268}Prefabs/Structures/Signs/Warnings/SignBendLeft_01.et",
+   "name": "Bend ahead sign (left/right/double variants)",
+   "category": "sign",
+   "sizeM": [
+    0.9,
+    0.09,
+    0.79
+   ],
+   "everonWorldCount": 157,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Bend warning; count covers BendLeft/Right, DoubleLeft/Right and DangerCurve left/right. Rural-road dressing, baked art."
+  },
+  {
+   "guid": "576AAE86A80302D5",
+   "path": "Prefabs/Structures/Signs/Warnings/SignFuelStation_01.et",
+   "res": "{576AAE86A80302D5}Prefabs/Structures/Signs/Warnings/SignFuelStation_01.et",
+   "name": "Fuel station sign",
+   "category": "sign",
+   "sizeM": [
+    0.5,
+    0.09,
+    0.7
+   ],
+   "everonWorldCount": 8,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Fuel-station roadside pictogram; only 8 on the map. Use near a petrol pump area. Baked art."
+  },
+  {
+   "guid": "7FCD4E7C25D886A8",
+   "path": "Prefabs/Structures/Signs/Traffic/SignBusStop_01.et",
+   "res": "{7FCD4E7C25D886A8}Prefabs/Structures/Signs/Traffic/SignBusStop_01.et",
+   "name": "Bus stop sign",
+   "category": "sign",
+   "sizeM": [
+    0.3,
+    0.61,
+    2.9
+   ],
+   "everonWorldCount": 39,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Bus stop road sign (pole built in, no separate _pole). Has a map descriptor (SCR_MapDescriptorComponent) so it can show on the map. Pair with BusShed_E_01."
+  },
+  {
+   "guid": "280A33241B3C655B",
+   "path": "Prefabs/Structures/Signs/Generic/SignGeneric_01_NoSmoking.et",
+   "res": "{280A33241B3C655B}Prefabs/Structures/Signs/Generic/SignGeneric_01_NoSmoking.et",
+   "name": "No smoking sign",
+   "category": "sign",
+   "sizeM": [
+    0.7,
+    0.08,
+    0.5
+   ],
+   "everonWorldCount": 21,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Wall/pole info plate; sibling NoSwimming, MilitaryArea, NoEntry. Baked art, no text."
+  },
+  {
+   "guid": "1E611095E27F7363",
+   "path": "Prefabs/Structures/Signs/TownNames/SignVillage_Eden/SignVillage_02_Montignac.et",
+   "res": "{1E611095E27F7363}Prefabs/Structures/Signs/TownNames/SignVillage_Eden/SignVillage_02_Montignac.et",
+   "name": "Village name sign (per-town prefabs, _end = leaving side)",
+   "category": "town-sign",
+   "sizeM": [
+    1.13,
+    0.05,
+    3.12
+   ],
+   "everonWorldCount": 106,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Village name board; one prefab per village (Montignac, Morton, Figari, Chotain, Regina, Laruns, Vernon, Erquy, LeMoule, Villeneuf, Gravette, Levie, Durras, Tyrone, Meaux, Provins, Lamentin, EntreDeux, SaintPhilippe, SaintPierre); _end = leaving side. The name is baked into the texture, so only listed villages are available. Count covers all of them."
+  },
+  {
+   "guid": "3728080CF905D22C",
+   "path": "Prefabs/Structures/Signs/Directions/SignDirection_Eden_01/SignDirection_Eden_01_1.et",
+   "res": "{3728080CF905D22C}Prefabs/Structures/Signs/Directions/SignDirection_Eden_01/SignDirection_Eden_01_1.et",
+   "name": "Direction signpost Eden set (numbered boards)",
+   "category": "town-sign",
+   "sizeM": [
+    1.02,
+    0.09,
+    3.13
+   ],
+   "everonWorldCount": 76,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Numbered direction signpost set (Eden_01..23, boards _1/_2/_3); destination text is baked. Count is the whole set. Harbor/Airport/PowerPlant direction signs live beside it."
+  },
+  {
+   "guid": "1C1BADBB8F73D8E3",
+   "path": "Prefabs/Structures/Signs/Tourist/TouristSign_01/TouristSign_01_Right_blue.et",
+   "res": "{1C1BADBB8F73D8E3}Prefabs/Structures/Signs/Tourist/TouristSign_01/TouristSign_01_Right_blue.et",
+   "name": "Tourist arrow board (Left/Right, blue/red/green/yellow)",
+   "category": "sign",
+   "sizeM": [
+    0.42,
+    0.08,
+    0.14
+   ],
+   "everonWorldCount": 81,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Tourist arrow board (Left/Right x blue/red/green/yellow); per-site Location boards (I01..I30) carry names like SaintPhilippe, Morton, Montignac. Baked art."
+  },
+  {
+   "guid": "268915B233B41B30",
+   "path": "Prefabs/Structures/Signs/Tourist/TrackSign_01/TrackSign_01_Flat_rectangle_blue.et",
+   "res": "{268915B233B41B30}Prefabs/Structures/Signs/Tourist/TrackSign_01/TrackSign_01_Flat_rectangle_blue.et",
+   "name": "Trail marker plate (rectangle/arrow/curve, 4 colours)",
+   "category": "sign",
+   "sizeM": [
+    0.26,
+    0,
+    0.18
+   ],
+   "everonWorldCount": 1272,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": false,
+   "notes": "Small trail marker plate (rectangle/arrow/curve in blue/red/green/yellow); no destructible component. Mostly hiking-route clutter, very common on the map."
+  },
+  {
+   "guid": "BE5D837410B95C7A",
+   "path": "Prefabs/Props/Commercial/SignPub_01_V1.et",
+   "res": "{BE5D837410B95C7A}Prefabs/Props/Commercial/SignPub_01_V1.et",
+   "name": "Pub sign (V1-V3, FoodMarket variant)",
+   "category": "shop-sign",
+   "sizeM": [
+    0.69,
+    0.59,
+    1.01
+   ],
+   "everonWorldCount": 60,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Hanging pub sign (V1-V3 plus Eden_FoodMarket_V1); baked picture. A prop, so it can be placed freely. Class on the map is not recorded; has destruction."
+  },
+  {
+   "guid": "1A299FE9842C8DB3",
+   "path": "Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_GroceryStore.et",
+   "res": "{1A299FE9842C8DB3}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_GroceryStore.et",
+   "name": "Shop wall sign (Grocery, CarService, GasStation, Drugstore, HouseholdWares, ClothesStore)",
+   "category": "shop-sign",
+   "sizeM": [
+    4.27,
+    0.05,
+    0.89
+   ],
+   "everonWorldCount": 37,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Wall sign for shop fronts: GroceryStore, CarService, GasStation, Drugstore, HouseholdWares, ClothesStore (count covers all). Baked artwork, mounts flat on a facade. Siblings: SignCommercial_02_Pub_V1, SignWall3D_GroceryStore_01/Pub_02, SignRooftop_Office_E_01."
+  },
+  {
+   "guid": "D46F2E632A683DBA",
+   "path": "Prefabs/Structures/BuildingParts/Signs/SignWall/SignWall_01_90x45_PostOffice.et",
+   "res": "{D46F2E632A683DBA}Prefabs/Structures/BuildingParts/Signs/SignWall/SignWall_01_90x45_PostOffice.et",
+   "name": "Wall plate sign (PostOffice, MunicipalOffice, ShippingCompany)",
+   "category": "shop-sign",
+   "sizeM": [
+    0.9,
+    0.04,
+    0.45
+   ],
+   "everonWorldCount": 17,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Wall plate sign (PostOffice, MunicipalOffice, ShippingCompany sizes differ); baked text. Count covers all SignWall_01 variants."
+  },
+  {
+   "guid": "41A0ECE98B6961D6",
+   "path": "Prefabs/Structures/BuildingParts/Signs/SignRooftop/SignRooftop_Office_E_01.et",
+   "res": "{41A0ECE98B6961D6}Prefabs/Structures/BuildingParts/Signs/SignRooftop/SignRooftop_Office_E_01.et",
+   "name": "Rooftop sign (office)",
+   "category": "shop-sign",
+   "sizeM": [
+    7.44,
+    1.12,
+    2.89
+   ],
+   "everonWorldCount": 6,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Rooftop office sign; 6 on the map. Baked art."
+  },
+  {
+   "guid": "F0E03780C850866F",
+   "path": "Prefabs/Structures/Commercial/PosterColumn_01.et",
+   "res": "{F0E03780C850866F}Prefabs/Structures/Commercial/PosterColumn_01.et",
+   "name": "Poster column",
+   "category": "poster",
+   "sizeM": [
+    1.24,
+    1.21,
+    2.76
+   ],
+   "everonWorldCount": 6,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Morris-style poster column; only 6 on the map. Poster texture baked into the model; has building-entity destruction."
+  },
+  {
+   "guid": "8DBE697AA61EA7E3",
+   "path": "Prefabs/Structures/Civilian/MessageBoard/MessageBoardSmall_01/MessageBoardSmall_01.et",
+   "res": "{8DBE697AA61EA7E3}Prefabs/Structures/Civilian/MessageBoard/MessageBoardSmall_01/MessageBoardSmall_01.et",
+   "name": "Message board small (filled variants exist)",
+   "category": "poster",
+   "sizeM": [
+    1.2,
+    0.14,
+    0.95
+   ],
+   "everonWorldCount": 128,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Small message board; the _filled_V* variants come pre-pinned with paper. Count covers MessageBoard, MessageBoardSmall and Filled sets."
+  },
+  {
+   "guid": "C6B86C6BD76EA814",
+   "path": "Prefabs/Structures/Civilian/BoardMap_01/BoardMap_01.et",
+   "res": "{C6B86C6BD76EA814}Prefabs/Structures/Civilian/BoardMap_01/BoardMap_01.et",
+   "name": "Map board",
+   "category": "poster",
+   "sizeM": [
+    2.6,
+    0.66,
+    3.32
+   ],
+   "everonWorldCount": 20,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Map board with a _Dot child (position marker). Baked map art."
+  },
+  {
+   "guid": "9ABAFFCBC76D824B",
+   "path": "Prefabs/Props/Civilian/NoticeBoardCork_01.et",
+   "res": "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et",
+   "name": "Cork notice board",
+   "category": "poster",
+   "sizeM": [
+    1.8,
+    0.02,
+    1.1
+   ],
+   "everonWorldCount": 227,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Cork notice board (interior). LF already uses a USSR cork board with LF_SignComponent for Read cards (Feature/Signs). Count includes vanilla in houses."
+  },
+  {
+   "guid": "A971B1711AC8958A",
+   "path": "Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et",
+   "res": "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et",
+   "name": "A4 notice sheet (V1-V9, vertical/horizontal)",
+   "category": "poster",
+   "sizeM": [
+    0.21,
+    0,
+    0.3
+   ],
+   "everonWorldCount": 263,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "A4 paper notice, V1-V9 vertical and horizontal (count covers all). Cheap wall clutter; LF_SignFace reuses this poster mesh for its printed-title sheet."
+  },
+  {
+   "guid": "43E4EEB4CDBBFE34",
+   "path": "Prefabs/Props/Commercial/Posters/PosterSingle_27x41_01_RadioEveron.et",
+   "res": "{43E4EEB4CDBBFE34}Prefabs/Props/Commercial/Posters/PosterSingle_27x41_01_RadioEveron.et",
+   "name": "Single poster (RadioEveron, WashYourHands, FootballMatch, Cans, Library...)",
+   "category": "poster",
+   "sizeM": [
+    0.35,
+    0.01,
+    0.53
+   ],
+   "everonWorldCount": 218,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Single wall posters: RadioEveron, WashYourHands, FootballMatch, ProgressOfMankind, rallyeveron, Cans, Alcohol, Library, Forest. Count covers all PosterSingle prefabs."
+  },
+  {
+   "guid": "E021E2FFF02ADF0C",
+   "path": "Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+   "res": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+   "name": "Street lamp E_01 4m/6m (_off = unlit)",
+   "category": "lamp",
+   "sizeM": [
+    0.7,
+    0.7,
+    4.25
+   ],
+   "everonWorldCount": 254,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": true,
+   "destructible": true,
+   "notes": "Street lamp: child glass prefab carries a LightEntity plus StreetLampComponent (IsLightOn, SetBroken); no user action, so day/night behaviour is the engine default (not verified in play). 4m and 6m poles; _off variants (unlit) exist. Light child LV 8, pale green-white."
+  },
+  {
+   "guid": "B9003EF716A534D4",
+   "path": "Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_02/LampStreet_E_02_single.et",
+   "res": "{B9003EF716A534D4}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_02/LampStreet_E_02_single.et",
+   "name": "Street lamp E_02 (single/addon/double)",
+   "category": "lamp",
+   "sizeM": [
+    0.68,
+    2.33,
+    8.75
+   ],
+   "everonWorldCount": 248,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": true,
+   "destructible": true,
+   "notes": "Street lamp E_02 with single/addon/doubleAngled/doubleStraight arms; light via child glass prefab + StreetLampComponent; no switch action."
+  },
+  {
+   "guid": "614C7CCF23A6FB40",
+   "path": "Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_03/LampStreet_E_03_single.et",
+   "res": "{614C7CCF23A6FB40}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_03/LampStreet_E_03_single.et",
+   "name": "Street lamp E_03 (single/addon)",
+   "category": "lamp",
+   "sizeM": [
+    0.72,
+    3.59,
+    11.25
+   ],
+   "everonWorldCount": 163,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": true,
+   "destructible": true,
+   "notes": "Street lamp E_03 single/addon (+ _off variants); light child + StreetLampComponent; no switch action."
+  },
+  {
+   "guid": "34F74A7DBAD46974",
+   "path": "Prefabs/Props/Furniture/LightWall_01.et",
+   "res": "{34F74A7DBAD46974}Prefabs/Props/Furniture/LightWall_01.et",
+   "name": "Wall light 01",
+   "category": "wall-light",
+   "sizeM": [
+    0.29,
+    0.32,
+    0.29
+   ],
+   "everonWorldCount": 2064,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Most common prop on the map (2064). Interior wall lamp MESH only: no light entity in the prefab or parents, so it does not light a room. Add a separate light entity or use a lit variant."
+  },
+  {
+   "guid": "97CCD43778D034CF",
+   "path": "Prefabs/Props/Furniture/LightCeiling_01.et",
+   "res": "{97CCD43778D034CF}Prefabs/Props/Furniture/LightCeiling_01.et",
+   "name": "Ceiling light 01",
+   "category": "ceiling-light",
+   "sizeM": [
+    0.83,
+    0.86,
+    0.82
+   ],
+   "everonWorldCount": 921,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Ceiling lamp mesh only (no light). The _on variant adds LightEntity children. Count excludes _on."
+  },
+  {
+   "guid": "49FF07D895A26DBE",
+   "path": "Prefabs/Props/Furniture/LightCeiling_03.et",
+   "res": "{49FF07D895A26DBE}Prefabs/Props/Furniture/LightCeiling_03.et",
+   "name": "Ceiling light 03",
+   "category": "ceiling-light",
+   "sizeM": [
+    0.39,
+    0.41,
+    1.02
+   ],
+   "everonWorldCount": 782,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Ceiling lamp mesh only (no light). Needs a placed light entity to glow."
+  },
+  {
+   "guid": "B3CF0487BB36323B",
+   "path": "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et",
+   "res": "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et",
+   "name": "Fluorescent lamp 01",
+   "category": "ceiling-light",
+   "sizeM": [
+    1.32,
+    0.21,
+    0.08
+   ],
+   "everonWorldCount": 651,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Tube fluorescent fitting; plain prefab is mesh only. Variants: _exterior (light + StreetLampComponent) and _glass (light child). Count is the plain prefab only."
+  },
+  {
+   "guid": "FA81E4DDBA1189AF",
+   "path": "Prefabs/Props/Furniture/LampInterior_01.et",
+   "res": "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et",
+   "name": "Interior lamp 01",
+   "category": "lamp",
+   "sizeM": [
+    0.51,
+    0.5,
+    1.53
+   ],
+   "everonWorldCount": 327,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Interior floor/shade lamp mesh; no light component in the prefab chain."
+  },
+  {
+   "guid": "ABE2F09DE90C218A",
+   "path": "Prefabs/Props/Furniture/LampInterior_02/LampInterior_02_Yellow.et",
+   "res": "{ABE2F09DE90C218A}Prefabs/Props/Furniture/LampInterior_02/LampInterior_02_Yellow.et",
+   "name": "Interior lamp 02 (colour shades)",
+   "category": "lamp",
+   "sizeM": [
+    0.76,
+    0.5,
+    1.84
+   ],
+   "everonWorldCount": 130,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Interior lamp 02 in Yellow/Orange/Red shades (count covers all); mesh only, no light component."
+  },
+  {
+   "guid": "62482F79CF1B97FD",
+   "path": "Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01.et",
+   "res": "{62482F79CF1B97FD}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01.et",
+   "name": "Industrial lamp",
+   "category": "lamp",
+   "sizeM": [
+    0.58,
+    0.56,
+    0.45
+   ],
+   "everonWorldCount": 81,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Industrial wall lamp; plain prefab is mesh only. _on_exterior and _on_mine variants add point+spot LightEntity. Count is LampIndustrial_01 only."
+  },
+  {
+   "guid": "E34303CB179E13D6",
+   "path": "Prefabs/Structures/BuildingParts/Lights/LightIndustrial_01.et",
+   "res": "{E34303CB179E13D6}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_01.et",
+   "name": "Industrial light (wall/outdoor)",
+   "category": "wall-light",
+   "sizeM": [
+    0.38,
+    0.16,
+    0.34
+   ],
+   "everonWorldCount": 142,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Industrial light fixture; plain mesh only. _on_exterior adds spot+point lights. Count is LightIndustrial_01 only (02 and 03 exist separately)."
+  },
+  {
+   "guid": "862432FB57C1C1B3",
+   "path": "Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et",
+   "res": "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et",
+   "name": "Kerosene lamp",
+   "category": "lamp",
+   "sizeM": [
+    0.2,
+    0.17,
+    0.4
+   ],
+   "everonWorldCount": 60,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": true,
+   "actions": [
+    "switch light on/off (SCR_SwitchLightUserAction, context \"Switch\")"
+   ],
+   "emitsLight": true,
+   "destructible": true,
+   "notes": "Kerosene lantern, colours green/blue/military_USSR. The only item here with a real player action: SCR_SwitchLightUserAction (light on/off), LIT_ON_SPAWN point light. Good table/stall prop."
+  },
+  {
+   "guid": "64EDA881A2C6291C",
+   "path": "Prefabs/Structures/Infrastructure/Power/Powerlines/PowerLine_01/PowerLine_01_pole_small_hook.et",
+   "res": "{64EDA881A2C6291C}Prefabs/Structures/Infrastructure/Power/Powerlines/PowerLine_01/PowerLine_01_pole_small_hook.et",
+   "name": "Small power pole (scenery)",
+   "category": "other",
+   "sizeM": [
+    0.53,
+    0.27,
+    9.72
+   ],
+   "everonWorldCount": 1304,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Small power pole; counts 1304. SCR_PowerPole class (cable slots), scenery only."
+  },
+  {
+   "guid": "33C0565C5FE1ED74",
+   "path": "Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+   "res": "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+   "name": "Street bench 02",
+   "category": "bench",
+   "sizeM": [
+    2.19,
+    0.7,
+    1.03
+   ],
+   "everonWorldCount": 206,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Street bench, no ActionsManager in vanilla. LF provides an invisible sit place Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et (F to Sit) to place over it."
+  },
+  {
+   "guid": "5BAA975FE04E94EF",
+   "path": "Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et",
+   "res": "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et",
+   "name": "Street bench 01 (green/red/yellow_red)",
+   "category": "bench",
+   "sizeM": [
+    2,
+    0.81,
+    1.01
+   ],
+   "everonWorldCount": 406,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Street bench 01 in green, red and yellow_red (count covers all). No vanilla sit action; LF has LF_Seat_BenchStreet_01_green.et and _red.et seat anchors."
+  },
+  {
+   "guid": "8BB5855208F77724",
+   "path": "Prefabs/Props/Furniture/BenchWooden_01.et",
+   "res": "{8BB5855208F77724}Prefabs/Props/Furniture/BenchWooden_01.et",
+   "name": "Wooden bench 01",
+   "category": "bench",
+   "sizeM": [
+    1.45,
+    0.39,
+    0.52
+   ],
+   "everonWorldCount": 250,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Wooden park bench; no sit action; no LF seat anchor yet."
+  },
+  {
+   "guid": "027DFD4BB8D66F61",
+   "path": "Prefabs/Props/Furniture/BenchWooden_03.et",
+   "res": "{027DFD4BB8D66F61}Prefabs/Props/Furniture/BenchWooden_03.et",
+   "name": "Wooden bench 03",
+   "category": "bench",
+   "sizeM": [
+    1.52,
+    0.43,
+    0.5
+   ],
+   "everonWorldCount": 312,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Wooden bench 03; no sit action; no LF seat anchor yet."
+  },
+  {
+   "guid": "678F3374CF4CC249",
+   "path": "Prefabs/Props/Furniture/BenchChurch_02/BenchChurch_02_long.et",
+   "res": "{678F3374CF4CC249}Prefabs/Props/Furniture/BenchChurch_02/BenchChurch_02_long.et",
+   "name": "Church pew (short/long)",
+   "category": "bench",
+   "sizeM": [
+    4.81,
+    0.7,
+    1.06
+   ],
+   "everonWorldCount": 54,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Church pew (short and long, count covers both); no sit action; wide 4-5 person run."
+  },
+  {
+   "guid": "4F581C1DDB0D3796",
+   "path": "Prefabs/Props/Furniture/BenchOffice_01/BenchOffice_01_Base.et",
+   "res": "{4F581C1DDB0D3796}Prefabs/Props/Furniture/BenchOffice_01/BenchOffice_01_Base.et",
+   "name": "Office/waiting bench",
+   "category": "bench",
+   "sizeM": [
+    1.36,
+    0.61,
+    0.96
+   ],
+   "everonWorldCount": 156,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Waiting-room / office bench (also _Green); no sit action. Good for station, clinic, or bank lobby."
+  },
+  {
+   "guid": "C8A5C92E74ABB5EA",
+   "path": "Prefabs/Props/Civilian/PicnicTable/PicnicTable_01.et",
+   "res": "{C8A5C92E74ABB5EA}Prefabs/Props/Civilian/PicnicTable/PicnicTable_01.et",
+   "name": "Picnic table with benches",
+   "category": "bench",
+   "sizeM": [
+    1.99,
+    2.38,
+    0.97
+   ],
+   "everonWorldCount": 295,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Picnic table with attached benches; no sit action. Good for beach/park dressing."
+  },
+  {
+   "guid": "32CDE9FE3FB35D51",
+   "path": "Prefabs/Props/Garbage/Bins/BinStreet_01.et",
+   "res": "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et",
+   "name": "Street bin",
+   "category": "bin",
+   "sizeM": [
+    0.4,
+    0.34,
+    1.58
+   ],
+   "everonWorldCount": 165,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Street litter bin; has TagComponent; destructible. No interact action."
+  },
+  {
+   "guid": "5E99DD1E8377D27F",
+   "path": "Prefabs/Props/Garbage/Bins/TrashBin_02.et",
+   "res": "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.et",
+   "name": "Trash bin 02",
+   "category": "bin",
+   "sizeM": [
+    0.64,
+    0.67,
+    1.09
+   ],
+   "everonWorldCount": 411,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Plastic wheeled trash bin; no interact action. Common behind houses and shops."
+  },
+  {
+   "guid": "72E42BEAFED9B5A7",
+   "path": "Prefabs/Props/Garbage/Bins/GarbageContainer_01.et",
+   "res": "{72E42BEAFED9B5A7}Prefabs/Props/Garbage/Bins/GarbageContainer_01.et",
+   "name": "Garbage container (with lid)",
+   "category": "bin",
+   "sizeM": [
+    1.6,
+    1.1,
+    1.49
+   ],
+   "everonWorldCount": 412,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Large lidded dumpster (lid is a separate prefab, 206); TagComponent; no interact action. Back alleys."
+  },
+  {
+   "guid": "7A63E9272B714EC7",
+   "path": "Prefabs/Props/Civilian/AshtrayStreet_01.et",
+   "res": "{7A63E9272B714EC7}Prefabs/Props/Civilian/AshtrayStreet_01.et",
+   "name": "Street ashtray post",
+   "category": "bin",
+   "sizeM": [
+    0.3,
+    0.3,
+    0.92
+   ],
+   "everonWorldCount": 90,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Standing street ashtray; 90 on the map; no action. Count excludes the tabletop Ashtray_01 family."
+  },
+  {
+   "guid": "3AC9CDFE7E068E5E",
+   "path": "Prefabs/Props/Services/Post/Mailbox_02.et",
+   "res": "{3AC9CDFE7E068E5E}Prefabs/Props/Services/Post/Mailbox_02.et",
+   "name": "Mailbox",
+   "category": "other",
+   "sizeM": [
+    0.49,
+    0.37,
+    2.01
+   ],
+   "everonWorldCount": 19,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Post mailbox, 19 on the map, none inside the four town dumps. Static, no deposit action."
+  },
+  {
+   "guid": "B5963E922C972A4A",
+   "path": "Prefabs/Structures/Infrastructure/Landlines/PhoneBooth_E/PhoneBooth_E_01.et",
+   "res": "{B5963E922C972A4A}Prefabs/Structures/Infrastructure/Landlines/PhoneBooth_E/PhoneBooth_E_01.et",
+   "name": "Phone booth (lit variant _Light)",
+   "category": "booth",
+   "sizeM": [
+    1.72,
+    1.62,
+    3.37
+   ],
+   "everonWorldCount": 24,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": true,
+   "actions": [
+    "open/close door (SCR_DoorUserAction)"
+   ],
+   "emitsLight": true,
+   "destructible": true,
+   "notes": "Glass phone booth with a door action (SCR_DoorUserAction) and a _Light child (LightEntity). Glass panes are child prefabs. A prop only; it is not a working phone."
+  },
+  {
+   "guid": "85B2A7E85CA6C656",
+   "path": "Prefabs/Props/Services/PhoneWall_01/PhoneWall_01_grey.et",
+   "res": "{85B2A7E85CA6C656}Prefabs/Props/Services/PhoneWall_01/PhoneWall_01_grey.et",
+   "name": "Wall payphone",
+   "category": "booth",
+   "sizeM": [
+    0.33,
+    0.19,
+    0.58
+   ],
+   "everonWorldCount": 24,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Wall payphone prop; no action; mesh only."
+  },
+  {
+   "guid": "2D4B21B9086F6AFB",
+   "path": "Prefabs/Structures/Infrastructure/Waterworks/HydrantStreet_01/HydrantStreet_01.et",
+   "res": "{2D4B21B9086F6AFB}Prefabs/Structures/Infrastructure/Waterworks/HydrantStreet_01/HydrantStreet_01.et",
+   "name": "Street fire hydrant",
+   "category": "other",
+   "sizeM": [
+    0.4,
+    0.23,
+    1.3
+   ],
+   "everonWorldCount": 24,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Street fire hydrant, destructible, 24 on the map."
+  },
+  {
+   "guid": "97380F89AA02D20B",
+   "path": "Prefabs/Structures/Infrastructure/Bus/BusShed_E_01/BusShed_E_01_blue.et",
+   "res": "{97380F89AA02D20B}Prefabs/Structures/Infrastructure/Bus/BusShed_E_01/BusShed_E_01_blue.et",
+   "name": "Bus shelter (blue/green)",
+   "category": "bus-stop",
+   "sizeM": [
+    3.95,
+    2.32,
+    3.68
+   ],
+   "everonWorldCount": 26,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Bus shelter (blue/green); no seat action, destructible building entity. Pair with SignBusStop_01. Count covers both colours."
+  },
+  {
+   "guid": "DA33ED8E94FD68DF",
+   "path": "Prefabs/Structures/Commercial/Booth/NewspaperBooth_E_01/NewspaperBooth_E_01_redyellow.et",
+   "res": "{DA33ED8E94FD68DF}Prefabs/Structures/Commercial/Booth/NewspaperBooth_E_01/NewspaperBooth_E_01_redyellow.et",
+   "name": "Newspaper kiosk (redyellow/redwhite)",
+   "category": "booth",
+   "sizeM": [
+    4.13,
+    5,
+    4.13
+   ],
+   "everonWorldCount": 17,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": true,
+   "actions": [
+    "open/close door (SCR_DoorUserAction)"
+   ],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Newspaper kiosk (redyellow/redwhite). Has a door action (SCR_DoorUserAction); a stall front for roleplay vendor use."
+  },
+  {
+   "guid": "EA34FD3A068E550A",
+   "path": "Prefabs/Props/Commercial/NewspaperStand_01.et",
+   "res": "{EA34FD3A068E550A}Prefabs/Props/Commercial/NewspaperStand_01.et",
+   "name": "Newspaper stand",
+   "category": "other",
+   "sizeM": [
+    0.5,
+    0.4,
+    2.02
+   ],
+   "everonWorldCount": 46,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Newspaper stand; no action; 46 on the map."
+  },
+  {
+   "guid": "D8B83A318AE3611E",
+   "path": "Prefabs/Props/Commercial/MarketStand_01.et",
+   "res": "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et",
+   "name": "Market stall (umbrella variant)",
+   "category": "other",
+   "sizeM": [
+    2.53,
+    1.29,
+    1.03
+   ],
+   "everonWorldCount": 112,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Market stall (MarketStand_01_Umbrella variant 73); no action. Count covers both. A shop-front-in-the-street prop."
+  },
+  {
+   "guid": "AE971BD9E187C0F8",
+   "path": "Prefabs/Structures/Walls/Pole/PoleFence_01/PoleFence_01_6m_A.et",
+   "res": "{AE971BD9E187C0F8}Prefabs/Structures/Walls/Pole/PoleFence_01/PoleFence_01_6m_A.et",
+   "name": "Wooden pole fence 01 (3m/6m)",
+   "category": "fence",
+   "sizeM": [
+    6.27,
+    0.28,
+    2.67
+   ],
+   "everonWorldCount": 10055,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Most placed fence on the map (3m/6m segments, count excludes pole/end pieces). Rural wooden pole fence."
+  },
+  {
+   "guid": "CBB323D90F2FF29F",
+   "path": "Prefabs/Structures/Walls/Net/NetFence_02/NetFence_02_8m.et",
+   "res": "{CBB323D90F2FF29F}Prefabs/Structures/Walls/Net/NetFence_02/NetFence_02_8m.et",
+   "name": "Wire net fence 02 (2/4/8m)",
+   "category": "fence",
+   "sizeM": [
+    8,
+    0.08,
+    4.01
+   ],
+   "everonWorldCount": 2059,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Wire mesh fence in 2/4/8m pieces; has navmesh-blocking and explosion points."
+  },
+  {
+   "guid": "AB044B4917B05086",
+   "path": "Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+   "res": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+   "name": "Wooden fence 01 (2/4/8m)",
+   "category": "fence",
+   "sizeM": [
+    8.04,
+    0.17,
+    1.57
+   ],
+   "everonWorldCount": 1214,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Wooden plank fence (2/4/8m); NavmeshCustomLink for AI."
+  },
+  {
+   "guid": "425B3F37AE13AE3C",
+   "path": "Prefabs/Structures/Walls/Crashbarrier/CrashBarrier_01/CrashBarrier_01_8m_V1.et",
+   "res": "{425B3F37AE13AE3C}Prefabs/Structures/Walls/Crashbarrier/CrashBarrier_01/CrashBarrier_01_8m_V1.et",
+   "name": "Guardrail (4m/8m, V1/V2)",
+   "category": "barrier",
+   "sizeM": [
+    8,
+    0.34,
+    2.33
+   ],
+   "everonWorldCount": 1119,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Road guardrail (4m/8m, V1/V2); Start/End caps separate."
+  },
+  {
+   "guid": "07F043DD6AACCD0B",
+   "path": "Prefabs/Structures/Infrastructure/Barriers/BarGate_01/BarGate_01.et",
+   "res": "{07F043DD6AACCD0B}Prefabs/Structures/Infrastructure/Barriers/BarGate_01/BarGate_01.et",
+   "name": "Bar gate (boom barrier)",
+   "category": "barrier",
+   "sizeM": [
+    8.74,
+    0.47,
+    4.59
+   ],
+   "everonWorldCount": 28,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Montignac"
+   ],
+   "hasAction": true,
+   "actions": [
+    "raise/lower bar (SCR_DoorUserAction)"
+   ],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Boom barrier gate; SCR_DoorUserAction found in the prefab chain (raise/lower). StaticModelEntity. Good for car park or yard entry."
+  },
+  {
+   "guid": "25C8B889A777399D",
+   "path": "Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et",
+   "res": "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et",
+   "name": "Traffic cone (red; stack variant)",
+   "category": "barrier",
+   "sizeM": [
+    0.45,
+    0.45,
+    0.55
+   ],
+   "everonWorldCount": 41,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Traffic cone (red); a _stack variant exists (31). No action. Count includes the _stack variant."
+  },
+  {
+   "guid": "64C9C1D1C2C1B38D",
+   "path": "Prefabs/Props/Infrastructure/Roadblocks/RoadBlock_01.et",
+   "res": "{64C9C1D1C2C1B38D}Prefabs/Props/Infrastructure/Roadblocks/RoadBlock_01.et",
+   "name": "Road block",
+   "category": "barrier",
+   "sizeM": [
+    2.21,
+    0.52,
+    1.17
+   ],
+   "everonWorldCount": 30,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Road block barrier, destructible; 30 on the map."
+  },
+  {
+   "guid": "85CE0F68DA969A31",
+   "path": "Prefabs/Structures/Infrastructure/Naval/SeaBollards/SeaBollard_01.et",
+   "res": "{85CE0F68DA969A31}Prefabs/Structures/Infrastructure/Naval/SeaBollards/SeaBollard_01.et",
+   "name": "Sea bollard (harbour)",
+   "category": "barrier",
+   "sizeM": [
+    0.6,
+    0.45,
+    0.52
+   ],
+   "everonWorldCount": 418,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Harbour mooring bollard (418); asset_search for bollard finds only this one, so there is no street bollard in vanilla."
+  },
+  {
+   "guid": "59886E834739DCA2",
+   "path": "Prefabs/Structures/Infrastructure/Pavements/ConcreteKerb_01/ConcreteKerb_01_2m_v2.et",
+   "res": "{59886E834739DCA2}Prefabs/Structures/Infrastructure/Pavements/ConcreteKerb_01/ConcreteKerb_01_2m_v2.et",
+   "name": "Concrete kerb 2m",
+   "category": "other",
+   "sizeM": [
+    2.02,
+    0.15,
+    0.31
+   ],
+   "everonWorldCount": 4453,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": false,
+   "notes": "Concrete kerb piece 2m (many variants); no destruction. Highest-count street piece (4453); builds pavement edges."
+  },
+  {
+   "guid": "199181163F247657",
+   "path": "Prefabs/Structures/Infrastructure/Pavements/AsphaltPavement_01/AsphaltPavement_01_Narrow_4m_A.et",
+   "res": "{199181163F247657}Prefabs/Structures/Infrastructure/Pavements/AsphaltPavement_01/AsphaltPavement_01_Narrow_4m_A.et",
+   "name": "Asphalt pavement strip (narrow/wide 4m)",
+   "category": "other",
+   "sizeM": [
+    4.84,
+    2.25,
+    0.46
+   ],
+   "everonWorldCount": 3267,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": false,
+   "notes": "Asphalt pavement strip, Narrow/Wide 4m variants (count covers both A pieces); no destruction."
+  },
+  {
+   "guid": "4AA410D301A881F2",
+   "path": "Prefabs/Structures/BuildingParts/Misc/FlagHolder_01.et",
+   "res": "{4AA410D301A881F2}Prefabs/Structures/BuildingParts/Misc/FlagHolder_01.et",
+   "name": "Wall flag holder",
+   "category": "other",
+   "sizeM": [
+    0.21,
+    0.12,
+    0.28
+   ],
+   "everonWorldCount": 54,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Wall flag bracket (54 on the map, mesh only). Pair with a Flag_* prefab for an actual flag."
+  },
+  {
+   "guid": "1A8791C2BC2B8B75",
+   "path": "Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et",
+   "res": "{1A8791C2BC2B8B75}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et",
+   "name": "Flag pole (no flag)",
+   "category": "other",
+   "sizeM": [
+    0.13,
+    0.28,
+    6.81
+   ],
+   "everonWorldCount": 13,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Flagpole with no flag, 13 on the map (military base style); add a Flag_* prefab. Mesh only."
+  },
+  {
+   "guid": "4D6D06CAD0439114",
+   "path": "Prefabs/Structures/Cultural/Fountains/Fountain_01.et",
+   "res": "{4D6D06CAD0439114}Prefabs/Structures/Cultural/Fountains/Fountain_01.et",
+   "name": "Fountain",
+   "category": "statue",
+   "sizeM": [
+    7.1,
+    7.1,
+    3.23
+   ],
+   "everonWorldCount": 3,
+   "usedInTowns": [
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Town fountain; map-descriptor component; only 3 on the map (Montignac, Morton area). Destructible."
+  },
+  {
+   "guid": "C30C81643A9F1A2C",
+   "path": "Prefabs/Structures/Cultural/Statues/PlagueColumn_01.et",
+   "res": "{C30C81643A9F1A2C}Prefabs/Structures/Cultural/Statues/PlagueColumn_01.et",
+   "name": "Plague column monument",
+   "category": "statue",
+   "sizeM": [
+    3.63,
+    3.63,
+    12.93
+   ],
+   "everonWorldCount": 5,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Plague-column monument; 5 on the map; fractal destruction."
+  },
+  {
+   "guid": "A46718148CC2442E",
+   "path": "Prefabs/Structures/Cultural/Statues/StatueSoldier_02/StatueSoldier_02.et",
+   "res": "{A46718148CC2442E}Prefabs/Structures/Cultural/Statues/StatueSoldier_02/StatueSoldier_02.et",
+   "name": "Soldier statue",
+   "category": "statue",
+   "sizeM": [
+    1.44,
+    1.43,
+    5.19
+   ],
+   "everonWorldCount": 4,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Soldier statue; only 4 on the map; destructible."
+  },
+  {
+   "guid": "06ABA7878E8CC278",
+   "path": "Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et",
+   "res": "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et",
+   "name": "Street planter box (rect/octa, flowers by colour)",
+   "category": "other",
+   "sizeM": [
+    1.49,
+    0.66,
+    0.81
+   ],
+   "everonWorldCount": 262,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Street planter box (rect long/short, octa; begonia and tagetes colours; count covers all). Common in Saint Philippe/Pierre."
+  },
+  {
+   "guid": "0BE3BDE3910436F2",
+   "path": "Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et",
+   "res": "{0BE3BDE3910436F2}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et",
+   "name": "Pelargonia flowerpot (colours)",
+   "category": "other",
+   "sizeM": [
+    1.37,
+    0.52,
+    0.51
+   ],
+   "everonWorldCount": 416,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Window/doorstep flowerpot (red, pink, white, V2 variants; count covers all). Very common town dressing."
+  },
+  {
+   "guid": "9235921E3FFE47C7",
+   "path": "Prefabs/Props/Furniture/LightCeiling_01_on.et",
+   "res": "{9235921E3FFE47C7}Prefabs/Props/Furniture/LightCeiling_01_on.et",
+   "name": "Ceiling light 01 lit variant (emits light)",
+   "category": "ceiling-light",
+   "sizeM": [
+    0.83,
+    0.86,
+    0.82
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": true,
+   "destructible": true,
+   "notes": "Lit variant of LightCeiling_01 with LightEntity pair; used by LF in the drug store polish. Not placed by vanilla Everon (0 in world dump)."
+  },
+  {
+   "guid": "B61A08FB644D2050",
+   "path": "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01_exterior.et",
+   "res": "{B61A08FB644D2050}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01_exterior.et",
+   "name": "Fluorescent lamp exterior (lit variant)",
+   "category": "lamp",
+   "sizeM": [
+    1.32,
+    0.21,
+    0.08
+   ],
+   "everonWorldCount": 22,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": true,
+   "destructible": true,
+   "notes": "Exterior fluorescent with LightEntity + StreetLampComponent. Small count."
+  },
+  {
+   "guid": "097F88BDCA8B3D89",
+   "path": "Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et",
+   "res": "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et",
+   "name": "Industrial lamp lit exterior variant",
+   "category": "lamp",
+   "sizeM": [
+    0.58,
+    0.56,
+    0.45
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": true,
+   "destructible": true,
+   "notes": "Lit exterior variant (point + spot lights, StreetLampComponent). Not placed in vanilla Everon world dump."
+  },
+  {
+   "guid": "68F2D79548A1A0D2",
+   "path": "Prefabs/Structures/BuildingParts/Lights/LightIndustrial_01_on_exterior.et",
+   "res": "{68F2D79548A1A0D2}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_01_on_exterior.et",
+   "name": "Industrial light lit exterior variant",
+   "category": "wall-light",
+   "sizeM": [
+    0.38,
+    0.16,
+    0.34
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": true,
+   "destructible": true,
+   "notes": "Lit exterior variant (spot + point lights, StreetLampComponent). Not placed in vanilla Everon world dump."
+  },
+  {
+   "guid": "DC9CC2A6C3E7244F",
+   "path": "Prefabs/Structures/Signs/TownNames/SignVillage_Eden/SignVillage_02_SaintPhilippe.et",
+   "res": "{DC9CC2A6C3E7244F}Prefabs/Structures/Signs/TownNames/SignVillage_Eden/SignVillage_02_SaintPhilippe.et",
+   "name": "Saint Philippe village name sign",
+   "category": "town-sign",
+   "sizeM": [
+    1.13,
+    0.05,
+    3.12
+   ],
+   "everonWorldCount": 6,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Village sign with the Saint Philippe name baked in; _end is the exit side. Verified present at world positions."
+  },
+  {
+   "guid": "68C788AD2D1467AB",
+   "path": "Prefabs/Structures/Signs/TownNames/SignVillage_Eden/SignVillage_02_SaintPierre.et",
+   "res": "{68C788AD2D1467AB}Prefabs/Structures/Signs/TownNames/SignVillage_Eden/SignVillage_02_SaintPierre.et",
+   "name": "Saint Pierre village name sign",
+   "category": "town-sign",
+   "sizeM": [
+    1.13,
+    0.05,
+    3.12
+   ],
+   "everonWorldCount": 6,
+   "usedInTowns": [
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": true,
+   "notes": "Village sign with the Saint Pierre name baked in; _end is the exit side."
+  },
+  {
+   "guid": "B85D81962A3F85BA",
+   "path": "Prefabs/Props/Fabric/Flags/Flag_1_2_Everon_01.et",
+   "res": "{B85D81962A3F85BA}Prefabs/Props/Fabric/Flags/Flag_1_2_Everon_01.et",
+   "name": "Flag 1:2 (Everon; also Blue, Green, Red, RedCross, SovietArmy, USArmy, USSR, US, White) and 2:3 sets",
+   "category": "other",
+   "sizeM": [
+    0.03,
+    2.01,
+    1.01
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "emitsLight": false,
+   "destructible": false,
+   "notes": "Placeable cloth flag prefabs exist (1:2 and 2:3 ratios; Everon, Blue, Green, Red, RedCross, SovietArmy, USArmy, USSR, US, White) but none is placed in the vanilla Everon world dump. Mesh/cloth only, no destruction found."
+  }
+ ]
+}

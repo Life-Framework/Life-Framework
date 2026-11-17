@@ -26,7 +26,7 @@ cards to `tmp/slices-<parent>.cards.md`; without `--dry-run` it creates each
 card as a GitHub sub-issue of the parent (label `slice`), in dependency order.
 The check refuses a slice over the timebox, a slice with no acceptance check,
 risky work below T2 or off Opus, a dependency cycle, and two slices that can
-run at once but own the same file. Shared append-only files (`features.md`,
+run at once but own the same file. Shared append-only files (`docs/features/<area>.md`,
 string tables, triage, the test registry) have merge drivers and do not count.
 
 ## 2. Fan out

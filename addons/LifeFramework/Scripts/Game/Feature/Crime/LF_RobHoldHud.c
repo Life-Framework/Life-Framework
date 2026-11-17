@@ -178,3 +178,20 @@ class LF_RobHoldHud
 		return string.Format("%1 left=%2 progress=%3 dist=%4 radius=%5 edge=%6 end=%7", state, LF_RobHoldRules.Clock(s_iHoldMs - elapsed), LF_RobHoldRules.Progress(elapsed, s_iHoldMs).ToString(-1, 2), s_fDistance.ToString(-1, 1), s_fRadius, s_bEdge, s_iEnd);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_RobHoldHud's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_RobHoldHud_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_RobHoldHud_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_RobHoldHud";
+	}
+
+	override void Apply()
+	{
+		LF_RobHoldHud.ResetStatics();
+	}
+}

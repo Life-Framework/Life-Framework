@@ -1,0 +1,62 @@
+GenericEntity {
+ ID "FA50309671CD280A"
+ components {
+  MeshObject "{27FCDDE78D14F2D5}" {
+   Object "{9F3AF591CD6DFE1A}Assets/Characters/Basebody/Basebody_Male_01.xob"
+   Materials {
+    MaterialAssignClass "{0CD9F1AEBFDCDF30}" {
+     SourceMaterial "Basebody_01_Male_Arms"
+     AssignedMaterial "{9F83E1AFD00970AA}Assets/Props/Mannequin/Data/LF_Mannequin.emat"
+    }
+    MaterialAssignClass "{6C44254152D794A5}" {
+     SourceMaterial "Basebody_01_Male_Arms_wound"
+     AssignedMaterial "{9F83E1AFD00970AA}Assets/Props/Mannequin/Data/LF_Mannequin.emat"
+    }
+    MaterialAssignClass "{6CC9F130A0D39C9F}" {
+     SourceMaterial "Basebody_01_Male_Body"
+     AssignedMaterial "{9F83E1AFD00970AA}Assets/Props/Mannequin/Data/LF_Mannequin.emat"
+    }
+    MaterialAssignClass "{F2CBD0D0804C7F73}" {
+     SourceMaterial "Basebody_01_Male_Body_wound"
+     AssignedMaterial "{9F83E1AFD00970AA}Assets/Props/Mannequin/Data/LF_Mannequin.emat"
+    }
+   }
+  }
+ }
+ {
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "098A02D507EBE983"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{787C8218FC491004}Assets/Characters/Basebody/Basebody_Male_Head_01.xob"
+     Materials {
+      MaterialAssignClass "{52EEFF8FA3332F94}" {
+       SourceMaterial "Assets/Characters/OPFOR/RU_Soldier_01/Data/Eyes"
+       AssignedMaterial "{9F83E1AFD00970AA}Assets/Props/Mannequin/Data/LF_Mannequin.emat"
+      }
+      MaterialAssignClass "{2C14782490D00B87}" {
+       SourceMaterial "Assets/Characters/Basebody/Data/Basebody_01_Male_Head"
+       AssignedMaterial "{9F83E1AFD00970AA}Assets/Props/Mannequin/Data/LF_Mannequin.emat"
+      }
+      MaterialAssignClass "{6A0B031A121F0A5A}" {
+       SourceMaterial "Neck"
+       AssignedMaterial "{9F83E1AFD00970AA}Assets/Props/Mannequin/Data/LF_Mannequin.emat"
+      }
+      MaterialAssignClass "{AFC2E027C8FF2BE5}" {
+       SourceMaterial "Common/Materials/Default"
+       AssignedMaterial "{9F83E1AFD00970AA}Assets/Props/Mannequin/Data/LF_Mannequin.emat"
+      }
+      MaterialAssignClass "{26D22E3B5557BABA}" {
+       SourceMaterial "Mounth_White"
+       AssignedMaterial "{9F83E1AFD00970AA}Assets/Props/Mannequin/Data/LF_Mannequin.emat"
+      }
+      MaterialAssignClass "{E9BE1990B42893BA}" {
+       SourceMaterial "Mounth_White_wound"
+       AssignedMaterial "{9F83E1AFD00970AA}Assets/Props/Mannequin/Data/LF_Mannequin.emat"
+      }
+     }
+    }
+   }
+  }
+ }
+}

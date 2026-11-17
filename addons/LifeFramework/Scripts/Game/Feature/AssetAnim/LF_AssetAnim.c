@@ -101,3 +101,20 @@ class LF_AssetAnim
 		s_iStops = 0;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_AssetAnim's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_AssetAnim_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_AssetAnim_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_AssetAnim";
+	}
+
+	override void Apply()
+	{
+		LF_AssetAnim.ResetStatics();
+	}
+}

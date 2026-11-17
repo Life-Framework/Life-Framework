@@ -323,6 +323,9 @@ class LF_Lockpick
 			return false;
 		}
 
+		if (LF_CuffEnforcement.Refuse(user, "lockpick"))
+			return false;
+
 		if (playerUid.IsEmpty())
 		{
 			LF_Debug.Error(FEATURE, "begin refused: player has no account id");
@@ -381,6 +384,12 @@ class LF_Lockpick
 		if (controller && controller.GetLifeState() != ECharacterLifeState.ALIVE)
 		{
 			Drop(attempt, user, "user is down");
+			return;
+		}
+
+		if (LF_Restraint.IsRestrained(user))
+		{
+			Drop(attempt, user, "user is cuffed");
 			return;
 		}
 
@@ -487,5 +496,22 @@ class LF_Lockpick
 
 		if (LF_LockpickRules.IsHeard(result, attempt.m_iSkill, Math.RandomFloat01()))
 			LF_WantedReports.Report(attempt.m_sPlayerUid, user, LF_WantedReports.OFFENCE_LOCKPICK);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Lockpick's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Lockpick_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Lockpick_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Lockpick";
+	}
+
+	override void Apply()
+	{
+		LF_Lockpick.ResetStatics();
 	}
 }

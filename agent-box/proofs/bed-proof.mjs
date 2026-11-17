@@ -44,18 +44,14 @@ async function runBedProof() {
   }
   need(String(state(1).faction).includes("MEDIC"), "client 1 did not clock in as a medic");
 
-  // Carry the patient to the ambulance parked at the hospital and load them.
+  // Load the patient into the ambulance parked at the hospital (drag and carry were cut
+  // 2026-11-15: the load is offered on the body when the ambulance is within m_fLoadRange).
   on(1, { verb: "stand", entityName: patientName });
   wait(2500);
   on(1, { verb: "look" });
-  on(1, { verb: "use", className: "LF_CarryAction", entityName: patientName }, 10000);
-  wait(1500);
-  need(parsePeer(peers(2), 2)?.carrier === 1, "the carry did not take hold");
   const carryOnly = process.argv.includes("--carry-only");
   let bleedA = 0;
   if (!carryOnly) {
-    on(1, { verb: "stand", entityName: "Roadmap_Hospital_Ambulance" });
-    wait(4000);
     const load = on(1, { verb: "use", className: "LF_LoadPatientAction", entityName: patientName }, 10000);
     need(load.status === "ok", `load returned ${load.status} ${load.detail}`);
     wait(9000);

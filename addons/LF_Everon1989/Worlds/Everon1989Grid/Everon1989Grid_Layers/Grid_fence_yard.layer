@@ -1,0 +1,102 @@
+// Grid cell c14r4 for fence-yard: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_fence_yard_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 191 0 71
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 195.4 0 71
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 199.8 0 71
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 204.2 0 71
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 208.6 0 71
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 71
+ angleY 270
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 75.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 79.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 84.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 88.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 208.6 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 204.2 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 199.8 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 195.4 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 191 0 93
+ angleY 90
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 191 0 88.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_fence_yard_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 191 0 84.2
+ angleY 90
+}
+GenericEntity Grid_fence_yard_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:fence-yard"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 190.2 0.505 71.6
+ angleY -90
+}
+GenericEntity Grid_fence_yard_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "fence-yard"
+  }
+ }
+ coords 190.3 0 75.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_fence_yard_Main : "{A3651B565452A1DA}Prefabs/Buildings/FenceYard/FenceYard.et" {
+ coords 199.424 0 82.117
+ angleY -90
+}
+GenericEntity FenceYard_Stall : "{4855AC571C89CA6D}Prefabs/Props/Commercial/LF_FenceStall.et" {
+ coords 204.974 0.19 78.857
+ angleY -90
+}
+LF_NpcBaseEntity FenceYard_Fence : "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.et" {
+ coords 204.224 0.19 79.857
+ angleY 90
+}

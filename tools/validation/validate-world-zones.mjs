@@ -1,12 +1,22 @@
 // tools/validation/validate-world-zones.mjs
 // inputs: always
 //
-// The two DebugWorld zones (docs/architecture/world-zones.md).
+// The world zones (docs/architecture/world-zones.md, three-worlds.md).
 //
 // 1. Grid claims. Each tools/grid/cells/<slug>.json names a cell of the lattice, no two claim one
-//    cell, each has its DebugWorld_Layers/Grid_<slug>.layer, each Grid_*.layer has a claim, and every
+//    cell, each has its GridWorld_Layers/Grid_<slug>.layer, each Grid_*.layer has a claim, and every
 //    entity a grid layer places stands inside its own cell (a feature never sprawls past its fence).
-// 2. Zone guard. A branch may change a town layer (a DebugWorld village layer, or a layer of the pack
+//    The frame (tools/grid/lattice.mjs, claim frame.json with cell "lattice") is the one claim that spans the
+//    lattice: its entities need only stand inside the lattice rectangle.
+//    A Grid_*.layer in DebugWorld_Layers fails: the grid lives in GridWorld. A claim on a cell that
+//    origin/main gives to another slug fails too (two slices cut before either merged; #1905 and #1906
+//    both took c2r4): the claims come from git, fetched in CI.
+//    In CI it also reads the claims of the other OPEN PRs (`gh`); a cell another open PR claims is a
+//    printed warning, never a failure (#2014 and #2016 both took c0r6; `grid place` now avoids those cells).
+// 2. Annex freeze. Until slice W6 deletes the annex from DebugWorld, no branch adds or changes an
+//    entity inside the annex rectangle (x 18..114, z 18..114) in a DebugWorld layer; the copy in
+//    GridWorld is the one to edit. Deleting is allowed. Entities are compared with the merge base.
+// 3. Zone guard. A branch may change a town layer (a DebugWorld village layer, or a layer of the pack
 //    world Everon1989Town) only when it is a town-placement pass: its worktree slug starts with
 //    `town-` (branch ws/town-<chapter>). Slices put their world props in a grid cell with
 //    `tools\cli grid place`. Branches that existed when the guard landed are listed in
@@ -14,14 +24,16 @@
 //    The branch is GITHUB_HEAD_REF in CI, else the checked-out branch; main and a detached HEAD
 //    outside CI are not checked. The change set is the diff against the merge base with origin/main,
 //    untracked files included.
-// red-proof: tools/validation/grid-selftest.mjs plants a slice that edits Street_Hospital.layer, two
-// claims on one cell and a grid prop outside its cell, and asserts each is reported.
+// red-proof: tools/validation/world-zones-selftest.mjs plants a slice that edits Street_Hospital.layer,
+// two claims on one cell, a grid prop outside its cell, a Grid_ layer in DebugWorld and a changed annex
+// entity in DebugWorld, and asserts each is reported.
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEBUG_LAYERS, allCells, cellBounds, layerOfSlug, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
+import { FRAME_CELL, claimCellIds, claimRect, isFrameClaim, latticeRect } from "../grid/lattice.mjs";
+import { DEBUG_LAYERS, GRID_LAYERS, PACK_GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
 
 export const BASELINE = "tools/validation/zone-guard-baseline.json";
 export const TOWN_PASS = /^town-/;
@@ -46,10 +58,31 @@ export function topLevelCoords(text) {
   return out;
 }
 
-export function checkClaims(root) {
+// `mainClaims`: the claims origin/main holds (lib mainClaims). A cell this tree claims for one slug while
+// origin/main gives it to another is a clash between two slices cut before either merged.
+// `prClaims`: the claims of other OPEN PRs (lib openPrClaims). Two PRs open at once can each take a cell
+// that is free on origin/main (#2014 and #2016, c0r6); that is only a WARNING here, so a GitHub flake or a
+// race lost by a minute never blocks a merge: the loser is stopped by the origin/main check once the
+// other merges.
+export function checkClaims(root, { mainClaims: onMain = [], prClaims = [] } = {}) {
   const errors = [];
+  const warnings = [];
   const claims = readCells(root);
+  for (const c of claims) {
+    if (c.error || isFrameClaim(c)) continue;
+    const mine = new Set(claimCellIds(c));
+    for (const o of prClaims.filter((x) => x.slug !== c.slug && claimCellIds(x).some((id) => mine.has(id)))) {
+      warnings.push(`${c.file}: cell ${c.cell} is also claimed by ${o.slug} in open PR #${o.pr} (${o.branch}); whichever merges second fails this check. Run tools\\cli grid free ${c.slug} and grid place ${c.slug} again if yours is the later one`);
+    }
+  }
   const seen = new Map();
+  for (const c of claims) {
+    const mine = new Set(claimCellIds(c));
+    const other = onMain.find((m) => !m.error && m.slug !== c.slug && claimCellIds(m).some((id) => mine.has(id)));
+    if (other && !c.error) {
+      errors.push(`${c.file}: cell ${c.cell} is already claimed on origin/main by ${other.slug}. Merge origin/main, then run tools\\cli grid free ${c.slug} and grid place ${c.slug} again for a free cell`);
+    }
+  }
   for (const c of claims) {
     const base = c.file.slice(c.file.lastIndexOf("/") + 1).replace(/\.json$/, "");
     if (c.error) {
@@ -57,35 +90,118 @@ export function checkClaims(root) {
       continue;
     }
     if (c.slug !== base) errors.push(`${c.file}: slug "${c.slug}" does not match the file name`);
+    if (isFrameClaim(c)) {
+      if (c.cell !== FRAME_CELL) errors.push(`${c.file}: the frame's cell is "${FRAME_CELL}"`);
+      const frameFile = join(root, GRID_LAYERS, layerOfSlug(c.slug));
+      if (!existsSync(frameFile)) {
+        errors.push(`${c.file}: ${GRID_LAYERS}/${layerOfSlug(c.slug)} is missing (node tools/grid/lattice.mjs write)`);
+        continue;
+      }
+      const r = latticeRect();
+      for (const e of topLevelCoords(readFileSync(frameFile, "utf8"))) {
+        if (e.x < r.x0 - 0.5 || e.x > r.x1 + 0.5 || e.z < r.z0 - 0.5 || e.z > r.z1 + 0.5) errors.push(`${layerOfSlug(c.slug)}: ${e.name} at ${e.x},${e.z} is outside the lattice (x ${r.x0}..${r.x1}, z ${r.z0}..${r.z1})`);
+      }
+      continue;
+    }
     const p = parseCellId(c.cell);
     if (!p) {
-      errors.push(`${c.file}: cell "${c.cell}" is not in the lattice (c0r0 to c6r6)`);
+      errors.push(`${c.file}: cell "${c.cell}" is not in the lattice (c0r0 to the last cell, see grid list)`);
       continue;
     }
-    if (seen.has(c.cell)) errors.push(`${c.file}: cell ${c.cell} is claimed by ${seen.get(c.cell)} too. Run tools\\cli grid free ${c.slug} and grid place again for a free cell`);
-    else seen.set(c.cell, c.file);
+    const rect = claimRect(c);
+    if (!rect) {
+      errors.push(`${c.file}: span ${JSON.stringify(c.span ?? [1, 1])} from ${c.cell} is not a block of whole cells inside the lattice`);
+      continue;
+    }
+    for (const id of claimCellIds(c)) {
+      if (seen.has(id)) errors.push(`${c.file}: cell ${id} is claimed by ${seen.get(id)} too. Run tools\cli grid free ${c.slug} and grid place again for a free cell`);
+      else seen.set(id, c.file);
+    }
     const layer = layerOfSlug(c.slug);
     if (c.layer !== layer) errors.push(`${c.file}: layer should be ${layer}`);
-    const file = join(root, DEBUG_LAYERS, layer);
+    const layersDir = c.pack === true ? PACK_GRID_LAYERS : GRID_LAYERS;
+    const file = join(root, layersDir, layer);
+    if (c.pack !== undefined && c.pack !== true) errors.push(`${c.file}: "pack" is true or absent`);
     if (!existsSync(file)) {
-      errors.push(`${c.file}: ${DEBUG_LAYERS}/${layer} is missing (tools\\cli grid place ${c.slug} writes it)`);
+      errors.push(`${c.file}: ${layersDir}/${layer} is missing (tools\\cli grid place ${c.slug}${c.pack === true ? " --pack" : ""} writes it)`);
       continue;
     }
-    const b = cellBounds(p.col, p.row);
+    // A cell lives in one world: the claim and the folder agree (a pack cell is marked "pack": true).
+    const other = join(root, c.pack === true ? GRID_LAYERS : PACK_GRID_LAYERS, layer);
+    if (existsSync(other)) errors.push(`${c.file}: ${layer} is in both ${GRID_LAYERS} and ${PACK_GRID_LAYERS}; a cell lives in one world (grid free ${c.slug} and place it again)`);
+    const b = rect;
     for (const e of topLevelCoords(readFileSync(file, "utf8"))) {
       if (e.x < b.x0 - 0.5 || e.x > b.x1 + 0.5 || e.z < b.z0 - 0.5 || e.z > b.z1 + 0.5) {
-        errors.push(`${layer}: ${e.name} at ${e.x},${e.z} is outside cell ${c.cell} (x ${b.x0}..${b.x1}, z ${b.z0}..${b.z1}); a grid feature stays in its cell`);
+        errors.push(`${layer}: ${e.name} at ${e.x},${e.z} is outside cell ${c.cell}${rect.w * rect.h > 1 ? ` +${rect.w}x${rect.h}` : ""} (x ${b.x0}..${b.x1}, z ${b.z0}..${b.z1}); a grid feature stays in its cell`);
       }
     }
   }
-  const dir = join(root, DEBUG_LAYERS);
-  const claimed = new Set(claims.map((c) => layerOfSlug(c.slug ?? "")));
-  if (existsSync(dir)) {
+  const claimed = new Set(claims.filter((c) => c.pack !== true).map((c) => layerOfSlug(c.slug ?? "")));
+  const claimedPack = new Set(claims.filter((c) => c.pack === true).map((c) => layerOfSlug(c.slug ?? "")));
+  for (const [rel, set] of [[GRID_LAYERS, claimed], [PACK_GRID_LAYERS, claimedPack]]) {
+    const dir = join(root, rel);
+    if (!existsSync(dir)) continue;
+    const pack = rel === PACK_GRID_LAYERS;
     for (const f of readdirSync(dir).filter((n) => /^Grid_.*\.layer$/.test(n))) {
-      if (!claimed.has(f)) errors.push(`${DEBUG_LAYERS}/${f}: no claim in tools/grid/cells/ (write grid layers with tools\\cli grid place)`);
+      if (!set.has(f)) errors.push(`${rel}/${f}: no ${pack ? '"pack": true ' : ""}claim in tools/grid/cells/ (write grid layers with tools\\cli grid place${pack ? " --pack" : ""})`);
     }
   }
-  return { errors, claims: claims.length, cells: allCells().length };
+  const debugDir = join(root, DEBUG_LAYERS);
+  if (existsSync(debugDir)) {
+    for (const f of readdirSync(debugDir).filter((n) => /^Grid_.*\.layer$/.test(n))) {
+      errors.push(`${DEBUG_LAYERS}/${f}: a Grid_ layer belongs in ${GRID_LAYERS}/ (the grid lives in GridWorld; tools\\cli grid place writes it there)`);
+    }
+  }
+  return { errors, warnings, claims: claims.length, cells: allCells().length };
+}
+
+// Top-level entities of a layer with their exact text: [{ name, x, z, text }] (x, z null without coords).
+export function topLevelBlocks(text) {
+  const out = [];
+  let depth = 0;
+  let cur = null;
+  for (const line of String(text).split("\n")) {
+    const t = line.trim();
+    if (depth === 0 && /\{\s*$/.test(t)) {
+      const m = /^[A-Za-z_][A-Za-z0-9_]*\s+([A-Za-z_][A-Za-z0-9_]*)\s*:/.exec(t) || /^([A-Za-z_][A-Za-z0-9_]*)\s*:/.exec(t);
+      cur = { name: m ? m[1] : t, x: null, z: null, lines: [] };
+    }
+    if (cur) {
+      cur.lines.push(line);
+      if (depth === 1) {
+        const c = /^coords\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)/.exec(t);
+        if (c) {
+          cur.x = Number(c[1]);
+          cur.z = Number(c[3]);
+        }
+      }
+    }
+    depth += (t.match(/\{/g) || []).length - (t.match(/\}/g) || []).length;
+    if (cur && depth === 0) {
+      out.push({ name: cur.name, x: cur.x, z: cur.z, text: cur.lines.join("\n") });
+      cur = null;
+    }
+  }
+  return out;
+}
+
+// The annex freeze on a change set: { files: [path], baseText(path) -> text|null at the merge base,
+// nowText(path) -> text|null in the tree } -> { errors }. Only DebugWorld layers are checked. An entity
+// inside the annex rectangle whose exact text is not in the base layer is new or changed.
+export function checkFreeze({ files, baseText, nowText }) {
+  const errors = [];
+  for (const f of files) {
+    const path = f.replace(/\\/g, "/");
+    if (!path.endsWith(".layer") || !path.startsWith(`${DEBUG_LAYERS}/`)) continue;
+    const now = nowText(path);
+    if (now == null) continue; // deleted: W6 removes annex entities
+    const base = new Set(topLevelBlocks(baseText(path) ?? "").map((b) => b.text));
+    for (const b of topLevelBlocks(now)) {
+      if (b.x == null || !inAnnexRect(b.x, b.z) || base.has(b.text)) continue;
+      errors.push(`${path}: ${b.name} at ${b.x},${b.z} is new or changed inside the annex rectangle in DebugWorld. The annex is frozen there (docs/architecture/three-worlds.md); edit its copy in ${GRID_LAYERS}/ instead`);
+    }
+  }
+  return { errors };
 }
 
 // The guard on a change set: { branch, files: [path], baseline: [branch] } -> { skipped?, town, errors }.
@@ -116,12 +232,27 @@ export function changedFiles(root) {
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isMain) {
   const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-  const claims = checkClaims(root);
+  // origin/main's claims: from git, fetched only in CI (locally validate stays offline; grid place fetches).
+  const main = mainClaims(root, { fetch: Boolean(process.env.CI) });
+  if (main.note && process.env.CI) console.log(`validate-world-zones: ${main.note}`);
   const branch = process.env.GITHUB_HEAD_REF || (git(root, ["rev-parse", "--abbrev-ref", "HEAD"]) || "").trim();
+  // Claims in flight in other open PRs: CI only (locally validate stays offline), warn only, soft on any gh failure.
+  const prs = process.env.CI ? openPrClaims(root, { exclude: { branch } }) : { claims: [], note: "" };
+  if (prs.note) console.log(`validate-world-zones: warning: ${prs.note}`);
+  const claims = checkClaims(root, { mainClaims: main.claims, prClaims: prs.claims });
+  for (const w of claims.warnings) console.log(`validate-world-zones: warning: ${w}`);
   const baseline = existsSync(join(root, BASELINE)) ? JSON.parse(readFileSync(join(root, BASELINE), "utf8")).branches : [];
   const files = changedFiles(root);
   const guard = files ? checkGuard({ branch, files, baseline }) : { skipped: "no merge base with origin/main", town: [], errors: [] };
-  const errors = [...claims.errors, ...guard.errors];
+  const mb = files ? (git(root, ["merge-base", "origin/main", "HEAD"]) || "").trim() : "";
+  const freeze = mb && branch !== "main" && branch !== "HEAD"
+    ? checkFreeze({
+        files,
+        baseText: (path) => git(root, ["show", `${mb}:${path}`]),
+        nowText: (path) => (existsSync(join(root, path)) ? readFileSync(join(root, path), "utf8") : null),
+      })
+    : { errors: [] };
+  const errors = [...claims.errors, ...freeze.errors, ...guard.errors];
   if (errors.length) {
     console.log("validate-world-zones: FAIL");
     for (const e of errors) console.log(`  ${e}`);

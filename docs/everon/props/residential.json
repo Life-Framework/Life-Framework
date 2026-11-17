@@ -1,0 +1,2035 @@
+{
+ "group": "residential",
+ "generated": "2026-11-16",
+ "items": [
+  {
+   "guid": "0164749D6EAA4518",
+   "path": "Prefabs/Props/Furniture/Bed_01.et",
+   "res": "{0164749D6EAA4518}Prefabs/Props/Furniture/Bed_01.et",
+   "name": "Single bed",
+   "category": "bed",
+   "sizeM": [
+    1.13,
+    2.3,
+    0.51
+   ],
+   "surfaces": [
+    0.5
+   ],
+   "everonWorldCount": 443,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 60,
+    "Saint Pierre": 40,
+    "Morton": 22,
+    "Montignac": 30
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Single bed, mattress top 0.50 m. Plain mesh: no sleep or lie action. LF can turn any bed into a respawn point with LF_HospitalBedComponent (docs/features/character-survival.md); a sleep or rest action would be new work."
+  },
+  {
+   "guid": "AC49D9D23A2BD1D8",
+   "path": "Prefabs/Props/Furniture/BunkBed_01_Double.et",
+   "res": "{AC49D9D23A2BD1D8}Prefabs/Props/Furniture/BunkBed_01_Double.et",
+   "name": "Double bunk bed",
+   "category": "bed",
+   "sizeM": [
+    0.96,
+    2.4,
+    1.82
+   ],
+   "surfaces": [
+    0.49
+   ],
+   "everonWorldCount": 387,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 36,
+    "Saint Pierre": 1,
+    "Morton": 1,
+    "Montignac": 2
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Double bunk (two 0.96 m frames, tops 0.49 and 1.55 m). 36 of the 40 bunks sampled sit in Saint Philippe's 450 m radius (a barracks or dormitory style prop). No vanilla action."
+  },
+  {
+   "guid": "8A6DD31A4FF94E48",
+   "path": "Prefabs/Props/Furniture/BedDouble_01.et",
+   "res": "{8A6DD31A4FF94E48}Prefabs/Props/Furniture/BedDouble_01.et",
+   "name": "Double bed",
+   "category": "bed",
+   "sizeM": [
+    2.26,
+    2.41,
+    0.9
+   ],
+   "surfaces": [
+    0.5,
+    0.51
+   ],
+   "everonWorldCount": 267,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 53,
+    "Saint Pierre": 27,
+    "Morton": 14,
+    "Montignac": 26
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Double bed, top 0.50 m; the commonest double bed. No vanilla action. Same LF_HospitalBedComponent option."
+  },
+  {
+   "guid": "E639E7FAF33DC166",
+   "path": "Prefabs/Props/Furniture/BedDouble_02.et",
+   "res": "{E639E7FAF33DC166}Prefabs/Props/Furniture/BedDouble_02.et",
+   "name": "Double bed (variant 2)",
+   "category": "bed",
+   "sizeM": [
+    2.23,
+    2.32,
+    0.93
+   ],
+   "surfaces": [
+    0.49,
+    0.5,
+    0.51
+   ],
+   "everonWorldCount": 108,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 8,
+    "Saint Pierre": 3,
+    "Morton": 4,
+    "Montignac": 5
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Second double bed model (tops 0.49-0.51 m). Same notes as BedDouble_01."
+  },
+  {
+   "guid": "AC98FF880BD0F2C2",
+   "path": "Prefabs/Props/Furniture/Chair_01/Chair_01_base.et",
+   "res": "{AC98FF880BD0F2C2}Prefabs/Props/Furniture/Chair_01/Chair_01_base.et",
+   "name": "Chair 01 (metal/plastic)",
+   "category": "seat",
+   "sizeM": [
+    0.47,
+    0.56,
+    1.02
+   ],
+   "surfaces": [
+    0.51
+   ],
+   "everonWorldCount": 975,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 127,
+    "Saint Pierre": 52,
+    "Morton": 52,
+    "Montignac": 92
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "The commonest chair in the world (975), seat top 0.51 m. No sit action on the vanilla prefab and LF has no LF_Seat wrapper for it yet (only Chair_02_green). White and blue variants exist."
+  },
+  {
+   "guid": "CFB893B8084ECD2B",
+   "path": "Prefabs/Props/Furniture/Armchair_01.et",
+   "res": "{CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et",
+   "name": "Armchair",
+   "category": "seat",
+   "sizeM": [
+    0.71,
+    0.87,
+    1.03
+   ],
+   "surfaces": [],
+   "everonWorldCount": 593,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 93,
+    "Saint Pierre": 50,
+    "Morton": 25,
+    "Montignac": 37
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Armchair 0.71 x 0.87 m, 593 in world. Soft collider: no flat seat top measured. No sit action; needs an LF_SitAction wrapper with its own offset."
+  },
+  {
+   "guid": "0DC4F830876C6671",
+   "path": "Prefabs/Props/Furniture/Chair_02/Chair_02_green.et",
+   "res": "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et",
+   "name": "Chair 02 (wood, green)",
+   "category": "seat",
+   "sizeM": [
+    0.5,
+    0.62,
+    1.01
+   ],
+   "surfaces": [
+    0.47,
+    0.5
+   ],
+   "everonWorldCount": 575,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 104,
+    "Saint Pierre": 47,
+    "Morton": 30,
+    "Montignac": 58
+   },
+   "hasAction": true,
+   "actions": [
+    "sit (LF_SitAction, only on LF wrapper Prefabs/Props/Seats/LF_Seat_Chair_02_green.et; the vanilla prefab itself has no action)"
+   ],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Wooden chair, seat top 0.47-0.50 m. LF wrapper Prefabs/Props/Seats/LF_Seat_Chair_02_green.et adds the F-key Sit action (LF_SitAction, seat offset 0 0 0.62). Chair_02_red and _Base exist without a wrapper."
+  },
+  {
+   "guid": "D19D5E8950BC4DD1",
+   "path": "Prefabs/Props/Furniture/ChairOffice_01.et",
+   "res": "{D19D5E8950BC4DD1}Prefabs/Props/Furniture/ChairOffice_01.et",
+   "name": "Office chair",
+   "category": "seat",
+   "sizeM": [
+    0.64,
+    0.64,
+    0.95
+   ],
+   "surfaces": [
+    0.5,
+    0.51
+   ],
+   "everonWorldCount": 259,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 61,
+    "Saint Pierre": 21,
+    "Morton": 10,
+    "Montignac": 13
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Office swivel chair, seat top 0.5 m; for a clerk or police desk. No sit action."
+  },
+  {
+   "guid": "8BB5855208F77724",
+   "path": "Prefabs/Props/Furniture/BenchWooden_01.et",
+   "res": "{8BB5855208F77724}Prefabs/Props/Furniture/BenchWooden_01.et",
+   "name": "Wooden bench",
+   "category": "seat",
+   "sizeM": [
+    1.45,
+    0.39,
+    0.52
+   ],
+   "surfaces": [
+    0.51
+   ],
+   "everonWorldCount": 250,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 28,
+    "Saint Pierre": 15,
+    "Morton": 11,
+    "Montignac": 8
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Wooden bench 1.45 m, top 0.51 m. No sit action; LF has wrappers only for the street benches."
+  },
+  {
+   "guid": "8D01E253FD83E46F",
+   "path": "Prefabs/Props/Furniture/ChairRecreation_01/ChairRecreation_01_white.et",
+   "res": "{8D01E253FD83E46F}Prefabs/Props/Furniture/ChairRecreation_01/ChairRecreation_01_white.et",
+   "name": "Recreation chair",
+   "category": "seat",
+   "sizeM": [
+    0.5,
+    0.61,
+    0.97
+   ],
+   "surfaces": [
+    0.49
+   ],
+   "everonWorldCount": 228,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 37,
+    "Saint Pierre": 59,
+    "Morton": 2,
+    "Montignac": 3
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Plastic garden/recreation chair (white; red variant 117), seat top 0.49 m, mostly Saint Philippe. No sit action."
+  },
+  {
+   "guid": "9FE49438E0414334",
+   "path": "Prefabs/Props/Furniture/Sofa_01.et",
+   "res": "{9FE49438E0414334}Prefabs/Props/Furniture/Sofa_01.et",
+   "name": "Sofa",
+   "category": "seat",
+   "sizeM": [
+    2.89,
+    1.05,
+    0.9
+   ],
+   "surfaces": [],
+   "everonWorldCount": 209,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 34,
+    "Saint Pierre": 24,
+    "Morton": 13,
+    "Montignac": 16
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Sofa 2.89 m wide (room for about three places). Soft collider, no flat top measured. No sit action."
+  },
+  {
+   "guid": "33C0565C5FE1ED74",
+   "path": "Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+   "res": "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+   "name": "Street bench",
+   "category": "seat",
+   "sizeM": [
+    2.19,
+    0.7,
+    1.03
+   ],
+   "surfaces": [
+    0.49
+   ],
+   "everonWorldCount": 206,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 38,
+    "Saint Pierre": 50,
+    "Morton": 17,
+    "Montignac": 8
+   },
+   "hasAction": true,
+   "actions": [
+    "sit (LF_SitAction, only on LF wrapper Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et; the vanilla prefab itself has no action)"
+   ],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Street bench 2.19 m wide, top 0.49 m. LF wrapper Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et gives one Sit action per place."
+  },
+  {
+   "guid": "5BAA975FE04E94EF",
+   "path": "Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et",
+   "res": "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et",
+   "name": "Street bench 01 (green; red variant too)",
+   "category": "seat",
+   "sizeM": [
+    2,
+    0.81,
+    1.01
+   ],
+   "surfaces": [],
+   "everonWorldCount": 197,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 14,
+    "Saint Pierre": 5,
+    "Morton": 13,
+    "Montignac": 9
+   },
+   "hasAction": true,
+   "actions": [
+    "sit (LF_SitAction, only on LF wrapper Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et; the vanilla prefab itself has no action)"
+   ],
+   "hasStorage": null,
+   "destructible": null,
+   "notes": "Green street bench (yellow_red variant 124). LF wrappers LF_Seat_BenchStreet_01_green and _red add the Sit action."
+  },
+  {
+   "guid": "B60865AB934AB9A6",
+   "path": "Prefabs/Props/Furniture/StoolPiano_01.et",
+   "res": "{B60865AB934AB9A6}Prefabs/Props/Furniture/StoolPiano_01.et",
+   "name": "Piano stool",
+   "category": "seat",
+   "sizeM": [
+    0.56,
+    0.56,
+    0.5
+   ],
+   "surfaces": [
+    0.5
+   ],
+   "everonWorldCount": 187,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 23,
+    "Saint Pierre": 12,
+    "Morton": 7,
+    "Montignac": 11
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Round piano stool 0.56 m, seat 0.5 m; pairs with Piano_01."
+  },
+  {
+   "guid": "A0A76057A66049D0",
+   "path": "Prefabs/Props/Furniture/Sofa_02/Sofa_02_orange.et",
+   "res": "{A0A76057A66049D0}Prefabs/Props/Furniture/Sofa_02/Sofa_02_orange.et",
+   "name": "Sofa 02 (orange)",
+   "category": "seat",
+   "sizeM": [
+    2.04,
+    0.91,
+    0.81
+   ],
+   "surfaces": [
+    0.39
+   ],
+   "everonWorldCount": 179,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 30,
+    "Saint Pierre": 11,
+    "Morton": 7,
+    "Montignac": 11
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Smaller orange sofa 2.04 m, steps measured at 0.26 and 0.39 m. Other Sofa_02 colours exist. No sit action."
+  },
+  {
+   "guid": "EE22BB8259C1A594",
+   "path": "Prefabs/Props/Furniture/Armchair_03.et",
+   "res": "{EE22BB8259C1A594}Prefabs/Props/Furniture/Armchair_03.et",
+   "name": "Armchair (variant 3)",
+   "category": "seat",
+   "sizeM": [
+    0.8,
+    0.82,
+    0.98
+   ],
+   "surfaces": [
+    0.48
+   ],
+   "everonWorldCount": 130,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 21,
+    "Saint Pierre": 7,
+    "Morton": 6,
+    "Montignac": 10
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Third armchair model, seat top 0.48 m, 130 in world. Armchair_02 (78) also exists. No sit action."
+  },
+  {
+   "guid": "BC77A0CE72611DC3",
+   "path": "Prefabs/Props/Furniture/Stool_01.et",
+   "res": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+   "name": "Stool",
+   "category": "seat",
+   "sizeM": [
+    0.41,
+    0.41,
+    0.5
+   ],
+   "surfaces": [
+    0.39,
+    0.5
+   ],
+   "everonWorldCount": 105,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 11,
+    "Saint Pierre": 7,
+    "Morton": 3,
+    "Montignac": 6
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Simple stool, seat top 0.5 m. Inherits Props_Base only, so it is not destructible. Cheap LF_SitAction candidate."
+  },
+  {
+   "guid": "814ADF7834151561",
+   "path": "Prefabs/Props/Furniture/BenchKitchen_01/BenchKitchen_01_Green.et",
+   "res": "{814ADF7834151561}Prefabs/Props/Furniture/BenchKitchen_01/BenchKitchen_01_Green.et",
+   "name": "Kitchen bench (green)",
+   "category": "seat",
+   "sizeM": [
+    1.46,
+    0.78,
+    1.13
+   ],
+   "surfaces": [
+    0.55,
+    0.56
+   ],
+   "everonWorldCount": 67,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 17,
+    "Saint Pierre": 5,
+    "Morton": 6,
+    "Montignac": 8
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Kitchen bench with backrest (1.13 m high), seat 0.55 m; Red (63), Base (49) and a corner part also exist. No sit action."
+  },
+  {
+   "guid": "53506DCB398C7EBE",
+   "path": "Prefabs/Props/Furniture/Table_01.et",
+   "res": "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et",
+   "name": "Table 01",
+   "category": "table",
+   "sizeM": [
+    1.59,
+    1.18,
+    0.92
+   ],
+   "surfaces": [
+    0.9
+   ],
+   "everonWorldCount": 544,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 86,
+    "Saint Pierre": 42,
+    "Morton": 29,
+    "Montignac": 43
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Standard table 1.59 x 1.18 m, top 0.90 m; the commonest table (544)."
+  },
+  {
+   "guid": "DB56577F30DE9129",
+   "path": "Prefabs/Props/Furniture/Table_02.et",
+   "res": "{DB56577F30DE9129}Prefabs/Props/Furniture/Table_02.et",
+   "name": "Table 02",
+   "category": "table",
+   "sizeM": [
+    1.03,
+    1.03,
+    0.91
+   ],
+   "surfaces": [
+    0.91
+   ],
+   "everonWorldCount": 482,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 77,
+    "Saint Pierre": 39,
+    "Morton": 31,
+    "Montignac": 41
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Square table 1.03 m, top 0.91 m (482)."
+  },
+  {
+   "guid": "5E7626D8E78566B4",
+   "path": "Prefabs/Props/Furniture/Desk_01_long.et",
+   "res": "{5E7626D8E78566B4}Prefabs/Props/Furniture/Desk_01_long.et",
+   "name": "Desk, long",
+   "category": "table",
+   "sizeM": [
+    1.98,
+    0.75,
+    0.91
+   ],
+   "surfaces": [
+    0.91
+   ],
+   "everonWorldCount": 332,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 66,
+    "Saint Pierre": 30,
+    "Morton": 17,
+    "Montignac": 26
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Home/office desk 1.98 m, top 0.91 m; _short (224) and _Base variants exist. Clerk or counter use."
+  },
+  {
+   "guid": "E3382F292BA2A27D",
+   "path": "Prefabs/Props/Furniture/TableCoffee_01.et",
+   "res": "{E3382F292BA2A27D}Prefabs/Props/Furniture/TableCoffee_01.et",
+   "name": "Coffee table",
+   "category": "table",
+   "sizeM": [
+    1.5,
+    0.55,
+    0.6
+   ],
+   "surfaces": [
+    0.6
+   ],
+   "everonWorldCount": 284,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 48,
+    "Saint Pierre": 33,
+    "Morton": 14,
+    "Montignac": 24
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Coffee table 1.5 x 0.55 m, top 0.6 m. Goes in front of a sofa."
+  },
+  {
+   "guid": "67C2A2742A183D89",
+   "path": "Prefabs/Props/Furniture/PhoneTable_01_red.et",
+   "res": "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et",
+   "name": "Phone table",
+   "category": "table",
+   "sizeM": [
+    0.34,
+    0.28,
+    0.12
+   ],
+   "surfaces": [],
+   "everonWorldCount": 205,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 36,
+    "Saint Pierre": 16,
+    "Morton": 11,
+    "Montignac": 19
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Phone with its 0.34 x 0.28 x 0.12 m stand (red; khaki 97, grey 61, Base 49 variants). No call action in the vanilla prefab."
+  },
+  {
+   "guid": "2CD0BA0D32115DD2",
+   "path": "Prefabs/Props/Furniture/TableKitchen_01.et",
+   "res": "{2CD0BA0D32115DD2}Prefabs/Props/Furniture/TableKitchen_01.et",
+   "name": "Kitchen table",
+   "category": "table",
+   "sizeM": [
+    1.34,
+    0.86,
+    1
+   ],
+   "surfaces": [
+    1
+   ],
+   "everonWorldCount": 138,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 19,
+    "Saint Pierre": 11,
+    "Morton": 6,
+    "Montignac": 8
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Kitchen table, top 1.0 m (counter height), 138 in world."
+  },
+  {
+   "guid": "1C531149AF99ACD1",
+   "path": "Prefabs/Props/Furniture/TableDining_01.et",
+   "res": "{1C531149AF99ACD1}Prefabs/Props/Furniture/TableDining_01.et",
+   "name": "Dining table",
+   "category": "table",
+   "sizeM": [
+    1.3,
+    1.3,
+    0.9
+   ],
+   "surfaces": [
+    0.58,
+    0.85,
+    0.9
+   ],
+   "everonWorldCount": 86,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 14,
+    "Saint Pierre": 5,
+    "Morton": 3,
+    "Montignac": 5
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Dining table 1.3 m square, top 0.90 m (86 in world)."
+  },
+  {
+   "guid": "A319C11D446D88B3",
+   "path": "Prefabs/Props/Furniture/Dresser_01.et",
+   "res": "{A319C11D446D88B3}Prefabs/Props/Furniture/Dresser_01.et",
+   "name": "Dresser",
+   "category": "storage",
+   "sizeM": [
+    1.5,
+    0.76,
+    1
+   ],
+   "surfaces": [],
+   "everonWorldCount": 934,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 162,
+    "Saint Pierre": 97,
+    "Morton": 39,
+    "Montignac": 76
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Chest of drawers 1.5 m wide, top 1.0 m (small props can stand on it). Visual only: no storage, no drawer animation."
+  },
+  {
+   "guid": "FD47FF9699A52E82",
+   "path": "Prefabs/Props/Furniture/Wardrobe_01.et",
+   "res": "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et",
+   "name": "Wardrobe",
+   "category": "storage",
+   "sizeM": [
+    1.5,
+    0.76,
+    2
+   ],
+   "surfaces": [],
+   "everonWorldCount": 840,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 150,
+    "Saint Pierre": 79,
+    "Morton": 37,
+    "Montignac": 72
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Wardrobe 1.5 x 0.76 x 2.0 m, one of the commonest props (840). No open action and no inventory storage in the prefab: visual only. A wardrobe stash would need an LF storage component."
+  },
+  {
+   "guid": "7251C9DFEC27E1AB",
+   "path": "Prefabs/Props/Furniture/Shelf_01_long.et",
+   "res": "{7251C9DFEC27E1AB}Prefabs/Props/Furniture/Shelf_01_long.et",
+   "name": "Wall shelf, long",
+   "category": "storage",
+   "sizeM": [
+    1.5,
+    0.26,
+    0.26
+   ],
+   "surfaces": [],
+   "everonWorldCount": 688,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 132,
+    "Saint Pierre": 58,
+    "Morton": 38,
+    "Montignac": 65
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Long wall shelf 1.5 m, very common (688). Same quirks as Shelf_01."
+  },
+  {
+   "guid": "23EDC2B8CDEE124F",
+   "path": "Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_F.et",
+   "res": "{23EDC2B8CDEE124F}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_F.et",
+   "name": "Cupboard (series 01; variants A-F)",
+   "category": "storage",
+   "sizeM": [
+    0.76,
+    0.81,
+    2
+   ],
+   "surfaces": [],
+   "everonWorldCount": 560,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 98,
+    "Saint Pierre": 51,
+    "Morton": 22,
+    "Montignac": 33
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Kitchen/living cupboard series (A-F are the same footprint with different door and glass parts; F is the commonest at 560). Doors are not openable."
+  },
+  {
+   "guid": "1AB7A2C69A30391D",
+   "path": "Prefabs/Props/Furniture/CoatRack_01.et",
+   "res": "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et",
+   "name": "Coat rack",
+   "category": "storage",
+   "sizeM": [
+    0.56,
+    0.57,
+    1.97
+   ],
+   "surfaces": [],
+   "everonWorldCount": 524,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 87,
+    "Saint Pierre": 34,
+    "Morton": 20,
+    "Montignac": 37
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Standing coat rack (0.56 m footprint, 1.97 m tall); CoatRack_02..04 are variants, Civilian/CoatHook_01 is a wall hook. Cosmetic."
+  },
+  {
+   "guid": "F77F7F847CC6455F",
+   "path": "Prefabs/Props/Furniture/Bookshelf_01/Bookshelf_01.et",
+   "res": "{F77F7F847CC6455F}Prefabs/Props/Furniture/Bookshelf_01/Bookshelf_01.et",
+   "name": "Bookshelf",
+   "category": "storage",
+   "sizeM": [
+    1.5,
+    0.5,
+    1.85
+   ],
+   "surfaces": [],
+   "everonWorldCount": 521,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 98,
+    "Saint Pierre": 54,
+    "Morton": 29,
+    "Montignac": 53
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Bookshelf 1.5 x 0.5 x 1.85 m; the glass door parts are separate prefabs (Bookshelf_01_glass_01 and _02, about 519 each). Five levels measured."
+  },
+  {
+   "guid": "208028C4307E3772",
+   "path": "Prefabs/Props/Furniture/ShelfDecorative_01_barewood.et",
+   "res": "{208028C4307E3772}Prefabs/Props/Furniture/ShelfDecorative_01_barewood.et",
+   "name": "Decorative shelf",
+   "category": "storage",
+   "sizeM": [
+    1.1,
+    0.2,
+    2.3
+   ],
+   "surfaces": [],
+   "everonWorldCount": 501,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 103,
+    "Saint Pierre": 67,
+    "Morton": 32,
+    "Montignac": 57
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": null,
+   "destructible": true,
+   "notes": "Open decorative shelf unit 2.3 m tall with levels at about 0.4, 1.11, 1.85 and 2.3 m (darkbrown variant 112). Good for books, jars and a radio."
+  },
+  {
+   "guid": "A84A73E9D9D4B20E",
+   "path": "Prefabs/Props/Furniture/Shelf_01.et",
+   "res": "{A84A73E9D9D4B20E}Prefabs/Props/Furniture/Shelf_01.et",
+   "name": "Wall shelf",
+   "category": "storage",
+   "sizeM": [
+    0.9,
+    0.26,
+    0.26
+   ],
+   "surfaces": [],
+   "everonWorldCount": 495,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 98,
+    "Saint Pierre": 52,
+    "Morton": 29,
+    "Montignac": 49
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Plain wall shelf 0.9 m (495). Thin plank: the measured top is 0.02 m, place objects by shelf height."
+  },
+  {
+   "guid": "17F3181D0DAC27FC",
+   "path": "Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et",
+   "res": "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et",
+   "name": "Metal cabinet, grey",
+   "category": "storage",
+   "sizeM": [
+    0.74,
+    0.54,
+    1.98
+   ],
+   "surfaces": [],
+   "everonWorldCount": 379,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 96,
+    "Saint Pierre": 46,
+    "Morton": 11,
+    "Montignac": 31
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Grey metal locker/cabinet 0.74 x 0.54 x 1.98 m; V1, V2 and V3 variants (379, 51, 531). LF first-night room uses V1 as a locker. Not openable, no storage."
+  },
+  {
+   "guid": "09AAA51D935DAF1E",
+   "path": "Prefabs/Props/Furniture/CupboardOld_01/CupboardOld_01_large.et",
+   "res": "{09AAA51D935DAF1E}Prefabs/Props/Furniture/CupboardOld_01/CupboardOld_01_large.et",
+   "name": "Old cupboard, large",
+   "category": "storage",
+   "sizeM": [
+    1.64,
+    0.67,
+    1.98
+   ],
+   "surfaces": [],
+   "everonWorldCount": 80,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 5,
+    "Saint Pierre": 2,
+    "Morton": 3,
+    "Montignac": 4
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Old glass-front cupboard 1.64 m wide; medium (119) and small (110) variants exist. Period fit for a 1989 farmhouse. Not openable."
+  },
+  {
+   "guid": "0BB4B21E4F560431",
+   "path": "Prefabs/Props/Furniture/Chest_01.et",
+   "res": "{0BB4B21E4F560431}Prefabs/Props/Furniture/Chest_01.et",
+   "name": "Chest",
+   "category": "storage",
+   "sizeM": [
+    0.8,
+    0.43,
+    0.42
+   ],
+   "surfaces": [],
+   "everonWorldCount": 80,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 2,
+    "Saint Pierre": 2,
+    "Morton": 2,
+    "Montignac": 4
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Small wooden chest 0.8 x 0.43 x 0.42 m, only 80 in the whole world. No lid animation or storage; a candidate for an LF stash component."
+  },
+  {
+   "guid": "EFCD232A50C15173",
+   "path": "Prefabs/Props/Furniture/Nightstand_01.et",
+   "res": "{EFCD232A50C15173}Prefabs/Props/Furniture/Nightstand_01.et",
+   "name": "Nightstand",
+   "category": "storage",
+   "sizeM": [
+    0.44,
+    0.4,
+    0.88
+   ],
+   "surfaces": [],
+   "everonWorldCount": 66,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 4,
+    "Saint Pierre": 9,
+    "Morton": 0,
+    "Montignac": 1
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Small bedside table, top 0.86 m, for a lamp or alarm clock. Rare (66 world); Nightstand_02 is the common model (518). LF first-night room already uses Nightstand_01."
+  },
+  {
+   "guid": "D31FBEC7A468AE3B",
+   "path": "Prefabs/Props/Furniture/PantryOld_01.et",
+   "res": "{D31FBEC7A468AE3B}Prefabs/Props/Furniture/PantryOld_01.et",
+   "name": "Old pantry",
+   "category": "storage",
+   "sizeM": [
+    0.67,
+    0.48,
+    1.98
+   ],
+   "surfaces": [],
+   "everonWorldCount": 54,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 5,
+    "Saint Pierre": 2,
+    "Morton": 2,
+    "Montignac": 4
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Narrow old pantry cupboard, 54 in world. Visual only."
+  },
+  {
+   "guid": "D0BD7A55306FC46B",
+   "path": "Prefabs/Props/Furniture/Faucet_01/Faucet_01.et",
+   "res": "{D0BD7A55306FC46B}Prefabs/Props/Furniture/Faucet_01/Faucet_01.et",
+   "name": "Faucet",
+   "category": "kitchen",
+   "sizeM": [
+    0.25,
+    0.44,
+    0.21
+   ],
+   "surfaces": [],
+   "everonWorldCount": 1313,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 210,
+    "Saint Pierre": 110,
+    "Morton": 59,
+    "Montignac": 103
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Tap, 1313 in world (second most placed furniture). Has an ActionsManagerComponent with a 'default' context but no user action entry in the file, so it is inert today: a ready hook for a wash or drink action."
+  },
+  {
+   "guid": "49012FE1DEF653EE",
+   "path": "Prefabs/Props/Furniture/Sink_01.et",
+   "res": "{49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et",
+   "name": "Sink",
+   "category": "kitchen",
+   "sizeM": [
+    0.82,
+    0.68,
+    0.54
+   ],
+   "surfaces": [],
+   "everonWorldCount": 754,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 124,
+    "Saint Pierre": 66,
+    "Morton": 34,
+    "Montignac": 61
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Sink 0.82 x 0.68 x 0.54 m (754), normally with Faucet_01. No wash action."
+  },
+  {
+   "guid": "FF8BD8E8A95DB3D2",
+   "path": "Prefabs/Props/Furniture/Fridge_01.et",
+   "res": "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et",
+   "name": "Fridge",
+   "category": "kitchen",
+   "sizeM": [
+    0.81,
+    0.71,
+    1.87
+   ],
+   "surfaces": [],
+   "everonWorldCount": 428,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 75,
+    "Saint Pierre": 41,
+    "Morton": 22,
+    "Montignac": 41
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Fridge 0.81 x 0.71 x 1.87 m. Door does not open; no storage."
+  },
+  {
+   "guid": "9E6BB1D7AA5D0FEB",
+   "path": "Prefabs/Props/Furniture/Stove_01.et",
+   "res": "{9E6BB1D7AA5D0FEB}Prefabs/Props/Furniture/Stove_01.et",
+   "name": "Stove / cooker",
+   "category": "kitchen",
+   "sizeM": [
+    0.65,
+    0.77,
+    1.08
+   ],
+   "surfaces": [
+    1.03
+   ],
+   "everonWorldCount": 369,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 74,
+    "Saint Pierre": 36,
+    "Morton": 19,
+    "Montignac": 36
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Cooker 0.65 x 0.77 x 1.08 m, top 1.03 m. No heat or cook action in the prefab; a cooking interaction would be new LF work."
+  },
+  {
+   "guid": "CB6D914A907F4378",
+   "path": "Prefabs/Props/Furniture/WashingMachine_01.et",
+   "res": "{CB6D914A907F4378}Prefabs/Props/Furniture/WashingMachine_01.et",
+   "name": "Washing machine",
+   "category": "kitchen",
+   "sizeM": [
+    0.75,
+    0.81,
+    1.03
+   ],
+   "surfaces": [
+    1,
+    1.02
+   ],
+   "everonWorldCount": 311,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 68,
+    "Saint Pierre": 37,
+    "Morton": 19,
+    "Montignac": 33
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Washing machine 0.75 x 0.81 x 1.03 m, top about 1.0 m. Visual only."
+  },
+  {
+   "guid": "BA3FC18BC11AE7F8",
+   "path": "Prefabs/Props/Furniture/KitchenHood_01.et",
+   "res": "{BA3FC18BC11AE7F8}Prefabs/Props/Furniture/KitchenHood_01.et",
+   "name": "Cooker hood",
+   "category": "kitchen",
+   "sizeM": [
+    0.6,
+    0.67,
+    0.25
+   ],
+   "surfaces": [],
+   "everonWorldCount": 193,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 38,
+    "Saint Pierre": 21,
+    "Morton": 10,
+    "Montignac": 21
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Cooker hood above the stove. Cosmetic."
+  },
+  {
+   "guid": "E66C895D628B01A2",
+   "path": "Prefabs/Props/Furniture/Kitchen_01_base.et",
+   "res": "{E66C895D628B01A2}Prefabs/Props/Furniture/Kitchen_01_base.et",
+   "name": "Kitchen counter unit",
+   "category": "kitchen",
+   "sizeM": [
+    2.22,
+    0.76,
+    2.5
+   ],
+   "surfaces": [
+    0.88,
+    1.02
+   ],
+   "everonWorldCount": 181,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 27,
+    "Saint Pierre": 13,
+    "Morton": 6,
+    "Montignac": 12
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Kitchen counter block 2.22 m wide with upper cabinets (2.5 m high), counter at about 0.88-1.02 m. Kitchen_01_blue (95), _yellow (66) and Kitchen_02 (59) also exist."
+  },
+  {
+   "guid": "2ED930A7BA4156F5",
+   "path": "Prefabs/Props/Furniture/MirrorBathroom_01.et",
+   "res": "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et",
+   "name": "Bathroom mirror",
+   "category": "bathroom",
+   "sizeM": [
+    0.59,
+    0.16,
+    0.44
+   ],
+   "surfaces": [],
+   "everonWorldCount": 715,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 110,
+    "Saint Pierre": 54,
+    "Morton": 27,
+    "Montignac": 56
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Bathroom mirror 0.59 x 0.44 m (715). A texture, not a reflection (not verified in game)."
+  },
+  {
+   "guid": "F49E9F098C6069AD",
+   "path": "Prefabs/Props/Furniture/Toilet_01.et",
+   "res": "{F49E9F098C6069AD}Prefabs/Props/Furniture/Toilet_01.et",
+   "name": "Toilet",
+   "category": "bathroom",
+   "sizeM": [
+    0.85,
+    0.91,
+    1.15
+   ],
+   "surfaces": [],
+   "everonWorldCount": 511,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 79,
+    "Saint Pierre": 43,
+    "Morton": 23,
+    "Montignac": 35
+   },
+   "hasAction": true,
+   "actions": [
+    "SCR_FlushToilet (flush, with sound)"
+   ],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Toilet with the SCR_FlushToilet action (Flush context, plays Props_Toilet_01.acp). Toilet_02 (58) is a second model. No sit action."
+  },
+  {
+   "guid": "DEE73EC3DF43A836",
+   "path": "Prefabs/Props/Furniture/Shower_01_addon.et",
+   "res": "{DEE73EC3DF43A836}Prefabs/Props/Furniture/Shower_01_addon.et",
+   "name": "Shower",
+   "category": "bathroom",
+   "sizeM": [
+    0.29,
+    0.76,
+    1.33
+   ],
+   "surfaces": [],
+   "everonWorldCount": 469,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 64,
+    "Saint Pierre": 31,
+    "Morton": 18,
+    "Montignac": 28
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Shower head and fittings 0.29 x 0.76 x 1.33 m. Curtain is separate (ShowerCurtains_01_*, 87). Visual only."
+  },
+  {
+   "guid": "D2990433DD2D8B43",
+   "path": "Prefabs/Props/Furniture/Bathtub_01.et",
+   "res": "{D2990433DD2D8B43}Prefabs/Props/Furniture/Bathtub_01.et",
+   "name": "Bathtub",
+   "category": "bathroom",
+   "sizeM": [
+    0.92,
+    2.16,
+    0.71
+   ],
+   "surfaces": [],
+   "everonWorldCount": 316,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 72,
+    "Saint Pierre": 37,
+    "Morton": 19,
+    "Montignac": 35
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Bathtub 0.92 x 2.16 x 0.71 m. Visual only: no get-in action. Bathtub_02 (103) also exists."
+  },
+  {
+   "guid": "4549BE7A1D414EDA",
+   "path": "Prefabs/Props/Furniture/PlantRoom_01.et",
+   "res": "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et",
+   "name": "Room plant (01-04)",
+   "category": "living",
+   "sizeM": [
+    0.56,
+    0.5,
+    0.71
+   ],
+   "surfaces": [],
+   "everonWorldCount": 942,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 170,
+    "Saint Pierre": 87,
+    "Morton": 50,
+    "Montignac": 76
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Room plant; PlantRoom_01..04 (942, 846, 817, 329) make about 2930 per world, the main home decoration."
+  },
+  {
+   "guid": "EFE1F11444E6D34F",
+   "path": "Prefabs/Props/Furniture/CurtainsWindow_01/CurtainWindow_01_V2_folded_left_V1.et",
+   "res": "{EFE1F11444E6D34F}Prefabs/Props/Furniture/CurtainsWindow_01/CurtainWindow_01_V2_folded_left_V1.et",
+   "name": "Window curtain (folded, left)",
+   "category": "living",
+   "sizeM": [
+    0.44,
+    0.11,
+    1.9
+   ],
+   "surfaces": [],
+   "everonWorldCount": 638,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 119,
+    "Saint Pierre": 33,
+    "Morton": 37,
+    "Montignac": 47
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "One of many curtain pieces (folded, straight, unfolded; left, right; V1-V3; sizes small to big). Pick by window size."
+  },
+  {
+   "guid": "313CC1F195E06A6E",
+   "path": "Prefabs/Props/Furniture/TVSet_01.et",
+   "res": "{313CC1F195E06A6E}Prefabs/Props/Furniture/TVSet_01.et",
+   "name": "TV set",
+   "category": "living",
+   "sizeM": [
+    0.76,
+    0.54,
+    0.51
+   ],
+   "surfaces": [
+    0.51
+   ],
+   "everonWorldCount": 501,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 83,
+    "Saint Pierre": 49,
+    "Morton": 25,
+    "Montignac": 45
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "CRT TV 0.76 x 0.54 x 0.51 m (501); needs a table or cabinet under it. No screen content or on/off in the vanilla file."
+  },
+  {
+   "guid": "D51E223FD6EDB039",
+   "path": "Prefabs/Props/Furniture/ClockWall_01.et",
+   "res": "{D51E223FD6EDB039}Prefabs/Props/Furniture/ClockWall_01.et",
+   "name": "Wall clock",
+   "category": "living",
+   "sizeM": [
+    0.4,
+    0.04,
+    0.42
+   ],
+   "surfaces": [],
+   "everonWorldCount": 378,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 69,
+    "Saint Pierre": 42,
+    "Morton": 22,
+    "Montignac": 41
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Wall clock with ProcAnim and SignalsManager (ticks via signals); inherits the destructible base. ClockFloor_01 (294, with sound) and ClockTable_01 (88) exist."
+  },
+  {
+   "guid": "2F2BBFDA3A2C73D4",
+   "path": "Prefabs/Props/Civilian/RadioSmall_01_black.et",
+   "res": "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et",
+   "name": "Small radio",
+   "category": "living",
+   "sizeM": [
+    0.36,
+    0.09,
+    0.3
+   ],
+   "surfaces": [],
+   "everonWorldCount": 180,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 32,
+    "Saint Pierre": 17,
+    "Morton": 9,
+    "Montignac": 14
+   },
+   "hasAction": true,
+   "actions": [
+    "SCR_TurnOnAction (radio on/off, RadioBroadcastComponent)"
+   ],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Small radio. Inherits RadioSmall_01_Base: RadioBroadcastComponent with SCR_TurnOnAction (turn on and off, plays the base-game radio broadcast sounds, 1.5 m context radius). Working radio out of the box; LF also has its own LF_Radio prop."
+  },
+  {
+   "guid": "473922A1279485A9",
+   "path": "Prefabs/Props/Furniture/Carpet_01.et",
+   "res": "{473922A1279485A9}Prefabs/Props/Furniture/Carpet_01.et",
+   "name": "Carpet",
+   "category": "living",
+   "sizeM": [
+    1.3,
+    1.52,
+    0.01
+   ],
+   "surfaces": [],
+   "everonWorldCount": 141,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 25,
+    "Saint Pierre": 19,
+    "Morton": 10,
+    "Montignac": 14
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Floor carpet 1.3 x 1.52 m, 1 cm thick, not destructible. Carpet_02 (174) and Carpet_03 red/green exist."
+  },
+  {
+   "guid": "D9842C11742C00CF",
+   "path": "Prefabs/Props/Civilian/Fireplace_01.et",
+   "res": "{D9842C11742C00CF}Prefabs/Props/Civilian/Fireplace_01.et",
+   "name": "Fireplace",
+   "category": "living",
+   "sizeM": [
+    1.46,
+    1.41,
+    0.39
+   ],
+   "surfaces": [],
+   "everonWorldCount": 126,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 3,
+    "Saint Pierre": 0,
+    "Morton": 4,
+    "Montignac": 1
+   },
+   "hasAction": true,
+   "actions": [
+    "SCR_LightFireplaceUserAction (light the fire)"
+   ],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Civilian/Fireplace_01: 1.46 x 1.41 x 0.39 m, 126 in world, rare in towns. Has SCR_FireplaceComponent and SCR_LightFireplaceUserAction. Low and wide, so it looks like a fire ring rather than a house hearth (visual not checked)."
+  },
+  {
+   "guid": "1F415A3F7ECBE13A",
+   "path": "Prefabs/Props/Furniture/Piano_01_brown.et",
+   "res": "{1F415A3F7ECBE13A}Prefabs/Props/Furniture/Piano_01_brown.et",
+   "name": "Piano",
+   "category": "living",
+   "sizeM": [
+    2.13,
+    0.91,
+    1.53
+   ],
+   "surfaces": [
+    0.86,
+    1.54
+   ],
+   "everonWorldCount": 113,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 16,
+    "Saint Pierre": 9,
+    "Morton": 4,
+    "Montignac": 6
+   },
+   "hasAction": true,
+   "actions": [
+    "SCR_PlayInstrument x4 (stroke the keys, prelude, get carried away, old tune; sound only)"
+   ],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Upright piano 2.13 x 0.91 x 1.53 m (black 47, Base 64). Inherits Piano_01_Base: four SCR_PlayInstrument actions (stroke the keys 1.4 s, prelude 3.6 s, get carried away 15.5 s, old tune 9 s) from a Play context at the keyboard: sound only, no sit or animation checked. Pair with StoolPiano_01."
+  },
+  {
+   "guid": "A0683DD8CEF09277",
+   "path": "Prefabs/Props/Decorations/Paintings/PaintingBig_01_base.et",
+   "res": "{A0683DD8CEF09277}Prefabs/Props/Decorations/Paintings/PaintingBig_01_base.et",
+   "name": "Painting, big (variants V2-V9)",
+   "category": "decor",
+   "sizeM": [
+    1,
+    0.05,
+    0.62
+   ],
+   "surfaces": [],
+   "everonWorldCount": 521,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 89,
+    "Saint Pierre": 50,
+    "Morton": 28,
+    "Montignac": 42
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Wall painting 1.0 x 0.62 m; the V2..V9 variants differ only by picture. Paintings are common (PaintingSmall_01 303 too)."
+  },
+  {
+   "guid": "34F74A7DBAD46974",
+   "path": "Prefabs/Props/Furniture/LightWall_01.et",
+   "res": "{34F74A7DBAD46974}Prefabs/Props/Furniture/LightWall_01.et",
+   "name": "Wall light",
+   "category": "light",
+   "sizeM": [
+    0.29,
+    0.32,
+    0.29
+   ],
+   "surfaces": [],
+   "everonWorldCount": 2064,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 314,
+    "Saint Pierre": 157,
+    "Morton": 82,
+    "Montignac": 163
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Wall light 0.29 m; the single most placed furniture prop (2064). Light source behaviour not verified."
+  },
+  {
+   "guid": "97CCD43778D034CF",
+   "path": "Prefabs/Props/Furniture/LightCeiling_01.et",
+   "res": "{97CCD43778D034CF}Prefabs/Props/Furniture/LightCeiling_01.et",
+   "name": "Ceiling light 01",
+   "category": "light",
+   "sizeM": [
+    0.83,
+    0.86,
+    0.82
+   ],
+   "surfaces": [],
+   "everonWorldCount": 921,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 143,
+    "Saint Pierre": 71,
+    "Morton": 48,
+    "Montignac": 74
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Ceiling light fixture; LightCeiling_01/02/03 total about 1930. Whether the light source needs power is not verified."
+  },
+  {
+   "guid": "FA81E4DDBA1189AF",
+   "path": "Prefabs/Props/Furniture/LampInterior_01.et",
+   "res": "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et",
+   "name": "Interior lamp",
+   "category": "light",
+   "sizeM": [
+    0.51,
+    0.5,
+    1.53
+   ],
+   "surfaces": [],
+   "everonWorldCount": 327,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 55,
+    "Saint Pierre": 31,
+    "Morton": 15,
+    "Montignac": 26
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Floor/standing lamp 1.53 m tall. LampInterior_02 comes in red (86)."
+  },
+  {
+   "guid": "7BB30759D09C70B5",
+   "path": "Prefabs/Props/Civilian/StepladderWooden_01.et",
+   "res": "{7BB30759D09C70B5}Prefabs/Props/Civilian/StepladderWooden_01.et",
+   "name": "Stepladder",
+   "category": "other",
+   "sizeM": [
+    0.6,
+    0.13,
+    1.91
+   ],
+   "surfaces": [],
+   "everonWorldCount": 208,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 31,
+    "Saint Pierre": 22,
+    "Morton": 7,
+    "Montignac": 19
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Folding stepladder 1.91 m (also _Open, 87). Visual only: no climb action."
+  },
+  {
+   "guid": "FE47006C7C7869FE",
+   "path": "Prefabs/Props/Civilian/LadderWooden_01.et",
+   "res": "{FE47006C7C7869FE}Prefabs/Props/Civilian/LadderWooden_01.et",
+   "name": "Wooden ladder",
+   "category": "other",
+   "sizeM": [
+    0.49,
+    0.09,
+    2.96
+   ],
+   "surfaces": [],
+   "everonWorldCount": 149,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "townCounts": {
+    "Saint Philippe": 19,
+    "Saint Pierre": 7,
+    "Morton": 5,
+    "Montignac": 9
+   },
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Wooden ladder 2.96 m, plus _Long (152). No ladder component or action in the prefab, so a prop only."
+  }
+ ]
+}

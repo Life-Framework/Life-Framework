@@ -3,9 +3,11 @@
 //       reach the PR body (tools/lib/gate-warnings.mjs);
 //   (b) the tier is judged on the maintainer's own change, not on what a merge of main brought in, even when the
 //       local origin/main ref is stale (gate-tier.mjs ownBase / collectDiff);
+//   (d) a failing test is a warning at every tier (demoteTests, ci test steps);
 //   (c) a world ship body stays under GitHub's 65 KB limit with a "+N more" line, and `gh pr create` gets the body
 //       through --body-file, never on the command line (ENAMETOOLONG).
-// inputs: tools/lib/gate-tier.mjs, tools/lib/gate-warnings.mjs, tools/commands/world.mjs, tools/wt.mjs, tools/validation/maintainer-gate-selftest.mjs
+// inputs: tools/lib/gate-tier.mjs, tools/lib/gate-warnings.mjs, tools/lib/world-test-judge.mjs, tools/cli.mjs, tools/commands/world.mjs, tools/wt.mjs, tools/validation/maintainer-gate-selftest.mjs
+// red-proof (d, 2026-11-15): with gate-warnings.mjs, world-test-judge.mjs and cli.mjs from main, (d) printed FAIL for every case (no demoteTests, tier=all-core unparsed, bare test steps).
 // red-proof: before the fix this printed FAIL for every case below (ownBase, gate-warnings.mjs and the body cap did not
 //   exist; createPrGh passed --body) and exited 1 (2026-11-15); with the fix it passes.
 import { spawnSync } from "node:child_process";
@@ -90,6 +92,49 @@ if (typeof gw.demotePlacement === "function") {
   check(recorded.length === 1 && recorded[0].check === "placement audit" && recorded[0].lines.length === 2, `the findings are recorded for the PR body, got ${JSON.stringify(recorded)}`);
   check(plain === 1, "any other branch still fails on the placement audit");
 } else check(false, "gate-warnings.mjs has no demotePlacement");
+
+// ---- (d) a failing test is a warning on a maintainer branch, at every tier; a compile error or an empty run still blocks.
+{
+  const shardFail = async () => {
+    process.stdout.write("[LFTEST] FAIL disconnect/jail (normal, shard 4)\n[LFTEST]   - the incident log has the logout with the state and the sentence\ntest-e2e: SUMMARY tier=all passed=580 failed=1 total=581 (48 s, 4 shard(s))\ntest-e2e: FAILED (exit 1)\n");
+    return 1;
+  };
+  // a two-pass run: the normal pass is green, the core-only pass has the failure (the first SUMMARY says failed=0)
+  const corePassFail = async () => {
+    process.stdout.write("test-e2e: SUMMARY tier=all passed=581 failed=0 total=581 (48 s)\n[LFTEST] FAIL disconnect/jail (core, shard 4)\n[LFTEST]   - the incident log has the logout with the state and the sentence\ntest-e2e: SUMMARY tier=all-core passed=580 failed=1 total=581 (47 s)\n");
+    return 1;
+  };
+  const compileErr = async () => { process.stdout.write("Can't compile \"Game\" script module!\ntest-e2e: SUMMARY tier=all passed=0 failed=1 total=1\n"); return 1; };
+  const noSummary = async () => { process.stdout.write("TIMEOUT after 281s (the server never reached ready)\n"); return 1; };
+  const green = async () => 0;
+  if (typeof gw.demoteTests === "function") {
+    const recorded = [];
+    const out = process.stdout.write.bind(process.stdout);
+    process.stdout.write = () => true;
+    let a, b, cErr, none, ok, plain;
+    try {
+      const rec = (e) => recorded.push(e);
+      a = await gw.demoteTests("ws/town-maintainer-edits", shardFail, rec)();
+      b = await gw.demoteTests("ws/town-maintainer-edits", corePassFail, rec)();
+      cErr = await gw.demoteTests("ws/town-maintainer-edits", compileErr, rec)();
+      none = await gw.demoteTests("ws/town-maintainer-edits", noSummary, rec)();
+      ok = await gw.demoteTests("ws/town-maintainer-edits", green, rec)();
+      plain = await gw.demoteTests("ws/some-slice", shardFail, rec)();
+    } finally { process.stdout.write = out; }
+    check(a === 0, `a failing test must not fail a maintainer branch, got exit ${a}`);
+    check(b === 0, `a failure in the second (core-only) pass must warn too, got exit ${b}`);
+    check(recorded.length === 2 && recorded.every((e) => e.check === "tests" && /disconnect\/jail|the incident log/.test(e.lines.join(" "))), `the failing test is recorded for the PR body, got ${JSON.stringify(recorded)}`);
+    check(cErr === 1, "a compile error still blocks a maintainer branch");
+    check(none === 1, "a run with no SUMMARY (timeout, crash) still blocks a maintainer branch");
+    check(ok === 0, "a green run stays green");
+    check(plain === 1, "any other branch still fails on a failing test");
+  } else check(false, "gate-warnings.mjs has no demoteTests");
+  // the step runs in every ci path: full, sharded, slim and T1 (the cli wraps each test step in maint.test)
+  const src = readFileSync(new URL("../cli.mjs", import.meta.url), "utf8");
+  const bare = [...src.matchAll(/\["test(?! \(T1w)[^"]*",\s*(?:async )?\(\) => (?!maint\.test)/g)].map((m) => m[0]);
+  check(bare.length === 0, `every ci test step must go through maint.test, found ${JSON.stringify(bare)}`);
+  check((src.match(/maint\.test\(/g) ?? []).length >= 5, "the full, sharded, core-only, slim and T1 test steps use maint.test");
+}
 
 // The PR body section replaces itself (a re-gate does not stack it) and stays inside the size cap.
 if (typeof gw.applyGateWarnings === "function") {

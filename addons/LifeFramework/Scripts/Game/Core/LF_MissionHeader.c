@@ -17,6 +17,12 @@ class LF_MissionHeader : SCR_MissionHeader
 	[Attribute("0", desc: "A police application is approved the moment it is filed, so a solo tester can try the form (the desk). Off for real servers: an administrator approves.")]
 	bool m_bLF_InstantPoliceApproval;
 
+	[Attribute("0", desc: "Testing bypass: every whitelist-gated job (police roster, playtime, application) opens to every player. Only the playtest mission sets it; the flagship header never does (validate-flagship-job-gates). The owner config jobs.testUnlockAll asks for the same switch.")]
+	bool m_bLF_TestUnlockAllJobs;
+
+	[Attribute("0", desc: "Lets the job-gate bypass (m_bLF_TestUnlockAllJobs or jobs.testUnlockAll) run on a dedicated server. Without it a dedicated server refuses the bypass and logs an error.")]
+	bool m_bLF_TestUnlockOnDedicated;
+
 	[Attribute("0", desc: "Close the playtest helpers the world's game mode switches on (test cars, bank and cash top-up, the jail-me board, the spawn hub travel globe, test dispatch calls, the near convoy drop), even when the game mode opts in. On for a mission a real server runs; off for the playtest mission and DebugWorld.")]
 	bool m_bLF_PlaytestHelpersOff;
 
@@ -25,6 +31,9 @@ class LF_MissionHeader : SCR_MissionHeader
 
 	[Attribute("", UIWidgets.ResourceNamePicker, desc: "The pack's manifest (.conf of class LF_PackManifest): its id and the core versions it supports. When the running core is outside that range the core logs one error and loads none of this mission's config overlays. Empty: no check (#963).", params: "conf")]
 	ResourceName m_LF_PackManifest;
+
+	[Attribute("", UIWidgets.Auto, desc: "Map states that are live (D14, #2208). An LF_PlaceComponent with a map state outside this list stays dark: it does not register in LF_Places, so its systems have no place there. Empty: every state is live (the playtest town and the test worlds). The pack says what each number means.")]
+	ref array<int> m_aLF_LiveStates;
 
 	//------------------------------------------------------------------------------------------------
 	//! \return the running mission's header when it is an LF_MissionHeader, else null.

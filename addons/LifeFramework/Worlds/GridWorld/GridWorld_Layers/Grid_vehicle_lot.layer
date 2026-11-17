@@ -1,0 +1,238 @@
+// Grid cell c6r3 for vehicle-lot: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 95 0 59
+}
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 100 0 59
+}
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 105 0 59
+ angleY 270
+}
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 105 0 63.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 105 0 67.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 105 0 72.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 105 0 76.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 105 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 100 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 95 0 81
+ angleY 90
+}
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 95 0 76.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_vehicle_lot_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 95 0 72.2
+ angleY 90
+}
+GenericEntity Grid_vehicle_lot_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:vehicle-lot"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 94.2 0.505 59.6
+ angleY -90
+}
+GenericEntity Grid_vehicle_lot_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "vehicle-lot"
+  }
+ }
+ coords 94.3 0 63.4
+ angleY 90
+}
+GenericEntity Annex_Vehicle_Lot {
+ components {
+  MeshObject "{E1B0E70100000001}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{E1B0E70100000002}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_VehicleLotComponent "{E1B0E70100000003}" {
+   m_sShopId "annex-lot"
+   m_iCashCeiling 500
+   m_iExtraKeyPrice 25
+   m_aOffers {
+    LF_VehicleOffer "{E1B0E70100000011}" {
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     m_sSpawnPrefab "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et"
+     m_iPrice 1000
+     m_sNameKey "#EL-Vehicle_S105"
+    }
+    LF_VehicleOffer "{E1B0E70100000012}" {
+     m_sPrefab "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
+     m_sSpawnPrefab "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et"
+     m_iPrice 2500
+     m_sNameKey "#EL-Vehicle_UAZ469"
+    }
+    LF_VehicleOffer "{E1B0E70100000013}" {
+     m_sPrefab "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
+     m_sSpawnPrefab "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et"
+     m_iPrice 4000
+     m_sNameKey "#EL-Vehicle_S1203"
+    }
+    LF_VehicleOffer "{E1B0E70100000014}" {
+     m_sPrefab "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
+     m_sSpawnPrefab "{E1A452BE1A000001}Prefabs/Vehicles/Wheeled/UAZ452/EL_UAZ452_base.et"
+     m_iPrice 3500
+     m_sNameKey "#EL-Vehicle_UAZ452"
+    }
+    LF_VehicleOffer "{E1B0E70100000015}" {
+     m_sPrefab "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et"
+     m_sSpawnPrefab "{E1A923BE1A000001}Prefabs/Vehicles/Wheeled/M923A1/EL_M923A1_transport.et"
+     m_iPrice 8000
+     m_sNameKey "#EL-Vehicle_M923"
+    }
+    LF_VehicleOffer "{E1B0E70100000016}" {
+     m_sPrefab "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et"
+     m_sSpawnPrefab "{E1A2101BE1A00001}Prefabs/Vehicles/Wheeled/V2101/EL_V2101_beige.et"
+     m_iPrice 1800
+     m_sNameKey "#EL-Vehicle_Dana2101"
+    }
+    LF_VehicleOffer "{E1B0E70100000017}" {
+     m_sPrefab "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et"
+     m_sSpawnPrefab "{E1A601BE1A000001}Prefabs/Vehicles/Wheeled/T601/EL_T601_beige.et"
+     m_iPrice 700
+     m_sNameKey "#EL-Vehicle_SputnikT601"
+    }
+   }
+  }
+  LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
+   m_sShopId "annex-lot"
+   m_vOffset -5 0 -5
+  }
+  ActionsManagerComponent "{E1B0E70100000006}" {
+   ActionContexts {
+    UserActionContext "{E1B0E70100000007}" {
+     ContextName "default"
+     Position PointInfo "{E1B0E70100000008}" {
+      Offset 0 0.8 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_VehicleBuyAction "{E1B0E70100000021}" {
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000022}" {
+      Name "#EL-Vehicle_Buy"
+     }
+    }
+    LF_VehicleExtraKeyAction "{E1B0E70100000023}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000024}" {
+      Name "#EL-Vehicle_ExtraKey"
+     }
+    }
+   }
+  }
+  RplComponent "{E1B0E70100000009}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 100 0 63
+}
+GenericEntity Annex_Garage {
+ components {
+  MeshObject "{A1C1080A0000000A}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{A1C1080A0000000B}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_VehicleGarageComponent "{A1C1080A00000001}" {
+   m_sPadId "annex-garage"
+  }
+  LF_VehicleSpawnPointComponent "{C3E2E6F2E56F3E66}" {
+   m_sShopId "annex-garage"
+   m_vOffset 0 0 -2
+   m_iSlots 3
+   m_vSlotStep -7 0 0
+   m_vAngles 90 0 0
+  }
+  ActionsManagerComponent "{A1C1080A00000002}" {
+   ActionContexts {
+    UserActionContext "{A1C1080A00000003}" {
+     ContextName "default"
+     Position PointInfo "{A1C1080A00000004}" {
+      Offset 0 1.0 2.0
+     }
+     Radius 3.5
+    }
+   }
+   additionalActions {
+    LF_VehicleStoreAction "{A1C1080A00000005}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A1C1080A00000006}" {
+      Name "#EL-Vehicle_Store"
+     }
+    }
+    LF_VehicleRetrieveAction "{A1C1080A00000007}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A1C1080A00000008}" {
+      Name "#EL-Vehicle_Retrieve"
+     }
+    }
+    LF_GarageLedgerAction "{C9A69B1164585666}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{006BD8DCF53DEDC6}" {
+      Name "#LF-Garage_ReadLedger"
+     }
+    }
+   }
+  }
+  RplComponent "{A1C1080A00000009}" {
+   Enabled 1
+  }
+ }
+ coords 100 0 77
+ {
+  GenericEntity : "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et" {
+   coords 0 0 5.9
+   angleY 180
+  }
+ }
+}

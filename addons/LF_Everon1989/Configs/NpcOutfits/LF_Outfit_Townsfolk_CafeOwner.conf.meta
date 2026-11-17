@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{DC3D71F42C853776}Configs/NpcOutfits/LF_Outfit_Townsfolk_CafeOwner.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

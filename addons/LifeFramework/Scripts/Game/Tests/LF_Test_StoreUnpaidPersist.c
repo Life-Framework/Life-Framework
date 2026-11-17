@@ -1,3 +1,4 @@
+// red-proof: observed 2026-11-16 (#1891), `tools\cli test --no-build --no-cache --only <the 10 classes>` on GridWorld before the grid fixtures: 10 of 15 failed on `... resolves in the DebugWorld` (Shop_GeneralStore_Debug, Shop_BlackMarket_Debug, FenceNpc are town entities); on Grid_shops_till fixtures 15 of 15 pass.
 // red-proof: observed 2026-11-11 with `tools\cli test --no-build --only LF_Test_StoreUnpaidPersist`: LF_Stores.ExportUnpaid not writing the live tags failed
 // `- both tags wait for the shopper (expected 2, got 0)` and `- the shopper owes the same after the restart (expected 16, got 0)`; restored, green.
 // red-proof: observed 2026-11-11, same loop: a restored tag that never leaves its grace (the reviewer's logout exploit) failed
@@ -34,12 +35,12 @@ class LF_Test_StoreUnpaidPersist : LF_Test
 	protected void RunKeptOrgs(LF_TestContext ctx)
 	{
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
-		ctx.NotNull(gameMode, "the DebugWorld game mode resolves");
+		ctx.NotNull(gameMode, "the GridWorld game mode resolves");
 		if (!gameMode)
 			return;
 
 		LF_PersistenceComponent persistence = LF_PersistenceComponent.Cast(gameMode.FindComponent(LF_PersistenceComponent));
-		IEntity counter = GetGame().GetWorld().FindEntityByName(LF_Test_StoreShelf.STORE_COUNTER);
+		IEntity counter = GetGame().GetWorld().FindEntityByName(LF_Test_StoreShelf.GRID_STORE);
 		ctx.NotNull(persistence, "the game mode carries LF_PersistenceComponent");
 		ctx.NotNull(counter, "the general store counter resolves");
 		if (!persistence || !counter)

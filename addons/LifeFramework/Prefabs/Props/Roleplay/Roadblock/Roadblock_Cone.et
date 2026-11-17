@@ -1,0 +1,23 @@
+GenericEntity : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+ ID "262F55970D53E360"
+ components {
+  ActionsManagerComponent "{F738D4E1483B26F6}" {
+   ActionContexts {
+    UserActionContext "{3AE520D3C6428F11}" {
+     ContextName "default"
+     Position PointInfo "{7437E9179186C28C}" {
+      Offset 0 0.4 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_RoadblockPickUpAction "{60731B236DB704ED}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+ }
+}

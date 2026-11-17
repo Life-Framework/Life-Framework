@@ -361,3 +361,20 @@ class LF_PlacementAimAction : ScriptedUserAction
 		return true;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_PlacementAim's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PlacementAim_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PlacementAim_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_PlacementAim";
+	}
+
+	override void Apply()
+	{
+		LF_PlacementAim.ResetStatics();
+	}
+}

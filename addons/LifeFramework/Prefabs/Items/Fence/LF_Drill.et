@@ -25,6 +25,16 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
      ItemVolume 4000
      RestingUP Up
     }
+    ItemAnimationAttributes ItemAnimationAttributes "{3D9A61C47E2B5F10}" {
+     AnimationAttachments {
+      AnimationAttachmentInfo "{3D9A61C47E2B5F11}" {
+       AnimGraph "{CEC539E559BB8BA6}Assets/Items/Equipment/workspaces/RepairKit.agr"
+       AnimInstance "{23AF6C3E45B2D948}Assets/Items/Equipment/workspaces/RepairKit.asi"
+       BindingName "Gadget"
+      }
+     }
+     HandAdditiveRotation 0 0 0
+    }
    }
   }
   MeshObject "{5A4ACD10B8DA304F}" {
@@ -54,6 +64,10 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
      m_sEvent "SOUND_LF_DRILL_GRIND_LP"
     }
    }
+  }
+  LF_HandToolComponent "{3D9A61C47E2B5F12}" {
+   m_eAnimVariable ADRIANOV
+   m_sToolId "drill"
   }
   ActionsManagerComponent "{508AB5952B584B2E}" {
    additionalActions {

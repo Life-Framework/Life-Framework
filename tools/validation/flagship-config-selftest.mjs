@@ -1,5 +1,5 @@
 // Proves the flagship's two live files (#1321): server/flagship/config.json passes the owner-config check and
-// carries the decided values (2-hour in-game day, restarts at 06:00 and 18:00 with 15/5/1 minute warnings);
+// carries the decided values (2-hour in-game day, restarts at 06:00 and 18:00 with 15/5/1 minute warnings, rejoin at the saved spot, 30 minutes of new-character grace);
 // server/flagship/server.json has the listing name and the same scenario and mods as server/example; neither
 // file holds a secret (passwords, admin uids, a webhook URL). Secrets live only in the host's secrets.json.
 // red-proof: adding game.password, a webhook URL or a changed name to a fixture copy below prints a FAIL line.
@@ -40,6 +40,9 @@ export function flagshipProblems(root = ".") {
     if (c.dayCycle?.mode !== "accelerated" || c.dayCycle?.dayLengthMinutes !== 120) out.push("config.json dayCycle must be accelerated with dayLengthMinutes 120 (a 2 hour day)");
     if (JSON.stringify(c.restarts?.times) !== JSON.stringify(["06:00", "18:00"])) out.push("config.json restarts.times must be [\"06:00\", \"18:00\"]");
     if (JSON.stringify(c.restarts?.warningMinutes) !== JSON.stringify([15, 5, 1])) out.push("config.json restarts.warningMinutes must be [15, 5, 1]");
+    // #1779 / #2075: returning players rejoin at the saved spot; a new character has 30 minutes of grace.
+    if (c.respawn?.rejoinAtLastPosition !== true) out.push("config.json respawn.rejoinAtLastPosition must be true (rejoin at the saved spot, #1779)");
+    if (c.grace?.minutes !== 30) out.push("config.json grace.minutes must be 30 (the new-character grace, #2075)");
     scan(c, "$", "config.json");
   }
   if (srv) {
@@ -86,6 +89,8 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, "/")}` || proc
   mutate("config.json", json((o) => { o.shops.note = "https://example.org/x"; }), /holds a URL/);
   mutate("config.json", json((o) => { o.dayCycle.dayLengthMinutes = 1440; }), /dayCycle must be/);
   mutate("config.json", json((o) => { delete o.restarts; }), /restarts\.times/);
+  mutate("config.json", json((o) => { o.respawn.rejoinAtLastPosition = false; }), /rejoinAtLastPosition must be true/);
+  mutate("config.json", json((o) => { delete o.grace; }), /grace\.minutes must be 30/);
   mutate("config.json", json((o) => { o.shops.defaultBuyPrice = "cheap"; }), /config\.json \d+:\d+/);
   mutate("server.json", () => "{", /is not JSON/);
 

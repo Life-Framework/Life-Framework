@@ -160,3 +160,20 @@ class LF_VehicleSpawnPointComponent : ScriptComponent
 		return false;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_VehicleSpawnPointComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_VehicleSpawnPointComponent_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_VehicleSpawnPointComponent_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_VehicleSpawnPointComponent";
+	}
+
+	override void Apply()
+	{
+		LF_VehicleSpawnPointComponent.ResetStatics();
+	}
+}

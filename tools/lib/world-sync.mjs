@@ -184,7 +184,7 @@ export function formatSummary(r) {
   return `SUMMARY world-sync ok${dry} pulled=${r.pulled} files ${held} reload-workbench=${r.reload ? "yes" : "no"}`;
 }
 
-export function syncWorktree(dirIn, { dryRun = false, force = false, base = "main", log = () => {}, listProcesses, hooks = {} } = {}) {
+export function syncWorktree(dirIn, { dryRun = false, force = false, base = "main", target: pinTo = null, log = () => {}, listProcesses, hooks = {} } = {}) {
   const dir = resolve(dirIn);
   const lines = [];
   const say = (s) => { lines.push(s); log(s); };
@@ -222,7 +222,9 @@ export function syncWorktree(dirIn, { dryRun = false, force = false, base = "mai
   let head, target, baseSha;
   try {
     head = gitText(dir, ["rev-parse", "HEAD"]);
-    target = gitText(dir, ["rev-parse", remoteRef]);
+    // pinTo: the newest commit the main guard marked compiled-ok (tools/lib/guard-pin.mjs), never past origin/<base>.
+    target = pinTo ? gitText(dir, ["rev-parse", `${pinTo}^{commit}`]) : gitText(dir, ["rev-parse", remoteRef]);
+    if (pinTo && runGit(dir, ["merge-base", "--is-ancestor", target, remoteRef], { allowFail: true }).code !== 0) throw new Error(`${pinTo} is not on origin/${base}`);
     baseSha = gitText(dir, ["merge-base", "HEAD", remoteRef]);
   } catch (e) {
     return fail(`cannot resolve origin/${base} against HEAD: ${e.message}. Nothing was changed.`);

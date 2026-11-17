@@ -19,6 +19,11 @@ GenericEntity : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
      }
      m_sService "police"
     }
+    LF_PoliceCallBoardAction "{7A3C51D2E9B80F46}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
    }
   }
  }

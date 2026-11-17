@@ -6,8 +6,16 @@ dedicated test server, checks the result, writes the layer, and then runs the pl
 (`docs/placement-audit.md`) on what it wrote. A placement the audit flags is rolled back.
 
 A slice places its props in its own debug-grid cell: `tools\cli grid place <slug> <prefab>...` claims
-the cell and runs `arrange row` there. Only a town-placement pass places in town
+the cell, writes `GridWorld_Layers/Grid_<slug>.layer` and runs `arrange row` there. A `--layer Grid_*.layer`
+argument, and `place on|against|ground` aimed at a grid entity, resolve to GridWorld's layer folder; every
+other layer name is a DebugWorld or pack-town layer. Only a town-placement pass places in town
 (`docs/architecture/world-zones.md`).
+
+The audit follows the target: a command that writes or moves a `Grid_*.layer` entity lists GridWorld's own
+layers, boots GridWorld and judges at the grid bar, exactly as `tools\cli audit placement --grid` does (props
+stand on the ground and are reachable; no roads, no town doors, no overlap or tilt verdicts). Any other layer
+is audited in the playtest world as before. In the grid a prop counts as floating by its bounds bottom and as sunk only when its pivot is under too, as the audit has it (a label sign's pole goes into the gravel mound by its cell). One command works in one world; a mix is refused. So
+`grid place` and `place on|against|ground --layer Grid_<slug>.layer` need no `--no-verify`.
 
 Do not type coordinates into a `.layer` for a prop. Every failure in the table below came from a
 typed number that nobody could see.
@@ -33,7 +41,9 @@ tools\cli place verify <entity>...          the placement audit on those entitie
   prefab it cannot resolve.
 - An unnamed entity is addressed by its prefab file name and a point: `LampStreet_E_01_6m@196,255.4`.
 - `--dry` prints the plan and writes nothing. `--no-verify` skips the audit boot (run `place verify`
-  before you ship). `--keep` leaves a flagged placement in the file. `--force` writes despite an
+  before you ship). The probe and the audit boot go through the pool like `test` (RAM gate, queue, run
+  budget): this PC goes first while it has RAM room (`--prefer-local`), otherwise the machine with headroom
+  runs them, and the output line `pool: test only on <machine>` says which. Never pinned. `--keep` leaves a flagged placement in the file. `--force` writes despite an
   offline finding. `--scale s` sets a scale (a new entity gets a scale line; a `--move` rewrites or adds its scale line); outside 0.5 to 2 is refused.
 
 Run it from a worktree. A probe or an audit is one boot of the test server, about 11 s, queued on the
@@ -154,6 +164,18 @@ that slips through still meets the audit there.
 - `tools/place/surface-cache.json`: one line per surface mesh (the probed grid, the entity it was
   probed on, the date), sorted by mesh path, so two branches that each probed a surface merge as two
   added lines. `place probe <surface>` refreshes an entry after a mesh changes.
+
+## Sizing a block on the grid: `grid place <slug> <prefab>`
+
+`toolscli grid place <slug> <prefab>` (docs/architecture/world-zones.md "One command for a building") reuses this tool
+instead of a second bounds reader: `prefabInfo` gives the bounds, the scale and the entity class (the prefab's root class,
+`SCR_DestructibleBuildingEntity` for a vanilla building); `tools/lib/game-prefab.mjs` `resolvePrefab` turns a bare name such as
+`Villa_E_2I01` into its `{GUID}path` (the paks carry no `.meta`, so `place` alone refuses a vanilla name no layer uses yet). The
+grid command sizes the block from `footprintRect` at yaw 0 and 90 (`ceil((footprint + 4 m) / 12)` per axis), claims it, then calls
+`place ground <block centre> <ref> --layer Grid_<slug>.layer --yaw <Y> --y-hint 0 --name Grid_<slug>_Main`: `ground` puts the
+footprint **centre** at that point whatever the mesh's pivot offset, probes the ground, runs the offline checks and the audit, and
+writes the entity with the class read from the prefab. `grid place ... --dry` prints the sizing and writes nothing; it runs no
+probe, so it needs no pool machine. The audit that follows is `audit placement --grid --strict --layer Grid_<slug>.layer`.
 
 ## Failure classes (2026-11 trailer review, PRs #740 to #743)
 

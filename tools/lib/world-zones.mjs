@@ -1,27 +1,41 @@
-// tools/lib/world-zones.mjs: the two DebugWorld zones (docs/architecture/world-zones.md).
+// tools/lib/world-zones.mjs: the two world zones (docs/architecture/world-zones.md).
 //
-// Grid: the net-fenced annex south-west of the village (x 20..112, z 20..112). One feature per
-// cell, low look bar, written by `tools\cli grid`. Town: every other layer the playtest town loads
+// Grid: the net-fenced annex (x 20..328, z 20..112; it was 20..112 before the lattice grew east), which lives in GridWorld
+// (Worlds/GridWorld/GridWorld_Layers, docs/architecture/three-worlds.md); until slice W6 deletes
+// it, the legacy annex layers also sit in DebugWorld. One feature per cell, low look bar, written
+// by `tools\cli grid`. Town: every other layer the playtest town loads
 // (the DebugWorld village layers and the pack world Everon1989Town). Polished; written only by a
 // town-placement pass (a `town-` worktree slug).
 //
 // Pure functions, no I/O except where a function says it reads the tree. Used by
 // tools/commands/grid.mjs, tools/validation/validate-world-zones.mjs, agent-box/place-audit.mjs,
 // tools/validation/validate-player-props.mjs and tools/visual/look.mjs.
-import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { basename, join, resolve } from "node:path";
+import { CORE_ADDON, GRID_WORLD, PACK_ADDON, PACK_GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
+import { CELL, GRID_CENTRE, GRID_FENCE, allCells, cellBounds, cellId, claimCellIds, claimRect, claimSpan, isFrameClaim, parseCellId } from "../grid/lattice.mjs";
 
-export const DEBUG_LAYERS = "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers";
+// The lattice constants and cell maths live in tools/grid/lattice.mjs (with the grid frame).
+export { CELL, GRID_CENTRE, allCells, cellBounds, cellId, claimCellIds, claimRect, claimSpan, parseCellId };
+
+export const DEBUG_LAYERS = `addons/${CORE_ADDON}/${layersOf(PLAYTEST_WORLD)}`;
+// Where Grid_<slug>.layer files are written and claims are checked: GridWorld, not the playtest world.
+export const GRID_LAYERS = `addons/${CORE_ADDON}/${layersOf(GRID_WORLD)}`;
+// Where a PACK cell's Grid_<slug>.layer lives: the pack's own grid world, a SubScene of GridWorld
+// (docs/architecture/world-zones.md "Pack cells"). The claim says `"pack": true`.
+export const PACK_GRID_LAYERS = `addons/${PACK_ADDON}/${layersOf(PACK_GRID_WORLD)}`;
+// The repo-relative folder holding a claim's grid layer, and the file.
+export const gridLayersOfClaim = (claim) => (claim && claim.pack === true ? PACK_GRID_LAYERS : GRID_LAYERS);
+export const gridLayerPath = (root, claim) => join(root, gridLayersOfClaim(claim), layerOfSlug(claim.slug));
 export const PACK_TOWN_LAYERS = "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers";
 export const CELLS_DIR = "tools/grid/cells";
 
 // The annex fence (Annex.layer): the grid zone.
-export const GRID = { x0: 20, z0: 20, x1: 112, z1: 112 };
-// Cells: a 7 x 7 lattice of 12 m squares from 22,22 (2 m inside the annex fence). Each cell holds a
-// 10 m fenced yard (1 m in from its edges) with a 5 m gap on the side facing the annex centre.
-export const CELL = { size: 12, origin: 22, cols: 7, rows: 7, inset: 1, fence: 5 };
-export const GRID_CENTRE = [66, 66];
-
+export const GRID = { ...GRID_FENCE };
+// The rectangle the DebugWorld freeze watches: the fence plus 2 m (three-worlds.md "What counts as grid").
+export const ANNEX_RECT = { x0: 18, z0: 18, x1: 114, z1: 114 };
 // Ground no cell may take: the open ground world tests spawn their fixtures on
 // (docs/roadmap/m1-25-village.md "Test annex"), and the track in through the gap in the north fence.
 export const RESERVED = [
@@ -40,6 +54,18 @@ export const LEGACY_ANNEX = new Set([
 export const SYSTEM_LAYERS = new Set(["default", "Gamemode", "Factions"]);
 
 export const SLUG_RX = /^[a-z0-9][a-z0-9-]{1,40}$/;
+// A prefab argument of `grid place` (a `{GUID}path`, a path under an addon, or a bare name) is PACK content when its file
+// exists under the pack addon and not under the core; that routes the cell to the pack grid world.
+export function isPackPrefab(root, arg) {
+  let p = String(arg).replace(/\\/g, "/").replace(/^\{[0-9A-Fa-f]{16}\}/, "").replace(/^.*addons\/(LifeFramework|LF_Everon1989)\//, "");
+  if (!p.endsWith(".et")) p = `${p}.et`;
+  const under = (addon, rel) => existsSync(join(root, "addons", addon, ...rel.split("/")));
+  if (p.includes("/")) return under(PACK_ADDON, p) && !under(CORE_ADDON, p);
+  const find = (dir) => readdirSync(dir, { withFileTypes: true }).some((e) => (e.isDirectory() ? find(join(dir, e.name)) : e.name === p));
+  const packPrefabs = join(root, "addons", PACK_ADDON, "Prefabs");
+  const corePrefabs = join(root, "addons", CORE_ADDON, "Prefabs");
+  return existsSync(packPrefabs) && find(packPrefabs) && !(existsSync(corePrefabs) && find(corePrefabs));
+}
 export const layerOfSlug = (slug) => `Grid_${slug.replace(/-/g, "_")}.layer`;
 // The slug is in the claim file (its `layer` field); a layer name maps back only with dashes unknown.
 // Entity names written into a grid layer: Grid_<slug with _>_<n>.
@@ -59,39 +85,15 @@ export function zoneOfPath(path) {
   const p = String(path).replace(/\\/g, "/");
   if (!p.endsWith(".layer")) return null;
   const base = p.slice(p.lastIndexOf("/") + 1);
-  if (p.startsWith(`${DEBUG_LAYERS}/`)) return zoneOfLayer(base, "debug");
+  if (p.startsWith(`${DEBUG_LAYERS}/`) || p.startsWith(`${GRID_LAYERS}/`) || p.startsWith(`${PACK_GRID_LAYERS}/`)) return zoneOfLayer(base, "debug");
   if (p.startsWith(`${PACK_TOWN_LAYERS}/`)) return zoneOfLayer(base, "pack");
   return null;
 }
 
 export const inGrid = (x, z) => x >= GRID.x0 && x <= GRID.x1 && z >= GRID.z0 && z <= GRID.z1;
+export const inAnnexRect = (x, z) => x >= ANNEX_RECT.x0 && x <= ANNEX_RECT.x1 && z >= ANNEX_RECT.z0 && z <= ANNEX_RECT.z1;
 
 // ------------------------------------------------------------------ cells
-
-export function cellId(col, row) {
-  return `c${col}r${row}`;
-}
-
-export function parseCellId(id) {
-  const m = /^c(\d+)r(\d+)$/.exec(String(id));
-  if (!m) return null;
-  const col = Number(m[1]);
-  const row = Number(m[2]);
-  if (col >= CELL.cols || row >= CELL.rows) return null;
-  return { col, row };
-}
-
-export function cellBounds(col, row) {
-  const x0 = CELL.origin + col * CELL.size;
-  const z0 = CELL.origin + row * CELL.size;
-  return { x0, z0, x1: x0 + CELL.size, z1: z0 + CELL.size };
-}
-
-export function allCells() {
-  const out = [];
-  for (let row = 0; row < CELL.rows; row++) for (let col = 0; col < CELL.cols; col++) out.push({ id: cellId(col, row), col, row, ...cellBounds(col, row) });
-  return out;
-}
 
 const overlaps = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.z0 < b.z1 && b.z0 < a.z1;
 
@@ -127,14 +129,19 @@ export function slugHash(slug) {
 // The cell for a slug: the first usable cell from hash(slug) in lattice order. Two branches with
 // different slugs rarely land on one cell; validate-world-zones fails if they do.
 // `taken` is a Set of cell ids claimed in tools/grid/cells/.
-export function allocate(slug, { ents = [], taken = new Set() } = {}) {
+// `span` is [cols, rows] for a big item: the first free block of that size, returned as the claim's rectangle
+// (its low corner's id, so a one-cell span is the same cell as before).
+export function allocate(slug, { ents = [], taken = new Set(), span = [1, 1] } = {}) {
   const cells = allCells();
   const start = slugHash(slug) % cells.length;
   for (let k = 0; k < cells.length; k++) {
     const c = cells[(start + k) % cells.length];
-    if (taken.has(c.id)) continue;
-    if (blockers(c, ents).length) continue;
-    return c;
+    const rect = claimRect({ cell: c.id, span });
+    if (!rect) continue;
+    const ids = claimCellIds({ cell: c.id, span });
+    if (ids.some((id) => taken.has(id))) continue;
+    if (ids.some((id) => blockers(cells.find((x) => x.id === id), ents).length)) continue;
+    return rect;
   }
   return null;
 }
@@ -154,10 +161,12 @@ export function yawAlong(d, rot) {
 // The fence runs of a cell's yard: 5 m segments (pivot at one end, extending along local +x),
 // two per side, one left out on the gap side. Returns [{ at: [x, z], dir: [dx, dz] }], plus the
 // sign spot (outside the open end of the gap) and the facing the sign and the props take.
+// A claim of several cells (a rectangle from claimRect) gets one yard around the whole block: each side is
+// ceil(length / 5) runs spaced evenly (a 10 m side is two runs at 5 m, as for one cell); a side 20 m or more
+// leaves two runs out for the gap, a shorter one leaves one.
 export function yardPlan(cell) {
   const i = CELL.inset;
   const a = { x0: cell.x0 + i, z0: cell.z0 + i, x1: cell.x1 - i, z1: cell.z1 - i };
-  const L = CELL.fence;
   const sides = {
     south: { from: [a.x0, a.z0], dir: [1, 0] },
     east: { from: [a.x1, a.z0], dir: [0, 1] },
@@ -168,14 +177,18 @@ export function yardPlan(cell) {
   const runs = [];
   let signAt = null;
   for (const [name, s] of Object.entries(sides)) {
-    for (let k = 0; k < 2; k++) {
+    const len = Math.abs(s.dir[0]) ? a.x1 - a.x0 : a.z1 - a.z0;
+    const n = Math.max(2, Math.ceil(len / CELL.fence - 1e-9));
+    const L = len / n;
+    const open = name === gap.side ? (len >= 20 ? 2 : 1) : 0;
+    for (let k = 0; k < n; k++) {
       const at = [s.from[0] + s.dir[0] * L * k, s.from[1] + s.dir[1] * L * k];
-      if (name === gap.side && k === 1) {
-        // The open half: the sign stands just outside its far end, clear of the opening.
-        const end = [s.from[0] + s.dir[0] * L * 2, s.from[1] + s.dir[1] * L * 2];
+      if (k === n - open) {
+        // The open end: the sign stands just outside its far end, clear of the opening.
+        const end = [s.from[0] + s.dir[0] * len, s.from[1] + s.dir[1] * len];
         signAt = [end[0] - s.dir[0] * 0.6 + gap.out[0] * 0.8, end[1] - s.dir[1] * 0.6 + gap.out[1] * 0.8];
-        continue;
       }
+      if (k >= n - open) continue;
       runs.push({ at, dir: s.dir });
     }
   }
@@ -186,7 +199,8 @@ export function yardPlan(cell) {
 // (row 0 at the back), facing the gap. Returns the two end points and the compass word.
 export function rowLine(cell, k) {
   const { gap, yard } = yardPlan(cell);
-  const depth = 7.5 - 2.5 * k; // from the gap side, inside a 10 m yard
+  const across = gap.side === "north" || gap.side === "south" ? yard.z1 - yard.z0 : yard.x1 - yard.x0;
+  const depth = across - 2.5 - 2.5 * k; // from the gap side: 7.5 m for the first row of a 10 m yard
   if (k < 0 || depth < 1.5) return null;
   const edge = 2; // keep row ends 2 m off the side fences
   if (gap.side === "north" || gap.side === "south") {
@@ -218,9 +232,153 @@ export function readCells(root) {
 
 // The look target of a claimed cell: the centre of its yard, seen from the gap side.
 export function lookArea(entry) {
-  const p = parseCellId(entry.cell);
-  if (!p) return null;
-  const c = { ...cellBounds(p.col, p.row) };
+  // The frame claims the whole lattice: its picture is the gate end, the map board seen from the spawn.
+  if (isFrameClaim(entry)) return { name: "grid-frame", x: 74, y: 0, z: 100, radius: 22, front: 0 };
+  const c = claimRect(entry);
+  if (!c) return null;
   const front = { north: 0, east: 90, south: 180, west: 270 }[gapSide(c).side];
-  return { name: `grid-${entry.slug}`, x: (c.x0 + c.x1) / 2, y: 0, z: (c.z0 + c.z1) / 2, radius: 8, front };
+  return { name: `grid-${entry.slug}`, x: (c.x0 + c.x1) / 2, y: 0, z: (c.z0 + c.z1) / 2, radius: 8 * Math.max(c.w, c.h), front };
+}
+
+// The claims origin/main holds, read from git, so a second worktree sees a cell the first one took
+// after this branch was cut (every worktree has its own copy of tools/grid/cells/). Fetches
+// origin/main first (bounded to 20 s) unless { fetch: false }. A failed fetch is not fatal: it is
+// `note`, and the claims come from the last origin/main this clone has; no origin/main is no claims.
+export function mainClaims(root, { fetch = true, ref = "origin/main" } = {}) {
+  const git = (args, timeout = 20000) => spawnSync("git", args, { cwd: root, encoding: "utf8", timeout });
+  let note = "";
+  if (fetch) {
+    const f = git(["fetch", "--quiet", "origin", "main"]);
+    if (f.status !== 0) note = `could not fetch origin/main (${String(f.stderr || f.error?.message || "timed out").trim().split("\n")[0]}); using the last one this clone has`;
+  }
+  const ls = git(["ls-tree", "--name-only", "-r", ref, "--", `${CELLS_DIR}/`]);
+  if (ls.status !== 0) return { claims: [], note: note || `no ${ref} here; claims on main were not checked` };
+  const claims = [];
+  for (const file of ls.stdout.split(/\r?\n/).filter((f) => f.endsWith(".json"))) {
+    const show = git(["show", `${ref}:${file}`]);
+    if (show.status !== 0) continue;
+    try {
+      claims.push({ file, ...JSON.parse(show.stdout) });
+    } catch (e) {
+      claims.push({ file, error: String(e.message || e) });
+    }
+  }
+  return { claims, note };
+}
+
+// ------------------------------------------------------------------ claims in sibling worktrees
+
+// A claim still uncommitted in another local worktree (`?? tools/grid/cells/<slug>.json`) is on no
+// remote and in no PR, so neither origin/main nor `openPrClaims` sees it (ws/police-station-kit and
+// ws/building-bank both took c3r1 for a 2x2, 2026-11-16). `git worktree list --porcelain` names every
+// worktree of this clone with no network; each one's tools/grid/cells/*.json is read straight from
+// disk. { claims: [{ file, slug, cell, span?, worktree, branch }], note }.
+//
+// Fail soft and fast: a missing or locked folder, an unreadable file or no git is skipped (a note only
+// when git itself fails). This tree is left out; its own claims are read as `local`. `run(cmd, args)`
+// returns spawnSync's shape (the test seam).
+const canon = (p) => {
+  let r = resolve(p);
+  try {
+    // .native expands Windows 8.3 short names (RUNNER~1 in CI temp), which git prints in long form
+    r = realpathSync.native(r);
+  } catch {
+    // a missing folder keeps its resolved name
+  }
+  return process.platform === "win32" ? r.toLowerCase() : r;
+};
+const samePath = (a, b) => canon(a) === canon(b);
+
+export function siblingWorktrees(root, { run } = {}) {
+  const exec = run ?? ((cmd, args) => spawnSync(cmd, args, { cwd: root, encoding: "utf8", timeout: 10000 }));
+  const ls = exec("git", ["worktree", "list", "--porcelain"]);
+  if (!ls || ls.status !== 0) return { trees: [], note: `could not list the worktrees (${String(ls?.stderr || ls?.error?.message || "git failed").trim().split("\n")[0]}); claims in sibling worktrees were not checked` };
+  const trees = [];
+  let cur = null;
+  for (const line of String(ls.stdout).split(/\r?\n/)) {
+    if (line.startsWith("worktree ")) {
+      cur = { path: line.slice(9).trim(), branch: "" };
+      trees.push(cur);
+    } else if (cur && line.startsWith("branch ")) cur.branch = line.slice(7).trim().replace(/^refs\/heads\//, "");
+    else if (cur && (line === "bare" || line.startsWith("prunable"))) cur.skip = true;
+  }
+  return { trees: trees.filter((t) => !t.skip && !samePath(t.path, root)), note: "" };
+}
+
+export function worktreeClaims(root, { run } = {}) {
+  const { trees, note } = siblingWorktrees(root, { run });
+  const claims = [];
+  for (const t of trees) {
+    const dir = join(t.path, CELLS_DIR);
+    let files;
+    try {
+      files = readdirSync(dir).filter((f) => f.endsWith(".json")).sort();
+    } catch {
+      continue; // a pruned, locked or cell-less worktree
+    }
+    for (const f of files) {
+      try {
+        const j = JSON.parse(readFileSync(join(dir, f), "utf8"));
+        if (j.slug && j.cell) claims.push({ file: `${CELLS_DIR}/${f}`, slug: j.slug, cell: j.cell, ...(j.span ? { span: j.span } : {}), worktree: basename(t.path), branch: t.branch });
+      } catch {
+        // unreadable or half-written: validate-world-zones reports it in that worktree
+      }
+    }
+  }
+  return { claims, note };
+}
+
+// ------------------------------------------------------------------ claims in flight (open PRs)
+
+// A PR's claim is invisible to origin/main until it merges, so two slices open at once can each take a
+// free-looking cell (#2014 `jobs` and #2016 `shooting-range` both took c0r6, 2026-11-16). This reads
+// the claim files of every OPEN PR from GitHub: one `gh pr list --json files` call, then one raw read
+// per cell file a PR touches. { claims: [{ file, slug, cell, pr, branch }], note, cached }.
+//
+// Fail soft: no `gh`, no token or an unreadable answer is `note` and no claims, never an error.
+// The answer is cached for `ttlMs` (default 60 s) in the OS temp dir so a burst of `grid place` and
+// `grid list` calls is one round of API calls. `exclude.branch` leaves out the caller's own PR;
+// `run(cmd, args)` returns spawnSync's shape and is the test seam (selftest stubs it).
+export const PR_CLAIMS_TTL_MS = 60000;
+const defaultPrCache = () => join(tmpdir(), "lf-grid-open-pr-claims.json");
+
+export function openPrClaims(root, { run, cacheFile = defaultPrCache(), ttlMs = PR_CLAIMS_TTL_MS, now = Date.now, exclude = {} } = {}) {
+  const exec = run ?? ((cmd, args) => spawnSync(cmd, args, { cwd: root, encoding: "utf8", timeout: 30000, maxBuffer: 64 * 1024 * 1024 }));
+  const keep = (claims) => claims.filter((c) => !(exclude.branch && c.branch === exclude.branch));
+  try {
+    const hit = JSON.parse(readFileSync(cacheFile, "utf8"));
+    if (cacheFile && now() - hit.at < ttlMs && Array.isArray(hit.claims)) return { claims: keep(hit.claims), note: "", cached: true };
+  } catch {
+    // no cache, or an unreadable one: ask GitHub
+  }
+  const fail = (why) => ({ claims: [], note: `could not read the claims of open PRs (${why}); cells claimed in flight were not checked`, cached: false });
+  const ls = exec("gh", ["pr", "list", "--state", "open", "--limit", "200", "--json", "number,headRefName,headRefOid,files"]);
+  if (!ls || ls.status !== 0) return fail(String(ls?.stderr || ls?.error?.message || "gh failed").trim().split("\n")[0]);
+  let prs;
+  try {
+    prs = JSON.parse(ls.stdout);
+  } catch (e) {
+    return fail(`gh answered with ${String(e.message).slice(0, 60)}`);
+  }
+  const claims = [];
+  for (const pr of Array.isArray(prs) ? prs : []) {
+    for (const f of pr.files ?? []) {
+      const path = String(f.path ?? "");
+      if (!path.startsWith(`${CELLS_DIR}/`) || !path.endsWith(".json")) continue;
+      const raw = exec("gh", ["api", "-H", "Accept: application/vnd.github.raw", `repos/{owner}/{repo}/contents/${path}?ref=${pr.headRefOid || pr.headRefName}`]);
+      if (!raw || raw.status !== 0) continue; // the PR deletes the file (grid free), or the read failed
+      try {
+        const j = JSON.parse(raw.stdout);
+        if (j.slug && j.cell) claims.push({ file: path, slug: j.slug, cell: j.cell, ...(j.span ? { span: j.span } : {}), pr: pr.number, branch: pr.headRefName });
+      } catch {
+        // not a claim file we can read; validate-world-zones reports it on that PR
+      }
+    }
+  }
+  try {
+    writeFileSync(cacheFile, JSON.stringify({ at: now(), claims }));
+  } catch {
+    // an unwritable temp dir only costs the cache
+  }
+  return { claims: keep(claims), note: "", cached: false };
 }

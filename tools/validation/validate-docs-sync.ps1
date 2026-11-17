@@ -54,8 +54,9 @@ if ($featureFiles.Count -eq 0) {
   exit 0
 }
 
-if (-not $changed.ContainsKey('docs/features.md')) {
-  Add-Warning ("feature code changed but docs/features.md not updated - refresh the affected feature's rows in the SAME change (stale rows read as live bugs): " + ($featureFiles -join ', '))
+$featuresDocChanged = @($changed.Keys | Where-Object { $_ -eq 'docs/features.md' -or $_ -like 'docs/features/*' }).Count -gt 0
+if (-not $featuresDocChanged) {
+  Add-Warning ("feature code changed but no docs/features/<area>.md updated - refresh the affected feature's rows in the SAME change (stale rows read as live bugs): " + ($featureFiles -join ', '))
 }
 
 # --- report -----------------------------------------------------------------

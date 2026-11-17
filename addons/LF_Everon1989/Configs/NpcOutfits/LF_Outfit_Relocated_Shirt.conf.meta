@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{515C7AFD4FE4524A}Configs/NpcOutfits/LF_Outfit_Relocated_Shirt.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

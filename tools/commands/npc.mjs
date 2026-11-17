@@ -50,13 +50,18 @@ export function planText(o, expected) {
   if (o.preset) lines.push(`preset ${o.preset}`);
   for (const [k, p] of o.slots) lines.push(`slot ${k} ${p}`);
   if (o.proof) for (const e of o.entities) lines.push(`snapshot ${e}`);
+  const heads = () => { for (const e of o.entities) lines.push(`expect-heads ${e} 1`); };
+  if (o.proof) heads(); // the NPC starts with its one head
   lines.push("dress");
   if (o.proof) {
     for (const e of o.entities) for (const [k, p] of expected) lines.push(`expect ${e} ${k} ${p}`);
+    heads(); // a dress must not grow another head (the editor re-initialises the entity on a write)
     lines.push("undo");
     for (const e of o.entities) lines.push(`expect-snapshot ${e}`);
+    heads();
     lines.push("redo");
     for (const e of o.entities) for (const [k, p] of expected) lines.push(`expect ${e} ${k} ${p}`);
+    heads();
   }
   if (o.save) lines.push("save");
   return lines.join("\n") + "\n";

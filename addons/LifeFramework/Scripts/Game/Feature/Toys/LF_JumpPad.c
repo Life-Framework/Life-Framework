@@ -24,9 +24,63 @@
 //! Jump pad. Entering applies an upward velocity once. Leaving clears that enter
 //! so the next entry can launch again. A disabled pad applies the zero vector.
 //------------------------------------------------------------------------------------------------
+//! The visitors inside one pad, by entity key: a small token for each (what LF_JumpPad.AcceptEnter
+//! counts), kept only while the visitor stands on the pad. A visitor that leaves is forgotten, so the
+//! list never outgrows the people on the pad (#2406).
+class LF_JumpPadSeen
+{
+	protected ref array<string> m_aKeys = {};
+	protected ref array<int> m_aTokens = {};
+	protected int m_iNextToken = 1;
+
+	//------------------------------------------------------------------------------------------------
+	//! The visitor's token (above 0). `create` makes one for a new visitor; without it a stranger is 0.
+	int TokenFor(string key, bool create)
+	{
+		int index = m_aKeys.Find(key);
+		if (index >= 0)
+			return m_aTokens[index];
+
+		if (!create)
+			return 0;
+
+		int token = m_iNextToken;
+		m_iNextToken++;
+		m_aKeys.Insert(key);
+		m_aTokens.Insert(token);
+		return token;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The visitor left: its key and token are dropped.
+	void Forget(string key)
+	{
+		int index = m_aKeys.Find(key);
+		if (index < 0)
+			return;
+
+		m_aKeys.Remove(index);
+		m_aTokens.Remove(index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int Count()
+	{
+		return m_aKeys.Count();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class LF_JumpPad
 {
 	static const float DEFAULT_UPWARD_SPEED = 12;
+
+	//------------------------------------------------------------------------------------------------
+	//! Only a living, standing-capable body is thrown: a corpse or a downed player is not (#2406).
+	static bool CanLaunch(ECharacterLifeState state)
+	{
+		return state == ECharacterLifeState.ALIVE;
+	}
 
 	protected bool m_bEnabled = true;
 	protected float m_fUpwardSpeed = DEFAULT_UPWARD_SPEED;
@@ -126,7 +180,7 @@ class LF_JumpPadComponent : ScriptComponent
 	protected float m_fUpwardSpeed = 12;
 
 	protected ref LF_JumpPad m_Pad;
-	protected ref array<EntityID> m_aSeenIds;
+	protected ref LF_JumpPadSeen m_Seen;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -206,18 +260,10 @@ class LF_JumpPadComponent : ScriptComponent
 			return 0;
 		}
 
-		if (!m_aSeenIds)
-			m_aSeenIds = new array<EntityID>();
+		if (!m_Seen)
+			m_Seen = new LF_JumpPadSeen();
 
-		int index = m_aSeenIds.Find(id);
-		if (index >= 0)
-			return index + 1;
-
-		if (!create)
-			return 0;
-
-		m_aSeenIds.Insert(id);
-		return m_aSeenIds.Count();
+		return m_Seen.TokenFor(id.ToString(), create);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -243,6 +289,14 @@ class LF_JumpPadComponent : ScriptComponent
 		// Toys off: the pad throws nobody; it is a patch of ground (#1075).
 		if (!SwitchedOn())
 			return;
+
+		// A corpse or a downed body is not thrown (#2406).
+		CharacterControllerComponent controller = character.GetCharacterController();
+		if (controller && !LF_JumpPad.CanLaunch(controller.GetLifeState()))
+		{
+			LF_Debug.Log("JumpPad", "rejected: visitor is dead or downed");
+			return;
+		}
 
 		int token = TokenFor(ent, true);
 		if (token <= 0)
@@ -275,5 +329,6 @@ class LF_JumpPadComponent : ScriptComponent
 			return;
 
 		Pad().AcceptExit(token);
+		m_Seen.Forget(ent.GetID().ToString());
 	}
 }

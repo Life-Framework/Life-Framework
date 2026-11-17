@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{23BFE33133831ECE}Prefabs/Props/Roleplay/Roadblock/Roadblock_Barrier.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

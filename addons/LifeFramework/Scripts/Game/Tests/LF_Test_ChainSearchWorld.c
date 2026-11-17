@@ -1,6 +1,6 @@
-// red-proof: 2026-11-10 shares LF_ChainSearch.IsGood with LF_Test_ChainSearch; dropping the m_bContraband check made the flagged-goods count wrong (see that red-proof); restored; green.
+// red-proof: 2026-11-10 shares LF_ChainSearch.IsGood with LF_Test_ChainSearch; dropping the m_bContraband check made the flagged-goods count wrong (see that red-proof); restored; green. 2026-11-16: #2001 made the still output the moonshine bottle, so the crate stopped being chain goods and this failed ("the crate is found as chain goods (expected 1, got 0)"); with the bottle it passes.
 // tier: WORLD
-//! Officer search for chain goods (#419), against a real inventory: the contraband crate in a
+//! Officer search for chain goods (#419), against a real inventory: the moonshine bottle (the still makes it since #2001) in a
 //! character's inventory is collected as flagged goods, an ordinary item is not. Deletes what it spawns.
 class LF_Test_ChainSearchWorld : LF_Test
 {
@@ -28,10 +28,10 @@ class LF_Test_ChainSearchWorld : LF_Test
 		LF_ChainSearch.Collect(character, goods, units, load);
 		ctx.Equal(0, goods.Count(), "an ordinary item is not flagged");
 
-		ctx.Equal(1, LF_InventoryUtils.AddAmount(character, LF_Contraband.ITEM, 1), "the contraband crate lands in the inventory");
+		ctx.Equal(1, LF_InventoryUtils.AddAmount(character, LF_Test_AlcoholDrinks.MOONSHINE, 1), "the moonshine bottle lands in the inventory");
 		LF_ChainSearch.Collect(character, goods, units, load);
-		ctx.Equal(1, goods.Count(), "the crate is found as chain goods");
-		ctx.True(load >= 1, "the crate has weight");
+		ctx.Equal(1, goods.Count(), "the moonshine bottle is found as chain goods");
+		ctx.True(load >= 1, "the bottle has weight");
 
 		LF_TestCharacterFixture.Delete(character);
 		LF_ChainCatalog.ResetStatics();

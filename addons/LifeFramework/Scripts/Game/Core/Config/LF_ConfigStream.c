@@ -288,11 +288,18 @@ class LF_ConfigStream
 
 		// The clerk's fee for a replacement identity card (server).
 		LF_PhotoIdCardConfig.Reload();
+
+		// How long a locked house's open door stays open (#2505, server): the next door that opens reads it.
+		LF_HousesConfig.Reload();
 		LF_QuizConfig.Reload();
 		LF_QuizBank.Reload();
 
 		// Disconnect rules (#691, server).
 		LF_DisconnectConfig.Reload();
+
+		// Rejoin at the saved spot and the new-character grace (#1779, server).
+		LF_RespawnConfig.Reload();
+		LF_GraceConfig.ResetStatics();
 
 		// Which systems run (#960): the server reads the owner file again, a client takes the stream's.
 		LF_Systems.Reload();
@@ -365,3 +372,20 @@ class LF_ConfigStream
 		s_bReceived = false;
 	}
 };
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ConfigStream's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_ConfigStream_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ConfigStream_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_ConfigStream";
+	}
+
+	override void Apply()
+	{
+		LF_ConfigStream.Reset();
+	}
+}

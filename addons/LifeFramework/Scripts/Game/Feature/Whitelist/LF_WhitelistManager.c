@@ -68,6 +68,17 @@ class LF_WhitelistManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: the lists, the load-failed latch, the counters and a test save path all go; the file stays.
+	static void ResetStatics()
+	{
+		Reset();
+		s_sSavePath = "";
+		s_iMissingFileReports = 0;
+		s_iFactionRefusals = 0;
+		s_bLoadFailed = false;
+	}
+
+//------------------------------------------------------------------------------------------------
 	//! Drop the in-memory lists. The file stays. The next Load is a restart.
 	static void Reset()
 	{
@@ -80,6 +91,10 @@ class LF_WhitelistManager
 	static bool IsFactionRestricted(LF_EFactionType factionType)
 	{
 		if (!LF_Systems.IsEnabled(SYSTEM))
+			return false;
+
+		// Testing bypass (LF_JobGates): nothing is restricted, so the roster is never asked.
+		if (LF_JobGates.Unlocked())
 			return false;
 
 		switch (factionType)
@@ -98,6 +113,10 @@ class LF_WhitelistManager
 	static bool IsJobRestricted(LF_EJobType jobType)
 	{
 		if (!LF_Systems.IsEnabled(SYSTEM))
+			return false;
+
+		// Testing bypass (LF_JobGates): see IsFactionRestricted.
+		if (LF_JobGates.Unlocked())
 			return false;
 
 		// Solo POLICE requiere whitelist
@@ -227,8 +246,10 @@ class LF_WhitelistManager
 	//! Remove player from faction whitelist (admin command)
 	static bool RemoveFactionWhitelist(string playerUID, LF_EFactionType factionType)
 	{
+		// Load first: a remove before anything read the file (a trial expiring right after a restart)
+		// found no cache, returned false, and the officer stayed in the file.
 		if (!s_mFactionWhitelist)
-			return false;
+			Initialize();
 		
 		array<LF_EFactionType> playerFactions = s_mFactionWhitelist.Get(playerUID);
 		if (!playerFactions)
@@ -248,8 +269,10 @@ class LF_WhitelistManager
 	//! Remove player from job whitelist (admin command)
 	static bool RemoveJobWhitelist(string playerUID, LF_EJobType jobType)
 	{
+		// Load first: a remove before anything read the file (a trial expiring right after a restart)
+		// found no cache, returned false, and the officer stayed in the file.
 		if (!s_mJobWhitelist)
-			return false;
+			Initialize();
 		
 		array<LF_EJobType> playerJobs = s_mJobWhitelist.Get(playerUID);
 		if (!playerJobs)
@@ -592,5 +615,22 @@ class LF_WhitelistManager
 		}
 
 		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_WhitelistManager's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_WhitelistManager_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_WhitelistManager_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_WhitelistManager";
+	}
+
+	override void Apply()
+	{
+		LF_WhitelistManager.ResetStatics();
 	}
 }

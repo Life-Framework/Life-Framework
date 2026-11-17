@@ -1,7 +1,8 @@
 // tools\cli lead: the lead agent's one-screen dispatch view, so it stops gathering state with ad-hoc commands.
 //
 //   tools\cli lead [--prs N]          milestones, PRs, worktrees, pool, ship queue, accounts, slices (about 40 lines, under 15 s)
-//   tools\cli lead prune-safe [--dry-run]   prune only worktrees whose PR is MERGED on GitHub, clean, idle and unlocked
+//   tools\cli lead prune-safe [--dry-run] [--oldest N]   prune only worktrees whose PR is MERGED on GitHub, clean, idle and unlocked
+//                                     (--oldest N: only the N least recently active of those; the rules do not change)
 //
 // The sections run in parallel, each with its own timeout; one that fails or times out prints one line and the rest
 // still print. The pool section reads each machine in its own process, in parallel, with a per-machine timeout
@@ -15,12 +16,13 @@ import { basename, dirname, join, normalize } from "node:path";
 import * as wt from "../wt.mjs";
 import { predictConflicts } from "../prs.mjs";
 import {
-  classifyWorktree, conflictHint, gatherPool, isConflicting, milestoneCounts, milestoneLine, poolLines,
+  classifyWorktree, conflictHint, gatherPool, isConflicting, milestoneCounts, milestoneLine, newestActivityMs, poolLines,
   prLine, shipQueueLine, sortPrs, timeoutHealth, unregisteredDirs, worktreeSummary,
 } from "../lib/lead.mjs";
 import { readQueue } from "../lib/ship-queue.mjs";
+import { diskLines, oldestFirst, parseOldest } from "../lib/disk-guard.mjs";
 
-export const help = "lead [--prs N] | lead prune-safe [--dry-run]   one-screen dispatch view: milestones, PRs, worktrees, pool, ship queue, accounts, slices";
+export const help = "lead [--prs N] | lead prune-safe [--dry-run] [--oldest N]   one-screen dispatch view: milestones, PRs, worktrees, pool, ship queue, accounts, slices";
 
 
 // ---------------------------------------------------------------- process helpers
@@ -142,7 +144,9 @@ function childrenOf(dir) {
 }
 
 // Newest agent change in one worktree: its last HEAD reflog entry, files git reports changed or untracked,
-// tmp/ and the session logs. Shallow, and never follows a junction (same rule as prs.mjs lastActivity).
+// tmp/ (and the files in tmp/logs, which grow without touching their folder) and the session logs. Shallow, never
+// follows a junction (same rule as prs.mjs lastActivity). The registry marker tmp/wt.json is bookkeeping, not
+// activity (newestActivityMs drops it).
 async function inspect(e) {
   const exists = existsSync(e.path);
   const isGit = exists && existsSync(join(e.path, ".git"));
@@ -162,10 +166,9 @@ async function inspect(e) {
     if (f.includes(" -> ")) f = f.split(" -> ")[1];
     paths.push(join(e.path, f.replace(/^"|"$/g, "")));
   }
-  paths.push(...childrenOf(join(e.path, "tmp")));
+  paths.push(...childrenOf(join(e.path, "tmp")), ...childrenOf(join(e.path, "tmp", "logs")));
   for (const scope of childrenOf(join(e.path, "server", "profile"))) paths.push(...childrenOf(join(scope, "logs")));
-  const rlMs = Number(rl.out.trim()) * 1000;
-  const lastMs = Math.max(Number.isFinite(rlMs) ? rlMs : 0, ...paths.map(mtimeOf), 0);
+  const lastMs = newestActivityMs(Number(rl.out.trim()) * 1000, paths.map((p) => ({ path: p, mtimeMs: mtimeOf(p) })));
   return { ...base, dirty, lastMs };
 }
 
@@ -314,6 +317,9 @@ function poolProbe(root) {
 
 const envMs = (name, dflt) => (/^[0-9]+$/.test(process.env[name] ?? "") ? Number(process.env[name]) : dflt);
 
+// The machines' last snapshots, for the DISK block (poolSection fills it; each snapshot carries the machine's free disk).
+let poolSnaps = [];
+
 async function poolSection(root) {
   const pool = await import("../remote/pool.mjs");
   const machines = pool.loadMachines(root);
@@ -326,6 +332,7 @@ async function poolSection(root) {
     budgetMs,
     fallback: (m) => timeoutHealth(pool.lastHealth(root, m.name), Date.now(), pool.RECENT_OK_MS),
   });
+  poolSnaps = g.snaps;
   return poolLines({ snaps: g.snaps, queue: pool.liveTickets(root).length, exceeded: g.exceeded, budgetMs, elapsedMs: g.elapsedMs });
 }
 
@@ -365,6 +372,10 @@ async function accountsSection(root) {
   return ["ACCOUNTS", ...lines.slice(0, 4).map((l) => `  ${l}`)];
 }
 
+async function usageSection(root) {
+  return (await import("../agents/usage-plan.mjs")).leadUsageLines(root);
+}
+
 async function slicesSection(root) {
   if (!existsSync(join(root, "tools", "commands", "slice.mjs"))) return ["SLICES skipped: `tools\\cli slice list --ready` is not on this branch yet"];
   const r = await sh(process.execPath, [join(root, "tools", "cli.mjs"), "slice", "list", "--ready"], { cwd: root, timeout: 12000 });
@@ -379,6 +390,8 @@ async function pruneSafe(root, args) {
   const gh = wt.ghBin();
   if (!gh) { console.log("FAIL  GitHub CLI not found"); return 1; }
   const dry = args.includes("--dry-run");
+  const oldest = parseOldest(args);
+  if (Number.isNaN(oldest)) { console.log("FAIL  --oldest needs a positive number, e.g. --oldest 20"); return 1; }
   let g;
   try {
     wt.git(root, ["fetch", "origin", "--prune", "--quiet"]);
@@ -387,7 +400,10 @@ async function pruneSafe(root, args) {
     console.log(`WARN  cannot list merged PRs (${e.message}); pruning nothing. Ancestry alone never qualifies a worktree.`);
     return 1;
   }
-  const take = g.rows.filter((r) => r.cls === "prunable");
+  // Same rules for every row (MERGED PR, clean, idle, unlocked); --oldest N only caps how many go, least recently active first.
+  const all = oldestFirst(g.rows.filter((r) => r.cls === "prunable"), null);
+  const take = oldest === null ? all : all.slice(0, oldest);
+  if (oldest !== null && all.length > take.length) console.log(`  --oldest ${oldest}: taking ${take.length} of ${all.length} that qualify`);
   for (const r of g.rows.filter((x) => x.cls === "merged-kept")) console.log(`  kept    ${r.slug}: ${r.via}, but ${r.why}`);
   if (!take.length) { console.log("prune-safe: nothing qualifies (needs a MERGED PR on GitHub, clean, idle 30 min, unlocked)"); return 0; }
   let failed = 0;
@@ -433,6 +449,7 @@ export async function main(args, { root }) {
     section("PRS", 13000, () => needGh("PRS", () => prsSection(gh, root, maxPrs))),
     section("WORKTREES", 14000, () => needGh("WORKTREES", async () => worktreeLines(await gatherWorktrees(root, gh)))),
     section("POOL", 13500, () => poolSection(root)),
+    section("USAGE", 13000, () => usageSection(root)),
     section("SHIP QUEUE", 5000, () => shipSection(root)),
     section("MAIN GUARD", 3000, () => guardSection(root)),
     section("ACCOUNTS", 13000, () => accountsSection(root)),
@@ -440,21 +457,25 @@ export async function main(args, { root }) {
   ]);
   // Disk: its own process (the walk is synchronous), cached sizes refreshed inside a deadline; appended to the worktree block.
   const diskP = sh(process.execPath, [join(root, "tools", "cli.mjs"), "lead", "--disk-worker"], { cwd: root, timeout: 12500 });
-  const [ms, prs, wts, pool, ship, guard, acc, sl] = await sections;
+  const [ms, prs, wts, pool, usage, ship, guard, acc, sl] = await sections;
   let diskLine;
   try {
     const dr = await diskP;
     const d = JSON.parse(dr.out.trim().split("\n").pop());
-    const free = wt.freeDiskGbAt(wt.mainRootOf(root));
     const partial = d.sized < d.total;
     const used = partial ? `~${d.estGb.toFixed(0)}` : d.gb.toFixed(1);
     const note = partial ? ` (${d.sized}/${d.total} measured, the rest next run)` : "";
-    diskLine = `  disk: worktrees ${used} GB${note}, ${free === null ? "?" : free.toFixed(0)} GB free on C:`;
+    diskLine = `  disk: worktrees ${used} GB${note}`;
   } catch {
     diskLine = "  disk: unavailable (size walk failed)";
   }
   wts.push(diskLine);
-  const out = [...ms, ...prs, ...wts, ...pool, ...ship, ...guard, ...acc, ...sl];
+  // DISK: free space on this PC and on each pool machine, a warning under 30 GB (`wt new` refuses under 10 GB).
+  const disk = diskLines([
+    { name: "this PC", freeGb: wt.freeDiskGbAt(wt.mainRootOf(root)) },
+    ...poolSnaps.filter((m) => m.via !== "local").map((m) => ({ name: m.name, freeGb: Number.isFinite(m.diskGb) ? m.diskGb : null, note: !m.health || m.health === "up" ? undefined : m.health })),
+  ]);
+  const out = [...ms, ...prs, ...wts, ...disk, ...pool, ...usage, ...ship, ...guard, ...acc, ...sl];
   out.push(`lead ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   console.log(out.join("\n"));
   return 0;

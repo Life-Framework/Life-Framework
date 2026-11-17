@@ -1,0 +1,24 @@
+{
+  "rule": "cluster",
+  "version": 1,
+  "about": "The map POI layer's min-zoom and cluster rules (docs/architecture/everon-map.md section 1, Rendering), in the loader format of tools/map/rules/index.mjs: cases = [{ name, input, expect }]. Run by LF_Test_MapPlacesLayout (Enforce, LF_MapClusterRules.Evaluate) and tools/validation/map-cluster-selftest.mjs (node, evaluate() of tools/map/rules/cluster.mjs): one table, so the two cannot drift. Zoom: the view is 12800 m / 2^zoom wide (zoom 0 is the island, the emulator's --zoom). input: op minzoom|mode|cluster; zoom; minZoom (op minzoom); points (op cluster): comma list of id:x:z:minZoom in place order. Below zoom 4 the layer buckets the shown points into a grid whose cell is one eighth of the view width; a cell of two or more is one cluster stamp, a cell of one stays a single icon. At zoom 4 and closer every point is a single icon. A point whose kind min zoom is above the view zoom is dropped before the buckets. expect: show|hide (minzoom), solo|clustered (mode), or the comma list of what is drawn in first-member order (cluster): a single id, or a cluster as its member ids joined with +.",
+  "cases": [
+    { "name": "a kind shows at exactly its min zoom", "input": { "op": "minzoom", "zoom": 3, "minZoom": 3, "points": "" }, "expect": "show" },
+    { "name": "a kind hides below its min zoom", "input": { "op": "minzoom", "zoom": 2.5, "minZoom": 3, "points": "" }, "expect": "hide" },
+    { "name": "min zoom 0 shows at the island view", "input": { "op": "minzoom", "zoom": 0, "minZoom": 0, "points": "" }, "expect": "show" },
+    { "name": "a closer zoom shows a kind with a higher min zoom", "input": { "op": "minzoom", "zoom": 5, "minZoom": 4, "points": "" }, "expect": "show" },
+    { "name": "just under the solo zoom still clusters", "input": { "op": "mode", "zoom": 3.99, "minZoom": 0, "points": "" }, "expect": "clustered" },
+    { "name": "the solo zoom draws every point alone", "input": { "op": "mode", "zoom": 4, "minZoom": 0, "points": "" }, "expect": "solo" },
+    { "name": "the island view clusters", "input": { "op": "mode", "zoom": 0, "minZoom": 0, "points": "" }, "expect": "clustered" },
+    { "name": "no points draw nothing", "input": { "op": "cluster", "zoom": 3, "minZoom": 0, "points": "" }, "expect": "" },
+    { "name": "two points in one cell are one cluster, a far one stays single", "input": { "op": "cluster", "zoom": 3, "minZoom": 0, "points": "a:10:10:3,b:60:90:3,c:210:10:3" }, "expect": "a+b,c" },
+    { "name": "the same points at the solo zoom are three singles", "input": { "op": "cluster", "zoom": 4, "minZoom": 0, "points": "a:10:10:3,b:60:90:3,c:210:10:3" }, "expect": "a,b,c" },
+    { "name": "three points in a cell keep place order inside the stamp", "input": { "op": "cluster", "zoom": 3, "minZoom": 0, "points": "c:10:10:3,a:20:20:3,b:30:30:3" }, "expect": "c+a+b" },
+    { "name": "a point below its min zoom is dropped and leaves a single", "input": { "op": "cluster", "zoom": 3, "minZoom": 0, "points": "a:10:10:3,b:20:20:5" }, "expect": "a" },
+    { "name": "every point dropped by min zoom draws nothing", "input": { "op": "cluster", "zoom": 2, "minZoom": 0, "points": "a:10:10:3,b:20:20:4" }, "expect": "" },
+    { "name": "a point beside a cell edge is its own cell", "input": { "op": "cluster", "zoom": 3, "minZoom": 0, "points": "a:199:10:3,b:201:10:3" }, "expect": "a,b" },
+    { "name": "negative coordinates bucket by floor", "input": { "op": "cluster", "zoom": 3, "minZoom": 0, "points": "a:-10:-10:3,b:-50:-50:3,c:10:10:3" }, "expect": "a+b,c" },
+    { "name": "the island view merges a whole town", "input": { "op": "cluster", "zoom": 0, "minZoom": 0, "points": "a:4400:10700:0,b:4600:10800:0,c:4700:10900:0,d:7000:3000:0" }, "expect": "a+b+c,d" },
+    { "name": "a cluster at a closer zoom splits back to the singles", "input": { "op": "cluster", "zoom": 3, "minZoom": 0, "points": "a:10:10:3,b:250:10:3" }, "expect": "a,b" }
+  ]
+}
