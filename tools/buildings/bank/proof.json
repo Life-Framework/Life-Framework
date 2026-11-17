@@ -234,6 +234,14 @@
       "why": "the dev gate hands over a drill, standing in for the fence's sale"
     },
     {
+      "do": {
+        "verb": "hold",
+        "item": "LF_Drill"
+      },
+      "wait": 3500,
+      "why": "the drill works only from the hands (LF_HandTool)"
+    },
+    {
       "shot": "robbery_start",
       "look": [
         3.9,
@@ -241,9 +249,9 @@
         -0.7
       ],
       "from": [
-        -1.4,
+        -0.3,
         -0.4,
-        1.4
+        1.1
       ]
     },
     {
@@ -262,9 +270,9 @@
         -0.7
       ],
       "from": [
-        -1.4,
+        -0.3,
         -0.4,
-        1.4
+        1.1
       ],
       "wait": 2000
     },
