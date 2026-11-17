@@ -14,6 +14,21 @@ class LF_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 	ref array<ref LF_Whitelist> m_aWhitelists;
 
 	//------------------------------------------------------------------------------------------------
+	//! Server start: each configured legacy list moves into the roster once (#2575).
+	override void OnGameModeStart()
+	{
+		super.OnGameModeStart();
+		if (!GetGameMode() || !GetGameMode().IsMaster() || !m_aWhitelists)
+			return;
+
+		foreach (LF_Whitelist whitelist : m_aWhitelists)
+		{
+			if (whitelist)
+				LF_WhitelistLegacyMigration.Migrate(whitelist.m_eType, whitelist.m_sWhitelistFilePath);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Join gate: when a CONNECT whitelist is configured, the player must be on it.
 	override void OnPlayerAuditSuccess(int playerId)
 	{
@@ -115,9 +130,15 @@ class LF_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: persist the UUID, then enable the flag on the player if they are online.
+	//! Server: save the UUID on the roster, then enable the flag on the player if they are online.
+	//! The legacy file is no longer written (#2575).
 	void EnableWhitelistOnPlayer(string uuid, LF_WhitelistType whitelistType)
 	{
+		if (whitelistType == LF_WhitelistType.POLICE)
+			LF_WhitelistManager.AddFactionWhitelist(uuid, LF_EFactionType.POLICE);
+		else
+			LF_Debug.Warn("Whitelist", string.Format("grant of %1 to %2 is session only: that type has no roster", typename.EnumToString(LF_WhitelistType, whitelistType), uuid));
+
 		AddUUIDToWhitelist(uuid, whitelistType);
 
 		IEntity targetPlayer = GetPlayerByUID(uuid);
@@ -148,6 +169,9 @@ class LF_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 			Print(string.Format("[%1-WHITELIST] Trying to remove a UUID from a whitelist that is not active in the gamemode", typename.EnumToString(LF_WhitelistType, whitelistType)), LogLevel.WARNING);
 			return;
 		}
+
+		if (whitelistType == LF_WhitelistType.POLICE)
+			LF_WhitelistManager.RemoveFactionWhitelist(uuid, LF_EFactionType.POLICE);
 
 		RemoveUUIDFromWhitelist(uuid, whitelistType);
 
