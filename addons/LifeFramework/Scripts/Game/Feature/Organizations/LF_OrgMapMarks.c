@@ -191,8 +191,9 @@ class LF_OrgMapMarks
 
 	//------------------------------------------------------------------------------------------------
 	//! Server load: replaces every mark with \rows and re-puts them into LF_MapShares (which saves
-	//! nothing). Idempotent. Skips a row with no organization or one that no longer exists (organizations
-	//! load first), a bad serial, a repeated key, or one past the cap. Null clears. \return how many rows were applied.
+	//! nothing). Idempotent. Skips a row with no organization id, a bad serial, a repeated key, or one
+	//! past the cap. Null clears. A row whose organization is not registered right now is kept: a whole-store
+	//! re-apply may run while the register is being replaced, and an ORG row with no members reaches nobody. \return how many rows were applied.
 	static int ApplyAll(array<ref LF_OrgMapMarkRow> rows)
 	{
 		if (s_aRows)
@@ -213,12 +214,6 @@ class LF_OrgMapMarks
 			if (!row || row.m_sOrgId.IsEmpty() || row.m_iSerial <= 0)
 			{
 				LF_Debug.Warn(FEATURE, "load skipped an org mark with no organization or serial");
-				continue;
-			}
-
-			if (!LF_OrganizationManager.Get(row.m_sOrgId))
-			{
-				LF_Debug.Warn(FEATURE, string.Format("load dropped mark %1:%2: no such organization", row.m_sOrgId, row.m_iSerial));
 				continue;
 			}
 

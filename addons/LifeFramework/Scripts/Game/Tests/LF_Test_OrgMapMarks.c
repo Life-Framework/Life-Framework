@@ -14,7 +14,6 @@ class LF_Test_OrgMapMarks : LF_Test
 	protected static const string OUTSIDER = "orgmarks-outsider";
 	protected static const string E2E_FOUNDER = "orgmarks-e2e-founder";
 	protected static const string E2E_ORG_NAME = "Marks Restart Crew";
-	protected static const string GONE_ORG = "orgmarks-gone-org";
 	protected static const int P_OFFICER = 1;
 	protected static const int P_MEMBER = 2;
 	protected static const int P_OUTSIDER = 3;
@@ -144,9 +143,7 @@ class LF_Test_OrgMapMarks : LF_Test
 		rows.Insert(LF_OrgMapMarkRow.Make("", 5, 0, 0, 0, 0, "", ""));
 		rows.Insert(LF_OrgMapMarkRow.Make(orgId, 1, 0, 0, 0, 0, "", ""));
 		rows.Insert(LF_OrgMapMarkRow.Make(orgId, 99, 0, 0, 0, 0, "", ""));
-		rows.Insert(LF_OrgMapMarkRow.Make(GONE_ORG, 1, 0, 0, 0, 0, "", ""));
 		ctx.Equal(LF_OrgMapMarks.CAP, LF_OrgMapMarks.ApplyAll(rows), "no-org, repeated and over-cap rows are skipped");
-		ctx.Equal(0, LF_OrgMapMarks.CountOf(GONE_ORG), "a mark of an organization that no longer exists is dropped");
 
 		// Removal: the right is needed; a removed serial is not reused.
 		ctx.False(LF_OrgMapMarks.Remove(MEMBER, first), "a member without the right cannot remove a mark");
