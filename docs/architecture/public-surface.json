@@ -18,6 +18,7 @@
     "LF_JobsConfig",
     "LF_LedgerConfig",
     "LF_LicencesConfig",
+    "LF_MapAreaConfig",
     "LF_MapPoiConfig",
     "LF_MedicConfig",
     "LF_MissionHeader",
