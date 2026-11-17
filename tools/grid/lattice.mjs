@@ -169,10 +169,16 @@ function signBlock(name, id, at, yaw, colour) {
 // Every entity of the frame: [{ name, x, z }] with `lines` of layer text. Pure.
 export function framePlan(states) {
   const out = [];
+  const claimAt = new Map(states.filter((s) => s.state === "claimed").map((s) => [`${s.col}_${s.row}`, s.label]));
   for (const c of states) {
-    // The west edge, in the 2 m corridor between columns: marker 1.5 m and plate 3.5 m north of the row's path.
-    const mAt = [c.x0 + 0.5, c.z0 + 1.5];
-    const pAt = [c.x0 + 0.5, c.z0 + 3.5];
+    // The west edge, in the 2 m corridor between columns: marker 1.5 m and plate 3.5 m north of the row's path. A claim
+    // spanning columns has no corridor inside it: a cell whose west neighbour is the same claim is marked on its east
+    // edge instead (for two columns, the claim's own east edge), so the signs stay out of a building that fills the
+    // claim (the bank's 17 m office stood c12r1's marker and plate in its corridor, #2278).
+    const inner = c.state === "claimed" && claimAt.get(`${c.col - 1}_${c.row}`) === c.label;
+    const edgeX = inner ? c.x1 - 0.5 : c.x0 + 0.5;
+    const mAt = [edgeX, c.z0 + 1.5];
+    const pAt = [edgeX, c.z0 + 3.5];
     out.push({ name: markerName(c.col, c.row), x: mAt[0], z: mAt[1], lines: signBlock(markerName(c.col, c.row), c.id, mAt, YAW.south, COLOURS.marker) });
     out.push({ name: plateName(c.col, c.row), x: pAt[0], z: pAt[1], lines: signBlock(plateName(c.col, c.row), c.label, pAt, YAW.south, COLOURS[c.state]) });
   }
