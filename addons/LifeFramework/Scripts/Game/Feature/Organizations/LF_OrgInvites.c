@@ -188,6 +188,38 @@ class LF_OrgHideoutLease
 		LF_Debug.Info("Organizations", string.Format("lease org=%1 hideout=%2", org.GetId(), hideoutId));
 		return true;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a character with the buy right gives the hideout lease back (#2572). Only the organization
+	//! that holds the lease may end it, and LF_Hideout.Release locks the gate and drops the held ground.
+	//! \return true when the lease is FREE now because of this call.
+	static bool Release(string characterId, string hideoutId)
+	{
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
+		if (!org)
+		{
+			LF_Debug.Warn("Organizations", string.Format("lease release refused: %1 has no organization", characterId));
+			return false;
+		}
+
+		if (!org.Allows(characterId, LF_EOrganizationPermission.BUY_UPGRADE))
+		{
+			LF_Debug.Warn("Organizations", string.Format("lease release refused: %1 lacks the rank", characterId));
+			return false;
+		}
+
+		if (StateFor(org.GetId(), hideoutId) != LF_EOrgLease.OURS)
+		{
+			LF_Debug.Warn("Organizations", string.Format("lease release refused: org=%1 does not hold %2", org.GetId(), hideoutId));
+			return false;
+		}
+
+		if (!LF_Hideout.Release(hideoutId, "given up"))
+			return false;
+
+		LF_Debug.Info("Organizations", string.Format("lease given up org=%1 hideout=%2 by %3", org.GetId(), hideoutId, characterId));
+		return true;
+	}
 }
 
 //------------------------------------------------------------------------------------------------

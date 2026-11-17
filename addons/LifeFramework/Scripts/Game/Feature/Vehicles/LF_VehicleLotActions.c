@@ -290,7 +290,7 @@ class LF_VehicleStoreAction : ScriptedUserAction
 class LF_VehicleStoreHereAction : LF_VehicleStoreAction
 {
 	//------------------------------------------------------------------------------------------------
-	//! eturn True when offered: the owner on foot, car and user sharing one garage.
+	//! \return True when offered: the owner on foot, car and user sharing one garage.
 	static bool IsOffered(bool isOwner, bool inVehicle, bool garageFound, vector garageOrigin, vector playerOrigin, vector vehicleOrigin)
 	{
 		if (!LF_Garage.ParkAllowed(isOwner, inVehicle, garageFound))

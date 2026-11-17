@@ -59,6 +59,31 @@ class LF_HeldGroundRow
 }
 
 //------------------------------------------------------------------------------------------------
+//! Idle clock of a hideout lease (#2573, "leaseidle" payload): the last real time (unix seconds) a
+//! member of the holding organization was connected. One row per leased hideout, keyed by hideout id
+//! (a place id). The limit is owner config (LF_OrgConfig.HideoutLeaseIdleDays), never saved. A later
+//! field is a new payload, never a new member.
+//------------------------------------------------------------------------------------------------
+class LF_HideoutIdleRow
+{
+	static const int VERSION = 1;
+
+	int m_iVersion;
+	string m_sHideoutId;
+	int m_iLastActive;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_HideoutIdleRow Create(string hideoutId, int lastActive)
+	{
+		LF_HideoutIdleRow row();
+		row.m_iVersion = VERSION;
+		row.m_sHideoutId = hideoutId;
+		row.m_iLastActive = lastActive;
+		return row;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class LF_HideoutState : Managed
 {
 	string m_sHideoutId;
@@ -72,6 +97,10 @@ class LF_HideoutState : Managed
 	int m_iHoldSeconds;
 	//! Banked points, 0 to LF_OrgConfig.HeldGroundMaxPoints().
 	int m_iHoldPoints;
+
+	//! Unix seconds a member of the leasing organization was last connected (#2573), saved in the
+	//! "leaseidle" payload (LF_HideoutIdleRow), not in "hideout"; 0 = no lease.
+	int m_iLastActive;
 
 	//! Runtime only, never saved: the organization this site's door is registered for as its base
 	//! (LF_Places "org_base", #2504); "" = none registered.
@@ -110,9 +139,18 @@ class LF_Hideout
 	static const float RELOCK_RADIUS_M = 40;	// lf-fixed: door safety radius, not a balance knob
 	static const int RELOCK_SWEEP_MS = 15000;	// lf-fixed: sweep period of the relock check
 
+	//! A lease idle longer than LF_OrgConfig.HideoutLeaseIdleDays() lapses (#2573); the check runs this often.
+	static const int IDLE_SWEEP_MS = 300000;	// lf-fixed: sweep period of the idle-lease check, not a balance knob
+	static const int DAY_SECONDS = 86400;	// lf-fixed: seconds in a day
+	//! A saved clock already past the limit at load means the server was down, so no member could connect:
+	//! the lease gets this much more time instead of lapsing before its members can join.
+	static const int IDLE_LOAD_GRACE_S = 86400;	// lf-fixed: one day of grace after downtime
+
 	protected static ref map<string, ref LF_HideoutState> s_mHideouts;
 	protected static string s_sLastRefusal;
 	protected static bool s_bRelockScheduled;
+	protected static bool s_bIdleScheduled;
+	protected static ref LF_HideoutEmptiedListener s_Emptied;
 
 	//! Character id of an entity no player controls (a test fixture). A player always resolves
 	//! through the account, never through this map.
@@ -124,9 +162,14 @@ class LF_Hideout
 	static void ResetStatics()
 	{
 		CancelRelockSweep();
+		CancelIdleSweep();
 		s_sLastRefusal = "";
 		s_mBoundCharacters = null;
 		s_mHideouts = null;
+		if (s_Emptied)
+			LF_EventBus.Unsubscribe(LF_OnOrganizationEmptied, s_Emptied);
+
+		s_Emptied = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -145,6 +188,7 @@ class LF_Hideout
 
 			state.m_sOrganizationId = "";
 			state.m_bLocked = true;
+			state.m_iLastActive = 0;
 			state.ResetHeldGround();
 			PushLock(state);
 		}
@@ -289,6 +333,9 @@ class LF_Hideout
 			return false;
 		}
 
+		if (state.m_sOrganizationId != organizationId || state.m_iLastActive <= 0)
+			state.m_iLastActive = System.GetUnixTime();
+
 		state.m_sOrganizationId = organizationId;
 		PushLock(state);
 		LF_Debug.Log("Hideout", string.Format("assigned hideout=%1 org=%2", hideoutId, organizationId));
@@ -299,7 +346,7 @@ class LF_Hideout
 	//! Ends a lease (server): the site has no owner, locks, and loses its held ground (#751: points
 	//! are lost when the lease lapses).
 	//! \return False when the site has no lease.
-	static bool Release(string hideoutId)
+	static bool Release(string hideoutId, string reason = "released")
 	{
 		if (!Server())
 			return false;
@@ -314,10 +361,48 @@ class LF_Hideout
 		string organizationId = state.m_sOrganizationId;
 		state.m_sOrganizationId = "";
 		state.m_bLocked = true;
+		state.m_iLastActive = 0;
 		state.ResetHeldGround();
 		PushLock(state);
-		LF_Debug.Log("Hideout", string.Format("released hideout=%1 org=%2", hideoutId, organizationId));
+		LF_Debug.Info("Hideout", string.Format("released hideout=%1 org=%2 reason=%3", hideoutId, organizationId, reason));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: an organization with no member left (LF_OnOrganizationEmptied, #2571) holds nothing:
+	//! every site it leases is released.
+	//! \return How many sites were released.
+	static int ReleaseAllOf(string organizationId, string reason)
+	{
+		if (!s_mHideouts || organizationId.IsEmpty())
+			return 0;
+
+		array<string> sites = {};
+		foreach (string hideoutId, LF_HideoutState state : s_mHideouts)
+		{
+			if (state && state.m_sOrganizationId == organizationId)
+				sites.Insert(hideoutId);
+		}
+
+		int released;
+		foreach (string site : sites)
+		{
+			if (Release(site, reason))
+				released++;
+		}
+
+		return released;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Subscribes the empty-organization release to the bus. Idempotent: the bus refuses a second
+	//! subscription of the same subscriber, and the subscriber is kept for the world's life.
+	protected static void WatchEmptiedOrganizations()
+	{
+		if (!s_Emptied)
+			s_Emptied = new LF_HideoutEmptiedListener();
+
+		LF_EventBus.Subscribe(LF_OnOrganizationEmptied, s_Emptied);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -610,6 +695,9 @@ class LF_Hideout
 			LF_HideoutState state = Ensure(record.m_sHideoutId);
 			state.m_sOrganizationId = record.m_sOrganizationId;
 			state.m_bLocked = record.m_bLocked;
+			// Every lease loads with its clock at "now"; the "leaseidle" payload (#2573) puts the saved time
+			// back. A save from before it never reaches that payload, so no lease lapses on the first boot after.
+			state.m_iLastActive = System.GetUnixTime();
 			PushLock(state);
 			if (!state.m_bLocked)
 				anyOpen = true;
@@ -633,9 +721,225 @@ class LF_Hideout
 			LF_Debug.Info("Hideout", string.Format("load released hideout=%1: the save has no lease for it", leasedId));
 			leased.m_sOrganizationId = "";
 			leased.m_bLocked = true;
+			leased.m_iLastActive = 0;
 			leased.ResetHeldGround();
 			PushLock(leased);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The "leaseidle" payload (#2573): the idle clock of every leased hideout.
+	static array<ref LF_HideoutIdleRow> ExportIdle()
+	{
+		array<ref LF_HideoutIdleRow> rows = new array<ref LF_HideoutIdleRow>();
+		if (!s_mHideouts)
+			return rows;
+
+		foreach (string hideoutId, LF_HideoutState state : s_mHideouts)
+		{
+			if (!state || state.m_sOrganizationId.IsEmpty() || state.m_iLastActive <= 0)
+				continue;
+
+			rows.Insert(LF_HideoutIdleRow.Create(state.m_sHideoutId, state.m_iLastActive));
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts each saved idle clock back on its leased site (runs after "hideout" in the same load, which
+	//! seeded every lease at "now"). A row whose site has no lease is dropped; a stamp in the future
+	//! reads as now; a stamp already past the limit means the server was down, so the lease gets
+	//! IDLE_LOAD_GRACE_S more instead of lapsing before its members can connect. Idempotent.
+	//! \return The number of rows applied.
+	static int ApplyIdle(array<ref LF_HideoutIdleRow> rows)
+	{
+		if (!rows)
+			return 0;
+
+		int now = System.GetUnixTime();
+		int limit = LF_OrgConfig.HideoutLeaseIdleDays() * DAY_SECONDS;
+		int applied = 0;
+		foreach (LF_HideoutIdleRow row : rows)
+		{
+			if (!row || row.m_iVersion < 1 || row.m_sHideoutId.IsEmpty())
+			{
+				LF_Debug.Error("Hideout", "idle load skipped a row with no id or version");
+				continue;
+			}
+
+			LF_HideoutState state = Find(LF_SaveIds.Resolve(LF_SaveIds.KIND_PLACE, row.m_sHideoutId));
+			if (!state || state.m_sOrganizationId.IsEmpty())
+			{
+				LF_Debug.Warn("Hideout", string.Format("idle clock of %1 dropped: the site has no lease", row.m_sHideoutId));
+				continue;
+			}
+
+			int lastActive = row.m_iLastActive;
+			if (lastActive <= 0 || lastActive > now)
+				lastActive = now;
+
+			if (limit > 0 && now - lastActive > limit)
+			{
+				LF_Debug.Warn("Hideout", string.Format("idle clock of %1 is %2 days old at load (server downtime): the lease gets one more day", state.m_sHideoutId, (now - lastActive) / DAY_SECONDS));
+				lastActive = now - limit + IDLE_LOAD_GRACE_S;
+			}
+
+			state.m_iLastActive = lastActive;
+			applied++;
+		}
+
+		return applied;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Unix seconds a member of the site's leasing organization was last seen connected; 0 = no lease.
+	static int LastActiveOf(string hideoutId)
+	{
+		LF_HideoutState state = Find(hideoutId);
+		if (!state || state.m_sOrganizationId.IsEmpty())
+			return 0;
+
+		return state.m_iLastActive;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets a leased site's idle clock (server): the seam the sweep tests and the load use.
+	//! \return False when the site has no lease.
+	static bool SetLastActive(string hideoutId, int lastActive)
+	{
+		if (!Server())
+			return false;
+
+		LF_HideoutState state = Find(hideoutId);
+		if (!state || state.m_sOrganizationId.IsEmpty())
+			return false;
+
+		state.m_iLastActive = lastActive;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: one pass over the leases (#2573). A lease whose organization has a member connected restarts
+	//! its clock at `now`; any other lease idle longer than LF_OrgConfig.HideoutLeaseIdleDays() is
+	//! released (0 days = never). Logs `released hideout=<id> org=<org> reason=idle <n> days`.
+	//! \param nowUnix Unix seconds to judge by; 0 reads the clock.
+	//! \param online Character ids counted as connected; null reads the connected players.
+	//! \return How many leases were released.
+	static int SweepIdle(int nowUnix = 0, array<string> online = null)
+	{
+		if (!Replication.IsServer() || !s_mHideouts)
+			return 0;
+
+		// A server that switched hideouts off keeps its leases as saved (#1075).
+		if (!LF_Systems.IsEnabled(SYSTEM))
+			return 0;
+
+		int now = nowUnix;
+		if (now <= 0)
+			now = System.GetUnixTime();
+
+		array<string> connected = online;
+		ref array<string> read;
+		if (!connected)
+		{
+			read = new array<string>();
+			CollectOnlineCharacters(read);
+			connected = read;
+		}
+
+		int limit = LF_OrgConfig.HideoutLeaseIdleDays() * DAY_SECONDS;
+		array<string> lapsed = {};
+		array<int> idleDays = {};
+		foreach (string hideoutId, LF_HideoutState state : s_mHideouts)
+		{
+			if (!state || state.m_sOrganizationId.IsEmpty())
+				continue;
+
+			if (AnyMemberOnline(state.m_sOrganizationId, connected) || state.m_iLastActive <= 0)
+			{
+				state.m_iLastActive = now;
+				continue;
+			}
+
+			if (limit > 0 && now - state.m_iLastActive > limit)
+			{
+				lapsed.Insert(hideoutId);
+				idleDays.Insert((now - state.m_iLastActive) / DAY_SECONDS);
+			}
+		}
+
+		int released;
+		foreach (int index, string lapsedId : lapsed)
+		{
+			if (Release(lapsedId, string.Format("idle %1 days", idleDays.Get(index))))
+				released++;
+		}
+
+		return released;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a member of the organization is in `online`.
+	protected static bool AnyMemberOnline(string organizationId, notnull array<string> online)
+	{
+		LF_Organization org = LF_OrganizationManager.Get(organizationId);
+		if (!org)
+			return false;
+
+		foreach (string characterId : online)
+		{
+			if (org.IsMember(characterId))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the active character id of every connected player.
+	protected static void CollectOnlineCharacters(notnull array<string> online)
+	{
+		PlayerManager players = GetGame().GetPlayerManager();
+		if (!players)
+			return;
+
+		array<int> playerIds = {};
+		players.GetPlayers(playerIds);
+		foreach (int playerId : playerIds)
+		{
+			string characterId = CharacterIdOf(players.GetPlayerControlledEntity(playerId));
+			if (!characterId.IsEmpty())
+				online.Insert(characterId);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void ScheduleIdleSweep()
+	{
+		if (s_bIdleScheduled || !Replication.IsServer() || !GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		s_bIdleScheduled = true;
+		GetGame().GetCallqueue().CallLater(IdleSweepTick, IDLE_SWEEP_MS, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void CancelIdleSweep()
+	{
+		if (s_bIdleScheduled && GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(IdleSweepTick);
+
+		s_bIdleScheduled = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The timed sweep: one pass, then it queues itself again for the life of the world.
+	protected static void IdleSweepTick()
+	{
+		s_bIdleScheduled = false;
+		SweepIdle();
+		ScheduleIdleSweep();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -805,8 +1109,9 @@ class LF_Hideout
 		if (!lock)
 			return;
 
-		if (!state.m_sOrganizationId.IsEmpty())
-			lock.SetHouseIdentifier(state.m_sOrganizationId);
+		// An empty id on a released site makes the door read "Unowned" (LF_HideoutDoorRules.View) and
+		// matches no house (LF_HouseLockAction.GetHouse), so a former owner's id never lingers (#2571).
+		lock.SetHouseIdentifier(state.m_sOrganizationId);
 
 		LF_HideoutDoorComponent doorComponent = LF_Component<LF_HideoutDoorComponent>.Find(door);
 		if (doorComponent)
@@ -879,6 +1184,9 @@ class LF_Hideout
 		if (!s_mHideouts)
 			s_mHideouts = new map<string, ref LF_HideoutState>();
 
+		WatchEmptiedOrganizations();
+		ScheduleIdleSweep();
+
 		LF_HideoutState state = s_mHideouts.Get(hideoutId);
 		if (!state)
 		{
@@ -919,6 +1227,21 @@ class LF_Hideout
 
 		Refuse("rejected: not the server");
 		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Bus subscriber (#2571): an organization that lost its last member loses its hideout lease.
+class LF_HideoutEmptiedListener : LF_EventSubscriber
+{
+	override bool Handle(notnull LF_Event busEvent)
+	{
+		LF_OnOrganizationEmptied emptied = LF_OnOrganizationEmptied.Cast(busEvent);
+		if (!emptied)
+			return false;
+
+		LF_Hideout.ReleaseAllOf(emptied.m_sOrgId, "organization emptied: " + emptied.m_sReason);
+		return true;
 	}
 }
 

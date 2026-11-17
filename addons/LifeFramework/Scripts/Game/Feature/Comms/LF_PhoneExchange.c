@@ -178,7 +178,7 @@ class LF_PhoneExchange : Managed
 
 	//------------------------------------------------------------------------------------------------
 	//! Forgets every call that is no longer live (the world reset); a call in progress stays.
-	//! eturn How many finished calls were dropped.
+	//! \return How many finished calls were dropped.
 	int PurgeEnded()
 	{
 		int dropped = 0;

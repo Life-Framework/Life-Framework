@@ -441,7 +441,7 @@ class LF_PlayerAccountManager : Managed
 	//------------------------------------------------------------------------------------------------
 	//! Server: every loaded account's wanted level back to 0 (the world reset, which also takes their
 	//! posters down through SetWantedLevel).
-	//! eturn How many accounts had a wanted level.
+	//! \return How many accounts had a wanted level.
 	int ClearAllWanted()
 	{
 		if (!m_mAccounts)

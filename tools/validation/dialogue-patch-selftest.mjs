@@ -5,10 +5,10 @@
 // red-proof: with the unknown-node check disabled this printed "FAIL unknown reply target: expected
 // /unknown node/" and exited 1 (2026-11-14).
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { checkDialoguePatches } from "./validate-dialogue-patch.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 function put(root, path, text) {
   const full = join(root, path);
@@ -58,7 +58,7 @@ const node = (op, id, extra = "") => `  LF_DialogueNode "{8}" {\n   m_sOp "${op}
 const patch = (lines = "", nodes = "", id = "clerk") => `LF_DialogueConfig {\n m_sId "${id}"\n${lines ? ` m_aLines {\n${lines} }\n` : ""}${nodes ? ` m_aNodes {\n${nodes} }\n` : ""}}\n`;
 
 function tree(patchText, extra = {}) {
-  const root = mkdtempSync(join(tmpdir(), "lf-dialoguepatch-"));
+  const root = scratchDir("lf-dialoguepatch-");
   put(root, "addons/LifeFramework/Configs/Dialogue/LF_Dialogue_Clerk.conf", CORE);
   put(root, "addons/LifeFramework/Configs/Dialogue/LF_DialogueIndex.conf", `LF_DialogueIndexConfig {\n m_aEntries {\n  LF_DialogueIndexEntry "{7}" {\n   m_sId "clerk"\n   m_Conf "{AA}Configs/Dialogue/LF_Dialogue_Clerk.conf"\n  }\n }\n}\n`);
   put(root, "addons/LifeFramework/Language/core.st", ST("Reply_Bye", "Line_Greet", "Line_Bye"));

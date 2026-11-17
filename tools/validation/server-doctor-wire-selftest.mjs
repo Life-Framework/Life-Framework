@@ -4,19 +4,19 @@
 // Profile folders are built in a temp dir from the O12 boot-log fixtures and the O13 config fixtures.
 // inputs: tools/lib/server-doctor.mjs, tools/lib/server-doctor-config.mjs, tools/lib/log-triage.mjs, tools/validation/fixtures/server-doctor, tools/validation/fixtures/server-doctor-config, docs/debug-log-triage.md
 // red-proof: before diagnoseTarget existed the import failed with "does not provide an export named 'diagnoseTarget'" and the run exited 1.
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { copyFileSync, mkdirSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFileSync } from "node:fs";
 import { diagnoseTarget, renderReport } from "../lib/server-doctor.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
 const triage = readFileSync(join(root, "docs", "debug-log-triage.md"), "utf8");
 const bootLog = (n) => join(here, "fixtures", "server-doctor", n);
 const cfgFile = (n) => join(here, "fixtures", "server-doctor-config", n, "config.json");
-const tmp = mkdtempSync(join(tmpdir(), "lf-doctor-wire-"));
+const tmp = scratchDir("lf-doctor-wire-");
 const fails = [];
 const expect = (ok, msg) => { if (!ok) fails.push(msg); };
 

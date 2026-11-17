@@ -10,11 +10,11 @@
 // "a public launch passes -noBackend (not in the server browser, no join password)" and exited 1 (2026-11-15).
 // red-proof: with publicPreflight skipping the password check this printed
 // "pre-flight passes an empty game.password" and exited 1 (2026-11-15).
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, existsSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const imp = (p) => import(pathToFileURL(join(ROOT, ...p.split("/"))).href);
@@ -99,7 +99,7 @@ if (!pf(pinned).ok) fail("pre-flight refuses a mod pinned to 0.1.0");
 if (JSON.stringify(pf(good)).includes("alpha-pass")) fail("the pre-flight result carries the password");
 
 // ---- config apply --mods: the confirmation file, refusals, and a real apply on a fixture host
-const base = mkdtempSync(join(tmpdir(), "lf-host-public-"));
+const base = scratchDir("lf-host-public-");
 try {
   const host = join(base, "host");
   mkdirSync(host, { recursive: true });
