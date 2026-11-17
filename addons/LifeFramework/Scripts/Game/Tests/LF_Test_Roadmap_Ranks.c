@@ -1,6 +1,7 @@
 // red-proof: 2026-10-11 fast boot logs_2026-10-11_03-48-03 printed [LFTEST] FAIL roadmap/ranks / [LFTEST]   - patrol kit is the rank's prefabs only (expected 0, got 1)
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Ranks : LF_Test
 {
 	override string GetName()
@@ -149,6 +150,7 @@ class LF_Test_Roadmap_Ranks : LF_Test
 }
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_RanksWorld : LF_Test
 {
 	protected static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";

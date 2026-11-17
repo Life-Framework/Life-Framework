@@ -4,6 +4,7 @@
 //! the seven flagship pages in reading order, and every title and body key is in a string table, so
 //! no `#LF-` key shows raw on the page. The core file ships two neutral pages; the pack overlay adds
 //! the other five and patches the rules page into the law and the permit.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronHandbookPages : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

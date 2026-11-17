@@ -3,6 +3,7 @@
 //! #1781 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the clerk's last
 //! arrival step hands over a 1989 welcome gift: a folded paper map, a packet of crackers and a bottle
 //! of apple juice. The neutral core table ships no gift; the pack's overlay adds the row.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronWelcomeGift : LF_Test
 {
 	static const ResourceName OVERLAY = "{A4E6130B9D2C7F85}Configs/Quests/LF_WelcomeGift_Everon1989.conf";

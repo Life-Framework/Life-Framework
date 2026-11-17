@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! Lockpicking rules (#411): skill shortens the attempt, a worn pick breaks, a non-pickable or open
 //! door refuses, a plain failure wears nothing, and only a heard attempt files a report.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_LockpickDoor : LF_Test
 {
 	override string GetName()
@@ -58,6 +59,7 @@ class LF_Test_LockpickDoor : LF_Test
 // tier: WORLD
 //! The playtest lock-up door is wired (#411): locked, pickable, the pick action on it, the jail-style
 //! breach door refuses a pick. Spawns nothing. The held attempt itself is the two-client session proof.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LockpickDoorWorld : LF_Test
 {
 	override string GetName()

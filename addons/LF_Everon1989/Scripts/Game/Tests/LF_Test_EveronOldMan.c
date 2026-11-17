@@ -4,6 +4,7 @@
 //! (Gaspard Lenoir) has a voiced dialogue about the zone and the move and one pointer for a newcomer. Every
 //! line resolves to a caption key in the string table and a sound event with a length and a mouth envelope,
 //! and every reply reads and leads somewhere playable. The pack owns it; the core ships no old man.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronOldMan : LF_Test
 {
 	static const ResourceName OLD_MAN = "{99F9786003FB5B5E}Configs/Dialogue/LF_Dialogue_OldMan.conf";

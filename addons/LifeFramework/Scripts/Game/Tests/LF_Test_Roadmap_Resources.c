@@ -5,6 +5,7 @@
 // Restored the expected value to 0.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Resources : LF_Test
 {
 	protected static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
@@ -77,6 +78,7 @@ class LF_Test_Roadmap_Resources : LF_Test
 }
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_ResourcesWorld : LF_Test
 {
 	protected static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";

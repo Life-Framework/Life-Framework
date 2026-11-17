@@ -5,6 +5,7 @@
 //! identity card), the hostel for the first night, and what the town expects. Each welcome line has a caption
 //! key that resolves, a sound event and a length with a mouth envelope. A character that is already registered
 //! is not offered the welcome. The core clerk ships none of it (it is text only and neutral).
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronClerkWelcome : LF_Test
 {
 	static const ResourceName OVERLAY = "{73865DD94EA3B5CA}Configs/Dialogue/LF_Dialogue_ClerkEveron.conf";

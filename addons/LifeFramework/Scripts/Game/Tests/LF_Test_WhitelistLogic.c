@@ -3,6 +3,7 @@
 // and watch [LFTEST] FAIL whitelist/logic.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WhitelistLogic : LF_Test
 {
 	override string GetName()
@@ -38,6 +39,7 @@ class LF_Test_WhitelistLogic : LF_Test
 // and the fast tier fails on the command parse assertions.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WhitelistCommandParse : LF_Test
 {
 	override string GetName()

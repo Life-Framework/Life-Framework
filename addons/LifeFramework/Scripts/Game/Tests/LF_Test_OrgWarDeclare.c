@@ -27,6 +27,7 @@ class LF_TestOrgWarFeeRecorder : LF_EventSubscriber
 }
 
 //------------------------------------------------------------------------------------------------
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_OrgWarDeclare : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

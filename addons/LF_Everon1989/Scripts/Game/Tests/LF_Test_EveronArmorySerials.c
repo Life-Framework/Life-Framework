@@ -4,6 +4,7 @@
 //! police armory issues by rank carries a serial. For each live issue offer of the `police_armory`
 //! outlet, the prefab the armory spawns (`m_IssuePrefab`, else the item's own prefab) has an
 //! `LF_SerialComponent`, so `LF_PoliceRanks.IssueOffer` books the weapon instead of logging "untracked".
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronArmorySerials : LF_Test
 {
 	//------------------------------------------------------------------------------------------------
