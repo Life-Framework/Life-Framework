@@ -5922,6 +5922,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Workplace"
      Comment "Map POI kind name (#2230): a job site."
     }
+    CustomStringTableItem "{DC7EEF1A69D6A983}" {
+     Id "LF-MapWaypoint_Label"
+     Target_en_us "Waypoint"
+     Comment "Map: name of the waypoint a player set by right-clicking the map (shown under the marker and by the pencil circle)."
+    }
     CustomStringTableItem "{71DFE7C94DAE37F2}" {
      Id "LF-Map_AreaGated"
      Target_en_us "Restricted"
@@ -8345,6 +8350,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-SafeZone_Title"
      Target_en_us "Safe zone"
      Comment "Toast title when a shot is refused in the spawn safe zone."
+    }
+    CustomStringTableItem "{4EE60B1CA1D7C2F3}" {
+     Id "LF-Safe_BoxRob"
+     Target_en_us "Crack the box safe"
+     Comment "Action: a small box safe in a shop (safe type store_box)."
+    }
+    CustomStringTableItem "{E04945AFDC28CB9A}" {
+     Id "LF-Safe_ReserveRob"
+     Target_en_us "Break into the reserve depot"
+     Comment "Action: the big standalone vault (safe type reserve_vault). Neutral name; the docs call the building the Federal Reserve."
     }
     CustomStringTableItem "{59E2E4A1484842B5}" {
      Id "LF-Scanner_Heard"
