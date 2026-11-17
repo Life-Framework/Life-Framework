@@ -98,16 +98,18 @@ class LF_QuestState
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Persistence seam: a quest turned in before a restart. World time starts over after a
-	//! restart, so the old turn-in time means nothing; no cooldown carries over.
-	void RestoreTurnedIn(string questId)
+	//! Persistence seam: a quest turned in on an earlier body or before a restart. The old turn-in
+	//! time is not saved (world time starts over after a restart), so the cooldown counts from
+	//! `now`, the restore. With 0 a respawn wiped the cooldown, and a repeatable quest paid again
+	//! after every death (docs/reviews/2026-11-17-life.md).
+	void RestoreTurnedIn(string questId, float now = 0)
 	{
 		m_sQuestId = questId;
 		m_eStatus = LF_EQuestStatus.TURNED_IN;
 		m_mObjectiveProgress.Clear();
 		m_fAcceptedAt = 0;
 		m_fDeadline = -1;
-		m_fLastTurnedInAt = 0;
+		m_fLastTurnedInAt = now;
 	}
 
 	//------------------------------------------------------------------------------------------------
