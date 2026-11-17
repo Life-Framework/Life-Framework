@@ -1,0 +1,246 @@
+{
+  "schema": 1,
+  "kit": "gun-counter",
+  "system": "gun-counter",
+  "source": {
+    "file": "addons/LF_Everon1989/Prefabs/Buildings/GunStore/GunStore_Store.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local",
+    "also": [
+      "addons/LF_Everon1989/Prefabs/Buildings/GunStore/GunStore.et"
+    ]
+  },
+  "scope": "building",
+  "building": {
+    "mode": "override",
+    "via": "{7EAFD7FF46F56083}Prefabs/Buildings/GunStore/GunStore.et",
+    "vanilla": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et"
+  },
+  "store": {
+    "prefab": "{1902DB32C6DE05E6}Prefabs/Buildings/GunStore/GunStore_Store.et",
+    "config": [
+      {
+        "component": "LF_ShopComponent",
+        "set": {},
+        "blocks": [
+          "m_aShopItems"
+        ]
+      },
+      {
+        "component": "LF_StoreComponent",
+        "set": {
+          "m_sStoreKey": "\"everon_gunstore\"",
+          "m_vBoundaryCenter": "0.1 0 -0.15",
+          "m_vBoundaryHalf": "6.1 0 7.75",
+          "m_iRestockSeconds": "300"
+        },
+        "blocks": [
+          "m_aLines"
+        ]
+      },
+      {
+        "component": "ActionsManagerComponent",
+        "set": {},
+        "blocks": [
+          "ActionContexts",
+          "additionalActions"
+        ]
+      }
+    ]
+  },
+  "anchoring": {
+    "floorY": 0.199,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.199
+      }
+    ],
+    "footprint": {
+      "source": "store-boundary",
+      "min": [
+        -6,
+        -7.9
+      ],
+      "max": [
+        6.2,
+        7.6
+      ]
+    },
+    "front": "-x",
+    "counters": [
+      {
+        "id": "cashier-shop-01",
+        "wall": "free",
+        "edgeGap": 3.65
+      },
+      {
+        "id": "lf-gun-counter",
+        "wall": "free",
+        "edgeGap": 3.2
+      }
+    ],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "gun-store-furniture-01",
+      "prefab": "{3C567594DE66D4C8}Prefabs/Buildings/GunStore/Furniture/GunStore_furniture_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "from": "GunStore.et",
+      "wall": "free",
+      "floor": "all"
+    },
+    {
+      "id": "lf-sign-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -0.05,
+        1.432,
+        -0.164
+      ],
+      "yaw": 180,
+      "from": "GunStore.et",
+      "config": [
+        {
+          "component": "MeshObject",
+          "set": {},
+          "blocks": [
+            "Materials"
+          ]
+        },
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"gun_store\"",
+            "m_vRimColor": "0.85 0.68 0.3",
+            "m_vPaintColor": "0.12 0.16 0.12",
+            "m_vTextColor": "0.93 0.86 0.66"
+          },
+          "blocks": []
+        },
+        {
+          "component": "Hierarchy",
+          "set": {
+            "PivotID": "\"socket_win_420x275_01\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "electricity-box-small-01",
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "role": "alarm",
+      "verb": "against wall",
+      "offset": [
+        -0.9,
+        2.6,
+        7.65
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_AlarmMountComponent",
+          "set": {
+            "m_vOffset": "0 0.167 0.065",
+            "m_fReach": "10"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0"
+    },
+    {
+      "id": "lf-weapon-rack-cabinet-display",
+      "prefab": "{12BFA4BF5A703816}Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        5.75,
+        0.199,
+        0.6
+      ],
+      "yaw": -90,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "lf-weapon-rack-stand-display",
+      "prefab": "{96114332715F34A3}Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        3,
+        0.199,
+        6.7
+      ],
+      "yaw": 0,
+      "wall": "+z",
+      "floor": "f0"
+    },
+    {
+      "id": "shelf-shop-01",
+      "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.52,
+        0.199,
+        4.25
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cashier-shop-01",
+      "prefab": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et",
+      "role": "till",
+      "verb": "on lf-gun-counter",
+      "offset": [
+        2.55,
+        1.238,
+        -0.6
+      ],
+      "yaw": 0,
+      "floor": "f0"
+    },
+    {
+      "id": "lf-gun-counter",
+      "prefab": "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        3,
+        0.199,
+        -0.5
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ShopComponent",
+          "set": {
+            "m_sOutletId": "\"gun_counter\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
