@@ -1230,6 +1230,11 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "Draw kit"
      Comment "Station armory action that issues the officer's rank kit"
     }
+    CustomStringTableItem "{161F069D20EEEF68}" {
+     Id "EL-Rank_DrawCooldown"
+     Target_en_us "The armory issues your next kit in %1 min"
+     Comment "Toast: armory draw refused, the officer drew a kit less than 2 hours ago (real time). %1 = minutes left."
+    }
     CustomStringTableItem "{C91A4E7700B10014}" {
      Id "EL-Rank_DrawDenied"
      Target_en_us "Only on-duty {police} can draw a kit"
@@ -1244,6 +1249,26 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Id "EL-Rank_IssueNeedsRank"
      Target_en_us "The armory issues that from the rank of %1"
      Comment "Toast: the armory refused an item because the officer's rank is below the offer's. %1 = the rank title that may draw it."
+    }
+    CustomStringTableItem "{8A7BC982642B2C23}" {
+     Id "EL-Rank_KitOutstanding"
+     Target_en_us "Your last kit is still out. Hand it in here, or use the armory again to report it lost"
+     Comment "Toast: armory draw refused, the officer has issued items not yet turned in. A second use within 15 s reports them lost."
+    }
+    CustomStringTableItem "{1DC38F5132E43BEC}" {
+     Id "EL-Rank_KitPartReturned"
+     Target_en_us "Kit handed in, %1 item(s) still out"
+     Comment "Toast: the armory took back part of the issued kit. %1 = serialled items still missing."
+    }
+    CustomStringTableItem "{94F584B3EA53013B}" {
+     Id "EL-Rank_KitReportedLost"
+     Target_en_us "Kit reported lost. Its serials are logged"
+     Comment "Toast: the officer confirmed the issued kit is lost; the book clears it and logs the serials. The 2 hour cooldown still applies."
+    }
+    CustomStringTableItem "{1DFCFD19D6D4381C}" {
+     Id "EL-Rank_KitReturned"
+     Target_en_us "Kit handed in"
+     Comment "Toast: the armory took back every serialled item of the officer's issued kit"
     }
     CustomStringTableItem "{C91A4E7700B10011}" {
      Id "EL-Rank_Patrol"
@@ -4082,6 +4107,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Gather_Action"
      Target_en_us "Gather %1"
      Comment "Action name for gathering a resource. %1 = item name"
+    }
+    CustomStringTableItem "{C978A84E212BD638}" {
+     Id "LF-Gather_Empty"
+     Target_en_us "Picked clean for now"
+     Comment "Gather refused on the client: the spot is out of stock (#2409)"
+    }
+    CustomStringTableItem "{E1BA56AC133E9004}" {
+     Id "LF-Gather_EmptyWait"
+     Target_en_us "Picked clean. More in about %1 min."
+     Comment "Toast when a gather spot is out of stock. %1 = minutes until the next one grows back (#2409)"
     }
     CustomStringTableItem "{44A28FD4E95EA8C3}" {
      Id "LF-Gather_RequiresItem"
@@ -7467,6 +7502,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Placing"
      Comment "Toast title for every placement refusal (#1026)."
     }
+    CustomStringTableItem "{F875CB040C3C2526}" {
+     Id "LF-PoliceAppGm_Approve"
+     Target_en_us "Approve"
+     Comment "Applications sheet button."
+    }
+    CustomStringTableItem "{1296E6499AD624E5}" {
+     Id "LF-PoliceAppGm_Approved"
+     Target_en_us "APPROVED: %1"
+     Comment "Applications sheet status after approving; %1 is the applicant name."
+    }
+    CustomStringTableItem "{0E3BC446BA9C4943}" {
+     Id "LF-PoliceAppGm_BadRequest"
+     Target_en_us "Request refused."
+     Comment "Applications sheet status when the server refused a malformed request."
+    }
+    CustomStringTableItem "{1EA5C56CC7684B12}" {
+     Id "LF-PoliceAppGm_Busy"
+     Target_en_us "Too fast. Press again in a moment."
+     Comment "Applications sheet status when the server dropped a request sent too quickly (#1288)."
+    }
+    CustomStringTableItem "{58CA4203A5B3554F}" {
+     Id "LF-PoliceAppGm_Close"
+     Target_en_us "Close"
+     Comment "Applications sheet close button."
+    }
+    CustomStringTableItem "{15339673DC6E1BB0}" {
+     Id "LF-PoliceAppGm_Count"
+     Target_en_us "OPEN APPLICATIONS .... %1"
+     Comment "Applications sheet status; %1 is how many are open."
+    }
+    CustomStringTableItem "{1DB18896201F1A7B}" {
+     Id "LF-PoliceAppGm_Detail"
+     Target_en_us "%1. Why: %2. Hours: %3."
+     Comment "Applications sheet detail line; %1 name, %2 reason, %3 availability."
+    }
+    CustomStringTableItem "{8A45E10EB5B5A7DF}" {
+     Id "LF-PoliceAppGm_NeedAdministrator"
+     Target_en_us "Only an administrator can approve or reject. Moderators may read."
+     Comment "Applications sheet status when a moderator or operator tries to decide (#1288)."
+    }
+    CustomStringTableItem "{95CC9997DB5D0E03}" {
+     Id "LF-PoliceAppGm_PickFirst"
+     Target_en_us "Read an application, then approve or reject it."
+     Comment "Applications sheet detail line before one is picked."
+    }
+    CustomStringTableItem "{3B80676FFF309851}" {
+     Id "LF-PoliceAppGm_Read"
+     Target_en_us "Read"
+     Comment "Applications sheet row action: show this application."
+    }
+    CustomStringTableItem "{343D76BAE52282A8}" {
+     Id "LF-PoliceAppGm_Reject"
+     Target_en_us "Reject"
+     Comment "Applications sheet button."
+    }
+    CustomStringTableItem "{5957CB471E7B660E}" {
+     Id "LF-PoliceAppGm_Rejected"
+     Target_en_us "REJECTED: %1"
+     Comment "Applications sheet status after rejecting; %1 is the applicant name."
+    }
+    CustomStringTableItem "{1EF55798C921D26C}" {
+     Id "LF-PoliceAppGm_Title"
+     Target_en_us "Applications to the {police}"
+     Comment "Game Master applications sheet title (#1288)."
+    }
+    CustomStringTableItem "{7064E4B84B8AE16A}" {
+     Id "LF-PoliceAppGm_Waited"
+     Target_en_us "waited %1 h"
+     Comment "Applications sheet row status; %1 is whole hours since filing."
+    }
+    CustomStringTableItem "{FC7DA9A04AC8D7ED}" {
+     Id "LF-PoliceAppGm_Waiting"
+     Target_en_us "Reading the file..."
+     Comment "Applications sheet status while the server answers."
+    }
     CustomStringTableItem "{AD999D02320AA8DB}" {
      Id "LF-PoliceApp_Action"
      Target_en_us "Apply to the police"
@@ -9842,6 +9952,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-TownBoard_WhereNear"
      Target_en_us "%1, right here"
      Comment "Where a town board card's place is when it stands beside the board. %1 place name."
+    }
+    CustomStringTableItem "{3C7E19B2D54A806F}" {
+     Id "LF-Trader_SaleRefused"
+     Target_en_us "The trader won't take that."
+     Comment "Toast to the seller: the server refused a trader sale (not bought, out of reach, not carried, or the black market)."
+    }
+    CustomStringTableItem "{8D20F4A6B1957C3E}" {
+     Id "LF-Trader_SaleRefused_Title"
+     Target_en_us "No sale"
+     Comment "Title of the refused-sale toast."
     }
     CustomStringTableItem "{D820B2BCD7FC410A}" {
      Id "LF-UIKit_Keep"

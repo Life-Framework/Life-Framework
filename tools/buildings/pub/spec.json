@@ -1,7 +1,7 @@
 {
   "slug": "pub",
   "name": "Pub",
-  "concept": "The pub and cafe of Saint-Philippe, 1989: the two-storey vanilla PubVillage_E_2L01 (Saint-Philippe b03, the V8 variant with the wall sign, 17.9 x 17 m) fitted whole. The taproom with its bar counter, taps and kegs is where the town drinks in the evening; the front room is the daytime cafe with small tables, a radio and a chess board; the keg store, kitchen and toilets stay as the base game has them. Upstairs is the landlord's flat and two rooms to let. Drinks are the existing survival consumables (eat and drink by doing, character-survival) sold over the counter through a `store` block; no new system. This card is the shell: the vanilla set pruned from 287 props to the ones the rooms read from, before pass 1 dresses it. Base-game props only.",
+  "concept": "The pub and cafe of Saint-Philippe, 1989: the two-storey vanilla PubVillage_E_2L01 (Saint-Philippe b03, the V8 variant with the wall sign, 17.9 x 17 m) fitted whole. The taproom with its bar counter, taps and kegs is where the town drinks in the evening; the front room is the daytime cafe with small tables, a radio and a chess board; the keg store, kitchen and toilets stay as the base game has them. Upstairs is the landlord's flat and two rooms to let. Drinks are the existing survival consumables (eat and drink by doing, character-survival) sold over the counter through a `store` block; no new system. The shell card pruned the vanilla set from 287 props; pass 1 (#2294) fits the systems: the store block, seats, radio, chess and one shadowless light per room. Base-game props only.",
   "red_line": "pack",
   "addon": "LF_Everon1989",
   "prefab_dir": "Prefabs/Buildings/Pub",
@@ -10,10 +10,18 @@
     "building": "Pub",
     "furniture": "Furniture/Pub_furniture_01"
   },
-  "budget": { "size": "medium", "entities": 300, "lights": 6, "shadow_casters": 1 },
+  "budget": {
+    "size": "medium",
+    "entities": 300,
+    "lights": 6,
+    "shadow_casters": 1
+  },
   "host": {
     "prefab": "{965AFAD159CB0C8A}Prefabs/Structures/Commercial/Pubs/PubVillage_E_2L01/PubVillage_E_2L01_V8_ProgresBar.et",
-    "world_xz": [4455.4, 10700.3],
+    "world_xz": [
+      4455.4,
+      10700.3
+    ],
     "town": "saint-philippe",
     "slot": "b03",
     "note": "Building space is prefab space (x across, y up from the taproom floor, z along). The street face with the pub sign is the -z wall; proof.json stands the camera there. Saint-Philippe placement is town fit later; until then the building stands in its pack grid cell, claim pub (c17r0)."
@@ -24,28 +32,241 @@
     "entity": "Pub"
   },
   "rooms": [
-    { "id": "taproom", "floor": 0, "box": [-8.6, -8.7, -0.2, -1.5], "use": "the bar counter (two BarTable_01 with taps, the till) along z -4.6, the bottle shelves behind it, the drinking tables at the -z street wall" },
-    { "id": "cafe", "floor": 0, "box": [0.2, -8.7, 3.9, 1.0], "use": "the daytime cafe: small tables, the clock, the radio and chess board in pass 1" },
-    { "id": "keg-store", "floor": 0, "box": [4.2, -8.6, 7.9, -3.0], "use": "kegs, freezer, rack and crates: the back of house" },
-    { "id": "kitchen", "floor": 0, "box": [-8.6, -2.9, -3.8, 1.3], "use": "stove, old sink, small fridge and cupboard" },
-    { "id": "toilets", "floor": 0, "box": [4.2, 0.0, 7.9, 6.5], "use": "urinals, WC and sink" },
-    { "id": "upstairs", "floor": 1, "box": [-8.6, -8.7, 7.9, 6.5], "use": "the landlord's flat and two rooms to let (vanilla beds, cupboards, chairs)" }
+    {
+      "id": "taproom",
+      "floor": 0,
+      "box": [
+        -8.6,
+        -8.7,
+        -0.2,
+        -1.5
+      ],
+      "use": "the bar counter (two BarTable_01 with taps, the till) along z -4.6, the bottle shelves behind it, the drinking tables at the -z street wall"
+    },
+    {
+      "id": "cafe",
+      "floor": 0,
+      "box": [
+        0.2,
+        -8.7,
+        3.9,
+        1.0
+      ],
+      "use": "the daytime cafe: small tables, the clock, the radio and chess board in pass 1"
+    },
+    {
+      "id": "keg-store",
+      "floor": 0,
+      "box": [
+        4.2,
+        -8.6,
+        7.9,
+        -3.0
+      ],
+      "use": "kegs, freezer, rack and crates: the back of house"
+    },
+    {
+      "id": "kitchen",
+      "floor": 0,
+      "box": [
+        -8.6,
+        -2.9,
+        -3.8,
+        1.3
+      ],
+      "use": "stove, old sink, small fridge and cupboard"
+    },
+    {
+      "id": "toilets",
+      "floor": 0,
+      "box": [
+        4.2,
+        0.0,
+        7.9,
+        6.5
+      ],
+      "use": "urinals, WC and sink"
+    },
+    {
+      "id": "upstairs",
+      "floor": 1,
+      "box": [
+        -8.6,
+        -8.7,
+        7.9,
+        6.5
+      ],
+      "use": "the landlord's flat and two rooms to let (vanilla beds, cupboards, chairs)"
+    }
   ],
   "interactables": [
-    { "system": "store (a `store` block in a later pass)", "note": "the bar till sells the survival drink and food items" },
-    { "system": "character-survival consumables", "note": "drink by drinking: the bottles sold are the existing consumable items" }
+    {
+      "system": "store (shop)",
+      "note": "the `store` block: the drinks cooler sells water on its deck, apple juice and crackers on its two tops (one line per board); paid at the vanilla till on the bar (CashierShop_01)"
+    },
+    {
+      "system": "character-survival consumables",
+      "note": "the goods sold are the existing food and drink items: eat and drink by using them"
+    },
+    {
+      "system": "emote (Sit)",
+      "note": "every chair is a seat: prune.mjs swaps Chair_01 for the pack's Seats/LF_Seat_Chair_01_*.et and Chair_02 for the core LF_Seat_Chair_02_green"
+    },
+    {
+      "system": "atmosphere (radio)",
+      "note": "LF_Radio_Pub on the cafe corner table: the pub's music 10:00 to 02:00"
+    },
+    {
+      "system": "chess",
+      "note": "LF_ChessTable in the cafe's street window with a seat either side"
+    }
   ],
   "looks": {
     "about": "tools\\cli look grid:pub --close 0 [--hour 22] for the exterior; tools\\cli look grid:pub --interior <world x,y,z> --radius 5 --close 0 per room, the building-space centres below turned by the grid entity's coords and angleY",
     "exterior": true,
     "rooms": [
-      { "name": "taproom", "at": [-4.5, 0.2, -6.0], "radius": 5 },
-      { "name": "cafe", "at": [2.0, 0.2, -3.5], "radius": 4 },
-      { "name": "keg-store", "at": [6.0, 0.2, -6.0], "radius": 4 },
-      { "name": "kitchen", "at": [-6.2, 0.2, -0.8], "radius": 4 },
-      { "name": "toilets", "at": [6.0, 0.2, 3.2], "radius": 4 },
-      { "name": "upstairs", "at": [-2.0, 4.0, -3.5], "radius": 5 }
+      {
+        "name": "taproom",
+        "at": [
+          -4.5,
+          0.2,
+          -6.0
+        ],
+        "radius": 5
+      },
+      {
+        "name": "cafe",
+        "at": [
+          2.0,
+          0.2,
+          -3.5
+        ],
+        "radius": 4
+      },
+      {
+        "name": "keg-store",
+        "at": [
+          6.0,
+          0.2,
+          -6.0
+        ],
+        "radius": 4
+      },
+      {
+        "name": "kitchen",
+        "at": [
+          -6.2,
+          0.2,
+          -0.8
+        ],
+        "radius": 4
+      },
+      {
+        "name": "toilets",
+        "at": [
+          6.0,
+          0.2,
+          3.2
+        ],
+        "radius": 4
+      },
+      {
+        "name": "upstairs",
+        "at": [
+          -2.0,
+          4.0,
+          -3.5
+        ],
+        "radius": 5
+      }
     ],
-    "hours": [14, 22]
-  }
+    "hours": [
+      14,
+      22
+    ]
+  },
+  "store": {
+    "prefab": "Pub_Store",
+    "key": "everon_pub",
+    "boundary": {
+      "center": [
+        -2.3,
+        0,
+        -3.8
+      ],
+      "half": [
+        6.4,
+        0,
+        5.0
+      ]
+    },
+    "restock_seconds": 300,
+    "till": "CashierShop_01",
+    "alarm": {
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "at": [
+        -3.0,
+        2.6,
+        -9.1
+      ],
+      "yaw": 180,
+      "offset": [
+        0,
+        0.167,
+        0.065
+      ],
+      "reach": 10,
+      "why": "TODO(look): the bell box on the street front between the taproom windows; check the wall depth against a picture"
+    },
+    "fixtures": [
+      {
+        "prefab": "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et",
+        "at": [
+          -7.95,
+          0,
+          -6.75
+        ],
+        "yaw": 90,
+        "why": "the drinks cooler on the taproom's end wall, beside the bar: take a bottle and pay at the bar till (the vanilla CashierShop_01 on the counter)"
+      }
+    ],
+    "lines": [
+      {
+        "item": "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et",
+        "fixture": "CoolingBoxShop_01",
+        "pick": [
+          0
+        ],
+        "boards": [
+          0
+        ]
+      },
+      {
+        "item": "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et",
+        "fixture": "CoolingBoxShop_01",
+        "pick": [
+          0
+        ],
+        "boards": [
+          2
+        ]
+      },
+      {
+        "item": "{8F2C06D1F757C40F}Prefabs/Items/Food/LF_Crackers.et",
+        "fixture": "CoolingBoxShop_01",
+        "pick": [
+          0
+        ],
+        "boards": [
+          1
+        ]
+      }
+    ]
+  },
+  "floaters_allow": [
+    {
+      "match": "58E48906EA7152D7",
+      "why": "the base game stacked wall-shelf pair in the taproom (Shelf_01 at y 1.389 under its twin at 1.648), hung on the end wall at the vanilla heights; the check reads the lower one as inside the upper since the pass 1 prefabs joined the folder (it passed with the shell alone). Untouched by #2294"
+    }
+  ]
 }

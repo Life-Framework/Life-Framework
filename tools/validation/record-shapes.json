@@ -1,5 +1,5 @@
 {
-  "saveVersion": 44,
+  "saveVersion": 45,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -46,7 +46,8 @@
     "worldevents": "LF_EventShellRow",
     "mapknown": "LF_MapKnownRow",
     "mapmarks": "LF_MapMarkRow",
-    "orgmarks": "LF_OrgMapMarkRow"
+    "orgmarks": "LF_OrgMapMarkRow",
+    "armorykits": "LF_ArmoryKitRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -563,6 +564,15 @@
         "int m_iColour",
         "string m_sText",
         "string m_sAuthorId"
+      ]
+    },
+    "LF_ArmoryKitRow": {
+      "since": 45,
+      "fields": [
+        "int m_iVersion",
+        "string m_sOfficerUid",
+        "int m_iLastIssueUnix",
+        "array<string> m_aSerials"
       ]
     }
   }

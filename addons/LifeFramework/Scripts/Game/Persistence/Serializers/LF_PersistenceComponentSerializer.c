@@ -35,7 +35,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks. The written version is that list's length (44). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits. The written version is that list's length (45). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -100,6 +100,8 @@
 //! character starts with a clean map.
 //! A version 43 save includes the personal map marks and has no org map marks (#2240): every
 //! organization starts with an empty shared map.
+//! A version 44 save includes the org map marks and has no armory book (#2416): every officer may draw
+//! a kit at once, with nothing outstanding.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -233,6 +235,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("mapknown");
 		order.Insert("mapmarks");
 		order.Insert("orgmarks");
+		order.Insert("armorykits");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -266,7 +269,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 44);
+		context.WriteValue("version", 45);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -776,6 +779,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_OrgMapMarkRow> orgMarkRows = LF_OrgMapMarks.ExportAll();
 			context.Write(orgMarkRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 org map mark(s)", orgMarkRows.Count()));
+		}
+		else if (payload == "armorykits")
+		{
+			// Each officer's armory book (#2416): last issue time and the serials still out.
+			array<ref LF_ArmoryKitRow> armoryRows = LF_ArmoryKits.ExportAll();
+			context.Write(armoryRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 armory book row(s)", armoryRows.Count()));
 		}
 		else
 		{
@@ -1440,6 +1450,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("org map marks failed to read, every organization starts with no marks");
+			}
+		}
+		else if (payload == "armorykits")
+		{
+			// A version 1-44 save never reaches this payload: no officer has kit out or a cooldown.
+			array<ref LF_ArmoryKitRow> armoryRows = new array<ref LF_ArmoryKitRow>();
+			if (context.Read(armoryRows))
+			{
+				int armoryApplied = LF_ArmoryKits.ApplyAll(armoryRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 armory book row(s)", armoryApplied, armoryRows.Count()));
+			}
+			else
+			{
+				ReadFailed("armory book failed to read, every officer starts with no kit out and no cooldown");
 			}
 		}
 		else
