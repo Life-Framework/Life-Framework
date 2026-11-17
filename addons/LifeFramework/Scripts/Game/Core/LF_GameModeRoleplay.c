@@ -99,6 +99,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_WantedPosters.Install();
 		// The case board rebuilds for on-duty officers on the same events (server only, #148).
 		LF_CaseBoard.Install();
+		// A player's first wanted report posts a police call (server only, #2477).
+		LF_PoliceCalls.Install();
 		// Playtime per account and job, credited to online players (server only, #692).
 		LF_Playtime.Start();
 		// A playtest mission remembers where its vehicles stand, for the world reset (server only).

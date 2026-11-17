@@ -367,6 +367,20 @@ class LF_PlacementCompositions
 		if (verdict != LF_EPlacementVerdict.VALID)
 			return Refuse(player, "refused: " + plan.m_sReason, "#LF-Placement_NoGround");
 
+		// The cost (#2448): taken once, only now every piece is VALID; given back if a spawn fails.
+		LF_PlacementCostTerms terms = LF_PlacementCost.TermsFor(composition.m_sName);
+		if (LF_PlacementCost.CostIsItself(terms, ignore))
+		{
+			LF_Debug.Error(LF_PlacementRules.FEATURE, string.Format("the policy names the kit itself (%1) as the cost of %2; refusing", terms.m_sItem, composition.m_sName));
+			return Refuse(player, "refused: the cost item is the kit itself", "");
+		}
+
+		string costWhy;
+		string costToast;
+		LF_PlacementCharge charge = LF_PlacementCost.Take(player, terms, costWhy, costToast);
+		if (!charge)
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), costWhy), costToast);
+
 		LF_PlacedComposition placed = new LF_PlacedComposition();
 		placed.m_sName = composition.m_sName;
 		for (int i = 0; i < composition.Count(); i++)
@@ -377,12 +391,14 @@ class LF_PlacementCompositions
 			if (!piece)
 			{
 				Remove(placed);
+				LF_PlacementCost.Refund(player, charge, "spawn failed");
 				return Refuse(player, string.Format("refused: spawn failed for %1", composition.m_aPieces[i].m_sPrefab), "");
 			}
 
 			placed.m_aIds.Insert(piece.GetID());
 		}
 
+		LF_PlacementCost.Keep(charge, placed.m_aIds);
 		s_aPlaced.Insert(placed);
 		LF_Debug.Info(LF_PlacementRules.FEATURE, string.Format("placed composition %1 (%2 pieces) for %3 at %4", composition.m_sName, placed.m_aIds.Count(), LF_PoliceRanks.ResolveUid(player), proposal[3]));
 		return placed;
@@ -419,8 +435,10 @@ class LF_PlacementCompositions
 			return 0;
 		}
 
+		EntityID pieceId = piece.GetID();
 		int removed = Remove(placed);
 		s_aPlaced.RemoveItem(placed);
+		LF_PlacementCost.OnPickedUp(player, pieceId);
 		LF_Debug.Info(LF_PlacementRules.FEATURE, string.Format("picked up composition %1: %2 pieces removed", placed.m_sName, removed));
 		return removed;
 	}
