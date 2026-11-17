@@ -446,6 +446,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Prefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PrefabSlots(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PrefabSlotsSwapSpawn(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PricedSignProvider(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ProgressionRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ProgressionOldSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_QuantityStack(), LF_TestTier.WORLD);
