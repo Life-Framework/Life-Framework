@@ -70,9 +70,9 @@ class LF_GraceConfig
 //! For its first N minutes of playtime a character cannot be held up or arrested, and may not
 //! rob (a protected robber would be a robber nobody can arrest). The protection ends for good
 //! the first time the character completes any crime. Nothing is saved here: the clock is the
-//! persisted playtime of the account (LF_Playtime.Total) and the end is the persisted crime
-//! record of the character (LF_CrimeRecord.Total), so a restart or a relog neither restarts
-//! nor extends it. The server decides; a client offer check cannot see playtime, so the server
+//! character's own persisted played time (LF_GraceCharacterClock, #2443; a second character on an
+//! old account gets its own grace) and the end is the persisted crime record of the character
+//! (LF_CrimeRecord.Total), so a restart or a relog neither restarts nor extends it. The server decides; a client offer check cannot see playtime, so the server
 //! refuses and tells the player (the refusal names the grace). Nothing is replicated.
 //! Off by default (LF_GraceConfig.m_iMinutes = 0).
 class LF_Grace
@@ -120,22 +120,19 @@ class LF_Grace
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: is the character with this record key (or account uid) in its grace now?
+	//! Server: is the character with this record key in its grace now? The clock is the character's
+	//! own played time, never its account's (#2443).
 	static bool Protects(string recordKey)
 	{
 		if (recordKey.IsEmpty() || Minutes() <= 0)
 			return false;
 
-		string accountUid = recordKey;
-		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
-		if (accounts)
-		{
-			LF_PlayerAccount account = accounts.GetFromCache(recordKey);
-			if (account)
-				accountUid = account.GetPersistentId();
-		}
+		// A clock stops at CAP_SECONDS: a .conf longer than MINUTES_MAX would otherwise never end.
+		int played = LF_GraceCharacterClock.Seconds(recordKey);
+		if (played >= LF_GraceCharacterClock.CAP_SECONDS)
+			return false;
 
-		return IsProtected(Minutes(), LF_Playtime.Total(accountUid), LF_CrimeRecord.Total(recordKey));
+		return IsProtected(Minutes(), played, LF_CrimeRecord.Total(recordKey));
 	}
 
 	//------------------------------------------------------------------------------------------------

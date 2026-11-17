@@ -1,5 +1,5 @@
 {
-  "saveVersion": 47,
+  "saveVersion": 48,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -49,7 +49,8 @@
     "orgmarks": "LF_OrgMapMarkRow",
     "armorykits": "LF_ArmoryKitRow",
     "houses": "LF_HouseLockRecord",
-    "itemkeys": "LF_StorageItemKeyRecord"
+    "itemkeys": "LF_StorageItemKeyRecord",
+    "graceclock": "LF_GraceClockRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -591,6 +592,13 @@
         "string m_sOwnerKey",
         "string m_sSlot",
         "array<string> m_aHouseKeys"
+      ]
+    },
+    "LF_GraceClockRow": {
+      "since": 48,
+      "fields": [
+        "string m_sRecordKey",
+        "int m_iSeconds"
       ]
     }
   }

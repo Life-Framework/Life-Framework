@@ -55,6 +55,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	protected static const string STREET_ID = "e2e-street-car";
 	//! Playtime (#692, save version 26): 90 min on police duty in two stretches and 30 min civilian.
 	static const string PLAYTIME_UID = "e2e-playtime-account";
+	//! Grace clock (#2443, "graceclock" payload, save version 48): 7 minutes of one character's own play.
+	static const string GRACE_KEY = "e2e-grace-character";
 	//! Job levels (#749, "joblevels" payload, save version 28): XP in three jobs, one of which
 	//! (CIVILIAN) the progression record's pre-#749 single level also carries.
 	static const string JOBS_UID = "e2e-job-levels";
@@ -365,6 +367,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		LF_Playtime.Credit(PLAYTIME_UID, "POLICE", 1800);
 		LF_Playtime.Credit(PLAYTIME_UID, LF_Playtime.JOB_CIVILIAN, 1800);
 		ctx.Equal(7200, LF_Playtime.Total(PLAYTIME_UID), "e2e playtime account has 2 h before the save");
+		LF_GraceCharacterClock.Credit(GRACE_KEY, 420);
+		ctx.Equal(420, LF_GraceCharacterClock.Seconds(GRACE_KEY), "e2e grace character has 7 min before the save");
 
 		SeedOrgLadder(ctx);
 
@@ -544,6 +548,13 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(7200, LF_Playtime.Total(uid), "e2e the playtime total is 2 h after the restart");
 		LF_Debug.Info(LF_Playtime.FEATURE, string.Format("e2e restart: %1 has %2 s (POLICE %3 s, CIVILIAN %4 s)", uid, LF_Playtime.Total(uid), LF_Playtime.JobSeconds(uid, "POLICE"), LF_Playtime.JobSeconds(uid, LF_Playtime.JOB_CIVILIAN)));
 #endif
+		// #2443: the character grace clock survives the restart; a save older than it seeds only real characters.
+		string graceKey = LF_Test_E2E_SaveStateWrite.GRACE_KEY;
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("graceclock"))
+			ctx.Equal(420, LF_GraceCharacterClock.Seconds(graceKey), "e2e the character grace clock survives the restart");
+		else
+			ctx.Equal(0, LF_GraceCharacterClock.Seconds(graceKey), "e2e a save older than graceclock has no grace clock for it");
+		LF_Debug.Info(LF_Grace.FEATURE, string.Format("e2e restart: grace clock of %1 is %2 s (boot save version %3)", graceKey, LF_GraceCharacterClock.Seconds(graceKey), LF_SaveStamp.BootSaveVersion()));
 	}
 
 	//------------------------------------------------------------------------------------------------
