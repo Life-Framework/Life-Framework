@@ -313,6 +313,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_IdCardGrant(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_IdCardRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IdentityFallback(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_IdRegistryUnreadable(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_IdRequestReask(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Impairment(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ImpairmentView(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ImpairmentViewFrame(), LF_TestTier.LOGIC);
@@ -552,6 +554,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RestartToast(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartWarnerFires(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RestartWarnings(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RestoredBodyLicences(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RestraintRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Revive(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ReviveAnim(), LF_TestTier.WORLD);

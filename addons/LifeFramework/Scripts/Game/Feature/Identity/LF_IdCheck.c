@@ -239,6 +239,9 @@ class LF_IdRequestSheet
 
 	protected static ref LF_UIScreen s_Screen;
 	protected static bool s_bAnswered;
+	//! Answers this client sent since the world began (Send past its answered gate). A sheet closed
+	//! by a newer request, or by the world ending, is not an answer.
+	protected static int s_iAnswersSent;
 
 	//------------------------------------------------------------------------------------------------
 	static array<ref LF_UIPart> BuildParts()
@@ -254,9 +257,10 @@ class LF_IdRequestSheet
 	//------------------------------------------------------------------------------------------------
 	static LF_UIScreen Open()
 	{
-		if (s_Screen)
-			s_Screen.Close();
-
+		// The sheet being replaced belongs to the old request, which the server already dropped for
+		// the new one. Closing it must not answer: OnClosed would send a refusal that the server
+		// reads as the answer to the NEW request, and the officer hears "refused" (#2413).
+		Dismiss();
 		s_bAnswered = false;
 		s_Screen = LF_UIScreen.Open(BuildParts(), LF_UISkin.IdCheck());
 		if (!s_Screen)
@@ -274,6 +278,24 @@ class LF_IdRequestSheet
 
 		LF_Debug.Info(LF_PhotoIdCard.FEATURE, "ID request sheet open");
 		return s_Screen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Closes the open sheet without answering it.
+	static void Dismiss()
+	{
+		if (!s_Screen)
+			return;
+
+		s_bAnswered = true;
+		s_Screen.Close();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! eturn How many answers this client has sent since the world began.
+	static int AnswersSent()
+	{
+		return s_iAnswersSent;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -312,6 +334,7 @@ class LF_IdRequestSheet
 			return;
 
 		s_bAnswered = true;
+		s_iAnswersSent++;
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (!controller)
 		{
@@ -329,6 +352,7 @@ class LF_IdRequestSheet
 	{
 		s_Screen = null;
 		s_bAnswered = false;
+		s_iAnswersSent = 0;
 	}
 
 //------------------------------------------------------------------------------------------------
