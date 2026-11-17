@@ -63,6 +63,22 @@ export function widthMatches(status, wantMetres) {
   return Number.isFinite(got) && got > 0 && Math.abs(got - wantMetres) / wantMetres <= WIDTH_TOLERANCE;
 }
 
+// The emulator's own view table (tools/map/render/render.mjs PLACES) and its width rule, for a machine that cannot
+// render: { x0, z0, x1, z1, zoom } or undefined. A catalog place name needs the emulator.
+const WORLD_M = 12800;
+const KNOWN = { island: { x: 6400, z: 6400, zoom: 0 }, "saint-philippe": { x: 4503, z: 10772, zoom: 3 }, square: { x: 4592, z: 10818, zoom: 4 } };
+export function fallbackView(view) {
+  if (view.bbox) {
+    const [x0, z0, x1, z1] = view.bbox;
+    return { x0, z0, x1, z1, zoom: view.zoom ?? Math.log2(WORLD_M / (x1 - x0)) };
+  }
+  const p = KNOWN[view.place || "island"];
+  if (!p) return undefined;
+  const zoom = view.zoom ?? p.zoom;
+  const w = WORLD_M / 2 ** zoom;
+  return { x0: p.x - w / 2, x1: p.x + w / 2, z0: p.z - w / 2, z1: p.z + w / 2, zoom };
+}
+
 async function runMapShots(args) {
   const out = resolve(opt(args, "out") || join(ROOT, "tmp", "map-shots"));
   const views = viewsFor(args);
@@ -105,14 +121,17 @@ async function runMapShots(args) {
 
   const shots = [];
   for (const view of views) {
+    // The emulator draws the companion picture and fixes the view; a machine with no MCP clone (the pool's session
+    // boxes) cannot render, so the same view comes from the emulator's table (render.mjs PLACES) instead.
     let emu;
     try {
       emu = await renderMap({ root: ROOT, place: view.place, bbox: view.bbox, zoom: view.zoom, log: () => {} });
+      writeFileSync(join(out, `${view.name}-emulator.png`), emu.png);
     } catch (e) {
-      return fail(`emulator ${view.name}: ${e.message}`);
+      console.log(`note emulator ${view.name}: ${e.message}; framing from the built-in view table`);
+      emu = { view: fallbackView(view) };
+      if (!emu.view) return fail(`emulator ${view.name}: ${e.message} and no built-in view for it`);
     }
-    const emuPath = join(out, `${view.name}-emulator.png`);
-    writeFileSync(emuPath, emu.png);
     const cx = (emu.view.x0 + emu.view.x1) / 2;
     const cz = (emu.view.z0 + emu.view.z1) / 2;
     const wantMetres = emu.view.x1 - emu.view.x0;
@@ -127,13 +146,13 @@ async function runMapShots(args) {
     if (!landed) console.log(`note ${view.name}: view is ${status.view_m} m wide, wanted ${wantMetres.toFixed(0)} (zoom limits ${status.min}..${status.max} px/m); photographing it as it is`);
     wait(1500); // tiles and labels draw a frame or two after a pan
 
-    const shot = on({ verb: "capture", mode: "ui", name: `map_${view.name}` }, 30000);
+    const shot = on({ verb: "capture", mode: "ui", name: `map_${view.name.replace(/[^A-Za-z0-9]+/g, "_")}` }, 30000);
     if (shot.status !== "ok") return fail(`capture ${view.name}: ${shot.detail}`);
     const bmp = h.resolveCapture(shot.detail);
     if (!bmp) return fail(`no capture file for ${view.name}`);
     const png = bmpFileToPng(bmp, join(out, `${view.name}.png`));
     shots.push(png);
-    console.log(`saved ${png} (emulator ${emuPath})`);
+    console.log(`saved ${png}`);
   }
 
   on({ verb: "map", words: ["close"] });

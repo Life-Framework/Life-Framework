@@ -82,9 +82,12 @@ class LF_MapHarness
 		IEntity item;
 		if (!FindCarried(character, item))
 		{
-			LF_Debug.Warn(FEATURE, "harness map open: no map gadget carried");
-			detail = "not_carried";
-			return false;
+			// No paper map on this character (the welcome gift comes after the arrival chain): open the
+			// menu the gadget opens, which reads the same game mode map config.
+			GetGame().GetMenuManager().OpenMenu(ChimeraMenuPreset.MapMenu);
+			LF_Debug.Info(FEATURE, "harness map open: no map gadget carried, opened the map menu");
+			detail = "opening (menu, no map carried)";
+			return true;
 		}
 
 		gadgets.SetGadgetMode(item, EGadgetMode.IN_HAND);
