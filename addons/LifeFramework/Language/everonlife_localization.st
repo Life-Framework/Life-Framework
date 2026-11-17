@@ -5053,6 +5053,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Delivery stop"
      Comment "Map mark and waypoint label: the current stop of a delivery run (courier, fuel)."
     }
+    CustomStringTableItem "{ADAD471556F7297F}" {
+     Id "LF-Job_AbandonedDeposit"
+     Target_en_us "Run abandoned. No pay, and the {currency:sym}%1 deposit is kept."
+     Comment "Notice when a delivery run with a cargo deposit is abandoned; %1 is the kept deposit."
+    }
     CustomStringTableItem "{CDE67184D007F114}" {
      Id "LF-Job_AccessDenied"
      Target_en_us "Access denied"
@@ -5151,6 +5156,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Puesto desconocido"
      Comment "Job title shown when the player's job config is missing"
     }
+    CustomStringTableItem "{3129D349B0449B3A}" {
+     Id "LF-Job_NeedDeposit"
+     Target_en_us "You need {currency:sym}%1 in cash as a deposit for the cargo. You get it back when you deliver."
+     Comment "Toast: a run does not start because the player cannot cover the cargo deposit; %1 is the deposit; the title is the job name."
+    }
     CustomStringTableItem "{A6F0C19B47735D9E}" {
      Id "LF-Job_NeedMedicCard"
      Target_en_us "You need your ambulance service ID to go on duty. It is issued at the hospital."
@@ -5167,6 +5177,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Job_NewWork"
      Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
      Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
+    }
+    CustomStringTableItem "{12050BC151134136}" {
+     Id "LF-Job_NoPassenger"
+     Target_en_us "A fare needs a passenger seated in your car."
+     Comment "Toast: a taxi fare is refused at the drop-off because no other player is seated in the driver vehicle; the title is the job name."
+    }
+    CustomStringTableItem "{3B4E65464D2780EE}" {
+     Id "LF-Job_NotADrop"
+     Target_en_us "This is not a drop-off point."
+     Comment "Toast: the entity the drop-off was tried on is not a placed drop site; the title is the job name."
     }
     CustomStringTableItem "{5F637FC76D6C6D7E}" {
      Id "LF-Job_NotWhitelisted"
@@ -5257,6 +5277,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Job_SignedUp_Taxi"
      Target_en_us "You drive a taxi now. Start a fare at this counter."
      Comment "Toast after signing up for taxi work: the next step."
+    }
+    CustomStringTableItem "{4BBC06DC40BA877A}" {
+     Id "LF-Job_TooClose"
+     Target_en_us "That drop is too close to where you started. Take it farther away."
+     Comment "Toast: a run is refused at a drop nearer than the configured minimum distance from its start; the title is the job name."
+    }
+    CustomStringTableItem "{F83B7CF7B24C02B9}" {
+     Id "LF-Job_TooFast"
+     Target_en_us "You got here too quickly to have made the trip. Nothing is paid."
+     Comment "Toast: a run is refused because it took less than the configured share of the expected driving time; the title is the job name."
     }
     CustomStringTableItem "{3B3C747588B68991}" {
      Id "LF-Job_Work_Title"

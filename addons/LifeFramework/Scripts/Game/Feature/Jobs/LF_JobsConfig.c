@@ -147,12 +147,27 @@ class LF_JobsConfig
 	static const int THRESHOLD_MAX = 100000000;	// lf-fixed: the XP cap limit
 	static const int GATE_LEVEL_MIN = 1;	// lf-fixed: the schema limit, levels start at 1
 	static const int GATE_LEVEL_MAX = 100;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float RUN_DISTANCE_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float RUN_DISTANCE_MAX = 100000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float RUN_FRACTION_MIN = 0;	// lf-fixed: the schema limit, 0 turns the time check off
+	static const float RUN_FRACTION_MAX = 1;	// lf-fixed: the schema limit, more than the whole expected time never pays
+	static const float RUN_SPEED_MIN = 1;	// lf-fixed: the schema limit, a zero speed has no expected time
+	static const float RUN_SPEED_MAX = 100;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DEPOSIT_PERCENT_MIN = 0;	// lf-fixed: the schema limit, 0 turns the deposit off
+	static const int DEPOSIT_PERCENT_MAX = 1000;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int LEGACY_FIRST_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int LEGACY_FIRST_MAX = 1000000;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const float LEGACY_GROWTH_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const float LEGACY_GROWTH_MAX = 10;	// lf-fixed: the schema limit, mirrors the attribute params
 
 	//! The pre-#749 career curve when the `.conf` does not resolve (the values it shipped with).
+	//! The run rules when the `.conf` does not resolve (the values it ships with). The fields carry no
+	//! initializers (#1077): the `.conf` holds them.
+	static const float DEFAULT_RUN_MIN_DISTANCE = 300;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
+	static const float DEFAULT_RUN_MIN_TIME_FRACTION = 0.6;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
+	static const float DEFAULT_RUN_ROAD_SPEED = 10;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
+	static const int DEFAULT_CARGO_DEPOSIT_PERCENT = 100;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
+	static const int DEFAULT_CARGO_DEPOSIT_FALLBACK = 50;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
 	static const int DEFAULT_JOB_XP_FIRST_LEVEL = 500;
 	static const float DEFAULT_JOB_XP_LEVEL_GROWTH = 2;
 
@@ -170,6 +185,21 @@ class LF_JobsConfig
 
 	[Attribute("1200", UIWidgets.Auto, "Unemployment benefit: seconds between collections for one account", params: "0 86400")]
 	float m_fBenefitCooldownSeconds;
+
+	[Attribute("300", UIWidgets.Auto, "Delivery run: the drop-off must be at least this many metres (straight line) from where the run started, or the run pays nothing", params: "0 100000")]
+	float m_fRunMinDistance;
+
+	[Attribute("0.6", UIWidgets.Auto, "Delivery run: the run must take at least this share of the expected driving time (distance over the road speed), or it pays nothing", params: "0 1")]
+	float m_fRunMinTimeFraction;
+
+	[Attribute("10", UIWidgets.Auto, "Delivery run: road speed in metres per second used to work out the expected driving time of a run", params: "1 100")]
+	float m_fRunRoadSpeed;
+
+	[Attribute("100", UIWidgets.Auto, "Delivery cargo deposit: percent of the cargo's shop sell price taken at the start of a run. It is returned on delivery and kept when the run is abandoned. 0 turns the deposit off", params: "0 1000")]
+	int m_iCargoDepositPercent;
+
+	[Attribute("50", UIWidgets.Auto, "Delivery cargo deposit: the deposit base when the shop price list has no sell price for the cargo", params: "0 1000000")]
+	int m_iCargoDepositFallback;
 
 	[Attribute("500", UIWidgets.Auto, "Delivery career before job tracks: XP from level 1 to 2. Read only to migrate a version 7-27 save's career onto the DELIVERY job; set it to what this server used", params: "1 1000000")]
 	int m_iJobXpFirstLevel;
@@ -281,7 +311,7 @@ class LF_JobsConfig
 	//! \param[in] source The file, for log lines.
 	void ApplyOwner(notnull LF_ConfigReader reader, string source = "config.json")
 	{
-		array<string> ownerKeys = {"policeDutyPayPerSecond", "medicDutyPayPerSecond", "benefitBalanceThreshold", "benefitAmount", "benefitCooldownSeconds", "jobXpFirstLevel", "jobXpLevelGrowth", "testUnlockAll", "tracks", "xpAwards", "licenceGates"};
+		array<string> ownerKeys = {"policeDutyPayPerSecond", "medicDutyPayPerSecond", "benefitBalanceThreshold", "benefitAmount", "benefitCooldownSeconds", "runMinDistance", "runMinTimeFraction", "runRoadSpeed", "cargoDepositPercent", "cargoDepositFallback", "jobXpFirstLevel", "jobXpLevelGrowth", "testUnlockAll", "tracks", "xpAwards", "licenceGates"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadBool("testUnlockAll", m_bTestUnlockAll);
 		reader.ReadFloat("policeDutyPayPerSecond", m_fPoliceDutyPayPerSecond, PAY_RATE_MIN, PAY_RATE_MAX);
@@ -289,6 +319,11 @@ class LF_JobsConfig
 		reader.ReadInt("benefitBalanceThreshold", m_iBenefitBalanceThreshold, CASH_MIN, CASH_MAX);
 		reader.ReadInt("benefitAmount", m_iBenefitAmount, CASH_MIN, CASH_MAX);
 		reader.ReadFloat("benefitCooldownSeconds", m_fBenefitCooldownSeconds, COOLDOWN_MIN, COOLDOWN_MAX);
+		reader.ReadFloat("runMinDistance", m_fRunMinDistance, RUN_DISTANCE_MIN, RUN_DISTANCE_MAX);
+		reader.ReadFloat("runMinTimeFraction", m_fRunMinTimeFraction, RUN_FRACTION_MIN, RUN_FRACTION_MAX);
+		reader.ReadFloat("runRoadSpeed", m_fRunRoadSpeed, RUN_SPEED_MIN, RUN_SPEED_MAX);
+		reader.ReadInt("cargoDepositPercent", m_iCargoDepositPercent, DEPOSIT_PERCENT_MIN, DEPOSIT_PERCENT_MAX);
+		reader.ReadInt("cargoDepositFallback", m_iCargoDepositFallback, CASH_MIN, CASH_MAX);
 		reader.ReadInt("jobXpFirstLevel", m_iJobXpFirstLevel, LEGACY_FIRST_MIN, LEGACY_FIRST_MAX);
 		reader.ReadFloat("jobXpLevelGrowth", m_fJobXpLevelGrowth, LEGACY_GROWTH_MIN, LEGACY_GROWTH_MAX);
 

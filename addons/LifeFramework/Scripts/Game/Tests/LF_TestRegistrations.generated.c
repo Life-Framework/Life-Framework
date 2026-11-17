@@ -219,7 +219,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_EventWaypoints(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceLockerPersist(), LF_TestTier.PERSISTENCE);
-		manager.Register(new LF_Test_FruitCatcherRounds(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobSwitchGuards(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BuildingPlacementRange(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AdminChatRole(), LF_TestTier.LOGIC);
@@ -324,7 +323,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobLevelSync(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobMapMarks(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobPacing(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JobRunCargoWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobRunMarks(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JobRunRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobSignUpPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JobsOverrideModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobsPackOverlay(), LF_TestTier.WORLD);
@@ -584,7 +585,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SearchCooldown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SearchLegality(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SearchSeizedList(), LF_TestTier.WORLD);
-		manager.Register(new LF_Test_FruitCatcherRewardClamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServerPerfLog(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ServiceBoard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ServiceCalls(), LF_TestTier.LOGIC);

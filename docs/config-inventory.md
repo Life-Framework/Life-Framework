@@ -335,7 +335,6 @@ Owner is core for every row until the M3 move.
 | `Jobs/LF_JobsConfig.c` | `LEGACY_GROWTH_MAX` | `10` | jobs | fixed (marked) |
 | `Jobs/LF_JobsConfig.c` | `DEFAULT_JOB_XP_FIRST_LEVEL` | `500` | jobs | config default |
 | `Jobs/LF_JobsConfig.c` | `DEFAULT_JOB_XP_LEVEL_GROWTH` | `2` | jobs | config default |
-| `Jobs/LF_PlayerJobComponent.c` | `LF_FRUIT_CATCHER_MAX_SCORE` | `100` | jobs | to move (#284) |
 | `Level/LF_JobLevels.c` | `DAY_SECONDS` | `86400` | unrouted | fixed (marked) |
 | `Level/LF_JobLevels.c` | `LEGACY_MAX_SINGLE_LEVEL` | `1000` | unrouted | fixed (marked) |
 | `Level/LF_JobLevels.c` | `LEGACY_MAX_LEVEL` | `20` | unrouted | fixed (marked) |
