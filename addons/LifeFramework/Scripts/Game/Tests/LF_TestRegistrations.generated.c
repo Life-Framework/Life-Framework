@@ -361,6 +361,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapWaypoint(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MedicDutyDesk(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_MedicResetHooks(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MiningAreaWeightedSpawns(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MiningDamage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MiningPrefabs(), LF_TestTier.WORLD);
@@ -465,6 +466,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuantityOperations(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_QuantityVisuals(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuarryZone(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_QuestRestoreCooldown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestSignal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestTracker(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestWorld(), LF_TestTier.WORLD);
@@ -476,6 +478,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RaceCourses(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceEveryFinisher(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceHud(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RacePathStart(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceRecords(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_RaceRunner(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RadioPlaylist(), LF_TestTier.LOGIC);

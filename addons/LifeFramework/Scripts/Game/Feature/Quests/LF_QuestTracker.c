@@ -165,14 +165,14 @@ class LF_QuestTracker
 	//! Persistence seam: marks a quest turned in when this tracker has no state for it. A live
 	//! state (re-accepted, active) is kept, so applying twice changes nothing.
 	//! \return true when this call added the turned-in state.
-	bool RestoreTurnedIn(string questId)
+	bool RestoreTurnedIn(string questId, float now = 0)
 	{
 		// An account flag (LF_Progression.NoteFlag) shares the turn-in list; it is not a quest.
 		if (questId.IsEmpty() || questId.StartsWith(LF_Progression.FLAG_PREFIX) || m_mStates.Contains(questId))
 			return false;
 
 		LF_QuestState state = new LF_QuestState();
-		state.RestoreTurnedIn(questId);
+		state.RestoreTurnedIn(questId, now);
 		m_mStates.Set(questId, state);
 		return true;
 	}

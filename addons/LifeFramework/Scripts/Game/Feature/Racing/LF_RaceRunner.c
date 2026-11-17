@@ -36,6 +36,33 @@ class LF_RaceEntrant
 	//! World position at the last detection tick, so a fast car is checked along its path.
 	vector m_vLast;
 	bool m_bHasLast;
+	//! The body the last position belongs to. A new body (respawn, character switch) starts a new path.
+	EntityID m_LastBodyId = EntityID.INVALID;
+
+	//------------------------------------------------------------------------------------------------
+	//! Where this tick's path starts for body bodyId standing at now, and remembers now for the next
+	//! tick. The path is only joined to the last spot when the same body stood there: a death,
+	//! respawn or character switch would otherwise draw a line from the old body to the new one
+	//! and pass any checkpoint on it (docs/reviews/2026-11-17-life.md).
+	vector Step(EntityID bodyId, vector now)
+	{
+		vector from = now;
+		if (m_bHasLast && bodyId != EntityID.INVALID && bodyId == m_LastBodyId)
+			from = m_vLast;
+
+		m_vLast = now;
+		m_bHasLast = true;
+		m_LastBodyId = bodyId;
+		return from;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No living body this tick: the next one starts a new path.
+	void Lose()
+	{
+		m_bHasLast = false;
+		m_LastBodyId = EntityID.INVALID;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -691,16 +718,17 @@ class LF_RaceRunner
 
 				string next = LF_RaceCourse.NextCheckpoint(running.m_Course, racer.m_Progress);
 				IEntity body = ResolveBody(racer);
-				if (next.IsEmpty() || !body)
+				if (!body)
+				{
+					racer.Lose();
+					continue;
+				}
+
+				if (next.IsEmpty())
 					continue;
 
 				vector now = WorldPosition(body);
-				vector from = now;
-				if (racer.m_bHasLast)
-					from = racer.m_vLast;
-
-				racer.m_vLast = now;
-				racer.m_bHasLast = true;
+				vector from = racer.Step(body.GetID(), now);
 				if (LF_RaceCheckpointComponent.Crossed(next, from, now))
 					PassAt(id, uid, next, timeMs);
 			}
