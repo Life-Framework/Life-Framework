@@ -133,10 +133,11 @@ class LF_BanRecord
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: the numbers of the target's incidents (as either party) the log still holds, the newest
-	//! INCIDENT_MAX, oldest first.
+	//! INCIDENT_MAX, oldest first. The log keys incidents by character, so every record key of the
+	//! account is asked, not only the uid a ban names (#2414).
 	static array<int> RecentIncidentIds(string uid)
 	{
-		return LF_IncidentLog.RecentNumbersFor(uid, INCIDENT_MAX);
+		return LF_IncidentLog.RecentNumbersForAny(LF_PlayerAccountManager.RecordKeysOf(uid), INCIDENT_MAX);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-10 with `tools/cli test --no-build --only LF_Test_NpcWitness`: dropping the range check in LF_Witness.AddWitness failed `investigation/npc-witness` with `- an NPC 80 m away saw nothing`. Restored; green.
+// red-proof: Observed 2026-11-17 `tools/cli test --no-build --only LF_Test_NpcWitness` on the unfixed LF_Witness.Ask failed `investigation/npc-witness` with `- asked again, the NPC is not re-rolled and says nothing more (#2419) (expected 0, got 2)`. Fixed: green. Earlier proof, 2026-11-10: dropping the range check in LF_Witness.AddWitness failed it with `- an NPC 80 m away saw nothing`.
 // tier: LOGIC
 //! Officers question witnesses in person (#267): a town NPC that stood in range gives a statement,
 //! one out of range saw nothing, a low-accuracy roll leaves a statement partial, a player witness
@@ -34,7 +34,10 @@ class LF_Test_NpcWitness : LF_Test
 		ctx.True(!statements[0].m_sClothing.IsEmpty() && statements[0].m_sVehicle.IsEmpty() && statements[0].m_sPlateFragment.IsEmpty(), "the statement holds the clothing and nothing else");
 
 		array<float> sharp = {0.0, 0.0, 0.0};
-		ctx.Equal(2, LF_Witness.Ask(LF_Witness.SceneFor(NPC_NEAR, 6000), NPC_NEAR, sharp, "officer"), "asked again, a sharp NPC adds the vehicle and the plate");
+		ctx.Equal(0, LF_Witness.Ask(LF_Witness.SceneFor(NPC_NEAR, 6000), NPC_NEAR, sharp, "officer"), "asked again, the NPC is not re-rolled and says nothing more (#2419)");
+		LF_Witness.CollectFor(52, statements);
+		ctx.Equal(1, statements.Count(), "the second ask leaves no second statement");
+		ctx.True(!statements[0].m_sClothing.IsEmpty() && statements[0].m_sVehicle.IsEmpty() && statements[0].m_sPlateFragment.IsEmpty(), "the statement is still the clothing and nothing else");
 
 		ctx.Equal(3, LF_Witness.Ask(LF_Witness.SceneFor(PLAYER, 6000), PLAYER, null, "officer"), "a player witness says everything it could see");
 

@@ -38,6 +38,10 @@ class LF_JobSiteComponent : ScriptComponent
 
 		LF_Debug.Log("Jobs", string.Format("site %1 kind %2", owner.GetName(), m_eSite));
 
+		// A drop-off is found by place, never by name (LF_JobMapMarks marks the nearest one for a run).
+		if (m_eSite == LF_EJobSite.DROP)
+			LF_Places.Register(LF_JobMapMarks.PLACE_DROP, owner.GetName(), owner);
+
 		if (m_eSite == LF_EJobSite.FUEL)
 		{
 			Resource fuel = Resource.Load(LF_CivilianJob.FUEL_PREFAB);

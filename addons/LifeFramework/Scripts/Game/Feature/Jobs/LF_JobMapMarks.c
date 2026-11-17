@@ -12,6 +12,10 @@ class LF_JobMapMark : Managed
 	string m_sWaypointId;
 	//! A job stop made while its runner had a run: it goes when that run ends, however it ends.
 	bool m_bRunBound;
+	//! What the waypoint said and where, kept so a respawned player gets it again (ResendTo).
+	string m_sText;
+	int m_iX;
+	int m_iZ;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -70,13 +74,19 @@ class LF_JobWaypointRplSink : LF_JobWaypointSink
 //! (LF_Waypoint, the one GPS-like aid, D-M9). The job owns the marks: finishing the fare or the run
 //! (LF_OnJobCompleted), abandoning the run, or the safety expiry removes both the row and the waypoint.
 //! Server only; nothing is saved, a restart clears runs and marks alike (D-M11).
-//! The fare and stop systems call OnFareAccepted/OnFareDone and OnStop/OnStopDone; no job code is
-//! edited by this card.
+//! The fare and stop systems call OnFareAccepted/OnFareDone and OnStop/OnStopDone. Callers (follow-up to #2239):
+//! starting a delivery run puts its stop on the map (OnRunStarted: the nearest drop, a DROP
+//! LF_JobSiteComponent registered in LF_Places); LF_CivilianJob.AbandonRun clears it at once (a run
+//! ended any other way is swept); completing a run clears it by LF_OnJobCompleted; a respawn resends
+//! the waypoint (ResendTo). A run has the one stop today; a route with several calls OnStop for each
+//! next one and the new stop replaces the last. Taxi runs get no stop mark: no fare system yet (M6).
 class LF_JobMapMarks
 {
 	static const string FEATURE = "Jobs";
 	static const string KEY_TAXI = "taxi:";
 	static const string KEY_JOB = "job:";
+	//! LF_Places kind of a drop-off (an LF_JobSiteComponent of site DROP); the id is the entity name.
+	static const string PLACE_DROP = "JobDrop";
 	static const string WAYPOINT_FARE = "taxi-fare";
 	static const string WAYPOINT_STOP = "job-stop";
 	static const string TEXT_FARE = "#LF-JobMap_Fare";
@@ -133,6 +143,98 @@ class LF_JobMapMarks
 	static bool IsStale(bool runBound, bool runActive)
 	{
 		return runBound && !runActive;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: index of the position nearest `from` (ground distance), or -1 for none.
+	static int NearestIndex(notnull array<vector> positions, vector from)
+	{
+		int best = -1;
+		float bestDistance;
+		foreach (int i, vector position : positions)
+		{
+			float distance = vector.DistanceSq(Vector(position[0], 0, position[2]), Vector(from[0], 0, from[2]));
+			if (best == -1 || distance < bestDistance)
+			{
+				best = i;
+				bestDistance = distance;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a delivery run started with its cargo in hand. Its stop is the nearest placed drop-off.
+	//! \return The share key, or "" when the run gets no mark (a taxi run, or no drop placed).
+	static string OnRunStarted(string runnerUid, LF_EJobType job, vector from)
+	{
+		array<IEntity> drops = {};
+		LF_Places.FindAll(PLACE_DROP, drops);
+		array<string> ids = {};
+		array<vector> positions = {};
+		array<string> farIds = {};
+		array<vector> farPositions = {};
+		foreach (IEntity drop : drops)
+		{
+			ids.Insert(drop.GetName());
+			positions.Insert(drop.GetOrigin());
+			if (vector.Distance(from, drop.GetOrigin()) >= LF_CivilianJob.RunMinDistance())
+			{
+				farIds.Insert(drop.GetName());
+				farPositions.Insert(drop.GetOrigin());
+			}
+		}
+
+		// A drop nearer than the run's minimum distance pays nothing, so the stop is the nearest one that
+		// pays; when none is far enough the nearest is marked anyway (the drop-off then says why it is refused).
+		if (!farIds.IsEmpty())
+			return StopForRun(runnerUid, job, from, farIds, farPositions);
+
+		return StopForRun(runnerUid, job, from, ids, positions);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The run's stop from the drops that exist: ids[i] stands at positions[i].
+	static string StopForRun(string runnerUid, LF_EJobType job, vector from, notnull array<string> ids, notnull array<vector> positions)
+	{
+		if (job == LF_EJobType.TAXI)
+			return "";
+
+		int nearest = NearestIndex(positions, from);
+		if (nearest < 0 || nearest >= ids.Count())
+		{
+			LF_Debug.Warn(FEATURE, string.Format("no stop map mark for %1: no drop-off is placed", runnerUid));
+			return "";
+		}
+
+		return OnStop(runnerUid, ids[nearest], positions[nearest]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a player spawned (late join or respawn): put their waypoints on the new client again.
+	//! The map rows come back through LF_MapShares.OnSpawned; the waypoint lives only on the client.
+	//! \return How many waypoints were sent.
+	static int ResendTo(string uid)
+	{
+		if (!s_aMarks || uid.IsEmpty())
+			return 0;
+
+		Prune();
+		int sent;
+		foreach (LF_JobMapMark mark : s_aMarks)
+		{
+			if (mark.m_sUid != uid)
+				continue;
+
+			Sink().Mark(uid, mark.m_sWaypointId, mark.m_sText, mark.m_iX, mark.m_iZ);
+			sent++;
+		}
+
+		if (sent > 0)
+			LF_Debug.Info(FEATURE, string.Format("%1 spawned: %2 waypoint(s) sent again", uid, sent));
+
+		return sent;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -281,6 +383,9 @@ class LF_JobMapMarks
 		mark.m_sUid = uid;
 		mark.m_sWaypointId = waypointId;
 		mark.m_bRunBound = runBound;
+		mark.m_sText = text;
+		mark.m_iX = x;
+		mark.m_iZ = z;
 		Marks().Insert(mark);
 		Sink().Mark(uid, waypointId, text, x, z);
 		LF_Debug.Info(FEATURE, string.Format("map mark %1 and waypoint %2 for %3 at %4 %5", key, waypointId, uid, x, z));
@@ -357,37 +462,69 @@ class LF_JobMapMarks
 }
 
 //------------------------------------------------------------------------------------------------
-//! Bus subscriber for completed runs.
+//! Bus subscriber: completed runs clear their marks, a spawn resends the player's waypoints.
 class LF_JobMapMarkSubscriber : LF_EventSubscriber
 {
 	protected static ref LF_JobMapMarkSubscriber s_Subscriber;
+	static const int RETRY_MS = 2000; // lf-fixed: one retry for an account that has no character at the spawn event
 
 	//------------------------------------------------------------------------------------------------
 	override bool Handle(notnull LF_Event busEvent)
 	{
 		LF_OnJobCompleted done = LF_OnJobCompleted.Cast(busEvent);
-		if (!done)
+		if (done)
+		{
+			LF_JobMapMarks.OnJobCompleted(done);
+			return true;
+		}
+
+		LF_OnPlayerSpawnedEvent spawned = LF_OnPlayerSpawnedEvent.Cast(busEvent);
+		if (!spawned)
 			return false;
 
-		LF_JobMapMarks.OnJobCompleted(done);
+		if (!ResendFor(spawned.m_iPlayerId) && GetGame())
+			GetGame().GetCallqueue().CallLater(LF_JobMapMarkSubscriber.RetryResend, RETRY_MS, false, spawned.m_iPlayerId);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The account may not have its character yet when the spawn event fires: ask once more.
+	protected static void RetryResend(int playerId)
+	{
+		ResendFor(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return false when the player's character is not known yet.
+	protected static bool ResendFor(int playerId)
+	{
+		LF_MapShareGameFacts facts = new LF_MapShareGameFacts();
+		LF_MapShareMember member = facts.Of(playerId);
+		if (!member)
+			return false;
+
+		LF_JobMapMarks.ResendTo(member.m_sUid);
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static void Install()
 	{
-		if (s_Subscriber)
-			LF_EventBus.Unsubscribe(LF_OnJobCompleted, s_Subscriber);
-
+		ResetStatics();
 		s_Subscriber = new LF_JobMapMarkSubscriber();
 		LF_EventBus.Subscribe(LF_OnJobCompleted, s_Subscriber);
+		LF_EventBus.Subscribe(LF_OnPlayerSpawnedEvent, s_Subscriber);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		if (s_Subscriber)
+		{
 			LF_EventBus.Unsubscribe(LF_OnJobCompleted, s_Subscriber);
+			LF_EventBus.Unsubscribe(LF_OnPlayerSpawnedEvent, s_Subscriber);
+		}
 
 		s_Subscriber = null;
 	}

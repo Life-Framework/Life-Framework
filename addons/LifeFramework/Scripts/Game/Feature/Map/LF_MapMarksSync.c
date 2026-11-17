@@ -68,7 +68,7 @@ modded class SCR_MapMarkerManagerComponent
 //! RPC for a burst of edits or a drag) and re-inserts the server's list on spawn.
 class LF_MapMarksClient
 {
-	static const int UPLOAD_DELAY_MS = 2000; // lf-fixed: batches a burst of edits under the COMMS rate window
+	static const int UPLOAD_DELAY_MS = 2000; // lf-fixed: batches a burst of edits under the MAP rate window
 
 	protected static bool s_bRestoring;
 	protected static bool s_bUploadQueued;
@@ -84,9 +84,16 @@ class LF_MapMarksClient
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A mark the player placed with the dialog (custom or military), not a scripted marker.
+	//! A mark the player placed with the dialog (custom or military), not a scripted marker. A shared
+	//! mark (LF_MapShareComponent) is a local PLACED_CUSTOM marker too, so it is told apart by being
+	//! read-only: it sets CanBeRemovedByOwner false before its insert. Counting it as personal let shared
+	//! marks fill the 20 cap (a full map refused dispatch and org marks) and uploaded them into the
+	//! player's saved personal marks, so an org mark outlived leaving the org (review 2026-11-17).
 	static bool IsPersonal(notnull SCR_MapMarkerBase marker)
 	{
+		if (!marker.CanBeRemovedByOwner())
+			return false;
+
 		SCR_EMapMarkerType type = marker.GetType();
 		return type == SCR_EMapMarkerType.PLACED_CUSTOM || type == SCR_EMapMarkerType.PLACED_MILITARY;
 	}
@@ -276,7 +283,7 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_MapMarksSync()
 	{
-		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.COMMS, "map marks sync"))
+		if (!LF_MapMarks.AllowAsk(GetPlayerId(), "map marks sync"))
 			return;
 
 		LF_SendMapMarksAll(LF_MapMarksSyncRetry.RETRIES);
@@ -287,7 +294,7 @@ modded class SCR_PlayerController
 	protected void RpcAsk_LF_MapMarksSet(array<int> ints, array<string> texts)
 	{
 		int playerId = GetPlayerId();
-		if (!LF_RateLimit.Allow(playerId, LF_ERequestKind.COMMS, "map marks save"))
+		if (!LF_MapMarks.AllowAsk(playerId, "map marks save"))
 			return;
 
 		// A real client never holds more than the cap; a flood is refused before any row is built.

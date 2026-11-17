@@ -134,8 +134,8 @@ StringTable {
     }
     CustomStringTableItem "{6B1E0C2D9A4F7E31}" {
      Id "EL-Benefit_Refused_Balance"
-     Target_en_us "Your bank balance is too high for the benefit"
-     Comment "Benefit refused because the bank balance is at or above the threshold"
+     Target_en_us "You have too much money for the benefit"
+     Comment "Benefit refused because the bank balance plus carried cash is at or above the threshold"
     }
     CustomStringTableItem "{6B1E0C2D9A4F7E33}" {
      Id "EL-Benefit_Refused_Cooldown"
@@ -1230,6 +1230,11 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "Draw kit"
      Comment "Station armory action that issues the officer's rank kit"
     }
+    CustomStringTableItem "{161F069D20EEEF68}" {
+     Id "EL-Rank_DrawCooldown"
+     Target_en_us "The armory issues your next kit in %1 min"
+     Comment "Toast: armory draw refused, the officer drew a kit less than 2 hours ago (real time). %1 = minutes left."
+    }
     CustomStringTableItem "{C91A4E7700B10014}" {
      Id "EL-Rank_DrawDenied"
      Target_en_us "Only on-duty {police} can draw a kit"
@@ -1244,6 +1249,26 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Id "EL-Rank_IssueNeedsRank"
      Target_en_us "The armory issues that from the rank of %1"
      Comment "Toast: the armory refused an item because the officer's rank is below the offer's. %1 = the rank title that may draw it."
+    }
+    CustomStringTableItem "{8A7BC982642B2C23}" {
+     Id "EL-Rank_KitOutstanding"
+     Target_en_us "Your last kit is still out. Hand it in here, or use the armory again to report it lost"
+     Comment "Toast: armory draw refused, the officer has issued items not yet turned in. A second use within 15 s reports them lost."
+    }
+    CustomStringTableItem "{1DC38F5132E43BEC}" {
+     Id "EL-Rank_KitPartReturned"
+     Target_en_us "Kit handed in, %1 item(s) still out"
+     Comment "Toast: the armory took back part of the issued kit. %1 = serialled items still missing."
+    }
+    CustomStringTableItem "{94F584B3EA53013B}" {
+     Id "EL-Rank_KitReportedLost"
+     Target_en_us "Kit reported lost. Its serials are logged"
+     Comment "Toast: the officer confirmed the issued kit is lost; the book clears it and logs the serials. The 2 hour cooldown still applies."
+    }
+    CustomStringTableItem "{1DFCFD19D6D4381C}" {
+     Id "EL-Rank_KitReturned"
+     Target_en_us "Kit handed in"
+     Comment "Toast: the armory took back every serialled item of the officer's issued kit"
     }
     CustomStringTableItem "{C91A4E7700B10011}" {
      Id "EL-Rank_Patrol"
@@ -2201,9 +2226,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Comment "Load refusal: no vehicle with a free passenger seat nearby."
     }
     CustomStringTableItem "{7A30C5E1D49B6A05}" {
-     Id "LF-Carry_NotAllowed"
-     Target_en_us "Only a {medic} on duty can move them."
-     Comment "Carry refusal: config limits it to medics."
+     Id "LF-Carry_NotAllowedDuty"
+     Target_en_us "Only a {medic} or {police} on duty can move them."
+     Comment "Carry refusal: config limits it to medics and police."
     }
     CustomStringTableItem "{7A30C5E1D49B6A0B}" {
      Id "LF-Carry_NotDowned"
@@ -2520,6 +2545,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take this stolen car apart"
      Comment "Action: start dismantling the car in the yard (#415)."
     }
+    CustomStringTableItem "{72D3F56BF9D4656A}" {
+     Id "LF-Chop_NoRoom"
+     Target_en_us "No room for the cash. Make space, then collect."
+     Comment "Toast: the worker's inventory cannot take the chop payout, so the car stays (crime review 2026-11-17)."
+    }
     CustomStringTableItem "{764914C9C71A4DE3}" {
      Id "LF-Chop_NoVehicle"
      Target_en_us "Park the car in the yard first"
@@ -2595,6 +2625,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1  /  %2  /  %3 UTC"
      Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
     }
+    CustomStringTableItem "{5C1E7A3B90D24F68}" {
+     Id "LF-Contraband_Cooldown"
+     Target_en_us "Your crew needs a breather. Wait a few minutes before the next run."
+     Comment "Convoy start refused: the character was paid for a run in the last ten minutes"
+    }
     CustomStringTableItem "{1D5E4503B79F1A6F}" {
      Id "LF-Contraband_Crate_Desc"
      Target_en_us "Unstamped bottles, no excise paid. The publican on the square buys them at his back door. Police take it on sight."
@@ -2619,6 +2654,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Contraband_Loaded"
      Target_en_us "You have a crate. Drive it to the convoy drop, the empty crate cage, and stay in the vehicle until you get there."
      Comment "Toast when the convoy start hands the player a contraband crate at the barn"
+    }
+    CustomStringTableItem "{B7240E91C5A3D816}" {
+     Id "LF-Contraband_NotDriven"
+     Target_en_us "The crate has to be driven to the drop. Carrying it over on foot pays nothing."
+     Comment "Convoy delivery refused: the run never watched a vehicle, so the crate went on foot"
     }
     CustomStringTableItem "{C6C3575A8274C731}" {
      Id "LF-Contraband_NotHideoutOwner"
@@ -3750,6 +3790,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "on duty"
      Comment "Inserted into the duty status sentence (EL-Duty_Status_Change, You are now %1)"
     }
+    CustomStringTableItem "{BDF3D838FB6219D0}" {
+     Id "LF-Duty_TrialExpired"
+     Target_en_us "Your trial as an officer has ended. You have been clocked out."
+     Comment "Toast to an on-duty officer whose trial ran out: the server clocked them out and removed them from the police roster (#2416)."
+    }
     CustomStringTableItem "{10850C37306E78EB}" {
      Id "LF-Duty_WrongDesk"
      Target_en_us "You are on duty for another service. Clock out at your own desk first."
@@ -3764,6 +3809,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Emote_Restrained"
      Target_en_us "Not while restrained"
      Comment "Greyed-out reason on an emote or on Sit while the body is cuffed or stunned (#982)."
+    }
+    CustomStringTableItem "{5B1F9A3E7C2D4086}" {
+     Id "LF-EventMap_Place"
+     Target_en_us "Event"
+     Comment "Map mark and area label: where a story event is running, shown to everyone until it ends. A pack may override the Id with a place or event name."
     }
     CustomStringTableItem "{4587AF3655D18A21}" {
      Id "LF-Evidence_Bag_Action"
@@ -3943,6 +3993,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
      Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
     }
+    CustomStringTableItem "{58906F560E794544}" {
+     Id "LF-Garage_EmptyCargo"
+     Target_en_us "Empty the vehicle's storage first"
+     Comment "Garage store refused (#2411): the vehicle still holds items, and a stored vehicle keeps no cargo."
+    }
     CustomStringTableItem "{7DACF581EBBB4514}" {
      Id "LF-Garage_Engine"
      Target_en_us "Engine"
@@ -4013,6 +4068,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You have no vehicle in the garage."
      Comment "Retrieve refused: nothing stored"
     }
+    CustomStringTableItem "{4D580A2D0F314D42}" {
+     Id "LF-Garage_Occupied"
+     Target_en_us "Everyone must step out of the vehicle first"
+     Comment "Garage store refused (#2411): someone is still seated in the vehicle."
+    }
     CustomStringTableItem "{A103BFA88FF840F0}" {
      Id "LF-Garage_PadBusy"
      Target_en_us "The pad in front of the garage is blocked. Move the car that is standing there."
@@ -4077,6 +4137,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Gather_Action"
      Target_en_us "Gather %1"
      Comment "Action name for gathering a resource. %1 = item name"
+    }
+    CustomStringTableItem "{C978A84E212BD638}" {
+     Id "LF-Gather_Empty"
+     Target_en_us "Picked clean for now"
+     Comment "Gather refused on the client: the spot is out of stock (#2409)"
+    }
+    CustomStringTableItem "{E1BA56AC133E9004}" {
+     Id "LF-Gather_EmptyWait"
+     Target_en_us "Picked clean. More in about %1 min."
+     Comment "Toast when a gather spot is out of stock. %1 = minutes until the next one grows back (#2409)"
     }
     CustomStringTableItem "{44A28FD4E95EA8C3}" {
      Id "LF-Gather_RequiresItem"
@@ -4422,6 +4492,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Hotwire_Title"
      Target_en_us "Hotwire"
      Comment "Toast title for hotwiring (#412)."
+    }
+    CustomStringTableItem "{7B1E4C90A2D35F68}" {
+     Id "LF-HouseLock_Lock"
+     Target_en_us "Lock house"
+     Comment "House door action: the owner or a key holder locks the house"
+    }
+    CustomStringTableItem "{9D52A7E31C084B6F}" {
+     Id "LF-HouseLock_Unlock"
+     Target_en_us "Unlock house"
+     Comment "House door action: the owner or a key holder unlocks the house"
     }
     CustomStringTableItem "{57AECD3805F0082C}" {
      Id "LF-ID_CardAge"
@@ -4843,6 +4923,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Step closer to them."
      Comment "Player interaction refused: the other person is out of reach."
     }
+    CustomStringTableItem "{7C1E4A92B05D3F18}" {
+     Id "LF-ItemName_HouseKeyOf"
+     Target_en_us "House Key [%1]"
+     Comment "Inventory name of a house key bound to a house. %1 is the house identifier it opens (#2470)."
+    }
+    CustomStringTableItem "{2D9B60E7A4C85F31}" {
+     Id "LF-ItemName_VehicleKeyOf"
+     Target_en_us "Vehicle Key [%1]"
+     Comment "Inventory name of a vehicle key bound to a vehicle. %1 is the vehicle identifier it opens (#2470)."
+    }
     CustomStringTableItem "{39E8DFFDB0869E08}" {
      Id "LF-Item_CarParts_Description"
      Target_en_us "Spare parts stripped off a stolen car. A trader pays a little for them."
@@ -4998,6 +5088,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "SERVED. Released."
      Comment "Stamp printed on a sentence slip when the sentence ends."
     }
+    CustomStringTableItem "{5D1E7A3C9B20F486}" {
+     Id "LF-JailSlip_Unnamed"
+     Target_en_us "unknown"
+     Comment "Sentence slip: the prisoner name when the prisoner has no character name. Never the platform uid."
+    }
     CustomStringTableItem "{04A2CD75730658F5}" {
      Id "LF-JailWork_BadConfig"
      Target_en_us "This job is not set up."
@@ -5047,6 +5142,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-JobMap_Stop"
      Target_en_us "Delivery stop"
      Comment "Map mark and waypoint label: the current stop of a delivery run (courier, fuel)."
+    }
+    CustomStringTableItem "{ADAD471556F7297F}" {
+     Id "LF-Job_AbandonedDeposit"
+     Target_en_us "Run abandoned. No pay, and the {currency:sym}%1 deposit is kept."
+     Comment "Notice when a delivery run with a cargo deposit is abandoned; %1 is the kept deposit."
     }
     CustomStringTableItem "{CDE67184D007F114}" {
      Id "LF-Job_AccessDenied"
@@ -5146,6 +5246,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Puesto desconocido"
      Comment "Job title shown when the player's job config is missing"
     }
+    CustomStringTableItem "{3129D349B0449B3A}" {
+     Id "LF-Job_NeedDeposit"
+     Target_en_us "You need {currency:sym}%1 in cash as a deposit for the cargo. You get it back when you deliver."
+     Comment "Toast: a run does not start because the player cannot cover the cargo deposit; %1 is the deposit; the title is the job name."
+    }
     CustomStringTableItem "{A6F0C19B47735D9E}" {
      Id "LF-Job_NeedMedicCard"
      Target_en_us "You need your ambulance service ID to go on duty. It is issued at the hospital."
@@ -5162,6 +5267,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Job_NewWork"
      Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
      Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
+    }
+    CustomStringTableItem "{12050BC151134136}" {
+     Id "LF-Job_NoPassenger"
+     Target_en_us "A fare needs a passenger seated in your car."
+     Comment "Toast: a taxi fare is refused at the drop-off because no other player is seated in the driver vehicle; the title is the job name."
+    }
+    CustomStringTableItem "{3B4E65464D2780EE}" {
+     Id "LF-Job_NotADrop"
+     Target_en_us "This is not a drop-off point."
+     Comment "Toast: the entity the drop-off was tried on is not a placed drop site; the title is the job name."
     }
     CustomStringTableItem "{5F637FC76D6C6D7E}" {
      Id "LF-Job_NotWhitelisted"
@@ -5253,11 +5368,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You drive a taxi now. Start a fare at this counter."
      Comment "Toast after signing up for taxi work: the next step."
     }
+    CustomStringTableItem "{4BBC06DC40BA877A}" {
+     Id "LF-Job_TooClose"
+     Target_en_us "That drop is too close to where you started. Take it farther away."
+     Comment "Toast: a run is refused at a drop nearer than the configured minimum distance from its start; the title is the job name."
+    }
+    CustomStringTableItem "{F83B7CF7B24C02B9}" {
+     Id "LF-Job_TooFast"
+     Target_en_us "You got here too quickly to have made the trip. Nothing is paid."
+     Comment "Toast: a run is refused because it took less than the configured share of the expected driving time; the title is the job name."
+    }
     CustomStringTableItem "{3B3C747588B68991}" {
      Id "LF-Job_Work_Title"
      Target_en_us "Work"
      Target_es_es "Trabajo"
      Comment "Hint title for work results"
+    }
+    CustomStringTableItem "{280FC8E5DDE60C95}" {
+     Id "LF-Keybind_OpenEmote"
+     Target_en_us "Open emote menu"
+     Comment "Key binding menu label: hold to open the emote radial."
+    }
+    CustomStringTableItem "{15BA4CF2BECFEB7F}" {
+     Id "LF-Keybind_SirenDouble"
+     Target_en_us "Cycle siren mode (alternate)"
+     Comment "Key binding menu label: cycle the vehicle siren modes (double click)."
+    }
+    CustomStringTableItem "{EBE5A15AF131A672}" {
+     Id "LF-Keybind_SirenSingle"
+     Target_en_us "Cycle siren mode"
+     Comment "Key binding menu label: cycle the vehicle siren modes (single click)."
     }
     CustomStringTableItem "{C8B8911B5F3A014D}" {
      Id "LF-Keybind_VehicleLock"
@@ -5867,10 +6007,30 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Buy"
      Comment "Car lot row button."
     }
+    CustomStringTableItem "{811F406212DFA1D1}" {
+     Id "LF-Lot_ChangeLocks"
+     Target_en_us "Change the locks"
+     Comment "Car lot sheet row and toast title: the owner pays for new locks on their latest car; every older key stops working (#2411)."
+    }
+    CustomStringTableItem "{8CEDC85FF7E4E4F0}" {
+     Id "LF-Lot_ChangeLocksButton"
+     Target_en_us "Change"
+     Comment "Car lot sheet button on the change-locks row."
+    }
+    CustomStringTableItem "{F332871C9531979A}" {
+     Id "LF-Lot_ChangeLocksRow"
+     Target_en_us "Change the locks: %1"
+     Comment "Car lot sheet row: re-key the car with this plate. %1 = the plate."
+    }
     CustomStringTableItem "{EEBDBD6504C8B4FF}" {
      Id "LF-Lot_Leave"
      Target_en_us "Leave"
      Comment "Car lot sheet close button."
+    }
+    CustomStringTableItem "{0FCCB2C68B85D51F}" {
+     Id "LF-Lot_LocksChanged"
+     Target_en_us "New locks fitted. Your old keys no longer open the car; here is the new one."
+     Comment "Toast after the owner changed the locks on their car."
     }
     CustomStringTableItem "{3E2EC9B19D88B571}" {
      Id "LF-Lot_Money"
@@ -5916,6 +6076,106 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-MapKnown_Title"
      Target_en_us "Your map"
      Comment "Map discovery (#2242): the toast title for the clerk's arrival marks."
+    }
+    CustomStringTableItem "{FB41DE0AE665439A}" {
+     Id "LF-MapLegend_Cat_civic"
+     Target_en_us "Civic"
+     Comment "Map legend (#2244): category line, civic places."
+    }
+    CustomStringTableItem "{DB2CEFE2D4AB3134}" {
+     Id "LF-MapLegend_Cat_health"
+     Target_en_us "Health"
+     Comment "Map legend (#2244): category line, clinics and hospital."
+    }
+    CustomStringTableItem "{1264A12EDAE44B4D}" {
+     Id "LF-MapLegend_Cat_law"
+     Target_en_us "Law"
+     Comment "Map legend (#2244): category line, police and law."
+    }
+    CustomStringTableItem "{0356E8394B3CCC79}" {
+     Id "LF-MapLegend_Cat_shop"
+     Target_en_us "Shops"
+     Comment "Map legend (#2244): category line, shops."
+    }
+    CustomStringTableItem "{8C14520EB5B1F9F5}" {
+     Id "LF-MapLegend_Cat_story"
+     Target_en_us "Story places"
+     Comment "Map legend (#2244): category line, story places."
+    }
+    CustomStringTableItem "{5663C5F74F2B4A2C}" {
+     Id "LF-MapLegend_Cat_travel"
+     Target_en_us "Travel"
+     Comment "Map legend (#2244): category line, taxi and harbour."
+    }
+    CustomStringTableItem "{AA8F815614FBCA7B}" {
+     Id "LF-MapLegend_Cat_underworld"
+     Target_en_us "Pencilled places"
+     Comment "Map legend (#2244): category line, places the player only met and marked."
+    }
+    CustomStringTableItem "{532D924D534C72E5}" {
+     Id "LF-MapLegend_Cat_work"
+     Target_en_us "Work"
+     Comment "Map legend (#2244): category line, places of work."
+    }
+    CustomStringTableItem "{BABDE49853D9B663}" {
+     Id "LF-MapLegend_Close"
+     Target_en_us "Close"
+     Comment "Map legend (#2244): closes the sheet."
+    }
+    CustomStringTableItem "{68E7EBFADC8A8DA6}" {
+     Id "LF-MapLegend_Find"
+     Target_en_us "Find"
+     Comment "Map legend (#2244): the button that runs the search."
+    }
+    CustomStringTableItem "{4062C7A0E4B4025D}" {
+     Id "LF-MapLegend_Go"
+     Target_en_us "Go to"
+     Comment "Map legend (#2244): button on a search result, pans the map to the place."
+    }
+    CustomStringTableItem "{21D8FEFAC7CBA51F}" {
+     Id "LF-MapLegend_Heading"
+     Target_en_us "Show on the map"
+     Comment "Map legend (#2244): heading over the category lines."
+    }
+    CustomStringTableItem "{849CF0B065C6A4FD}" {
+     Id "LF-MapLegend_Hide"
+     Target_en_us "Hide"
+     Comment "Map legend (#2244): button that takes a category off the map."
+    }
+    CustomStringTableItem "{13D7B2C3585F2511}" {
+     Id "LF-MapLegend_NoMatch"
+     Target_en_us "No place you know of by that name"
+     Comment "Map legend (#2244): shown when a search finds no known place."
+    }
+    CustomStringTableItem "{969CA1332312A3ED}" {
+     Id "LF-MapLegend_Off"
+     Target_en_us "Hidden"
+     Comment "Map legend (#2244): status of a category left off the map."
+    }
+    CustomStringTableItem "{300A53CF8CF58594}" {
+     Id "LF-MapLegend_On"
+     Target_en_us "Shown"
+     Comment "Map legend (#2244): status of a category drawn on the map."
+    }
+    CustomStringTableItem "{2DD3F3DDA0A65424}" {
+     Id "LF-MapLegend_Search"
+     Target_en_us "Find a place"
+     Comment "Map legend (#2244): caption of the search blank."
+    }
+    CustomStringTableItem "{CE42C02CF49D5038}" {
+     Id "LF-MapLegend_Show"
+     Target_en_us "Show"
+     Comment "Map legend (#2244): button that puts a category back on the map."
+    }
+    CustomStringTableItem "{EC872DF7663D8669}" {
+     Id "LF-MapLegend_Tab"
+     Target_en_us "Map key"
+     Comment "Map legend (#2244): the tab on the map edge that opens the key."
+    }
+    CustomStringTableItem "{9188A58C330DB074}" {
+     Id "LF-MapLegend_Title"
+     Target_en_us "Map key"
+     Comment "Map legend sheet (#2244): the sheet title."
     }
     CustomStringTableItem "{DE2AC99F6166AB0D}" {
      Id "LF-MapPlaces_ClusterNote"
@@ -6026,6 +6286,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-NewLife_WakeToast"
      Target_en_us "You wear a New Life wristband. Stay away from where you died for %1 minutes."
      Comment "Toast on waking in hospital after a real death. %1 is the minutes."
+    }
+    CustomStringTableItem "{CA9A4B5596B7F647}" {
+     Id "LF-Notify_TitleEms"
+     Target_en_us "[EMS] EMERGENCY"
+     Comment "Fallback toast title for an EMS alert with no title of its own."
+    }
+    CustomStringTableItem "{10C684BAFB8726FC}" {
+     Id "LF-Notify_TitleError"
+     Target_en_us "[ERROR]"
+     Comment "Fallback toast title for an error toast with no title of its own."
+    }
+    CustomStringTableItem "{935DFAAFB015C5B0}" {
+     Id "LF-Notify_TitleInfo"
+     Target_en_us "[INFO]"
+     Comment "Fallback toast title for an info toast with no title of its own."
+    }
+    CustomStringTableItem "{0EDECFCE6CD087EF}" {
+     Id "LF-Notify_TitlePolice"
+     Target_en_us "[{POLICE}] ALERT"
+     Comment "Fallback toast title for a police alert with no title of its own."
+    }
+    CustomStringTableItem "{47BF95CEC2D7EE59}" {
+     Id "LF-Notify_TitleRobbery"
+     Target_en_us "[ALARM] ROBBERY"
+     Comment "Fallback toast title for a robbery alarm with no title of its own."
+    }
+    CustomStringTableItem "{134C8AE505DFAE31}" {
+     Id "LF-Notify_TitleSms"
+     Target_en_us "[SMS] MESSAGE"
+     Comment "Fallback toast title for a received text message with no title of its own."
+    }
+    CustomStringTableItem "{AAE5379432E08885}" {
+     Id "LF-Notify_TitleSuccess"
+     Target_en_us "[SUCCESS]"
+     Comment "Fallback toast title for a success toast with no title of its own."
+    }
+    CustomStringTableItem "{EEDE8B6F5C239B08}" {
+     Id "LF-Notify_TitleWarning"
+     Target_en_us "[WARNING]"
+     Comment "Fallback toast title for a warning toast with no title of its own."
     }
     CustomStringTableItem "{B687CB4145329863}" {
      Id "LF-NpcRole_farmer_Bye"
@@ -7347,6 +7647,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You moved. Look at the spot again and retry."
      Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
     }
+    CustomStringTableItem "{F2BDAD6DBBEFE3E2}" {
+     Id "LF-Placement_NeedBase"
+     Target_en_us "You can only place this at your organization's base."
+     Comment "Toast when the placement policy refuses: the kind needs the organization's base nearby (#2447)."
+    }
+    CustomStringTableItem "{2448C0A51B7E4D01}" {
+     Id "LF-Placement_NeedCash"
+     Target_en_us "You don't have enough cash to place that."
+     Comment "Toast when a placement is refused because the player carries less cash than the kind costs (#2448)."
+    }
+    CustomStringTableItem "{A1D7C4E09B3F5202}" {
+     Id "LF-Placement_NeedHouse"
+     Target_en_us "Only the owner or a key holder of a house nearby can place this."
+     Comment "Toast when the placement policy refuses: the kind needs the house owner or a key holder (#2446)."
+    }
+    CustomStringTableItem "{2448C0A51B7E4D02}" {
+     Id "LF-Placement_NeedItem"
+     Target_en_us "You don't have what it takes to place that."
+     Comment "Toast when a placement is refused because the player lacks the items the kind uses up (#2448)."
+    }
+    CustomStringTableItem "{A1D7C4E09B3F5203}" {
+     Id "LF-Placement_NeedOrg"
+     Target_en_us "Only a member of an organization can place this."
+     Comment "Toast when the placement policy refuses: the kind needs an organization member (#2446)."
+    }
+    CustomStringTableItem "{A1D7C4E09B3F5201}" {
+     Id "LF-Placement_NeedPolice"
+     Target_en_us "Only on-duty {police} can place this."
+     Comment "Toast when the placement policy refuses: the kind needs an on-duty officer (#2446)."
+    }
+    CustomStringTableItem "{B4CD02854FD9C6F2}" {
+     Id "LF-Placement_NeedProperty"
+     Target_en_us "You can only place this inside a property you own or hold a key to."
+     Comment "Toast when the placement policy refuses: the kind needs an owned or keyed property (#2447)."
+    }
+    CustomStringTableItem "{A1D7C4E09B3F5204}" {
+     Id "LF-Placement_NeedRank"
+     Target_en_us "Your organization rank is too low to place this."
+     Comment "Toast when the placement policy refuses: the kind needs a higher organization rank (#2446)."
+    }
+    CustomStringTableItem "{7D3AE2EE9C995350}" {
+     Id "LF-Placement_NeedRoad"
+     Target_en_us "You can only place this on a road."
+     Comment "Toast when the placement policy refuses: the kind may go on roads only (#2447)."
+    }
     CustomStringTableItem "{70A8229A6F903FA6}" {
      Id "LF-Placement_NoGround"
      Target_en_us "There is no flat ground there."
@@ -7361,6 +7706,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Placement_Title"
      Target_en_us "Placing"
      Comment "Toast title for every placement refusal (#1026)."
+    }
+    CustomStringTableItem "{F875CB040C3C2526}" {
+     Id "LF-PoliceAppGm_Approve"
+     Target_en_us "Approve"
+     Comment "Applications sheet button."
+    }
+    CustomStringTableItem "{1296E6499AD624E5}" {
+     Id "LF-PoliceAppGm_Approved"
+     Target_en_us "APPROVED: %1"
+     Comment "Applications sheet status after approving; %1 is the applicant name."
+    }
+    CustomStringTableItem "{0E3BC446BA9C4943}" {
+     Id "LF-PoliceAppGm_BadRequest"
+     Target_en_us "Request refused."
+     Comment "Applications sheet status when the server refused a malformed request."
+    }
+    CustomStringTableItem "{1EA5C56CC7684B12}" {
+     Id "LF-PoliceAppGm_Busy"
+     Target_en_us "Too fast. Press again in a moment."
+     Comment "Applications sheet status when the server dropped a request sent too quickly (#1288)."
+    }
+    CustomStringTableItem "{58CA4203A5B3554F}" {
+     Id "LF-PoliceAppGm_Close"
+     Target_en_us "Close"
+     Comment "Applications sheet close button."
+    }
+    CustomStringTableItem "{15339673DC6E1BB0}" {
+     Id "LF-PoliceAppGm_Count"
+     Target_en_us "OPEN APPLICATIONS .... %1"
+     Comment "Applications sheet status; %1 is how many are open."
+    }
+    CustomStringTableItem "{1DB18896201F1A7B}" {
+     Id "LF-PoliceAppGm_Detail"
+     Target_en_us "%1. Why: %2. Hours: %3."
+     Comment "Applications sheet detail line; %1 name, %2 reason, %3 availability."
+    }
+    CustomStringTableItem "{8A45E10EB5B5A7DF}" {
+     Id "LF-PoliceAppGm_NeedAdministrator"
+     Target_en_us "Only an administrator can approve or reject. Moderators may read."
+     Comment "Applications sheet status when a moderator or operator tries to decide (#1288)."
+    }
+    CustomStringTableItem "{95CC9997DB5D0E03}" {
+     Id "LF-PoliceAppGm_PickFirst"
+     Target_en_us "Read an application, then approve or reject it."
+     Comment "Applications sheet detail line before one is picked."
+    }
+    CustomStringTableItem "{3B80676FFF309851}" {
+     Id "LF-PoliceAppGm_Read"
+     Target_en_us "Read"
+     Comment "Applications sheet row action: show this application."
+    }
+    CustomStringTableItem "{343D76BAE52282A8}" {
+     Id "LF-PoliceAppGm_Reject"
+     Target_en_us "Reject"
+     Comment "Applications sheet button."
+    }
+    CustomStringTableItem "{5957CB471E7B660E}" {
+     Id "LF-PoliceAppGm_Rejected"
+     Target_en_us "REJECTED: %1"
+     Comment "Applications sheet status after rejecting; %1 is the applicant name."
+    }
+    CustomStringTableItem "{1EF55798C921D26C}" {
+     Id "LF-PoliceAppGm_Title"
+     Target_en_us "Applications to the {police}"
+     Comment "Game Master applications sheet title (#1288)."
+    }
+    CustomStringTableItem "{7064E4B84B8AE16A}" {
+     Id "LF-PoliceAppGm_Waited"
+     Target_en_us "waited %1 h"
+     Comment "Applications sheet row status; %1 is whole hours since filing."
+    }
+    CustomStringTableItem "{FC7DA9A04AC8D7ED}" {
+     Id "LF-PoliceAppGm_Waiting"
+     Target_en_us "Reading the file..."
+     Comment "Applications sheet status while the server answers."
     }
     CustomStringTableItem "{AD999D02320AA8DB}" {
      Id "LF-PoliceApp_Action"
@@ -7482,6 +7902,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Why you want to serve"
      Comment "Police application blank: reason."
     }
+    CustomStringTableItem "{95E584A32913873F}" {
+     Id "LF-PoliceCall_Paid"
+     Target_en_us "Call closed: {currency:sym}%1 cash"
+     Comment "Toast to the officer when fining the call's suspect at the site completes their police call; %1 is the reward"
+    }
+    CustomStringTableItem "{6EB531AC99FDCC19}" {
+     Id "LF-PoliceCall_Title"
+     Target_en_us "Call for {police}"
+     Comment "Toast title for a police call event"
+    }
     CustomStringTableItem "{57D1AD3E97B72422}" {
      Id "LF-PoliceRoster_Approved"
      Target_en_us "You are on the {Police} roster: go on duty at the station locker."
@@ -7496,6 +7926,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Police_Alert_Murder"
      Target_en_us "Crime Alert: a person was killed"
      Comment "Police notification when a player kills someone (M1-27)."
+    }
+    CustomStringTableItem "{6F303BE1BA9EE09E}" {
+     Id "LF-Police_CallBoardTake"
+     Target_en_us "Take a call"
+     Comment "Action on the police dispatch board: take the oldest open call your rank may see (#2479)."
+    }
+    CustomStringTableItem "{1B0D73A7B04203F5}" {
+     Id "LF-Police_CallNone"
+     Target_en_us "No open call for your rank."
+     Comment "Toast when the police board has no call this officer may take."
+    }
+    CustomStringTableItem "{28DC7CFE99DA35C4}" {
+     Id "LF-Police_CallTaken"
+     Target_en_us "Call taken: %1"
+     Comment "Toast to the officer after taking a police call. %1 = the site."
+    }
+    CustomStringTableItem "{E07B9C887D2B46B5}" {
+     Id "LF-Police_CallTitle"
+     Target_en_us "Dispatch"
+     Comment "Toast title for the police dispatch board."
     }
     CustomStringTableItem "{C0906C82C890BD00}" {
      Id "LF-Police_Cap_Name"
@@ -8036,6 +8486,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Checkpoint. Next: %1"
      Comment "Toast: a checkpoint counted; %1 is the next checkpoint id (#1923)."
     }
+    CustomStringTableItem "{CAF45E694BF8CC75}" {
+     Id "LF-Race_Closing"
+     Target_en_us "A racer has finished. The race ends in %1 s: get to the line."
+     Comment "Toast to each racer still out when the first racer finishes. %1 = seconds until the race pays out (#2406)."
+    }
+    CustomStringTableItem "{6EB30AAE936633A0}" {
+     Id "LF-Race_Dropped"
+     Target_en_us "You were out of the race too long. You are dropped and your fee stays in the pot."
+     Comment "Toast: a racer with no living body past the AFK grace is dropped from a running race (#2406)."
+    }
     CustomStringTableItem "{A52B7FA55F67B76F}" {
      Id "LF-Race_Full"
      Target_en_us "This race is full."
@@ -8070,6 +8530,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Race_Started"
      Target_en_us "The race has started. Go!"
      Comment "Toast to each racer when the lobby closes (#1923)."
+    }
+    CustomStringTableItem "{4F32DA25EF3F27B5}" {
+     Id "LF-Race_TimeUp"
+     Target_en_us "Time is up. The race paid those who finished; your fee stays in the pot."
+     Comment "Toast: the settle delay after the first finisher ran out while this racer was still out (#2406)."
     }
     CustomStringTableItem "{26AFE384C6B0253E}" {
      Id "LF-Race_Title"
@@ -8175,6 +8640,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Restrain_NotOfficer"
      Target_en_us "Only an on-duty officer can do that."
      Comment "Cuff refusal: the player is not clocked in as police."
+    }
+    CustomStringTableItem "{7C2E91A5D3B04F68}" {
+     Id "LF-Restrain_NotWhileCuffed"
+     Target_en_us "Not while in handcuffs."
+     Comment "Toast to a cuffed player whose request the server refused: a robbery, a lockpick, a driver's seat, giving cash or an item."
     }
     CustomStringTableItem "{1069F4CF50C7B5A1}" {
      Id "LF-Restrain_Release"
@@ -8286,6 +8756,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Too far! Back to the counter: %2 m of %1 m"
      Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Shown near the edge of the radius. %1 is the radius, %2 the distance."
     }
+    CustomStringTableItem "{1383AADB0F8627B0}" {
+     Id "LF-RobHold_Fail_Clerk"
+     Target_en_us "Robbery failed: the attendant went down."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
     CustomStringTableItem "{C823A75E1A8C79F8}" {
      Id "LF-RobHold_Fail_Downed"
      Target_en_us "Robbery failed: you went down."
@@ -8329,6 +8804,11 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{008CB39C11D31B0D}" {
      Id "LF-RobHold_Refused_Cooldown"
      Target_en_us "(The till was emptied a short while ago. Come back later.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{D455F915F3D9F8DF}" {
+     Id "LF-RobHold_Refused_Holding"
+     Target_en_us "(You are already holding up another till.)"
      Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
     }
     CustomStringTableItem "{66AD4C2125D11C00}" {
@@ -8380,6 +8860,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Rob_RecentlyRobbed"
      Target_en_us "Robbed recently. Lie low for now."
      Comment "Vehicle/weapon robbery refused because the cooldown is still running"
+    }
+    CustomStringTableItem "{3B9E05C7A1D48F62}" {
+     Id "LF-Robbery_NoRoom"
+     Target_en_us "No room for the cash. The till stays shut."
+     Comment "Toast: the robber's inventory cannot take the till cash, so nothing is taken and nobody is alerted (crime review 2026-11-17)."
     }
     CustomStringTableItem "{4AA0194A741E081B}" {
      Id "LF-SafeZone_ShotRefused"
@@ -9029,6 +9514,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-SpawnHub_TooFar"
      Target_en_us "Stand at the travel globe to travel."
      Comment "Spawn hub refusal: the server found no travel globe next to the player (#693b)."
+    }
+    CustomStringTableItem "{19BD6378F5F924A0}" {
+     Id "LF-SpikeStrip_Cap"
+     Target_en_us "You already have your limit of spike strips down. Pick one up first."
+     Comment "Toast: the officer tried to lay another spike strip while the configured number of their own is still deployed (#2416)."
     }
     CustomStringTableItem "{C9A02C030858FF1F}" {
      Id "LF-SpikeStrip_Deploy"
@@ -9733,6 +10223,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1, right here"
      Comment "Where a town board card's place is when it stands beside the board. %1 place name."
     }
+    CustomStringTableItem "{3C7E19B2D54A806F}" {
+     Id "LF-Trader_SaleRefused"
+     Target_en_us "The trader won't take that."
+     Comment "Toast to the seller: the server refused a trader sale (not bought, out of reach, not carried, or the black market)."
+    }
+    CustomStringTableItem "{8D20F4A6B1957C3E}" {
+     Id "LF-Trader_SaleRefused_Title"
+     Target_en_us "No sale"
+     Comment "Title of the refused-sale toast."
+    }
     CustomStringTableItem "{D820B2BCD7FC410A}" {
      Id "LF-UIKit_Keep"
      Target_en_us "Keep %1"
@@ -9808,10 +10308,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
+    CustomStringTableItem "{5E0B7D31C9A24F86}" {
+     Id "LF-Wanted_BuildHidden"
+     Target_en_us "build hidden"
+     Comment "Witness report and wanted poster clothing list: something the suspect wore hid the build."
+    }
     CustomStringTableItem "{DA0581F22B573242}" {
      Id "LF-Wanted_Driving"
      Target_en_us "driving %1"
      Comment "Wanted poster: %1 is the vehicle name."
+    }
+    CustomStringTableItem "{A1C7E94B2D603F58}" {
+     Id "LF-Wanted_FaceHidden"
+     Target_en_us "face hidden"
+     Comment "Witness report and wanted poster clothing list: something the suspect wore covered the face."
     }
     CustomStringTableItem "{2AE926B35D391FDA}" {
      Id "LF-Wanted_Level"

@@ -144,6 +144,7 @@ our folders).
 | island clients and client profiles classified; small client p90 no longer island-inflated | #2344 | 0.5-0.8 GB per small session client | laptop |
 | island client growth counted at the island peak | #2344 | none (closes an under-reserve: crash risk) | both |
 | test servers record `test:*` peaks (the reserve can now follow the measured 0.70-0.76 GB) | #2344 | up to 0.05-0.1 GB per test, once samples exist | both |
+| a test or audit run on an island world (MainWorld, CoreOnEveron, the island mission; `town fit`'s `audit placement --world MainWorld`) reserves the island server peak (2.5 GB seed, measured 2.2 GB working set) and gets an island run budget (300 s seed, 180 s floor, its own history) instead of the small test's 0.8 GB and 30 s; the lock, ticket and holder carry the world | #2394 | none (closes an under-reserve: `Out of memory. Free system 355 MB` on lf-testbox, no `out.txt`) | both |
 | orphan game/Workbench reaping | #2350 | 0 today (no orphans seen); 0.7-2.6 GB per hung server or Workbench it catches | both |
 | validate fan-out fits over the floor | #2352 | 0.16-0.8 GB at a validate's peak when free RAM is short | this PC |
 | Windows Search, telemetry, Phone Link off | (box config) | ~0.3 GB | laptop |

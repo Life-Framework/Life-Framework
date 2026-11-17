@@ -1,6 +1,6 @@
 {
- "handlers": 79,
- "checked": 79,
+ "handlers": 76,
+ "checked": 76,
  "unchecked": 0,
  "entries": [
   {
@@ -346,29 +346,11 @@
   },
   {
    "file": "Feature/Jobs/LF_PlayerJobComponent.c",
-   "handler": "RpcAsk_ClaimFruitCatcherReward",
-   "verdict": "checked",
-   "checks": [
-    "cooldown",
-    "money",
-    "role"
-   ]
-  },
-  {
-   "file": "Feature/Jobs/LF_PlayerJobComponent.c",
    "handler": "RpcAsk_SetJob",
    "verdict": "checked",
    "checks": [
     "cooldown",
     "range",
-    "role"
-   ]
-  },
-  {
-   "file": "Feature/Jobs/LF_PlayerJobComponent.c",
-   "handler": "RpcAsk_StartFruitCatcherRound",
-   "verdict": "checked",
-   "checks": [
     "role"
    ]
   },
@@ -514,6 +496,7 @@
    "handler": "RpcAsk_LF_WriteTicket",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "money",
     "range",
     "role"
@@ -547,14 +530,6 @@
     "cooldown",
     "range",
     "role"
-   ]
-  },
-  {
-   "file": "Feature/Police/LF_PoliceMenu.c",
-   "handler": "RpcAsk_LF_PoliceSelfPromote",
-   "verdict": "checked",
-   "checks": [
-    "noinput"
    ]
   },
   {

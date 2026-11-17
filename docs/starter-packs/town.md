@@ -15,6 +15,7 @@ tools\cli scout <place>                      # dossier: docs/everon/places/<slug
 tools\cli town map <slug> [--template town|village] [--force]   # proposes slot -> building; `--check` refuses an incomplete one
 tools\cli town kit extract <layer> <group>   # a kit from a building that already works; no absolute positions
 tools\cli town fit <place> <slot>            # writes MainWorld_Layers/Place_<place>_<slot>.layer + a claim
+tools\cli town fit <place> <slot> --check    # per-row seat corrections (floor, wall, clip) against the layer on disk; writes nothing
 tools\cli town check <place>                 # static kinds and claims; then audit placement --world MainWorld
 tools\cli town ready <state>                 # every place of the state passes, systems present, arrival route walks
 tools\cli look place:<place>/<slot>          # the slot on the island (MainWorld): wide, obliques, top, kit close-ups
@@ -33,6 +34,8 @@ tools\cli look place:<place>/<slot> --interior auto   # its ground floor from in
 - **Never touch the maintainer's worktree** (`ws/town-maintainer-edits`) or the playtest town's layers. The lead
   ships those.
 - No step types a coordinate: every number comes from the dossier. A kit holds none.
+- Rows are seated on the island host's own floors and walls (`tools/town/seat.mjs`); a row that still cuts the shell
+  refuses the fit. Fix the kit row instead of reaching for `--allow-clip`. A socket-hung row (a fascia) is left out of the layer.
 - Core never reads the mapping; what reaches the game is the fitted layer with `LF_PlaceComponent` and feature
   components. Core text stays neutral (place names are pack strings).
 - A fitted vanilla building gets its destruction override (D15), or a fitted floor falls in.

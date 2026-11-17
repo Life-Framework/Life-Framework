@@ -29,7 +29,8 @@ enum LF_EChopCheck
 	WRONG_STATE,
 	TOO_FAR,
 	TOO_FAST,
-	VEHICLE_GONE
+	VEHICLE_GONE,
+	NO_ROOM
 }
 
 //------------------------------------------------------------------------------------------------
@@ -249,6 +250,47 @@ class LF_ChopShopRules
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Which car in the drop area the bench takes: the nearest STOLEN one, so an unstolen car parked
+	//! beside the bench cannot block the yard. With no stolen car it is the nearest car, so the
+	//! worker still reads why it is refused.
+	//! \param distances Metres from the bench, one per candidate.
+	//! \param stolen The stolen flag of each candidate, same order.
+	//! \return Index of the chosen candidate, or -1 when there is none.
+	static int PickDropIndex(notnull array<float> distances, notnull array<bool> stolen)
+	{
+		int bestStolen = -1;
+		int bestAny = -1;
+		for (int i = 0; i < distances.Count(); i++)
+		{
+			if (bestAny < 0 || distances[i] < distances[bestAny])
+				bestAny = i;
+
+			if (i < stolen.Count() && stolen[i] && (bestStolen < 0 || distances[i] < distances[bestStolen]))
+				bestStolen = i;
+		}
+
+		if (bestStolen >= 0)
+			return bestStolen;
+
+		return bestAny;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a stripped car may be collected (the car is deleted after this passes).
+	//! \param occupied Someone sits in the car: a keyed owner can get back in between LOAD and COLLECT.
+	//! \param paid Cash the worker's inventory took; anything short of the payout keeps the car.
+	static LF_EChopCheck CheckCollect(bool occupied, int paid, int payout)
+	{
+		if (occupied)
+			return LF_EChopCheck.OCCUPIED;
+
+		if (paid < payout)
+			return LF_EChopCheck.NO_ROOM;
+
+		return LF_EChopCheck.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string RefusalKey(LF_EChopCheck check)
 	{
 		switch (check)
@@ -262,6 +304,7 @@ class LF_ChopShopRules
 			case LF_EChopCheck.BUSY: return "#LF-Chop_Busy";
 			case LF_EChopCheck.TOO_FAR: return "#LF-Chop_TooFar";
 			case LF_EChopCheck.VEHICLE_GONE: return "#LF-Chop_Gone";
+			case LF_EChopCheck.NO_ROOM: return "#LF-Chop_NoRoom";
 		}
 
 		return string.Empty;
@@ -375,26 +418,30 @@ class LF_ChopShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The nearest car with a lock component in the drop area.
+	//! The car in the drop area the bench takes: the nearest stolen one, else the nearest with a lock
+	//! component (LF_ChopShopRules.PickDropIndex).
 	protected IEntity FindDropVehicle()
 	{
 		array<IEntity> nearby = LF_Utils.GetNearbyVehicles(GetOwner().GetOrigin(), m_fDropRadius);
-		IEntity best;
-		float bestDistance = 999999;
+		array<IEntity> candidates = {};
+		array<float> distances = {};
+		array<bool> stolen = {};
 		foreach (IEntity vehicle : nearby)
 		{
-			if (!LF_Component<LF_VehicleLockComponent>.Find(vehicle))
+			LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
+			if (!vehicleLock)
 				continue;
 
-			float distance = vector.Distance(vehicle.GetOrigin(), GetOwner().GetOrigin());
-			if (distance < bestDistance)
-			{
-				bestDistance = distance;
-				best = vehicle;
-			}
+			candidates.Insert(vehicle);
+			distances.Insert(vector.Distance(vehicle.GetOrigin(), GetOwner().GetOrigin()));
+			stolen.Insert(vehicleLock.IsStolen());
 		}
 
-		return best;
+		int index = LF_ChopShopRules.PickDropIndex(distances, stolen);
+		if (index < 0)
+			return null;
+
+		return candidates[index];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -501,7 +548,25 @@ class LF_ChopShopComponent : ScriptComponent
 		}
 
 		string uid = LF_Utils.GetPlayerUID(user);
+		LF_EChopCheck occupiedCheck = LF_ChopShopRules.CheckCollect(LF_StolenVehicles.HasOccupant(vehicle), m_iPayout, m_iPayout);
+		if (occupiedCheck != LF_EChopCheck.NONE)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("%1: collect by %2 refused, someone sits in %3", m_sShopId, uid, m_sVehicleId));
+			return occupiedCheck;
+		}
+
+		// Pay first: a full inventory takes nothing, and the car must not go for nothing.
 		int paid = LF_MoneyUtils.AddCash(user, m_iPayout, "chopshop");
+		LF_EChopCheck payCheck = LF_ChopShopRules.CheckCollect(false, paid, m_iPayout);
+		if (payCheck != LF_EChopCheck.NONE)
+		{
+			if (paid > 0)
+				LF_MoneyUtils.RemoveCash(user, paid, "chopshop-rollback");
+
+			LF_Debug.Warn(FEATURE, string.Format("%1: collect by %2 refused, the inventory took %3 of %4; the car stays", m_sShopId, uid, paid, m_iPayout));
+			return payCheck;
+		}
+
 		int parts;
 		InventoryStorageManagerComponent inventory = LF_Component<InventoryStorageManagerComponent>.Find(user);
 		for (int i = 0; i < LF_ChopShopConfig.PartsCount(); i++)

@@ -407,6 +407,40 @@ class LF_VehicleLotComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The car the change-locks row means (#2411): the owner's latest car in the world, else the
+	//! latest stored one (the same choice as IssueExtraKey). The sheet prints its plate, so the
+	//! owner sees which car is re-keyed before paying. "" when the player owns nothing.
+	static string LocksTarget(string ownerUid)
+	{
+		string vehicleId = LF_VehicleOwnership.LatestInWorld(ownerUid);
+		if (vehicleId.IsEmpty())
+			vehicleId = LF_VehicleOwnership.LatestStored(ownerUid);
+
+		return vehicleId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Change the locks on LocksTarget, for the price of a key: every key cut before stops working
+	//! and the owner gets the one new key.
+	bool ChangeLocks(string ownerUid, IEntity owner, out int cashCharged, out string reasonKey)
+	{
+		cashCharged = 0;
+		reasonKey = "#EL-Vehicle_NotOwner";
+		string vehicleId = LocksTarget(ownerUid);
+		if (vehicleId.IsEmpty())
+		{
+			LF_Debug.Log("Vehicle", "change locks rejected: this player owns nothing");
+			return false;
+		}
+
+		vector origin = "0 0 0";
+		if (GetOwner())
+			origin = GetOwner().GetOrigin();
+
+		return LF_VehicleOwnership.ChangeLocks(vehicleId, ownerUid, m_iExtraKeyPrice, m_iCashCeiling, owner, origin, cashCharged, reasonKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected LF_VehicleOffer FindOffer(ResourceName prefab)
 	{
 		LF_VehicleOffer offer = OfferIn(m_aOffers, prefab);

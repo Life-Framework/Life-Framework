@@ -485,6 +485,28 @@ class LF_Utils : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server check for a request that needs a living talker: the character's life state is ALIVE.
+	//! A dead or downed body, or no body, is not (a client could ask from a corpse).
+	static bool IsAliveState(IEntity character)
+	{
+		ChimeraCharacter chimera = ChimeraCharacter.Cast(character);
+		if (!chimera)
+			return false;
+
+		// The damage manager is destroyed the moment the character dies; the controller's life state
+		// follows a frame later. Either one means not alive.
+		DamageManagerComponent damage = DamageManagerComponent.Cast(chimera.FindComponent(DamageManagerComponent));
+		if (damage && damage.IsDestroyed())
+			return false;
+
+		CharacterControllerComponent controller = chimera.GetCharacterController();
+		if (!controller)
+			return false;
+
+		return controller.GetLifeState() == ECharacterLifeState.ALIVE;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Compatibility alias: some code uses GetPlayerUid (lowercase d)
 	static string GetPlayerUid(IEntity player)
 	{

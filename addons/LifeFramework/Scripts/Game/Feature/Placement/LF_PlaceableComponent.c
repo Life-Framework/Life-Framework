@@ -18,11 +18,17 @@ enum LF_EPlacementSnap
 	WALL
 }
 
-//! Who may place it, until the per-kind policy from a .conf takes over (#1030).
+//! Who may place it. A kind's entry in Configs/Placement/LF_PlacementPolicy.conf decides (#2446,
+//! LF_PlacementPolicy); this is also the rule a kind with no entry keeps. New values are appended, so a
+//! prefab or conf naming an older value keeps meaning it.
 enum LF_EPlacementWho
 {
 	ANYONE,
-	ON_DUTY_POLICE
+	ON_DUTY_POLICE,
+	//! The owner of the house the player stands at, or someone holding a key to it.
+	HOUSE_OWNER_OR_KEY,
+	//! A member of an organization (at or above the entry's minimum rank).
+	ORG_MEMBER
 }
 
 //! What happens to it after it is placed.
@@ -60,8 +66,11 @@ class LF_PlaceableComponent : ScriptComponent
 	[Attribute("0", UIWidgets.ComboBox, desc: "How the spot is found", enums: ParamEnumArray.FromEnum(LF_EPlacementSnap))]
 	protected LF_EPlacementSnap m_eSnap;
 
-	[Attribute("0", UIWidgets.ComboBox, desc: "Who may place it (until the placement policy, #1030)", enums: ParamEnumArray.FromEnum(LF_EPlacementWho))]
+	[Attribute("0", UIWidgets.ComboBox, desc: "Who may place it when the placement policy conf has no entry for this kind (#2446)", enums: ParamEnumArray.FromEnum(LF_EPlacementWho))]
 	protected LF_EPlacementWho m_eWho;
+
+	[Attribute("", UIWidgets.EditBox, "The kind the placement policy conf names. Empty: the placed prefab's file name")]
+	protected string m_sKind;
 
 	[Attribute("0", UIWidgets.ComboBox, desc: "Temporary (goes by itself) or permanent (stays until picked up)", enums: ParamEnumArray.FromEnum(LF_EPlacementLifetime))]
 	protected LF_EPlacementLifetime m_eLifetime;
@@ -111,9 +120,20 @@ class LF_PlaceableComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The rule this prefab names itself; the policy conf's entry for its kind takes over (GetKind).
 	LF_EPlacementWho GetWho()
 	{
 		return m_eWho;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The name the placement policy conf keys this placeable by.
+	string GetKind()
+	{
+		if (!m_sKind.IsEmpty())
+			return m_sKind;
+
+		return LF_PlacementPolicy.KindOfPrefab(m_sPlacedPrefab);
 	}
 
 	//------------------------------------------------------------------------------------------------
