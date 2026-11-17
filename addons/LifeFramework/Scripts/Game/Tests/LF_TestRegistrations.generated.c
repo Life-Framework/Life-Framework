@@ -83,6 +83,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChainStationsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ChainTrace(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CharacterCreationReset(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CharacterFlowGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CharacterSlotsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CharactersPerAccount(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
@@ -715,12 +716,14 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VaultDrillPayOnce(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VaultTool(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleBankRefusal(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehicleChangeLocks(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleColours(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleColoursOverlay(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GarageLedger(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleImpound(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_VehicleKeyInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLock(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_VehicleLockedCargo(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLockIdMatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLockPolish(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLotSheet(), LF_TestTier.LOGIC);
@@ -728,11 +731,13 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehiclePriceModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceOwner(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleRemoveByBaseGuid(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehicleRetrieveKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleStateBadRow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateLegacy(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_VehicleStateReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateRoundTrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_WantedLook(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_WantedLookConceal(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WantedLooksPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_WantedPosterFace(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WantedPostersFeed(), LF_TestTier.LOGIC);

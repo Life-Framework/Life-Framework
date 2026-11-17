@@ -419,6 +419,15 @@
   the portraits come back after a restart; a version 28 save loads its reports without a
   picture. Tests `police/wanted-look`, `persist/wanted-looks`; `wt e2e` checks the look
   across a real restart.
+- 🔧 **What the clothes hide** (#2438, merged, in-dev): a witness report reads
+  `LF_ItemCatalogue.Concealment` over what the suspect wears (`LF_WantedLook.WornPrefabs`,
+  `LF_WantedReports.ApplyConcealment`). A `concealsBuild` item (the green raincoat) adds
+  "build hidden" and a `concealsFace` item adds "face hidden" to the clothing list, so the
+  dispatch call, witness statements, the wanted board and the posters say so. A hidden face
+  leaves no portrait (`LF_WantedLook.Witnessed`: the poster keeps its empty photo frame); a
+  hidden build keeps it, since the portrait is head and shoulders and already wears the
+  coat. The photo ID still calls `LF_WantedLook.Capture` and keeps the full face. Test
+  `police/wanted-look-conceal`.
 
 ### `LF_Dispatch` / `LF_SiteAlarmComponent` — `Feature/Police/` (M1-20, #105)
 - ✅ **One crime entry point** (LOGIC `dispatch/once`): `LF_Dispatch.Report`

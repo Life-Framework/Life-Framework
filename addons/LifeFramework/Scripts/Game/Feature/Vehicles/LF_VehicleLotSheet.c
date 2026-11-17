@@ -66,7 +66,18 @@ class LF_VehicleLot
 		if (account)
 			bank = account.GetBalance();
 
-		controller.LF_ShowVehicleLot(nameKeys, prices, lot.GetCashCeiling(), LF_MoneyUtils.GetCash(reader), bank, LF_NetworkUtils.GetRplId(lotEntity));
+		// The change-locks row is offered only to an owner and names the car it re-keys (#2411);
+		// a price of 0 hides it.
+		int locksPrice = 0;
+		string locksPlate;
+		string locksTarget = LF_VehicleLotComponent.LocksTarget(uid);
+		if (!locksTarget.IsEmpty())
+		{
+			locksPrice = lot.GetExtraKeyPrice();
+			locksPlate = LF_VehicleOwnership.GetPlate(locksTarget);
+		}
+
+		controller.LF_ShowVehicleLot(nameKeys, prices, lot.GetCashCeiling(), LF_MoneyUtils.GetCash(reader), bank, locksPrice, locksPlate, LF_NetworkUtils.GetRplId(lotEntity));
 		LF_Debug.Info(FEATURE, string.Format("lot sheet sent to %1: %2 offer(s), bank %3", uid, nameKeys.Count(), bank));
 		return true;
 	}
@@ -123,6 +134,45 @@ class LF_VehicleLot
 
 		Show(buyer, lotEntity);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the reader pressed Change locks (#2411). Same counter reach as Buy; the lot decides.
+	static void ChangeLocks(IEntity owner, IEntity lotEntity)
+	{
+		if (!Replication.IsServer() || !owner || !lotEntity)
+			return;
+
+		LF_VehicleLotComponent lot = LF_Component<LF_VehicleLotComponent>.Find(lotEntity);
+		if (!lot)
+		{
+			LF_Debug.Error(FEATURE, "change locks refused: the target is not a lot");
+			return;
+		}
+
+		if (!LF_Garage.WithinReach(owner, lotEntity))
+		{
+			LF_Debug.Warn(FEATURE, "change locks refused: the player is not at the lot counter");
+			return;
+		}
+
+		string uid = LF_Utils.GetPlayerUID(owner);
+		if (uid.IsEmpty())
+		{
+			LF_Debug.Error(FEATURE, "change locks refused: player UID is unavailable");
+			return;
+		}
+
+		int cashCharged;
+		string reasonKey;
+		bool changed = lot.ChangeLocks(uid, owner, cashCharged, reasonKey);
+		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(owner);
+		if (playerId > 0 && !reasonKey.IsEmpty())
+			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Lot_ChangeLocks", reasonKey);
+
+		LF_Debug.Info(FEATURE, string.Format("change locks for %1: changed=%2 (%3)", uid, changed, reasonKey));
+
+		Show(owner, lotEntity);
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -131,13 +181,15 @@ class LF_VehicleLotSheet
 {
 	static const string LIST = "Cars";
 	static const string ROW_PREFIX = "Car";
+	//! The change-locks row (#2411). Not ROW_PREFIX, so RowIndex never reads it as an offer.
+	static const string LOCKS_ROW = "ChangeLocks";
 	static const float LIST_HEIGHT = 330;
 
 	protected static ref LF_UIScreen s_Screen;
 	protected static RplId s_LotId;
 
 	//------------------------------------------------------------------------------------------------
-	static void Open(array<string> nameKeys, array<int> prices, int cashCeiling, int cash, int bank, RplId lotId)
+	static void Open(array<string> nameKeys, array<int> prices, int cashCeiling, int cash, int bank, int locksPrice, string locksPlate, RplId lotId)
 	{
 		Close();
 		s_LotId = lotId;
@@ -178,6 +230,9 @@ class LF_VehicleLotSheet
 			s_Screen.AddListRow(LIST, ROW_PREFIX + i.ToString(), WidgetManager.Translate(nameKeys[i]), status, action);
 		}
 
+		if (locksPrice > 0)
+			s_Screen.AddListRow(LIST, LOCKS_ROW, WidgetManager.Translate("#LF-Lot_ChangeLocksRow", locksPlate), LF_MoneyFormat.FormatMoney(locksPrice), "#LF-Lot_ChangeLocksButton");
+
 		s_Screen.GetOnButton().Insert(OnButton);
 		LF_Debug.Info(LF_VehicleLot.FEATURE, string.Format("lot sheet open: %1 car(s), bank %2", count, bank));
 	}
@@ -211,11 +266,24 @@ class LF_VehicleLotSheet
 	//------------------------------------------------------------------------------------------------
 	protected static void OnButton(string name)
 	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (name == LOCKS_ROW)
+		{
+			if (!controller)
+			{
+				LF_Debug.Error(LF_VehicleLot.FEATURE, "change locks not sent: no player controller");
+				return;
+			}
+
+			LF_Debug.Info(LF_VehicleLot.FEATURE, "change locks asked");
+			controller.LF_AskChangeVehicleLocks(s_LotId);
+			return;
+		}
+
 		int index = RowIndex(name);
 		if (index < 0)
 			return;
 
-		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (!controller)
 		{
 			LF_Debug.Error(LF_VehicleLot.FEATURE, "buy not sent: no player controller");
@@ -232,17 +300,17 @@ class LF_VehicleLotSheet
 modded class SCR_PlayerController
 {
 	//------------------------------------------------------------------------------------------------
-	void LF_ShowVehicleLot(array<string> nameKeys, array<int> prices, int cashCeiling, int cash, int bank, RplId lot)
+	void LF_ShowVehicleLot(array<string> nameKeys, array<int> prices, int cashCeiling, int cash, int bank, int locksPrice, string locksPlate, RplId lot)
 	{
 		if (GetGame().GetPlayerController() == this)
-			RpcDo_LF_ShowVehicleLot(nameKeys, prices, cashCeiling, cash, bank, lot);
+			RpcDo_LF_ShowVehicleLot(nameKeys, prices, cashCeiling, cash, bank, locksPrice, locksPlate, lot);
 		else
-			Rpc(RpcDo_LF_ShowVehicleLot, nameKeys, prices, cashCeiling, cash, bank, lot);
+			Rpc(RpcDo_LF_ShowVehicleLot, nameKeys, prices, cashCeiling, cash, bank, locksPrice, locksPlate, lot);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_LF_ShowVehicleLot(array<string> nameKeys, array<int> prices, int cashCeiling, int cash, int bank, RplId lot)
+	protected void RpcDo_LF_ShowVehicleLot(array<string> nameKeys, array<int> prices, int cashCeiling, int cash, int bank, int locksPrice, string locksPlate, RplId lot)
 	{
 		if (!GetGame().GetWorkspace())
 		{
@@ -250,7 +318,7 @@ modded class SCR_PlayerController
 			return;
 		}
 
-		LF_VehicleLotSheet.Open(nameKeys, prices, cashCeiling, cash, bank, lot);
+		LF_VehicleLotSheet.Open(nameKeys, prices, cashCeiling, cash, bank, locksPrice, locksPlate, lot);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -270,5 +338,24 @@ modded class SCR_PlayerController
 			return;
 
 		LF_VehicleLot.Buy(GetControlledEntity(), LF_NetworkUtils.FindEntityByRplId(lot), index, colour);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void LF_AskChangeVehicleLocks(RplId lot)
+	{
+		if (Replication.IsServer())
+			RpcAsk_LF_ChangeVehicleLocks(lot);
+		else
+			Rpc(RpcAsk_LF_ChangeVehicleLocks, lot);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_ChangeVehicleLocks(RplId lot)
+	{
+		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.PURCHASE, "change vehicle locks"))
+			return;
+
+		LF_VehicleLot.ChangeLocks(GetControlledEntity(), LF_NetworkUtils.FindEntityByRplId(lot));
 	}
 }

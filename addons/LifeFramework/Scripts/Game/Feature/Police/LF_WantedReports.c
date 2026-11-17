@@ -64,6 +64,8 @@ class LF_WantedReports
 	static const string OFFENCE_CHAIN_GOODS = "#LF-Offence_ChainGoods";
 	static const string OFFENCE_SHOPLIFTING = "#LF-Offence_Shoplifting";
 	static const string PLACE_GRID_KEY = "#LF-Wanted_PlaceGrid";
+	static const string CLOTHING_FACE_HIDDEN = "#LF-Wanted_FaceHidden";
+	static const string CLOTHING_BUILD_HIDDEN = "#LF-Wanted_BuildHidden";
 
 	protected static ref map<string, ref array<ref LF_WantedReportRecord>> s_mReports;
 	protected static int s_iSequence;
@@ -111,8 +113,12 @@ class LF_WantedReports
 		LF_EventBus.Publish(LF_OnCrimeCommitted.Create(playerUid, offence));
 
 		bool caught = suspect && IsOfficerNear(suspect, LF_PoliceConfig.CatchInActRadius());
+		string appearance;
+		if (suspect)
+			ApplyConcealment(suspect, LF_ItemCatalogueConfig.Get(), clothing, appearance);
+
 		LF_WantedReportRecord record = Add(playerUid, offence, clothing, vehicle, place, caught);
-		record.m_sAppearance = LF_WantedLook.Capture(suspect);
+		record.m_sAppearance = appearance;
 		LF_Debug.Info(FEATURE, string.Format("crime report #%1 %2 by %3: clothing='%4' vehicle='%5' place='%6' identified=%7", record.m_iSequence, offence, playerUid, clothing, vehicle, place, caught));
 		LF_CaseBoard.OnReport(record.m_iSequence);
 		if (suspect)
@@ -412,6 +418,45 @@ class LF_WantedReports
 					list.SwapItems(j, j - 1);
 			}
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a witness could see of `suspect` (#2438): the clothing text gains "face hidden" and/or
+	//! "build hidden" when a worn catalogue item conceals that part (LF_ItemCatalogue.Concealment), and
+	//! the portrait look is what LF_WantedLook.Witnessed leaves. The ID photo keeps the full face.
+	static void ApplyConcealment(IEntity suspect, LF_ItemCatalogueConfig config, inout string clothing, out string look)
+	{
+		array<ResourceName> worn = {};
+		LF_WantedLook.WornPrefabs(suspect, worn);
+		bool face;
+		bool build;
+		LF_ItemCatalogue.Concealment(config, worn, face, build);
+		clothing = DescribeConcealed(clothing, face, build);
+		look = LF_WantedLook.Witnessed(LF_WantedLook.Capture(suspect), face);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The clothing text with the hidden parts added as keys, the way every reader resolves it.
+	static string DescribeConcealed(string clothing, bool face, bool build)
+	{
+		string text = clothing;
+		if (face)
+		{
+			if (!text.IsEmpty())
+				text += "|";
+
+			text += CLOTHING_FACE_HIDDEN;
+		}
+
+		if (build)
+		{
+			if (!text.IsEmpty())
+				text += "|";
+
+			text += CLOTHING_BUILD_HIDDEN;
+		}
+
+		return text;
 	}
 
 	//------------------------------------------------------------------------------------------------

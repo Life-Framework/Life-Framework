@@ -97,6 +97,7 @@ import { trimProcs } from "./lib/ws-trim.mjs";
 import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
 import { helpRequest, usageText } from "./lib/help-guard.mjs";
 import { checkBudgetMs, createWatchdog } from "./lib/check-budget.mjs";
+import { silentFailureNote } from "./lib/silent-failure.mjs";
 import { killTreeSync, pidAlive as wbPidAlive, waitUntilDone } from "./lib/wb-until.mjs";
 import { findFreezeDump, stallReason, steamSignedIn } from "./lib/wb-launch-health.mjs";
 
@@ -677,7 +678,7 @@ function invokeScriptAsync(full, opts = {}) {
     child.stdout.on("data", (d) => { stdout += d; });
     child.stderr.on("data", (d) => { stderr += d; });
     child.on("error", (e) => done({ status: 1, stdout, stderr: stderr + `failed to spawn ${cmd}: ${e.message}` }));
-    child.on("close", (code) => done({ status: code ?? 1, stdout, stderr }));
+    child.on("close", (code, signal) => done({ status: code ?? 1, signal, stdout, stderr }));
     // kill(why): end the check and its children now and settle with a failure (the budget ran out).
     // Settles without waiting for `close`: a grandchild holding the pipes open must not hold the run.
     onSpawn?.({
@@ -783,6 +784,9 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     const ok = res.status === 0;
     const warnOnly = !ok && area === "validate" && worldChecks.judgeChecks([{ s: job.s, status: res.status }], { demote }).warned.length > 0;
     console.log(`${ok ? "PASS" : warnOnly ? "WARN" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})${warnOnly ? " layout check on the town (hand-edited): a warning, never blocking" : ""}`);
+    // A failing check that printed nothing says how it ended (tools/lib/silent-failure.mjs).
+    const silent = !warnOnly ? silentFailureNote(job.s, res) : "";
+    if (silent) console.log(silent);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok && !warnOnly) failed++;
