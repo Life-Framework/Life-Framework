@@ -194,6 +194,46 @@ StringTable {
      Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
+    CustomStringTableItem "{A5BFE7A72F0C053D}" {
+     Id "LF-Dialogue_HarbourMaster_Bye"
+     Target_en_us "Mind the edge of the quay."
+     Comment "Harbour master caption (#2692): the goodbye."
+    }
+    CustomStringTableItem "{A55113E34B39D13E}" {
+     Id "LF-Dialogue_HarbourMaster_FirstJob"
+     Target_en_us "Crates, mostly. The coaster unloads onto the quay and somebody has to carry them across to the sheds. It pays by the crate, on the spot."
+     Comment "Harbour master caption (#2692): the first job, carrying crates from the quay (the parcel run)."
+    }
+    CustomStringTableItem "{71AC670B32383636}" {
+     Id "LF-Dialogue_HarbourMaster_Go"
+     Target_en_us "Good. Take a crate from the pile by the crane and carry it where the tag says. Then come back for the next one."
+     Comment "Harbour master caption (#2692): how the crate run works."
+    }
+    CustomStringTableItem "{0C493581129EAF98}" {
+     Id "LF-Dialogue_HarbourMaster_Greet"
+     Target_en_us "Harbour office. Mind the crane and mind the ropes. What can I do for you?"
+     Comment "Harbour master caption (#2692): the greeting."
+    }
+    CustomStringTableItem "{841D61171005B9D8}" {
+     Id "LF-Dialogue_HarbourMaster_SayAskWork"
+     Target_en_us "Is there any work on the quay?"
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{329FE33AE5F0B131}" {
+     Id "LF-Dialogue_HarbourMaster_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{5644E7F72839DB8C}" {
+     Id "LF-Dialogue_HarbourMaster_SayNotNow"
+     Target_en_us "Not just now."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{555B8170F5B38060}" {
+     Id "LF-Dialogue_HarbourMaster_SayTakeJob"
+     Target_en_us "I'll carry the crates."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
     CustomStringTableItem "{29B583DBF009AF66}" {
      Id "LF-Dialogue_NightShift_AboutMove"
      Target_en_us "They gave us one bus and one suitcase each. The island is quiet, and the quiet is hard at first. But nobody asks you to leave in the middle of dinner."
@@ -2043,6 +2083,11 @@ StringTable {
      Id "LF-Townsfolk_CafeOwner_Role"
      Target_en_us "Café owner"
      Comment "Townsfolk (The relocated, #1960): what Odile Marchand does, the role line under the name."
+    }
+    CustomStringTableItem "{D20E34A328504890}" {
+     Id "LF-Townsfolk_HarbourMaster_Name"
+     Target_en_us "Marcel Roux"
+     Comment "Townsfolk (M6, #2692): the harbour master's name, the speaker line of his dialogue."
     }
     CustomStringTableItem "{7C3E5A19D04B82F6}" {
      Id "LF-Townsfolk_NightShift_Name"
