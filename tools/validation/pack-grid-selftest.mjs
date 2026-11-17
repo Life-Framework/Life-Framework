@@ -16,9 +16,10 @@
 //   5. The repo: Everon1989Grid.ent is a SubScene of GridWorld, has a meta GUID, and the pack test header boots it.
 // Does not boot the game.
 //
-// red-proof: 2026-11-16, against the tree before the change (tools/ and agent-box/ stashed, the two new world
-// files kept): this printed 21 FAIL lines, from "isPackPrefab reads a {GUID}path" to "session --mission grid
-// boots the pack header when a pack cell exists", and exited 1. Green with the change: pack-grid-selftest: OK.
+// red-proof: 2026-11-17, with `gridWorldFor` always returning GridWorld and `packRouting` treating every claim as a core
+// cell (the two lines broken in a scratch copy, then restored) this printed 3 FAIL lines and exited 1: "a pack cell may hold
+// a core prop", "a second call stays on the pack cell", "gridWorldFor picks the pack world when a pack cell exists".
+// Restored: pack-grid-selftest: OK.
 
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";

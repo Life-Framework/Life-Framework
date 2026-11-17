@@ -593,7 +593,7 @@ export function selftestSession() {
   if (gs[0] !== "-server" || gs[1] !== GRID_MISSION || !/LF_GridWorld.conf$/.test(gs[1])) failures.push("--mission grid does not run LF_GridWorld.conf");
   // Pack cells: with the pack loaded and a pack cell in the tree, --mission grid boots the pack's grid header; the pack
   // test header is that one and its world is Everon1989Grid. A core-only launch never sees the pack world.
-  // red-proof: 2026-11-16 written before gridMissionFor existed: the pack case ran LF_GridWorld.conf and failed.
+  // red-proof: pack-grid-selftest.mjs breaks gridWorldFor and fails "session --mission grid boots the pack header when a pack cell exists".
   const gp = serverArgs({ addonsDir: "A", profile: "SP", mission: "grid", addons: ["LifeFramework", PACK_ADDON] });
   const want = hasPackGridLayers(ROOT) ? PACK_GRID_MISSION : GRID_MISSION;
   if (gp[1] !== want) failures.push(`--mission grid with the pack loaded runs ${gp[1]}, wanted ${want}`);
