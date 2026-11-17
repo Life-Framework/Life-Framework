@@ -4108,6 +4108,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 is waiting on the pad in front of the garage."
      Comment "Retrieve succeeded. %1 is the plate"
     }
+    CustomStringTableItem "{4F4F48DC707A84B4}" {
+     Id "LF-Garage_SlotsFull"
+     Target_en_us "Your garage is full: %1 vehicles at most. Retrieve one before storing another."
+     Comment "Garage store refused (#2655): the owner's stored vehicles fill every garage slot. %1 is the cap."
+    }
     CustomStringTableItem "{A1C4E87B62D94F05}" {
      Id "LF-Garage_StepOut"
      Target_en_us "Step out of the vehicle first"

@@ -207,9 +207,11 @@ class LF_VehicleStoreAction : ScriptedUserAction
 			inVehicle = true;
 
 		LF_VehicleGarageComponent garage = LF_VehicleGarageComponent.FindAt(pUserEntity.GetOrigin());
-		if (!LF_Garage.CanPark(true, inVehicle, garage != null))
+		int slotCap = LF_GarageSlots.CapOf(uid);
+		string refusalReason;
+		if (!LF_Garage.CanPark(true, inVehicle, garage != null, LF_GarageSlots.UsedBy(uid), slotCap, refusalReason))
 		{
-			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#LF-Garage_StepOut");
+			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", refusalReason, 4.0, LF_ENotificationType.WARNING, slotCap.ToString());
 			return;
 		}
 

@@ -271,6 +271,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_FormatAbbreviate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FuelClerkDialogue(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_GarageSlots(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GarageStoreRange(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GatherStock(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GatherStockAction(), LF_TestTier.WORLD);
