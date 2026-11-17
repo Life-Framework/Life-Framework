@@ -89,6 +89,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChessResultHold(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChessScreenLayout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChessTable(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ChopShopCollect(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPlacedCar(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChopShopSteal(), LF_TestTier.WORLD);
@@ -310,11 +311,14 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_IntroductionsSerializer(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ItemCatalogue(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ItemVolume(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_JailEscortDrop(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailOnlineTime(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailPlacedCell(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_JailSelfArrest(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailSlip(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailVehicleArrest(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JailWork(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_JailWorkAbandon(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobClientOffers(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobGateBypass(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobLevelGates(), LF_TestTier.LOGIC);
@@ -559,6 +563,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RobberyAlarmsShipped(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobHold(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobHoldGraceToast(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RobNoRoom(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobReward(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobWeaponVehicle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Robustness(), LF_TestTier.LOGIC);
