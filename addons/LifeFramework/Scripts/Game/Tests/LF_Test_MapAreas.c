@@ -1,14 +1,6 @@
 // red-proof: Observed 2026-11-16 with `toolscli test --no-build --red LF_Test_MapAreas`: skipping `LF_MapAreas.Collect` (the merge act) failed "a safe zone is on the map", "a lawless zone is on the map" and "the map-only town area is in the merged list" (RED PROOF OK). The first run, before LF_MapAreas existed, failed to compile. Shape, style and rule cases: node twin proof in tools/validation/map-areas-selftest.mjs.
 
 //------------------------------------------------------------------------------------------------
-//! The shared case table as one JSON string (Configs/Map/Rules/areas.cases.conf).
-[BaseContainerProps(configRoot: true)]
-class LF_Test_MapAreasCases
-{
-	[Attribute("", UIWidgets.EditBox, "The case table, JSON")]
-	string m_sJson;
-}
-
 //------------------------------------------------------------------------------------------------
 //! map/areas (#2233, epic #2223): the map's area rules in pure script. A polygon, a circle, a box
 //! and a corridor become outline vertex lists; safe and lawless zones take their style from the
@@ -18,9 +10,6 @@ class LF_Test_MapAreasCases
 // tier: LOGIC
 class LF_Test_MapAreas : LF_Test
 {
-	//! The game cannot read a loose .json from an addon, so the table travels in this conf as one string;
-	//! tools/validation/map-areas-selftest.mjs keeps it equal to areas.cases.json.
-	static const ResourceName CASES_CONF = "{3E8A5D17B2C94F60}Configs/Map/Rules/areas.cases.conf";
 
 	override string GetName()
 	{
@@ -30,7 +19,7 @@ class LF_Test_MapAreas : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		string text = ReadCases();
-		ctx.True(!text.IsEmpty(), "the shared case table reads from the addon");
+		ctx.True(!text.IsEmpty(), "the shared case table is in the script");
 		SCR_JsonLoadContext json = new SCR_JsonLoadContext(false);
 		ctx.True(json.ImportFromString(text), "the shared case table parses");
 
@@ -375,22 +364,10 @@ class LF_Test_MapAreas : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The shared table as text. The game cannot read the loose .json from an addon, so it comes from
+	//! LF_MapAreaCasesData, generated from it (node tools/map/rules/areas.mjs --gen).
 	protected string ReadCases()
 	{
-		Resource container = BaseContainerTools.LoadContainer(CASES_CONF);
-		if (!container || !container.GetResource())
-		{
-			LF_Debug.Error("MapAreas", string.Format("test: case table conf does not resolve: %1", CASES_CONF));
-			return string.Empty;
-		}
-
-		LF_Test_MapAreasCases table = LF_Test_MapAreasCases.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
-		if (!table)
-		{
-			LF_Debug.Error("MapAreas", "test: case table conf has an unexpected root class");
-			return string.Empty;
-		}
-
-		return table.m_sJson;
+		return LF_MapAreaCasesData.Json();
 	}
 }
