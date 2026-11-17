@@ -2520,6 +2520,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take this stolen car apart"
      Comment "Action: start dismantling the car in the yard (#415)."
     }
+    CustomStringTableItem "{72D3F56BF9D4656A}" {
+     Id "LF-Chop_NoRoom"
+     Target_en_us "No room for the cash. Make space, then collect."
+     Comment "Toast: the worker's inventory cannot take the chop payout, so the car stays (crime review 2026-11-17)."
+    }
     CustomStringTableItem "{764914C9C71A4DE3}" {
      Id "LF-Chop_NoVehicle"
      Target_en_us "Park the car in the yard first"
@@ -8485,6 +8490,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Rob_RecentlyRobbed"
      Target_en_us "Robbed recently. Lie low for now."
      Comment "Vehicle/weapon robbery refused because the cooldown is still running"
+    }
+    CustomStringTableItem "{3B9E05C7A1D48F62}" {
+     Id "LF-Robbery_NoRoom"
+     Target_en_us "No room for the cash. The till stays shut."
+     Comment "Toast: the robber's inventory cannot take the till cash, so nothing is taken and nobody is alerted (crime review 2026-11-17)."
     }
     CustomStringTableItem "{4AA0194A741E081B}" {
      Id "LF-SafeZone_ShotRefused"

@@ -8,6 +8,7 @@ class LF_RobAction : ScriptedUserAction
 	static const string REFUSED_PAYOUT = "robbery refused: payout is not configured";
 	static const string REFUSED_OFF = "robbery refused: the Robbery system is off";
 	static const string REFUSED_GRACE = "robbery refused: the robber is in its grace period";
+	static const string REFUSED_NO_ROOM = "robbery refused: the robber's inventory took none of the cash";
 	//! The system id (LF_Systems, #960): till, weapon and vehicle robbery and the till hold.
 	static const string SYSTEM = "Robbery";
 
@@ -182,6 +183,13 @@ class LF_RobAction : ScriptedUserAction
 		}
 
 		int paid = PayCash(user, payout);
+		if (paid <= 0)
+		{
+			// Nothing was taken: no cooldown on the till, no wanted level, no dispatch.
+			NoteRefusal(REFUSED_NO_ROOM);
+			return 0;
+		}
+
 		outLastRobTimeMs = nowMs;
 		s_sLastRefusal = "";
 		Report(playerUid, user, policeOnDuty, alarmKind);
@@ -449,6 +457,8 @@ class LF_RobAction : ScriptedUserAction
 			LF_Utils.NotifyEntity(pUserEntity, "#EL-Stole_Money", "#EL-Robbery_Successful", 3.0, paid.ToString());
 		else if (s_sLastRefusal == REFUSED_GRACE)
 			LF_Grace.Notify(pUserEntity);
+		else if (s_sLastRefusal == REFUSED_NO_ROOM)
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-Robbery_NoRoom", "#EL-Stole_Money", 3.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

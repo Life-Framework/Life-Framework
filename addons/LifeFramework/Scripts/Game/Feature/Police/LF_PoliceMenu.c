@@ -62,6 +62,21 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		// The same hands-on gates as the in-world arrest action (LF_JailArrestAction): a live
+		// suspect who is not the officer, and no new character in its grace.
+		LF_EInteractionRefusal refusal = LF_PlayerInteraction.CheckPair(officer, target);
+		if (refusal != LF_EInteractionRefusal.NONE)
+		{
+			LF_Debug.Warn("Jail", "menu arrest refused: " + typename.EnumToString(LF_EInteractionRefusal, refusal));
+			return;
+		}
+
+		if (LF_JailArrestAction.RefusedByGrace(targetPlayerUid))
+		{
+			LF_Grace.Notify(officer);
+			return;
+		}
+
 		if (!LF_Jail.Arrest(officerUid, targetPlayerUid, target))
 			return;
 
