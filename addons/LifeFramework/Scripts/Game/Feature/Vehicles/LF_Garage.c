@@ -38,6 +38,14 @@ class LF_GarageConfig
 	protected static bool s_bLoadAttempted;
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: drop the cached config so the next world loads its own.
+	static void ResetStatics()
+	{
+		s_Config = null;
+		s_bLoadAttempted = false;
+	}
+
+//------------------------------------------------------------------------------------------------
 	//! The loaded config, or null (logged once) when the file does not resolve.
 	static LF_GarageConfig Get()
 	{
@@ -484,5 +492,22 @@ class LF_ImpoundCollectAction : ScriptedUserAction
 	{
 		outName = "#LF-Impound_Collect";
 		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_GarageConfig's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_GarageConfig_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_GarageConfig_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_GarageConfig";
+	}
+
+	override void Apply()
+	{
+		LF_GarageConfig.ResetStatics();
 	}
 }

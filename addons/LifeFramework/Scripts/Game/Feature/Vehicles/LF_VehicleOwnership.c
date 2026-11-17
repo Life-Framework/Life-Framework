@@ -194,6 +194,15 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: drop every record, session and the order list; the next world loads its own.
+	static void ResetStatics()
+	{
+		s_mRecords = null;
+		s_mSessions = null;
+		s_aOrder = null;
+	}
+
+//------------------------------------------------------------------------------------------------
 	//! Cash at or below the ceiling. Above it, the bank balance. Never both.
 	//! \return True when the price can be paid from the one source the rule allows.
 	static bool QuotePurchase(int price, int cashCeiling, int cash, int bank, out int cashDebit, out int bankDebit)
@@ -1502,5 +1511,22 @@ class LF_VehicleOwnership
 			return null;
 
 		return GetGame().GetWorld().FindEntityByID(id);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_VehicleOwnership's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_VehicleOwnership_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_VehicleOwnership_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_VehicleOwnership";
+	}
+
+	override void Apply()
+	{
+		LF_VehicleOwnership.ResetStatics();
 	}
 }

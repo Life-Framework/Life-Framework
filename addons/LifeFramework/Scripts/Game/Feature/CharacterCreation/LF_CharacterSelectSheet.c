@@ -85,6 +85,13 @@ class LF_CharacterSelectSheet
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: forget the open sheet (the world takes its screen down).
+	static void ResetStatics()
+	{
+		s_Sheet = null;
+	}
+
+//------------------------------------------------------------------------------------------------
 	static LF_UIScreen Current()
 	{
 		if (!s_Sheet)
@@ -144,5 +151,22 @@ class LF_CharacterSelectSheet
 	protected static void Reopen(SCR_PlayerController controller, string names, bool canRegister)
 	{
 		Open(controller, names, canRegister);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CharacterSelectSheet's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_CharacterSelectSheet_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_CharacterSelectSheet_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_CharacterSelectSheet";
+	}
+
+	override void Apply()
+	{
+		LF_CharacterSelectSheet.ResetStatics();
 	}
 }

@@ -68,6 +68,17 @@ class LF_WhitelistManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: the lists, the load-failed latch, the counters and a test save path all go; the file stays.
+	static void ResetStatics()
+	{
+		Reset();
+		s_sSavePath = "";
+		s_iMissingFileReports = 0;
+		s_iFactionRefusals = 0;
+		s_bLoadFailed = false;
+	}
+
+//------------------------------------------------------------------------------------------------
 	//! Drop the in-memory lists. The file stays. The next Load is a restart.
 	static void Reset()
 	{
@@ -604,5 +615,22 @@ class LF_WhitelistManager
 		}
 
 		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_WhitelistManager's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_WhitelistManager_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_WhitelistManager_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_WhitelistManager";
+	}
+
+	override void Apply()
+	{
+		LF_WhitelistManager.ResetStatics();
 	}
 }

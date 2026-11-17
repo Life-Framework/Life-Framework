@@ -79,6 +79,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChainStations(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChainStationsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ChainTrace(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CharacterCreationReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CharacterSlotsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CharactersPerAccount(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
@@ -160,6 +161,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_CharacterCreationRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobNoAccount(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AccountReplicationWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DevGameMasterReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DialogueClerk(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DialogueFlow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DialogueFocusStep(), LF_TestTier.LOGIC);
@@ -392,6 +394,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OrgRegistry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_OrgRights(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_OrgStaticReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OutletSerial(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OutletSerialWired(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PackManifest(), LF_TestTier.LOGIC);
@@ -675,6 +678,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UIKitClose(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIKitFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIPaperSheet(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_UiSheetStaticReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIThemePack(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UIThemeTokens(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UnemploymentBenefit(), LF_TestTier.LOGIC);
@@ -699,6 +703,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleRemoveByBaseGuid(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateBadRow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateLegacy(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_VehicleStateReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateRoundTrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_WantedLook(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WantedLooksPersist(), LF_TestTier.PERSISTENCE);
@@ -710,6 +715,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_WhitelistCommandParse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistPersist(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistRemoveUnloaded(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_WhitelistStaticReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Witness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WitnessDialogue(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WoodcuttingDamage(), LF_TestTier.WORLD);
