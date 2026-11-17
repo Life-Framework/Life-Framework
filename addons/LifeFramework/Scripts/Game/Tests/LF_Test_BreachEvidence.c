@@ -22,6 +22,7 @@ class LF_Test_BreachEvidence : LF_Test
 		LF_Breach.Configure(armedTarget, 5, "");
 		LF_Breach.Configure(defusedTarget, 5, "");
 		LF_PlayerAccountManager.GetOrCreate(policeUid).SetFaction(LF_Faction.POLICE);
+		LF_PlayerAccountManager.GetOrCreate(policeUid).SetOnDuty(true);
 
 		IEntity robber = LF_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "85 0 85", true);
 		if (!robber)
