@@ -50,7 +50,7 @@ prop within 2 cm of a top, floor or the ground. `wt ship` runs it for a PR touch
 
 ## Fitting a vault room (`bank_room` safe type)
 The bank safe is a room in the building, not the standalone `LF_BankVault.et`. Doorway: `{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et`
-(origin = the front's centre, hinges 1.271 m to its right); the layer entity name is the vault id, unique per door; bag inside: copy
+(origin = the front's centre, hinges 1.271 m to its right); the layer entity name is the vault id, unique per door (inside a prefab set `m_sVaultId` and the breach `m_sTargetId`); bag inside: copy
 `Roadmap_Bank_Bag`, `m_sId` = that id. The placement's numbers come from `bank_room`, never typed. Shop safe: `{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et`.
 
 ## Performance (docs/architecture/performance.md)
@@ -70,7 +70,7 @@ pass, the counts table, `## Manual testing`. No town layers, no `ws/town-maintai
 - Your building is a pack prefab, so its cell is a pack cell: `grid place <slug> <pack prefab>` (or `--pack`) writes
   `LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_<slug>.layer`, claims the cell in the shared lattice with
   `"pack": true`, and the layer is committed like any other. Never keep a layer untracked, never put a pack prefab in
-  `GridWorld_Layers/` (`validate-addon-boundary`). A layer already written there: `grid free <slug>`, then place again.
+  `GridWorld_Layers/` (`validate-addon-boundary`). A layer already written there: `grid free <slug>`, then `grid place ... --again`.
   `look grid:<slug>`, `audit placement --grid` and `session up --mission grid` load it through the pack grid world.
 - A GUID is made once and kept (rule 2); typed coordinates only in a building-space row the script writes. `look` queues on the pool, never here.
 
