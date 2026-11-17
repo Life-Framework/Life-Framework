@@ -1470,6 +1470,10 @@ Plain `tools\cli validate` (and `dev`) runs a check only when something it reads
 this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `validate --full`, `ci`, `wt gate`,
 `wt ship` and CI (`CI` or `GITHUB_ACTIONS` set, or `LF_VALIDATE_ALL=1`) always run every check.
 
+Checks run 8-12 at once (by CPU count); when free RAM is short each one is counted at 80 MB and only as many start
+as fit over the pool's 1.5 GB floor, never fewer than 2 (`tools/lib/validate-concurrency.mjs`, 2026-11-17: a full
+fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/ram-budget.md).
+
 - A check declares its inputs in a header line in its first 30 lines: `// inputs: addons/**/*.layer, docs/features.md`
   (`# inputs:` in a .ps1). `*` stays in one folder, `**` crosses folders; the check's own file, `tools/validation/*.json`
   and `tools/validation/fixtures/**` are always inputs. `inputs: always` runs every time (a check that reads machine or
