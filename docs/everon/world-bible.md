@@ -485,7 +485,7 @@ Each system, its home and its status. "Exists" means it is in the framework toda
 | Gathering and processing (apples, jam, cider, quarry) | Orchards, the quarry, processing sheds | Exist |
 | Farm plots | Farm villages | Exist; Working the land M8 |
 | State factory, tasks | Work town | M6 |
-| Fishing | Harbours and coves | **Gap:** no fishing system planned |
+| Fishing | Harbours and coves | M6 chapter Gone fishing ([design](../architecture/fishing.md)) |
 | Scrap and salvage | Scrapyard; military sites | M6 |
 | Police station, armoury, ranks, jail | Main station in the hub; posts in the larger towns | Exist |
 | Prison and prison work | A separate site | M7 (Behind bars) |
@@ -510,7 +510,7 @@ Each system, its home and its status. "Exists" means it is in the framework toda
 | Housing | Every town and village | M8 (A place of your own) |
 | Garages and lockers | Hub and the larger towns | M8 |
 | Vehicles and plates | Car dealer, registry at the town hall | Exist |
-| Reputation (standing) | Everywhere | M6: per faction, unlocks better jobs and pay |
+| Reputation (standing) | Everywhere | M6: per faction, unlocks better jobs and pay ([design](../architecture/reputation.md)) |
 | Public transport between towns | Roads | Taxis and cars for now; the bus (#1793) is reviewed when the state-2 cards are cut |
 | Tourism work | The hotel and the coast | **Gap:** not planned |
 
