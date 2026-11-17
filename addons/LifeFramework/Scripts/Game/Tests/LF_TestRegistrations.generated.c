@@ -63,6 +63,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_BleedOutRules(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_BoardProvider(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_BreachEvidence(), LF_TestTier.WORLD;
+		// self-registered: new LF_Test_BuildStageRules(), LF_TestTier.LOGIC;
 		manager.Register(new LF_Test_CarriedInventoryRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CarriedInventoryDeathNoDupe(), LF_TestTier.WORLD);
 		// self-registered: new LF_Test_CarriedPropCull(), LF_TestTier.LOGIC;

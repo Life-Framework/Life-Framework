@@ -10,3 +10,13 @@
 - 🟡 Saved as the `properties` sidecar payload (save version 51, `docs/persistence.md` item 38). A row
   whose property is not in the world waits and is saved again. A version 1-50 save loads an empty book.
   Proof: `property/record`, `property/persist`, `wt e2e`. No gameplay uses the book yet (later M8 slices).
+
+### `LF_BuildStageRules` — `Feature/Property/` (2026-11-18, #2648, spec #756)
+- 🟡 Pure rules for a build stage (`LF_PropertyStageDef` plus the record's `prefab=count;...` string and
+  work done): `Missing` and `MissingText` per item, `ItemsMet`, `WorkRemaining`, `WorkAfter` (clamped, work
+  is the site's so every worker's units add), `RoundsLeft` (reuses `LF_StationProgress.Rounds`), and
+  `IsDone`, true only when items and work are both met.
+- 🟡 `Deposit` accepts only the owner and invited key holders (`MayContribute`, grief rule #807). A deposit
+  past the need is refused whole and names the item and the overflow; a refused try changes nothing.
+- 🟡 Deposited items are counts, never entities; `Parse`, `Format` and `CountOf` read and write the string.
+  Nothing calls the rules yet (later M8 slices). Proof: `property/build-stage-rules`.
