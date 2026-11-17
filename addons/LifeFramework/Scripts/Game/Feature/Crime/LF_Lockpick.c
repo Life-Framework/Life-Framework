@@ -323,6 +323,9 @@ class LF_Lockpick
 			return false;
 		}
 
+		if (LF_CuffEnforcement.Refuse(user, "lockpick"))
+			return false;
+
 		if (playerUid.IsEmpty())
 		{
 			LF_Debug.Error(FEATURE, "begin refused: player has no account id");
@@ -381,6 +384,12 @@ class LF_Lockpick
 		if (controller && controller.GetLifeState() != ECharacterLifeState.ALIVE)
 		{
 			Drop(attempt, user, "user is down");
+			return;
+		}
+
+		if (LF_Restraint.IsRestrained(user))
+		{
+			Drop(attempt, user, "user is cuffed");
 			return;
 		}
 
