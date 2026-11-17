@@ -450,6 +450,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PlacementAuditTown(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementComposition(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementConfirm(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacementDoorProbe(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementProbe(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementRoad(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesBankBag(), LF_TestTier.WORLD);
