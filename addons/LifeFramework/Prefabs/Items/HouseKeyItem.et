@@ -16,7 +16,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
       FOV 10
      }
     }
-    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+    ItemDisplayName LF_KeyItemUIInfo "{5222EB4D07D865FA}" {
      Name "#EL-ItemName_HouseKey"
      Description "#EL-ItemDesc_HouseKey"
     }

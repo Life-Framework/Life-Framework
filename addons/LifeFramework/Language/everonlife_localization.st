@@ -4493,6 +4493,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hotwire"
      Comment "Toast title for hotwiring (#412)."
     }
+    CustomStringTableItem "{7B1E4C90A2D35F68}" {
+     Id "LF-HouseLock_Lock"
+     Target_en_us "Lock house"
+     Comment "House door action: the owner or a key holder locks the house"
+    }
+    CustomStringTableItem "{9D52A7E31C084B6F}" {
+     Id "LF-HouseLock_Unlock"
+     Target_en_us "Unlock house"
+     Comment "House door action: the owner or a key holder unlocks the house"
+    }
     CustomStringTableItem "{57AECD3805F0082C}" {
      Id "LF-ID_CardAge"
      Target_en_us "Age: %1"
@@ -4912,6 +4922,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Interact_TooFar"
      Target_en_us "Step closer to them."
      Comment "Player interaction refused: the other person is out of reach."
+    }
+    CustomStringTableItem "{7C1E4A92B05D3F18}" {
+     Id "LF-ItemName_HouseKeyOf"
+     Target_en_us "House Key [%1]"
+     Comment "Inventory name of a house key bound to a house. %1 is the house identifier it opens (#2470)."
+    }
+    CustomStringTableItem "{2D9B60E7A4C85F31}" {
+     Id "LF-ItemName_VehicleKeyOf"
+     Target_en_us "Vehicle Key [%1]"
+     Comment "Inventory name of a vehicle key bound to a vehicle. %1 is the vehicle identifier it opens (#2470)."
     }
     CustomStringTableItem "{39E8DFFDB0869E08}" {
      Id "LF-Item_CarParts_Description"
@@ -7617,10 +7637,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You can only place this at your organization's base."
      Comment "Toast when the placement policy refuses: the kind needs the organization's base nearby (#2447)."
     }
+    CustomStringTableItem "{2448C0A51B7E4D01}" {
+     Id "LF-Placement_NeedCash"
+     Target_en_us "You don't have enough cash to place that."
+     Comment "Toast when a placement is refused because the player carries less cash than the kind costs (#2448)."
+    }
     CustomStringTableItem "{A1D7C4E09B3F5202}" {
      Id "LF-Placement_NeedHouse"
      Target_en_us "Only the owner or a key holder of a house nearby can place this."
      Comment "Toast when the placement policy refuses: the kind needs the house owner or a key holder (#2446)."
+    }
+    CustomStringTableItem "{2448C0A51B7E4D02}" {
+     Id "LF-Placement_NeedItem"
+     Target_en_us "You don't have what it takes to place that."
+     Comment "Toast when a placement is refused because the player lacks the items the kind uses up (#2448)."
     }
     CustomStringTableItem "{A1D7C4E09B3F5203}" {
      Id "LF-Placement_NeedOrg"

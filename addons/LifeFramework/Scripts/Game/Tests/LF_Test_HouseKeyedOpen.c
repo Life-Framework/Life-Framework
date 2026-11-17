@@ -91,6 +91,8 @@ class LF_Test_HouseKeyedOpen : LF_Test
 		action.PerformAction(door, holder);
 		ctx.False(doorComponent.GetControlValue() == closed, "the key holder's open moves the door");
 		ctx.True(doorLock.IsLocked(), "the door is still locked after the key holder opened it");
+		// An open door may be closed by anyone (#2472, LF_Test_HouseDoorAutoClose); the refusal below is for a closed door.
+		doorComponent.SetControlValue(0, RplId.Invalid());
 		ctx.False(action.CanBePerformedScript(stranger), "a stranger after the key holder is still refused");
 
 		ctx.False(action.CanBePerformedScript(owner), "a character with no key and no ownership is refused");
