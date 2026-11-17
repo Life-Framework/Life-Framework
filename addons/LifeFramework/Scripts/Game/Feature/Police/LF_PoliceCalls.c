@@ -136,7 +136,7 @@ class LF_PoliceCalls
 	//------------------------------------------------------------------------------------------------
 	//! Server: closes the suspect's open call without an officer completing it (the suspect is no longer
 	//! wanted). Pays nothing; LF_PoliceCallPay pays only through Complete.
-	//! eturn True when a call was open.
+	//! \return True when a call was open.
 	static bool CloseFor(string suspectUid, string reason)
 	{
 		LF_PoliceCall call = FindOpenFor(suspectUid);

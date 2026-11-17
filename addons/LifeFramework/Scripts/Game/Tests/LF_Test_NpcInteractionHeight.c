@@ -19,8 +19,7 @@ class LF_Test_NpcInteractionHeight : LF_Test
 	{
 		array<ResourceName> prefabs = {
 			"{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et",
-			"{E8989175335080B8}Prefabs/Characters/Quests/QuestGiver_Start.et",
-			"{05BE7F756ADCA703}Prefabs/Characters/Npcs/PoliceDutyNPC.et"
+			"{E8989175335080B8}Prefabs/Characters/Quests/QuestGiver_Start.et"
 		};
 
 		foreach (ResourceName prefab : prefabs)

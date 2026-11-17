@@ -76,7 +76,7 @@ class LF_Houses
 	//------------------------------------------------------------------------------------------------
 	//! Server: a house with a stable identifier appeared. A saved row that arrived first is applied;
 	//! otherwise the house's own state is recorded.
-	//! eturn True when the house is registered (its state is saved); false for a second house with
+	//! \return True when the house is registered (its state is saved); false for a second house with
 	//! an identifier already in use, which is then not saved.
 	static bool Register(LF_HouseManagerComponent house)
 	{
