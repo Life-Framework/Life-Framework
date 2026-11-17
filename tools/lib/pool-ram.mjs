@@ -25,8 +25,11 @@
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
-// World class of a job: "island" is vanilla Everon (CoreOnEveron: terrain, navmesh, AI streaming),
-// "small" is every other world the pool boots (TestLogic, GridWorld, DebugWorld, the town).
+// World class of a job: "island" is vanilla Everon (CoreOnEveron: terrain, navmesh, AI streaming) and the
+// pack's own island (MainWorld, a SubScene of Eden; the LF_EveronIsland mission), named by a path, a bare
+// name or a mission header. "small" is every other world the pool boots (TestLogic, GridWorld, DebugWorld,
+// the town). A test or audit run on an island world reserves the island server peak and gets an island
+// budget (pool-queue budgetSeconds): #2394, the gun-counter audit on MainWorld was admitted as a small test.
 export const ISLAND = "island";
 export const SMALL = "small";
 
@@ -58,7 +61,7 @@ export const MIN_SAMPLE_MB = 200;
 export function worldClass(world) {
   const w = String(world ?? "");
   // CoreOnEveron (vanilla Everon plus the core mode), the pack's MainWorld (a SubScene of Eden), Eden itself.
-  return w === ISLAND || /CoreOnEveron|(^|[/}])MainWorld\.ent$|(^|\/)Eden\.ent$/i.test(w) || /^(everon|island)$/i.test(w.trim()) ? ISLAND : SMALL;
+  return w === ISLAND || /CoreOnEveron|LF_EveronIsland|(^|[/}])MainWorld(\.ent)?$|(^|\/)Eden(\.ent)?$/i.test(w.trim()) || /^(everon|island)$/i.test(w.trim()) ? ISLAND : SMALL;
 }
 
 export function peakKey(kind, world = SMALL, profile) {

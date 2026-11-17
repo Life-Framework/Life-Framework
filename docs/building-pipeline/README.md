@@ -222,6 +222,10 @@ has the format). Points are building space, so it survives moving the building. 
 Any step takes `expect` (a regex on the reply), `wait` (ms after it) and `why` (printed when it fails). Then `checks`
 compare kept values (`{ "lt": ["paid.cash", "before.cash"] }`, `gt`, `eq`, `ne`, `in`) and `log` reads the server log
 (`{ "re": "paid \\d+ for 3 item" }`, or `{ "last": "alarm sounding at <([^>]+)>", "near": [x,y,z], "within": 1.5 }`).
+A world shot moves the body: it stands the robber at the camera, lifted, and the fall drops a held tool (the drill
+reads `drill left the hands: ON_GROUND`, and the vault then refuses with "needs a drill", #2384); walking off also
+cancels a timed job. So no `shot` follows a `hold` step: take the pictures before the hold, wait out the work with a
+`state` step, and mark a later shot `"handsFree": "<why>"` once the hands are empty. `scenarioProblems` refuses the file otherwise.
 The supermarket's file talks to the shopkeeper, picks a torch, crackers and a water, pays, leaves clean, then walks out
 with a dressing and checks the alarm on the shop-front box.
 

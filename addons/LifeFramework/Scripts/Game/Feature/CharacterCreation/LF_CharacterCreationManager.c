@@ -141,6 +141,43 @@ class LF_CharacterCreationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: drop the singleton and with it the per-player offer sets, which are keyed by player
+	//! id (ids restart at 1 in the next world).
+	static void ResetStatics()
+	{
+		s_Instance = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a player left; their ids are reused by the next arrival, so no offer or wait may
+	//! outlive the connection (a stale offer lets a new player 1 pass RefuseFurtherCharacter).
+	static void ForgetPlayer(int playerId)
+	{
+		if (!s_Instance)
+			return;
+
+		s_Instance.m_PickOffered.RemoveItem(playerId);
+		s_Instance.m_RegisterOffered.RemoveItem(playerId);
+		s_Instance.m_IdentityWaiting.RemoveItem(playerId);
+		s_Instance.m_IdentityNoticeSent.RemoveItem(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: records the pick and register offers for a player id without a controller.
+	void OfferForTest(int playerId)
+	{
+		m_PickOffered.Insert(playerId);
+		m_RegisterOffered.Insert(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true when an offer or wait is still recorded for this player id.
+	bool HasPlayerState(int playerId)
+	{
+		return m_PickOffered.Contains(playerId) || m_RegisterOffered.Contains(playerId) || m_IdentityWaiting.Contains(playerId) || m_IdentityNoticeSent.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void ~LF_CharacterCreationManager()
 	{
 		if (s_Instance == this)
@@ -601,3 +638,20 @@ class LF_CharacterCreationManager : Managed
 		// a proper HUD element before it can come back.
 	}
 };
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CharacterCreationManager's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_CharacterCreationManager_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_CharacterCreationManager_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_CharacterCreationManager";
+	}
+
+	override void Apply()
+	{
+		LF_CharacterCreationManager.ResetStatics();
+	}
+}

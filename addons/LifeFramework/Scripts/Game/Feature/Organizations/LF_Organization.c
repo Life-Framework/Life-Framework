@@ -1536,3 +1536,22 @@ class LF_OrganizationManager : Managed
 		return false;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_OrganizationManager's singleton (registered at script load;
+//! Core/LF_StaticReset.c). Without it the last world's organizations, members and funds stayed live
+//! into the next world in the same process and were written into its first save.
+class LF_OrganizationManager_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_OrganizationManager_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_OrganizationManager";
+	}
+
+	override void Apply()
+	{
+		LF_OrganizationManager.Reset();
+	}
+}

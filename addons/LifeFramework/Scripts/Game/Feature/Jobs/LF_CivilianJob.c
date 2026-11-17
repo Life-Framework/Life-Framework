@@ -572,6 +572,7 @@ class LF_CivilianJob
 		worker.m_bActive = false;
 		worker.m_eActiveJob = LF_EJobType.UNEMPLOYED;
 		LF_Debug.Log("Jobs", string.Format("run abandoned by %1, no pay", playerUid));
+		LF_JobMapMarks.OnStopDone(playerUid);
 		return true;
 	}
 

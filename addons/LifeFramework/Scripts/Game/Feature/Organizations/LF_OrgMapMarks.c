@@ -255,12 +255,38 @@ class LF_OrgMapMarks
 		players.GetPlayers(ids);
 		foreach (int playerId : ids)
 		{
-			if (LF_Utils.GetPlayerUID(playerId) == characterId)
+			if (CharacterIdOfPlayer(playerId) == characterId)
 			{
 				LF_MapShares.Refresh(playerId);
 				return;
 			}
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the id organizations list this player's active character under, "" when unknown.
+	static string CharacterIdOfPlayer(int playerId)
+	{
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (!accounts)
+			return "";
+
+		return CharacterIdOfAccount(accounts.GetAccount(playerId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The active character's id, never its record key: slot 1's record key is the account uid,
+	//! while LF_OrganizationManager lists members by character id (LF_OrganizationPlayer.CharacterId).
+	static string CharacterIdOfAccount(LF_PlayerAccount account)
+	{
+		if (!account)
+			return "";
+
+		LF_PlayerCharacter character = account.GetActiveCharacter();
+		if (!character)
+			return "";
+
+		return character.GetId();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -409,7 +435,7 @@ modded class LF_MapShareComponent
 		if (!controller)
 			return "";
 
-		return LF_Utils.GetPlayerUID(controller.GetPlayerId());
+		return LF_OrgMapMarks.CharacterIdOfPlayer(controller.GetPlayerId());
 	}
 }
 

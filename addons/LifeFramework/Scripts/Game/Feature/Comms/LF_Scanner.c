@@ -12,6 +12,57 @@ class LF_ScannerComponent : ScriptComponent
 	[Attribute("SOUND_RADIO_SIGNAL_2", UIWidgets.EditBox, "Sound event on the scanner's SCR_SoundDataComponent: the chirp")]
 	protected string m_sBeepSound;
 
+	//! Every scanner in the world on the server, so a police call visits the scanners and not every
+	//! player's inventory (#2404). Components are engine-owned: not ref.
+	protected static ref array<LF_ScannerComponent> s_aScanners;
+
+	//------------------------------------------------------------------------------------------------
+	static array<LF_ScannerComponent> All()
+	{
+		if (!s_aScanners)
+			s_aScanners = new array<LF_ScannerComponent>();
+
+		return s_aScanners;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		s_aScanners = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The entity carrying this scanner: the root of its hierarchy. A carried item hangs under the
+	//! carrier (in a pocket, a worn bag or the hands); a scanner on the ground is its own root.
+	IEntity Holder()
+	{
+		IEntity owner = GetOwner();
+		if (!owner)
+			return null;
+
+		return owner.GetRootParent();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnPostInit(IEntity owner)
+	{
+		super.OnPostInit(owner);
+		if (!Replication.IsServer())
+			return;
+
+		if (All().Find(this) < 0)
+			All().Insert(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnDelete(IEntity owner)
+	{
+		if (s_aScanners)
+			s_aScanners.RemoveItem(this);
+
+		super.OnDelete(owner);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Server: one chirp for one heard call.
 	void Chirp()
@@ -121,6 +172,7 @@ class LF_Scanner
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: gathers the connected players who carry a scanner and are not receivers of the call.
+	//! Walks the scanner registry (a handful), not every player's inventory (#2404).
 	static int HearLive(notnull LF_OnServiceCall call)
 	{
 		if (!GetGame() || !GetGame().GetPlayerManager() || !Hears(call))
@@ -129,25 +181,52 @@ class LF_Scanner
 		array<string> uids = {};
 		array<ref array<LF_ScannerComponent>> carried = {};
 		array<IEntity> bodies = {};
-		array<int> playerIds = {};
-		GetGame().GetPlayerManager().GetPlayers(playerIds);
-		foreach (int playerId : playerIds)
+		CollectHolders(call.m_aReceiverIds, uids, carried, bodies);
+		return Hear(call, uids, carried, bodies);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the players who carry a registered scanner and are not in receiverIds, each once with
+	//! every scanner they carry (parallel arrays, as Hear takes them).
+	//! \return How many scanners were visited.
+	static int CollectHolders(notnull array<int> receiverIds, notnull array<string> outUids, notnull array<ref array<LF_ScannerComponent>> outCarried, notnull array<IEntity> outBodies)
+	{
+		PlayerManager players = GetGame().GetPlayerManager();
+		if (!players)
+			return 0;
+
+		map<int, int> rowOf = new map<int, int>();
+		int visited;
+		foreach (LF_ScannerComponent scanner : LF_ScannerComponent.All())
 		{
-			if (call.m_aReceiverIds.Find(playerId) >= 0)
+			if (!scanner)
 				continue;
 
-			IEntity body = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-			array<LF_ScannerComponent> scanners = {};
-			FindCarried(body, scanners);
-			if (scanners.IsEmpty())
+			visited++;
+			IEntity holder = scanner.Holder();
+			if (!holder)
 				continue;
 
-			uids.Insert(LF_Utils.GetPlayerUID(playerId));
-			carried.Insert(scanners);
-			bodies.Insert(body);
+			int playerId = players.GetPlayerIdFromControlledEntity(holder);
+			if (playerId <= 0 || receiverIds.Find(playerId) >= 0)
+				continue;
+
+			int row;
+			if (rowOf.Find(playerId, row))
+			{
+				outCarried[row].Insert(scanner);
+				continue;
+			}
+
+			array<LF_ScannerComponent> mine = {};
+			mine.Insert(scanner);
+			rowOf.Set(playerId, outUids.Count());
+			outUids.Insert(LF_Utils.GetPlayerUID(playerId));
+			outCarried.Insert(mine);
+			outBodies.Insert(holder);
 		}
 
-		return Hear(call, uids, carried, bodies);
+		return visited;
 	}
 }
 
@@ -182,5 +261,22 @@ class LF_ScannerSubscriber : LF_EventSubscriber
 	static void ResetStatics()
 	{
 		s_Subscriber = null;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ScannerComponent's registry (registered at script load; Core/LF_StaticReset.c).
+class LF_ScannerComponent_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ScannerComponent_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_ScannerComponent";
+	}
+
+	override void Apply()
+	{
+		LF_ScannerComponent.ResetStatics();
 	}
 }

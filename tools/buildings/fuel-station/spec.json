@@ -13,21 +13,112 @@
   "host": {
     "prefab": "FuelStation",
     "town": "saint-philippe",
-    "dossier": ["b107", "b97"],
-    "world_xz": [4616.6, 10658.7],
+    "dossier": [
+      "b107",
+      "b97"
+    ],
+    "world_xz": [
+      4616.6,
+      10658.7
+    ],
     "front": "-z",
     "front_note": "The station keeps the vanilla composition's frame: the pumps and the shop door face -z. proof.json points are in this frame; grid place uses --front -z.",
-    "footprint": { "min": [-15.49, -1.43], "max": [15.49, 6.4] },
+    "footprint": {
+      "min": [
+        -15.49,
+        -1.43
+      ],
+      "max": [
+        15.49,
+        6.4
+      ]
+    },
     "parts": {
-      "building": { "at": [3.25, 0.245, 3.372], "yaw": 180 },
-      "kiosk": { "at": [-7.477, 0.331, 4.156], "yaw": 180 },
-      "pumps": [[-8.105, 0, -0.769], [2.541, 0, -0.643]]
+      "building": {
+        "at": [
+          3.25,
+          0.245,
+          3.372
+        ],
+        "yaw": 180
+      },
+      "kiosk": {
+        "at": [
+          -7.477,
+          0.331,
+          4.156
+        ],
+        "yaw": 180
+      },
+      "pumps": [
+        [
+          -8.105,
+          0,
+          -0.769
+        ],
+        [
+          2.541,
+          0,
+          -0.643
+        ]
+      ]
     }
   },
   "rooms": [
-    { "id": "shop", "part": "building", "x": [-5.44, -2.44], "z": [-2.6, 2.25], "station_centre": [7.19, 0.35, 3.55], "role": "sales room: the vanilla counter and cash register (the fuel till goes here in pass 1), newspaper stand, posters, armchair" },
-    { "id": "workshop", "part": "building", "x": [-2.44, 4.8], "z": [-2.6, 0.4], "station_centre": [2.07, 0.35, 4.47], "role": "workshop and store: racks, crates, gas bottles, jerrycans, paint" },
-    { "id": "kiosk", "part": "kiosk", "x": [-2.14, 2.06], "z": [-1.8, 1.2], "station_centre": [-7.48, 0.43, 4.46], "role": "attendant's hut: shelf, tool rack, jerrycans, stepladder" }
+    {
+      "id": "shop",
+      "part": "building",
+      "x": [
+        -5.44,
+        -2.44
+      ],
+      "z": [
+        -2.6,
+        2.25
+      ],
+      "station_centre": [
+        7.19,
+        0.35,
+        3.55
+      ],
+      "role": "sales room: the vanilla counter and cash register (the fuel till goes here in pass 1), newspaper stand, posters, armchair"
+    },
+    {
+      "id": "workshop",
+      "part": "building",
+      "x": [
+        -2.44,
+        4.8
+      ],
+      "z": [
+        -2.6,
+        0.4
+      ],
+      "station_centre": [
+        2.07,
+        0.35,
+        4.47
+      ],
+      "role": "workshop and store: racks, crates, gas bottles, jerrycans, paint"
+    },
+    {
+      "id": "kiosk",
+      "part": "kiosk",
+      "x": [
+        -2.14,
+        2.06
+      ],
+      "z": [
+        -1.8,
+        1.2
+      ],
+      "station_centre": [
+        -7.48,
+        0.43,
+        4.46
+      ],
+      "role": "attendant's hut: shelf, tool rack, jerrycans, stepladder"
+    }
   ],
   "interactables": [
     "fuel till (LF_FuelTill_Attended) on the shop counter, pass 1",
@@ -46,9 +137,109 @@
   },
   "scripts": {
     "shell": "node tools/buildings/fuel-station/prune.mjs",
-    "proof": "tools/buildings/fuel-station/proof.json"
+    "proof": "tools/buildings/fuel-station/proof.json",
+    "fitout": "node tools/buildings/fuel-station/fitout.mjs"
   },
   "counts": {
-    "shell": { "entities": 90, "lights": 0, "shadow_casters": 0, "vanilla_props_kept": { "building": "44/56", "kiosk": "18/24" } }
-  }
+    "shell": {
+      "entities": 90,
+      "lights": 0,
+      "shadow_casters": 0,
+      "vanilla_props_kept": {
+        "building": "44/56",
+        "kiosk": "18/24"
+      }
+    },
+    "pass1": {
+      "entities": 94,
+      "lights": 1,
+      "shadow_casters": 0,
+      "grade": "C"
+    }
+  },
+  "floaters_allow": [
+    {
+      "match": "5B18BE720DF26F8D",
+      "why": "vanilla furniture kept by prune.mjs, in its part's own frame (floor y 0.1): the check reads every prefab of the station in one space, so it is judged against the V1 forecourt slab (top 0.2) it never stands on"
+    },
+    {
+      "match": "5B18BE720DF26FED",
+      "why": "vanilla furniture kept by prune.mjs, in its part's own frame (floor y 0.1): the check reads every prefab of the station in one space, so it is judged against the V1 forecourt slab (top 0.2) it never stands on"
+    },
+    {
+      "match": "5B18BE720DF26E8F",
+      "why": "vanilla furniture kept by prune.mjs, in its part's own frame (floor y 0.1): the check reads every prefab of the station in one space, so it is judged against the V1 forecourt slab (top 0.2) it never stands on"
+    },
+    {
+      "match": "5B18BE720DF26E9B",
+      "why": "vanilla furniture kept by prune.mjs, in its part's own frame (floor y 0.1): the check reads every prefab of the station in one space, so it is judged against the V1 forecourt slab (top 0.2) it never stands on"
+    },
+    {
+      "match": "5B18BE720DF26EFF",
+      "why": "vanilla furniture kept by prune.mjs, in its part's own frame (floor y 0.1): the check reads every prefab of the station in one space, so it is judged against the V1 forecourt slab (top 0.2) it never stands on"
+    },
+    {
+      "match": "5B18BE720DF26EDB",
+      "why": "vanilla furniture as the base game places it (a few cm in its neighbour); polish pass re-snaps it"
+    },
+    {
+      "match": "5B18BE720DF26D42",
+      "why": "vanilla furniture as the base game places it (a few cm in its neighbour); polish pass re-snaps it"
+    },
+    {
+      "match": "5B18BE720DF26DB3",
+      "why": "vanilla furniture kept by prune.mjs, in its part's own frame (floor y 0.1): the check reads every prefab of the station in one space, so it is judged against the V1 forecourt slab (top 0.2) it never stands on"
+    },
+    {
+      "match": "5B18BE720DF26DF5",
+      "why": "vanilla furniture kept by prune.mjs, in its part's own frame (floor y 0.1): the check reads every prefab of the station in one space, so it is judged against the V1 forecourt slab (top 0.2) it never stands on"
+    },
+    {
+      "match": "58EA8658FA034599",
+      "why": "vanilla furniture kept by prune.mjs, in its part's own frame (floor y 0.1): the check reads every prefab of the station in one space, so it is judged against the V1 forecourt slab (top 0.2) it never stands on"
+    },
+    {
+      "match": "58EA8658FA0342C0",
+      "why": "vanilla furniture as the base game places it (a few cm in its neighbour); polish pass re-snaps it"
+    },
+    {
+      "match": "58EA8658FA0342E4",
+      "why": "vanilla furniture as the base game places it (a few cm in its neighbour); polish pass re-snaps it"
+    },
+    {
+      "match": "58EA8658FA0342F7",
+      "why": "vanilla furniture kept by prune.mjs, in its part's own frame (floor y 0.1): the check reads every prefab of the station in one space, so it is judged against the V1 forecourt slab (top 0.2) it never stands on"
+    },
+    {
+      "match": "58EA8658FA0345B4",
+      "why": "vanilla furniture kept by prune.mjs, in its part's own frame (floor y 0.1): the check reads every prefab of the station in one space, so it is judged against the V1 forecourt slab (top 0.2) it never stands on"
+    }
+  ],
+  "systems": [
+    {
+      "system": "fuel till robbery (#936, dialogue-only)",
+      "entity": "FuelStation_Till (grid layer), LF_FuelTill_Attended on the vanilla register, a DispatchSource place",
+      "docs": "addons/LifeFramework/Scripts/Game/Feature/Crime/Feature.md"
+    },
+    {
+      "system": "fuel clerk",
+      "entity": "FuelStation_Clerk (grid layer)",
+      "prefab": "LF_Npc_FuelClerk_1",
+      "docs": "dialogue fuel_clerk (Configs/Dialogue/LF_Dialogue_FuelClerk.conf) finds the till by distance"
+    },
+    {
+      "system": "ambient pump hum",
+      "entity": "FuelStation_Kit child LF_FuelPumpHum, between the pumps",
+      "docs": "addons/LifeFramework/Scripts/Game/Feature/Atmosphere/Feature.md LF_AmbientFuelPump"
+    },
+    {
+      "system": "site alarm (LF_SiteAlarm_Fuel)",
+      "entity": "FuelStation_Kit child ElectricityBox_small_01 + LF_AlarmMountComponent on the shop front",
+      "docs": "docs/features/crime-police.md LF_Dispatch"
+    },
+    {
+      "system": "canopy light",
+      "entity": "FuelStation_Kit child LightEntity, CastShadow 0"
+    }
+  ]
 }

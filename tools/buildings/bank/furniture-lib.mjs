@@ -58,10 +58,23 @@ const emit = (node, depth) => {
   return out;
 };
 
-// The entity as a child of the furniture block (two spaces in).
-export function emitEntity(e) {
+// A pure yaw written as `angles 0 a 0` becomes `angleY a` (the same pose): the floater check and the placement audit
+// read angleY, so a desk turned by `angles` was judged unturned and the props on it were called floating.
+const yawOnly = (l) => {
+  const m = /^angles (\S+) (\S+) (\S+)$/.exec(l);
+  return m && +m[1] === 0 && +m[3] === 0 ? `angleY ${m[2]}` : l;
+};
+
+// The entity as a child of the furniture block (two spaces in). `kids` adds child nodes first (a components override).
+export function emitEntity(e, kids = []) {
   const head = `${e.cls} : "${e.guid}${e.path}"`;
-  return emit({ head, lines: e.node.lines, kids: e.node.kids }, 2).join("\n");
+  return emit({ head, lines: e.node.lines.map(yawOnly), kids: [...kids, ...e.node.kids] }, 2).join("\n");
+}
+
+// A components block that assigns `emat` to one material slot of a MeshObject: { head, lines, kids } for emitEntity.
+export function materialKid(meshId, assignId, slot, emat) {
+  const assign = { head: `MaterialAssignClass "{${assignId}}"`, lines: [`SourceMaterial "${slot}"`, `AssignedMaterial "${emat}"`], kids: [] };
+  return { head: "components", lines: [], kids: [{ head: `MeshObject "{${meshId}}"`, lines: [], kids: [{ head: "Materials", lines: [], kids: [assign] }] }] };
 }
 
 // A floor name from the height: ground 0.2, first 4.0, second 7.8 (the vanilla municipal office's slabs).

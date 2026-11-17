@@ -13,15 +13,15 @@ const eq = (a, b, what) => { if (JSON.stringify(a) !== JSON.stringify(b)) fails.
 eq(verdict([{ place: "a", check: true, reach: true, switchOff: true }]), [], "a fully green place is ready");
 eq(verdict([{ place: "a", check: true, reach: null, switchOff: null }]).length, 2, "not run counts as not ready");
 eq(verdict([{ place: "a", check: false, reach: true, switchOff: true }]).length, 1, "a failed check is one problem");
-eq(switchOffLines("x\n[LFDebug:Systems] jail switches off: no JailCell placed\ny").length, 1, "a switches-off line is found");
-eq(switchOffLines("[LFDebug:Bank] vault switched off by an admin").length, 0, "only the Systems feature counts");
+eq(switchOffLines("x\n18:40:40.174 SCRIPT       : [LFDebug:Jail] no JailCell placed on this map: off\ny").length, 1, "the real CheckPlaces line is found");
+eq(switchOffLines("[LFDebug:Hideouts] no HideoutDoor or Vault placed on this map: off").length, 1, "a system with two kinds is found");
+eq(switchOffLines("[LFDebug:Systems] systems: 70 of 71 on; off: Jail\n[LFDebug:Bank] vault switched off by an admin").length, 0, "other off lines do not count");
 eq(parseReach("noise\nTOWNREACH {\"place\":\"p\",\"pass\":true,\"results\":[]}\nPASS").pass, true, "the proof's json line parses");
 eq(parseReach("no line"), null, "no line is null");
 
 const d = JSON.parse(readFileSync(new URL("../../docs/everon/places/saint-philippe/dossier.json", import.meta.url), "utf8"));
 const m = acceptanceMarkers(d);
-const area = Math.max(...d.buildings.map((b) => b.footprint?.area ?? 0));
-eq(d.buildings.find((b) => b.footprint?.cx === m.closed.x)?.footprint.area, area, "the closed marker is the biggest building's centre");
+if (m.offmap.x < 12800) fails.push(`the off-map marker x ${m.offmap.x} is on the map`);
 const dd = Math.hypot(m.from.x - m.reach.x, m.from.z - m.reach.z);
 if (dd < 50 || dd > 150) fails.push(`the reachable marker is ${dd} m away, expected 50 to 150`);
 const t = slotTargets({ buildings: [{ id: "b1", x: 1, y: 0, z: 2, entrances: [{ side: "front", x: 5, y: 0, z: 6 }] }, { id: "b2", x: 9, y: 0, z: 9 }], freePlots: [] }, { slots: { arrival: { building: "b1" }, shop: { building: "b2" } } });
