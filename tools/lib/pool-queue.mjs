@@ -1,6 +1,7 @@
 // Pure rules of the test pool queue (tools/remote/pool.mjs): lanes, priority
 // order with aging, the RAM gate, and the session lease. No I/O, so
 // tools/validation/pool-selftest.mjs proves them without a game.
+import { ISLAND, SEED_PEAKS_MB, worldClass } from "./pool-ram.mjs";
 
 export const PRIORITIES = ["low", "normal", "high"];
 export const DEFAULTS = {
@@ -273,7 +274,9 @@ export function burstAdmit(ahead, mine, { freeLanes, freeMb, pendingMb = 0, minF
 // test the test server's boot reserve. A ticket without a lane (an older CLI) is a session.
 export function ticketReserveMb(t, settings = {}) {
   if ((t?.lane ?? "session") === "session") return sessionReserveMb(settings, t?.clients ?? 1, t?.profile ?? "full");
-  return settings.testReserveMb ?? DEFAULTS.testReserveMb;
+  const base = settings.testReserveMb ?? DEFAULTS.testReserveMb;
+  // An island-world test (the placement audit on MainWorld) holds the island server's peak, not a small boot's.
+  return worldClass(t?.world) === ISLAND ? Math.max(base, SEED_PEAKS_MB["test:island"]) : base;
 }
 
 // Memory still booting on a machine that its free RAM does not show yet (MB), from its live lane
@@ -435,6 +438,11 @@ export const BUDGET_MIN_RUNS = 5;
 export const TIMEOUT_RATE_RAISE = 0.02;
 export const BOOT_BUDGET_S = 30;
 // Starting budgets (seconds) until a kind has history. e2e is per pass.
+// An island-world run (MainWorld, CoreOnEveron, the island mission) streams Everon after boot: its own seed,
+// floor and history, apart from the small-world runs of the same purpose (#2394, a 30 s history budget killed
+// an audit that needs minutes). Boot is budgeted separately (bootBudgetSeconds).
+export const ISLAND_BUDGET_S = 300;
+export const ISLAND_BUDGET_FLOOR_S = 180;
 export const DEFAULT_BUDGET_S = { "test only": 30, "test fast": 45, "test all": 90, "test all core-only": 90, "test persistence": 120, "test perf": 120, e2e: 120 };
 
 // The run-log label of a test run (runs.jsonl "purpose", the budget key, the pool status column).
@@ -472,15 +480,19 @@ export function p95(values) {
   return v.length ? v[Math.max(0, Math.ceil(0.95 * v.length) - 1)] : 0;
 }
 
+// Whether a world (path, mission header, bare name) is island-sized: the pool's world class (pool-ram.mjs).
+export const isIslandWorld = (world) => worldClass(world) === ISLAND;
+
 // Budget for one run kind on one machine, in seconds, excluding boot:
 //   3x the p95 of that machine's recent passing runs of the kind, never under
 //   the 30 s floor; a seeded default (times the machine multiplier) until it
 //   has 5 passes. A kind whose recent runs timed out more than 2% of the time
 //   gets double, so a budget that is too tight corrects itself.
 // runs: the pool's runs.jsonl records. Returns { runS, source, rate }.
-export function budgetSeconds(runs, kind, machine, { multiplier = 1, override } = {}) {
+export function budgetSeconds(runs, kind, machine, { multiplier = 1, override, world } = {}) {
   if (Number.isFinite(override) && override > 0) return { runS: Math.round(override), source: "override", rate: 0 };
-  const mine = runs.filter((r) => r.purpose === kind && r.machine === machine).slice(-50);
+  const island = isIslandWorld(world);
+  const mine = runs.filter((r) => r.purpose === kind && r.machine === machine && isIslandWorld(r.world) === island).slice(-50);
   const perPass = kind === "e2e" ? 2 : 1;
   const passes = mine.filter((r) => r.result === "pass").slice(-30).map((r) => Number(r.durS) / perPass);
   const timeouts = mine.filter((r) => r.result === "timeout").length;
@@ -488,12 +500,13 @@ export function budgetSeconds(runs, kind, machine, { multiplier = 1, override } 
   let runS;
   let source;
   if (passes.length >= BUDGET_MIN_RUNS) {
-    runS = Math.max(BUDGET_FLOOR_S, 3 * p95(passes));
+    runS = Math.max(island ? ISLAND_BUDGET_FLOOR_S : BUDGET_FLOOR_S, 3 * p95(passes));
     source = "history";
   } else {
-    runS = (DEFAULT_BUDGET_S[kind] ?? 90) * multiplier;
+    runS = island ? Math.max(ISLAND_BUDGET_S, DEFAULT_BUDGET_S[kind] ?? 0) * multiplier : (DEFAULT_BUDGET_S[kind] ?? 90) * multiplier;
     source = "default";
   }
+  if (island) source += "+island";
   if (rate > TIMEOUT_RATE_RAISE) {
     runS *= 2;
     source += "+raised";

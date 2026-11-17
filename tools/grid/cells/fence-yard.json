@@ -1,0 +1,12 @@
+{
+  "slug": "fence-yard",
+  "cell": "c14r4",
+  "span": [
+    2,
+    2
+  ],
+  "layer": "Grid_fence_yard.layer",
+  "rows": 1,
+  "created": "2026-11-17",
+  "pack": true
+}
