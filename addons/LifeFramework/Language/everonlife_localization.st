@@ -9928,6 +9928,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You are not in an organisation."
      Comment "Greyed-out reason and toast: Leave with no organisation (#934)."
     }
+    CustomStringTableItem "{7581DEC7A2972FB8}" {
+     Id "LF-TestOrgSign_OtherOrg"
+     Target_en_us "The test sign only takes you out of the test organisation."
+     Comment "Toast: the test org sign's Leave refused because the player belongs to a different organisation (#2536)."
+    }
     CustomStringTableItem "{C3D98F355E87E01F}" {
      Id "LF-TestOrgSign_Title"
      Target_en_us "Test organisation"

@@ -13,7 +13,8 @@ enum LF_ETestOrgRefusal
 	NO_CHARACTER,
 	TOO_FAR,
 	ALREADY_IN,
-	NOT_IN
+	NOT_IN,
+	OTHER_ORG
 }
 
 //------------------------------------------------------------------------------------------------
@@ -24,7 +25,9 @@ class LF_TestOrgRules
 
 	//------------------------------------------------------------------------------------------------
 	//! \param joining true for Join, false for Leave.
-	static LF_ETestOrgRefusal Check(bool hubEnabled, bool devAllowed, bool hasCharacter, bool near, bool inOrganisation, bool joining)
+	//! \param inTestOrganisation true when the character's organisation is this sign's own. Leave
+	//! takes a character out of their organisation founder and all, so it must never reach a real one.
+	static LF_ETestOrgRefusal Check(bool hubEnabled, bool devAllowed, bool hasCharacter, bool near, bool inOrganisation, bool joining, bool inTestOrganisation = true)
 	{
 		if (!hubEnabled)
 			return LF_ETestOrgRefusal.NOT_PLAYTEST;
@@ -43,6 +46,9 @@ class LF_TestOrgRules
 
 		if (!joining && !inOrganisation)
 			return LF_ETestOrgRefusal.NOT_IN;
+
+		if (!joining && !inTestOrganisation)
+			return LF_ETestOrgRefusal.OTHER_ORG;
 
 		return LF_ETestOrgRefusal.NONE;
 	}
@@ -75,6 +81,9 @@ class LF_TestOrgRules
 
 		if (reason == LF_ETestOrgRefusal.NOT_IN)
 			return "#LF-TestOrgSign_NotIn";
+
+		if (reason == LF_ETestOrgRefusal.OTHER_ORG)
+			return "#LF-TestOrgSign_OtherOrg";
 
 		return string.Empty;
 	}
@@ -120,8 +129,11 @@ class LF_TestOrgSign
 			characterId = LF_OrganizationPlayer.CharacterId(user);
 
 		bool near = user && sign && vector.Distance(user.GetOrigin(), sign.GetOrigin()) <= REACH;
-		bool inOrganisation = LF_OrganizationManager.GetByCharacter(characterId) != null;
-		LF_ETestOrgRefusal refusal = LF_TestOrgRules.Check(LF_SpawnHub.IsEnabled(), DevAllowed(user), !characterId.IsEmpty(), near, inOrganisation, joining);
+		LF_Organization own = LF_OrganizationManager.GetByCharacter(characterId);
+		bool inOrganisation = own != null;
+		LF_Organization testOrg = LF_OrganizationManager.FindByName(LF_TestOrgRules.ORG_NAME);
+		bool inTestOrganisation = own && testOrg && own.GetId() == testOrg.GetId();
+		LF_ETestOrgRefusal refusal = LF_TestOrgRules.Check(LF_SpawnHub.IsEnabled(), DevAllowed(user), !characterId.IsEmpty(), near, inOrganisation, joining, inTestOrganisation);
 		if (refusal != LF_ETestOrgRefusal.NONE)
 		{
 			LF_Debug.Warn(FEATURE, string.Format("refused %1: %2", characterId, typename.EnumToString(LF_ETestOrgRefusal, refusal)));

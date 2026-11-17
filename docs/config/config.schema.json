@@ -837,6 +837,13 @@
           "minimum": 0,
           "maximum": 1000000
         },
+        "hideoutLeaseIdleDays": {
+          "type": "integer",
+          "description": "Real days a hideout lease may stand with no member of its organization connected before the lease lapses (#2573); 0 = leases never lapse",
+          "default": 14,
+          "minimum": 0,
+          "maximum": 3650
+        },
         "rankDefaults": {
           "type": "object",
           "description": "Rights of the default ranks a new organization starts with, one entry per rank id (founder, officer, member). A rank with no entry keeps its shipped rights. Applies to organizations founded after the change; a saved organization keeps its own ranks. Records are an object keyed by a stable key. The key is a default rank id: founder, officer or member. The entry starts from the shipped rights, so only the permissions written change. It applies to organizations founded afterwards; a saved organization keeps its own ranks.",

@@ -9,11 +9,11 @@
 // red-proof: before summarize() ran the doctor this printed
 // "FAIL good boot: the report must open with the doctor verdict" (2026-11-15).
 
-import { cpSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "host-summary-doctor");
@@ -55,7 +55,7 @@ const bare = page("18:00:00.000  DEFAULT      : Engine start\n18:00:30.000  NETW
 check(!/Server doctor/.test(bare), "a log with no boot header must get no doctor section");
 
 // The command: server name from <root>/server.json, the page written under <host>/sessions.
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-summary-doctor-"));
+const tmp = scratchDir("lf-host-summary-doctor-");
 try {
   const host = join(tmp, "host");
   const logDir = join(host, "profile", "logs", "logs_2026-11-15_10-02-00");
