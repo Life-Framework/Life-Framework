@@ -20,8 +20,8 @@ key out to keep it on.
 
 | Key | Off means, after a restart |
 |---|---|
-| `keepCash` | Cash on hand is gone from every character. The bank balance, and cash in a locker or stash, stay. |
-| `keepCarriedGear` | Every character respawns with the starting loadout. Cash on hand goes with the gear. Lockers and stashes stay. |
+| `keepCash` | Cash on hand is gone from every character, including cash left in the police or medic duty gear and in the clothes an on-duty officer left at the desk. The bank balance, and cash in a house locker or stash, stay. |
+| `keepCarriedGear` | Every character respawns with the starting loadout. Cash on hand goes with the gear, and so do the clothes an on-duty officer left at the duty desk: they get the civilian kit at clock-out. Police and medic duty gear, house lockers and stashes stay. |
 | `keepSurvival` | Hunger and thirst start full. |
 | `keepWanted` | Every warrant is cleared, on every character of every account, and the wanted posters come down. |
 | `keepJail` | Every prisoner is free. This includes a sentence started by logging out cuffed ([disconnect rules](disconnect-rules.md)). |

@@ -70,7 +70,7 @@ class LF_ChessScreen
 	//! in a key one eighth of the sheet wide the label was pushed a whole key to the right (the a-file
 	//! blank, the h-file clipped). The square drops the padding and the glyph, centres the label in
 	//! its own button and takes a shorter height.
-	//! eturn false when the key is missing the parts of the kit button.
+	//! \return false when the key is missing the parts of the kit button.
 	static bool FitKey(Widget key)
 	{
 		if (!key)
@@ -115,7 +115,7 @@ class LF_ChessScreen
 
 	//------------------------------------------------------------------------------------------------
 	//! Fits all 64 keys and the eight rows of the board that is open on the workspace.
-	//! eturn How many keys were fitted.
+	//! \return How many keys were fitted.
 	static int FitBoard()
 	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();

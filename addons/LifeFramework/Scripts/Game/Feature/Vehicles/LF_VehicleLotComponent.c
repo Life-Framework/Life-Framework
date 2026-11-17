@@ -222,7 +222,7 @@ class LF_VehicleLotComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The offer for a vehicle prefab among these offers, or null. Pure; tests drive it.
+	//! \return The offer for a vehicle prefab among these offers, or null. Pure; tests drive it.
 	static LF_VehicleOffer OfferIn(array<ref LF_VehicleOffer> offers, ResourceName prefab)
 	{
 		if (!offers)
@@ -243,7 +243,7 @@ class LF_VehicleLotComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The offer for a vehicle prefab on this lot, or null.
+	//! \return The offer for a vehicle prefab on this lot, or null.
 	LF_VehicleOffer GetOffer(ResourceName prefab)
 	{
 		return OfferIn(m_aOffers, prefab);

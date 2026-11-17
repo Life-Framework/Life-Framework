@@ -72,14 +72,36 @@ class LF_MapMarksClient
 
 	protected static bool s_bRestoring;
 	protected static bool s_bUploadQueued;
+	//! The generation of the server's latest restore; every upload echoes it. 0: no restore yet.
+	protected static int s_iGeneration;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		CancelUpload();
+		s_bRestoring = false;
+		s_iGeneration = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops a queued upload. The controlled character changed: the queued list holds the previous
+	//! character's marks, and uploading it now would save it under the new character's key (#2546).
+	//! The generation is forgotten too, so nothing uploads until the new character's restore lands.
+	static void ForgetCharacter()
+	{
+		if (s_bUploadQueued)
+			LF_Debug.Info(LF_MapMarks.FEATURE, "queued mark upload cancelled: the controlled character changed");
+
+		CancelUpload();
+		s_iGeneration = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void CancelUpload()
+	{
 		if (s_bUploadQueued && GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(Upload);
 
-		s_bRestoring = false;
 		s_bUploadQueued = false;
 	}
 
@@ -109,7 +131,7 @@ class LF_MapMarksClient
 	//! static marker outside the shown map frame from its static list to its disabled list each map frame
 	//! (SCR_MapMarkerManagerComponent.Update), so a mark off screen is only in the disabled list: counting,
 	//! uploading or restoring from GetStaticMarkers alone misses it (the map proof pass, #2236).
-	//! eturn how many were added.
+	//! \return How many were added.
 	static int CollectPersonal(array<SCR_MapMarkerBase> visible, array<SCR_MapMarkerBase> disabled, notnull array<SCR_MapMarkerBase> into)
 	{
 		return CollectPersonalFrom(visible, into) + CollectPersonalFrom(disabled, into);
@@ -172,6 +194,12 @@ class LF_MapMarksClient
 		if (!controller || !manager)
 			return;
 
+		if (s_iGeneration == 0)
+		{
+			LF_Debug.Info(LF_MapMarks.FEATURE, "mark upload skipped: the server's restore has not arrived yet");
+			return;
+		}
+
 		array<int> ints = {};
 		array<string> texts = {};
 		foreach (SCR_MapMarkerBase marker : PersonalOf(manager))
@@ -182,12 +210,13 @@ class LF_MapMarksClient
 			LF_MapMarksWire.Append(row, ints, texts);
 		}
 
-		controller.LF_AskMapMarksSet(ints, texts);
+		controller.LF_AskMapMarksSet(s_iGeneration, ints, texts);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Replaces the map's personal marks with the server's list (spawn, respawn, character switch).
-	static void Restore(array<int> ints, array<string> texts)
+	//! \param[in] generation The server's restore generation; later uploads echo it.
+	static void Restore(int generation, array<int> ints, array<string> texts)
 	{
 		SCR_MapMarkerManagerComponent manager = SCR_MapMarkerManagerComponent.GetInstance();
 		if (!manager)
@@ -203,6 +232,9 @@ class LF_MapMarksClient
 			return;
 		}
 
+		// An upload queued before this restore holds the map as it was; the restore replaces that map.
+		CancelUpload();
+		s_iGeneration = generation;
 		s_bRestoring = true;
 		foreach (SCR_MapMarkerBase old : PersonalOf(manager))
 		{
@@ -262,6 +294,9 @@ modded class SCR_PlayerController
 		if (!to || GetGame().GetPlayerController() != this)
 			return;
 
+		// A queued upload holds the previous character's marks: drop it before asking for the new list.
+		LF_MapMarksClient.ForgetCharacter();
+
 		// The owner pulls the (maybe new) character's marks on join, respawn and character switch.
 		if (Replication.IsServer())
 			RpcAsk_LF_MapMarksSync();
@@ -271,12 +306,13 @@ modded class SCR_PlayerController
 
 	//------------------------------------------------------------------------------------------------
 	//! Client: the whole personal mark list after a change.
-	void LF_AskMapMarksSet(array<int> ints, array<string> texts)
+	//! \param[in] generation The restore generation the list was edited under (LF_MapMarks.SetFromPlayer).
+	void LF_AskMapMarksSet(int generation, array<int> ints, array<string> texts)
 	{
 		if (Replication.IsServer())
-			RpcAsk_LF_MapMarksSet(ints, texts);
+			RpcAsk_LF_MapMarksSet(generation, ints, texts);
 		else
-			Rpc(RpcAsk_LF_MapMarksSet, ints, texts);
+			Rpc(RpcAsk_LF_MapMarksSet, generation, ints, texts);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -291,7 +327,7 @@ modded class SCR_PlayerController
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_MapMarksSet(array<int> ints, array<string> texts)
+	protected void RpcAsk_LF_MapMarksSet(int generation, array<int> ints, array<string> texts)
 	{
 		int playerId = GetPlayerId();
 		if (!LF_MapMarks.AllowAsk(playerId, "map marks save"))
@@ -312,7 +348,10 @@ modded class SCR_PlayerController
 			return;
 		}
 
-		int kept = LF_MapMarks.SetCharacter(characterId, rows);
+		int kept = LF_MapMarks.SetFromPlayer(playerId, characterId, generation, rows);
+		if (kept < 0)
+			return; // stale generation, logged by SetFromPlayer
+
 		LF_Debug.Info(LF_MapMarks.FEATURE, string.Format("player %1 saved %2 of %3 mark(s)", playerId, kept, rows.Count()));
 	}
 
@@ -337,18 +376,19 @@ modded class SCR_PlayerController
 		array<int> ints = {};
 		array<string> texts = {};
 		int count = LF_MapMarks.ExportCharacter(characterId, ints, texts);
-		LF_Debug.Info(LF_MapMarks.FEATURE, string.Format("restore: %1 mark(s) to player %2", count, GetPlayerId()));
+		int generation = LF_MapMarks.IssueGeneration(GetPlayerId(), characterId);
+		LF_Debug.Info(LF_MapMarks.FEATURE, string.Format("restore: %1 mark(s) to player %2, generation %3", count, GetPlayerId(), generation));
 		if (GetGame().GetPlayerController() == this)
-			RpcDo_LF_MapMarksSync(ints, texts);
+			RpcDo_LF_MapMarksSync(generation, ints, texts);
 		else
-			Rpc(RpcDo_LF_MapMarksSync, ints, texts);
+			Rpc(RpcDo_LF_MapMarksSync, generation, ints, texts);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_LF_MapMarksSync(array<int> ints, array<string> texts)
+	protected void RpcDo_LF_MapMarksSync(int generation, array<int> ints, array<string> texts)
 	{
-		LF_MapMarksClient.Restore(ints, texts);
+		LF_MapMarksClient.Restore(generation, ints, texts);
 	}
 }
 
