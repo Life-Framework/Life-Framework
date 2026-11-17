@@ -1,6 +1,9 @@
 // tools\cli map: the offline Everon map emulator (docs/architecture/everon-map.md, card M0 #2227).
-//   map render [--place saint-philippe|square|island|<catalog place>|--bbox x0,z0,x1,z1] [--zoom N]
+//   map render [--place saint-philippe|square|island|fit|<catalog place>|--bbox x0,z0,x1,z1] [--zoom N]
 //              [--as new|known|police|org:<id>] [--night] [--size WxH] [--html] [--out file] [--fallback]
+//              [--world main|town|debug|grid|<layers dir|.layer>] [--live-states 1,2] [--base everon|plain] [--fixture]
+//   POIs are the live places of --world (default main, the pack island) joined to the POI kind table; --fixture
+//   draws the stand-in rows instead. A world other than main draws on a plain grid and fits the view to its places.
 //   map extract [--force]    read the base layer (terrain colour + heights) from the game paks into the cache
 //   map status               where the cache is and whether it exists
 // No game boot and no Workbench: a render is about 1 to 2 s with the base layer cached.
@@ -11,7 +14,7 @@ import { gameVfs } from "../lib/game-prefab.mjs";
 import { cacheDir, extract, loadBase } from "../map/lib/basemap.mjs";
 import { renderMap } from "../map/render/render.mjs";
 
-export const help = "map render [--place saint-philippe|square|island|--bbox x0,z0,x1,z1] [--zoom N] [--as new|known|police|org:<id>] [--night] [--html] [--out f]   the Everon map to a PNG in ~1-2 s, no game, no Workbench; map extract|status manage the base-layer cache";
+export const help = "map render [--place saint-philippe|square|island|fit|--bbox x0,z0,x1,z1] [--zoom N] [--as new|known|police|org:<id>] [--world main|town|debug|grid] [--fixture] [--night] [--html] [--out f]   the Everon map to a PNG in ~1-2 s, no game, no Workbench; map extract|status manage the base-layer cache";
 
 function opt(args, name, takes = true) {
   const i = args.indexOf(`--${name}`);
@@ -47,14 +50,22 @@ export async function main(args, { root }) {
   const as = opt(rest, "as") || "new";
   if (!/^(new|known|police|org:[\w-]+)$/.test(as)) { console.error("map: --as new|known|police|org:<id>"); return 2; }
   const html = opt(rest, "html", false);
+  const world = opt(rest, "world") || "main";
+  const baseArg = opt(rest, "base");
+  if (baseArg && !/^(everon|plain)$/.test(baseArg)) { console.error("map: --base everon|plain"); return 2; }
+  const statesArg = opt(rest, "live-states");
+  const liveStates = statesArg === undefined ? undefined : statesArg.split(",").filter(Boolean).map(Number);
+  if (liveStates?.some((n) => !Number.isFinite(n))) { console.error("map: --live-states 1,2 (numbers)"); return 2; }
+  const fixture = opt(rest, "fixture", false);
   let r;
   try {
-    r = await renderMap({ root, place: opt(rest, "place"), bbox, zoom: zoomArg === undefined ? undefined : Number(zoomArg), as, night: opt(rest, "night", false), size, html, extract: !opt(rest, "fallback", false), cacheRoot: opt(rest, "fallback", false) ? join(root, "tmp", "map", "no-cache") : undefined, log: console.log });
+    r = await renderMap({ root, place: opt(rest, "place"), bbox, zoom: zoomArg === undefined ? undefined : Number(zoomArg), as, world, fixture, base: baseArg, liveStates, night: opt(rest, "night", false), size, html, extract: !opt(rest, "fallback", false), cacheRoot: opt(rest, "fallback", false) ? join(root, "tmp", "map", "no-cache") : undefined, log: console.log });
   } catch (e) {
     console.error(`SUMMARY map render fail ${e.message}`);
     return 1;
   }
-  const slug = `${opt(rest, "place") || (bbox ? "bbox" : "island")}-z${r.view.zoom.toFixed(1)}-${as.replace(":", "-")}${opt(rest, "night", false) ? "-night" : ""}`;
+  const placeName = opt(rest, "place") || (bbox ? "bbox" : fixture || world === "main" ? "island" : "fit");
+  const slug = `${fixture ? "fixture-" : world === "main" ? "" : `${String(world).replace(/[^\w-]+/g, "_")}-`}${placeName}-z${r.view.zoom.toFixed(1)}-${as.replace(":", "-")}${opt(rest, "night", false) ? "-night" : ""}`;
   const out = opt(rest, "out") || join(root, "tmp", "map", `${slug}.png`);
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, r.png);
@@ -64,6 +75,11 @@ export async function main(args, { root }) {
     writeFileSync(htmlOut, r.html);
   }
   const s = r.stats;
-  console.log(`SUMMARY map render ok layer=${r.layer} ${r.view.w}x${r.view.h} zoom=${r.view.zoom.toFixed(1)} as=${as} pois=${s.pois} places=${s.places} areas=${s.areas} buildings=${s.buildings} overlay=${s.overlay} ms=${s.ms} png=${out}${htmlOut ? ` html=${htmlOut}` : ""}`);
+  const i = s.info;
+  if (s.overlay === "none") {
+    console.error(`map: no places with a POI kind in world ${i.world} (${i.files} layer files, ${i.places} places, ${i.kinds} POI kinds${Object.keys(i.unjoined).length ? `; kinds with no POI row: ${Object.entries(i.unjoined).map(([k, n]) => `${k} x${n}`).join(", ")}` : ""}). No POIs drawn; pass --fixture for the stand-in rows.`);
+  }
+  const world_ = s.overlay === "fixture" ? "" : ` world=${i.world} places-in-world=${i.places} poi-places=${i.pois} dark=${i.dark}`;
+  console.log(`SUMMARY map render ok layer=${r.layer} ${r.view.w}x${r.view.h} zoom=${r.view.zoom.toFixed(1)} as=${as} pois=${s.pois}${world_} places=${s.places} areas=${s.areas} buildings=${s.buildings} overlay=${s.overlay} ms=${s.ms} png=${out}${htmlOut ? ` html=${htmlOut}` : ""}`);
   return 0;
 }

@@ -1,0 +1,22 @@
+GenericEntity Fit_arrival_Place {
+ components {
+  LF_PlaceComponent "{AAAAAAAAAAAAAAA1}" {
+   m_sKind "Spawn"
+   m_sId "sample-square.arrival"
+  }
+ }
+ coords 1012 12.4 2014
+}
+GenericEntity Fit_arrival_Place_Clerk {
+ components {
+  LF_PlaceComponent "{AAAAAAAAAAAAAAA1}" {
+   m_sKind "Clerk"
+   m_sId "sample-square.arrival"
+  }
+ }
+ coords 1012 12.4 2014
+}
+GenericEntity Fit_arrival_Desk : "{BBBBBBBBBBBBBBB1}Prefabs/Fx/Table.et" {
+ coords 1010 12.4 2012
+ angleY 90
+}

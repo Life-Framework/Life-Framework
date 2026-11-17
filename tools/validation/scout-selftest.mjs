@@ -109,7 +109,7 @@ check("a house addon garage is a garage, quay pieces are counted not listed, a r
 check("props: pier, fuel pump, bench", t("Prefabs/Structures/Infrastructure/Naval/Pier_Wooden_01.et").type === "pier-or-dock" && t("Prefabs/Structures/BuildingParts/Industrial/FuelPump_01.et").type === "fuel-pump" && t("Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et").type === "bench");
 check("a kitchen bench is not a street bench", t("Prefabs/Props/Furniture/BenchKitchen_01/BenchKitchen_01_Red.et").type !== "bench");
 check("a door and a fence are not buildings", t("Prefabs/Structures/BuildingParts/Doors/Door_House_Town_3I01/Door_X.et").group === "other" && t("Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01_4m.et").group === "wall");
-check("every rule names a distinct type once per family", typeTable().length === BUILDING_RULES.length + typeTable().filter((r) => r.kind === "prop").length);
+check("every rule names a distinct type once per family", typeTable().length === BUILDING_RULES.length + typeTable().filter((r) => r.kind === "prop" || r.kind === "alias").length);
 
 // ------------------------------------------------------------------ footprints, entrances, interiors
 
