@@ -38,14 +38,14 @@ class LF_Test_OrgMapMarks : LF_Test
 
 #ifdef LF_E2E_LOAD_BOOT
 		// The reload boot: the organization and its mark the save boot recorded came back from the real save.
-		LF_Organization e2eOrg = LF_OrganizationManager.FindByName(E2E_ORG_NAME);
-		ctx.NotNull(e2eOrg, "the e2e organization is back after the restart");
-		if (!e2eOrg)
+		LF_Organization reloadedOrg = LF_OrganizationManager.FindByName(E2E_ORG_NAME);
+		ctx.NotNull(reloadedOrg, "the e2e organization is back after the restart");
+		if (!reloadedOrg)
 			return;
 
-		string e2eKey = LF_OrgMapMarks.KeyOf(e2eOrg.GetId(), 1);
-		ctx.True(LF_OrgMapMarks.Has(e2eKey), "the org mark is in the store after the restart");
-		ctx.True(LF_MapShares.Has(e2eKey), "the org mark is shared again after the restart");
+		string reloadedKey = LF_OrgMapMarks.KeyOf(reloadedOrg.GetId(), 1);
+		ctx.True(LF_OrgMapMarks.Has(reloadedKey), "the org mark is in the store after the restart");
+		ctx.True(LF_MapShares.Has(reloadedKey), "the org mark is shared again after the restart");
 		return;
 #endif
 
