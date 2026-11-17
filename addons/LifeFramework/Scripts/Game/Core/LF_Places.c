@@ -22,9 +22,28 @@ class LF_Places
 	//! \return true when entity now holds the key.
 	static bool Register(string kind, string id, IEntity entity)
 	{
+		return RegisterOn(kind, id, entity, Replication.IsServer());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Register as a given machine would: a client never holds a server-only kind (#2492), so a
+	//! modified client has neither the id nor the position of a place it may not see. The server sends
+	//! each player the private places that player may see (LF_MapPrivatePlaces). Tests pass server
+	//! false to prove a client keeps nothing.
+	//! \param[in] server True on the server (dedicated or listen host), false on a client.
+	//! \return true when entity now holds the key.
+	static bool RegisterOn(string kind, string id, IEntity entity, bool server)
+	{
 		if (kind.IsEmpty() || id.IsEmpty() || !entity)
 		{
 			LF_Debug.Error(FEATURE, string.Format("register refused: kind '%1' id '%2' entity %3", kind, id, entity != null));
+			return false;
+		}
+
+		// Qualified: an unqualified static call here binds to this file's body, not the map's modded one.
+		if (!server && LF_Places.IsServerOnlyKind(kind))
+		{
+			LF_Debug.Info(FEATURE, string.Format("kept off this client: %1 '%2' is a server-only kind", kind, id));
 			return false;
 		}
 
@@ -137,6 +156,14 @@ class LF_Places
 			return id;
 
 		return string.Format("%1#%2", id, order);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a kind stays on the server. None here; the map marks its private POI kinds
+	//! (Feature/Map/LF_MapPrivatePlaces.c).
+	static bool IsServerOnlyKind(string kind)
+	{
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
