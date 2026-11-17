@@ -70,6 +70,8 @@ import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
+import { cliInDesktopSession, desktopSessionOrSay, needsDesktopSession } from "./remote/desktop/in-session.mjs";
+import { needsDesktopRerun } from "./lib/gpu-session.mjs";
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
@@ -3939,6 +3941,7 @@ async function ciWorkbench(root, opts = {}) {
 // (tools/remote/desktop/run-interactive.ps1); its transcript and exit code come back through files.
 // No one signed in, or no exit code: 3, so the caller runs the steps on its own machine.
 function ciWorkbenchInSession(root, stepFlags = []) {
+  if (!desktopSessionOrSay()) return 3;
   const dir = join(root, "tmp", "wb-session");
   mkdirSync(dir, { recursive: true });
   const [log, codeFile, ps1, pidFile] = ["ci.log", "ci.code", "ci.ps1", "ci.pid"].map((n) => join(dir, n));
@@ -5639,6 +5642,10 @@ try {
   const helpReq = helpRequest(cmd, rest);
   if (helpReq) {
     code = printUsage(helpReq);
+  } else if (needsDesktopSession() && needsDesktopRerun([cmd, ...rest])) {
+    // Over ssh (session 0, no display output) a command that starts Workbench in-process runs again in the signed-in
+    // desktop session; with none it stops with one line (tools/lib/gpu-session.mjs).
+    code = cliInDesktopSession(ROOT, [cmd, ...rest], { name: `gpu-${cmd}` });
   } else if (cmd === "mcp") {
     const sub = cmds[a];
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
