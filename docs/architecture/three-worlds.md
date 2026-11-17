@@ -86,7 +86,9 @@ game loads. The pack test leg closes that gap:
   `PACK_TEST_MISSION` names it.
 - **The leg.** `planLegs` (`packLeg`, `tools/lib/test-world.mjs`) adds one boot on that header for the pack
   tests of `--tier all` (every one but PERF) or `--tier persistence`, and for those an `--only`/`--red`
-  names; a mixed `--only` splits into the core legs plus the pack leg. A sharded run (`ci`, `wt gate`)
+  names; a mixed `--only` splits into the core legs plus the pack leg, and each leg runs only the names
+  that belong to it (a core leg never falls back to the whole tier, #2276); a name that matches no test
+  stops the run with exit 2 (`splitSelection`, `test-selection-selftest`). A sharded run (`ci`, `wt gate`)
   runs the pack leg after the shards. `planE2eLegs` gives PERSISTENCE pack tests a save and reload pair
   on the same header. `pack-test-leg-selftest` proves the plan, the boundary and the header.
 - **The first one.** `everon/drinks-impair` (`LF_Test_EveronDrinksImpair`, #2003) asserts that the moonshine
