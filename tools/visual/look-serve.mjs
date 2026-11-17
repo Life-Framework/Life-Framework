@@ -347,7 +347,7 @@ async function sendRequest(st, id, reload, plan, budgetS) {
 }
 
 // One request through the server. The caller holds the build lock.
-// { ok: true, served, sha, reason, raw, statusText, seconds, id } or { ok: false, why }.
+// { ok: true, served, sha, renderedTree, reason, raw, statusText, seconds, id } or { ok: false, why }.
 export async function serveLook(root, { plan, budgetS, exe, workbenchArgs, snapshot, allowStart, ramGate, log = console.log, parseStatus }) {
   const snap = snapshot(root);
   const viewer = viewerPath(root);
@@ -397,6 +397,8 @@ export async function serveLook(root, { plan, budgetS, exe, workbenchArgs, snaps
     killServer(root, st, log);
     return { ok: false, why: at.why };
   }
+  // The addon files the Workbench has on disk for this shot (index.json inputs.rendered; look compares it with the request).
+  const renderedTree = gitOut(viewer, ["rev-parse", "HEAD:addons"]);
   const id = `${process.pid}-${Date.now()}`;
   const res = await sendRequest(st, id, reload, plan, budgetS);
   if (!res.ok) {
@@ -410,7 +412,7 @@ export async function serveLook(root, { plan, budgetS, exe, workbenchArgs, snaps
     return { ok: false, why };
   }
   writeServeState(root, { ...st, sha: snap.sha, lastUsed: new Date().toISOString(), by: root });
-  return { ok: true, served, sha: snap.sha, reason: decision.reason, raw: res.raw, statusText: res.statusText, seconds: res.seconds, id };
+  return { ok: true, served, sha: snap.sha, renderedTree, reason: decision.reason, raw: res.raw, statusText: res.statusText, seconds: res.seconds, id };
 }
 
 // ------------------------------------------------------------------ the `look serve` command

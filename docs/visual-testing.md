@@ -135,6 +135,19 @@ looks off. Each close-up label carries the entity's world bounds in metres and i
 when that is not 1; compare sizes between neighbours. The exit code is 1 when a shot is missing or
 Workbench timed out, never because of a flag.
 
+**What a picture shows.** A look shows the working tree: HEAD plus uncommitted and untracked
+files. Shoot "before" from a checkout without your edit (before the first edit, `git stash`, or the
+base commit), never after `dress.mjs` or any generator has already rewritten the file. Every
+`index.json` carries `inputs.addons` (the git tree of `addons/` the look was asked to show) and
+`inputs.rendered` (the tree the Workbench had on disk when it shot: the viewer checkout for the look
+server, the snapshot for a fresh Workbench); the summary prints it as `addons=<tree>`. The look fails
+when the two differ, and a routed look also fails when the box rendered another tree than this
+checkout's. `tools\cli evidence <key> after <area>` refuses a pair whose before and after show the
+same tree (`--same-inputs` for a change outside `addons/`). On 2026-11-17 PR #2364's general store
+before and after looked the same: the "before" look ran after `dress.mjs` had rewritten the prefab,
+so both pictures showed the new prefab (snapshot `f66939f0` held the 1312-line file). The look itself
+was right: the same prefab, committed in another worktree, showed its thinner shelves at once.
+
 **Flags** are printed per shot and written into the tile label and `index.json`. They are hints
 that say where to look first, not verdicts:
 
@@ -243,7 +256,7 @@ What a look from **another worktree** costs is decided by what differs from the 
 |---|---|
 | nothing | `server-same`: shot as is |
 | only files outside `addons/` | `server-reopen` |
-| a modified addon file whose extension is in `FAST_PATH_EXT` (empty; `LF_LOOK_REOPEN_EXT=.layer` to probe) | `server-reopen`; the file is written **in place** (open, truncate, write: an editor's save), HEAD moves with no worktree write, because `git checkout` unlinks and recreates a file and a reopen after that crashed Workbench 4 of 4 (2026-11-14) |
+| a modified `.layer` when `FAST_PATH_EXT` lists it (empty; `LF_LOOK_REOPEN_EXT=.layer` to probe). Only `.layer` can ever take this path (`REOPEN_SAFE_EXT`): a prefab, material, config or mesh stays loaded in Workbench across a world reopen, so it restarts whatever the variable says | `server-reopen`; the file is written **in place** (open, truncate, write: an editor's save), HEAD moves with no worktree write, because `git checkout` unlinks and recreates a file and a reopen after that crashed Workbench 4 of 4 (2026-11-14) |
 | any other addon change (added, deleted, renamed, a script, a `.meta`, the look plugin) | `server-restart`: 10 to 17 s |
 
 **Not proven (2026-11-17):** the in-place reopen. On the shared box every look between mine came from another worktree
