@@ -147,3 +147,35 @@ export function bodyProblems({ body, files, exists = () => true, reviewText = nu
   }
   return problems;
 }
+
+// ---- buildings: no floating props ------------------------------------------------------------------------------------
+// A PR that touches tools/buildings/<slug>/ or the pack prefabs of a building must pass `tools\cli building check <slug>`
+// (tools/buildings/pipeline/floaters.mjs: no small prop hangs over or sits in the top under it; offline, about a second).
+// specs: [{ slug, addon, prefab_dir }] from tools/buildings/*/spec.json. Pure: the selftest is
+// tools/validation/building-surface-selftest.mjs.
+export function buildingSlugsTouched(files, specs) {
+  const out = new Set();
+  for (const raw of files ?? []) {
+    const f = raw.replace(/\\/g, "/");
+    const m = /^tools\/buildings\/([a-z0-9-]+)\//.exec(f);
+    if (m && m[1] !== "pipeline" && specs.some((s) => s.slug === m[1])) out.add(m[1]);
+    for (const s of specs) if (s.addon && s.prefab_dir && f.startsWith(`addons/${s.addon}/${s.prefab_dir}/`)) out.add(s.slug);
+  }
+  return [...out].sort();
+}
+
+// run(slug) -> { code, out }: 0 clean, 1 a prop floats, 2 the check could not run here (no game files): skipped, said in the log.
+export function buildingCheckProblems({ files, specs, run }) {
+  const problems = [];
+  for (const slug of buildingSlugsTouched(files, specs)) {
+    const r = run(slug);
+    if (r.code === 0 || r.code === 2) continue;
+    const lines = String(r.out ?? "").split("\n").filter((l) => l.trim() && !l.startsWith("[enfusion-mcp]"));
+    const detail = lines.filter((l) => !l.startsWith("SUMMARY")).slice(0, 4).map((l) => l.trim()).join("; ");
+    problems.push(
+      `this PR touches the ${slug} building and \`tools\\cli building check ${slug}\` fails: ${detail || "see its output"}. ` +
+        `Stand each prop on its surface (tools/buildings/pipeline/surface.mjs: \`on:\` or the automatic snap in the generator; \`building check ${slug} --fix\` for a prefab with no generator), then ship again`,
+    );
+  }
+  return problems;
+}

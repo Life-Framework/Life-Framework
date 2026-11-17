@@ -39,6 +39,9 @@ class LF_UIThemeRecord : LF_ConfigRecord
 	[Attribute("", UIWidgets.EditBox, "Section labels and highlighted words, hex #RRGGBB. Empty: the ink. Not inherited")]
 	string m_sAccent;
 
+	[Attribute("", UIWidgets.EditBox, "The map's colours, \"map-name=#RRGGBB;map-name=#RRGGBB\" (LF_MapAreasDraw names them). A name left out keeps its built-in value. Empty takes the paper theme's")]
+	string m_sMapTokens;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Print face of titles and labels (a .fnt). Empty takes the paper theme's", params: "fnt")]
 	ResourceName m_Font;
 
@@ -145,6 +148,7 @@ class LF_UIThemeRecord : LF_ConfigRecord
 		record.m_sButtonText = m_sButtonText;
 		record.m_sButtonFocus = m_sButtonFocus;
 		record.m_sAccent = m_sAccent;
+		record.m_sMapTokens = m_sMapTokens;
 		record.m_Font = m_Font;
 		record.m_FontRegular = m_FontRegular;
 		record.m_PaperTexture = m_PaperTexture;
@@ -173,6 +177,8 @@ class LF_UIThemeRecord : LF_ConfigRecord
 			record.m_sButtonText = base.m_sButtonText;
 		if (record.m_sButtonFocus.IsEmpty())
 			record.m_sButtonFocus = base.m_sButtonFocus;
+		if (record.m_sMapTokens.IsEmpty())
+			record.m_sMapTokens = base.m_sMapTokens;
 		if (record.m_Font.IsEmpty())
 			record.m_Font = base.m_Font;
 		if (record.m_FontRegular.IsEmpty())
@@ -395,6 +401,7 @@ class LF_UIThemeList : LF_ConfigList
 		changed += PatchString(container, "m_sButtonText", theme.m_sButtonText);
 		changed += PatchString(container, "m_sButtonFocus", theme.m_sButtonFocus);
 		changed += PatchString(container, "m_sAccent", theme.m_sAccent);
+		changed += PatchString(container, "m_sMapTokens", theme.m_sMapTokens);
 		changed += PatchResource(container, "m_Font", theme.m_Font);
 		changed += PatchResource(container, "m_FontRegular", theme.m_FontRegular);
 		changed += PatchResource(container, "m_PaperTexture", theme.m_PaperTexture);

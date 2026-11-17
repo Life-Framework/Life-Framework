@@ -14,6 +14,8 @@ class LF_Test_MapShareCaseInput
 	float now;
 	ref array<string> delivered;
 	ref array<string> wanted;
+	int radius;
+	int style;
 };
 
 //------------------------------------------------------------------------------------------------
@@ -97,7 +99,7 @@ class LF_Test_MapShareFacts : LF_MapShareFacts
 // tier: LOGIC
 //! map/shares: the shared-mark core (#2237, everon-map.md section 3, card M9). The case table
 //! Configs/Map/Rules/shares.cases.json (audience resolution for player, role, org and everyone;
-//! expiry; the membership diff) runs here through LF_MapShareRules and in
+//! expiry; the membership diff; whether a row's area is drawable) runs here through LF_MapShareRules and in
 //! tools/validation/map-shares-selftest.mjs through the node twin tools/map/rules/shares.mjs.
 //! Then four fixture players through LF_MapShares with a recording sink: each row reaches its audience
 //! only, going on and off duty and leaving an org add and remove rows, a spawn clears and resends the
@@ -170,6 +172,14 @@ class LF_Test_MapShares : LF_Test
 		if (input.op == "expired")
 		{
 			if (LF_MapShareRules.Expired(input.expires, input.now))
+				return "yes";
+
+			return "no";
+		}
+
+		if (input.op == "area")
+		{
+			if (LF_MapShareRules.AreaValid(input.radius, input.style))
 				return "yes";
 
 			return "no";

@@ -152,7 +152,10 @@ gate before a merge; the main guard (next section) checks `main` after it.
    `origin/<base>` in, pushes again and retries.
 4. Prints `SUMMARY ship ok|fail`, then `PR <url>, head <sha>`. No queue, no pool lane, no wait.
 
-`--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
+`--draft` runs the same body checks, preflight and push, then opens the PR with `gh pr create --draft` and never runs
+`gh pr merge --auto`; the summary reads `auto-merge off (draft)`. Town-draft and maintainer-review PRs use it; a human
+marks the PR ready and merges it (`ship-direct.mjs` `draft`, `wt-ship-draft-selftest.mjs`). Re-running on an open PR
+reuses it. `--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
 <slug>` stays as an optional manual check (tiers in `tools/lib/gate-tier.mjs`, `gate-risk.mjs`). The ship queue
 (`tools/ship-queue.mjs`), `wt ship-status`, `wait ship` and the tier selection in ship are retired; their code stays
 on disk until someone deletes it.
@@ -813,6 +816,17 @@ it, picks a lane and a budget, and prints one line per outcome.
   for an idle session's 3-5 min reap instead of starting beside it. Selftests: `tools/validation/pool-ram-selftest.mjs`
   (full machine queues, island refused, small test admitted, Workbench counted); `pool-selftest` pins its RAM with
   `LF_POOL_TEST_FREE_MB` so this PC's real load never decides it.
+- **What each process is, and whose peaks (2026-11-17, `docs/architecture/ram-budget.md`).** One PowerShell classifier
+  (`Get-LfArmaRows` in `pool-ram.mjs`) serves the pool's scan and the box holder's gate. A server whose `-profile` is
+  `<checkout>\server\profile\test` is a **test** (its peaks used to land under `server`, so `test:*` never left its seed);
+  a client is **island** when its session folder is the one of a `CoreOnEveron` server (a client joins by address, so it
+  used to count as a small client: 1.2 GB low for growth, and its 2 GB samples inflated the small client peak); a client's
+  **profile** is its own (`-maxFPS 15` = lowspec), not the asking job's; a Workbench is the **look** viewer
+  (`LF_VisualShotsPlugin`, 2.5-2.65 GB) or a **tool** (rdb, compile, pack: 1.0-1.2 GB, key `workbench:small:tool`, seed
+  1.3 GB) instead of both counting 3.7 GB. **Per machine:** `remoteState` also reads the box's own `pool-peaks.json` (its
+  look, rdb and holder jobs record there), and the box's admission, ranking and holder config use its measured keys (3+
+  samples) over this PC's (`machinePeaks`); before, the laptop was judged by this PC's seeds (Workbench 3.7 GB where the
+  laptop measured 2.6).
 - **Backfill without starvation.** A job that tried and cannot start for RAM or a lane is passed
   by the jobs behind it that can start now (a lowspec 1-client session goes while a full 2-client
   one waits for RAM). Once the waiting job has waited `starveMin` (20) minutes it holds its place:
@@ -820,6 +834,17 @@ it, picks a lane and a budget, and prints one line per outcome.
   the same RAM) until it fits, as long as draining can help it (its need fits in free RAM plus what
   the pool's running jobs there hold). A job that could not fit even on an empty machine never
   blocks anyone.
+- **Where the RAM goes, and orphans (2026-11-17, `tools/lib/ram.mjs`).** `tools\cli ram [--machine <name>]` prints,
+  per pool machine, free RAM and commit, working set and private bytes by role (claude agents, MCP children per claude,
+  tools/cli node, test and session servers, clients, Workbench, main guard, T3, git, shells, Defender, Search, NVIDIA,
+  Steam, Windows, other apps), every ArmaReforger process with its `-profile`, and the orphans. An orphan is only an
+  ArmaReforger process our tools launched (`-profile` under a checkout's `server\profile\` or a
+  `LifeFramework\session\` folder), older than 10 min, and: its checkout is gone; its session record is missing, stopped
+  or names other pids; a test server past 120 min; or an `-exitAfterInit` (rdb, compile) Workbench past 60 min. The
+  user's own game and Workbench and the look viewer are never candidates. The pool stops them by pid
+  (`taskkill /T /F`, re-checked to still be ArmaReforger) from its wait loop and `pool status`, once per machine per
+  10 min (`tmp/wt/orphan-reap.json`); `ram --dry-run` lists, `ram --reap` stops now, `LF_ORPHAN_REAP=0` turns the
+  pool's off. Selftest: `ram-selftest`.
 - **Status.** `pool status` prints each machine's live free RAM (and the laptop's temperature),
   and per waiting job where it may run, the reason (`ram 2-client full: needs 3.8 GB free, local
   has 1.1, lf-testbox has 2.8`; a pinned job adds `(pinned; lf-testbox has room)`; `lane`, `behind N`, `starved, so it holds its place`) and an
@@ -1470,6 +1495,10 @@ Plain `tools\cli validate` (and `dev`) runs a check only when something it reads
 this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `validate --full`, `ci`, `wt gate`,
 `wt ship` and CI (`CI` or `GITHUB_ACTIONS` set, or `LF_VALIDATE_ALL=1`) always run every check.
 
+Checks run 8-12 at once (by CPU count); when free RAM is short each one is counted at 80 MB and only as many start
+as fit over the pool's 1.5 GB floor, never fewer than 2 (`tools/lib/validate-concurrency.mjs`, 2026-11-17: a full
+fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/ram-budget.md).
+
 - A check declares its inputs in a header line in its first 30 lines: `// inputs: addons/**/*.layer, docs/features.md`
   (`# inputs:` in a .ps1). `*` stays in one folder, `**` crosses folders; the check's own file, `tools/validation/*.json`
   and `tools/validation/fixtures/**` are always inputs. `inputs: always` runs every time (a check that reads machine or
@@ -1494,11 +1523,12 @@ parallel, each with its own timeout; one that fails prints one line and the rest
 - PRS: every open PR, conflicting first, then BLOCKED/UNSTABLE/BEHIND, then CLEAN; checks and age. A conflicting PR names whether only
   generated or driver-merged files conflict (`prs heal` fixes those) or a source file needs a human (`git merge-tree`, no checkout).
   A PR GitHub has not graded yet (UNKNOWN) is asked through the REST endpoint.
-- WORKTREES: active (a file, commit or log touched in 30 min) vs idle; merged-prunable; orphans (in the registry but not a git worktree
+- WORKTREES: active (a commit, a changed file, a file in `tmp/` or `tmp/logs`, or a session log touched in 30 min; the registry marker `tmp/wt.json` is bookkeeping and never counts) vs idle; merged-prunable; orphans (in the registry but not a git worktree
   or missing, or a `Life-Framework-ws-*` folder nobody registered); disk. A worktree is merged only through a merged GitHub PR whose head
   SHA is the branch tip, never through git ancestry: a fresh worktree is an ancestor of main and is never listed (`lead-selftest`).
   Disk sizes are cached per folder for 24 h in `tmp/wt/lead-disk.json` and refreshed in a 9 s budget, so the first runs say
   `~N GB (k/n measured)`; the walk never follows a junction.
+- DISK: free space on this PC and on each pool machine (the drive holding the worktrees), `WARN DISK` under 30 GB (`LF_DISK_WARN_GB`). `wt new` refuses under 10 GB (`LF_WT_MIN_FREE_GB`, 0 turns it off) with a message naming `lead prune-safe --oldest N`.
 - POOL: one line per machine (free RAM, lanes busy/total, temperature, `up`, `slow` or `DOWN`) and the queue length. Each machine is
   read in its own process (`lead --pool-worker <name>`), all at once, with a per-machine timeout (9 s, `LF_LEAD_POOL_MACHINE_MS`) inside
   an overall budget (12 s, `LF_LEAD_POOL_BUDGET_MS`). A machine that has not finished shows what it had: `slow` when it answered within
@@ -1512,3 +1542,6 @@ parallel, each with its own timeout; one that fails prints one line and the rest
 `tools\cli lead prune-safe [--dry-run]` prunes the merged-prunable worktrees through `wt prune` (never `--force`) and prints one line each:
 a merged PR on GitHub, no uncommitted change, idle 30 min, no live lock or session, and re-checked clean just before the delete. When
 GitHub cannot list the merged PRs it prunes nothing.
+`--oldest N` caps a run to the N least recently active of the worktrees that qualify, to free the most space at once; every rule above still applies to each one.
+
+**Why the marker is bookkeeping (2026-11-17).** `wt list` reconciles the registry and rewrote `tmp/wt.json` in every worktree, so all 214 looked touched a minute ago and `prune-safe` pruned none while C: filled to 195 MB free. `writeMarker` now writes only when the content changes, and the idle check (`newestActivityMs` in `tools/lib/lead.mjs`) ignores `tmp/wt.json` and its temp and lock files. `disk-guard-selftest` proves both and the thresholds.

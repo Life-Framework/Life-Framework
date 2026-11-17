@@ -56,6 +56,10 @@ class LF_Stun
 		if (!Replication.IsServer() || damageContext.damageType != EDamageType.KINETIC || !damageContext.instigator)
 			return false;
 
+		// A dart from a cuffed shooter is swallowed whichever damage hook the engine reaches first.
+		if (LF_CuffEnforcement.RefuseHit(damageManager.GetOwner(), damageContext))
+			return true;
+
 		IEntity shooter = damageContext.instigator.GetInstigatorEntity();
 		SCR_ChimeraCharacter victim = SCR_ChimeraCharacter.Cast(damageManager.GetOwner());
 		if (!shooter || !victim || shooter == victim)
@@ -85,7 +89,29 @@ class LF_Stun
 			return false;
 
 		s_iStunCount++;
+		StampContact(victim, byUid);
 		LF_Utils.NotifyEntity(victim, "#LF-Police_Stunned", "", 4.0, Math.Ceil(seconds).ToString());
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a stun from an on-duty officer is police contact for the logout rule (#2543, as cuffing
+	//! does: LF_Cuffing.StampContact), so a wanted player who is tased and logs out is jailed. A stun
+	//! from anyone else is not. \return true when contact was stamped.
+	static bool StampContact(notnull SCR_ChimeraCharacter victim, string byUid)
+	{
+		if (byUid.IsEmpty())
+			return false;
+
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (!accounts || !LF_PoliceUtils.IsOnDutyOfficer(accounts.GetAccount(byUid)))
+			return false;
+
+		string victimUid = LF_PoliceRanks.ResolveUid(victim);
+		if (victimUid.IsEmpty())
+			return false;
+
+		LF_PoliceContact.Stamp(victimUid, "stun");
 		return true;
 	}
 
@@ -156,6 +182,23 @@ class LF_Stun
 			return "npc";
 
 		return uid;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Stun's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Stun_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Stun_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Stun";
+	}
+
+	override void Apply()
+	{
+		LF_Stun.ResetStatics();
 	}
 }
 

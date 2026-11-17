@@ -33,6 +33,8 @@ class LF_WitnessEntry : Managed
 	string m_sKey;
 	bool m_bNpc;
 	float m_fDistance;
+	//! An NPC answers an officer once: its accuracy is rolled on that one ask (LF_Witness.Ask).
+	bool m_bAsked;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -435,7 +437,8 @@ class LF_Witness
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: an officer asks. A player says everything it could see; an NPC remembers each thing
-	//! only with the configured accuracy (rolls are 0..1, one per field, so a test can fix them).
+	//! only with the configured accuracy (rolls are 0..1, one per field, so a test can fix them), and
+	//! only on the first ask: a second ask of the same NPC says nothing.
 	//! \return Number of things the witness said.
 	static int Ask(LF_WitnessScene scene, string witnessKey, array<float> rolls, string channel)
 	{
@@ -445,6 +448,19 @@ class LF_Witness
 		LF_WitnessEntry entry = FindEntry(scene, witnessKey);
 		if (!entry)
 			return 0;
+
+		// An NPC remembers each thing only with its accuracy, and that roll happens once. Asking again
+		// would re-roll the missing fields until the witness knew everything.
+		if (entry.m_bNpc)
+		{
+			if (entry.m_bAsked)
+			{
+				LF_Debug.Info(FEATURE, string.Format("report #%1: %2 was already questioned, nothing more to say", scene.m_iReport, witnessKey));
+				return 0;
+			}
+
+			entry.m_bAsked = true;
+		}
 
 		LF_WitnessStatement statement = FindStatement(scene, entry);
 		bool fresh = statement == null;

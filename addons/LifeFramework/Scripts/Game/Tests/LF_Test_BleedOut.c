@@ -1,3 +1,4 @@
+// red-proof: 2026-11-17 (#2405): with `character.LF_AdvanceDownedFor(dt)` off in LF_BleedOut.Advance, `--only LF_Test_BleedOut` failed `- the downed clock still runs on the stretcher (expected 31, got 0)` and `- a patient on a stretcher can give up after the delay`. With it, green.
 // red-proof: observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_BleedOut`: LF_BleedOut.IsExpired using `left < 0` failed `running out of time kills for real` and `one expiry (expected 1, got 0)`; restored, green.
 
 // tier: WORLD
@@ -28,6 +29,7 @@ class LF_Test_BleedOut : LF_Test
 		RunExpiry(ctx);
 		RunGiveUp(ctx);
 		RunRevive(ctx);
+		RunStretcherGiveUp(ctx);
 
 		config.m_bDownedEnabled = wasEnabled;
 		config.m_fBleedOutSeconds = wasBleed;
@@ -107,6 +109,28 @@ class LF_Test_BleedOut : LF_Test
 		ctx.True(damage.GetState() == EDamageState.DESTROYED, "giving up kills for real");
 		ctx.Equal(1, LF_BleedOut.GetGaveUpCount(), "one give-up");
 		ctx.False(LF_BleedOut.GiveUp(entity), "a dead character cannot give up again");
+
+		LF_TestCharacterFixture.Delete(entity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #2405: a patient on a stretcher keeps the paused bleed-out (a medic's ambulance run) but the
+	//! give-up clock runs, so a seated player is never held downed with no way out.
+	protected void RunStretcherGiveUp(LF_TestContext ctx)
+	{
+		IEntity entity;
+		SCR_ChimeraCharacter character = SpawnDowned(ctx, entity);
+		if (!character)
+			return;
+
+		SCR_CharacterDamageManagerComponent damage = SCR_CharacterDamageManagerComponent.Cast(entity.FindComponent(SCR_CharacterDamageManagerComponent));
+		LF_BleedOut.SetTestLoaded(true);
+		LF_BleedOut.Advance(31);
+		LF_BleedOut.SetTestLoaded(false);
+		ctx.EqualFloat(100, character.LF_GetBleedLeft(), 0.01, "a stretcher patient does not bleed (the medic's ambulance run)");
+		ctx.EqualFloat(31, character.LF_GetDownedForSeconds(), 0.01, "the downed clock still runs on the stretcher");
+		ctx.True(LF_BleedOut.GiveUp(entity), "a patient on a stretcher can give up after the delay");
+		ctx.True(damage.GetState() == EDamageState.DESTROYED, "giving up on a stretcher kills for real");
 
 		LF_TestCharacterFixture.Delete(entity);
 	}

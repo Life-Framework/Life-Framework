@@ -4,3 +4,4 @@
 
 - ✅ **Fixed (#147):** a player or payphone that had never called read as having called at time 0 (`map.Find` leaves 0 in the out value when the key is missing), so every call in a server's first 60 s was refused with the cooldown. `LF_Payphone.UseAt` now treats a missing entry as never used; `comms/payphone` covers a first call at second 5.
 
+- ✅ **A missed dial is cooled down (#2405, life review 2026-11-17).** A call nobody on duty answers took no coin and stamped neither cooldown, so a player could redial every second (each dial built a call row, a bus event and log lines). `LF_Payphone.UseAt` now stamps a per-player-and-service miss time (`MissKey`, `LF_EPayphoneResult.MISSED_COOLDOWN`, the player cooldown's length, toast `LF-Payphone_Cooldown`); the check runs before the route lookup. It is per service so a missed medic call never blocks an emergency call to the police. Test `comms/payphone`.

@@ -308,6 +308,14 @@ class LF_StolenVehicles
 			return false;
 		}
 
+		// The garage keeps no cargo: the officer searches the car before it goes back (#2411).
+		if (LF_Garage.HasCargo(vehicle))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("recover refused on %1: the vehicle still holds items", vehicleId));
+			LF_Utils.NotifyEntity(officer, "#LF-Garage_EmptyCargo", "#LF-Stolen_CheckTitle", 4.0);
+			return false;
+		}
+
 		bool tracked = LF_VehicleOwnership.GetVehicle(vehicleId) == vehicle;
 		if (!LF_VehicleOwnership.Store(vehicleId, report.m_sOwnerUid))
 		{

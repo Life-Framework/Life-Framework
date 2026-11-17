@@ -3,6 +3,9 @@
 //
 //   node tools/buildings/gun-store/decor.mjs          rewrite the decor block in the furniture prefab
 //   node tools/buildings/gun-store/decor.mjs --check  exit 1 when the prefab is not what this script writes
+//   node tools/buildings/gun-store/decor.mjs --report print every prop whose height the snap changed
+// Heights: a prop's y is a hint; surface.mjs snaps it onto the top under it (`on:` names the support), so a counter-top
+// prop never hovers over its counter. `toolsi building check gun-store` proves it.
 //
 // Everything here is a base-game prop standing on its own: no inventory item, nothing pickable, no store
 // slot. The sold goods stay in GunStore_Store.et (spec.json, `tools\cli building run gun-store`).
@@ -18,9 +21,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gameVfs, readText } from "../../lib/game-prefab.mjs";
 import { gameDb } from "../pipeline/gamedb.mjs";
+import { prefabChildren, snapItems } from "../pipeline/surface.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const FURNITURE = join(ROOT, "addons", "LF_Everon1989", "Prefabs", "Buildings", "GunStore", "Furniture", "GunStore_furniture_01.et");
+const STORE = join(ROOT, "addons", "LF_Everon1989", "Prefabs", "Buildings", "GunStore", "GunStore_Store.et"); // the gun counter and the till stand in the store prefab
+const COUNTER = "B9C79E66EFB96EA3"; // the LF_GunCounter entity in GunStore_Store.et
 const F = 0.199; // the shop floor
 const ID_PREFIX = "DC1F";
 
@@ -72,7 +78,9 @@ const VANILLA_LAMPS = ["52640E95D114237B", "E99B992F704FA5F1"];
 
 const items = []; // { path, x, y, z, yaw, scale }
 const lights = []; // { x, y, z, angles, color, lv, radius, angle }
-const put = (path, x, y, z, yaw = 0, scale = 1, lit = false) => items.push({ path, x, y, z, yaw, scale, lit });
+// y is a hint: every prop is snapped onto the top under it (tools/buildings/pipeline/surface.mjs). `o.on` names its support
+// (an `id` given to another row, or an entity ID of the prefab or the store), `o.id` names this row as a support.
+const put = (path, x, y, z, yaw = 0, scale = 1, lit = false, o = {}) => items.push({ path, x, y, z, yaw, scale, lit, ...o });
 const spot = (x, y, z, o = {}) => lights.push({ type: "Spot", x, y, z, angles: "-90 0 0", color: "1 0.86 0.64 1", lv: 5.5, radius: 7, angle: 140, ...o });
 // A point light has no cone: it is what lights the ceiling and the upper walls, which the downward spots never reach.
 const glow = (x, y, z, o = {}) => lights.push({ type: "Point", x, y, z, color: "1 0.88 0.68 1", lv: 2.2, radius: 5.5, ...o });
@@ -112,10 +120,11 @@ put(P.posterA1, 5.72, 1.95, -1.3, -90);
 put(P.forest2, 5.72, 2.0, -2.0, -90);
 
 // ---- The counter top: ledger, phone, radio, a photograph ----
-put(P.notebook, 3.3, 1.238, -0.1, 15);
-put(P.phone, 3.5, 1.238, -0.75, 200);
-put(P.radio, 3.1, 1.238, -0.9, 180);
-put(P.frame, 3.62, 1.238, -0.3, 195);
+const onCounter = { on: COUNTER };
+put(P.notebook, 3.3, 1.238, -0.1, 15, 1, false, onCounter);
+put(P.phone, 3.5, 1.238, -0.75, 200, 1, false, onCounter);
+put(P.radio, 3.1, 1.238, -0.9, 180, 1, false, onCounter);
+put(P.frame, 3.62, 1.238, -0.3, 195, 1, false, onCounter);
 
 // ---- The floor ----
 put(P.box1, 5.4, F, -1.8, 90);
@@ -140,27 +149,29 @@ put(P.toolbox, 1.45, F, 6.85, 10);
 put(P.cabinet, -1.53, F, 3.0, 90, 0.85);
 put(P.skull1, -1.53, 2.6, 3.62, -90);
 // The middle: a display table of cleaning kits and cases, a coat tree and a case beside it.
-put(P.table, 3.35, F, 3.1, 0);
-const TT = F + 0.92; // the table top
-put(P.suitcase, 2.95, TT, 3.1, 20);
-put(P.toolbox, 3.75, TT, 2.95, -10);
-put(P.can, 3.3, TT, 3.35, 0, 0.8);
-put(P.can, 3.5, TT, 3.42, 40, 0.8);
-put(P.can, 3.4, TT, 3.2, 80, 0.8);
-put(P.notebook, 3.95, TT, 3.4, 80);
+put(P.table, 3.35, F, 3.1, 0, 1, false, { id: "table" });
+const TT = F + 0.92; // the table top (a hint; the props are snapped onto the real top)
+const onTable = { on: "table" };
+put(P.suitcase, 2.95, TT, 3.1, 20, 1, false, onTable);
+put(P.toolbox, 3.75, TT, 2.95, -10, 1, false, onTable);
+put(P.can, 3.3, TT, 3.35, 0, 0.8, false, onTable);
+put(P.can, 3.5, TT, 3.42, 40, 0.8, false, onTable);
+put(P.can, 3.4, TT, 3.2, 80, 0.8, false, onTable);
+put(P.notebook, 3.95, TT, 3.4, 80, 1, false, onTable);
 put(P.coatTree, 4.65, F, 4.25);
 // The repair corner, inside the shop room: the shop room's back-left is NOT the shop (the stair room is behind a
 // partition at x 0.9, z -3..-0.4; the first pass and this one's first try put a bench there). The partition's shop
 // face (x 0.9, faces +x) is bare, so the workbench stands along it, left of the till counter (x 1.9), with a vice, a
 // toolbox, solvent tins and a desk lamp, a stool, notices and a deer mount over it.
-put(P.bench, 1.28, F, -1.75, 90, 0.85);
-const BT = F + 0.85; // the bench top
-put(P.vice, 1.5, BT, -2.5, 90);
-put(P.toolbox, 1.2, BT, -1.5, 90);
-put(P.can, 1.2, BT, -2.05, 0, 0.8);
-put(P.can, 1.32, BT, -2.12, 50, 0.8);
-put(P.notebook, 1.35, BT, -1.0, 100);
-put(P.deskLamp, 1.1, BT, -2.6, 70);
+put(P.bench, 1.28, F, -1.75, 90, 0.85, false, { id: "bench" });
+const BT = F + 0.85; // the bench top (a hint; the props are snapped onto the real top)
+const onBench = { on: "bench" };
+put(P.vice, 1.5, BT, -2.5, 90, 1, false, onBench);
+put(P.toolbox, 1.2, BT, -1.5, 90, 1, false, onBench);
+put(P.can, 1.2, BT, -2.05, 0, 0.8, false, onBench);
+put(P.can, 1.32, BT, -2.12, 50, 0.8, false, onBench);
+put(P.notebook, 1.35, BT, -1.0, 100, 1, false, onBench);
+put(P.deskLamp, 1.1, BT, -2.6, 70, 1, false, onBench);
 put(P.stool, 2.0, F, -1.75, -90);
 put(P.notice, 0.93, 1.85, -1.35, 90);
 put(P.notice, 0.93, 1.85, -1.8, 90);
@@ -222,7 +233,10 @@ put(P.pot, 4.95, 0, 8.55);
 const hex16 = (s) => ID_PREFIX + createHash("sha1").update(s).digest("hex").slice(0, 12).toUpperCase();
 const num = (n) => String(+(+n).toFixed(3));
 
-async function build() {
+async function build(fixed) {
+  const snap = await snapItems(items, { fixed });
+  console.log(`decor: ${snap.summary}${snap.unmeasured.length ? ` (not measurable, left as typed: ${snap.unmeasured.join(", ")})` : ""}`);
+  if (process.argv.includes("--report")) for (const c of snap.changes) console.log(`  ${c.path.split("/").pop().replace(".et", "")} y ${c.from} -> ${c.to} (on ${c.on})`);
   const vfs = await gameVfs();
   const db = gameDb();
   if (!db) throw new Error("the game's resource database is not readable here (ENFUSION_GAME_PATH)");
@@ -311,7 +325,8 @@ export function rewrite(text, block) {
 }
 
 const text = readFileSync(FURNITURE, "utf8");
-const built = await build();
+const fixed = [...prefabChildren(rewrite(text, "")), ...prefabChildren(readFileSync(STORE, "utf8"))];
+const built = await build(fixed);
 const next = glowVanillaLamps(rewrite(text, built.block), built.litRef);
 if (process.argv.includes("--check")) {
   const same = next === text;

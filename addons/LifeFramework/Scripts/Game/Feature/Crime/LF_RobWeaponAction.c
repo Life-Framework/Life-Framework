@@ -81,6 +81,9 @@ class LF_RobWeaponAction : ScriptedUserAction
 		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "weapon robbery"))
 			return false;
 
+		if (LF_CuffEnforcement.Refuse(user, "weapon robbery"))
+			return false;
+
 		// A new character is in its grace (#1780): it may not rob.
 		if (LF_Grace.Refuses(playerUid, "weapon robbery"))
 		{

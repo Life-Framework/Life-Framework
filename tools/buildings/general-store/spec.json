@@ -43,7 +43,7 @@
     { "prefab": "Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_newspaper_V1.et", "at": [2.12, 1.24, -0.05], "yaw": -8, "why": "today's paper" },
     { "prefab": "Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_newspaper_V3.et", "at": [2.12, 1.25, -0.05], "yaw": 14 },
     { "prefab": "Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et", "at": [1.6, 1.24, -0.64], "yaw": 40, "why": "the shopkeeper's mug" },
-    { "prefab": "Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et", "at": [1.55, 1.24, 0.12], "yaw": 170 },
+    { "prefab": "Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et", "at": [1.55, 1.24, 0.02], "yaw": 170 },
     { "prefab": "Prefabs/Props/Commercial/Posters/PosterSingle_A1_Cans_V1.et", "at": [-1.53, 1.75, 0.65], "yaw": 90 },
     { "prefab": "Prefabs/Props/Commercial/Posters/PosterSingle_A3_AirMail_V1.et", "at": [-1.53, 1.7, 1.35], "yaw": 90 },
     { "prefab": "Prefabs/Props/Commercial/Posters/PosterSingle_A3_Insurance_V1.et", "at": [-1.53, 1.7, 1.8], "yaw": 90 },
@@ -78,7 +78,7 @@
     { "prefab": "Prefabs/Props/Furniture/Carpet_01.et", "at": [-3.8, 0.005, 8.0], "yaw": 0, "scale": 0.65, "walkable": true, "why": "the doormat outside the front door (the arch door, x -5.1 to -2.5)" },
     { "prefab": "Prefabs/Props/Crates/CardboardBoxStack_01.et", "at": [2.08, 0.199, 1.8], "yaw": 0, "why": "aisle-end display: cartons at the north end of the gondola" },
     { "prefab": "Prefabs/Props/Civilian/BeerBottle_01_group.et", "at": [1.95, 1.034, 1.8], "yaw": 10, "why": "special offer on top of the carton stack" },
-    { "prefab": "Prefabs/Props/Civilian/BeerBottle_01_group.et", "at": [2.22, 1.034, 1.78], "yaw": -15 },
+    { "prefab": "Prefabs/Props/Civilian/BeerBottle_01_group.et", "at": [2.22, 0.6, 1.78], "yaw": -15 },
     { "prefab": "Prefabs/Props/Crates/Crate_01_green.et", "at": [3.0, 0.199, 1.85], "yaw": 0, "why": "aisle-end display: a stack of bottle crates beside it" },
     { "prefab": "Prefabs/Props/Crates/Crate_01_green.et", "at": [3.0, 0.426, 1.85], "yaw": 4 },
     { "prefab": "Prefabs/Props/Civilian/SodaBottle_01.et", "at": [2.82, 0.658, 1.85], "yaw": 0 },
@@ -118,6 +118,9 @@
     { "at": [0.6, 3.0, 5.4], "type": "Point", "attenuation": 0.8, "near": 0.45, "lv": 1.6, "radius": 8, "color": "1 0.87 0.7 1", "why": "ceiling fill: a spot downlight never reaches the ceiling, so it was black at night; the base game's ceiling lamp pairs its glass with a point LightAmbient the same way" },
     { "at": [4.4, 3.0, 2.2], "type": "Point", "attenuation": 0.8, "near": 0.45, "lv": 1.6, "radius": 8, "color": "1 0.87 0.7 1", "why": "ceiling fill over the main aisle" },
     { "at": [0.9, 3.0, -0.4], "type": "Point", "attenuation": 0.8, "near": 0.45, "lv": 1.6, "radius": 8, "color": "1 0.87 0.7 1", "why": "ceiling fill over the counter" }
+  ],
+  "check_supports": [
+    { "prefab": "Prefabs/Props/Commercial/CounterShop_01.et", "at": [1.57, 0.199, -0.323], "yaw": 0, "id": "till-counter", "why": "the store entity Shop_GeneralStore_Debug (Shops.layer) is the counter; building space = counter_at, unturned" }
   ],
   "addon": "LF_Everon1989",
   "prefab_dir": "Prefabs/Buildings/GeneralStore"

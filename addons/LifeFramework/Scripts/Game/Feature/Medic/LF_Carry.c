@@ -59,17 +59,26 @@ class LF_Carry
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Pure: who may load. Anyone when config says so, else only an on-duty medic.
-	static bool MayCarry(bool anyone, bool medicOnDuty)
+	//! Pure: who may load. Anyone when config says so, else an on-duty medic or on-duty police
+	//! (an officer moves a downed suspect). A griefer must not seat a stranger (#2405).
+	static bool MayCarry(bool anyone, bool medicOnDuty, bool policeOnDuty = false)
 	{
-		return anyone || medicOnDuty;
+		return anyone || medicOnDuty || policeOnDuty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: a stretcher vehicle's seat pauses the bleed-out (#262), so only an on-duty medic may use
+	//! one, whatever the config says. Any other vehicle is open to whoever may load.
+	static bool MayUseVehicle(bool stretcherVehicle, bool medicOnDuty)
+	{
+		return !stretcherVehicle || medicOnDuty;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static string RefusalKey(LF_ECarryRefusal refusal)
 	{
 		if (refusal == LF_ECarryRefusal.NOT_ALLOWED)
-			return "#LF-Carry_NotAllowed";
+			return "#LF-Carry_NotAllowedDuty";
 
 		if (refusal == LF_ECarryRefusal.TOO_FAR)
 			return "#LF-Carry_TooFar";
@@ -109,12 +118,30 @@ class LF_Carry
 	//------------------------------------------------------------------------------------------------
 	protected static bool CarrierMayCarry(IEntity carrier)
 	{
-		bool onDuty;
-		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
-		if (accounts && carrier)
-			onDuty = LF_MedicDuty.IsOnDuty(accounts.GetAccount(LF_Utils.GetPlayerUid(carrier)));
+		return MayCarry(LF_MedicConfig.Get().m_bCarryAnyone, CarrierIsMedic(carrier), CarrierIsPolice(carrier));
+	}
 
-		return MayCarry(LF_MedicConfig.Get().m_bCarryAnyone, onDuty);
+	//------------------------------------------------------------------------------------------------
+	//! Server: is this carrier an on-duty medic.
+	protected static bool CarrierIsMedic(IEntity carrier)
+	{
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (!accounts || !carrier)
+			return false;
+
+		return LF_MedicDuty.IsOnDuty(accounts.GetAccount(LF_Utils.GetPlayerUid(carrier)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: is this carrier on-duty police.
+	protected static bool CarrierIsPolice(IEntity carrier)
+	{
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (!accounts || !carrier)
+			return false;
+
+		LF_PlayerAccount account = accounts.GetAccount(LF_Utils.GetPlayerUid(carrier));
+		return account && account.IsOnDuty() && account.GetFaction() == LF_Faction.POLICE;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -137,16 +164,19 @@ class LF_Carry
 		if (!character || !character.LF_IsDowned() || IsSeated(target))
 			return false;
 
-		bool allowed = LF_MedicConfig.Get().m_bCarryAnyone || LF_MedicDuty.IsOnDutyState(LF_AccountReplication.GetState(user));
+		int state = LF_AccountReplication.GetState(user);
+		bool medic = LF_MedicDuty.IsOnDutyState(state);
+		bool allowed = MayCarry(LF_MedicConfig.Get().m_bCarryAnyone, medic, LF_AccountStateBits.IsOnDutyPolice(state));
 		if (DecideLoad(true, user == target, true, allowed, vector.Distance(user.GetOrigin(), target.GetOrigin()), LF_MedicConfig.Get().m_fCarryRange) != LF_ECarryRefusal.NONE)
 			return false;
 
-		return FindSeatVehicle(user, target) != null;
+		return FindSeatVehicle(user, target, medic) != null;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The nearest vehicle within load range that has a free passenger (cargo) seat.
-	static IEntity FindSeatVehicle(IEntity carrier, IEntity patient)
+	//! The nearest vehicle within load range that has a free passenger (cargo) seat. A stretcher
+	//! vehicle counts only when `medic` (see MayUseVehicle).
+	static IEntity FindSeatVehicle(IEntity carrier, IEntity patient, bool medic = true)
 	{
 		CompartmentAccessComponent access = CompartmentAccessComponent.Cast(patient.FindComponent(CompartmentAccessComponent));
 		if (!access)
@@ -157,7 +187,10 @@ class LF_Carry
 		float bestDistance = 100000;
 		foreach (IEntity vehicle : vehicles)
 		{
-			if (!vehicle || !access.FindFreeCompartment(vehicle, ECompartmentType.CARGO, true))
+			if (!vehicle || !MayUseVehicle(LF_BedDelivery.IsStretcherVehicle(vehicle), medic))
+				continue;
+
+			if (!access.FindFreeCompartment(vehicle, ECompartmentType.CARGO, true))
 				continue;
 
 			float distance = vector.Distance(carrier.GetOrigin(), vehicle.GetOrigin());
@@ -189,7 +222,7 @@ class LF_Carry
 			return refusal;
 		}
 
-		IEntity vehicle = FindSeatVehicle(carrier, patient);
+		IEntity vehicle = FindSeatVehicle(carrier, patient, CarrierIsMedic(carrier));
 		if (!vehicle)
 		{
 			LF_Debug.Info(FEATURE, string.Format("load of %1 by %2 refused: no free passenger seat within %3 m", Uid(patient), Uid(carrier), LF_MedicConfig.Get().m_fLoadRange));

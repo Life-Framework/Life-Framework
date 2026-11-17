@@ -1,7 +1,9 @@
 //------------------------------------------------------------------------------------------------
-//! Placed hospital till. Registers the cash gates with LF_Hospital on the server.
+//! Placed hospital till. Registers the till as a place (LF_Places) so the harness and the map find it;
+//! the robbery itself is the LF_RobAction on the same entity. The payout, cooldown and police
+//! attributes are kept so placed layers keep loading; nothing reads them (#2419).
 //------------------------------------------------------------------------------------------------
-[ComponentEditorProps(category: "LifeFramework/Feature/Crime", description: "Hospital till: civilian cash robbery.")]
+[ComponentEditorProps(category: "LifeFramework/Feature/Crime", description: "Hospital till: registers the till place. The robbery is the LF_RobAction.")]
 class LF_HospitalTillComponentClass : ScriptComponentClass
 {
 }
@@ -28,18 +30,13 @@ class LF_HospitalTillComponent : ScriptComponent
 
 		string targetId = GetTargetId();
 		if (!targetId.IsEmpty())
-			LF_Places.Register(LF_Hospital.PLACE_KIND, targetId, owner);
-
-		if (!Replication.IsServer())
-			return;
-
-		if (targetId.IsEmpty())
 		{
-			LF_Debug.Error("Hospital", "till component has no id and the entity is unnamed");
+			LF_Places.Register(LF_Hospital.PLACE_KIND, targetId, owner);
 			return;
 		}
 
-		LF_Hospital.ConfigureTill(targetId, m_iPayout, m_fCooldown, m_iMinPolice);
+		if (Replication.IsServer())
+			LF_Debug.Error("Hospital", "till component has no id and the entity is unnamed");
 	}
 
 	//------------------------------------------------------------------------------------------------

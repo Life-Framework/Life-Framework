@@ -82,6 +82,8 @@ class LF_EventSceneSpawn
 	static const float VEHICLE_SIDE_M = 5;
 
 	protected static ref LF_EventSceneCrew s_Running;
+	//! How many times the players' eyes were collected since the last reset (a regression counter, #2406).
+	protected static int s_iEyeScans;
 
 	//------------------------------------------------------------------------------------------------
 	//! How many AI the engine can still take: AIWorld's limit of active AIs minus the active ones.
@@ -96,6 +98,13 @@ class LF_EventSceneSpawn
 		}
 
 		return Math.Max(0, aiWorld.GetLimitOfActiveAIs() - aiWorld.GetCurrentNumOfActiveAIs());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Times CollectPlayerEyes ran since the last reset.
+	static int EyeScanCount()
+	{
+		return s_iEyeScans;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -245,6 +254,7 @@ class LF_EventSceneSpawn
 	//! The eyes of every player with a body: where they look from, and the body a trace must skip.
 	static void CollectPlayerEyes(notnull array<vector> eyes, notnull array<IEntity> bodies)
 	{
+		s_iEyeScans++;
 		PlayerManager playerManager = GetGame().GetPlayerManager();
 		if (!playerManager)
 			return;
@@ -290,12 +300,17 @@ class LF_EventSceneSpawn
 	//! Ends the crew's scene when nobody sees any of its entities: deletes them and frees the scene
 	//! slot. `eyes` (with `bodies` beside them, null entries allowed) stands in for the players; null
 	//! reads the connected players. \return true when removed, false (logged) while someone sees one,
-	//! so the caller tries again later.
-	static bool TryDespawn(notnull LF_EventSceneCrew crew, array<vector> eyes = null, array<IEntity> bodies = null)
+	//! so the caller tries again later. `force` removes them whoever looks (#2406): the caller sets it once
+	//! a watcher has held the scene for the plan's m_fForceDespawnSeconds.
+	static bool TryDespawn(notnull LF_EventSceneCrew crew, array<vector> eyes = null, array<IEntity> bodies = null, bool force = false)
 	{
 		array<vector> lookers = {};
 		array<IEntity> lookerBodies = {};
-		if (eyes)
+		if (force)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("scene %1 despawn forced: it waited too long for nobody to be looking", crew.m_sSceneId));
+		}
+		else if (eyes)
 		{
 			lookers.Copy(eyes);
 			if (bodies)
@@ -330,7 +345,7 @@ class LF_EventSceneSpawn
 
 		crew.m_aPeople.Clear();
 		crew.m_VehicleId = EntityID.INVALID;
-		LF_Debug.Info(FEATURE, string.Format("scene %1 despawned %2 entities out of sight", crew.m_sSceneId, entities.Count()));
+		LF_Debug.Info(FEATURE, string.Format("scene %1 despawned %2 entities", crew.m_sSceneId, entities.Count()));
 		LF_EventScenePlanner.Finish(crew.m_sSceneId);
 		if (s_Running == crew)
 			s_Running = null;
@@ -345,6 +360,7 @@ class LF_EventSceneSpawn
 			GetGame().GetCallqueue().Remove(s_Running.Tick);
 
 		s_Running = null;
+		s_iEyeScans = 0;
 	}
 }
 

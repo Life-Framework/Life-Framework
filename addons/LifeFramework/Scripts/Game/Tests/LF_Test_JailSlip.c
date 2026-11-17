@@ -1,3 +1,7 @@
+// red-proof (#2416 uid), observed 2026-11-18 with `tools\cli test --no-build --only LF_Test_JailSlip --no-cache` on the
+// unfixed LF_JailSlip.c and LF_Jail.c (m_sHolderUid an RplProp, the name falling back to the uid): FAIL
+// 'the replicated name is never the platform uid' and 'the slip component carries no uid field for clients (expected 0, got 1)'.
+// Restored; green.
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --only LF_Test_JailSlip`:
 // made LF_JailSlip.Grant skip the carried slip (`carried = null`); got
 // `- a refused arrest and a respawn hand no second slip (expected 1, got 2)`. Restored; green.
@@ -46,7 +50,21 @@ class LF_Test_JailSlip : LF_Test
 
 		LF_JailSlipComponent slip = slips.Get(0);
 		ctx.EqualStr(prisonerUid, slip.GetHolderUid(), "the slip names its holder");
-		ctx.True(!slip.GetPrisonerName().IsEmpty(), "the slip prints the prisoner name");
+		ctx.True(slip.IsPrinted(), "the slip is printed (the flag clients read)");
+		ctx.False(slip.GetPrisonerName() == prisonerUid, "the replicated name is never the platform uid (a prisoner with no character reads 'unknown')");
+
+		// The paper: no replicated property holds the platform uid of its prisoner (#2416).
+		typename paper = LF_JailSlipComponent;
+		int uidVars = 0;
+		for (int v = 0; v < paper.GetVariableCount(); v++)
+		{
+			string varName = paper.GetVariableName(v);
+			varName.ToLower();
+			if (varName.Contains("uid"))
+				uidVars++;
+		}
+
+		ctx.Equal(0, uidVars, "the slip component carries no uid field for clients");
 		ctx.Equal(2, slip.GetWantedLevel(), "the slip prints the offence (wanted level)");
 		ctx.Equal(LF_JailSlipRules.MinutesLeft(LF_Jail.GetRemaining(prisonerUid)), slip.GetMinutesLeft(), "the slip minutes match LF_Jail");
 		ctx.Equal(2, slip.GetMinutesLeft(), "120 seconds print as 2 minutes");

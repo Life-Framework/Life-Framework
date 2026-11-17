@@ -24,6 +24,30 @@ export function spanFor(extent, margin = MARGIN) {
   return Math.max(1, Math.ceil((extent + margin) / CELL.size - 1e-9));
 }
 
+// A prefab with an annex child (FenceYard: Workshop_01_Main plus Workshop_01_Side) is as big as the root and its
+// children together. `children` are the prefab's own child entities as `modelOf(..., { prefabRoot })` gives them:
+// pose relative to the root (x, z, y, yaw), `scale` and mesh `bounds`. The result is the root's box grown to take them
+// in, in the root's units (so `scale * bounds` still holds). A child at exactly 0 0 0 is skipped: it is attached by a
+// socket on the building (doors, entries) or stands at the root, inside its box either way. Pure.
+export function boundsWithChildren(P, bounds, scale, children = []) {
+  const s = scale || 1;
+  const min = bounds.min.map((v) => v * s);
+  const max = bounds.max.map((v) => v * s);
+  for (const c of children) {
+    if (!c || c.isPrefabRoot || !c.bounds) continue;
+    if (c.coordsText && /^0(\.0+)?\s+0(\.0+)?\s+0(\.0+)?$/.test(String(c.coordsText).trim())) continue;
+    for (const [px, pz] of P.footprintCorners(c.bounds, c.scale ?? 1, c.yaw ?? 0)) {
+      min[0] = Math.min(min[0], c.x + px);
+      max[0] = Math.max(max[0], c.x + px);
+      min[2] = Math.min(min[2], c.z + pz);
+      max[2] = Math.max(max[2], c.z + pz);
+    }
+    min[1] = Math.min(min[1], c.y + c.bounds.min[1] * (c.scale ?? 1));
+    max[1] = Math.max(max[1], c.y + c.bounds.max[1] * (c.scale ?? 1));
+  }
+  return { min: min.map((v) => v / s), max: max.map((v) => v / s) };
+}
+
 // What the bounds say at one yaw: world extents along x and z, the footprint centre relative to the pivot
 // (the mesh is not always centred on its pivot: a MunicipalOffice's centre is 0.36, 0.56 off), and the height.
 export function footprintOf(P, bounds, scale = 1, yaw = 0) {
