@@ -805,9 +805,9 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   LightEntity {
    ID "DC1F6B1AEB3FEC11"
-   coords 0.2 3.4 3
+   coords 0.4 3.4 1.4
    Color 1 0.88 0.68 1
-   LV 3.2
+   LV 3
    ClipEV -10
    Type Point
    Radius 6.5

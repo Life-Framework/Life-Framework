@@ -77,8 +77,7 @@ const glow = (pass, x, y, z, o = {}) => lights.push({ pass, type: "Point", x, y,
 // ---- POLISH 1: lights. Ceiling at 3.9 on the ground floor, 7.7 on the first. ----
 glow(1, 0.2, 3.4, 5.8, { lv: 3.4, radius: 6.5, until: 1 }); // the entrance corridor by the arrival marker and the board
 glow(2, -0.5, 3.4, 5.6, { lv: 4, radius: 7 }); // pass 2: moved to the board wall, which the night pictures showed dark
-glow(1, 0.4, 3.4, 1.4, { lv: 3, radius: 6.5, until: 2 }); // the middle of the corridor
-glow(3, 0.2, 3.4, 3.0, { lv: 3.2, radius: 6.5 }); // the A pass: moved up the corridor, which the night pictures showed dark between the board and the glass doors
+glow(1, 0.4, 3.4, 1.4, { lv: 3, radius: 6.5 }); // the middle of the corridor
 spot(1, 8.0, 3.5, 2.7, { lv: 5, radius: 5, angle: 120 }); // the clerk's side of the counter
 glow(1, 7.4, 3.4, 6.0, { lv: 2.2, radius: 4.5 }); // the waiting benches
 glow(1, 0, 7.3, 1.0, { lv: 2.2, radius: 5.5 }); // the first-floor landing
