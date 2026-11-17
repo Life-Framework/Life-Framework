@@ -271,6 +271,10 @@
   left the menu in M1-11: wanted people are on the station wanted board. The
   remote fine (`RpcAsk_LF_PoliceFine`, `FinePlayer`, the Fine button) is gone
   (M1-19): a fine is a paper ticket written face to face (`LF_FineTicket*`).
+  The duty NPC's menu shows only Close (#2509): the blank Search and Arrest
+  buttons are removed, not built. `ArrestPlayer` stays for the wanted-list sheet
+  to call; `LF_Test_PoliceMenuNoDeadButtons` holds the layout and focus ring to
+  working buttons.
 - ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
   through `SCR_ChimeraCharacter.LF_AskPoliceArrest`, and the server
   handler `RpcAsk_LF_PoliceArrest` validates on-duty officer and wanted
