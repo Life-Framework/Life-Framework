@@ -671,6 +671,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VaultDrillAction(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VaultDrillCancel(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VaultDrillPayOnce(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_VaultHeldDrill(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VaultTool(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleBankRefusal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleColours(), LF_TestTier.LOGIC);
