@@ -1,0 +1,87 @@
+// Grid cell c20r0 for fuel-station: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_fuel_station_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 263 0 23
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 267.857 0 23
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 272.714 0 23
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 277.571 0 23
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 282.429 0 23
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 287.286 0 23
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 292.143 0 23
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 297 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 297 0 28
+ angleY 270
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 297 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 292.143 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 287.286 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 282.429 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 277.571 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 272.714 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 267.857 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fuel_station_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 263 0 33
+ angleY 90
+}
+GenericEntity Grid_fuel_station_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:fuel-station"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 262.2 0.505 23.6
+ angleY -90
+}
+GenericEntity Grid_fuel_station_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "fuel-station"
+  }
+ }
+ coords 262.3 0 25.5
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_fuel_station_Main : "{D8BB8753BC550250}Prefabs/Buildings/FuelStation/FuelStation.et" {
+ coords 279.999 0 25.516
+}

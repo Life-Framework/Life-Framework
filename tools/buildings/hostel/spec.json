@@ -1,0 +1,50 @@
+{
+  "slug": "hostel",
+  "name": "Hostel",
+  "concept": "The Saint-Philippe hostel, 1989: the three-storey town house House_Town_E_2I02 (block b14, about 248 m2) fitted whole as a cheap place to sleep for a newcomer with no house yet. The ground floor's east half is the reception and common room (front) and the kitchen (back) with the washroom beside it; the west half, a workshop in the base game, becomes the luggage hall. The first floor holds the two dormitories, a washroom and a small kitchen. The attic is shut. This card is the shell: the vanilla set flattened and cut (switches, workshop clutter, attic junk, repeats); bunks, the reception desk and lockers come in pass 1. Base-game props only.",
+  "red_line": "pack",
+  "addon": "LF_Everon1989",
+  "prefab_dir": "Prefabs/Buildings/Hostel",
+  "vanilla": {
+    "base": "{54F1C704EB440885}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02.et",
+    "building": "Hostel",
+    "furniture": "Furniture/Hostel_furniture_01"
+  },
+  "budget": { "size": "medium", "entities": 300, "lights": 6, "shadow_casters": 1 },
+  "host": {
+    "prefab": "House_Town_E_2I02",
+    "town": "saint-philippe",
+    "block": "b14",
+    "front": "+z",
+    "footprint": { "min": [-9.27, -6.74], "max": [9.24, 6.63] },
+    "floor_y": [0.3, 4.1, 7.5],
+    "note": "Placed in Saint-Philippe later by town fit (the town-draft card), indestructible through the place layer (D15). Until then it stands in the pack grid, claim hostel."
+  },
+  "grid": {
+    "claim": "tools/grid/cells/hostel.json",
+    "layer": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_hostel.layer",
+    "cell": "c14r0"
+  },
+  "rooms": [
+    { "id": "reception", "floor": 0, "box": [0.6, 0.0, 8.7, 5.6], "use": "reception and common room: sofa, TV, desk (the reception desk in pass 1)" },
+    { "id": "kitchen", "floor": 0, "box": [4.0, -5.6, 8.7, -1.5], "use": "the guests' kitchen: stove, sink unit, table and corner bench" },
+    { "id": "washroom", "floor": 0, "box": [-0.6, -5.6, 4.0, -2.0], "use": "toilet, bath, sink, washing machine" },
+    { "id": "luggage", "floor": 0, "box": [-8.7, -5.6, -0.6, 5.6], "use": "luggage hall (the base game's workshop, cleared); lockers in pass 1" },
+    { "id": "dorm-west", "floor": 1, "box": [-8.7, -1.9, -0.6, 5.6], "use": "dormitory (bunks in pass 1)" },
+    { "id": "dorm-east", "floor": 1, "box": [0.6, 0.0, 8.7, 5.6], "use": "dormitory and lounge (piano, sofa)" },
+    { "id": "upstairs-wash", "floor": 1, "box": [-0.6, -5.6, 4.0, -2.0], "use": "washroom and shower" }
+  ],
+  "interactables": [],
+  "looks": {
+    "about": "proof.json holds the shots as look/from pairs in building space; tools\\cli look grid:hostel shoots the exterior and --interior x,y,z (world space: the building's grid position plus these) each room",
+    "rooms": [
+      { "name": "reception", "at": [4.6, 0.3, 2.8], "radius": 5 },
+      { "name": "kitchen", "at": [6.3, 0.3, -3.5], "radius": 4 },
+      { "name": "washroom", "at": [1.7, 0.3, -3.8], "radius": 4 },
+      { "name": "luggage", "at": [-4.6, 0.3, 0.0], "radius": 5 },
+      { "name": "dorm-west", "at": [-4.6, 4.1, 1.8], "radius": 5 },
+      { "name": "dorm-east", "at": [4.6, 4.1, 2.8], "radius": 5 }
+    ],
+    "hours": [14, 22]
+  }
+}

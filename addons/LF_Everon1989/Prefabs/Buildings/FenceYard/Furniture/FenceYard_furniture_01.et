@@ -1,0 +1,134 @@
+GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {
+ ID "56A8CBB92342240A"
+ {
+  GenericEntity : "{01E3612B337477CC}Prefabs/Props/Civilian/CoatHook_01.et" {
+   ID "58568DE51601FC09"
+   coords -1.05 1.906 -1.032
+   angles 0 -90 0
+  }
+  GenericEntity : "{027DFD4BB8D66F61}Prefabs/Props/Furniture/BenchWooden_03.et" {
+   ID "58568DE51601FC3B"
+   coords -1.353 0.19 -1.152
+   angles 0 90 0
+  }
+  GenericEntity : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
+   ID "58568DE51601FC87"
+   coords -0.405 0.19 -0.169
+  }
+  GenericEntity : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et" {
+   ID "58568DE51601F275"
+   coords 1.625 1.15 -0.58
+   angles 0 0 0
+  }
+  GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+   ID "58568DE51601F3B5"
+   coords -0.358 0.19 2.266
+  }
+  GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
+   ID "58568DE51601F32E"
+   coords -1.888 1.628 -3.235
+  }
+  GenericEntity : "{34F74A7DBAD46974}Prefabs/Props/Furniture/LightWall_01.et" {
+   ID "58568DE51601F302"
+   coords -0.634 2.711 -0.269
+   angles 0 90 0
+  }
+  GenericEntity : "{34F74A7DBAD46974}Prefabs/Props/Furniture/LightWall_01.et" {
+   ID "58568DE51601F361"
+   coords -5.5 2.681 -0.368
+   angles 0 90 0
+  }
+  GenericEntity : "{49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et" {
+   ID "58568DE51601F330"
+   coords -1.878 0.269 -3.235
+  }
+  GenericEntity : "{4A34979DC19CA9ED}Prefabs/Props/Construction/ConcreteMixer_01.et" {
+   ID "58568DE51601F20B"
+   coords 5.013 0.19 0.233
+   angles 0 -90 0
+  }
+  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+   ID "58568DE51601F255"
+   coords 0.687 0.196 2.959
+   angles 0 -90 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "58568DE51601F3A1"
+   coords 0.151 0.19 2.922
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "58568DE51601F3AB"
+   coords 0.367 0.19 2.922
+  }
+  GenericEntity : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+   ID "58568DE51601F244"
+   coords 0.644 0.19 -0.873
+  }
+  GenericEntity : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+   ID "58568DE51601FCC2"
+   coords -2.886 0.19 2.763
+   angles 0 180 0
+  }
+  GenericEntity : "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et" {
+   ID "58568DE51601F266"
+   coords 5.107 0.19 2.753
+  }
+  GenericEntity : "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et" {
+   ID "58568DE51601F387"
+   coords -0.305 0.19 2.797
+  }
+  GenericEntity : "{7E08142AFFDE045E}Prefabs/Props/Furniture/CabinetMetal_02.et" {
+   ID "58568DE51601F349"
+   coords -3.162 0.19 -3.226
+  }
+  GenericEntity : "{8AC23039E7EC0375}Prefabs/Props/Furniture/TowelRack_01.et" {
+   ID "58568DE51601F35B"
+   coords -2.434 1.341 -3.216
+  }
+  GenericEntity : "{910424AC5CABE800}Prefabs/Props/Garbage/Bins/BinInterior_01_red.et" {
+   ID "58568DE51601FC9A"
+   coords -2.608 0.19 -2.955
+  }
+  GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+   ID "58568DE51601F23F"
+   coords 0.799 0.19 2.971
+  }
+  GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+   ID "58568DE51601FC10"
+   coords -5.201 0.407 2.996
+  }
+  GenericEntity : "{B69B4902BAF5B1B9}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_02.et" {
+   ID "58568DE51601F215"
+   coords 3.852 0.19 1.005
+  }
+  GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+   ID "58568DE51601F2F2"
+   coords 4.444 0.19 1.777
+   angles 0 118.34 0
+  }
+  GenericEntity : "{D0BD7A55306FC46B}Prefabs/Props/Furniture/Faucet_01/Faucet_01.et" {
+   ID "58568DE51601F325"
+   coords -1.892 1.494 -3.235
+  }
+  GenericEntity : "{D19D5E8950BC4DD1}Prefabs/Props/Furniture/ChairOffice_01.et" {
+   ID "58568DE51601F3D9"
+   coords 1.114 0.19 0.067
+   angles 0 135.524 0
+  }
+  GenericEntity : "{DCBC472CDA3EA9B2}Prefabs/Props/Civilian/WallMap_01.et" {
+   ID "58568DE51601FCA1"
+   coords -5.5 1.268 2.001
+   angles 0 -90 0
+  }
+  GenericEntity : "{DD07AE4E1B3E5EE2}Prefabs/Props/Furniture/FirstAidBox_01.et" {
+   ID "58568DE51601FCB5"
+   coords -1.11 1.609 -2.345
+   angles 0 -90 0
+  }
+  GenericEntity : "{F737777FF0A566D5}Prefabs/Props/Commercial/CabinetCardFile_01/CabinetCardFile_01_Base.et" {
+   ID "58568DE51601FCAD"
+   coords -5.242 0.19 -0.03
+   angles 0 90 0
+  }
+ }
+}

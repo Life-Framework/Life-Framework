@@ -38,6 +38,7 @@
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
+import { areaConcurrency } from "./lib/validate-concurrency.mjs";
 import "./lib/quiet-gate.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -651,8 +652,9 @@ function toolEnv() {
 const FULL_ONLY = new Set(["validate-scripts.ps1"]);
 
 // Checks are independent read-only scripts, so they run concurrently (most of
-// their time is PowerShell start-up). Output is printed in file order.
-const AREA_CONCURRENCY = Math.max(8, Math.min(12, os.cpus().length));
+// their time is PowerShell start-up), fewer at once when free RAM is short (tools/lib/validate-concurrency.mjs).
+// Output is printed in file order.
+const AREA_CONCURRENCY = areaConcurrency(os.cpus().length, Math.round(os.freemem() / 1048576));
 
 function invokeScriptAsync(full, opts = {}) {
   let cmd = process.execPath;
@@ -4502,7 +4504,7 @@ function wtHelpFull() {
   tools\\cli wt sync-base <base> [--source main]
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
-  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local] [--wait] [--no-preflight]
+  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--draft] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local] [--wait] [--no-preflight]
                                        clean-tree and PR-body checks, preflight (merge-tree conflicts, validate of changed
                                        inputs) -> push -> PR (auto-merge off) -> ship queue: merge origin/<base> once,
                                        ci --remote on a pool machine, push, auto-merge (docs/worktrees.md "Async ship").
@@ -4521,6 +4523,7 @@ flags:
   --base B     branch to cut from and ship to (default main; 'wt new' records it for 'wt ship')
   --wait       queue behind the build/worktree lock instead of failing fast
   --pr-only    open the PR but leave it for review (no auto-merge)
+--draft      body checks, preflight and push, then a draft PR; auto-merge is never requested
   --refs N     start the PR body with 'Refs #N' (N >= 1; leave it out when there is no issue); --closes N is the same. Merging never closes an issue:
                it moves to in-dev / needs-playtest and 'promote --confirm' verifies and closes it
   --body-file F  PR body from F (e.g. tmp/pr-body.md in the worktree; end it with the attribution line)
@@ -5196,6 +5199,7 @@ async function wtSyncBaseCmd(args) {
 }
 
 async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody }) {
+  const draft = flags.includes("--draft"); // a draft PR, auto-merge never requested
   const { shipDirect } = await import("./lib/ship-direct.mjs");
   const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
   const body = refsBody(customBody ?? [`Automated ship from worktree \`${slug}\`.`, "", "## Commits", ...subjects.map((x) => `- ${x}`)].join("\n"), closes);
@@ -5210,14 +5214,15 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
     validate: () => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1,
     push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
     findPr: () => wt.findOpenPrGh(wtRoot, e.branch),
-    createPr: () => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base }),
+    createPr: (o) => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base, draft: o?.draft === true }),
     autoMerge: (n) => gh(["pr", "merge", String(n), "--auto", "--merge"]),
     mergeState: (n) => String(gh(["pr", "view", String(n), "--json", "mergeStateStatus", "-q", ".mergeStateStatus"]).stdout ?? "").trim(),
-  }, { base, slug, preflight: !flags.includes("--no-preflight") });
+  }, { base, slug, preflight: !flags.includes("--no-preflight"), draft });
   const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
-  console.log(`SUMMARY ship ${r.code === 0 ? "ok" : "fail"} ${slug}${r.pr ? ` PR #${r.pr.number}` : ""} auto-merge ${r.code === 0 ? "on" : "off"}`);
+  console.log(`SUMMARY ship ${r.code === 0 ? "ok" : "fail"} ${slug}${r.pr ? ` PR #${r.pr.number}` : ""} auto-merge ${r.code === 0 && !draft ? "on" : "off"}${draft ? " (draft)" : ""}`);
   if (r.pr) console.log(`PR ${r.pr.url}, head ${head}`);
-  if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
+  if (r.code === 0 && draft) console.log(`ship: draft PR left open for review. Prune after it merges: 'cli wt prune ${slug}'`);
+  else if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
   return r.code;
 }
 
@@ -5225,7 +5230,8 @@ async function wtShipCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
   const flags = args.slice(1);
-  const prOnly = flags.includes("--pr-only");
+  const draft = flags.includes("--draft"); // draft PR, never auto-merged (also on the --gate and no-gh paths)
+  const prOnly = flags.includes("--pr-only") || draft;
   const skipGate = flags.includes("--skip-gate");
   const skipSync = flags.includes("--skip-sync");
   let closes = null;
@@ -5288,6 +5294,30 @@ async function wtShipCmd(args) {
       reviewText,
       hasBodyFile: customBody !== null,
     });
+    {
+      // A building PR must pass `building check` (no floating props, offline): tools/lib/pr-quality.mjs buildingCheckProblems.
+      const { buildingCheckProblems } = await import("./lib/pr-quality.mjs");
+      const specs = [];
+      const bdir = join(wtRoot, "tools", "buildings");
+      if (existsSync(bdir)) {
+        for (const d of readdirSync(bdir)) {
+          try {
+            const s = JSON.parse(readFileSync(join(bdir, d, "spec.json"), "utf8"));
+            if (s.prefab_dir) specs.push({ slug: s.slug ?? d, addon: s.addon, prefab_dir: s.prefab_dir });
+          } catch {}
+        }
+      }
+      problems.push(
+        ...buildingCheckProblems({
+          files: changed,
+          specs,
+          run: (slug) => {
+            const res = spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "building", "check", slug], { cwd: wtRoot, encoding: "utf8", timeout: 180000, windowsHide: true });
+            return { code: res.status ?? 2, out: `${res.stdout ?? ""}${res.stderr ?? ""}` };
+          },
+        }),
+      );
+    }
     if (problems.length) {
       console.log("FAIL  the PR is not ready to ship:");
       for (const p of problems) console.log(`  - ${p}`);
@@ -5301,7 +5331,7 @@ async function wtShipCmd(args) {
   // No pre-merge gate (maintainer decision 2026-11-15): preflight, push, PR, auto-merge on. GitHub's validate
   // check gates the merge; the main guard checks main after it (docs/worktrees.md "Ship"). The ship queue
   // (tools/ship-queue.mjs) is retired from the flow; --gate runs the old local gate before the push.
-  if (!prOnly && !flags.includes("--gate") && wt.ghAvailable()) return shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody });
+  if (!flags.includes("--pr-only") && !flags.includes("--gate") && wt.ghAvailable()) return shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody });
   // Merge main only when it conflicts. A clean branch goes up as is: the PR's
   // validate check and auto-merge cover the combination with main.
   if (!skipSync) {
@@ -5360,7 +5390,7 @@ async function wtShipCmd(args) {
     if (wt.ghAvailable()) {
       pr = wt.findOpenPrGh(wtRoot, e.branch);
       if (pr) console.log(`ship: PR already open, pushed ${head.slice(0, 7)} to it`);
-      else pr = wt.createPrGh(wtRoot, { head: e.branch, title, body, base });
+      else pr = wt.createPrGh(wtRoot, { head: e.branch, title, body, base, draft });
     } else {
       const token = process.env.GITHUB_TOKEN;
       if (!token) {
@@ -5375,7 +5405,7 @@ async function wtShipCmd(args) {
   }
   console.log(`PR: ${pr.url}`);
   if (prOnly) {
-    console.log("ship: PR left open for review (--pr-only)");
+    console.log(draft ? "ship: draft PR left open for review (--draft)" : "ship: PR left open for review (--pr-only)");
     console.log(`PR ${pr.url}, head ${head}`);
     return 0;
   }

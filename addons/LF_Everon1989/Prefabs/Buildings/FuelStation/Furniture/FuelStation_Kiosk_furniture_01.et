@@ -1,0 +1,91 @@
+GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {
+ ID "56A8CBB92342240A"
+ {
+  GenericEntity : "{05B3F0626D25CB4A}Prefabs/Props/Commercial/Posters/PosterSingle_27x41_01_WashYourHands.et" {
+   ID "58EA8658FA034255"
+   coords -0.57 1.906 -1.834
+  }
+  GenericEntity : "{0E43D5546330841F}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01_tool_01.et" {
+   ID "58EA8658FA034272"
+   coords 1.842 1.282 0.937
+   angles 0 -90 0
+   scale 0.96
+  }
+  GenericEntity : "{20C6CD91EBCF3AD5}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01.et" {
+   ID "58EA8658FA034296"
+   coords 1.08 1.56 -1.828
+   scale 0.73
+  }
+  GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+   ID "58EA8658FA034599"
+   coords 1.296 0.111 -1.521
+   angles 0 90 0
+  }
+  GenericEntity : "{49BA7458EE1B6991}Prefabs/Props/Commercial/Posters/PosterSingle_27x41_01_ProgressOfMankind.et" {
+   ID "58EA8658FA034237"
+   coords 2.092 1.988 -0.289
+   angles 0 -90 0
+  }
+  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+   ID "58EA8658FA034522"
+   coords 1.822 0.527 -0.345
+  }
+  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+   ID "58EA8658FA03452C"
+   coords 1.822 0.527 -0.832
+   angles 0 -21.634 0
+  }
+  GenericEntity : "{6217E1B4DFF40B31}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01_tool_02.et" {
+   ID "58EA8658FA034261"
+   coords 1.988 1.838 -1.814
+   scale 0.734
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "58EA8658FA0342C0"
+   coords 1.251 0.1 0.976
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "58EA8658FA0342E4"
+   coords 1.051 0.1 0.976
+   angles 0 -10.548 0
+  }
+  GenericEntity : "{7BB30759D09C70B5}Prefabs/Props/Civilian/StepladderWooden_01.et" {
+   ID "58EA8658FA0342AE"
+   coords -1.788 0.105 -1.687
+   angles 2.247 0 0
+  }
+  GenericEntity : "{7E9186C892E9F07F}Prefabs/Props/Garbage/Cardboard/Cardboard_01.et" {
+   ID "58EA8658FA034566"
+   coords 0.607 0.1 0.928
+  }
+  GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
+   ID "58EA8658FA03454A"
+   coords -0.483 3.215 -0.332
+  }
+  GenericEntity : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+   ID "58EA8658FA0345A5"
+   coords 2.051 0.1 -0.278
+   angles 0 -90 0
+  }
+  GenericEntity : "{BD65F1D86388640D}Prefabs/Props/Civilian/FireExtinguisher_01.et" {
+   ID "58EA8658FA0342F7"
+   coords -2.037 0.1 -0.147
+   angles 0 85.612 0
+  }
+  GenericEntity : "{BEC9710797A5C593}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_Base.et" {
+   ID "58EA8658FA03457A"
+   coords -0.497 1.415 1.246
+   angles 0 -180 0
+  }
+  GenericEntity : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
+   ID "58EA8658FA034584"
+   coords -0.48 0.1 -1.506
+   angles 0 -90 0
+  }
+  GenericEntity : "{F6D1E024E82511F9}Prefabs/Props/Crates/Crate_01_base.et" {
+   ID "58EA8658FA0345B4"
+   coords -1.104 0.1 -1.506
+   angles 0 -90 0
+  }
+ }
+}

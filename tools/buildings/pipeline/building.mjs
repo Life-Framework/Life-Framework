@@ -5,6 +5,7 @@
 //   building adopt <slug> [<file.blend>]   keep a hand-polished scene (docs/building-pipeline/polish.md)
 //   building plan <slug>     building proof <slug>   (plan.mjs, proof.mjs)
 //   building review <slug> --shots         Blender review renders and a contact sheet, no game
+//   building check <slug>   no small prop floats: bottom within 2 cm of its support, offline (floaters.mjs)
 //   building status [<slug>]     building doctor     building selftest
 //
 // The spec is tools/buildings/<slug>/spec.json (tracked). Every stage writes into
@@ -597,6 +598,7 @@ export async function main(flags, { workbench } = {}) {
   const root = ROOT;
   if (sub === "selftest") return Math.max(await (await import("../../validation/building-pipeline-selftest.mjs")).main(rest), await (await import("../../validation/building-import-delta-selftest.mjs")).main(rest), await (await import("../../validation/building-vanilla-store-selftest.mjs")).main(rest));
   if (sub === "doctor") return cmdDoctor();
+  if (sub === "check") return (await import("./floaters.mjs")).cmdCheck(root, rest);
   if (sub === "plan") return rest[0] ? (await import("./plan.mjs")).cmdPlan(root, rest[0]) : say("usage: tools\\cli building plan <slug>", 2);
   if (sub === "proof") return rest[0] && !rest[0].startsWith("--") ? (await import("./proof.mjs")).cmdProof(root, rest[0], rest.slice(1)) : say("usage: tools\\cli building proof <slug> [--entity E] [--skip-audit] [--no-session] [--mission debug|playtest]", 2);
   if (sub === "status") return cmdStatus(root, rest[0]);
