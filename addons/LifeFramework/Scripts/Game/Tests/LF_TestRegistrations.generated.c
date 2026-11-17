@@ -19,6 +19,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AccountCachePolicy(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ActionGuards(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AdminAction(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_AdminWaddGrant(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AgentHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AimIntent(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AlarmMount(), LF_TestTier.WORLD);
