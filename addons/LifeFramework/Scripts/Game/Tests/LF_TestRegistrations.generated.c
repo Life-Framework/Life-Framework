@@ -292,11 +292,13 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HeldGroundBadRow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HeldGroundLegacy(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HeldGroundRoundTrip(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_HideoutLoadRelock(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HideoutOrgBase(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutRelock(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HideoutStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutStashFind(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HideoutStashRight(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HoldUp(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HospitalRejoinPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HospitalBillOnce(), LF_TestTier.LOGIC);
@@ -440,6 +442,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OnboardingChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_OpsEventsContract(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_OrgFundOverflow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgMapMarkBounds(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_OrgMapMarks(), LF_TestTier.PERSISTENCE);
@@ -448,6 +451,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OrgRights(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_OrgStaticReset(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_OrgUpgradeUnwired(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OutletSerial(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OutletSerialWired(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PackManifest(), LF_TestTier.LOGIC);
