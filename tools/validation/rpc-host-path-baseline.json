@@ -1,4 +1,0 @@
-{
-  "note": "Each entry is one file::method that calls Rpc(RpcAsk_...) with no Replication.IsServer() branch. Explicit list only; delete an entry when the site is fixed (validate-rpc-host-path fails on a stale one).",
-  "sites": []
-}

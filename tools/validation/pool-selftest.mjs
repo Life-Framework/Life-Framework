@@ -18,6 +18,7 @@
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
 //   7. burst starts (#1195): N queued runs start together on N free lanes, in queue order, behind the RAM of the
 //      starts in flight; a granted ticket stops blocking; atomic lane locks across racing holders; one snapshot per burst.
+// red-proof 2026-11-17 (pool VRAM end to end, #2634), on main before the change: "pool settings do not carry the VRAM reserves (undefined, floor undefined)"; "the remote state read does not carry free and total VRAM"; "a 2-client full session went to a PC whose card has 1000 MB free (local) while the laptop had 6000 MB"; "a session started on a laptop with 1000 MB of VRAM free (lf-testbox)"; after it the file passes.
 // red-proof 2026-11-17 (pool-budget-lanes, #1700 #1699), each broken alone: with the boot budget flat 30 s (the old budgetsFor) "CoreOnEveron still gets the 30 s boot budget that killed it (#1700)"; with LF_POOL_THIS_LANES ignored (the old loadMachines) "the leg on lf-cloud still sees 2 session lane(s), the router counted 9 (#1699; this PC: 2)"; with withoutAvoided returning every machine "an avoided machine was still ranked"; with a flat 3 s retry "the lane refusal backoff is 3000,3000,3000,3000,3000,3000".
 // red-proof 2026-11-16 (place-probe-pool): with `local: true` back in place.mjs serverRun "probe: the server run goes through the pool and is not hard-local" (place-tool-selftest); with preferRoomy unused "a probe does not take this PC while it has room".
 // red-proof 2026-11-14 (run-overhead rdb): with rdbPlan ignoring staleness (the old syncToSlot) "a stale rdb is sent to a machine that refreshes its own".
@@ -1262,6 +1263,48 @@ const dir0 = () => {
     } finally {
       holder.kill();
       rmSync(croot, { recursive: true, force: true });
+    }
+  }
+  // GPU memory end to end (#2634, tools/lib/pool-vram.mjs): the router (chooseSessionMachine) reads free VRAM
+  // per machine (this PC through opts.localVramMb, the laptop through remoteState's vramFreeMb) and sends a
+  // client session to the machine whose card holds its clients, though the other has the RAM and is faster.
+  {
+    const vroot = scratchDir("lf-vram-");
+    spawnSync("git", ["init", "-q", vroot], { windowsHide: true });
+    writeFileSync(join(vroot, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "local", lanes: { test: 1, session: 1 } }] } }));
+    mkdirSync(join(vroot, "tmp", "wt", "locks"), { recursive: true });
+    const quiet = () => {};
+    const lapState = (vramFreeMb) => ({ locks: { "server-2001": null, "server-2011": null, "server-2021": null }, freeMb: 9000, totalMb: 15606, vramFreeMb });
+    const choose = (slug, clients, profile, state, extra) =>
+      pool.chooseSessionMachine(vroot, { clients, profile, waitMs: 600, meta: { slug }, log: quiet, opts: { probe: () => ({ reachable: true, build: null }), remoteState: () => state, pollMs: 100, diskMsg: null, localFreeMb: 9000, ...extra } });
+    try {
+      const vs = pool.poolSettings(vroot);
+      check(vs.sessionReserveClientVramMb?.lowspec === 700 && vs.sessionReserveClientVramMb?.full === 1800 && vs.minFreeVramMb === 256, `pool settings do not carry the VRAM reserves (${JSON.stringify(vs.sessionReserveClientVramMb)}, floor ${vs.minFreeVramMb})`);
+      const ps = pool.parseRemoteState("lf-pool: ram 9000 15606\nlf-pool: vram 5800\nlf-pool: vramtotal 8192\n");
+      check(ps.vramFreeMb === 5800 && ps.vramTotalMb === 8192, "the remote state read does not carry free and total VRAM");
+      check(pool.parseRemoteState("lf-pool: ram 9000 15606\n").vramFreeMb === null, "a remote state without the VRAM line is not unknown VRAM (null)");
+      // This PC has the RAM and is first in the order, but its card is nearly full: two full clients (3600 MB) go to the laptop.
+      const away = await choose("vram-local-full", 2, "full", lapState(6000), { localVramMb: 1000 });
+      check(away?.name === "lf-testbox", `a 2-client full session went to a PC whose card has 1000 MB free (${away?.name ?? "null"}) while the laptop had 6000 MB`);
+      // The same request with room on both stays in the RAM order (this PC first).
+      const home = await choose("vram-both-roomy", 2, "full", lapState(6000), { localVramMb: 6000 });
+      check(home?.name === "local", `with VRAM room on both machines the RAM order changed (${home?.name ?? "null"})`);
+      // Lowspec clients (700 MB each) fit the same 1900 MB.
+      const low = await choose("vram-lowspec", 2, "lowspec", lapState(6000), { localVramMb: 1900 });
+      check(low?.name === "local", `a lowspec session did not fit 1900 MB of VRAM (${low?.name ?? "null"})`);
+      // The laptop's card is full and this PC refuses (disk): the request queues, it does not start there.
+      const nowhere = await choose("vram-laptop-full", 2, "full", lapState(1000), { diskMsg: "free disk 3.5 GB is under 5 GB" });
+      check(nowhere === null, `a session started on a laptop with 1000 MB of VRAM free (${nowhere?.name ?? "null"})`);
+      // An unreadable card skips the rule, never a refusal: the laptop answers no VRAM line and this PC refuses.
+      const unknown = await choose("vram-unknown", 2, "full", lapState(null), { diskMsg: "free disk 3.5 GB is under 5 GB" });
+      check(unknown?.name === "lf-testbox", `unknown VRAM refused the laptop (${unknown?.name ?? "null"})`);
+      // A test-lane ordering (no client) ignores VRAM.
+      const ranked = pool.rankedMachines(vroot, pool.loadMachines(vroot), vs, { reserveMb: 2300, vramReserveMb: 0, stateOf: () => lapState(0), localFreeMb: 9000, localVramMb: 0 });
+      check(ranked.every((r) => r.room === true), "a job with no client was refused for VRAM in the machine order");
+    } catch (e) {
+      failures.push(`the VRAM scenario threw: ${e.message}`);
+    } finally {
+      rmSync(vroot, { recursive: true, force: true });
     }
   }
   // Machine choice by RAM headroom (2026-11-14: this PC at 0.4 GB free kept its first lanes while the

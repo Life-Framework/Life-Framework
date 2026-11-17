@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{EB67B516E1C0A23D}Prefabs/Debug/LF_TestRpcProbe_NoRpl.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
