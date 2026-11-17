@@ -368,7 +368,7 @@ class LF_PlacementCost
 			return 0;
 
 		if (terms.m_eCost == LF_EPlacementCost.CASH)
-			return LF_MoneyUtils.AddCash(player, amount, REASON_REFUND);
+			return LF_MoneyUtils.AddCash(player, amount, REASON_REFUND, "", true);
 
 		return LF_InventoryUtils.AddAmount(player, terms.m_sItem, amount, true);
 	}

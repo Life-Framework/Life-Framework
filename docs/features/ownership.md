@@ -44,7 +44,7 @@
   `node agent-box/session.mjs org [--shot]`.
 - ✅ (2026-11-12, #750a) Ranks are a ladder with a rights bitmask
   (`LF_OrgRights`; bit = `LF_EOrganizationPermission`: withdraw, invite, kick,
-  buy upgrade, manage ranks, and the reserved declare war, use stash, manage
+  buy upgrade, manage ranks, use stash, and the reserved declare war, manage
   territory, spend fund). A new organization gets founder (every right), officer
   (invite, kick, stash) and member (stash); an invite joins on the bottom rung.
   Face to face, a member with manage ranks sees "Promote in <org>" on a member
@@ -136,8 +136,8 @@
   gets the inventory, anyone else hears a refusal sound and gets the
   `#LF-HideoutStash_NotMember` toast, and the refusal is logged
   (`stash refused: not a member`). The server also refuses a non-member moving an
-  item out (`HandleAccessValidation`) or in (`CanStoreItem`). Membership is the
-  only key: an open or breached door does not open the stash.
+  item out (`HandleAccessValidation`) or in (`CanStoreItem`). Membership and the
+  rank's stash right (`USE_STASH`) are the key: an open or breached door does not open the stash.
 - ✅ Stash contents survive a restart through `LF_PersistentStorageComponent`
   keyed `hideout:Roadmap_Hideout` (not an entity id), so the stash keeps its
   items wherever the layer places it. See the placed-storage row under Carried
@@ -149,3 +149,13 @@
   `#EL-Hideout_NoUpgrade`, `#EL-Hideout_Process`, `#LF-HideoutStash_Name`,
   `#LF-HideoutStash_Desc`, `#LF-HideoutStash_Title`, `#LF-HideoutStash_NotMember`.
 
+- ✅ **Organisations review fixes (2026-11-17, `docs/reviews/2026-11-17-orgs.md`).** The seven ledger
+  requests and the ledger reply now have a listen-host path (#2525): the host's own ask calls its
+  handler and the reply is applied directly when the server owns the character. The ledger no longer
+  sells extra storage or the parked vehicle (`LF_OrganizationManager.IsUpgradeWired`): nothing reads
+  those flags, so a crafted request burned the fund for nothing. A deposit that would pass the fund's
+  int ceiling is refused (the cash goes back). The stash checks the rank's `USE_STASH` right, which
+  the rank config could already take off. A hideout gate saved open queues the relock sweep on load,
+  so a restart no longer leaves it open for anyone. Tests `organization/upgrade-unwired`,
+  `organization/fund-overflow`, `hideout/stash-right`, `hideout/load-relock` (LOGIC). The lease that
+  never ends is #2533.
