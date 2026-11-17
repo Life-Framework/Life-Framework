@@ -318,10 +318,8 @@ class LF_PlacementService
 		if (!user || !placeable)
 			return false;
 
-		if (placeable.GetWho() == LF_EPlacementWho.ON_DUTY_POLICE)
-			return LF_PoliceUtils.IsOnDutyCharacter(user);
-
-		return true;
+		string toastKey;
+		return LF_PlacementPolicy.Check(user, placeable.GetKind(), placeable.GetWho(), toastKey).IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -510,8 +508,10 @@ class LF_PlacementService
 		if (!placeable || placeable.GetPlacedPrefab().IsEmpty())
 			return Refuse(player, "refused: the item names no placed prefab", "");
 
-		if (!MayPlace(player, placeable))
-			return Refuse(player, string.Format("refused: %1 is not on-duty police", LF_PoliceRanks.ResolveUid(player)), "#LF-Placement_NotAllowed");
+		string toastKey;
+		string why = LF_PlacementPolicy.Check(player, placeable.GetKind(), placeable.GetWho(), toastKey);
+		if (!why.IsEmpty())
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), why), toastKey);
 
 		// Only an item on the ground or in the player's own inventory: not one in someone's car.
 		IEntity holder = LF_InventoryUtils.GetStorageHierachyRoot(item);

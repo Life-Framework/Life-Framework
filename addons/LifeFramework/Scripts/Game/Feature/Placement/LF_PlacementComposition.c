@@ -332,8 +332,10 @@ class LF_PlacementCompositions
 		if (composition.Count() == 0)
 			return Refuse(player, "refused: the composition has no pieces", "");
 
-		if (composition.m_eWho == LF_EPlacementWho.ON_DUTY_POLICE && !LF_PoliceUtils.IsOnDutyCharacter(player))
-			return Refuse(player, string.Format("refused: %1 is not on-duty police", LF_PoliceRanks.ResolveUid(player)), "#LF-Placement_NotAllowed");
+		string toastKey;
+		string why = LF_PlacementPolicy.Check(player, composition.m_sName, composition.m_eWho, toastKey);
+		if (!why.IsEmpty())
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), why), toastKey);
 
 		// Before the probes, so a flood of proposals costs no traces.
 		if (!LF_RateLimit.AllowCharacter(player, LF_ERequestKind.SPAWN, "composition confirm"))
