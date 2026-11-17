@@ -834,6 +834,17 @@ it, picks a lane and a budget, and prints one line per outcome.
   the same RAM) until it fits, as long as draining can help it (its need fits in free RAM plus what
   the pool's running jobs there hold). A job that could not fit even on an empty machine never
   blocks anyone.
+- **Where the RAM goes, and orphans (2026-11-17, `tools/lib/ram.mjs`).** `tools\cli ram [--machine <name>]` prints,
+  per pool machine, free RAM and commit, working set and private bytes by role (claude agents, MCP children per claude,
+  tools/cli node, test and session servers, clients, Workbench, main guard, T3, git, shells, Defender, Search, NVIDIA,
+  Steam, Windows, other apps), every ArmaReforger process with its `-profile`, and the orphans. An orphan is only an
+  ArmaReforger process our tools launched (`-profile` under a checkout's `server\profile\` or a
+  `LifeFramework\session\` folder), older than 10 min, and: its checkout is gone; its session record is missing, stopped
+  or names other pids; a test server past 120 min; or an `-exitAfterInit` (rdb, compile) Workbench past 60 min. The
+  user's own game and Workbench and the look viewer are never candidates. The pool stops them by pid
+  (`taskkill /T /F`, re-checked to still be ArmaReforger) from its wait loop and `pool status`, once per machine per
+  10 min (`tmp/wt/orphan-reap.json`); `ram --dry-run` lists, `ram --reap` stops now, `LF_ORPHAN_REAP=0` turns the
+  pool's off. Selftest: `ram-selftest`.
 - **Status.** `pool status` prints each machine's live free RAM (and the laptop's temperature),
   and per waiting job where it may run, the reason (`ram 2-client full: needs 3.8 GB free, local
   has 1.1, lf-testbox has 2.8`; a pinned job adds `(pinned; lf-testbox has room)`; `lane`, `behind N`, `starved, so it holds its place`) and an
