@@ -1,0 +1,288 @@
+{
+  "about": "Town hall: every picture the building needs, as look/from pairs in building space (tools/buildings/pipeline/scenario.mjs; the front faces +z, the camera stands at look + from and faces look): the street front and the lit facade, then the arrival corridor with the town board, the registry counter from the clerk's side and the customer side, the licence desk, the waiting benches, the stair and the first floor. The `_night` shots repeat the main ones at 22:00 (the scene step sets the hour first; `node tools/buildings/town-hall/looks.mjs --hour 22` shoots them without a session). The interactables (registry clerk, licence desk, town board) are walked in their own feature proofs (`licence/desk`, `dialogue/clerk`, `town-board-proof`); this file stands the camera at each one.",
+  "session": {
+    "profile": "full",
+    "mission": "playtest"
+  },
+  "steps": [
+    {
+      "shot": "warmup",
+      "look": [
+        0,
+        3,
+        7.7
+      ],
+      "from": [
+        -7,
+        -1.4,
+        10
+      ],
+      "wait": 6000,
+      "why": "the first frames after a teleport draw the building before it streams in"
+    },
+    {
+      "shot": "street",
+      "look": [
+        0,
+        3,
+        7.7
+      ],
+      "from": [
+        -7,
+        -1.4,
+        10
+      ]
+    },
+    {
+      "shot": "front",
+      "look": [
+        0,
+        4.5,
+        8
+      ],
+      "from": [
+        0,
+        -2.8,
+        24
+      ]
+    },
+    {
+      "shot": "facade_lamp",
+      "look": [
+        2.6,
+        3,
+        7.73
+      ],
+      "from": [
+        1.5,
+        -1.2,
+        5
+      ]
+    },
+    {
+      "shot": "registry_sign",
+      "look": [
+        -5.2,
+        1.3,
+        9.6
+      ],
+      "from": [
+        1.5,
+        0.3,
+        6
+      ]
+    },
+    {
+      "shot": "corridor",
+      "look": [
+        0,
+        1.4,
+        -2
+      ],
+      "from": [
+        0.2,
+        0.2,
+        6.5
+      ],
+      "why": "the arrival corridor from just inside the entrance doors"
+    },
+    {
+      "shot": "arrival",
+      "look": [
+        0,
+        1.4,
+        5.6
+      ],
+      "from": [
+        0,
+        0.2,
+        -2.8
+      ],
+      "why": "the arrival point faces the doors"
+    },
+    {
+      "shot": "town_board",
+      "look": [
+        -1.7,
+        1.6,
+        5.3
+      ],
+      "from": [
+        3,
+        0,
+        0
+      ]
+    },
+    {
+      "shot": "counter_clerk",
+      "look": [
+        8.35,
+        1.4,
+        3.1
+      ],
+      "from": [
+        -3,
+        0.2,
+        -0.2
+      ],
+      "why": "the registry clerk behind the counter, from the staff corridor"
+    },
+    {
+      "shot": "counter_customer",
+      "look": [
+        8,
+        1.3,
+        4.1
+      ],
+      "from": [
+        -1.2,
+        0.2,
+        2.6
+      ],
+      "why": "the counter from the customer side"
+    },
+    {
+      "shot": "licence_desk",
+      "look": [
+        9.85,
+        1.3,
+        4.1
+      ],
+      "from": [
+        0.4,
+        0.2,
+        2.4
+      ],
+      "why": "the licence desk window, the right-hand module of the counter"
+    },
+    {
+      "shot": "waiting",
+      "look": [
+        7,
+        0.9,
+        6.8
+      ],
+      "from": [
+        -1.6,
+        0.7,
+        -1.8
+      ]
+    },
+    {
+      "shot": "stair",
+      "look": [
+        1.3,
+        1.5,
+        -5
+      ],
+      "from": [
+        0,
+        0.2,
+        5.5
+      ]
+    },
+    {
+      "shot": "first_floor",
+      "look": [
+        0,
+        5.4,
+        -1
+      ],
+      "from": [
+        0,
+        0.2,
+        6
+      ]
+    },
+    {
+      "do": {
+        "verb": "scene",
+        "args": "start street 22 Clear"
+      },
+      "wait": 4000,
+      "why": "22:00, clear weather: the lit facade and the lit rooms"
+    },
+    {
+      "shot": "street_night",
+      "look": [
+        0,
+        3,
+        7.7
+      ],
+      "from": [
+        -7,
+        -1.4,
+        10
+      ]
+    },
+    {
+      "shot": "facade_lamp_night",
+      "look": [
+        2.6,
+        3,
+        7.73
+      ],
+      "from": [
+        1.5,
+        -1.2,
+        5
+      ]
+    },
+    {
+      "shot": "corridor_night",
+      "look": [
+        0,
+        1.4,
+        -2
+      ],
+      "from": [
+        0.2,
+        0.2,
+        6.5
+      ],
+      "why": "the arrival corridor from just inside the entrance doors"
+    },
+    {
+      "shot": "counter_clerk_night",
+      "look": [
+        8.35,
+        1.4,
+        3.1
+      ],
+      "from": [
+        -3,
+        0.2,
+        -0.2
+      ],
+      "why": "the registry clerk behind the counter, from the staff corridor"
+    },
+    {
+      "shot": "waiting_night",
+      "look": [
+        7,
+        0.9,
+        6.8
+      ],
+      "from": [
+        -1.6,
+        0.7,
+        -1.8
+      ]
+    },
+    {
+      "shot": "first_floor_night",
+      "look": [
+        0,
+        5.4,
+        -1
+      ],
+      "from": [
+        0,
+        0.2,
+        6
+      ]
+    }
+  ],
+  "checks": [],
+  "log": []
+}
