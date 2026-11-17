@@ -5,7 +5,8 @@
 //! A kind with no entry keeps the rule its placeable or composition names (`m_eWho`), so a prefab
 //! authored before the policy still works. LF_PlacementService and LF_PlacementCompositions ask
 //! `Check`; the ghost's action gate asks it too (through MayPlace), so the answer is one rule on both
-//! sides. A refusal names its rule in the log (`reason`) and in the toast (`toastKey`).
+//! sides. An entry may also name a zone (`m_eWhere`, #2447; LF_PlacementZones) that limits where the
+//! kind goes; the server's Confirm asks `ZoneAt` with the spot. A refusal names its rule in the log (`reason`) and in the toast (`toastKey`).
 //! Ownership, keys and ranks are read from Houses and Organizations; this file edits neither.
 //------------------------------------------------------------------------------------------------
 
@@ -21,6 +22,12 @@ class LF_PlacementPolicyEntry
 
 	[Attribute("", UIWidgets.EditBox, "ORG_MEMBER only: the lowest rank id that may place it (founder, officer, member); empty lets any member")]
 	string m_sMinRank;
+
+	[Attribute("0", UIWidgets.ComboBox, desc: "Where this kind may go (#2447): anywhere, roads only, inside an owned or keyed property, or near the organization's base", enums: ParamEnumArray.FromEnum(LF_EPlacementWhere))]
+	LF_EPlacementWhere m_eWhere;
+
+	[Attribute("30", UIWidgets.EditBox, "ORG_BASE only: how many metres from the organization's base the kind may be placed")]
+	float m_fBaseRadius;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -313,7 +320,7 @@ class LF_PlacementPolicy
 
 	//------------------------------------------------------------------------------------------------
 	//! The house identifier on every key the player carries (inventory and the left-hand slot).
-	protected static void HeldKeyHouseIds(IEntity player, notnull array<string> ids)
+	static void HeldKeyHouseIds(IEntity player, notnull array<string> ids)
 	{
 		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(player);
 		IEntity inHand;
@@ -354,5 +361,38 @@ class LF_PlacementPolicy
 			return "";
 
 		return Judge(who, Gather(player, who, minRank), toastKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The zone for a kind: the table's entry, else ANYWHERE.
+	//! \param[out] baseRadius The entry's base radius (ORG_BASE).
+	static LF_EPlacementWhere WhereFor(string kind, out float baseRadius)
+	{
+		baseRadius = 0;
+		LF_PlacementPolicyConfig config = LF_PlacementPolicyConfig.Get();
+		if (!config)
+			return LF_EPlacementWhere.ANYWHERE;
+
+		LF_PlacementPolicyEntry entry = config.Find(kind);
+		if (!entry)
+			return LF_EPlacementWhere.ANYWHERE;
+
+		baseRadius = entry.m_fBaseRadius;
+		return entry.m_eWhere;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the kind's zone allows `spot` for `player` (#2447). The server's Confirm asks it once the
+	//! proposal is well formed, so no gather runs on a malformed spot.
+	//! \return Empty when allowed, else the refusal tail (see LF_PlacementZones.Judge).
+	static string ZoneAt(IEntity player, string kind, vector spot, out string toastKey)
+	{
+		toastKey = "";
+		float baseRadius;
+		LF_EPlacementWhere zone = WhereFor(kind, baseRadius);
+		if (zone == LF_EPlacementWhere.ANYWHERE)
+			return "";
+
+		return LF_PlacementZones.Judge(zone, LF_PlacementZones.Gather(player, spot, zone, baseRadius), toastKey);
 	}
 }
