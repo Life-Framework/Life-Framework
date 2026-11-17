@@ -265,7 +265,7 @@ town (`world-zones.md` "Tests do not read the town").
   slot's entrance on the `GM_Eden.nmn` navmesh. It fails on a slot with no path, or with a path over
   3 times the straight-line distance.
 - **Phase readiness** (`town ready <state>`): every place of the state passes `town check`, every system
-  that the state's chapters list is present (the boot log has no "switches off" line for it), the arrival
+  that the state's chapters list is present (the boot log has no `[LFDebug:<System>] no <Kind> placed on this map: off` line, which `LF_Systems.CheckPlaces` logs for a system with no place), the arrival
   route works end to end on the flagship header, and no live slot points at a dark place.
 
 ### 3.6 Phased map states and the bake order
