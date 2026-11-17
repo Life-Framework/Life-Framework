@@ -120,6 +120,13 @@ class LF_OrgLedger
 	protected bool m_bRebuilding;
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: forget the open ledger page (the world takes its screen down).
+	static void ResetStatics()
+	{
+		s_Ledger = null;
+	}
+
+//------------------------------------------------------------------------------------------------
 	static LF_OrgLedger Current()
 	{
 		return s_Ledger;
@@ -426,5 +433,22 @@ class LF_OrgLedger
 
 		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_HUD_MAP_CLOSE);
 		LF_Debug.Info("Organizations", "ledger closed");
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_OrgLedger's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_OrgLedger_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_OrgLedger_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_OrgLedger";
+	}
+
+	override void Apply()
+	{
+		LF_OrgLedger.ResetStatics();
 	}
 }
