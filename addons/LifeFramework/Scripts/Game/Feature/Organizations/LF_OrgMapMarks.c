@@ -71,7 +71,8 @@ class LF_OrgMapMarks
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: a member adds a mark for their organization. \return the share key, or "" when refused
-	//! (logged): no organization, no right, the cap, the rate limit, or a value outside the wire range.
+	//! (logged): no organization, no right, the cap, the rate limit, a value outside the wire range, an icon
+	//! or colour index past the placed-marker lists, or a position outside the map.
 	static string Add(string characterId, int x, int z, int icon, int colour, string text, float now)
 	{
 		if (!Replication.IsServer())
@@ -100,6 +101,13 @@ class LF_OrgMapMarks
 			return "";
 		}
 
+		string boundsWhy = OutOfBounds(x, z, icon, colour);
+		if (!boundsWhy.IsEmpty())
+		{
+			LF_Debug.Warn(FEATURE, string.Format("add refused: %1 sent %2 (%3,%4 icon %5 colour %6)", characterId, boundsWhy, x, z, icon, colour));
+			return "";
+		}
+
 		if (CountOf(orgId) >= CAP)
 		{
 			LF_Debug.Warn(FEATURE, string.Format("add refused: %1 already holds %2 marks", orgId, CAP));
@@ -121,6 +129,89 @@ class LF_OrgMapMarks
 		LF_MapShares.Put(ToShare(row));
 		LF_Debug.Info(FEATURE, string.Format("mark %1 added by %2 (%3 of %4)", key, characterId, CountOf(orgId), CAP));
 		return key;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "" when the position is on the map and the icon and colour index entries of the placed-marker
+	//! config (LF_MapMarkerConfig.conf), else the reason. A limit that cannot be read here (no marker
+	//! manager or no world) is skipped with a warning, so the wire-range checks still hold.
+	static string OutOfBounds(int x, int z, int icon, int colour)
+	{
+		int iconCount = PlacedListSize(true);
+		if (iconCount >= 0 && icon >= iconCount)
+			return string.Format("an icon past the %1 placed-marker icons", iconCount);
+
+		int colourCount = PlacedListSize(false);
+		if (colourCount >= 0 && colour >= colourCount)
+			return string.Format("a colour past the %1 placed-marker colours", colourCount);
+
+		int minX, minZ, maxX, maxZ;
+		if (!MapExtent(minX, minZ, maxX, maxZ))
+			return "";
+
+		if (x < minX || x > maxX || z < minZ || z > maxZ)
+			return string.Format("a position outside the map (%1..%2, %3..%4)", minX, maxX, minZ, maxZ);
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many icons (or colours) the placed marker entry lists, -1 when unknown. Reads the engine's
+	//! marker manager, which the server's game mode carries; the lists only ever grow at the end.
+	protected static int PlacedListSize(bool icons)
+	{
+		SCR_MapMarkerManagerComponent manager = SCR_MapMarkerManagerComponent.GetInstance();
+		if (!manager || !manager.GetMarkerConfig())
+		{
+			LF_Debug.Warn(FEATURE, "no marker config: the icon and colour index are checked against the wire range only");
+			return -1;
+		}
+
+		SCR_MapMarkerEntryPlaced placed = SCR_MapMarkerEntryPlaced.Cast(manager.GetMarkerConfig().GetMarkerEntryConfigByType(SCR_EMapMarkerType.PLACED_CUSTOM));
+		if (!placed)
+		{
+			LF_Debug.Warn(FEATURE, "no placed marker entry: the icon and colour index are checked against the wire range only");
+			return -1;
+		}
+
+		if (icons)
+		{
+			if (!placed.GetIconEntries())
+				return -1;
+
+			return placed.GetIconEntries().Count();
+		}
+
+		if (!placed.GetColorEntries())
+			return -1;
+
+		return placed.GetColorEntries().Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The map's extent in world metres, from the world's own bound box (the dedicated server has no map
+	//! entity). \return false when there is no world or an empty box.
+	static bool MapExtent(out int minX, out int minZ, out int maxX, out int maxZ)
+	{
+		if (!GetGame() || !GetGame().GetWorld())
+		{
+			LF_Debug.Warn(FEATURE, "no world: the position is checked against the wire range only");
+			return false;
+		}
+
+		vector mins, maxs;
+		GetGame().GetWorld().GetBoundBox(mins, maxs);
+		if (maxs[0] <= mins[0] || maxs[2] <= mins[2])
+		{
+			LF_Debug.Warn(FEATURE, "the world has an empty bound box: the position is checked against the wire range only");
+			return false;
+		}
+
+		minX = Math.Floor(mins[0]);
+		minZ = Math.Floor(mins[2]);
+		maxX = Math.Ceil(maxs[0]);
+		maxZ = Math.Ceil(maxs[2]);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
