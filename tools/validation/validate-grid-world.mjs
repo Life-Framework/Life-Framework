@@ -27,9 +27,7 @@ import { isFrameClaim } from "../grid/lattice.mjs";
 import { topLevelBlocks } from "./validate-world-zones.mjs";
 
 // Legacy layers still free-standing. One per line so slices that remove one do not conflict.
-export const PENDING = [
-  "Annex",
-];
+export const PENDING = [];
 
 // Entities of the legacy layers that stand outside every claimed cell: [{ layer, name, x, z }].
 // `layers` is { "<Name>.layer": text }, `claims` the parsed tools/grid/cells/*.json.

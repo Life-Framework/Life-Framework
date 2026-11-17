@@ -6,7 +6,9 @@
 //   2. a red step is rerun at the same head (only the failing tests): a one-off is a flake, logged to
 //      tmp/logs/main-guard-flakes.log, and nothing is reverted;
 //   3. a red that reproduces: bisect the first-parent PR merges since the last green head (only merges made
-//      after the guard started), rerunning only what failed at each candidate;
+//      after the guard started), rerunning only what failed at each candidate; a suite red is matched by its failing
+//      test names (a commit is red only if it fails one of them) and stops with "mixed causes", no revert, when no
+//      single merge explains the set (#2052);
 //   4. the culprit merge is reverted with `git revert -m 1` on a ws/revert-pr<N>-guard branch, a PR titled
 //      "Revert #N (main guard: <what failed>)" with auto-merge (GitHub's required validate check gates it),
 //      a comment on the original PR, its issues reopened as `regression`, one line to the staff webhook.
@@ -14,7 +16,7 @@
 // One worker per repo (hub lock); state in <hub>/main-guard.json; log tmp/logs/main-guard.log.
 
 import { spawn, spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, openSync, closeSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, openSync, closeSync, readdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
@@ -86,7 +88,7 @@ function runDir(root, slug = RUN_SLUG) {
 // wt new pin to on any machine).
 function mark(root, dir, sha, status, extra) {
   try { pin.recordHead(hub(root), sha, status, extra); } catch (e) { log(root, `state write failed: ${e.message}`); }
-  const r = pin.postStatus(dir, sha, status, extra?.step);
+  const r = pin.postStatus(dir, sha, status, extra?.step, extra?.note);
   if (r.status !== 0) log(root, `commit status ${status} on ${sha.slice(0, 8)} not posted: ${String(r.stderr || "").trim().slice(0, 160)}`);
 }
 
@@ -98,6 +100,24 @@ function ensureRunWorktree(root, slug = RUN_SLUG) {
   const r = spawnSync(process.execPath, [join(mainRoot(root), "tools", "cli.mjs"), "wt", "new", RUN_SLUG], { cwd: mainRoot(root), encoding: "utf8", windowsHide: true, timeout: 600000 });
   if (r.status !== 0 || !existsSync(join(dir, ".git"))) throw new Error(`wt new ${RUN_SLUG} failed: ${(r.stdout + r.stderr).trim().split(/\r?\n/).slice(-3).join(" | ")}`);
   return dir;
+}
+
+// The LF_Test_*.c sources of the checkout (core and every pack): names the test behind a failing assertion line when the
+// compact suite output has no FAIL header (mg.failingTests).
+function testSources(dir) {
+  const out = [];
+  let addons = [];
+  try { addons = readdirSync(join(dir, "addons")); } catch { return out; }
+  for (const a of addons) {
+    const t = join(dir, "addons", a, "Scripts", "Game", "Tests");
+    let files = [];
+    try { files = readdirSync(t); } catch { continue; }
+    for (const f of files) {
+      if (!/^LF_Test_\w+\.c$/.test(f)) continue;
+      try { out.push({ file: f, text: readFileSync(join(t, f), "utf8") }); } catch {}
+    }
+  }
+  return out;
 }
 
 function checkout(dir, sha) {
@@ -159,7 +179,7 @@ async function checkHead(root, dir, head) {
       writeState(root, { running: null });
       return;
     }
-    const failing = step.name === "suite" ? mg.failingTests(r.text) : [];
+    const failing = step.name === "suite" ? mg.failingTests(r.text, testSources(dir)) : [];
     const what = failing.length ? failing.slice(0, 3).join(", ") : step.name;
     log(root, `${head.slice(0, 8)} ${step.name} RED (exit ${r.code}, ${what}); rechecking at the same head (log ${r.log})`);
     const again = await runCli(root, dir, step.recheck(failing), `${head.slice(0, 8)}-recheck`);
@@ -179,25 +199,44 @@ async function checkHead(root, dir, head) {
     const list = mg.candidates(mergesSince(dir, state.lastGreen ?? state.startHead, head, state.startHead));
     log(root, `${head.slice(0, 8)} ${step.name} reproduced (${what}); bisecting ${list.length} merge(s) since ${(state.lastGreen ?? state.startHead ?? "").slice(0, 8)}`);
     writeState(root, { running: { head, step: `bisect ${step.name}`, at: now() } });
-    const b = await mg.bisect(list, async (c) => {
-      checkout(dir, c.sha);
-      const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
-      if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
-      log(root, `  bisect ${c.sha.slice(0, 8)} ${x.code === 0 ? "green" : "red"} (${c.subject.slice(0, 60)})`);
-      return x.code !== 0;
-    });
+    // The recorded red set (#2052): the failing tests and FAIL lines at this head. The suite bisect treats a commit as
+    // red only when it fails one of these tests; other steps (build, audit, e2e) have no test set and stay red/green.
+    const redLines = step.name === "suite" ? mg.failLines(r.text) : [];
+    if (step.name === "suite") log(root, `${head.slice(0, 8)} suite red set: ${failing.length ? failing.join(", ") : "(no test names parsed)"}${redLines.length ? ` | ${redLines.slice(0, 3).join(" | ")}` : ""}`);
+    let b;
+    if (step.name === "suite" && !failing.length) {
+      b = { culprit: null, stop: "no failing test name could be read from the suite output, so no merge can be matched to it" };
+    } else if (step.name === "suite") {
+      b = await mg.bisectBySet(list, failing, async (c) => {
+        checkout(dir, c.sha);
+        const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
+        if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
+        const failed = mg.failingTests(x.text, testSources(dir));
+        const hit = mg.setHits(failing, failed);
+        log(root, `  bisect ${c.sha.slice(0, 8)} ${hit.length ? `red (${hit.slice(0, 3).join(", ")})` : x.code === 0 ? "green" : `green for the set (exit ${x.code}, other failures: ${failed.slice(0, 3).join(", ") || "none parsed"})`} (${c.subject.slice(0, 60)})`);
+        return failed;
+      }, { head });
+    } else {
+      b = await mg.bisect(list, async (c) => {
+        checkout(dir, c.sha);
+        const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
+        if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
+        log(root, `  bisect ${c.sha.slice(0, 8)} ${x.code === 0 ? "green" : "red"} (${c.subject.slice(0, 60)})`);
+        return x.code !== 0;
+      });
+    }
     checkout(dir, head);
-    const refusal = mg.revertRefusal(b.culprit, readState(root), { step: step.name });
+    const refusal = b.stop ?? mg.revertRefusal(b.culprit, readState(root), { step: step.name });
     if (refusal) {
       log(root, `${head.slice(0, 8)} ${step.name} red, no revert: ${refusal}`);
       if (mg.fixCardInstead(b.culprit, step.name)) openFixCard(root, dir, b.culprit, step.name, what, r.log);
-      mark(root, dir, head, "red", { step: step.name, what });
-      writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), note: refusal } });
+      mark(root, dir, head, "red", { step: step.name, what, note: b.stop ? refusal : "" });
+      writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), note: refusal, failing, failLines: redLines } });
       return;
     }
     await revert(root, dir, b.culprit, what, r.log);
     mark(root, dir, head, "red", { step: step.name, what });
-    writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), culprit: mg.prOfMerge(b.culprit.subject) } });
+    writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), culprit: mg.prOfMerge(b.culprit.subject), failing, failLines: redLines } });
     return;
   }
   mark(root, dir, head, "green");

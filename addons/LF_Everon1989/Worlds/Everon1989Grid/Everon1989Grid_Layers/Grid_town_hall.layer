@@ -1,0 +1,142 @@
+// Grid cell c11r2 for town-hall: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_town_hall_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 155 0 47
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 159.857 0 47
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 164.714 0 47
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 169.571 0 47
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 174.429 0 47
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 179.286 0 47
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 184.143 0 47
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 47
+ angleY 270
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 51.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 55.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 60.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 64.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 184.143 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 179.286 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 174.429 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 169.571 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 164.714 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_19 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 159.857 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_20 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 155 0 69
+ angleY 90
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_21 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 155 0 64.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_town_hall_Fence_22 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 155 0 60.2
+ angleY 90
+}
+GenericEntity Grid_town_hall_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:town-hall"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 154.2 0.505 47.6
+ angleY -90
+}
+GenericEntity Grid_town_hall_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "town-hall"
+  }
+ }
+ coords 154.3 0 51.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity TownHall : "{E3997010AC16F846}Prefabs/Buildings/TownHall/TownHall.et" {
+ coords 172.358 0 58.558
+ angleY 180
+}
+LF_NpcBaseEntity TownHall_Clerk : "{446165FE77D592AC}Prefabs/Characters/Npcs/Outfits/LF_Npc_Clerk_1.et" {
+ coords 164.008 0.2 55.458
+ angleY 180
+}
+GenericEntity TownHall_Board : "{EE587A113AF85FC5}Prefabs/Props/Signs/LF_TownBoard.et" {
+ components {
+  LF_SignComponent "{CB0DD0E500C1A1EE}" {
+   m_sSignId "town_map"
+  }
+ }
+ coords 174.058 0.2 53.258
+ angleY 90
+}
+GenericEntity TownHall_Registry_Sign : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
+ components {
+  LF_SignComponent "{C8DC6C24E38F2C19}" {
+   m_sSignId "registry"
+   m_vRimColor 0.08 0.18 0.42
+   m_vPaintColor 0.95 0.93 0.86
+   m_vTextColor 0.08 0.18 0.42
+  }
+ }
+ coords 177.558 0 48.958
+ angleY 180
+}
+GenericEntity TownHall_ArrivalPoint {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "ArrivalSpawn"
+   m_sId "town-hall"
+  }
+ }
+ coords 172.358 0.2 52.958
+}

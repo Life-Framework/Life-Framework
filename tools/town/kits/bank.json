@@ -1,0 +1,255 @@
+{
+  "schema": 1,
+  "kit": "bank",
+  "system": "bank",
+  "source": {
+    "file": "addons/LF_Everon1989/Prefabs/Buildings/Bank/Bank_Kit.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local",
+    "also": [
+      "addons/LF_Everon1989/Prefabs/Buildings/Bank/Bank.et"
+    ]
+  },
+  "scope": "building",
+  "building": {
+    "mode": "override",
+    "via": "{F550115D39FD56BA}Prefabs/Buildings/Bank/Bank.et",
+    "vanilla": "{74CBD673D67C58FF}Prefabs/Structures/Industrial/Houses/Office_E_01/Office_E_01_base.et"
+  },
+  "store": {
+    "prefab": "{D59DAC3BC0F482D9}Prefabs/Buildings/Bank/Bank_Kit.et",
+    "config": []
+  },
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      },
+      {
+        "id": "f1",
+        "y": 3
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        0,
+        0
+      ],
+      "max": [
+        9.95,
+        4.4
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "bank-furniture-01",
+      "prefab": "{054FFEA0FE082CAE}Prefabs/Buildings/Bank/Furniture/Bank_furniture_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "from": "Bank.et",
+      "wall": "-x",
+      "floor": "all"
+    },
+    {
+      "id": "ladder-office-e-01-317-b",
+      "prefab": "{C6D39474528BDB97}Prefabs/Structures/BuildingParts/Ladders/Ladder_Office_E_01_317_B.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        0,
+        -0.23,
+        0
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "from": "Bank.et",
+      "config": [
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts"
+          ]
+        },
+        {
+          "component": "Hierarchy",
+          "set": {
+            "PivotID": "\"socket_ladder_02\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "ladder-metal-900-b",
+      "prefab": "{CCBFEA66D534BC9C}Prefabs/Structures/BuildingParts/Ladders/Ladder_Metal_900_B.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "from": "Bank.et",
+      "config": [
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts"
+          ]
+        },
+        {
+          "component": "Hierarchy",
+          "set": {
+            "PivotID": "\"socket_ladder_01\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "lf-bank-vault",
+      "prefab": "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        9.95,
+        0.007,
+        4.4
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_BankVaultComponent",
+          "set": {
+            "m_sVaultId": "\"bank_vault\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "lf-bank-vault-small-roof",
+      "prefab": "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay/BankVault/LF_BankVault_SmallRoof.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        9.85,
+        2.907,
+        4.056
+      ],
+      "yaw": 0,
+      "scale": 1.2,
+      "wall": "+x",
+      "floor": "f1"
+    },
+    {
+      "id": "lf-money-bag",
+      "prefab": "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        9.95,
+        0.497,
+        2.41
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_PlaceComponent",
+          "set": {
+            "m_sKind": "\"BankBag\"",
+            "m_sId": "\"bank_vault\""
+          },
+          "blocks": []
+        }
+      ],
+      "children": [
+        {
+          "prefab": "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et",
+          "offset": [
+            0,
+            0.15,
+            0
+          ],
+          "yaw": 0
+        }
+      ],
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "electricity-box-small-01",
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "role": "alarm",
+      "verb": "against wall",
+      "offset": [
+        -0.4,
+        3,
+        7.42
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_AlarmMountComponent",
+          "set": {
+            "m_vOffset": "0 0.167 0.065",
+            "m_fReach": "12"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f1"
+    },
+    {
+      "id": "lf-sign-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -3,
+        4.1,
+        7.5
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"bank\"",
+            "m_vRimColor": "0.85 0.68 0.3",
+            "m_vPaintColor": "0.42 0.07 0.07",
+            "m_vTextColor": "0.92 0.78 0.42"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f1"
+    }
+  ]
+}

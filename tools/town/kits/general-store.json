@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "kit": "general-store",
+  "system": "store",
+  "source": {
+    "file": "addons/LF_Everon1989/Prefabs/Buildings/GeneralStore/GeneralStore.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local",
+    "also": [
+      "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Shops.layer"
+    ]
+  },
+  "scope": "building",
+  "building": {
+    "mode": "override",
+    "via": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et",
+    "vanilla": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et"
+  },
+  "store": {
+    "prefab": "{5ED335114B9E795B}Prefabs/Buildings/GeneralStore/GeneralStore.et",
+    "config": [
+      {
+        "component": "MeshObject",
+        "set": {},
+        "blocks": [
+          "Materials"
+        ]
+      }
+    ]
+  },
+  "anchoring": {
+    "floorY": 0.194,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.194
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -0.05,
+        -1.254
+      ],
+      "max": [
+        2.07,
+        0
+      ]
+    },
+    "front": "-x",
+    "counters": [
+      {
+        "id": "general-store-till",
+        "wall": "+x",
+        "edgeGap": 0.022
+      }
+    ],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "general-store-furniture-01",
+      "prefab": "{5E0CC4C3522C8E2B}Prefabs/Buildings/GeneralStore/Furniture/GeneralStore_furniture_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "+z",
+      "floor": "all"
+    },
+    {
+      "id": "lf-sign-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -0.05,
+        1.432,
+        -0.164
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "MeshObject",
+          "set": {},
+          "blocks": [
+            "Materials"
+          ]
+        },
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"general_store\"",
+            "m_vRimColor": "0.9 0.82 0.55",
+            "m_vPaintColor": "0.1 0.28 0.17",
+            "m_vTextColor": "0.96 0.93 0.82"
+          },
+          "blocks": []
+        },
+        {
+          "component": "Hierarchy",
+          "set": {
+            "PivotID": "\"socket_win_420x275_01\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "general-store-till",
+      "name": "Shop_GeneralStore_Till",
+      "prefab": "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et",
+      "role": "till",
+      "verb": "against wall",
+      "offset": [
+        2.048,
+        1.238,
+        -0.303
+      ],
+      "yaw": 0,
+      "from": "Shops.layer",
+      "config": [
+        {
+          "component": "LF_PlaceComponent",
+          "set": {
+            "m_sKind": "\"FilmTill\"",
+            "m_sId": "\"street\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ],
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "general-store-radio",
+      "name": "Shop_GeneralStore_Radio",
+      "prefab": "{6E621E4B599F06FD}Prefabs/Atmosphere/LF_Radio_Store.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        1.053,
+        1.237,
+        -0.629
+      ],
+      "yaw": 0,
+      "from": "Shops.layer",
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "clerk",
+      "name": "Shop_Clerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        2.07,
+        0.194,
+        -1.254
+      ],
+      "yaw": 0,
+      "class": "LF_NpcBaseEntity",
+      "from": "Shops.layer",
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "general-store-alarm-box",
+      "name": "Shop_GeneralStore_AlarmBox",
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "role": "alarm",
+      "verb": "against wall",
+      "offset": [
+        -0.7,
+        2.6,
+        7.65
+      ],
+      "yaw": 0,
+      "from": "Shops.layer",
+      "config": [
+        {
+          "component": "LF_AlarmMountComponent",
+          "set": {
+            "m_vOffset": "0 0.167 0.065",
+            "m_fReach": "10"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0"
+    }
+  ]
+}

@@ -10,6 +10,9 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
   LF_NpcRoleComponent "{7A31C05E94D2B861}" {
    m_sRole "townsfolk"
   }
+  LF_DialogueComponent "{3759E48D9BEE51BC}" {
+   m_sDialogueId "old_man"
+  }
   LF_PlaceComponent "{F42C6DF2C1A31EA2}" {
    m_sKind "Townsfolk"
    m_sId "old_man"
@@ -28,6 +31,27 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
     LoadoutSlotInfo Hat {
      Enabled 1
      Prefab "{6FEB0D9130EC400E}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_lightgrey.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{13A3376659FE82C8}" {
+     ContextName "Talk"
+     Position PointInfo "{9F0D17F2E9DAA2C2}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{057E1E2F37BD4E7B}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{10B415322A0C6FAB}" {
+      Name "#LF-NpcTalk_Action"
+     }
     }
    }
   }

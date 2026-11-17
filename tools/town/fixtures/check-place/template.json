@@ -1,0 +1,60 @@
+{
+ "schema": 1,
+ "kind": "town",
+ "about": "Fixture template for island-zones-selftest: tooling data, no coordinates or place names.",
+ "slots": [
+  {
+   "id": "arrival",
+   "required": true,
+   "kit": "fit-kit",
+   "host": "building",
+   "needs": {
+    "interior": "required"
+   },
+   "places": [
+    "Spawn",
+    "Clerk"
+   ],
+   "poi": "none"
+  },
+  {
+   "id": "shop",
+   "required": true,
+   "kit": "fit-kit",
+   "host": "building",
+   "needs": {
+    "interior": "required"
+   },
+   "places": [
+    "StoreCounter"
+   ],
+   "poi": "StoreCounter"
+  },
+  {
+   "id": "board",
+   "required": true,
+   "kit": "fit-kit",
+   "host": "street",
+   "needs": {
+    "interior": "optional"
+   },
+   "places": [
+    "TownBoard"
+   ],
+   "poi": "none"
+  },
+  {
+   "id": "parcel",
+   "required": false,
+   "kit": "fit-kit",
+   "host": "building",
+   "needs": {
+    "interior": "optional"
+   },
+   "places": [
+    "ParcelDepot"
+   ],
+   "poi": "none"
+  }
+ ]
+}

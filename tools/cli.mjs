@@ -38,6 +38,7 @@
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
+import { areaConcurrency } from "./lib/validate-concurrency.mjs";
 import "./lib/quiet-gate.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -70,6 +71,8 @@ import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
+import { cliInDesktopSession, desktopSessionOrSay, needsDesktopSession } from "./remote/desktop/in-session.mjs";
+import { needsDesktopRerun } from "./lib/gpu-session.mjs";
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
@@ -94,6 +97,7 @@ import { trimProcs } from "./lib/ws-trim.mjs";
 import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
 import { helpRequest, usageText } from "./lib/help-guard.mjs";
 import { checkBudgetMs, createWatchdog } from "./lib/check-budget.mjs";
+import { silentFailureNote } from "./lib/silent-failure.mjs";
 import { killTreeSync, pidAlive as wbPidAlive, waitUntilDone } from "./lib/wb-until.mjs";
 import { findFreezeDump, stallReason, steamSignedIn } from "./lib/wb-launch-health.mjs";
 
@@ -649,8 +653,9 @@ function toolEnv() {
 const FULL_ONLY = new Set(["validate-scripts.ps1"]);
 
 // Checks are independent read-only scripts, so they run concurrently (most of
-// their time is PowerShell start-up). Output is printed in file order.
-const AREA_CONCURRENCY = Math.max(8, Math.min(12, os.cpus().length));
+// their time is PowerShell start-up), fewer at once when free RAM is short (tools/lib/validate-concurrency.mjs).
+// Output is printed in file order.
+const AREA_CONCURRENCY = areaConcurrency(os.cpus().length, Math.round(os.freemem() / 1048576));
 
 function invokeScriptAsync(full, opts = {}) {
   let cmd = process.execPath;
@@ -673,7 +678,7 @@ function invokeScriptAsync(full, opts = {}) {
     child.stdout.on("data", (d) => { stdout += d; });
     child.stderr.on("data", (d) => { stderr += d; });
     child.on("error", (e) => done({ status: 1, stdout, stderr: stderr + `failed to spawn ${cmd}: ${e.message}` }));
-    child.on("close", (code) => done({ status: code ?? 1, stdout, stderr }));
+    child.on("close", (code, signal) => done({ status: code ?? 1, signal, stdout, stderr }));
     // kill(why): end the check and its children now and settle with a failure (the budget ran out).
     // Settles without waiting for `close`: a grandchild holding the pipes open must not hold the run.
     onSpawn?.({
@@ -779,6 +784,9 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     const ok = res.status === 0;
     const warnOnly = !ok && area === "validate" && worldChecks.judgeChecks([{ s: job.s, status: res.status }], { demote }).warned.length > 0;
     console.log(`${ok ? "PASS" : warnOnly ? "WARN" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})${warnOnly ? " layout check on the town (hand-edited): a warning, never blocking" : ""}`);
+    // A failing check that printed nothing says how it ended (tools/lib/silent-failure.mjs).
+    const silent = !warnOnly ? silentFailureNote(job.s, res) : "";
+    if (silent) console.log(silent);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok && !warnOnly) failed++;
@@ -1632,10 +1640,64 @@ async function runWorkbenchPluginUntil(root, plugin, pluginArgs, { timeoutMs, lo
 
 // tools/cli ui-image <svg|png> <name>: see tools/ui-image/ui-image.mjs and
 // docs/research/ui-illustration-pipeline.md.
+// ui-image --batch <list.txt>: rebuild every listed .tif (repo-relative, one per line, next to a
+// .edds.meta already written) in ONE headless Workbench boot. The map icon set uses it
+// (tools/map/icons/build-icons.mjs writes tmp/map/icons-batch.txt). Needs a Workbench machine.
+async function cmdUiImageBatch(flags) {
+  const root = ROOT;
+  const list = flags[flags.indexOf("--batch") + 1];
+  if (!list || list.startsWith("--") || !existsSync(resolve(root, list))) { console.log("usage: tools\\cli ui-image --batch <list.txt>  (repo-relative .tif paths, one per line)"); return 2; }
+  if (wt.isMainCheckout(root)) { console.log("FAIL  ui-image runs only in a worktree"); return 1; }
+  const tifs = readFileSync(resolve(root, list), "utf8").split(/\r?\n/).map((l) => l.trim()).filter(Boolean).map((p) => resolve(root, p));
+  const missing = tifs.filter((t) => !existsSync(t) || !existsSync(t.replace(/\.tif$/i, ".edds.meta")));
+  if (!tifs.length || missing.length) { console.log("FAIL  batch list is empty or lacks a .tif/.edds.meta: " + missing.join(", ")); return 1; }
+  const ui = await import("./ui-image/ui-image.mjs");
+  const polUi = wbRoute.localWorkbench(root);
+  if (!polUi.allowed) { console.log(`FAIL  ${wbRoute.refusalText("ui-image import", polUi.host)}`); return 1; }
+  const exe = workbenchExe();
+  if (!existsSync(exe)) { console.log("FAIL  Workbench not found: " + exe); return 1; }
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: 900000 });
+    locked = true;
+    const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+    const profile = join(root, "server", "profile", "rdb");
+    mkdirSync(profile, { recursive: true });
+    const logFile = join(root, "tmp", "ui-image-batch.log");
+    mkdirSync(join(root, "tmp"), { recursive: true });
+    const started = Date.now();
+    ui.installPlugin(root);
+    // A headless boot builds only the first texture that has no .edds yet (measured 2026-11-17: the
+    // rest of a RebuildResourceFiles list is dropped until they are registered), so boot again for
+    // what is still missing; each boot is ~12 s. Stops when a boot builds nothing.
+    const eddsOf = (t) => t.replace(/\.tif$/i, ".edds");
+    let boots = 0;
+    for (let pending = tifs.filter((t) => !existsSync(eddsOf(t))); pending.length && boots <= tifs.length; pending = tifs.filter((t) => !existsSync(eddsOf(t)))) {
+      const before = pending.length;
+      boots++;
+      quietSpawnSync(exe, [
+        "-gproj", join(root, "addons", "LifeFramework", "LifeFramework.gproj"),
+        "-wbModule=ResourceManager", "-noSplash", "-run", "-exitAfterInit",
+        "-plugin=LF_ImageImportPlugin", "-lfImage=" + pending.join("|"),
+        "-profile", profile,
+        ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
+      ], { cwd: gameDir, timeoutMs: Number(process.env.LF_UI_IMAGE_TIMEOUT_S || 150) * 1000, stdout: logFile, stderr: logFile });
+      if (tifs.filter((t) => !existsSync(eddsOf(t))).length >= before) break;
+    }
+    const secs = ((Date.now() - started) / 1000).toFixed(0);
+    const bad = tifs.filter((t) => !existsSync(eddsOf(t)));
+    console.log(`SUMMARY ui-image batch ${bad.length ? "fail" : "ok"} textures=${tifs.length} built=${tifs.length - bad.length} boots=${boots} secs=${secs} log=${logFile}${bad.length ? " missing=" + bad.map((b) => b.replace(root, "")).join(",") : ""}`);
+    return bad.length ? 1 : 0;
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
+}
+
 async function cmdUiImage(flags) {
   const root = ROOT;
   const pos = (flags ?? []).filter((f, i, a) => !f.startsWith("--") && a[i - 1] !== "--size");
   const [src, name] = pos;
+  if ((flags ?? []).includes("--batch")) return cmdUiImageBatch(flags);
   const sizeIdx = (flags ?? []).indexOf("--size");
   const size = sizeIdx >= 0 ? Number(flags[sizeIdx + 1]) : 0;
   if (!src || !name || !/^[A-Za-z0-9_]+$/.test(name)) {
@@ -2611,7 +2673,7 @@ function cmdSessionUp(root, dir, flags) {
   let lane = null;
   try {
     if (flags.includes("--wait")) console.log(`session: the session lane is held by ${holderOf()}; queued (up to ${SESSION_QUEUE_MIN} min)`);
-    lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root, clients, profile: rp.profile }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
+    lane = pool.acquireSessionLaneSync(root, { waitMs: flags.includes("--wait") ? SESSION_QUEUE_MIN * 60000 : 0, meta: { slug: wt.slugOfRoot(root) ?? undefined, purpose: "session", root, clients, profile: rp.profile, world: mission }, priority: priorityFlag(flags), callerPids: [process.ppid, Number(process.env.LF_CALLER_PID)].filter((p) => Number.isInteger(p) && p > 0) });
   } catch (e) {
     if (e.refusal) {
       console.log(`FAIL  ${e.message}`);
@@ -3188,6 +3250,14 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     }
     console.log("test: " + onlyFlag + " " + only.join(","));
   }
+  if (!exact && only.length) {
+    // An unknown name must stop the run: it would otherwise run the whole suite or nothing (#2276).
+    const sel = testWorld.splitSelection({ only, names: testWorld.testNames(root), tiers: testWorld.testTiers(root), registry: shards.readRegistry(root), pack: testWorld.readPackTests(root) });
+    if (sel.unknown.length) {
+      console.log(`FAIL  test: ${onlyFlag} names no test: ${sel.unknown.join(", ")} (a LF_Test_ class, its GetName() or its file; pack tests are LF_Test_Everon*)`);
+      return 2;
+    }
+  }
   guardHeavy(root, "test", opts.force);
   // A LOGIC-only selection boots the minimal world (tools/lib/test-world.mjs). It is decided here,
   // before the pass cache key, so a TestLogic pass is never reused for a DebugWorld request.
@@ -3340,7 +3410,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
   let slot;
   const inShardGroup = !!process.env.LF_SHARD_GROUP;
   try {
-    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority, budget: opts.budget, waitMs: opts.waitMs });
+    slot = await pool.acquireSlot(root, { ...poolMode(root, opts), purpose, priority: opts.priority, budget: opts.budget, world: opts.world, bootBudget: opts.bootBudget, waitMs: opts.waitMs });
   } catch (e) {
     // A slice that only tried remote lanes for a short while: ask again with this PC allowed.
     if (inShardGroup && opts.waitMs) return { shardWait: "local" };
@@ -3363,7 +3433,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     rdbForSlot(root, slot);
     if (!slot.local) {
       // --no-cache: the box runs what it was sent; this side owns the cache.
-      const args = ["test", "--no-build", "--local", "--no-cache", "--tier", tier, ...(only.length ? [red ? "--red" : exact ? "--only-classes" : "--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : [])];
+      const args = ["test", "--no-build", "--local", "--no-cache", "--tier", tier, ...(only.length ? [red ? "--red" : exact ? "--only-classes" : "--only", only.join(",")] : []), ...(opts.world ? ["--world", opts.world] : []), ...(opts.coreOnly ? ["--core-only"] : []), ...(slot.budgetS ? ["--budget", String(slot.budgetS)] : []), ...(slot.bootS && opts.world ? ["--boot-budget", String(slot.bootS)] : [])];
       // The placement audit (agent-box/place-audit.mjs) hands its input list in through
       // LF_PLACE_AUDIT_IN and reads out.txt from the test profile: both travel with a remote run.
       const auditIn = process.env.LF_PLACE_AUDIT_IN;
@@ -3391,6 +3461,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     if (tookLocal) shards.dropLocal(root);
     slot.release();
     if (cacheKey) extra.cacheKey = cacheKey.slice(0, 16);
+    if (opts.world) extra.world = opts.world;
     if (!slot.inherited) pool.recordRun(root, slot, { purpose, code, extra });
   }
 }
@@ -3433,6 +3504,7 @@ function shardPassThrough(opts) {
   if (opts.any) out.push("--any");
   if (opts.priority) out.push("--priority", opts.priority);
   if (opts.budget) out.push("--budget", String(opts.budget));
+  if (opts.bootBudget) out.push("--boot-budget", String(opts.bootBudget));
   if (opts.force) out.push("--force");
   return out;
 }
@@ -3555,6 +3627,11 @@ function stampMergedSuite(root, tier, m) {
 // --local / --remote [name] / --machine <name|any> / --any (default).
 // LF_TESTBOX_AUTO=0 keeps the default on this machine.
 function poolMode(root, opts) {
+  const m = poolModeBase(root, opts);
+  return m.mode === "any" && opts.preferLocal ? { ...m, preferLocal: true } : m;
+}
+
+function poolModeBase(root, opts) {
   if (opts.local) return { mode: "local" };
   if (opts.machine) return opts.machine === "any" ? { mode: "any" } : { mode: "any", machine: opts.machine };
   if (opts.remote !== undefined) return opts.remote ? { mode: "remote", machine: opts.remote } : { mode: "remote" };
@@ -3620,7 +3697,7 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
 function sourceTests(root) {
   const dir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
   return () => {
-    try { return readdirSync(dir).filter((f) => /^LF_Test_w+.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(dir, f), "utf8") })); } catch { return []; }
+    try { return readdirSync(dir).filter((f) => /^LF_Test_\w+\.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(dir, f), "utf8") })); } catch { return []; }
   };
 }
 
@@ -3870,6 +3947,7 @@ async function ciWorkbench(root, opts = {}) {
 // (tools/remote/desktop/run-interactive.ps1); its transcript and exit code come back through files.
 // No one signed in, or no exit code: 3, so the caller runs the steps on its own machine.
 function ciWorkbenchInSession(root, stepFlags = []) {
+  if (!desktopSessionOrSay()) return 3;
   const dir = join(root, "tmp", "wb-session");
   mkdirSync(dir, { recursive: true });
   const [log, codeFile, ps1, pidFile] = ["ci.log", "ci.code", "ci.ps1", "ci.pid"].map((n) => join(dir, n));
@@ -4146,6 +4224,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 --old-build stamps boot 1's save as game build 1.8.0.13 (#980);
                                 --content-ids runs the three-boot stable-id proof instead (#965);
                                 --cash-swap runs the two-boot cash slot swap proof (#1130)
+  --boot-budget <s>             boot budget for a test run (default: 30 s for DebugWorld, 150 s or more for a big --world such as CoreOnEveron)
   --budget <s>                  run-time budget for a known-long test/e2e run (default: learned from the pool's history)
   --priority high|normal|low    on test, e2e, dev, ci, session up, wt gate/ship: queue order in the pool
                                 (default normal; LF_PRIORITY or 'wt new --priority' set a worktree default)
@@ -4184,16 +4263,18 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   asset new <slug> --kind weapon|gadget|deployable --prompt "..." | run <slug> [--from s] [--only s] [--force] | status | doctor | selftest
                                 roadmap item to asset: Meshy generation (paid, capped per asset), headless Blender clean-up,
                                 Workbench import, prefab scaffold; resumable per stage in tmp/assets/<slug>/ (docs/asset-pipeline/README.md)
-  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] [--serve|--fresh] | item <prefab|slug> [--states ground,inventory] | selftest
+  look <area | x,z | all | place:<place>/<slot>> [--world island] [--interior auto] [--edit] [--close N] [--hour h] [--measure] [--wait] [--serve|--fresh] | item <prefab|slug> [--states ground,inventory] | selftest
                                 area pictures with no session: a hidden Workbench plays DebugWorld, shoots a wide,
                                 three obliques, a top view and close-ups, and writes tmp/look/<area>/contact.jpg
-                                (about 20 s; a few seconds through a live look server; docs/visual-testing.md)
+                                (about 20 s; a few seconds through a live look server; docs/visual-testing.md);
+                                place:<place>/<slot> shoots a fitted town slot on the island (MainWorld, about 2-4 min)
   look serve [--status | --stop [--remove]]
                                 one Workbench for every worktree's looks, on the Life-Framework-look-viewer checkout;
                                 each look is served from a snapshot of the caller's worktree, stops after 10 min idle
   logs <pattern> [--before N] [--after N] [--limit N] [--tail] [--scope test|serve|build|workbench]
                                 grep the newest server console.log (default after=3 limit=8)
   perf [--log <file>] [test flags]   run the 128-character cost benchmark (LF_Test_PerfBudget), print the report vs Configs/Perf/LF_PerfBudget.conf; exit 1 over budget
+  perf building <slug|prefab.et> [--size small|medium|large] [--json]   count a fitted building's entities, lights and shadow casters against the building budget (docs/architecture/performance.md)
   suite-stamp <tier>            print the newest tmp/test-results/summaries.jsonl line for a tier
   suite-valid <sha>             exit 0 when every file since <sha> is localization, the generated
                                 test registry, or docs/features.md; exit 1 for gameplay, a
@@ -4263,12 +4344,18 @@ function pinFlags(list) {
 }
 
 function remoteFlags(list) {
-  const out = { local: list.includes("--local"), any: list.includes("--any"), priority: priorityFlag(list) };
+  const out = { local: list.includes("--local"), any: list.includes("--any"), preferLocal: list.includes("--prefer-local"), priority: priorityFlag(list) };
   const b = argValue(list, "--budget");
   if (b !== null) {
     const n = Number(b);
     if (!(n > 0)) throw new Error(`--budget must be a number of seconds (got '${b}')`);
     out.budget = n;
+  }
+  const bb = argValue(list, "--boot-budget");
+  if (bb !== null) {
+    const n = Number(bb);
+    if (!(n > 0)) throw new Error(`--boot-budget must be a number of seconds (got '${bb}')`);
+    out.bootBudget = n;
   }
   if (list.includes("--remote")) {
     const v = argValue(list, "--remote");
@@ -4421,7 +4508,7 @@ function wtHelpFull() {
   tools\\cli wt sync-base <base> [--source main]
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
-  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local] [--wait] [--no-preflight]
+  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--draft] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local] [--wait] [--no-preflight]
                                        clean-tree and PR-body checks, preflight (merge-tree conflicts, validate of changed
                                        inputs) -> push -> PR (auto-merge off) -> ship queue: merge origin/<base> once,
                                        ci --remote on a pool machine, push, auto-merge (docs/worktrees.md "Async ship").
@@ -4440,6 +4527,7 @@ flags:
   --base B     branch to cut from and ship to (default main; 'wt new' records it for 'wt ship')
   --wait       queue behind the build/worktree lock instead of failing fast
   --pr-only    open the PR but leave it for review (no auto-merge)
+--draft      body checks, preflight and push, then a draft PR; auto-merge is never requested
   --refs N     start the PR body with 'Refs #N' (N >= 1; leave it out when there is no issue); --closes N is the same. Merging never closes an issue:
                it moves to in-dev / needs-playtest and 'promote --confirm' verifies and closes it
   --body-file F  PR body from F (e.g. tmp/pr-body.md in the worktree; end it with the attribution line)
@@ -5115,6 +5203,7 @@ async function wtSyncBaseCmd(args) {
 }
 
 async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody }) {
+  const draft = flags.includes("--draft"); // a draft PR, auto-merge never requested
   const { shipDirect } = await import("./lib/ship-direct.mjs");
   const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
   const body = refsBody(customBody ?? [`Automated ship from worktree \`${slug}\`.`, "", "## Commits", ...subjects.map((x) => `- ${x}`)].join("\n"), closes);
@@ -5129,14 +5218,15 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
     validate: () => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1,
     push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
     findPr: () => wt.findOpenPrGh(wtRoot, e.branch),
-    createPr: () => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base }),
+    createPr: (o) => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base, draft: o?.draft === true }),
     autoMerge: (n) => gh(["pr", "merge", String(n), "--auto", "--merge"]),
     mergeState: (n) => String(gh(["pr", "view", String(n), "--json", "mergeStateStatus", "-q", ".mergeStateStatus"]).stdout ?? "").trim(),
-  }, { base, slug, preflight: !flags.includes("--no-preflight") });
+  }, { base, slug, preflight: !flags.includes("--no-preflight"), draft });
   const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
-  console.log(`SUMMARY ship ${r.code === 0 ? "ok" : "fail"} ${slug}${r.pr ? ` PR #${r.pr.number}` : ""} auto-merge ${r.code === 0 ? "on" : "off"}`);
+  console.log(`SUMMARY ship ${r.code === 0 ? "ok" : "fail"} ${slug}${r.pr ? ` PR #${r.pr.number}` : ""} auto-merge ${r.code === 0 && !draft ? "on" : "off"}${draft ? " (draft)" : ""}`);
   if (r.pr) console.log(`PR ${r.pr.url}, head ${head}`);
-  if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
+  if (r.code === 0 && draft) console.log(`ship: draft PR left open for review. Prune after it merges: 'cli wt prune ${slug}'`);
+  else if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
   return r.code;
 }
 
@@ -5144,7 +5234,8 @@ async function wtShipCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
   const flags = args.slice(1);
-  const prOnly = flags.includes("--pr-only");
+  const draft = flags.includes("--draft"); // draft PR, never auto-merged (also on the --gate and no-gh paths)
+  const prOnly = flags.includes("--pr-only") || draft;
   const skipGate = flags.includes("--skip-gate");
   const skipSync = flags.includes("--skip-sync");
   let closes = null;
@@ -5207,6 +5298,30 @@ async function wtShipCmd(args) {
       reviewText,
       hasBodyFile: customBody !== null,
     });
+    {
+      // A building PR must pass `building check` (no floating props, offline): tools/lib/pr-quality.mjs buildingCheckProblems.
+      const { buildingCheckProblems } = await import("./lib/pr-quality.mjs");
+      const specs = [];
+      const bdir = join(wtRoot, "tools", "buildings");
+      if (existsSync(bdir)) {
+        for (const d of readdirSync(bdir)) {
+          try {
+            const s = JSON.parse(readFileSync(join(bdir, d, "spec.json"), "utf8"));
+            if (s.prefab_dir) specs.push({ slug: s.slug ?? d, addon: s.addon, prefab_dir: s.prefab_dir });
+          } catch {}
+        }
+      }
+      problems.push(
+        ...buildingCheckProblems({
+          files: changed,
+          specs,
+          run: (slug) => {
+            const res = spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "building", "check", slug], { cwd: wtRoot, encoding: "utf8", timeout: 180000, windowsHide: true });
+            return { code: res.status ?? 2, out: `${res.stdout ?? ""}${res.stderr ?? ""}` };
+          },
+        }),
+      );
+    }
     if (problems.length) {
       console.log("FAIL  the PR is not ready to ship:");
       for (const p of problems) console.log(`  - ${p}`);
@@ -5220,7 +5335,7 @@ async function wtShipCmd(args) {
   // No pre-merge gate (maintainer decision 2026-11-15): preflight, push, PR, auto-merge on. GitHub's validate
   // check gates the merge; the main guard checks main after it (docs/worktrees.md "Ship"). The ship queue
   // (tools/ship-queue.mjs) is retired from the flow; --gate runs the old local gate before the push.
-  if (!prOnly && !flags.includes("--gate") && wt.ghAvailable()) return shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody });
+  if (!flags.includes("--pr-only") && !flags.includes("--gate") && wt.ghAvailable()) return shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody });
   // Merge main only when it conflicts. A clean branch goes up as is: the PR's
   // validate check and auto-merge cover the combination with main.
   if (!skipSync) {
@@ -5279,7 +5394,7 @@ async function wtShipCmd(args) {
     if (wt.ghAvailable()) {
       pr = wt.findOpenPrGh(wtRoot, e.branch);
       if (pr) console.log(`ship: PR already open, pushed ${head.slice(0, 7)} to it`);
-      else pr = wt.createPrGh(wtRoot, { head: e.branch, title, body, base });
+      else pr = wt.createPrGh(wtRoot, { head: e.branch, title, body, base, draft });
     } else {
       const token = process.env.GITHUB_TOKEN;
       if (!token) {
@@ -5294,7 +5409,7 @@ async function wtShipCmd(args) {
   }
   console.log(`PR: ${pr.url}`);
   if (prOnly) {
-    console.log("ship: PR left open for review (--pr-only)");
+    console.log(draft ? "ship: draft PR left open for review (--draft)" : "ship: PR left open for review (--pr-only)");
     console.log(`PR ${pr.url}, head ${head}`);
     return 0;
   }
@@ -5562,6 +5677,10 @@ try {
   const helpReq = helpRequest(cmd, rest);
   if (helpReq) {
     code = printUsage(helpReq);
+  } else if (needsDesktopSession() && needsDesktopRerun([cmd, ...rest])) {
+    // Over ssh (session 0, no display output) a command that starts Workbench in-process runs again in the signed-in
+    // desktop session; with none it stops with one line (tools/lib/gpu-session.mjs).
+    code = cliInDesktopSession(ROOT, [cmd, ...rest], { name: `gpu-${cmd}` });
   } else if (cmd === "mcp") {
     const sub = cmds[a];
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());

@@ -4,10 +4,17 @@
   "addon": "LF_Everon1989",
   "speaker_key": "#LF-Townsfolk_CafeOwner_Name",
   "voice": {
-    "engine": "piper",
-    "id": "en_US-ljspeech-high",
-    "name": "Piper en_US-ljspeech-high",
-    "why": "Odile Marchand, the café owner, is a woman in her fifties who came out of the zone. A calm, even, unhurried voice suits someone who says hard things plainly. Piper ljspeech only (LJ Speech, public domain; lessac and libritts_r are never used)."
+    "id": "1hIScOW98xkqE5ttC10C",
+    "name": "Mariva Viva Muse - Warm and Energetic",
+    "public_owner_id": "157c9fb2dca64bb35f10d679f1285f7682eae13c6edbaa42d414a6dc49ec1477",
+    "why": "Odile Marchand is a woman in her fifties with a light French accent. Mariva is a warm, confident, soft-spoken middle-aged woman with a French accent: it welcomes the newcomer and still says hard things plainly. Settings tuned calm (stability 0.55) so 'energetic' stays out of it.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.55,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 0.95
+    }
   },
   "budget_chars": 1000,
   "hear_range_m": 8,

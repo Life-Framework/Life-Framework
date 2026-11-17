@@ -5,6 +5,7 @@
 // verdict, room inference and the wall a door stands in, and that every committed proof.json parses.
 // red-proof: 2026-11-15, toWorld with the yaw sign flipped -> FAIL toWorld: yaw 90 turns +Z onto +X
 // red-proof: 2026-11-15, walkable needing every lane clear -> FAIL walkable: one clear lane is a doorway
+// red-proof: 2026-11-17, the #2384 hold-then-shot rule switched off -> FAIL scenario: a world shot after a hold is refused (it drops the drill, #2384)
 import { existsSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -40,6 +41,11 @@ ok(logFails(log, [{ last: "alarm sounding at <([^>]+)>", near: [-2.4, 2.3, -7] }
 
 ok(scenarioProblems({ steps: [{ shot: "a" }] }).length === 1, "scenario: a shot without look/from is refused");
 ok(scenarioProblems({ steps: [{ pickup: "Apple", do: { verb: "x" } }] }).length === 1, "scenario: two kinds in one step are refused");
+const shot = (name, extra = {}) => ({ shot: name, look: [0, 1, 0], from: [1, 0, 1], ...extra });
+const holdThenShoot = [{ do: { verb: "hold", item: "LF_Drill" } }, { do: { verb: "stand", entityName: "Door" } }, shot("start"), { do: { verb: "use", className: "LF_BankRobAction" } }];
+ok(scenarioProblems({ steps: holdThenShoot }).some((p) => /after hold LF_Drill/.test(p)), "scenario: a world shot after a hold is refused (it drops the drill, #2384)");
+ok(!scenarioProblems({ steps: [shot("start"), { do: { verb: "hold", item: "LF_Drill" } }, { state: "drilling" }] }).length, "scenario: a shot before the hold is fine");
+ok(!scenarioProblems({ steps: [{ do: { verb: "hold", item: "LF_Drill" } }, { state: "robbed" }, shot("open", { handsFree: "the drill was left at the vault" })] }).length, "scenario: a shot with handsFree after the work is fine");
 for (const slug of readdirSync(join(ROOT, "tools", "buildings")).filter((d) => existsSync(join(ROOT, "tools", "buildings", d, "proof.json")))) {
   const p = scenarioProblems(loadScenario(ROOT, slug));
   ok(!p.length, `tools/buildings/${slug}/proof.json: ${p.join("; ")}`);

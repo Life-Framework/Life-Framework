@@ -11,6 +11,13 @@
   heist target, `LF_Hospital` till and cabinet origin, the hideout door (no
   longer needs an entity name). Tests `places/registry`,
   `places/unnamed-door`.
+- ✅ **Live map states** (2026-11-16, #2208, D14): `LF_MissionHeader.m_aLF_LiveStates` lists the
+  live map states (plain numbers; the pack says what each means) and an `LF_PlaceComponent` has
+  `m_iLiveState` (default -1, always live). A place whose state is not listed does not register in
+  `LF_Places`, so its systems stay dark and players see vanilla terrain, and it logs one
+  `[LFDebug:Places] dark: ...` info line. An empty list, or no `LF_MissionHeader`, makes every
+  state live, so the playtest town and the test worlds are unchanged. Logic in
+  `Core/LF_PlaceLiveState.c`. Test `places/live-state`.
 
 ### `LF_GameModeRoleplay` — `Scripts/Game/Core/LF_GameModeRoleplay.c`
 - ✅ Lazy-creates `LF_CharacterCreationManager`, `LF_ATMManager`,
@@ -59,7 +66,7 @@
 
 ### `LF_RateLimit` — `Core/LF_RateLimit.c` (#693b, 2026-11-12)
 - ✅ Server-side request rate limit, per player and per request kind (`LF_ERequestKind`
-  PURCHASE, TRAVEL, COMMS, SPAWN, INVENTORY): a fixed window admits a small burst
+  PURCHASE, TRAVEL, COMMS, SPAWN, INVENTORY, CRIME, CHESS; chess 6 per 5 s, its own bucket, #2405): a fixed window admits a small burst
   (purchases 4 per 2 s, travel 2 per 10 s, comms 3 per 5 s, spawn or move 4 per 1 s,
   inventory 8 per 1 s; named `// lf-fixed:` constants until the #278 config service lands).
   The first refusal in a window logs `[LFDebug:RateLimit]` Warn and toasts the player
@@ -78,6 +85,9 @@
   sampled per victim/attacker pair every `m_fDamageSampleSeconds`; `OnMoneyMoved`
   with its source; `OnPlayerDowned` as kind `downed`, #255). Bounded by `m_iMaxRecords` and `m_iRetentionHours`, kinds from
   `Configs/Moderation/LF_Incident.conf` (`all` or a list of death, damage, cash, downed).
+  Damage held back inside a sample window is published when the window ends (a 1 s tick) and
+  before the victim's death or downing record, so the end of a short fight is logged (#2414; test
+  `incident/damage-flush`).
   `Query(center, radius, from, to, kind)`. Saved as the `incidents` payload
   (save version 13); never replicated. Logs `[LFDebug:Incident]`. Tests
   `incident/log`, `persist/incident-log-roundtrip`.
@@ -88,7 +98,7 @@
   at both characters, toasts the target, and publishes `LF_OnHoldUp`. The incident log records kind `holdup`
   (actor, target, position, zone). A refusal logs `[LFDebug:HoldUp] hold-up refused` and records nothing.
 - ✅ **Admin actions are logged** (#246, test `incident/admin-action`). `LF_AdminAction` publishes `LF_OnAdminAction` on the server for every Game Master editor action (teleport, heal, spawn, delete, whitelist, kick), the vanilla `#kick` and `#ban` chat commands, and `!wadd` / `!handled`. The incident log records kind `admin`: the admin is the subject, the player acted on the other party, the action name the detail. Shown in the Game Master incident view only (it answers administrators only). No save change (existing record, new kind string).
-- 🔧 **Ban record** (#1285, test `moderation/ban-record`). Every `#ban create` and `#ban remove` (the unban) the backend confirms (held at PENDING, written from `BanCommand.OnUpdate` only on OK), from chat or RCON, appends a `V1|BAN or UNBAN|account uid|unix|staff uid|duration|incident ids|reason` row to `$profile:LifeFramework/ban_record.txt`; the incident ids are the target's newest 10 `LF_IncidentLog` numbers (as either party) the log still keeps. `#banrecord <uid or player id>` (administrators, chat or RCON) lists one account's rows. Legacy and malformed lines are skipped with a warning. Enforcement stays vanilla; the file is append-only and outside the save (no persistence version).
+- 🔧 **Ban record** (#1285, test `moderation/ban-record`). Every `#ban create` and `#ban remove` (the unban) the backend confirms (held at PENDING, written from `BanCommand.OnUpdate` only on OK), from chat or RCON, appends a `V1|BAN or UNBAN|account uid|unix|staff uid|duration|incident ids|reason` row to `$profile:LifeFramework/ban_record.txt`; the incident ids are the newest 10 `LF_IncidentLog` numbers (as either party) the log still keeps under any record key of the account: its uid and each character's key, since incidents are stored by character (#2414; test `moderation/ban-record-characters`). `#banrecord <uid or player id>` (administrators, chat or RCON) lists one account's rows. Legacy and malformed lines are skipped with a warning. Enforcement stays vanilla; the file is append-only and outside the save (no persistence version).
 - ✅ **Aim intent** (#245, test `incident/aim-throttle`). Server only: `LF_AimIntent` ticks every `m_fAimCheckSeconds` (1 s), looks only at characters with a raised weapon, and when one keeps another player within `m_fAimRange` (15 m) and `m_fAimConeDegrees` (6) for `m_fAimWindowSeconds` (3 s) publishes `LF_OnAimedAt`: one incident row (kind `aim`) per pair per window. `m_bAimAloneCounts` 0 also needs a clear line of sight. No rule changes. No save change.
   It changes no damage rule. No save change (the kind is a string).
 - ⚠️ Cash given, robbed, or picked up appear only as `OnMoneyMoved` publish points
@@ -103,9 +113,9 @@
   refusal. Nothing persists. Test `incident/gm-query`. Manual: see the PR.
 
 ### Player report to staff — `Feature/Moderation/LF_IncidentFlags.c` (#241, 2026-11-09)
-- ✅ `/report` in chat flags the reporter's incidents (either party) from the last `m_iReportWindowMinutes` (10) in `LF_Incident.conf`; online admins get a toast; a per-player cooldown `m_iReportCooldownSeconds` (120) refuses spam, and a report with nothing to flag does not start it. Flagged incidents head the Game Master list (sent even outside the camera radius, marker "!!") and persist (`incidentflags` payload, save version 17) until an admin types `!handled <number>` in admin chat, which is logged `[LFDebug:IncidentReport]`. Tests `incident/report`, `persist/incident-flags-roundtrip`.
+- ✅ `/report` in chat flags the reporter's incidents (either party) from the last `m_iReportWindowMinutes` (10) in `LF_Incident.conf`; online admins get a toast; a per-player cooldown `m_iReportCooldownSeconds` (120) refuses spam, and a report with nothing to flag starts it too (#2414; test `incident/report-spam`). Flagged incidents head the Game Master list (sent even outside the camera radius, marker "!!") and persist (`incidentflags` payload, save version 17) until an admin types `!handled <number>` in admin chat, which is logged `[LFDebug:IncidentReport]`. Tests `incident/report`, `persist/incident-flags-roundtrip`.
 - ⚠️ The payphone staff line waits for comms routing.
-- ✅ (2026-11-15, #1284) Staff relay, `Feature/Moderation/LF_StaffRelay.c`: `LF_OnAdminAction` and the new `LF_OnIncidentFlagged` (published by `LF_IncidentFlags.Report` after the rows exist) each send one short line through `LF_StaffWebhook.Send`. Throttled per kind: events collect for 5 s from the first, then one line goes out (its own line for one event, a count for more), so ten flags in a window are one message. Tests `incident/flagged-event`, `moderation/staff-relay` (captured sender). `LF_StaffRelay.Install()` runs from a `modded class LF_GameModeRoleplay.OnGameStart` in the same file (#1284 follow-up): server only, a no-op on a client, safe to call twice, and `LF_StaticReset.ResetAll` calls `Uninstall()` at world end (subscribers and tick). Test `moderation/staff-relay-install`.
+- ✅ (2026-11-15, #1284) Staff relay, `Feature/Moderation/LF_StaffRelay.c`: `LF_OnAdminAction` and the new `LF_OnIncidentFlagged` (published by `LF_IncidentFlags.Report` after the rows exist) each send one short line through `LF_StaffWebhook.Send`. Throttled per kind: events collect for 5 s from the first, then one line goes out (its own line for one event, a count for more), so ten flags in a window are one message. Tests `incident/flagged-event`, `moderation/staff-relay` (captured sender). `LF_StaffRelay.Install()` runs from a `modded class LF_GameModeRoleplay.OnGameStart` in the same file (#1284 follow-up): server only, a no-op on a client, safe to call twice, and `LF_StaticReset.ResetAll` calls `Uninstall()` at world end (subscribers and tick). Test `moderation/staff-relay-install`. (2026-11-17, #2414) The webhook keeps each POST's `RestCallback` in a bounded list until its answer arrives (a local one could be freed before success or error fired), cuts a long line on a UTF-8 character boundary and escapes every control character as JSON requires; test `moderation/webhook-escape`.
 
 ### `LF_SpawnLogic` — `Scripts/Game/Feature/Character/Spawning/LF_SpawnLogic.c`
 - ✅ Account-aware respawn: loads `LF_PlayerAccount`, spawns the active
@@ -168,6 +178,14 @@
   `persist/character-slots`, `e2e/pass*` (`e2e --legacy-save`). ⚠️ The "start a
   new life" form and retiring a character are not built yet; the incident log
   keeps character keys.
+- ✅ **Arrival-only flow (#2413, merged, in-dev).** The server keeps a set of players whose arrival
+  flow is open (`m_FlowOpen`: filled on connect, cleared in `SpawnPlayer`, forgotten on disconnect).
+  `ContinueAfterQuiz` (the quiz's `RpcAsk_LF_QuizContinue`), `ServerCreateCharacter` (form R-89) and
+  `ContinueFlow` itself refuse anyone not in it (`LF_CharacterCreationRules.RefuseFlowRequest`): a
+  dead, downed, cuffed, jailed or combat-logout-held player, all of whom are already past arrival,
+  can no longer restart the flow to reach the character pick or an instant respawn. A refusal toasts
+  `#LF-CharSel_Refused` and logs `[LFDebug:CharacterCreation] ... refused: not arriving`. Test
+  `character/flow-gate` (LOGIC).
 
 ### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
 - ✅ One list on another player's body (`Character_Roleplay.et`, context
@@ -395,3 +413,24 @@
 ### `LF_NamedPlaces` — `Scripts/Game/Core/LF_NamedPlaces.c` (#1943, chapter #1014)
 - 🧪 (2026-11-16, #1943) `LF_NamedPlaces.Nearest(pos, maxRadius = 600)` returns the display name of the nearest map location (the editor comment entities every map places for its town, village and landmark labels; a pack adds a name by placing one), or empty when none is within the radius or the world has no editable-entity core. The name is the map's own, usually a `#` localization key for a widget's SetText. The core holds no town list. Test `world/named-place`. The 1989 pack places "Saint Philippe" (`Place_SaintPhilippe` in `Village_Dressing.layer`, key `LF-Place_SaintPhilippe`, town pass #1947).
 - 🔧 (2026-11-16, #1771; merged, in-dev) **The 1989 Everon pack fills the starting kit.** `LF_Catalogue_Kit_Everon1989.conf` offers under `starting_kit`: a brown denim jacket (its shirt is part of the prefab; shirts and jackets share the one upper slot), dark-brown trousers, the dirty work boots, a flat cap and `cash_start` (the `MoneyStack` default of 100, carried in a pocket, the same cash the game mode's M88 jacket held). No M88 or M70 pieces, Soviet panama, ALICE pack, police kit or weapon. Fixture `tools/validation/fixtures/everon/starting-kit.json` (kind `outlets`, `present:false` for the military pieces) is read by `validate-everon-config`. Vanilla has no civilian shoe, so the boots are the pack's existing `boots_work`; a civilian shoe asset is a follow-up.
+
+### `LF_FittedBuildings` — `Scripts/Game/Core/LF_FittedBuildings.c`, `LF_FittedBuildingComponent.c` (D15)
+- 🔧 (2026-11-17; merged, in-dev) **Fitted vanilla buildings are indestructible.** `town fit` puts
+  `LF_FittedBuildingComponent` on the slot's place marker (beside `LF_PlaceComponent`, inside the
+  building) and records the claim's `destruction.mode: "hooked"`; a slot with no marker stays
+  `needs-hook`. On the server, one frame after load, the component runs one sphere query (radius
+  `m_fSearchRadius`, default 25 m) for entities with `SCR_DestructibleBuildingComponent`, takes the one
+  whose bounds hold the marker (else the closest within 3 m) and calls
+  `DamageManagerComponent.EnableDamageHandling(false)` on it and its child destructibles. Every
+  vanilla hit (explosive, shell, vehicle contact) goes through `HandleDamage`, so the building never
+  reaches DESTROYED, never sends the destroy RPC and has no JIP state to replicate. Logs
+  `[LFDebug:FittedBuildings] <place id>: building ... is indestructible`; no building found is an
+  `Error` and the building stays destructible. No coordinates in core; no per-frame cost. A game
+  master `SetHealth(0)` still bypasses it (vanilla's own invulnerability rule). Test
+  `world/fitted-building-indestructible` (DebugWorld spawns two garages; on CoreOnEveron it uses two
+  real buildings near the map's middle).
+
+- **World-end resets (#2415):** the dev Game Master, character-creation manager and offers, pick/registration/ID-request/ledger sheets, vehicle records and plates, garage and organization config, and the whitelist now register `LF_StaticResetHook`s. The dev Game Master hook takes its handler off `SCR_EditorManagerCore` and a grant re-checks the dev-tools gate, so a production world loaded after a dev world grants no EDIT. A disconnect forgets the player's pick/register offers. Tests `moderation/dev-gm-reset`, `character/creation-reset`, `vehicle/state-reset`, `whitelist/static-reset`, `organization/static-reset`, `ui/sheet-static-reset`.
+- **Open sheets close at world end, HUD money handler leaves the old body (#2512):** the registration form and the character pick hide their open screen before the world-end reset drops the static, so the old world's sheet no longer stays drawn (and holding the interaction prompt) into the next session. `LF_BetaHud` keeps the inventory manager its `OnMoneyChange` handler is subscribed to and removes it in `OnStopDraw` and before subscribing again, so a respawn leaves one cash update per move. Test `character-creation/sheets-world-end-reset` (WORLD, through a seam; the HUD path is manual).
+
+- **Host path for client requests (#2511):** a listen host's own `Rpc(RpcAsk_...)` never reaches its handler, so the debug menu's actions and the spawn-hub travel did nothing for the host. `LF_AskDebugAction` and `LF_AskSpawnHubTravel` now call their handler directly when `Replication.IsServer()` (the world reset request already did). `validate-rpc-host-path` fails any method that calls `Rpc(RpcAsk_...)` with no `Replication.IsServer()` in its body; the baseline (`tools/validation/rpc-host-path-baseline.json`) is now empty: the organization ledger asks (#2550), `LF_AskPoliceArrest` and the quest tracker `AskRequestLog` (#2534) call their handler directly on a listen host. Selftest: `rpc-host-path-selftest.mjs`.

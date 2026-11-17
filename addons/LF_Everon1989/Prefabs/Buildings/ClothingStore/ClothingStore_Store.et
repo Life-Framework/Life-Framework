@@ -240,8 +240,12 @@ SCR_DestructibleBuildingEntity : "{5B1494161ABF8F6D}Prefabs/Buildings/ClothingSt
    ID "79A65A35A354451B"
    coords 3.7 0.199 7
   }
+  GenericEntity : "{4DC523B95D7DFD0F}Prefabs/Props/Clothing/LF_Mannequin_Knit.et" {
+   ID "A7538CC78FDF832F"
+   coords 2.75 0.199 6.55
+  }
   GenericEntity : "{88F59F323FF25661}Prefabs/Props/Clothing/LF_Mannequin_Suit.et" {
-   ID "120B698FC44F392E"
+   ID "58A9EDC4BCA9390C"
    coords -0.6 0.199 6.6
   }
  }

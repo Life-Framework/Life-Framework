@@ -16,6 +16,7 @@ import {
   CORE_VERSION_FILE,
   PACK_MANIFEST_FILE,
   STAMPED_FILES,
+  cacheBustedRequest,
   cmpSemver,
   discordPost,
   inRange,
@@ -33,7 +34,14 @@ const ok = (cond, msg) => {
   if (!cond) failures.push(msg);
 };
 
-const SHA = "a".repeat(40);
+{
+  const r = cacheBustedRequest("https://reforger.armaplatform.com/workshop/ABC?x=1", 1234567);
+  ok(r.url === "https://reforger.armaplatform.com/workshop/ABC?x=1&t=1234567", `cache-bust url (${r.url})`);
+  ok(/no-cache/.test(r.headers["Cache-Control"] ?? "") && r.headers.Pragma === "no-cache", "cache-bust headers");
+  ok(cacheBustedRequest("https://a.b/c", 1).url !== cacheBustedRequest("https://a.b/c", 2).url, "cache-bust url changes per call");
+}
+
+const SHA ="a".repeat(40);
 const GPROJ = (id, title) => `GameProject {\n ID "${id}"\n GUID "0000"\n TITLE "${title}"\n}\n`;
 const CORE_C = 'class LF_PackManifest\n{\n\tstatic const string CORE_VERSION = "0.1.0";\n}\n';
 const MANIFEST = 'LF_PackManifest {\n m_sPackId "LF_Everon1989"\n m_sCoreMin "0.1.0"\n m_sCoreBelow "0.2.0"\n}\n';

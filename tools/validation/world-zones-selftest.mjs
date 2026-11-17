@@ -9,6 +9,11 @@
 // a town layer (core or pack) and passes a town- pass, a baselined branch and a grid layer edit.
 // Open PR claims (2026-11-16): grid place and list skip or show a cell an OPEN PR claims, validate only warns
 // (gh stubbed, the reader injected).
+// Sibling worktree claims (2026-11-16): grid place and list skip or show a cell an uncommitted claim in another local
+// worktree holds, naming the worktree (real `git worktree add` fixture; no network).
+// red-proof: with tools/commands/grid.mjs reverted to its text before the sibling-worktree reader (`git show HEAD:...`) this printed
+// 5 FAILs, from "grid place --span 2x2 avoids a cell a sibling worktree claims" (it took the sibling's c6r3) to "a failing worktree
+// reader is a warning" (2026-11-16); fixed, it passes.
 // red-proof: with tools/commands/grid.mjs reverted to its pre-fix text (no open-PR reader) this printed 6 FAILs, from
 // "grid place avoids a cell an open PR claims" to "grid list flags two open PRs on one cell" (2026-11-16); fixed, it passes.
 // red-proof: with checkGuard's town- test made always true (`TOWN_PASS.test(slug) || true`) this printed
@@ -20,7 +25,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
 import { main as gridMain, yardLayer } from "../commands/grid.mjs";
-import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, gapSide, inGrid, layerOfSlug, lookArea, mainClaims as mainClaimsOf, openPrClaims, rowLine, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
+import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, claimCellIds as claimCellIdsOf, gapSide, inGrid, layerOfSlug, lookArea, mainClaims as mainClaimsOf, openPrClaims, rowLine, worktreeClaims, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
 import { checkClaims, checkFreeze, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
 
 let failed = 0;
@@ -180,14 +185,14 @@ try {
 // ---- capacity (2026-11-16): the lattice grew east, and a claim may span several cells
 {
   const L = await import("../grid/lattice.mjs");
-  ok(L.CELL.cols === 11 && L.CELL.rows === 7 && allCells().length === 77, "the lattice is 11 x 7 cells");
+  ok(L.CELL.cols === 25 && L.CELL.rows === 7 && allCells().length === 175, "the lattice is 25 x 7 cells");
   ok(cellBounds(0, 0).x0 === 22 && cellBounds(6, 6).x1 === 106, "the old cells keep their coordinates (c0r0 at 22,22; c6r6 ends at 106)");
-  ok(L.GRID_FENCE.x1 === 160 && L.GRID_FENCE.z1 === 112 && L.GRID_FENCE.x0 === 20, "the outer fence is x 20..160, z 20..112");
+  ok(L.GRID_FENCE.x1 === 328 && L.GRID_FENCE.z1 === 112 && L.GRID_FENCE.x0 === 20, "the outer fence is x 20..328, z 20..112");
   ok(L.GRID_FENCE.x1 < L.TERRAIN_SIZE && L.GRID_FENCE.z1 < L.TERRAIN_SIZE, "the grid fits inside GridTerrain (512 m)");
-  ok(inGrid(150, 30) && !inGrid(161, 30), "inGrid follows the wider fence");
+  ok(inGrid(150, 30) && inGrid(320, 30) && !inGrid(329, 30), "inGrid follows the wider fence");
   ok(allCells().find((c) => c.id === "c3r4") && cellBounds(7, 0).x0 === 106 && gapSide({ ...cellBounds(10, 3) }).side === "west", "the new east cells face the centre, so an old cell's gap never flips");
   ok(L.claimCellIds({ cell: "c2r1", span: [3, 2] }).join() === "c2r1,c3r1,c4r1,c2r2,c3r2,c4r2", "a 3 x 2 claim covers six cells");
-  ok(L.claimCellIds({ cell: "c9r6", span: [3, 1] }).length === 0 && L.claimCellIds({ cell: "c0r0", span: [0, 1] }).length === 0, "a span that leaves the lattice or is empty covers nothing");
+  ok(L.claimCellIds({ cell: "c23r6", span: [3, 1] }).length === 0 && L.claimCellIds({ cell: "c0r0", span: [0, 1] }).length === 0, "a span that leaves the lattice or is empty covers nothing");
   ok(L.claimCellIds({ cell: "c3r3" }).join() === "c3r3", "no span is one cell");
   const r = L.claimRect({ cell: "c7r0", span: [3, 2] });
   ok(r.x0 === 106 && r.x1 === 142 && r.z0 === 22 && r.z1 === 46, "a 3 x 2 claim from c7r0 is the 36 x 24 m rectangle (a 33 x 19 m hotel fits)");
@@ -323,6 +328,83 @@ try {
     ok(v.errors.length === 0 && v.warnings.length === 1 && /#77/.test(v.warnings[0]) && /orgs/.test(v.warnings[0]) && /c2r4/.test(v.warnings[0]), `a cell another open PR claims is a warning, not an error (${JSON.stringify(v)})`);
     ok(checkClaims(root5, { prClaims: [{ ...other, slug: "signs" }, { ...other, cell: "c3r3" }] }).warnings.length === 0, "the same slug, or another cell, in an open PR warns nothing");
     ok(checkClaims(root5).warnings.length === 0, "without open PR claims the check is as before");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+// ---- claims in sibling worktrees: an uncommitted claim in another local worktree counts as taken
+// (ws/police-station-kit and ws/building-bank both took c3r1 for a 2x2, 2026-11-16). Real git worktrees.
+{
+  const dir = mkdtempSync(join(tmpdir(), "lf-grid-wt-"));
+  const git = (cwd, ...args) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd, encoding: "utf8" });
+  try {
+    const mainTree = join(dir, "main");
+    const sibTree = join(dir, "Life-Framework-ws-building-bank");
+    mkdirSync(mainTree, { recursive: true });
+    put(mainTree, `${GRID_LAYERS}/Annex.layer`, "");
+    git(mainTree, "init", "-q", "-b", "main");
+    git(mainTree, "add", "-A");
+    git(mainTree, "commit", "-q", "--allow-empty", "-m", "init");
+    const wt = git(mainTree, "worktree", "add", "-q", "-b", "ws/building-bank", sibTree);
+    ok(wt.status === 0, `fixture: git worktree add works (${wt.stderr})`);
+    const natural = allocate("police-station-kit", { span: [2, 2] });
+    // the sibling worktree holds the claim, uncommitted (`?? tools/grid/cells/building-bank.json`)
+    put(sibTree, `${CELLS_DIR}/building-bank.json`, JSON.stringify({ slug: "building-bank", cell: natural.id, span: [2, 2], layer: layerOfSlug("building-bank"), rows: 0, created: "2026-11-16" }));
+    const none = () => ({ claims: [], note: "" });
+    const realLog3 = console.log;
+    const run3 = async (...argv) => {
+      const out = [];
+      console.log = (...a) => out.push(a.join(" "));
+      try {
+        return { code: await gridMain(argv, { root: mainTree, openPrClaims: none }), out };
+      } finally {
+        console.log = realLog3;
+      }
+    };
+    const taken = new Set(claimCellIdsOf({ cell: natural.id, span: [2, 2] }));
+    const overlaps = (id) => taken.has(id);
+
+    const found = worktreeClaims(mainTree);
+    ok(found.claims.length === 1 && found.claims[0].slug === "building-bank" && found.claims[0].worktree === "Life-Framework-ws-building-bank" && found.claims[0].branch === "ws/building-bank" && JSON.stringify(found.claims[0].span) === "[2,2]", `worktreeClaims reads the sibling's uncommitted claim, not this tree's (got ${JSON.stringify(found.claims)})`);
+    ok(worktreeClaims(sibTree).claims.length === 0, "a worktree does not read its own claims as a sibling's");
+    // Windows CI hands over the 8.3 short form of the temp dir (RUNNER~1) while git prints the long one
+    if (process.platform === "win32") {
+      const q = spawnSync("powershell", ["-NoProfile", "-Command", `(New-Object -ComObject Scripting.FileSystemObject).GetFolder('${sibTree}').ShortPath`], { encoding: "utf8" });
+      const short = String(q.stdout || "").trim();
+      if (q.status === 0 && short && short.toLowerCase() !== sibTree.toLowerCase()) ok(worktreeClaims(short).claims.length === 0, `a worktree given by its 8.3 short path (${short}) does not read its own claims as a sibling's`);
+    }
+
+    let g = await run3("place", "police-station-kit", "--span", "2x2", "--dry", "--no-fetch");
+    const m = g.out.map((l) => /-> cell (c\d+r\d+)/.exec(l)?.[1]).find(Boolean);
+    ok(g.code === 0 && m && claimCellIdsOf({ cell: m, span: [2, 2] }).every((id) => !overlaps(id)), `grid place --span 2x2 avoids a cell a sibling worktree claims (${natural.id}); got ${g.out.join(" | ")}`);
+    g = await run3("place", "police-station-kit", "--span", "2x2", "--dry", "--no-fetch", "--cell", natural.id);
+    ok(g.code === 1 && g.out.some((l) => /worktree Life-Framework-ws-building-bank/.test(l) && /building-bank/.test(l)), `grid place --cell refuses it and names the worktree (${g.out.join(" | ")})`);
+    g = await run3("place", "building-bank", "--dry", "--no-fetch");
+    ok(g.code === 1 && g.out.some((l) => /worktree Life-Framework-ws-building-bank/.test(l) && /already claims building-bank/.test(l)), `grid place refuses a slug a sibling worktree already claims (${g.out.join(" | ")})`);
+    g = await run3("list", "--no-fetch");
+    ok(g.out.some((l) => /building-bank/.test(l) && /worktree Life-Framework-ws-building-bank/.test(l) && l.includes(natural.id)), `grid list shows the sibling's claim with its worktree (${g.out.slice(0, 4).join(" | ")})`);
+    // a failing worktree reader (the injected seam) is a warning, not a throw
+    const hush = console.log;
+    const warned = [];
+    console.log = (...a) => warned.push(a.join(" "));
+    try {
+      g = await gridMain(["list", "--no-fetch"], { root: mainTree, openPrClaims: none, worktreeClaims: () => ({ claims: [], note: "could not list the worktrees (boom)" }) });
+    } finally {
+      console.log = hush;
+    }
+    ok(g === 0 && warned.some((l) => /warning: could not list the worktrees/.test(l)), "a failing worktree reader is a warning, not a throw");
+
+    // fail soft: a pruned or missing folder, bare entries and no git
+    const porcelain = `worktree ${mainTree.replace(/\\/g, "/")}\nHEAD abc\nbranch refs/heads/main\n\nworktree ${join(dir, "gone").replace(/\\/g, "/")}\nHEAD abc\nbranch refs/heads/ws/gone\nprunable gitdir file points to non-existent location\n\nworktree ${join(dir, "nofolder").replace(/\\/g, "/")}\nHEAD abc\ndetached\n\nworktree ${sibTree.replace(/\\/g, "/")}\nHEAD abc\nbranch refs/heads/ws/building-bank\n`;
+    const stub = worktreeClaims(sibTree, { run: () => ({ status: 0, stdout: porcelain }) });
+    ok(stub.claims.length === 0 && stub.note === "", `missing and prunable folders are skipped, the caller's own tree is left out (got ${JSON.stringify(stub)})`);
+    const stub2 = worktreeClaims(mainTree, { run: () => ({ status: 0, stdout: porcelain }) });
+    ok(stub2.claims.length === 1 && stub2.claims[0].slug === "building-bank", "from the main tree the sibling's claim is read through the same listing");
+    const nogit = worktreeClaims(mainTree, { run: () => ({ status: null, error: new Error("spawn git ENOENT") }) });
+    ok(nogit.claims.length === 0 && /could not list the worktrees/.test(nogit.note), `no git is a note, not a throw (got ${nogit.note})`);
+    put(sibTree, `${CELLS_DIR}/broken.json`, "{ not json");
+    ok(worktreeClaims(mainTree).claims.length === 1, "an unreadable claim file in a sibling is skipped");
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

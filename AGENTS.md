@@ -20,6 +20,8 @@ agent type has a tool-call budget; past it the agent writes
 `tmp/handoff-<slug>.md` and ends with a `RESUME` line. A town-wide job is one
 agent per area. `tools\cli usage` shows where the tokens went.
 
+**Starter packs.** `tools\cli brief building|slice|map|town|grid` prints one page of exact commands and known traps for that kind of work (`docs/starter-packs/`); read it instead of the docs it points to.
+
 ## Repo map
 
 | Path | What lives there |
@@ -192,6 +194,10 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   (`--tier all`, or `--only`/`--red` by name). Never a node selftest that reads `.conf` text
   (`docs/architecture/three-worlds.md` "Pack test leg").
 - Loop: `tools\cli test --no-build --only <LF_Test_Class>` (~10 s) until green, one `--red` run for the new tests, then `--tier all` once at the end.
+- **A test never calls `LF_StaticReset.ResetAll()`**: it wipes every feature's statics and fails every later test in the suite (2026-11-16, 38 tests, #2092). Apply only your own feature's `LF_StaticResetHook` (`<Owner>.ResetStatics()`); `validate-no-test-resetall` fails core and pack tests that call it.
+- **A node selftest that builds a scratch git repo** calls `useHermeticGit()` and cleans up with `removeScratch()`
+  (`tools/lib/selftest-git.mjs`): no machine git config, a fixed identity and branch, no auto-gc holding the folder
+  (EBUSY on the Windows CI runner), and a failure message that says the exit code and what git printed (`describeRun`).
 - Persistence tests go through public mutators and accessors only. In-session
   round trips prove nothing about restarts; use `wt e2e` or a real restart.
 - **Pass cache.** `test` (and the suite inside `ci`, `wt gate`) reuses a pass whose key matches: `addons/` (tracked and untracked), its `resourceDatabase.rdb`, `tools/test/`, the selection, the addon list and the server build. A failure is never reused; persistence tier, `--red`, `dev`, `e2e` and the placement audit always run (`docs/worktrees.md` "Pass cache").

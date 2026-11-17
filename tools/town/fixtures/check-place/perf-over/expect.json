@@ -1,0 +1,7 @@
+{
+ "ok": false,
+ "errors": [
+  "slot shop (medium): over the building budget: lights 7 > 6",
+  "shadow casters 7 > 1"
+ ]
+}

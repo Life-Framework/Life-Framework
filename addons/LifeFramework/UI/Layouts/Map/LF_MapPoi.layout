@@ -1,0 +1,45 @@
+FrameWidgetClass "{9173C9D40E1D3BDA}" {
+ Name "PoiRoot"
+ Slot FrameWidgetSlot "{93691C5B8F148982}" {
+  Anchor 0 0 0 0
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 28
+  OffsetRight -28
+  SizeY 28
+  OffsetBottom -28
+ }
+ {
+  ImageWidgetClass "{69D7D315789D5CBA}" {
+   Name "Icon"
+   Slot FrameWidgetSlot "{529445FAAE3197A8}" {
+    Anchor 0 0 1 1
+   }
+   Color 0.110 0.102 0.086 1
+  }
+  TextWidgetClass "{7A3063F5F09AE005}" {
+   Name "Count"
+   Slot FrameWidgetSlot "{2A322EE2EC9A5794}" {
+    Anchor 1 1 1 1
+    PositionX -10
+    OffsetLeft -10
+    PositionY -8
+    OffsetTop -8
+    SizeX 20
+    OffsetRight -10
+    SizeY 16
+    OffsetBottom -8
+   }
+   Color 0.933 0.902 0.839 1
+   Text ""
+   "Font Size" 13
+   "Min Font Size" 10
+   "Horizontal Alignment" Center
+   FontProperties FontProperties "{A711E0DA2F5456B7}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+ }
+}

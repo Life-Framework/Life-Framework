@@ -162,10 +162,14 @@ under "Hard-coded flagship values in script".
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
 | `Props/Signs/EL_MiningSign.et` | pack, moved (batch 1) | Soviet undermined-area warning sign; its placement left the core `MiningChain.layer` for the pack layer `Village_Signs` |
 | `Props/Roleplay/SpikeStrip/` | split | The deployed strip and the folded item are the core's working deployable that `LF_Test_SpikeStrip` loads (#646); the 1989 stinger look, its place in the rank kits and the DebugWorld display strip are pack (#647) |
+| `Prefabs/Props/Commercial/LF_SafeBox.et` | core | The store box safe: the vanilla `Safe_01` mesh with the heist rob, breach and `LF_HeistVaultComponent` set to the `store_box` safe type. A generic robbable shop safe: what the game can do. Where a shop gets one is the pack's |
+| `Configs/Crime/LF_SafeTypes.conf` | core | The three safe tiers (`store_box`, `bank_room`, `reserve_vault`) as neutral numbers. `LF_Everon1989/Configs/Crime/LF_SafeTypes_Everon1989.conf` is the pack overlay (1989 till takings) |
+| `Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et` (in `LF_Everon1989`) | pack | The vault-room door kit: the generated vault door on a meshless root with the rob, breach and `bank_room` components, for a building to fit into a room. Pack because it uses the pack's door mesh |
 | `Props/Roleplay/BankVault/` (in `LF_Everon1989`) | pack | The 1989 bank vault kit, placed as `Roadmap_Bank_Vault` in the pack layer `Village_Buildings`: the round door in its frame and wall, the steel room, the deposit box wall, the cash trolley, and the assembled vault closed and open. The assembled vault carries the rob, breach and swing components and is the town bank vault (#925); `LF_BankVault_Light` is its two ceiling lights (each with a vanilla caged bulkhead fixture); `LF_BankVault_SmallRoof` is the door hood (the vanilla `SmallRoof_01` mesh); the vault room and front use a vanilla concrete material in place of the dark generated one. The gameplay components (`LF_BankVaultComponent`, `LF_BreachTargetComponent`) are core |
 | `Assets/Props/Roleplay/BankVault/` (in `LF_Everon1989`) | pack | Meshes and materials of the vault kit (door generated with Meshy, `docs/credits.md`; the rest built by `tools/assets/bank-vault/build.py`) |
 | `Prefabs/Props/Commercial/LF_Mannequin.et`, `LF_MannequinGarment.et`, `Assets/Props/Mannequin/` | core | Shop-window mannequin: the base-game male body and head meshes in one matte off-white material, no face texture, standing in the body's bind pose; `LF_MannequinGarment` holds one worn clothing model as a static mesh at the body origin. Display only, any store can dress one |
 | `Prefabs/Props/Clothing/LF_Mannequin_*.et` (in `LF_Everon1989`) | pack | The clothing store's dressed mannequins (denim, suit, raincoat), base-game worn models and colour materials on `LF_Mannequin` |
+| `Prefabs/Items/LF_TouristMap.et` (in `LF_Everon1989`) | pack | The "Tourist map of Everon": the vanilla folded paper map with the core `LF_TouristMapAction`, which pencils every live discoverable place onto the player's map as heard of (#2242, M14). Pack because the item and its name are this server's; the action and the rule are core |
 | `Assets/Props/Roleplay/SpikeStrip/` | split | Mesh of the strip above (generated with Meshy, `docs/credits.md`): example in core, the police stinger in pack |
 | `Resources/` | core | Ore, trees, logs |
 | `Structures/` | core | Doors, jail door, bank, concrete plant |
@@ -189,12 +193,13 @@ under "Hard-coded flagship values in script".
 | `Dialogue/LF_DialogueIndex.conf` | core | The dialogue registry (#957): id to file; a pack overlay adds, replaces or removes an id |
 | `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`): the Everon wording and the voiced lines, listed in the pack's mission header |
 | `Dialogue/LF_Dialogue_OldMan.conf` (in `LF_Everon1989`) | pack | The old man on the bench: a pack's own full dialogue (`tools/assets/dialogue/old_man/`, #1962), voiced; flavour of this server, so the core knows nothing of it |
-| `Sounds/Dialogue/old_man/` (in `LF_Everon1989`) | pack | His five recordings (Piper ljspeech) and audio project (#1962) |
-| `Sounds/Dialogue/clerk_everon/` (in `LF_Everon1989`) | pack | The clerk's thirteen recordings and audio project (the ten from #323 batch 4, moved out of the core's `Sounds/Dialogue/clerk/`, and the three welcome lines of #1959), all Piper en_US-ljspeech (#1959) |
+| `Sounds/Dialogue/old_man/` (in `LF_Everon1989`) | pack | His five recordings (ElevenLabs, voice Alder) and audio project (#1962) |
+| `Sounds/Dialogue/clerk_everon/` (in `LF_Everon1989`) | pack | The clerk's thirteen recordings and audio project (the ten from #323 batch 4, moved out of the core's `Sounds/Dialogue/clerk/`, and the three welcome lines of #1959), all ElevenLabs, voice Julien - Serious (#1959, #1015) |
 | `Dialogue/LF_Dialogue_CafeOwner.conf` (in `LF_Everon1989`) | pack | The café owner Odile Marchand's own dialogue (#1961, `tools/assets/dialogue/cafe_owner/`): the zone, the move and three pointers. Pack content: it names the story and the town's places. Not yet in the dialogue index (follow-up with her talk action) |
-| `Sounds/Dialogue/cafe_owner/` (in `LF_Everon1989`) | pack | The café owner's seven recordings and audio project (#1961, Piper en_US-ljspeech) |
+| `Sounds/Dialogue/cafe_owner/` (in `LF_Everon1989`) | pack | The café owner's seven recordings and audio project (#1961, ElevenLabs, voice Mariva Viva Muse) |
 | `Dialogue/LF_Dialogue_NightShift.conf`, `Dialogue/LF_DialogueIndex_NightShift.conf` (in `LF_Everon1989`) | pack | The night-shift worker's (Rémi Duval) dialogue and the pack index overlay that adds the id `night_shift` (#1963) |
-| `Sounds/Dialogue/night_shift/` (in `LF_Everon1989`) | pack | The night-shift worker's five recordings and audio project, Piper en_US-ljspeech (#1963) |
+| `Dialogue/LF_DialogueIndex_CafeOwner.conf`, `Dialogue/LF_DialogueIndex_OldMan.conf` (in `LF_Everon1989`) | pack | Pack index overlays that add the ids `cafe_owner` and `old_man`, so the townsfolk prefabs' `LF_DialogueComponent` resolves their voiced dialogues (#2164) |
+| `Sounds/Dialogue/night_shift/` (in `LF_Everon1989`) | pack | The night-shift worker's five recordings and audio project, ElevenLabs, voice Raspy (#1963) |
 | `Dialogue/LF_Dialogue_Shopkeeper.conf` | core | A store's shopkeeper, neutral and text only (#1143, `tools/assets/dialogue/shopkeeper/`): greeting, how to pay, what the store sells, and the line a store's staff say on a walk-out. The prefab `Characters/Npcs/LF_Shopkeeper.et` is core too; the pack places it in its supermarket |
 | `Dialogue/LF_Dialogue_Clerk.conf` | core | The neutral, text-only clerk conversation (generated from `tools/assets/dialogue/clerk/`, `text_only`); the Everon voice is a pack patch (#323) |
 | `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
@@ -241,7 +246,7 @@ its save.
 | `EL_DebugTest.conf` | core | The suite's header |
 | `LF_PlaytestTown.conf` | pack, moved (batch 1) | The developer playtest header, hidden from the scenario list since #374 (`LF_Everon1989.conf` is the one listed flagship; this id still boots for `host`, `playtest`, `session --mission playtest`, the e2e `--mission playtest` and existing saves) and the one that keeps the playtest helpers on; its world is the pack world. The core suite reads the neutral fixture `LF_HostedTest.conf` (core) instead |
 | `LF_PlaytestTown_Preview.{edds,jpg}` | pack, moved (batch 1) | The Workshop scenario picture of the Everon town (2026-11-10); moves with `LF_PlaytestTown.conf` |
-| `EveronLifeGameMode.conf` | pack, moved (batch 1) | The MainWorld header |
+| `LF_EveronIsland.conf` | pack | The hidden island header: MainWorld under the flagship's overlays (#2204); `EveronLifeGameMode.conf` is retired |
 | `LF_HostedTest.conf` | core | Test fixture (#323 batch 1): a hosted header on DebugWorld with dev tools closed, read by `host/playtest-mission` and `harness/dev-gate-dedicated` |
 | `addons/LF_Everon1989/Missions/LF_Everon1989.conf` | pack (in the pack) | The flagship header, the only scenario Workshop players see (#322, #374, #1339). It closes the playtest helpers (`m_bLF_PlaytestHelpersOff 1`) and leaves `m_bLF_FirstPlayerPolice` and `m_bLF_InstantPoliceApproval` off, so a real server gets no test cars, top-up, spawn hub or auto-police; the listen-host proof boots it. Since batch 1 it loads the pack world `Everon1989Town.ent` and uses the moved preview art. A host whose save was made on `LF_PlaytestTown.conf` keeps that header until the save is cleared |
 | `EveronLife_TitleImage.{edds,jpg}` | split | Every header uses it; the core needs neutral art |
@@ -260,7 +265,7 @@ its save.
 | `Signs` | split | Village signs; `LF_Test_SafeZone` finds two |
 | Chain layers: `AppleChain`, `CementChain`, `CrimeChain`, `FarmingChain`, `GravelChain`, `LoggingChain`, `MiningChain`, `PlumChain`, `SandChain`, `TraderChain` | split | On the village outskirts; tests find some of their nodes |
 | `ATM`, `Gamemode`, `Roadmap`, `Survival`, `default` | split | Village placement of entities tests use; the game mode entity is core |
-| `MainWorld/` | pack, moved (batch 1) | The Everon town, St Philippe apple farm |
+| `MainWorld/` | pack, moved (batch 1) | Vanilla Everon with the game mode, a spawn and the Eden AI world and navmesh; the apple-farm layer is gone (#2204) |
 
 ## Assets
 

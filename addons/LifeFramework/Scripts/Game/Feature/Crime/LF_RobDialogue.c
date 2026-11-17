@@ -67,6 +67,7 @@ class LF_DialogueHook_RobRefused : LF_DialogueHook
 	{
 		string refusal = LF_RobHold.Refusal(player, npc);
 		LF_Debug.Info(LF_RobHold.FEATURE, string.Format("robbery demand refused in the dialogue: %1", refusal));
+		LF_RobHold.NoteRefusal(player, refusal);
 		spoken.Insert(LF_RobHoldRules.RefusalKey(refusal));
 	}
 }

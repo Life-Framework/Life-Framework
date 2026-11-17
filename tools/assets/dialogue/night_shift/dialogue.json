@@ -4,11 +4,17 @@
   "speaker_key": "#LF-Townsfolk_NightShift_Name",
   "addon": "LF_Everon1989",
   "voice": {
-    "engine": "piper",
-    "id": "en_US-ljspeech-high",
-    "name": "LJ Speech (Piper)",
-    "why": "One voice per character (lead decision, 2026-11-17). Piper en_US-ljspeech-high is trained on LJ Speech, public domain, so it is licence-safe for public builds. A tired man at the end of a shift: the lines are short and slow (length_scale 1.1).",
-    "length_scale": 1.1
+    "id": "HL6h30e2Rd3SQjMZu1Wz",
+    "name": "Raspy - Convincing and Weary Narrator",
+    "public_owner_id": "8aba776a20ef1207599626c70ba4393e6aa675a1d44749709ccec0685962cd54",
+    "why": "Rémi Duval is a tired man in his thirties at the end of a night shift. Raspy is a young male voice sold as weary, low and worn. Stability 0.4 and speed 0.9 let it sag between sentences instead of narrating.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.4,
+      "similarity_boost": 0.75,
+      "style": 0.1,
+      "speed": 0.9
+    }
   },
   "budget_chars": 3000,
   "hear_range_m": 10,

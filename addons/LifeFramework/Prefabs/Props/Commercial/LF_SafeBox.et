@@ -1,0 +1,49 @@
+GenericEntity {
+ ID "6E1B3A7C95D204F8"
+ components {
+  MeshObject "{6E1B3A7C95D20401}" {
+   Object "{4CD9B977F230E7DF}Assets/Props/Furniture/Safe_01/Safe_01.xob"
+  }
+  RigidBody "{6E1B3A7C95D20402}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_LockComponent "{6E1B3A7C95D20403}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{6E1B3A7C95D20404}" {
+   ActionContexts {
+    UserActionContext "{6E1B3A7C95D20405}" {
+     ContextName "default"
+     Position PointInfo "{6E1B3A7C95D20406}" {
+      Offset 0 0.5 0
+     }
+     Radius 2
+    }
+   }
+   additionalActions {
+    LF_HeistRobAction "{6E1B3A7C95D20407}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{6E1B3A7C95D20408}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{6E1B3A7C95D20409}" {
+   Enabled 1
+  }
+  LF_BreachTargetComponent "{6E1B3A7C95D2040A}" {
+   m_fFuseSeconds 0
+  }
+  LF_HeistVaultComponent "{6E1B3A7C95D2040B}" {
+   m_sLootKind "bags"
+   m_sSafeType "store_box"
+  }
+ }
+}

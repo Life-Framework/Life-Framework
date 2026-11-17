@@ -88,6 +88,26 @@ class LF_ImpairmentView
 	{
 		s_fDebugLevel = level;
 		LF_Debug.Info(LOG, string.Format("view level pinned to %1", level));
+
+		IEntity local = SCR_PlayerController.GetLocalControlledEntity();
+		if (!local)
+			return;
+
+		LF_CharacterSurvivalComponent survival = LF_CharacterSurvivalComponent.Cast(local.FindComponent(LF_CharacterSurvivalComponent));
+		if (survival)
+			survival.RefreshImpairmentView();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a body runs the sway frame (#2404): only the locally controlled body on a machine that
+	//! renders, and only while there is sway to show (level above 0) or to unwind (an offset still
+	//! applied). Every other body, every proxy and a dedicated server run none.
+	static bool WantsFrame(bool dedicated, bool local, float level, bool offsetPending)
+	{
+		if (dedicated || !local)
+			return false;
+
+		return level > 0 || offsetPending;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -118,21 +138,69 @@ class LF_ImpairmentView
 //------------------------------------------------------------------------------------------------
 //! The owner's client frame: adds the change in sway since the last frame to the aim input, so the
 //! view and the aim sway together and settle where the player left them once the level is gone.
+//! The frame is armed only on the local player's own body while it sways (#2404): a level change,
+//! a control change or the harness pin arms it, and the frame clears itself once the sway is unwound.
 modded class LF_CharacterSurvivalComponent
 {
 	protected float m_fViewTimeSeconds;
 	protected vector m_vViewAppliedOffset;
 	protected float m_fViewLogSeconds;
+	protected bool m_bViewFrameArmed;
 
 	//------------------------------------------------------------------------------------------------
-	override void OnPostInit(IEntity owner)
+	override protected void OnImpairmentLevelChanged()
 	{
-		super.OnPostInit(owner);
+		super.OnImpairmentLevelChanged();
+		RefreshImpairmentView();
+	}
 
-		if (RplSession.Mode() == RplMode.Dedicated)
+	//------------------------------------------------------------------------------------------------
+	//! Arms or clears the sway frame for this body from the current level and control.
+	void RefreshImpairmentView()
+	{
+		IEntity owner = GetOwner();
+		if (!owner)
 			return;
 
-		SetEventMask(owner, EntityEvent.FRAME);
+		ArmImpairmentView(owner == SCR_PlayerController.GetLocalControlledEntity());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Arms or clears the sway frame, with local telling whether this body is the local player's.
+	void ArmImpairmentView(bool local)
+	{
+		IEntity owner = GetOwner();
+		if (!owner)
+			return;
+
+		bool dedicated = RplSession.Mode() == RplMode.Dedicated;
+		float level = LF_ImpairmentView.ViewLevel(GetReplicatedImpairment());
+		SetViewFrame(owner, LF_ImpairmentView.WantsFrame(dedicated, local, level, m_vViewAppliedOffset != vector.Zero));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while this body runs the sway frame.
+	bool IsViewFrameArmed()
+	{
+		return m_bViewFrameArmed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetViewFrame(IEntity owner, bool on)
+	{
+		if (on == m_bViewFrameArmed)
+			return;
+
+		m_bViewFrameArmed = on;
+		if (on)
+		{
+			SetEventMask(owner, EntityEvent.FRAME);
+			LF_Debug.Info(LF_ImpairmentView.LOG, "sway frame armed on the local body");
+			return;
+		}
+
+		ClearEventMask(owner, EntityEvent.FRAME);
+		LF_Debug.Info(LF_ImpairmentView.LOG, "sway frame cleared");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -144,14 +212,25 @@ modded class LF_CharacterSurvivalComponent
 		// and is skipped by the controlled-entity check, so no one else's view is touched.
 		float level = LF_ImpairmentView.ViewLevel(GetReplicatedImpairment());
 		if (level <= 0 && m_vViewAppliedOffset == vector.Zero)
+		{
+			SetViewFrame(owner, false);
 			return;
+		}
 
 		if (owner != SCR_PlayerController.GetLocalControlledEntity())
+		{
+			SetViewFrame(owner, false);
 			return;
+		}
 
 		CharacterControllerComponent controller = CharacterControllerComponent.Cast(owner.FindComponent(CharacterControllerComponent));
 		if (!controller || controller.GetLifeState() != ECharacterLifeState.ALIVE)
+		{
+			// A dead or downed body has nothing to unwind into: drop the offset and stop.
+			m_vViewAppliedOffset = vector.Zero;
+			SetViewFrame(owner, false);
 			return;
+		}
 
 		CharacterInputContext input = controller.GetInputContext();
 		if (!input)
@@ -182,6 +261,35 @@ modded class LF_CharacterSurvivalComponent
 			}
 			LF_Debug.Info(LF_ImpairmentView.LOG, string.Format("level %1 sway yaw %2 pitch %3 deg, aiming rad %4, camera deg %5", level, offset[0], offset[1], input.GetAimingAngles(), camAngles));
 		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A control change moves the sway frame: the body left behind stops, the body taken over starts if
+//! it is drunk (#2404).
+modded class SCR_PlayerController
+{
+	//------------------------------------------------------------------------------------------------
+	override void OnControlledEntityChanged(IEntity from, IEntity to)
+	{
+		super.OnControlledEntityChanged(from, to);
+
+		if (RplSession.Mode() == RplMode.Dedicated || GetGame().GetPlayerController() != this)
+			return;
+
+		LF_ArmImpairmentView(from, false);
+		LF_ArmImpairmentView(to, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_ArmImpairmentView(IEntity body, bool local)
+	{
+		if (!body)
+			return;
+
+		LF_CharacterSurvivalComponent survival = LF_CharacterSurvivalComponent.Cast(body.FindComponent(LF_CharacterSurvivalComponent));
+		if (survival)
+			survival.ArmImpairmentView(local);
 	}
 }
 

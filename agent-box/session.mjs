@@ -44,10 +44,10 @@ import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
-import { GRID_MISSION } from "../tools/lib/worlds.mjs";
+import { EVERON_WORLD, GRID_MISSION, ISLAND_MISSION, PACK_ADDON, PACK_GRID_MISSION, hasPackGridLayers } from "../tools/lib/worlds.mjs";
 import { addonsArgs, CORE_PLAYTEST_MISSION, launchAddons, launchAddonsFor, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
-import { sessionA2sPort } from "../tools/lib/pool-queue.mjs";
+import { laneRefusalBackoffMs, sessionA2sPort } from "../tools/lib/pool-queue.mjs";
 export { applyClientSettings, resolveProfile };
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -88,13 +88,26 @@ export const SESSION_DEFINE = "LF_SESSION_IDENTITY";
 // Opens the harness gate on the playtest mission (LF_DevGate.HarnessBuild).
 // Only a session passes it; tools\cli host start never does.
 export const HARNESS_DEFINE = "LF_HARNESS";
-export const MISSIONS = ["debug", "playtest", "grid", "template"];
+export const MISSIONS = ["debug", "playtest", "grid", "everon", "island", "template"];
 // `--mission grid` boots GridWorld (the flat annex world for WORLD tests and grid cells) through its header
 // Missions/LF_GridWorld.conf, a bare world like debug: no harness define. `debug` still boots the town.
+// `--mission everon` boots Worlds/CoreOnEveron (vanilla Everon, its navmesh and an SCR_AIWorld): the world where
+// vanilla AI walks (#2174). Its game mode keeps dev tools shut, so the session opens the harness gate with the
+// harness define, as playtest does. Its test layers hold only proof routes, never town content.
+// `--mission island` boots the pack's island header Missions/LF_EveronIsland.conf (#2204): MainWorld, vanilla Everon
+// with the AI world and navmesh, under the flagship's systems. The harness gate opens as for everon. About 2.5 GB
+// server and 2.9 GB client (docs/architecture/everon-world.md "Measured cost"); the pool queues it until it fits.
 // `--mission template` boots the example server folder (server/example, #295): the scenario and mods
 // server.json names, the owner config.json it ships; clients join like the playtest mission (harness gate open).
 // `--mission template-<variant>` boots tools/server-template/variants/<variant>/server.json instead (#297):
 // the same file with only mods and scenarioId swapped, e.g. template-core-only boots the core with no pack.
+
+// The header `--mission grid` boots: GridWorld's own (LF_GridWorld.conf), or, when the pack is loaded and holds a
+// pack cell (LF_Everon1989/Worlds/Everon1989Grid), the pack's header whose world is that SubScene of GridWorld, so
+// every Grid_ layer loads, the pack's included (docs/architecture/world-zones.md "Pack cells").
+export function gridMissionFor(addons = launchAddons(), root = ROOT) {
+  return addons.includes(PACK_ADDON) && hasPackGridLayers(root) ? PACK_GRID_MISSION : GRID_MISSION;
+}
 
 export function parseMission(args) {
   const i = args.indexOf("--mission");
@@ -109,7 +122,7 @@ export function parseMission(args) {
 // ("remote script source code checksum does not match").
 export function defineArgs(mission = "debug") {
   const args = ["-scrDefine", SESSION_DEFINE];
-  if (mission === "playtest" || isTemplateMission(mission)) args.push("-scrDefine", HARNESS_DEFINE);
+  if (mission === "playtest" || mission === "everon" || mission === "island" || isTemplateMission(mission)) args.push("-scrDefine", HARNESS_DEFINE);
   return args;
 }
 
@@ -221,7 +234,7 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
   // engine refuses -config together with -addons, so the file's two lists become -server and -addons.
   const tpl = isTemplateMission(mission) ? templateLaunch(ROOT, templateVariant(mission)) : null;
   const args = [
-    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : mission === "grid" ? GRID_MISSION : SERVER_WORLD,
+    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : mission === "grid" ? gridMissionFor(addons) : mission === "everon" ? EVERON_WORLD : mission === "island" ? ISLAND_MISSION : SERVER_WORLD,
     "-addonsDir", addonsDir,
     ...addonsArgs(tpl ? tpl.addons : addons),
     "-profile", profile,
@@ -555,9 +568,36 @@ export function selftestSession() {
   } catch {
     failures.push("--mission grid was refused");
   }
-  const gs = serverArgs({ addonsDir: "A", profile: "SP", mission: "grid" });
+  // #2174: --mission everon boots CoreOnEveron (no header), where vanilla AI has a navmesh, with the harness gate open.
+  // red-proof: 2026-11-16 written before the mission existed: "--mission everon was refused" failed, then passed.
+  try {
+    if (parseMission(["--mission", "everon"]) !== "everon") failures.push("parseMission everon");
+  } catch {
+    failures.push("--mission everon was refused");
+  }
+  const es = serverArgs({ addonsDir: "A", profile: "SP", mission: "everon" });
+  if (es[1] !== EVERON_WORLD || !/CoreOnEveron\.ent$/.test(es[1])) failures.push("--mission everon does not boot CoreOnEveron");
+  if (!es.includes(HARNESS_DEFINE) || !clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "everon" }).includes(HARNESS_DEFINE)) failures.push("--mission everon does not open the harness gate (its game mode keeps dev tools shut)");
+  // #2204: --mission island boots the pack's island header (MainWorld on Everon), harness gate open, and no other mission does.
+  // red-proof: 2026-11-17 on origin/main parseMission(["--mission","island"]) threw "--mission must be debug or playtest or ..."; these cases then passed.
+  try {
+    if (parseMission(["--mission", "island"]) !== "island") failures.push("parseMission island");
+  } catch {
+    failures.push("--mission island was refused");
+  }
+  const is = serverArgs({ addonsDir: "A", profile: "SP", mission: "island" });
+  if (is[0] !== "-server" || is[1] !== ISLAND_MISSION || !/LF_EveronIsland\.conf$/.test(is[1])) failures.push("--mission island does not run LF_EveronIsland.conf");
+  if (!is.includes(HARNESS_DEFINE) || !clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "island" }).includes(HARNESS_DEFINE)) failures.push("--mission island does not open the harness gate");
+  const gs = serverArgs({ addonsDir: "A", profile: "SP", mission: "grid", addons: ["LifeFramework"] });
   const gc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "grid" });
   if (gs[0] !== "-server" || gs[1] !== GRID_MISSION || !/LF_GridWorld.conf$/.test(gs[1])) failures.push("--mission grid does not run LF_GridWorld.conf");
+  // Pack cells: with the pack loaded and a pack cell in the tree, --mission grid boots the pack's grid header; the pack
+  // test header is that one and its world is Everon1989Grid. A core-only launch never sees the pack world.
+  // red-proof: pack-grid-selftest.mjs breaks gridWorldFor and fails "session --mission grid boots the pack header when a pack cell exists".
+  const gp = serverArgs({ addonsDir: "A", profile: "SP", mission: "grid", addons: ["LifeFramework", PACK_ADDON] });
+  const want = hasPackGridLayers(ROOT) ? PACK_GRID_MISSION : GRID_MISSION;
+  if (gp[1] !== want) failures.push(`--mission grid with the pack loaded runs ${gp[1]}, wanted ${want}`);
+  if (gridMissionFor(["LifeFramework"], ROOT) !== GRID_MISSION) failures.push("--mission grid on a core-only launch must stay on LF_GridWorld.conf");
   if (gs.includes(HARNESS_DEFINE) || gc.includes(HARNESS_DEFINE)) failures.push("--mission grid carries the harness define (it is the bare world like debug)");
   if (serverArgs({ addonsDir: "A", profile: "SP" })[1] !== SERVER_WORLD) failures.push("the default mission no longer boots the town");
   if (harnessFlagProblem(["--admin-client", "1"], "grid", 1) === "") failures.push("--admin-client was accepted on the grid mission, where it does nothing");
@@ -1143,10 +1183,15 @@ async function routeMachine(cmd, rest) {
   const prio = args.indexOf("--priority") === -1 ? undefined : args[args.indexOf("--priority") + 1];
   const legArgs = args.filter((a) => a !== "--wait");
   const deadline = Date.now() + waitMs;
+  // Machines whose own `up` refused (LANE_BUSY): not asked again until the backoff passes (#1699).
+  const refused = new Map();
+  let refusals = 0;
   for (;;) {
     let target;
     try {
-      target = await pool.chooseSessionMachine(ROOT, { clients, profile, waitMs: Math.max(0, deadline - Date.now()), priority: prio, meta: { clients, profile } });
+      const nowMs = Date.now();
+      const avoid = new Set([...refused].filter(([, until]) => until > nowMs).map(([name]) => name));
+      target = await pool.chooseSessionMachine(ROOT, { clients, profile, waitMs: Math.max(0, deadline - Date.now()), priority: prio, meta: { clients, profile, world: args.includes("--mission") ? args[args.indexOf("--mission") + 1] : undefined }, avoid });
     } catch (e) {
       if (!e.refusal) throw e;
       console.log(`session: ${e.message}`);
@@ -1163,9 +1208,13 @@ async function routeMachine(cmd, rest) {
     const code = target.via === "local" ? runLocalUp(legArgs) : await upOnRemote(pool, target, legArgs, clients, ptr);
     const again = code === pool.LANE_BUSY_CODE || code === UP_MACHINE_GONE;
     if (!again || waitMs <= 0 || Date.now() > deadline) return { code: code === UP_MACHINE_GONE ? 1 : code };
-    console.log(`session: ${code === UP_MACHINE_GONE ? `${target.name} went away` : `lost the race for a lane on ${target.name}`}; queuing again for any machine`);
-    // A lane that looked free and was not: give the holder a moment before asking again.
-    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 3000);
+    // A lane that looked free and was not: back off (3 s, doubling to 60 s) and ask another machine first,
+    // so a machine that keeps refusing cannot spin the request (and the log) in a tight loop.
+    const busy = code === pool.LANE_BUSY_CODE;
+    const backoffMs = busy ? laneRefusalBackoffMs(++refusals) : 3000;
+    if (busy) refused.set(target.name, Date.now() + backoffMs * 2);
+    console.log(`session: ${code === UP_MACHINE_GONE ? `${target.name} went away` : `lost the race for a lane on ${target.name}`}; queuing again${busy ? ` (another machine first, ${Math.round(backoffMs / 1000)} s backoff)` : " for any machine"}`);
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, backoffMs);
   }
 }
 
@@ -1199,7 +1248,7 @@ async function upOnRemote(pool, target, args, clients, ptr) {
   // (testbox.syncToSlot); only for one without, this PC's headless Workbench refreshes it first.
   const tb = await import("../tools/remote/testbox.mjs");
   if (!tb.refreshesRdb(target)) spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "rdb"], { windowsHide: true, stdio: "inherit", cwd: ROOT });
-  const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", "--machine", "local", ...args], onSlot: (rDir) => writePtr(rDir) });
+  const r = await pool.syncAndRun(ROOT, target, { script: "agent-box/session.mjs", args: ["up", "--machine", "local", ...args], onSlot: (rDir) => writePtr(rDir), env: { [pool.LANES_ENV]: pool.lanesEnvFor(target) } });
   if (r.code === 0) {
     writePtr(r.rDir);
     return 0;
@@ -1261,7 +1310,7 @@ async function runWhereSession(rest) {
 }
 
 // `pull [dest]`: copies the remote session's evidence here: the run folder's
-// agent-box/reports (journey.html, films) and each client's newest el-captures.
+// agent-box/reports (journey.html, films), each client's newest el-captures and the server's console.log (server/console.log).
 // Lands in tmp/session-pull/<machine>-<time>/ unless dest is given.
 async function pullFromSession(rest) {
   const ptr = readRemotePointer();
@@ -1287,6 +1336,10 @@ async function pullFromSession(rest) {
     "  $newest = Get-ChildItem -LiteralPath $logs -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
     "  if ($newest) { $to = Join-Path $stage $_.Name; New-Item -ItemType Directory -Force $to | Out-Null; Copy-Item -Force (Join-Path $newest.FullName 'console.log') $to -ErrorAction SilentlyContinue; $cap = Join-Path $newest.FullName 'el-captures'; if (Test-Path $cap) { Copy-Item -Recurse -Force $cap $to } }",
     "}",
+    // The server's newest console.log: `town ready` reads the boot log from it (the "no ... placed on this map: off" lines).
+    "$slogs = Join-Path $session 'server\\logs'",
+    "$sn = Get-ChildItem -LiteralPath $slogs -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+    "if ($sn) { $to = Join-Path $stage 'server'; New-Item -ItemType Directory -Force $to | Out-Null; Copy-Item -Force (Join-Path $sn.FullName 'console.log') $to -ErrorAction SilentlyContinue }",
     `if (Test-Path ${tb.psQuote(zip)}) { Remove-Item -Force ${tb.psQuote(zip)} }`,
     `Compress-Archive -Path (Join-Path $stage '*') -DestinationPath ${tb.psQuote(zip)}`,
     "exit 0",
@@ -1331,7 +1384,7 @@ export async function usageText() {
   const proofs = [...(await loadProofs()).values()];
   const verbs = proofs.map((p) => p.usage + (p.film ? " [--film]" : ""));
   return [
-    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest|grid|template|template-core-only] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
+    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest|grid|everon|island|template|template-core-only] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
     `proof verbs (agent-box/proofs/<verb>.mjs): ${verbs.join(" | ")}`,
   ].join("\n");
 }
@@ -1421,7 +1474,7 @@ async function relayToSession(cmd, rest, ptr) {
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
-    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|grid|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|grid|everon|island|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
     return 0;
   }
   {

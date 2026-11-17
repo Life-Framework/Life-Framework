@@ -54,6 +54,9 @@
   "grace": {
     "minutes": 0
   },
+  "houses": {
+    "doorCloseDelaySeconds": 20
+  },
   "idCard": {
     "replacementFee": 50,
     "showSeconds": 8
@@ -64,6 +67,11 @@
     "benefitBalanceThreshold": 500,
     "benefitAmount": 100,
     "benefitCooldownSeconds": 1200,
+    "runMinDistance": 300,
+    "runMinTimeFraction": 0.6,
+    "runRoadSpeed": 10,
+    "cargoDepositPercent": 100,
+    "cargoDepositFallback": 50,
     "jobXpFirstLevel": 500,
     "jobXpLevelGrowth": 2,
     "testUnlockAll": false,
@@ -104,6 +112,10 @@
     "permitFee": 250,
     "permitWaitDays": 1,
     "permitConvictionDays": 7
+  },
+  "logoutBody": {
+    "windowSeconds": 300,
+    "downedWindowSeconds": 600
   },
   "organizations": {
     "foundingFee": 500,
@@ -166,7 +178,15 @@
     "spikeStripLifetimeSeconds": 600,
     "applyMinPlaytimeHours": 50,
     "applyRejectCooldownHours": 72,
-    "trialHours": 168
+    "trialHours": 168,
+    "armoryCooldownMinutes": 120,
+    "dutyShiftMaxMinutes": 120,
+    "trialSweepSeconds": 60,
+    "ticketRateWindowSeconds": 10,
+    "ticketRateBurst": 3,
+    "spikeStripMaxPerOfficer": 2,
+    "callReward": 150,
+    "callRadius": 50
   },
   "respawn": {
     "wakeInHospital": true,

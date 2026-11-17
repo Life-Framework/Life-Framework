@@ -643,6 +643,8 @@ modded class SCR_ChimeraCharacter
 		Replication.BumpMe();
 		// The server is the owner of a hosted player's body and of test characters.
 		LF_OnRestrainedReplicated();
+		if (restrained)
+			LF_CuffEnforcement.OnCuffed(this);
 	}
 
 	//------------------------------------------------------------------------------------------------

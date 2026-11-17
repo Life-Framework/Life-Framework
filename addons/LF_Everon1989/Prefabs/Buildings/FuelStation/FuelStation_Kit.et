@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "F5F1B17EB192F8D2"
+ {
+  LightEntity {
+   ID "F5F19ED15819AEE1"
+   coords -0.89 5.75 -0.2
+   Color 0.86 0.94 1 1
+   LV 5.5
+   ClipEV -10
+   CastShadow 0
+   Radius 12
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  GenericEntity : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+   ID "F5F104BF886E8AC2"
+   components {
+    LF_AlarmMountComponent "{F5F179D75F4DFC41}" {
+     m_vOffset 0 0.167 0.065
+    }
+   }
+   coords 8.45 2.645 0.852
+   angleY 180
+  }
+  GenericEntity : "{D88D0B05DF83772F}Prefabs/Atmosphere/LF_FuelPumpHum.et" {
+   ID "F5F139C9940833EE"
+   coords -2.78 0.2 -0.7
+  }
+ }
+}

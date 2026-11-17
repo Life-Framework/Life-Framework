@@ -1,0 +1,2839 @@
+{
+ "group": "vehicles-dock-industrial",
+ "generated": "2026-11-16",
+ "source": "vanilla game paks via PakVirtualFS (prefab ancestry read), tools/cli measure, tmp/everon/raw/*.txt world dumps",
+ "caveats": [
+  "everonWorldCount is null for Prefabs/Vehicles/* and Prefabs/Items/*: the world dump has 0 Prefabs/Vehicles rows (cannot tell if vehicles are absent from the map or skipped by the extractor).",
+  "everonWorldCount sums every variant matched by the entry's colour/variant family (see notes); structure rows are deduplicated by (path, round x, round z), C rows are summed as given.",
+  "sizeM is [width x, depth z, height y] of the model bounds at scale 1; null where the prefab is a composite entity with no MeshObject of its own.",
+  "hasAction/actions come from the resolved prefab ancestry text (ActionsManagerComponent and *Action classes); for entries where only the context exists the action class is marked unextracted.",
+  "No drivable boat or trailer prefab exists in vanilla: Prefabs/Vehicles/Water is empty and Wheeled holds no trailer."
+ ],
+ "items": [
+  {
+   "guid": "54C3CC22DEBD57BE",
+   "path": "Prefabs/Vehicles/Wheeled/S105/S105_beige.et",
+   "res": "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et",
+   "name": "Skoda S105 car (10 colours)",
+   "category": "car",
+   "sizeM": [
+    1.89,
+    4.44,
+    1.36
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "repair at support station",
+    "push vehicle",
+    "handbrake",
+    "engine on/off",
+    "open vehicle storage",
+    "load resource",
+    "unload resource",
+    "unflip",
+    "refuel at support station (pump)",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Civilian saloon; colour = sibling prefab (beige, darkblue, darkbrown, darkred, green, lightblue, lightgreen, red, white, yellow). Used on the LF vehicle lot (locked child EL_S105_beige). _rally and _FIA variants are not civilian."
+  },
+  {
+   "guid": "5E696DD4888CE406",
+   "path": "Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et",
+   "res": "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et",
+   "name": "Dana V2101 car (9 colours)",
+   "category": "car",
+   "sizeM": [
+    1.76,
+    4.26,
+    1.33
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "repair at support station",
+    "push vehicle",
+    "engine on/off",
+    "open vehicle storage",
+    "load resource",
+    "unload resource",
+    "unflip",
+    "handbrake",
+    "refuel at support station (pump)",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "1970s saloon; colours beige, darkBlue, darkRed, green, lightBlue, lightGreen, red, white, yellow. On the LF lot (EL_V2101_beige)."
+  },
+  {
+   "guid": "6303FEB76E4B719A",
+   "path": "Prefabs/Vehicles/Wheeled/T601/T601_beige.et",
+   "res": "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et",
+   "name": "Sputnik T601 small car (6 colours + two-tone)",
+   "category": "car",
+   "sizeM": [
+    1.6,
+    3.64,
+    1.58
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "repair at support station",
+    "push vehicle",
+    "engine on/off",
+    "open vehicle storage",
+    "load resource",
+    "unload resource",
+    "unflip",
+    "handbrake",
+    "refuel at support station (pump)",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Cheap small car; beige, blue, green, grey, orange, white plus _twoTone beige/blue/orange. On the LF lot (EL_T601_beige)."
+  },
+  {
+   "guid": "543799AC5C52989C",
+   "path": "Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et",
+   "res": "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et",
+   "name": "S1203 minibus (transport)",
+   "category": "van",
+   "sizeM": [
+    1.95,
+    4.46,
+    2.51
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "handbrake",
+    "engine on/off",
+    "open vehicle storage",
+    "load resource",
+    "unload resource",
+    "unflip",
+    "push vehicle",
+    "refuel at support station (pump)",
+    "repair at support station",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Passenger van with inventory storage; beige, blue, brown, red, white, yellow (_red prefab is only 578 B, check before use). On the lot (EL_S1203_transport_beige)."
+  },
+  {
+   "guid": "2A66E3B8B0C61D87",
+   "path": "Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et",
+   "res": "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et",
+   "name": "S1203 cargo van",
+   "category": "van",
+   "sizeM": [
+    1.95,
+    4.46,
+    2.51
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "handbrake",
+    "engine on/off",
+    "open vehicle storage",
+    "load resource",
+    "unload resource",
+    "unflip",
+    "push vehicle",
+    "refuel at support station (pump)",
+    "repair at support station",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Delivery van body; beige, blue, brown, red, white, yellow. Courier or shop-delivery dressing. No SCR_UniversalInventoryStorageComponent in its chain."
+  },
+  {
+   "guid": "1D96D899FA313A08",
+   "path": "Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_cargo_CIV_blue.et",
+   "res": "{1D96D899FA313A08}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_cargo_CIV_blue.et",
+   "name": "UAZ452 cargo van (civilian colours)",
+   "category": "van",
+   "sizeM": [
+    2.29,
+    4.53,
+    1.89
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "refuel at support station (pump)",
+    "repair at support station",
+    "push vehicle",
+    "handbrake",
+    "engine on/off",
+    "open vehicle storage",
+    "load resource",
+    "unload resource",
+    "unflip",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Boxy van; CIV colours blue, grey, orange exist only on the _cargo_CIV_ and _transport_CIV_ branches. The LF lot sells UAZ452_base (no colour choice)."
+  },
+  {
+   "guid": "A2C4DBCDDE967600",
+   "path": "Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_transport_CIV_blue.et",
+   "res": "{A2C4DBCDDE967600}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_transport_CIV_blue.et",
+   "name": "UAZ452 passenger van (civilian colours)",
+   "category": "van",
+   "sizeM": [
+    2.29,
+    4.53,
+    1.89
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "refuel at support station (pump)",
+    "repair at support station",
+    "push vehicle",
+    "handbrake",
+    "engine on/off",
+    "open vehicle storage",
+    "load resource",
+    "unload resource",
+    "unflip",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Same body as the cargo van, with seats; blue, grey, orange."
+  },
+  {
+   "guid": "C8B16ABCA57679A2",
+   "path": "Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et",
+   "res": "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et",
+   "name": "UAZ469 jeep, covered (civilian)",
+   "category": "car",
+   "sizeM": [
+    1.94,
+    4.09,
+    1.77
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "refuel at support station (pump)",
+    "repair at support station",
+    "unflip",
+    "push vehicle",
+    "engine on/off",
+    "open vehicle storage",
+    "load resource",
+    "unload resource",
+    "handbrake",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Farm/forestry jeep; blue, brown, forest, red, teal; JZD, PTS, VAK are liveries. On the LF lot (EL_UAZ469_covered_CIV_blue)."
+  },
+  {
+   "guid": "9B3A89DD33FF0483",
+   "path": "Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_uncovered_CIV_blue.et",
+   "res": "{9B3A89DD33FF0483}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_uncovered_CIV_blue.et",
+   "name": "UAZ469 jeep, open (civilian)",
+   "category": "car",
+   "sizeM": [
+    1.94,
+    4.09,
+    1.77
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "refuel at support station (pump)",
+    "repair at support station",
+    "unflip",
+    "push vehicle",
+    "engine on/off",
+    "open vehicle storage",
+    "load resource",
+    "unload resource",
+    "handbrake",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Open-top jeep; blue, brown, red, teal."
+  },
+  {
+   "guid": "A2E23CB8DDCFE82E",
+   "path": "Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et",
+   "res": "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et",
+   "name": "Ural 4320 cargo truck (civilian)",
+   "category": "truck",
+   "sizeM": [
+    2.75,
+    7.44,
+    2.26
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "refuel at support station (pump)",
+    "repair at support station",
+    "unflip",
+    "push vehicle",
+    "handbrake",
+    "engine on/off",
+    "open vehicle storage",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Flatbed truck with SCR_UniversalInventoryStorageComponent; _CIV_forest and _randomized exist. Dock, farm and forestry haul."
+  },
+  {
+   "guid": "4A59DAEFE645E8A0",
+   "path": "Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_tanker_CIV_orange.et",
+   "res": "{4A59DAEFE645E8A0}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_tanker_CIV_orange.et",
+   "name": "Ural 4320 fuel tanker (civilian)",
+   "category": "truck",
+   "sizeM": [
+    2.75,
+    7.44,
+    2.26
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "refuel at support station (pump)",
+    "repair at support station",
+    "unflip",
+    "push vehicle",
+    "handbrake",
+    "engine on/off",
+    "open vehicle storage",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Orange or _pohona livery; has SCR_FuelNode plus SCR_ResourceComponent. Park beside a pump or tank farm."
+  },
+  {
+   "guid": "F1FBD0972FA5FE09",
+   "path": "Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et",
+   "res": "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et",
+   "name": "M923A1 cargo truck",
+   "category": "truck",
+   "sizeM": [
+    3.19,
+    8.25,
+    2.66
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "refuel at support station (pump)",
+    "repair at support station",
+    "unflip",
+    "push vehicle",
+    "handbrake",
+    "engine on/off",
+    "open vehicle storage",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "US military 5-ton; on the LF lot as EL_M923A1_transport. Only MERDC camo variants, no civilian colours. _covered and _covered_closed exist."
+  },
+  {
+   "guid": "2BE1F8B9299B67C1",
+   "path": "Prefabs/Vehicles/Wheeled/M923A1/M923A1_tanker.et",
+   "res": "{2BE1F8B9299B67C1}Prefabs/Vehicles/Wheeled/M923A1/M923A1_tanker.et",
+   "name": "M923A1 fuel tanker",
+   "category": "truck",
+   "sizeM": [
+    3.19,
+    8.25,
+    2.66
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "refuel at support station (pump)",
+    "repair at support station",
+    "unflip",
+    "push vehicle",
+    "handbrake",
+    "engine on/off",
+    "open vehicle storage",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Military green tanker; SCR_FuelNode present."
+  },
+  {
+   "guid": "939AC713213C2BA1",
+   "path": "Prefabs/Vehicles/Wheeled/Z7211/Z7211_red_CIV.et",
+   "res": "{939AC713213C2BA1}Prefabs/Vehicles/Wheeled/Z7211/Z7211_red_CIV.et",
+   "name": "Zetor 7211 tractor (red)",
+   "category": "tractor",
+   "sizeM": [
+    2.2,
+    4.11,
+    2.43
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "repair at support station",
+    "push vehicle",
+    "engine on/off",
+    "unflip",
+    "handbrake",
+    "refuel at support station (pump)",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Only tractor in vanilla (Z7211_base plus this red CIV). Drivable, has storage. Not on the LF lot. Pair with hay bales and plough wrecks for a farm yard."
+  },
+  {
+   "guid": "F649585ABB3706C4",
+   "path": "Prefabs/Vehicles/Wheeled/M151A2/M151A2.et",
+   "res": "{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et",
+   "name": "M151A2 military jeep",
+   "category": "car",
+   "sizeM": [
+    2.03,
+    3.69,
+    1.59
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "remove casualty",
+    "refuel at support station (pump)",
+    "repair at support station",
+    "unflip",
+    "push vehicle",
+    "load resource",
+    "unload resource",
+    "engine on/off",
+    "open vehicle storage",
+    "handbrake",
+    "lights (presence/hi-beam/turn/hazard)"
+   ],
+   "drivable": true,
+   "hasStorage": true,
+   "destructible": true,
+   "notes": "Military; M151A2_transport has a bench. Not civilian; surplus-dealer or army yard only."
+  },
+  {
+   "guid": "3386EAA823BE462E",
+   "path": "Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_static.et",
+   "res": "{3386EAA823BE462E}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_static.et",
+   "name": "UAZ469 wreck (static)",
+   "category": "car",
+   "sizeM": [
+    2.27,
+    4.09,
+    1.63
+   ],
+   "everonWorldCount": 9,
+   "usedInTowns": [
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static derelict: mesh and rigidbody only, no components. Also _blue_static and _rusty_static. Scrapyard or roadside."
+  },
+  {
+   "guid": "1A1CE09F7BCA6650",
+   "path": "Prefabs/Props/Wrecks/S105_wreck/S105_wreck_static.et",
+   "res": "{1A1CE09F7BCA6650}Prefabs/Props/Wrecks/S105_wreck/S105_wreck_static.et",
+   "name": "S105 wreck (static)",
+   "category": "car",
+   "sizeM": [
+    2.48,
+    4.53,
+    1.46
+   ],
+   "everonWorldCount": 30,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static derelict car for a scrapyard."
+  },
+  {
+   "guid": null,
+   "path": "Prefabs/Props/Wrecks/S1203_wreck/S1203_wreck_static.et",
+   "res": null,
+   "name": "S1203 wreck (static)",
+   "category": "van",
+   "sizeM": [
+    1.83,
+    4.59,
+    1.8
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static derelict van."
+  },
+  {
+   "guid": "56FFF0C990358ED2",
+   "path": "Prefabs/Props/Wrecks/UAZ452_wreck/UAZ452_wreck_static.et",
+   "res": "{56FFF0C990358ED2}Prefabs/Props/Wrecks/UAZ452_wreck/UAZ452_wreck_static.et",
+   "name": "UAZ452 wreck (static)",
+   "category": "van",
+   "sizeM": [
+    2.27,
+    4.57,
+    1.87
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static derelict van."
+  },
+  {
+   "guid": "AE300E34EA8FF40C",
+   "path": "Prefabs/Props/Wrecks/Ural4320_wreck/Ural4320_wreck_static.et",
+   "res": "{AE300E34EA8FF40C}Prefabs/Props/Wrecks/Ural4320_wreck/Ural4320_wreck_static.et",
+   "name": "Ural 4320 wreck (static)",
+   "category": "truck",
+   "sizeM": [
+    3.16,
+    7.62,
+    2.61
+   ],
+   "everonWorldCount": 16,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static derelict truck."
+  },
+  {
+   "guid": "4923E218F59644B9",
+   "path": "Prefabs/Props/Wrecks/BoatWreck_01/BoatWreck_01.et",
+   "res": "{4923E218F59644B9}Prefabs/Props/Wrecks/BoatWreck_01/BoatWreck_01.et",
+   "name": "Wrecked small boat",
+   "category": "boat",
+   "sizeM": [
+    1.41,
+    5.13,
+    0.8
+   ],
+   "everonWorldCount": 86,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Only small-boat mesh in vanilla: no drivable boat prefab exists (Prefabs/Vehicles/Water is empty). Beached or dry-dock hull."
+  },
+  {
+   "guid": "43957C1E3ECCDFE2",
+   "path": "Prefabs/Props/Wrecks/ShipWreckWooden_01/ShipWreckWooden_01.et",
+   "res": "{43957C1E3ECCDFE2}Prefabs/Props/Wrecks/ShipWreckWooden_01/ShipWreckWooden_01.et",
+   "name": "Wooden ship wreck",
+   "category": "boat",
+   "sizeM": [
+    6.64,
+    23.29,
+    9.89
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Large hull; variants _sunk and _Underwater_01. Harbour-edge set piece."
+  },
+  {
+   "guid": "FE43934149F46BFC",
+   "path": "Prefabs/Props/Industrial/CompressorTrailerWreck_01/CompressorTrailerWreck_01_Yellow.et",
+   "res": "{FE43934149F46BFC}Prefabs/Props/Industrial/CompressorTrailerWreck_01/CompressorTrailerWreck_01_Yellow.et",
+   "name": "Compressor trailer wreck (yellow)",
+   "category": "trailer",
+   "sizeM": [
+    2.44,
+    7.37,
+    2.83
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Only trailer-like prop (Gray and Yellow). SCR_DestructibleEntity. Not a hitchable trailer: no vanilla trailer vehicle exists."
+  },
+  {
+   "guid": "DE59CB05202006E8",
+   "path": "Prefabs/Props/Agriculture/CultivatorWreck_01.et",
+   "res": "{DE59CB05202006E8}Prefabs/Props/Agriculture/CultivatorWreck_01.et",
+   "name": "Cultivator wreck",
+   "category": "farm",
+   "sizeM": [
+    2.64,
+    2.09,
+    1.62
+   ],
+   "everonWorldCount": 93,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Rusting tractor implement (also _Damaged). Farm-yard filler."
+  },
+  {
+   "guid": "A98BA618430E9BAA",
+   "path": "Prefabs/Props/Agriculture/PlowWreck_01.et",
+   "res": "{A98BA618430E9BAA}Prefabs/Props/Agriculture/PlowWreck_01.et",
+   "name": "Plough wreck",
+   "category": "farm",
+   "sizeM": [
+    1.24,
+    2.18,
+    1.7
+   ],
+   "everonWorldCount": 68,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Rusting plough. Farm-yard filler."
+  },
+  {
+   "guid": "9269BD1B6BF3A441",
+   "path": "Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/FuelStation_E_01_V1.et",
+   "res": "{9269BD1B6BF3A441}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/FuelStation_E_01_V1.et",
+   "name": "Fuel station (full composition)",
+   "category": "fuel",
+   "sizeM": [
+    30.99,
+    7.83,
+    6.21
+   ],
+   "everonWorldCount": 24,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Eden kiosk + canopy + platform. LF Street_Fuel uses this exact prefab for the till and clerk. Count = V1 plus building/building_small/platform/roof parts. Composite: no own mesh, so no sizeM."
+  },
+  {
+   "guid": "A4D0B331414901A5",
+   "path": "Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_tankpistol.et",
+   "res": "{A4D0B331414901A5}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_tankpistol.et",
+   "name": "Fuel pump with nozzle",
+   "category": "fuel",
+   "sizeM": [
+    1.37,
+    0.73,
+    1.91
+   ],
+   "everonWorldCount": 19,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": true,
+   "actions": [
+    "SCR_FuelSupportStationComponent: fuel pump support station"
+   ],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "The working pump: SCR_FuelSupportStationComponent + SCR_FuelNode + ActionsManager + SCR_FuelNozzle child. Vehicles refuel via SCR_RefuelAtSupportStationAction (on the vehicle). LF_AmbientFuelPump hooks it for the hum. Count includes the PrefabLibrary copy. Composite: no own mesh."
+  },
+  {
+   "guid": "486D45EE6885B589",
+   "path": "Prefabs/Props/Commercial/FuelNozzle_01.et",
+   "res": "{486D45EE6885B589}Prefabs/Props/Commercial/FuelNozzle_01.et",
+   "name": "Fuel nozzle",
+   "category": "fuel",
+   "sizeM": [
+    0.08,
+    0.35,
+    0.58
+   ],
+   "everonWorldCount": 19,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "SCR_FuelNozzle with InventoryItemComponent; child of the pump, can be placed alone as a dressing prop."
+  },
+  {
+   "guid": "389D6DF9941FF22D",
+   "path": "Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_01/FuelTank_01_grey.et",
+   "res": "{389D6DF9941FF22D}Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_01/FuelTank_01_grey.et",
+   "name": "Fuel tank, horizontal (FuelTank_01)",
+   "category": "fuel",
+   "sizeM": [
+    5.16,
+    4.64,
+    10.2
+   ],
+   "everonWorldCount": 22,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Large bulk tank (grey, green, orange, rust; _Ruin variants exist). Scenery."
+  },
+  {
+   "guid": "2D4B0333F2858BDD",
+   "path": "Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_02/FuelTank_02_Pump_grey.et",
+   "res": "{2D4B0333F2858BDD}Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_02/FuelTank_02_Pump_grey.et",
+   "name": "Fuel tank with pump housing (FuelTank_02_Pump)",
+   "category": "fuel",
+   "sizeM": [
+    11.17,
+    2.82,
+    7.67
+   ],
+   "everonWorldCount": 3,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Grey, green, yellow, USSR variant. Scenery only: no SCR_FuelSupportStationComponent in its chain, so it does not refuel; pair with the pump prop."
+  },
+  {
+   "guid": "AAB10C30EE97D12D",
+   "path": "Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_03/FuelTank_03_grey.et",
+   "res": "{AAB10C30EE97D12D}Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_03/FuelTank_03_grey.et",
+   "name": "Fuel tank, upright (FuelTank_03)",
+   "category": "fuel",
+   "sizeM": [
+    16,
+    17.55,
+    12.55
+   ],
+   "everonWorldCount": 8,
+   "usedInTowns": [
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Vertical tank; grey, green, orange. Scenery."
+  },
+  {
+   "guid": "4BE795374BE3D67E",
+   "path": "Prefabs/Props/Industrial/BarrelFuel_01_closed.et",
+   "res": "{4BE795374BE3D67E}Prefabs/Props/Industrial/BarrelFuel_01_closed.et",
+   "name": "Fuel barrel, closed",
+   "category": "fuel",
+   "sizeM": [
+    0.67,
+    0.67,
+    1.01
+   ],
+   "everonWorldCount": 551,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Steel fuel drum; destructible (SCR_DestructionMultiPhaseComponent, particle on destruction). Count sums Base, closed, closed_old."
+  },
+  {
+   "guid": "DF3EF41CE4D441DE",
+   "path": "Prefabs/Props/Industrial/BarrelMetal_01_rust.et",
+   "res": "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et",
+   "name": "Metal drum (rust / grey / blue / military)",
+   "category": "fuel",
+   "sizeM": [
+    0.76,
+    0.76,
+    1.1
+   ],
+   "everonWorldCount": 493,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Generic oil drum; rust, grey, blue, blue_open, military. Destructible. Workshop and dock clutter."
+  },
+  {
+   "guid": "10C5A45290A9EEED",
+   "path": "Prefabs/Props/Industrial/GasTank_01_blue.et",
+   "res": "{10C5A45290A9EEED}Prefabs/Props/Industrial/GasTank_01_blue.et",
+   "name": "Gas bottle (GasTank_01 and _02, 4 colours)",
+   "category": "fuel",
+   "sizeM": [
+    0.34,
+    0.34,
+    0.64
+   ],
+   "everonWorldCount": 345,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Propane-style cylinder; blue, red, rusty. Destructible. Garage or kitchen clutter."
+  },
+  {
+   "guid": "62B2ADC4243454F9",
+   "path": "Prefabs/Props/Civilian/Jerrycan_01.et",
+   "res": "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et",
+   "name": "Jerrycan (world prop)",
+   "category": "fuel",
+   "sizeM": [
+    0.16,
+    0.37,
+    0.52
+   ],
+   "everonWorldCount": 574,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static mesh only: no InventoryItemComponent, so it is not pick-up-able. The carryable item is Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et (used by the LF fuel-can job)."
+  },
+  {
+   "guid": "12D5AD21E383B768",
+   "path": "Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et",
+   "res": "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et",
+   "name": "Jerrycan (item)",
+   "category": "fuel",
+   "sizeM": [
+    0.16,
+    0.37,
+    0.52
+   ],
+   "everonWorldCount": null,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "refuel at support station (pump)",
+    "drain fuel",
+    "pick up item",
+    "SCR_FuelSupportStationComponent: fuel pump support station"
+   ],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Pickup item used by LF job Roadmap_Job_FuelCan. Not a world-count prop."
+  },
+  {
+   "guid": "DB4F61D5F37432F7",
+   "path": "Prefabs/Props/Military/Camps/PalletFuel_01.et",
+   "res": "{DB4F61D5F37432F7}Prefabs/Props/Military/Camps/PalletFuel_01.et",
+   "name": "Pallet of fuel drums",
+   "category": "fuel",
+   "sizeM": [
+    1.38,
+    2.08,
+    1.25
+   ],
+   "everonWorldCount": 40,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Military camp prop with particle spawn on destruct; yard stack."
+  },
+  {
+   "guid": "95D947E744336F78",
+   "path": "Prefabs/Props/Industrial/Workbench_01.et",
+   "res": "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et",
+   "name": "Workbench 01",
+   "category": "workshop",
+   "sizeM": [
+    2.6,
+    1.13,
+    1.2
+   ],
+   "everonWorldCount": 154,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static bench for a garage back wall."
+  },
+  {
+   "guid": "64A37FE9287F1A77",
+   "path": "Prefabs/Props/Industrial/Workbench_02.et",
+   "res": "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et",
+   "name": "Workbench 02",
+   "category": "workshop",
+   "sizeM": [
+    2.47,
+    0.74,
+    1
+   ],
+   "everonWorldCount": 127,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Variant bench."
+  },
+  {
+   "guid": "2B0BD0720F8FB3A7",
+   "path": "Prefabs/Props/Industrial/Workbench_Vice_01.et",
+   "res": "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et",
+   "name": "Workbench with vice",
+   "category": "workshop",
+   "sizeM": [
+    0.25,
+    0.45,
+    0.3
+   ],
+   "everonWorldCount": 224,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Bench with vice; the most common workshop prop."
+  },
+  {
+   "guid": "2B26287DC5B7F9D0",
+   "path": "Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et",
+   "res": "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et",
+   "name": "Toolbox (red / grey / lightblue)",
+   "category": "workshop",
+   "sizeM": [
+    0.55,
+    0.24,
+    0.36
+   ],
+   "everonWorldCount": 26,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "ToolBox_01 grey and red, ToolBox_02 lightblue; destructible. Count sums all variants."
+  },
+  {
+   "guid": "B557358F8F64AE31",
+   "path": "Prefabs/Props/Industrial/Repair/HydraulicCarJack_01.et",
+   "res": "{B557358F8F64AE31}Prefabs/Props/Industrial/Repair/HydraulicCarJack_01.et",
+   "name": "Hydraulic car jack",
+   "category": "workshop",
+   "sizeM": [
+    0.34,
+    0.51,
+    1.19
+   ],
+   "everonWorldCount": 29,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static trolley jack; place beside a car."
+  },
+  {
+   "guid": "90A74133C1DC6226",
+   "path": "Prefabs/Props/Industrial/Repair/EngineCrane_01.et",
+   "res": "{90A74133C1DC6226}Prefabs/Props/Industrial/Repair/EngineCrane_01.et",
+   "name": "Engine crane",
+   "category": "workshop",
+   "sizeM": [
+    0.81,
+    1.7,
+    1.49
+   ],
+   "everonWorldCount": 17,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static shop crane; no hoist action."
+  },
+  {
+   "guid": "50A752B7D5E679A2",
+   "path": "Prefabs/Props/Industrial/Repair/GasWelder_01.et",
+   "res": "{50A752B7D5E679A2}Prefabs/Props/Industrial/Repair/GasWelder_01.et",
+   "name": "Gas welder set",
+   "category": "workshop",
+   "sizeM": [
+    0.81,
+    0.51,
+    1.48
+   ],
+   "everonWorldCount": 24,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Welding trolley with bottles."
+  },
+  {
+   "guid": "342E852E9A1847EA",
+   "path": "Prefabs/Props/Industrial/Repair/VehicleGarbage_01_pile_medium.et",
+   "res": "{342E852E9A1847EA}Prefabs/Props/Industrial/Repair/VehicleGarbage_01_pile_medium.et",
+   "name": "Vehicle-parts junk pile (small / medium / large)",
+   "category": "workshop",
+   "sizeM": [
+    1.72,
+    2.26,
+    0.91
+   ],
+   "everonWorldCount": 137,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Scrap-part piles; destructible. Scrapyard filler."
+  },
+  {
+   "guid": "5D31850B326BA246",
+   "path": "Prefabs/Props/Industrial/AirCompressor_01/AirCompressor_01.et",
+   "res": "{5D31850B326BA246}Prefabs/Props/Industrial/AirCompressor_01/AirCompressor_01.et",
+   "name": "Air compressor",
+   "category": "workshop",
+   "sizeM": [
+    0.78,
+    1.35,
+    1.31
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Workshop compressor; destructible."
+  },
+  {
+   "guid": "CEA239D9E1899899",
+   "path": "Prefabs/Props/Garbage/Tires/TirePile_01_small.et",
+   "res": "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et",
+   "name": "Tyre pile (small / medium)",
+   "category": "workshop",
+   "sizeM": [
+    2.01,
+    2.27,
+    0.64
+   ],
+   "everonWorldCount": 407,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Stack of tyres; destructible. Count covers small + medium."
+  },
+  {
+   "guid": "6929659CE9375CAF",
+   "path": "Prefabs/Props/Garbage/Tires/TireTractor_01_single.et",
+   "res": "{6929659CE9375CAF}Prefabs/Props/Garbage/Tires/TireTractor_01_single.et",
+   "name": "Tractor tyre (single)",
+   "category": "workshop",
+   "sizeM": [
+    1.4,
+    1.4,
+    0.38
+   ],
+   "everonWorldCount": 198,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Big tractor tyre; destructible. Farm yard or dock fender."
+  },
+  {
+   "guid": "6095B175AA9804DC",
+   "path": "Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et",
+   "res": "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et",
+   "name": "Loose vehicle tyres (UAZ469, BTR70, M151A2, M998, M939A1, Ural, with _pile)",
+   "category": "workshop",
+   "sizeM": [
+    0.85,
+    0.84,
+    0.22
+   ],
+   "everonWorldCount": 195,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Loose tyres and per-model *_pile stacks; Wheel_* are tyre plus rim."
+  },
+  {
+   "guid": "80A5B37A1472B084",
+   "path": "Prefabs/Structures/Industrial/Garages/Garage_E_02/Garage_E_02.et",
+   "res": "{80A5B37A1472B084}Prefabs/Structures/Industrial/Garages/Garage_E_02/Garage_E_02.et",
+   "name": "Garage building (E_02)",
+   "category": "workshop",
+   "sizeM": [
+    28.12,
+    18.85,
+    13.9
+   ],
+   "everonWorldCount": 10,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Destructible building shell; interior sub-prefab Garage_E_02_furniture_01."
+  },
+  {
+   "guid": "5F00FD9BDAD8C1A5",
+   "path": "Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Garage.et",
+   "res": "{5F00FD9BDAD8C1A5}Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Garage.et",
+   "name": "Workshop 01 garage bay",
+   "category": "workshop",
+   "sizeM": [
+    8.32,
+    5.82,
+    6.49
+   ],
+   "everonWorldCount": 81,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Workshop_01 comes as Main, Side and Garage parts; count sums all three."
+  },
+  {
+   "guid": "74FAABE8512145EF",
+   "path": "Prefabs/Structures/Industrial/Repair/RampVehicle_01/RampVehicle_01_metal.et",
+   "res": "{74FAABE8512145EF}Prefabs/Structures/Industrial/Repair/RampVehicle_01/RampVehicle_01_metal.et",
+   "name": "Vehicle service ramp (metal)",
+   "category": "workshop",
+   "sizeM": [
+    5.07,
+    11.05,
+    1.69
+   ],
+   "everonWorldCount": 8,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Ramp for working under a car; also _concrete. Has SCR_ResourceComponent."
+  },
+  {
+   "guid": "35AC8C84785CB8B1",
+   "path": "Prefabs/Structures/Infrastructure/Naval/Piers/Pier_Wood_Long_01.et",
+   "res": "{35AC8C84785CB8B1}Prefabs/Structures/Infrastructure/Naval/Piers/Pier_Wood_Long_01.et",
+   "name": "Wooden pier, long",
+   "category": "dock",
+   "sizeM": [
+    9.21,
+    0.66,
+    1
+   ],
+   "everonWorldCount": 634,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Count covers Pier_Wood Long/Short/Broken and PierWooden_01 (10m, 25m, abandoned, destroyed, poles). Plain GenericEntity (no destruction component in chain)."
+  },
+  {
+   "guid": "DB3F36604A282237",
+   "path": "Prefabs/Structures/Infrastructure/Naval/Piers/PierConcrete_01_20m.et",
+   "res": "{DB3F36604A282237}Prefabs/Structures/Infrastructure/Naval/Piers/PierConcrete_01_20m.et",
+   "name": "Concrete quay, 20 m",
+   "category": "dock",
+   "sizeM": [
+    20.01,
+    8.25,
+    8.12
+   ],
+   "everonWorldCount": 343,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Modular quay: 20m, 20m_T, wall 5/10/20, corners, flat, slipway, 10m_end. Count sums all PierConcrete_01_* parts."
+  },
+  {
+   "guid": null,
+   "path": "Prefabs/Structures/Infrastructure/Naval/Piers/FloatingDock_01/FloatingDock_01.et",
+   "res": null,
+   "name": "Floating dock",
+   "category": "dock",
+   "sizeM": [
+    17.64,
+    50.05,
+    30.66
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Pontoon with bridge part."
+  },
+  {
+   "guid": "5BA952DAADCB9C5B",
+   "path": "Prefabs/Structures/Infrastructure/Naval/Piers/Pier_Tires_01.et",
+   "res": "{5BA952DAADCB9C5B}Prefabs/Structures/Infrastructure/Naval/Piers/Pier_Tires_01.et",
+   "name": "Jetty with tyre fenders (01 and 02)",
+   "category": "dock",
+   "sizeM": [
+    0.87,
+    1.64,
+    1.44
+   ],
+   "everonWorldCount": 60,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Small jetty with tyre bumpers."
+  },
+  {
+   "guid": "85CE0F68DA969A31",
+   "path": "Prefabs/Structures/Infrastructure/Naval/SeaBollards/SeaBollard_01.et",
+   "res": "{85CE0F68DA969A31}Prefabs/Structures/Infrastructure/Naval/SeaBollards/SeaBollard_01.et",
+   "name": "Mooring bollard",
+   "category": "dock",
+   "sizeM": [
+    0.6,
+    0.45,
+    0.52
+   ],
+   "everonWorldCount": 418,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Most-placed naval structure on Everon; destructible entity."
+  },
+  {
+   "guid": "85B7377A90F6A75F",
+   "path": "Prefabs/Structures/Infrastructure/Naval/Cranes/HarborCrane_01.et",
+   "res": "{85B7377A90F6A75F}Prefabs/Structures/Infrastructure/Naval/Cranes/HarborCrane_01.et",
+   "name": "Harbour crane",
+   "category": "dock",
+   "sizeM": [
+    17.19,
+    13.54,
+    13.57
+   ],
+   "everonWorldCount": 12,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre"
+   ],
+   "hasAction": true,
+   "actions": [
+    "climb ladder (SCR_LadderDoorUserAction)"
+   ],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Quay crane (multicolour and green variants); ActionsManager with a ladder action (SCR_LadderDoorUserAction). Not animated for loading."
+  },
+  {
+   "guid": "5E11FCE4F657AE49",
+   "path": "Prefabs/Structures/Infrastructure/Naval/Slipway_01/Slipway_01_cradle_01.et",
+   "res": "{5E11FCE4F657AE49}Prefabs/Structures/Infrastructure/Naval/Slipway_01/Slipway_01_cradle_01.et",
+   "name": "Slipway boat cradle",
+   "category": "dock",
+   "sizeM": [
+    4.26,
+    5.9,
+    2.43
+   ],
+   "everonWorldCount": 13,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "StaticModelEntity cradle for a boat on rails (Slipway_01 base, rail, winch, cradle_02)."
+  },
+  {
+   "guid": "2B165B5BF9FE270D",
+   "path": "Prefabs/Structures/Infrastructure/Naval/Sheds/BoatShed_01/BoatShed_01.et",
+   "res": "{2B165B5BF9FE270D}Prefabs/Structures/Infrastructure/Naval/Sheds/BoatShed_01/BoatShed_01.et",
+   "name": "Boat shed",
+   "category": "dock",
+   "sizeM": [
+    6.97,
+    8.67,
+    10.71
+   ],
+   "everonWorldCount": 40,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Open-water shed (BoatShed_01, _weathered, _land, floor)."
+  },
+  {
+   "guid": "F281250F8F8E3755",
+   "path": "Prefabs/Structures/Infrastructure/Naval/Breakwater/BreakwaterStone_01_stack_wall.et",
+   "res": "{F281250F8F8E3755}Prefabs/Structures/Infrastructure/Naval/Breakwater/BreakwaterStone_01_stack_wall.et",
+   "name": "Stone breakwater block",
+   "category": "dock",
+   "sizeM": [
+    39.61,
+    21.98,
+    9.72
+   ],
+   "everonWorldCount": 198,
+   "usedInTowns": [
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Indestructible environmental entity; wall, wall_half, slope."
+  },
+  {
+   "guid": "618BDE854B335713",
+   "path": "Prefabs/Props/Naval/HarborWinch_01.et",
+   "res": "{618BDE854B335713}Prefabs/Props/Naval/HarborWinch_01.et",
+   "name": "Harbour winch",
+   "category": "dock",
+   "sizeM": [
+    1.61,
+    1.25,
+    1.6
+   ],
+   "everonWorldCount": 7,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Deck winch; destructible."
+  },
+  {
+   "guid": "71B834B133AA3DB3",
+   "path": "Prefabs/Props/Naval/FishingNet_01.et",
+   "res": "{71B834B133AA3DB3}Prefabs/Props/Naval/FishingNet_01.et",
+   "name": "Fishing net (01 / 02 / 03)",
+   "category": "dock",
+   "sizeM": [
+    2.54,
+    1.7,
+    0.46
+   ],
+   "everonWorldCount": 322,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Net heaps; three mesh variants."
+  },
+  {
+   "guid": "5FA05CC09D57A6CF",
+   "path": "Prefabs/Props/Naval/NetHanger_01_long.et",
+   "res": "{5FA05CC09D57A6CF}Prefabs/Props/Naval/NetHanger_01_long.et",
+   "name": "Net-drying rack",
+   "category": "dock",
+   "sizeM": [
+    0.95,
+    7,
+    1.94
+   ],
+   "everonWorldCount": 34,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Pole rack for hanging nets: long, short, stick_A, stick_B."
+  },
+  {
+   "guid": "33D5102FA67E1B46",
+   "path": "Prefabs/Props/Naval/FishingRope_01.et",
+   "res": "{33D5102FA67E1B46}Prefabs/Props/Naval/FishingRope_01.et",
+   "name": "Rope coil",
+   "category": "dock",
+   "sizeM": [
+    0.96,
+    0.49,
+    0.09
+   ],
+   "everonWorldCount": 124,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Coiled fishing rope."
+  },
+  {
+   "guid": "19968B13AD8B3115",
+   "path": "Prefabs/Props/Naval/FishingGear_01.et",
+   "res": "{19968B13AD8B3115}Prefabs/Props/Naval/FishingGear_01.et",
+   "name": "Fishing gear (composite)",
+   "category": "dock",
+   "sizeM": null,
+   "everonWorldCount": 19,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Composite entity of fishing kit; no own mesh, so no sizeM."
+  },
+  {
+   "guid": "93737DC0B2AB7E62",
+   "path": "Prefabs/Props/Naval/LobsterTrapWooden_01.et",
+   "res": "{93737DC0B2AB7E62}Prefabs/Props/Naval/LobsterTrapWooden_01.et",
+   "name": "Lobster trap (01 and 02)",
+   "category": "dock",
+   "sizeM": [
+    0.93,
+    0.48,
+    0.38
+   ],
+   "everonWorldCount": 246,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Wooden pot."
+  },
+  {
+   "guid": "5564DA2B07C100EA",
+   "path": "Prefabs/Props/Naval/Buoy_01_red.et",
+   "res": "{5564DA2B07C100EA}Prefabs/Props/Naval/Buoy_01_red.et",
+   "name": "Buoy (red / green / white / chain / lit)",
+   "category": "dock",
+   "sizeM": [
+    3.98,
+    4.22,
+    9.68
+   ],
+   "everonWorldCount": 156,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Count covers Buoy_01 variants (lightsource red/green, grounded). Destructible."
+  },
+  {
+   "guid": "89534EF0A1EEE176",
+   "path": "Prefabs/Props/Naval/LifeBuoy_01.et",
+   "res": "{89534EF0A1EEE176}Prefabs/Props/Naval/LifeBuoy_01.et",
+   "name": "Life ring (single / set / stand)",
+   "category": "dock",
+   "sizeM": [
+    0.76,
+    0.73,
+    0.15
+   ],
+   "everonWorldCount": 191,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Wall or quay life ring; _set and _stand variants."
+  },
+  {
+   "guid": "95274C6C9B84E104",
+   "path": "Prefabs/Props/Naval/MooringBuoy_01.et",
+   "res": "{95274C6C9B84E104}Prefabs/Props/Naval/MooringBuoy_01.et",
+   "name": "Mooring buoy",
+   "category": "dock",
+   "sizeM": [
+    20.13,
+    20.13,
+    28.91
+   ],
+   "everonWorldCount": 25,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Water-surface marker."
+  },
+  {
+   "guid": "1B79BB823DC46F9D",
+   "path": "Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_20ft_green.et",
+   "res": "{1B79BB823DC46F9D}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_20ft_green.et",
+   "name": "Cargo container 20 ft",
+   "category": "container",
+   "sizeM": [
+    2.52,
+    6.14,
+    2.6
+   ],
+   "everonWorldCount": 105,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Blue, green, grey, olive, red plus _rusty. Destructible. Stack for a port yard."
+  },
+  {
+   "guid": "35E211705F8FED68",
+   "path": "Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_40ft_blue.et",
+   "res": "{35E211705F8FED68}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_40ft_blue.et",
+   "name": "Cargo container 40 ft",
+   "category": "container",
+   "sizeM": [
+    2.52,
+    12.27,
+    2.6
+   ],
+   "everonWorldCount": 8,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Blue, green, grey, olive, red."
+  },
+  {
+   "guid": "ADB764EA160A1A4E",
+   "path": "Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_10ft_grey.et",
+   "res": "{ADB764EA160A1A4E}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_10ft_grey.et",
+   "name": "Cargo container 10 ft",
+   "category": "container",
+   "sizeM": [
+    2.52,
+    3.06,
+    2.6
+   ],
+   "everonWorldCount": 70,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Blue, green, grey, olive, red."
+  },
+  {
+   "guid": "2A5CFC83306263A4",
+   "path": "Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_02_20ft_ENP.et",
+   "res": "{2A5CFC83306263A4}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_02_20ft_ENP.et",
+   "name": "Branded 20 ft container",
+   "category": "container",
+   "sizeM": [
+    2.52,
+    6.14,
+    2.6
+   ],
+   "everonWorldCount": 144,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Liveries ENP, BaltaShipping, Chernarussian, Duvanblade, Emerald, HansaAtlantic, KAL, Starline, SZD; count sums all."
+  },
+  {
+   "guid": "E4DA6CFFCE8E5940",
+   "path": "Prefabs/Props/Construction/ContainerMetal_01/ContainerMetal_01_green.et",
+   "res": "{E4DA6CFFCE8E5940}Prefabs/Props/Construction/ContainerMetal_01/ContainerMetal_01_green.et",
+   "name": "Site container (metal)",
+   "category": "container",
+   "sizeM": [
+    2.08,
+    4.04,
+    1.82
+   ],
+   "everonWorldCount": 263,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Small job-site container: base, blue, green, grey and _low_ variants."
+  },
+  {
+   "guid": "D7F69BF7D2DCA0A8",
+   "path": "Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+   "res": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+   "name": "Wooden pallet",
+   "category": "container",
+   "sizeM": [
+    0.81,
+    1.23,
+    0.14
+   ],
+   "everonWorldCount": 807,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Plain pallet; see Pallet_01_Pile for a stack."
+  },
+  {
+   "guid": "1112756E8A13445B",
+   "path": "Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et",
+   "res": "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et",
+   "name": "Pallet pile",
+   "category": "container",
+   "sizeM": [
+    0.99,
+    1.45,
+    0.98
+   ],
+   "everonWorldCount": 626,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Stack of empty pallets."
+  },
+  {
+   "guid": "51B08BDA20AF8FF7",
+   "path": "Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+   "res": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+   "name": "Pallet box (wood)",
+   "category": "container",
+   "sizeM": [
+    1.14,
+    1.32,
+    1.01
+   ],
+   "everonWorldCount": 852,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Boxed pallet; _Wood variant; destructible."
+  },
+  {
+   "guid": "0B0479E79F7D60D5",
+   "path": "Prefabs/Props/Industrial/Pallets/MarsBox_01_blue.et",
+   "res": "{0B0479E79F7D60D5}Prefabs/Props/Industrial/Pallets/MarsBox_01_blue.et",
+   "name": "Mars box (plastic crate on pallet)",
+   "category": "container",
+   "sizeM": [
+    0.91,
+    1.35,
+    0.66
+   ],
+   "everonWorldCount": 497,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Colours blue, green, white, wood; MarsBoxContainer variants hold stacks."
+  },
+  {
+   "guid": "4BF528DF7A469909",
+   "path": "Prefabs/Props/Construction/PalletJack_01.et",
+   "res": "{4BF528DF7A469909}Prefabs/Props/Construction/PalletJack_01.et",
+   "name": "Pallet jack",
+   "category": "container",
+   "sizeM": [
+    0.56,
+    1.4,
+    1.28
+   ],
+   "everonWorldCount": 43,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Hand pallet truck."
+  },
+  {
+   "guid": "AA3D2C0BB0D2B56B",
+   "path": "Prefabs/Props/Crates/Crate_01_green.et",
+   "res": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
+   "name": "Plastic crate (green / red / brown / yellow / orange / ivory / white)",
+   "category": "crate",
+   "sizeM": [
+    0.61,
+    0.41,
+    0.23
+   ],
+   "everonWorldCount": 4351,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Everon's most common crate; also a PrefabLibrary/Props/Shop copy (not counted here)."
+  },
+  {
+   "guid": "B3283803059E2750",
+   "path": "Prefabs/Props/Crates/CrateWooden_01_plain.et",
+   "res": "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et",
+   "name": "Wooden crate (01)",
+   "category": "crate",
+   "sizeM": [
+    0.88,
+    1.45,
+    0.83
+   ],
+   "everonWorldCount": 1180,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Plain and blue variants."
+  },
+  {
+   "guid": "E4416C4C6938BEEE",
+   "path": "Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et",
+   "res": "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et",
+   "name": "Wooden crate (02, sized)",
+   "category": "crate",
+   "sizeM": [
+    1,
+    1.01,
+    1.01
+   ],
+   "everonWorldCount": 105,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1x1x1, 1x1x2, 1x15x3 sizes; destructible."
+  },
+  {
+   "guid": "2B1D0128ED660BE9",
+   "path": "Prefabs/Props/Crates/BoxWooden_01.et",
+   "res": "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
+   "name": "Wooden box",
+   "category": "crate",
+   "sizeM": [
+    0.5,
+    0.37,
+    0.28
+   ],
+   "everonWorldCount": 1995,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Small wooden box; top crate count on Everon."
+  },
+  {
+   "guid": "C76C3AF337109066",
+   "path": "Prefabs/Props/Crates/CardboardBoxStack_01.et",
+   "res": "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et",
+   "name": "Cardboard box stack",
+   "category": "crate",
+   "sizeM": [
+    0.68,
+    0.83,
+    0.83
+   ],
+   "everonWorldCount": 1139,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Stacked boxes; CardboardBox_01..09 for single boxes."
+  },
+  {
+   "guid": "F4CA533A99B20DAE",
+   "path": "Prefabs/Props/Civilian/SackUniversal_01.et",
+   "res": "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et",
+   "name": "Sack (and sack pile)",
+   "category": "crate",
+   "sizeM": [
+    0.79,
+    0.54,
+    1.36
+   ],
+   "everonWorldCount": 1075,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Grain or cement sack; _Pile stack."
+  },
+  {
+   "guid": "EB66EE2298D16D18",
+   "path": "Prefabs/Props/Civilian/SackTruck_01.et",
+   "res": "{EB66EE2298D16D18}Prefabs/Props/Civilian/SackTruck_01.et",
+   "name": "Sack truck (hand trolley)",
+   "category": "crate",
+   "sizeM": [
+    0.61,
+    0.52,
+    1.22
+   ],
+   "everonWorldCount": 390,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Hand truck."
+  },
+  {
+   "guid": "24DE47095BD6BE7B",
+   "path": "Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et",
+   "res": "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et",
+   "name": "Hay bale, large square",
+   "category": "farm",
+   "sizeM": [
+    1.74,
+    3.16,
+    1.76
+   ],
+   "everonWorldCount": 1860,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Count includes the _bottom variant. Destructible. The most-used farm prop."
+  },
+  {
+   "guid": "C959D3CF939EBBB3",
+   "path": "Prefabs/Props/Agriculture/Farm/HayBale_01_square_small.et",
+   "res": "{C959D3CF939EBBB3}Prefabs/Props/Agriculture/Farm/HayBale_01_square_small.et",
+   "name": "Hay bale, small square",
+   "category": "farm",
+   "sizeM": [
+    0.85,
+    1.06,
+    0.65
+   ],
+   "everonWorldCount": 167,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Destructible."
+  },
+  {
+   "guid": "E537DCDB9B3F2278",
+   "path": "Prefabs/Props/Agriculture/Farm/HayPile_01.et",
+   "res": "{E537DCDB9B3F2278}Prefabs/Props/Agriculture/Farm/HayPile_01.et",
+   "name": "Hay pile",
+   "category": "farm",
+   "sizeM": [
+    2.69,
+    3.44,
+    0.81
+   ],
+   "everonWorldCount": 472,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Loose hay heap; _green variant."
+  },
+  {
+   "guid": "ECAF8FE9FFC28643",
+   "path": "Prefabs/Props/Agriculture/Farm/HaystackDryer_01.et",
+   "res": "{ECAF8FE9FFC28643}Prefabs/Props/Agriculture/Farm/HaystackDryer_01.et",
+   "name": "Haystack dryer rack",
+   "category": "farm",
+   "sizeM": [
+    1.68,
+    1.77,
+    2.57
+   ],
+   "everonWorldCount": 501,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Drying rack (also _folded); count includes HaystackSmall_01 and Haystack_01."
+  },
+  {
+   "guid": "57237781CE749464",
+   "path": "Prefabs/Props/Agriculture/Farm/Trough_01.et",
+   "res": "{57237781CE749464}Prefabs/Props/Agriculture/Farm/Trough_01.et",
+   "name": "Animal trough",
+   "category": "farm",
+   "sizeM": [
+    0.71,
+    3,
+    0.59
+   ],
+   "everonWorldCount": 25,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static trough."
+  },
+  {
+   "guid": "3AB2B7156B3A0F3D",
+   "path": "Prefabs/Props/Agriculture/MilkCan_01.et",
+   "res": "{3AB2B7156B3A0F3D}Prefabs/Props/Agriculture/MilkCan_01.et",
+   "name": "Milk can",
+   "category": "farm",
+   "sizeM": [
+    0.37,
+    0.36,
+    0.6
+   ],
+   "everonWorldCount": 458,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Churn."
+  },
+  {
+   "guid": "C7BE6D1395342D32",
+   "path": "Prefabs/Props/Agriculture/WaterTank_01_v1.et",
+   "res": "{C7BE6D1395342D32}Prefabs/Props/Agriculture/WaterTank_01_v1.et",
+   "name": "Farm water tank (v1 / v2)",
+   "category": "farm",
+   "sizeM": [
+    1.43,
+    4.08,
+    2.04
+   ],
+   "everonWorldCount": 102,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static tank."
+  },
+  {
+   "guid": "6DD0648BB7A52420",
+   "path": "Prefabs/Props/Civilian/Wheelbarrow_01.et",
+   "res": "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et",
+   "name": "Wheelbarrow",
+   "category": "farm",
+   "sizeM": [
+    0.87,
+    2.16,
+    0.67
+   ],
+   "everonWorldCount": 317,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Static."
+  },
+  {
+   "guid": "4D100F180B3EFEC1",
+   "path": "Prefabs/Structures/Industrial/Containers/Silos/Silo_01/Silo_01.et",
+   "res": "{4D100F180B3EFEC1}Prefabs/Structures/Industrial/Containers/Silos/Silo_01/Silo_01.et",
+   "name": "Silo 01",
+   "category": "farm",
+   "sizeM": [
+    2.49,
+    3.65,
+    9.05
+   ],
+   "everonWorldCount": 11,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Tall grain silo; destructible building entity."
+  },
+  {
+   "guid": "ECC9D2866789526D",
+   "path": "Prefabs/Structures/Industrial/Containers/Silos/Silo_02/Silo_02_white.et",
+   "res": "{ECC9D2866789526D}Prefabs/Structures/Industrial/Containers/Silos/Silo_02/Silo_02_white.et",
+   "name": "Silo 02 (white / red-yellow / blue-red)",
+   "category": "farm",
+   "sizeM": [
+    3.47,
+    4.38,
+    16.05
+   ],
+   "everonWorldCount": 6,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": true,
+   "actions": [
+    "ActionsManagerComponent context present; action class not extracted"
+   ],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Has an ActionsManager context; destructible."
+  },
+  {
+   "guid": "99F6E8E52B71B137",
+   "path": "Prefabs/Structures/Agriculture/Barn/Barn_E_01/Barn_E_01.et",
+   "res": "{99F6E8E52B71B137}Prefabs/Structures/Agriculture/Barn/Barn_E_01/Barn_E_01.et",
+   "name": "Barn E_01",
+   "category": "farm",
+   "sizeM": [
+    15.12,
+    10.77,
+    16.01
+   ],
+   "everonWorldCount": 164,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Barn_E_01/02/03 families; count sums all barn parts."
+  },
+  {
+   "guid": "12310677867A85D4",
+   "path": "Prefabs/Structures/Industrial/Houses/Warehouse_01/Warehouse_01.et",
+   "res": "{12310677867A85D4}Prefabs/Structures/Industrial/Houses/Warehouse_01/Warehouse_01.et",
+   "name": "Warehouse 01",
+   "category": "other",
+   "sizeM": [
+    41.26,
+    19.23,
+    11.06
+   ],
+   "everonWorldCount": 28,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "drivable": false,
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Industrial warehouse shell (V3 and others)."
+  }
+ ],
+ "harbours": [
+  {
+   "name": "Harbour marker (MortonBay 303 m)",
+   "x": 5350,
+   "z": 3668,
+   "naval_rows": 451,
+   "nearestHarbourMarker": {
+    "dist_m": 445,
+    "x": 4957,
+    "z": 3876
+   },
+   "nearestNamedPlace": {
+    "name": "MortonBay",
+    "dist_m": 303
+   }
+  },
+  {
+   "name": "Harbour marker (Lamentin 356 m)",
+   "x": 972,
+   "z": 6121,
+   "naval_rows": 406,
+   "nearestHarbourMarker": {
+    "dist_m": 93,
+    "x": 1024,
+    "z": 6043
+   },
+   "nearestNamedPlace": {
+    "name": "Lamentin",
+    "dist_m": 356
+   }
+  },
+  {
+   "name": "Harbour marker (CharletBay 220 m)",
+   "x": 4222,
+   "z": 10943,
+   "naval_rows": 405,
+   "nearestHarbourMarker": {
+    "dist_m": 235,
+    "x": 4397,
+    "z": 11098
+   },
+   "nearestNamedPlace": {
+    "name": "CharletBay",
+    "dist_m": 220
+   }
+  },
+  {
+   "name": "Harbour marker (StPierre 403 m)",
+   "x": 10081,
+   "z": 1464,
+   "naval_rows": 216,
+   "nearestHarbourMarker": {
+    "dist_m": 167,
+    "x": 9925,
+    "z": 1525
+   },
+   "nearestNamedPlace": {
+    "name": "StPierre",
+    "dist_m": 403
+   }
+  },
+  {
+   "name": "Harbour marker (Meaux 262 m)",
+   "x": 4263,
+   "z": 9512,
+   "naval_rows": 129,
+   "nearestHarbourMarker": {
+    "dist_m": 47,
+    "x": 4307,
+    "z": 9526
+   },
+   "nearestNamedPlace": {
+    "name": "Meaux",
+    "dist_m": 262
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Kermovan 71 m",
+   "x": 6389,
+   "z": 9597,
+   "naval_rows": 119,
+   "nearestHarbourMarker": {
+    "dist_m": 2084,
+    "x": 4307,
+    "z": 9526
+   },
+   "nearestNamedPlace": {
+    "name": "Kermovan",
+    "dist_m": 71
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Lancre 66 m",
+   "x": 11629,
+   "z": 2269,
+   "naval_rows": 102,
+   "nearestHarbourMarker": {
+    "dist_m": 1859,
+    "x": 9925,
+    "z": 1525
+   },
+   "nearestNamedPlace": {
+    "name": "Lancre",
+    "dist_m": 66
+   }
+  },
+  {
+   "name": "Harbour marker (Erquy 322 m)",
+   "x": 10615,
+   "z": 11816,
+   "naval_rows": 91,
+   "nearestHarbourMarker": {
+    "dist_m": 53,
+    "x": 10663,
+    "z": 11791
+   },
+   "nearestNamedPlace": {
+    "name": "Erquy",
+    "dist_m": 322
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: ErquyIsland 625 m",
+   "x": 11485,
+   "z": 10881,
+   "naval_rows": 82,
+   "nearestHarbourMarker": {
+    "dist_m": 1227,
+    "x": 10663,
+    "z": 11791
+   },
+   "nearestNamedPlace": {
+    "name": "ErquyIsland",
+    "dist_m": 625
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: FishermansBay 282 m",
+   "x": 7596,
+   "z": 6685,
+   "naval_rows": 81,
+   "nearestHarbourMarker": {
+    "dist_m": 3854,
+    "x": 4957,
+    "z": 3876
+   },
+   "nearestNamedPlace": {
+    "name": "FishermansBay",
+    "dist_m": 282
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Gravette 873 m",
+   "x": 3702,
+   "z": 8562,
+   "naval_rows": 80,
+   "nearestHarbourMarker": {
+    "dist_m": 1138,
+    "x": 4307,
+    "z": 9526
+   },
+   "nearestNamedPlace": {
+    "name": "Gravette",
+    "dist_m": 873
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Thollevast 109 m",
+   "x": 3151,
+   "z": 2187,
+   "naval_rows": 61,
+   "nearestHarbourMarker": {
+    "dist_m": 2473,
+    "x": 4957,
+    "z": 3876
+   },
+   "nearestNamedPlace": {
+    "name": "Thollevast",
+    "dist_m": 109
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Argent 65 m",
+   "x": 10864,
+   "z": 8699,
+   "naval_rows": 39,
+   "nearestHarbourMarker": {
+    "dist_m": 3098,
+    "x": 10663,
+    "z": 11791
+   },
+   "nearestNamedPlace": {
+    "name": "Argent",
+    "dist_m": 65
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Kermovan 415 m",
+   "x": 5969,
+   "z": 9549,
+   "naval_rows": 33,
+   "nearestHarbourMarker": {
+    "dist_m": 1662,
+    "x": 4307,
+    "z": 9526
+   },
+   "nearestNamedPlace": {
+    "name": "Kermovan",
+    "dist_m": 415
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: PerelleBay 204 m",
+   "x": 9358,
+   "z": 5288,
+   "naval_rows": 33,
+   "nearestHarbourMarker": {
+    "dist_m": 3805,
+    "x": 9925,
+    "z": 1525
+   },
+   "nearestNamedPlace": {
+    "name": "PerelleBay",
+    "dist_m": 204
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Laruns 415 m",
+   "x": 7810,
+   "z": 5871,
+   "naval_rows": 32,
+   "nearestHarbourMarker": {
+    "dist_m": 3482,
+    "x": 4957,
+    "z": 3876
+   },
+   "nearestNamedPlace": {
+    "name": "Laruns",
+    "dist_m": 415
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Gravette 297 m",
+   "x": 3827,
+   "z": 7749,
+   "naval_rows": 25,
+   "nearestHarbourMarker": {
+    "dist_m": 1840,
+    "x": 4307,
+    "z": 9526
+   },
+   "nearestNamedPlace": {
+    "name": "Gravette",
+    "dist_m": 297
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Scythe 130 m",
+   "x": 7362,
+   "z": 9422,
+   "naval_rows": 20,
+   "nearestHarbourMarker": {
+    "dist_m": 3057,
+    "x": 4307,
+    "z": 9526
+   },
+   "nearestNamedPlace": {
+    "name": "Scythe",
+    "dist_m": 130
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Montignac 83 m",
+   "x": 4775,
+   "z": 7011,
+   "naval_rows": 17,
+   "nearestHarbourMarker": {
+    "dist_m": 2558,
+    "x": 4307,
+    "z": 9526
+   },
+   "nearestNamedPlace": {
+    "name": "Montignac",
+    "dist_m": 83
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: LeBosc 156 m",
+   "x": 8015,
+   "z": 1334,
+   "naval_rows": 11,
+   "nearestHarbourMarker": {
+    "dist_m": 1919,
+    "x": 9925,
+    "z": 1525
+   },
+   "nearestNamedPlace": {
+    "name": "LeBosc",
+    "dist_m": 156
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Pins 302 m",
+   "x": 1427,
+   "z": 11632,
+   "naval_rows": 10,
+   "nearestHarbourMarker": {
+    "dist_m": 3018,
+    "x": 4397,
+    "z": 11098
+   },
+   "nearestNamedPlace": {
+    "name": "Pins",
+    "dist_m": 302
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: Whitewater 252 m",
+   "x": 11119,
+   "z": 1808,
+   "naval_rows": 9,
+   "nearestHarbourMarker": {
+    "dist_m": 1227,
+    "x": 9925,
+    "z": 1525
+   },
+   "nearestNamedPlace": {
+    "name": "Whitewater",
+    "dist_m": 252
+   }
+  },
+  {
+   "name": "No harbour marker within 500 m; nearest place: CragPoint 43 m",
+   "x": 11762,
+   "z": 1390,
+   "naval_rows": 8,
+   "nearestHarbourMarker": {
+    "dist_m": 1842,
+    "x": 9925,
+    "z": 1525
+   },
+   "nearestNamedPlace": {
+    "name": "CragPoint",
+    "dist_m": 43
+   }
+  }
+ ]
+}

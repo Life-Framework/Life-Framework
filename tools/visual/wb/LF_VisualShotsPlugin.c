@@ -31,6 +31,10 @@
 //     spawns the prefab (play mode only), poses it, takes the picture, deletes it. ground: the item's three
 //     axes in the world (RestingUP faces up), lowest point on the ground, then a close-up. inventory: model
 //     orientation, frozen, seen from the prefab's PreviewRenderAttributes camera (tools/visual/look-item.mjs).
+//   dump <name> <x> <z> <radius> [step]
+//     writes $profile:lf-visual/dump-<name>.txt: every entity within radius of (x, z) as one text row (the
+//     scout tool, tools\cli scout, reads it; the rows are listed at DumpArea). Runs in the editor world
+//     before play mode starts and needs no shot lines.
 //   close <name> <entity|-> <x> <y> <z> <az>
 //     a close-up of the entity a layer placed there (found by name, else the nearest
 //     entity with a mesh within 1 m). Framed from its world bounds, from the clearest of
@@ -277,6 +281,7 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 		int firstMs = 1500;
 		string park;
 		array<string> shots = {};
+		array<string> dumps = {};
 		string line;
 		while (plan.ReadLine(line) >= 0)
 		{
@@ -293,6 +298,8 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 				firstMs = Rest(line, 6).ToInt();
 			else if (line.StartsWith("park "))
 				park = Rest(line, 5);
+			else if (line.StartsWith("dump "))
+				dumps.Insert(line);
 			else if (line.StartsWith("shot ") || line.StartsWith("close ") || line.StartsWith("item "))
 				shots.Insert(line);
 		}
@@ -336,6 +343,11 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 		m_World = m_Api.GetWorld();
 		m_Api.GetWorldPath(opened);
 		Note(string.Format("ok world %1 view=%2x%3 entities=%4", opened, m_Api.GetScreenWidth(), m_Api.GetScreenHeight(), m_Api.GetEditorEntityCount()));
+
+		foreach (string dump : dumps)
+		{
+			DumpArea(dump);
+		}
 
 		if (m_bPlay && !EnterPlay(worldEditor, park))
 			return 1;
@@ -845,5 +857,290 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 
 		Note(string.Format("ok shot %1 %2 %3 cam=%4,%5,%6", name, FilePath.StripPath(found), detail, cam[0], cam[1], cam[2]));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Entities the dump found (filled by the world query, read in the same frame).
+	protected ref array<IEntity> m_aDumpHits = {};
+
+	//------------------------------------------------------------------------------------------------
+	protected bool CollectDump(IEntity entity)
+	{
+		if (entity)
+			m_aDumpHits.Insert(entity);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string DumpNum(float value)
+	{
+		return (Math.Round(value * 100) / 100).ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string DumpPrefab(notnull IEntity entity)
+	{
+		EntityPrefabData data = entity.GetPrefabData();
+		if (data)
+			return data.GetPrefabName();
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Door entities below an entity (a building's doors are children of it), as `D <owner> <prefab> <x> <y> <z>` rows.
+	protected void DumpDoors(notnull IEntity parent, int owner, int depth, notnull array<string> rows)
+	{
+		IEntity child = parent.GetChildren();
+		while (child)
+		{
+			if (child.FindComponent(BaseDoorComponent))
+			{
+				vector at = child.GetOrigin();
+				string prefab = DumpPrefab(child);
+				if (prefab.IsEmpty())
+					prefab = "-";
+
+				rows.Insert("D " + owner.ToString() + " " + prefab + " " + DumpNum(at[0]) + " " + DumpNum(at[1]) + " " + DumpNum(at[2]));
+			}
+
+			if (depth < 4)
+				DumpDoors(child, owner, depth + 1, rows);
+
+			child = child.GetSibling();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A road or other spline: `R <class> <name> <count> x y z x y z ...` in world space. The points come from the
+	//! shape (ShapeEntity) or, for a RoadEntity, from the entity source's Points / SplinePoints array; when neither
+	//! gives any, the source's variable names are written as an `RV` row so the reader can be corrected.
+	protected void DumpShape(notnull IEntity entity, notnull array<string> rows, notnull map<string, bool> seenVars)
+	{
+		string cls = entity.ClassName();
+		string name = entity.GetName();
+		if (name.IsEmpty())
+			name = "-";
+
+		array<vector> points = {};
+		ShapeEntity shape = ShapeEntity.Cast(entity);
+		if (shape)
+		{
+			array<vector> local = {};
+			shape.GetPointsPositions(local);
+			foreach (vector point : local)
+			{
+				points.Insert(entity.CoordToParent(point));
+			}
+		}
+
+		IEntitySource src;
+		if (m_Api)
+			src = m_Api.EntityToSource(entity);
+
+		if (points.IsEmpty() && src)
+		{
+			array<string> names = { "Points", "SplinePoints" };
+			foreach (string varName : names)
+			{
+				if (src.GetVarIndex(varName) < 0)
+					continue;
+
+				BaseContainerList list = src.GetObjectArray(varName);
+				if (!list)
+					continue;
+
+				for (int i = 0; i < list.Count(); i++)
+				{
+					BaseContainer one = list.Get(i);
+					vector pos;
+					if (one && one.Get("Position", pos))
+						points.Insert(entity.CoordToParent(pos));
+				}
+
+				if (!points.IsEmpty())
+					break;
+			}
+		}
+
+		if (points.IsEmpty())
+		{
+			if (src && !seenVars.Contains(cls))
+			{
+				seenVars.Insert(cls, true);
+				string vars;
+				for (int v = 0; v < src.GetNumVars(); v++)
+				{
+					vars += " " + src.GetVarName(v);
+				}
+
+				rows.Insert("RV " + cls + vars);
+			}
+
+			return;
+		}
+
+		string row = "R " + cls + " " + name + " " + points.Count().ToString();
+		foreach (vector p : points)
+		{
+			row += " " + DumpNum(p[0]) + " " + DumpNum(p[1]) + " " + DumpNum(p[2]);
+		}
+
+		rows.Insert(row);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! dump <name> <x> <z> <radius> [step]: see the file header. One row per thing, space separated:
+	//!   H <name> <x> <z> <radius> <step>                      the request
+	//!   E <i> <class> <prefab|-> <x> <y> <z> <yaw> <scale> <minx> <miny> <minz> <maxx> <maxy> <maxz> <name|->
+	//!   D <i> <prefab|-> <x> <y> <z>                          a door below entity i
+	//!   T <x> <z>                                             a tree or bush (an entity with a model and no prefab is generator output)
+	//!   R / RV                                                splines (DumpShape)
+	//!   C <class> <count>                                     how many entities of each class the query returned
+	//!   G <x0> <z0> <step> <nx> <nz>, then GH <j> y y y ...   ground height rows, GW <j> 0101...  water flags
+	protected void DumpArea(string spec)
+	{
+		array<string> p = {};
+		spec.Split(" ", p, true);
+		if (p.Count() < 5)
+		{
+			Note("error bad_dump " + spec);
+			return;
+		}
+
+		string name = p[1];
+		float cx = p[2].ToFloat();
+		float cz = p[3].ToFloat();
+		float radius = p[4].ToFloat();
+		float step = 5;
+		if (p.Count() > 5)
+			step = p[5].ToFloat();
+
+		if (step < 1)
+			step = 1;
+
+		array<string> rows = {};
+		rows.Insert("H " + name + " " + DumpNum(cx) + " " + DumpNum(cz) + " " + DumpNum(radius) + " " + DumpNum(step));
+
+		m_aDumpHits.Clear();
+		m_World.QueryEntitiesBySphere(Vector(cx, m_World.GetSurfaceY(cx, cz), cz), radius, CollectDump, null, EQueryEntitiesFlags.ALL);
+
+		ref map<string, int> classes = new map<string, int>();
+		ref map<string, bool> seenVars = new map<string, bool>();
+		int trees;
+		int kept;
+		foreach (IEntity entity : m_aDumpHits)
+		{
+			if (!entity)
+				continue;
+
+			string cls = entity.ClassName();
+			int seen;
+			if (classes.Find(cls, seen))
+				classes.Set(cls, seen + 1);
+			else
+				classes.Insert(cls, 1);
+
+			// A child is written with the thing that owns it (its doors); only top-level entities are rows.
+			if (entity.GetParent())
+				continue;
+
+			vector at = entity.GetOrigin();
+			string prefab = DumpPrefab(entity);
+			if (cls == "RoadEntity" || cls.IndexOf("Shape") >= 0 || cls.IndexOf("Generator") >= 0 || cls.IndexOf("River") >= 0)
+			{
+				DumpShape(entity, rows, seenVars);
+				continue;
+			}
+
+			// No prefab but a model: what the forest and clutter generators spawn (trees, bushes). One point each.
+			// No prefab and no model (a logic entity, a probe, a spawn point) is not a place.
+			if (prefab.IsEmpty())
+			{
+				if (entity.GetVObject())
+				{
+					rows.Insert("T " + DumpNum(at[0]) + " " + DumpNum(at[2]));
+					trees++;
+				}
+
+				continue;
+			}
+
+			if (cls.IndexOf("Tree") >= 0 || prefab.IndexOf("/Vegetation/") >= 0)
+			{
+				rows.Insert("T " + DumpNum(at[0]) + " " + DumpNum(at[2]));
+				trees++;
+				continue;
+			}
+
+			vector mat[4];
+			entity.GetWorldTransform(mat);
+			float yaw = 0;
+			if (Math.AbsFloat(mat[2][0]) + Math.AbsFloat(mat[2][2]) > 0.0001)
+				yaw = Math.Atan2(mat[2][0], mat[2][2]) * Math.RAD2DEG;
+
+			vector mins, maxs;
+			entity.GetWorldBounds(mins, maxs);
+			string entityName = entity.GetName();
+			if (entityName.IsEmpty())
+				entityName = "-";
+
+			string entityRow = "E " + kept.ToString() + " " + cls + " " + prefab;
+			entityRow += " " + DumpNum(at[0]) + " " + DumpNum(at[1]) + " " + DumpNum(at[2]);
+			entityRow += " " + DumpNum(yaw) + " " + DumpNum(entity.GetScale());
+			entityRow += " " + DumpNum(mins[0]) + " " + DumpNum(mins[1]) + " " + DumpNum(mins[2]);
+			entityRow += " " + DumpNum(maxs[0]) + " " + DumpNum(maxs[1]) + " " + DumpNum(maxs[2]);
+			entityRow += " " + entityName;
+			rows.Insert(entityRow);
+			DumpDoors(entity, kept, 0, rows);
+			kept++;
+		}
+
+		foreach (string className, int count : classes)
+		{
+			rows.Insert("C " + className + " " + count.ToString());
+		}
+
+		// Ground heights on a grid over the square around the centre, and where that ground is under the sea.
+		int n = Math.Floor(2 * radius / step) + 1;
+		float x0 = cx - radius;
+		float z0 = cz - radius;
+		rows.Insert("G " + DumpNum(x0) + " " + DumpNum(z0) + " " + DumpNum(step) + " " + n.ToString() + " " + n.ToString());
+		for (int j = 0; j < n; j++)
+		{
+			string heights = "GH " + j.ToString();
+			string water = "GW " + j.ToString() + " ";
+			for (int i = 0; i < n; i++)
+			{
+				float x = x0 + i * step;
+				float z = z0 + j * step;
+				float y = m_World.GetSurfaceY(x, z);
+				heights += " " + DumpNum(y);
+				if (m_World.GetOceanHeight(x, z) > y)
+					water += "1";
+				else
+					water += "0";
+			}
+
+			rows.Insert(heights);
+			rows.Insert(water);
+		}
+
+		FileHandle f = FileIO.OpenFile(DIR + "/dump-" + name + ".txt", FileMode.WRITE);
+		if (!f)
+		{
+			Note("error dump_not_written " + name);
+			return;
+		}
+
+		foreach (string row : rows)
+		{
+			f.WriteLine(row);
+		}
+
+		f.Close();
+		Note(string.Format("ok dump %1 entities=%2 hits=%3 trees=%4 rows=%5", name, kept, m_aDumpHits.Count(), trees, rows.Count()));
+		m_aDumpHits.Clear();
 	}
 }

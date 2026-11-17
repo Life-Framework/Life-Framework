@@ -31,11 +31,14 @@ class LF_ResourceNodeDef
 	[Attribute(ResourceName.Empty, UIWidgets.ResourcePickerThumbnail, "Tool required in hand. Empty means no tool", "et")]
 	ResourceName m_ToolPrefab;
 
-	[Attribute("0", UIWidgets.Auto, "Gathers before the cooldown. 0 means unlimited")]
+	[Attribute("0", UIWidgets.Auto, "Gathers a spot holds. 0 means unlimited. With m_fRegrowMs set this is the stock cap, otherwise the gathers before the cooldown")]
 	int m_iMaxGathers;
 
-	[Attribute("0", UIWidgets.Auto, "Cooldown in milliseconds once the node is exhausted")]
+	[Attribute("0", UIWidgets.Auto, "Cooldown in milliseconds once the node is exhausted, then it restocks in full. Ignored when m_fRegrowMs is set")]
 	float m_fCooldownMs;
+
+	[Attribute("0", UIWidgets.Auto, "Stock model (#2409): milliseconds for one gather to grow back, starting full at m_iMaxGathers. 0 keeps the cooldown model")]
+	float m_fRegrowMs;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -145,7 +148,7 @@ class LF_ResourceChainCatalog
 		if (node.m_ItemPrefab.IsEmpty() || node.m_iYield < 1)
 			return false;
 
-		if (node.m_iMaxGathers < 0 || node.m_fCooldownMs < 0)
+		if (node.m_iMaxGathers < 0 || node.m_fCooldownMs < 0 || node.m_fRegrowMs < 0)
 			return false;
 
 		Resource yield = Resource.Load(node.m_ItemPrefab);

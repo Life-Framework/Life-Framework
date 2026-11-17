@@ -1,6 +1,6 @@
 // tools/lib/world-zones.mjs: the two world zones (docs/architecture/world-zones.md).
 //
-// Grid: the net-fenced annex (x 20..160, z 20..112; it was 20..112 before the lattice grew east), which lives in GridWorld
+// Grid: the net-fenced annex (x 20..328, z 20..112; it was 20..112 before the lattice grew east), which lives in GridWorld
 // (Worlds/GridWorld/GridWorld_Layers, docs/architecture/three-worlds.md); until slice W6 deletes
 // it, the legacy annex layers also sit in DebugWorld. One feature per cell, low look bar, written
 // by `tools\cli grid`. Town: every other layer the playtest town loads
@@ -11,10 +11,10 @@
 // tools/commands/grid.mjs, tools/validation/validate-world-zones.mjs, agent-box/place-audit.mjs,
 // tools/validation/validate-player-props.mjs and tools/visual/look.mjs.
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { CORE_ADDON, GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
+import { basename, join, resolve } from "node:path";
+import { CORE_ADDON, GRID_WORLD, PACK_ADDON, PACK_GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
 import { CELL, GRID_CENTRE, GRID_FENCE, allCells, cellBounds, cellId, claimCellIds, claimRect, claimSpan, isFrameClaim, parseCellId } from "../grid/lattice.mjs";
 
 // The lattice constants and cell maths live in tools/grid/lattice.mjs (with the grid frame).
@@ -23,6 +23,12 @@ export { CELL, GRID_CENTRE, allCells, cellBounds, cellId, claimCellIds, claimRec
 export const DEBUG_LAYERS = `addons/${CORE_ADDON}/${layersOf(PLAYTEST_WORLD)}`;
 // Where Grid_<slug>.layer files are written and claims are checked: GridWorld, not the playtest world.
 export const GRID_LAYERS = `addons/${CORE_ADDON}/${layersOf(GRID_WORLD)}`;
+// Where a PACK cell's Grid_<slug>.layer lives: the pack's own grid world, a SubScene of GridWorld
+// (docs/architecture/world-zones.md "Pack cells"). The claim says `"pack": true`.
+export const PACK_GRID_LAYERS = `addons/${PACK_ADDON}/${layersOf(PACK_GRID_WORLD)}`;
+// The repo-relative folder holding a claim's grid layer, and the file.
+export const gridLayersOfClaim = (claim) => (claim && claim.pack === true ? PACK_GRID_LAYERS : GRID_LAYERS);
+export const gridLayerPath = (root, claim) => join(root, gridLayersOfClaim(claim), layerOfSlug(claim.slug));
 export const PACK_TOWN_LAYERS = "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers";
 export const CELLS_DIR = "tools/grid/cells";
 
@@ -48,6 +54,18 @@ export const LEGACY_ANNEX = new Set([
 export const SYSTEM_LAYERS = new Set(["default", "Gamemode", "Factions"]);
 
 export const SLUG_RX = /^[a-z0-9][a-z0-9-]{1,40}$/;
+// A prefab argument of `grid place` (a `{GUID}path`, a path under an addon, or a bare name) is PACK content when its file
+// exists under the pack addon and not under the core; that routes the cell to the pack grid world.
+export function isPackPrefab(root, arg) {
+  let p = String(arg).replace(/\\/g, "/").replace(/^\{[0-9A-Fa-f]{16}\}/, "").replace(/^.*addons\/(LifeFramework|LF_Everon1989)\//, "");
+  if (!p.endsWith(".et")) p = `${p}.et`;
+  const under = (addon, rel) => existsSync(join(root, "addons", addon, ...rel.split("/")));
+  if (p.includes("/")) return under(PACK_ADDON, p) && !under(CORE_ADDON, p);
+  const find = (dir) => readdirSync(dir, { withFileTypes: true }).some((e) => (e.isDirectory() ? find(join(dir, e.name)) : e.name === p));
+  const packPrefabs = join(root, "addons", PACK_ADDON, "Prefabs");
+  const corePrefabs = join(root, "addons", CORE_ADDON, "Prefabs");
+  return existsSync(packPrefabs) && find(packPrefabs) && !(existsSync(corePrefabs) && find(corePrefabs));
+}
 export const layerOfSlug = (slug) => `Grid_${slug.replace(/-/g, "_")}.layer`;
 // The slug is in the claim file (its `layer` field); a layer name maps back only with dashes unknown.
 // Entity names written into a grid layer: Grid_<slug with _>_<n>.
@@ -67,7 +85,7 @@ export function zoneOfPath(path) {
   const p = String(path).replace(/\\/g, "/");
   if (!p.endsWith(".layer")) return null;
   const base = p.slice(p.lastIndexOf("/") + 1);
-  if (p.startsWith(`${DEBUG_LAYERS}/`) || p.startsWith(`${GRID_LAYERS}/`)) return zoneOfLayer(base, "debug");
+  if (p.startsWith(`${DEBUG_LAYERS}/`) || p.startsWith(`${GRID_LAYERS}/`) || p.startsWith(`${PACK_GRID_LAYERS}/`)) return zoneOfLayer(base, "debug");
   if (p.startsWith(`${PACK_TOWN_LAYERS}/`)) return zoneOfLayer(base, "pack");
   return null;
 }
@@ -248,6 +266,68 @@ export function mainClaims(root, { fetch = true, ref = "origin/main" } = {}) {
   return { claims, note };
 }
 
+// ------------------------------------------------------------------ claims in sibling worktrees
+
+// A claim still uncommitted in another local worktree (`?? tools/grid/cells/<slug>.json`) is on no
+// remote and in no PR, so neither origin/main nor `openPrClaims` sees it (ws/police-station-kit and
+// ws/building-bank both took c3r1 for a 2x2, 2026-11-16). `git worktree list --porcelain` names every
+// worktree of this clone with no network; each one's tools/grid/cells/*.json is read straight from
+// disk. { claims: [{ file, slug, cell, span?, worktree, branch }], note }.
+//
+// Fail soft and fast: a missing or locked folder, an unreadable file or no git is skipped (a note only
+// when git itself fails). This tree is left out; its own claims are read as `local`. `run(cmd, args)`
+// returns spawnSync's shape (the test seam).
+const canon = (p) => {
+  let r = resolve(p);
+  try {
+    // .native expands Windows 8.3 short names (RUNNER~1 in CI temp), which git prints in long form
+    r = realpathSync.native(r);
+  } catch {
+    // a missing folder keeps its resolved name
+  }
+  return process.platform === "win32" ? r.toLowerCase() : r;
+};
+const samePath = (a, b) => canon(a) === canon(b);
+
+export function siblingWorktrees(root, { run } = {}) {
+  const exec = run ?? ((cmd, args) => spawnSync(cmd, args, { cwd: root, encoding: "utf8", timeout: 10000 }));
+  const ls = exec("git", ["worktree", "list", "--porcelain"]);
+  if (!ls || ls.status !== 0) return { trees: [], note: `could not list the worktrees (${String(ls?.stderr || ls?.error?.message || "git failed").trim().split("\n")[0]}); claims in sibling worktrees were not checked` };
+  const trees = [];
+  let cur = null;
+  for (const line of String(ls.stdout).split(/\r?\n/)) {
+    if (line.startsWith("worktree ")) {
+      cur = { path: line.slice(9).trim(), branch: "" };
+      trees.push(cur);
+    } else if (cur && line.startsWith("branch ")) cur.branch = line.slice(7).trim().replace(/^refs\/heads\//, "");
+    else if (cur && (line === "bare" || line.startsWith("prunable"))) cur.skip = true;
+  }
+  return { trees: trees.filter((t) => !t.skip && !samePath(t.path, root)), note: "" };
+}
+
+export function worktreeClaims(root, { run } = {}) {
+  const { trees, note } = siblingWorktrees(root, { run });
+  const claims = [];
+  for (const t of trees) {
+    const dir = join(t.path, CELLS_DIR);
+    let files;
+    try {
+      files = readdirSync(dir).filter((f) => f.endsWith(".json")).sort();
+    } catch {
+      continue; // a pruned, locked or cell-less worktree
+    }
+    for (const f of files) {
+      try {
+        const j = JSON.parse(readFileSync(join(dir, f), "utf8"));
+        if (j.slug && j.cell) claims.push({ file: `${CELLS_DIR}/${f}`, slug: j.slug, cell: j.cell, ...(j.span ? { span: j.span } : {}), worktree: basename(t.path), branch: t.branch });
+      } catch {
+        // unreadable or half-written: validate-world-zones reports it in that worktree
+      }
+    }
+  }
+  return { claims, note };
+}
+
 // ------------------------------------------------------------------ claims in flight (open PRs)
 
 // A PR's claim is invisible to origin/main until it merges, so two slices open at once can each take a
@@ -289,7 +369,7 @@ export function openPrClaims(root, { run, cacheFile = defaultPrCache(), ttlMs = 
       if (!raw || raw.status !== 0) continue; // the PR deletes the file (grid free), or the read failed
       try {
         const j = JSON.parse(raw.stdout);
-        if (j.slug && j.cell) claims.push({ file: path, slug: j.slug, cell: j.cell, pr: pr.number, branch: pr.headRefName });
+        if (j.slug && j.cell) claims.push({ file: path, slug: j.slug, cell: j.cell, ...(j.span ? { span: j.span } : {}), pr: pr.number, branch: pr.headRefName });
       } catch {
         // not a claim file we can read; validate-world-zones reports it on that PR
       }

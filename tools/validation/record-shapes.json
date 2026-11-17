@@ -1,5 +1,5 @@
 {
-  "saveVersion": 40,
+  "saveVersion": 49,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -42,7 +42,16 @@
     "firstspawns": "LF_FirstSpawnRow",
     "racerecords": "LF_RaceRecordRow",
     "lastpos": "LF_LastPositionRow",
-    "hospitalrejoin": "LF_HospitalRejoinRow"
+    "hospitalrejoin": "LF_HospitalRejoinRow",
+    "worldevents": "LF_EventShellRow",
+    "mapknown": "LF_MapKnownRow",
+    "mapmarks": "LF_MapMarkRow",
+    "orgmarks": "LF_OrgMapMarkRow",
+    "armorykits": "LF_ArmoryKitRow",
+    "houses": "LF_HouseLockRecord",
+    "itemkeys": "LF_StorageItemKeyRecord",
+    "graceclock": "LF_GraceClockRow",
+    "jobruns": "LF_JobRunRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -507,6 +516,98 @@
       "fields": [
         "string m_sPlayerUid",
         "int m_iLoggedOutUnix"
+      ]
+    },
+    "LF_EventShellRow": {
+      "since": 41,
+      "fields": [
+        "int m_iVersion",
+        "string m_sEventId",
+        "string m_sPhaseName",
+        "float m_fPhaseAge",
+        "float m_fCooldownLeft",
+        "float m_fEndedAgo",
+        "array<string> m_aIntKeys",
+        "array<int> m_aIntValues"
+      ]
+    },
+    "LF_MapKnownRow": {
+      "since": 42,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterId",
+        "string m_sPlaceId",
+        "int m_iState"
+      ]
+    },
+    "LF_MapMarkRow": {
+      "since": 43,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterId",
+        "int m_iType",
+        "int m_iPosX",
+        "int m_iPosY",
+        "int m_iIcon",
+        "int m_iColor",
+        "int m_iRotation",
+        "int m_iConfigId",
+        "int m_iFlags",
+        "string m_sText"
+      ]
+    },
+    "LF_OrgMapMarkRow": {
+      "since": 44,
+      "fields": [
+        "int m_iVersion",
+        "string m_sOrgId",
+        "int m_iSerial",
+        "int m_iX",
+        "int m_iZ",
+        "int m_iIcon",
+        "int m_iColour",
+        "string m_sText",
+        "string m_sAuthorId"
+      ]
+    },
+    "LF_ArmoryKitRow": {
+      "since": 45,
+      "fields": [
+        "int m_iVersion",
+        "string m_sOfficerUid",
+        "int m_iLastIssueUnix",
+        "array<string> m_aSerials"
+      ]
+    },
+    "LF_HouseLockRecord": {
+      "since": 46,
+      "fields": [
+        "string m_sHouseIdentifier",
+        "bool m_bLocked",
+        "string m_sOwnerKey"
+      ]
+    },
+    "LF_StorageItemKeyRecord": {
+      "since": 47,
+      "fields": [
+        "string m_sOwnerKey",
+        "string m_sSlot",
+        "array<string> m_aHouseKeys"
+      ]
+    },
+    "LF_GraceClockRow": {
+      "since": 48,
+      "fields": [
+        "string m_sRecordKey",
+        "int m_iSeconds"
+      ]
+    },
+    "LF_JobRunRow": {
+      "since": 49,
+      "fields": [
+        "string m_sPlayerUid",
+        "int m_iAmount",
+        "int m_iJob"
       ]
     }
   }

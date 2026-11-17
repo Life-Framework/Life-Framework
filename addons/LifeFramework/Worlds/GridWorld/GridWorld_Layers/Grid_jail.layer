@@ -1,0 +1,99 @@
+// Grid cell c10r0 for jail: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_jail_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 143 0 23
+}
+SCR_DestructibleEntity Grid_jail_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 148 0 23
+}
+SCR_DestructibleEntity Grid_jail_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_jail_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 28
+ angleY 270
+}
+SCR_DestructibleEntity Grid_jail_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 153 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_jail_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 148 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_jail_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 143 0 33
+ angleY 90
+}
+GenericEntity Grid_jail_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:jail"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 142.2 0.505 23.6
+ angleY -90
+}
+GenericEntity Grid_jail_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "jail"
+  }
+ }
+ coords 142.3 0 25.5
+ angleY 90
+}
+GenericEntity Annex_Jail_Door : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   ActionContexts {
+    UserActionContext "{50888D37F529F720}" {
+     Position PointInfo "{50888D37F0EB77E0}" {
+      Offset 1.1594 1.205 0.0196
+     }
+     Radius 0.6528
+     Height 2.41
+    }
+   }
+   additionalActions {
+    LF_BreachArmAction "{30DA080036F318AA}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{C82C7E9C610EFB5D}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_BreachTargetComponent "{D2FC9663261624B6}" {
+   m_sTargetId "Annex_Jail_Door"
+   m_fFuseSeconds 0
+  }
+ }
+ Flags 0x403 0
+ coords 150.682 0 27.99
+}
+GenericEntity Annex_Jail_Cell {
+ components {
+  MeshObject "{A8A8F0F320D87587}" {
+   Object "{55991E1823C60AB3}Assets/Props/Crates/Crate_01.xob"
+  }
+  RigidBody "{A60BB662C605A567}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ Flags 0x403 0
+ coords 145.318 0.003 28.01
+}

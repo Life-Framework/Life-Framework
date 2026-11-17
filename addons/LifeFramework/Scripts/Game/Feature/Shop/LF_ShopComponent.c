@@ -537,6 +537,59 @@ class LF_ShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The live licence rows this counter shows (catalogue offers with m_sGrantsLicence); empty when the
+	//! shop has no outlet or the Catalogue system is off. Every machine.
+	void GetLicenceRows(notnull array<LF_OutletOffer> outRows)
+	{
+		outRows.Clear();
+		if (m_sOutletId.IsEmpty() || !LF_Systems.IsEnabled(LF_ItemCatalogue.SYSTEM))
+			return;
+
+		LF_ItemCatalogue.LicenceRows(LF_ItemCatalogueConfig.Get(), m_sOutletId, outRows);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a licence row at this counter, by the buyer's own account. \see ApplyForLicenceFor.
+	LF_EShopRefusal ApplyForLicence(IEntity buyer, LF_ELicenseType licence, out LF_ELicenceDesk outcome, out int minutesLeft)
+	{
+		return ApplyForLicenceFor(buyer, LF_Utils.GetPlayerUID(buyer), new LF_EntityCashWallet(buyer, LF_LicenceDesk.LEDGER_REASON, string.Empty), licence, outcome, minutesLeft);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the counter's licence row runs the licence office's visit (LF_LicenceDesk.VisitFor: the
+	//! same fee, clean-record check, licence gate, wait and collection as the desk), so a player applies
+	//! and later collects at this counter. The counter only checks that it offers the licence.
+	//! \param[out] outcome The office's answer, when this returns NONE.
+	//! \param[out] minutesLeft In-game minutes until collection (APPLIED, WAITING).
+	//! \return NONE when the office answered, else why the counter would not ask it.
+	LF_EShopRefusal ApplyForLicenceFor(IEntity buyer, string uid, notnull LF_CashWallet wallet, LF_ELicenseType licence, out LF_ELicenceDesk outcome, out int minutesLeft)
+	{
+		outcome = LF_ELicenceDesk.FAILED;
+		minutesLeft = 0;
+		if (!Replication.IsServer())
+			return LF_EShopRefusal.NO_SHOP;
+
+		if (LF_Systems.Refuses(LF_ShopRefusal.SYSTEM, "licence at " + m_sOutletId))
+			return LF_EShopRefusal.SYSTEM_OFF;
+
+		if (IsClosed(GetGame().GetWorld().GetWorldTime()))
+		{
+			LF_Debug.Info("Shop", string.Format("licence rejected (raided, shut) outlet=%1", m_sOutletId));
+			return LF_EShopRefusal.CLOSED;
+		}
+
+		if (!LF_ItemCatalogue.LicenceRowFor(LF_ItemCatalogueConfig.Get(), m_sOutletId, licence) || !LF_Systems.IsEnabled(LF_ItemCatalogue.SYSTEM))
+		{
+			LF_Debug.Warn("Shop", string.Format("licence rejected: outlet '%1' has no row for %2", m_sOutletId, typename.EnumToString(LF_ELicenseType, licence)));
+			return LF_EShopRefusal.NOT_SOLD_HERE;
+		}
+
+		outcome = LF_LicenceDesk.VisitFor(buyer, uid, wallet, minutesLeft);
+		LF_Debug.Info("Shop", string.Format("licence row at %1 for %2: %3", m_sOutletId, uid, typename.EnumToString(LF_ELicenceDesk, outcome)));
+		return LF_EShopRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: charge the buyer the config buy price and deliver the items. Only what was delivered
 	//! is charged; a partial delivery refunds the difference. The till slip shows the outcome, so
 	//! this raises no toast.
@@ -629,7 +682,9 @@ class LF_ShopComponent : ScriptComponent
 			charged = totalPrice;
 			LF_Debug.Info("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, units, totalPrice));
 			if (m_bFence)
-				LF_EventBus.Publish(LF_OnFenceSale.Create(buyerUid, prefab, units, totalPrice));
+				LF_EventBus.Publish(LF_OnFenceSale.Create(buyerUid, prefab, units, totalPrice, m_sOutletId));
+			else if (IsLicensedWeaponLine(prefab))
+				LF_FenceSerials.OnWeaponSale(buyer, LF_Utils.GetPlayerUid(buyer), prefab, units, m_sOutletId);
 			return LF_EShopRefusal.NONE;
 		}
 
@@ -753,6 +808,21 @@ class LF_ShopComponent : ScriptComponent
 		earned = LF_ShopRules.StackTradeTotal(unitPrice, removed);
 		LF_Debug.Info("Shop", string.Format("sold item=%1 qty=%2 price=%3 stock=%4 flagged=%5", prefab, removed, earned, m_sStockId, flaggedOnly));
 		return LF_EShopRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the prefab is a licensed weapon this outlet sells (#2153): a weapon in the catalogue, sold
+	//! under an offer that asks for a licence (the gun counter's firearm permit). The permit is what
+	//! makes the weapon a registered one, so an unlicensed outlet (the black market, a back room) sells
+	//! it with no serial. A shop with no outlet has no catalogue category to read.
+	protected bool IsLicensedWeaponLine(ResourceName prefab)
+	{
+		LF_OutletOffer offer = StockOffer(prefab);
+		if (!offer || offer.m_sLicence.IsEmpty())
+			return false;
+
+		LF_CatalogueItem entry = LF_ItemCatalogue.ItemByPrefab(LF_ItemCatalogueConfig.Get(), prefab);
+		return entry && entry.GetCategory() == LF_EItemCategory.WEAPON;
 	}
 
 	//------------------------------------------------------------------------------------------------

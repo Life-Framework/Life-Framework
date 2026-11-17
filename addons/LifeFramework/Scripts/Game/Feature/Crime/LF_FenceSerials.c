@@ -154,39 +154,18 @@ class LF_FenceSerials
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A fence sale: stamp each delivered tool still without a serial and book it to the buyer.
-	//! \return False when a delivered tool could not be stamped.
+	//! A fence sale: stamp each delivered tool still without a serial and book it to the buyer, naming
+	//! the outlet that sold it (#2153). eturn False when a delivered tool could not be stamped.
 	static bool OnSale(notnull LF_OnFenceSale sale)
 	{
 		IEntity buyer = FindPlayer(sale.m_sBuyerUid);
-		InventoryStorageManagerComponent inventory = null;
-		if (buyer)
-			inventory = LF_InventoryUtils.GetResponsibleStorageManager(buyer);
-
-		if (!inventory)
+		if (!buyer)
 		{
 			LF_Debug.Error(FEATURE, string.Format("sale of %1 to %2 not stamped: the buyer is not in the world", sale.m_sPrefab, sale.m_sBuyerUid));
 			return false;
 		}
 
-		int stamped;
-		array<IEntity> items = LF_InventoryUtils.FindItemsByPrefab(inventory, sale.m_sPrefab);
-		foreach (IEntity item : items)
-		{
-			if (stamped >= sale.m_iQuantity)
-				break;
-
-			LF_SerialComponent component = LF_SerialComponent.Cast(item.FindComponent(LF_SerialComponent));
-			if (!component || !component.GetSerial().IsEmpty())
-				continue;
-
-			string serial = Issue(sale.m_sBuyerUid, sale.m_sPrefab);
-			if (serial.IsEmpty() || !component.SetSerial(serial))
-				continue;
-
-			stamped++;
-		}
-
+		int stamped = StampDelivered(buyer, sale.m_sBuyerUid, sale.m_sPrefab, sale.m_iQuantity, sale.m_sOutlet);
 		if (stamped < sale.m_iQuantity)
 		{
 			LF_Debug.Error(FEATURE, string.Format("sale of %1 to %2: stamped %3 of %4 tool(s)", sale.m_sPrefab, sale.m_sBuyerUid, stamped, sale.m_iQuantity));
@@ -194,6 +173,67 @@ class LF_FenceSerials
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a weapon sold at an outlet that is not a fence (the licensed gun counter, #2153): the
+	//! delivered weapon is registered to its buyer with the outlet in its serial. A weapon prefab with
+	//! no LF_SerialComponent cannot carry one; that is logged and the sale stands.
+	//! eturn Weapons stamped.
+	static int OnWeaponSale(IEntity buyer, string buyerUid, string prefab, int quantity, string outlet)
+	{
+		int stamped = StampDelivered(buyer, buyerUid, prefab, quantity, outlet);
+		if (stamped < quantity)
+			LF_Debug.Warn(FEATURE, string.Format("weapon sale of %1 at %2 to %3: stamped %4 of %5 (a weapon prefab needs LF_SerialComponent)", prefab, outlet, buyerUid, stamped, quantity));
+
+		return stamped;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stamps up to quantity delivered items of a prefab that carry an empty serial component.
+	//! eturn Items stamped.
+	protected static int StampDelivered(IEntity buyer, string buyerUid, string prefab, int quantity, string outlet)
+	{
+		if (!buyer)
+			return 0;
+
+		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(buyer);
+		if (!inventory)
+			return 0;
+
+		// A bought weapon lands in the weapon slot when one is free, which the bag search does not see.
+		array<IEntity> items = {};
+		items.InsertAll(LF_InventoryUtils.FindItemsByPrefab(inventory, prefab));
+		EquipedWeaponStorageComponent weapons = LF_Component<EquipedWeaponStorageComponent>.Find(buyer);
+		if (weapons)
+		{
+			array<IEntity> equipped = {};
+			weapons.GetAll(equipped);
+			foreach (IEntity worn : equipped)
+			{
+				if (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(worn), prefab) && items.Find(worn) == -1)
+					items.Insert(worn);
+			}
+		}
+
+		int stamped;
+		foreach (IEntity item : items)
+		{
+			if (stamped >= quantity)
+				break;
+
+			LF_SerialComponent component = LF_SerialComponent.Cast(item.FindComponent(LF_SerialComponent));
+			if (!component || !component.GetSerial().IsEmpty())
+				continue;
+
+			string serial = Issue(buyerUid, prefab, outlet);
+			if (serial.IsEmpty() || !component.SetSerial(serial))
+				continue;
+
+			stamped++;
+		}
+
+		return stamped;
 	}
 
 	//------------------------------------------------------------------------------------------------

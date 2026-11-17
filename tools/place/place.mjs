@@ -25,7 +25,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { layerFile as townLayerFile, worldLayerDirs } from "../lib/addons.mjs";
-import { GRID_LAYERS } from "../lib/world-zones.mjs";
+import { GRID_LAYERS, PACK_GRID_LAYERS } from "../lib/world-zones.mjs";
 import { layerEntityPrefabs } from "../lib/layer-prefabs.mjs";
 import { boundsOf, braceBlock, matchBlock, parentOf, readResource, resolveChain } from "../actions/place-action-contexts.mjs";
 import { meshOf, ownMesh, parseTree, prefabOf } from "../actions/prop-on-surface.mjs";
@@ -47,7 +47,10 @@ export function gridWorldOf(files) {
 }
 const itemsGrid = (items) => gridWorldOf(items.map((it) => (it.mode === "move" ? it.ent?.file : it.layer)));
 export function layerPath(root, name) {
-  return isGridLayer(name) ? join(root, GRID_LAYERS, name) : townLayerFile(root, name);
+  if (!isGridLayer(name)) return townLayerFile(root, name);
+  // A pack cell's layer is in the pack's grid world (Everon1989Grid); every other Grid_ layer is GridWorld's.
+  const pack = join(root, PACK_GRID_LAYERS, name);
+  return existsSync(pack) ? pack : join(root, GRID_LAYERS, name);
 }
 const layerFile = layerPath;
 // Every layer file the model and the prefab scan read: the playtest world's, plus GridWorld's own Grid_*
@@ -55,9 +58,10 @@ const layerFile = layerPath;
 function modelLayerPaths(root) {
   const dirs = worldLayerDirs(root);
   const out = dirs.flatMap((d) => readdirSync(d).filter((f) => f.endsWith(".layer")).map((f) => ({ file: f, path: join(d, f) })));
-  const grid = join(root, GRID_LAYERS);
-  if (existsSync(grid)) {
-    for (const f of readdirSync(grid)) if (isGridLayer(f)) out.push({ file: f, path: join(grid, f) });
+  for (const grid of [join(root, GRID_LAYERS), join(root, PACK_GRID_LAYERS)]) {
+    if (existsSync(grid)) {
+      for (const f of readdirSync(grid)) if (isGridLayer(f)) out.push({ file: f, path: join(grid, f) });
+    }
   }
   return out;
 }
@@ -222,9 +226,12 @@ export function resolveRef(root, arg) {
   if (full) return { guid: full[1].toUpperCase(), path: full[2] };
   const want = String(arg).replace(/\\/g, "/");
   const addon = join(root, "addons", "LifeFramework");
-  if (want.includes("/") && existsSync(join(addon, `${want}.meta`))) {
-    const m = readFileSync(join(addon, `${want}.meta`), "utf8").match(/Name\s+"\{([0-9A-Fa-f]{16})\}/);
-    if (m) return { guid: m[1].toUpperCase(), path: want };
+  // A pack prefab (addons/LF_Everon1989/<path>) has its GUID in its own .meta, as a core one does.
+  for (const dir of [addon, join(root, "addons", "LF_Everon1989")]) {
+    if (want.includes("/") && existsSync(join(dir, `${want}.meta`))) {
+      const m = readFileSync(join(dir, `${want}.meta`), "utf8").match(/Name\s+"\{([0-9A-Fa-f]{16})\}/);
+      if (m) return { guid: m[1].toUpperCase(), path: want };
+    }
   }
   if (!refIndex) {
     refIndex = new Map();
@@ -849,8 +856,11 @@ export function parseRays(outText) {
 export function serverRun(rayLines = [], { grid = false, measure = measureTown } = {}) {
   mkdirSync(TMP, { recursive: true });
   const records = grid ? auditRecords({ grid: true }) : auditRecords({ annex: true });
-  // The interactive placement loop stays on this PC (a probe is seconds; a remote run adds a sync).
-  const run = measure(records, { outDir: TMP, extra: rayLines, local: true, grid });
+  // The probe goes through the pool like `test` (RAM admission, FIFO queue, a run budget). This PC goes first
+  // while it has room (a probe is seconds; another machine adds a sync); under the RAM floor the pool sends it
+  // to the machine with headroom, carrying in.txt up and out.txt back. Never pinned (`local: true` timed out
+  // under the RAM floor, 2026-11-16).
+  const run = measure(records, { outDir: TMP, extra: rayLines, preferLocal: true, grid });
   if (run.outText == null) throw new PlaceError("the test server wrote no measurements (lines above). Run it from a worktree; `tools\\cli test --no-build --only LF_Test_PlacementAuditTown` shows why");
   const { rays, doors } = parseRays(run.outText);
   // doors.json is the town's door cache (loadDoors); GridWorld's doors must not replace it.

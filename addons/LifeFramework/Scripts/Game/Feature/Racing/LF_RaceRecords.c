@@ -1,6 +1,6 @@
 // LF_RaceRecords.c - the best race time per character per course (#1925, chapter Evenings in the
-// village #1011). A finished race (LF_OnRaceFinished, #1923) offers the winner's time; a faster time
-// than that character's record on that course replaces it, a slower one changes nothing. The board
+// village #1011). A finished race (LF_OnRaceFinished, #1923) offers every finisher's time (#2160); a faster
+// time than that character's record on that course replaces it, a slower one changes nothing. The board
 // at the track reads the top times through LF_RaceBoardProvider (LF_RaceBoard.c). Server only, never
 // replicated. Saved as the "racerecords" payload, keyed by course id and player uid (the character
 // record key, LF_Utils.GetPlayerUID), never an entity id.
@@ -36,7 +36,22 @@ class LF_RaceRecordsSubscriber : LF_EventSubscriber
 		if (!finish)
 			return false;
 
-		LF_RaceRecords.Offer(finish.m_sCourseId, finish.m_sWinnerUid, LF_RaceRecords.NameOf(finish.m_sWinnerUid), finish.m_iWinnerMs);
+		// Every finisher offers a time (#2160). An event with no finisher list (the winner fields alone)
+		// still records the winner.
+		foreach (int i, string uid : finish.m_aFinisherUids)
+		{
+			if (i >= finish.m_aFinisherMs.Count())
+			{
+				LF_Debug.Warn(LF_RaceRecords.FEATURE, string.Format("finish on '%1' lists %2 uids but %3 times; the rest are skipped", finish.m_sCourseId, finish.m_aFinisherUids.Count(), finish.m_aFinisherMs.Count()));
+				break;
+			}
+
+			LF_RaceRecords.Offer(finish.m_sCourseId, uid, LF_RaceRecords.NameOf(uid), finish.m_aFinisherMs[i]);
+		}
+
+		if (finish.m_aFinisherUids.IsEmpty())
+			LF_RaceRecords.Offer(finish.m_sCourseId, finish.m_sWinnerUid, LF_RaceRecords.NameOf(finish.m_sWinnerUid), finish.m_iWinnerMs);
+
 		return true;
 	}
 }

@@ -49,10 +49,20 @@ class LF_WorkAnim
 	protected static bool s_bSilent;
 	protected static int s_iStarts;
 	protected static int s_iStops;
+	//! Times ResetStatics took the repeating watch off the call queue. Not reset: tests read the difference.
+	//! (The queue defers a removal made inside its own pass, so the queue cannot be read back from a test.)
+	protected static int s_iWatchRemovals;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		// The repeating watch would otherwise stay queued: each reset leaked a 400 ms ticker.
+		if (s_bWatching && GetGame() && GetGame().GetCallqueue())
+		{
+			GetGame().GetCallqueue().Remove(Watch);
+			s_iWatchRemovals++;
+		}
+
 		s_aSessions.Clear();
 		s_bWatching = false;
 		s_bSilent = false;
@@ -77,6 +87,13 @@ class LF_WorkAnim
 	static int GetStopCount()
 	{
 		return s_iStops;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: how many resets took the repeating watch off the call queue.
+	static int GetWatchRemovalCount()
+	{
+		return s_iWatchRemovals;
 	}
 
 	//------------------------------------------------------------------------------------------------

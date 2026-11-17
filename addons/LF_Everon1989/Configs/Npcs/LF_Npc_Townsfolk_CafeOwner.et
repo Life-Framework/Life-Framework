@@ -10,6 +10,9 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
   LF_NpcRoleComponent "{7A31C05E94D2B861}" {
    m_sRole "townsfolk"
   }
+  LF_DialogueComponent "{A914CC16F6F8EB3E}" {
+   m_sDialogueId "cafe_owner"
+  }
   LF_PlaceComponent "{3165913B2276EBF8}" {
    m_sKind "Townsfolk"
    m_sId "cafe_owner"
@@ -24,6 +27,27 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
     }
     SCR_FeetLoadoutSlotInfo Boots {
      Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{16419E51EB91FDBC}" {
+     ContextName "Talk"
+     Position PointInfo "{2601F1C1DDEDD56C}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{575A8F71BEF6E5FD}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{9AF93C85486001DF}" {
+      Name "#LF-NpcTalk_Action"
+     }
     }
    }
   }

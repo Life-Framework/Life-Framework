@@ -16,7 +16,7 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 
 - **Player sees:** nothing directly; this is the data and the rules every event runs on.
 - **Owner and side:** `LF_EventPhaseRules` decides on the server, in server seconds.
-- **Data:** `Configs/Events/LF_Events.conf` (`LF_EventsConfig` of `LF_EventDef` of `LF_EventPhase`): per event an id, a cooldown, and phases each with a stable name, a cadence, an idle timeout and a module id list. The phase NAME is the save key, so phases may be added or reordered; never rename a shipped one. State is `LF_EventRunState` (not persisted yet).
+- **Data:** `Configs/Events/LF_Events.conf` (`LF_EventsConfig` of `LF_EventDef` of `LF_EventPhase`): per event an id, a cooldown, and phases each with a stable name, a cadence, an idle timeout and a module id list. The phase NAME is the save key, so phases may be added or reordered; never rename a shipped one. State is `LF_EventRunState`, saved by phase name (#1951, below).
 - **Rules:** conditions are AND-ed to advance, aborts OR-ed and end the event, an idle timeout ends it, finishing the last phase ends it, and each end starts the cooldown; a cooldown blocks `Start` until it runs out. A bad definition (no id, no phases, duplicate or empty phase name, negative time) is refused and logged `[LFDebug:Events]`.
 - **Proof:** `events/phase-rules` (LOGIC).
 
@@ -39,6 +39,14 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Owner and side:** server; `LF_EventModuleLoader` registers the condition and the scene by id at game start (#2137).
 - **Proof:** `everon/arrival-event` (pack leg).
 
+## Events survive a restart by phase name (#1951)
+
+- **Player sees:** an event that was running at a restart does not replay its scene after the boot; it cools down. A cooldown left at the save still holds after it.
+- **Owner and side:** `LF_EventShell.ExportSaved` and `ApplySaved` (`LF_EventShellSave.c`), server only; nothing replicates.
+- **Data:** the `worldevents` payload, one `LF_EventShellRow` per event the shell runs: row version first, event id, phase NAME, phase age, cooldown left, seconds since it ended, and the int bag as parallel key and value lists. Times are relative to the save; the shell clock is world seconds since boot.
+- **Rules:** idle keeps its cooldown left; a phase the event still has goes to its full cooldown from the load; a phase name it no longer has loads idle with `LF_Debug.Warn`; an id this boot does not run (removed, off, refused) is dropped with `LF_Debug.Warn`. The int bag comes back for every applied row. A load before game start loads the config first and `StartIfServer` keeps those runs. Applying the same rows twice gives the same state, and a re-apply onto a live session leaves a running event alone. An end older than the boot loads as "ended at boot" (the clock restarted), so a gap condition waits longer, never less.
+- **Proof:** `events/shell-persist` (WORLD), restart by `wt e2e`.
+
 ## Scene markers are checked at game start (#2067)
 
 - **Player sees:** nothing. A pack author sees one `[LFDebug:Events]` warning per broken scene in the server log.
@@ -54,3 +62,17 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Data:** `LF_EventsConfig.m_aModules` of `LF_EventModuleRef` (id + `.conf`), core and pack overlays merged by id. The `.conf` root class picks the kind: `LF_EventPrecondition` condition, `LF_EventAbort` abort, `LF_EventScene` scene operation (`LF_EventSceneOperation`).
 - **Rules:** a bad ref is logged and skipped, so its phase holds. A scene stages once per phase run and keeps its phase busy until its walkers have left out of sight.
 - **Proof:** `events/module-loader` (WORLD), `everon/arrival-event` (pack leg).
+
+## Scene from a fixture in a session (#2173)
+
+- **Player sees:** nothing; a harness verb for proofs.
+- **Owner and side:** `LF_EventSceneHarness` on the server, asked by the `eventscene` harness verb through the character's dev-gated RPC (like `eventjip`).
+- **Data:** a fixture `.conf` of root `LF_EventsConfig`, laid over `LF_EventOverlay.Get()` like a pack overlay; `[hour]` goes to `LF_EventShell.ForceHour`.
+- **Proof:** `events/scene-harness` (WORLD): applies a fixture, the event starts at the forced hour, refuses no conf, a missing conf and a wrong root, and `stop` restores the list.
+
+## Event places on the map (#2243)
+
+- **Player sees:** while an event runs, its place is a mark on everyone's map (and an EVENT-style circle where the area is drawn); it leaves when the event ends.
+- **Owner and side:** server; `LF_EventMapShare` listens to `LF_OnEventPhase` and puts or removes the `EVERYONE` row `event:<eventId>` in `LF_MapShares`; the row carries the radius and the `EVENT` style, and each client draws the circle in its own `LF_MapAreas` (`LF_MapShareAreas`). Nothing is saved.
+- **Data:** the place is the `LF_EventPlace` binding (scene id, radius) resolved to the `event_target` marker through `LF_Places`; label `#LF-EventMap_Place`.
+- **Proof:** `events/map-share` (WORLD).

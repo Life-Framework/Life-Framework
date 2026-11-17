@@ -37,6 +37,8 @@
     "addons/LifeFramework/UI/Layouts/Investigation/LF_CaseBoardString.layout": "A face part, not a screen: the red string and its two pins drawn into the case board render target (LF_CaseBoardFace, #148).",
     "addons/LifeFramework/UI/Layouts/Character/LogoutBodyTag.layout": "A world-space label, not a screen: the Logged out tag over a logged-out body (LF_LogoutBodyTagHud).",
     "addons/LifeFramework/UI/Layouts/HUD/LF_Waypoint.layout": "A HUD marker, not a screen: the town board waypoint, the place name and distance pinned over the place it marks (LF_WaypointHud).",
+    "addons/LifeFramework/UI/Layouts/Map/LF_MapPoi.layout": "A map overlay icon, not a screen: one POI or cluster stamp drawn over the open map (LF_MapPlacesUI, #2232). Only an icon and a count; takes the hover.",
+    "addons/LifeFramework/UI/Layouts/Map/LF_MapPoiCard.layout": "A map overlay card, not a screen: the hover card of a POI with its name and Set waypoint, pinned beside the icon on the open map (LF_MapPlacesUI, #2232). Paper, ink and brass of the paper theme; the theme's two faces.",
     "addons/LifeFramework/UI/Layouts/Racing/LF_RaceHud.layout": "A HUD strip, not a screen: the racer's lap, next checkpoint, place and time over the game while driving (#1924). Only a plate and a column; the rows inside are the kit's LF_UIHeading and LF_UIStatusRow parts. Takes no input."
   }
 }

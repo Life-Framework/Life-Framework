@@ -152,7 +152,10 @@ gate before a merge; the main guard (next section) checks `main` after it.
    `origin/<base>` in, pushes again and retries.
 4. Prints `SUMMARY ship ok|fail`, then `PR <url>, head <sha>`. No queue, no pool lane, no wait.
 
-`--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
+`--draft` runs the same body checks, preflight and push, then opens the PR with `gh pr create --draft` and never runs
+`gh pr merge --auto`; the summary reads `auto-merge off (draft)`. Town-draft and maintainer-review PRs use it; a human
+marks the PR ready and merges it (`ship-direct.mjs` `draft`, `wt-ship-draft-selftest.mjs`). Re-running on an open PR
+reuses it. `--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
 <slug>` stays as an optional manual check (tiers in `tools/lib/gate-tier.mjs`, `gate-risk.mjs`). The ship queue
 (`tools/ship-queue.mjs`), `wt ship-status`, `wait ship` and the tier selection in ship are retired; their code stays
 on disk until someone deletes it.
@@ -176,6 +179,15 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    `build`, `test --no-build --tier all`, `audit placement --strict`, `e2e --pre-move 502ebf39 --mission playtest`.
    All pass: `green`. A red step reruns at the same head; a pass on the rerun is a flake
    (`tmp/logs/main-guard-flakes.log`), red twice bisects and reverts.
+   **The suite bisect matches the failing-test set (#2052).** At a red head the guard records the failing test names
+   and FAIL lines (`suite red set:` in the log, `failing` and `failLines` in `lastResult`). The bisect reruns just
+   those tests at each candidate and counts a commit as red only when it fails one of them; another test failing there,
+   or a test that does not exist yet, is green for the set. So an earlier merge that broke different tests (#2011,
+   twice) is never blamed. When no single merge explains the set it stops: the culprit fails only some of the tests
+   (the rest fail from a later merge), or none of them fail at the newest merge (a flake or another cause). The log
+   gets a `mixed causes: ...` line, the head's `main-guard/suite` status says `red: suite failed; mixed causes ...`,
+   and nothing is reverted. A suite red with no readable test name is not reverted either. Build, audit and e2e keep
+   red/green. A compile break and a machine exit (logoff, budget kill) are handled as before.
    **Stage 2b, the town tests (warn-only).** The 12 tests of `tools/test/town-tests.json` (the roadmap scenarios, the
    narrative loop, the sign coverage) are not in the suite: `test --tier all`, `ci`, `wt gate` and `wt ship` skip them.
    After the suite goes `green`, the guard runs them once as their own stage, `test --no-build --town` (one boot of the
@@ -195,7 +207,9 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    comment on #N, its issues reopened as `regression`, one line to the staff webhook (`LF_STAFF_WEBHOOK_URL` or
    `"mainGuard": { "webhookUrl" }` in `lf.local.json`).
 
-Never reverted: a revert; a merge that was on main when the guard first started; a PR twice; **a placement audit red**
+The placement steps are `audit placement --strict` (town findings warn) and `audit placement --grid --strict` (GridWorld; clean since #1814, any finding is red).
+
+Never reverted: a revert; a merge that was on main when the guard first started; a PR twice; **a placement audit red, town or grid**
 (town layout findings warn on every branch, #1872: the guard opens a fix-card issue instead); **a `town-maintainer-*`
 PR for anything but a compile break** (a test or audit failure gets a fix card). It never pushes `main`.
 `LF_MAIN_GUARD=0` stops the worker. Log: `tmp/logs/main-guard.log`.
@@ -359,7 +373,9 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   gate), `wt e2e`, and `e2e`. Every run prints where it ran and how long it
   waited (`pool: test all runs on lf-testbox ...; waited 0.7 s`) and a footer
   with the exit code, wait, and run time. `--local`, `--remote [name]`,
-  `--machine <name>`, and `--any` pick; `LF_TESTBOX_AUTO=0` makes the
+  `--machine <name>`, and `--any` pick; `--prefer-local` is `--any` with this PC
+  tried first while it has RAM room (the placement tool's probe uses it; a short job
+  where a sync costs more than the run); `LF_TESTBOX_AUTO=0` makes the
   default `--local`.
 - **Machines.** `tools/pool.json` lists them: `name`, `via` (`local` or
   `ssh`), `host` (ssh alias), `root` (the remote main clone), `slots`, `caps`
@@ -652,7 +668,7 @@ path that would start a Workbench here asks it first:
 | the rdb refresh before `test`, `session up`, `serve`, `e2e` and a gate; `rdb`, `rdb --wait` (`chooseRefresh`) | goes to a machine with the `rdb` cap even when it can only queue there; none yet: waits (`LF_RDB_WAIT_S`, 900 s, `rdb --budget <s>`), then warns and leaves the rdb stale. It never falls back to a local refresh |
 | `validate --full` (the `validate-scripts.ps1` compile) | `ci --wb-only --compile-only` on a pool machine, its transcript streamed here |
 | `build`, and `test` without `--no-build` | `ci --wb-only --build-only [--addon X]` on a pool machine; the exit code is the result |
-| `look <area>`, `look item` | runs on a pool machine (`look ... --local --fresh --clean` in its desktop session); the pictures are copied back to `tmp/look` (or `--out`) with the paths in each `index.json` made local. `look serve` (start) refuses: its Workbench is long-lived and local |
+| `look <area>`, `look item` | runs on a pool machine (`look ... --local --fresh --clean` in its desktop session); the pictures are copied back to `tmp/look` (or `--out`) with the paths in each `index.json` made local. A routed look is warm by default: the box runs it with `--serve`, so one resident look Workbench per box (the `Life-Framework-look-viewer` checkout) takes it (`--cold` is the old path). Its RAM is the pool's admission (`tools/lib/pool-ram.mjs`: a `workbench` job at its measured peak; a request to a live resident server needs none); it closes after 5 idle minutes (`reapRemoteLookServer`) or at once when a session request waits on that machine for RAM or a lane, never runs on this PC and never pins. Each look prints its phases (queue, sync, start, world, shots, copy back). `look serve` (start) on this PC refuses; `docs/visual-testing.md` "look on a pool machine" |
 | `pack`, `asset` plugin runs, `ui-image`, `wt open --workbench` | refuse with the reason: their output is files in this worktree |
 | `cli call wb_*` (and so `agent-box/harness.mjs launch`, `play`) | refuse: every `wb_*` tool needs a Workbench and the MCP starts one itself. `api_search`, `game_read`, `asset_search` and `api class` need none |
 | `validate-scripts.ps1` run by hand | refuses unless the CLI launched it (`LF_WB_GUARDED=1`) or `LF_WB_LOCAL=1` |
@@ -775,6 +791,42 @@ it, picks a lane and a budget, and prints one line per outcome.
   edit. Measured 2026-11-10 on this 15.6 GB PC: server plus one client 1.3 GB, the second client
   +0.8 GB; with ~3.8 GB free and nothing running a 2-client full session (2.3 GB) fits, a second
   one does not.
+- **RAM admission by measured peaks (2026-11-16, `tools/lib/pool-ram.mjs`).** The gate above compared free
+  RAM once, at the start, with hand-set reserves, and the 15.2 GB laptop still fell under its floor with a session, a
+  Workbench rdb refresh and the main guard's suite together. Causes and fixes:
+  - *Reserves below real peaks.* Each job kind now reserves a measured peak per world class (`small` = every world but
+    Everon, `island` = `CoreOnEveron`): server 0.7 GB, client 1.2 GB (lowspec 1.1), test 0.8 GB, **Everon island
+    server 2.5 GB plus 2.9 GB per client**, **Workbench 3.7 GB** (the seeds). A test now reserves its server too; it used to
+    reserve only the floor and could land 0.8 GB under it. The pool.json reserves stay as a lower bound.
+  - *Observed peaks.* Every scan notes each ArmaReforger process's highest working set; when it ends, that is one sample
+    for its kind and world, in `tmp/wt/pool-peaks.json` (newest 40). With 3 or more samples the reserve is their p90, never
+    under the configured number; fewer, the seed. `pool status` prints the current peaks (`*` = seed).
+  - *Everything is counted.* The gate scans every `ArmaReforger*` process on the machine (here with one PowerShell call, kept
+    4 s; on a pool machine in the same ssh read, and in the slot holder's own gate): a Workbench (rdb refresh, look,
+    compile, the user's editor), the guard's servers and anything started outside the pool. What each still has to grow to
+    its peak (peak less the larger of its working set and the highest one seen; nothing once its private bytes reach the
+    peak, i.e. loaded and merely paged out) is subtracted from free RAM before a job is admitted. The pool's own lock
+    reserves count only for a job's first 45 s, before its processes exist, so nothing is counted twice.
+  - *Peak, not the start reading.* A job starts only when free RAM less that growth less its own peak stays at or over
+    `minFreeMb`; else it queues (`free RAM 2.8 GB minus 3.0 GB peak for the session ... would be under 1.5 GB`).
+  - *One island at a time.* An island session also needs room for a second peak while another island server or client runs,
+    so two never start where only the first one's visible memory fits. `session up --mission everon` (and a remote one)
+    tells the gate its world.
+  A trimmed idle session counts for the peak it can regrow to: safe on the laptop, and the reason a queued job may now wait
+  for an idle session's 3-5 min reap instead of starting beside it. Selftests: `tools/validation/pool-ram-selftest.mjs`
+  (full machine queues, island refused, small test admitted, Workbench counted); `pool-selftest` pins its RAM with
+  `LF_POOL_TEST_FREE_MB` so this PC's real load never decides it.
+- **What each process is, and whose peaks (2026-11-17, `docs/architecture/ram-budget.md`).** One PowerShell classifier
+  (`Get-LfArmaRows` in `pool-ram.mjs`) serves the pool's scan and the box holder's gate. A server whose `-profile` is
+  `<checkout>\server\profile\test` is a **test** (its peaks used to land under `server`, so `test:*` never left its seed);
+  a client is **island** when its session folder is the one of a `CoreOnEveron` server (a client joins by address, so it
+  used to count as a small client: 1.2 GB low for growth, and its 2 GB samples inflated the small client peak); a client's
+  **profile** is its own (`-maxFPS 15` = lowspec), not the asking job's; a Workbench is the **look** viewer
+  (`LF_VisualShotsPlugin`, 2.5-2.65 GB) or a **tool** (rdb, compile, pack: 1.0-1.2 GB, key `workbench:small:tool`, seed
+  1.3 GB) instead of both counting 3.7 GB. **Per machine:** `remoteState` also reads the box's own `pool-peaks.json` (its
+  look, rdb and holder jobs record there), and the box's admission, ranking and holder config use its measured keys (3+
+  samples) over this PC's (`machinePeaks`); before, the laptop was judged by this PC's seeds (Workbench 3.7 GB where the
+  laptop measured 2.6).
 - **Backfill without starvation.** A job that tried and cannot start for RAM or a lane is passed
   by the jobs behind it that can start now (a lowspec 1-client session goes while a full 2-client
   one waits for RAM). Once the waiting job has waited `starveMin` (20) minutes it holds its place:
@@ -782,6 +834,17 @@ it, picks a lane and a budget, and prints one line per outcome.
   the same RAM) until it fits, as long as draining can help it (its need fits in free RAM plus what
   the pool's running jobs there hold). A job that could not fit even on an empty machine never
   blocks anyone.
+- **Where the RAM goes, and orphans (2026-11-17, `tools/lib/ram.mjs`).** `tools\cli ram [--machine <name>]` prints,
+  per pool machine, free RAM and commit, working set and private bytes by role (claude agents, MCP children per claude,
+  tools/cli node, test and session servers, clients, Workbench, main guard, T3, git, shells, Defender, Search, NVIDIA,
+  Steam, Windows, other apps), every ArmaReforger process with its `-profile`, and the orphans. An orphan is only an
+  ArmaReforger process our tools launched (`-profile` under a checkout's `server\profile\` or a
+  `LifeFramework\session\` folder), older than 10 min, and: its checkout is gone; its session record is missing, stopped
+  or names other pids; a test server past 120 min; or an `-exitAfterInit` (rdb, compile) Workbench past 60 min. The
+  user's own game and Workbench and the look viewer are never candidates. The pool stops them by pid
+  (`taskkill /T /F`, re-checked to still be ArmaReforger) from its wait loop and `pool status`, once per machine per
+  10 min (`tmp/wt/orphan-reap.json`); `ram --dry-run` lists, `ram --reap` stops now, `LF_ORPHAN_REAP=0` turns the
+  pool's off. Selftest: `ram-selftest`.
 - **Status.** `pool status` prints each machine's live free RAM (and the laptop's temperature),
   and per waiting job where it may run, the reason (`ram 2-client full: needs 3.8 GB free, local
   has 1.1, lf-testbox has 2.8`; a pinned job adds `(pinned; lf-testbox has room)`; `lane`, `behind N`, `starved, so it holds its place`) and an
@@ -838,7 +901,10 @@ it, picks a lane and a budget, and prints one line per outcome.
   driven by an older harness is not mistaken for idle. A session being driven is
   never touched.
 - **Runtime budget.** A test run is killed when it exceeds its budget (clock
-  starts at the server's ready line; boot has its own `bootBudgetS`, 30 s):
+  starts at the server's ready line; boot has its own `bootBudgetS`, 30 s, for DebugWorld and the small
+  test worlds; any other `--world` boots a big map and gets 150 s (`CoreOnEveron`, 1.1M entities), doubled up to 600 s
+  while that world's recent runs on that machine timed out, times `budgetMultiplier`; `--boot-budget <s>` overrides,
+  and the remote leg works it out from `--world` itself, #1700):
   3 times the p95 of that machine's last 30 passing runs of the kind, never under
   30 s; until it has 5 passes, seeded: `--only` 30 s, `fast` 45 s, `all` 90 s,
   `persistence` 120 s, `e2e` 120 s per pass, times the machine's
@@ -880,8 +946,10 @@ to door). The `hostname` key makes the entry the local machine when the CLI runs
 and the RAM (and, on the laptop, below its heat hold). A machine that is down when the request arrives stays in it and
 is probed again every 10 s while it waits (2026-11-14: two 2-client requests arrived while the laptop was off, went to
 this PC and queued there pinned for 58 and 11 minutes while the laptop came back with free lanes). The chosen machine's
-own `up` runs without `--wait`: a lost race there exits 75 (`LANE_BUSY_CODE`) and the request queues again for
-any machine, keeping its age. `--machine local` (or `--machine <name>`) pins it. The remote session's clients start
+own `up` runs without `--wait`: a lost race there exits 75 (`LANE_BUSY_CODE`) and the request queues again
+(that machine is skipped while another can take it, and refusals back off 3 s doubling to 60 s, #1699), keeping its age. The
+router sends the machine's lane counts to its leg (`LF_POOL_THIS_LANES`): the run folder on lf-cloud has no
+`lf.local.json`, so without it the leg counted this PC's 2 session lanes where the router counted 9. `--machine local` (or `--machine <name>`) pins it. The remote session's clients start
 on the laptop's desktop. Everything that drives them follows the session there: `harness.mjs`, `session.mjs
 state`, `reset`, `join`, `roster`, `film` and every proof verb run in the run folder over ssh (`--local` keeps
 one on this PC), and a path of this worktree among a proof's arguments (an out dir) is mapped into the run folder
@@ -1125,6 +1193,15 @@ ssh has no desktop; use the `testbox` commands below, which capture in the
 signed-in session.
 
 ### Desktop on the box (virtual display, recording, clients from ssh)
+
+**GPU routes.** Every route that renders on a pool machine goes through the desktop session (`tools/lib/gpu-session.mjs`):
+the `ci --wb-only` steps (`build`, the compile, `validate --full`) re-run in it (`ciWorkbenchInSession`); `look` (and the warm
+`look serve` Workbench), the rdb refresh, `npc dress`, the main guard and every `session up` client start their process there
+through `interactiveSpawnDetached`; `ui-image`, `asset run`, `pack` and `call wb_*` re-run in it when started over ssh. With no
+signed-in (or a disconnected) session each stops at once with `<machine> has no signed-in desktop session: log in once`;
+`chooseGate` never picks such a machine (a pin or "all of them" is `none`, not a wait) and `pool status` shows its
+`desktop:` line. The `LF-DesktopHelper` logon task (`toolscli desktop-helper setup <machine>`, docs/setup.md "Desktop helper")
+keeps the session awake and writes the heartbeat `pool status` reads.
 
 ssh runs in session 0. The box's signed-in desktop is session 1, so
 `tools/remote/desktop/run-interactive.ps1` runs a program there through a
@@ -1418,6 +1495,10 @@ Plain `tools\cli validate` (and `dev`) runs a check only when something it reads
 this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `validate --full`, `ci`, `wt gate`,
 `wt ship` and CI (`CI` or `GITHUB_ACTIONS` set, or `LF_VALIDATE_ALL=1`) always run every check.
 
+Checks run 8-12 at once (by CPU count); when free RAM is short each one is counted at 80 MB and only as many start
+as fit over the pool's 1.5 GB floor, never fewer than 2 (`tools/lib/validate-concurrency.mjs`, 2026-11-17: a full
+fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/ram-budget.md).
+
 - A check declares its inputs in a header line in its first 30 lines: `// inputs: addons/**/*.layer, docs/features.md`
   (`# inputs:` in a .ps1). `*` stays in one folder, `**` crosses folders; the check's own file, `tools/validation/*.json`
   and `tools/validation/fixtures/**` are always inputs. `inputs: always` runs every time (a check that reads machine or
@@ -1442,11 +1523,12 @@ parallel, each with its own timeout; one that fails prints one line and the rest
 - PRS: every open PR, conflicting first, then BLOCKED/UNSTABLE/BEHIND, then CLEAN; checks and age. A conflicting PR names whether only
   generated or driver-merged files conflict (`prs heal` fixes those) or a source file needs a human (`git merge-tree`, no checkout).
   A PR GitHub has not graded yet (UNKNOWN) is asked through the REST endpoint.
-- WORKTREES: active (a file, commit or log touched in 30 min) vs idle; merged-prunable; orphans (in the registry but not a git worktree
+- WORKTREES: active (a commit, a changed file, a file in `tmp/` or `tmp/logs`, or a session log touched in 30 min; the registry marker `tmp/wt.json` is bookkeeping and never counts) vs idle; merged-prunable; orphans (in the registry but not a git worktree
   or missing, or a `Life-Framework-ws-*` folder nobody registered); disk. A worktree is merged only through a merged GitHub PR whose head
   SHA is the branch tip, never through git ancestry: a fresh worktree is an ancestor of main and is never listed (`lead-selftest`).
   Disk sizes are cached per folder for 24 h in `tmp/wt/lead-disk.json` and refreshed in a 9 s budget, so the first runs say
   `~N GB (k/n measured)`; the walk never follows a junction.
+- DISK: free space on this PC and on each pool machine (the drive holding the worktrees), `WARN DISK` under 30 GB (`LF_DISK_WARN_GB`). `wt new` refuses under 10 GB (`LF_WT_MIN_FREE_GB`, 0 turns it off) with a message naming `lead prune-safe --oldest N`.
 - POOL: one line per machine (free RAM, lanes busy/total, temperature, `up`, `slow` or `DOWN`) and the queue length. Each machine is
   read in its own process (`lead --pool-worker <name>`), all at once, with a per-machine timeout (9 s, `LF_LEAD_POOL_MACHINE_MS`) inside
   an overall budget (12 s, `LF_LEAD_POOL_BUDGET_MS`). A machine that has not finished shows what it had: `slow` when it answered within
@@ -1454,8 +1536,12 @@ parallel, each with its own timeout; one that fails prints one line and the rest
   When the budget itself cuts a machine the section ends with `pool budget N s exceeded ... partial rows for ...`. A machine whose
   free RAM is under the pool floor (`minFreeMb`, 1.5 GB) adds `WARN RAM: <machine> has 0.5 GB free, under its 1.5 GB floor`: it takes no new job.
 - SHIP QUEUE: `SHIP QUEUE 1 gating, 2 queued, oldest wait 14 min (<slug> #<pr>)`, from the same file `ship-queue status` prints.
+- USAGE: one line, the Gaming plan's real 5h and weekly utilization, pace and advice from `usage --plan` (docs/agent-budget.md "Plan utilization"); `USAGE Gaming: plan usage unavailable (why)` when the endpoint or token fails.
 - ACCOUNTS and SLICES appear when `usage --accounts` and `slice list --ready` exist; until then each prints one skip line.
 
 `tools\cli lead prune-safe [--dry-run]` prunes the merged-prunable worktrees through `wt prune` (never `--force`) and prints one line each:
 a merged PR on GitHub, no uncommitted change, idle 30 min, no live lock or session, and re-checked clean just before the delete. When
 GitHub cannot list the merged PRs it prunes nothing.
+`--oldest N` caps a run to the N least recently active of the worktrees that qualify, to free the most space at once; every rule above still applies to each one.
+
+**Why the marker is bookkeeping (2026-11-17).** `wt list` reconciles the registry and rewrote `tmp/wt.json` in every worktree, so all 214 looked touched a minute ago and `prune-safe` pruned none while C: filled to 195 MB free. `writeMarker` now writes only when the content changes, and the idle check (`newestActivityMs` in `tools/lib/lead.mjs`) ignores `tmp/wt.json` and its temp and lock files. `disk-guard-selftest` proves both and the thresholds.

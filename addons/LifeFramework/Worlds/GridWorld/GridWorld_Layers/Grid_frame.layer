@@ -183,10 +183,10 @@ GenericEntity GridMarker_c7r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c7r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:bank-heist"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 106.5 0.505 25.5
@@ -201,19 +201,19 @@ GenericEntity GridMarker_c8r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 23.5
+ coords 129.5 0.505 23.5
  angleY 180
 }
 GenericEntity GridPlate_c8r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:bank-heist"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 25.5
+ coords 129.5 0.505 25.5
  angleY 180
 }
 GenericEntity GridMarker_c9r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -231,10 +231,10 @@ GenericEntity GridMarker_c9r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c9r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:hideout"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 130.5 0.505 25.5
@@ -255,13 +255,349 @@ GenericEntity GridMarker_c10r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:jail"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 142.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c11r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c11r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 154.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c11r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:bank"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 154.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c12r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c12r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 177.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c12r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:bank"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 177.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c13r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c13r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 178.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c13r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
    m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
    m_vPaintColor 0.4 0.8 0.4
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 142.5 0.505 25.5
+ coords 178.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c14r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c14r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 190.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c14r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:hostel"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 190.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c15r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c15r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 213.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c15r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:hostel"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 213.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c16r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c16r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c16r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c17r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c17r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 226.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c17r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:pub"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 226.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c18r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c18r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 249.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c18r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:pub"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 249.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c19r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c19r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c19r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c20r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c20r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c20r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:fuel-station"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 262.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c21r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c21r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 285.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c21r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:fuel-station"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 285.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c22r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c22r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 297.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c22r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:fuel-station"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 297.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c23r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c23r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c23r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:clinic"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 298.5 0.505 25.5
+ angleY 180
+}
+GenericEntity GridMarker_c24r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c24r0"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 321.5 0.505 23.5
+ angleY 180
+}
+GenericEntity GridPlate_c24r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:clinic"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 321.5 0.505 25.5
  angleY 180
 }
 GenericEntity GridMarker_c0r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -327,10 +663,10 @@ GenericEntity GridMarker_c2r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c2r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
-   m_vTextColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
   }
  }
  coords 46.5 0.505 37.5
@@ -351,9 +687,9 @@ GenericEntity GridMarker_c3r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c3r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:police-station-kit"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -369,19 +705,19 @@ GenericEntity GridMarker_c4r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 70.5 0.505 35.5
+ coords 81.5 0.505 35.5
  angleY 180
 }
 GenericEntity GridPlate_c4r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:police-station-kit"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 70.5 0.505 37.5
+ coords 81.5 0.505 37.5
  angleY 180
 }
 GenericEntity GridMarker_c5r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -399,9 +735,9 @@ GenericEntity GridMarker_c5r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c5r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:hospital"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -423,9 +759,9 @@ GenericEntity GridMarker_c6r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:chain-barrels"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -447,10 +783,10 @@ GenericEntity GridMarker_c7r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c7r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:chopshop"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 106.5 0.505 37.5
@@ -471,10 +807,10 @@ GenericEntity GridMarker_c8r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c8r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:lockpick-cars"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 118.5 0.505 37.5
@@ -495,10 +831,10 @@ GenericEntity GridMarker_c9r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c9r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:cash-van"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 130.5 0.505 37.5
@@ -513,10 +849,82 @@ GenericEntity GridMarker_c10r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 142.5 0.505 35.5
+ coords 153.5 0.505 35.5
  angleY 180
 }
 GenericEntity GridPlate_c10r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:cash-van"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 153.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c11r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c11r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 154.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c11r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:bank"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 154.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c12r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c12r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 177.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c12r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:bank"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 177.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c13r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c13r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 178.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c13r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
    m_sSignId "grid:free"
@@ -525,7 +933,271 @@ GenericEntity GridPlate_c10r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 142.5 0.505 37.5
+ coords 178.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c14r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c14r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 190.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c14r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:hostel"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 190.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c15r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c15r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 213.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c15r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:hostel"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 213.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c16r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c16r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c16r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c17r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c17r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 226.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c17r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:pub"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 226.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c18r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c18r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 249.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c18r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:pub"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 249.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c19r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c19r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c19r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c20r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c20r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c20r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c21r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c21r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c21r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c22r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c22r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c22r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c23r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c23r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c23r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:clinic"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 298.5 0.505 37.5
+ angleY 180
+}
+GenericEntity GridMarker_c24r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c24r1"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 321.5 0.505 35.5
+ angleY 180
+}
+GenericEntity GridPlate_c24r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:clinic"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 321.5 0.505 37.5
  angleY 180
 }
 GenericEntity GridMarker_c0r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -615,9 +1287,9 @@ GenericEntity GridMarker_c3r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c3r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:police-station-kit"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -633,19 +1305,19 @@ GenericEntity GridMarker_c4r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 70.5 0.505 47.5
+ coords 81.5 0.505 47.5
  angleY 180
 }
 GenericEntity GridPlate_c4r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:police-station-kit"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 70.5 0.505 49.5
+ coords 81.5 0.505 49.5
  angleY 180
 }
 GenericEntity GridMarker_c5r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -663,9 +1335,9 @@ GenericEntity GridMarker_c5r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c5r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:hospital"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -687,9 +1359,9 @@ GenericEntity GridMarker_c6r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:impound"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -711,10 +1383,10 @@ GenericEntity GridMarker_c7r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c7r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:police-desk"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 106.5 0.505 49.5
@@ -729,19 +1401,19 @@ GenericEntity GridMarker_c8r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 47.5
+ coords 129.5 0.505 47.5
  angleY 180
 }
 GenericEntity GridPlate_c8r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:police-desk"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 49.5
+ coords 129.5 0.505 49.5
  angleY 180
 }
 GenericEntity GridMarker_c9r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -759,10 +1431,10 @@ GenericEntity GridMarker_c9r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c9r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:dispatch"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 130.5 0.505 49.5
@@ -783,13 +1455,349 @@ GenericEntity GridMarker_c10r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:convoy"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 142.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c11r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c11r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 154.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c11r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:town-hall"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 154.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c12r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c12r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 177.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c12r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:town-hall"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 177.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c13r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c13r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 189.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c13r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:town-hall"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 189.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c14r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c14r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 190.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c14r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:slice-2441"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 190.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c15r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c15r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 202.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c15r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
    m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
    m_vPaintColor 0.4 0.8 0.4
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 142.5 0.505 49.5
+ coords 202.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c16r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c16r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c16r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c17r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c17r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 226.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c17r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 226.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c18r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c18r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 238.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c18r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 238.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c19r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c19r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c19r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c20r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c20r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c20r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c21r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c21r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c21r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c22r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c22r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c22r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c23r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c23r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c23r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 49.5
+ angleY 180
+}
+GenericEntity GridMarker_c24r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c24r2"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 310.5 0.505 47.5
+ angleY 180
+}
+GenericEntity GridPlate_c24r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 310.5 0.505 49.5
  angleY 180
 }
 GenericEntity GridMarker_c0r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -951,9 +1959,9 @@ GenericEntity GridMarker_c6r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:vehicle-lot"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -975,10 +1983,10 @@ GenericEntity GridMarker_c7r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c7r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:job-depot"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 106.5 0.505 61.5
@@ -993,19 +2001,19 @@ GenericEntity GridMarker_c8r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 59.5
+ coords 129.5 0.505 59.5
  angleY 180
 }
 GenericEntity GridPlate_c8r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:job-depot"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 61.5
+ coords 129.5 0.505 61.5
  angleY 180
 }
 GenericEntity GridMarker_c9r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1023,10 +2031,10 @@ GenericEntity GridMarker_c9r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c9r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:zone-signs"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 130.5 0.505 61.5
@@ -1041,10 +2049,106 @@ GenericEntity GridMarker_c10r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 142.5 0.505 59.5
+ coords 153.5 0.505 59.5
  angleY 180
 }
 GenericEntity GridPlate_c10r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:zone-signs"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 153.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c11r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c11r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 154.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c11r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:town-hall"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 154.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c12r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c12r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 177.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c12r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:town-hall"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 177.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c13r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c13r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 189.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c13r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:town-hall"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 189.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c14r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c14r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 190.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c14r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
    m_sSignId "grid:free"
@@ -1053,7 +2157,247 @@ GenericEntity GridPlate_c10r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 142.5 0.505 61.5
+ coords 190.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c15r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c15r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 202.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c15r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 202.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c16r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c16r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c16r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c17r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c17r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 226.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c17r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 226.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c18r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c18r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 238.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c18r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:pack-fixture"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 238.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c19r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c19r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c19r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c20r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c20r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c20r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c21r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c21r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c21r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c22r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c22r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c22r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c23r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c23r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c23r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 61.5
+ angleY 180
+}
+GenericEntity GridMarker_c24r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c24r3"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 310.5 0.505 59.5
+ angleY 180
+}
+GenericEntity GridPlate_c24r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 310.5 0.505 61.5
  angleY 180
 }
 GenericEntity GridMarker_c0r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1215,9 +2559,9 @@ GenericEntity GridMarker_c6r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:vehicle-lot"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
+   m_vPaintColor 0.95 0.78 0.1
    m_vTextColor 0.1 0.1 0.1
   }
  }
@@ -1239,10 +2583,10 @@ GenericEntity GridMarker_c7r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c7r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:apple-chain"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 106.5 0.505 73.5
@@ -1257,19 +2601,19 @@ GenericEntity GridMarker_c8r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 71.5
+ coords 129.5 0.505 71.5
  angleY 180
 }
 GenericEntity GridPlate_c8r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:apple-chain"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 73.5
+ coords 129.5 0.505 73.5
  angleY 180
 }
 GenericEntity GridMarker_c9r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1287,10 +2631,10 @@ GenericEntity GridMarker_c9r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c9r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:org-desk"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 130.5 0.505 73.5
@@ -1311,13 +2655,349 @@ GenericEntity GridMarker_c10r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:atm"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 142.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c11r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c11r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 154.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c11r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
    m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
    m_vPaintColor 0.4 0.8 0.4
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 142.5 0.505 73.5
+ coords 154.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c12r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c12r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 166.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c12r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 166.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c13r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c13r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 178.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c13r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 178.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c14r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c14r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 190.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c14r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:fence-yard"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 190.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c15r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c15r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 213.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c15r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:fence-yard"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 213.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c16r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c16r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c16r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c17r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c17r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 226.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c17r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:parcel-kiosk"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 226.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c18r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c18r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 238.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c18r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 238.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c19r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c19r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c19r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c20r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c20r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c20r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c21r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c21r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c21r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c22r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c22r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c22r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c23r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c23r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c23r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 73.5
+ angleY 180
+}
+GenericEntity GridMarker_c24r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c24r4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 310.5 0.505 71.5
+ angleY 180
+}
+GenericEntity GridPlate_c24r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 310.5 0.505 73.5
  angleY 180
 }
 GenericEntity GridMarker_c0r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1479,10 +3159,10 @@ GenericEntity GridMarker_c6r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
-   m_vTextColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
   }
  }
  coords 94.5 0.505 85.5
@@ -1521,7 +3201,7 @@ GenericEntity GridMarker_c8r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 83.5
+ coords 129.5 0.505 83.5
  angleY 180
 }
 GenericEntity GridPlate_c8r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1533,7 +3213,7 @@ GenericEntity GridPlate_c8r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 85.5
+ coords 129.5 0.505 85.5
  angleY 180
 }
 GenericEntity GridMarker_c9r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1545,7 +3225,7 @@ GenericEntity GridMarker_c9r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 130.5 0.505 83.5
+ coords 141.5 0.505 83.5
  angleY 180
 }
 GenericEntity GridPlate_c9r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1557,7 +3237,7 @@ GenericEntity GridPlate_c9r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 130.5 0.505 85.5
+ coords 141.5 0.505 85.5
  angleY 180
 }
 GenericEntity GridMarker_c10r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1575,13 +3255,349 @@ GenericEntity GridMarker_c10r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:furnace"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 142.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c11r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c11r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 154.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c11r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
    m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
    m_vPaintColor 0.4 0.8 0.4
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 142.5 0.505 85.5
+ coords 154.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c12r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c12r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 166.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c12r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 166.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c13r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c13r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 178.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c13r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 178.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c14r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c14r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 190.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c14r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:fence-yard"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 190.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c15r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c15r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 213.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c15r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:fence-yard"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 213.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c16r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c16r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c16r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c17r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c17r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 226.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c17r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 226.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c18r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c18r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 238.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c18r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 238.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c19r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c19r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c19r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c20r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c20r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c20r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c21r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c21r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c21r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c22r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c22r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c22r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c23r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c23r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c23r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 85.5
+ angleY 180
+}
+GenericEntity GridMarker_c24r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c24r5"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 310.5 0.505 83.5
+ angleY 180
+}
+GenericEntity GridPlate_c24r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 310.5 0.505 85.5
  angleY 180
 }
 GenericEntity GridMarker_c0r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1743,10 +3759,10 @@ GenericEntity GridMarker_c6r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
 GenericEntity GridPlate_c6r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:blocked"
+   m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.62 0.62 0.62
-   m_vTextColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
   }
  }
  coords 94.5 0.505 97.5
@@ -1785,7 +3801,7 @@ GenericEntity GridMarker_c8r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 95.5
+ coords 129.5 0.505 95.5
  angleY 180
 }
 GenericEntity GridPlate_c8r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1797,7 +3813,7 @@ GenericEntity GridPlate_c8r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 97.5
+ coords 129.5 0.505 97.5
  angleY 180
 }
 GenericEntity GridMarker_c9r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1809,7 +3825,7 @@ GenericEntity GridMarker_c9r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 130.5 0.505 95.5
+ coords 141.5 0.505 95.5
  angleY 180
 }
 GenericEntity GridPlate_c9r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1821,7 +3837,7 @@ GenericEntity GridPlate_c9r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 130.5 0.505 97.5
+ coords 141.5 0.505 97.5
  angleY 180
 }
 GenericEntity GridMarker_c10r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1839,13 +3855,349 @@ GenericEntity GridMarker_c10r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c10r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:gun-counter"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 142.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c11r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c11r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 154.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c11r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
    m_sSignId "grid:free"
    m_vRimColor 0.1 0.1 0.1
    m_vPaintColor 0.4 0.8 0.4
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 142.5 0.505 97.5
+ coords 154.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c12r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c12r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 166.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c12r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 166.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c13r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c13r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 178.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c13r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 178.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c14r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c14r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 190.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c14r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 190.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c15r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c15r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 202.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c15r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 202.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c16r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c16r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c16r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 214.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c17r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c17r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 226.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c17r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 226.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c18r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c18r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 238.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c18r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 238.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c19r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c19r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c19r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 250.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c20r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c20r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c20r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 262.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c21r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c21r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c21r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 274.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c22r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c22r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c22r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 286.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c23r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c23r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c23r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 298.5 0.505 97.5
+ angleY 180
+}
+GenericEntity GridMarker_c24r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:c24r6"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.25 0.6 0.95
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 310.5 0.505 95.5
+ angleY 180
+}
+GenericEntity GridPlate_c24r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:free"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.4 0.8 0.4
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+ coords 310.5 0.505 97.5
  angleY 180
 }
 StaticModelEntity GridPath_r0_1 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
@@ -1988,46 +4340,6 @@ StaticModelEntity GridPath_r0_35 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 104.67 0.025 22
  scale 0.3
 }
-StaticModelEntity GridPath_r0_36 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 107.07 0.025 22
- scale 0.3
-}
-StaticModelEntity GridPath_r0_37 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 109.47 0.025 22
- scale 0.3
-}
-StaticModelEntity GridPath_r0_38 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 111.87 0.025 22
- scale 0.3
-}
-StaticModelEntity GridPath_r0_39 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 114.27 0.025 22
- scale 0.3
-}
-StaticModelEntity GridPath_r0_40 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 116.67 0.025 22
- scale 0.3
-}
-StaticModelEntity GridPath_r0_41 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 119.07 0.025 22
- scale 0.3
-}
-StaticModelEntity GridPath_r0_42 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 121.47 0.025 22
- scale 0.3
-}
-StaticModelEntity GridPath_r0_43 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 123.87 0.025 22
- scale 0.3
-}
-StaticModelEntity GridPath_r0_44 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 126.27 0.025 22
- scale 0.3
-}
-StaticModelEntity GridPath_r0_45 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 128.67 0.025 22
- scale 0.3
-}
 StaticModelEntity GridPath_r0_46 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 131.07 0.025 22
  scale 0.3
@@ -2066,6 +4378,66 @@ StaticModelEntity GridPath_r0_54 : "{D93A7286584E122C}Prefabs/Props/Construction
 }
 StaticModelEntity GridPath_r0_55 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 152.67 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_66 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 179.07 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_67 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 181.47 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_68 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 183.87 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_69 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 186.27 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_70 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 188.67 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_81 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 215.07 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_82 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 217.47 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_83 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 219.87 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_84 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 222.27 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_85 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 224.67 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_96 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 251.07 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_97 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 253.47 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_98 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 255.87 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_99 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 258.27 0.025 22
+ scale 0.3
+}
+StaticModelEntity GridPath_r0_100 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 260.67 0.025 22
  scale 0.3
 }
 StaticModelEntity GridPath_r1_1 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
@@ -2128,66 +4500,6 @@ StaticModelEntity GridPath_r1_15 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 56.67 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_16 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 59.07 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_17 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 61.47 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_18 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 63.87 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_19 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 66.27 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_20 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 68.67 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_21 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 71.07 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_22 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 73.47 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_23 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 75.87 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_24 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 78.27 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_25 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 80.67 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_26 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 83.07 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_27 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 85.47 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_28 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 87.87 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_29 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 90.27 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_30 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 92.67 0.025 34
- scale 0.3
-}
 StaticModelEntity GridPath_r1_31 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 95.07 0.025 34
  scale 0.3
@@ -2208,84 +4520,64 @@ StaticModelEntity GridPath_r1_35 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 104.67 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_36 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 107.07 0.025 34
+StaticModelEntity GridPath_r1_66 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 179.07 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_37 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 109.47 0.025 34
+StaticModelEntity GridPath_r1_67 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 181.47 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_38 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 111.87 0.025 34
+StaticModelEntity GridPath_r1_68 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 183.87 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_39 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 114.27 0.025 34
+StaticModelEntity GridPath_r1_69 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 186.27 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_40 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 116.67 0.025 34
+StaticModelEntity GridPath_r1_70 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 188.67 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_41 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 119.07 0.025 34
+StaticModelEntity GridPath_r1_81 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 215.07 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_42 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 121.47 0.025 34
+StaticModelEntity GridPath_r1_82 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 217.47 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_43 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 123.87 0.025 34
+StaticModelEntity GridPath_r1_83 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 219.87 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_44 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 126.27 0.025 34
+StaticModelEntity GridPath_r1_84 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 222.27 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_45 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 128.67 0.025 34
+StaticModelEntity GridPath_r1_85 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 224.67 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_46 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 131.07 0.025 34
+StaticModelEntity GridPath_r1_96 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 251.07 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_47 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 133.47 0.025 34
+StaticModelEntity GridPath_r1_97 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 253.47 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_48 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 135.87 0.025 34
+StaticModelEntity GridPath_r1_98 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 255.87 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_49 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 138.27 0.025 34
+StaticModelEntity GridPath_r1_99 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 258.27 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_50 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 140.67 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_51 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 143.07 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_52 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 145.47 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_53 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 147.87 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_54 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 150.27 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_55 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 152.67 0.025 34
+StaticModelEntity GridPath_r1_100 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 260.67 0.025 34
  scale 0.3
 }
 StaticModelEntity GridPath_r2_1 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
@@ -2348,66 +4640,6 @@ StaticModelEntity GridPath_r2_15 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 56.67 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_16 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 59.07 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_17 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 61.47 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_18 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 63.87 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_19 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 66.27 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_20 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 68.67 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_21 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 71.07 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_22 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 73.47 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_23 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 75.87 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_24 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 78.27 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_25 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 80.67 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_26 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 83.07 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_27 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 85.47 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_28 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 87.87 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_29 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 90.27 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_30 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 92.67 0.025 46
- scale 0.3
-}
 StaticModelEntity GridPath_r2_31 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 95.07 0.025 46
  scale 0.3
@@ -2428,84 +4660,104 @@ StaticModelEntity GridPath_r2_35 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 104.67 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_36 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 107.07 0.025 46
+StaticModelEntity GridPath_r2_81 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 215.07 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_37 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 109.47 0.025 46
+StaticModelEntity GridPath_r2_82 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 217.47 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_38 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 111.87 0.025 46
+StaticModelEntity GridPath_r2_83 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 219.87 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_39 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 114.27 0.025 46
+StaticModelEntity GridPath_r2_84 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 222.27 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_40 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 116.67 0.025 46
+StaticModelEntity GridPath_r2_85 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 224.67 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_41 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 119.07 0.025 46
+StaticModelEntity GridPath_r2_96 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 251.07 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_42 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 121.47 0.025 46
+StaticModelEntity GridPath_r2_97 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 253.47 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_43 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 123.87 0.025 46
+StaticModelEntity GridPath_r2_98 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 255.87 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_44 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 126.27 0.025 46
+StaticModelEntity GridPath_r2_99 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 258.27 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_45 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 128.67 0.025 46
+StaticModelEntity GridPath_r2_100 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 260.67 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_46 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 131.07 0.025 46
+StaticModelEntity GridPath_r2_101 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 263.07 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_47 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 133.47 0.025 46
+StaticModelEntity GridPath_r2_102 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 265.47 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_48 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 135.87 0.025 46
+StaticModelEntity GridPath_r2_103 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 267.87 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_49 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 138.27 0.025 46
+StaticModelEntity GridPath_r2_104 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 270.27 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_50 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 140.67 0.025 46
+StaticModelEntity GridPath_r2_105 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 272.67 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_51 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 143.07 0.025 46
+StaticModelEntity GridPath_r2_106 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 275.07 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_52 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 145.47 0.025 46
+StaticModelEntity GridPath_r2_107 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 277.47 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_53 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 147.87 0.025 46
+StaticModelEntity GridPath_r2_108 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 279.87 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_54 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 150.27 0.025 46
+StaticModelEntity GridPath_r2_109 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 282.27 0.025 46
  scale 0.3
 }
-StaticModelEntity GridPath_r2_55 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 152.67 0.025 46
+StaticModelEntity GridPath_r2_110 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 284.67 0.025 46
+ scale 0.3
+}
+StaticModelEntity GridPath_r2_111 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 287.07 0.025 46
+ scale 0.3
+}
+StaticModelEntity GridPath_r2_112 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 289.47 0.025 46
+ scale 0.3
+}
+StaticModelEntity GridPath_r2_113 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 291.87 0.025 46
+ scale 0.3
+}
+StaticModelEntity GridPath_r2_114 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 294.27 0.025 46
+ scale 0.3
+}
+StaticModelEntity GridPath_r2_115 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 296.67 0.025 46
  scale 0.3
 }
 StaticModelEntity GridPath_r3_1 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
@@ -2568,164 +4820,224 @@ StaticModelEntity GridPath_r3_15 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 56.67 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_16 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 59.07 0.025 58
+StaticModelEntity GridPath_r3_71 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 191.07 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_17 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 61.47 0.025 58
+StaticModelEntity GridPath_r3_72 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 193.47 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_18 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 63.87 0.025 58
+StaticModelEntity GridPath_r3_73 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 195.87 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_19 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 66.27 0.025 58
+StaticModelEntity GridPath_r3_74 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 198.27 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_20 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 68.67 0.025 58
+StaticModelEntity GridPath_r3_75 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 200.67 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_21 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 71.07 0.025 58
+StaticModelEntity GridPath_r3_76 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 203.07 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_22 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 73.47 0.025 58
+StaticModelEntity GridPath_r3_77 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 205.47 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_23 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 75.87 0.025 58
+StaticModelEntity GridPath_r3_78 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 207.87 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_24 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 78.27 0.025 58
+StaticModelEntity GridPath_r3_79 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 210.27 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_25 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 80.67 0.025 58
+StaticModelEntity GridPath_r3_80 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 212.67 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_26 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 83.07 0.025 58
+StaticModelEntity GridPath_r3_81 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 215.07 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_27 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 85.47 0.025 58
+StaticModelEntity GridPath_r3_82 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 217.47 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_28 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 87.87 0.025 58
+StaticModelEntity GridPath_r3_83 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 219.87 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_29 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 90.27 0.025 58
+StaticModelEntity GridPath_r3_84 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 222.27 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_30 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 92.67 0.025 58
+StaticModelEntity GridPath_r3_85 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 224.67 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_31 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 95.07 0.025 58
+StaticModelEntity GridPath_r3_86 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 227.07 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_32 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 97.47 0.025 58
+StaticModelEntity GridPath_r3_87 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 229.47 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_33 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 99.87 0.025 58
+StaticModelEntity GridPath_r3_88 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 231.87 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_34 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 102.27 0.025 58
+StaticModelEntity GridPath_r3_89 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 234.27 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_35 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 104.67 0.025 58
+StaticModelEntity GridPath_r3_90 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 236.67 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_36 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 107.07 0.025 58
+StaticModelEntity GridPath_r3_91 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 239.07 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_37 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 109.47 0.025 58
+StaticModelEntity GridPath_r3_92 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 241.47 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_38 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 111.87 0.025 58
+StaticModelEntity GridPath_r3_93 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 243.87 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_39 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 114.27 0.025 58
+StaticModelEntity GridPath_r3_94 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 246.27 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_40 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 116.67 0.025 58
+StaticModelEntity GridPath_r3_95 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 248.67 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_41 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 119.07 0.025 58
+StaticModelEntity GridPath_r3_96 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 251.07 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_42 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 121.47 0.025 58
+StaticModelEntity GridPath_r3_97 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 253.47 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_43 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 123.87 0.025 58
+StaticModelEntity GridPath_r3_98 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 255.87 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_44 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 126.27 0.025 58
+StaticModelEntity GridPath_r3_99 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 258.27 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_45 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 128.67 0.025 58
+StaticModelEntity GridPath_r3_100 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 260.67 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_46 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 131.07 0.025 58
+StaticModelEntity GridPath_r3_101 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 263.07 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_47 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 133.47 0.025 58
+StaticModelEntity GridPath_r3_102 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 265.47 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_48 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 135.87 0.025 58
+StaticModelEntity GridPath_r3_103 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 267.87 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_49 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 138.27 0.025 58
+StaticModelEntity GridPath_r3_104 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 270.27 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_50 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 140.67 0.025 58
+StaticModelEntity GridPath_r3_105 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 272.67 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_51 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 143.07 0.025 58
+StaticModelEntity GridPath_r3_106 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 275.07 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_52 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 145.47 0.025 58
+StaticModelEntity GridPath_r3_107 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 277.47 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_53 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 147.87 0.025 58
+StaticModelEntity GridPath_r3_108 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 279.87 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_54 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 150.27 0.025 58
+StaticModelEntity GridPath_r3_109 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 282.27 0.025 58
  scale 0.3
 }
-StaticModelEntity GridPath_r3_55 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 152.67 0.025 58
+StaticModelEntity GridPath_r3_110 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 284.67 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_111 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 287.07 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_112 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 289.47 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_113 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 291.87 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_114 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 294.27 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_115 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 296.67 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_116 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 299.07 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_117 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 301.47 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_118 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 303.87 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_119 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 306.27 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_120 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 308.67 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_121 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 311.07 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_122 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 313.47 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_123 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 315.87 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_124 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 318.27 0.025 58
+ scale 0.3
+}
+StaticModelEntity GridPath_r3_125 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 320.67 0.025 58
  scale 0.3
 }
 StaticModelEntity GridPath_r4_1 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
@@ -2848,104 +5160,184 @@ StaticModelEntity GridPath_r4_30 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 92.67 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_31 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 95.07 0.025 70
+StaticModelEntity GridPath_r4_81 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 215.07 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_32 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 97.47 0.025 70
+StaticModelEntity GridPath_r4_82 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 217.47 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_33 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 99.87 0.025 70
+StaticModelEntity GridPath_r4_83 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 219.87 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_34 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 102.27 0.025 70
+StaticModelEntity GridPath_r4_84 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 222.27 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_35 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 104.67 0.025 70
+StaticModelEntity GridPath_r4_85 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 224.67 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_36 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 107.07 0.025 70
+StaticModelEntity GridPath_r4_86 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 227.07 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_37 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 109.47 0.025 70
+StaticModelEntity GridPath_r4_87 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 229.47 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_38 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 111.87 0.025 70
+StaticModelEntity GridPath_r4_88 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 231.87 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_39 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 114.27 0.025 70
+StaticModelEntity GridPath_r4_89 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 234.27 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_40 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 116.67 0.025 70
+StaticModelEntity GridPath_r4_90 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 236.67 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_41 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 119.07 0.025 70
+StaticModelEntity GridPath_r4_91 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 239.07 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_42 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 121.47 0.025 70
+StaticModelEntity GridPath_r4_92 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 241.47 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_43 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 123.87 0.025 70
+StaticModelEntity GridPath_r4_93 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 243.87 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_44 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 126.27 0.025 70
+StaticModelEntity GridPath_r4_94 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 246.27 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_45 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 128.67 0.025 70
+StaticModelEntity GridPath_r4_95 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 248.67 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_46 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 131.07 0.025 70
+StaticModelEntity GridPath_r4_96 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 251.07 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_47 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 133.47 0.025 70
+StaticModelEntity GridPath_r4_97 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 253.47 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_48 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 135.87 0.025 70
+StaticModelEntity GridPath_r4_98 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 255.87 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_49 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 138.27 0.025 70
+StaticModelEntity GridPath_r4_99 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 258.27 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_50 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 140.67 0.025 70
+StaticModelEntity GridPath_r4_100 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 260.67 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_51 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 143.07 0.025 70
+StaticModelEntity GridPath_r4_101 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 263.07 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_52 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 145.47 0.025 70
+StaticModelEntity GridPath_r4_102 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 265.47 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_53 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 147.87 0.025 70
+StaticModelEntity GridPath_r4_103 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 267.87 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_54 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 150.27 0.025 70
+StaticModelEntity GridPath_r4_104 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 270.27 0.025 70
  scale 0.3
 }
-StaticModelEntity GridPath_r4_55 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 152.67 0.025 70
+StaticModelEntity GridPath_r4_105 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 272.67 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_106 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 275.07 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_107 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 277.47 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_108 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 279.87 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_109 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 282.27 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_110 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 284.67 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_111 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 287.07 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_112 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 289.47 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_113 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 291.87 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_114 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 294.27 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_115 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 296.67 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_116 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 299.07 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_117 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 301.47 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_118 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 303.87 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_119 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 306.27 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_120 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 308.67 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_121 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 311.07 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_122 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 313.47 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_123 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 315.87 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_124 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 318.27 0.025 70
+ scale 0.3
+}
+StaticModelEntity GridPath_r4_125 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 320.67 0.025 70
  scale 0.3
 }
 StaticModelEntity GridPath_r5_1 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
@@ -3068,86 +5460,6 @@ StaticModelEntity GridPath_r5_30 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 92.67 0.025 82
  scale 0.3
 }
-StaticModelEntity GridPath_r5_31 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 95.07 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_32 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 97.47 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_33 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 99.87 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_34 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 102.27 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_35 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 104.67 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_36 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 107.07 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_37 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 109.47 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_38 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 111.87 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_39 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 114.27 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_40 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 116.67 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_41 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 119.07 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_42 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 121.47 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_43 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 123.87 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_44 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 126.27 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_45 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 128.67 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_46 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 131.07 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_47 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 133.47 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_48 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 135.87 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_49 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 138.27 0.025 82
- scale 0.3
-}
-StaticModelEntity GridPath_r5_50 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 140.67 0.025 82
- scale 0.3
-}
 StaticModelEntity GridPath_r5_51 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 143.07 0.025 82
  scale 0.3
@@ -3166,6 +5478,246 @@ StaticModelEntity GridPath_r5_54 : "{D93A7286584E122C}Prefabs/Props/Construction
 }
 StaticModelEntity GridPath_r5_55 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 152.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_56 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 155.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_57 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 157.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_58 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 159.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_59 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 162.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_60 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 164.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_61 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 167.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_62 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 169.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_63 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 171.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_64 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 174.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_65 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 176.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_66 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 179.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_67 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 181.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_68 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 183.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_69 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 186.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_70 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 188.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_81 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 215.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_82 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 217.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_83 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 219.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_84 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 222.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_85 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 224.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_86 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 227.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_87 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 229.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_88 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 231.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_89 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 234.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_90 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 236.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_91 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 239.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_92 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 241.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_93 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 243.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_94 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 246.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_95 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 248.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_96 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 251.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_97 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 253.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_98 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 255.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_99 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 258.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_100 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 260.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_101 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 263.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_102 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 265.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_103 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 267.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_104 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 270.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_105 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 272.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_106 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 275.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_107 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 277.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_108 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 279.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_109 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 282.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_110 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 284.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_111 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 287.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_112 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 289.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_113 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 291.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_114 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 294.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_115 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 296.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_116 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 299.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_117 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 301.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_118 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 303.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_119 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 306.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_120 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 308.67 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_121 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 311.07 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_122 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 313.47 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_123 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 315.87 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_124 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 318.27 0.025 82
+ scale 0.3
+}
+StaticModelEntity GridPath_r5_125 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 320.67 0.025 82
  scale 0.3
 }
 StaticModelEntity GridPath_r6_1 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
@@ -3308,66 +5860,6 @@ StaticModelEntity GridPath_r6_35 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 104.67 0.025 94
  scale 0.3
 }
-StaticModelEntity GridPath_r6_36 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 107.07 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_37 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 109.47 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_38 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 111.87 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_39 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 114.27 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_40 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 116.67 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_41 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 119.07 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_42 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 121.47 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_43 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 123.87 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_44 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 126.27 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_45 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 128.67 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_46 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 131.07 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_47 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 133.47 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_48 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 135.87 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_49 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 138.27 0.025 94
- scale 0.3
-}
-StaticModelEntity GridPath_r6_50 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 140.67 0.025 94
- scale 0.3
-}
 StaticModelEntity GridPath_r6_51 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 143.07 0.025 94
  scale 0.3
@@ -3388,6 +5880,246 @@ StaticModelEntity GridPath_r6_55 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 152.67 0.025 94
  scale 0.3
 }
+StaticModelEntity GridPath_r6_56 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 155.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_57 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 157.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_58 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 159.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_59 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 162.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_60 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 164.67 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_61 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 167.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_62 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 169.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_63 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 171.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_64 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 174.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_65 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 176.67 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_66 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 179.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_67 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 181.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_68 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 183.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_69 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 186.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_70 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 188.67 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_81 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 215.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_82 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 217.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_83 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 219.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_84 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 222.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_85 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 224.67 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_86 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 227.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_87 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 229.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_88 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 231.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_89 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 234.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_90 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 236.67 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_91 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 239.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_92 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 241.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_93 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 243.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_94 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 246.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_95 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 248.67 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_96 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 251.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_97 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 253.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_98 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 255.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_99 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 258.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_100 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 260.67 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_101 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 263.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_102 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 265.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_103 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 267.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_104 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 270.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_105 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 272.67 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_106 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 275.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_107 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 277.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_108 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 279.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_109 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 282.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_110 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 284.67 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_111 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 287.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_112 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 289.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_113 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 291.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_114 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 294.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_115 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 296.67 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_116 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 299.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_117 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 301.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_118 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 303.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_119 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 306.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_120 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 308.67 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_121 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 311.07 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_122 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 313.47 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_123 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 315.87 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_124 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 318.27 0.025 94
+ scale 0.3
+}
+StaticModelEntity GridPath_r6_125 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 320.67 0.025 94
+ scale 0.3
+}
 GenericEntity Grid_frame_Spawn {
  components {
   LF_PlaceComponent "{3C7B2E9A41D58F06}" {
@@ -3401,7 +6133,7 @@ GenericEntity Grid_frame_Spawn {
 GenericEntity GridMapBoard : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:map c0r0 chess-table, c1r0 pr-features, c2r0 whitelist-chat, c3r0 shops-till, c4r0 crimes, c5r0 zones-spawn, c6r0 first-night, c0r1 roadblock, c1r1 retheme-proof, c0r2 jobs, c1r2 event-scene, c2r2 community-hall, c0r3 houses-keys, c1r3 test-fixtures, c0r4 shooting-range, c1r4 fence-shop-2, c2r4 orgs-vehicles, c0r5 licence-desk, c1r5 everon-outlets, c2r5 signs-board-quests, c7r5 first-night-room, c8r5 first-night-room, c9r5 first-night-room, c0r6 race-track, c1r6 police, c2r6 npcs, c5r6 wanted-posters, c7r6 first-night-room, c8r6 first-night-room, c9r6 first-night-room"
+   m_sSignId "grid:map c0r0 chess-table, c1r0 pr-features, c2r0 whitelist-chat, c3r0 shops-till, c4r0 crimes, c5r0 zones-spawn, c6r0 first-night, c7r0 bank-heist, c8r0 bank-heist, c9r0 hideout, c10r0 jail, c11r0 bank, c12r0 bank, c14r0 hostel, c15r0 hostel, c17r0 pub, c18r0 pub, c20r0 fuel-station, c21r0 fuel-station, c22r0 fuel-station, c23r0 clinic, c24r0 clinic, c0r1 roadblock, c1r1 retheme-proof, c3r1 police-station-kit, c4r1 police-station-kit, c5r1 hospital, c6r1 chain-barrels, c7r1 chopshop, c8r1 lockpick-cars, c9r1 cash-van, c10r1 cash-van, c11r1 bank, c12r1 bank, c14r1 hostel, c15r1 hostel, c17r1 pub, c18r1 pub, c23r1 clinic, c24r1 clinic, c0r2 jobs, c1r2 event-scene, c2r2 community-hall, c3r2 police-station-kit, c4r2 police-station-kit, c5r2 hospital, c6r2 impound, c7r2 police-desk, c8r2 police-desk, c9r2 dispatch, c10r2 convoy, c11r2 town-hall, c12r2 town-hall, c13r2 town-hall, c14r2 slice-2441, c0r3 houses-keys, c1r3 test-fixtures, c6r3 vehicle-lot, c7r3 job-depot, c8r3 job-depot, c9r3 zone-signs, c10r3 zone-signs, c11r3 town-hall, c12r3 town-hall, c13r3 town-hall, c18r3 pack-fixture, c0r4 shooting-range, c1r4 fence-shop-2, c2r4 orgs-vehicles, c6r4 vehicle-lot, c7r4 apple-chain, c8r4 apple-chain, c9r4 org-desk, c10r4 atm, c14r4 fence-yard, c15r4 fence-yard, c17r4 parcel-kiosk, c0r5 licence-desk, c1r5 everon-outlets, c2r5 signs-board-quests, c7r5 first-night-room, c8r5 first-night-room, c9r5 first-night-room, c10r5 furnace, c14r5 fence-yard, c15r5 fence-yard, c0r6 race-track, c1r6 police, c2r6 npcs, c5r6 wanted-posters, c7r6 first-night-room, c8r6 first-night-room, c9r6 first-night-room, c10r6 gun-counter"
    m_vRimColor 0.1 0.1 0.1
    m_vPaintColor 0.95 0.95 0.9
    m_vTextColor 0.05 0.05 0.05

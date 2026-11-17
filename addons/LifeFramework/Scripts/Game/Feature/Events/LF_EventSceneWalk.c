@@ -14,6 +14,8 @@ class LF_EventSceneWalker
 	bool m_bTimedOut;
 	//! Timed out, waiting for nobody to see it before it is removed.
 	bool m_bDespawnPending;
+	//! Seconds it has waited in that state; past the plan's m_fForceDespawnSeconds it goes in sight (#2406).
+	float m_fPendingS;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -31,6 +33,9 @@ class LF_EventSceneWalk
 	static const int TICK_MS = 1000; // lf-fixed: progress check resolution only; the plan sets the time budget
 	//! A walker this close to the target has arrived; the AI waypoints complete at the same radius.
 	static const float ARRIVE_M = 3; // lf-fixed: a little over a walking group's spread at a waypoint
+	//! Once the AI group has finished its route, its members stop in formation around the leader, a
+	//! line abreast about this far apart: the outer member of six stood 18.8 m out (#2174).
+	static const float FORMATION_SPACING_M = 4; // lf-fixed: the vanilla line's spacing seen in the #2174 runs
 	//! Getting this much further along the route counts as progress.
 	static const float PROGRESS_M = 0.5; // lf-fixed: well under a second of walking
 	//! A walker that makes no progress this long is stuck.
@@ -40,6 +45,8 @@ class LF_EventSceneWalk
 	static const ResourceName MOVE_WAYPOINT_PREFAB = "{750A8D1695BD6998}Prefabs/AI/Waypoints/AIWaypoint_Move.et";
 
 	protected static ref LF_EventSceneWalk s_Active;
+	//! The result of the last walk that ended ("6 reached the target, 0 timed out"); "" before one.
+	protected static string s_sLastOver;
 
 	ref LF_EventSceneCrew m_Crew;
 	//! Route point positions in walking order; the last is the target.
@@ -47,7 +54,14 @@ class LF_EventSceneWalk
 	ref array<ref LF_EventSceneWalker> m_aWalkers = {};
 	EntityID m_GroupId = EntityID.INVALID;
 	ref array<EntityID> m_aAiWaypoints = {};
+	//! The route went out: every planned walker has spawned and the group has its waypoints. Until
+	//! then the walkers wait at the spawn marker and their stuck and walk clocks do not run.
+	bool m_bRouteOut;
 	float m_fElapsed;
+	//! The players' eyes collected once for the current Step (#2406), not once per walker.
+	protected ref array<vector> m_aStepEyes = {};
+	protected ref array<IEntity> m_aStepBodies = {};
+	protected bool m_bStepEyes;
 	//! The log line of the last time out, for the caller and the tests.
 	string m_sLastTimeout;
 	protected bool m_bDoneLogged;
@@ -84,6 +98,7 @@ class LF_EventSceneWalk
 			walk.SetUpAi();
 
 		s_Active = walk;
+		s_sLastOver = "";
 		walk.JoinNewWalkers();
 		LF_Debug.Info(FEATURE, string.Format("scene %1 walk starts over %2 route points", crew.m_sSceneId, walk.m_aRoute.Count()));
 		if (tick)
@@ -156,9 +171,36 @@ class LF_EventSceneWalk
 			}
 
 			waypoint.SetCompletionRadius(ARRIVE_M);
-			group.AddWaypoint(waypoint);
 			m_aAiWaypoints.Insert(waypoint.GetID());
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Once every planned walker has spawned, hands the group its move waypoints in route order, as
+	//! vanilla SCR_AIGroup.SpawnUnits does (members first, then AddWaypointsStatic). A group given its
+	//! route at the first spawn finished it while the last of a staggered family was still 20 m behind.
+	protected void SendRouteWhenAllSpawned(notnull BaseWorld world)
+	{
+		if (m_bRouteOut || !m_Crew.IsFullySpawned())
+			return;
+
+		m_bRouteOut = true;
+		AIGroup group = AIGroup.Cast(world.FindEntityByID(m_GroupId));
+		int given = 0;
+		if (group)
+		{
+			foreach (EntityID id : m_aAiWaypoints)
+			{
+				AIWaypoint waypoint = AIWaypoint.Cast(world.FindEntityByID(id));
+				if (!waypoint)
+					continue;
+
+				group.AddWaypoint(waypoint);
+				given++;
+			}
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("scene %1: all %2 walkers spawned, the route goes out (%3 AI waypoint(s))", m_Crew.m_sSceneId, m_aWalkers.Count(), given));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -170,14 +212,30 @@ class LF_EventSceneWalk
 		if (world)
 			group = AIGroup.Cast(world.FindEntityByID(m_GroupId));
 
-		for (int i = m_aWalkers.Count(); i < m_Crew.m_aPeople.Count(); i++)
+		// By id, not by count: a walker removed from the crew must not hide the next one spawned.
+		foreach (EntityID id : m_Crew.m_aPeople)
 		{
+			if (IsWalker(id))
+				continue;
+
 			LF_EventSceneWalker walker = new LF_EventSceneWalker();
-			walker.m_Id = m_Crew.m_aPeople[i];
+			walker.m_Id = id;
 			m_aWalkers.Insert(walker);
 			if (group && world)
-				JoinGroup(group, world.FindEntityByID(walker.m_Id), i);
+				JoinGroup(group, world.FindEntityByID(id), m_aWalkers.Count() - 1);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsWalker(EntityID id)
+	{
+		foreach (LF_EventSceneWalker walker : m_aWalkers)
+		{
+			if (walker.m_Id == id)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -242,6 +300,37 @@ class LF_EventSceneWalk
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Arrival rule. A walker that passed every waypoint arrives within ARRIVE_M of the target (standing
+	//! near the target is not the walk). Once the AI group has completed its last waypoint, the group
+	//! stops in formation around its leader, so a member within FormationArriveM(members) has arrived.
+	static bool HasArrived(bool passedEveryWaypoint, float toTargetM, bool groupDone, int members = 1)
+	{
+		if (groupDone)
+			return toTargetM <= FormationArriveM(members);
+
+		return passedEveryWaypoint && toTargetM <= ARRIVE_M;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far from the target a member of a finished group of `members` may stand: the leader within
+	//! ARRIVE_M, the line abreast FORMATION_SPACING_M per member beside it (23 m for six).
+	static float FormationArriveM(int members)
+	{
+		return ARRIVE_M + FORMATION_SPACING_M * Math.Max(0, members - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The walk's AI group exists, was given the route and has completed every waypoint of it.
+	protected bool IsGroupDone(notnull BaseWorld world)
+	{
+		if (!m_bRouteOut || m_aAiWaypoints.IsEmpty())
+			return false;
+
+		AIGroup group = AIGroup.Cast(world.FindEntityByID(m_GroupId));
+		return group && !group.GetCurrentWaypoint();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	vector Target()
 	{
 		return m_aRoute[m_aRoute.Count() - 1];
@@ -296,12 +385,26 @@ class LF_EventSceneWalk
 	void Step(float seconds, array<vector> eyes = null, array<IEntity> bodies = null)
 	{
 		m_fElapsed += seconds;
+		m_aStepEyes.Clear();
+		m_aStepBodies.Clear();
+		m_bStepEyes = false;
+		if (eyes)
+		{
+			m_aStepEyes.Copy(eyes);
+			if (bodies)
+				m_aStepBodies.Copy(bodies);
+
+			m_bStepEyes = true;
+		}
+
 		JoinNewWalkers();
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
 			return;
 
+		SendRouteWhenAllSpawned(world);
 		vector target = Target();
+		bool groupDone = IsGroupDone(world);
 		foreach (int index, LF_EventSceneWalker walker : m_aWalkers)
 		{
 			if (walker.m_bArrived || (walker.m_bTimedOut && !walker.m_bDespawnPending))
@@ -318,18 +421,22 @@ class LF_EventSceneWalk
 
 			if (walker.m_bDespawnPending)
 			{
-				TryRemove(walker, person, eyes, bodies);
+				walker.m_fPendingS += seconds;
+				TryRemove(walker, person);
 				continue;
 			}
+
+			// Waiting at the spawn marker for the rest of the family is not walking, nor being stuck.
+			if (!m_bRouteOut)
+				continue;
 
 			walker.m_fWalked += seconds;
 			vector at = person.GetOrigin();
 			while (walker.m_iNext < m_aRoute.Count() - 1 && Passed(at, walker.m_iNext))
 				walker.m_iNext++;
 
-			// Only a walker that passed every waypoint arrives: standing near the target is not the walk.
 			float toTarget = vector.DistanceXZ(at, target);
-			if (walker.m_iNext == m_aRoute.Count() - 1 && toTarget <= ARRIVE_M)
+			if (HasArrived(walker.m_iNext == m_aRoute.Count() - 1, toTarget, groupDone, m_aWalkers.Count()))
 			{
 				walker.m_bArrived = true;
 				LF_Debug.Info(FEATURE, string.Format("scene %1 walker %2 reached the target after %3 s", m_Crew.m_sSceneId, index, walker.m_fWalked));
@@ -349,7 +456,7 @@ class LF_EventSceneWalk
 
 			string why;
 			if (walker.m_fSinceProgress >= STUCK_SECONDS)
-				why = string.Format("stuck %1 s with %2 m of the route left", walker.m_fSinceProgress, remaining);
+				why = string.Format("stuck %1 s with %2 m of the route left (%3 m from the target)", walker.m_fSinceProgress, remaining, toTarget);
 			else if (walker.m_fWalked >= m_Crew.m_Plan.m_fWalkTimeoutSeconds)
 				why = string.Format("%1 m of the route left after the %2 s walk budget", remaining, m_Crew.m_Plan.m_fWalkTimeoutSeconds);
 
@@ -360,42 +467,46 @@ class LF_EventSceneWalk
 			walker.m_bDespawnPending = true;
 			m_sLastTimeout = string.Format("scene %1 walker %2 timed out: %3; removed once out of sight", m_Crew.m_sSceneId, index, why);
 			LF_Debug.Warn(FEATURE, m_sLastTimeout);
-			TryRemove(walker, person, eyes, bodies);
+			TryRemove(walker, person);
 		}
 
 		if (IsDone() && !m_bDoneLogged)
 		{
 			m_bDoneLogged = true;
-			LF_Debug.Info(FEATURE, string.Format("scene %1 walk over: %2 reached the target, %3 timed out", m_Crew.m_sSceneId, CountArrived(), CountTimedOut()));
+			s_sLastOver = string.Format("%1 reached the target, %2 timed out", CountArrived(), CountTimedOut());
+			LF_Debug.Info(FEATURE, string.Format("scene %1 walk over: %2", m_Crew.m_sSceneId, s_sLastOver));
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Removes a timed-out walker when no player sees it; otherwise leaves it pending for the next step.
-	protected void TryRemove(LF_EventSceneWalker walker, IEntity person, array<vector> eyes, array<IEntity> bodies)
+	//! A walker watched for the plan's m_fForceDespawnSeconds is removed anyway (#2406). The players'
+	//! eyes are read once per Step, however many walkers wait.
+	protected void TryRemove(LF_EventSceneWalker walker, IEntity person)
 	{
-		array<vector> lookers = {};
-		array<IEntity> lookerBodies = {};
-		if (eyes)
+		bool force = walker.m_fPendingS >= m_Crew.m_Plan.m_fForceDespawnSeconds;
+		if (!force)
 		{
-			lookers.Copy(eyes);
-			if (bodies)
-				lookerBodies.Copy(bodies);
+			if (!m_bStepEyes)
+			{
+				LF_EventSceneSpawn.CollectPlayerEyes(m_aStepEyes, m_aStepBodies);
+				m_bStepEyes = true;
+			}
+
+			array<IEntity> self = {person};
+			foreach (int i, vector eye : m_aStepEyes)
+			{
+				IEntity body;
+				if (i < m_aStepBodies.Count())
+					body = m_aStepBodies[i];
+
+				if (LF_EventSceneSpawn.Sees(eye, body, person, self))
+					return;
+			}
 		}
 		else
 		{
-			LF_EventSceneSpawn.CollectPlayerEyes(lookers, lookerBodies);
-		}
-
-		array<IEntity> self = {person};
-		foreach (int i, vector eye : lookers)
-		{
-			IEntity body;
-			if (i < lookerBodies.Count())
-				body = lookerBodies[i];
-
-			if (LF_EventSceneSpawn.Sees(eye, body, person, self))
-				return;
+			LF_Debug.Warn(FEATURE, string.Format("scene %1: a timed-out walker is removed in sight after %2 s", m_Crew.m_sSceneId, walker.m_fPendingS));
 		}
 
 		m_Crew.m_aPeople.RemoveItem(walker.m_Id);
@@ -440,9 +551,20 @@ class LF_EventSceneWalk
 					SCR_EntityHelper.DeleteEntityAndChildren(waypoint);
 			}
 
-			IEntity group = world.FindEntityByID(m_GroupId);
+			AIGroup group = AIGroup.Cast(world.FindEntityByID(m_GroupId));
 			if (group)
+			{
+				// Release the walkers first, as vanilla RemoveAIEntityFromGroup does: deleting the group
+				// with its children took the walkers along the moment the walk ended (#2174 follow-up).
+				array<AIAgent> agents = {};
+				group.GetAgents(agents);
+				foreach (AIAgent agent : agents)
+				{
+					group.RemoveAgent(agent);
+				}
+
 				SCR_EntityHelper.DeleteEntityAndChildren(group);
+			}
 		}
 
 		m_aAiWaypoints.Clear();
@@ -452,8 +574,16 @@ class LF_EventSceneWalk
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	static string LastOver()
+	{
+		return s_sLastOver;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		s_sLastOver = "";
 		if (s_Active)
 			s_Active.Stop();
 

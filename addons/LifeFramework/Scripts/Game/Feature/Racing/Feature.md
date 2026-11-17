@@ -21,7 +21,7 @@ Nothing in the world yet. This slice is the rules only (#1922); the checkpoint t
 - **Owner and side:** `LF_RaceRunner` on the server, one race per course. `LF_RaceEntryAction` reads the uid from the user entity on the server; the client sends nothing but the action.
 - **Money:** fee out with `LF_MoneyUtils.RemoveCash` (`race_fee`, a partial take is handed back), prizes and refunds with `AddCash` (`race_prize`, `race_refund`). A race is detached from the table before any payout, so nothing pays twice. A leaver forfeits (nothing is paid to a leaving body, so the disconnect snapshot carries no duplicate).
 - **Data:** nothing persisted. `LF_GameModeRoleplay.OnGameEnd` refunds every racer still in before the engine's shutdown save.
-- **Events:** `LF_OnRaceFinished` (`LF_RacingEvents.c`) for the results board.
+- **Events:** `LF_OnRaceFinished` (`LF_RacingEvents.c`) for the results board and the record board; it carries the winner and every finisher's uid and time.
 - **Proof:** `racing/runner` (WORLD).
 
 ## Flagship dirt loop (#1927)

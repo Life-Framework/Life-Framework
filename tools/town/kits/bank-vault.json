@@ -1,0 +1,166 @@
+{
+  "schema": 1,
+  "kit": "bank-vault",
+  "system": "bank",
+  "source": {
+    "file": "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers/Village_Buildings.layer",
+    "group": "Roadmap_Bank_*",
+    "origin": "Roadmap_Bank_Vault",
+    "frame": "origin-entity",
+    "also": [
+      "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Street_Bank.layer"
+    ]
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      },
+      {
+        "id": "f1",
+        "y": 3
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -2.4,
+        -1.987
+      ],
+      "max": [
+        0,
+        1.099
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "bank-vault",
+      "name": "Roadmap_Bank_Vault",
+      "prefab": "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        0,
+        0.007,
+        0
+      ],
+      "yaw": 0,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "bank-vault-hood",
+      "name": "Roadmap_Bank_VaultHood",
+      "prefab": "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay/BankVault/LF_BankVault_SmallRoof.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        -0.1,
+        2.9,
+        -0.344
+      ],
+      "yaw": 0,
+      "scale": 1.2,
+      "wall": "+x",
+      "floor": "f1"
+    },
+    {
+      "id": "bank-alarm-box",
+      "name": "Roadmap_Bank_AlarmBox",
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "role": "alarm",
+      "verb": "against wall",
+      "offset": [
+        1.675,
+        3.435,
+        -2.4
+      ],
+      "yaw": -90,
+      "config": [
+        {
+          "component": "LF_AlarmMountComponent",
+          "set": {
+            "m_vOffset": "0 0.167 0.065"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+x",
+      "floor": "f1"
+    },
+    {
+      "id": "bank-bag",
+      "name": "Roadmap_Bank_Bag",
+      "prefab": "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        -0.002,
+        0.497,
+        -1.987
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_PlaceComponent",
+          "set": {
+            "m_sKind": "\"BankBag\"",
+            "m_sId": "\"Roadmap_Bank_Vault\""
+          },
+          "blocks": []
+        }
+      ],
+      "children": [
+        {
+          "prefab": "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et",
+          "offset": [
+            0,
+            0.15,
+            0
+          ],
+          "yaw": 0
+        }
+      ],
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "bank-rob-kit",
+      "name": "Roadmap_Bank_RobKit",
+      "prefab": "{6EAEEC207EBAB7C5}Prefabs/Props/Debug/LF_BankRobKitStand.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -2.4,
+        0,
+        1.099
+      ],
+      "yaw": 0,
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "bank-vault-light",
+      "name": "Roadmap_Bank_VaultLight",
+      "prefab": "{E34303CB179E13D6}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_01.et",
+      "role": "light",
+      "verb": "against wall",
+      "offset": [
+        -1.44,
+        2.1,
+        0.02
+      ],
+      "yaw": 0,
+      "scale": 1.1,
+      "wall": "-x",
+      "floor": "f0"
+    }
+  ]
+}

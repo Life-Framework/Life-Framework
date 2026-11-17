@@ -99,7 +99,7 @@ The mod lives under `addons/LifeFramework/`:
 
 | Path | Purpose |
 | --- | --- |
-| `Missions/EveronLifeGameMode.conf` | Scenario → MainWorld |
+| `Missions/LF_EveronIsland.conf` | Hidden header → MainWorld (`session up --mission island`) |
 | `Missions/EL_DebugTest.conf` | Test scenario → DebugWorld + `LF_Test*` suite |
 | `Worlds/MainWorld` | Everon (`Eden`) sub-scene with the game mode, a spawn point, and one apple-farm area; the other systems are not placed here yet |
 | `Worlds/DebugWorld` | Dev/test bed — one layer per feature |

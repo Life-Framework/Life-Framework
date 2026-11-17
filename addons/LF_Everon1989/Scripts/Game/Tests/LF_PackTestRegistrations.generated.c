@@ -6,16 +6,22 @@ modded class LF_TestManager
 	protected override void RegisterPackTests()
 	{
 		super.RegisterPackTests();
+		RegisterPack(new LF_Test_EveronArmorySerials(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronArrivalEvent(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronCafeOwner(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronClerkWelcome(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronDrinksImpair(), LF_TestTier.WORLD);
+		RegisterPack(new LF_Test_EveronGunCounterSerials(), LF_TestTier.WORLD);
+		RegisterPack(new LF_Test_EveronGunStorePermit(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronHandbookPages(), LF_TestTier.WORLD);
+		RegisterPack(new LF_Test_EveronMapAreas(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronNightShift(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronOldMan(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronPoliceKit(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronRulesOverlays(), LF_TestTier.WORLD);
+		RegisterPack(new LF_Test_EveronSafeTypes(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronTownsfolk(), LF_TestTier.WORLD);
+		RegisterPack(new LF_Test_EveronTownsfolkTalk(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronWelcomeGift(), LF_TestTier.WORLD);
 	}
 }

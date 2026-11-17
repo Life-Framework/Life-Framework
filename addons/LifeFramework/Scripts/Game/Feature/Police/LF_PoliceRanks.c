@@ -437,11 +437,9 @@ class LF_PoliceRanks
 		if (!account)
 			return;
 
-		// A shift boundary in either direction opens the next shift's single armory draw.
-		account.SetArmoryDrawnThisShift(false);
-
 		if (nowOnDuty)
 		{
+			account.ResetShiftSeconds();
 			account.StartDutyClock(nowMs);
 			LF_Debug.Log("Ranks", string.Format("duty clock started for %1", account.GetPersistentId()));
 			return;
@@ -451,8 +449,17 @@ class LF_PoliceRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Gives the officer the resolved kit and nothing else. Refusals are logged.
+	//! The station armory use. With kit out, it takes back what the officer carries of it, or (a
+	//! second use with none of it carried) reports it lost; otherwise it gives the resolved kit once
+	//! the officer's cooldown has run (LF_ArmoryKits, #2416). Refusals are logged.
 	static bool Draw(string uid, IEntity officer)
+	{
+		return DrawAt(uid, officer, System.GetUnixTime());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Draw with the real-time clock passed in, so a test can drive the cooldown.
+	static bool DrawAt(string uid, IEntity officer, int nowUnix)
 	{
 		LF_PlayerAccount account = Account(uid);
 		if (!OnDutyPolice(account))
@@ -467,13 +474,23 @@ class LF_PoliceRanks
 			return false;
 		}
 
-		if (account.HasDrawnArmoryThisShift())
+		// One issued kit per officer (#2416): while its serials are out, this use turns them in or
+		// reports them lost and issues nothing. Saved, so clocking out and in changes nothing. The
+		// book is the account's, so switching to another character does not open a second kit.
+		string book = account.GetPersistentId();
+		if (LF_ArmoryKits.Outstanding(book) > 0)
 		{
-			// One kit per duty shift. Without this an officer could draw kits without end and
-			// hand them to anyone. Going off duty opens the next shift's draw.
-			s_sLastError = string.Format("draw refused: %1 already drew a kit this shift", uid);
+			SettleOutstandingKit(book, officer, nowUnix);
+			return false;
+		}
+
+		int cooldownLeft = LF_ArmoryKits.CooldownLeft(book, nowUnix);
+		if (cooldownLeft > 0)
+		{
+			int minutes = (cooldownLeft + 59) / 60;
+			s_sLastError = string.Format("draw refused: %1 is on the armory cooldown for %2 more minute(s)", uid, minutes);
 			LF_Debug.Warn("Ranks", s_sLastError);
-			NotifyOfficer(officer, "#EL-Rank_AlreadyDrawn");
+			NotifyOfficerArg(officer, "#EL-Rank_DrawCooldown", minutes.ToString());
 			return false;
 		}
 
@@ -501,6 +518,7 @@ class LF_PoliceRanks
 
 		int inserted = 0;
 		int expected = kit.Count();
+		array<string> serials = {};
 		foreach (ResourceName prefab : kit)
 		{
 			// A kit line the armory outlet issues is gated and served by the outlet (#1763): free,
@@ -510,8 +528,13 @@ class LF_PoliceRanks
 			if (issueOffer && issueOffer.m_bIssue && issueItem)
 			{
 				string refusedBy;
-				if (IssueOffer(uid, officer, issueOffer, issueItem, refusedBy))
+				string serial;
+				if (IssueOffer(uid, officer, issueOffer, issueItem, refusedBy, serial))
+				{
 					inserted++;
+					if (!serial.IsEmpty())
+						serials.Insert(serial);
+				}
 				else if (!refusedBy.IsEmpty())
 					expected--;
 
@@ -528,16 +551,111 @@ class LF_PoliceRanks
 			inserted++;
 		}
 
-		// Any weapon handed out spends the shift's draw, so a partly full inventory cannot be
-		// retried for more kit lines.
+		// Any line handed out books the kit and starts the cooldown, so a partly full inventory
+		// cannot be retried for more kit lines.
 		if (inserted > 0)
-			account.SetArmoryDrawnThisShift(true);
+			LF_ArmoryKits.RecordIssue(book, nowUnix, serials);
 
 		if (inserted != expected)
 			return false;
 
 		LF_Debug.Log("Ranks", string.Format("kit drawn for %1 rank %2 lines %3", uid, account.GetPoliceRank(), inserted));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Kit is out: what the officer carries of it goes back (the items are removed); with none of it
+	//! carried, a second use within LF_ArmoryKits.LOST_CONFIRM_SECONDS reports the rest lost.
+	//! \param[in] uid The armory book key: the officer's account id.
+	protected static void SettleOutstandingKit(string uid, IEntity officer, int nowUnix)
+	{
+		array<IEntity> carried = {};
+		array<string> serials = {};
+		CarriedKit(uid, officer, carried, serials);
+		if (!carried.IsEmpty())
+		{
+			InventoryStorageManagerComponent inventory = LF_Component<InventoryStorageManagerComponent>.Find(officer);
+			foreach (IEntity item : carried)
+			{
+				// A serialled item inside another one went with its container.
+				if (!item)
+					continue;
+
+				// Out of whatever storage holds it (a bag or vest too), then gone.
+				InventoryItemComponent itemComponent = LF_Component<InventoryItemComponent>.Find(item);
+				if (inventory && itemComponent && itemComponent.GetParentSlot() && itemComponent.GetParentSlot().GetStorage())
+					inventory.TryRemoveItemFromStorage(item, itemComponent.GetParentSlot().GetStorage());
+
+				SCR_EntityHelper.DeleteEntityAndChildren(item);
+			}
+
+			LF_ArmoryKits.TurnIn(uid, serials);
+			int left = LF_ArmoryKits.Outstanding(uid);
+			s_sLastError = string.Format("kit turned in by %1: %2 item(s), %3 still out", uid, carried.Count(), left);
+			LF_Debug.Log("Ranks", s_sLastError);
+			if (left == 0)
+				NotifyOfficer(officer, "#EL-Rank_KitReturned");
+			else
+				NotifyOfficerArg(officer, "#EL-Rank_KitPartReturned", left.ToString());
+
+			return;
+		}
+
+		if (LF_ArmoryKits.ConfirmLost(uid, nowUnix))
+		{
+			int lost = LF_ArmoryKits.ReportLost(uid);
+			s_sLastError = string.Format("kit reported lost by %1: %2 serial(s)", uid, lost);
+			LF_Debug.Warn("Ranks", s_sLastError);
+			NotifyOfficer(officer, "#EL-Rank_KitReportedLost");
+			return;
+		}
+
+		s_sLastError = string.Format("draw refused: %1 has %2 issued item(s) still out", uid, LF_ArmoryKits.Outstanding(uid));
+		LF_Debug.Warn("Ranks", s_sLastError);
+		NotifyOfficer(officer, "#EL-Rank_KitOutstanding");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The items the officer carries (bags and weapon slots) whose serial is out on their armory book.
+	protected static void CarriedKit(string uid, IEntity officer, notnull array<IEntity> items, notnull array<string> serials)
+	{
+		if (!officer)
+			return;
+
+		array<IEntity> found = {};
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(officer);
+		if (inventory)
+			inventory.FindItems(found, null);
+
+		// A weapon in a weapon slot is not always in the bag search (LF_FenceSerials.StampDelivered).
+		EquipedWeaponStorageComponent weapons = LF_Component<EquipedWeaponStorageComponent>.Find(officer);
+		if (weapons)
+		{
+			array<IEntity> equipped = {};
+			weapons.GetAll(equipped);
+			foreach (IEntity worn : equipped)
+			{
+				if (found.Find(worn) == -1)
+					found.Insert(worn);
+			}
+		}
+
+		foreach (IEntity item : found)
+		{
+			if (!item)
+				continue;
+
+			LF_SerialComponent stamp = LF_SerialComponent.Cast(item.FindComponent(LF_SerialComponent));
+			if (!stamp)
+				continue;
+
+			string serial = stamp.GetSerial();
+			if (!LF_ArmoryKits.IsOutstanding(uid, serial) || serials.Find(serial) != -1)
+				continue;
+
+			items.Insert(item);
+			serials.Insert(serial);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -560,13 +678,16 @@ class LF_PoliceRanks
 			return false;
 		}
 
-		return IssueOffer(uid, officer, offer, item, missing);
+		string serial;
+		return IssueOffer(uid, officer, offer, item, missing, serial);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool IssueOffer(string uid, IEntity officer, notnull LF_OutletOffer offer, notnull LF_CatalogueItem item, out string missing)
+	//! param[out] serial The serial booked to the issued item, empty when it carries none.
+	protected static bool IssueOffer(string uid, IEntity officer, notnull LF_OutletOffer offer, notnull LF_CatalogueItem item, out string missing, out string serial)
 	{
 		missing = string.Empty;
+		serial = string.Empty;
 		LF_PlayerAccount account = Account(uid);
 		if (!OnDutyPolice(account))
 		{
@@ -610,9 +731,12 @@ class LF_PoliceRanks
 		LF_SerialComponent stamp = LF_SerialComponent.Cast(issued.FindComponent(LF_SerialComponent));
 		if (stamp)
 		{
-			string serial = LF_FenceSerials.Issue(uid, prefab);
+			serial = LF_FenceSerials.Issue(uid, prefab, offer.m_sOutlet);
 			if (serial.IsEmpty() || !stamp.SetSerial(serial))
+			{
+				serial = string.Empty;
 				LF_Debug.Error("Ranks", string.Format("issued %1 to %2 without a serial", offer.m_sItem, uid));
+			}
 		}
 		else
 		{
@@ -657,27 +781,41 @@ class LF_PoliceRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static string FindLowerRankNearby(IEntity promoter, float radius)
+	//! The officer the station promote action promotes: a police account within radius of the
+	//! promoter, below the promoter's rank, preferring one this promoter may promote. Candidates are
+	//! the connected players (#2416: this used to read only BindOfficer, which play never calls).
+	//! \param[in] candidates Who is around; null reads the connected players.
+	static string FindLowerRankNearby(IEntity promoter, float radius, LF_PromoteCandidates candidates = null)
 	{
-		if (!promoter || !s_aBoundIds || !GetGame() || !GetGame().GetWorld())
+		if (!promoter)
 			return "";
 
-		string promoterUid = ResolveUid(promoter);
+		if (candidates)
+			return FindLowerRankNear(ResolveUid(promoter), promoter.GetOrigin(), radius, candidates);
+
+		LF_PromoteCandidates players = new LF_PromoteCandidates();
+		return FindLowerRankNear(ResolveUid(promoter), promoter.GetOrigin(), radius, players);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! FindLowerRankNearby on a uid and a position.
+	static string FindLowerRankNear(string promoterUid, vector promoterOrigin, float radius, notnull LF_PromoteCandidates candidates)
+	{
 		LF_PlayerAccount promoterAccount = Account(promoterUid);
 		if (!promoterAccount)
 			return "";
 
+		array<string> uids = {};
+		array<vector> origins = {};
+		candidates.List(uids, origins);
+
 		string refused;
-		for (int i = s_aBoundIds.Count() - 1; i >= 0; i--)
+		for (int i = 0; i < uids.Count(); i++)
 		{
-			IEntity other = GetGame().GetWorld().FindEntityByID(s_aBoundIds.Get(i));
-			if (!other || other == promoter)
+			if (vector.Distance(promoterOrigin, origins[i]) > radius)
 				continue;
 
-			if (vector.Distance(promoter.GetOrigin(), other.GetOrigin()) > radius)
-				continue;
-
-			string otherUid = s_aBoundUids.Get(i);
+			string otherUid = uids[i];
 			if (otherUid.IsEmpty() || otherUid == promoterUid)
 				continue;
 
@@ -698,6 +836,28 @@ class LF_PoliceRanks
 		}
 
 		return refused;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every live body BindOfficer tied to an account and not listed yet, as LF_PromoteCandidates lists them.
+	static void BoundBodies(notnull array<string> uids, notnull array<vector> origins)
+	{
+		if (!s_aBoundIds || !GetGame() || !GetGame().GetWorld())
+			return;
+
+		for (int i = s_aBoundIds.Count() - 1; i >= 0; i--)
+		{
+			IEntity body = GetGame().GetWorld().FindEntityByID(s_aBoundIds.Get(i));
+			if (!body)
+				continue;
+
+			string uid = s_aBoundUids.Get(i);
+			if (uids.Find(uid) != -1)
+				continue;
+
+			uids.Insert(uid);
+			origins.Insert(body.GetOrigin());
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -788,12 +948,23 @@ class LF_PoliceRanks
 			int deltaSeconds = (nowMs - started) / 1000;
 			if (deltaSeconds > 0)
 			{
-				// Rank seconds are police only; a medic's seconds are only the shift's pay.
-				if (account.GetFaction() == LF_Faction.POLICE)
-					AccrueDuty(account.GetPersistentId(), deltaSeconds);
+				// A shift counts for at most dutyShiftMaxMinutes (#2416): an officer who left the
+				// game running earns up to that and no more until they clock in again.
+				int credited = ShiftCredit(deltaSeconds, account.GetShiftSeconds(), LF_PoliceConfig.DutyShiftMaxSeconds());
+				if (credited < deltaSeconds)
+					LF_Debug.Info("Ranks", string.Format("%1: shift cap reached, %2 of %3 s counted (%4 s already this shift)", account.GetPersistentId(), credited, deltaSeconds, account.GetShiftSeconds()));
 
-				if (account.GetFaction() != LF_Faction.CIVILIAN)
-					account.AddUnpaidDutySeconds(deltaSeconds);
+				if (credited > 0)
+				{
+					account.AddShiftSeconds(credited);
+
+					// Rank seconds are police only; a medic's seconds are only the shift's pay.
+					if (account.GetFaction() == LF_Faction.POLICE)
+						AccrueDuty(account.GetPersistentId(), credited);
+
+					if (account.GetFaction() != LF_Faction.CIVILIAN)
+						account.AddUnpaidDutySeconds(credited);
+				}
 			}
 		}
 
@@ -801,6 +972,67 @@ class LF_PoliceRanks
 			account.StartDutyClock(nowMs);
 		else
 			account.StopDutyClock();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: how many of deltaSeconds still count when shiftSoFar of capSeconds is already used.
+	static int ShiftCredit(int deltaSeconds, int shiftSoFar, int capSeconds)
+	{
+		return Math.Max(0, Math.Min(deltaSeconds, capSeconds - shiftSoFar));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, from the game mode when a player leaves: closes the officer's duty clock at once, so
+	//! the time they are gone is never paid or counted toward rank (#2416). The officer stays on duty
+	//! (the body and the kit wait, LF_DutyLocker); the clock restarts when they spawn again.
+	static void OnPlayerLeft(int playerId)
+	{
+		string uid = LF_Utils.GetPlayerUID(playerId);
+		StopDutyClockOf(Account(uid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Settles a running police duty clock at the world time now and keeps it running, so seconds
+	//! already earned count before a decision that reads them (LF_PoliceTrialSweep.ExpireAt).
+	static void SettleNow(LF_PlayerAccount account)
+	{
+		if (account && account.GetFaction() == LF_Faction.POLICE)
+			SettleDutyAt(account, true, NowMs());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Settles and stops the duty clock of account at the world time now.
+	//! \return True when a running clock was stopped.
+	static bool StopDutyClockOf(LF_PlayerAccount account)
+	{
+		if (!account || !account.IsDutyClockRunning())
+			return false;
+
+		SettleDutyAt(account, false, NowMs());
+		LF_Debug.Info("Ranks", string.Format("duty clock stopped for %1: the player left", account.GetPersistentId()));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, when a player spawns: an officer still on duty (a rejoin, or a restart that kept the
+	//! duty flag, which does not keep the clock) gets the clock started again. The shift's counted
+	//! seconds are kept, so leaving and returning does not open a fresh shift cap.
+	//! \return True when a clock was started.
+	static bool ResumeDutyClock(LF_PlayerAccount account, int nowMs)
+	{
+		if (!account || !account.IsOnDuty() || account.GetFaction() == LF_Faction.CIVILIAN || account.IsDutyClockRunning())
+			return false;
+
+		account.StartDutyClock(nowMs);
+		LF_Debug.Info("Ranks", string.Format("duty clock resumed for %1", account.GetPersistentId()));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, from the game mode when a player spawns: ResumeDutyClock for that player's account.
+	static void OnPlayerReturned(int playerId)
+	{
+		ResumeDutyClock(Account(LF_Utils.GetPlayerUID(playerId)), NowMs());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -871,6 +1103,44 @@ class LF_PoliceRanks
 		}
 
 		return "";
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Who stands near a station promote action (#2416): the connected players, then the bodies
+//! BindOfficer tied to an account (tests). Server only. A test overrides ListPlayers.
+class LF_PromoteCandidates
+{
+	//------------------------------------------------------------------------------------------------
+	void List(notnull array<string> uids, notnull array<vector> origins)
+	{
+		ListPlayers(uids, origins);
+		LF_PoliceRanks.BoundBodies(uids, origins);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every connected player with a controlled body: its account id and position.
+	protected void ListPlayers(notnull array<string> uids, notnull array<vector> origins)
+	{
+		if (!GetGame() || !GetGame().GetPlayerManager())
+			return;
+
+		PlayerManager players = GetGame().GetPlayerManager();
+		array<int> playerIds = {};
+		players.GetPlayers(playerIds);
+		foreach (int playerId : playerIds)
+		{
+			IEntity body = players.GetPlayerControlledEntity(playerId);
+			if (!body)
+				continue;
+
+			string uid = LF_PoliceRanks.ResolveUid(body);
+			if (uid.IsEmpty())
+				continue;
+
+			uids.Insert(uid);
+			origins.Insert(body.GetOrigin());
+		}
 	}
 }
 

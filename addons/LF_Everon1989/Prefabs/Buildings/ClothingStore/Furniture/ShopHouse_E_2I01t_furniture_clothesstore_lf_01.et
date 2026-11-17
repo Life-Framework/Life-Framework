@@ -520,118 +520,635 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -0.191 4.267 2.973
    angleY -90
   }
-  GenericEntity : "{625787D8FEB15355}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02_on_interior.et" {
-   ID "A6DB6F910C4658A2"
-   coords 1.8 3.9 7.35
-   angles -80 180 0
-  }
-  GenericEntity : "{625787D8FEB15355}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02_on_interior.et" {
-   ID "50FAF86C7DEBD525"
-   coords 3.7 3.9 7.35
-   angles -80 180 0
-  }
   GenericEntity : "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et" {
    ID "647DDDDFB68BBE27"
    coords 5.2 0 8.7
    angleY 20
   }
-  GenericEntity : "{9235921E3FFE47C7}Prefabs/Props/Furniture/LightCeiling_01_on.et" {
-   ID "2B4D01C04FCE36DF"
+  GenericEntity : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
+   ID "DC1FBFBE7D86C92B"
+   components {
+    MeshObject "{5111E74D5E891458}" {
+     Materials {
+      MaterialAssignClass "{000094A3CFE9499B}" {
+       SourceMaterial "Glass"
+       AssignedMaterial "{FC236CB65AE3141F}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_white.emat"
+      }
+     }
+    }
+   }
+   coords 1.8 3.9 7.35
+   angles -80 180 0
+  }
+  GenericEntity : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
+   ID "DC1FF84CDD4A20A0"
+   components {
+    MeshObject "{5111E74D5E891458}" {
+     Materials {
+      MaterialAssignClass "{0000B40A9BC34973}" {
+       SourceMaterial "Glass"
+       AssignedMaterial "{FC236CB65AE3141F}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_white.emat"
+      }
+     }
+    }
+   }
+   coords 3.7 3.9 7.35
+   angles -80 180 0
+  }
+  GenericEntity : "{97CCD43778D034CF}Prefabs/Props/Furniture/LightCeiling_01.et" {
+   ID "DC1F6CD3536464D7"
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{0000219F6F197C1D}" {
+       SourceMaterial "LightCeiling_01_Glass"
+       AssignedMaterial "{E21591A9C6D08AE8}Assets/Props/Furniture/LightCeiling_01/data/LightCeiling_01_Glass_on.emat"
+      }
+     }
+    }
+   }
    coords 2.7 4 5.6
   }
-  GenericEntity : "{9235921E3FFE47C7}Prefabs/Props/Furniture/LightCeiling_01_on.et" {
-   ID "A244D4DCCFAF3DA2"
+  GenericEntity : "{97CCD43778D034CF}Prefabs/Props/Furniture/LightCeiling_01.et" {
+   ID "DC1F7C1416DDAFD4"
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{0000EA66CB067E94}" {
+       SourceMaterial "LightCeiling_01_Glass"
+       AssignedMaterial "{E21591A9C6D08AE8}Assets/Props/Furniture/LightCeiling_01/data/LightCeiling_01_Glass_on.emat"
+      }
+     }
+    }
+   }
    coords 1.5 3.99 -0.3
   }
-  GenericEntity : "{9235921E3FFE47C7}Prefabs/Props/Furniture/LightCeiling_01_on.et" {
-   ID "9D9C2A8901335D7A"
+  GenericEntity : "{97CCD43778D034CF}Prefabs/Props/Furniture/LightCeiling_01.et" {
+   ID "DC1FE81FBB0B40C2"
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{000059E1D8329F75}" {
+       SourceMaterial "LightCeiling_01_Glass"
+       AssignedMaterial "{E21591A9C6D08AE8}Assets/Props/Furniture/LightCeiling_01/data/LightCeiling_01_Glass_on.emat"
+      }
+     }
+    }
+   }
    coords 2.7 3.99 1.8
   }
   GenericEntity : "{2B6D16419B500A87}Prefabs/Props/Furniture/Carpet_02.et" {
-   ID "3086FBF886A5ED69"
+   ID "DC1F267A6CA61680"
    coords 2.75 0.199 6.8
    angleY 90
   }
-  GenericEntity : "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et" {
-   ID "885CD02BE411F3D9"
-   coords 5.3 0.199 7
+  GenericEntity : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
+   ID "DC1F7B1C4EB59CC0"
+   coords 0.98 0.199 6.95
+   angleY 4
   }
-  GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
-   ID "02A586812023C0F3"
-   coords 5.765 1.2 6.4
+  GenericEntity : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
+   ID "DC1FD09B672C1359"
+   coords 0.98 0.422 6.95
+   angleY -6
+  }
+  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
+   ID "DC1F5AAB9F3BAFBC"
+   scale 0.5
+   coords 0.88 0.645 6.93
+   angleY 90
+  }
+  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
+   ID "DC1F43D162493C5B"
+   scale 0.5
+   coords 1.08 0.645 6.96
+   angleY 84
+  }
+  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
+   ID "DC1F418E6749D48D"
+   scale 0.5
+   coords 0.88 0.858 6.93
+   angleY 96
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "DC1F275F43AF172B"
+   scale 0.7
+   coords 0.98 0.319 7.16
+  }
+  GenericEntity : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
+   ID "DC1F5092DD9E6597"
+   coords 4.35 0.199 6.35
+   angleY -8
+  }
+  GenericEntity : "{D5C3CF5996B43A27}Prefabs/Props/Civilian/BasketWicker_01.et" {
+   ID "DC1FF0A1AD7C77C8"
+   scale 0.55
+   coords 4.72 0.199 6.95
+  }
+  GenericEntity : "{AE4BFFE75F7DA86F}Prefabs/Props/Furniture/CoatRack_04.et" {
+   ID "DC1F2F4766C3AD1A"
+   coords 0.45 0.199 6
+  }
+  GenericEntity : "{937FDADF2A112158}Prefabs/Props/Furniture/CoatRack_03.et" {
+   ID "DC1FA833F2C11435"
+   coords 5.745 0.199 -0.55
    angleY -90
   }
-  GenericEntity : "{DD918C2BCC564E9D}Prefabs/Props/Decorations/Paintings/PaintingBig_01_V4.et" {
-   ID "8369BD565BAECA04"
-   coords -1.535 2.35 4.4
-   angleY 90
-  }
-  GenericEntity : "{43E4EEB4CDBBFE34}Prefabs/Props/Commercial/Posters/PosterSingle_27x41_01_RadioEveron.et" {
-   ID "C018FCDE11F92D1C"
-   coords -1.535 1.6 6.4
-   angleY 90
-  }
-  GenericEntity : "{D51E223FD6EDB039}Prefabs/Props/Furniture/ClockWall_01.et" {
-   ID "3D435C3FAD704D51"
-   coords 2.3 2.6 -3.015
-  }
-  GenericEntity : "{C3973010F42EB6A0}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V3.et" {
-   ID "B21BC3828A875E72"
-   coords 0.9 1.7 -2.995
-  }
-  GenericEntity : "{7480053B4EE198D3}Prefabs/Props/Commercial/Posters/PosterSingle_A3_Insurance_V1.et" {
-   ID "57690E2BF9AA1698"
-   coords 4.85 1.7 -2.995
-  }
-  GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
-   ID "5B2884E2AE5D37EC"
-   coords 1.75 1.238 -0.25
-   angleY 180
-  }
-  GenericEntity : "{A5E64994411BA6A0}Prefabs/Props/Civilian/Pen_01/Pen_01_base.et" {
-   ID "AAF7D44F136FF47C"
-   coords 1.98 1.245 -0.2
-   angleY 25
-  }
-  GenericEntity : "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et" {
-   ID "CAFEE0E5B8FEF2A3"
-   coords 2.1 1.238 -0.65
-   angleY 200
-  }
-  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
-   ID "05F272AF39CE1C8A"
-   coords 1 1.238 -0.75
-  }
-  GenericEntity : "{1D9FA80D3742DBD6}Prefabs/Props/Civilian/SewingMachine_01.et" {
-   ID "7EB932E7D49120C9"
-   coords 0 0.199 -2.5
-  }
-  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "24171C082A81C130"
-   coords -0.95 0.199 -2.5
-  }
-  GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
-   ID "E51E440BD316C7ED"
-   coords -0.95 0.624 -2.5
-   angleY 10
-  }
-  GenericEntity : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
-   ID "76B945B659552E8E"
-   coords 2.6 0.199 -1.15
-  }
-  GenericEntity : "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et" {
-   ID "2F62AF994CA871A2"
-   coords 2.7 0 8.45
+  GenericEntity : "{937FDADF2A112158}Prefabs/Props/Furniture/CoatRack_03.et" {
+   ID "DC1F8E613B113651"
+   coords 5.745 0.199 0.3
+   angleY -90
   }
   GenericEntity : "{CBADF2BB9A4BD3DD}Prefabs/Props/Decorations/Paintings/PaintingBig_01_V9.et" {
-   ID "5FCF786D617F87A3"
+   ID "DC1F41B3F54119C1"
    coords 5.765 2.45 4.6
    angleY -90
   }
   GenericEntity : "{A08D6C886BE1B004}Prefabs/Props/Decorations/Paintings/PaintingSmall_01_V3.et" {
-   ID "0DC3CFC2430BD458"
+   ID "DC1FC5F225FF7E80"
    coords 5.765 2.4 2
    angleY -90
+  }
+  GenericEntity : "{34E90D599E5E3517}Prefabs/Props/Furniture/MirrorBathroom_02/MirrorBathroom_02.et" {
+   ID "DC1F6C8F62C808DB"
+   coords 5.745 1.499 6.35
+   angles 0 -90 90
+  }
+  GenericEntity : "{937FDADF2A112158}Prefabs/Props/Furniture/CoatRack_03.et" {
+   ID "DC1F150D97A46999"
+   coords -1.535 0.199 1.9
+   angleY 90
+  }
+  GenericEntity : "{937FDADF2A112158}Prefabs/Props/Furniture/CoatRack_03.et" {
+   ID "DC1FD247DABD26F6"
+   coords -1.535 0.199 2.8
+   angleY 90
+  }
+  GenericEntity : "{DD918C2BCC564E9D}Prefabs/Props/Decorations/Paintings/PaintingBig_01_V4.et" {
+   ID "DC1F78A6B000EE7B"
+   coords -1.535 2.35 4.4
+   angleY 90
+  }
+  GenericEntity : "{43E4EEB4CDBBFE34}Prefabs/Props/Commercial/Posters/PosterSingle_27x41_01_RadioEveron.et" {
+   ID "DC1F6783974B832F"
+   coords -1.535 1.6 6.4
+   angleY 90
+  }
+  GenericEntity : "{D51E223FD6EDB039}Prefabs/Props/Furniture/ClockWall_01.et" {
+   ID "DC1F76D26A61C8D5"
+   coords 2.3 2.6 -3.015
+  }
+  GenericEntity : "{C3973010F42EB6A0}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V3.et" {
+   ID "DC1FF1C57B8726FF"
+   coords 0.9 1.7 -2.995
+  }
+  GenericEntity : "{7480053B4EE198D3}Prefabs/Props/Commercial/Posters/PosterSingle_A3_Insurance_V1.et" {
+   ID "DC1F9BA0A308F028"
+   coords 4.85 1.7 -2.995
+  }
+  GenericEntity : "{76E3962626F4B633}Prefabs/Props/Furniture/CoatRack_02.et" {
+   ID "DC1F6F0F40141670"
+   coords 3.95 0.199 -2.995
+  }
+  GenericEntity : "{D023942ECEA592ED}Prefabs/Props/Furniture/Stool_02.et" {
+   ID "DC1F3D6202B494CE"
+   coords 5.05 0.199 6.2
+   angleY 90
+  }
+  GenericEntity : "{58B2E36607A20EB4}Prefabs/Props/Furniture/ShoeCabinet_01.et" {
+   ID "DC1FB49021AFD49E"
+   coords -1.53 0.199 5.95
+   angleY 90
+  }
+  GenericEntity : "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et" {
+   ID "DC1FCC39FDBB0B9F"
+   coords 5.3 0.199 7
+  }
+  GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+   ID "DC1FCD1AC73AEDBF"
+   coords 1.75 1.238 -0.25
+   angleY 180
+  }
+  GenericEntity : "{A5E64994411BA6A0}Prefabs/Props/Civilian/Pen_01/Pen_01_base.et" {
+   ID "DC1F709AC4CF3985"
+   coords 1.98 1.271 -0.2
+   angleY 25
+  }
+  GenericEntity : "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et" {
+   ID "DC1F5234B37F6BB0"
+   coords 2.1 1.238 -0.65
+   angleY 200
+  }
+  GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
+   ID "DC1FD50D0A8A0142"
+   coords 1 1.238 -0.75
+  }
+  GenericEntity : "{E558F8B85096CAA4}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01_V3.et" {
+   ID "DC1FCA2475E92AE1"
+   coords 2.25 1.238 -0.05
+   angleY 195
+  }
+  GenericEntity : "{1D9FA80D3742DBD6}Prefabs/Props/Civilian/SewingMachine_01.et" {
+   ID "DC1F388BE3E745BA"
+   coords 0 0.199 -2.5
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "DC1F511F07D1A038"
+   coords -0.95 0.199 -2.5
+  }
+  GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
+   ID "DC1FF4BEBCC04671"
+   coords -0.95 0.624 -2.5
+   angleY 10
+  }
+  GenericEntity : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
+   ID "DC1FF5787601FB74"
+   coords 2.6 0.199 -1.15
+  }
+  GenericEntity : "{E558F8B85096CAA4}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01_V3.et" {
+   ID "DC1F4DD3B7518C60"
+   coords 2.86 1.238 2.2
+   angleY 200
+  }
+  GenericEntity : "{E558F8B85096CAA4}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01_V3.et" {
+   ID "DC1F353FCA0991D4"
+   coords 2.87 1.238 4.45
+   angleY 160
+  }
+  GenericEntity : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+   ID "DC1F22A432DD48F5"
+   coords 4.05 0.199 3.4
+   angleY 90
+  }
+  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
+   ID "DC1F12B62B629AFD"
+   scale 0.8
+   coords 3.56 1.358 3.4
+   angles 0 90 0
+  }
+  SCR_DestructibleEntity : "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et" {
+   ID "DC1F220BC4C7B7AB"
+   coords 2.7 0 8.45
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F6013300347F2"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{1241A6F5FBC636BA}Assets/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_item.xob"
+     Materials {
+      MaterialAssignClass "{0000C247B3C568EA}" {
+       SourceMaterial "Shirt_Turtleneck_01_Item"
+       AssignedMaterial "{1632C031727671EE}Assets/Characters/Uniforms/Shirt_Turtleneck_01/Data/Shirt_Turtleneck_01_Item_Blue.emat"
+      }
+     }
+    }
+   }
+   coords 4.35 0.422 6.35
+   angleY 12
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F6966989FB72F"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{49B326457951B0F6}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01.xob"
+     Materials {
+      MaterialAssignClass "{00009156955EC444}" {
+       SourceMaterial "Hat_Knitted_01"
+       AssignedMaterial "{3A7AFA6B91A7B89D}Assets/Characters/HeadGear/Hat_Knitted_01/Data/Hat_Knitted_01_red.emat"
+      }
+     }
+    }
+   }
+   coords 4.72 0.399 6.95
+   angleY 20
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F647F19FAE37A"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{49B326457951B0F6}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01.xob"
+     Materials {
+      MaterialAssignClass "{0000D5EC5E004BCA}" {
+       SourceMaterial "Hat_Knitted_01"
+       AssignedMaterial "{D1709E05186FA7A9}Assets/Characters/HeadGear/Hat_Knitted_01/Data/Hat_Knitted_01_blue.emat"
+      }
+     }
+    }
+   }
+   coords 4.78 0.379 6.9
+   angleY -30
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F20C31D02D5D1"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{591954AAE7A6DA14}Assets/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01.xob"
+     Materials {
+      MaterialAssignClass "{00006BA4BA43BF6D}" {
+       SourceMaterial "Hat_FlatCap_01"
+       AssignedMaterial "{F6409416B72B3660}Assets/Characters/HeadGear/Hat_FlatCap_01/Data/Hat_FlatCap_01_LightGray.emat"
+      }
+     }
+    }
+   }
+   coords 0.45 0.249 6
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1FBF7FC0425DF0"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{591954AAE7A6DA14}Assets/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01.xob"
+     Materials {
+      MaterialAssignClass "{0000FBE61AD37EE2}" {
+       SourceMaterial "Hat_FlatCap_01"
+       AssignedMaterial "{B08760B8D77A57A6}Assets/Characters/HeadGear/Hat_FlatCap_01/Data/Hat_FlatCap_01_Blue.emat"
+      }
+     }
+    }
+   }
+   coords 0.6 -0.001 6.05
+   angleY 40
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F6E1B5B537C51"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{49B326457951B0F6}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01.xob"
+     Materials {
+      MaterialAssignClass "{0000D92F6B63E709}" {
+       SourceMaterial "Hat_Knitted_01"
+       AssignedMaterial "{BD8F9DE2660F5639}Assets/Characters/HeadGear/Hat_Knitted_01/Data/Hat_Knitted_01_brown.emat"
+      }
+     }
+    }
+   }
+   coords 0.32 -0.001 5.95
+   angleY -40
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1FCB715F914523"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{5AB4AEC9CED9DB28}Assets/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01.xob"
+    }
+   }
+   coords 5.53 0.299 -0.55
+   angleY -90
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1FC074D5394EF4"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{7449DAACFEBE36CC}Assets/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01.xob"
+     Materials {
+      MaterialAssignClass "{00009F746C8FF374}" {
+       SourceMaterial "Jacket_Suit_01"
+       AssignedMaterial "{99EBF808CF181832}Assets/Characters/Uniforms/Jacket_Suit_01/Data/Jacket_Suit_01_Grey.emat"
+      }
+     }
+    }
+   }
+   coords 5.53 0.299 0.3
+   angleY -90
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1FC355F116562E"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{6F223F9465D881DF}Assets/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01.xob"
+    }
+   }
+   coords -1.32 0.299 1.9
+   angleY 90
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F8572EF95922E"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{5AB4AEC9CED9DB28}Assets/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01.xob"
+     Materials {
+      MaterialAssignClass "{0000B1E14520F773}" {
+       SourceMaterial "Jacket_Raincoat_01"
+       AssignedMaterial "{24BF726B4A89ABFB}Assets/Characters/Uniforms/Jacket_Raincoat_01/Data/Jacket_Raincoat_01_Green.emat"
+      }
+     }
+    }
+   }
+   coords -1.32 0.299 2.8
+   angleY 90
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F58CCD46A3FFC"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{591954AAE7A6DA14}Assets/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01.xob"
+     Materials {
+      MaterialAssignClass "{00009DE33ABC5C28}" {
+       SourceMaterial "Hat_FlatCap_01"
+       AssignedMaterial "{C2B7559303D0C6DC}Assets/Characters/HeadGear/Hat_FlatCap_01/Data/Hat_FlatCap_01_DarkGray.emat"
+      }
+     }
+    }
+   }
+   coords 3.7 0.199 -2.88
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F0B7C54685AA1"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{49B326457951B0F6}Assets/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01.xob"
+     Materials {
+      MaterialAssignClass "{0000FED40F16606D}" {
+       SourceMaterial "Hat_Knitted_01"
+       AssignedMaterial "{BD8F9DE2660F5639}Assets/Characters/HeadGear/Hat_Knitted_01/Data/Hat_Knitted_01_brown.emat"
+      }
+     }
+    }
+   }
+   coords 3.97 0.149 -2.88
+   angleY 10
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1FE3FE8CA5E1DE"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{591954AAE7A6DA14}Assets/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01.xob"
+     Materials {
+      MaterialAssignClass "{0000AC4170916A35}" {
+       SourceMaterial "Hat_FlatCap_01"
+       AssignedMaterial "{B08760B8D77A57A6}Assets/Characters/HeadGear/Hat_FlatCap_01/Data/Hat_FlatCap_01_Blue.emat"
+      }
+     }
+    }
+   }
+   coords 4.2 0.199 -2.88
+   angleY -8
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F579CB056990F"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{349EF65230313C3E}Assets/Characters/Footwear/CombatBoots_Soviet_01/CombatBoots_Soviet_01.xob"
+    }
+   }
+   coords -1.3 0.76 6.25
+   angleY 90
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F267FF1997B7C"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{349EF65230313C3E}Assets/Characters/Footwear/CombatBoots_Soviet_01/CombatBoots_Soviet_01.xob"
+    }
+   }
+   coords -1.3 0.76 6.65
+   angleY 80
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F35D8F0CA5796"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{552FC3FD0C7AA01F}Assets/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_item.xob"
+     Materials {
+      MaterialAssignClass "{0000EF65886191FD}" {
+       SourceMaterial "Jacket_Raincoat_01_Item"
+       AssignedMaterial "{12A152B1EC4F49DA}Assets/Characters/Uniforms/Jacket_Raincoat_01/Data/Jacket_Raincoat_01_Item_Green.emat"
+      }
+     }
+    }
+   }
+   coords 4.05 1.238 2.75
+   angleY 90
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F77936F6064C9"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{89EAA1D318413C8A}Assets/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_item.xob"
+     Materials {
+      MaterialAssignClass "{00003DBE77B0E414}" {
+       SourceMaterial "Pants_Fisherman_01_Item"
+       AssignedMaterial "{E67F8DC00DBEA182}Assets/Characters/Uniforms/Pants_Fisherman_01/Data/Pants_Fisherman_01_Item_Green.emat"
+      }
+     }
+    }
+   }
+   coords 4.05 1.238 3.3
+   angleY 90
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F9B0A6E449206"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{3B76B43FE1866AC4}Assets/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_item.xob"
+     Materials {
+      MaterialAssignClass "{000093829CACB250}" {
+       SourceMaterial "Jacket_Suit_01_Item"
+       AssignedMaterial "{1CF24BF58016E9E4}Assets/Characters/Uniforms/Jacket_Suit_01/Data/Jacket_Suit_01_Item_Brown.emat"
+      }
+     }
+    }
+   }
+   coords 4.05 1.238 3.85
+   angleY 90
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F20429A8EBDA4"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{694E923474190369}Assets/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_item.xob"
+     Materials {
+      MaterialAssignClass "{000068D25CDB8546}" {
+       SourceMaterial "Pants_Suit_01_item"
+       AssignedMaterial "{CA7C5E35808BF4CA}Assets/Characters/Uniforms/Pants_Suit_01/Data/Pants_Suit_01_Item_Brown.emat"
+      }
+     }
+    }
+   }
+   coords 3.75 1.238 4
+   angleY 90
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "DC1F1ECBEC4C96E8"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{5AB4AEC9CED9DB28}Assets/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01.xob"
+    }
+   }
+   coords 5.2 0.28 8.7
+   angleY 200
+  }
+  LightEntity {
+   ID "DC1F5574829A7977"
+   coords 0.3 3.3 3.4
+   Color 1 0.88 0.68 1
+   LV 6.5
+   ClipEV -10
+   Radius 8
+   NearPlane 0.3
+   LensFlareType Disabled
+   CastShadow 0
+  }
+  LightEntity {
+   ID "DC1F7BE1FA8DAE8B"
+   coords 4.6 3.3 3
+   Color 1 0.88 0.68 1
+   LV 6.5
+   ClipEV -10
+   Radius 8
+   NearPlane 0.3
+   LensFlareType Disabled
+   CastShadow 0
+  }
+  LightEntity {
+   ID "DC1F7463B9D3836D"
+   coords 3.3 3.3 -1.7
+   Color 1 0.88 0.68 1
+   LV 6
+   ClipEV -10
+   Radius 6.5
+   NearPlane 0.3
+   LensFlareType Disabled
+   CastShadow 0
+  }
+  LightEntity {
+   ID "DC1F5809C293C7E3"
+   coords 1 3.3 6
+   Color 1 0.88 0.68 1
+   LV 6
+   ClipEV -10
+   Radius 5.5
+   NearPlane 0.3
+   LensFlareType Disabled
+   CastShadow 0
+  }
+  LightEntity {
+   ID "DC1F64225AC41D69"
+   coords 1.8 3.9 7.35
+   Color 1 1 1 1
+   LV 6
+   ClipEV -10
+   Radius 6
+   NearPlane 0.3
+   Type Spot
+   SpotAngle 140
+   angles -80 180 0
+   LensFlareType Disabled
+   CastShadow 0
+  }
+  LightEntity {
+   ID "DC1F091AD670152E"
+   coords 3.7 3.9 7.35
+   Color 1 1 1 1
+   LV 6
+   ClipEV -10
+   Radius 6
+   NearPlane 0.3
+   Type Spot
+   SpotAngle 140
+   angles -80 180 0
+   LensFlareType Disabled
+   CastShadow 0
   }
  }
 }

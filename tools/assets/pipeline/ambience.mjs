@@ -68,7 +68,6 @@ export function specProblems(rec) {
     if (!(s.takes >= 1 && s.takes <= 3)) out.push(`${at}: takes must be 1 to 3`);
     if (s.pick !== undefined && !(Number.isInteger(s.pick) && s.pick >= 1)) out.push(`${at}: pick must be a take number`);
     if (s.pick && !s.reason) out.push(`${at}: a pick needs a reason`);
-    if (s.synth !== undefined && !/^tools\/.+\.mjs$/.test(s.synth)) out.push(`${at}: synth must be the repo path of the script that renders it`);
   }
   if (!(rec.sounds || []).length) out.push("sounds is empty");
   return out;
@@ -313,7 +312,21 @@ export function requestFor(s) {
   return { path: "/v1/sound-generation?output_format=mp3_44100_128", body, timeoutMs: 180000 };
 }
 
-export async function stepGenerate(root, { again, now = new Date(), fetchImpl, settleMs = 60000 } = {}) {
+// A 429 system_busy (heavy traffic) or a 5xx is the service's, not the request's, and is not billed:
+// wait and ask again, up to 5 times, rather than lose the run.
+export async function callWithRetry(req, opts, waitMs = 30000, tries = 5) {
+  for (let n = 1; ; n++) {
+    try {
+      return await eleven.call("POST", req.path, req.body, opts);
+    } catch (e) {
+      if (n >= tries || !/HTTP (429|5\d\d)\b/.test(e.message)) throw e;
+      console.log(`  busy (try ${n} of ${tries}): ${e.message.slice(0, 120)}; waiting ${Math.round((waitMs * n) / 1000)} s`);
+      await new Promise((r) => setTimeout(r, waitMs * n));
+    }
+  }
+}
+
+export async function stepGenerate(root, { again, now = new Date(), fetchImpl, settleMs = 60000, retryMs = 30000 } = {}) {
   const rec = readRec(root);
   const problems = specProblems(rec);
   if (problems.length) throw new Error("ambience.json problems:\n  " + problems.join("\n  "));
@@ -323,7 +336,6 @@ export async function stepGenerate(root, { again, now = new Date(), fetchImpl, s
   mkdirSync(dir, { recursive: true });
   const todo = [];
   for (const s of rec.sounds) {
-    if (s.synth) continue; // composed by its own script (tools/assets/atmosphere/radio-synth.mjs), not paid for
     const have = gens.filter((g) => g.id === s.id).map((g) => g.take);
     const want = s.takes + (again === s.id ? have.length - s.takes + 1 : 0);
     for (let n = 1; have.length + todo.filter((t) => t.s === s).length < want; n++) if (!have.includes(n)) todo.push({ s, n });
@@ -336,7 +348,7 @@ export async function stepGenerate(root, { again, now = new Date(), fetchImpl, s
   for (const { s, n } of todo) {
     if (spentCredits(rec) + estimate(s) > rec.budget.credits) throw new Error(`${takeName(s, n)} would pass the budget: ${spentCredits(rec)} spent, about ${estimate(s)} more, cap ${rec.budget.credits}. Stop and report.`);
     const req = requestFor(s);
-    const res = await eleven.call("POST", req.path, req.body, { ...o, timeoutMs: req.timeoutMs });
+    const res = await callWithRetry(req, { ...o, timeoutMs: req.timeoutMs }, retryMs);
     const audio = Buffer.from(await res.arrayBuffer());
     if (audio.length < 4000) throw new Error(`ElevenLabs returned ${audio.length} bytes for ${takeName(s, n)}`);
     writeFileSync(join(dir, `${takeName(s, n)}.mp3`), audio);

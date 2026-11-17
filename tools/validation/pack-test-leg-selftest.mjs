@@ -141,7 +141,8 @@ if (existsSync(packDir)) {
   const text = existsSync(header) ? readFileSync(header, "utf8") : "";
   const flagMeta = readFileSync(join(packDir, "Missions", "LF_Everon1989.conf.meta"), "utf8").match(/\{([0-9A-F]{16})\}/)?.[1];
   check(new RegExp(`^LF_MissionHeader : "\\{${flagMeta}\\}Missions/LF_Everon1989\\.conf"`).test(text), "the pack test header inherits LF_Everon1989.conf (one overlay list)");
-  check(/World "\{2B35216B7F782445\}Worlds\/GridWorld\/GridWorld\.ent"/.test(text), "the pack test header boots GridWorld (its test runner)");
+  // Everon1989Grid is a SubScene of GridWorld (its test runner) that adds the pack's grid cells.
+  check(/World "\{[0-9A-F]{16}\}Worlds\/Everon1989Grid\/Everon1989Grid\.ent"/.test(text), "the pack test header boots the pack grid world (a SubScene of GridWorld, its test runner)");
   check(/m_bShowInScenarioMenu 0/.test(text), "the pack test header is hidden from Scenarios");
   check(!/m_aLF_ConfigOverlays/.test(text), "the pack test header does not copy the overlay list");
   const meta = existsSync(`${header}.meta`) ? readFileSync(`${header}.meta`, "utf8") : "";

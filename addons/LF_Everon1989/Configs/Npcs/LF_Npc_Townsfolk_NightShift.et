@@ -10,6 +10,9 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
   LF_NpcRoleComponent "{7A31C05E94D2B861}" {
    m_sRole "townsfolk"
   }
+  LF_DialogueComponent "{F406687B9DE895DA}" {
+   m_sDialogueId "night_shift"
+  }
   LF_PlaceComponent "{13ED0F31F3AB4768}" {
    m_sKind "Townsfolk"
    m_sId "night_shift"
@@ -28,6 +31,27 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
     LoadoutSlotInfo Hat {
      Enabled 1
      Prefab "{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{ECD11017762BA5F9}" {
+     ContextName "Talk"
+     Position PointInfo "{5D1CD9BC8239101E}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{98BA6512C0F36DED}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{F4263E9CAB71F6C8}" {
+      Name "#LF-NpcTalk_Action"
+     }
     }
    }
   }

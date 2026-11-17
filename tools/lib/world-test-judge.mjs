@@ -49,7 +49,7 @@ export function judgeWorldTests({ status = 0, text = "", fallbackTests = [], tes
 
 // The test class whose source holds this assertion label: `ctx.True(x, "label")`, with the
 // ` (expected 250, got 0)` tail the context appends to an Equal failure cut off. Null when none or several do.
-function ownerOf(assertion, tests) {
+export function ownerOf(assertion, tests) {
   const label = assertion.replace(/\s*\((expected|got)\b.*$/, "").trim();
   if (!label) return null;
   for (const probe of [`"${label}"`, `"${label.split(": ")[0]}: `]) {
