@@ -121,6 +121,35 @@ class LF_Bank
 	protected static ref map<string, ref LF_BankVaultState> s_mVaults;
 
 	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! Drops every vault. The world-end hook (LF_Bank_StaticResetHook) calls it so a world reload in
+	//! the same process does not inherit the last world's vaults, stock or looter.
+	static void ResetStatics()
+	{
+		s_mVaults = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Configured vaults in this world.
+	static int VaultCount()
+	{
+		if (!s_mVaults)
+			return 0;
+
+		return s_mVaults.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests only: puts vaults in as the table and returns the old one, so a test can run the
+	//! reset hook and give the world's vaults back.
+	static map<string, ref LF_BankVaultState> SwapVaults(map<string, ref LF_BankVaultState> vaults)
+	{
+		map<string, ref LF_BankVaultState> old = s_mVaults;
+		s_mVaults = vaults;
+		return old;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static map<string, ref LF_BankVaultState> Vaults()
 	{
 		if (!s_mVaults)
@@ -654,6 +683,13 @@ class LF_Bank
 
 		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "vault robbery of " + vaultId))
 			return false;
+
+		// A character in its grace may not rob (LF_Grace): no drill starts, no charge is set.
+		if (LF_Grace.Refuses(playerUid, "vault robbery of " + vaultId))
+		{
+			LF_Grace.Notify(robber);
+			return false;
+		}
 
 		if (!GatesPass(vault, playerUid))
 			return false;
@@ -1251,5 +1287,22 @@ class LF_Bank
 			return null;
 
 		return vault.m_aBags[index];
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Bank's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Bank_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Bank_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Bank";
+	}
+
+	override void Apply()
+	{
+		LF_Bank.ResetStatics();
 	}
 }
