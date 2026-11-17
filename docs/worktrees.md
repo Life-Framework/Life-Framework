@@ -1512,11 +1512,12 @@ parallel, each with its own timeout; one that fails prints one line and the rest
 - PRS: every open PR, conflicting first, then BLOCKED/UNSTABLE/BEHIND, then CLEAN; checks and age. A conflicting PR names whether only
   generated or driver-merged files conflict (`prs heal` fixes those) or a source file needs a human (`git merge-tree`, no checkout).
   A PR GitHub has not graded yet (UNKNOWN) is asked through the REST endpoint.
-- WORKTREES: active (a file, commit or log touched in 30 min) vs idle; merged-prunable; orphans (in the registry but not a git worktree
+- WORKTREES: active (a commit, a changed file, a file in `tmp/` or `tmp/logs`, or a session log touched in 30 min; the registry marker `tmp/wt.json` is bookkeeping and never counts) vs idle; merged-prunable; orphans (in the registry but not a git worktree
   or missing, or a `Life-Framework-ws-*` folder nobody registered); disk. A worktree is merged only through a merged GitHub PR whose head
   SHA is the branch tip, never through git ancestry: a fresh worktree is an ancestor of main and is never listed (`lead-selftest`).
   Disk sizes are cached per folder for 24 h in `tmp/wt/lead-disk.json` and refreshed in a 9 s budget, so the first runs say
   `~N GB (k/n measured)`; the walk never follows a junction.
+- DISK: free space on this PC and on each pool machine (the drive holding the worktrees), `WARN DISK` under 30 GB (`LF_DISK_WARN_GB`). `wt new` refuses under 10 GB (`LF_WT_MIN_FREE_GB`, 0 turns it off) with a message naming `lead prune-safe --oldest N`.
 - POOL: one line per machine (free RAM, lanes busy/total, temperature, `up`, `slow` or `DOWN`) and the queue length. Each machine is
   read in its own process (`lead --pool-worker <name>`), all at once, with a per-machine timeout (9 s, `LF_LEAD_POOL_MACHINE_MS`) inside
   an overall budget (12 s, `LF_LEAD_POOL_BUDGET_MS`). A machine that has not finished shows what it had: `slow` when it answered within
@@ -1530,3 +1531,6 @@ parallel, each with its own timeout; one that fails prints one line and the rest
 `tools\cli lead prune-safe [--dry-run]` prunes the merged-prunable worktrees through `wt prune` (never `--force`) and prints one line each:
 a merged PR on GitHub, no uncommitted change, idle 30 min, no live lock or session, and re-checked clean just before the delete. When
 GitHub cannot list the merged PRs it prunes nothing.
+`--oldest N` caps a run to the N least recently active of the worktrees that qualify, to free the most space at once; every rule above still applies to each one.
+
+**Why the marker is bookkeeping (2026-11-17).** `wt list` reconciles the registry and rewrote `tmp/wt.json` in every worktree, so all 214 looked touched a minute ago and `prune-safe` pruned none while C: filled to 195 MB free. `writeMarker` now writes only when the content changes, and the idle check (`newestActivityMs` in `tools/lib/lead.mjs`) ignores `tmp/wt.json` and its temp and lock files. `disk-guard-selftest` proves both and the thresholds.
