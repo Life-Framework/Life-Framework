@@ -33,11 +33,12 @@ const FIRST_PASS_IDS = new Set(
   `2B4D01C04FCE36DF A244D4DCCFAF3DA2 9D9C2A8901335D7A 3086FBF886A5ED69 885CD02BE411F3D9 02A586812023C0F3 8369BD565BAECA04
    C018FCDE11F92D1C 3D435C3FAD704D51 B21BC3828A875E72 57690E2BF9AA1698 5B2884E2AE5D37EC AAF7D44F136FF47C CAFEE0E5B8FEF2A3
    05F272AF39CE1C8A 7EB932E7D49120C9 24171C082A81C130 E51E440BD316C7ED 76B945B659552E8E 2F62AF994CA871A2 5FCF786D617F87A3
-   0DC3CFC2430BD458`.split(/\s+/),
+   0DC3CFC2430BD458 A6DB6F910C4658A2 50FAF86C7DEBD525`.split(/\s+/),
 );
 
 const P = {
-  chandelier: "Prefabs/Props/Furniture/LightCeiling_01_on.et",
+  windowLamp: "Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et", // unlit mesh, glass_on_white below (the vanilla _on_interior one carries a point and a spot, both casting)
+  chandelier: "Prefabs/Props/Furniture/LightCeiling_01.et", // the unlit mesh: glass_on below makes it glow, no lights of its own (perf budget, #2328)
   carpet: "Prefabs/Props/Furniture/Carpet_02.et",
   plant: "Prefabs/Props/Furniture/PlantRoom_02.et",
   mirrorFull: "Prefabs/Props/Furniture/MirrorBathroom_02/MirrorBathroom_02.et",
@@ -104,8 +105,10 @@ const G = {
 
 const items = []; // { path, x, y, z, yaw, scale, angles? }
 const garments = []; // { key, x, y, z, yaw, scale }
-const lights = []; // { x, y, z, color, lv, radius }
-const put = (path, x, y, z, yaw = 0, scale = 1, angles = null) => items.push({ path, x, y, z, yaw, scale, angles });
+const GLASS_ON = [["LightCeiling_01_Glass", "Assets/Props/Furniture/LightCeiling_01/data/LightCeiling_01_Glass_on.emat"]]; // emissive glass: glows, lights nothing
+const GLASS_ON_WHITE = [["Glass", "Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_white.emat"]];
+const lights = []; // { x, y, z, color, lv, radius, spot? }
+const put = (path, x, y, z, yaw = 0, scale = 1, angles = null, mats = null) => items.push({ path, x, y, z, yaw, scale, angles, mats });
 const wear = (key, x, y, z, yaw = 0, scale = 1) => garments.push({ key, x, y, z, yaw, scale });
 const glow = (x, y, z, o = {}) => lights.push({ x, y, z, color: "1 0.88 0.68 1", lv: 6.5, radius: 8, ...o });
 // a folded pile of n garments on a surface at (x, top, z); each copy turned a little
@@ -121,9 +124,15 @@ glow(4.6, 3.3, 3.0);
 glow(3.3, 3.3, -1.7, { lv: 6, radius: 6.5 });
 glow(1.0, 3.3, 6.0, { lv: 6, radius: 5.5 });
 
-put(P.chandelier, 2.7, 4, 5.6);
-put(P.chandelier, 1.5, 3.99, -0.3);
-put(P.chandelier, 2.7, 3.99, 1.8);
+// ---- The window spots: two lamps over the display, each ONE explicit spot light, no shadow, plus an emissive lamp mesh ----
+for (const x of [1.8, 3.7]) {
+  put(P.windowLamp, x, 3.9, 7.35, 0, 1, "-80 180 0", GLASS_ON_WHITE);
+  lights.push({ x, y: 3.9, z: 7.35, color: "1 1 1 1", lv: 6, radius: 6, spot: 140, angles: "-80 180 0" });
+}
+
+put(P.chandelier, 2.7, 4, 5.6, 0, 1, null, GLASS_ON);
+put(P.chandelier, 1.5, 3.99, -0.3, 0, 1, null, GLASS_ON);
+put(P.chandelier, 2.7, 3.99, 1.8, 0, 1, null, GLASS_ON);
 
 // ---- The window display (street side, z 6.4..7.15) ----
 put(P.carpet, 2.75, F, 6.8, 90);
@@ -239,7 +248,16 @@ async function build() {
   };
   items.forEach((it, i) => {
     const { ref, cls } = info(it.path);
-    rows.push(place([`  ${cls} : "${ref}" {`, `   ID "${hex16(`clothing-store|decor|${i}|${it.path}`)}"`], it));
+    const lines = [`  ${cls} : "${ref}" {`, `   ID "${hex16(`clothing-store|decor|${i}|${it.path}`)}"`];
+    if (it.mats) {
+      // a material override on the instance: the prefab's MeshObject component, by its own GUID
+      const mo = /MeshObject\s+"(\{[0-9A-F]+\})"/.exec(readText(ROOT, vfs, it.path) || "")?.[1];
+      if (!mo) throw new Error(`no MeshObject GUID to override materials on ${it.path}`);
+      lines.push("   components {", `    MeshObject "${mo}" {`, "     Materials {");
+      it.mats.forEach(([src, emat], k) => lines.push(`      MaterialAssignClass "{${hex16(`clothing-store|decor-mat|${i}|${k}`).slice(4).padStart(16, "0")}}" {`, `       SourceMaterial "${src}"`, `       AssignedMaterial "${guid(emat)}"`, "      }"));
+      lines.push("     }", "    }", "   }");
+    }
+    rows.push(place(lines, it));
   });
   garments.forEach((g, i) => {
     const def = G[g.key];
@@ -262,7 +280,9 @@ async function build() {
         "   ClipEV -10",
         `   Radius ${l.radius}`,
         "   NearPlane 0.3",
+        ...(l.spot ? ["   Type Spot", `   SpotAngle ${l.spot}`, `   angles ${l.angles}`] : []),
         "   LensFlareType Disabled",
+        "   CastShadow 0",
         "  }",
       ].join("\n"),
     );
