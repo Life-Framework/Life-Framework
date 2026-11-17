@@ -15,8 +15,9 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { typeIndex, unknownTypes } from "../scout/types.mjs";
+import { checkSlotPois, loadPoiKinds } from "./lib/poi-check.mjs";
 
-export const help = "map <slug> [--template town|village] [--dossier f] [--out f] [--force] | --check   propose a slot -> building/plot mapping from the scout dossier; --check refuses an incomplete one";
+export const help = "map <slug> [--template town|village] [--dossier f] [--out f] [--force] | --check   propose a slot -> building/plot mapping from the scout dossier; --check refuses an incomplete one or a slot with no POI kind";
 
 export const DOSSIER_SCHEMA = 1;
 export const TEMPLATE_SCHEMA = 1;
@@ -439,7 +440,8 @@ export async function main(args, { root }) {
     const template = loadTemplate(kind, root);
     if (flags.check) {
       const mapping = readJson(out, "mapping");
-      const probs = checkMapping(mapping, dossier, template);
+      // The template's POI naming (card M17): every slot names a front kind with a POI row, or "none". `town check` (T4) calls the same.
+      const probs = [...checkMapping(mapping, dossier, template), ...checkSlotPois(template, loadPoiKinds(root).kinds)];
       for (const p of probs) console.log(`FAIL  ${p}`);
       if (probs.length) {
         console.log(`SUMMARY town-map check fail ${slug}: ${probs.length} problem(s); ${relative(root, out)}`);
