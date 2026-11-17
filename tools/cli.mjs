@@ -5287,6 +5287,30 @@ async function wtShipCmd(args) {
       reviewText,
       hasBodyFile: customBody !== null,
     });
+    {
+      // A building PR must pass `building check` (no floating props, offline): tools/lib/pr-quality.mjs buildingCheckProblems.
+      const { buildingCheckProblems } = await import("./lib/pr-quality.mjs");
+      const specs = [];
+      const bdir = join(wtRoot, "tools", "buildings");
+      if (existsSync(bdir)) {
+        for (const d of readdirSync(bdir)) {
+          try {
+            const s = JSON.parse(readFileSync(join(bdir, d, "spec.json"), "utf8"));
+            if (s.prefab_dir) specs.push({ slug: s.slug ?? d, addon: s.addon, prefab_dir: s.prefab_dir });
+          } catch {}
+        }
+      }
+      problems.push(
+        ...buildingCheckProblems({
+          files: changed,
+          specs,
+          run: (slug) => {
+            const res = spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "building", "check", slug], { cwd: wtRoot, encoding: "utf8", timeout: 180000, windowsHide: true });
+            return { code: res.status ?? 2, out: `${res.stdout ?? ""}${res.stderr ?? ""}` };
+          },
+        }),
+      );
+    }
     if (problems.length) {
       console.log("FAIL  the PR is not ready to ship:");
       for (const p of problems) console.log(`  - ${p}`);
