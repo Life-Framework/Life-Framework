@@ -58,13 +58,24 @@ class LF_RegistrationForm
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! World end: forget the open form (the world takes its screen down).
+	//! World end: the old world's form is still on screen when its session ends, and the next
+	//! session would draw over it, so it is taken down before the static is dropped.
 	static void ResetStatics()
 	{
+		Hide();
 		s_Form = null;
 	}
 
-//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: holds an already open screen as the current form (Open needs a player controller).
+	static void AdoptForTest(LF_UIScreen screen)
+	{
+		LF_RegistrationForm form = new LF_RegistrationForm();
+		form.m_Screen = screen;
+		s_Form = form;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static LF_UIScreen Current()
 	{
 		if (!s_Form)

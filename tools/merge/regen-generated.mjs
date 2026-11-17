@@ -26,8 +26,45 @@ const TOOLS_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const TESTS_PREFIX = "addons/LifeFramework/Scripts/Game/Tests";
 const REGISTRY_NAME = "LF_TestRegistrations.generated.c";
 
-function git(args) {
-  return spawnSync("git", args, { windowsHide: true, encoding: "utf8" });
+// Every child runs with a time limit, no stdin and a kill signal, so a stuck git or PowerShell can never
+// hang `git merge` (#2549). A timeout or spawn error throws BoundedRunError; runDriver turns it into one stderr
+// line and exit 1, which leaves the file conflicted for git and lets the merge finish.
+// LF_MERGE_DRIVER_TIMEOUT_MS overrides both limits (the selftest); LF_MERGE_DRIVER_GENERATOR_STUB runs
+// `node <script>` in place of PowerShell (the selftest's child that never exits).
+const GIT_TIMEOUT_MS = 20_000;
+const GENERATOR_TIMEOUT_MS = 90_000;
+
+export class BoundedRunError extends Error {}
+
+export function timeoutFor(defaultMs, env = process.env) {
+  const override = Number(env.LF_MERGE_DRIVER_TIMEOUT_MS);
+  return Number.isFinite(override) && override > 0 ? override : defaultMs;
+}
+
+export function runBounded(step, command, args, options, defaultMs) {
+  const limit = timeoutFor(defaultMs);
+  const started = Date.now();
+  const result = spawnSync(command, args, {
+    windowsHide: true,
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024,
+    ...options,
+    stdio: ["ignore", "pipe", "pipe"],
+    timeout: limit,
+    killSignal: "SIGKILL",
+  });
+  if (result.error) {
+    const seconds = ((Date.now() - started) / 1000).toFixed(1);
+    const why = result.error.code === "ETIMEDOUT" ? `timed out after ${seconds}s (limit ${Math.round(limit / 1000)}s)` : `failed after ${seconds}s: ${result.error.message}`;
+    throw new BoundedRunError(`${step} ${why}`);
+  }
+  return result;
+}
+
+let fixCommand = "tools\\cli regen-tests or tools\\cli regen-localization";
+
+function git(args, options = {}) {
+  return runBounded(`git ${args.slice(0, 3).join(" ")}`, "git", args, options, GIT_TIMEOUT_MS);
 }
 
 function gitPath(rel) {
@@ -152,12 +189,16 @@ function runPowershell(scratch, script, args) {
   for (const [key, value] of Object.entries(process.env)) {
     if (!/^GIT_(DIR|WORK_TREE|INDEX_FILE|PREFIX|COMMON_DIR|OBJECT_DIRECTORY|ALTERNATE_OBJECT_DIRECTORIES|NAMESPACE)$/i.test(key)) env[key] = value;
   }
-  const init = spawnSync("git", ["init", "-q"], { windowsHide: true, cwd: scratch, encoding: "utf8", env });
+  const init = git(["init", "-q"], { cwd: scratch, env });
   if (init.status !== 0) return init;
-  return spawnSync(
+  const stub = process.env.LF_MERGE_DRIVER_GENERATOR_STUB;
+  if (stub) return runBounded("generator stub", process.execPath, [stub], { cwd: scratch, env }, GENERATOR_TIMEOUT_MS);
+  return runBounded(
+    `powershell ${script}`,
     powershell,
-    ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(TOOLS_ROOT, script), ...args],
-    { windowsHide: true, cwd: scratch, encoding: "utf8", env },
+    ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", join(TOOLS_ROOT, script), ...args],
+    { cwd: scratch, env },
+    GENERATOR_TIMEOUT_MS,
   );
 }
 
@@ -203,6 +244,17 @@ function runDriver() {
     console.error("lf-regen: expected a language conf or LF_TestRegistrations.generated.c");
     process.exit(1);
   }
+  fixCommand = plan.kind === "tests" ? "tools\\cli regen-tests" : "tools\\cli regen-localization";
+  try {
+    runPlan(plan, oursPath, pathname);
+  } catch (error) {
+    if (!(error instanceof BoundedRunError)) throw error;
+    console.error(`lf-regen: ${error.message}; the file is left conflicted, run ${fixCommand} after the merge`);
+    process.exitCode = 1;
+  }
+}
+
+function runPlan(plan, oursPath, pathname) {
   const sides = resolveSides();
   if (!sides) {
     console.error("lf-regen: cannot identify the merge sides");
