@@ -10,11 +10,11 @@
 //
 // red-proof: 2026-11-16 with the MODDED check removed from staticResetProblems this printed
 // FAIL "a modded layer is a problem (validate-registries fails it)".
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { CENTRAL, addHooks, centralFile, hookedCalls, registryHooks, staticResetProblems } from "../lib/static-reset-hooks.mjs";
 import { migrateRepo } from "../codemods/static-reset-registry.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const check = (ok, msg) => {
@@ -29,7 +29,7 @@ const layer = (names) =>
     .map((n) => `\t\tdone.Insert("${n}");\n\t\tif (apply)\n\t\t\t${n}.ResetStatics();\n`)
     .join("")}\t}\n}\n`;
 
-const dir = mkdtempSync(join(tmpdir(), "lf-static-reset-selftest-"));
+const dir = scratchDir("lf-static-reset-selftest-");
 const put = (rel, text) => {
   mkdirSync(dirname(join(dir, rel)), { recursive: true });
   writeFileSync(join(dir, rel), text);

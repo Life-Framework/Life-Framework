@@ -16,10 +16,10 @@
 // error text with the token in it: secret leaked"; the week projection using the 5h rate printed "FAIL usage-plan:
 // projected at reset: 30 != 198"; the over-pace branch removed from advise() printed "FAIL usage-plan: over pace: kind:
 // on != over"; the 4 h look-back removed printed "FAIL usage-plan: a sample older than 4 h is not used: 5 != 2".
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { addSample, advise, burnRate, clock, fetchPlanUsage, normalize, pace, planFor, planLine, readCredentials, redact, SAMPLE_KEEP_MS } from "../agents/usage-plan.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const eq = (got, want, msg) => {
@@ -178,7 +178,7 @@ const sample = (agoH, five, week, plan0, agents = null) => ({ t: NOW - agoH * H,
 }
 
 // ---- 4/5. fail soft and secrets, through planFor with a temp home
-const home = mkdtempSync(join(tmpdir(), "lf-usage-plan-"));
+const home = scratchDir("lf-usage-plan-");
 const cfg = join(home, ".claude-gaming");
 mkdirSync(cfg, { recursive: true });
 const writeCreds = (expiresAt) => writeFileSync(join(cfg, ".credentials.json"), JSON.stringify({ claudeAiOauth: { accessToken: SECRET, refreshToken: REFRESH, expiresAt, scopes: ["user:profile"] } }));

@@ -15,11 +15,12 @@
 //      GIT_INDEX_FILE and friends (set when validate runs under a hook) are removed from the environment, and
 //      hooks are pinned off, so only the scratch repo decides.
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
 import { describeRun } from "../wt.mjs";
+import { scratchDir } from "./scratch.mjs";
 
 export { describeRun };
 
@@ -54,7 +55,7 @@ let emptyConfig = null;
 let noHooks = null;
 export function hermeticGitEnv(base = process.env) {
   if (!emptyConfig) {
-    const folder = mkdtempSync(join(tmpdir(), "lf-gitcfg-"));
+    const folder = scratchDir("lf-gitcfg-");
     emptyConfig = join(folder, "empty.gitconfig");
     writeFileSync(emptyConfig, "");
     noHooks = join(folder, "no-hooks");
