@@ -49,6 +49,7 @@
 - [Racing](features/racing.md)
 - [Rules](features/rules.md)
 - [Service calls (#248)](features/service-calls.md)
+- [Sites](features/sites.md)
 - [Telephone calls (#147)](features/telephone-calls.md)
 - [Toys](features/toys.md)
 - [UI / Layouts / Localization](features/ui-layouts-localization.md)
