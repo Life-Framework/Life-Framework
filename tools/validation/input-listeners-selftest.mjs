@@ -24,6 +24,13 @@ assert.equal(wrongTrigger.length, 1, "a remove with another trigger does not cou
 
 assert.deepEqual(problems([f("/Feature/X/LF_D.c", '// input.AddActionListener("A", EActionTrigger.DOWN, OnA);')]), [], "a comment is not an add");
 assert.deepEqual(problems([f("/Tests/LF_Test_X.c", 'input.AddActionListener("A", EActionTrigger.DOWN, OnA);')]), [], "tests are skipped");
-assert.deepEqual(problems([f("/Feature/Medic/LF_GiveUpController.c", 'input.AddActionListener("LF_GiveUp", EActionTrigger.DOWN, LF_OnGiveUpKey);')]), [], "a listed once-per-controller listener passes");
+// The once-per-controller files had an allowlist; reconnecting in one process left a second listener
+// on a deleted controller. A controller file now removes its listeners like every other file.
+const once = 'input.AddActionListener("LF_GiveUp", EActionTrigger.DOWN, LF_OnGiveUpKey);';
+for (const p of ["/Feature/Medic/LF_GiveUpController.c", "/Feature/Moderation/LF_ClipStampController.c", "/Feature/Placement/LF_PlacementPlayerController.c", "/Feature/VehicleLock/LF_VehicleLockKeyController.c"]) {
+  assert.equal(problems([f(p, once)]).length, 1, `${p}: a once-per-controller add with no remove fails`);
+}
+assert.deepEqual(problems([f("/Feature/Medic/LF_GiveUpController.c", `${once}
+void ~SCR_PlayerController() { input.RemoveActionListener("LF_GiveUp", EActionTrigger.DOWN, LF_OnGiveUpKey); }`)]), [], "a controller that removes in its destructor passes");
 
 console.log("input-listeners-selftest: OK");
