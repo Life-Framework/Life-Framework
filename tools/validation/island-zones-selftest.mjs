@@ -6,10 +6,13 @@
 // place, a missing required slot, a mapped slot without layer and claim, an entity outside its footprint, a double claim, a slot whose
 // layer lacks the kind it promises, a layer over the performance budget, and a branch that is not a town-draft. Each case's
 // expect.json lists the messages that must appear (substrings); a case with ok true must have no error at all.
-// Also: the claim's `destruction.mode: "needs-hook"` is a warning and never an error; the per-place limits within 60 m;
+// Also: the map POI-kind slot check (#2245: `checkSlotPois` against the POI table) fails a slot with no front kind or a kind with no row;
+// the claim's `destruction.mode: "needs-hook"` is a warning and never an error; the per-place limits within 60 m;
 // the guard lets a town-draft branch change only its own layer; the repo as it stands passes validate-island-zones.
 // red-proof: before tools/town/check.mjs existed this printed "FAIL cannot load tools/town/check.mjs: ERR_MODULE_NOT_FOUND" (2026-11-17).
 // red-proof: with the footprint test left out of checkClaimsAndFootprints() this printed "FAIL outside-footprint: no error contains 'Fit_shop_Stray stands 26 m outside building b03'" (2026-11-17).
+
+// red-proof: with the POI-kind call left out of checkPlace() this printed "FAIL complete: a slot with no poi should fail the POI check" and "FAIL complete: a front kind with no POI row should fail" (2026-11-17).
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -42,6 +45,7 @@ const { checkPlace, guardIslandLayers, loadPlace, placeOver, distToPolygon, cata
 const lamps = `GenericEntity {\n${Array.from({ length: 7 }, (_, i) => ` LightEntity L${i} {\n  CastShadow 1\n  Type Point\n }`).join("\n")}\n}\n`;
 const resolve_ = (ref) => ({ text: /Lamps7/.test(ref) ? lamps : "GenericEntity {\n}\n", where: "fixture" });
 
+const POI_KINDS = new Set(["StoreCounter"]); // the fixture POI table: the shop's front kind has a row
 const has = (list, sub) => list.some((m) => m.includes(sub));
 
 // ------------------------------------------------------------------ the fixture places
@@ -57,6 +61,7 @@ for (const name of names) {
       mappingFile: join(dir, "mapping.json"),
       templateFile: join(CASES, "template.json"),
       catalogFile: join(CASES, "catalog.conf"),
+      poiKinds: POI_KINDS,
       layerDir: "layers",
       claimsDir: "claims",
     });
@@ -80,10 +85,18 @@ for (const name of names) {
 // A needs-hook claim only warns; a fitted shop stays a pass.
 {
   const dir = join(CASES, "complete");
-  const data = loadPlace(dir, "sample-square", { dossierFile: join(FIX, "map-dossier.json"), mappingFile: join(dir, "mapping.json"), templateFile: join(CASES, "template.json"), catalogFile: join(CASES, "catalog.conf"), layerDir: "layers", claimsDir: "claims" });
+  const data = loadPlace(dir, "sample-square", { dossierFile: join(FIX, "map-dossier.json"), mappingFile: join(dir, "mapping.json"), templateFile: join(CASES, "template.json"), catalogFile: join(CASES, "catalog.conf"), poiKinds: POI_KINDS, layerDir: "layers", claimsDir: "claims" });
   const r = checkPlace(data, { resolve: resolve_ });
   check(r.ok && has(r.warnings, "needs-hook"), `complete: the needs-hook claim should be a warning on a passing place (ok ${r.ok}, warnings ${r.warnings.join(" | ")})`);
-  check(has(r.notes, "#2245"), "complete: the notes should say the POI-kind check waits on #2245");
+  // The map POI-kind slot check (#2245): a slot's front kind needs a POI row or an explicit none.
+  const slotsWith = (poi) => ({ ...data, template: { ...data.template, slots: data.template.slots.map((s) => (s.id === "shop" ? { ...s, poi } : s)) } });
+  const noPoi = checkPlace(slotsWith(undefined), { resolve: resolve_ });
+  check(!noPoi.ok && has(noPoi.errors, "slot shop: names no POI kind"), `complete: a slot with no poi should fail the POI check (errors: ${noPoi.errors.join(" | ") || "none"})`);
+  const noRow = checkPlace({ ...slotsWith("StoreCounter"), poiKinds: new Set(["Bank"]) }, { resolve: resolve_ });
+  check(!noRow.ok && has(noRow.errors, "front kind 'StoreCounter' has no POI row"), `complete: a front kind with no POI row should fail (errors: ${noRow.errors.join(" | ") || "none"})`);
+  check(checkPlace(slotsWith("none"), { resolve: resolve_ }).ok, "complete: an explicit poi none should pass");
+  const unloaded = checkPlace({ ...data, poiKinds: null }, { resolve: resolve_ });
+  check(unloaded.ok && has(unloaded.notes, "map POI kinds: not checked"), "complete: with no POI table loaded the check is skipped with a note");
   // A kind no system lists is a warning, not an error.
   const odd = { ...data, catalogKinds: new Set(["Spawn"]) };
   const r2 = checkPlace(odd, { resolve: resolve_ });

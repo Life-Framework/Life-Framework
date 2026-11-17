@@ -255,8 +255,8 @@ town (`world-zones.md` "Tests do not read the town").
   from the `.layer` text (a kind no system lists in `m_aPlaces` of `LF_SystemCatalog.conf` is a warning); the kits' prefabs resolve.
   It also counts each slot's layer against the building budget of its size (the `perf building` counts) and the
   per-place limits within 60 m (24 lights, 12 shadow casters, 1,500 added entities; `performance.md`), and warns on a claim
-  whose `destruction.mode` is `needs-hook` until the indestructible hook lands. The map POI-kind slot check (M17, #2245)
-  joins when `tools/town/lib/poi-check.mjs` lands.
+  whose `destruction.mode` is `needs-hook` until the indestructible hook lands. The map POI-kind slot check (M17, #2245,
+  `tools/town/lib/poi-check.mjs`) fails a template slot that names no front `poi` kind with a row in `LF_MapPois.conf` (or `none`).
 - **In-world** (one Workbench run): `audit placement --strict` over the place's layers, plus pictures.
 - **Reachable** (one session on MainWorld): a harness verb walks a character from the place spawn to each
   slot's entrance on the `GM_Eden.nmn` navmesh. It fails on a slot with no path, or with a path over
