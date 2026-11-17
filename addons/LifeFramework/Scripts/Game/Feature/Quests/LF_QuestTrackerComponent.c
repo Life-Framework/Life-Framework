@@ -20,6 +20,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 	protected ref map<string, bool> m_mInsideAreas = new map<string, bool>();
 	protected float m_fTickAccumulator;
 	protected string m_sClientLogCache;
+	protected int m_iLogPushes;
 	//! Test fixtures only: a stand-in player uid for a body no player controls (SetUidForTests).
 	protected string m_sTestUid;
 
@@ -589,7 +590,15 @@ class LF_QuestTrackerComponent : ScriptComponent
 	{
 		if (!Replication.IsServer())
 			return;
+		m_iLogPushes++;
 		Rpc(RpcDo_Log, LF_QuestLogFormat.Encode(m_Tracker.GetStates()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many times the log was pushed (a test reads it; no gameplay use).
+	int GetLogPushes()
+	{
+		return m_iLogPushes;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -951,6 +960,13 @@ class LF_QuestTrackerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	void AskRequestLog()
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_RequestLog();
+			return;
+		}
+
 		Rpc(RpcAsk_RequestLog);
 	}
 
