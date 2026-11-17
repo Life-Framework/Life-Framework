@@ -7,6 +7,7 @@
 // the payout paid without calling AddCash failed it with `[LFTEST] FAIL e2e/narrative-loop`,
 // `- robbery payout lands as MoneyStack: cash 210 (expected 210, got 10)`. Restored; green.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_E2E_Narrative : LF_Test
 {
 	protected static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";

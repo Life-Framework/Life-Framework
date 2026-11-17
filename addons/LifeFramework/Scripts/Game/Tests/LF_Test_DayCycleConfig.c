@@ -4,6 +4,7 @@
 //! config into engine settings. Vanilla changes nothing, accelerated gives the day length, the speed
 //! against the 24 h vanilla day, the night speed and the start hour (a 120-minute day is 12x), and
 //! realtime keeps a 24 h day started at the server clock plus the offset.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DayCycleConfig : LF_Test
 {
 	override string GetName()

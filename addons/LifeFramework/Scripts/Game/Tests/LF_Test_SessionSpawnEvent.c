@@ -21,6 +21,7 @@ class LF_TestSpawnCollector : LF_EventSubscriber
 //! account uid in a session is flagged, a second spawn of the same uid is not, and a reset
 //! (world teardown) makes the next spawn a first again.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SessionSpawnEvent : LF_Test
 {
 	override string GetName()

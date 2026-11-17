@@ -12,6 +12,7 @@
 //! every skin's paper is opaque, and the blur dims the whole world behind the sheet instead of
 //! sitting inside it.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_UIPaperSheet : LF_Test
 {
 	override string GetName()

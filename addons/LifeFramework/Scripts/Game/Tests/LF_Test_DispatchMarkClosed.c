@@ -5,6 +5,7 @@
 //! mark leaves when its suspect's wanted level returns to 0, and another suspect's mark stays. The crime goes
 //! through LF_Dispatch.Report (it sounds a real alarm at the site, so this is a WORLD test); the wanted change
 //! is the bus event LF_PoliceCalls closes its calls on. One fixture officer and a recording sink, no network.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DispatchMarkClosed : LF_Test
 {
 	protected static const int OFFICER = 1;

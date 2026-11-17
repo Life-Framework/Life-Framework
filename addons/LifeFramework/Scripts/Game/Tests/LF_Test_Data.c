@@ -3,6 +3,7 @@
 // `[LFTEST] FAIL config-and-localization`,
 // `- menu layout loads: {0000000000000001}UI/Layouts/Missing.layout`. Restored; green.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Data : LF_Test
 {
 	override string GetName()

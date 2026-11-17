@@ -5,6 +5,7 @@
 //! one footprint card (none from a car, none for a car theft); a witness's statement lies at their
 //! feet and bags with its note; and every piece is police-only: no inventory pickup, only the bag
 //! action.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ScenePiecesWorld : LF_Test
 {
 	protected static const int T0 = 2000000;

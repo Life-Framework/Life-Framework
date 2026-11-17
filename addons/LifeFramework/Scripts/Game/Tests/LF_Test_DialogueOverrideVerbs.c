@@ -4,6 +4,7 @@
 //! or a line out, `op: patch`, `remove` of an id no lower layer has and `add` of one it has are
 //! refused. A patched dialogue that is broken (a reply to a removed node, a hook with no class) is
 //! dropped whole and the core dialogue plays; a sound patch is the one that plays.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DialogueOverrideVerbs : LF_Test
 {
 	override string GetName()

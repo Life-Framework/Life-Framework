@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! A filed police application sends one staff line (#1289): the uid tail, playtime and time, never
 //! the full uid; a refused application sends nothing. Uses the StaffWebhook capture seam (#1346).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceApplicationRelay : LF_Test
 {
 	override string GetName()

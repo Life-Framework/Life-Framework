@@ -4,6 +4,7 @@
 //! tests/logic-world: the minimal LOGIC world's guard (Worlds/TestLogic, tools/lib/test-world.mjs).
 //! A LOGIC test may run there; a WORLD or PERSISTENCE test is refused by name and pointed at
 //! DebugWorld; a failing LOGIC test gets a hint naming it and the WORLD tier.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_TestLogicWorld : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

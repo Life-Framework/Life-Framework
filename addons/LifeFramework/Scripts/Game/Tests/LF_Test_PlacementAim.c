@@ -5,6 +5,7 @@
 //! steps (1 fine) and wraps; a thing placed across a road snaps to the road's axis, either way
 //! across, with a little turn either side the server still accepts; a wall face gives the heading out
 //! of it and refuses a floor or ceiling.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PlacementAim : LF_Test
 {
 	override string GetName()

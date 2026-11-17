@@ -3,6 +3,7 @@
 // `[LFTEST] FAIL spawn/identity-fallback`, `- a -noBackend dedicated server keys a player by name`. Restored; green.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_IdentityFallback : LF_Test
 {
 	override string GetName()

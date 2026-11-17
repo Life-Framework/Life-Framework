@@ -7,6 +7,7 @@
 //! runs in LF_Test_PlacementRoad on CoreOnEveron). With a strip already lying in the planned spot the ghost is red
 //! with the reason ("... is in the way"), and a confirm sent for that spot is refused by the
 //! placement service: nothing is placed, the folded strip stays.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SpikeStripPreview : LF_Test
 {
 	static const ResourceName ITEM = "{4B8BDB727DEE59B8}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et";

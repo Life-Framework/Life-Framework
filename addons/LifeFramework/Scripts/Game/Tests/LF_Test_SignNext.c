@@ -3,6 +3,7 @@
 // "title, What, How, Rules, Next, and Close (expected 6, got 5)".
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignNext : LF_Test
 {
 	override string GetName()

@@ -4,6 +4,7 @@
 //! incident/damage-flush (#2414): damage held back inside a sample window reaches the log without a
 //! later hit. The end of a short burst is published once its window has ended, a death publishes the
 //! victim's held damage before the death record, and the flush tick runs while the log is installed.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_IncidentDamageFlush : LF_Test
 {
 	override string GetName()

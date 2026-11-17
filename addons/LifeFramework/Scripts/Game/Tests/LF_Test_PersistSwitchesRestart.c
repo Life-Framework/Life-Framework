@@ -11,6 +11,7 @@
 //! carries it. The reload boot finds it cleared by the boot load, then turns the switch on (owner
 //! layer without the key), and a licence noted again survives a save and load. Every other field
 //! the other e2e tests check (cash, jail, wanted, survival) kept its switch on and survived.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_PersistSwitchesRestart : LF_Test
 {
 	//! The one owner config.json the e2e save boot writes; systems/keep-data writes the same text.

@@ -4,6 +4,7 @@
 //! police/cuffs-server-rules (#2417): the pure rules behind the server's cuff refusals. A cuffed
 //! instigator's hit is refused unless it is self-damage or bleeding already running; a cuffed
 //! character may sit in a cargo seat but not a driver's seat.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CuffsServerRules : LF_Test
 {
 	override string GetName()

@@ -2,6 +2,7 @@
 // tier: PERSISTENCE
 //! The serial book rides the real save path (the "fenceserials" payload, save version 16; fenceserials is payload 16, incidentflags 17): a
 //! booked serial still names its buyer after the store is wiped, and loading twice adds no rows.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_FenceSerialPersist : LF_Test
 {
 	protected static const string UID = "serial-save-uid";

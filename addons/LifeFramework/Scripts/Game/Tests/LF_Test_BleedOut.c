@@ -6,6 +6,7 @@
 //! accepted after it, running out of time kills for real and exactly once, a revive stops the
 //! clock, and the replicated copy of the time left moves in steps. Test characters have no
 //! player behind them, so the test opts them in as eligible.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_BleedOut : LF_Test
 {
 	override string GetName()

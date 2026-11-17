@@ -17,6 +17,7 @@ class LF_Test_EventShell_Listener : LF_EventSubscriber
 	}
 }
 
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventShell : LF_Test
 {
 	override string GetName()

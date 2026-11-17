@@ -6,6 +6,7 @@
 //! is used up. Proposals 5 m along the street, malformed
 //! (no forward, out of the world), on the strip just laid, and a civilian's are each refused with
 //! the reason logged, and their items stay.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementConfirm : LF_Test
 {
 	static const ResourceName ITEM = "{4B8BDB727DEE59B8}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et";

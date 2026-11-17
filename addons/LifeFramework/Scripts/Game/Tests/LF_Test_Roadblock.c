@@ -6,6 +6,7 @@
 //! deploys the kit: one barrier and four cones, each on the ground, the kit used up. A vehicle seen
 //! moving near the set and then stopped is logged once. A civilian cannot pick the set up; the officer
 //! folds all five pieces away with one pick-up and carries the kit again.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadblock : LF_Test
 {
 	protected static const string OFFICER_UID = "roadblock-officer";

@@ -5,6 +5,7 @@
 //! whitelist/legacy-gone (#2576): the whitelist sign is a readable sign only. The dead
 //! LF_WhitelistAction (it needed a component no character carries) is off the prefab, and the
 //! game mode's whitelist handler takes a spawned player without an error.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WhitelistLegacyGone : LF_Test
 {
 	protected static const ResourceName SIGN = "{C6940227F886B8EF}Prefabs/Props/Signs/EL_WhitelistSign.et";

@@ -3,6 +3,7 @@
 // tier: LOGIC
 //! Build-stage rules (#2648, slice of #747): what a stage still misses, who may deposit, when the
 //! stage is done. Pure logic over the stage def and the "prefab=count;..." deposit string.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_BuildStageRules : LF_Test
 {
 	protected const string PLANK = "{11111111AAAAAAAA}Prefabs/Test/Plank.et";

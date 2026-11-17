@@ -5,6 +5,7 @@
 //! sheet drawn and holding the interaction prompt, because the reset only dropped the pointer.
 //! Both resets now take the screen down first. Open needs a player controller, so the test hands
 //! each class an already open kit sheet through its seam; the sheet's public state shows the hide.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CharacterSheetsReset : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

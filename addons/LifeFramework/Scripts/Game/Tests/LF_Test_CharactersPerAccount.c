@@ -12,6 +12,7 @@
 //! account uid, slot 2 by its own id; wanted level and police rank belong to the character; the
 //! active character's key is what LF_Utils.GetPlayerUID resolves to, and that key finds the account.
 //! A third character is refused, and at maxPerAccount = 1 a second one is refused as before.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CharactersPerAccount : LF_Test
 {
 	protected static const string UID = "cpa-account-uid";

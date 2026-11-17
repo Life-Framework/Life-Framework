@@ -4,6 +4,7 @@
 //! course by id, patches and removes through the shared override model, and a course that breaks
 //! the rules (a checkpoint twice) is dropped and logged, never kept. Courses here are built in
 //! script and layered through the owner section; no world, no coordinates, no pack file.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RaceCourses : LF_Test
 {
 	protected LF_RaceCourseRecord BuildCourse(string id, array<string> checkpoints)

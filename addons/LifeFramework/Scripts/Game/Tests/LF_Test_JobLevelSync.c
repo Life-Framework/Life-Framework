@@ -22,6 +22,7 @@ class LF_TestJobLevelRecorder : LF_EventSubscriber
 //! A level rise from any grant (here a quest's reward XP routed to DELIVERY) publishes
 //! LF_OnJobLevelChanged, LF_JobLevelSync is subscribed at game start, and PullCareerFor puts the
 //! level on the body's replicated LF_PlayerJobComponent.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JobLevelSync : LF_Test
 {
 	static const string UID = "test-joblevel-sync";

@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! #1964: a character the creation flow marked spawns as new exactly once; the second spawn
 //! (after a death or a rejoin) is not; a character that was never marked (an existing one) never is.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FirstSpawn : LF_Test
 {
 	protected static const string NEW_ID = "firstspawn-new-character";

@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! gather/stock-rules (#2409): a spot holds a capped stock, an empty one refuses, and one gather
 //! grows back per regrow interval, on the server's clock.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_GatherStock : LF_Test
 {
 	override string GetName()

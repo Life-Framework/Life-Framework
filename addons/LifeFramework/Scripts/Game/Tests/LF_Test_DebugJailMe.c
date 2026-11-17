@@ -1,5 +1,6 @@
 // red-proof: flipped the gate-off assertion to True; "the gate off refuses to jail" failed, restored
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DebugJailMe : LF_Test
 {
 	override string GetName()

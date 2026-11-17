@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! Race panel (#1924): the panel model for a race state names the right lap, next checkpoint and
 //! place. No world: a course built in script, progress set by the course rules.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RaceHud : LF_Test
 {
 	override string GetName()

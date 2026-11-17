@@ -4,6 +4,7 @@
 //! shared COMMS rate bucket (review 2026-11-17). A player who just made three chess moves or board
 //! reads and then respawns still gets the new character's set. A second ask inside a second is
 //! deferred, not dropped (it may be the one for the new character); a third while one waits is dropped.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapKnownSyncGate : LF_Test
 {
 	protected static const int PLAYER = 990243;

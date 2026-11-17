@@ -5,6 +5,7 @@
 //! after an edit. A character switch inside that window used to save the old character's list under
 //! the new character's key. The server's restore now carries a generation the client echoes on the
 //! upload; a list stamped with an older generation, or issued for another character, is dropped.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapMarksUploadGeneration : LF_Test
 {
 	protected static const int PLAYER = 992546;

@@ -8,6 +8,7 @@
 //! off it and checks that the road is found, that the plan's axis runs straight across it for a player
 //! facing 40 degrees up the road, and that the server accepts a proposal across the road (and 10 degrees
 //! off) and refuses one turned 30 degrees and one along the road.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementRoad : LF_Test
 {
 	override string GetName()

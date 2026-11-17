@@ -5,6 +5,7 @@
 //! value the entity sets itself wins; an unknown or empty id degrades without a VME; and the store
 //! box prefab names a type the table has. bank_room is pinned to today's bank numbers, so the
 //! town bank does not change when a building moves to it.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SafeTypes : LF_Test
 {
 	static const ResourceName STORE_BOX_PREFAB = "{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et";

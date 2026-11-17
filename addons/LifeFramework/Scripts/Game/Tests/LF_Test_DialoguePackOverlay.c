@@ -4,6 +4,7 @@
 //! adds, replaces or removes an id with the override verbs. A line with no event and no length is text
 //! only and the dialogue stays playable; a half-made recording does not. A pack patch that leaves the
 //! dialogue broken is dropped whole and the core one plays.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DialoguePackOverlay : LF_Test
 {
 	override string GetName()

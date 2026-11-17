@@ -21,6 +21,7 @@ class LF_Test_IncidentFlaggedSubscriber : LF_EventSubscriber
 	}
 }
 
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_IncidentFlagged : LF_Test
 {
 	override string GetName()

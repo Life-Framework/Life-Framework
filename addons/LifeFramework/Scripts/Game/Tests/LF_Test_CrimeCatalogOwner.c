@@ -3,6 +3,7 @@
 //! #685a: the owner's `crime` section changes the catalog field by field, keyed by crime id; a number
 //! outside the schema range is refused and the shipped value kept; the repeat rule reads the saved
 //! crime record count; and a sentence entry lengthens a sentence but never shortens it.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CrimeCatalogOwner : LF_Test
 {
 	protected static const string UID = "crime-catalog-owner";

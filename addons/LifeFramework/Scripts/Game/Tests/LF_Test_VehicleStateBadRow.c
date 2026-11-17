@@ -6,6 +6,7 @@
 //! for a vehicle that is not loaded is skipped; an unknown tow state reads as none, a negative stamp
 //! as never, a compartment level outside 0-3 is clamped; the other rows still apply. A second apply
 //! gives the same records, and an empty apply puts every vehicle back to the default.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehicleStateBadRow : LF_Test
 {
 	protected static const string OWNER = "vehicle-state-bad-owner";

@@ -683,8 +683,12 @@ machine) and on a pool machine runs `audit placement` in the synced run folder.
 
 ### No Workbench on this PC (the `workbench` cap)
 
-The maintainer's world editor lives on this PC (Gaming-Box) and agents never
-run a headless Workbench on it. That is `workbench` missing from this machine's
+"This PC" is the maintainer's world-editor machine, Gaming-Box, and only it. Agents never
+run a headless Workbench there. On lf-testbox (PC1, the laptop and primary dev box) and lf-cloud
+the `workbench` cap is present, a Workbench runs there through the pool, and nothing below applies.
+`toolscli status` prints `workbench: ALLOWED` or `NOT allowed` for the machine you are on.
+
+On Gaming-Box that is `workbench` missing from the machine's
 caps: `lf.local.json` `pool.machines` entry `{ "name": "local", "caps":
 ["server"] }`. A pool machine's own entry (`lf-cloud`, `lf-testbox`) keeps the
 cap and runs what is sent to it. `tools/lib/wb-route.mjs` reads the cap; every

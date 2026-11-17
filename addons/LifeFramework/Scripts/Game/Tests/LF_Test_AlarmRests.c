@@ -7,6 +7,7 @@
 //! dispatch/alarm-rests: a site alarm stands on whatever is under the site, not in the air. The beacon was a
 //! child 1.1 m above the site point, so at the cash van box it hung in mid-air over the van (#571 trailer review).
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_AlarmRests : LF_Test
 {
 	override string GetName()

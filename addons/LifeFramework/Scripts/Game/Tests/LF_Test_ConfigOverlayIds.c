@@ -4,6 +4,7 @@
 //! no lower layer has refused while the rest of the overlay applies, an unknown verb refused, and
 //! two packs on one id: the later wins and the claim names both. Runs on the crime catalog, the
 //! catalogue's offers and the shop rules, the three sections on the shared merge.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigOverlayIds : LF_Test
 {
 	protected static const string ROBBERY = "#LF-Offence_Robbery";

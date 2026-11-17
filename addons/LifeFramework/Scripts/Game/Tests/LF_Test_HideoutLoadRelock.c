@@ -3,6 +3,7 @@
 //! hideout/load-relock (review 2026-11-17): a gate saved open loaded open, and only a member's unlock
 //! started the relock sweep, so after a restart the gate stayed open for anyone. A load with an open
 //! gate queues the sweep; a load with every gate shut queues nothing.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HideoutLoadRelock : LF_Test
 {
 	protected static const string SITE = "hideout-load-relock-site";

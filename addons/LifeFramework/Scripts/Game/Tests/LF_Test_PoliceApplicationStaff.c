@@ -1,6 +1,7 @@
 // red-proof: IsStaff returns true for every caller: '[LFTEST] SUMMARY tier=only passed=0 failed=1 total=1', restored (2026-11-14)
 // red-proof (level column, 2026-11-14): with ReadRoster taking the whole trimmed line as the uid: '[LFTEST] SUMMARY tier=only passed=0 failed=1 total=1', restored
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceApplicationStaff : LF_Test
 {
 	override string GetName()

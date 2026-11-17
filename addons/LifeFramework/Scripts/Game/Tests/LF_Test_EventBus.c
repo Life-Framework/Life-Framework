@@ -3,6 +3,7 @@
 // tier: LOGIC
 //! The server event bus: publish and subscribe, subscription order, one failing or null
 //! subscriber not stopping the rest, and unsubscribing during a publish.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_EventBus : LF_Test
 {
 	override string GetName()

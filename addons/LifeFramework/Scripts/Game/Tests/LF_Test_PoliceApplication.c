@@ -1,5 +1,6 @@
 // red-proof: make CanApprove return true for a non-admin; the "non-admin cannot approve" assertion fails.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceApplication : LF_Test
 {
 	override string GetName()

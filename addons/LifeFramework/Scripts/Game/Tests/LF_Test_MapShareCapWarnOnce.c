@@ -5,6 +5,7 @@
 //! wait" warning on every sweep, every 5 s for the rest of the session. It is logged once, when the player first
 //! goes over the cap, and again only after they dropped under it and went over once more.
 //! Pure script: one fixture player, EVERYONE rows, and the sweep driven by hand (RefreshAll).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapShareCapWarnOnce : LF_Test
 {
 	protected static const int PLAYER = 1;

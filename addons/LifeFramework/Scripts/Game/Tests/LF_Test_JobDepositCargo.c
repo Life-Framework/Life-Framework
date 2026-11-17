@@ -4,6 +4,7 @@
 //! A restart refunds a held cargo deposit and takes that run's cargo out of the player's saved carried
 //! snapshot, so the player never keeps both (#2481). A cargo no longer carried is just refunded; a stack
 //! loses one; a fuel run takes a fuel can, not a parcel; a row whose job is unknown looks for either kind.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobDepositCargo : LF_Test
 {
 	protected static const string COURIER = "job-cargo-courier";

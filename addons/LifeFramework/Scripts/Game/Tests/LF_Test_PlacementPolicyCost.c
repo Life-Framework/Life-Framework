@@ -5,6 +5,7 @@
 //! nothing; a player who cannot pay is refused with the reason and keeps their cash; a set whose spawn fails
 //! gives the cost back; a refundable set refunds once to the payer on pick-up, and nothing to a bystander
 //! who picks it up. Cones on open GridWorld ground at the annex gate, like LF_Test_PlacementComposition.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementPolicyCost : LF_Test
 {
 	protected static const ResourceName MISSING = "{0000000000002448}Prefabs/LF_Test/NoSuchPlacementPiece.et";

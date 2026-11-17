@@ -7,6 +7,7 @@
 //! its last credit to the account's job now, caps a wall-clock jump and stops on disconnect. The
 //! counts come back after the store is wiped, a second load gives the same counts, and a version
 //! 25 save leaves the live counts alone. The test puts back what it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_PlaytimePersist : LF_Test
 {
 	protected static const string UID = "playtime-save-uid";

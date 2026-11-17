@@ -3,6 +3,7 @@
 // tier: WORLD
 //! #2159: one sip of beer quenches thirst and impairs the drinker. The engine takes one consumable
 //! effect per item, so the impair effect carries a thirst amount and applies it itself.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DrinkQuenches : LF_Test
 {
 	static const ResourceName BEER = "{4CBB1F9A04D15772}Prefabs/Items/Drinks/BeerBottle.et";

@@ -3,6 +3,7 @@
 // tier: LOGIC
 //! A carried prop's per-frame work (#2339): the give-up counter counts frames missing in a row (a good
 //! frame resets it), and a walker that is not rendered or is past the view distance is not hung.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CarriedPropCull : LF_Test
 {
 	override string GetName()

@@ -7,6 +7,7 @@
 //! when the reader can pay, otherwise the line says what is missing. Cars up to the cash ceiling
 //! are paid in cash, dearer ones from the bank.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehicleLotSheet : LF_Test
 {
 	override string GetName()

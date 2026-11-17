@@ -3,6 +3,7 @@
 //! houses/door-auto-close (#2472): on a locked house, anyone may close an open door but only the owner
 //! and key holders may open it, and a door left open closes itself once the delay has run. An unlocked
 //! house's open door stays open. The close tick is called directly; nothing waits.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HouseDoorAutoClose : LF_Test
 {
 	protected static const ResourceName DOOR = "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et";

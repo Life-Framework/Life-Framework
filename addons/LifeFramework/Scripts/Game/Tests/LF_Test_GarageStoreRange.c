@@ -5,6 +5,7 @@
 
 // tier: LOGIC
 //! Storing a vehicle requires the vehicle, not only the player, at the garage.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_GarageStoreRange : LF_Test
 {
 	override string GetName()

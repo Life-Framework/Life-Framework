@@ -4,6 +4,7 @@
 //! in the stores a load just filled (LF_PersistenceKeep.ApplyAfterLoad). Cash, carried gear, jail
 //! and licences here; survival and wanted, which live on the game mode, ride the real save path in
 //! persistence/switches. The test puts back every store it touched.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PersistSwitches : LF_Test
 {
 	protected static const string OWNER_A = "test-persist-switch-a";

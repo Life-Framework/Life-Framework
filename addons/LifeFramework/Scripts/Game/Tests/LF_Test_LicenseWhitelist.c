@@ -2,6 +2,7 @@
 // (or drop a POLICE_* case) and run `tools\cli test --tier fast`; the mapping
 // assertions fail.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_LicenseWhitelist : LF_Test
 {
 	override string GetName()

@@ -4,6 +4,7 @@
 
 // tier: LOGIC
 //! Lock label per state, sort order below Get in, occupant key permission, Store-in-garage offer.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehicleLockPolish : LF_Test
 {
 	override string GetName()

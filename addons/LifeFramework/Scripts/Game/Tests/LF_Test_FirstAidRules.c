@@ -4,6 +4,7 @@
 //! The pure rules of first aid on a downed player (LF_FirstAid): the cap trims what is added and
 //! never takes time away, only medics add time when config says medic only, and morphine (or any
 //! unknown kind) adds nothing.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FirstAidRules : LF_Test
 {
 	override string GetName()

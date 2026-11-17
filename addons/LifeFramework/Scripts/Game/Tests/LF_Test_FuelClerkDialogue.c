@@ -8,6 +8,7 @@
 //! robbed only through the attendant (its world action hidden and refused), and an unarmed
 //! character is refused before anything is reported. The test spawns its own attendant and till,
 //! the prefabs the fuel station places, on an empty annex spot.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FuelClerkDialogue : LF_Test
 {
 	static const ResourceName CLERK = "{9FF2685A41D86574}Prefabs/Characters/Npcs/LF_FuelClerk.et";

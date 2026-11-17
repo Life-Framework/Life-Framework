@@ -7,6 +7,7 @@
 //! so the test logs it instead of asserting it. A real remote owner (a joined client's body)
 //! is the engine table's "routed to the owner client" case and needs a two-process session to observe.
 //! Findings: docs/architecture/rpc-routing.md.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RpcRoutingNotOwned : LF_Test
 {
 	override string GetName()

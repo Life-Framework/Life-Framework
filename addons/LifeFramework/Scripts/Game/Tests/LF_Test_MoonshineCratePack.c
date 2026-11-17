@@ -6,6 +6,7 @@
 //! The step is checked in the shipped config; the bench of the grid cell `slice-2441` is driven through the
 //! server methods the held actions call: loading takes the bottles, work finishes the batch, collecting
 //! gives the crate. The bottle and the crate both stay chain goods for an officer's search (#419).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MoonshineCratePack : LF_Test
 {
 	protected static const string BENCH = "Grid_slice_2441_Bench";

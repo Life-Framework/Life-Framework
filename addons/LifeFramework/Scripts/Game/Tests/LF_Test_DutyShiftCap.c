@@ -3,6 +3,7 @@
 //! police/duty-shift-cap (#2416): duty pay and rank count at most dutyShiftMaxSeconds of one shift
 //! (an AFK officer stops earning), a disconnect stops the clock so offline time is never counted,
 //! and a returning officer's clock restarts inside the same shift cap.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DutyShiftCap : LF_Test
 {
 	protected static const string AFK = "duty-cap-afk";

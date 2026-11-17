@@ -8,6 +8,7 @@
 // resolve at build time (the resource scan flags any orphan .edds.meta).
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MoneyRework : LF_Test
 {
 	override string GetName()

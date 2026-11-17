@@ -4,6 +4,7 @@
 //! it jumps clean over the 30 cm strip between two ticks, a path beside it or short of it is not;
 //! the strip runs across a nearby road on the officer's side, else where the officer faces; the
 //! ground rule is the placement tool's 0.25 m; the laid transform follows a slope.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SpikeStripGeometry : LF_Test
 {
 	override string GetName()

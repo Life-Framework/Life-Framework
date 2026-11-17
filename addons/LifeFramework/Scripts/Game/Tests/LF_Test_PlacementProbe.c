@@ -6,6 +6,7 @@
 //! trusting mesh bounds. On a table spawned on open ground south of the DebugWorld town (310, 100):
 //! a ray down finds the table top and names the table, a ray from the side stops at its edge, and a
 //! ray through open air reports its full length and no hit.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementProbe : LF_Test
 {
 	protected static const ResourceName TABLE = "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et";

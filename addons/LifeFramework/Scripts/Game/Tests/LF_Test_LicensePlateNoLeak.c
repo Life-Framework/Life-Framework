@@ -2,6 +2,7 @@
 
 //! An owned car keeps one plate: the plate EOnInit issued is released when the owner's plate replaces it.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LicensePlateNoLeak : LF_Test
 {
 	protected static const ResourceName FIXTURE_PREFAB = "{8821AF528FA28E8C}Prefabs/Vehicles/Core/Vehicle_Test_PlateFixture.et";

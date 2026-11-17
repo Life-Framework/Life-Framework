@@ -5,6 +5,7 @@
 // skips the sale in RedProof() and the sale assertions fail. Observed 2026-11-17:
 // `RED-OK trader/server-sale (fails with the hook on, 36 assertions)`. Green in the same session.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TraderServerSale : LF_Test
 {
 	protected static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";

@@ -4,6 +4,7 @@
 // tier: LOGIC
 //! Ore rock arithmetic: pickaxe damage piles up into pieces, the rock is spent
 //! after its row's piece count, and grows back whole.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OreYield : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

@@ -3,6 +3,7 @@
 //! The restart schedule (#1264): from a clock (seconds since local midnight) the schedule answers the
 //! seconds to the next restart and every warning time still ahead, the restart itself last. Times are
 //! `restarts.times`, leads `restarts.warningMinutes`. Pure: the clock is an argument.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestartWarnings : LF_Test
 {
 	override string GetName()

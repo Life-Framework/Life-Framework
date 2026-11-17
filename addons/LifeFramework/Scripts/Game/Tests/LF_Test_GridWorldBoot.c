@@ -8,6 +8,7 @@
 //! one fixture per legacy annex layer by name, and ground under the gate spawn. In TestLogic none of
 //! these exist; in DebugWorld all but the gate spawn do until W6 strips the annex from it.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_GridWorldBoot : LF_Test
 {
 	override string GetName()

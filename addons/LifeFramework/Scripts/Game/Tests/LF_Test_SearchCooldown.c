@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! Police search cooldown (#472): the same target cannot be searched again inside the configured
 //! window, so repeating a search cannot beat the find chance. Another target is unaffected.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SearchCooldown : LF_Test
 {
 	override string GetName()

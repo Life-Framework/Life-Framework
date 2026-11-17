@@ -5,6 +5,7 @@
 //! logout rule (LF_DisconnectRules). A stun from someone who is not an on-duty officer stamps nothing.
 //! The stun and stun-buzz statics clear at world end (review item 27): both reset hooks empty the
 //! counters and the playing map.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_StunContact : LF_Test
 {
 	protected static const string OFFICER_UID = "stun-contact-officer";

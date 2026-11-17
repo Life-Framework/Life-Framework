@@ -5,6 +5,7 @@
 //! Changing the locks revokes every key cut before (#2411): the owner pays, the old key stops
 //! opening the car (in the world and after a garage round trip), the new key opens it, a stranger
 //! cannot do it, and the vehicle identifier that plates and records use stays the same.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VehicleChangeLocks : LF_Test
 {
 	protected static const string OWNER = "change-locks-owner";

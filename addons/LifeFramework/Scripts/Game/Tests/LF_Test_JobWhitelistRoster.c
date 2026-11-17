@@ -3,6 +3,7 @@
 //! whitelist/job-roster (#2577): the police job and licence checks read the faction roster by account
 //! uid. An account on the POLICE roster passes with its second character active (the character key is
 //! not the roster key); an account off it fails; the old per-job list still passes, read only.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JobWhitelistRoster : LF_Test
 {
 	protected static const string ROSTER = "$profile:TestResults/job-whitelist-roster.txt";

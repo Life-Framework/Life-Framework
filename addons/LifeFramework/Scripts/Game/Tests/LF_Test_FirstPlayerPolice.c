@@ -7,6 +7,7 @@
 //! (LF_MissionHeader.m_bLF_FirstPlayerPolice), so the host can clock in without editing a file.
 //! A real server leaves the flag off; a roster that already has an officer is never touched.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FirstPlayerPolice : LF_Test
 {
 	override string GetName()

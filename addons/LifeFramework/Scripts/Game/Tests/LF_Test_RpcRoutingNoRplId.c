@@ -6,6 +6,7 @@
 //! - the replicated probe prefab spawned local-only (SpawnEntityPrefabLocal) on the server still gets a
 //!   valid RplId and routes exactly like case (a): on the server, "local-only" is not "unregistered".
 //! Findings: docs/architecture/rpc-routing.md.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RpcRoutingNoRplId : LF_Test
 {
 	static const ResourceName NO_RPL_PREFAB = "{EB67B516E1C0A23D}Prefabs/Debug/LF_TestRpcProbe_NoRpl.et";

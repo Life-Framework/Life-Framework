@@ -3,6 +3,7 @@
 // Restored; green.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SirenMode : LF_Test
 {
 	override string GetName()

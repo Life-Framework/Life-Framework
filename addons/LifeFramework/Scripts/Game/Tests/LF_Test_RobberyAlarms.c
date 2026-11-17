@@ -3,6 +3,7 @@
 //! Robbery alarms (#740): which alarm kind a robbery sounds, with no world. The kind the robbed thing names
 //! wins; otherwise the kind that lists the offence; otherwise none (the plain siren). A kind's loud twin is
 //! used when nobody is on duty, and a kind with no loud twin falls back to its normal alarm.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RobberyAlarms : LF_Test
 {
 	override string GetName()

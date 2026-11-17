@@ -8,6 +8,7 @@
 //! the shared table Configs/Map/Rules/areas.cases.json, which tools/map/rules/areas.mjs (the
 //! emulator's twin) runs too, so the two cannot drift. Merge cases need game state, so they are here.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapAreas : LF_Test
 {
 

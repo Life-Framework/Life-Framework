@@ -3,6 +3,7 @@
 //! houses/identifier-init (review 2026-11-17): a spawned building with LF_HouseManagerComponent gets a
 //! house identifier at init. The component never asked for EOnInit (no SetEventMask), so the identifier
 //! stayed empty, SyncDoors never ran, and no key could ever match the building's doors.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HouseIdentifierInit : LF_Test
 {
 	protected static const ResourceName BUILDING = "{74676598DF38F201}Prefabs/Structures/Core/EL_Building_Base.et";

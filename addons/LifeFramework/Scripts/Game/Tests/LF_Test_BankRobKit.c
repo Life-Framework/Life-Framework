@@ -3,6 +3,7 @@
 //! The bank robbery kit (#605): after one grant the character holds every item the vault tool
 //! check accepts (drill, keycard, fence charge), a vault that wants any one of them passes the
 //! offer check, a second grant adds nothing, and the placed stand sits in the playtest town.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_BankRobKit : LF_Test
 {
 	override string GetName()

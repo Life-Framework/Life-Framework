@@ -10,6 +10,7 @@
 //! signs-board-quests cell (the town's second one is at the village police station, #1004). Both are breach targets, so each carries its own id; sharing the
 //! prefab default made the second register refuse with "BreachTarget 'LF_EvidenceLocker' is already
 //! placed" and left that locker unbreachable.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacesEvidenceLocker : LF_Test
 {
 	protected static const string LOCKER_ID = "EvidenceLocker";

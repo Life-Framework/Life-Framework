@@ -3,6 +3,7 @@
 //! #1965: a new character's first spawn lands on a free first-spawn bed, the next new character on
 //! the next bed, and a spawn that is not a first spawn (a respawn after a death, a rejoin) or a
 //! world with every bed taken takes the normal spawn point.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FirstSpawnBed : LF_Test
 {
 	static const ResourceName BED_PREFAB = "{15468371DAC524FC}Prefabs/Medic/LF_FirstSpawnBed.et";

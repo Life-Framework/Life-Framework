@@ -3,6 +3,7 @@
 //! Chop shop collect guard (crime review 2026-11-17): COLLECT used to delete the car even when
 //! the worker's full inventory took none of the payout, and even with someone sitting inside.
 //! The collect rule now keeps the car in both cases.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ChopShopCollect : LF_Test
 {
 	override string GetName()

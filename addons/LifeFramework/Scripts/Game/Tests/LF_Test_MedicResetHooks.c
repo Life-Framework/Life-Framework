@@ -6,6 +6,7 @@
 //! LF_TreatmentBills, LF_ReviveAnim, LF_HospitalRespawn (and LF_NewLifeRule through it) had reset
 //! functions that only tests called, so a Workbench play restart or a mission change kept the last
 //! world's bills, pending wakes, wristbands and a stuck debt-sweep flag.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MedicResetHooks : LF_Test
 {
 	override string GetName()

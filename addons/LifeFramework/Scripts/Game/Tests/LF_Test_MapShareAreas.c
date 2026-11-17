@@ -33,6 +33,7 @@ class LF_MapShareAreaTestSink : LF_Test_MapShareSink
 }
 
 //------------------------------------------------------------------------------------------------
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapShareAreas : LF_Test
 {
 	protected static const int PLAYER = 1;

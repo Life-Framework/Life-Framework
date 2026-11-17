@@ -4,6 +4,7 @@
 //! Roadmap_Lockpick_Car) pays what its prefab is worth, $300 for the S105 (#611, #415, #601). It paid
 //! the unlisted default (800 x 30 = 240) because the yard read the prefab name off the entity data
 //! raw, which a layer override does not carry.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ChopShopPlacedCar : LF_Test
 {
 	override string GetName()

@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! Officer search for chain goods (#419): only goods of a chain flagged contraband are ever found,
 //! never the input or an unflagged chain's output; a bigger load is harder to hide.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ChainSearch : LF_Test
 {
 	protected static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

@@ -3,6 +3,7 @@
 //! The town board's cards and the waypoint, with no world: which cards show and in which slot, what a
 //! card says about a place it cannot find, the compass and distance words, the slot geometry the
 //! prefab's contexts follow, and the waypoint's set, replace, toggle, arrive and refuse rules.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_TownBoard : LF_Test
 {
 	override string GetName()

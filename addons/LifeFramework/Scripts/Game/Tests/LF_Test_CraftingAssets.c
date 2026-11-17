@@ -6,6 +6,7 @@
 // typo in one half. Restored; green. The README and file-existence checks live in
 // tools/validation/validate-crafting-assets.mjs, which runs in `tools\cli validate`.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CraftingAssets : LF_Test
 {
 	override string GetName()

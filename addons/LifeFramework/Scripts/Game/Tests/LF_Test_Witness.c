@@ -3,6 +3,7 @@
 //! The payphone witness (#266): a witness out of range gets no clothing and no plate, a near one
 //! gets the clothing and a longer plate fragment than a mid-range one, someone who never stood in
 //! sight can say nothing, a thing is said once, and the statement reaches the board entries.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Witness : LF_Test
 {
 	protected static const string NEAR_UID = "witness-near";

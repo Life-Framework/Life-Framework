@@ -4,6 +4,7 @@
 //! A fixture owner file with all three reads back every value through LF_ConfigService; a config
 //! without them gives no restarts, an empty webhook URL and the vanilla day cycle; a bad value keeps
 //! the shipped one.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_M4ConfigSections : LF_Test
 {
 	static const string FIXTURE = "{\"schemaVersion\":1,\"restarts\":{\"times\":[\"04:00\",\"16:30\"],\"warningMinutes\":[30,10,2]},\"staff\":{\"webhookUrl\":\"https://example.invalid/hook\"},\"dayCycle\":{\"mode\":\"accelerated\",\"dayLengthMinutes\":120,\"nightSpeed\":2.5,\"startHour\":6.5,\"clockOffsetMinutes\":-30}}";

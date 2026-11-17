@@ -3,6 +3,7 @@
 //! organization/fund-overflow (review 2026-11-17): the fund is an int and a deposit added to it with no
 //! ceiling, so a fund near int.MAX wrapped negative on the next deposit. A deposit that would pass the
 //! ceiling is refused and the fund is unchanged (LF_OrganizationPlayer.DepositCash then gives the cash back).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OrgFundOverflow : LF_Test
 {
 	protected static const string FOUNDER = "org-overflow-founder";

@@ -5,6 +5,7 @@
 //! reads (a changed config price changes the charge; the caller never names a price), listed
 //! stolen goods sell at the stock's share of the street value, an unlisted item sells only once it
 //! is flagged stolen, and the fence never buys back his own tools.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FenceStockTrade : LF_Test
 {
 	protected static const ResourceName LOCKPICK = "{6B1D3F5A92C47E08}Prefabs/Items/Fence/LF_Lockpick.et";

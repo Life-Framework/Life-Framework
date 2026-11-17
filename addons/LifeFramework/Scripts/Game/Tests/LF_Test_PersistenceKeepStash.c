@@ -5,6 +5,7 @@
 //! officer on duty at save time does not get pre-wipe gear back at clock-out; with keepCash off no
 //! slot keeps cash. The duty kits keep their gear (the armory book holds their serials). An officer
 //! whose stash was dropped clocks out into the civilian kit and can clock in and draw a kit again.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PersistenceKeepStash : LF_Test
 {
 	protected static const string UID = "test-persist-keep-stash";
