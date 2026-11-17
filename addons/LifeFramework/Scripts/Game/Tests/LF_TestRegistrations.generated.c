@@ -192,6 +192,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DispatchNamesPlace(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DoorLock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Downed(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DownedLogRate(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DownedPatient(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DownedPatientWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DownedRules(), LF_TestTier.LOGIC);
