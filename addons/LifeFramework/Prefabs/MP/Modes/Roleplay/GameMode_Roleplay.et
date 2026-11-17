@@ -36,6 +36,12 @@ LF_GameModeRoleplay {
   }
   SCR_HintManagerComponent "{59E8CC4E575D1802}" {
   }
+  SCR_MapConfigComponent "{5BB3D4E08ABD6F70}" {
+   m_sGadgetMapConfigPath "{92FEABB35503403C}Configs/Map/LF_MapFullscreen.conf"
+  }
+  SCR_MapMarkerManagerComponent "{DA4FE200585DAAF4}" {
+   m_sMarkerCfgPath "{F5D82559BE078538}Configs/Map/LF_MapMarkerConfig.conf"
+  }
   SCR_CommandingManagerComponent "{629426C491CF5D8E}" {
    m_sCommandsConfigPath "{EF8976BF510C09A2}Configs/Emote/LF_EmoteCommands.conf"
   }
