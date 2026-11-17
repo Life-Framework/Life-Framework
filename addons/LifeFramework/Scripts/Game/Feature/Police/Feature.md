@@ -14,9 +14,8 @@ that works from anywhere.
 
 Rung 1 for duty/arrest/confiscate; rung 3 target for the station terminal.
 
-Today: `LF_DutyAction` toggles the on-duty flag; `LF_PoliceMenu` is the duty NPC's menu (Close only; the arrest RPC is server-guarded); `LF_ConfiscateAction` deletes
-weapons from the nearest wanted player within 5 m; `LF_OpenPoliceMenuAction`
-is the entry point.
+Today: `LF_DutyAction` toggles the on-duty flag; the duty NPC has no menu (#2535); the arrest RPC (`LF_AskPoliceArrest`) stays server-guarded for the planned wanted-list sheet; `LF_ConfiscateAction` deletes
+weapons from the nearest wanted player within 5 m.
 
 ## V1 (shippable)
 
@@ -63,7 +62,7 @@ is the entry point.
   On-duty officers
   hear a vanilla radio chirp, then read a dispatch line with the place and the
   description, never a name. The wanted board lists recent dispatches for police.
-- `LF_PoliceMenu` — arrest entry point (no button calls it yet, #2509); the wanted list moved to the board.
+- The duty NPC's menu is gone (#2535); `SCR_ChimeraCharacter.LF_AskPoliceArrest` stays for the wanted-list sheet; the wanted list moved to the board.
 - Fine as a paper ticket (M1-19): Write ticket (player interaction `fine` slot)
   opens the ticket pad; the holder carries `Prefabs/Items/Roleplay/FineTicket.et`
   and pays it in carried cash at the desk punch clock (Pay ticket). Deadlines

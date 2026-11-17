@@ -410,6 +410,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapMarksOffscreen(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapMarksPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_MapMarksRateBucket(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapMarksUploadGeneration(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPlacesKnown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPlacesLayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPoiRoleAudience(), LF_TestTier.LOGIC);
@@ -422,6 +423,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapShareMemberKey(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareNotPersonal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShares(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapShareSweepSlices(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapWaypoint(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MedicDutyDesk(), LF_TestTier.WORLD);
@@ -475,6 +477,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PerfLife128(), LF_TestTier.PERF);
 		manager.Register(new LF_Test_PerfMap(), LF_TestTier.PERF);
 		manager.Register(new LF_Test_PeriodCars(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PersistenceKeepStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PersistLastPosition(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PersistOwnersStaticReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PersistStoreStaticReset(), LF_TestTier.WORLD);
@@ -531,7 +534,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceCallPay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceContactStamp(), LF_TestTier.LOGIC);
-		manager.Register(new LF_Test_PoliceMenuNoDeadButtons(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PoliceDutyNpcNoMenu(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PolicePromoteRung(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceRankPermissions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankTable(), LF_TestTier.LOGIC);
