@@ -1211,6 +1211,13 @@
           "default": 168,
           "minimum": 0,
           "maximum": 100000
+        },
+        "armoryCooldownMinutes": {
+          "type": "integer",
+          "description": "Minutes of real time between two armory kits for one officer. Saved, so clocking out and a restart do not reset it. At least 1: the spike strip and roadblock kit carry no serial, so only the cooldown limits them",
+          "default": 120,
+          "minimum": 1,
+          "maximum": 1440
         }
       },
       "additionalProperties": false,

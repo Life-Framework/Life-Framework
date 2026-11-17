@@ -1,8 +1,8 @@
 // tools/town/fit.mjs - `tools\cli town fit <place> <slot>`: apply a slot's kit to the building the approved mapping names
 // (docs/architecture/everon-world.md 3.3 and 3.4, card #2205).
 //
-//   town fit <place> <slot> [--dry] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path] [--destruction-guid {GUID}]
-//            [--dossier f] [--mapping f] [--template-file f] [--kits-dir d] [--out-dir d]
+//   town fit <place> <slot> [--dry] [--check] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path]
+//            [--destruction-guid {GUID}] [--dossier f] [--mapping f] [--template-file f] [--kits-dir d] [--out-dir d]
 //
 // Reads  docs/everon/places/<place>/dossier.json and mapping.json, tools/town/templates/<kind>.json, tools/town/kits/<kit>.json
 // Writes addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_<place>_<slot>.layer   (pack content, never a core layer)
@@ -10,7 +10,13 @@
 // Then runs `audit placement --strict --world MainWorld --layer <file>` and takes the `look` pictures (--no-audit, --no-look skip).
 //
 // No step types a coordinate: every number comes from the dossier (the building's centre, floor and entrance) and the kit's
-// building-local offsets (`kit apply`). The kit turns so its `front` faces the entrance, in quarter turns from the building's yaw.
+// building-local offsets (`kit apply`). A host that shows the kit's own building model (the .xob of the kit's
+// `building.vanilla`) takes the kit at its origin and yaw: the kit's offsets are already in that frame. Any other host takes
+// it at its footprint centre and floor, turned so the kit's `front` faces the entrance, in quarter turns from the building's yaw.
+// Then every row is seated on the HOST, read offline from its model colliders (tools/town/seat.mjs): a floor row on the
+// host's top under it, a wall-mounted row on the nearest wall plane along its facing; a row that still cuts the shell
+// refuses the fit (--allow-clip writes it anyway). `--check` prints the per-row corrections against the layer on disk and
+// writes nothing.
 // A slot's layer holds the slot's LF_PlaceComponent marker(s) (kind from the template, id `<place>.<slot>`) and one entity per kit row.
 // A slot whose mapping entry is a free plot (D9) also gets the purpose-built building, written with its destruction off (D15).
 // A vanilla building stands in the terrain, not in a layer, so a layer cannot switch its destruction off: the slot's place
@@ -24,15 +30,16 @@ import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { applyKit, checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
+import { sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
 
-export const help = "fit <place> <slot> [--dry] [--no-audit] [--no-look]   apply the slot's kit into its mapped building: Place_<place>_<slot>.layer (marker + kit rows) and a claim";
+export const help = "fit <place> <slot> [--dry] [--check] [--allow-clip] [--no-audit] [--no-look]   apply the slot's kit into its mapped building, rows seated on the host's floors and walls: Place_<place>_<slot>.layer (marker + kit rows) and a claim";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const LAYER_DIR = "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers";
 export const CLAIMS_DIR = "tools/town/claims";
 const SLUG_RX = /^[a-z0-9][a-z0-9-]*$/;
 const REF_RE = /^\{([0-9A-Fa-f]{16})\}(.+)$/;
-const FLAGS = new Set(["dry", "no-fetch", "no-audit", "no-look", "building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir", "help"]);
+const FLAGS = new Set(["dry", "check", "allow-clip", "no-fetch", "no-audit", "no-look", "building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir", "help"]);
 const WITH_VALUE = new Set(["building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir"]);
 const r3 = (n) => Math.round(n * 1000) / 1000;
 const norm = (d) => {
@@ -51,7 +58,14 @@ const guidOf = (...parts) => createHash("sha1").update(parts.join("|")).digest("
 
 // Pure: where the kit sits in a building. x, z and the floor come from the dossier; the yaw turns the kit's front side to
 // the entrance, in quarter turns from the building's own yaw (a kit with no front keeps the building's yaw).
-export function anchorFor(building, kit) {
+// `base` is the height kit offsets count from: a kit's row offsets already hold its own floor (`anchoring.floorY`), so
+// base = the host floor - that floor (adding both put every row one floor height too high: 0.2 m on the island shops, #2369).
+// sameShell: the host shows the kit's own building model, so the kit sits at the host's origin and yaw, unturned.
+export function anchorFor(building, kit, { sameShell = false } = {}) {
+  if (sameShell) {
+    const fy = r3(building.y + (building.firstFloor ?? 0));
+    return { x: building.x, y: fy, z: building.z, yaw: r3(norm(building.yaw ?? 0)), base: building.y, marker: [building.x, fy, building.z], note: "the host shows the kit's own building model: the kit at its origin and yaw" };
+  }
   const x = building.footprint?.cx ?? building.x;
   const z = building.footprint?.cz ?? building.z;
   const y = r3(building.y + (building.firstFloor ?? 0)); // the scout's first-floor height above the building origin
@@ -66,7 +80,7 @@ export function anchorFor(building, kit) {
     yaw = byaw + Math.round(norm(raw - byaw) / 90) * 90;
     note = `kit front ${kit.anchoring.front} turned to the entrance`;
   }
-  return { x, y, z, yaw: r3(norm(yaw)), marker: [x, y, z], note };
+  return { x, y, z, yaw: r3(norm(yaw)), base: r3(y - (kit.anchoring?.floorY ?? 0)), marker: [x, y, z], note };
 }
 
 // ------------------------------------------------------------------ prefab component guids (config overrides)
@@ -316,7 +330,9 @@ export function planFit(opts, ctx = {}) {
   // Claims: origin/main, open PRs, sibling worktrees. A read that fails is a note, never a block.
   const notes = [];
   const taken = [];
-  for (const r of [mainTownClaims(exec, { fetch: opts.fetch !== false }), openPrTownClaims(exec, { branch: opts.branch ?? null }), worktreeTownClaims(exec, root)]) {
+  // `--check` writes nothing, so it judges a slot whatever claims it (the draft that holds the slot is what it checks).
+  const claimReads = opts.skipClaims ? [] : [mainTownClaims(exec, { fetch: opts.fetch !== false }), openPrTownClaims(exec, { branch: opts.branch ?? null }), worktreeTownClaims(exec, root)];
+  for (const r of claimReads) {
     taken.push(...r.claims);
     if (r.note) notes.push(r.note);
   }
@@ -334,13 +350,13 @@ export function planFit(opts, ctx = {}) {
     if (!opts.buildingPrefab || !REF_RE.test(opts.buildingPrefab)) return (errors.push(`slot ${slotId} is a free plot: the purpose-built building must be resolved first (asset_search) and passed as --building-prefab {GUID}path`), { ...fail(), notes });
     const guid = opts.destructionGuid ?? componentGuid(opts.buildingPrefab, "SCR_DestructionMultiPhaseComponent", root, 6, ctx.readGame);
     if (!guid) return (errors.push(`cannot find the SCR_DestructionMultiPhaseComponent guid of ${opts.buildingPrefab}; pass --destruction-guid {GUID}`), { ...fail(), notes });
-    host = { x: plotE.x, y: plotE.ground ? r3((plotE.ground.min + plotE.ground.max) / 2) : plotE.y ?? 0, z: plotE.z, yaw: 0, entrances: [], footprint: null };
+    host = { x: plotE.x, y: plotE.ground ? r3((plotE.ground.min + plotE.ground.max) / 2) : plotE.y ?? 0, z: plotE.z, yaw: 0, entrances: [], footprint: null, prefab: opts.buildingPrefab };
     destruction = { mode: "layer-override", component: "SCR_DestructionMultiPhaseComponent" };
     out.push({ name: `Fit_${ident(place)}_${ident(slotId)}_Building`, ref: opts.buildingPrefab, coords: [host.x, host.y, host.z], yaw: 0, comps: [{ cls: "SCR_DestructionMultiPhaseComponent", guid: guid.replace(/[{}]/g, "").toUpperCase(), set: { Enabled: "0" } }] });
   }
 
-  const anchor = anchorFor(host, kit);
-  const rows = applyKit(kit, anchor.x, anchor.z, anchor.yaw, anchor.y);
+  const anchor = anchorFor(host, kit, { sameShell: Boolean(opts.sameShell) });
+  const rows = applyKit(kit, anchor.x, anchor.z, anchor.yaw, anchor.base ?? anchor.y);
 
   // The slot's markers: the first kind carries `<place>.<slot>`; each further kind is a marker of its own.
   const kinds = slot.places?.length ? slot.places : [];
@@ -387,11 +403,11 @@ export function planFit(opts, ctx = {}) {
       }
       comps.push({ cls: c.component, guid, set: c.set ?? {}, blocks });
     }
-    return { cls: src.class && /^\w+$/.test(src.class) ? src.class : "GenericEntity", name: `Fit_${ident(place)}_${ident(slotId)}_${ident(r.id)}`, ref: r.prefab, comps, coords: r.coords, yaw: r.yaw };
+    return { id: r.id, cls: src.class && /^\w+$/.test(src.class) ? src.class : "GenericEntity", name: `Fit_${ident(place)}_${ident(slotId)}_${ident(r.id)}`, ref: r.prefab, comps, coords: r.coords, yaw: r.yaw };
   });
 
   const layerName = layerNameOf(place, slotId);
-  const layerText = `${[...markers, ...out, ...rowEnts].map(entityText).join("\n")}\n`;
+  const layerText = renderLayer({ markers, out, rowEnts });
   const claim = {
     schema: 1,
     place,
@@ -405,7 +421,68 @@ export function planFit(opts, ctx = {}) {
     destruction,
     date: (ctx.now ? ctx.now() : new Date()).toISOString().slice(0, 10),
   };
-  return { ok: true, errors, warnings, notes, layerName, layerText, claimFile: claimFileOf(place, slotId), claim, anchor, rows };
+  return { ok: true, errors, warnings, notes, layerName, layerText, claimFile: claimFileOf(place, slotId), claim, anchor, rows, host, kit, ents: { markers, out, rowEnts } };
+}
+
+const renderLayer = ({ markers, out, rowEnts }) => `${[...markers, ...out, ...rowEnts].map(entityText).join("\n")}\n`;
+
+// The host prefab the dossier (or the --building-prefab of a plot) gives, before planFit runs; null when the slot has none.
+function hostRefOf(opts) {
+  const entry = opts.mapping?.slots?.[opts.slot];
+  if (!entry) return null;
+  if (entry.building) return opts.dossier?.buildings?.find((b) => b.id === entry.building)?.prefab ?? null;
+  return opts.buildingPrefab ?? null;
+}
+
+// planFit, then every row seated on the host (tools/town/seat.mjs) and the layer text rewritten from the seated rows.
+// ctx.shell is the reader (seat.mjs shellReader, or a selftest fixture); without one this is planFit. A row that still cuts
+// the host shell after the nudge fails the plan unless opts.allowClip.
+export async function planFitSeated(opts, ctx = {}) {
+  const reader = ctx.shell;
+  if (!reader) return planFit(opts, ctx);
+  const tmpl = opts.template?.slots?.find((s) => s.id === opts.slot);
+  const kit = tmpl ? opts.kits?.[tmpl.kit] : null;
+  const ref = hostRefOf(opts);
+  const same = kit && ref ? await sameShell(kit, ref, reader) : false;
+  const plan = planFit({ ...opts, sameShell: same }, ctx);
+  if (!plan.ok) return plan;
+  plan.anchor.sameShell = same;
+  if (!plan.host?.prefab) {
+    plan.warnings.push("the host has no prefab in the dossier: rows were not seated on it");
+    return plan;
+  }
+  const seat = await seatRows(plan.rows, plan.kit.rows, plan.host, { reader, allowClip: Boolean(opts.allowClip) });
+  plan.seat = seat;
+  if (!seat.host) {
+    plan.warnings.push(seat.note);
+    return plan;
+  }
+  const byId = new Map(plan.rows.map((r) => [r.id, r]));
+  for (const e of plan.ents.rowEnts) if (byId.has(e.id)) e.coords = byId.get(e.id).coords;
+  const skip = new Set(seat.skipped.map((r) => r.id));
+  plan.ents.rowEnts = plan.ents.rowEnts.filter((e) => !skip.has(e.id));
+  for (const r of seat.skipped) plan.warnings.push(`row ${r.id} ${r.skip}`);
+  for (const r of seat.furniture) plan.warnings.push(`row ${r.id} ${r.furniture}`);
+  plan.claim.rows = plan.ents.rowEnts.length;
+  plan.layerText = renderLayer(plan.ents);
+  for (const r of seat.unseated) plan.warnings.push(`row ${r.id}: ${r.notes.filter((n) => /^no /.test(n)).join("; ")}`);
+  const hostPath = String(plan.host.prefab).replace(/^\{[0-9A-Fa-f]{16}\}/, "");
+  for (const c of seat.clips) {
+    if (opts.allowClip) plan.warnings.push(`row ${c.id} ${c.clip.text} of the host ${hostPath} (written: --allow-clip)`);
+    else plan.errors.push(`row ${c.id} ${c.clip.text} of the host ${hostPath}; move it in the kit, or pass --allow-clip`);
+  }
+  if (plan.errors.length) plan.ok = false;
+  return plan;
+}
+
+// The coords of the Fit_ rows in a layer already on disk, by kit row id (for --check).
+export function layerCoords(text, place, slotId) {
+  const pre = `Fit_${ident(place)}_${ident(slotId)}_`;
+  const out = new Map();
+  for (const m of String(text).matchAll(/^\w+ (Fit_\w+)(?: : "[^"]+")? \{[\s\S]*?\n coords ([^\n]+)/gm)) {
+    if (m[1].startsWith(pre)) out.set(m[1].slice(pre.length), m[2].trim().split(/\s+/).map(Number));
+  }
+  return out;
 }
 
 // ------------------------------------------------------------------ CLI
@@ -426,7 +503,7 @@ function parseArgs(args) {
   return { flags, pos, bad };
 }
 
-const USAGE = "usage: tools\\cli town fit <place> <slot> [--dry] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path] [--destruction-guid {GUID}]";
+const USAGE = "usage: tools\\cli town fit <place> <slot> [--dry] [--check] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path] [--destruction-guid {GUID}]";
 const readJson = (f, what) => {
   if (!existsSync(f)) throw new Error(`no ${what}: ${f} does not exist`);
   return JSON.parse(readFileSync(f, "utf8"));
@@ -455,7 +532,34 @@ export function verifySteps(place, slotId, layerName, flags = {}) {
   return steps;
 }
 
-export async function main(args, { root = ROOT, run } = {}) {
+// `town fit --check`: per-row corrections, against the slot's layer on disk when there is one (a draft branch), else
+// against the kit's unseated positions. Writes nothing. Exit 1 on a clip or when the host cannot be read.
+function checkReport(plan, { root, place, slotId, layerFile }) {
+  const shown = relative(root, layerFile).replaceAll("\\", "/");
+  if (!plan.seat?.host) {
+    for (const e of plan.errors ?? []) console.log(`REFUSE  ${e}`);
+    for (const w of plan.warnings ?? []) console.log(`warn  ${w}`);
+    console.log(`SUMMARY town-fit check fail ${place}.${slotId}: ${plan.seat ? "the host's model could not be read" : `${(plan.errors ?? []).length} problem(s)`}; nothing written`);
+    return 1;
+  }
+  const written = existsSync(layerFile) ? layerCoords(readFileSync(layerFile, "utf8"), place, slotId) : null;
+  // the layer names a row by ident(id) (dashes become underscores); a row the layer lacks is judged against its unseated spot
+  const onDisk = written ? new Map(plan.seat.rows.map((r) => [r.id, written.get(ident(r.id)) ?? r.from])) : null;
+  const a = plan.anchor;
+  console.log(`anchor ${a.x} ${a.y} ${a.z} yaw ${a.yaw} (${a.note}); host model ${plan.seat.host.mesh}`);
+  console.log(onDisk ? `corrections against ${shown}:` : "no layer on disk: corrections against the kit's unseated positions:");
+  for (const l of seatReport(plan.seat, { against: onDisk })) console.log(l);
+  for (const w of plan.warnings ?? []) console.log(`warn  ${w}`);
+  const moved = plan.seat.rows.filter((r) => {
+    const was = onDisk?.get(r.id) ?? r.from;
+    return Math.hypot(...r.to.map((v, i) => v - was[i])) > 0.02;
+  }).length;
+  const clips = plan.seat.clips.length;
+  console.log(`SUMMARY town-fit check ${clips ? "fail" : "ok"} ${place}.${slotId}: ${plan.seat.rows.length} row(s), ${moved} to correct, ${clips} clip(s)${onDisk ? "" : " (no layer on disk)"}; nothing written`);
+  return clips ? 1 : 0;
+}
+
+export async function main(args, { root = ROOT, run, shell: ctxShell = null } = {}) {
   const { flags, pos, bad } = parseArgs(args);
   if (flags.help) {
     console.log(USAGE);
@@ -477,7 +581,7 @@ export async function main(args, { root = ROOT, run } = {}) {
   })();
 
   // Only a town-draft-<place>-<slot> worktree writes an island layer (T4 enforces it too); --dry and --out-dir are for trying and tests.
-  if (!flags.dry && !flags["out-dir"] && !new RegExp(`^ws/town-draft-${place}-${slotId}$`).test(branch ?? "")) {
+  if (!flags.dry && !flags.check && !flags["out-dir"] && !new RegExp(`^ws/town-draft-${place}-${slotId}$`).test(branch ?? "")) {
     console.log(`REFUSE  town fit writes an island layer only from the worktree ws/town-draft-${place}-${slotId} (this is ${branch ?? "unknown"}); create it with tools\\cli wt new town-draft-${place}-${slotId}, or pass --dry`);
     return 1;
   }
@@ -495,11 +599,14 @@ export async function main(args, { root = ROOT, run } = {}) {
       const kf = join(kitsDir, `${entry.kit}.json`);
       if (existsSync(kf)) kits[entry.kit] = readJson(kf, "kit");
     }
-    plan = planFit({ place, slot: slotId, dossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] }, { root, run, readGame: await gameReader() });
+    const shell = ctxShell ?? shellReader(root);
+    const fitOpts = { place, slot: slotId, dossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
+    plan = await planFitSeated(fitOpts, { root, run, readGame: await gameReader(), shell });
   } catch (e) {
     console.log(`REFUSE  ${e.message}`);
     return 1;
   }
+  if (flags.check) return checkReport(plan, { root, place, slotId, layerFile: join(resolve(root, flags["out-dir"] ?? LAYER_DIR), layerNameOf(place, slotId)) });
   for (const n of plan.notes ?? []) console.log(`note  ${n}`);
   for (const w of plan.warnings ?? []) console.log(`warn  ${w}`);
   if (!plan.ok) {

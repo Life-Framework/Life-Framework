@@ -484,19 +484,28 @@
   patrol". A refusal logs `[LFDebug:Police]` and toasts the promoter `#EL-Rank_PromoteNeedsHigher`. The armory
   action's server check (`CanPromote`) hides Promote from a rank that can promote nobody;
   the nearest-officer pick prefers someone the promoter may promote. Test: `police/promote-rung`.
+- 🔨 **The station Promote action finds officers in play** (#2416, in-dev): `FindLowerRankNearby` read only bodies
+  tied by `BindOfficer`, which only tests call, so every real promote was refused "no lower-rank officer nearby". It
+  now lists the connected players (`LF_PromoteCandidates`: each controlled body's account id and position) within
+  `PROMOTE_RADIUS` (5 m). Test: `police/promote-finds-players`.
 - 🔨 The flagship kit (#1942, merged, in-dev; `LF_PoliceKit_Everon1989.conf`, listed after the ladder in the
   mission header): the pack overlay restates each rung's `m_aKit`. Patrol (index 0) draws the M9 and the spike strip;
   senior and every rung above draw the M16, the spike strip and the roadblock kit (`LF_Roadblocks.KIT`, added to the
   station catalog in `LF_PoliceRanks.Catalog`, since a kit line outside it is not issued). A civilian cannot draw.
   Test: `police/everon-kit`.
-- ✅ **One armory draw per duty shift** (2026-11-07): a draw
-  that hands out any kit line marks the account; a second draw logs
-  `draw refused: <uid> already drew a kit this shift` and shows
-  `#EL-Rank_AlreadyDrawn`. `OnDutyChanged` clears the mark. Test:
-  `security/police-abuse`.
+- 🔨 **One issued kit per officer, two hours apart, saved** (#2416, in-dev; replaces the 2026-11-07 per-shift
+  draw mark, which clocking out and in reset). `LF_ArmoryKits` books each kit's serialled lines (the M9, the M16)
+  to the officer's account (all its characters share one book) with the issue time (`System.GetUnixTime`). While any serial is out, the armory action issues
+  nothing: an officer carrying the kit hands it in (the items are removed, `#EL-Rank_KitReturned` or
+  `#EL-Rank_KitPartReturned`); with none of it carried the first use warns `#EL-Rank_KitOutstanding` and a second
+  use within 15 s reports it lost (each serial logged `[LFDebug:Armory] <uid> reported serial <s> lost`,
+  `#EL-Rank_KitReportedLost`). A new kit also waits `armoryCooldownMinutes` (police config, 120) of real time after
+  the last issue (`#EL-Rank_DrawCooldown`). The book is the `armorykits` payload (save version 45), so clock-out and
+  restart keep both. Plain lines (spike strip, roadblock kit) carry no serial and are not booked. Tests:
+  `police/armory-kit-cap`, `police/armory-kit-turn-in`, `police/armory-cooldown-persist` (with a `wt e2e` reload
+  check).
 - ✅ Rank, on-duty seconds, and unpaid duty seconds survive a restart (M1-10,
   `progression` payload, save version 7).
-- ⚠️ The shift draw mark is session state, so a restart allows one more draw.
 - ✅ **Arrest and escort are config, open to every officer** (2026-11-08, #165):
   `LF_PoliceConfig` (`{916BDC092C01B7D1}Configs/Police/LF_Police.conf`) sets the
   lowest rank that may arrest (`m_iArrestMinRank`) and escort

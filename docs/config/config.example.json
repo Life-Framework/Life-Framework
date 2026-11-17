@@ -175,7 +175,8 @@
     "spikeStripLifetimeSeconds": 600,
     "applyMinPlaytimeHours": 50,
     "applyRejectCooldownHours": 72,
-    "trialHours": 168
+    "trialHours": 168,
+    "armoryCooldownMinutes": 120
   },
   "respawn": {
     "wakeInHospital": true,

@@ -86,6 +86,9 @@ class LF_PoliceConfig
 	static const int DEFAULT_APPLY_MIN_PLAYTIME_HOURS = 50;
 	static const int DEFAULT_APPLY_REJECT_COOLDOWN_HOURS = 72;
 	static const int DEFAULT_TRIAL_HOURS = 168;
+	static const int DEFAULT_ARMORY_COOLDOWN_MINUTES = 120;
+	static const int ARMORY_COOLDOWN_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int ARMORY_COOLDOWN_MAX = 1440;	// lf-fixed: the schema limit, mirrors the attribute params
 
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)", params: "0 20")]
 	int m_iArrestMinRank;
@@ -175,6 +178,9 @@ class LF_PoliceConfig
 
 	[Attribute("168", UIWidgets.Auto, "Hours a new officer is on trial after an approval. The roster entry ends when the trial does unless the officer was promoted first. 0 means no trial", params: "0 100000")]
 	int m_iTrialHours;
+
+	[Attribute("120", UIWidgets.Auto, "Minutes of real time between two armory kits for one officer. Saved, so clocking out and a restart do not reset it. At least 1: the spike strip and roadblock kit carry no serial, so only the cooldown limits them", params: "1 1440")]
+	int m_iArmoryCooldownMinutes;
 
 	//! How many rungs the core file ships; a remove of one of them is refused (a saved rank is its
 	//! index). Not an attribute. -1 until the first layer pass counts them.
@@ -293,7 +299,7 @@ class LF_PoliceConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds", "applyMinPlaytimeHours", "applyRejectCooldownHours", "trialHours"};
+		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds", "applyMinPlaytimeHours", "applyRejectCooldownHours", "trialHours", "armoryCooldownMinutes"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("arrestMinRank", m_iArrestMinRank, RANK_MIN, RANK_MAX);
 		reader.ReadInt("escortMinRank", m_iEscortMinRank, RANK_MIN, RANK_MAX);
@@ -323,6 +329,7 @@ class LF_PoliceConfig
 		reader.ReadInt("applyMinPlaytimeHours", m_iApplyMinPlaytimeHours, APPLY_HOURS_MIN, APPLY_HOURS_MAX);
 		reader.ReadInt("applyRejectCooldownHours", m_iApplyRejectCooldownHours, APPLY_HOURS_MIN, APPLY_HOURS_MAX);
 		reader.ReadInt("trialHours", m_iTrialHours, APPLY_HOURS_MIN, APPLY_HOURS_MAX);
+		reader.ReadInt("armoryCooldownMinutes", m_iArmoryCooldownMinutes, ARMORY_COOLDOWN_MIN, ARMORY_COOLDOWN_MAX);
 
 		if (!m_aRanks)
 			m_aRanks = new array<ref LF_PoliceRank>();
@@ -447,6 +454,7 @@ class LF_PoliceConfig
 		ctx.WriteValue("applyMinPlaytimeHours", m_iApplyMinPlaytimeHours);
 		ctx.WriteValue("applyRejectCooldownHours", m_iApplyRejectCooldownHours);
 		ctx.WriteValue("trialHours", m_iTrialHours);
+		ctx.WriteValue("armoryCooldownMinutes", m_iArmoryCooldownMinutes);
 
 		ctx.StartObject("ranks");
 		if (m_aRanks)
@@ -535,6 +543,17 @@ class LF_PoliceConfig
 			return DEFAULT_TRIAL_HOURS;
 
 		return config.m_iTrialHours;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Minutes of real time between two armory kits for one officer (LF_ArmoryKits, #2416).
+	static int ArmoryCooldownMinutes()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_ARMORY_COOLDOWN_MINUTES;
+
+		return Math.ClampInt(config.m_iArmoryCooldownMinutes, ARMORY_COOLDOWN_MIN, ARMORY_COOLDOWN_MAX);
 	}
 
 	//------------------------------------------------------------------------------------------------
