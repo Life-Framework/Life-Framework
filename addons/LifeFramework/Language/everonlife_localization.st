@@ -4083,6 +4083,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Gather %1"
      Comment "Action name for gathering a resource. %1 = item name"
     }
+    CustomStringTableItem "{C978A84E212BD638}" {
+     Id "LF-Gather_Empty"
+     Target_en_us "Picked clean for now"
+     Comment "Gather refused on the client: the spot is out of stock (#2409)"
+    }
+    CustomStringTableItem "{E1BA56AC133E9004}" {
+     Id "LF-Gather_EmptyWait"
+     Target_en_us "Picked clean. More in about %1 min."
+     Comment "Toast when a gather spot is out of stock. %1 = minutes until the next one grows back (#2409)"
+    }
     CustomStringTableItem "{44A28FD4E95EA8C3}" {
      Id "LF-Gather_RequiresItem"
      Target_en_us "Requires the right tool"

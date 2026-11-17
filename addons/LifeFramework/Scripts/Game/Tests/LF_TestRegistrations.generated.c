@@ -255,6 +255,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_FuelClerkDialogue(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GarageStoreRange(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_GatherStock(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_GatherStockAction(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_GatherStockConfig(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GraceProtection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GridFrameLabels(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GridTeleport(), LF_TestTier.WORLD);
