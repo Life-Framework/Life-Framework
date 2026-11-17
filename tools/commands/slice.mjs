@@ -134,7 +134,11 @@ export async function main(args, ctx) {
           ? JSON.parse(readFileSync(resolve(prFixture), "utf8")).prs
           : [["--head", `ws/slice-${row.issue}`], ["--search", `${row.issue} in:body`]].flatMap((q) => JSON.parse(ghRaw(root, ["pr", "list", "--state", "all", ...q, "--limit", "100", "--json", "number,state,mergedAt,headRefName,body"])));
         const v = mergeVerdict(prs, row.issue);
-        if (!v.ok) throw new Error(`refusing --outcome merged: ${v.reason}`);
+        if (!v.ok && v.open) {
+          // wt ship turned auto-merge on; waiting for GitHub is not the agent's job.
+          row.outcome = "shipped";
+          console.log(`slice record: ${v.reason.split(";")[0]}; recorded as shipped (auto-merge finishes it). Done: end the task, do not wait for the merge.`);
+        } else if (!v.ok) throw new Error(`refusing --outcome merged: ${v.reason}`);
       }
       const file = ledgerPath(root, args);
       mkdirSync(dirname(file), { recursive: true });

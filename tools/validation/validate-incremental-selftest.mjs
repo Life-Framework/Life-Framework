@@ -108,7 +108,21 @@ try {
 
   const s7 = green(plans({ checks: {} }));
   bump("docs/x.md");
-  check(!plans(s7).get("check-b.mjs").unchanged, "touching a matched file's mtime must re-run (safe side)");
+  check(plans(s7).get("check-b.mjs").unchanged, "touching a matched file's mtime (same bytes) must skip: fingerprints are content-addressed");
+
+  // A fresh worktree has no local state; a fingerprint another worktree published as green skips the check.
+  const fresh = plans({ checks: {} });
+  const shared = { checks: {}, shared: { "check-a.mjs": [fresh.get("check-a.mjs").fp] } };
+  const ps = plans(shared);
+  check(ps.get("check-a.mjs").unchanged && /another worktree/.test(ps.get("check-a.mjs").why), "a fingerprint green in another worktree must skip the check");
+  check(!ps.get("check-b.mjs").unchanged, "a check with no shared green fingerprint must run");
+
+  // The same bytes give the same fingerprint untracked (hashed here) and committed (git's blob id): what
+  // makes the shared file valid across worktrees.
+  const before = plans({ checks: {} }).get("check-a.mjs").fp;
+  sh("add", "-A");
+  sh("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "x");
+  check(plans({ checks: {} }).get("check-a.mjs").fp === before, "committing unchanged bytes changed the fingerprint (blob id mismatch)");
 } finally {
   rmSync(root, { recursive: true, force: true });
 }
