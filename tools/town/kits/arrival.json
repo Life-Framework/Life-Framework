@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "kit": "arrival",
+  "system": "arrival",
+  "source": {
+    "file": "addons/LF_Everon1989/Prefabs/Buildings/TownHall/TownHall.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local"
+  },
+  "scope": "building",
+  "building": {
+    "mode": "override",
+    "via": "{76D7178C2C1F92A9}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01_Base.et",
+    "vanilla": "{76D7178C2C1F92A9}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01_Base.et"
+  },
+  "store": {
+    "prefab": "{E3997010AC16F846}Prefabs/Buildings/TownHall/TownHall.et",
+    "config": [
+      {
+        "component": "BaseSlotComponent",
+        "set": {
+          "EntityPrefab": "\"{69A8FFE5527CB776}Prefabs/Structures/BuildingParts/Entry/Entry_Direct_01.et\""
+        },
+        "blocks": []
+      }
+    ]
+  },
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        0,
+        0
+      ],
+      "max": [
+        0,
+        0
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "town-hall-furniture-01",
+      "prefab": "{73F7E5F730727D8C}Prefabs/Buildings/TownHall/Furniture/TownHall_furniture_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "-x",
+      "floor": "all"
+    }
+  ]
+}
