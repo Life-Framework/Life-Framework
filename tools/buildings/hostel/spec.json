@@ -34,7 +34,11 @@
     { "id": "dorm-east", "floor": 1, "box": [0.6, 0.0, 8.7, 5.6], "use": "dormitory and lounge (piano, sofa)" },
     { "id": "upstairs-wash", "floor": 1, "box": [-0.6, -5.6, 4.0, -2.0], "use": "washroom and shower" }
   ],
-  "interactables": [],
+  "interactables": [
+    { "system": "first-spawn-bed", "prefab": "{15468371DAC524FC}Prefabs/Medic/LF_FirstSpawnBed.et", "room": "dorm-west", "row": "HostelKit_FirstBed_1", "docs": "docs/features/account-persistence.md (#1965)" },
+    { "system": "first-spawn-bed", "prefab": "{15468371DAC524FC}Prefabs/Medic/LF_FirstSpawnBed.et", "room": "dorm-east", "row": "HostelKit_FirstBed_2", "docs": "docs/features/account-persistence.md (#1965)" }
+  ],
+  "fitout": { "script": "tools/buildings/hostel/fitout.mjs", "prefix": "HostelKit_", "pass": 1, "note": "the reception counter, bunks and lockers are plain furniture; the washrooms and kitchen come with the shell; the attic (floor 2) stays shut" },
   "looks": {
     "about": "proof.json holds the shots as look/from pairs in building space; tools\\cli look grid:hostel shoots the exterior and --interior x,y,z (world space: the building's grid position plus these) each room",
     "rooms": [
