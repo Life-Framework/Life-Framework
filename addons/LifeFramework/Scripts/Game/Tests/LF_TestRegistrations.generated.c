@@ -862,7 +862,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_WantedPostersFeed(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WantedPostersStolen(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistChatResources(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_WhitelistLegacyFailurePaths(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WhitelistLegacyGone(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_WhitelistLegacyIgnoredCount(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WhitelistLegacyMigrate(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WhitelistLogic(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistCommandParse(), LF_TestTier.LOGIC);
