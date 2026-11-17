@@ -57,6 +57,6 @@ Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, then exactly
 - A world prop goes in your own grid cell (`brief grid`), never a town layer.
 
 ## Environment
-No Workbench on this PC and never pin a machine (`--local`, `--machine`). Run in the foreground (timeout up to
+No Workbench on the maintainer's PC (Gaming-Box); on lf-testbox (PC1) it is allowed through the pool (`toolscli status` says which you are on). Never pin a machine (`--local`, `--machine`). Run in the foreground (timeout up to
 600000 ms) or `t3_background_wait`; never end the turn with a run pending. Never `--force`, `rm -rf` or
 `Remove-Item -Recurse` a worktree (`wt prune`). Heavy commands refuse the main checkout.
