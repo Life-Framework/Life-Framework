@@ -125,6 +125,20 @@ class LF_HandTool
 				return held;
 		}
 
+		// The engine's left-hand gadget slot: where a held gadget sits, outside the inventory storages
+		// (vanilla SCR_ConsumableItemComponent reads it the same way).
+		ChimeraCharacter chimera = ChimeraCharacter.Cast(character);
+		CharacterControllerComponent controller;
+		if (chimera)
+			controller = chimera.GetCharacterController();
+		if (controller)
+		{
+			IEntity inHand = controller.GetAttachedGadgetAtLeftHandSlot();
+			LF_HandToolComponent handTool = Of(inHand);
+			if (handTool && handTool.GetToolId() == toolId && handTool.GetMode() != EGadgetMode.ON_GROUND)
+				return inHand;
+		}
+
 		// The manager learns of the hand at the end of the take animation; the gadget's own mode is
 		// what replicates, so read it too.
 		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(character);

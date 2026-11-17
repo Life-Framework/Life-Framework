@@ -391,20 +391,27 @@ class LF_Bank
 
 		array<string> tools = {};
 		vault.m_sTools.Split(",", tools, true);
+
+		// The drill in the hands first (#2384): a gadget taken into the hands leaves the storage the
+		// inventory search walks, so a held drill alone would read as no drill.
+		if (tools.Find(TOOL_DRILL) != -1)
+		{
+			toolItem = LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID);
+			if (toolItem)
+				return TOOL_DRILL;
+		}
+
 		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(robber);
 		if (!inventory)
 			return "";
 
 		if (tools.Find(TOOL_DRILL) != -1)
 		{
+			// A drill only in the pack: the gate points the robber to the hands (#LF-Bank_HoldDrill).
 			array<IEntity> drills = LF_InventoryUtils.FindItemsByPrefab(inventory, DRILL_PREFAB);
 			if (!drills.IsEmpty())
 			{
-				// The drill in the hands is the one that works; a spare in the pack is not it.
-				toolItem = LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID);
-				if (!toolItem)
-					toolItem = drills[0];
-
+				toolItem = drills[0];
 				return TOOL_DRILL;
 			}
 		}
