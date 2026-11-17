@@ -395,10 +395,24 @@ across the `wt e2e` restart, keepLicences off from the owner file).
 - `OnGameEnd` raised twice (dedicated-server shutdown) is a no-op the second
   time.
 - A load that lost a payload, or a continued save that never reached the store,
-  pauses autosave for the rest of the session (`LF_PersistenceComponentSerializer.IsLoadDamaged()`)
-  and logs `LF_Debug.Error`. When it is the boot load, saving is turned off at `ACTIVE`
-  (`SaveGameManager.SetSavingAllowed(false)`), which also stops the engine's shutdown save:
-  the save on disk stays the newest save point for `host restore` (#980).
+  marks the load damaged (`LF_PersistenceComponentSerializer.IsLoadDamaged()`) and logs
+  `LF_Debug.Error`. The save on disk then stays the newest save point for `host restore` (#980):
+  - **The load stops at the first failed read (#2489).** The store is read positionally, so every
+    read after a failure can be misaligned, and one that happens to succeed would replace live state
+    with what it misread. The payloads before the failure are applied; the rest are not read and keep
+    their live state (`save load stopped at the first failed read: N later payload(s) not applied`).
+    The steps after the payloads (persistence switches, wanted-report prune) still run: they only
+    reset or drop state, never apply what was read (`persist/stop-after-failed-read`).
+  - **Every save path refuses (#2489).** `PassesSaveGates` checks the damage first, so `SaveGame()`
+    (manual and admin requests through the manager) and `AutoSave()`, timer or direct, log
+    `save rejected: the save load was damaged` and fire `GetOnSaveFinished()` with `false`;
+    `GetLastSaveRejection()` keeps the reason. Saves that go straight to the `SaveGameManager` (the
+    Game Master save, the engine's SHUTDOWN save) are stopped by `SetSavingAllowed(false)`, which
+    `SyncSavingWithLoadDamage` sets after the boot load (at `ACTIVE`), after an in-session re-apply
+    (`ReapplyLatestSaveData`) and at `OnGameEnd` (`shutdown save refused`). A clean re-apply turns
+    saving back on only when this component turned it off. A disconnect writes no save point here:
+    it only updates the in-memory store, which reaches disk with the next save point, and that one is
+    refused (`persist/save-refused-on-damage`).
 - A save whose version is above the payload list's length was written by a newer build (a
   rollback, or a merge the main guard reverted after it saved). The known payloads load and the
   load counts as damaged, so no save drops the payloads this build cannot read
