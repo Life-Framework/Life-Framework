@@ -10,11 +10,11 @@
 // {"held":3864,"EPERM":5423} with 877 acquired, and {"held":2642} with 885 acquired after the fix. Restored.
 
 import { spawn, spawnSync } from "node:child_process";
-import { mkdtempSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const wtUrl = pathToFileURL(join(import.meta.dirname, "..", "wt.mjs")).href;
 
@@ -39,7 +39,7 @@ if (process.argv[2] === "worker") {
 }
 
 const failures = [];
-const root = mkdtempSync(join(tmpdir(), "lf-lockcontention-"));
+const root = scratchDir("lf-lockcontention-");
 try {
   spawnSync("git", ["init", "-q", root], { windowsHide: true });
   const outs = await Promise.all(Array.from({ length: 4 }, () => new Promise((res) => {

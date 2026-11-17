@@ -4,10 +4,10 @@
 // a GUID path, a comment, log text, a path builder, a $profile: path, a Tests/ file and a
 // baselined finding pass; a stale, issue-less or new baseline entry fails.
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { checkGuidPaths } from "./validate-guid-paths.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 function put(root, path, text) {
   const full = join(root, "addons", path);
@@ -20,7 +20,7 @@ const GOOD = "Pack/Scripts/Game/Feature/Crime/LF_Good.c";
 const BAD = "Pack/Scripts/Game/Feature/Crime/LF_Bad.c";
 
 function tree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-guidpaths-"));
+  const root = scratchDir("lf-guidpaths-");
   put(root, GOOD, script([
     '\t\tResourceName a = "{D6DE32D1C0FCC1C7}Prefabs/Editor/Camera/ManualCameraBase.et";',
     '\t\t// ResourceName b = "Prefabs/Old/Commented.et";',

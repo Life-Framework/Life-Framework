@@ -14,12 +14,12 @@
 //
 // red-proof: 2026-11-15, run before tools/playtest/opening/b6-day.mjs existed it printed
 // "FAIL tools/playtest/opening/b6-day.mjs is missing" and exited 1.
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SCRIPT = join(ROOT, "tools", "playtest", "opening", "b6-day.mjs");
@@ -52,7 +52,7 @@ const run = (args) => {
 const state = (r, id) => r.beats.get(id)?.status;
 const list = (dir) => (existsSync(dir) ? readdirSync(dir, { recursive: true }).sort().join("|") : "");
 
-const scratch = mkdtempSync(join(tmpdir(), "lf-b6-"));
+const scratch = scratchDir("lf-b6-");
 try {
   const good = join(FIX, "host-good");
   const withVerb = join(FIX, "proofs-with");

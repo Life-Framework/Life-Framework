@@ -8,10 +8,10 @@
 // red-proof: before tools/host/drill.mjs existed this check failed to import it
 // (ERR_MODULE_NOT_FOUND, 2026-11-15).
 
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "host", "fixtures", "drill");
@@ -37,7 +37,7 @@ if (!/^SUMMARY host-drill ok /.test(line) || !line.includes("accounts=3") || !li
 if (!/^SUMMARY host-drill fail /.test(drill.summaryLine({ ok: false, backup: "b", machine: "local", reason: "x" }))) fail("a failed drill prints ok");
 
 // Scratch: a copy of the backup in a throwaway host dir; the live host dir and the backup are not changed.
-const base = mkdtempSync(join(tmpdir(), "lf-drill-selftest-"));
+const base = scratchDir("lf-drill-selftest-");
 try {
   const host = join(base, "host");
   const sp = join(host, "backups", "2026-11-15_10-00-00-stop", "u", "game", "1054CC8646357708-LF-PlaytestTown", "playthrough000", "savepoint000");

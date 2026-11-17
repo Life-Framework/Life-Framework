@@ -11,8 +11,7 @@
 // red-proof: 2026-11-15 (folded piles):
 //   pilePoints with every copy at p[1] (no k * height)              -> FAIL pile: a pile stands on its shelf point, one item height per copy
 //   storePrefab without the m_iStack row                            -> FAIL pile: the prefab writes the yaw as each point's fourth number and m_iStack
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { run, specProblems, vanillaPrefabProblems, VANILLA_SKIPS } from "../buildings/pipeline/building.mjs";
@@ -21,6 +20,7 @@ import { buildingFiles, storePlan, storePrefab } from "../buildings/pipeline/sto
 import { expandScenario, permitProblems, scenarioProblems } from "../buildings/pipeline/scenario.mjs";
 import { placedPrefabs } from "../buildings/pipeline/proof.mjs";
 import { buildLine } from "../../agent-box/harness.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const BASE = "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et";
 const RACK = "{12BFA4BF5A703816}Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et";
@@ -60,7 +60,7 @@ export async function main() {
   ok(vanillaPrefabProblems(spec, 'SCR_DestructibleBuildingEntity : "{0000000000000000}Prefabs/Structures/Other.et" {\n}\n').problems.some((p) => /inherits/.test(p)), "vanilla: a prefab that does not inherit vanilla.base is refused");
 
   // run(): no ArchBuilder on this machine, and none needed.
-  const tmp = mkdtempSync(join(tmpdir(), "lf-vanilla-"));
+  const tmp = scratchDir("lf-vanilla-");
   try {
     mkdirSync(join(tmp, "tools", "buildings", "gun-store"), { recursive: true });
     writeFileSync(join(tmp, "tools", "buildings", "gun-store", "spec.json"), JSON.stringify(spec));

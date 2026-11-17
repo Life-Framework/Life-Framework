@@ -330,7 +330,7 @@ class LF_WantedBoard
 	//------------------------------------------------------------------------------------------------
 	//! Client: open a card of lines at the board the reader stands at (the wanted board's own
 	//! card and the service dispatch boards share it).
-	//! eturn False when the screen did not open.
+	//! \return False when the screen did not open.
 	static bool OpenParts(array<ref LF_UIPart> parts)
 	{
 		Hide();

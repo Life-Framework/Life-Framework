@@ -10,14 +10,14 @@
 // red-proof: before tools/host/logs.mjs existed the import failed:
 // "FAIL logs.mjs missing (Cannot find module ...)" (2026-11-15).
 
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIXTURE = join(ROOT, "tools", "validation", "fixtures", "host-logs");
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-logs-"));
+const tmp = scratchDir("lf-host-logs-");
 let failed = 0;
 function fail(msg) {
   console.log(`FAIL  ${msg}`);

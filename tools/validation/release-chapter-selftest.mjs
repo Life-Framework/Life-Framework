@@ -9,8 +9,7 @@
 // core ("core published before the pack"), dropping the players check ("no restart with players on"), and
 // accepting a Workshop version equal to the release ("refuses a version not newer than the Workshop").
 
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import {
   CORE_VERSION_FILE,
@@ -28,6 +27,7 @@ import {
   runChapter,
 } from "../release/chapter.mjs";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const ok = (cond, msg) => {
@@ -50,7 +50,7 @@ const MERGES = ["Merge pull request #1701 from Life-Framework/ws/a\x1fTaxi job p
 
 const temps = [];
 function tempDir(tag) {
-  const d = mkdtempSync(join(tmpdir(), `lf-relchap-${tag}-`));
+  const d = scratchDir(`lf-relchap-${tag}-`);
   temps.push(d);
   return d;
 }
