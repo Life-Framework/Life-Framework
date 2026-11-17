@@ -223,7 +223,8 @@ supplies every coordinate the later steps use. No step types a coordinate.
   lifted by the dossier floor a second time. Then each row is corrected from the host's `.xob` colliders, offline: a
   floor row onto the host top under it, a wall-mounted row (`on: "wall"`, a `wall` tag or a hung kind) along its
   facing onto the nearest wall plane, a row cutting a wall pushed out by up to 0.3 m. A row still cutting the shell
-  refuses the fit (`--allow-clip` writes it); a row hung on a socket of the source building is left out with a warning.
+  refuses the fit (`--allow-clip` writes it); a row hung on a socket of the source building is left out with a warning,
+  and a row standing in a prop the host carries itself (a vanilla furniture set a layer cannot remove) is flagged.
   `town fit <place> <slot> --check` prints the per-row corrections against the layer on disk and writes nothing.
 - **Seat on the host** (`tools/town/seat.mjs`). The island's vanilla host can differ from the playtest copy a kit
   came from, so offsets alone floated, sank and clipped rows (audits on #2369, #2378, #2394). A host that shows the
@@ -231,7 +232,8 @@ supplies every coordinate the later steps use. No step types a coordinate.
   lifted by the dossier floor a second time. Then each row is corrected from the host's `.xob` colliders, offline: a
   floor row onto the host top under it, a wall-mounted row (`on: "wall"`, a `wall` tag or a hung kind) along its
   facing onto the nearest wall plane, a row cutting a wall pushed out by up to 0.3 m. A row still cutting the shell
-  refuses the fit (`--allow-clip` writes it); a row hung on a socket of the source building is left out with a warning.
+  refuses the fit (`--allow-clip` writes it); a row hung on a socket of the source building is left out with a warning,
+  and a row standing in a prop the host carries itself (a vanilla furniture set a layer cannot remove) is flagged.
   `town fit <place> <slot> --check` prints the per-row corrections against the layer on disk and writes nothing.
 
 ### 3.4 Parallelism

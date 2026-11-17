@@ -11,6 +11,8 @@
 //     (--allow-clip writes it with a warning);
 //   - a host showing the kit's own building model takes the kit at its origin and yaw (never turned to an entrance), and
 //     a kit's offsets are not lifted by the dossier floor a second time;
+//   - a row standing in a prop the host carries itself (its vanilla furniture set, which a layer cannot remove) is
+//     flagged, not moved;
 //   - a row hung on a socket of the source building is left out of the layer;
 //   - `town fit --check` reports per-row corrections against the layer on disk and writes nothing.
 // red-proof: 2026-11-17, each guard broken once, FAIL seen, then restored:
@@ -108,6 +110,18 @@ for (const [floorY, what] of [[0.5, "sank"], [0, "floated"]]) {
   check(Boolean(dp.clip), "clip: a counter half through a wall was not refused");
   check(!res.ok && res.clips.length === 1, `clip: seatRows ok=${res.ok} with ${res.clips.length} clip(s), expected a refusal with 1`);
   check(seat.triCutsBox([[0, 0, 0], [1, 0, 0], [0, 1, 0]], { c: [5, 5, 5], h: [1, 1, 1], axes: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] }) === false, "triCutsBox: a far triangle cuts a box");
+}
+
+// ---- the host's own furniture (a vanilla set the island building keeps) is flagged, not moved
+{
+  const furnished = { ...room(0.2), kids: [{ path: "Fixture/Table.et", x: 2, y: 0.2, z: 1, yaw: 30 }] };
+  const rows = [at("on-table", 2.2, 0.2, 1.1), at("clear", -3, 0.2, 2)];
+  const kitRows = rows.map((r) => ({ id: r.id, verb: "on floor", role: "counter", prefab: STALL }));
+  const before = local(rows[0].coords);
+  const res = await seat.seatRows(rows, kitRows, HOST, { reader: reader({ "Fixture/Host.et": furnished }) });
+  check(Boolean(res.rows[0].furniture) && /Table/.test(res.rows[0].furniture), "a row standing in the host's own furniture was not flagged");
+  check(!res.rows[1].furniture && res.furniture.length === 1, "a row clear of the host's furniture was flagged");
+  check(near(local(rows[0].coords)[0], before[0]) && near(local(rows[0].coords)[2], before[2]), "a row in the host's furniture was moved instead of flagged");
 }
 
 // ---- a socket row is left out; a furniture set with no bounds stays where the kit puts it

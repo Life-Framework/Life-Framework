@@ -462,6 +462,7 @@ export async function planFitSeated(opts, ctx = {}) {
   const skip = new Set(seat.skipped.map((r) => r.id));
   plan.ents.rowEnts = plan.ents.rowEnts.filter((e) => !skip.has(e.id));
   for (const r of seat.skipped) plan.warnings.push(`row ${r.id} ${r.skip}`);
+  for (const r of seat.furniture) plan.warnings.push(`row ${r.id} ${r.furniture}`);
   plan.claim.rows = plan.ents.rowEnts.length;
   plan.layerText = renderLayer(plan.ents);
   for (const r of seat.unseated) plan.warnings.push(`row ${r.id}: ${r.notes.filter((n) => /^no /.test(n)).join("; ")}`);

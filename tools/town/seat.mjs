@@ -18,7 +18,7 @@
 // `kit apply` (tools/town/kit.mjs toWorld). The reader is injectable: the selftest passes fixture hosts.
 //   reader.info(path)  -> { bounds: { min, max }, scale } | null        a row prefab's visual bounds (surface.mjs gameReader)
 //   reader.shell(path) -> { mesh, surfaces: [{ y, x:[a,b], z:[a,b], area }], walls: [{ n:[nx,ny,nz], p:[[x,y,z] x3] }] } | null
-import { isHung, footOf, scaleOf, gameReader as surfaceReader } from "../buildings/pipeline/surface.mjs";
+import { isHung, footOf, scaleOf, gameReader as surfaceReader, prefabChildren as prefabChildrenOf } from "../buildings/pipeline/surface.mjs";
 import { toWorld, toLocal } from "./kit.mjs";
 
 export const TOL = 0.02; // a row within 2 cm of its support is left alone
@@ -68,6 +68,39 @@ export function wallsOfCollider(rec, toPrefab, boxCorners, scale = 1) {
   return out;
 }
 
+// The props a host prefab carries itself (its vanilla furniture sets, expanded one level into their pieces), in host-local
+// space: [{ path, x, y, z, yaw, scale }]. A layer cannot remove a terrain building's children, so a kit row that lands on
+// one is flagged (the clothes shop-house keeps ShopHouse_E_2I01t_furniture_clothesstore_01 on the island, #2369).
+// Socketed children (windows, doors, signs) are left out: they sit in the walls the shell test already covers.
+function hostKids(root, vfs, gp, path, rows) {
+  const out = [];
+  const parentOf = (t) => /^[^\n]*?:\s*"\{[0-9A-Fa-f]{16}\}([^"]+\.et)"/.exec(t)?.[1] ?? null;
+  const visit = (p, base, depth) => {
+    const seen = new Set();
+    for (let q = p; q && !seen.has(q) && seen.size < 6; ) {
+      seen.add(q);
+      const t = gp.readText(root, vfs, q);
+      if (!t) break;
+      for (const e of prefabChildrenOf(t)) {
+        if (e.socket || !e.path || /\/Doors?\//i.test(e.path)) continue;
+        const [dx, dz] = toWorld(e.x, e.z, base.yaw);
+        const at = { path: e.path, x: base.x + dx, y: base.y + e.y, z: base.z + dz, yaw: base.yaw + e.yaw, scale: e.scale };
+        const b = rows.info(e.path)?.bounds;
+        const set = !b || Math.max(b.max[0] - b.min[0], b.max[2] - b.min[2]) > 4; // a furniture set: its pieces, not its hull
+        if (!set) out.push(at);
+        else if (depth < 2) visit(e.path, at, depth + 1);
+      }
+      q = parentOf(t);
+    }
+  };
+  try {
+    visit(path, { x: 0, y: 0, z: 0, yaw: 0 }, 0);
+  } catch {
+    // an unreadable child list is no furniture to flag
+  }
+  return out;
+}
+
 // The default reader: row bounds from surface.mjs (prefabInfo), host shells from the .xob in addons/ or the game's paks.
 export function shellReader(root) {
   const rows = surfaceReader(root);
@@ -90,7 +123,7 @@ export function shellReader(root) {
         if (buf) {
           const m = xob.measureXob(buf, { scale });
           const walls = xob.colliders(buf).list.flatMap((rec) => wallsOfCollider(rec, xob.toPrefab, xob.boxCorners, scale));
-          out = { mesh, surfaces: m.surfaces, walls };
+          out = { mesh, surfaces: m.surfaces, walls, kids: hostKids(root, vfs, gp, path, rows) };
         }
       } catch {
         out = null;
@@ -191,6 +224,22 @@ function rayWall(walls, o, dir, max) {
   }
   return best;
 }
+
+// How far two upright boxes (yaw only) overlap: the smallest overlap over the four plan axes, 0 when apart or when their
+// heights do not meet.
+export function boxOverlap(a, b) {
+  if (a.c[1] + a.h[1] <= b.c[1] - b.h[1] || b.c[1] + b.h[1] <= a.c[1] - a.h[1]) return 0;
+  let least = Infinity;
+  for (const ax of [a.axes[0], a.axes[2], b.axes[0], b.axes[2]]) {
+    const proj = (x) => x.h[0] * Math.abs(dot(x.axes[0], ax)) + x.h[2] * Math.abs(dot(x.axes[2], ax));
+    const gap = Math.abs(dot(sub(a.c, b.c), ax));
+    const o = proj(a) + proj(b) - gap;
+    if (o <= 0) return 0;
+    least = Math.min(least, o);
+  }
+  return least;
+}
+export const FURNITURE_OVERLAP = 0.05; // a kit row this deep in one of the host's own props is flagged
 
 // The host tops under host-local (x, z): [y], any order.
 function topsUnder(surfaces, x, z, edge = 0.03) {
@@ -329,6 +378,16 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false 
           const c = cutWalls(shell.walls, boxOf(l, info, CLIP_TOL));
           res.clip = { walls: c.length, text: `cuts ${c.length} host wall face(s) after a ${NUDGE} m nudge` };
         }
+        // The host's own props (its vanilla furniture): flagged, not moved; the fix is the kit or the building's override.
+        const mine = boxOf(l, info);
+        const hits = [];
+        for (const kid of shell.kids ?? []) {
+          const ki = reader.info(kid.path);
+          if (!ki?.bounds) continue;
+          const o = boxOverlap(mine, boxOf(kid, ki));
+          if (o > FURNITURE_OVERLAP) hits.push(`${kid.path.split("/").pop().replace(/\.et$/, "")} (${r3(o)} m)`);
+        }
+        if (hits.length) res.furniture = `overlaps the host's own furniture, which the island building keeps: ${[...new Set(hits)].slice(0, 4).join(", ")}${hits.length > 4 ? ", ..." : ""}`;
       }
     }
     const to = toW(l);
@@ -345,7 +404,7 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false 
   }
   const clips = out.filter((r) => r.clip);
   const keep = rows.map((r) => out.find((o) => o.id === r.id));
-  return { ok: allowClip || !clips.length, host: { mesh: shell.mesh }, rows: keep, clips, skipped: out.filter((r) => r.skip), unseated: out.filter((r) => r.notes.some((n) => /^no /.test(n))) };
+  return { ok: allowClip || !clips.length, host: { mesh: shell.mesh }, rows: keep, clips, skipped: out.filter((r) => r.skip), furniture: out.filter((r) => r.furniture), unseated: out.filter((r) => r.notes.some((n) => /^no /.test(n))) };
 }
 
 // Does the host show the same model as the building the kit was lifted from? Then the kit's offsets are in the host's own
@@ -364,8 +423,8 @@ export function seatReport(seat, { against = null } = {}) {
     const was = against?.get(r.id) ?? r.from;
     const d = r.to.map((v, i) => r3(v - was[i]));
     const moved = r3(Math.hypot(...d));
-    const tags = [r.mount, r.wall ? `wall ${r.wall.side} ${r.wall.shift} m` : null, r.clip ? "CLIP" : null].filter(Boolean).join(", ");
-    lines.push(`${r.skip ? "SKIP " : r.clip ? "CLIP " : moved > TOL ? "fix  " : "ok   "} ${r.id.padEnd(44)} ${moved > TOL ? `moves ${moved} m (dx ${d[0]} dy ${d[1]} dz ${d[2]})` : "stays"}  [${tags}]${r.notes.length ? `  ${r.notes.join("; ")}` : ""}${r.clip ? `  ${r.clip.text}` : ""}`);
+    const tags = [r.mount, r.wall ? `wall ${r.wall.side} ${r.wall.shift} m` : null, r.clip ? "CLIP" : null, r.furniture ? "FURN" : null].filter(Boolean).join(", ");
+    lines.push(`${r.skip ? "SKIP " : r.clip ? "CLIP " : moved > TOL ? "fix  " : "ok   "} ${r.id.padEnd(44)} ${moved > TOL ? `moves ${moved} m (dx ${d[0]} dy ${d[1]} dz ${d[2]})` : "stays"}  [${tags}]${r.notes.length ? `  ${r.notes.join("; ")}` : ""}${r.clip ? `  ${r.clip.text}` : ""}${r.furniture ? `  ${r.furniture}` : ""}`);
   }
   return lines;
 }
