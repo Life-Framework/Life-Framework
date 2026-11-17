@@ -1,5 +1,5 @@
 {
-  "saveVersion": 41,
+  "saveVersion": 42,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -43,7 +43,8 @@
     "racerecords": "LF_RaceRecordRow",
     "lastpos": "LF_LastPositionRow",
     "hospitalrejoin": "LF_HospitalRejoinRow",
-    "worldevents": "LF_EventShellRow"
+    "worldevents": "LF_EventShellRow",
+    "mapknown": "LF_MapKnownRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -521,6 +522,15 @@
         "float m_fEndedAgo",
         "array<string> m_aIntKeys",
         "array<int> m_aIntValues"
+      ]
+    },
+    "LF_MapKnownRow": {
+      "since": 42,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterId",
+        "string m_sPlaceId",
+        "int m_iState"
       ]
     }
   }
