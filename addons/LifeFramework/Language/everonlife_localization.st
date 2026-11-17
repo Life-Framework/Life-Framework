@@ -5897,6 +5897,106 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Taser cartridge"
      Comment "Inventory name of the taser's single-shot cartridge."
     }
+    CustomStringTableItem "{FB41DE0AE665439A}" {
+     Id "LF-MapLegend_Cat_civic"
+     Target_en_us "Civic"
+     Comment "Map legend (#2244): category line, civic places."
+    }
+    CustomStringTableItem "{DB2CEFE2D4AB3134}" {
+     Id "LF-MapLegend_Cat_health"
+     Target_en_us "Health"
+     Comment "Map legend (#2244): category line, clinics and hospital."
+    }
+    CustomStringTableItem "{1264A12EDAE44B4D}" {
+     Id "LF-MapLegend_Cat_law"
+     Target_en_us "Law"
+     Comment "Map legend (#2244): category line, police and law."
+    }
+    CustomStringTableItem "{0356E8394B3CCC79}" {
+     Id "LF-MapLegend_Cat_shop"
+     Target_en_us "Shops"
+     Comment "Map legend (#2244): category line, shops."
+    }
+    CustomStringTableItem "{8C14520EB5B1F9F5}" {
+     Id "LF-MapLegend_Cat_story"
+     Target_en_us "Story places"
+     Comment "Map legend (#2244): category line, story places."
+    }
+    CustomStringTableItem "{5663C5F74F2B4A2C}" {
+     Id "LF-MapLegend_Cat_travel"
+     Target_en_us "Travel"
+     Comment "Map legend (#2244): category line, taxi and harbour."
+    }
+    CustomStringTableItem "{AA8F815614FBCA7B}" {
+     Id "LF-MapLegend_Cat_underworld"
+     Target_en_us "Pencilled places"
+     Comment "Map legend (#2244): category line, places the player only met and marked."
+    }
+    CustomStringTableItem "{532D924D534C72E5}" {
+     Id "LF-MapLegend_Cat_work"
+     Target_en_us "Work"
+     Comment "Map legend (#2244): category line, places of work."
+    }
+    CustomStringTableItem "{BABDE49853D9B663}" {
+     Id "LF-MapLegend_Close"
+     Target_en_us "Close"
+     Comment "Map legend (#2244): closes the sheet."
+    }
+    CustomStringTableItem "{68E7EBFADC8A8DA6}" {
+     Id "LF-MapLegend_Find"
+     Target_en_us "Find"
+     Comment "Map legend (#2244): the button that runs the search."
+    }
+    CustomStringTableItem "{4062C7A0E4B4025D}" {
+     Id "LF-MapLegend_Go"
+     Target_en_us "Go to"
+     Comment "Map legend (#2244): button on a search result, pans the map to the place."
+    }
+    CustomStringTableItem "{21D8FEFAC7CBA51F}" {
+     Id "LF-MapLegend_Heading"
+     Target_en_us "Show on the map"
+     Comment "Map legend (#2244): heading over the category lines."
+    }
+    CustomStringTableItem "{849CF0B065C6A4FD}" {
+     Id "LF-MapLegend_Hide"
+     Target_en_us "Hide"
+     Comment "Map legend (#2244): button that takes a category off the map."
+    }
+    CustomStringTableItem "{13D7B2C3585F2511}" {
+     Id "LF-MapLegend_NoMatch"
+     Target_en_us "No place you know of by that name"
+     Comment "Map legend (#2244): shown when a search finds no known place."
+    }
+    CustomStringTableItem "{969CA1332312A3ED}" {
+     Id "LF-MapLegend_Off"
+     Target_en_us "Hidden"
+     Comment "Map legend (#2244): status of a category left off the map."
+    }
+    CustomStringTableItem "{300A53CF8CF58594}" {
+     Id "LF-MapLegend_On"
+     Target_en_us "Shown"
+     Comment "Map legend (#2244): status of a category drawn on the map."
+    }
+    CustomStringTableItem "{2DD3F3DDA0A65424}" {
+     Id "LF-MapLegend_Search"
+     Target_en_us "Find a place"
+     Comment "Map legend (#2244): caption of the search blank."
+    }
+    CustomStringTableItem "{CE42C02CF49D5038}" {
+     Id "LF-MapLegend_Show"
+     Target_en_us "Show"
+     Comment "Map legend (#2244): button that puts a category back on the map."
+    }
+    CustomStringTableItem "{EC872DF7663D8669}" {
+     Id "LF-MapLegend_Tab"
+     Target_en_us "Map key"
+     Comment "Map legend (#2244): the tab on the map edge that opens the key."
+    }
+    CustomStringTableItem "{9188A58C330DB074}" {
+     Id "LF-MapLegend_Title"
+     Target_en_us "Map key"
+     Comment "Map legend sheet (#2244): the sheet title."
+    }
     CustomStringTableItem "{DE2AC99F6166AB0D}" {
      Id "LF-MapPlaces_ClusterNote"
      Target_en_us "Zoom in for each"
