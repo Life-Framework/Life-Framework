@@ -36,7 +36,7 @@ class LF_PoliceTrialSweep
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: expires the trials that ended by now and clocks out the connected officers they ended.
-	//! eturn How many officers were clocked out.
+	//! \return How many officers were clocked out.
 	static int SweepAt(int now)
 	{
 		PlayerManager playerManager = GetGame().GetPlayerManager();
@@ -69,7 +69,7 @@ class LF_PoliceTrialSweep
 	//! by now. The order matters: seconds an officer already earned may be the promotion that ends
 	//! their trial (LF_PoliceRanks.AccrueDuty), and an expiry first would take the roster row before
 	//! the promotion lands.
-	//! eturn How many officers left the roster.
+	//! \return How many officers left the roster.
 	static int ExpireAt(int now, notnull array<LF_PlayerAccount> online)
 	{
 		foreach (LF_PlayerAccount account : online)
@@ -100,7 +100,7 @@ class LF_PoliceTrialSweep
 	//! clock-out (shift pay, gear swap). With no living body (the spawn screen) or a refused
 	//! clock-out nothing is changed: the gear swap needs the body and the pay needs a pocket, so the
 	//! next sweep tries again. Death already ends a shift (LF_DutyLocker.OnDied).
-	//! eturn True when the officer was taken off duty.
+	//! \return True when the officer was taken off duty.
 	static bool EndIfExpired(int playerId, LF_PlayerAccount account, IEntity body)
 	{
 		if (!ShouldEnd(account))
