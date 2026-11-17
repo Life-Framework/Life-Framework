@@ -198,9 +198,21 @@
   The listen host's own drag and server code call the same `Sell` directly
   (no reach/carried check: the inventory UI there enforces them). The seller is
   now the inventory manager's owner, not `pStorageFrom.GetOwner()`. Test:
-  `trader/server-sale` (WORLD). Not yet: a move into the crate that bypasses
-  `InsertItem` (a vicinity move) still lands the item unpaid; proven only on a
-  host so far, the dedicated-server steps are in the PR's manual testing.
+  `trader/server-sale` (WORLD). A move that bypasses `InsertItem` is refused since #2506 (below). Proven only
+  on a host so far, the dedicated-server steps are in the PR's manual testing.
+- ✅ (2026-11-18, #2506) **A trader crate keeps nothing that skipped the sale.**
+  The sale never inserts into the crate (it pays and deletes), so on the server
+  a storage whose owner carries `LF_TraderManagerComponent` refuses every
+  insert: `CanStoreItem`, `CanStoreResource` and `CanReplaceItem` on
+  `LF_RestrictedInventoryStorageComponent` return false
+  (`Feature/Trader/LF_TraderCrateGuard.c`) and log `[LFDebug:Trader] crate
+  refused <prefab>`. A vicinity move, a direct storage insert or a swap now
+  fails and the item stays where it was; the drag sale is unchanged because it
+  never reaches the storage. Clients keep the prefab filter, so the drop
+  highlight still works for them; on a listen host the crate shows as not a
+  drop target during a drag; the drop still calls `InsertItem` and sells
+  (vanilla `SCR_InventoryMenuUI` does not pre-check it; a manual step). Test:
+  `trader/crate-direct-insert` (WORLD).
 - ⚠️ Unguarded `pStorageFrom.GetOwner()` (null crash); null `m_aTradableItems`
   foreach crash; delete-then-pay not atomic; `RETCODE_ITEM_TOO_BIG` used for
   "not tradable"; black-market check fails closed but is only cache-keyed.

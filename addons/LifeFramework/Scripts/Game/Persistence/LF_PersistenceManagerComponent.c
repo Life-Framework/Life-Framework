@@ -114,6 +114,16 @@ class LF_PersistenceManagerComponent : ScriptComponent
 	//! Fired with (bool success) when a save requested through this component completes.
 	protected ref ScriptInvoker m_OnSaveFinished = new ScriptInvoker();
 
+	//! Why PassesSaveGates last said no. Empty after a request that passed.
+	protected string m_sLastSaveRejection;
+
+	//! True while engine saving is off because this component turned it off for a damaged load
+	//! (#980, #2489). Only then does a clean load turn it back on.
+	protected bool m_bSavingOffForDamage;
+
+	//! True when OnGameEnd found the load damaged: the missing SHUTDOWN save is on purpose.
+	protected bool m_bShutdownSaveRefused;
+
 	//------------------------------------------------------------------------------------------------
 	//! \return Invoker fired with (bool success) when a save requested through this
 	//!         component ends. The honest save signal.
@@ -150,6 +160,43 @@ class LF_PersistenceManagerComponent : ScriptComponent
 	int GetCompletedSaveCount()
 	{
 		return m_iCompletedSaves;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Why the last save request was refused, the logged line. Empty when the last one passed.
+	string GetLastSaveRejection()
+	{
+		return m_sLastSaveRejection;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Turns engine saving off while the last load is damaged, and back on once a clean load cleared it.
+	//! Saves that skip this component (the Game Master save, the engine's SHUTDOWN save) go straight
+	//! to the SaveGameManager, so only SetSavingAllowed(false) stops them.
+	//! \param[in] load Which load this follows, for the log line.
+	void SyncSavingWithLoadDamage(string load)
+	{
+		SaveGameManager saves = GetGame().GetSaveGameManager();
+		if (!saves)
+			return;
+
+		if (LF_PersistenceComponentSerializer.IsLoadDamaged())
+		{
+			if (!saves.IsSavingAllowed())
+				return;
+
+			saves.SetSavingAllowed(false);
+			m_bSavingOffForDamage = true;
+			LF_Debug.Error("Persistence", string.Format("saving disabled for this session: %1 was damaged, so no save point (autosave, manual, admin or the engine's shutdown save) overwrites the save on disk (tools/cli host restore, docs/ops/game-updates.md)", load));
+			return;
+		}
+
+		if (!m_bSavingOffForDamage)
+			return;
+
+		saves.SetSavingAllowed(true);
+		m_bSavingOffForDamage = false;
+		LF_Debug.Info("Persistence", string.Format("saving enabled again: %1 was clean", load));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -259,7 +306,7 @@ class LF_PersistenceManagerComponent : ScriptComponent
 	{
 		// Checked at teardown, not on the SHUTDOWN state change: the engine enters SHUTDOWN
 		// first and writes the SHUTDOWN save point right after it.
-		if (m_bSessionEnding && !m_bShutdownSaveObserved)
+		if (m_bSessionEnding && !m_bShutdownSaveObserved && !m_bShutdownSaveRefused)
 			LF_Debug.Error("Persistence", "session ended without a shutdown save - the engine wrote none on this exit path");
 
 		if (m_bAutosaveScheduled)
@@ -498,6 +545,16 @@ class LF_PersistenceManagerComponent : ScriptComponent
 
 		m_bShutdownSaveRequested = true;
 		m_bSessionEnding = true;
+
+		// #2489: whatever path damaged the load, the engine's SHUTDOWN save comes after this.
+		if (LF_PersistenceComponentSerializer.IsLoadDamaged())
+		{
+			SyncSavingWithLoadDamage("the session's last load");
+			m_bShutdownSaveRefused = true;
+			LF_Debug.Error("Persistence", "shutdown save refused: the save load was damaged, so the save on disk stays the newest save point (tools/cli host restore, docs/ops/game-updates.md)");
+			return;
+		}
+
 		LF_Debug.Info("Persistence", "session ending, engine shutdown save expected");
 	}
 
@@ -675,7 +732,11 @@ class LF_PersistenceManagerComponent : ScriptComponent
 		}
 
 		if (isLast)
+		{
 			m_bReapplyInProgress = false;
+			// #2489: a damaged re-apply stops the saves that skip PassesSaveGates too.
+			SyncSavingWithLoadDamage("the re-applied load");
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -711,26 +772,40 @@ class LF_PersistenceManagerComponent : ScriptComponent
 	//! \return True when a save request may be made right now.
 	protected bool PassesSaveGates()
 	{
+		m_sLastSaveRejection = string.Empty;
+
+		// #980, #2489: the load lost data, or a continued save never reached the store. A save now
+		// would become the newest save point with what is left; the operator restores a backup.
+		if (LF_PersistenceComponentSerializer.IsLoadDamaged())
+			return RejectSave("save rejected: the save load was damaged, so no save point overwrites the save on disk until the server restarts on a good save (tools/cli host restore, docs/ops/game-updates.md)", true);
+
 		SaveGameManager manager = GetGame().GetSaveGameManager();
 		if (!manager)
-		{
-			LF_Debug.Error("Persistence", "save rejected: no SaveGameManager");
-			return false;
-		}
+			return RejectSave("save rejected: no SaveGameManager", true);
 
 		if (!manager.IsSavingAllowed())
-		{
-			LF_Debug.Warn("Persistence", "save rejected: saving is disabled or disallowed");
-			return false;
-		}
+			return RejectSave("save rejected: saving is disabled or disallowed", false);
 
 		if (!m_PersistenceSystem || m_PersistenceSystem.GetState() != EPersistenceSystemState.ACTIVE)
-		{
-			LF_Debug.Warn("Persistence", "save rejected: the persistence system is not active");
-			return false;
-		}
+			return RejectSave("save rejected: the persistence system is not active", false);
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Logs and keeps why a save request was refused.
+	//! \param[in] reason The log line.
+	//! \param[in] error True logs an error, false a warning.
+	//! \return Always false, for PassesSaveGates to return.
+	protected bool RejectSave(string reason, bool error)
+	{
+		m_sLastSaveRejection = reason;
+		if (error)
+			LF_Debug.Error("Persistence", reason);
+		else
+			LF_Debug.Warn("Persistence", reason);
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -847,14 +922,7 @@ class LF_PersistenceManagerComponent : ScriptComponent
 			// #980: the boot load lost data. Every save from here (autosave, manual, and the engine's
 			// own shutdown save) would become the latest save point with what is left, so saving is
 			// turned off for this session; the operator restores a backup.
-			if (LF_PersistenceComponentSerializer.IsLoadDamaged())
-			{
-				SaveGameManager saves = GetGame().GetSaveGameManager();
-				if (saves)
-					saves.SetSavingAllowed(false);
-
-				LF_Debug.Error("Persistence", "saving disabled for this session: the boot load was damaged, so no save point overwrites the save on disk (tools/cli host restore, docs/ops/game-updates.md)");
-			}
+			SyncSavingWithLoadDamage("the boot load");
 		}
 	}
 
