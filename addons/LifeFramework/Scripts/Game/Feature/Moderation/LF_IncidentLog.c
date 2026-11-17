@@ -161,6 +161,7 @@ class LF_IncidentLog
 		LF_EventBus.Subscribe(LF_OnNewLifeReturn, s_Nlr);
 		LF_EventBus.Subscribe(LF_OnFlaggedLogout, s_Logout);
 		s_bInstalled = true;
+		LF_IncidentDamage.StartTick();
 		LF_Debug.Info(FEATURE, string.Format("incident log installed (%1 record(s) loaded)", Records().Count()));
 	}
 
@@ -263,15 +264,27 @@ class LF_IncidentLog
 	//! first. Walks back from the newest record and stops at max, copying nothing.
 	static array<int> RecentNumbersFor(string uid, int max)
 	{
+		array<string> keys = {};
+		if (!uid.IsEmpty())
+			keys.Insert(uid);
+
+		return RecentNumbersForAny(keys, max);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Like RecentNumbersFor, for every key of one account (its uid and each character's record
+	//! key: an incident is stored under the key of the character that was active, #2414).
+	static array<int> RecentNumbersForAny(array<string> uids, int max)
+	{
 		array<int> numbers = {};
-		if (uid.IsEmpty() || max <= 0)
+		if (!uids || uids.IsEmpty() || max <= 0)
 			return numbers;
 
 		array<ref LF_IncidentRecord> records = Records();
 		for (int i = records.Count() - 1; i >= 0 && numbers.Count() < max; i--)
 		{
 			LF_IncidentRecord record = records[i];
-			if (record && (record.m_sSubjectUid == uid || record.m_sOtherUid == uid))
+			if (record && (uids.Find(record.m_sSubjectUid) >= 0 || uids.Find(record.m_sOtherUid) >= 0))
 				numbers.InsertAt(record.m_iNumber, 0);
 		}
 
@@ -387,6 +400,8 @@ class LF_IncidentKilledSubscriber : LF_EventSubscriber
 		if (!killed)
 			return false;
 
+		// The hits that led to the death go in first, so the log reads in the order it happened (#2414).
+		LF_IncidentDamage.FlushVictim(killed.m_sVictimUid);
 		LF_IncidentLog.Append(LF_IncidentConfig.KIND_DEATH, System.GetUnixTime(), killed.m_sVictimUid, killed.m_sKillerUid, killed.m_vPosition, 0, killed.m_sWeapon, killed.m_bMurder);
 		return true;
 	}
@@ -432,6 +447,7 @@ class LF_IncidentDownedSubscriber : LF_EventSubscriber
 		if (!downed)
 			return false;
 
+		LF_IncidentDamage.FlushVictim(downed.m_sPlayerUid);
 		LF_IncidentLog.Append(LF_IncidentConfig.KIND_DOWNED, System.GetUnixTime(), downed.m_sPlayerUid, downed.m_sDownerUid, downed.m_vPosition, 0, "", false);
 		return true;
 	}

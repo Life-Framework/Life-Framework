@@ -1,0 +1,61 @@
+// Grid cell c14r2 for slice-2441: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_slice_2441_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 191 0 47
+}
+SCR_DestructibleEntity Grid_slice_2441_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 196 0 47
+}
+SCR_DestructibleEntity Grid_slice_2441_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 201 0 47
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_2441_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 201 0 52
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_2441_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 201 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_2441_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 196 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_2441_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 191 0 57
+ angleY 90
+}
+GenericEntity Grid_slice_2441_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:slice-2441"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 190.2 0.505 47.6
+ angleY -90
+}
+GenericEntity Grid_slice_2441_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "slice-2441"
+  }
+ }
+ coords 190.3 0 49.5
+ angleY 90
+}
+GenericEntity Grid_slice_2441_Bench : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sChainId "moonshine"
+   m_sStepId "pack"
+   m_sStationKey "Grid_slice_2441_Bench"
+   m_sSiteId "Grid_slice_2441_Site"
+  }
+ }
+ coords 198.499 0.017 52
+ angleY -90
+}

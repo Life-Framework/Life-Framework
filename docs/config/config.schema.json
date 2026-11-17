@@ -411,6 +411,21 @@
       "additionalProperties": false,
       "x-class": "LF_GraceConfig"
     },
+    "houses": {
+      "type": "object",
+      "description": "The houses owner-config section: Configs/Houses/LF_Houses.conf with the owner's `houses` section layered over it.",
+      "properties": {
+        "doorCloseDelaySeconds": {
+          "type": "number",
+          "description": "Seconds a locked house's open door stays open before it closes itself. 0 turns the auto-close off",
+          "default": 20,
+          "minimum": 0,
+          "maximum": 600
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_HousesConfig"
+    },
     "idCard": {
       "type": "object",
       "description": "The photo identity card: Configs/Identity/LF_PhotoIdCard.conf with the owner's `idCard` section layered over it.",
@@ -471,6 +486,41 @@
           "default": 1200,
           "minimum": 0,
           "maximum": 86400
+        },
+        "runMinDistance": {
+          "type": "number",
+          "description": "Delivery run: the drop-off must be at least this many metres (straight line) from where the run started, or the run pays nothing",
+          "default": 300,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "runMinTimeFraction": {
+          "type": "number",
+          "description": "Delivery run: the run must take at least this share of the expected driving time (distance over the road speed), or it pays nothing",
+          "default": 0.6,
+          "minimum": 0,
+          "maximum": 1
+        },
+        "runRoadSpeed": {
+          "type": "number",
+          "description": "Delivery run: road speed in metres per second used to work out the expected driving time of a run",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cargoDepositPercent": {
+          "type": "integer",
+          "description": "Delivery cargo deposit: percent of the cargo's shop sell price taken at the start of a run. It is returned on delivery and kept when the run is abandoned. 0 turns the deposit off",
+          "default": 100,
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "cargoDepositFallback": {
+          "type": "integer",
+          "description": "Delivery cargo deposit: the deposit base when the shop price list has no sell price for the cargo",
+          "default": 50,
+          "minimum": 0,
+          "maximum": 1000000
         },
         "jobXpFirstLevel": {
           "type": "integer",
@@ -1176,6 +1226,62 @@
           "default": 168,
           "minimum": 0,
           "maximum": 100000
+        },
+        "armoryCooldownMinutes": {
+          "type": "integer",
+          "description": "Minutes of real time between two armory kits for one officer. Saved, so clocking out and a restart do not reset it. At least 1: the spike strip and roadblock kit carry no serial, so only the cooldown limits them",
+          "default": 120,
+          "minimum": 1,
+          "maximum": 1440
+        },
+        "dutyShiftMaxMinutes": {
+          "type": "integer",
+          "description": "Most minutes of one duty shift that count for duty pay and rank. Past it the clock runs on unpaid until the officer clocks out and in again, so an officer who walked away from the game stops earning. A disconnect also stops the clock",
+          "default": 120,
+          "minimum": 5,
+          "maximum": 1440
+        },
+        "trialSweepSeconds": {
+          "type": "integer",
+          "description": "Seconds between the server's checks for an on-duty officer whose trial ran out. That officer is clocked out",
+          "default": 60,
+          "minimum": 10,
+          "maximum": 3600
+        },
+        "ticketRateWindowSeconds": {
+          "type": "integer",
+          "description": "Seconds of the window in which an officer may send ticket requests (ticketRateBurst per window)",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 60
+        },
+        "ticketRateBurst": {
+          "type": "integer",
+          "description": "Ticket requests one officer may send per ticketRateWindowSeconds. More are refused",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 50
+        },
+        "spikeStripMaxPerOfficer": {
+          "type": "integer",
+          "description": "Spike strips one officer may have deployed at once. Each deployed strip checks for wheels 20 times a second",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 20
+        },
+        "callReward": {
+          "type": "integer",
+          "description": "Cash an officer is paid, once, when their fine of a taken police call suspect at the call site completes the call",
+          "default": 150,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "callRadius": {
+          "type": "number",
+          "description": "Metres from a police call site within which the fine by the officer holding the call completes it",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 2000
         }
       },
       "additionalProperties": false,

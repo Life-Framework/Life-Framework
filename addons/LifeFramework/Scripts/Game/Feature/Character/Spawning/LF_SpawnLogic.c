@@ -337,6 +337,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 				#endif
 					{
 				LF_Debug.Warn("Spawn", "player " + playerId + " already controls a character - not spawning another");
+				AdoptLivingBody(LF_Utils.GetPlayerUID(playerId), controlled);
 				return;
 					}
 			}
@@ -391,6 +392,28 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		// The signed-up delivery job (kept across death and restarts) goes on the new body. After the
 		// hand-over: the job component reads the player id from the body its player controls.
 		LF_CivilianJob.ApplySignUpToCharacter(LF_Utils.GetPlayerUID(playerId), character);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player who takes control of a living body no spawn made here (a save restored it) keeps it,
+	//! and CreateCharacter does not spawn another. Nothing then ran the progression apply that every
+	//! spawned body gets (BindAccountComponents): the body held only its starter licences, so the
+	//! licence desk and the gun counter treated a permit holder as one without a permit (#2413).
+	//! Idempotent: applying again to a body that already has the record changes nothing.
+	//! \param uid The character key progression is stored under (LF_Utils.GetPlayerUID).
+	//! \param body The living body the player controls.
+	//! \return true when the store had a record to apply.
+	static bool AdoptLivingBody(string uid, IEntity body)
+	{
+		if (!body || uid.IsEmpty())
+		{
+			LF_Debug.Warn("Spawn", "a restored body was not given its progression: no body or no character key");
+			return false;
+		}
+
+		bool applied = LF_Progression.ApplyToCharacter(uid, body);
+		LF_Debug.Info("Spawn", string.Format("restored body of %1 given its progression (record found: %2)", uid, applied));
+		return applied;
 	}
 
 	//------------------------------------------------------------------------------------------------

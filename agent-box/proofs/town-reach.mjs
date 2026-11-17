@@ -8,7 +8,7 @@ import { arrive, clientBox, sessionDir } from "../session.mjs";
 // (`tools\cli session up --mission island`).
 //
 //   town-reach                       the acceptance: a reachable marker (a junction of the place's road net) passes and a marker
-//                                    inside a closed building fails. Markers come from the place's dossier; the verb gets x,y,z.
+//                                    outside the map fails. Markers come from the place's dossier; the verb gets x,y,z.
 //   town-reach --place <slug>        the real proof `town ready` runs: from the arrival slot's entrance to every other mapped
 //                                    slot's entrance, from the place's dossier and approved mapping.
 //   town-reach --place <slug> --json   the same, one JSON line `TOWNREACH {...}` at the end for `town ready`.
@@ -24,17 +24,18 @@ function readPlace(place) {
   return { dossier, mapping: existsSync(mFile) ? JSON.parse(readFileSync(mFile, "utf8")) : null };
 }
 
-// Pure: the acceptance's two markers. `reach` is the junction nearest 50..150 m from the first junction (open road); `closed` is
-// the centre of the biggest building (a hole in the navmesh).
+const OFF_MAP_M = 20000; // the maps are 12.8 km square: 20 km east of any point is outside the world
+
+// Pure: the acceptance's two markers. `reach` is the junction nearest 50..150 m from the first junction (open road); `offmap` is a point
+// 20 km east of it, outside the world: no navmesh tile exists there, so the verb must refuse. Geography is no control: a point 40 m, and
+// 300 m, past the dossier's shore was still reached (the soldier navmesh wades), and a walker paths to the centre of a warehouse or a church.
 export function acceptanceMarkers(dossier) {
   const j = dossier.junctions ?? [];
   if (j.length < 2) throw new Error("the dossier has fewer than two junctions");
   const from = { x: j[0].x, z: j[0].z };
   const far = j.slice(1).map((p) => ({ x: p.x, z: p.z, d: dist(from, p) })).filter((p) => p.d >= 50 && p.d <= 150).sort((a, b) => a.d - b.d)[0];
   if (!far) throw new Error("no junction 50 to 150 m from the first one");
-  const big = [...(dossier.buildings ?? [])].filter((b) => b.footprint?.area).sort((a, b) => b.footprint.area - a.footprint.area)[0];
-  if (!big) throw new Error("the dossier has no building with a footprint");
-  return { from, reach: far, closed: { x: big.footprint.cx ?? big.x, y: big.y, z: big.footprint.cz ?? big.z, building: big.stem ?? big.prefab } };
+  return { from, reach: far, offmap: { x: r1(from.x + OFF_MAP_M), z: from.z } };
 }
 
 // Pure: [{ slot, from, to }] - the arrival slot's entrance to each other mapped slot's entrance (a plot slot uses the plot centre).
@@ -90,10 +91,10 @@ async function run(args) {
     const ok = reach(m.from, m.reach);
     results.push({ slot: "reachable-marker", ok: ok.status === "ok", detail: ok.detail });
     if (ok.status !== "ok") fails.push(`a reachable marker ${r1(dist(m.from, m.reach))} m away did not pass: ${ok.status} ${ok.detail}`);
-    const bad = reach(m.from, m.closed);
-    results.push({ slot: "closed-building-marker", ok: bad.status !== "ok", detail: bad.detail });
-    if (bad.status === "ok") fails.push(`a marker inside the closed building ${m.closed.building} passed: ${bad.detail}`);
-    else if (!/noreach|navmesh/.test(bad.detail)) fails.push(`the closed-building marker failed for the wrong reason: ${bad.detail}`);
+    const bad = reach(m.from, m.offmap);
+    results.push({ slot: "offmap-marker", ok: bad.status !== "ok", detail: bad.detail });
+    if (bad.status === "ok") fails.push(`a marker outside the map passed: ${bad.detail}`);
+    else if (!/noreach|navmesh/.test(bad.detail)) fails.push(`the off-map marker failed for the wrong reason: ${bad.detail}`);
   }
   for (const f of fails) console.log(`FAIL  ${f}`);
   if (asJson) console.log(`TOWNREACH ${JSON.stringify({ place, pass: !fails.length, results })}`);

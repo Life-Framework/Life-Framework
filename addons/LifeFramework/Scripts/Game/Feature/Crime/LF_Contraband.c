@@ -3,7 +3,8 @@
 //! of spirits at the barn (the start marker), drives it to the back of the pub
 //! (the drop), and is paid cash in hand once. Once the member gets into a vehicle,
 //! leaving it anywhere but at the drop fails the run, as does dying. A failed or
-//! already-paid run pays nothing.
+//! already-paid run pays nothing. The crate has to travel in a vehicle (the run records that a
+//! vehicle was watched) and a paid character waits out a cooldown before the next run.
 //------------------------------------------------------------------------------------------------
 enum LF_EConvoyState
 {
@@ -43,6 +44,7 @@ class LF_ConvoyVehicleWatch : Managed
 
 		events.RegisterScriptHandler("OnCompartmentLeft", this, OnCompartmentLeft);
 		m_VehicleId = vehicle.GetID();
+		LF_Contraband.MarkDriven(m_sCharacterId);
 		LF_Debug.Log("Contraband", string.Format("convoy watching vehicle for %1", m_sCharacterId));
 	}
 
@@ -157,6 +159,10 @@ class LF_ConvoyRun : Managed
 	int m_iCashPaid;
 	EntityID m_UserId;
 	bool m_bUserBound;
+	//! A vehicle watch attached during this run: the crate travelled by vehicle, not on foot.
+	bool m_bDriven;
+	//! System.GetTickCount() when the run was paid; the cooldown counts from it.
+	int m_iPaidAt;
 	ref LF_ConvoyVehicleWatch m_pWatch;
 }
 
@@ -164,6 +170,9 @@ class LF_ConvoyRun : Managed
 class LF_Contraband
 {
 	static const int PAYOUT = 200;
+	//! After a paid run the same character waits this long before starting another (10 minutes).
+	static const int COOLDOWN_MS = 600000;	// lf-fixed: balance rule of the review fix (#2419); a config class can take it later
+	static const string COOLDOWN_KEY = "#LF-Contraband_Cooldown";
 	//! A wooden crate of untaxed spirits, carried in both hands (vanilla BoxWooden_01 mesh).
 	static const ResourceName ITEM = "{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et";
 	//! Getting out of the vehicle this close to the drop is arriving, not abandoning the run.
@@ -238,7 +247,7 @@ class LF_Contraband
 	//! The player-facing reason a character may not start the convoy, or empty when they may.
 	//! No organization and an organization that does not hold the hideout read differently,
 	//! so the player knows what to do next.
-	static string StartRefusalKey(string characterId)
+	static string StartRefusalKey(string characterId, int nowMs = 0)
 	{
 		if (characterId.IsEmpty())
 			return "#LF-Contraband_JoinOrg";
@@ -251,16 +260,57 @@ class LF_Contraband
 		if (ownerId.IsEmpty() || org.GetId() != ownerId)
 			return "#LF-Contraband_NotHideoutOwner";
 
+		if (CooldownLeftMs(characterId, nowMs) > 0)
+			return COOLDOWN_KEY;
+
 		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool Start(string characterId, IEntity user)
+	//! Milliseconds left of the cooldown after a paid run; 0 when none runs. nowMs 0 reads the clock.
+	static int CooldownLeftMs(string characterId, int nowMs = 0)
+	{
+		LF_ConvoyRun run = Find(characterId);
+		if (!run || run.m_iState != LF_EConvoyState.PAID)
+			return 0;
+
+		if (nowMs == 0)
+			nowMs = System.GetTickCount();
+
+		int left = COOLDOWN_MS - (nowMs - run.m_iPaidAt);
+		if (left < 0)
+			return 0;
+
+		return left;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The run's vehicle watch attached: the crate is travelling by vehicle (server).
+	static void MarkDriven(string characterId)
+	{
+		LF_ConvoyRun run = Find(characterId);
+		if (!run || run.m_iState != LF_EConvoyState.RUNNING || run.m_bDriven)
+			return;
+
+		run.m_bDriven = true;
+		LF_Debug.Log("Contraband", string.Format("convoy driven by %1", characterId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param nowMs The clock for the cooldown; 0 reads System.GetTickCount() (tests pass a time).
+	static bool Start(string characterId, IEntity user, int nowMs = 0)
 	{
 		if (!Server())
 			return false;
 
-		if (!StartRefusalKey(characterId).IsEmpty())
+		string refusal = StartRefusalKey(characterId, nowMs);
+		if (refusal == COOLDOWN_KEY)
+		{
+			Refuse(string.Format("convoy refused: cooldown, %1 s left", CooldownLeftMs(characterId, nowMs) / 1000));
+			return false;
+		}
+
+		if (!refusal.IsEmpty())
 		{
 			Refuse("convoy refused: not a member");
 			return false;
@@ -270,6 +320,7 @@ class LF_Contraband
 		if (run.m_iState != LF_EConvoyState.RUNNING)
 		{
 			run.m_iState = LF_EConvoyState.RUNNING;
+			run.m_bDriven = false;
 			LF_Debug.Log("Contraband", string.Format("convoy started %1", characterId));
 		}
 
@@ -316,6 +367,15 @@ class LF_Contraband
 			return 0;
 		}
 
+		// A run begun on foot only arms a vehicle watch, so walking the crate to the drop never fails:
+		// the crate has to have been driven.
+		if (!run.m_bDriven)
+		{
+			Refuse("delivery refused: the crate was not driven");
+			LF_Utils.NotifyEntity(payTo, "#LF-Contraband_NotDriven", "#LF-Contraband_Title", 5.0);
+			return 0;
+		}
+
 		int paid = PAYOUT;
 		if (payTo)
 		{
@@ -336,11 +396,11 @@ class LF_Contraband
 			PlaySound(payTo, PICKUP_SOUND);
 
 		run.m_iState = LF_EConvoyState.PAID;
+		run.m_iPaidAt = System.GetTickCount();
 		run.m_iCashPaid = run.m_iCashPaid + paid;
 		StopWatch(run);
 		LF_Debug.Log("Contraband", string.Format("delivery paid %1 to %2", paid, characterId));
-		if (GetGame() && GetGame().GetWorkspace())
-			LF_Utils.NotifyEntity(payTo, "#EL-Contraband_Paid", "#EL-Contraband_Deliver", 3.0);
+		LF_Utils.NotifyEntity(payTo, "#EL-Contraband_Paid", "#EL-Contraband_Deliver", 3.0);
 		return paid;
 	}
 
@@ -507,8 +567,11 @@ class LF_Contraband
 		run.m_iState = LF_EConvoyState.FAILED;
 		StopWatch(run);
 		Refuse(message);
-		if (GetGame() && GetGame().GetWorkspace())
-			LF_Utils.Notify("#EL-Contraband_Failed", "#EL-Contraband_Deliver", 3.0);
+		// The hauler hears it through the server: LF_Utils.Notify shows a hint on the machine that
+		// calls it, which on a dedicated server is nobody.
+		if (run.m_bUserBound && GetGame() && GetGame().GetWorld())
+			LF_Utils.NotifyEntity(GetGame().GetWorld().FindEntityByID(run.m_UserId), "#EL-Contraband_Failed", "#EL-Contraband_Deliver", 3.0);
+
 		return true;
 	}
 

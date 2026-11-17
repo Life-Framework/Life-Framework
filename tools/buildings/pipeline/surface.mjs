@@ -108,10 +108,11 @@ export async function levelsUnder(ents, reader, px, pz, skip = null) {
       if (lx >= s.x[0] * k - EDGE && lx <= s.x[1] * k + EDGE && lz >= s.z[0] * k - EDGE && lz <= s.z[1] * k + EDGE) here.push({ y: e.y + s.y * k, ent: e });
     }
     // An open crate or box: its only up-facing collider is the inside floor, but things stack on its rim (bounds top).
-    // A small prop with no collider top under the point (a loaf, a notebook) is stacked on by its bounds top.
+    // A small prop with no collider top under the point (a loaf, a notebook) is stacked on by its bounds top. The collider
+    // top stays a level too: a wall shelf's board sits under its bracket, and what stands on the board stands.
     const top = e.y + b.max[1] * k;
     const low = (b.max[1] - b.min[1]) * k <= RIM.maxHeight;
-    if (low && (!here.length || top - here[0].y >= RIM.recess)) here.splice(0, here.length, { y: top, ent: e, rim: true });
+    if (low && (!here.length || top - here[0].y >= RIM.recess)) here.push({ y: top, ent: e, rim: true });
     out.push(...here);
   }
   return out.sort((a, b) => b.y - a.y);
@@ -138,7 +139,9 @@ export function prefabChildren(text) {
         continue;
       }
       const c = k.props.coords.trim().split(/\s+/).map(Number);
-      const yaw = Number(k.props.angleY || 0);
+      // A base-game furniture set writes `angles x y z`; ours write `angleY` (and angleX/angleZ for a tilt).
+      const ang = k.props.angles ? k.props.angles.trim().split(/\s+/).map(Number) : null;
+      const yaw = ang ? ang[1] || 0 : Number(k.props.angleY || 0);
       const [dx, dz] = par ? rot(par.yaw, c[0], c[2]) : [c[0], c[2]];
       const path = prefabOf(k.header) || grp || null;
       const head = k.header.replace(/^\$grp\s+/, "").replace(/:\s*".*$/, "").trim().split(/\s+/);
@@ -153,7 +156,7 @@ export function prefabChildren(text) {
         z: (par ? par.z : 0) + dz,
         yaw: (par ? par.yaw : 0) + yaw,
         scale: k.props.scale ? Number(k.props.scale) : null,
-        tilted: Boolean(Number(k.props.angleX || 0) || Number(k.props.angleZ || 0)),
+        tilted: Boolean(Number(k.props.angleX || 0) || Number(k.props.angleZ || 0) || (ang && (ang[0] || ang[2]))),
       };
       out.push(ent);
       visit(k, ent, null);

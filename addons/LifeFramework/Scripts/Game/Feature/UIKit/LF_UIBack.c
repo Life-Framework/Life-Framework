@@ -15,18 +15,29 @@ class LF_UIBack
 	//! Backspace alone (keyboard:KC_BACK, chimeraInputCommon.conf). Backspace is also one of MenuBack's
 	//! sources, so a press with a text field focused reports both and must delete text, not close.
 	static const string BACKSPACE = "LF_UIBackspace";
+	//! The keypad's delete-a-digit action (the ATM). It shares Backspace with MenuBack, so a sheet that
+	//! binds it as a hotkey keeps Backspace the way a focused text field does.
+	static const string KEYPAD_BACK = "LF_KeypadBack";
 
 	protected static int s_iLastMs = -100000;
 
 	//------------------------------------------------------------------------------------------------
-	//! True when this Back report is a Backspace in a focused text field: the field keeps it.
-	static bool IsTyping(bool fieldFocused)
+	//! True when this Back report is a Backspace the sheet keeps: a focused text field, or a keypad
+	//! that binds KEYPAD_BACK (sheetKeepsBackspace).
+	static bool IsTyping(bool sheetKeepsBackspace)
 	{
-		if (!fieldFocused || !GetGame())
+		if (!sheetKeepsBackspace || !GetGame())
 			return false;
 
 		InputManager input = GetGame().GetInputManager();
-		return input && input.GetActionTriggered(BACKSPACE);
+		return Keeps(sheetKeepsBackspace, input && input.GetActionTriggered(BACKSPACE));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rule behind IsTyping without the input read: Backspace stays with a sheet that keeps it.
+	static bool Keeps(bool sheetKeepsBackspace, bool backspaceDown)
+	{
+		return sheetKeepsBackspace && backspaceDown;
 	}
 
 	//------------------------------------------------------------------------------------------------

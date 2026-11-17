@@ -21,9 +21,36 @@ class LF_DevGameMaster
 	protected static bool s_bInstalled;
 
 	//------------------------------------------------------------------------------------------------
+	//! True while the editor-manager handler is installed on this world's core.
+	static bool IsInstalled()
+	{
+		return s_bInstalled;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! World end: take the handler off the editor core and forget the install. SCR_EditorManagerCore
+	//! outlives the world, so a handler left on it would keep granting EDIT in a production world
+	//! loaded after a dev-tools world in the same process (#2415).
 	static void ResetStatics()
 	{
+		if (s_bInstalled)
+		{
+			SCR_EditorManagerCore core = SCR_EditorManagerCore.Cast(SCR_EditorManagerCore.GetInstance(SCR_EditorManagerCore));
+			if (core)
+				core.Event_OnEditorManagerCreatedServer.Remove(OnManagerCreated);
+		}
+
 		s_bInstalled = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A grant needs this install and the current game mode's dev-tools gate, read again at grant
+	//! time: a handler or a delayed call that outlived its world must not grant in the next one.
+	//! \param installed The install flag.
+	//! \param devToolsEnabled The game mode's gate (LF_GameModeRoleplay.AreDevToolsEnabled).
+	static bool MayGrant(bool installed, bool devToolsEnabled)
+	{
+		return installed && devToolsEnabled;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -66,6 +93,17 @@ class LF_DevGameMaster
 	//------------------------------------------------------------------------------------------------
 	protected static void Grant(int playerId)
 	{
+		bool devTools;
+		LF_GameModeRoleplay gameMode = LF_GameModeRoleplay.Cast(GetGame().GetGameMode());
+		if (gameMode)
+			devTools = gameMode.AreDevToolsEnabled();
+
+		if (!MayGrant(s_bInstalled, devTools))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("player %1 not granted EDIT: dev tools are off in this world", playerId));
+			return;
+		}
+
 		SCR_EditorManagerCore core = SCR_EditorManagerCore.Cast(SCR_EditorManagerCore.GetInstance(SCR_EditorManagerCore));
 		if (!core)
 			return;
@@ -76,5 +114,22 @@ class LF_DevGameMaster
 
 		manager.AddEditorModes(EEditorModeAccess.BASE, EEditorMode.EDIT);
 		LF_Debug.Info(FEATURE, string.Format("player %1 granted EDIT (modes %2)", playerId, manager.GetEditorModes()));
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_DevGameMaster's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_DevGameMaster_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_DevGameMaster_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_DevGameMaster";
+	}
+
+	override void Apply()
+	{
+		LF_DevGameMaster.ResetStatics();
 	}
 }

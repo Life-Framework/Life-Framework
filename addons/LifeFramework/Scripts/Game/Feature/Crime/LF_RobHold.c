@@ -286,6 +286,9 @@ class LF_RobHold
 		if (!LF_Systems.IsEnabled(LF_RobAction.SYSTEM))
 			return LF_RobAction.REFUSED_OFF;
 
+		if (LF_Restraint.IsRestrained(player))
+			return LF_RobAction.REFUSED_CUFFED;
+
 		if (!LF_HoldUp.IsArmed(player))
 			return REFUSED_WEAPON;
 
@@ -314,6 +317,9 @@ class LF_RobHold
 		int playerId = players.GetPlayerIdFromControlledEntity(player);
 		if (!LF_RateLimit.Allow(playerId, LF_ERequestKind.CRIME, "robbery start", false))
 			return REFUSED_RATE;
+
+		if (LF_CuffEnforcement.Refuse(player, "held robbery"))
+			return LF_RobAction.REFUSED_CUFFED;
 
 		string refusal = Refusal(player, npc);
 		if (!refusal.IsEmpty())
@@ -390,7 +396,8 @@ class LF_RobHold
 		bool policeNear;
 		if (present)
 		{
-			downed = LF_Downed.IsDowned(player) || IsDead(player);
+			// Cuffed ends it like downed: the server, not the robber's client, decides (#2417).
+			downed = LF_Downed.IsDowned(player) || IsDead(player) || LF_Restraint.IsRestrained(player);
 			armed = LF_HoldUp.IsArmed(player);
 			distance = vector.Distance(player.GetOrigin(), session.m_vTill);
 			policeNear = PoliceWithin(session.m_vTill, session.m_fPoliceRadius);

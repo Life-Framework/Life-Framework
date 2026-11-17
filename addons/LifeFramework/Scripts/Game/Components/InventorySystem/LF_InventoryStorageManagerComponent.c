@@ -22,52 +22,31 @@ modded class SCR_InventoryStorageManagerComponent
 			return;
 		}
 
-		IEntity seller = pStorageFrom.GetOwner();
+		// The sale resolves on the server (LF_TraderSale). A client's drag only forwards the request:
+		// money and items are server state, so a client-side payout always fails.
+		IEntity seller = GetOwner();
 		if (!seller)
 		{
 			super.InsertItem(pItem, pStorageTo, pStorageFrom, cb);
 			return;
 		}
 
-		ResourceName itemPrefab = LF_Utils.GetPrefabName(pItem);
-		int unitValue = LF_TraderManagerComponent.GetUnitValue(trader.m_aTradableItems, itemPrefab);
-		if (unitValue <= 0)
+		if (!Replication.IsServer())
+		{
+			SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+			if (controller)
+				controller.LF_RequestTraderSale(pItem, shopOwner);
+			else
+				FailSell(cb);
+			return;
+		}
+
+		if (LF_TraderSale.Sell(seller, pItem, shopOwner, false) != LF_ETraderSale.SOLD)
 		{
 			FailSell(cb);
 			return;
 		}
 
-		if (trader.m_bBlackMarket && !LF_TraderManagerComponent.CanAccessBlackMarket(GetPlayerAccount(seller)))
-		{
-			FailSell(cb);
-			return;
-		}
-
-		// One output unit per LF_QuantityComponent quantity, then one cash unit per
-		// output. Ported from rekterakathom/EveronLife (MIT), commit
-		// 482b74a5a7e39e999d129b0657253696b9b8be15. This trader pays cash rather
-		// than spawning a barter prefab; the count is the same rule.
-		int outputUnits = LF_ShopRules.StackTradeOutputCount(GetItemQuantity(pItem));
-		int totalValue = LF_ShopRules.StackTradeTotal(unitValue, outputUnits);
-
-		// Pay before deleting: a sale that cannot pay out never consumes the item.
-		int paid = LF_MoneyUtils.AddCash(seller, totalValue, "trader-sell");
-		if (paid != totalValue)
-		{
-			if (paid > 0)
-				LF_MoneyUtils.RemoveCash(seller, paid, "trader-sell-rollback");
-			FailSell(cb);
-			return;
-		}
-
-		if (!this.TryDeleteItem(pItem))
-		{
-			LF_MoneyUtils.RemoveCash(seller, paid, "trader-sell-rollback");
-			FailSell(cb);
-			return;
-		}
-
-		SCR_HintManagerComponent.ShowCustomHint(LF_Terms.Text("#EL-Item_Sold", totalValue.ToString()), "#EL-Trade_Successful", 3.0);
 		this.SetReturnCode(EInventoryRetCode.RETCODE_OK);
 		if (cb)
 			cb.InvokeOnComplete();
@@ -80,28 +59,6 @@ modded class SCR_InventoryStorageManagerComponent
 	{
 		if (cb)
 			cb.InvokeOnFailed();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Stack size of the sold entity; 1 for items without a quantity component.
-	protected int GetItemQuantity(IEntity item)
-	{
-		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(item);
-		if (!quantity)
-			return 1;
-		return quantity.GetQuantity();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected LF_PlayerAccount GetPlayerAccount(IEntity user)
-	{
-		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
-		if (accountManager)
-		{
-			string playerUid = LF_Utils.GetPlayerUid(user);
-			return accountManager.GetAccount(playerUid);
-		}
-		return null;
 	}
 }
 

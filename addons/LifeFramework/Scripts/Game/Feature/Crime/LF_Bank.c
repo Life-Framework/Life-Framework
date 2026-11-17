@@ -636,6 +636,9 @@ class LF_Bank
 	//! the breach does not arm, or the vault is not configured.
 	static bool Rob(string vaultId, string playerUid, IEntity robber = null, float jamRoll = -1)
 	{
+		if (LF_CuffEnforcement.Refuse(robber, "vault robbery"))
+			return false;
+
 		if (vaultId.IsEmpty() || playerUid.IsEmpty())
 		{
 			LF_Debug.Error("Bank", "rob refused: vault id or player uid is empty");

@@ -1,61 +1,47 @@
-// Stage the bank kit in GridWorld for `look`, or take it out again.
+// The bank's layer rows beside the kit: the two tellers and the rob kit chest, in the pack grid layer.
 //
-//   node tools/buildings/bank/stage.mjs [<prefab>] [--yaw A] [--at X,Z]   write the staging layer
-//   node tools/buildings/bank/stage.mjs --remove                           delete it (always before a commit)
+//   node tools/buildings/bank/stage.mjs           rewrite the rows in Everon1989Grid_Layers/Grid_bank.layer
+//   node tools/buildings/bank/stage.mjs --check   exit 1 when the layer's rows are not what this script writes
 //
-// The kit is pack content (LF_Everon1989) and the GridWorld layers are core, so a committed grid layer must not
-// name it (validate-addon-boundary: pack-side grid layers do not exist yet, three-worlds.md). The staging layer
-// is a local, uncommitted file in GridWorld_Layers; `tools\cli look <x,z> --world <GridWorld.ent>` then shows
-// the real kit. <prefab> defaults to the pack's Bank/Bank.et (building, furniture, vault and interactables);
-// pass `vanilla` for the base-game Office_E_01 alone. Default spot: 300,300, flat ground outside the grid.
-import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+// `tools\cli grid place bank Prefabs/Buildings/Bank/Bank_Kit.et --pack` writes the cell (yard, sign, the kit). The tellers
+// are layer entities, not kit children (the clerk precedent: an NPC is spawned by the world, not by a building), so
+// `town fit` carries them as kit rows too. Their spots are building space (layout.mjs) turned into the world by the
+// kit row's own coords and yaw. Rows are named Grid_bank_Stage_*, so a re-run replaces its own block.
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { npcs, vault } from "./layout.mjs";
 import { fileURLToPath } from "node:url";
+import { F, npcs, robKit } from "./layout.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-export const STAGE_LAYER = join(ROOT, "addons", "LifeFramework", "Worlds", "GridWorld", "GridWorld_Layers", "Grid_zz_bankstage.layer");
-const args = process.argv.slice(2);
-const flag = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
+export const LAYER = join(ROOT, "addons", "LF_Everon1989", "Worlds", "Everon1989Grid", "Everon1989Grid_Layers", "Grid_bank.layer");
+const ROBKIT = "{6EAEEC207EBAB7C5}Prefabs/Props/Debug/LF_BankRobKitStand.et";
+const n = (v) => String(+(+v).toFixed(3));
 
-if (args.includes("--remove")) {
-  if (existsSync(STAGE_LAYER)) unlinkSync(STAGE_LAYER);
-  console.log("bank-stage: removed");
-  process.exit(0);
+if (!existsSync(LAYER)) throw new Error("no Grid_bank.layer: run tools\\cli grid place bank Prefabs/Buildings/Bank/Bank_Kit.et --pack first");
+const text = readFileSync(LAYER, "utf8");
+const kitRow = /^\w+ \w+ : "\{[0-9A-F]{16}\}Prefabs\/Buildings\/Bank\/Bank_Kit\.et" \{\n((?: .*\n)*?)\}/m.exec(text);
+if (!kitRow) throw new Error("Grid_bank.layer has no Bank_Kit row");
+const prop = (k) => new RegExp(`^ ${k} (.+)$`, "m").exec(kitRow[1])?.[1];
+const [kx, ky, kz] = prop("coords").split(" ").map(Number);
+const kyaw = Number(prop("angleY") ?? 0);
+const rad = (kyaw * Math.PI) / 180;
+// building space to world: Enfusion's yaw turns +z towards +x
+const world = (x, y, z) => [kx + x * Math.cos(rad) + z * Math.sin(rad), ky + y, kz - x * Math.sin(rad) + z * Math.cos(rad)];
+
+const rows = [];
+for (const p of npcs) {
+  const [x, y, z] = world(p.x, p.y, p.z);
+  rows.push(`LF_NpcBaseEntity Grid_bank_Stage_${p.name} : "${p.prefab}" {\n coords ${n(x)} ${n(y)} ${n(z)}\n angleY ${n((p.yaw + kyaw) % 360)}\n}`);
 }
-const name = args.find((a, i) => !a.startsWith("--") && !["--yaw", "--at"].includes(args[i - 1])) ?? "Bank";
-const guid = (rel) => /Name "\{([0-9A-F]{16})\}/.exec(readFileSync(join(ROOT, "addons", "LF_Everon1989", rel + ".meta"), "utf8"))[1];
-let cls = "GenericEntity";
-let ref;
-if (name === "vanilla") {
-  cls = "SCR_DestructibleBuildingEntity";
-  ref = "{51F233A0BA73532A}Prefabs/Structures/Industrial/Houses/Office_E_01/Office_E_01.et";
-} else {
-  const rel = name === "Bank" ? "Prefabs/Buildings/Bank/Bank_Kit.et" : name === "shell" ? "Prefabs/Buildings/Bank/Bank.et" : name;
-  if (name === "shell" || name === "Bank") cls = "SCR_DestructibleBuildingEntity";
-  ref = `{${guid(rel)}}${rel}`;
+{
+  const [x, y, z] = world(robKit.x, F, robKit.z);
+  rows.push(`GenericEntity Grid_bank_Stage_RobKit : "${ROBKIT}" {\n coords ${n(x)} ${n(y)} ${n(z)}\n angleY ${n((robKit.yaw + kyaw) % 360)}\n}`);
 }
-const [x, z] = flag("--at", "300,300").split(",").map(Number);
-const yaw = Number(flag("--yaw", "0"));
-// the kit also needs its tellers (layer entities) and, for the robbery proof, the rob kit chest; building space to world
-const rad = (yaw * Math.PI) / 180;
-const world = (lx, lz) => [x + lx * Math.cos(rad) + lz * Math.sin(rad), z - lx * Math.sin(rad) + lz * Math.cos(rad)];
-let extra = "";
-if (name === "Bank") {
-  for (const n of npcs) {
-    const [wx, wz] = world(n.x, n.z);
-    extra += `LF_NpcBaseEntity Grid_zz_bankstage_${n.name} : "${n.prefab}" {
- coords ${wx.toFixed(3)} ${n.y} ${wz.toFixed(3)}
- angleY ${(n.yaw + yaw) % 360}
+const kept = text.replace(/^\w+ Grid_bank_Stage_\w+ : "[^"]+" \{\n(?: .*\n)*?\}\n/gm, "");
+const next = `${kept.trimEnd()}\n${rows.join("\n")}\n`;
+if (process.argv.includes("--check")) {
+  console.log(next === text ? "bank stage: current" : "bank stage: DRIFT (run node tools/buildings/bank/stage.mjs)");
+  process.exit(next === text ? 0 : 1);
 }
-`;
-  }
-  const [kx, kz] = world(vault.x, vault.z + 1.8);
-  extra += `GenericEntity Grid_zz_bankstage_RobKit : "{6EAEEC207EBAB7C5}Prefabs/Props/Debug/LF_BankRobKitStand.et" {
- coords ${kx.toFixed(3)} 0 ${kz.toFixed(3)}
- angleY ${yaw}
-}
-`;
-}
-writeFileSync(STAGE_LAYER, `// Local staging (never committed): tools/buildings/bank/stage.mjs\n${cls} Grid_zz_bankstage_Kit : "${ref}" {\n coords ${x} 0 ${z}\n${yaw ? ` angleY ${yaw}\n` : ""}}\n${extra}`);
-console.log(`bank-stage: ${name} at ${x},${z} yaw ${yaw}`);
+writeFileSync(LAYER, next);
+console.log(`bank stage: ${rows.length} row(s) written to Grid_bank.layer (kit at ${kx}, ${kz}, yaw ${kyaw})`);
