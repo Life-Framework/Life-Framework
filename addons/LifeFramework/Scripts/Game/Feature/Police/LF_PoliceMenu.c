@@ -230,6 +230,8 @@ class LF_PoliceUtils
 //------------------------------------------------------------------------------------------------
 class LF_PoliceMenu : ChimeraMenuBase
 {
+	static const string LAYOUT = "{41C6F92AE5EA775C}UI/Layouts/PoliceMenu.layout";
+
 	protected PlayerController m_PlayerController;
 
 	// UI input only: Enter, Esc and the pad, polled every frame (LF_UIMenuInput).
@@ -256,10 +258,18 @@ class LF_PoliceMenu : ChimeraMenuBase
 			LF_Debug.Error("Police", "police menu close button missing or not a button; Esc still closes");
 
 		array<Widget> focus = {};
-		focus.Insert(root.FindAnyWidget("SearchButton"));
-		focus.Insert(root.FindAnyWidget("ArrestButton"));
-		focus.Insert(m_wCloseButton);
+		BuildFocusOrder(root, focus);
 		m_Input.SetFocusOrder(focus);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The focus ring for a menu built from LAYOUT, top to bottom.
+	static void BuildFocusOrder(Widget root, array<Widget> focus)
+	{
+		if (!root || !focus)
+			return;
+
+		focus.Insert(root.FindAnyWidget("CloseButton"));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -305,6 +315,8 @@ class LF_PoliceMenu : ChimeraMenuBase
 
 	//------------------------------------------------------------------------------------------------
 	//! Client-side entry: routes the arrest request to the server via the officer's character.
+	//! No widget in this menu calls it today (the blank Search and Arrest buttons are gone, #2509);
+	//! the wanted-list sheet will call it.
 	void ArrestPlayer(string playerUid)
 	{
 		SCR_ChimeraCharacter officer = GetOfficerCharacter();

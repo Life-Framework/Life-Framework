@@ -8,36 +8,19 @@
 //! re-reads the lock and the door when it fires, so a house locked after the door was opened is still
 //! covered, and a door someone already closed is left alone.
 //!
-//! DELAY. The default is 20 seconds; 0 turns the auto-close off. The owner-config key for it is a
-//! follow-up (the config service lives outside this slice); until then SetDelaySeconds is the one
-//! writer, so a later config section only has to call it.
+//! DELAY. The owner sets it: `houses.doorCloseDelaySeconds` (LF_HousesConfig, #2505). The default is
+//! 20 seconds; 0 turns the auto-close off; a value over LF_HousesConfig.DOOR_CLOSE_MAX is clamped. A /configreload
+//! applies to the next door that opens; a timer already running keeps the delay it was armed with.
 //------------------------------------------------------------------------------------------------
 class LF_HouseDoorClose
 {
-	static const float DEFAULT_DELAY_SECONDS = 20;	// lf-fixed: the shipped default until the owner-config key lands (follow-up card)
-	static const float MAX_DELAY_SECONDS = 600;	// lf-fixed: the limit for a future owner setting, ten minutes
 	protected static const float OPEN_SHARE = 0.5;	// lf-fixed: the same threshold the vanilla door action uses for "open"
 
-	protected static float s_fDelaySeconds = DEFAULT_DELAY_SECONDS;
-
 	//------------------------------------------------------------------------------------------------
-	//! \return The seconds a locked house's door may stay open; 0 means it never closes itself.
+	//! \return The seconds a locked house's door may stay open (the owner's `houses.doorCloseDelaySeconds`); 0 means it never closes itself.
 	static float GetDelaySeconds()
 	{
-		return s_fDelaySeconds;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! \param seconds The new delay, clamped to 0..MAX_DELAY_SECONDS; 0 turns the auto-close off.
-	static void SetDelaySeconds(float seconds)
-	{
-		s_fDelaySeconds = Math.Clamp(seconds, 0, MAX_DELAY_SECONDS);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static void ResetStatics()
-	{
-		s_fDelaySeconds = DEFAULT_DELAY_SECONDS;
+		return LF_HousesConfig.DoorCloseDelaySeconds();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -58,7 +41,11 @@ class LF_HouseDoorClose
 	//! Server: schedules the close for a house door that was just opened.
 	static void Arm(IEntity door)
 	{
-		if (!Replication.IsServer() || !door || s_fDelaySeconds <= 0)
+		if (!Replication.IsServer() || !door)
+			return;
+
+		float delay = GetDelaySeconds();
+		if (delay <= 0)
 			return;
 
 		ScriptCallQueue queue = GetGame().GetCallqueue();
@@ -67,7 +54,7 @@ class LF_HouseDoorClose
 
 		// No Remove(Tick): the queue holds every door's tick under one function. A door opened again
 		// before its first tick fires is closed by that earlier tick, which is the safe side.
-		queue.CallLater(Tick, s_fDelaySeconds * 1000, false, door);
+		queue.CallLater(Tick, delay * 1000, false, door);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -85,24 +72,7 @@ class LF_HouseDoorClose
 
 		BaseDoorComponent doorComponent = BaseDoorComponent.Cast(door.FindComponent(BaseDoorComponent));
 		doorComponent.SetControlValue(0, RplId.Invalid());
-		LF_Debug.Info("Houses", string.Format("locked house door closed itself after %1 s: house=%2", s_fDelaySeconds, doorLock.GetHouseIdentifier()));
+		LF_Debug.Info("Houses", string.Format("locked house door closed itself after %1 s: house=%2", GetDelaySeconds(), doorLock.GetHouseIdentifier()));
 		return true;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! World-end reset of LF_HouseDoorClose's statics (registered at script load; Core/LF_StaticReset.c).
-class LF_HouseDoorClose_StaticResetHook : LF_StaticResetHook
-{
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_HouseDoorClose_StaticResetHook());
-
-	override string Owner()
-	{
-		return "LF_HouseDoorClose";
-	}
-
-	override void Apply()
-	{
-		LF_HouseDoorClose.ResetStatics();
 	}
 }

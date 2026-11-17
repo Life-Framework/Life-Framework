@@ -73,6 +73,10 @@ class LF_HideoutState : Managed
 	//! Banked points, 0 to LF_OrgConfig.HeldGroundMaxPoints().
 	int m_iHoldPoints;
 
+	//! Runtime only, never saved: the organization this site's door is registered for as its base
+	//! (LF_Places "org_base", #2504); "" = none registered.
+	string m_sBaseOrgId;
+
 	//------------------------------------------------------------------------------------------------
 	void ResetHeldGround()
 	{
@@ -771,6 +775,8 @@ class LF_Hideout
 		if (!door)
 			return;
 
+		SyncOrgBase(state, door);
+
 		LF_LockComponent lock = LF_Component<LF_LockComponent>.Find(door);
 		if (!lock)
 			return;
@@ -790,6 +796,39 @@ class LF_Hideout
 		}
 
 		lock.SetLocked(state.m_bLocked);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A leased hideout is its organization's base for placement (#2504): the door is registered in
+	//! LF_Places as "org_base" under the organization id, and the place goes when the lease does. Runs
+	//! from PushLock, so every lease change, load and door bind keeps it right, and is idempotent.
+	//! Server only. An organization that leases a second site takes its base over (last lease wins).
+	protected static void SyncOrgBase(notnull LF_HideoutState state, notnull IEntity door)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		string baseKind = LF_PlacementZones.ORG_BASE_KIND;
+		if (!state.m_sBaseOrgId.IsEmpty() && state.m_sBaseOrgId != state.m_sOrganizationId)
+		{
+			if (LF_Places.Find(baseKind, state.m_sBaseOrgId) == door)
+				LF_Places.Unregister(baseKind, state.m_sBaseOrgId);
+
+			state.m_sBaseOrgId = "";
+		}
+
+		if (state.m_sOrganizationId.IsEmpty() || state.m_sBaseOrgId == state.m_sOrganizationId)
+			return;
+
+		IEntity held = LF_Places.Find(baseKind, state.m_sOrganizationId);
+		if (held && held != door)
+		{
+			LF_Debug.Info("Hideout", string.Format("base of org=%1 moves to hideout=%2: the last lease wins", state.m_sOrganizationId, state.m_sHideoutId));
+			LF_Places.Unregister(baseKind, state.m_sOrganizationId);
+		}
+
+		if (LF_Places.Register(baseKind, state.m_sOrganizationId, door))
+			state.m_sBaseOrgId = state.m_sOrganizationId;
 	}
 
 	//------------------------------------------------------------------------------------------------
