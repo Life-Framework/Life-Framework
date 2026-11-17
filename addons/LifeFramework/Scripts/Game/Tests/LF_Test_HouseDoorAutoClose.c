@@ -58,7 +58,7 @@ class LF_Test_HouseDoorAutoClose : LF_Test
 		if (!doorLock || !doorComponent || !action)
 			return;
 
-		ctx.EqualFloat(20, LF_HouseDoorClose.DEFAULT_DELAY_SECONDS, 0.001, "a door left open closes after 20 seconds unless the server says otherwise");
+		ctx.EqualFloat(20, LF_HouseDoorClose.GetDelaySeconds(), 0.001, "a door left open closes after 20 seconds unless the server says otherwise");
 		doorLock.SetHouseIdentifier(HOUSE);
 		doorLock.Lock();
 
