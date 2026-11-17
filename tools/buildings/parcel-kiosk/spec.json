@@ -1,0 +1,110 @@
+{
+  "slug": "parcel-kiosk",
+  "name": "Parcel kiosk",
+  "concept": "The Saint-Philippe newspaper kiosk (b21), 1989, fitted as the parcel kiosk: the vanilla NewspaperBooth_E_01_redyellow, a 4 m booth with its shelves, counter and hatch built into one model. It becomes the place where the town posts and collects parcels (the post-parcel prop, a clerk behind the hatch, a noticeboard). Later it also sells the tourist map (M14 follow-up): the pack item LF_TouristMap.et as a row on the kiosk shop counter, so a new arrival can buy the map that marks the town heard of. This card is the shell: the booth as an LF pack prefab and its own pack grid cell, with the proof file to re-shoot it. Pass 1 builds it out.",
+  "red_line": "pack",
+  "addon": "LF_Everon1989",
+  "prefab_dir": "Prefabs/Buildings/ParcelKiosk",
+  "vanilla": {
+    "base": "{DA33ED8E94FD68DF}Prefabs/Structures/Commercial/Booth/NewspaperBooth_E_01/NewspaperBooth_E_01_redyellow.et",
+    "building": "ParcelKiosk",
+    "furniture": "none: the vanilla booth carries no Furniture child (shelves and counter are in the model), so prune.mjs has nothing to flatten or cut"
+  },
+  "host": {
+    "prefab": "NewspaperBooth_E_01_redyellow",
+    "town": "saint-philippe",
+    "dossier": [
+      "b21"
+    ],
+    "world_xz": [
+      4424.9,
+      10753.7
+    ],
+    "yaw_deg": 100,
+    "front": "+z",
+    "front_note": "Front +z like every building. The booth model is a long box (5 m along z): the glass and the street door are on the +z face as placed in the dossier; pass 1 reads the pictures and, if the hatch faces -x, says so here.",
+    "footprint": {
+      "min": [
+        -2.21,
+        -2.64
+      ],
+      "max": [
+        1.92,
+        2.36
+      ]
+    },
+    "floor_y": 0.05,
+    "grid": {
+      "cell": "c17r4",
+      "entity": "Grid_parcel_kiosk_R0",
+      "layer": "Grid_parcel_kiosk.layer"
+    }
+  },
+  "rooms": [
+    {
+      "id": "kiosk",
+      "floor": 0,
+      "x": [
+        -0.98,
+        1.45
+      ],
+      "z": [
+        -2.31,
+        2.03
+      ],
+      "centre": [
+        0.24,
+        0.05,
+        -0.14
+      ],
+      "role": "the booth interior: counter, shelves and hatch in the model; the clerk stands here in pass 1"
+    }
+  ],
+  "interactables": [
+    "parcel counter (post-parcel prop, tools/assets/post-parcel) with the parcel-post action, pass 1",
+    "kiosk clerk behind the hatch (an NPC with a dialogue), pass 1",
+    "tourist map for sale (M14 follow-up, after pass 1): LF_Everon1989/Prefabs/Items/LF_TouristMap.et as a shop-price row on the kiosk counter; docs/features/map.md says the kiosk does not sell it yet"
+  ],
+  "budget": {
+    "size": "small",
+    "entities": 150,
+    "lights": 3,
+    "shadow_casters": 0,
+    "physics_props": 0,
+    "per_frame_scripts": 0,
+    "check": "toolscli perf building parcel-kiosk --size small"
+  },
+  "scripts": {
+    "shell": "node tools/buildings/parcel-kiosk/prune.mjs",
+    "proof": "tools/buildings/parcel-kiosk/proof.json"
+  },
+  "counts": {
+    "shell": {
+      "entities": 1,
+      "lights": 0,
+      "shadow_casters": 0,
+      "vanilla_props_kept": {
+        "building": "0/0 (the booth has no furniture child)"
+      }
+    }
+  },
+  "looks": {
+    "about": "Re-shoot: toolscli look grid:parcel-kiosk --close 0 [--hour 22]; the room with toolscli look grid:parcel-kiosk --interior 234.5,0.05,76.38 --radius 3 --close 0 [--hour 22] (world space: the kit sits at coords 234.359 0 76.144, angleY -90 in Grid_parcel_kiosk.layer, so building (bx,by,bz) is world (234.359 - bz, by, 76.144 + bx))",
+    "exterior": true,
+    "rooms": [
+      {
+        "name": "kiosk",
+        "at": [
+          0.24,
+          0.05,
+          -0.14
+        ],
+        "radius": 3
+      }
+    ],
+    "hours": [
+      14,
+      22
+    ]
+  }
+}
