@@ -27,6 +27,9 @@ class LF_BetaHud : SCR_InfoDisplay
 	protected SCR_CharacterControllerComponent m_PlayerController;
 	protected DamageManagerComponent m_DMC;
 	protected LF_CharacterSurvivalComponent m_Survival;
+	//! The inventory manager OnMoneyChange is subscribed to, kept so the handler can be removed
+	//! from it when the HUD stops drawing this body (a respawn draws a new one).
+	protected ScriptedInventoryStorageManagerComponent m_MoneyInventory;
 
 	protected bool m_bUsingProgressWidget;
 	protected bool m_bStatChange;
@@ -191,10 +194,32 @@ class LF_BetaHud : SCR_InfoDisplay
 		}
 
 		// Init cash display and subscribe to balance changes
+		UnsubscribeMoney();
 		int currentCash = LF_MoneyUtils.GetCash(owner);
 		OnMoneyChange(LF_MoneyUtils.CashPrefab(), currentCash, currentCash);
-		ScriptedInventoryStorageManagerComponent inventoryManager = LF_Component<ScriptedInventoryStorageManagerComponent>.Find(owner);
-		if (inventoryManager) inventoryManager.LF_GetOnAmountChanged(LF_MoneyUtils.CashPrefab()).Insert(OnMoneyChange);
+		m_MoneyInventory = LF_Component<ScriptedInventoryStorageManagerComponent>.Find(owner);
+		if (m_MoneyInventory) m_MoneyInventory.LF_GetOnAmountChanged(LF_MoneyUtils.CashPrefab()).Insert(OnMoneyChange);
+	}
+
+	//---------------------------------------------------------------------
+	//! The money handler must not outlive the body it listened to: the old inventory manager would
+	//! keep calling it, and the next OnStartDraw would add a second copy (two updates per move).
+	protected void UnsubscribeMoney()
+	{
+		if (m_MoneyInventory)
+		{
+			ScriptInvoker invoker = m_MoneyInventory.LF_GetOnAmountChanged(LF_MoneyUtils.CashPrefab());
+			if (invoker) invoker.Remove(OnMoneyChange);
+		}
+
+		m_MoneyInventory = null;
+	}
+
+	//---------------------------------------------------------------------
+	override event void OnStopDraw(IEntity owner)
+	{
+		UnsubscribeMoney();
+		super.OnStopDraw(owner);
 	}
 
 	//---------------------------------------------------------------------

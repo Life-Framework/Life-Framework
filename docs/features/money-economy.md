@@ -3,6 +3,11 @@
 ### `LF_MoneyUtils` — `Feature/Money/LF_MoneyUtils.c`
 - ✅ Cash is the `MoneyStack` inventory item. `GetCash` (‑1 on fault),
   `AddCash`/`RemoveCash` (actual amount, 0 on fault).
+- ✅ `AddCash(..., dropOverflow = true)` (#2503, opt-in): cash the inventory cannot take is left
+  on the ground at the target's feet, counts as added, and the ledger records the full amount
+  once (`[LFDebug:Money] $N of $M ... dropped at their feet`). Default off: other callers are
+  unchanged. `LF_PlacementCost` refunds use it, so a refund to a full inventory is no longer lost
+  (`LF_Test_MoneyAddCashDrop`).
 - ⚠️ Inconsistent sentinels (`-1` vs `0`); doc comments wrong on
   Remove/Take.
 
