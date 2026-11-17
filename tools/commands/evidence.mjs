@@ -17,7 +17,8 @@
 // resolves once the PR merges. `wt ship` refuses a player-visible PR with no embedded picture
 // (tools/lib/pr-quality.mjs), and a path in backticks is not an embedded picture.
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { extname, join } from "node:path";
+import { dirname, extname, join } from "node:path";
+import { samePairProblem } from "../lib/look-job.mjs";
 
 export const help = "evidence <key> before|after <area|image> | table   keep before/after pictures in docs-images/<key>/ and print the PR markdown";
 
@@ -26,7 +27,7 @@ const DIR = "website/public/docs-images";
 const MAX_W = 1280;
 const MAX_KB = 500;
 
-const USAGE = `usage: tools\\cli evidence <key> before|after <area | image.png|jpg> [--shot wide|top|c03...] [--name n]
+const USAGE = `usage: tools\\cli evidence <key> before|after <area | image.png|jpg> [--shot wide|top|c03...] [--name n] [--same-inputs]
        tools\\cli evidence <key> table
   <key>  the issue number, or a short slug when there is no issue`;
 
@@ -74,16 +75,26 @@ export function fitWidth(width, height, rgb, max = MAX_W) {
   return { width: w, height: h, rgb: out };
 }
 
+// The addons tree a look picture shows (its index.json inputs.rendered), or null for a picture from elsewhere.
+function lookTree(dir) {
+  try {
+    const idx = JSON.parse(readFileSync(join(dir, "index.json"), "utf8"));
+    return idx.inputs?.rendered ?? idx.inputs?.addons ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function resolveSource(root, src, shot) {
   if (/\.(png|jpe?g)$/i.test(src)) {
     const p = existsSync(src) ? src : join(root, src);
-    return existsSync(p) ? { path: p, name: null } : null;
+    return existsSync(p) ? { path: p, name: null, tree: lookTree(dirname(p)) } : null;
   }
   const dir = join(root, "tmp", "look", src);
   if (!existsSync(dir)) return null;
   const want = shot ?? "wide";
   const hit = readdirSync(dir).filter((n) => n.endsWith(".png")).find((n) => n === `${want}.png` || n.startsWith(want) || n.replace(/^c\d+_/, "") === `${want}.png`);
-  return hit ? { path: join(dir, hit), name: want === "wide" ? src : `${src}-${hit.replace(/\.png$/, "").replace(/^c\d+_/, "")}` } : null;
+  return hit ? { path: join(dir, hit), name: want === "wide" ? src : `${src}-${hit.replace(/\.png$/, "").replace(/^c\d+_/, "")}`, tree: lookTree(dir) } : null;
 }
 
 function arg(list, flag) {
@@ -128,6 +139,21 @@ export async function main(args, ctx) {
     console.log("FAIL  an image path needs --name <short-name>");
     return 1;
   }
+  // Which addon files each kept picture shows (tmp/, never published): a pair of the same files shows no change.
+  const record = join(root, "tmp", "evidence", `${key}.json`);
+  let trees = {};
+  try {
+    trees = JSON.parse(readFileSync(record, "utf8"));
+  } catch {}
+  const other = verb === "before" ? "after" : "before";
+  const same = samePairProblem(trees[name]?.[other], found.tree);
+  if (same && !list.includes("--same-inputs")) {
+    console.log(`FAIL  evidence: ${same}. Nothing kept (--same-inputs keeps it anyway, for a change outside addons/)`);
+    return 1;
+  }
+  mkdirSync(dirname(record), { recursive: true });
+  trees[name] = { ...trees[name], [verb]: found.tree ?? null };
+  writeFileSync(record, JSON.stringify(trees, null, 2) + "\n");
   mkdirSync(outDir, { recursive: true });
   const ext = extname(found.path).toLowerCase();
   let file;
@@ -143,7 +169,6 @@ export async function main(args, ctx) {
   }
   console.log(`evidence: ${DIR}/${key}/${file}`);
   console.log(embedLine(key, file, `${name} ${verb}`));
-  const other = verb === "before" ? "after" : "before";
   if (pairs(readdirSync(outDir)).find((r) => r.name === name && r[other])) console.log(`pair complete: 'tools\\cli evidence ${key} table' prints the before | after table`);
   console.log("look at the picture before you keep it; commit it with the change");
   return 0;
