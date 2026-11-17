@@ -5,13 +5,13 @@
 //   licenceVerdict accepting by-nc                 -> FAIL source: NC, ND, SA and unlabelled licences are refused
 //   searchCatalogue without the size filter        -> FAIL source: the best name match wins and a 9 m cliff is not a candidate
 //   appendCredit without the already-there test    -> FAIL source: a credit row is added once
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { STAGES, specProblems } from "../assets/pipeline/asset.mjs";
 import * as src from "../assets/pipeline/source.mjs";
 import { VANILLA_SKIP, licenceVerdict, vanillaQuery } from "../assets/pipeline/sources.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -22,7 +22,7 @@ export async function main() {
     failed++;
     console.log(`FAIL  ${what}`);
   };
-  const tmp = mkdtempSync(join(tmpdir(), "lf-source-selftest-"));
+  const tmp = scratchDir("lf-source-selftest-");
 
   ok(licenceVerdict("cc0").ok && licenceVerdict("CC0 1.0").ok && licenceVerdict("by").credit === true, "source: CC0 is free and CC-BY needs its credit");
   ok(["by-nc", "by-nd", "by-sa", "by-nc-sa", "", "all rights reserved"].every((l) => !licenceVerdict(l).ok), "source: NC, ND, SA and unlabelled licences are refused");

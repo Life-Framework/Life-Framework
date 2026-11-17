@@ -15,8 +15,7 @@
 // runs the local step without the cap" ...); requireLocalWorkbench never throwing failed "the slot refuses
 // without the cap and takes no lock" and "the sync slot refuses too".
 
-import { mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { chooseGate, chooseRefresh } from "../lib/wb-gate.mjs";
@@ -24,6 +23,7 @@ import * as wb from "../lib/wb-lock.mjs";
 import * as route from "../lib/wb-route.mjs";
 import * as pool from "../remote/pool.mjs";
 import { check as policyCheck } from "./validate-wb-policy.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const ok = (name, cond) => {
@@ -75,7 +75,7 @@ ok("no local entry keeps the old behaviour", route.localPolicy({ machines: [{ na
 
 // 4. the real registry: a temp checkout whose lf.local.json removes the cap, like this PC's
 pool.setHostnameForTest("selftest-host");
-const dir = mkdtempSync(join(tmpdir(), "lf-wb-policy-"));
+const dir = scratchDir("lf-wb-policy-");
 spawnSync("git", ["init", "-q", dir], { windowsHide: true });
 writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "local", caps: ["server"] }] } }));
 ok("registry: this PC's caps lack workbench", route.localWorkbench(dir, { env: {} }).allowed === false);

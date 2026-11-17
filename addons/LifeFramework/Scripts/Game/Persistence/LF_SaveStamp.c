@@ -61,7 +61,7 @@ class LF_SaveStamp
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The game build stamped in the first save this world loaded, UNKNOWN_BUILD without one.
+	//! \return The game build stamped in the first save this world loaded, UNKNOWN_BUILD without one.
 	static string BootLoadedBuild()
 	{
 		if (!s_bBootCaptured)
@@ -71,7 +71,7 @@ class LF_SaveStamp
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The save version stamped in the first save this world loaded, 0 without one.
+	//! \return The save version stamped in the first save this world loaded, 0 without one.
 	static int BootSaveVersion()
 	{
 		return s_iBootSaveVersion;
