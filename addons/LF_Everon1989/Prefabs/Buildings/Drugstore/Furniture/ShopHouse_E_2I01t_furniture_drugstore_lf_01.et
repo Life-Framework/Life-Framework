@@ -1,45 +1,10 @@
 GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {
  ID "3C4F0996E90E514E"
  {
-  GenericEntity : "{00C9C0860D1D8A84}Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_DarkWood.et" {
-   ID "5FB8FE19EB415272"
-   coords -4.989 7.599 1.517
-   angleY -105
-  }
   GenericEntity : "{0164749D6EAA4518}Prefabs/Props/Furniture/Bed_01.et" {
    ID "91613D364E16E872"
    coords 5.126 4.299 2.105
    angleY -180
-  }
-  GenericEntity : "{078B9372FC15735D}Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_red.et" {
-   ID "E3EDBBF96BA62206"
-   coords -3.902 7.599 -4.361
-   angleY -105
-  }
-  GenericEntity : "{0BE3BDE3910436F2}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et" {
-   ID "C13878424A0091D2"
-   coords -4.899 7.599 2.463
-   angleY -179.449
-  }
-  GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
-   ID "A4711298A2D8DAEA"
-   coords -4.931 7.599 3.576
-   angleY -180
-  }
-  GenericEntity : "{163A4F4899E087E8}Prefabs/Props/Furniture/BenchKitchen_01/Dst/BenchKitchen_01_dst_Green.et" {
-   ID "538A4E1CDE68D00A"
-   coords -4.759 7.599 6.374
-   angleY -180
-  }
-  GenericEntity : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
-   ID "444CE5A526F8288C"
-   coords -5.433 7.599 0.559
-   angleY 90
-  }
-  GenericEntity : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
-   ID "456F3E5076797F13"
-   coords -5.433 7.599 -0.949
-   angleY 90
   }
   GenericEntity : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
    ID "6191BE39F98FF21F"
@@ -51,20 +16,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -2.102 4.299 -4.289
    angleY -90
   }
-  GenericEntity : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
-   ID "94C2E8C8D3045EED"
-   coords -5.433 7.599 -0.195
-   angleY 90
-  }
   GenericEntity : "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et" {
    ID "C8465E441F4A26D4"
    coords 5.403 0.295 -4.529
    angleY -105
-  }
-  GenericEntity : "{1CA1A9D19D7C8445}Prefabs/Props/Furniture/Rack_01_Short.et" {
-   ID "51EEDA982222EA20"
-   coords -1.548 7.599 -1.869
-   angleY -180
   }
   GenericEntity : "{1ED9E780B8829B78}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_A.et" {
    ID "98CC44F3D8FF28A0"
@@ -128,43 +83,15 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.756 4.35 -4.782
    angleY -90
   }
-  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "3208C986E809BDE7"
-   coords -1.254 7.599 2.854
-   angleY -105
-  }
-  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "21D58BB0DFC0EEAE"
-   coords -0.878 7.599 2.655
-   angleY -105
-  }
-  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "1FC8E1FE24C04A10"
-   coords -1.199 7.599 2.527
-   angleY -60.231
-  }
   GenericEntity : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
    ID "AB0018C23B6BFC82"
    coords 1.92 4.299 6.428
    angleY 89.277
   }
-  GenericEntity : "{62482F79CF1B97FD}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01.et" {
-   ID "90F63E9CDE0F2221"
-   coords 1.423 11.142 -2.662
-  }
   GenericEntity : "{660BD816AA043589}Prefabs/Props/Furniture/Piano_01_Base.et" {
    ID "200383FB945C4D90"
    coords -5.767 4.299 4.768
    angleY 90
-  }
-  GenericEntity : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
-   ID "821657A00B8701DC"
-   coords 4.381 7.599 3.726
-  }
-  GenericEntity : "{6FC9E85153AE41B1}Prefabs/Props/Civilian/WoodKindling_Crate_01.et" {
-   ID "AB5558790FDD38EB"
-   coords 2.789 7.599 2.644
-   angleY -82.464
   }
   GenericEntity : "{728DD36004461456}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_B.et" {
    ID "5A21C681780C2C9B"
@@ -176,117 +103,9 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -5.696 4.595 0.545
    angleY 90
   }
-  GenericEntity : "{81629CC060EFF293}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_130.et" {
-   ID "775925B5672C7A61"
-   coords 3.911 4.883 7.235
-   angleY -180
-  }
-  GenericEntity : "{81629CC060EFF293}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_130.et" {
-   ID "BA962AB316E69F5A"
-   coords 0.256 4.872 7.235
-   angleY -180
-  }
-  GenericEntity : "{81629CC060EFF293}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_130.et" {
-   ID "10B200940769D0C4"
-   coords 0.445 4.934 -0.171
-  }
-  GenericEntity : "{81629CC060EFF293}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_130.et" {
-   ID "46A41F443D02C36E"
-   coords -3.93 4.83 7.235
-   angleY -180
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "156D3DCA3644BD90"
-   coords 2.332 8.867 -2.661
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "172879F3C2DD8F5A"
-   coords 2.464 5.567 0.502
-   angleY -90
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "FA08DD59C2BFF93D"
-   coords -1.536 5.664 -3.264
-   angleY 90
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "39A9D13DED315BBD"
-   coords -3.022 5.596 -0.185
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "9EE5CD77AD0E78FC"
-   coords -1.685 5.589 5.791
-   angleY 90
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "8D3957EF6D05B681"
-   coords -2.979 5.548 2.909
-   angleY -180
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "365C5C0656E08FC8"
-   coords -3.018 5.594 -0.485
-   angleY -180
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "0A7225FDA6DF286F"
-   coords 2.764 5.581 0.474
-   angleY 90
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "137038307A23C1D8"
-   coords 5.164 5.547 -3.006
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "5720038CAE8A12A6"
-   coords 5.14 1.513 -3.32
-   angleY -180
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "FDB86BA3F382CFB4"
-   coords 2.464 8.898 -3.394
-   angleY -88.188
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "9F6F945D0CFD28A2"
-   coords 5.131 1.521 -3.019
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "1E5F843C45BAD294"
-   coords 5.17 5.542 -3.327
-   angleY -180
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "599BED5D4EDD0341"
-   coords -1.985 5.598 5.806
-   angleY -90
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "30557420F2E31D25"
-   coords 3.51 1.477 -7.932
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "995FFC623B59887F"
-   coords -3.018 5.633 3.209
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "4716BE93A8CAD095"
-   coords -1.536 1.509 0.435
-   angleY 90
-  }
   GenericEntity : "{8CAC93B6377EC1D4}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_Base.et" {
    ID "D971B54D735063B1"
    coords -0.315 4.317 -0.717
-  }
-  GenericEntity : "{97CCD43778D034CF}Prefabs/Props/Furniture/LightCeiling_01.et" {
-   ID "5EFD0967B5B4F257"
-   coords 0.747 7.299 5.349
-   angleY -105
-  }
-  GenericEntity : "{97CCD43778D034CF}Prefabs/Props/Furniture/LightCeiling_01.et" {
-   ID "57314B3CA30D4431"
-   coords -3.728 7.299 5.349
-   angleY -105
   }
   GenericEntity : "{9E6BB1D7AA5D0FEB}Prefabs/Props/Furniture/Stove_01.et" {
    ID "934663840F58DCA9"
@@ -311,10 +130,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "09BEBE6E51A5B68F"
    coords 5.749 4.299 3.523
   }
-  GenericEntity : "{A7E2685F2EC63A0D}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_65.et" {
-   ID "5F1D11EC46E19E92"
-   coords 4.986 4.878 -7.924
-  }
   GenericEntity : "{AA25BAA17DCF0A0A}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_D.et" {
    ID "7805BB1AAB4E52F1"
    coords 5.722 4.299 -0.946
@@ -323,11 +138,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   GenericEntity : "{AC98FF880BD0F2C2}Prefabs/Props/Furniture/Chair_01/Chair_01_base.et" {
    ID "B70E45F411ECE342"
    coords 5.296 0.199 -5.291
-   angleY -105
-  }
-  GenericEntity : "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et" {
-   ID "24EB6FEB855CA76D"
-   coords -5.208 7.599 4.501
    angleY -105
   }
   GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
@@ -367,11 +177,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   GenericEntity : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
    ID "8F393A680CD9A2F2"
    coords 2.099 0.199 2.933
-  }
-  GenericEntity : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
-   ID "F30B4FBC247D6EA5"
-   coords -4.311 7.599 -5.589
-   angles -0.007 -1.06 0.027
   }
   GenericEntity : "{B9B923210CF2325D}Prefabs/Props/Commercial/ShelfUniversal_01_Base.et" {
    ID "6884835CB0CBA7D9"
@@ -464,11 +269,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.764 4.299 -5.766
    angleY -180
   }
-  GenericEntity : "{D5247F493225CA91}Prefabs/Props/Civilian/WateringCan_01.et" {
-   ID "274E63EF0E268FA8"
-   coords 2.333 7.599 2.553
-   angleY -105
-  }
   GenericEntity : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
    ID "DBBFB960AED31D8B"
    coords 5.525 5.299 3.7
@@ -498,15 +298,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.745 0.199 6.057
    angleY -90
   }
-  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
-   ID "E7D435FE53BDE4C1"
-   coords -4.693 7.599 -2.976
-   angleY -105
-  }
-  GenericEntity : "{DAFA84A74B550694}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_95.et" {
-   ID "51F636E0295EA7EF"
-   coords -3.762 4.884 -6.222
-  }
   GenericEntity : "{DEE73EC3DF43A836}Prefabs/Props/Furniture/Shower_01_addon.et" {
    ID "ECB7C8AE0FAF752B"
    coords 3.239 5.225 -7.934
@@ -530,29 +321,9 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.752 4.299 -6.124
    angleY -90
   }
-  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "37830194764B4423"
-   coords -0.805 7.599 3.848
-   angleY -3.152
-  }
-  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "C384462D3C77C734"
-   coords -0.55 7.599 3.161
-   angleY -105
-  }
-  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "0E4CFC545118F3D4"
-   coords -0.084 7.599 3.615
-   angleY -14.2
-  }
   GenericEntity : "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et" {
    ID "65D2F667405171E8"
    coords -4.965 4.299 -3.779
-   angleY -90
-  }
-  GenericEntity : "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et" {
-   ID "DB35EFEA9EA85D5D"
-   coords 5.709 7.599 0.324
    angleY -90
   }
   GenericEntity : "{F6D1E024E82511F9}Prefabs/Props/Crates/Crate_01_base.et" {
@@ -564,11 +335,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "78EDBEBDB561383F"
    coords 3.172 0.414 -6.033
    angleY -90
-  }
-  GenericEntity : "{F6D1E024E82511F9}Prefabs/Props/Crates/Crate_01_base.et" {
-   ID "37246F3AD925C22E"
-   coords -3.87 7.599 2.962
-   angleY -105
   }
   GenericEntity : "{F737777FF0A566D5}Prefabs/Props/Commercial/CabinetCardFile_01/CabinetCardFile_01_Base.et" {
    ID "DC347745977C8067"
@@ -615,12 +381,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.281 0.311 4.165
    angleY 178.144
   }
-  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
-   ID "E6C8883A1D2C8725"
-   coords -1.295 0.311 3.529
-   angleY 91.102
-   scale 0.55
-  }
   GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
    ID "AD408337AD5AEE89"
    coords -1.325 0.787 4.384
@@ -641,38 +401,16 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.325 0.853 4.384
    angleY 91.881
   }
-  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "66E5D79D4E7972D8"
-   coords -1.279 0.787 3.884
-   angleY 177.872
-  }
   GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
    ID "033B1A3C8C8975DF"
    coords -1.292 1.28 4.173
    angleY 177.644
-  }
-  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
-   ID "E69CD1EB1DFCCA35"
-   coords -1.291 1.280 3.706
-   angleY 105.979
-   scale 0.42
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E6134191AD061E74"
-   coords -1.285 1.280 3.536
-   angleY 82.133
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
    ID "E67BFA2024BE0D23"
    coords -1.306 1.773 4.307
    angleY 89.979
    scale 0.5
-  }
-  GenericEntity : "{46A95C6081A28586}Prefabs/Props/Industrial/Pallets/MarsBox_01_white.et" {
-   ID "E6B8259DC9220AEB"
-   coords -1.303 1.773 3.700
-   angleY 88.422
-   scale 0.28
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
    ID "B032463C88DC94F9"
@@ -684,103 +422,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.258 2.791 4.182
    angleY 180.257
   }
-  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
-   ID "E6DE601F038735A1"
-   coords -1.257 2.791 3.558
-   angleY 90
-   scale 0.5
-  }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "1FBAE946998C9E89"
-   coords -1.274 0.311 5.617
-   angleY 177.849
-  }
-  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
-   ID "E6AFC38964C5CD6A"
-   coords -1.302 0.311 5.016
-   angleY 90
-   scale 0.5
-  }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "38D6FAA90DC00DFE"
-   coords -1.279 0.787 5.616
-   angleY 181.722
-  }
-  GenericEntity : "{46A95C6081A28586}Prefabs/Props/Industrial/Pallets/MarsBox_01_white.et" {
-   ID "E6145FE0AE63A9C6"
-   coords -1.295 0.787 5.030
-   angleY 93.458
-   scale 0.28
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "70A5185916C95D01"
-   coords -1.341 1.28 5.843
-   angleY 90.279
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "657826478E27BBD0"
-   coords -1.341 1.302 5.843
-   angleY 90.217
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "974A720D0D8991BA"
-   coords -1.341 1.324 5.843
-   angleY 93.312
-  }
-  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "E6A68140EBA829C2"
-   coords -1.292 1.280 5.602
-   angleY 78.125
-   scale 0.42
-  }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "E6A3B24084BBCFBA"
-   coords -1.279 1.280 5.432
-   angleY 83.491
-   scale 0.42
-  }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "E63A6E018AA7AA92"
-   coords -1.281 1.280 5.009
-   angleY 86.719
-   scale 0.5
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E6997DD9E9D136C8"
-   coords -1.275 1.773 5.693
-   angleY 87.965
-  }
-  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
-   ID "E6EE0C079917DDFF"
-   coords -1.306 1.773 5.308
-   angleY 92.339
-   scale 0.45
-  }
-  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
-   ID "E68DCE56F296869C"
-   coords -1.302 1.773 4.935
-   angleY 95.964
-   scale 0.415
-  }
-  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
-   ID "0DE819854068AA57"
-   coords -1.299 2.266 5.626
-   angleY 182.446
-  }
-  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
-   ID "C0B017DAD70B707F"
-   coords -1.24 2.791 5.651
-   angleY 180.053
-  }
   GenericEntity : "{148E2BA12B48CFBA}Prefabs/Props/Furniture/PlantRoom_04.et" {
    ID "167ECA0BABF7D1BB"
    coords -1.241 2.791 5.099
    angleY 98.98
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E671AEF278A313A9"
-   coords 5.545 0.311 -2.610
-   angleY -86.722
   }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
    ID "E6E1555D7DD7DD85"
@@ -791,23 +436,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "E69BA83CA22DFC67"
    coords 5.554 0.311 -2.270
    angleY -112.373
-  }
-  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
-   ID "6A4F57176993991D"
-   coords 5.558 0.787 -2.514
-   angleY -2.012
-  }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "E651A282995725E1"
-   coords 5.550 1.280 -2.777
-   angleY -101.275
-   scale 0.42
-  }
-  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "E6A3E3A4BEB34CFE"
-   coords 5.548 1.280 -2.607
-   angleY -86.217
-   scale 0.42
   }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
    ID "E69F2246FDB97152"
@@ -828,12 +456,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "9FA1CFD2FFDE6992"
    coords 5.595 1.324 -2.182
    angleY -83.707
-  }
-  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
-   ID "E646406825727E8F"
-   coords 5.560 1.773 -2.643
-   angleY -92.285
-   scale 0.5
   }
   GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
    ID "E62DB582D6263ED3"
@@ -856,32 +478,11 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.537 2.266 -2.218
    angleY -111.515
   }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "ADC1AE775553562B"
-   coords 5.5 2.791 -2.526
-   angleY -2.444
-  }
-  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
-   ID "E6DF358BD4658485"
-   coords 5.519 0.311 -1.550
-   angleY -90
-   scale 0.5
-  }
   GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
    ID "E6839BF126610A9A"
    coords 5.527 0.311 -1.028
    angleY -94.414
    scale 0.55
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E680BD72875C6CA3"
-   coords 5.542 0.787 -1.682
-   angleY -69.509
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E6466554BD0768A8"
-   coords 5.540 0.787 -1.512
-   angleY -82.932
   }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
    ID "E621924B489C26F8"
@@ -894,55 +495,11 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    angleY -81.659
    scale 0.42
   }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "73A44A025CFA4938"
-   coords 5.569 0.787 -0.909
-   angleY -80.136
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "DB1058AB2F36A570"
-   coords 5.569 0.809 -0.909
-   angleY -87.353
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "66CEA42EAFBC75C8"
-   coords 5.569 0.831 -0.909
-   angleY -92.83
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "6206FBE615650E04"
-   coords 5.569 0.853 -0.909
-   angleY -92.496
-  }
-  GenericEntity : "{46A95C6081A28586}Prefabs/Props/Industrial/Pallets/MarsBox_01_white.et" {
-   ID "E617B3761648802E"
-   coords 5.517 1.280 -1.596
-   angleY -93.778
-   scale 0.28
-  }
   GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
    ID "E60F1DCA5CF17977"
    coords 5.544 1.280 -1.160
    angleY -87.316
    scale 0.5
-  }
-  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "E69FBF0F9564254D"
-   coords 5.555 1.280 -0.839
-   angleY -93.593
-   scale 0.426
-  }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "E6C2B1FD92778DD7"
-   coords 5.544 1.280 -0.669
-   angleY -91.955
-   scale 0.412
-  }
-  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
-   ID "E65AE6EBE79205DE"
-   coords 5.534 1.773 -1.529
-   angleY -89.263
-   scale 0.55
   }
   GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
    ID "276A4C9BB12DF70B"
@@ -954,18 +511,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.571 1.795 -1.017
    angleY -94.122
   }
-  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "E6BCB7AA66C6AE38"
-   coords 5.516 2.266 -1.713
-   angleY -99.649
-   scale 0.405
-  }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "E6A4EF399D9F97DA"
-   coords 5.539 2.266 -1.543
-   angleY -96.764
-   scale 0.427
-  }
   GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
    ID "FB1053698D5E36E2"
    coords 5.536 2.266 -1.047
@@ -976,34 +521,16 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.508 2.791 -1.498
    angleY -2.546
   }
-  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
-   ID "E6B3EDF9F1328259"
-   coords 5.505 2.791 -0.869
-   angleY -90
-   scale 0.5
-  }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
    ID "E65ACBD98FDD3219"
    coords 5.525 0.311 0.627
    angleY -89.487
    scale 0.45
   }
-  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
-   ID "E62AB42FEFC4B090"
-   coords 5.551 0.311 1.146
-   angleY -90
-   scale 0.5
-  }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "D148DA9521C649F8"
    coords 5.533 0.787 0.759
    angleY 0.096
-  }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "E6E9410D43B36771"
-   coords 5.524 0.787 1.353
-   angleY -93.977
-   scale 0.5
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
    ID "E6587642113285BB"
@@ -1015,21 +542,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "E613DEE8D79EA030"
    coords 5.553 1.280 0.924
    angleY -105.525
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E63B785C25BF574E"
-   coords 5.548 1.280 1.094
-   angleY -110.15
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E603AAAADD279D8D"
-   coords 5.518 1.280 1.264
-   angleY -99.762
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E6B8CA6F499A444C"
-   coords 5.519 1.280 1.434
-   angleY -113.812
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "E648A597477920C5"
@@ -1048,48 +560,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    angleY -97.117
    scale 0.433
   }
-  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "E608F3424E1160C9"
-   coords 5.548 1.773 1.087
-   angleY -92.158
-   scale 0.43
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "2761B46EC5773572"
-   coords 5.562 1.773 1.324
-   angleY -96.352
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "86987CF84C8077A3"
-   coords 5.562 1.795 1.324
-   angleY -86.283
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "99BC40C7DC94C57E"
-   coords 5.562 1.817 1.324
-   angleY -94.526
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "7FA0F12DB80F91BF"
-   coords 5.562 1.839 1.324
-   angleY -96.37
-  }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
    ID "DEFFE348DD043581"
    coords 5.549 2.266 0.766
    angleY -1.507
-  }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "E6AC328C97C28FB5"
-   coords 5.533 2.266 1.237
-   angleY -99.141
-   scale 0.416
-  }
-  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
-   ID "E6F512F2F1D15F31"
-   coords 5.526 2.266 1.407
-   angleY -91.538
-   scale 0.414
   }
   GenericEntity : "{148E2BA12B48CFBA}Prefabs/Props/Furniture/PlantRoom_04.et" {
    ID "7C796AA788DDD6B7"
@@ -1107,12 +581,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    angleY -90
    scale 0.5
   }
-  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
-   ID "E64479510606C17B"
-   coords 5.534 0.311 5.488
-   angleY -87.552
-   scale 0.55
-  }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
    ID "E6E36BA4DE5956A4"
    coords 5.550 0.787 4.792
@@ -1123,41 +591,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.539 0.787 4.962
    angleY -76.475
   }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E602F311EA5F2267"
-   coords 5.532 0.787 5.132
-   angleY -67.857
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "0DA89D43085B842A"
-   coords 5.587 0.787 5.385
-   angleY -100.676
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "1E574A63DF3D5437"
-   coords 5.587 0.809 5.385
-   angleY -83.306
-  }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
    ID "E6C3286869A7C084"
    coords 5.530 1.280 4.835
    angleY -114.102
-  }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "E6814FB88025A3E0"
-   coords 5.542 1.280 5.005
-   angleY -82.896
-   scale 0.42
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E62C02AF4DD157F3"
-   coords 5.537 1.280 5.175
-   angleY -78.387
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E627D8C863ECA95C"
-   coords 5.526 1.280 5.345
-   angleY -69.301
   }
   GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
    ID "748946062213C577"
@@ -1184,16 +621,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.522 1.773 4.993
    angleY -77.471
    scale 0.42
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E6A3C1630AD54171"
-   coords 5.547 1.773 5.163
-   angleY -69.685
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E6BAF92704712F07"
-   coords 5.518 1.773 5.364
-   angleY -86.055
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
    ID "E6BE5C856C7E85BE"
@@ -1226,155 +653,15 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.57 2.31 4.845
    angleY -91.52
   }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "744524591B3A1F31"
-   coords 5.518 2.266 5.363
-   angleY 0.391
-  }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "2BB20F14A9412AF3"
-   coords 5.481 2.791 5.024
-   angleY 0.334
-  }
-  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
-   ID "E66021819B77BE77"
-   coords 5.494 2.791 5.659
-   angleY -90
-   scale 0.5
-  }
-  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
-   ID "E650186E36CAF40D"
-   coords 1.207 0.311 -2.722
-   scale 0.5
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E6E49177B1626B1A"
-   coords 1.574 0.311 -2.746
-   angleY -18.722
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E6AC0D1299676275"
-   coords 1.744 0.311 -2.760
-   angleY -17.238
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E67F7316A5B65966"
-   coords 1.914 0.311 -2.731
-   angleY 6.456
-  }
-  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
-   ID "E691F702FEF58A31"
-   coords 1.193 0.787 -2.761
-   angleY 0.017
-   scale 0.55
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E69183C349B856B2"
-   coords 1.559 0.787 -2.743
-   angleY -9.006
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E6D7EF1A6A2E9A6A"
-   coords 1.729 0.787 -2.748
-   angleY 8.295
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E628E626D6D470FB"
-   coords 1.899 0.787 -2.742
-   angleY -14.305
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E6A4BF7B96E726D5"
-   coords 1.039 1.280 -2.747
-   angleY -9.438
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E638C3E9ED31C4F0"
-   coords 1.209 1.280 -2.751
-   angleY 15.027
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E6543C52C0C88279"
-   coords 1.379 1.280 -2.748
-   angleY 23.421
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E61C6F7F7E3862B6"
-   coords 1.601 1.280 -2.738
-   angleY 14.23
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E6EF9377CF2CF9FB"
-   coords 1.771 1.280 -2.750
-   angleY 19.395
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E68A07938B22E49C"
-   coords 2.000 1.280 -2.736
-   angleY -1.655
-  }
-  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
-   ID "E6530C8E60801E05"
-   coords 1.196 1.773 -2.752
-   angleY -0.673
-   scale 0.42
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E68E2155310FBDDD"
-   coords 1.366 1.773 -2.742
-   angleY -2.2
-  }
-  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
-   ID "E607B7F8549F1B7C"
-   coords 1.604 1.773 -2.754
-   angleY 8.92
-   scale 0.43
-  }
-  GenericEntity : "{46A95C6081A28586}Prefabs/Props/Industrial/Pallets/MarsBox_01_white.et" {
-   ID "E6D2D09E9298CBD5"
-   coords 1.946 1.773 -2.756
-   angleY 2.061
-   scale 0.28
-  }
   GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
    ID "6A31481C6616CC06"
    coords 1.324 2.266 -2.724
    angleY 90.187
   }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "714371D4A9721D22"
-   coords 1.826 2.266 -2.798
-   angleY -10.717
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "A6856D8A0156BF90"
-   coords 1.826 2.288 -2.798
-   angleY -0.471
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "D6C3CAEA09C16F88"
-   coords 1.826 2.31 -2.798
-   angleY 2.537
-  }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "7491E1BE8656AB8B"
-   coords 1.826 2.332 -2.798
-   angleY -2.885
-  }
   GenericEntity : "{148E2BA12B48CFBA}Prefabs/Props/Furniture/PlantRoom_04.et" {
    ID "D1D6B5BF28BF8491"
    coords 1.1 2.791 -2.697
    angleY -74.479
-  }
-  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
-   ID "F7B2696936189882"
-   coords 1.665 2.791 -2.705
-   angleY 90.573
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E65813F0BA45BD9C"
-   coords 2.469 0.311 -2.779
-   angleY -12.096
   }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
    ID "E610AD6F7CBADD04"
@@ -1397,12 +684,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.743 1.28 -2.775
    angleY 89.423
   }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "E6F2D783CA050B92"
-   coords 2.451 1.773 -2.775
-   angleY 22.061
-   scale 0.42
-  }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
    ID "E6032B9EFA7CC888"
    coords 2.621 1.773 -2.796
@@ -1424,42 +705,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.692 2.791 -2.767
    angleY 91.95
   }
-  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "E6137E1E0E1A3AB2"
-   coords 1.094 0.301 5.680
-   angleY -4.822
-   scale 0.39
-  }
-  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "E661CD7248378FF7"
-   coords 1.264 0.301 5.648
-   angleY -11.575
-   scale 0.428
-  }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "E6DF81FBC27EEEB5"
-   coords 1.571 0.301 5.672
-   angleY 1.164
-   scale 0.5
-  }
-  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
-   ID "E647CFCC977DA3E3"
-   coords 1.889 0.301 5.665
-   angleY -6.74
-   scale 0.413
-  }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "E6253EF353E44970"
-   coords 2.117 0.301 5.680
-   angleY 7.941
-   scale 0.398
-  }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "E66E846CA16259D3"
-   coords 2.351 0.301 5.650
-   angleY -1.338
-   scale 0.432
-  }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
    ID "E628A31FA4E1FF2D"
    coords 2.521 0.301 5.655
@@ -1471,12 +716,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    angleY -2.498
    scale 0.55
   }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "E60B4FC48AC82BB2"
-   coords 3.030 0.301 5.119
-   angleY 178.414
-   scale 0.5
-  }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "E616833D87B90B2F"
    coords 2.596 0.301 5.114
@@ -1487,12 +726,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "E656A4CB863E1DB2"
    coords 2.145 0.301 5.111
    angleY 175.265
-   scale 0.45
-  }
-  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "E67C895079BA94ED"
-   coords 1.650 0.301 5.099
-   angleY 175.237
    scale 0.45
   }
   GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
@@ -1536,12 +769,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.833 0.301 3.186
    angleY 0.967
    scale 0.55
-  }
-  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "E62A5ECE1959BA06"
-   coords 3.165 0.301 2.620
-   angleY 174.593
-   scale 0.399
   }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
    ID "E63F5EB9A6EAB673"
@@ -1617,12 +844,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    angleY -87.126
    scale 0.383
   }
-  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "E6D2323DC4A9A66E"
-   coords 5.511 0.301 4.114
-   angleY -92.859
-   scale 0.404
-  }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
    ID "E6EF6B83F52013C1"
    coords 5.477 0.301 4.331
@@ -1662,25 +883,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 3.95 1.238 -0.4
    angleY 180
   }
-  GenericEntity : "{3800AA04761AE0EC}Prefabs/Props/Civilian/Notebook_01_Single_Blue.et" {
-   ID "844B51E6962C8A0B"
-   coords 3.15 1.238 -0.2
-   angleY 190
-  }
-  GenericEntity : "{A5E64994411BA6A0}Prefabs/Props/Civilian/Pen_01/Pen_01_base.et" {
-   ID "2B518FD8F0FEF14D"
-   coords 3 1.268 -0.3
-   angleY 40
-  }
   GenericEntity : "{148E2BA12B48CFBA}Prefabs/Props/Furniture/PlantRoom_04.et" {
    ID "73F8A247BCA57822"
    coords 2.85 1.238 -0.7
    angleY 20
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E6B999E4C507BED6"
-   coords 3.550 1.238 -0.720
-   angleY 160
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "13968DA9E28DA9C8"
@@ -1757,16 +963,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "936454597BB10B38"
    coords 3.3 0.199 7.05
   }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "EA03E4D0009C5E5C"
-   coords 1.1 0.799 7.05
-   angleY 90
-  }
-  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "0351E59498CC6B8B"
-   coords 1.1 1.229 7.05
-   angleY 80
-  }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
    ID "E6BB90D033564C6C"
    coords 1.600 0.799 7.000
@@ -1793,13 +989,14 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   LightEntity {
    ID "A73D2CB48B90EE1F"
-   coords 0.45 3.7 6.1
+   coords 2.3 3.7 6.6
    angles -90 0 0
    Color 0.9 0.96 1 1
-   LV 7.5
+   LV 9
    ClipEV -10
+   CastShadow 0
    Type Spot
-   Radius 7
+   Radius 7.5
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
@@ -1807,19 +1004,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "76F34CEA16C22A8F"
    coords 4.2 3.899 6
-  }
-  LightEntity {
-   ID "99A966857D870DCB"
-   coords 4.2 3.7 6
-   angles -90 0 0
-   Color 0.9 0.96 1 1
-   LV 7.5
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "9F7E3BFE105DE52B"
@@ -1832,6 +1016,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    Color 0.9 0.96 1 1
    LV 7.5
    ClipEV -10
+   CastShadow 0
    Type Spot
    Radius 7
    NearPlane 0.3
@@ -1849,6 +1034,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    Color 0.9 0.96 1 1
    LV 9
    ClipEV -10
+   CastShadow 1
    Type Spot
    Radius 7
    NearPlane 0.3
@@ -1866,36 +1052,11 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    Color 0.9 0.96 1 1
    LV 8
    ClipEV -10
+   CastShadow 0
    Type Spot
    Radius 7
    NearPlane 0.3
    SpotAngle 140
-   LensFlareType Disabled
-  }
-  LightEntity {
-   ID "F20980DC11BA1275"
-   coords 1.2 3.7 7.2
-   angles -90 0 0
-   Color 1 0.95 0.85 1
-   LV 9
-   ClipEV -10
-   Type Spot
-   Radius 4.5
-   NearPlane 0.3
-   SpotAngle 100
-   LensFlareType Disabled
-  }
-  LightEntity {
-   ID "CE025A5EC2A4A813"
-   coords 3.3 3.7 7.2
-   angles -90 0 0
-   Color 1 0.95 0.85 1
-   LV 9
-   ClipEV -10
-   Type Spot
-   Radius 4.5
-   NearPlane 0.3
-   SpotAngle 100
    LensFlareType Disabled
   }
   GenericEntity : "{5743177105AE61EF}Prefabs/Structures/BuildingParts/Signs/Signboard_03_Drugstore.et" {
@@ -1913,6 +1074,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    Color 1 0.95 0.85 1
    LV 5
    ClipEV -10
+   CastShadow 0
    Type Spot
    Radius 5
    NearPlane 0.3
@@ -1928,56 +1090,9 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 4.3 0 8.7
    angleY 8
   }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E6B8FCBE5EE7DA5F"
-   coords 4.100 0.223 8.700
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "E63A39CB45B5AA3E"
-   coords 4.300 0.223 8.650
-   angleY 30
-  }
   GenericEntity : "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et" {
    ID "13B7A6FBACA81F88"
    coords 4.55 0.223 8.7
-  }
-  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
-   ID "E6484778C4843699"
-   coords 1.198 0.627 5.664
-   angleY 4.688
-   scale 0.381
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E607282C367E670D"
-   coords 1.383 0.627 5.688
-   angleY -3.248
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E66264B34A6D1612"
-   coords 1.619 0.627 5.674
-   angleY 6.673
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E6CDF728DF7129A1"
-   coords 1.809 0.627 5.662
-   angleY 5.9
-  }
-  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "E605B9FDEC876EC7"
-   coords 1.983 0.627 5.681
-   angleY -0.344
-   scale 0.422
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E671AAC1BF51217F"
-   coords 2.210 0.627 5.679
-   angleY -3.4
-  }
-  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "E649114AED3D768F"
-   coords 2.388 0.627 5.665
-   angleY 3.365
-   scale 0.407
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
    ID "E67F0CC9E5F591ED"
@@ -1990,12 +1105,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.798 0.627 5.681
    angleY -5.319
   }
-  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
-   ID "E620328B0D686662"
-   coords 3.004 0.627 5.675
-   angleY -0.225
-   scale 0.382
-  }
   GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
    ID "E644CC5B3C430A61"
    coords 1.183 0.627 5.100
@@ -2007,17 +1116,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 1.418 0.627 5.117
    angleY 174.265
    scale 0.433
-  }
-  GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "E6C2AC8BDD27F33D"
-   coords 1.592 0.627 5.087
-   angleY 181.259
-   scale 0.44
-  }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "E6F50AF93B9CEF08"
-   coords 1.804 0.627 5.086
-   angleY 175.757
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
    ID "E60992410F08F9D3"
@@ -2142,29 +1240,11 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    angleY 184.045
    scale 0.389
   }
-  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "E62920A497BC99EE"
-   coords 3.058 1.376 2.718
-   angleY 178.98
-   scale 0.415
-  }
   GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
    ID "E6DEAAFE6070488A"
    coords 1.150 1.630 5.390
    angleY 94.911
    scale 0.5
-  }
-  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
-   ID "E61C8D3AE5DB12B6"
-   coords 1.542 1.630 5.390
-   angleY 91.498
-   scale 0.5
-  }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "E6368103F9455C53"
-   coords 1.881 1.630 5.390
-   angleY 79.224
-   scale 0.436
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "E6550393CBF62221"
@@ -2214,24 +1294,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    angleY 94.357
    scale 0.396
   }
-  GenericEntity : "{0F866B72D473D8C4}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_grey.et" {
-   ID "E6A40E255D1D0163"
-   coords 3.079 1.630 2.916
-   angleY 104.913
-   scale 0.5
-  }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "E6EA24FA877EE9B6"
-   coords 0.620 0.199 5.400
-   angleY 90
-   scale 0.8
-  }
-  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
-   ID "E6FEA8DD31385B27"
-   coords 0.620 0.544 5.400
-   angleY 85
-   scale 0.75
-  }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
    ID "E64EDF4849115B79"
    coords 0.620 0.199 2.900
@@ -2263,47 +1325,15 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 0.800 0.199 7.650
   }
   LightEntity {
-   ID "E661E9AF7263E621"
-   coords 2.2 3.4 2.6
-   Color 0.95 0.95 1 1
-   LV 0.25
-   ClipEV -10
-   Radius 10
-   NearPlane 0.45
-   DistanceAttenuation 0.8
-  }
-  LightEntity {
    ID "E63CBAFB4923848D"
-   coords 2.2 3.2 2.6
+   coords 2.2 3.2 4.5
    angles 90 0 0
    Color 0.95 0.95 1 1
-   LV 2
+   LV 2.5
    ClipEV -10
+   CastShadow 0
    Type Spot
-   Radius 8
-   NearPlane 0.35
-   SpotAngle 150
-   LensFlareType Disabled
-  }
-  LightEntity {
-   ID "E65E10B525D44486"
-   coords 2.2 3.4 6.4
-   Color 0.95 0.95 1 1
-   LV 0.25
-   ClipEV -10
-   Radius 10
-   NearPlane 0.45
-   DistanceAttenuation 0.8
-  }
-  LightEntity {
-   ID "E65AEB07C2379848"
-   coords 2.2 3.2 6.4
-   angles 90 0 0
-   Color 0.95 0.95 1 1
-   LV 2
-   ClipEV -10
-   Type Spot
-   Radius 8
+   Radius 9
    NearPlane 0.35
    SpotAngle 150
    LensFlareType Disabled
