@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "template": "village",
+  "place": "meaux",
+  "status": "proposed",
+  "note": "Hand-edited from the tool proposal with the Mix rule (D9, docs/architecture/everon-world.md): hall, shop and house are vanilla buildings converted in place. The police villa b07 and the church b17 have no slot in the village template and stay vanilla and dark. Approval is a reviewed PR holding only this file (label town-mapping); `toolscli town map meaux --check --template village` passes.",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-17",
+    "buildings": 61,
+    "freePlots": 8
+  },
+  "slots": {
+    "hall": {
+      "building": "b03",
+      "why": [
+        "Mix rule (D9): the vanilla municipal office (type government, 429 m2, 3 floors, interior yes) is the town hall; the tool proposed the church b17, which the village template ranks by type only",
+        "26.6 m from the centre"
+      ],
+      "alternatives": [
+        {
+          "building": "b02"
+        }
+      ]
+    },
+    "pub": {
+      "building": "b06",
+      "score": 0.858,
+      "why": [
+        "type pub (first choice)",
+        "near: 304.3 m2, 47.4 m out",
+        "interior yes"
+      ]
+    },
+    "shop": {
+      "building": "b04",
+      "why": [
+        "Mix rule (D9): vanilla ShopModern_E_01 (type shop, 483.1 m2, 2 floors, interior yes, ground door) converts to the general store",
+        "37.7 m from the centre"
+      ]
+    },
+    "fuel": {
+      "none": true,
+      "reason": "no fuel station within the 120 m survey and the village template gives fuel no plot fallback"
+    },
+    "garage": {
+      "building": "b35",
+      "score": 0.864,
+      "why": [
+        "type garage (first choice)",
+        "far: 48.5 m2, 93.2 m out"
+      ],
+      "alternatives": [
+        {
+          "building": "b37",
+          "score": 0.864
+        },
+        {
+          "building": "b39",
+          "score": 0.864
+        },
+        {
+          "building": "b36",
+          "score": 0.863
+        }
+      ]
+    },
+    "house": {
+      "building": "b02",
+      "why": [
+        "Mix rule (D9): vanilla town house House_Town_E_2I03 (type townhouse, 255.8 m2, 3 floors, interior yes, 2 entrances) converts to the house kit",
+        "26.5 m from the centre"
+      ],
+      "alternatives": [
+        {
+          "building": "b10"
+        },
+        {
+          "building": "b45"
+        }
+      ]
+    },
+    "farm-plot": {
+      "none": true,
+      "reason": "plot p8 (22 x 22 m) is the free plot that fits, but the village template lists no farm-plot prefab, so there is nothing to place on it; revisit when one is added"
+    },
+    "board": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "street furniture on the frontage of b01 (kiosk), 7.6 m from the centre; the kit sets it against the kerb"
+      ]
+    },
+    "taxi": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "street furniture on the frontage of b01 (kiosk), 7.6 m from the centre; the kit sets it against the kerb"
+      ]
+    }
+  }
+}
