@@ -1,4 +1,4 @@
-// tools/lib/static-reset-hooks.mjs - world-end static resets are registered per feature, in a flat list.
+// tools/lib/static-reset-hooks.mjs - world-end static resets are hook classes per feature, found by reflection.
 //
 // History. Core/LF_StaticReset.c first held one central list (`LF_X.ResetStatics();` per feature) that
 // nearly every feature PR appended to, so the ship queue ran those PRs one after another (#1870 moved
@@ -6,15 +6,17 @@
 // super.Run, nested one script frame per layer: at about 123 layers Run overflowed the script stack
 // (#2034) and took the suite and the world-end reset down with it.
 //
-// Now each class that owns statics adds a small hook class in its own file, which registers itself
-// from a static initializer when the script module loads, and LF_StaticReset walks a flat array:
+// Then each hook registered itself from a static initializer. Every static field initializer in the
+// Game module (vanilla included) compiles into one function whose size the engine caps ("Too many
+// instructions per function"); the hooks were two thirds of ours and the module was a day from not
+// compiling (#2755). Now each class that owns statics adds a small hook class in its own file with no
+// registration at all; LF_StaticReset finds every LF_StaticResetHook subclass by reflection
+// (typename.GetInheritedTypes) on first use and walks a flat array sorted by owner:
 //
 //   //------------------------------------------------------------------------------------------------
-//   //! World-end reset of LF_X's statics (registered at script load; Core/LF_StaticReset.c).
+//   //! World-end reset of LF_X's statics (LF_StaticReset finds it by reflection).
 //   class LF_X_StaticResetHook : LF_StaticResetHook
 //   {
-//   	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_X_StaticResetHook());
-//
 //   	override string Owner()
 //   	{
 //   		return "LF_X";
@@ -28,7 +30,7 @@
 //
 // Pure helpers here are shared by the codemod (tools/codemods/static-reset-registry.mjs), `tools\cli
 // heal-hotspots` (moves a branch's old central-list or modded-layer edit into this form), the feature
-// scaffold, and validate-registries.mjs (rejects a central call or a modded layer).
+// scaffold, and validate-registries.mjs (rejects a central call, a modded layer or a static Register).
 // tools/validation/static-reset-hooks-selftest.mjs proves them.
 
 import { execFileSync } from "node:child_process";
@@ -101,17 +103,15 @@ export function hookedCalls(text) {
 
 const key = (c) => `${c.cls}.${c.method}`;
 
-// The hook class registering `calls`, which all reset one owning class (calls[0].cls).
+// The hook class for `calls`, which all reset one owning class (calls[0].cls).
 export function hookClass(calls) {
   const cls = calls[0].cls;
   const name = `${cls}_StaticResetHook`;
   return [
     "//------------------------------------------------------------------------------------------------",
-    `//! World-end reset of ${cls}'s statics (registered at script load; Core/LF_StaticReset.c).`,
+    `//! World-end reset of ${cls}'s statics (LF_StaticReset finds it by reflection).`,
     `class ${name} : LF_StaticResetHook`,
     "{",
-    `\tprotected static bool s_bRegistered = LF_StaticReset.Register(new ${name}());`,
-    "",
     "\toverride string Owner()",
     "\t{",
     `\t\treturn "${cls}";`,
@@ -173,12 +173,14 @@ export function centralFile() {
 //! cells, garages, and spawn points register in their OnPostInit, which runs before the game
 //! mode starts; a start-time reset would wipe them.
 //!
-//! Nothing is listed here. Each class that owns statics adds an LF_StaticResetHook subclass in its
-//! own file that registers itself from a static initializer at script load (the feature scaffold
-//! writes it; template in tools/lib/static-reset-hooks.mjs). ResetAll walks the flat array.
-//! A central list made every feature PR touch this file; a \`modded class\` layer per feature nested
-//! one super call per feature and overflowed the script stack at about 123 (#2034).
-//! validate-registries.mjs rejects both.
+//! Nothing is listed here and nothing registers. Each class that owns statics adds an
+//! LF_StaticResetHook subclass in its own file (the feature scaffold writes it; template in
+//! tools/lib/static-reset-hooks.mjs); the first ResetAll or Registered finds every subclass by
+//! reflection (typename.GetInheritedTypes), spawns each once and sorts them by owner (#2755).
+//! A static initializer per hook ate the Game module's one static-init function, which the engine
+//! caps ("Too many instructions per function"); a central list made every feature PR touch this
+//! file; a \`modded class\` layer per feature overflowed the script stack at about 123 (#2034).
+//! validate-registries.mjs rejects all three.
 //------------------------------------------------------------------------------------------------
 class LF_StaticResetHook : Managed
 {
@@ -200,12 +202,12 @@ class LF_StaticResetHook : Managed
 class LF_StaticReset
 {
 	protected static int s_iRuns;
-	//! No initializer on purpose: hooks register from other classes' static initializers, which may
-	//! run before this class's own; Register creates the array on first use.
+	protected static bool s_bDiscovered;
 	protected static ref array<ref LF_StaticResetHook> s_aHooks;
 
 	//------------------------------------------------------------------------------------------------
-	//! Add a hook (once per owner). Returns true so a static bool initializer can call it.
+	//! Add a hook (once per owner). Discovery adds every LF_StaticResetHook subclass already; this is
+	//! for a hook object built at run time. Never call it from a static initializer (#2755).
 	static bool Register(LF_StaticResetHook hook)
 	{
 		if (!hook)
@@ -226,8 +228,56 @@ class LF_StaticReset
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Find every LF_StaticResetHook subclass once, spawn it and add it, sorted by owner.
+	protected static void EnsureDiscovered()
+	{
+		if (s_bDiscovered)
+			return;
+
+		s_bDiscovered = true;
+		array<typename> types = {};
+		typename base = LF_StaticResetHook;
+		base.GetInheritedTypes(types);
+
+		map<string, ref LF_StaticResetHook> byOwner = new map<string, ref LF_StaticResetHook>();
+		array<string> owners = {};
+		foreach (typename t : types)
+		{
+			if (t == base)
+				continue;
+
+			LF_StaticResetHook hook = LF_StaticResetHook.Cast(t.Spawn());
+			if (!hook)
+			{
+				LF_Debug.Error("StaticReset", "could not spawn reset hook " + t.ToString());
+				continue;
+			}
+
+			string owner = hook.Owner();
+			if (owner.IsEmpty())
+			{
+				LF_Debug.Error("StaticReset", "reset hook " + t.ToString() + " names no owner; skipped");
+				continue;
+			}
+
+			if (byOwner.Contains(owner))
+				continue;
+
+			byOwner.Insert(owner, hook);
+			owners.Insert(owner);
+		}
+
+		owners.Sort();
+		foreach (string o : owners)
+		{
+			Register(byOwner.Get(o));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void ResetAll()
 	{
+		EnsureDiscovered();
 		int count;
 		if (s_aHooks)
 		{
@@ -246,9 +296,10 @@ class LF_StaticReset
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The registered hooks by owner class name, without running them.
+	//! The hooks by owner class name, without running them.
 	static array<string> Registered()
 	{
+		EnsureDiscovered();
 		array<string> done = new array<string>();
 		if (!s_aHooks)
 			return done;
@@ -326,17 +377,23 @@ export function addedCalls(baseText, headText) {
   return centralCalls(headText ?? "").filter((c) => !before.has(key(c)));
 }
 
-// Problems in one file's static-reset hooks: any modded layer (the chain overflows, #2034), and a hook
-// class that would never register or registers the wrong thing.
+// A static field initializer that calls LF_StaticReset.Register: each one costs a share of the Game
+// module's single, size-capped static-init function (#2755). Discovery finds the hook without it.
+const STATIC_REGISTER = /^[ \t]*(?:(?:protected|private|const)\s+)*static\b[^;\n(]*=\s*LF_StaticReset\.Register\(/gm;
+
+// Problems in one file's static-reset hooks: any modded layer (the chain overflows, #2034), a static
+// initializer that registers (#2755), and a hook class with no owner or no Apply.
 export function staticResetProblems(text) {
   const problems = [];
   const src = String(text);
   for (const _ of src.match(MODDED) || [])
-    problems.push("modded class LF_StaticResetHooks is retired (#2034: one nested super.Run per feature overflowed the stack); add an LF_StaticResetHook subclass that calls LF_StaticReset.Register (tools/codemods/static-reset-registry.mjs converts it)");
+    problems.push("modded class LF_StaticResetHooks is retired (#2034: one nested super.Run per feature overflowed the stack); add an LF_StaticResetHook subclass (tools/codemods/static-reset-registry.mjs converts it)");
   const hooks = registryHooks(src);
+  for (const m of src.matchAll(STATIC_REGISTER)) {
+    const line = src.slice(0, m.index).split("\n").length;
+    problems.push(`line ${line}: a static initializer calls LF_StaticReset.Register; delete it, LF_StaticReset finds every LF_StaticResetHook subclass by reflection (#2755: all static initializers share one size-capped function)`);
+  }
   for (const h of hooks) {
-    if (!new RegExp(`static\\s+bool\\s+\\w+\\s*=\\s*LF_StaticReset\\.Register\\(\\s*new\\s+${h.name}\\(\\)\\s*\\)\\s*;`).test(h.block))
-      problems.push(`${h.name} must register itself: protected static bool s_bRegistered = LF_StaticReset.Register(new ${h.name}());`);
     if (!h.owner) problems.push(`${h.name} overrides string Owner() returning the class it resets`);
     if (!/override\s+void\s+Apply\(\)/.test(h.block)) problems.push(`${h.name} overrides void Apply() with the reset call`);
   }

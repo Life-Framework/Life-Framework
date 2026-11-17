@@ -289,8 +289,6 @@ class LF_EventModuleLoader
 //! drops the modules themselves.
 class LF_EventModuleLoader_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_EventModuleLoader_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_EventModuleLoader";

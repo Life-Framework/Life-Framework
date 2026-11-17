@@ -6,7 +6,7 @@
 //     agent-box/proofs/<verb>.mjs (default export { name, usage, run(ctx) }); session.mjs
 //     discovers the folder and builds its usage text from it.
 //   - Core/LF_StaticReset.c: every feature's world-end ResetStatics call. Each owning file now adds an
-//     LF_StaticResetHook subclass that registers itself at script load (tools/lib/static-reset-hooks.mjs);
+//     LF_StaticResetHook subclass that LF_StaticReset finds by reflection, no static initializer (#2755; tools/lib/static-reset-hooks.mjs);
 //     `tools\cli heal-hotspots` moves an old branch's central entry there. A `modded class
 //     LF_StaticResetHooks` layer fails: one nested super.Run per feature overflowed the stack (#2034).
 //   - Core/Events/LF_Events.c: every feature's bus events. Each event class now lives in its
@@ -14,6 +14,8 @@
 // This check fails a new proof verb inside session.mjs, a proof module with the wrong shape, and an
 // `LF_On* : LF_Event` class outside Feature/**/LF_*Events.c (so also in Core/Events/).
 //
+// red-proof: 2026-11-17 (#2755) a scratch pack file `static bool s_b = LF_StaticReset.Register(...)` printed
+// `FAIL ...LF_ZzTmp.c: line 3: a static initializer calls LF_StaticReset.Register`.
 // red-proof: 2026-11-10, a scratch `if (cmd === "zz-proof") return 0;` in session.mjs printed
 // `FAIL agent-box/session.mjs:N proof verb "zz-proof"` and exited 1; a scratch
 // `class LF_OnZZ : LF_Event {}` in Core/Events/LF_EventBus.c printed `FAIL ...LF_EventBus.c:N`.
@@ -62,9 +64,15 @@ if (existsSync(join(root, CENTRAL))) {
   for (const c of centralCalls(readFileSync(join(root, CENTRAL), "utf8")))
     bad.push(`FAIL ${CENTRAL}:${c.line} ${c.cls}.${c.method}(): register it in ${c.cls}'s own file with an LF_StaticResetHook subclass (tools\\cli heal-hotspots does it)`);
 }
-for (const f of files) {
+// Every addon (the pack too): a static Register initializer anywhere costs the shared static-init budget.
+const allScripts = execFileSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "addons"], {
+  cwd: root,
+  encoding: "utf8",
+  maxBuffer: 1 << 28,
+}).split("\0").filter((f) => /\/Scripts\/.*\.c$/.test(f) && existsSync(join(root, f)));
+for (const f of allScripts) {
   const text = readFileSync(join(root, f), "utf8");
-  if (!text.includes("LF_StaticResetHook")) continue;
+  if (!text.includes("LF_StaticResetHook") && !text.includes("LF_StaticReset.Register")) continue;
   const r = staticResetProblems(text);
   hooks += r.hooks;
   for (const msg of r.problems) bad.push(`FAIL ${f}: ${msg}`);

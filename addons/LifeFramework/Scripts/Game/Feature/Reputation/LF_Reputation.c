@@ -309,11 +309,9 @@ class LF_Reputation
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Reputation's statics (registered at script load).
+//! World-end reset of LF_Reputation's statics (LF_StaticReset finds it by reflection).
 class LF_Reputation_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Reputation_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Reputation";

@@ -366,11 +366,9 @@ modded class SCR_ChimeraCharacter
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_BleedOut's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_BleedOut's statics (LF_StaticReset finds it by reflection).
 class LF_BleedOut_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_BleedOut_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_BleedOut";

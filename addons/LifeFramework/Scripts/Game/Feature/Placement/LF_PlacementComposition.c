@@ -659,11 +659,9 @@ class LF_PlacementCompositionGhost
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PlacementCompositions's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PlacementCompositions's statics (LF_StaticReset finds it by reflection).
 class LF_PlacementCompositions_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PlacementCompositions_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PlacementCompositions";
@@ -676,11 +674,9 @@ class LF_PlacementCompositions_StaticResetHook : LF_StaticResetHook
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PlacementCompositionGhost's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PlacementCompositionGhost's statics (LF_StaticReset finds it by reflection).
 class LF_PlacementCompositionGhost_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PlacementCompositionGhost_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PlacementCompositionGhost";

@@ -272,11 +272,9 @@ class LF_WaypointHud
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Waypoint's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Waypoint's statics (LF_StaticReset finds it by reflection).
 class LF_Waypoint_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Waypoint_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Waypoint";

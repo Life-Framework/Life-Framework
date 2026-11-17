@@ -176,11 +176,9 @@ class LF_PlayerIdentity
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PlayerIdentity's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PlayerIdentity's statics (LF_StaticReset finds it by reflection).
 class LF_PlayerIdentity_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PlayerIdentity_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PlayerIdentity";

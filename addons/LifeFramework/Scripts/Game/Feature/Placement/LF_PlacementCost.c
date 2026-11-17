@@ -375,11 +375,9 @@ class LF_PlacementCost
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PlacementCost's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PlacementCost's statics (LF_StaticReset finds it by reflection).
 class LF_PlacementCost_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PlacementCost_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PlacementCost";

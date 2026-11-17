@@ -261,8 +261,6 @@ class LF_EventScenePlanner
 //! is not resumed after a restart.
 class LF_EventScenePlanner_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_EventScenePlanner_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_EventScenePlanner";
