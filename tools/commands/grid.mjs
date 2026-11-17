@@ -42,8 +42,7 @@ import { dirname, join } from "node:path";
 import { CELL, isFrameClaim } from "../grid/lattice.mjs";
 import { loadWorld } from "../../agent-box/layers.mjs";
 import { withSpawn } from "../grid/cell-spawn.mjs";
-import { MARGIN, blockText, boundsWithChildren, chooseYaw, footprintOf, largestFree, noFitMessage, pivotAt, spanOptions } from "../grid/autosize.mjs";
-import { readResource } from "../actions/place-action-contexts.mjs";
+import { MARGIN, blockText, chooseYaw, footprintOf, largestFree, noFitMessage, pivotAt, spanOptions } from "../grid/autosize.mjs";
 import { resolvePrefab } from "../lib/game-prefab.mjs";
 import {
   CELLS_DIR, GRID_LAYERS, PACK_GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, claimCellIds, claimRect, entityPrefix, gapSide, gridLayersOfClaim, isPackPrefab, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, worktreeClaims, yardPlan, yawAlong,
@@ -229,16 +228,7 @@ async function readPrefab(root, P, arg, ctx) {
     if (!r.ref) throw new Error(`no GUID known for ${r.path}`);
     const info = P.prefabInfo(P.ROOT, r.path);
     if (!info.bounds) throw new Error(`${r.path} has no mesh the tool can measure (${info.error || "no MeshObject in its chain"})`);
-    // The block takes the prefab's annex children too (FenceYard: a main building and a side one), not the root mesh alone.
-    let sized = info;
-    try {
-      const text = readResource(P.ROOT, r.path);
-      const kids = text ? P.modelOf(P.ROOT, text, r.path, { prefabRoot: r.path }) : [];
-      sized = { ...info, bounds: boundsWithChildren(P, info.bounds, info.scale, kids) };
-    } catch {
-      // a child the tool cannot read leaves the root's own bounds
-    }
-    return { ref: r.ref, info: sized };
+    return { ref: r.ref, info };
   } catch (e) {
     console.log(`grid: cannot size ${arg}: ${e.message}`);
     return null;

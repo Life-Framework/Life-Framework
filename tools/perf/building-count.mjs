@@ -183,34 +183,16 @@ export function buildingRoots(dir) {
   return files.filter((f) => !referenced(f));
 }
 
-// A slug names its folder case- and hyphen-blind (fuel-station -> FuelStation, town-hall -> TownHall), else the folder the
-// building's spec names (tools/buildings/<slug>/spec.json "prefab_dir").
-const flat = (n) => String(n).toLowerCase().replace(/[^a-z0-9]/g, "");
-export function buildingFolderNames(slug, root = ROOT) {
-  const names = [slug];
-  const spec = join(root, "tools", "buildings", slug, "spec.json");
-  if (existsSync(spec)) {
-    try {
-      const dir = JSON.parse(readFileSync(spec, "utf8")).prefab_dir;
-      if (dir) names.push(String(dir).replaceAll("\\", "/").split("/").filter(Boolean).pop());
-    } catch {
-      // an unreadable spec is the same as no spec: the slug alone is tried
-    }
-  }
-  return names;
-}
-
 export function findBuilding(slug, root = ROOT) {
   if (slug.endsWith(".et")) {
     const f = existsSync(slug) ? slug : join(root, slug);
     return existsSync(f) ? { files: [f] } : null;
   }
   const addons = join(root, "addons");
-  const wanted = buildingFolderNames(slug, root).map(flat);
   for (const a of readdirSync(addons)) {
     const b = join(addons, a, "Prefabs", "Buildings");
     if (!existsSync(b)) continue;
-    const hit = readdirSync(b).find((n) => wanted.includes(flat(n)));
+    const hit = readdirSync(b).find((n) => n.toLowerCase() === slug.toLowerCase());
     if (hit) return { files: buildingRoots(join(b, hit)) };
   }
   return null;
