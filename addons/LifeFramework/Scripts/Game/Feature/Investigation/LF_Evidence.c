@@ -129,7 +129,7 @@ class LF_Evidence
 	//------------------------------------------------------------------------------------------------
 	//! Server: every scene closes and every marker and casing lying about is removed (the world
 	//! reset). The shooters being watched stay watched.
-	//! eturn How many pieces of evidence were removed.
+	//! \return How many pieces of evidence were removed.
 	static int ClearAll()
 	{
 		int removed = 0;

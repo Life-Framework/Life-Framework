@@ -206,13 +206,14 @@ export function desktopHelperScript() {
 }
 
 // The PowerShell that registers (or replaces) the "At log on" task for the user who runs it and starts it now when
-// the desktop session is up. Idempotent: -Force replaces the task; a helper already running stays (its mutex).
+// the desktop session is up. The action is `conhost.exe --headless powershell.exe ...` (as every LF-* task): a plain
+// powershell.exe opens a console window, and when that window is closed the helper dies (~15 s after logon, #2590). Idempotent: -Force replaces the task; a helper already running stays (its mutex).
 export function setupScript({ user, helperPath = "C:\\LF\\desktop\\desktop-helper.ps1" } = {}) {
   const q = (s) => `'${String(s).replace(/'/g, "''")}'`;
   return [
     "$ErrorActionPreference = 'Stop'",
     `$user = ${user ? q(user) : "(whoami)"}`,
-    `$a = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument ${q(`-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "${helperPath}"`)}`,
+    `$a = New-ScheduledTaskAction -Execute 'conhost.exe' -Argument ${q(`--headless powershell.exe -NoProfile -ExecutionPolicy Bypass -File "${helperPath}"`)}`,
     "$t = New-ScheduledTaskTrigger -AtLogOn -User $user",
     "$p = New-ScheduledTaskPrincipal -UserId $user -LogonType Interactive -RunLevel Limited",
     "$s = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)",

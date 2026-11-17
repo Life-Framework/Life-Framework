@@ -11,11 +11,11 @@
 // red-proof: 2026-11-14, with the duplicate-uid test in checkRoster removed this printed
 // "FAIL staff-roster: duplicate uid fails check: ok != fail". Section 5 (#1466): 2026-11-15, before add,
 // remove and promote existed it printed "FAIL staff-roster: add: exit: 1 != 0".
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { main } from "../commands/staff.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const eq = (got, want, msg) => {
@@ -24,7 +24,7 @@ const eq = (got, want, msg) => {
 const failed = (r) => (r.code === 0 ? "ok" : "fail");
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const dir = mkdtempSync(join(tmpdir(), "lf-staff-"));
+const dir = scratchDir("lf-staff-");
 let n = 0;
 const fixture = (...lines) => {
   const file = join(dir, `staff-${n++}.txt`);

@@ -9,10 +9,10 @@
 // "Cannot find module '.../tools/host/triage-draft.mjs'" (2026-11-15, #1270).
 
 import { dirname, join, resolve } from "node:path";
-import { mkdtempSync, readFileSync, readdirSync, existsSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, readdirSync, existsSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "log-triage");
@@ -69,7 +69,7 @@ function host(...args) {
   const run = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "host", "triage", ...args], { cwd: ROOT, encoding: "utf8", timeout: 60000, windowsHide: true });
   return { status: run.status, out: `${run.stdout ?? ""}${run.stderr ?? ""}` };
 }
-const outDir = mkdtempSync(join(tmpdir(), "lf-triage-draft-"));
+const outDir = scratchDir("lf-triage-draft-");
 const log = join(FIX, "console.log");
 const table = join(FIX, "triage.md");
 

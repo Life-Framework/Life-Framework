@@ -9,11 +9,11 @@
 // same table as script for the Enforce test; this fails when it is stale: node tools/map/rules/areas.mjs --gen.
 // red-proof: observed 2026-11-16: a copy of the table with the box yaw-90 vertices reversed, the SAFE
 // fill alpha at 99 and the LAWLESS rule mapped to SAFE made runCases report exactly 3 failures.
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { evaluate, generatedIsCurrent } from "../map/rules/areas.mjs";
 import { CASES_DIR, runCases } from "../map/rules/index.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = false;
 const fail = (m) => { console.log(`FAIL ${m}`); failed = true; };
@@ -25,7 +25,7 @@ if (!real.missing && real.pass < 20) fail(`only ${real.pass} case(s) ran`);
 
 if (!generatedIsCurrent()) fail("LF_MapAreaCases.generated.c is stale: run node tools/map/rules/areas.mjs --gen");
 
-const dir = mkdtempSync(join(tmpdir(), "lf-map-areas-"));
+const dir = scratchDir("lf-map-areas-");
 try {
   const bad = JSON.parse(readFileSync(join(CASES_DIR, "areas.cases.json"), "utf8"));
   bad.cases.find((c) => c.input.shape === "box" && c.input.yaw === 90).expect.outline = "95 180 95 220 105 220 105 180";

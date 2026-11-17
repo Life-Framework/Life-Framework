@@ -15,12 +15,12 @@
 //   checkout's" for each worktree and prune left the worktree path; with `git config --local --add include.path
 //   "$DRIVERS"` put back in the hook, hook printed "pre-commit adds an include.path itself".
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
 import { driversIncludes, mainCheckout, registerDrivers } from "../merge/register-drivers.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SCRIPT = join(ROOT, "tools", "merge", "register-drivers.mjs");
@@ -36,7 +36,7 @@ function git(dir, args) {
 }
 const registerCli = (dir) => spawnSync("node", [SCRIPT], { cwd: dir, encoding: "utf8", windowsHide: true });
 
-const temp = mkdtempSync(join(tmpdir(), "lf-drivers-include-"));
+const temp = scratchDir("lf-drivers-include-");
 try {
   const main = join(temp, "main");
   mkdirSync(join(main, "tools", "merge"), { recursive: true });
