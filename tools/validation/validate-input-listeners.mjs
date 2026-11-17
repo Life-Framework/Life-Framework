@@ -7,8 +7,9 @@
 // left four more on a dead menu (docs/reviews/2026-11-17-ui.md).
 //
 // Fails when a .c calls AddActionListener(action, trigger, callback) and the same file has no
-// RemoveActionListener with the same three arguments. A file listed in ONCE_PER_CONTROLLER adds
-// its listener once per local player controller behind a flag and names why it never removes it.
+// RemoveActionListener with the same three arguments. There is no allowlist: a once-per-controller
+// listener (give up, clip stamp, placement, vehicle lock) is removed in the controller's destructor,
+// or a reconnect in the same process leaves a second one on a deleted controller (#2545).
 // Comments are ignored; tests are skipped.
 // red-proof: tools/validation/input-listeners-selftest.mjs plants an add with no remove, and the
 // inventory menu's add-on-close copy.
@@ -16,15 +17,6 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-
-// A listener registered once per local SCR_PlayerController (a flag stops a second add). The
-// controller lives for the session; the reconnect case is a plausible finding in the UI review.
-export const ONCE_PER_CONTROLLER = {
-  "/Feature/Medic/LF_GiveUpController.c": "LF_GiveUp key, added once per local controller behind m_bLF_GiveUpListening",
-  "/Feature/Moderation/LF_ClipStampController.c": "LF_ClipStamp key, added once per local controller behind its listening flag",
-  "/Feature/Placement/LF_PlacementPlayerController.c": "placement keys, added once per local controller behind its listening flag",
-  "/Feature/VehicleLock/LF_VehicleLockKeyController.c": "vehicle lock key, added once per local controller behind its listening flag",
-};
 
 const strip = (text) => text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
 const norm = (s) => s.replace(/\s+/g, "");
@@ -34,7 +26,6 @@ export function problems(files) {
   const out = [];
   for (const f of files) {
     if (f.path.includes("/Tests/")) continue;
-    if (Object.entries(ONCE_PER_CONTROLLER).some(([k, why]) => f.path.includes(k) && why.length >= 15)) continue;
     const code = strip(f.text);
     const removes = new Set([...code.matchAll(/RemoveActionListener\(([^;]*)\);/g)].map((m) => norm(m[1])));
     const seen = new Set();
@@ -42,7 +33,7 @@ export function problems(files) {
       const args = norm(m[1]);
       if (removes.has(args) || seen.has(args)) continue;
       seen.add(args);
-      out.push(`${f.path}: AddActionListener(${args}) has no RemoveActionListener with the same arguments; InputManager keeps it after the menu or screen is gone. Remove it in OnMenuClose / Close (or list a once-per-controller listener in ONCE_PER_CONTROLLER with the reason)`);
+      out.push(`${f.path}: AddActionListener(${args}) has no RemoveActionListener with the same arguments; InputManager keeps it after the menu or screen is gone. Remove it in OnMenuClose / Close, or for a per-controller listener in the controller's destructor`);
     }
   }
   return out;

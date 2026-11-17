@@ -10,6 +10,27 @@ modded class SCR_PlayerController
 	protected bool m_bLF_PlacementKeysListening;
 
 	//------------------------------------------------------------------------------------------------
+	//! The listeners live on the process-global InputManager, so they leave with this controller;
+	//! otherwise a reconnect in the same process adds a second set and the old one calls a deleted
+	//! controller (#2545). The base destructors run after this one on their own.
+	void ~SCR_PlayerController()
+	{
+		if (!m_bLF_PlacementKeysListening || !GetGame())
+			return;
+
+		InputManager input = GetGame().GetInputManager();
+		if (input)
+		{
+			input.RemoveActionListener("LF_PlacementPlace", EActionTrigger.DOWN, LF_OnPlacementPlace);
+			input.RemoveActionListener("LF_PlacementCancel", EActionTrigger.DOWN, LF_OnPlacementCancel);
+			input.RemoveActionListener("LF_PlacementTurnLeft", EActionTrigger.DOWN, LF_OnPlacementTurnLeft);
+			input.RemoveActionListener("LF_PlacementTurnRight", EActionTrigger.DOWN, LF_OnPlacementTurnRight);
+		}
+
+		m_bLF_PlacementKeysListening = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void OnControlledEntityChanged(IEntity from, IEntity to)
 	{
 		super.OnControlledEntityChanged(from, to);
