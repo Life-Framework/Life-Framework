@@ -3810,6 +3810,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not while restrained"
      Comment "Greyed-out reason on an emote or on Sit while the body is cuffed or stunned (#982)."
     }
+    CustomStringTableItem "{2AB2FE3B951F79E3}" {
+     Id "LF-Escort_HeldByOther"
+     Target_en_us "Another officer already has them."
+     Comment "Toast to an officer whose escort grab was refused: the suspect is held by a different officer."
+    }
     CustomStringTableItem "{5B1F9A3E7C2D4086}" {
      Id "LF-EventMap_Place"
      Target_en_us "Event"
