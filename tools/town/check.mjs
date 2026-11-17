@@ -14,13 +14,15 @@
 //   - a claim whose `destruction.mode` is "needs-hook" is a WARN until the core's indestructible hook lands (D15);
 //   - the performance budget (docs/architecture/performance.md): each slot's layer against the building budget of its size
 //     (the same counts as `tools\cli perf building <slug> --size <size> --json`), and the per-place limits within 60 m;
-//   - the map POI-kind slot check: TODO(#2245), `tools/town/lib/poi-check.mjs` (card M17) has not landed.
+//   - the map POI-kind slot check (`tools/town/lib/poi-check.mjs`, #2245): every template slot names a front `poi` kind with a row in
+//     LF_MapPois.conf (core or a pack overlay), or `none`; a slot that names none, or a kind with no row, is an error.
 // The pure functions are what tools/validation/island-zones-selftest.mjs runs; `validate-island-zones` shares the claim and footprint half.
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { BUDGET, countTree, makeResolver, parseEntities, verdict } from "../perf/building-count.mjs";
 import { topLevelCoords } from "../validation/validate-world-zones.mjs";
+import { checkSlotPois, loadPoiKinds } from "./lib/poi-check.mjs";
 import { loadTemplate } from "./map.mjs";
 
 export const help = "check <place> [--json] [--no-perf]   one place: required slots mapped, layers and claims, kinds against m_aPlaces, footprints, perf budget; exit 1 on an error";
@@ -219,9 +221,9 @@ export function checkPlace(data, opts = {}) {
     if (known) for (const kind of promised) if (!known.has(kind)) warnings.push(`slot ${row.slot}: kind ${kind} is in no system's m_aPlaces (LF_SystemCatalog.conf); the layer is right but nothing looks for it yet`);
   }
 
-  // TODO(#2245): the map POI-kind slot check (card M17, tools/town/lib/poi-check.mjs) is not in yet. When it lands, call it here:
-  // a slot whose front kind has no POI row, and no explicit `none`, is an error.
-  notes.push("map POI kinds: not checked yet (waiting on #2245, tools/town/lib/poi-check.mjs)");
+  // The map POI-kind slot check (#2245): each slot's front kind has a POI row, or is `none`.
+  if (data.poiKinds) errors.push(...checkSlotPois(template, data.poiKinds).map((p) => `template: ${p}`));
+  else notes.push("map POI kinds: not checked (no POI table was loaded)");
 
   // Performance budget.
   const perf = [];
@@ -294,7 +296,7 @@ export function guardIslandLayers({ branch, files }) {
 const readJson = (f) => JSON.parse(readFileSync(f, "utf8"));
 
 // Everything about one place from a repo root. Throws on a missing dossier or mapping (a place with neither is not a place).
-export function loadPlace(root, place, { templateFile = null, catalogFile = null, dossierFile = null, mappingFile = null, layerDir = LAYER_DIR, claimsDir = CLAIMS_DIR } = {}) {
+export function loadPlace(root, place, { poiKinds = undefined, templateFile = null, catalogFile = null, dossierFile = null, mappingFile = null, layerDir = LAYER_DIR, claimsDir = CLAIMS_DIR } = {}) {
   const placeDir = join(root, "docs", "everon", "places", place);
   const dFile = dossierFile ?? join(placeDir, "dossier.json");
   const mFile = mappingFile ?? join(placeDir, "mapping.json");
@@ -317,7 +319,15 @@ export function loadPlace(root, place, { templateFile = null, catalogFile = null
   if (existsSync(lDir)) for (const f of readdirSync(lDir)) if (f.startsWith(`Place_${place}_`) && f.endsWith(".layer")) layers[f] = readFileSync(join(lDir, f), "utf8");
   const cat = catalogFile ?? join(root, CATALOG);
   const catalogKinds = existsSync(cat) ? catalogPlaces(readFileSync(cat, "utf8")) : null;
-  return { place, dossier, mapping, template, claims, layers, catalogKinds };
+  let poi = poiKinds ?? null;
+  if (poiKinds === undefined) {
+    try {
+      poi = loadPoiKinds(root).kinds;
+    } catch {
+      poi = null; // no POI conf under this root: the check notes it and skips
+    }
+  }
+  return { place, dossier, mapping, template, claims, layers, catalogKinds, poiKinds: poi };
 }
 
 // ------------------------------------------------------------------ CLI
