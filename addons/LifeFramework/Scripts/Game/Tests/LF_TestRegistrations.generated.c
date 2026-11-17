@@ -344,6 +344,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapConfig(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MapKnown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapKnownPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_MapKnownSyncGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPois(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapWaypoint(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);
