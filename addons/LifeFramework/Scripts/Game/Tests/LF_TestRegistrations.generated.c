@@ -451,6 +451,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgFundOverflow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_OrgLedgerRate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgMapMarkBounds(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_OrgMapMarks(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_OrgMarkCharacterId(), LF_TestTier.LOGIC);

@@ -159,3 +159,10 @@
   so a restart no longer leaves it open for anyone. Tests `organization/upgrade-unwired`,
   `organization/fund-overflow`, `hideout/stash-right`, `hideout/load-relock` (LOGIC). The lease that
   never ends is #2533.
+- ✅ **Ledger asks are rate-limited; the test sign only leaves its own org** (#2536, review items 30 and 31 of #2415,
+  merged, in-dev). View, Deposit, Withdraw, Leave and Lease now go through `LF_OrgLedgerGate` (`LF_OrganizationCharacter.c`)
+  on the existing `PURCHASE` bucket, the same as founding and upgrades (View walks every member, so a spammed ask cost
+  a pass over the whole roster). The first refusal in a window logs `[LFDebug:RateLimit]` and toasts; a refused ask
+  returns no page. The dev-gated test sign's Leave refuses with `OTHER_ORG` (`#LF-TestOrgSign_OtherOrg`) unless the
+  player's org is the sign's own "Test Organisation", so it can never strip a real org of its founder. Test
+  `organizations/ledger-rate` (LOGIC).

@@ -4,6 +4,29 @@
 //! cash, upgrade, lease, leave) is refused away from the desk; the server checks the character,
 //! moves MoneyStack, and answers with the ledger page.
 //------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
+//! Rate limit for the ledger asks (review 2026-11-17 items 30, 31, #2415). View, Deposit, Withdraw,
+//! Leave and Lease share the PURCHASE bucket with founding and upgrades: they are the same desk
+//! and the same money, and View walks every member of the organisation. The test org sign has no
+//! bucket of its own to hide behind, so it is not touched here.
+class LF_OrgLedgerGate
+{
+	//------------------------------------------------------------------------------------------------
+	//! Server. Counts one ledger ask against the player's bucket. A refusal logs LF_RateLimit's warning.
+	//! \param request Short name for the log line, e.g. "view".
+	//! \return true when the ask may proceed.
+	static bool Admit(int playerId, string request, bool notify = true)
+	{
+		return LF_RateLimit.Allow(playerId, LF_ERequestKind.PURCHASE, "organization " + request, notify);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: Admit for an ask that arrived on a character.
+	static bool AdmitCharacter(IEntity character, string request)
+	{
+		return LF_RateLimit.AllowCharacter(character, LF_ERequestKind.PURCHASE, "organization " + request);
+	}
+}
 modded class SCR_ChimeraCharacter
 {
 	//------------------------------------------------------------------------------------------------
@@ -104,6 +127,9 @@ modded class SCR_ChimeraCharacter
 		if (LF_RefuseOrganizationsOff("view"))
 			return;
 
+		if (!LF_OrgLedgerGate.AdmitCharacter(this, "view"))
+			return;
+
 		LF_PushOrganizationView("");
 	}
 
@@ -114,7 +140,7 @@ modded class SCR_ChimeraCharacter
 		if (LF_RefuseOrganizationsOff("found"))
 			return;
 
-		if (!LF_RateLimit.AllowCharacter(this, LF_ERequestKind.PURCHASE, "organization founding"))
+		if (!LF_OrgLedgerGate.AdmitCharacter(this, "founding"))
 			return;
 
 		if (LF_RefuseAwayFromOrganizationDesk("found", 0))
@@ -142,6 +168,9 @@ modded class SCR_ChimeraCharacter
 		if (LF_RefuseOrganizationsOff("deposit"))
 			return;
 
+		if (!LF_OrgLedgerGate.AdmitCharacter(this, "deposit"))
+			return;
+
 		string notice = "#LF-Org_CashRefused";
 		if (!LF_RefuseAwayFromOrganizationDesk("deposit", amount) && LF_OrganizationPlayer.DepositCash(this, amount))
 			notice = "#LF-Org_Deposited";
@@ -156,6 +185,9 @@ modded class SCR_ChimeraCharacter
 		if (LF_RefuseOrganizationsOff("withdraw"))
 			return;
 
+		if (!LF_OrgLedgerGate.AdmitCharacter(this, "withdraw"))
+			return;
+
 		string notice = "#LF-Org_CashRefused";
 		if (!LF_RefuseAwayFromOrganizationDesk("withdraw", amount) && LF_OrganizationPlayer.WithdrawCash(this, amount))
 			notice = "#LF-Org_Withdrawn";
@@ -168,6 +200,9 @@ modded class SCR_ChimeraCharacter
 	protected void RpcAsk_LF_OrganizationLeave()
 	{
 		if (LF_RefuseOrganizationsOff("leave"))
+			return;
+
+		if (!LF_OrgLedgerGate.AdmitCharacter(this, "leave"))
 			return;
 
 		string notice = "#LF-Org_LeaveRefused";
@@ -187,6 +222,9 @@ modded class SCR_ChimeraCharacter
 	protected void RpcAsk_LF_OrganizationLease()
 	{
 		if (LF_RefuseOrganizationsOff("lease"))
+			return;
+
+		if (!LF_OrgLedgerGate.AdmitCharacter(this, "lease"))
 			return;
 
 		string notice = "#LF-Org_LeaseRefused";
@@ -241,7 +279,7 @@ modded class SCR_ChimeraCharacter
 		if (LF_RefuseOrganizationsOff("buy"))
 			return;
 
-		if (!LF_RateLimit.AllowCharacter(this, LF_ERequestKind.PURCHASE, "organization upgrade"))
+		if (!LF_OrgLedgerGate.AdmitCharacter(this, "upgrade"))
 			return;
 
 		LF_EOrganizationUpgrade kind = LF_EOrganizationUpgrade.PROCESSING_SLOT;
