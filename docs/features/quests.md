@@ -58,7 +58,7 @@
 
 ### Layouts (loaded by `LF_Test_Data`)
 - ✅ `LF_SplitQuantityDialog`, `LF_CharacterCreationMenu`, `LF_ATMMenu`,
-  `EL_SurvivalHUD`, `ShopMenu`, `PoliceMenu`,
+  `EL_SurvivalHUD`, `ShopMenu`,
   `DeathScreen` load (WORLD tier). The `SurvivalHUD` menu preset and its
   `EL_SurvivalHUD` class were never opened and are removed (2026-11-07); `LF_BetaHud`
   draws the gauges. The layout stays only as this load fixture. The unused

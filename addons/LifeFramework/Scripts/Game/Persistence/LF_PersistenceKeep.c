@@ -9,11 +9,11 @@
 //! makes a save written with the switch on load "fresh" when the owner turns it off, and is
 //! idempotent: a second pass over the same save resets the same fields to the same defaults.
 //!
-//! FIELDS. keepCash (cash stacks in the carried snapshots), keepCarriedGear (every carried
-//! snapshot, cash included), keepSurvival (hunger, thirst), keepWanted (every character's
-//! wanted level; the posters are pruned after, LF_WantedReports.PruneCleared), keepJail (serving
-//! sentences), keepLicences (earned licences; the body keeps its starter ones). Fields the save does
-//! not hold today (position, vehicle fuel, damage and trunk, house contents) have no switch.
+//! FIELDS. keepCash (cash stacks in the carried, civilian stash and duty snapshots),
+//! keepCarriedGear (every carried snapshot and civilian stash, cash included; the duty kits stay,
+//! #2547), keepSurvival (hunger, thirst), keepWanted (every character's wanted level; the posters
+//! are pruned after, LF_WantedReports.PruneCleared), keepJail (serving sentences),
+//! keepLicences (earned licences; the body keeps its starter ones). Fields the save does not hold today (position, vehicle fuel, damage and trunk, house contents) have no switch.
 //------------------------------------------------------------------------------------------------
 class LF_PersistenceKeep
 {
@@ -32,14 +32,20 @@ class LF_PersistenceKeep
 		if (!keep.m_bKeepCarriedGear)
 		{
 			int dropped = LF_StorageSnapshot.ClearSlot(LF_StorageSnapshot.SLOT_CARRIED);
-			LF_Debug.Info(FEATURE, string.Format("keepCarriedGear off: %1 carried snapshot(s) reset to the starting loadout", dropped));
+			int stashes = LF_StorageSnapshot.ClearSlot(LF_DutyLocker.SLOT_CIVILIAN);
+			LF_Debug.Info(FEATURE, string.Format("keepCarriedGear off: %1 carried snapshot(s) reset to the starting loadout, %2 civilian stash(es) dropped", dropped, stashes));
 			reset++;
 		}
-		else if (!keep.m_bKeepCash)
+
+		if (!keep.m_bKeepCash)
 		{
-			int cash = LF_StorageSnapshot.StripPrefab(LF_StorageSnapshot.SLOT_CARRIED, LF_MoneyUtils.CashPrefab());
-			LF_Debug.Info(FEATURE, string.Format("keepCash off: %1 cash on hand removed from the carried snapshots", cash));
-			reset++;
+			// With carried gear off the carried and civilian slots are already empty; this is one field
+			// then, cash riding with the gear. The duty kits keep their gear (the armory book holds
+			// their serials, #2488) and lose only the cash an officer left in them.
+			int cash = StripCash(!keep.m_bKeepCarriedGear);
+			LF_Debug.Info(FEATURE, string.Format("keepCash off: %1 cash removed from the carried, civilian stash and duty snapshots", cash));
+			if (keep.m_bKeepCarriedGear)
+				reset++;
 		}
 
 		if (!keep.m_bKeepSurvival && !persistence)
@@ -82,5 +88,31 @@ class LF_PersistenceKeep
 		}
 
 		return reset;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Strips the cash stacks from every slot a player can carry back: carried, the civilian stash and
+	//! both duty slots. A duty slot is not cleared, only its cash goes.
+	//! \param[in] dutyOnly True when the carried and civilian slots were already dropped.
+	//! \return The total cash removed.
+	protected static int StripCash(bool dutyOnly)
+	{
+		ResourceName cashPrefab = LF_MoneyUtils.CashPrefab();
+		if (cashPrefab.IsEmpty())
+		{
+			LF_Debug.Error(FEATURE, "keepCash off: no cash prefab configured, cash left as saved");
+			return 0;
+		}
+
+		int cash;
+		if (!dutyOnly)
+		{
+			cash += LF_StorageSnapshot.StripPrefab(LF_StorageSnapshot.SLOT_CARRIED, cashPrefab);
+			cash += LF_StorageSnapshot.StripPrefab(LF_DutyLocker.SLOT_CIVILIAN, cashPrefab);
+		}
+
+		cash += LF_StorageSnapshot.StripPrefab(LF_DutyLocker.SLOT_POLICE, cashPrefab);
+		cash += LF_StorageSnapshot.StripPrefab(LF_DutyLocker.SLOT_MEDIC, cashPrefab);
+		return cash;
 	}
 }

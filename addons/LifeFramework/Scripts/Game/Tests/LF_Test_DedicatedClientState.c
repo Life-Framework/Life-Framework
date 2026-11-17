@@ -207,6 +207,7 @@ class LF_Test_AccountReplicationWorld : LF_Test
 		string policeUid = "dedicated-breach-mirror-police";
 		LF_PlayerAccountManager.GetOrCreate(uid);
 		LF_PlayerAccountManager.GetOrCreate(policeUid).SetFaction(LF_Faction.POLICE);
+		LF_PlayerAccountManager.GetOrCreate(policeUid).SetOnDuty(true);
 
 		LF_Breach.Repair(LF_TestAnnex.BREACH_DOOR, policeUid);
 		ctx.False(target.IsReplicatedOpen(), "repair clears the replicated open flag");
