@@ -1,0 +1,9 @@
+GenericEntity : "{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et" {
+ ID "818BFACC14BB79EE"
+ components {
+  LF_HeistVaultComponent "{6E1B3A7C95D2040B}" {
+   m_sLootKind "bags"
+   m_sSafeType "store_box"
+  }
+ }
+}

@@ -14,17 +14,17 @@
 // red-proof: before tools/playtest/opening/b1-desk.mjs existed every case printed "FAIL ... no BEAT line" (2026-11-15); with the
 // two-person roster limit (`entries.length > 1`) loosened, "case 2: staff-two.txt gives roster FAIL" failed. Restored.
 
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "opening-b1");
 const SCRIPT = join(ROOT, "tools", "playtest", "opening", "b1-desk.mjs");
 const FAKE_CLI = join(FIX, "fake-cli.mjs");
-const scratch = mkdtempSync(join(tmpdir(), "lf-b1-"));
+const scratch = scratchDir("lf-b1-");
 
 let failed = 0;
 function check(ok, label) {

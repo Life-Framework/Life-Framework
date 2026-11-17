@@ -105,9 +105,9 @@ function Get-LastMs($p) {
 
 // Prints the free disk of the volume holding the run folders, and (unless it is already at or over
 // targetGb, when targetGb > 0) one `lf-pool: rt` line per run folder. Never deletes.
-export function rtScanScript(parentDir, targetGb) {
+export function rtScanScript(parentDir, targetGb, mainDir = "") {
   return `$parent = ${psQuote(String(parentDir).replace(/\//g, "\\"))}
-$main = Join-Path $parent 'Life-Framework'
+$main = ${mainDir ? psQuote(String(mainDir).replace(/\//g, "\\")) : "Join-Path $parent 'Life-Framework'"}
 $target = ${Number(targetGb) > 0 ? Number(targetGb) : 0}
 ${PS_COMMON}
 $free = Get-FreeGb $parent
@@ -131,9 +131,9 @@ foreach ($d in Get-ChildItem -LiteralPath $parent -Directory -Filter '${RT_PREFI
 // soon as targetGb is free (targetGb 0: remove them all). A folder that got a lock, a process or
 // a write since the scan (older than cutoffMs no more) is kept. One line per folder:
 // `lf-pool: gc removed <free after, GB> <path>`, `lf-pool: gc kept <why> <path>`, `lf-pool: gc fail <path>`.
-export function rtRemoveScript(parentDir, dirs, { targetGb = 0, cutoffMs = 0 } = {}) {
+export function rtRemoveScript(parentDir, dirs, { targetGb = 0, cutoffMs = 0, mainDir = "" } = {}) {
   return `$parent = ${psQuote(String(parentDir).replace(/\//g, "\\"))}
-$main = Join-Path $parent 'Life-Framework'
+$main = ${mainDir ? psQuote(String(mainDir).replace(/\//g, "\\")) : "Join-Path $parent 'Life-Framework'"}
 $target = ${Number(targetGb) > 0 ? Number(targetGb) : 0}
 $cutoff = ${Math.max(0, Math.floor(Number(cutoffMs) || 0))}
 $dirs = @(${dirs.map(psQuote).join(",")})

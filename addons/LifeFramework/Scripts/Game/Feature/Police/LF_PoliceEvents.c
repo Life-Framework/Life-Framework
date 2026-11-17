@@ -48,13 +48,19 @@ class LF_OnWantedReportFiled : LF_Event
 	int m_iSequence;
 	//! The report's place text (a sign title key or "grid X-Z"), never a coordinate.
 	string m_sPlace;
+	//! Where the crime was filed (#2578), when the report knows it: a place text that is only a map
+	//! label has no point to mark otherwise. A runtime value, never a coded coordinate.
+	vector m_vPosition;
+	bool m_bHasPosition;
 
-	static LF_OnWantedReportFiled Create(string playerUid, int sequence, string place)
+	static LF_OnWantedReportFiled Create(string playerUid, int sequence, string place, bool hasPosition = false, vector position = vector.Zero)
 	{
 		LF_OnWantedReportFiled e = new LF_OnWantedReportFiled();
 		e.m_sPlayerUid = playerUid;
 		e.m_iSequence = sequence;
 		e.m_sPlace = place;
+		e.m_bHasPosition = hasPosition;
+		e.m_vPosition = position;
 		return e;
 	}
 }

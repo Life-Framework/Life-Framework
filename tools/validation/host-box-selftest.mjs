@@ -15,11 +15,11 @@
 // '.../tools/lib/host-box.mjs'"; and without the guard in lib/addons.mjs the box run died with
 // "ENOENT: no such file or directory, scandir '<clone>/addons'" (2026-11-15).
 
-import { cpSync, existsSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { tmpdir } from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const { BOX_MARKER, boxMode, missingForHostStart } = await import("../lib/host-box.mjs");
@@ -32,7 +32,7 @@ function fail(msg) {
 }
 
 // --- the pure parts
-const scratch = mkdtempSync(join(tmpdir(), "lf-host-box-"));
+const scratch = scratchDir("lf-host-box-");
 try {
   const clone = join(scratch, "clone");
   mkdirSync(clone, { recursive: true });

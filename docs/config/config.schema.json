@@ -741,6 +741,49 @@
       "additionalProperties": false,
       "x-class": "LF_LicencesConfig"
     },
+    "lockers": {
+      "type": "object",
+      "description": "The lockers owner-config section: Configs/Lockers/LF_Lockers.conf with the owner's `lockers` section layered over it.",
+      "properties": {
+        "rentPrice": {
+          "type": "integer",
+          "description": "Cash for one rent period at a locker site. 0 rents free",
+          "default": 100,
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "rentPeriodDays": {
+          "type": "integer",
+          "description": "Days one rent payment lasts. 0 means a locker never lapses",
+          "default": 7,
+          "minimum": 0,
+          "maximum": 3650
+        },
+        "gracePeriodDays": {
+          "type": "integer",
+          "description": "Days after the paid-until moment before the contents move to the site's lost-and-found",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 3650
+        },
+        "reclaimFee": {
+          "type": "integer",
+          "description": "Cash to take the contents back from lost-and-found. 0 reclaims free",
+          "default": 50,
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "weightCapacity": {
+          "type": "number",
+          "description": "Kilograms one locker holds",
+          "default": 60,
+          "minimum": 1,
+          "maximum": 10000
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_LockerConfig"
+    },
     "logoutBody": {
       "type": "object",
       "description": "Owner config, section \"logoutBody\".",
@@ -836,6 +879,13 @@
           "default": 1000,
           "minimum": 0,
           "maximum": 1000000
+        },
+        "hideoutLeaseIdleDays": {
+          "type": "integer",
+          "description": "Real days a hideout lease may stand with no member of its organization connected before the lease lapses (#2573); 0 = leases never lapse",
+          "default": 14,
+          "minimum": 0,
+          "maximum": 3650
         },
         "rankDefaults": {
           "type": "object",
@@ -1292,12 +1342,12 @@
           "minimum": 1,
           "maximum": 1440
         },
-        "dutyShiftMaxMinutes": {
+        "dutyShiftMaxSeconds": {
           "type": "integer",
-          "description": "Most minutes of one duty shift that count for duty pay and rank. Past it the clock runs on unpaid until the officer clocks out and in again, so an officer who walked away from the game stops earning. A disconnect also stops the clock",
-          "default": 120,
-          "minimum": 5,
-          "maximum": 1440
+          "description": "Most seconds of one duty shift that count for duty pay and rank; 0 means no cap. Past it the clock runs on unpaid until the officer clocks out and in again, so an officer who walked away from the game stops earning. A disconnect also stops the clock",
+          "default": 10800,
+          "minimum": 0,
+          "maximum": 86400
         },
         "trialSweepSeconds": {
           "type": "integer",

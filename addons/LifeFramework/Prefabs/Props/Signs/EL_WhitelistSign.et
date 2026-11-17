@@ -15,15 +15,6 @@ GenericEntity : "{81206EAE6A99ACF8}Prefabs/Props/Signs/Industrial/SignIndustrial
     }
    }
    additionalActions + {
-    LF_WhitelistAction "{77527FE1EF344A89}" {
-     m_eWhitelistOnlyType POLICE
-     ParentContextList {
-      "EL_WhitelistSign"
-     }
-     UIInfo UIInfo "{15C49629D3CF3C68}" {
-      Name "#EL-Whitelist_Sign_Action"
-     }
-    }
     LF_SignReadAction "{ADEDD9093DFD7999}" {
      ParentContextList {
       "EL_WhitelistSign"

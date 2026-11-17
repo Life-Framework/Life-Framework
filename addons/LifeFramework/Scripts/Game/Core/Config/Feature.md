@@ -136,6 +136,9 @@ write fails) logs `LF_Debug.Error`, leaves `config.json` exactly as it was, and 
 layer, so every section runs on shipped values. The server always boots. The unit is the whole
 file, not a section: a step works on text, so a half-migrated document is never loaded.
 
+`StampVersion` never takes one `Substring` past 8191 chars (the engine cuts it silently); it
+joins pieces of 4000 (#2671, `docs/architecture/enforce-string-limits.md`).
+
 A migrated file is at the build's version, so the next boot finds nothing to do and writes no
 backup. A file with no `schemaVersion` reads as 1 and is not migrated.
 

@@ -11,12 +11,12 @@
 // red-proof: before tools/playtest/opening/b8-reload.mjs existed this file failed on its first run:
 // "tools/playtest/opening/b8-reload.mjs is missing" (2026-11-15).
 
-import { existsSync, mkdtempSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SCRIPT = join(ROOT, "tools", "playtest", "opening", "b8-reload.mjs");
@@ -41,7 +41,7 @@ const checksOf = (out) => {
   return m;
 };
 
-const tmp = mkdtempSync(join(tmpdir(), "lf-b8-selftest-"));
+const tmp = scratchDir("lf-b8-selftest-");
 try {
   // 1. A clean reload: both log checks PASS, time is BLOCKED by #1302, rejoin names restart-cycle and #1268; exit 0.
   const clean = run(["--log", join(FIX, "clean-reload.log")]);

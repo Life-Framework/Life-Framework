@@ -40,17 +40,6 @@ class LF_QuestTrackerComponent : ScriptComponent
 	static const float SIGN_READ_RADIUS = 6.0;
 
 	//------------------------------------------------------------------------------------------------
-	override void OnPostInit(IEntity owner)
-	{
-		super.OnPostInit(owner);
-
-		if (!Replication.IsServer())
-			return;
-
-		SetEventMask(owner, EntityEvent.INIT | EntityEvent.FRAME);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	override void EOnFrame(IEntity owner, float timeSlice)
 	{
 		if (!Replication.IsServer())
@@ -66,6 +55,45 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		TickTimedQuests(now);
 		CheckAreas(manager, owner);
+		RefreshFrameMask();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the timed check runs only while this body holds a quest that can expire or fire an
+	//! area (ACTIVE or COMPLETED). Every other body, with no quest or only turned-in ones, does no
+	//! frame work and allocates nothing. Called wherever a quest starts or ends (#2537).
+	protected void RefreshFrameMask()
+	{
+		if (!Replication.IsServer() || !GetOwner())
+			return;
+
+		bool live = false;
+		foreach (string questId, LF_QuestState state : m_Tracker.GetStates())
+		{
+			if (state.GetStatus() == LF_EQuestStatus.ACTIVE || state.GetStatus() == LF_EQuestStatus.COMPLETED)
+			{
+				live = true;
+				break;
+			}
+		}
+
+		bool ticking = (GetEventMask() & EntityEvent.FRAME) != 0;
+		if (live && !ticking)
+		{
+			m_fTickAccumulator = 0;
+			SetEventMask(GetOwner(), EntityEvent.FRAME);
+		}
+		else if (!live && ticking)
+		{
+			ClearEventMask(GetOwner(), EntityEvent.FRAME);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Whether the timed check is running on this body (a test reads it; no gameplay use).
+	bool IsTicking()
+	{
+		return (GetEventMask() & EntityEvent.FRAME) != 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -191,6 +219,8 @@ class LF_QuestTrackerComponent : ScriptComponent
 			Notify("#LF-Quest_Rejected", "#LF-Quest_Title");
 			return false;
 		}
+
+		RefreshFrameMask();
 
 		if (quiet)
 		{
@@ -348,6 +378,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 		// (and remembered), never completed and payable a second time.
 		m_Tracker.TurnIn(questId, GetGame().GetWorld().GetWorldTime() / 1000.0);
 		LF_Progression.NoteTurnedIn(uid, questId);
+		RefreshFrameMask();
 		GrantReward(def);
 
 		int rewardItems = 0;
