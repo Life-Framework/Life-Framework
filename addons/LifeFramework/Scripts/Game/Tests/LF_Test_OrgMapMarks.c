@@ -12,7 +12,9 @@ class LF_Test_OrgMapMarks : LF_Test
 	protected static const string OFFICER = "orgmarks-officer";
 	protected static const string MEMBER = "orgmarks-member";
 	protected static const string OUTSIDER = "orgmarks-outsider";
-	protected static const string E2E_ORG = "orgmarks-e2e-org";
+	protected static const string E2E_FOUNDER = "orgmarks-e2e-founder";
+	protected static const string E2E_ORG_NAME = "Marks Restart Crew";
+	protected static const string GONE_ORG = "orgmarks-gone-org";
 	protected static const int P_OFFICER = 1;
 	protected static const int P_MEMBER = 2;
 	protected static const int P_OUTSIDER = 3;
@@ -34,9 +36,14 @@ class LF_Test_OrgMapMarks : LF_Test
 		if (!persistence)
 			return;
 
-		string e2eKey = LF_OrgMapMarks.KeyOf(E2E_ORG, 1);
 #ifdef LF_E2E_LOAD_BOOT
-		// The reload boot: the mark the save boot recorded came back from the real save.
+		// The reload boot: the organization and its mark the save boot recorded came back from the real save.
+		LF_Organization e2eOrg = LF_OrganizationManager.FindByName(E2E_ORG_NAME);
+		ctx.NotNull(e2eOrg, "the e2e organization is back after the restart");
+		if (!e2eOrg)
+			return;
+
+		string e2eKey = LF_OrgMapMarks.KeyOf(e2eOrg.GetId(), 1);
 		ctx.True(LF_OrgMapMarks.Has(e2eKey), "the org mark is in the store after the restart");
 		ctx.True(LF_MapShares.Has(e2eKey), "the org mark is shared again after the restart");
 		return;
@@ -45,6 +52,8 @@ class LF_Test_OrgMapMarks : LF_Test
 		ctx.True(LF_PersistenceComponentSerializer.PayloadSinceVersion("orgmarks") > 0, "orgmarks is a registered payload");
 
 		array<ref LF_OrgMapMarkRow> before = LF_OrgMapMarks.ExportAll();
+		array<ref LF_OrganizationRecord> orgsBefore = LF_OrganizationManager.ExportAll();
+		array<ref LF_OrganizationRankRow> ranksBefore = LF_OrganizationManager.ExportRanks();
 		LF_OrgMapMarks.ApplyAll(null);
 		LF_OrgMapMarks.ResetStatics();
 		LF_MapShares.ResetStatics();
@@ -59,7 +68,7 @@ class LF_Test_OrgMapMarks : LF_Test
 		ctx.NotNull(org, "the organization is founded");
 		if (!org)
 		{
-			Restore(before);
+			Restore(before, orgsBefore, ranksBefore);
 			return;
 		}
 
@@ -135,13 +144,20 @@ class LF_Test_OrgMapMarks : LF_Test
 		rows.Insert(LF_OrgMapMarkRow.Make("", 5, 0, 0, 0, 0, "", ""));
 		rows.Insert(LF_OrgMapMarkRow.Make(orgId, 1, 0, 0, 0, 0, "", ""));
 		rows.Insert(LF_OrgMapMarkRow.Make(orgId, 99, 0, 0, 0, 0, "", ""));
+		rows.Insert(LF_OrgMapMarkRow.Make(GONE_ORG, 1, 0, 0, 0, 0, "", ""));
 		ctx.Equal(LF_OrgMapMarks.CAP, LF_OrgMapMarks.ApplyAll(rows), "no-org, repeated and over-cap rows are skipped");
+		ctx.Equal(0, LF_OrgMapMarks.CountOf(GONE_ORG), "a mark of an organization that no longer exists is dropped");
 
 		// Removal: the right is needed; a removed serial is not reused.
 		ctx.False(LF_OrgMapMarks.Remove(MEMBER, first), "a member without the right cannot remove a mark");
 		ctx.True(LF_OrgMapMarks.Remove(OFFICER, first), "the officer removes a mark");
 		ctx.False(LF_MapShares.Has(first), "the removed mark leaves the share table");
-		ctx.EqualStr(LF_OrgMapMarks.KeyOf(orgId, 21), LF_OrgMapMarks.Add(OFFICER, 5, 5, 0, 0, "", now + 100), "a new mark takes the next serial, not the removed one");
+		string latest = LF_OrgMapMarks.Add(OFFICER, 5, 5, 0, 0, " #LF-Org_RankFounder ", now + 100);
+		ctx.EqualStr(LF_OrgMapMarks.KeyOf(orgId, 21), latest, "a new mark takes the next serial, not the removed one");
+		array<ref LF_OrgMapMarkRow> afterAdd = LF_OrgMapMarks.ExportAll();
+		ctx.EqualStr("LF-Org_RankFounder", afterAdd[afterAdd.Count() - 1].m_sText, "player text cannot be a string table key");
+		ctx.True(LF_OrgMapMarks.Remove(OFFICER, latest), "the officer removes the newest mark");
+		ctx.EqualStr(LF_OrgMapMarks.KeyOf(orgId, 22), LF_OrgMapMarks.Add(OFFICER, 6, 6, 0, 0, "", now + 200), "the removed newest serial is not handed out again");
 
 		// Leaving: the member's map loses the org's marks.
 		ctx.True(LF_OrganizationManager.LeaveDirect(MEMBER), "the member leaves");
@@ -149,20 +165,29 @@ class LF_Test_OrgMapMarks : LF_Test
 		LF_MapShares.Refresh(P_MEMBER);
 		ctx.Equal(0, LF_MapShares.DeliveredCount(P_MEMBER), "a player who left holds no org marks");
 
-		Restore(before);
+		Restore(before, orgsBefore, ranksBefore);
 #ifdef LF_E2E_HOST_STOP
-		// The save boot: the shutdown save carries one org mark.
-		array<ref LF_OrgMapMarkRow> e2e = LF_OrgMapMarks.ExportAll();
-		e2e.Insert(LF_OrgMapMarkRow.Make(E2E_ORG, 1, 640, 480, 0, 0, "e2e", "orgmarks-e2e-author"));
-		LF_OrgMapMarks.ApplyAll(e2e);
-		ctx.True(LF_OrgMapMarks.Has(e2eKey), "the save boot recorded the e2e org mark");
+		// The save boot: the shutdown save carries one organization with one org mark.
+		LF_Organization e2eOrg = LF_OrganizationManager.FindByName(E2E_ORG_NAME);
+		if (!e2eOrg)
+			e2eOrg = LF_OrganizationManager.Create(E2E_FOUNDER, E2E_ORG_NAME);
+		ctx.NotNull(e2eOrg, "the save boot founded the e2e organization");
+		if (e2eOrg)
+		{
+			string e2eKey = LF_OrgMapMarks.KeyOf(e2eOrg.GetId(), 1);
+			if (!LF_OrgMapMarks.Has(e2eKey))
+				LF_OrgMapMarks.Add(E2E_FOUNDER, 640, 480, 0, 0, "e2e", LF_MapShares.Now() + 1000);
+			ctx.True(LF_OrgMapMarks.Has(e2eKey), "the save boot recorded the e2e org mark");
+		}
 #endif
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Restore(array<ref LF_OrgMapMarkRow> before)
+	protected void Restore(array<ref LF_OrgMapMarkRow> before, array<ref LF_OrganizationRecord> orgsBefore, array<ref LF_OrganizationRankRow> ranksBefore)
 	{
 		LF_OrganizationManager.Reset();
+		LF_OrganizationManager.ApplyAll(orgsBefore);
+		LF_OrganizationManager.ApplyRanks(ranksBefore);
 		LF_MapShares.ResetStatics();
 		LF_OrgMapMarks.ResetStatics();
 		LF_MapShares.EnsureStarted();

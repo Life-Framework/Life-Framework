@@ -51,12 +51,16 @@ class LF_OrgMapMarks
 	protected static ref array<ref LF_OrgMapMarkRow> s_aRows;
 	//! World seconds of each character's last add.
 	protected static ref map<string, float> s_mLastAddAt;
+	//! Highest serial each organization has used this session, so a removed key is never handed out
+	//! again while a client may still hold it.
+	protected static ref map<string, int> s_mHighSerial;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_aRows = null;
 		s_mLastAddAt = null;
+		s_mHighSerial = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -112,6 +116,7 @@ class LF_OrgMapMarks
 		LF_OrgMapMarkRow row = LF_OrgMapMarkRow.Make(orgId, NextSerial(orgId), x, z, icon, colour, CleanText(text), characterId);
 		s_aRows.Insert(row);
 		s_mLastAddAt.Set(characterId, now);
+		s_mHighSerial.Set(orgId, row.m_iSerial);
 		string key = KeyOf(orgId, row.m_iSerial);
 		LF_MapShares.Put(ToShare(row));
 		LF_Debug.Info(FEATURE, string.Format("mark %1 added by %2 (%3 of %4)", key, characterId, CountOf(orgId), CAP));
@@ -186,8 +191,8 @@ class LF_OrgMapMarks
 
 	//------------------------------------------------------------------------------------------------
 	//! Server load: replaces every mark with \rows and re-puts them into LF_MapShares (which saves
-	//! nothing). Idempotent. Skips a row with no organization, a bad serial, a repeated key, or one past
-	//! the cap. Null clears. \return how many rows were applied.
+	//! nothing). Idempotent. Skips a row with no organization or one that no longer exists (organizations
+	//! load first), a bad serial, a repeated key, or one past the cap. Null clears. \return how many rows were applied.
 	static int ApplyAll(array<ref LF_OrgMapMarkRow> rows)
 	{
 		if (s_aRows)
@@ -208,6 +213,12 @@ class LF_OrgMapMarks
 			if (!row || row.m_sOrgId.IsEmpty() || row.m_iSerial <= 0)
 			{
 				LF_Debug.Warn(FEATURE, "load skipped an org mark with no organization or serial");
+				continue;
+			}
+
+			if (!LF_OrganizationManager.Get(row.m_sOrgId))
+			{
+				LF_Debug.Warn(FEATURE, string.Format("load dropped mark %1:%2: no such organization", row.m_sOrgId, row.m_iSerial));
 				continue;
 			}
 
@@ -258,10 +269,16 @@ class LF_OrgMapMarks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Trimmed and cut to the share text cap. No profanity filter exists in the core yet.
+	//! Trimmed, without leading '#' (the client would translate it as a string table key), and cut to the
+	//! share text cap. No profanity filter exists in the core yet.
 	static string CleanText(string text)
 	{
 		string clean = text.Trim();
+		while (clean.StartsWith("#"))
+		{
+			clean = clean.Substring(1, clean.Length() - 1).Trim();
+		}
+
 		if (clean.Length() > LF_MapShares.TEXT_CAP)
 			clean = clean.Substring(0, LF_MapShares.TEXT_CAP);
 
@@ -289,11 +306,14 @@ class LF_OrgMapMarks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One past the highest serial the organization holds, so a removed mark's key is not reused while
-	//! a client may still hold it.
+	//! One past the highest serial the organization holds or has used this session, so a removed mark's
+	//! key is not reused while a client may still hold it (a spawn resend clears the client's set).
 	protected static int NextSerial(string orgId)
 	{
 		int highest;
+		if (s_mHighSerial)
+			highest = s_mHighSerial.Get(orgId);
+
 		foreach (LF_OrgMapMarkRow row : s_aRows)
 		{
 			if (row.m_sOrgId == orgId && row.m_iSerial > highest)
@@ -326,6 +346,9 @@ class LF_OrgMapMarks
 
 		if (!s_mLastAddAt)
 			s_mLastAddAt = new map<string, float>();
+
+		if (!s_mHighSerial)
+			s_mHighSerial = new map<string, int>();
 	}
 }
 
