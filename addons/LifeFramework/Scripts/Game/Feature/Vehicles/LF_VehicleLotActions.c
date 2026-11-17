@@ -230,6 +230,14 @@ class LF_VehicleStoreAction : ScriptedUserAction
 			return;
 		}
 
+		string refusalKey = LF_Garage.StoreRefusalKey(vehicle);
+		if (!refusalKey.IsEmpty())
+		{
+			LF_Debug.Warn("Vehicle", string.Format("store refused: vehicle %1 is not empty (%2)", vehicleId, refusalKey));
+			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", refusalKey, 4.0, LF_ENotificationType.WARNING);
+			return;
+		}
+
 		LF_Garage.StopAndEject(vehicle);
 		if (!LF_VehicleOwnership.Store(vehicleId, uid))
 		{

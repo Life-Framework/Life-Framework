@@ -3988,6 +3988,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
      Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
     }
+    CustomStringTableItem "{58906F560E794544}" {
+     Id "LF-Garage_EmptyCargo"
+     Target_en_us "Empty the vehicle's storage first"
+     Comment "Garage store refused (#2411): the vehicle still holds items, and a stored vehicle keeps no cargo."
+    }
     CustomStringTableItem "{7DACF581EBBB4514}" {
      Id "LF-Garage_Engine"
      Target_en_us "Engine"
@@ -4057,6 +4062,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Garage_NothingStored"
      Target_en_us "You have no vehicle in the garage."
      Comment "Retrieve refused: nothing stored"
+    }
+    CustomStringTableItem "{4D580A2D0F314D42}" {
+     Id "LF-Garage_Occupied"
+     Target_en_us "Everyone must step out of the vehicle first"
+     Comment "Garage store refused (#2411): someone is still seated in the vehicle."
     }
     CustomStringTableItem "{A103BFA88FF840F0}" {
      Id "LF-Garage_PadBusy"
@@ -7592,6 +7602,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You moved. Look at the spot again and retry."
      Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
     }
+    CustomStringTableItem "{A1D7C4E09B3F5202}" {
+     Id "LF-Placement_NeedHouse"
+     Target_en_us "Only the owner or a key holder of a house nearby can place this."
+     Comment "Toast when the placement policy refuses: the kind needs the house owner or a key holder (#2446)."
+    }
+    CustomStringTableItem "{A1D7C4E09B3F5203}" {
+     Id "LF-Placement_NeedOrg"
+     Target_en_us "Only a member of an organization can place this."
+     Comment "Toast when the placement policy refuses: the kind needs an organization member (#2446)."
+    }
+    CustomStringTableItem "{A1D7C4E09B3F5201}" {
+     Id "LF-Placement_NeedPolice"
+     Target_en_us "Only on-duty {police} can place this."
+     Comment "Toast when the placement policy refuses: the kind needs an on-duty officer (#2446)."
+    }
+    CustomStringTableItem "{A1D7C4E09B3F5204}" {
+     Id "LF-Placement_NeedRank"
+     Target_en_us "Your organization rank is too low to place this."
+     Comment "Toast when the placement policy refuses: the kind needs a higher organization rank (#2446)."
+    }
     CustomStringTableItem "{70A8229A6F903FA6}" {
      Id "LF-Placement_NoGround"
      Target_en_us "There is no flat ground there."
@@ -8356,6 +8386,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Checkpoint. Next: %1"
      Comment "Toast: a checkpoint counted; %1 is the next checkpoint id (#1923)."
     }
+    CustomStringTableItem "{CAF45E694BF8CC75}" {
+     Id "LF-Race_Closing"
+     Target_en_us "A racer has finished. The race ends in %1 s: get to the line."
+     Comment "Toast to each racer still out when the first racer finishes. %1 = seconds until the race pays out (#2406)."
+    }
+    CustomStringTableItem "{6EB30AAE936633A0}" {
+     Id "LF-Race_Dropped"
+     Target_en_us "You were out of the race too long. You are dropped and your fee stays in the pot."
+     Comment "Toast: a racer with no living body past the AFK grace is dropped from a running race (#2406)."
+    }
     CustomStringTableItem "{A52B7FA55F67B76F}" {
      Id "LF-Race_Full"
      Target_en_us "This race is full."
@@ -8390,6 +8430,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Race_Started"
      Target_en_us "The race has started. Go!"
      Comment "Toast to each racer when the lobby closes (#1923)."
+    }
+    CustomStringTableItem "{4F32DA25EF3F27B5}" {
+     Id "LF-Race_TimeUp"
+     Target_en_us "Time is up. The race paid those who finished; your fee stays in the pot."
+     Comment "Toast: the settle delay after the first finisher ran out while this racer was still out (#2406)."
     }
     CustomStringTableItem "{26AFE384C6B0253E}" {
      Id "LF-Race_Title"

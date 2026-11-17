@@ -1181,6 +1181,15 @@ class LF_VehicleOwnership
 			IEntity vehicle = FindLive(session.m_Vehicle);
 			if (vehicle)
 			{
+				// The record keeps no inventory and the delete below takes the children with it:
+				// a car holding items or people stays on the street (#2411).
+				string refusalKey = LF_Garage.StoreRefusalKey(vehicle);
+				if (!refusalKey.IsEmpty())
+				{
+					LF_Debug.Warn("Vehicle", string.Format("store rejected: %1 is not empty (%2)", vehicleId, refusalKey));
+					return false;
+				}
+
 				LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
 				if (vehicleLock)
 					record.m_bLocked = vehicleLock.IsVehicleLocked();
