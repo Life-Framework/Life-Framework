@@ -134,8 +134,8 @@ StringTable {
     }
     CustomStringTableItem "{6B1E0C2D9A4F7E31}" {
      Id "EL-Benefit_Refused_Balance"
-     Target_en_us "Your bank balance is too high for the benefit"
-     Comment "Benefit refused because the bank balance is at or above the threshold"
+     Target_en_us "You have too much money for the benefit"
+     Comment "Benefit refused because the bank balance plus carried cash is at or above the threshold"
     }
     CustomStringTableItem "{6B1E0C2D9A4F7E33}" {
      Id "EL-Benefit_Refused_Cooldown"

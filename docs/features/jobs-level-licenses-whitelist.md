@@ -206,7 +206,8 @@
 ### `LF_UnemploymentBenefit` — `Feature/Jobs/LF_UnemploymentBenefit.c`
 - ✅ "Collect benefit" (`LF_CollectBenefitAction`) at `Roadmap_Job_Depot`
   (verified 2026-11-08: LOGIC test `jobs/unemployment-benefit`; in-world collection
-  is manual). The server reads the bank balance (`LF_ATMManager`) and pays
+  is manual). The server reads the bank balance (`LF_ATMManager`) plus the cash the
+  player carries (economy review 2026-11-17, test `jobs/benefit-counts-cash`) and pays
   `m_iBenefitAmount` cash when the balance is strictly below
   `m_iBenefitBalanceThreshold`, the player is not on duty as police and has no
   active delivery run, and `m_fBenefitCooldownSeconds` passed since that
