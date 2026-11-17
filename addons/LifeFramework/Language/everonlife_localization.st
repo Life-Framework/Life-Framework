@@ -3810,6 +3810,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not while restrained"
      Comment "Greyed-out reason on an emote or on Sit while the body is cuffed or stunned (#982)."
     }
+    CustomStringTableItem "{2AB2FE3B951F79E3}" {
+     Id "LF-Escort_HeldByOther"
+     Target_en_us "Another officer already has them."
+     Comment "Toast to an officer whose escort grab was refused: the suspect is held by a different officer."
+    }
     CustomStringTableItem "{5B1F9A3E7C2D4086}" {
      Id "LF-EventMap_Place"
      Target_en_us "Event"
@@ -8756,6 +8761,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Too far! Back to the counter: %2 m of %1 m"
      Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Shown near the edge of the radius. %1 is the radius, %2 the distance."
     }
+    CustomStringTableItem "{1383AADB0F8627B0}" {
+     Id "LF-RobHold_Fail_Clerk"
+     Target_en_us "Robbery failed: the attendant went down."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
     CustomStringTableItem "{C823A75E1A8C79F8}" {
      Id "LF-RobHold_Fail_Downed"
      Target_en_us "Robbery failed: you went down."
@@ -8799,6 +8809,11 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{008CB39C11D31B0D}" {
      Id "LF-RobHold_Refused_Cooldown"
      Target_en_us "(The till was emptied a short while ago. Come back later.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{D455F915F3D9F8DF}" {
+     Id "LF-RobHold_Refused_Holding"
+     Target_en_us "(You are already holding up another till.)"
      Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
     }
     CustomStringTableItem "{66AD4C2125D11C00}" {
