@@ -1,6 +1,8 @@
 SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "0C8689557692B8E1"
  components {
+  LF_CarriedPropComponent "{77BF91BF83699B38}" {
+  }
   BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
     LoadoutSlotInfo Hat {
@@ -22,8 +24,8 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
    Slots {
     EntitySlotInfo Suitcase {
      PivotID "RightHandProp"
-     Offset 0 -0.05 0
-     Angles 0 0 -180
+     Offset -0.0268 -0.4495 0.0679
+     Angles 9.944 14.908 5.455
      Prefab "{A635265E5BAC8DCB}Prefabs/Props/Roleplay/LF_Prop_SuitcaseCarried.et"
     }
    }
