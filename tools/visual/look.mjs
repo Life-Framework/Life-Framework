@@ -9,6 +9,8 @@
 //          --world <path> (override the world; the proof for a failed load)  --keep (leave Workbench's raw output)  --force (skip the RAM gate)  --wait (queue behind a Workbench build)
 //          --budget s (base budget before the per-shot part: 90 fresh, 150 through the server; raise it on a slow box)
 //          --serve (use the look server, starting one) --fresh (never use it); look serve [--status|--stop [--remove]]
+//          --dump <radius> [--dumpstep m] (tools\cli scout: besides the pictures, every entity within radius of each area as
+//          dump.txt beside its shots, plus the ground heights on a grid of step m, default 5; tools/scout/dump.mjs reads it)
 //          --interior x,y,z (one area: shoot from INSIDE a building; x,y,z is the room's centre on the floor, --radius the
 //          room's reach, default 6): four eye-level views from the room's sides, no oblique or top, close-ups of that floor only
 //
@@ -29,21 +31,26 @@ import * as tb from "../remote/testbox.mjs";
 import { townWorld } from "../lib/addons.mjs";
 import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
 import { GRID_WORLD, gridLayersDir } from "../lib/worlds.mjs";
+import { lookStartVerdict, phaseText, requestNeedsRam, timeline } from "../lib/look-job.mjs";
+import * as poolRam from "../lib/pool-ram.mjs";
+import { SEED_PEAKS_MB } from "../lib/pool-ram.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PLUGIN = join(ROOT, "tools", "visual", "wb", "LF_VisualShotsPlugin.c");
 const WORLD = townWorld(); // the pack world (a SubScene of DebugWorld that holds the village) when the pack is here
-const WORKBENCH_MB = 1900; // peak working set of the run, measured 2026-11-11 (docs/visual-testing.md)
-const RAM_MARGIN_MB = 300;
 const BOOT_BUDGET_S = 90;
 // What a look needs free on a machine to start a Workbench; the pool floor (minFreeMb) comes on top when it chooses one.
-export const LOOK_RESERVE_MB = WORKBENCH_MB + RAM_MARGIN_MB;
+// The pool's Workbench peak (tools/lib/pool-ram.mjs: 3.7 GB measured on the laptop 2026-11-16; the p90 of the
+// observed peaks once there are samples). The look no longer carries a number of its own (it was 1.9 GB + 0.3).
+export const LOOK_RESERVE_MB = SEED_PEAKS_MB["workbench:small"];
 // run() returns this when this machine could not run the look (RAM, the build lock, a starved Workbench),
 // so the router (routeLook) tries another machine. Never a verdict about the pictures.
 export const ENV_SHORT_CODE = 4;
 // How long a look queues for a machine (RAM or a Workbench slot) before it gives up: LF_LOOK_WAIT_S.
 const waitBudgetS = () => (Number(process.env.LF_LOOK_WAIT_S) > 0 ? Number(process.env.LF_LOOK_WAIT_S) : 1200);
 const SERVE_BUDGET_S = 150;
+// Seconds per phase of this process's look (slot wait, RAM wait, build lock, Workbench start, world, shots, collect); printed and kept in index.json.
+const TL = timeline();
 
 export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 
@@ -52,7 +59,7 @@ export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 export function parseArgs(argv) {
   const flags = {};
   const pos = [];
-  const valued = new Set(["world", "interior", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget", "machine"]);
+  const valued = new Set(["world", "interior", "dump", "dumpstep", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget", "machine"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith("--")) pos.push(a);
@@ -91,11 +98,12 @@ export function resolveArea(arg, areas, radius, { root = ROOT } = {}) {
   }
   const hit = areas.find((a) => a.name === arg);
   if (hit) return { ...hit, radius: radius ?? hit.radius };
-  const m = /^(-?\d+(?:\.\d+)?)[, ](-?\d+(?:\.\d+)?)$/.exec(String(arg));
-  if (!m) throw new Error(`unknown area "${arg}". Known: ${[...new Set(areas.map((a) => a.name))].join(", ")}; or pass x,z`);
+  // x,z, or x,z,r for a radius of its own (tools\cli scout asks one run for several places of different sizes).
+  const m = /^(-?\d+(?:\.\d+)?)[, ](-?\d+(?:\.\d+)?)(?:[, ](\d+(?:\.\d+)?))?$/.exec(String(arg));
+  if (!m) throw new Error(`unknown area "${arg}". Known: ${[...new Set(areas.map((a) => a.name))].join(", ")}; or pass x,z[,radius]`);
   const x = Number(m[1]);
   const z = Number(m[2]);
-  return { name: `xz-${Math.round(x)}-${Math.round(z)}`, x, y: 0, z, radius: radius ?? 20, front: 180 };
+  return { name: `xz-${Math.round(x)}-${Math.round(z)}`, x, y: 0, z, radius: m[3] === undefined ? radius ?? 20 : Number(m[3]), front: 180 };
 }
 
 // grid:all: a contact sheet of every claimed cell, each resolved like grid:<slug>.
@@ -212,6 +220,7 @@ export function planText(shots, areas, opts = {}) {
     `settle ${opts.settle ?? DEFAULTS.settle}`,
     `first ${opts.first ?? DEFAULTS.first}`,
     `park ${r1(minX - 150)} ${r1(minZ - 150)}`,
+    ...(opts.dump ? areas.map((a) => `dump ${safe(a.name)} ${a.x} ${a.z} ${opts.dump.radius ?? a.radius} ${opts.dump.step}`) : []),
     ...shots.map((s) => s.line),
   ];
   return lines.join("\n") + "\n";
@@ -518,22 +527,37 @@ export function compileErrors(logFile) {
 // waitS > 0: queue for the RAM (re-read every 15 s) instead of refusing at once.
 async function ramShort(force, waitS = 0) {
   if (force) return null;
-  const need = LOOK_RESERVE_MB;
-  const freeMb = () => Math.round(freemem() / 1048576);
+  const pool = await import("../remote/pool.mjs");
+  const wt = await import("../wt.mjs");
+  const serve = await import("./look-serve.mjs");
+  const settings = pool.poolSettings(ROOT);
   const t0 = Date.now();
   let said = false;
+  // The pool's own admission (pool-ram.admit): this Workbench's measured peak, what every running ArmaReforger
+  // process here still grows into, the floor on top. A resident look Workbench this start replaces gives its memory back first.
+  const verdict = () => {
+    const procs = pool.localScan();
+    const hub = wt.hubDirOf(ROOT);
+    let peaks = {};
+    try {
+      peaks = procs ? poolRam.recordLive(hub, procs, { tag: "local" }) : poolRam.readPeaks(hub);
+    } catch {}
+    const st = serve.readServeState(ROOT);
+    const seen = procs?.length ? poolRam.withSeenMax(hub, procs) : procs;
+    return lookStartVerdict({ state: { freeMb: Math.round(freemem() / 1048576), procs: seen }, settings, peaks, residentPid: st?.pid ?? null });
+  };
   for (;;) {
-    if (freeMb() < need) {
-      const pool = await import("../remote/pool.mjs");
-      pool.trimIfShort(ROOT, need);
+    let v = verdict();
+    if (!v.ok) {
+      pool.trimIfShort(ROOT, v.needMb);
+      v = verdict();
     }
-    if (freeMb() >= need) return null;
-    if (Date.now() - t0 >= waitS * 1000) break;
-    if (!said) console.log(`look: ${freeMb()} MB of RAM free here, a Workbench needs about ${need} MB; waiting for it (re-checked every 15 s, up to ${Math.round(waitS / 60)} min)`);
+    if (v.ok) return null;
+    if (Date.now() - t0 >= waitS * 1000) return `look: ${v.reason}. Wait for whatever holds the RAM (a session, an encode), or pass --force.`;
+    if (!said) console.log(`look: ${v.reason}; waiting for it (re-checked every 15 s, up to ${Math.round(waitS / 60)} min)`);
     said = true;
     await new Promise((r) => setTimeout(r, 15000));
   }
-  return `look: ${freeMb()} MB of RAM free, a Workbench needs about ${need} MB. Wait for whatever holds it (a session, an encode), or pass --force.`;
 }
 
 // Pure: why a timed-out run with no shot counts as a machine short of RAM, or null.
@@ -577,7 +601,8 @@ async function freshRun(exe, profile, raw, plan, shots, opts, args, areas) {
     // Injected like the MCP handlers: Scripts/WorkbenchGame/ is git-ignored, and the copy is removed after the run.
     mkdirSync(injected, { recursive: true });
     cpSync(PLUGIN, join(injected, "LF_VisualShotsPlugin.c"));
-    const budgetS = num(args.flags.budget, BOOT_BUDGET_S) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
+    // A dump asks the editor world for every entity near each area (about 40 s on the laptop for a village), then the shots follow.
+    const budgetS = num(args.flags.budget, BOOT_BUDGET_S) + (opts.dump ? 60 * areas.length : 0) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
     console.log(`look: ${shots.length} shot(s) of ${areas.length} area(s), ${opts.edit ? "edit" : "play"} mode, hidden Workbench (budget ${budgetS} s)`);
     return await runWorkbench(exe, profile, budgetS, args.flags.measure === true);
   } finally {
@@ -585,6 +610,25 @@ async function freshRun(exe, profile, raw, plan, shots, opts, args, areas) {
     try {
       if (existsSync(injected) && readdirSync(injected).length === 0) rmSync(injected, { recursive: false });
     } catch {}
+  }
+}
+
+// Why this look's areas do not resolve (the same checks run() makes before it starts anything), or null.
+// `look item` is checked where its prefab names resolve (it needs the game paks), so it passes here.
+export function targetProblem(args, { root = ROOT } = {}) {
+  if (args.pos[0] === "item") return null;
+  try {
+    const all = JSON.parse(readFileSync(join(root, "agent-box", "areas.json"), "utf8")).areas;
+    const radius = args.flags.radius === undefined ? undefined : num(args.flags.radius, undefined);
+    let areas = args.pos[0] === "all" ? all.map((a) => ({ ...a })) : args.pos.flatMap((p) => (p === "grid:all" ? resolveGridAll(all, radius, { root }) : [resolveArea(p, all, radius, { root })]));
+    if (args.flags.interior !== undefined) {
+      if (areas.length !== 1) throw new Error("--interior shoots one room: give exactly one area");
+      areas = [resolveInterior(areas[0], args.flags.interior, radius)];
+    }
+    worldOfAreas(areas);
+    return null;
+  } catch (e) {
+    return e.message;
   }
 }
 
@@ -632,7 +676,7 @@ async function run(args) {
     return 2;
   }
   const world = itemPerArea ? null : loadWorld(ROOT, worldOfAreas(areas) === GRID_WORLD ? gridLayersDir(ROOT) : undefined);
-  const opts = { world: typeof args.flags.world === "string" ? args.flags.world : undefined, edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
+  const opts = { dump: args.flags.dump === undefined ? null : { radius: num(args.flags.dump, undefined), step: num(args.flags.dumpstep, 5) }, world: typeof args.flags.world === "string" ? args.flags.world : undefined, edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
   const perArea = itemPerArea ?? areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
   for (const n of itemNotes) console.log(`look: ${n}`);
   const shots = perArea.flatMap((p) => p.shots);
@@ -643,7 +687,7 @@ async function run(args) {
   // Routed here by routeLook: a short machine hands the look back at once (ENV_SHORT_CODE) so another is tried.
   // Pinned here (--local, or the pool machine a router sent it to): queue for the RAM instead of refusing.
   const envFail = args.routed ? ENV_SHORT_CODE : 3;
-  const ramGate = () => ramShort(args.flags.force === true, args.routed ? 0 : waitBudgetS());
+  const ramGate = () => TL.span("ram-wait", () => ramShort(args.flags.force === true, args.routed ? 0 : waitBudgetS()));
 
   // A live look server (tools\cli look serve) takes the plan; `look item` stays on the fresh path (its spawned
   // prefabs are not proven through the server). --serve starts one when none is up; --fresh never uses it.
@@ -660,7 +704,9 @@ async function run(args) {
   // One Workbench at a time beside the headless build and the rdb refresh (shared shader cache). A server request
   // takes the lock too; it lasts seconds, so look queues behind a server for up to 2 minutes without --wait.
   // Routed here: a held lock hands the look to another machine. Pinned here: queue for it (10 min).
+  const lockT0 = Date.now();
   const lockErr = takeBuildLock(wt, args.flags.wait || !args.routed ? 600000 : useServer ? 120000 : 0);
+  TL.add("lock-wait", (Date.now() - lockT0) / 1000);
   if (lockErr) {
     console.log(`${args.routed ? "look: not here:" : "FAIL "} look: ${lockErr}`);
     return envFail;
@@ -756,6 +802,10 @@ async function run(args) {
   // Collect per area: move the PNGs, read their pixels, build the sheet and the index.
   const { image } = await import("../../agent-box/shots.mjs");
   const bootS = res.seconds - (status.done ? status.done.ms : 0) / 1000;
+  const collectT0 = Date.now();
+  TL.add(served === "fresh" ? "wb-start" : "request", bootS);
+  TL.add("world", (status.readyMs ?? 0) / 1000);
+  TL.add("shots", Math.max(0, (status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000));
   let flagged = 0;
   let missing = 0;
   const overview = [];
@@ -765,6 +815,9 @@ async function run(args) {
     const dir = join(outRoot, safe(area.name));
     mkdirSync(dir, { recursive: true });
     for (const f of readdirSync(dir)) if (/\.(png|jpg|json)$/.test(f)) rmSync(join(dir, f), { force: true });
+    // tools\cli scout: the plugin's entity rows for this area stay beside its pictures.
+    const dumpRaw = join(raw, `dump-${safe(area.name)}.txt`);
+    if (opts.dump && existsSync(dumpRaw)) renameSync(dumpRaw, join(dir, "dump.txt"));
     const rows = [];
     for (const shot of list) {
       const st = status.shots[shot.name] ?? null;
@@ -790,7 +843,7 @@ async function run(args) {
     const { cols } = sheetLayout(tiles.length);
     const contact = join(dir, "contact.jpg");
     image({ op: "sheet", tiles, out: contact, cols, maxWidth: cols * 480, quality: 74 });
-    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, contact, shots: rows }, null, 2) + "\n");
+    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, timing: { ...TL.get(), collect: Math.round((Date.now() - collectT0) / 100) / 10 }, contact, shots: rows }, null, 2) + "\n");
     const bad = rows.filter((r) => r.flags.length);
     summaries.push({ area: area.name, contact, bad, count: rows.length });
     if (rows[0].file) overview.push({ file: rows[0].file, label: `${area.name}${bad.length ? `  [${bad.length} flagged]` : ""}`, marks: [] });
@@ -810,6 +863,8 @@ async function run(args) {
   const total = (Date.now() - started) / 1000;
   const ram = res.peakMb ? `, Workbench peak ${res.peakMb} MB` : "";
   const startLabel = served === "fresh" ? "Workbench start" : "request to first step";
+  TL.add("collect", (Date.now() - collectT0) / 1000);
+  console.log(`look: phases: ${phaseText(TL.get())}`);
   console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, world and play ${r1((status.readyMs ?? 0) / 1000)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
   for (const s of summaries) {
     console.log(`  ${s.area}: ${s.contact}`);
@@ -1108,10 +1163,11 @@ export async function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | town:<area> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--interior x,y,z] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
+const USAGE = "usage: tools\\cli look <area | town:<area> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--edit] [--close N] [--radius m] [--interior x,y,z] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh|--cold] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);
+  if (args.flags.cold) args.flags.fresh = true; // --cold: today's path, a Workbench of its own, no resident server
   if (args.flags.local) process.env.LF_WB_LOCAL = "1"; // a human's explicit ask for this PC's Workbench
   if (args.pos[0] === "selftest") return selftest();
   const route = await import("../lib/wb-route.mjs");
@@ -1141,7 +1197,7 @@ export async function main(argv) {
 // This PC: one of its Workbench slots for the whole look (tools/lib/wb-lock.mjs, behind the workbench-cap check), then the run.
 async function localLook(args) {
   const { acquireWorkbench } = await import("../lib/wb-route.mjs");
-  const wb = await acquireWorkbench(ROOT, { purpose: `look ${args.pos[0]}` });
+  const wb = await TL.span("slot-wait", () => acquireWorkbench(ROOT, { purpose: `look ${args.pos[0]}` }));
   try {
     return await run(args);
   } finally {
@@ -1161,7 +1217,7 @@ export function routeMode(args, { serverUp = () => false, env = {} } = {}) {
 }
 
 // Pure: the argv a pool machine runs: ours without --out/--machine/--local, pinned there, writing to outRel.
-export function remoteLookArgs(argv, outRel) {
+export function remoteLookArgs(argv, outRel, { warm = false } = {}) {
   const out = [];
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--out" || argv[i] === "--machine") {
@@ -1171,7 +1227,10 @@ export function remoteLookArgs(argv, outRel) {
     if (argv[i] === "--local") continue;
     out.push(argv[i]);
   }
-  return ["look", ...out, "--local", "--out", outRel];
+  // warm: the box's resident look Workbench takes it (started on the first look, closed after LOOK_IDLE_MIN idle).
+  // --cold / --fresh, and `look item`, stay on a Workbench of their own.
+  const cold = out.includes("--cold") || out.includes("--fresh") || out[0] === "item";
+  return ["look", ...out, "--local", ...(warm && !cold && !out.includes("--serve") ? ["--serve"] : []), "--out", outRel];
 }
 
 // Pure: an index.json written on another machine, its paths moved to the folder it now lives in.
@@ -1186,11 +1245,20 @@ export function rehomeIndex(index, dir) {
 // (re-read every 20 s, up to LF_LOOK_WAIT_S, 20 min). A machine that cannot run it after all (RAM gone,
 // the build lock, a starved Workbench: ENV_SHORT_CODE; a remote that does not take it) is skipped.
 async function routeLook(args, argv) {
+  // A target that does not resolve fails here, in a second, not after the queue for a Workbench (2026-11-16: a
+  // misspelt grid cell waited 217 s for the slot to say so).
+  const bad = targetProblem(args);
+  if (bad) {
+    console.log(`FAIL  ${bad}`);
+    return 2;
+  }
   const wbGate = await import("../lib/wb-gate.mjs");
   const pool = await import("../remote/pool.mjs");
   const settings = pool.poolSettings(ROOT);
   const machine = typeof args.flags.machine === "string" ? args.flags.machine : null;
   const waitS = waitBudgetS();
+  const reserveMb = poolRam.peakMb(poolRam.readPeaks((await import("../wt.mjs")).hubDirOf(ROOT)), "workbench"); // the pool's measured Workbench peak
+  const warmWanted = !args.flags.cold && !args.flags.fresh && args.pos[0] !== "item";
   const tried = [];
   const t0 = Date.now();
   let saidWait = false;
@@ -1199,7 +1267,10 @@ async function routeLook(args, argv) {
     let c;
     for (;;) {
       view = (await import("../lib/wb-route.mjs")).workbenchMachines(ROOT, { mode: "any", machine }); // this PC only with the workbench cap
-      c = wbGate.chooseGate({ ...view, machine, exclude: tried, reserveMb: LOOK_RESERVE_MB, minFreeMb: settings.minFreeMb, roomyMb: settings.roomyMb });
+      // A box whose resident look Workbench is up takes a warm look with no new RAM: it already holds its peak
+      // (look-job.requestNeedsRam), so its free RAM counts that much more for this look.
+      if (warmWanted) for (const r of view.remotes) if (r.state?.lookServer && !requestNeedsRam(true)) r.state = { ...r.state, freeMb: (r.state.freeMb ?? 0) + reserveMb };
+      c = wbGate.chooseGate({ ...view, machine, exclude: tried, reserveMb, minFreeMb: settings.minFreeMb, roomyMb: settings.roomyMb });
       if (c.where !== "wait") break;
       if (Date.now() - t0 > waitS * 1000) {
         console.log(`FAIL  look: no machine had the RAM for a Workbench in ${Math.round((Date.now() - t0) / 1000)} s (${c.why})`);
@@ -1221,6 +1292,7 @@ async function routeLook(args, argv) {
       return code;
     }
     const m = view.remotes.find((r) => r.name === c.where).m;
+    TL.add("route-wait", (Date.now() - t0) / 1000);
     const code = await remoteLook(m, args, argv, pool);
     if (code === ENV_SHORT_CODE || code === null) continue;
     return code;
@@ -1231,11 +1303,13 @@ async function routeLook(args, argv) {
 
 // One look on a pool machine through the pool's run-folder sync (this worktree's snapshot, uncommitted
 // state included), its pictures copied back. null: the machine did not take it (sync, ssh); try another.
-async function remoteLook(m, args, argv, pool) {
+async function remoteLook(m, args, argv, pool, { warm = !args.flags.cold && !args.flags.fresh && args.pos[0] !== "item" } = {}) {
   const id = `${Date.now().toString(36)}${process.pid.toString(36)}`;
   const outRel = `tmp/look-routed/${id}`;
   const t0 = Date.now();
-  const r = await pool.syncAndRun(ROOT, m, { script: "tools\\cli.mjs", args: remoteLookArgs(argv, outRel), suffix: "-look", purpose: "look" });
+  let syncedAt = null;
+  const r = await pool.syncAndRun(ROOT, m, { script: "tools\\cli.mjs", args: remoteLookArgs(argv, outRel, { warm }), suffix: "-look", purpose: "look", onSlot: () => (syncedAt = Date.now()), env: { LF_LOOK_REOPEN_EXT: process.env.LF_LOOK_REOPEN_EXT } });
+  const remoteEnd = Date.now();
   if (!r.rDir || r.code === 255) {
     console.log(`look: ${m.name} did not take it (exit ${r.code})`);
     return null;
@@ -1243,11 +1317,23 @@ async function remoteLook(m, args, argv, pool) {
   if (r.code === ENV_SHORT_CODE) return ENV_SHORT_CODE;
   const pulled = pullPictures(m, r.rDir, outRel, resolve(ROOT, args.flags.out || join("tmp", "look")));
   const s = Math.round((Date.now() - t0) / 1000);
+  // The phases of this call: sync to the box, the run there (its own phases are in index.json "timing"), the copy back.
+  TL.add("sync", ((syncedAt ?? t0) - t0) / 1000).add("remote-total", (remoteEnd - (syncedAt ?? t0)) / 1000).add("copy-back", (Date.now() - remoteEnd) / 1000);
+  if (!pulled.areas.length && warm && r.code !== 2) {
+    // The warm server misbehaved (a crash, a wrong world, no answer): the cold path, once, on the same machine.
+    console.log(`look: the warm look on ${m.name} gave no pictures (exit ${r.code}); running it cold`);
+    return remoteLook(m, args, argv, pool, { warm: false });
+  }
   if (!pulled.areas.length) {
     console.log(`FAIL  look: ${m.name} exit ${r.code} after ${s} s and no pictures came back${pulled.error ? ` (${pulled.error})` : ""}`);
     return r.code || 1;
   }
   console.log(`look: ran on ${m.name} in ${s} s (sync, Workbench, copy back); the pictures are here:`);
+  let remotePhases = null;
+  try {
+    remotePhases = JSON.parse(readFileSync(join(dirname(pulled.areas[0].contact), "index.json"), "utf8")).timing ?? null;
+  } catch {}
+  console.log(`look: phases here: ${phaseText(TL.get())}${remotePhases ? `; on ${m.name}: ${phaseText(remotePhases)}` : ""}`);
   for (const a of pulled.areas) console.log(`  ${a.name}: ${a.contact}`);
   if (pulled.overview) console.log(`  overview: ${pulled.overview}`);
   return r.code;

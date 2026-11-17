@@ -370,7 +370,9 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   gate), `wt e2e`, and `e2e`. Every run prints where it ran and how long it
   waited (`pool: test all runs on lf-testbox ...; waited 0.7 s`) and a footer
   with the exit code, wait, and run time. `--local`, `--remote [name]`,
-  `--machine <name>`, and `--any` pick; `LF_TESTBOX_AUTO=0` makes the
+  `--machine <name>`, and `--any` pick; `--prefer-local` is `--any` with this PC
+  tried first while it has RAM room (the placement tool's probe uses it; a short job
+  where a sync costs more than the run); `LF_TESTBOX_AUTO=0` makes the
   default `--local`.
 - **Machines.** `tools/pool.json` lists them: `name`, `via` (`local` or
   `ssh`), `host` (ssh alias), `root` (the remote main clone), `slots`, `caps`
@@ -663,7 +665,7 @@ path that would start a Workbench here asks it first:
 | the rdb refresh before `test`, `session up`, `serve`, `e2e` and a gate; `rdb`, `rdb --wait` (`chooseRefresh`) | goes to a machine with the `rdb` cap even when it can only queue there; none yet: waits (`LF_RDB_WAIT_S`, 900 s, `rdb --budget <s>`), then warns and leaves the rdb stale. It never falls back to a local refresh |
 | `validate --full` (the `validate-scripts.ps1` compile) | `ci --wb-only --compile-only` on a pool machine, its transcript streamed here |
 | `build`, and `test` without `--no-build` | `ci --wb-only --build-only [--addon X]` on a pool machine; the exit code is the result |
-| `look <area>`, `look item` | runs on a pool machine (`look ... --local --fresh --clean` in its desktop session); the pictures are copied back to `tmp/look` (or `--out`) with the paths in each `index.json` made local. `look serve` (start) refuses: its Workbench is long-lived and local |
+| `look <area>`, `look item` | runs on a pool machine (`look ... --local --fresh --clean` in its desktop session); the pictures are copied back to `tmp/look` (or `--out`) with the paths in each `index.json` made local. A routed look is warm by default: the box runs it with `--serve`, so one resident look Workbench per box (the `Life-Framework-look-viewer` checkout) takes it (`--cold` is the old path). Its RAM is the pool's admission (`tools/lib/pool-ram.mjs`: a `workbench` job at its measured peak; a request to a live resident server needs none); it closes after 5 idle minutes (`reapRemoteLookServer`) or at once when a session request waits on that machine for RAM or a lane, never runs on this PC and never pins. Each look prints its phases (queue, sync, start, world, shots, copy back). `look serve` (start) on this PC refuses; `docs/visual-testing.md` "look on a pool machine" |
 | `pack`, `asset` plugin runs, `ui-image`, `wt open --workbench` | refuse with the reason: their output is files in this worktree |
 | `cli call wb_*` (and so `agent-box/harness.mjs launch`, `play`) | refuse: every `wb_*` tool needs a Workbench and the MCP starts one itself. `api_search`, `game_read`, `asset_search` and `api class` need none |
 | `validate-scripts.ps1` run by hand | refuses unless the CLI launched it (`LF_WB_GUARDED=1`) or `LF_WB_LOCAL=1` |

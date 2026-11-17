@@ -351,7 +351,7 @@ export function openPrClaims(root, { run, cacheFile = defaultPrCache(), ttlMs = 
       if (!raw || raw.status !== 0) continue; // the PR deletes the file (grid free), or the read failed
       try {
         const j = JSON.parse(raw.stdout);
-        if (j.slug && j.cell) claims.push({ file: path, slug: j.slug, cell: j.cell, pr: pr.number, branch: pr.headRefName });
+        if (j.slug && j.cell) claims.push({ file: path, slug: j.slug, cell: j.cell, ...(j.span ? { span: j.span } : {}), pr: pr.number, branch: pr.headRefName });
       } catch {
         // not a claim file we can read; validate-world-zones reports it on that PR
       }

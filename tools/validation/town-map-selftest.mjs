@@ -1,5 +1,5 @@
 // tools/validation/town-map-selftest.mjs
-// inputs: tools/town/**, tools/commands/town.mjs
+// inputs: tools/town/**, tools/commands/town.mjs, tools/scout/types.mjs, docs/everon/places/*/dossier.json, docs/everon/places/*/mapping.json
 //
 // Proves `tools\cli town map` (docs/architecture/everon-world.md 3.2): a place template (tools/town/templates/<kind>.json)
 // scored against a scout dossier (schema 1, fixture tools/town/fixtures/map-dossier.json) gives a proposed mapping.json,
@@ -11,6 +11,14 @@
 //   - `--check` fails on a missing or `none` required slot, an unknown building or plot, a building without the
 //     interior the slot needs, a building claimed twice, and a plot slot with no prefab;
 //   - a template holds no coordinate and no place name (`checkTemplate`).
+//   - the template's building types and the scout's types are ONE vocabulary (tools/scout/types.mjs TYPE_ALIASES): a legacy
+//     name (municipal-office, house-town, shop-*) and the scout's (government, townhouse, shop) resolve to each other, and
+//     every type a committed template names is known;
+//   - the template is chosen from the flag, else the mapping's own template, else the dossier, else town (`chooseTemplate`);
+//   - the real dossiers' halls, shops and houses are found without a hand edit (Saint-Philippe fills the town template, Meaux
+//     fills the village one, and Meaux's approved mapping passes `--check` under its own template).
+// red-proof: with TYPE_ALIASES emptied this printed "FAIL alias: municipal-office resolves to government" (2026-11-17).
+// red-proof: with chooseTemplate ignoring the mapping this printed "FAIL template choice: a mapping for village beats the gazetteer kind" (2026-11-17).
 // red-proof: before tools/town/map.mjs existed this printed "FAIL cannot load tools/town/map.mjs: ERR_MODULE_NOT_FOUND" (2026-11-16).
 // red-proof: with the interior gate in `eligible()` removed this printed "FAIL slot arrival maps to b02, which has no interior (only candidate left)" (2026-11-16).
 // red-proof: with "At 4503, 10772." added to a template's `about` this printed "FAIL template town has problems: .about: ... holds a coordinate pair" (2026-11-16).
@@ -23,6 +31,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIXTURE = join(ROOT, "tools", "town", "fixtures", "map-dossier.json");
+// The legacy names the templates used to carry; a committed template uses the scout's own type instead.
+const LEGACY_TYPE_NAMES = new Set(["municipal-office", "house-town", "house-village", "fuel-station", "industrial-shed", "farm-building", "house-addon", "cottage"]);
 let failed = 0;
 const fail = (msg) => {
   console.log(`FAIL  ${msg}`);
@@ -56,6 +66,80 @@ const required = town.slots.filter((s) => s.required).map((s) => s.id);
 for (const id of ["arrival", "hostel", "cafe", "bank", "police", "clinic", "general-store", "clothing", "gun-counter", "fuel", "fence", "board"]) {
   check(required.includes(id), `town template lacks required slot ${id}`);
 }
+// ---- one type vocabulary: aliases resolve both ways, and no template names a type nobody knows
+{
+  const types = await import(pathToFileURL(join(ROOT, "tools", "scout", "types.mjs")).href);
+  const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  check(eq(types.canonicalTypes("municipal-office"), ["government"]), "alias: municipal-office resolves to government");
+  check(eq(types.canonicalTypes("house-town"), ["townhouse"]) && eq(types.canonicalTypes("house-village"), ["house"]), "alias: house-town and house-village resolve to townhouse and house");
+  check(eq(types.canonicalTypes("fuel-station"), ["fuel"]) && eq(types.canonicalTypes("fuel"), ["fuel"]), "alias: fuel-station and fuel are the same type");
+  check(types.canonicalTypes("shop-*").includes("shop") && types.canonicalTypes("shop-drug").includes("shop"), "alias: the shop-* family and shop-drug resolve to shop");
+  check(types.canonicalTypes("warp-gate").length === 0, "alias: an unknown name resolves to nothing");
+  check(types.typeIndex(["municipal-office", "house-town"], "government") === 0, "typeIndex: a legacy template name finds the scout's government");
+  check(types.typeIndex(["government", "townhouse"], "house-town") === 1, "typeIndex: the scout's template name finds a hand-written house-town");
+  check(types.typeIndex(["shop-*"], "shop") === 0 && types.typeIndex(["shop"], "shop-clothes") === 0, "typeIndex: shop-* and shop meet either way");
+  check(types.typeIndex(["house", "townhouse"], "villa") === -1, "typeIndex: a villa is neither a house nor a townhouse");
+  check(types.typeIndex(["shop-drug", "shop"], "shop", "ShopHouse_E_2I01t_drugstore") === 0 && types.typeIndex(["shop-drug", "shop"], "shop", "ShopHouse_E_2I01t_clothesstore") === 1, "typeIndex: shop-drug picks the drugstore by its stem and a plain shop still falls through to shop");
+  check(types.typeIndex(["shop-drug", "townhouse"], "shop", "ShopHouse_E_2I01t_clothesstore") === -1 && types.typeIndex(["shop-clothes"], "shop-clothes") === 0, "typeIndex: a refinement does not match another kind of shop, but matches its own hand-written type");
+  check(types.typeIndex(["house"], "shed") === -1, "typeIndex: a shed is not a house");
+  check(types.typeIndex(["mystery"], "mystery") === 0, "typeIndex: a name the table does not know still matches itself");
+  check(types.CANONICAL_TYPES.has("government") && types.CANONICAL_TYPES.has("townhouse"), "the canonical set is the scout's building types");
+  for (const [alias, to] of Object.entries(types.TYPE_ALIASES)) check(to.length > 0 && to.every((t) => types.CANONICAL_TYPES.has(t)), `alias ${alias} points at a type scout does not know`);
+  for (const kind of ["town", "village"]) {
+    const t = map.loadTemplate(kind, ROOT);
+    for (const slot of t.slots) check(types.unknownTypes(slot.needs.types ?? []).length === 0, `template ${kind} slot ${slot.id} names an unknown building type ${types.unknownTypes(slot.needs.types ?? [])}`);
+    check(!t.slots.some((s) => (s.needs.types ?? []).some((x) => LEGACY_TYPE_NAMES.has(x))), `template ${kind} still uses a legacy alias instead of the scout's type`);
+  }
+  const bad = clone(town);
+  bad.slots[0].needs.types = ["warp-gate"];
+  check(map.checkTemplate(bad).some((p) => p.includes("warp-gate")), "checkTemplate lets an unknown building type through");
+}
+
+// ---- which template a place uses
+{
+  const c = map.chooseTemplate;
+  check(c({ flag: "village", mapping: { template: "town" }, dossier: { place: { kind: "town" } } }).kind === "village", "template choice: the flag wins");
+  check(c({ mapping: { template: "village" }, dossier: { place: { kind: "other" } } }).kind === "village", "template choice: a mapping for village beats the gazetteer kind");
+  check(c({ mapping: { template: "village" }, dossier: { place: { kind: "town" } } }).kind === "village", "template choice: a mapping beats the dossier's place kind");
+  check(c({ dossier: { place: { kind: "other", template: "village" } } }).kind === "village", "template choice: the dossier's scouted template is used");
+  check(c({ dossier: { place: { kind: "village" } } }).kind === "village", "template choice: a place kind that is a template name is used");
+  check(c({ dossier: { place: { kind: "urban" } } }).kind === "town" && c({}).kind === "town", "template choice: otherwise town");
+  check(c({ flag: "../x", dossier: {} }).kind === "town", "template choice: a flag that is not a plain name is ignored");
+}
+
+// ---- the real dossiers: halls, shops and houses are found without a hand edit
+{
+  const place = (slug) => {
+    const dir = join(ROOT, "docs", "everon", "places", slug);
+    const d = join(dir, "dossier.json");
+    return existsSync(d) ? { dossier: JSON.parse(readFileSync(d, "utf8")), mapping: existsSync(join(dir, "mapping.json")) ? JSON.parse(readFileSync(join(dir, "mapping.json"), "utf8")) : null } : null;
+  };
+  const sp = place("saint-philippe");
+  if (sp) {
+    const t = map.loadTemplate(map.chooseTemplate({ dossier: sp.dossier, mapping: sp.mapping }).kind, ROOT);
+    const prop = map.proposeMapping(sp.dossier, t);
+    const types = new Map(sp.dossier.buildings.map((b) => [b.id, b.type]));
+    check((prop.missing ?? []).length === 0, `saint-philippe: the proposal leaves ${(prop.missing ?? []).join(", ")} unmapped`);
+    check(["government", "townhouse", "house", "villa", "hotel"].includes(types.get(prop.slots.arrival.building)), "saint-philippe: arrival should land on a hall or a home");
+    check(types.get(prop.slots.police.building) === "police", `saint-philippe: police should take the police villa, took ${types.get(prop.slots.police.building)}`);
+    check(types.get(prop.slots["general-store"].building) === "shop" && types.get(prop.slots.clothing.building) === "shop", "saint-philippe: the stores should take shops");
+  }
+  const mx = place("meaux");
+  if (mx?.mapping) {
+    const choice = map.chooseTemplate({ dossier: mx.dossier, mapping: mx.mapping });
+    check(choice.kind === "village", `meaux: the template should be village (from its mapping), not ${choice.kind}`);
+    const t = map.loadTemplate(choice.kind, ROOT);
+    const prop = map.proposeMapping(mx.dossier, t);
+    const types = new Map(mx.dossier.buildings.map((b) => [b.id, b.type]));
+    check(prop.slots.hall.building && types.get(prop.slots.hall.building) === "government", `meaux: hall should be the government office, got ${prop.slots.hall.building}`);
+    check(prop.slots.shop.building && types.get(prop.slots.shop.building) === "shop", `meaux: shop should be the shop, got ${prop.slots.shop.building}`);
+    check(["house", "townhouse", "farmhouse"].includes(types.get(prop.slots.house.building)), `meaux: house should be a dwelling, got ${prop.slots.house.building}`);
+    check(prop.slots.hall.building === mx.mapping.slots.hall.building && prop.slots.shop.building === mx.mapping.slots.shop.building && prop.slots.pub.building === mx.mapping.slots.pub.building, "meaux: the tool's hall, shop and pub equal the reviewed ones, no hand edit");
+    check(map.checkMapping(mx.mapping, mx.dossier, t).length === 0, `meaux: the approved mapping fails --check: ${map.checkMapping(mx.mapping, mx.dossier, t).join("; ")}`);
+    check(mx.mapping.status === "approved", `meaux: the lead approved this mapping (#2260), status is ${mx.mapping.status}`);
+  }
+}
+
 if (failed) {
   console.log(`SUMMARY town-map-selftest fail ${failed}`);
   process.exit(1);

@@ -5897,6 +5897,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Taser cartridge"
      Comment "Inventory name of the taser's single-shot cartridge."
     }
+    CustomStringTableItem "{06BAB63766610E3E}" {
+     Id "LF-MapPoi_Bank"
+     Target_en_us "Bank"
+     Comment "Map POI kind name (#2230): the bank."
+    }
+    CustomStringTableItem "{9FA312C17AB06C17}" {
+     Id "LF-MapPoi_Hospital"
+     Target_en_us "Clinic"
+     Comment "Map POI kind name (#2230): the hospital or clinic."
+    }
+    CustomStringTableItem "{83D5FBD46034ADAD}" {
+     Id "LF-MapPoi_PoliceArmoury"
+     Target_en_us "{Police} armoury"
+     Comment "Map POI kind name (#2230): the police armoury, shown to officers only."
+    }
+    CustomStringTableItem "{02A346FCF31764FE}" {
+     Id "LF-MapPoi_PoliceStation"
+     Target_en_us "{Police} station"
+     Comment "Map POI kind name (#2230): the police station."
+    }
+    CustomStringTableItem "{B00FE6F8C70CF970}" {
+     Id "LF-MapPoi_Workplace"
+     Target_en_us "Workplace"
+     Comment "Map POI kind name (#2230): a job site."
+    }
+    CustomStringTableItem "{71DFE7C94DAE37F2}" {
+     Id "LF-Map_AreaGated"
+     Target_en_us "Restricted"
+     Comment "Map label of a gated area (police yard, hospital back, the prison)."
+    }
+    CustomStringTableItem "{66EFF29951500B8B}" {
+     Id "LF-Map_AreaLawless"
+     Target_en_us "No {police}"
+     Comment "Map label of a lawless area, stamped in red."
+    }
+    CustomStringTableItem "{5DCCFFA00AEF5C7D}" {
+     Id "LF-Map_AreaSafe"
+     Target_en_us "Safe zone"
+     Comment "Map label of a safe zone at the closest zoom."
+    }
     CustomStringTableItem "{3C71B0A2D4E5F612}" {
      Id "LF-Medic_Downed"
      Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."

@@ -1,0 +1,14 @@
+{
+ "schema": 1,
+ "place": "sample-square",
+ "slot": "shop",
+ "building": "b03",
+ "kit": "fit-kit",
+ "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_sample-square_shop.layer",
+ "kinds": [],
+ "rows": 1,
+ "destruction": {
+  "mode": "layer-override"
+ },
+ "date": "2026-11-17"
+}

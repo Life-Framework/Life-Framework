@@ -494,22 +494,24 @@ export function inputText(records, extra = [], circle = TOWN) {
 // The `tools\cli test` arguments of one audit boot. It goes through the pool's "any" choice like every
 // other test run (the machine with the RAM headroom takes it; `tools\cli test` ships the input list up
 // and brings out.txt back); only an interactive caller that wants the quick local loop pins it (local).
-export function auditTestArgs({ local = false, grid = false } = {}) {
-  return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", grid ? GRID_WORLD : townWorld(), ...(local ? ["--local"] : []), "--verbose"];
+// preferLocal: still the pool's choice, but this PC goes first while it has RAM room (the placement tool's
+// probe: seconds on a booted server, so a sync to another machine is the slower path when this PC can run it).
+export function auditTestArgs({ local = false, grid = false, preferLocal = false } = {}) {
+  return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", grid ? GRID_WORLD : townWorld(), ...(local ? ["--local"] : preferLocal ? ["--prefer-local"] : []), "--verbose"];
 }
 
 // One boot of the dedicated test server: LF_Test_PlacementAuditTown measures `records` and traces the
 // `extra` input lines (the placement tool's probe rays). Returns the raw out.txt (null when the server
 // wrote none) and whether the test failed. The list goes in and the result comes out through this
 // checkout's test profile, on whichever machine the pool picked.
-export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit"), extra = [], log = console.log, local = false, grid = false } = {}) {
+export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit"), extra = [], log = console.log, local = false, preferLocal = false, grid = false } = {}) {
   mkdirSync(outDir, { recursive: true });
   const inFile = join(outDir, "in.txt");
   const outFile = join(PROFILE_DIR, "out.txt");
   rmSync(outFile, { force: true });
   writeFileSync(inFile, inputText(records, extra, grid ? GRID_CIRCLE : TOWN));
   writeFileSync(join(outDir, "records.json"), JSON.stringify(records));
-  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...auditTestArgs({ local, grid })], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
+  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...auditTestArgs({ local, grid, preferLocal })], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
   const text = `${r.stdout ?? ""}${r.stderr ?? ""}`;
   const keep = text.split(/\r?\n/).filter((l) => /SUMMARY|^pool:|FAILED|TIMEOUT|error/i.test(l));
   for (const l of keep.slice(-4)) log(`  ${l.trim()}`);
