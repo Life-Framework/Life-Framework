@@ -104,6 +104,12 @@
 - Amplitude is `max * (level / fullLevel)^power`, zero at level 0, capped at the maximum
   (`LF_ImpairmentViewConfig`: full level 40, power 1.5, max 1.6 degrees yaw, pitch 60%).
   Script defaults, no `.conf` yet. Test: `survival/impairment-view`.
+- ✅ Cost at 128 players (#2404): the frame is armed only on the local controlled body, and only while it
+  sways or has an offset left to unwind. A level change (the owner-only RplProp callback, or the
+  server on a listen host), a control change (`SCR_PlayerController.OnControlledEntityChanged`) or the
+  harness pin arms it; the frame clears itself once the sway is unwound. Before, every survival
+  component armed `EOnFrame` on every rendering client, proxies included (127 early-return calls a
+  frame per client at 128 players). Tests `survival/impairment-view-frame`, `perf/life-128`.
 - Harness `impair <0-100|off>` pins the local view level for a session proof.
 
 ### `LF_SurvivalStatsSaveData` — `Feature/Survival/Persistence/`
