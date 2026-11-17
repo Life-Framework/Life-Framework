@@ -462,6 +462,13 @@ class LF_Zones
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Every registered zone, read-only, for the map's areas (LF_MapAreas.Collect). Do not modify it.
+	static array<ref LF_ZoneArea> GetAll()
+	{
+		return Zones();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string RuleName(LF_ZoneRule rule)
 	{
 		if (rule == LF_ZoneRule.SAFE)
