@@ -155,7 +155,6 @@ if (PASS >= 2) {
   put(P.noticeB, 0.72, 1.55, -1.6, 90);
   put(P.noticeC, 0.72, 1.55, -2.1, 90);
   put(P.poster, 3.2, 1.55, 7.25, 180); // inside the front window wall of the canteen
-  put(P.corkboard, -2.0, 1.45, 3.0, 90);
 
   // Desks: typewriters and phones, the dispatch radio, a computer on the commander's desk, ashtrays, ledgers.
   put(P.typewriter, 3.2, 0.907, 0.2, 200);
@@ -165,7 +164,6 @@ if (PASS >= 2) {
   put(P.radio, 1.8, 0.907, -1.7, 180);
   put(P.notebook, 2.5, 0.907, -1.7, 0);
   put(P.binIn, 1.6, 0, 0.9, 0);
-  put(P.coatRack, 1.1, 0, 3.0, 0);
   put(P.computer, 4.1, F1 + 0.906, 4.4, 200);
   put(P.phone, 3.6, F1 + 0.906, 4.3, 190);
 

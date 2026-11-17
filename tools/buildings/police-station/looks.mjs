@@ -45,5 +45,5 @@ for (const [room, [x, y, z, r]] of Object.entries(ROOMS)) {
   if (only.length && !only.includes(room)) continue;
   run(room, ["--interior", `${+(ORIGIN.x + x).toFixed(2)},${y},${+(ORIGIN.z + z).toFixed(2)}`, "--radius", String(r), "--close", "0"]);
 }
-if (!only.length && !process.argv.includes("--no-night")) run("office-night", ["--interior", `${+(ORIGIN.x + 3).toFixed(2)},0,${ORIGIN.z}`, "--radius", "5", "--close", "0", "--hour", "22"]);
+if ((!only.length || only.includes("office-night")) && !process.argv.includes("--no-night")) run("office-night", ["--interior", `${+(ORIGIN.x + 3).toFixed(2)},0,${ORIGIN.z}`, "--radius", "5", "--close", "0", "--hour", "22"]);
 console.log(`looks: pictures in tmp/ps/${name}/`);
