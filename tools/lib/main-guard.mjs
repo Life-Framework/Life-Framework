@@ -273,3 +273,54 @@ export const REGEN_AFTER_REVERT = [
   ["tools/cli.mjs", "regen-localization"],
   ["tools/config/schema.mjs", "--write"],
 ];
+
+// ---- The watchdog (#2754): a dead guard is noticed and restarted, and a stale one is shouted about.
+// The worker renews its lease (the main-guard/lease status) every 5 min, but a long compile or a slow tick can delay
+// one, so "down" is three missed renewals (15 min), not the 30 min after which `start` may take the lease over.
+export const GUARD_DOWN_MS = 15 * 60 * 1000;
+export const GUARD_WEDGED_MS = 45 * 60 * 1000; // a live pid with a lease this old is hung, not slow
+export const RESTART_CAP = 3; // restarts per RESTART_WINDOW_MS before the watchdog stops and only alerts
+export const RESTART_WINDOW_MS = 60 * 60 * 1000;
+
+// Pure: the lease (guard-pin readLease: { state, host, pid, at } | null | undefined) -> what GitHub says about the guard.
+// state: live | down (held, renewal overdue) | stopped (released on purpose) | none | unknown (gh failed).
+export function guardHealth(lease, { now = Date.now(), downMs = GUARD_DOWN_MS } = {}) {
+  if (lease === undefined) return { state: "unknown", minutes: 0 };
+  if (!lease) return { state: "none", minutes: 0 };
+  const at = Date.parse(lease.at ?? "");
+  const minutes = Number.isFinite(at) ? Math.max(0, Math.round((now - at) / 60000)) : 0;
+  if (lease.state !== "held") return { state: "stopped", minutes, host: lease.host };
+  if (!Number.isFinite(at) || now - at > downMs) return { state: "down", minutes, host: lease.host, pid: lease.pid };
+  return { state: "live", minutes, host: lease.host, pid: lease.pid };
+}
+
+// The loud line for `lead` and `wt new`, null when the guard is fine or unknown. behind = commits between the pinned
+// compiled-ok head and origin/main (null when not known).
+// alive = this machine's worker pid: a live pid with a lease that is late but not hung is a busy guard, not a dead one.
+export function guardAlert(lease, { now = Date.now(), behind = null, downMs = GUARD_DOWN_MS, alive = null } = {}) {
+  const h = guardHealth(lease, { now, downMs });
+  if (alive && h.state === "down" && h.minutes * 60000 <= GUARD_WEDGED_MS) return null;
+  const gap = behind === null || behind === undefined ? "" : `; you are ${behind} commit(s) behind main`;
+  if (h.state === "down") return `main-guard down for ${h.minutes} min (last lease renewal on ${h.host}${gap}); \`tools\\cli main-guard start\`, or wait for the watchdog`;
+  if (h.state === "stopped") return `main-guard stopped ${h.minutes} min ago${gap}; \`tools\\cli main-guard start\``;
+  if (h.state === "none") return `main-guard has never held the lease${gap}; \`tools\\cli main-guard start\``;
+  return null;
+}
+
+// Pure: what one watchdog tick does. alive = pid of this machine's worker or null; restarts = ISO times of the
+// watchdog's recent restarts. -> { action: "none" | "restart" | "alert", why }.
+export function watchDecision({ off = false, alive = null, lease, host, now = Date.now(), restarts = [], downMs = GUARD_DOWN_MS, wedgedMs = GUARD_WEDGED_MS } = {}) {
+  if (off) return { action: "none", why: "LF_MAIN_GUARD=0" };
+  const h = guardHealth(lease, { now, downMs });
+  if (alive) {
+    const stale = lease?.host === host && lease?.state === "held" && h.minutes * 60000 > wedgedMs;
+    return stale ? { action: "alert", why: `worker pid ${alive} is alive but its lease is ${h.minutes} min old (hung?); not restarted` } : { action: "none", why: `worker pid ${alive} alive` };
+  }
+  if (h.state === "live" && lease.host !== host) return { action: "none", why: `${lease.host} runs the guard` };
+  if (h.state === "stopped") return { action: "none", why: `stopped on purpose ${h.minutes} min ago (tools\\cli main-guard start)` };
+  const recent = restarts.filter((t) => now - Date.parse(t) < RESTART_WINDOW_MS).length;
+  if (recent >= RESTART_CAP) return { action: "alert", why: `${recent} restarts in the last hour and the guard keeps dying; not restarting` };
+  // Our own pid is dead: ground truth, no need to wait for the lease to age. Another machine's lease must be overdue.
+  if (h.state === "live" || h.state === "down") return { action: "restart", why: `worker dead (lease ${h.state}, ${h.minutes} min since renewal on ${h.host})` };
+  return { action: "restart", why: h.state === "none" ? "no guard has ever held the lease" : "worker dead (lease unreadable, gh failed)" };
+}

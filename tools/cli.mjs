@@ -4575,6 +4575,7 @@ function wtNewCmd(args) {
     console.log(`  time:   ${Object.entries(r.phases ?? {}).map(([k, v]) => `${k} ${(v / 1000).toFixed(1)}s`).join(", ")}`);
     console.log(`  base:   origin/${r.base}${r.pinned ? ` at ${r.pinned}` : ""}`);
     if (r.pinNote) console.log(`  pin:    ${r.pinNote}`);
+    if (r.guardWarn) console.log(`  WARNING: ${r.guardWarn}`);
     console.log(`  path:   ${r.path}`);
     console.log(`  branch: ${r.branch}`);
     console.log(`  ports:  game ${r.ports.gamePort}   a2s ${r.ports.a2sPort}`);
