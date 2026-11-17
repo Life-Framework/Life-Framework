@@ -816,6 +816,17 @@ it, picks a lane and a budget, and prints one line per outcome.
   for an idle session's 3-5 min reap instead of starting beside it. Selftests: `tools/validation/pool-ram-selftest.mjs`
   (full machine queues, island refused, small test admitted, Workbench counted); `pool-selftest` pins its RAM with
   `LF_POOL_TEST_FREE_MB` so this PC's real load never decides it.
+- **What each process is, and whose peaks (2026-11-17, `docs/architecture/ram-budget.md`).** One PowerShell classifier
+  (`Get-LfArmaRows` in `pool-ram.mjs`) serves the pool's scan and the box holder's gate. A server whose `-profile` is
+  `<checkout>\server\profile\test` is a **test** (its peaks used to land under `server`, so `test:*` never left its seed);
+  a client is **island** when its session folder is the one of a `CoreOnEveron` server (a client joins by address, so it
+  used to count as a small client: 1.2 GB low for growth, and its 2 GB samples inflated the small client peak); a client's
+  **profile** is its own (`-maxFPS 15` = lowspec), not the asking job's; a Workbench is the **look** viewer
+  (`LF_VisualShotsPlugin`, 2.5-2.65 GB) or a **tool** (rdb, compile, pack: 1.0-1.2 GB, key `workbench:small:tool`, seed
+  1.3 GB) instead of both counting 3.7 GB. **Per machine:** `remoteState` also reads the box's own `pool-peaks.json` (its
+  look, rdb and holder jobs record there), and the box's admission, ranking and holder config use its measured keys (3+
+  samples) over this PC's (`machinePeaks`); before, the laptop was judged by this PC's seeds (Workbench 3.7 GB where the
+  laptop measured 2.6).
 - **Backfill without starvation.** A job that tried and cannot start for RAM or a lane is passed
   by the jobs behind it that can start now (a lowspec 1-client session goes while a full 2-client
   one waits for RAM). Once the waiting job has waited `starveMin` (20) minutes it holds its place:
