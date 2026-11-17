@@ -40,6 +40,13 @@ modded class SCR_RespawnComponent
 	//! Client entry: request the server to respawn the account's active character.
 	void LF_AskRespawn()
 	{
+		// A listen host (Workbench play) is the server: run the handler directly (AGENTS.md RPC rule).
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_Respawn();
+			return;
+		}
+
 		Rpc(RpcAsk_LF_Respawn);
 	}
 

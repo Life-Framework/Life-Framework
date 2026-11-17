@@ -1,8 +1,5 @@
-// red-proof: expected wanted 0 after RobTill and ran `tools\cli test --no-build --tier fast`
-// on 2026-10-11. The suite reported
-// `[LFTEST] - till rob raises wanted once (expected 0, got 1)`.
-// Restored the expected value to 1.
-
+// red-proof: #2419 removed the dead till script (LF_Hospital.RobTill and helpers) and its assertions here; the cabinet
+// assertions are unchanged, and their original observed red run is in the git history of this file (2026-10-11).
 // tier: LOGIC
 class LF_Test_Roadmap_Hospital : LF_Test
 {
@@ -13,59 +10,6 @@ class LF_Test_Roadmap_Hospital : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		ctx.EqualStr("{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et", LF_Hospital.CashPrefab(), "till pays MoneyStack");
-		ctx.False(LF_Hospital.CooldownActive(-1, 1000, 60), "a till that has not been robbed is not on cooldown");
-		ctx.True(LF_Hospital.CooldownActive(1000, 1000, 60), "the same timestamp is still inside a 60 second cooldown");
-		ctx.True(LF_Hospital.CooldownActive(1000, 1059, 60), "59 seconds is still inside a 60 second cooldown");
-		ctx.False(LF_Hospital.CooldownActive(1000, 1060, 60), "60 seconds clears a 60 second cooldown");
-		ctx.False(LF_Hospital.CooldownActive(1000, 1000, 0), "a zero cooldown never blocks");
-
-		string tillId = "logic-hospital-till";
-		string policeTill = "logic-hospital-till-police";
-		string factionTill = "logic-hospital-till-faction";
-		string uid = "roadmap-hospital-logic";
-		string officerUid = "roadmap-hospital-officer";
-
-		LF_BankAccount bank = LF_ATMManager.GetInstance().CreateAccount(uid);
-		ctx.NotNull(bank, "robber bank account exists");
-		if (ctx.FailureCount() > 0)
-			return;
-
-		ctx.Equal(0, bank.GetBalance(), "bank starts at 0");
-
-		LF_Hospital.ConfigureTill(policeTill, LF_Hospital.DEFAULT_PAYOUT, 60, 1);
-		ctx.False(LF_Hospital.CanRobTill(policeTill, uid), "minimum police gate refuses when nobody is on duty");
-		ctx.False(LF_Hospital.RobTill(policeTill, uid, null), "till rob refuses below the police minimum");
-		ctx.Equal(0, LF_Hospital.GetTillAlertCount(policeTill), "a refused till rob does not alert");
-		ctx.Equal(0, bank.GetBalance(), "a refused till rob does not touch the bank");
-
-		LF_PlayerAccount officer = LF_PlayerAccountManager.GetOrCreate(officerUid);
-		officer.SetFaction(LF_Faction.POLICE);
-		LF_Hospital.ConfigureTill(factionTill, LF_Hospital.DEFAULT_PAYOUT, 60, 0);
-		ctx.False(LF_Hospital.CanRobTill(factionTill, officerUid), "police faction cannot rob the till");
-		ctx.False(LF_Hospital.RobTill(factionTill, officerUid, null), "till rob refuses a non-civilian");
-		ctx.Equal(0, officer.GetWantedLevel(), "a refused civilian gate does not raise wanted");
-		ctx.Equal(0, LF_Hospital.GetTillAlertCount(factionTill), "a refused civilian gate does not alert");
-
-		LF_Hospital.ConfigureTill(tillId, LF_Hospital.DEFAULT_PAYOUT, 60, 0);
-		ctx.Equal(LF_Hospital.DEFAULT_PAYOUT, LF_Hospital.GetConfiguredPayout(tillId), "till payout is the configured cash amount");
-		ctx.True(LF_Hospital.CanRobTill(tillId, uid), "civilian can rob a configured till");
-		ctx.True(LF_Hospital.CanRobTill(tillId, uid), "offer refresh can be asked again");
-		ctx.Equal(0, LF_Hospital.GetTillAlertCount(tillId), "offer refresh does not alert");
-
-		LF_PlayerAccount robber = LF_PlayerAccountManager.GetOrCreate(uid);
-		ctx.Equal(0, robber.GetWantedLevel(), "robber starts clean");
-		ctx.True(LF_Hospital.RobTill(tillId, uid, null), "till rob succeeds");
-		ctx.Equal(LF_Hospital.DEFAULT_PAYOUT, LF_Hospital.GetCashDelivered(tillId), "till delivered the MoneyStack payout");
-		ctx.Equal(0, bank.GetBalance(), "till does not touch the bank");
-		ctx.Equal(1, robber.GetWantedLevel(), "till rob raises wanted once");
-		ctx.Equal(1, LF_Hospital.GetTillAlertCount(tillId), "till alerts once");
-		ctx.False(LF_Hospital.CanRobTill(tillId, uid), "till is on cooldown after the rob");
-		ctx.False(LF_Hospital.RobTill(tillId, uid, null), "second till rob inside the cooldown refuses");
-		ctx.Equal(1, LF_Hospital.GetTillAlertCount(tillId), "cooldown refusal does not alert again");
-		ctx.Equal(1, robber.GetWantedLevel(), "cooldown refusal does not raise wanted");
-		ctx.Equal(0, bank.GetBalance(), "cooldown refusal does not touch the bank");
-
 		array<ResourceName> configured = {};
 		LF_Hospital.FillDefaultLoot(configured);
 		array<ResourceName> resolved = {};
@@ -145,8 +89,6 @@ class LF_Test_Roadmap_HospitalWorld : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		Resource cash = Resource.Load(LF_Hospital.CashPrefab());
-		ctx.True(cash != null && cash.IsValid(), "MoneyStack.et loads");
 		for (int i = 0; i < LF_Hospital.DefaultLootCount(); i++)
 		{
 			ResourceName prefab = LF_Hospital.DefaultLootPrefab(i);
@@ -181,14 +123,6 @@ class LF_Test_Roadmap_HospitalWorld : LF_Test
 		ctx.NotNull(account, "e2e robber account exists");
 		if (ctx.FailureCount() > 0)
 			return;
-
-		int alertsBefore = LF_Hospital.GetTillAlertCount(LF_TestAnnex.HOSPITAL_TILL);
-		ctx.True(LF_Hospital.CanRobTill(LF_TestAnnex.HOSPITAL_TILL, uid), "placed till can be robbed");
-		ctx.Equal(alertsBefore, LF_Hospital.GetTillAlertCount(LF_TestAnnex.HOSPITAL_TILL), "placed till offer refresh does not alert");
-		ctx.True(LF_Hospital.RobTill(LF_TestAnnex.HOSPITAL_TILL, uid, null), "placed till pays once");
-		ctx.False(LF_Hospital.RobTill(LF_TestAnnex.HOSPITAL_TILL, uid, null), "placed till refuses a second rob inside the cooldown");
-		ctx.Equal(0, bank.GetBalance(), "placed till does not touch the bank");
-		ctx.Equal(alertsBefore + 1, LF_Hospital.GetTillAlertCount(LF_TestAnnex.HOSPITAL_TILL), "placed till alerts once");
 
 		int cabinetAlerts = LF_Breach.GetPoliceNotifyCount(LF_TestAnnex.HOSPITAL_CABINET);
 		ctx.True(LF_Hospital.CanBreach(LF_TestAnnex.HOSPITAL_CABINET), "placed cabinet can be breached");

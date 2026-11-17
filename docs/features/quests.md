@@ -103,7 +103,7 @@
 - ⚠️ Localization keys `#EL-*` are frequently passed through `string.Format`
   (corrupting keys with `%1`) and/or handed to
   `SCR_HintManagerComponent.ShowCustomHint`, which does not localize `#Key`
-  — the player sees raw keys. Spanish literals in notifications remain. The job,
+  — the player sees raw keys. The fallback toast titles moved to `#LF-Notify_Title*` keys on 2026-11-17 (#2403). The job,
   level and licence texts, the duty status words, the robbery, gather and process action
   texts, and the DebugWorld shop names moved to `#LF-*` keys on 2026-11-07, worded as
   employment rather than XP. Violates the AGENTS.md localization contract until the
@@ -116,3 +116,13 @@
 
 ### Repeatable-quest cooldown survives a respawn (life review, 2026-11-17)
 - ✅ A new body restores its saved turn-ins with the cooldown counted from the restore (`LF_QuestState.RestoreTurnedIn(questId, now)`). Before, the restored turn-in carried no time, so a player could turn in a repeatable quest, die, respawn and take it again at once, paid every time. After a server restart the cooldown also counts from the player's first spawn, because the old turn-in time is not saved. Test: `quests/restore-cooldown` (LOGIC). Review: `docs/reviews/2026-11-17-life.md`.
+
+### Quests and dialogue hardening (life review, #2403, 2026-11-17)
+- ✅ **A gated quest is offered in conversation.** The converse giver read the player as level 1, unemployed, no faction, so a quest with a minimum level, job or faction was never offered. `LF_QuestStanding` is the one reader of the player's level, job and faction (`LF_QuestOwnerStanding` on the live character); `AcceptQuest` and the offer (`LF_QuestTracker.NextOffer`) both use it. Test: `quests/dialogue-hardening` (LOGIC).
+- ✅ **Turn-in records first, pays last, and needs a uid.** `TurnInQuest` marks the quest turned in and saves it (`LF_Progression.NoteTurnedIn`) before `GrantReward`, so an error inside the reward cannot leave a payable quest. A body no player controls (empty uid) is refused with `LF_Debug.Error`, as is a reward with items and no inventory; nothing is taken or paid. Test fixtures give their tracker a stand-in uid (`SetUidForTests`). Test: `quests/turn-in-guards` (WORLD).
+- ✅ **A dead or downed character cannot talk, read a sign or hand in** (`LF_Utils.IsAliveState`: life state ALIVE and the damage manager not destroyed), on the quest asks and on `LF_Dialogue.Start` and `Choose`.
+- ✅ **Rate limit.** Quest menu, accept, turn-in, converse, sign read, quest log, dialogue start and dialogue reply share the `QUEST` bucket of `LF_RateLimit` (8 per 2 s per player, quiet refusal, logged).
+- ✅ **`LF_QuestManager` resets at world end** (`LF_QuestManager_StaticResetHook`) and `IsNearGiver` resolves the giver through `GetGiver`, so a stale id never reaches an unrelated entity.
+- ✅ **Disconnect frees per-player state:** `LF_Dialogue.Forget` (session) and `LF_TownBoardMapKnown.Forget` (card-ask gap) run from `OnPlayerDisconnected`.
+- ✅ **Dialogue client no longer freezes on a refusal.** A refused start (stunned, out of reach, dead, rate limited) or a refused reply (not in a conversation, not offered) closes the client's scene at once instead of leaving it to the 5 s watchdog. A node that arrives for a closed scene, or one that is not waiting for it, is ignored (`LF_DialogueScene.AcceptsNode`).
+- ✅ **Notifications:** `SendToJob` null-checks the player and account managers; the fallback toast titles are `#LF-Notify_Title*` keys instead of Spanish literals.

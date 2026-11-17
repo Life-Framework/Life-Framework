@@ -99,8 +99,12 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_WantedPosters.Install();
 		// The case board rebuilds for on-duty officers on the same events (server only, #148).
 		LF_CaseBoard.Install();
+		// A player's first wanted report posts a police call (server only, #2477).
+		LF_PoliceCalls.Install();
 		// Playtime per account and job, credited to online players (server only, #692).
 		LF_Playtime.Start();
+		// A fine at the site completes the officer's police call and pays it (server only, #2478).
+		LF_PoliceCallPay.Install();
 		// A playtest mission remembers where its vehicles stand, for the world reset (server only).
 		LF_WorldReset.Start();
 	}
@@ -203,6 +207,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		{
 			// First: the rules read the cuffs, escort and downed state that the cleanup below ends (#691).
 			LF_DisconnectRules.OnPlayerDisconnected(playerId);
+			// The duty clock stops with the connection: time away is not paid or counted (#2416).
+			LF_PoliceRanks.OnPlayerLeft(playerId);
 			LF_BleedOut.OnPlayerDisconnected(playerId);
 			LF_PhoneCalls.OnPlayerDisconnected(playerId);
 			ReleaseDisconnectedPlayer(playerId);
@@ -210,6 +216,9 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 			LF_PlayerIdentity.Forget(playerId);
 			// Player ids are reused by the next arrival: no pick or register offer may outlive the connection (#2415).
 			LF_CharacterCreationManager.ForgetPlayer(playerId);
+			// Per-player conversation and town-board gap state is keyed by the reused player id too (#2403).
+			LF_Dialogue.Forget(playerId);
+			LF_TownBoardMapKnown.Forget(playerId);
 		}
 
 		super.OnPlayerDisconnected(playerId, cause, timeout);
@@ -277,6 +286,13 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		super.OnPlayerSpawned(playerId, controlledEntity);
 
 		LF_AccountReplication.PublishForPlayer(playerId, controlledEntity);
+
+		if (Replication.IsServer())
+		{
+			// An officer still on duty from before the disconnect or restart gets the clock back
+			// (#2416). A trial that ran out meanwhile is ended by the next LF_PoliceTrialSweep.
+			LF_PoliceRanks.OnPlayerReturned(playerId);
+		}
 
 		LF_WhitelistRespawnHandlerComponent whitelist = LF_WhitelistRespawnHandlerComponent.Cast(FindComponent(LF_WhitelistRespawnHandlerComponent));
 		if (whitelist)
@@ -361,6 +377,9 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		{
 			GetGame().GetCallqueue().CallLater(LF_RefreshAccountReplication, LF_AccountReplication.REFRESH_INTERVAL_MS, true);
 			m_bLF_AccountRefreshRunning = true;
+
+			// An on-duty officer whose trial ran out loses the duty (#2416).
+			LF_PoliceTrialSweep.Start();
 
 			// -lfPerf: print the server cost counters once a minute (LF_Perf).
 			if (LF_Perf.IsEnabled())

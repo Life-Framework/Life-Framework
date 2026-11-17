@@ -40,6 +40,9 @@ class LF_Test_QuestWorld : LF_Test
 		if (!tracker)
 			return;
 
+		// No player controls the fixture body; a turn-in needs a uid to be saved under.
+		tracker.SetUidForTests("quest-world-test");
+
 		// Talk quest: accept, interact with the giver, turn in, reward items land.
 		tracker.AcceptQuest("intro_talk");
 		ctx.True(tracker.GetTracker().GetStatus("intro_talk") == LF_EQuestStatus.ACTIVE, "talk quest accepted");

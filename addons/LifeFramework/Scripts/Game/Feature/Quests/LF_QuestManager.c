@@ -21,6 +21,13 @@ class LF_QuestManager
 	static const float GIVER_RADIUS = 5.0;
 
 	//------------------------------------------------------------------------------------------------
+	//! World-end reset: the next world starts with no registered givers or definitions.
+	static void ResetStatics()
+	{
+		s_Instance = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static LF_QuestManager GetInstance()
 	{
 		if (!s_Instance)
@@ -121,21 +128,16 @@ class LF_QuestManager
 	//! An unknown id or a deleted giver entity is never near.
 	bool IsNearGiver(IEntity user, string giverId)
 	{
-		if (!user || giverId.IsEmpty())
+		if (!user)
 			return false;
 
-		EntityID giverEntityId;
-		if (!m_mGiverEntities.Find(giverId, giverEntityId))
+		// Through GetGiver: a stale id whose entity is gone, or was reused by something that is no
+		// quest giver, is not near.
+		LF_QuestGiverComponent giver = GetGiver(giverId);
+		if (!giver || !giver.GetOwner())
 			return false;
 
-		if (!GetGame() || !GetGame().GetWorld())
-			return false;
-
-		IEntity giverEntity = GetGame().GetWorld().FindEntityByID(giverEntityId);
-		if (!giverEntity)
-			return false;
-
-		return vector.Distance(user.GetOrigin(), giverEntity.GetOrigin()) <= GIVER_RADIUS;
+		return vector.Distance(user.GetOrigin(), giver.GetOwner().GetOrigin()) <= GIVER_RADIUS;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -329,5 +331,22 @@ class LF_QuestManager
 	protected void LogEvent(LF_QuestEvent ev)
 	{
 		LF_Debug.Log("Quests", string.Format("event type=%1 filter='%2' value=%3", typename.EnumToString(LF_EQuestEventType, ev.m_eType), ev.m_sFilter, ev.m_iValue));
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_QuestManager's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_QuestManager_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_QuestManager_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_QuestManager";
+	}
+
+	override void Apply()
+	{
+		LF_QuestManager.ResetStatics();
 	}
 }

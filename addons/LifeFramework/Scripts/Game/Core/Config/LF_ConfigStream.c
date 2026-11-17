@@ -288,6 +288,9 @@ class LF_ConfigStream
 
 		// The clerk's fee for a replacement identity card (server).
 		LF_PhotoIdCardConfig.Reload();
+
+		// How long a locked house's open door stays open (#2505, server): the next door that opens reads it.
+		LF_HousesConfig.Reload();
 		LF_QuizConfig.Reload();
 		LF_QuizBank.Reload();
 

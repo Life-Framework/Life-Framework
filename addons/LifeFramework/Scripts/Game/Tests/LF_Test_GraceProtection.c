@@ -23,16 +23,16 @@ class LF_Test_GraceProtection : LF_Test
 		ctx.False(LF_Grace.IsProtected(30, 1800, 0), "the end of the grace is not protected");
 		ctx.False(LF_Grace.IsProtected(30, 60, 1), "a crime ends it for good");
 
-		array<ref LF_PlaytimeRecord> playtimeBefore = LF_Playtime.ExportAll();
+		array<ref LF_GraceClockRow> clocksBefore = LF_GraceCharacterClock.ExportAll();
 		array<ref LF_CrimeRecordRow> crimesBefore = LF_CrimeRecord.ExportAll();
-		LF_Playtime.ApplyAll(null);
+		LF_GraceCharacterClock.ApplyAll(null);
 		LF_CrimeRecord.ApplyAll(null);
 
-		// Playtime is the persisted clock: 10 minutes in for the new one, 2 hours for the old one.
-		LF_Playtime.Credit(UID_NEW, LF_Playtime.JOB_CIVILIAN, 600);
-		LF_Playtime.Credit(UID_OLD, LF_Playtime.JOB_CIVILIAN, 7200);
-		LF_Playtime.Credit(UID_ACTOR, LF_Playtime.JOB_CIVILIAN, 7200);
-		LF_Playtime.Credit(UID_CROOK, LF_Playtime.JOB_CIVILIAN, 60);
+		// The character grace clock (#2443): 10 minutes in for the new one, 2 hours for the old one.
+		LF_GraceCharacterClock.Credit(UID_NEW, 600);
+		LF_GraceCharacterClock.Credit(UID_OLD, 7200);
+		LF_GraceCharacterClock.Credit(UID_ACTOR, 7200);
+		LF_GraceCharacterClock.Credit(UID_CROOK, 60);
 
 		// Core default: off.
 		LF_Grace.SetMinutesOverride(-1);
@@ -65,13 +65,13 @@ class LF_Test_GraceProtection : LF_Test
 		ctx.Equal(LF_EHoldUp.OK, LF_HoldUp.Attempt(UID_ACTOR, UID_CROOK, "0 0 0", 1, true, 2000), "after the crime it can be held up");
 
 		// Grace over by time: the same character at 30 minutes plays on unprotected.
-		LF_Playtime.Credit(UID_NEW, LF_Playtime.JOB_CIVILIAN, 1200);
+		LF_GraceCharacterClock.Credit(UID_NEW, 1200);
 		ctx.False(LF_Grace.Protects(UID_NEW), "the clock running out ends the grace");
 		ctx.Equal(LF_EHoldUp.OK, LF_HoldUp.Attempt(UID_ACTOR, UID_NEW, "0 0 0", 1, true, 3000), "after the grace it can be held up");
 
 		LF_Grace.SetMinutesOverride(-1);
 		LF_HoldUp.ResetStatics();
-		LF_Playtime.ApplyAll(playtimeBefore);
+		LF_GraceCharacterClock.ApplyAll(clocksBefore);
 		LF_CrimeRecord.ApplyAll(crimesBefore);
 	}
 }

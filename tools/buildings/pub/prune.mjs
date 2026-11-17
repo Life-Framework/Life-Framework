@@ -19,6 +19,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gameVfs, readText } from "../../lib/game-prefab.mjs";
 import { emitEntity, entities, floorOf, short } from "./furniture-lib.mjs";
+import { blockOf, swapBlock } from "./decor-lib.mjs";
 import { floaters, gameReader, prefabChildren, specSupports } from "../pipeline/surface.mjs";
 import { floorsOf } from "../pipeline/floaters.mjs";
 
@@ -35,6 +36,13 @@ const CHECK = process.argv.includes("--check");
 // radio, which the base game stands 0.24 m inside the stacked wall shelf (`building check` flags it; pass 1 puts the
 // cafe radio on a table).
 const DROP = /LightSwitch_01|Bathtub_01|Boiler_01|ShowerDrain_01|Broom_01|Bucket_01|FirstAidBox_01|LifeBuoy_01|TowelRack_01|Carpet_03|RadioSmall_01/;
+
+// Vanilla chair -> the seat prefab that replaces it (same mesh plus the sit action).
+const SEATS = [
+  [/Chair_01\/Chair_01_red\.et$/, "{3145FC3DB0E675E8}", "Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et"],
+  [/Chair_01\/Chair_01_white\.et$/, "{1A8B1A9666D0C6CB}", "Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_white.et"],
+  [/Chair_02\/Chair_02_green\.et$/, "{69D6D9BFDFEC3225}", "Prefabs/Props/Seats/LF_Seat_Chair_02_green.et"],
+];
 
 // At most N of a prop per floor, in file order. Unlisted props stay (tables, bar, taps, kegs, kitchen, toilets).
 const LIMIT = [
@@ -141,7 +149,16 @@ async function main() {
     orphaned += gone.size;
     kept = kept.filter((e) => !gone.has(idOf(e)));
   }
-  const furniture = shell(kept);
+  // Pass 1 (#2294): every kept chair is a seat players can sit on (Emote's LF_SitAction). Chair_02 has the core seat
+  // prefab; the two Chair_01 colours get the pack's own (Seats/), the same action on the same base mesh.
+  kept = kept.map((e) => {
+    const to = SEATS.find(([re]) => re.test(e.path));
+    return to ? { ...e, guid: to[1], path: to[2] } : e;
+  });
+  // decor.mjs's block (IDs CAFE...) stays where it is: prune rewrites only the vanilla set.
+  const curFurniture = existsSync(join(DIR, FURNITURE)) ? readFileSync(join(DIR, FURNITURE), "utf8") : "";
+  const decorBlock = blockOf(curFurniture, "CAFE");
+  const furniture = decorBlock ? swapBlock(shell(kept), "CAFE", decorBlock) : shell(kept);
 
   const outs = [
     [join(DIR, BUILDING), `${building.trimEnd()}\n`],

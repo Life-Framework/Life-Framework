@@ -1,0 +1,33 @@
+GenericEntity Fit_saint_philippe_arrival_Place {
+ components {
+  LF_PlaceComponent "{71F262E0ACBDA279}" {
+   m_sKind "Spawn"
+   m_sId "saint-philippe.arrival"
+  }
+  LF_FittedBuildingComponent "{8A232FE3A28E99FC}" {
+  }
+ }
+ coords 4418.9 12.7 10647.5
+}
+GenericEntity Fit_saint_philippe_arrival_Place_Clerk {
+ components {
+  LF_PlaceComponent "{31AA2FB093188833}" {
+   m_sKind "Clerk"
+   m_sId "saint-philippe.arrival"
+  }
+ }
+ coords 4418.9 12.7 10647.5
+}
+GenericEntity Fit_saint_philippe_arrival_Place_LicenceDesk {
+ components {
+  LF_PlaceComponent "{35CA5F886D864E74}" {
+   m_sKind "LicenceDesk"
+   m_sId "saint-philippe.arrival"
+  }
+ }
+ coords 4418.9 12.7 10647.5
+}
+GenericEntity Fit_saint_philippe_arrival_town_hall_furniture_01 : "{73F7E5F730727D8C}Prefabs/Buildings/TownHall/Furniture/TownHall_furniture_01.et" {
+ coords 4418.9 12.7 10647.5
+ angleY -8
+}

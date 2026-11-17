@@ -5,28 +5,35 @@
 //! authoritative action; replies go through LF_NotificationManagerComponent.
 modded class SCR_ChimeraCharacter
 {
+	protected int m_iPoliceArrestRequests;
+
 	//------------------------------------------------------------------------------------------------
 	//! Ask the server to arrest the player with the given UID.
 	//! \param targetPlayerUid Platform-stable UID of the wanted player.
 	void LF_AskPoliceArrest(string targetPlayerUid)
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_PoliceArrest(targetPlayerUid);
+			return;
+		}
+
 		Rpc(RpcAsk_LF_PoliceArrest, targetPlayerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Ask the server to promote this officer. The server always refuses: rank is not a client field.
-	void LF_AskPoliceSelfPromote()
+	//! How many arrest requests this character's handler has taken (a test reads it; no gameplay use).
+	int LF_PoliceArrestRequests()
 	{
-		if (Replication.IsServer())
-			LF_PoliceRanks.RequestSelfPromotion(LF_Utils.GetPlayerUid(this));
-		else
-			Rpc(RpcAsk_LF_PoliceSelfPromote);
+		return m_iPoliceArrestRequests;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_PoliceArrest(string targetPlayerUid)
 	{
+		m_iPoliceArrestRequests++;
 		IEntity officer = this;
 		if (!officer)
 			return;
@@ -62,6 +69,21 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		// The same hands-on gates as the in-world arrest action (LF_JailArrestAction): a live
+		// suspect who is not the officer, and no new character in its grace.
+		LF_EInteractionRefusal refusal = LF_PlayerInteraction.CheckPair(officer, target);
+		if (refusal != LF_EInteractionRefusal.NONE)
+		{
+			LF_Debug.Warn("Jail", "menu arrest refused: " + typename.EnumToString(LF_EInteractionRefusal, refusal));
+			return;
+		}
+
+		if (LF_JailArrestAction.RefusedByGrace(targetPlayerUid))
+		{
+			LF_Grace.Notify(officer);
+			return;
+		}
+
 		if (!LF_Jail.Arrest(officerUid, targetPlayerUid, target))
 			return;
 
@@ -71,13 +93,6 @@ modded class SCR_ChimeraCharacter
 		LF_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Player_Arrested", 3.0, LF_ENotificationType.POLICE_ALERT);
 		if (targetPlayerId > 0)
 			LF_NotificationManagerComponent.NotifyPlayer(targetPlayerId, "#EL-Police_Title", "#EL-Player_Arrested", 3.0, LF_ENotificationType.WARNING);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_PoliceSelfPromote()
-	{
-		LF_PoliceRanks.RequestSelfPromotion(LF_Utils.GetPlayerUid(this));
 	}
 };
 
@@ -232,6 +247,8 @@ class LF_PoliceUtils
 //------------------------------------------------------------------------------------------------
 class LF_PoliceMenu : ChimeraMenuBase
 {
+	static const string LAYOUT = "{41C6F92AE5EA775C}UI/Layouts/PoliceMenu.layout";
+
 	protected PlayerController m_PlayerController;
 
 	// UI input only: Enter, Esc and the pad, polled every frame (LF_UIMenuInput).
@@ -258,10 +275,18 @@ class LF_PoliceMenu : ChimeraMenuBase
 			LF_Debug.Error("Police", "police menu close button missing or not a button; Esc still closes");
 
 		array<Widget> focus = {};
-		focus.Insert(root.FindAnyWidget("SearchButton"));
-		focus.Insert(root.FindAnyWidget("ArrestButton"));
-		focus.Insert(m_wCloseButton);
+		BuildFocusOrder(root, focus);
 		m_Input.SetFocusOrder(focus);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The focus ring for a menu built from LAYOUT, top to bottom.
+	static void BuildFocusOrder(Widget root, array<Widget> focus)
+	{
+		if (!root || !focus)
+			return;
+
+		focus.Insert(root.FindAnyWidget("CloseButton"));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -307,6 +332,8 @@ class LF_PoliceMenu : ChimeraMenuBase
 
 	//------------------------------------------------------------------------------------------------
 	//! Client-side entry: routes the arrest request to the server via the officer's character.
+	//! No widget in this menu calls it today (the blank Search and Arrest buttons are gone, #2509);
+	//! the wanted-list sheet will call it.
 	void ArrestPlayer(string playerUid)
 	{
 		SCR_ChimeraCharacter officer = GetOfficerCharacter();

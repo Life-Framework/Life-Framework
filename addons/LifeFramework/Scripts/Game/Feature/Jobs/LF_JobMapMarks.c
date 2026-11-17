@@ -173,11 +173,23 @@ class LF_JobMapMarks
 		LF_Places.FindAll(PLACE_DROP, drops);
 		array<string> ids = {};
 		array<vector> positions = {};
+		array<string> farIds = {};
+		array<vector> farPositions = {};
 		foreach (IEntity drop : drops)
 		{
 			ids.Insert(drop.GetName());
 			positions.Insert(drop.GetOrigin());
+			if (vector.Distance(from, drop.GetOrigin()) >= LF_CivilianJob.RunMinDistance())
+			{
+				farIds.Insert(drop.GetName());
+				farPositions.Insert(drop.GetOrigin());
+			}
 		}
+
+		// A drop nearer than the run's minimum distance pays nothing, so the stop is the nearest one that
+		// pays; when none is far enough the nearest is marked anyway (the drop-off then says why it is refused).
+		if (!farIds.IsEmpty())
+			return StopForRun(runnerUid, job, from, farIds, farPositions);
 
 		return StopForRun(runnerUid, job, from, ids, positions);
 	}
