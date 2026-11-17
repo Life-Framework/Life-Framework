@@ -7,6 +7,7 @@
 //! #1934: a chess table holds one server-side game. Two players sit (white first), a third only
 //! watches; a move from a watcher, from the wrong seat or out of turn is refused on the server;
 //! standing up mid-game holds the seat for the grace period, then resigns for the absent side.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ChessTable : LF_Test
 {
 	static const ResourceName TABLE_PREFAB = "{33881F3E4E64549D}Prefabs/Props/Chess/LF_ChessTable.et";

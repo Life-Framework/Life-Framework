@@ -4,6 +4,7 @@
 //! payload 18): a bag logged in the locker is still on file, against its report, after the store is
 //! wiped and read back, and loading twice adds no rows. The bag logging itself calls
 //! LF_FenceSerials.IdentifyItem: a serial'd tool in the bag identifies its buyer's wanted report.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_EvidenceLockerPersist : LF_Test
 {
 	protected static const string BUYER = "locker-save-buyer";

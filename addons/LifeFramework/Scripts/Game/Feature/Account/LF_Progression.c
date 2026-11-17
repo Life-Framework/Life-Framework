@@ -166,7 +166,8 @@ class LF_Progression
 
 	//------------------------------------------------------------------------------------------------
 	//! Drops everything progression holds for the player (test cleanup, admin wipe). The account's
-	//! rank and duty totals belong to the account and are left alone.
+	//! rank and duty totals belong to the account and are left alone. Standing is per character, so
+	//! it goes too (docs/architecture/reputation.md section 6).
 	static void Forget(string playerUid)
 	{
 		if (s_mRecords)
@@ -175,6 +176,7 @@ class LF_Progression
 		LF_CivilianJob.ForgetCareer(playerUid);
 		LF_UnemploymentBenefit.ForgetCollection(playerUid);
 		LF_JobLevels.Forget(playerUid);
+		LF_Reputation.Forget(playerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -3,6 +3,7 @@
 //! The crime record rides the real save path (the "crimerecord" payload, now save version 16): a crime
 //! published on the bus is counted by the subscriber, comes back after the store is wiped, and
 //! loading twice leaves the same counts.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_CrimeRecordPersist : LF_Test
 {
 	protected static const string UID = "crime-save-uid";

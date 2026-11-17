@@ -3,6 +3,7 @@
 //! Which town NPCs can be shot (#610). An ambient civilian (Npc_Civilian_01) carries a hit zone and
 //! dies to lethal damage; shop clerks, the fence and quest givers (Npc_Default_01 and children)
 //! have none and stay protected. A killed civilian is queued for removal once.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NpcDamage : LF_Test
 {
 	static const ResourceName CIVILIAN = "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et";

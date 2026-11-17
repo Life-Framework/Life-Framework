@@ -5,6 +5,7 @@
 // tier: LOGIC
 //! A server restart ends a cargo run; the deposit it held goes back to the player's bank account on
 //! the load instead of being kept. In-session round trip of the rows only: the restart itself is `wt e2e`.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobDepositRestart : LF_Test
 {
 	protected static const string UID = "job-deposit-restart";

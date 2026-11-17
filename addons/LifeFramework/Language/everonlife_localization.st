@@ -7007,6 +7007,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Withdraw from the fund"
      Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
     }
+    CustomStringTableItem "{7E0E46C2E4A95435}" {
+     Id "LF-OrgWar_Accepted"
+     Target_en_us "Declaration answered. Your organizations are at war."
+     Comment "Toast: the target accepted the declaration (#2668)."
+    }
+    CustomStringTableItem "{1BC0FE9D5A782876}" {
+     Id "LF-OrgWar_Declared"
+     Target_en_us "War declared. The other organization has until the window closes to answer."
+     Comment "Toast: the declaration went through and the fee left the fund (#2668)."
+    }
+    CustomStringTableItem "{325F9ECB97909DF2}" {
+     Id "LF-OrgWar_RefuseCooldown"
+     Target_en_us "These organizations fought too recently to declare again."
+     Comment "Toast: declaration refused, the pair cooldown is running (#2668)."
+    }
+    CustomStringTableItem "{211295C1DAB28A4F}" {
+     Id "LF-OrgWar_RefuseExpired"
+     Target_en_us "The answer window has closed; the declaration lapsed."
+     Comment "Toast: answer refused, the declaration lapsed (#2668)."
+    }
+    CustomStringTableItem "{192720B36BC76B20}" {
+     Id "LF-OrgWar_RefuseFund"
+     Target_en_us "The organization fund cannot cover the war fee."
+     Comment "Toast: declaration refused, fund short of the fee (#2668)."
+    }
+    CustomStringTableItem "{56FB87313A015E3A}" {
+     Id "LF-OrgWar_RefuseGone"
+     Target_en_us "That organization or declaration no longer exists."
+     Comment "Toast: war request refused, the org or war is gone or already answered (#2668)."
+    }
+    CustomStringTableItem "{CD36D2312320E8CE}" {
+     Id "LF-OrgWar_RefuseNoOrg"
+     Target_en_us "You are not in an organization."
+     Comment "Toast: war request refused, the player has no organization (#2668)."
+    }
+    CustomStringTableItem "{4349F738359D727D}" {
+     Id "LF-OrgWar_RefuseNoRight"
+     Target_en_us "Your rank cannot declare or answer a war."
+     Comment "Toast: war request refused, the rank lacks the war right (#2668)."
+    }
+    CustomStringTableItem "{0C78381E5C917C43}" {
+     Id "LF-OrgWar_RefuseNotTarget"
+     Target_en_us "That declaration was not made on your organization."
+     Comment "Toast: answer refused, the player is not in the declared-on organization (#2668)."
+    }
+    CustomStringTableItem "{EA8BDFF1CAD3449B}" {
+     Id "LF-OrgWar_RefuseOtherTooFew"
+     Target_en_us "The other organization has too few members for a war."
+     Comment "Toast: war request refused, the other organization below the member minimum (#2668)."
+    }
+    CustomStringTableItem "{D2F018F47366235B}" {
+     Id "LF-OrgWar_RefusePending"
+     Target_en_us "A declaration or war between these organizations is already running."
+     Comment "Toast: declaration refused, the pair already has a pending or active war (#2668)."
+    }
+    CustomStringTableItem "{84D688375916FAB8}" {
+     Id "LF-OrgWar_RefuseSelf"
+     Target_en_us "An organization cannot declare war on itself."
+     Comment "Toast: declaration refused, target is the own organization (#2668)."
+    }
+    CustomStringTableItem "{25A42815D66DCE2F}" {
+     Id "LF-OrgWar_RefuseTooFew"
+     Target_en_us "Your organization has too few members for a war."
+     Comment "Toast: war request refused, own organization below the member minimum (#2668)."
+    }
+    CustomStringTableItem "{AD3C4AAA651C8DCC}" {
+     Id "LF-OrgWar_Refused"
+     Target_en_us "The war desk refused that."
+     Comment "Toast: a war request was refused for a reason with no text of its own (#2668)."
+    }
+    CustomStringTableItem "{85E483079A7BF56C}" {
+     Id "LF-OrgWar_Title"
+     Target_en_us "War desk"
+     Comment "Toast title for organization war declarations and answers (#2668)."
+    }
     CustomStringTableItem "{AF38925B41949B01}" {
      Id "LF-Org_AlreadyMember"
      Target_en_us "You already belong to an {org}."

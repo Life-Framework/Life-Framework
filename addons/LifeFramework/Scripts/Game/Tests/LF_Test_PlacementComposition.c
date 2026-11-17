@@ -5,6 +5,7 @@
 //! verge: one plan with one verdict, one confirm that spawns every piece with each piece on the
 //! ground, and one pick-up that removes all of them. A second set on top of the first, a malformed
 //! proposal and a far-away picker are refused and change nothing. Further into the annex, a set with one piece half on a table (a rise past the step) is TOO_STEEP and places nothing.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementComposition : LF_Test
 {
 	static const ResourceName CONE = "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et";

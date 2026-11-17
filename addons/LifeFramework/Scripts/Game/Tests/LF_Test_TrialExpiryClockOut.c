@@ -3,6 +3,7 @@
 //! police/trial-expiry-clock-out (#2416): the sweep takes an officer whose trial ran out off duty
 //! through the duty desk's own clock-out: the shift is paid, the police gear is stored and the
 //! civilian inventory comes back.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TrialExpiryClockOut : LF_Test
 {
 	protected static const string UID = "trial-clockout";

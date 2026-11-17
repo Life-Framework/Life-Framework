@@ -3,6 +3,7 @@
 //! catalogue/service-pistol-lawful (#2096): the duty kit's service pistol is lawful police issue. An
 //! off-duty officer searched with it keeps it and nothing is filed; the plain catalogue M9 carried
 //! without a permit is still seized as an unlicensed item.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ServicePistolLawful : LF_Test
 {
 	protected static const string UID = "service-pistol-lawful-a";

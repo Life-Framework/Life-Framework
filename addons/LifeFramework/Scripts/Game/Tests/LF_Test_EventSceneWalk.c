@@ -5,6 +5,7 @@
 //! walkers toward the point the walk names for each (what the AI group does on a real map) and checks
 //! the books: every moving walker reaches the target inside the plan's walk budget, and a walker that
 //! stands still times out with a logged `[LFDebug:Events]` line and is removed out of sight.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventSceneWalk : LF_Test
 {
 	static const string SCENE = "grid_event_scene";

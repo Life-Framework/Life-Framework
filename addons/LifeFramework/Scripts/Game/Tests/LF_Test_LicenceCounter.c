@@ -9,6 +9,7 @@
 //! day later issues the permit and the same counter then sells the pistol. With the row the licence
 //! desk no longer takes permit applications, and a row for a licence the office does not issue is
 //! dropped at load.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LicenceCounter : LF_Test
 {
 	protected static const string UID = "lf-test-licence-counter";

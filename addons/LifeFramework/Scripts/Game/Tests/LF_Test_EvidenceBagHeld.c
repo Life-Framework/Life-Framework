@@ -3,6 +3,7 @@
 //! #2419: an officer bags a dropped item only while it still lies beside its marker. An item a
 //! civilian picked back up (it has a parent) or carried away (far from its marker) is refused, the
 //! row is dropped, and the item stays where it is.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EvidenceBagHeld : LF_Test
 {
 	protected static const vector SCENE = "1000 0 1000";

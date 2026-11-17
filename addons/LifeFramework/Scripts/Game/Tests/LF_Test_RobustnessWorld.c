@@ -3,6 +3,7 @@
 // robustness/single-jail-tick with "a second cell does not start its own jail tick". Restored, it passes.
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RobustnessWorld : LF_Test
 {
 	protected static const ResourceName JAIL_CELL = "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.et";

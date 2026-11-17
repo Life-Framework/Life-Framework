@@ -8,6 +8,7 @@
 //! takes the cargo's deposit from the player's cash (a player short of it gets no run and no cargo), an abandoned
 //! run keeps it, and a delivery pays the run and returns it. A drop too close to the start, or reached too fast,
 //! or not a placed drop at all, pays nothing and leaves the run, the cargo and the deposit where they were.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JobRunCargoWorld : LF_Test
 {
 	protected static const string UID = "job-run-cargo-world";

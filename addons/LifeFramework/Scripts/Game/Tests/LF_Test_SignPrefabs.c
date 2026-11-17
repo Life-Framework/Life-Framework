@@ -3,6 +3,7 @@
 // ...LF_Sign_Board.et (expected 2, got 1)" for every sign prefab.
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SignPrefabs : LF_Test
 {
 	override string GetName()

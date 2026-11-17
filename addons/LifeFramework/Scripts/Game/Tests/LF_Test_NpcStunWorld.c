@@ -3,6 +3,7 @@
 //! The taser on a town NPC (#922): a town NPC is stunned, lies down, cannot be talked to, wakes
 //! where it stood, and a stale wake or a second stun does nothing. A dart read from a shooter with
 //! no stun weapon stuns nobody.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NpcStunWorld : LF_Test
 {
 	static const ResourceName NPC_PREFAB = "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et";

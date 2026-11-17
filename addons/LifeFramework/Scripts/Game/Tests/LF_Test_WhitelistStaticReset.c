@@ -3,6 +3,7 @@
 //! whitelist/static-reset (#2415): the roster lists, the load-failed latch, the missing-file counter
 //! and the save path are process statics. A world loaded after one whose roster file was unreadable
 //! kept refusing saves; a test save path outlived its world.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WhitelistStaticReset : LF_Test
 {
 	protected static const string BAD = "$profile:LifeFramework/test_whitelist_static_reset_bad.txt";

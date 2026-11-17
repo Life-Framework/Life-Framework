@@ -48,6 +48,17 @@ export function localPolicy({ machines, env = process.env, host = os.hostname() 
   return { hasCap, forced, allowed: hasCap || forced, host };
 }
 
+// One line for `toolscli status` (#2749): may a headless Workbench start on THIS machine? Names the host so
+// an agent on lf-testbox (PC1) never mistakes the maintainer's-PC rule for itself.
+export function statusLine({ machines, env = process.env, host = os.hostname() } = {}) {
+  const p = localPolicy({ machines, env, host });
+  if (p.hasCap) return `workbench: ALLOWED on this machine (${host}): it has the "workbench" cap, so a headless Workbench may start here through the pool`;
+  const others = (machines ?? []).filter((m) => m.via !== "local" && !m.disabled && (m.caps ?? []).includes("workbench")).map((m) => m.name);
+  const where = others.length ? others.join(", ") : "a pool machine with the cap";
+  if (p.forced) return `workbench: forced on this machine (${host}) by ${FORCE_ENV}=1; it has no "workbench" cap, normally it runs on ${where}`;
+  return `workbench: NOT allowed on this machine (${host}, the maintainer's world-editor PC): no agent Workbench here; those steps run on ${where} via the pool`;
+}
+
 export function localWorkbench(root, { machines, env = process.env } = {}) {
   return localPolicy({ machines: machines ?? pool.loadMachines(root), env });
 }

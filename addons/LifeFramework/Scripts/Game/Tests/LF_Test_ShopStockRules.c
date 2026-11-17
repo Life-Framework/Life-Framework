@@ -3,6 +3,7 @@
 //! A stocked shop's pure decisions: the buyback pays a share of the street value, never more than
 //! the goods cost (fraction held to 1); it buys listed goods flagged or not, and anything else only
 //! when flagged and the stock takes stolen goods; a pack stock replaces the core stock of its id.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ShopStockRules : LF_Test
 {
 	protected static const ResourceName PARTS = "{7A94C1E05D3B2F68}Prefabs/Items/Resources/LF_CarParts.et";

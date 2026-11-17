@@ -2,6 +2,7 @@
 // tier: WORLD
 //! whitelist/legacy-ignored-count (#2607): after the move, a uid added to the legacy file is counted
 //! as ignored (Migrate warns with that count once per start) and never reaches the roster.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WhitelistLegacyIgnoredCount : LF_Test
 {
 	protected static const string ROSTER = "$profile:TestResults/whitelist-ignored-roster.txt";

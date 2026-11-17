@@ -9,6 +9,7 @@
 //! (campaign) UI, no task list, no journal (it needs the task list and the briefing), no military
 //! debug icons. Town names and roads are looked at in the emulator and the visual cards' final
 //! `map-shots` (card M0b); this test only proves the wiring.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MapConfig : LF_Test
 {
 	static const ResourceName FULLSCREEN = "{92FEABB35503403C}Configs/Map/LF_MapFullscreen.conf";

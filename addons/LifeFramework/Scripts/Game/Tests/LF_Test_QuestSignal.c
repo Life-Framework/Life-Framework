@@ -5,6 +5,7 @@
 // tier: LOGIC
 //! SIGNAL objectives advance only on their own key, chain steps open one at a time, and a
 //! returning player (turn-ins restored) is offered none of the chain again. Pure tracker logic.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_QuestSignal : LF_Test
 {
 	override string GetName()

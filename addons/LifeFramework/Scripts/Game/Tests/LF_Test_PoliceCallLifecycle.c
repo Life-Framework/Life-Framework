@@ -3,6 +3,7 @@
 // tier: LOGIC
 //! Police calls (#2516, parent #234): a crime raises the wanted level before its report is filed, so the
 //! call waits for the report and carries its place; a call closes when the suspect stops being wanted.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceCallLifecycle : LF_Test
 {
 	protected static const string CRIMINAL = "police-life-criminal";

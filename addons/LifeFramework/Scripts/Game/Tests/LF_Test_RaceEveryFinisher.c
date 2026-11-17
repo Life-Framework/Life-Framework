@@ -4,6 +4,7 @@
 //! three-racer race runs through LF_RaceRunner and settles; the record board holds all three times,
 //! and the event still names the winner and the winner's time for older subscribers. A leaver is
 //! not a finisher and gets no record. Records are saved and restored around the run (no ResetAll).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RaceEveryFinisher : LF_Test
 {
 	protected static const string UID_A = "race-every-a";

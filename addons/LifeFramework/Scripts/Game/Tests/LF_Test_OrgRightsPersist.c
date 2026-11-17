@@ -10,6 +10,7 @@
 //! rung added. A version 27 save brings back masks the four bools cannot hold, and the ladder order.
 //! Both loads run twice and give the same organization. Rank rows for a missing organization or rank
 //! are dropped. The test puts back the organizations it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_OrgRightsPersist : LF_Test
 {
 	protected static const string FOUNDER = "org-persist-founder";

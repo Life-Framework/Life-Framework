@@ -3,6 +3,7 @@
 // tier: WORLD (needs the organization hideout door: GridWorld's Grid_orgs_vehicles.layer; LOGIC runs on any map, #1047)
 //! Test org sign (#934): the gate, the founder rule, the direct join and leave the sign uses, and
 //! the wording of the hideout door ("Members only (<org>)" for a stranger, "Open" for a member).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TestOrgSign : LF_Test
 {
 	override string GetName()

@@ -4,6 +4,7 @@
 //! (LF_Stores.ParkCarrier). Rejoining inside the logout window takes the same body back, and the
 //! parked tags must go back on it: before the fix only a fresh spawn reattached them, so a quick
 //! logout and rejoin made the goods free.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LogoutBodyUnpaidTakeBack : LF_Test
 {
 	protected static const string UID = "logout-unpaid-uid";

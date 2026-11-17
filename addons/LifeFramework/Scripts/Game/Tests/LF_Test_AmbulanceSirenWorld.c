@@ -3,6 +3,7 @@
 //! The ambulance's siren (#923): the prefab carries the toggle with its other light controls
 //! (no positional context, so the seated driver sees them; a duty-only on and off pair that shows greyed with a reason when off duty), its own sound project loads and is
 //! set on the manager, the police car keeps the shared siren, and an anonymous request is refused.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_AmbulanceSirenWorld : LF_Test
 {
 	static const ResourceName AMBULANCE = "{D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et";

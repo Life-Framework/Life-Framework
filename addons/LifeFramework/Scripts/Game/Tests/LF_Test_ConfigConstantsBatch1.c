@@ -3,6 +3,7 @@
 // tier: WORLD
 //! Config-constants batch 1 (#284): the tunables moved out of script keep today's values. Each
 //! accessor reads the shipped .conf and must return the number the constant had before.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ConfigConstantsBatch1 : LF_Test
 {
 	override string GetName()

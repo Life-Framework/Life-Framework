@@ -3,6 +3,7 @@
 //! The vehicle and weapon robbery commits judge the robber on the server (#2538): a robber in grace,
 //! a faction that may not rob, too few police on duty and a robbery inside the cooldown each get
 //! nothing delivered and no wanted level. A robber who passes every gate still gets the robbery.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RobCommitGates : LF_Test
 {
 	protected static const ResourceName WEAPON_PREFAB = "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et";

@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! #1715: MenuDown then MenuUp in the clerk dialogue returns the focus to the first reply. A key
 //! held across several ticks (the harness holds one 300 ms) steps once, not once per tick.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DialogueFocusStep : LF_Test
 {
 	override string GetName()

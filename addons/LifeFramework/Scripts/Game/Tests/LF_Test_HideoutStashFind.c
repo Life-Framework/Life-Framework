@@ -3,6 +3,7 @@
 
 //! The agent harness finds a hideout stash through the placed storages, not by entity name (#323).
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HideoutStashFind : LF_Test
 {
 	override string GetName()

@@ -6,6 +6,7 @@
 //! The world reset service: every feature's file registers its step through the modded registry
 //! (no central list), and a run clears what the feature holds. The crime-only run (the harness
 //! `resetcrime`) leaves the vehicles, farm and ore steps out.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WorldReset : LF_Test
 {
 	override string GetName()

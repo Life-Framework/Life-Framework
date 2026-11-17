@@ -4,6 +4,7 @@
 //! The pure rules of a folded pile on a store shelf: a slot's yaw is the fourth number of its point,
 //! each run of N points is one pile, and a gap left by a copy taken from the middle closes by moving
 //! the copies above it down, never into another pile. No world, no entity.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StoreStackRules : LF_Test
 {
 	override string GetName()

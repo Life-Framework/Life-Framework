@@ -26,6 +26,7 @@ class LF_Test_SoundSlotsPackStub : LF_ConfigPackSource
 //! file is rejected and stays empty; a removed slot keeps the (empty) core default; an unknown slot is
 //! empty. The pack overlay itself is LF_Test_SoundSlotsEveron.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SoundSlots : LF_Test
 {
 	//! A base game sound project, so the test needs no pack.

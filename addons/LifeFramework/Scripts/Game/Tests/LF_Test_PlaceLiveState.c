@@ -5,6 +5,7 @@
 //! Two fixture places, states 0 and 2, under a header that lists only state 0: LF_Places finds the
 //! state-0 place and nothing for the state-2 one; once state 2 is listed both are found. A place
 //! with the always-live state and a header with no list are live too.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlaceLiveState : LF_Test
 {
 	protected static const string KIND = "PlaceLiveStateTest";

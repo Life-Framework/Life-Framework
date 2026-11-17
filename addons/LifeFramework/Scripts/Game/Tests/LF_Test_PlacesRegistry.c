@@ -5,6 +5,7 @@
 // tier: LOGIC
 //! places/registry: the LF_Places guards (#961). A register without a kind, id or entity is refused;
 //! a lookup of a place nobody placed is null and leaves the caller's fallback position alone.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PlacesRegistry : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

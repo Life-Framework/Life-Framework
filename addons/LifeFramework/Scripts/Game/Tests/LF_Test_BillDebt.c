@@ -5,6 +5,7 @@
 //! medic/bill-debt (#464): a bill unpaid past its deadline becomes debt; the bank pays it as soon as it
 //! has money, partially if needed, with the ledger reason; a paid bill never becomes debt; the debt
 //! survives the save/load of the bills record (it lives in the existing record, layout unchanged).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_BillDebt : LF_Test
 {
 	protected static const string PATIENT = "debt-patient";

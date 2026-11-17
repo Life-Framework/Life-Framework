@@ -1,6 +1,7 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_NpcStun`: expecting the farther NPC failed `of two NPCs on the line the nearer takes the dart (expected 0, got 1)`; restored, green.
 // tier: LOGIC
 //! The taser on a town NPC (#922): which NPC a dart along a line hits. Pure geometry, no world.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_NpcStun : LF_Test
 {
 	override string GetName()

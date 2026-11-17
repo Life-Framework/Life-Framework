@@ -3,6 +3,7 @@
 //! #1781: the arrival chain ends with a welcome gift, not cash (#795). The clerk's quests link by
 //! `m_sRequiredPreviousQuestId` with no gap and no cycle, no step rewards money, and every item a
 //! step hands over (its own `m_aRewardItems` plus the pack's welcome-gift rows) resolves to a prefab.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_OnboardingChain : LF_Test
 {
 	static const ResourceName CLERK_PREFAB = "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et";

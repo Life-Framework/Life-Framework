@@ -3,6 +3,7 @@
 //! The vanilla field dressing prefab keeps its SCR_ConsumableBandage effect. A `modded class` of
 //! that config class must repeat the base's [BaseContainerProps()]; without it the prefab's effect
 //! entry fails with "Unknown class 'SCR_ConsumableBandage'" and the item does nothing.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ConsumableEffectLoads : LF_Test
 {
 	static const ResourceName BANDAGE_PREFAB = "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et";

@@ -3,6 +3,7 @@
 //! The two calls the desk's application RPC makes (#1575): the playtest shape (gates 0/0/0) files and
 //! sends one staff line; the gated shape under its playtime minimum is refused and sends nothing.
 //! Uses the StaffWebhook capture seam (#1346). The RPC itself stays manual (needs a controller).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceApplicationDeskRelay : LF_Test
 {
 	override string GetName()

@@ -3,6 +3,7 @@
 //! moderation/ban-record (#1285): a ban and an unban each append one versioned row to the ban
 //! record file; reading the file back returns both with reason, staff uid and the target's recent
 //! incident ids; a legacy or malformed line is skipped with a warning, never thrown.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_BanRecord : LF_Test
 {
 	static const string PATH = "$profile:LifeFramework/test_ban_record.txt";

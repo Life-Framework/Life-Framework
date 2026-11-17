@@ -5,6 +5,7 @@
 //! A repeatable quest's cooldown survives a respawn (docs/reviews/2026-11-17-life.md #3). The new
 //! body restores saved turn-ins; with no turn-in time the cooldown was skipped, so a player could
 //! turn in, die, respawn and take the quest again at once, paid every time.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_QuestRestoreCooldown : LF_Test
 {
 	override string GetName()

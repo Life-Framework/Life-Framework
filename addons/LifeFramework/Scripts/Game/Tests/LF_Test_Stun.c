@@ -4,6 +4,7 @@
 //! player cannot give up out of it, the timed wake ends it, a stale wake does nothing, and a
 //! character that is already downed is not stunned. The taser prefab loads and is a stun weapon.
 //! Test characters have no player behind them, so the test opts them in as eligible.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Stun : LF_Test
 {
 	static const ResourceName TASER_PREFAB = "{6D583A40C5C5C150}Prefabs/Weapons/Handguns/Taser/Handgun_Taser.et";

@@ -4,6 +4,7 @@
 //! which GetDepositItemCountByResource does not search, so GetAmount counted it as 0 and the
 //! gather tool check (LF_GatherAction.LF_HasGatherTool, inventory mode) never saw a carried pickaxe.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PickaxeCount : LF_Test
 {
 	static const ResourceName PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";

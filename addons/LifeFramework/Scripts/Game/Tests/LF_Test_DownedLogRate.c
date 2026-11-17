@@ -3,6 +3,7 @@
 // tier: WORLD
 //! A downed body that keeps taking damage logs one line per few seconds with the count of hits
 //! absorbed since, not one line per hit, and a revive queues no delayed log calls (#2582).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DownedLogRate : LF_Test
 {
 	override string GetName()

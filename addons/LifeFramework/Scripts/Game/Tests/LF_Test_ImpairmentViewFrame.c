@@ -3,6 +3,7 @@
 //! #2404: the drunk sway frame runs on the local player's own body only, and only while it sways or
 //! still has sway to unwind. Before, every character's survival component armed EOnFrame on every
 //! client, proxies included: about 127 script calls a frame per client at 128 players.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ImpairmentViewFrame : LF_Test
 {
 	override string GetName()

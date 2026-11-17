@@ -5,6 +5,7 @@
 // tier: LOGIC
 //! Handbook pages load from config (#1772): the core file's pages in order, a pack overlay that adds
 //! and patches a page by id, and a broken page skipped with one error line.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HandbookPages : LF_Test
 {
 	static const ResourceName OVERLAY = "{DBA73A1F1423E7CA}Configs/Tests/LF_Test_HandbookOverlay.conf";

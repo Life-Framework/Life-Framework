@@ -2,6 +2,7 @@
 // tier: PERSISTENCE
 //! The ledger rides the real save path (the "ledger" payload, version 14): entries come back after
 //! the store is wiped, the id sequence continues, and loading twice leaves the same log.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_LedgerPersist : LF_Test
 {
 	protected static const string UID = "ledger-save-uid";

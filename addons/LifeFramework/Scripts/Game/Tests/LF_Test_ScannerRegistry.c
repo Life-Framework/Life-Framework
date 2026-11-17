@@ -3,6 +3,7 @@
 //! #2404: a police call visits the scanner registry, not every player's inventory. Every scanner
 //! registers on the server and leaves on delete, and its holder is the carrier whether the scanner
 //! sits in a pocket or inside a worn backpack, so the registry finds what the inventory walk found.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ScannerRegistry : LF_Test
 {
 	override string GetName()

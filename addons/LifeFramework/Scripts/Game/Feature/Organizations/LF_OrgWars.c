@@ -354,7 +354,7 @@ class LF_OrgWars
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_OrgWars' statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_OrgWars' statics (found by reflection; Core/LF_StaticReset.c).
 class LF_OrgWars_StaticResetHook : LF_StaticResetHook
 {
 	override string Owner()

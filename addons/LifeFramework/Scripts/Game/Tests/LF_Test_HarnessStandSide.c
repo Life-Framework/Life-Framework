@@ -7,6 +7,7 @@
 // tier: LOGIC
 //! The harness stand side token: a compass letter with an optional distance in whole metres, so a
 //! proof can stand on a building's street side ("s9") instead of 1.2 m from its centre (inside).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HarnessStandSide : LF_Test
 {
 	override string GetName()

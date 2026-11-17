@@ -9,6 +9,7 @@
 //! static-init function, which the engine caps). Listing runs no hook, so the test resets nothing.
 //! Spot checks cover a Core file that sorts before LF_StaticReset.c (LF_Places, Core/Config/LF_ConfigStream),
 //! files with two hooked classes, and the last entry the central list had (LF_PoliceRosterNotice).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StaticResetHooks : LF_Test
 {
 	override string GetName()

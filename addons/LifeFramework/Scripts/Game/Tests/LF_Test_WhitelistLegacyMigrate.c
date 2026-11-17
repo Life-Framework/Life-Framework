@@ -3,6 +3,7 @@
 //! whitelist/legacy-migrate (#2575): a legacy LF_Whitelist file moves into the roster once.
 //! Repeats and uids already on the roster are skipped, a second start adds nothing, a missing
 //! file changes nothing, CONNECT is counted and not migrated, and the legacy file is never written.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WhitelistLegacyMigrate : LF_Test
 {
 	protected static const string ROSTER = "$profile:TestResults/whitelist-legacy-roster.txt";

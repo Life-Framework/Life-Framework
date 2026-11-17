@@ -4,6 +4,7 @@
 //! its inventory (and nothing restored on top); after the window there is no body and the normal
 //! rejoin rule spawns; the hospital comes first and ends the body; a body killed while its player
 //! was away takes the ordinary death path. The real two-client rejoin is manual and a session proof.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LogoutBodyRejoin : LF_Test
 {
 	protected static const string UID = "logout-rejoin-uid";

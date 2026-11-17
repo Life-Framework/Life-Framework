@@ -4,6 +4,7 @@
 //! docs/architecture/enforce-string-limits.md site 1). Substring clamps a long result silently, so
 //! the old splice lost the tail of any config over 8 KB at its first migration. The stamped text
 //! must equal the input except for the version.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigStampLong : LF_Test
 {
 	override string GetName()

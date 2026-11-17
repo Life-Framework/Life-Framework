@@ -5,6 +5,7 @@
 //! LF_OnRestartWarning once at each lead and LF_OnRestartDue once at the restart time. The flagship
 //! schedule (06:00 and 18:00, leads 15, 5, 1) drives it second by second; the toast (#1265) and the
 //! close (#1267) subscribe through StartWith, so the close request lands exactly at 18:00:00.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestartWarnerFires : LF_Test
 {
 	static const string TEST_MARKER = "$profile:lf-test-warner-restart";

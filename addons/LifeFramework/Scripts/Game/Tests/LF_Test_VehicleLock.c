@@ -4,6 +4,7 @@
 // prefab identifier or break IdentifiersMatch and the configured-key assertions fail.
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VehicleLock : LF_Test
 {
 	protected static const ResourceName LOCK_FIXTURE = "{EA882144DF2D4BEC}Prefabs/Vehicles/Test/VehicleLockFixture.et";

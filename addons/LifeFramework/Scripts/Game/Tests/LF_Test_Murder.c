@@ -4,6 +4,7 @@
 // Restored the expected value to 3.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Murder : LF_Test
 {
 	override string GetName()

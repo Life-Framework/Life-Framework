@@ -3,6 +3,7 @@
 //! The siren action's menu row (the ambulance bug "I can't see the options for the siren"): a seated
 //! driver who is off duty sees the row greyed with a reason, never an empty menu; a seated on-duty
 //! driver gets it enabled; nobody sees the row for a mode that already runs or from outside the seat.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SirenActionView : LF_Test
 {
 	override string GetName()

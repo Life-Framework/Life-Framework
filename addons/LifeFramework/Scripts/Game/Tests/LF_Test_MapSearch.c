@@ -6,6 +6,7 @@
 //! name, case-insensitive, at most 8; a category filter takes its POIs off the map, and the layer's
 //! cluster build then has nothing of that category. Pure script, fixture places only.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapSearch : LF_Test
 {
 	override string GetName()

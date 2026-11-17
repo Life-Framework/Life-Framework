@@ -3,6 +3,7 @@
 //! ui/sheet-static-reset (#2415): the character pick, the registration form and the ID request
 //! sheet each keep their open screen in a static. A screen needs a client to open, so this test
 //! proves the hooks are registered and leave no screen behind; the pointer swap itself is one line.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UiSheetStaticReset : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

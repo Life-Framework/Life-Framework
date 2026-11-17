@@ -10,6 +10,7 @@
 //! the lathe and the radio offer no action; a rock takes no hit, drops nothing and does not grow back;
 //! a pickaxe deals no damage; a mining area places no ore; the jump pad is inactive. Turned on again,
 //! every one of them works as before and the rock that was spent grows back.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SystemsWorldResources : LF_Test
 {
 	protected static const ResourceName PILE = "{81CB1B2631584427}Prefabs/Props/Construction/CementPile.et";

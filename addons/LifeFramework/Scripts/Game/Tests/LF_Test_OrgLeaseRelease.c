@@ -3,6 +3,7 @@
 //! organization/lease-release (#2572): a member whose rank holds BUY_UPGRADE gives the hideout lease
 //! back; the lease reads FREE and the gate is shut. A member without the right, another organization,
 //! and a second release are refused and the lease stays.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_OrgLeaseRelease : LF_Test
 {
 	protected static const string FOUNDER = "org-release-founder";

@@ -4,6 +4,7 @@
 //! inventory can be taken and the account snapshot follows it (no dupe on the rejoin), it
 //! despawns when the window closes or the player returns, and a killed body drops the snapshot.
 //! The real disconnect (two clients) and the restart are manual and wt e2e.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LogoutBody : LF_Test
 {
 	protected static const string UID = "logout-body-uid";

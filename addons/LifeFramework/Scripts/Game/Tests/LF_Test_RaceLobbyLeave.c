@@ -3,6 +3,7 @@
 //! #2406: a racer who leaves while the race is still in its LOBBY gets the fee back at once (to the bank,
 //! never to the leaving body) and an emptied lobby closes. And the 250 ms checkpoint tick runs only
 //! while a race is RACING: a lobby open beside a finished race does not keep it on.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RaceLobbyLeave : LF_Test
 {
 	protected static const string UID_A = "race-lobby-a";

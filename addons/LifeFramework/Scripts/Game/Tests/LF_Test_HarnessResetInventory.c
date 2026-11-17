@@ -9,6 +9,7 @@
 //! LF_DutyLocker.ResetToCivilianKit: it empties the body, clothes included (the same step a clock-in
 //! makes), and issues the civilian kit. The kit has its own cash, food and a backpack, so the proof
 //! is that a loaded character ends up with exactly what a plain one gets, not that it holds nothing.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HarnessResetInventory : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 //! The order slip's preview resolver: the picked line's prefab for a catalogue line, nothing for a
 //! line without one, and no throw for a row that is gone (a filter refill, a bad index, a null entry).
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ShopItemPreview : LF_Test
 {
 	static const string APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

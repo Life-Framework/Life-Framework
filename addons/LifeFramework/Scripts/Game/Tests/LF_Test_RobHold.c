@@ -5,6 +5,7 @@
 //! The rules of a held robbery (#936, LF_RobHoldRules): what ends a hold and in which order, the
 //! timer text, the bar, the edge warning, when the attendant begs, and the message and the
 //! attendant's cry for every way it ends.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RobHold : LF_Test
 {
 	override string GetName()

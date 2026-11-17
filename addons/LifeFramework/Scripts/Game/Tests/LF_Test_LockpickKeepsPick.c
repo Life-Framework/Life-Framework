@@ -3,6 +3,7 @@
 //! A lockpick attempt needs the pick to the end (#411 review): a picker who drops or hands over the
 //! pick while the timer runs does not open the lock. Drives the real attempt on the placed lock-up
 //! door through the BeginAs and CompleteNow seams with a fixture character.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LockpickKeepsPick : LF_Test
 {
 	override string GetName()

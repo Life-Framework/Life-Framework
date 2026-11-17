@@ -4,6 +4,7 @@
 //! GridMarker_cXrY standing inside its cell, a plate GridPlate_cXrY beside it (the claim's slug, or
 //! FREE), and the gate spawn has a map board GridMapBoard. The lattice is the one in
 //! tools/grid/lattice.mjs: 12 m cells from x 22, z 22.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_GridFrameLabels : LF_Test
 {
 	protected static const float CELL_ORIGIN = 22;

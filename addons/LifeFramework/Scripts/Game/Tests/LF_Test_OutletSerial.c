@@ -3,6 +3,7 @@
 //! A sold weapon's serial names the outlet that sold it (#1765, Refs #1067): a serial minted for
 //! outlet `gun_counter` parses back to `gun_counter`, an old serial with no prefix parses to no
 //! outlet and still resolves in the book, and the booked serial from LF_FenceSerials.Issue carries it.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OutletSerial : LF_Test
 {
 	protected static const string BUYER = "outlet-serial-buyer";

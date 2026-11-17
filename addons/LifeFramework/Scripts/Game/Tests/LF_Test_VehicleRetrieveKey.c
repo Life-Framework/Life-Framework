@@ -3,6 +3,7 @@
 // tier: WORLD
 //! The owner leaves the garage with a working key (#2411): when the last key handed out is in
 //! someone else's pocket, Retrieve cuts the owner a new one instead of sending them off keyless.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VehicleRetrieveKey : LF_Test
 {
 	protected static const string OWNER = "retrieve-key-owner";

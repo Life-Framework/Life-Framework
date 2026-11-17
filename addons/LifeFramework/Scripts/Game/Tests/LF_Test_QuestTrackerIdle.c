@@ -5,6 +5,7 @@
 //! Quest tracker idle cost (#2537): the tracker's timed check (expiry, area entry) is an EOnFrame on every body on
 //! the server. It runs only while the body holds a quest that can expire or fire an area, starts with the accept and
 //! stops with the last quest's turn-in.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_QuestTrackerIdle : LF_Test
 {
 	protected static const string QUEST_ID = "idle_tracker_quest";

@@ -5,6 +5,7 @@
 //! save have their own rate bucket. On the shared COMMS bucket three phone or board asks in five seconds
 //! dropped a respawn's mark restore or the last save; the client's next upload then overwrote the stored
 //! marks with its own, maybe empty, map. Same shape as chess/rate-bucket (#2405).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapMarksRateBucket : LF_Test
 {
 	protected static const int PLAYER = 992223;

@@ -5,6 +5,7 @@
 //! named only by a map location label still gets a waypoint. The position comes from the report (the event
 //! when the call waits for the report, the stored report when the report came first); a report with no
 //! position falls back to the site text, which a bare label cannot resolve.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PoliceCallPosition : LF_Test
 {
 	protected static const string LATE = "police-pos-late";

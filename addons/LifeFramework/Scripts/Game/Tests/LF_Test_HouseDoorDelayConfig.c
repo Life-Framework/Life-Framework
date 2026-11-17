@@ -4,6 +4,7 @@
 //! house's open door stays open before LF_HouseDoorClose closes it. 5 gives a 5 s delay, 0 turns the
 //! auto-close off, 9999 clamps to 600 (with a warning), a missing key keeps the shipped 20, and a
 //! negative or non-numeric value keeps the shipped 20.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HouseDoorDelayConfig : LF_Test
 {
 	override string GetName()

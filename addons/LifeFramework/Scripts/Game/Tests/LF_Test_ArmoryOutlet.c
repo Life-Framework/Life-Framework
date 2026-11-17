@@ -4,6 +4,7 @@
 //! `police_armory` outlet's issue offers, a patrol officer is refused the rifle and the refusal names
 //! the senior rank, a senior officer draws it free with a serial booked to their account, and no
 //! money moves.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ArmoryOutlet : LF_Test
 {
 	protected static const string PATROL_UID = "armory-outlet-patrol";

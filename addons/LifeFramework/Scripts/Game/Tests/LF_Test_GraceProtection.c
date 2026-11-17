@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! onboarding/grace (#1780): for its first N minutes of playtime a character cannot be held up or
 //! arrested and may not rob; after N minutes, or after its first crime, all three work. Off at 0.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_GraceProtection : LF_Test
 {
 	protected static const string UID_NEW = "grace-new";

@@ -20,6 +20,7 @@ class LF_StolenListener : LF_EventSubscriber
 	}
 }
 
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StolenReport : LF_Test
 {
 	protected static const string PLATE = "ST AA 4141";

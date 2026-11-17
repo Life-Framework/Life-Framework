@@ -3,6 +3,7 @@
 //! #2406: a course whose minimum entrants exceeds the lobby limit is refused (it would take fees and always
 //! cancel), a negative AFK grace or settle delay is refused, and the racer's AFK clock and the race's
 //! settle clock count in the course's seconds (0 turns each off). Pure script, no world.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RaceLimits : LF_Test
 {
 	override string GetName()

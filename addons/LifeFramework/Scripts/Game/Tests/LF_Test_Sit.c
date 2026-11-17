@@ -2,6 +2,7 @@
 // LF_Sit.Decide failed it with `- a cuffed body is refused` and `- cuffs outrank a taken seat`. Restored; green.
 // tier: LOGIC
 //! emote/sit (#982): who may sit, the reason they read, where a seat puts the sitter, and who may emote.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Sit : LF_Test
 {
 	override string GetName()
