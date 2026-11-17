@@ -256,7 +256,7 @@ export function checkPlace(data, opts = {}) {
     }
     for (const o of placeOver(perf)) errors.push(o);
   }
-  return { ok: errors.length === 0, errors: [...new Set(errors)], warnings, notes, slots: base.slots.map((s) => s.slot), unfitted: base.unfitted, perf };
+  return { ok: errors.length === 0, errors: [...new Set(errors)], warnings, notes, slots: base.slots.map((s) => s.slot), unfitted: base.unfitted, fitted: base.slots.filter((s) => s.layer !== null || s.claim).length, perf };
 }
 
 // Pure: the per-place limits. For each slot as the centre, the slots whose centres lie within 60 m share one view; their added
@@ -372,7 +372,7 @@ export async function main(args, { root = ROOT } = {}) {
     for (const e of result.errors) console.log(`ERROR ${e}`);
     const lights = result.perf.reduce((n, p) => n + p.lights, 0);
     const ents = result.perf.reduce((n, p) => n + p.entities, 0);
-    console.log(`SUMMARY town-check ${result.ok ? "ok" : "fail"} ${place}: ${result.slots.length} fitted slot(s)${result.unfitted.length ? ` (${result.unfitted.length} not fitted yet)` : ""}${flags.has("--complete") ? ", --complete" : ""}, ${result.errors.length} error(s), ${result.warnings.length} warning(s)${result.perf.length ? `, ${ents} entities and ${lights} lights added` : ""}`);
+    console.log(`SUMMARY town-check ${result.ok ? "ok" : "fail"} ${place}: ${result.fitted} fitted slot(s) of ${result.slots.length + result.unfitted.length} mapped${flags.has("--complete") ? ", --complete" : ""}, ${result.errors.length} error(s), ${result.warnings.length} warning(s)${result.perf.length ? `, ${ents} entities and ${lights} lights added` : ""}`);
   }
   return result.ok ? 0 : 1;
 }

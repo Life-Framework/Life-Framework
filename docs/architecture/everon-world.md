@@ -244,7 +244,7 @@ supplies every coordinate the later steps use. No step types a coordinate.
 | Sibling-worktree claims | An uncommitted claim file in another local worktree counts as taken, read from `git worktree list --porcelain` with no network |
 | `place on/against/ground/arrange` | Unchanged; the kit rows call it |
 | `audit placement --strict` | Run with `--world MainWorld` on the new layer; island layers get the town bar |
-| `look`, `look --interior` (#2194) | Pictures per slot and per place, on MainWorld |
+| `look`, `look --interior` (#2194) | `look place:<place>/<slot> [--interior auto]`: pictures per slot on MainWorld, viewpoint from the dossier (#2347) |
 | `scout` | Step 1 |
 
 ### 3.5 Validation: `tools\cli town check <place>` and `town ready <state>`
