@@ -176,8 +176,10 @@ supplies every coordinate the later steps use. No step types a coordinate.
 - **Template** (`tools/town/templates/<kind>.json`, kinds `town`, `village`, `harbour`, `site`): the
   slots of a place kind. Each slot has an id, `required` or optional, the kit it takes, what the
   building needs (interior, ground floor, area, street frontage, distance from the square) and the
-  `LF_Places` kinds the core system looks for once it is fitted. Templates are tooling: they hold no
-  coordinates and no place names.
+  `LF_Places` kinds the core system looks for once it is fitted. Each slot also names its `poi`, the
+  front kind that has a row in the map's POI table (`LF_MapPois.conf` plus pack overlays), or `none`;
+  `town map --check` fails a slot with neither (`tools/town/lib/poi-check.mjs`, everon-map.md). Templates
+  are tooling: they hold no coordinates and no place names.
 - **Mapping** (`docs/everon/places/<slug>/mapping.json`, next to its dossier): slot id, then a building id
   from the dossier, a free plot from the dossier with a purpose-built building prefab (`plot:<id>` plus
   `prefab`, only where no vanilla building fits, D9), or `none` with a reason. `tools\cli town map <slug>`

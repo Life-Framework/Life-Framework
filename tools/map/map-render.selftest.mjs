@@ -1,6 +1,7 @@
 // tools/map/map-render.selftest.mjs - acceptance for `tools\cli map render` (slice #2227, card M0).
 // Renders the island, Saint-Philippe and the square at zoom 4; checks the PNG size and a few pixels; a render
 // is under 3 s with the base layer cached; with the raster cache removed the fallback layer still draws.
+// The POI legs use the stand-in rows (fixture: true); the real overlay is tools/validation/map-places-selftest.mjs.
 // Also runs the rule loader and the case-table format. Run: node tools/map/map-render.selftest.mjs
 import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -45,7 +46,7 @@ if (!base) console.log("SKIP raster legs: no game install or cache on this machi
 else {
   for (const f of FIXTURES) {
     const t0 = Date.now();
-    const r = await renderMap({ root: ROOT, size: [1024, 1024], ...f.opts });
+    const r = await renderMap({ root: ROOT, size: [1024, 1024], fixture: true, ...f.opts });
     const ms = Date.now() - t0;
     const img = decodePng(r.png);
     ok(img.w === 1024 && img.h === 1024, `raster ${f.name}: PNG is 1024x1024`);
@@ -58,8 +59,8 @@ else {
     }
     if (f.name === "square z4") ok(r.stats.pois > 0, `raster square: POIs drawn (${r.stats.pois})`);
   }
-  const a = await renderMap({ root: ROOT, place: "saint-philippe", zoom: 5, as: "new" });
-  const b = await renderMap({ root: ROOT, place: "saint-philippe", zoom: 5, as: "police" });
+  const a = await renderMap({ root: ROOT, place: "saint-philippe", zoom: 5, as: "new", fixture: true });
+  const b = await renderMap({ root: ROOT, place: "saint-philippe", zoom: 5, as: "police", fixture: true });
   ok(b.stats.pois > a.stats.pois, `persona: police sees more places than a new player (${b.stats.pois} > ${a.stats.pois})`);
   const html = await renderMap({ root: ROOT, place: "saint-philippe", zoom: 4, html: true });
   ok(typeof html.html === "string" && html.html.includes("data:image/png;base64,") && html.html.includes("mousemove"), "html variant: embeds the PNG and has hover");
