@@ -736,6 +736,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleStateReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateRoundTrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_WantedLook(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_WantedLookConceal(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WantedLooksPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_WantedPosterFace(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WantedPostersFeed(), LF_TestTier.LOGIC);

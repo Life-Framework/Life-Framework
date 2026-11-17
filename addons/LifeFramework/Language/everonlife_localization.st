@@ -10098,10 +10098,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
+    CustomStringTableItem "{5E0B7D31C9A24F86}" {
+     Id "LF-Wanted_BuildHidden"
+     Target_en_us "build hidden"
+     Comment "Witness report and wanted poster clothing list: something the suspect wore hid the build."
+    }
     CustomStringTableItem "{DA0581F22B573242}" {
      Id "LF-Wanted_Driving"
      Target_en_us "driving %1"
      Comment "Wanted poster: %1 is the vehicle name."
+    }
+    CustomStringTableItem "{A1C7E94B2D603F58}" {
+     Id "LF-Wanted_FaceHidden"
+     Target_en_us "face hidden"
+     Comment "Witness report and wanted poster clothing list: something the suspect wore covered the face."
     }
     CustomStringTableItem "{2AE926B35D391FDA}" {
      Id "LF-Wanted_Level"
