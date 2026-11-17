@@ -86,7 +86,7 @@ class LF_IncidentFlags
 	//! A player reports. Flags every incident of theirs from the window that is not flagged yet.
 	//! \param[out] flagged How many incidents this report flagged.
 	//! \return REPORT_OK, REPORT_COOLDOWN (too soon after their last report), or REPORT_NOTHING
-	//! (nothing of theirs in the window; the cooldown does not start).
+	//! (nothing of theirs in the window; the cooldown starts all the same).
 	static int Report(string reporterUid, int now, out int flagged)
 	{
 		flagged = 0;
@@ -118,13 +118,15 @@ class LF_IncidentFlags
 			flagged++;
 		}
 
+		// Every report that got past the cooldown starts it, found something or not: an empty report
+		// still ran the log query, wrote a line and sent a notification (#2414).
+		s_mLastReport.Set(reporterUid, now);
 		if (flagged == 0)
 		{
 			LF_Debug.Info(FEATURE, string.Format("report from %1: nothing of theirs in the last %2 s", reporterUid, window));
 			return REPORT_NOTHING;
 		}
 
-		s_mLastReport.Set(reporterUid, now);
 		LF_Debug.Info(FEATURE, string.Format("report from %1 flagged %2 incident(s)", reporterUid, flagged));
 		LF_EventBus.Publish(LF_OnIncidentFlagged.Create(reporterUid, flagged));
 		return REPORT_OK;

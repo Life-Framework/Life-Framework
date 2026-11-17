@@ -52,6 +52,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BankRobKit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BankTeller(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BanRecord(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_BanRecordCharacters(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BedDelivery(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BeerChainRuns(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BenefitCountsCash(), LF_TestTier.WORLD);
@@ -207,6 +208,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_E2E_ShutdownSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2EInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventBus(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventForceDespawn(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventMapShare(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventModuleLoader(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventPackOverlay(), LF_TestTier.LOGIC);
@@ -265,6 +267,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_GatherStock(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GatherStockAction(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GatherStockConfig(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_GracePerCharacter(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GraceProtection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_GridFrameLabels(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GridTeleport(), LF_TestTier.WORLD);
@@ -312,12 +315,14 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Impairment(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ImpairmentView(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ImpairmentViewFrame(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_IncidentDamageFlush(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagged(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_IncidentGmQuery(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentLog(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentLogPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_IncidentReport(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_IncidentReportSpam(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionGiveCash(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionIntroductions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionOffers(), LF_TestTier.LOGIC);
@@ -349,6 +354,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobsPackOverlay(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JoinNotice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JumpPadSeen(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Knockout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LateIdentity(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_LawlessHud(), LF_TestTier.LOGIC);
@@ -407,6 +413,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_NpcClothesReplicate(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcDamage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcInteractionHeight(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_NpcLoiter(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcStun(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_NpcStunWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_NpcWearsClothes(), LF_TestTier.WORLD);
@@ -457,6 +464,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PlacementComposition(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementConfirm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementDoorProbe(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacementPolicyWho(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacementProbe(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementRoad(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacesBankBag(), LF_TestTier.WORLD);
@@ -512,11 +520,14 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Quiz(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuizHarness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuizPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_RaceAfkSettle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceBoardProp(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceCourse(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceCourses(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceEveryFinisher(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceHud(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RaceLimits(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_RaceLobbyLeave(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RacePathStart(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RaceRacerIndex(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RaceRecords(), LF_TestTier.PERSISTENCE);
@@ -659,6 +670,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelayInstall(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StaffWebhookEscape(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookPayload(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookSeam(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StartingKit(), LF_TestTier.LOGIC);
@@ -743,6 +755,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehicleStateLegacy(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_VehicleStateReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateRoundTrip(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_VehicleStoreCargo(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WantedLook(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WantedLookConceal(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WantedLooksPersist(), LF_TestTier.PERSISTENCE);
