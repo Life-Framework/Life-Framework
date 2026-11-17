@@ -31,6 +31,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_AmbulanceSirenWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AmmoList(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Armory(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ArmoryCooldownPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_ArmoryKitCap(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ArmoryKitTurnIn(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ArmoryOutlet(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ArrivalChain(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_AssetAnim(), LF_TestTier.WORLD);
@@ -480,6 +483,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PricedSignProvider(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ProgressionRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ProgressionOldSave(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_PromoteFindsPlayers(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuantityStack(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_QuantityOperations(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_QuantityVisuals(), LF_TestTier.LOGIC);

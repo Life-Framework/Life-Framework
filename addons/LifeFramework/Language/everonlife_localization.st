@@ -1230,6 +1230,11 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "Draw kit"
      Comment "Station armory action that issues the officer's rank kit"
     }
+    CustomStringTableItem "{161F069D20EEEF68}" {
+     Id "EL-Rank_DrawCooldown"
+     Target_en_us "The armory issues your next kit in %1 min"
+     Comment "Toast: armory draw refused, the officer drew a kit less than 2 hours ago (real time). %1 = minutes left."
+    }
     CustomStringTableItem "{C91A4E7700B10014}" {
      Id "EL-Rank_DrawDenied"
      Target_en_us "Only on-duty {police} can draw a kit"
@@ -1244,6 +1249,26 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Id "EL-Rank_IssueNeedsRank"
      Target_en_us "The armory issues that from the rank of %1"
      Comment "Toast: the armory refused an item because the officer's rank is below the offer's. %1 = the rank title that may draw it."
+    }
+    CustomStringTableItem "{8A7BC982642B2C23}" {
+     Id "EL-Rank_KitOutstanding"
+     Target_en_us "Your last kit is still out. Hand it in here, or use the armory again to report it lost"
+     Comment "Toast: armory draw refused, the officer has issued items not yet turned in. A second use within 15 s reports them lost."
+    }
+    CustomStringTableItem "{1DC38F5132E43BEC}" {
+     Id "EL-Rank_KitPartReturned"
+     Target_en_us "Kit handed in, %1 item(s) still out"
+     Comment "Toast: the armory took back part of the issued kit. %1 = serialled items still missing."
+    }
+    CustomStringTableItem "{94F584B3EA53013B}" {
+     Id "EL-Rank_KitReportedLost"
+     Target_en_us "Kit reported lost. Its serials are logged"
+     Comment "Toast: the officer confirmed the issued kit is lost; the book clears it and logs the serials. The 2 hour cooldown still applies."
+    }
+    CustomStringTableItem "{1DFCFD19D6D4381C}" {
+     Id "EL-Rank_KitReturned"
+     Target_en_us "Kit handed in"
+     Comment "Toast: the armory took back every serialled item of the officer's issued kit"
     }
     CustomStringTableItem "{C91A4E7700B10011}" {
      Id "EL-Rank_Patrol"
