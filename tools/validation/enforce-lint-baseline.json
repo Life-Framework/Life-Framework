@@ -60,16 +60,6 @@
   "text": "Widget rowWidget = GetGame().GetWorkspace().CreateWidgets(\"{CE14CB47B66299DC}UI/Layouts/QuestMenuRow.layout\", m_wQuestList);"
  },
  {
-  "rule": "L2",
-  "file": "Scripts/Game/Feature/Whitelist/LF_WhitelistContextAction.c",
-  "text": "LF_WhitelistRespawnHandlerComponent whitelistComponent = LF_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(LF_WhitelistRespawnHandlerComponent));"
- },
- {
-  "rule": "L2",
-  "file": "Scripts/Game/Feature/Whitelist/LF_WhitelistContextAction.c",
-  "text": "LF_WhitelistRespawnHandlerComponent whitelistComponent = LF_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(LF_WhitelistRespawnHandlerComponent));"
- },
- {
   "rule": "L3",
   "file": "Scripts/Game/Feature/AgentHarness/LF_AgentHarness.c",
   "text": "GetGame().GetCallqueue().CallLater(Poll, 400, true);"
