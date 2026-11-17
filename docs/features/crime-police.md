@@ -182,6 +182,14 @@
   `LF_RobAction.IsFactionAllowedToRob`; `crime/rob-weapon-vehicle` (WORLD)
   drives them. The earlier `crime/rob-reward` and `crime/rob-wanted-clamp`
   never called an action and are gone; the clamp is pinned by `roadmap/fuel`.
+- ✅ **Weapon and vehicle robberies are judged on the server (#2538, merged, in-dev).** `CommitVehicleRobbery` and
+  `CommitWeaponRobbery` take the police count, the action's minimum, cooldown, last-rob time and now, and refuse (nothing
+  delivered, no wanted, `LF_Debug` warn plus a `NotifyEntity` toast) a robber in grace (the vehicle had no grace check),
+  a faction that may not rob, too few police on duty, or a robbery inside the cooldown. The pure `Gate` static
+  (`LF_RobVehicleAction.Gate`, `LF_RobWeaponAction.Gate`) is what the client's `CanBePerformedScript` and the server both
+  ask; the offers now read `LF_AccountReplication.GetPoliceOnDutyCount` (the old per-action counter is gone).
+  `PerformAction` judges against the previous rob time and does not start the server's cooldown for a refused robbery.
+  `crime/rob-commit-gates` (WORLD) pins it.
 - ✅ **No account, no robbery** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `CommitRobbery` refuses and logs
   `robbery refused: no account` instead of paying without the civilian gate and
   wanted bump. `PerformAction` runs on the server only; offers read

@@ -623,6 +623,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RobberyAlarmKinds(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobberyAlarms(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobberyAlarmsShipped(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RobCommitGates(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobHold(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobHoldGraceToast(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobNoRoom(), LF_TestTier.WORLD);
