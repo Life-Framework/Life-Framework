@@ -182,6 +182,13 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    `build`, `test --no-build --tier all`, `audit placement --strict`, `e2e --pre-move 502ebf39 --mission playtest`.
    All pass: `green`. A red step reruns at the same head; a pass on the rerun is a flake
    (`tmp/logs/main-guard-flakes.log`), red twice bisects and reverts.
+   **INFRA is not red (#2759).** A step the machine refused (a held lock, no free Workbench slot, no pool machine,
+   `build` exit 3, a Workbench that died before compiling) is `INFRA` in the log: no recheck, no bisect, no revert, no
+   red mark, and the head is tried again on a later tick. The same rule covers the recheck and every bisect probe. Only
+   the compiler's words (`SCRIPT (E)`, `does not compile`), a named failing test or another FAIL line is red
+   (`classifyStep` in `tools/lib/main-guard.mjs`). `build` runs with `--wait`, so a busy build lock queues first. A red
+   set on a refusal before this rule (7587bfd5, which reverted #2369 in #2736) is put back to `compiled-ok` and its
+   `main-guard/suite` status set to pending at worker start, or by `tools\cli main-guard reclassify [--dry-run]`.
    **The suite bisect matches the failing-test set (#2052).** At a red head the guard records the failing test names
    and FAIL lines (`suite red set:` in the log, `failing` and `failLines` in `lastResult`). The bisect reruns just
    those tests at each candidate and counts a commit as red only when it fails one of them; another test failing there,
