@@ -31,7 +31,7 @@ import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { checkEntities } from "../actions/prop-on-surface.mjs";
 import { isKind, obbPenetration } from "../../agent-box/place-audit.mjs";
-import { GRID_LAYERS } from "../lib/world-zones.mjs";
+import { GRID_LAYERS, PACK_GRID_LAYERS } from "../lib/world-zones.mjs";
 import { PlaceError, ROOT, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, gridWorldOf, judge, modelOf, offlineProblems, onGround, restOn, rot, rowCentres, excludeOf, serverRun, setTransform, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
 
 let failed = 0;
@@ -283,7 +283,8 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
 // `grid`; the boot is replaced by a stub that answers every listed entity with a clean row.
 {
   const gridDir = join(ROOT, GRID_LAYERS);
-  const gridNames = existsSync(gridDir) ? new Set(readdirSync(gridDir).filter((f) => f.endsWith(".layer"))) : new Set();
+  // GridWorld's layers, plus the pack grid world's when the pack holds a cell (Everon1989Grid, a SubScene of GridWorld).
+  const gridNames = new Set([gridDir, join(ROOT, PACK_GRID_LAYERS)].filter((d) => existsSync(d)).flatMap((d) => readdirSync(d).filter((f) => f.endsWith(".layer"))));
   ok(gridNames.size > 0 && [...gridNames].some((f) => f.startsWith("Grid_")), "grid audit: GridWorld_Layers holds a Grid_*.layer to measure");
   ok(gridWorldOf(["Grid_police_gates.layer"]) === true && gridWorldOf(["Street_Police.layer", "Signs.layer"]) === false && gridWorldOf([]) === false, "grid audit: a Grid_*.layer is the grid world, any other layer is the town");
   refuses(() => gridWorldOf(["Grid_police_gates.layer", "Street_Police.layer"]), /GridWorld .* town at once/, "grid audit: a command spanning both worlds is refused");

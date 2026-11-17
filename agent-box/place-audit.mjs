@@ -791,7 +791,8 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
 // auditTestArgs({ grid }) and the grid input circle existed: the selftest threw "gridBar is not defined"; then passed.
 function gridSelftest(fail) {
   const args = auditTestArgs({ grid: true });
-  if (args[args.indexOf("--world") + 1] !== "Worlds/GridWorld/GridWorld.ent") fail(`--grid boots ${args[args.indexOf("--world") + 1]}, not GridWorld`);
+  // GridWorld, or the pack's grid world (a SubScene of it) once a pack cell exists in the tree.
+  if (args[args.indexOf("--world") + 1] !== gridWorldFor(ROOT)) fail(`--grid boots ${args[args.indexOf("--world") + 1]}, not ${gridWorldFor(ROOT)}`);
   if (auditTestArgs().includes("Worlds/GridWorld/GridWorld.ent")) fail("the town audit boots GridWorld");
   const gridText = inputText([], [], GRID_CIRCLE);
   if (!gridText.startsWith(`town ${GRID_CIRCLE.x} ${GRID_CIRCLE.z} ${GRID_CIRCLE.r}\n`) || GRID_CIRCLE.x > 112 || GRID_CIRCLE.x < 20) fail(`grid input line: ${gridText}`);
