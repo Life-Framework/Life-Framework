@@ -14,6 +14,7 @@ modded class LF_TestManager
 		RegisterPack(new LF_Test_EveronGunCounterSerials(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronGunStorePermit(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronHandbookPages(), LF_TestTier.WORLD);
+		RegisterPack(new LF_Test_EveronHarbourMaster(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronMapAreas(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronNightShift(), LF_TestTier.WORLD);
 		RegisterPack(new LF_Test_EveronOldMan(), LF_TestTier.WORLD);
