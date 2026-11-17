@@ -160,7 +160,7 @@ class LF_Impairment
 //! whole-point level as an owner-only RplProp bumped on a significant change (NeedsSync).
 modded class LF_CharacterSurvivalComponent
 {
-	[RplProp(condition: RplCondition.OwnerOnly)]
+	[RplProp(condition: RplCondition.OwnerOnly, onRplName: "OnImpairmentReplicated")]
 	protected int m_iReplicatedImpairment;
 
 	protected float m_fImpairmentLastTickMs;
@@ -192,6 +192,7 @@ modded class LF_CharacterSurvivalComponent
 			{
 				m_iReplicatedImpairment = 0;
 				Replication.BumpMe();
+				OnImpairmentLevelChanged();
 			}
 			return;
 		}
@@ -252,6 +253,22 @@ modded class LF_CharacterSurvivalComponent
 
 		m_iReplicatedImpairment = Math.Round(level);
 		Replication.BumpMe();
+		OnImpairmentLevelChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner client: a new level arrived.
+	protected void OnImpairmentReplicated()
+	{
+		OnImpairmentLevelChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The whole-point level changed, on the server or on the owner. The drunk view
+	//! (LF_ImpairmentView.c) arms its frame from here, so a sober body or another player's body never
+	//! runs one (#2404).
+	protected void OnImpairmentLevelChanged()
+	{
 	}
 
 	//------------------------------------------------------------------------------------------------
