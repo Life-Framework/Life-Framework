@@ -30,7 +30,7 @@ class LF_CarriedPropComponent : ScriptComponent
 	protected int m_iMissing;
 
 	//! Beyond this distance from the local camera the prop is not hung (the case is a few pixels there).
-	static const float VIEW_DISTANCE = 60;
+	static const float VIEW_DISTANCE = 60; // lf-fixed: a render-cost cull, not gameplay tuning
 
 	//! Slot and bone index found on the first good frame, reused after that.
 	protected EntitySlotInfo m_Slot;
