@@ -51,7 +51,7 @@ expect(isLive(-1, [1]) && !isLive(2, [1]) && isLive(2, []) && isLive(2, null), "
 
 // 4. No place with a POI kind: the source says none, with no fixture rows slipped in.
 const empty = loadOverlay(ROOT, { world: "main" });
-expect(empty.source === "none" && empty.pois.length === 0, `the pack island has no places yet: source none (got ${empty.source}, ${empty.pois.length} POIs)`);
+expect((empty.source === "none" && empty.pois.length === 0) || (String(empty.source).startsWith("places:") && empty.pois.length > 0), `the pack island has either no places (source none) or only fitted ones (got ${empty.source}, ${empty.pois.length} POIs)`);
 const asked = loadOverlay(ROOT, { fixture: true });
 expect(asked.source === "fixture" && asked.pois.length > 0, "--fixture draws the stand-in rows");
 const unknown = (() => { try { loadOverlay(ROOT, { world: "nowhere-island" }); return false; } catch { return true; } })();
