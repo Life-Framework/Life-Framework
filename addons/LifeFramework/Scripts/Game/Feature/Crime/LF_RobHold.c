@@ -282,7 +282,7 @@ class LF_RobHold
 	//------------------------------------------------------------------------------------------------
 	//! Server: a refused demand told to the robber the way every other crime path tells a grace
 	//! refusal (#2075): the grace toast. Other refusals have their caption in the conversation and
-	//! need no toast. eturn The toast key sent, or empty.
+	//! need no toast. \return The toast key sent, or empty.
 	static string NoteRefusal(IEntity player, string refusal)
 	{
 		s_sLastRefusalNotice = "";
@@ -533,7 +533,7 @@ class LF_RobHold
 
 	//------------------------------------------------------------------------------------------------
 	//! Test seam: end `playerId`'s hold the way Tick does, from the robber's end and the attendant's
-	//! state. eturn The end it finished with, or NONE when the player holds nothing or it goes on.
+	//! state. \return The end it finished with, or NONE when the player holds nothing or it goes on.
 	static LF_ERobHoldEnd SettleForTest(int playerId, LF_ERobHoldEnd robberEnd, bool clerkDown)
 	{
 		// Only a seated hold: a real one (with a till) pays through Tick and nothing else.

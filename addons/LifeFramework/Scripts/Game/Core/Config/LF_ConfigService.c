@@ -415,7 +415,7 @@ class LF_ConfigPackSource
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The running pack's manifest (it declares the pack's config sections, #553), or null
+	//! \return The running pack's manifest (it declares the pack's config sections, #553), or null
 	//! when there is no pack or the core refused it.
 	LF_PackManifest GetManifest()
 	{
@@ -740,7 +740,7 @@ class LF_ConfigReader
 	//------------------------------------------------------------------------------------------------
 	//! Reads a `{GUID}path` resource name when present. A name that does not load (a typo, a pack the
 	//! server lacks) is refused like a bad number: it logs, and the lower layer's value stays.
-	//! eturn True when the value was taken.
+	//! \return True when the value was taken.
 	bool ReadResource(string key, inout ResourceName value)
 	{
 		if (!m_Ctx.DoesKeyExist(key))

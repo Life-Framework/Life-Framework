@@ -105,12 +105,77 @@ class LF_MapMarks
 	protected static ref map<string, ref array<ref LF_MapMarkRow>> s_mMarks;
 	//! Networked marker adds refused since the world started (both sides; tests read it).
 	protected static int s_iNetworkedRefused;
+	//! Server: the last restore generation handed out (session only, never saved). 0 is never issued.
+	protected static int s_iLastGeneration;
+	//! Server: player id -> the generation of that player's latest restore.
+	protected static ref map<int, int> s_mGeneration;
+	//! Server: player id -> the character key that restore was for.
+	protected static ref map<int, string> s_mGenerationCharacter;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_mMarks = null;
 		s_iNetworkedRefused = 0;
+		s_iLastGeneration = 0;
+		s_mGeneration = null;
+		s_mGenerationCharacter = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a new restore generation for this player's character (spawn, respawn, character
+	//! switch). The client echoes it on its next upload; an upload stamped with an older generation was
+	//! queued before the switch and holds the previous character's marks (#2546). Numbers are unique
+	//! across players for the session.
+	static int IssueGeneration(int playerId, string characterId)
+	{
+		if (!s_mGeneration)
+			s_mGeneration = new map<int, int>();
+		if (!s_mGenerationCharacter)
+			s_mGenerationCharacter = new map<int, string>();
+
+		s_iLastGeneration++;
+		s_mGeneration.Set(playerId, s_iLastGeneration);
+		s_mGenerationCharacter.Set(playerId, characterId);
+		return s_iLastGeneration;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the player's current restore generation, 0 before the first restore.
+	static int GenerationOf(int playerId)
+	{
+		if (!s_mGeneration)
+			return 0;
+
+		int generation;
+		s_mGeneration.Find(playerId, generation);
+		return generation;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a player's uploaded mark list, saved under `characterId` only when `generation` is that
+	//! player's current restore generation and that restore was for the same character. Anything else
+	//! is an upload the client queued before a character switch (or before its first restore) and is
+	//! dropped with a log line, so one character's marks never land under another's key (#2546).
+	//! \return Marks kept, or -1 when the list was dropped.
+	static int SetFromPlayer(int playerId, string characterId, int generation, array<ref LF_MapMarkRow> rows)
+	{
+		int current = GenerationOf(playerId);
+		if (current == 0 || generation != current)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("mark list dropped: player %1 sent generation %2, current is %3 (queued before a character switch)", playerId, generation, current));
+			return -1;
+		}
+
+		string issuedFor;
+		s_mGenerationCharacter.Find(playerId, issuedFor);
+		if (issuedFor != characterId)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("mark list dropped: player %1 generation %2 was for character '%3', now '%4'", playerId, generation, issuedFor, characterId));
+			return -1;
+		}
+
+		return SetCharacter(characterId, rows);
 	}
 
 	//------------------------------------------------------------------------------------------------

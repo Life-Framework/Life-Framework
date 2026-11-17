@@ -155,7 +155,7 @@ class LF_FenceSerials
 
 	//------------------------------------------------------------------------------------------------
 	//! A fence sale: stamp each delivered tool still without a serial and book it to the buyer, naming
-	//! the outlet that sold it (#2153). eturn False when a delivered tool could not be stamped.
+	//! the outlet that sold it (#2153). \return False when a delivered tool could not be stamped.
 	static bool OnSale(notnull LF_OnFenceSale sale)
 	{
 		IEntity buyer = FindPlayer(sale.m_sBuyerUid);
@@ -179,7 +179,7 @@ class LF_FenceSerials
 	//! Server: a weapon sold at an outlet that is not a fence (the licensed gun counter, #2153): the
 	//! delivered weapon is registered to its buyer with the outlet in its serial. A weapon prefab with
 	//! no LF_SerialComponent cannot carry one; that is logged and the sale stands.
-	//! eturn Weapons stamped.
+	//! \return Weapons stamped.
 	static int OnWeaponSale(IEntity buyer, string buyerUid, string prefab, int quantity, string outlet)
 	{
 		int stamped = StampDelivered(buyer, buyerUid, prefab, quantity, outlet);
@@ -191,7 +191,7 @@ class LF_FenceSerials
 
 	//------------------------------------------------------------------------------------------------
 	//! Stamps up to quantity delivered items of a prefab that carry an empty serial component.
-	//! eturn Items stamped.
+	//! \return Items stamped.
 	protected static int StampDelivered(IEntity buyer, string buyerUid, string prefab, int quantity, string outlet)
 	{
 		if (!buyer)
