@@ -374,6 +374,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		ctx.Equal(420, LF_GraceCharacterClock.Seconds(GRACE_KEY), "e2e grace character has 7 min before the save");
 
 		SeedOrgLadder(ctx);
+		LF_Test_ReputationPersist.SeedE2E(ctx);
 
 #ifndef LF_E2E_LEGACY_SAVE
 		// A cargo run in progress holds a deposit ("jobruns" payload, save version 49, #2408, #2481): the
@@ -1025,6 +1026,8 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		VerifyCharacterSlots(ctx);
 		VerifyPlaytime(ctx);
 		VerifyJobLevels(ctx);
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("reputation"))
+			LF_Test_ReputationPersist.VerifyE2E(ctx);
 		VerifyOrgLadder(ctx);
 		VerifyHeldGround(ctx);
 

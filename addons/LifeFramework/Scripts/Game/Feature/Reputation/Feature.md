@@ -23,11 +23,13 @@ Rung 4 background: server-only state, no screen in this card. Target: rung 3 for
 - `LF_ReputationConfig` (`LF_ReputationConfig.c`, `Configs/Reputation/LF_Reputation.conf`): factions
   (`TOWN`, `POLICE`, `UNDERWORLD`, thresholds `-300 -100 0 100 400 1000` = tiers -2..3, `#` keys, a 60 a
   day cap, the underworld not shown) and three conservative awards. Core labels are neutral keys.
+- Persistence (`Persistence/`, #2698): the `reputation` payload, `LF_ReputationRow` rows through a
+  `modded class LF_Reputation` seam (`ExportAll`/`ApplyAll`); load replaces the store, skips removed factions and clamps.
 - `LF_OnReputationChanged` (`LF_ReputationEvents.c`) fires only when a tier changes.
 
 ## Not built yet (later cards of chapter #1018)
 
-Event subscriptions, the `reputation` persistence payload, gates in job sign-up, contracts, the owner
+Event subscriptions, gates in job sign-up, contracts, the owner
 RPC and screens, the pack's words, and the pack overlay and owner `config.json` section for the config.
 
 ## Dependencies
