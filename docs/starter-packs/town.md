@@ -17,8 +17,13 @@ tools\cli town kit extract <layer> <group>   # a kit from a building that alread
 tools\cli town fit <place> <slot>            # writes MainWorld_Layers/Place_<place>_<slot>.layer + a claim
 tools\cli town check <place>                 # static kinds and claims; then audit placement --world MainWorld
 tools\cli town ready <state>                 # every place of the state passes, systems present, arrival route walks
-tools\cli look town:<area> --interior x,y,z  # pictures per slot on MainWorld (1.5 to 2 min each)
+tools\cli look place:<place>/<slot>          # the slot on the island (MainWorld): wide, obliques, top, kit close-ups
+tools\cli look place:<place>/<slot> --interior auto   # its ground floor from inside
 ```
+- **Pictures come from `look place:<place>/<slot>`** (docs/visual-testing.md "look place:"): it opens the pack's MainWorld
+  and reads the viewpoint from the dossier and mapping. A plain area, `town:<area>` or `x,z` opens DebugWorld, where an
+  island slot is sky. The "before" is the same command on main (the slot unfitted), the "after" on the draft branch.
+  The work is about a minute; the queue for the island's RAM can be 30 minutes, so run it once per draft, in the foreground.
 - The mapping is a PR that holds only `mapping.json`; nothing is placed before the lead merges it.
 - A fit runs in a worktree named `town-draft-<place>-<slot>`. Only that name writes an island layer.
 - Its PR is a **draft** with before and after pictures. The maintainer reviews it before any merge.
@@ -34,6 +39,9 @@ tools\cli look town:<area> --interior x,y,z  # pictures per slot on MainWorld (1
 - Towns are checked by audit and pictures, never by layout tests.
 - A place waiting for its state stays `dark`: no spawn, interactable or NPC.
 - Use Workbench `look`, not sessions: two island sessions do not fit the pool's RAM.
+- `validate` checks only your slot (layer and claim agree, footprint, branch guard). The other slots of the place being
+  unfitted is fine; `town check <place>` lists them as "not fitted yet". `town check <place> --complete` (and
+  `town ready`) is the completeness gate, for the lead, not for a draft.
 - Building interiors: `brief building` is the fit-out recipe, run in the debug grid first.
 
 ## Environment

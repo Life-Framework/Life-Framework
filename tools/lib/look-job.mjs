@@ -6,7 +6,7 @@
 // (admission counts it through free RAM and what it still grows into), and a look's own start is a
 // "workbench" job at that module's measured peak. This file only decides *when the resident one is kept*.
 
-import { admit, jobReserveMb, unrealisedMb } from "./pool-ram.mjs";
+import { admit, islandCount, jobReserveMb, unrealisedMb, worldClass } from "./pool-ram.mjs";
 
 // Idle minutes before the resident Workbench closes itself (docs/worktrees.md "sessions flow like a river":
 // a lane is held only while it is used). The plugin's own idle limit is the backstop (SERVE_IDLE_MS).
@@ -78,12 +78,15 @@ export function lookStartVerdict({ state, settings, peaks = {}, residentPid = nu
     minFreeMb: settings.minFreeMb,
     reserveMb: jobReserveMb(settings, peaks, { kind: "workbench", world }),
     growthMb: others ? unrealisedMb(others, peaks) : 0,
-    what: "the look Workbench",
+    island: worldClass(world) === "island",
+    islandRunning: others ? islandCount(others) : 0,
+    what: worldClass(world) === "island" ? "the island look Workbench" : "the look Workbench",
   });
 }
 
-// A request to a live resident server needs no new RAM: it is already counted as a running process.
-export const requestNeedsRam = (serverLive) => !serverLive;
+// A request to a live resident server needs no new RAM: it is already counted as a running process. An island
+// request does: the resident grows to the island peak when it opens MainWorld (lookStartVerdict counts it as given back).
+export const requestNeedsRam = (serverLive, world) => !serverLive || worldClass(world) === "island";
 
 // ---------------------------------------------------------------- the mirror
 
