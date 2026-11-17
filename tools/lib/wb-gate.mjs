@@ -13,6 +13,7 @@
 import { freemem } from "node:os";
 import { loadMachines as poolLoad } from "../remote/pool.mjs";
 import * as tb from "../remote/testbox.mjs";
+import { PS_GPU_PROBE, parseProbe, verdict } from "./gpu-session.mjs";
 import { DEFAULTS, rankMachines } from "./pool-queue.mjs";
 import { SEED_PEAKS_MB } from "./pool-ram.mjs";
 import * as wbLock from "./wb-lock.mjs";
@@ -34,7 +35,10 @@ export const ENV_SHORT_CODE = 4;
 // answers" is "wait" (the caller re-checks within a budget), never "run here". Only an explicit
 // `mode: "local"` / `machine: "local"` (--local from a human, which sets hasWb true via LF_WB_LOCAL)
 // still returns it. Unset hasWb means true, as before.
-// remotes: [{ name, caps, multiplier, state: { freeMb, wbAlive, wbLimit } | null }].
+// remotes: [{ name, caps, multiplier, state: { freeMb, wbAlive, wbLimit, gpu?: { ok, line } } | null }]. A machine whose
+// state.gpu.ok is false (nobody signed in to its desktop, or the session disconnected: ssh has no display output, so
+// no Workbench renders there, tools/lib/gpu-session.mjs) is never a candidate. A pin on one, or every Workbench machine
+// that way with no cap here to fall back on, is { where: "none", why: <the one line> } at once, never a wait.
 // opts: mode "any" | "local" | "remote" (remote: pool machines only, this PC only when none answers),
 // machine (a pin), exclude (names already tried), reserveMb, minFreeMb, roomyMb.
 // Returns { where: "local" | <name> | "wait" | "none" (nothing left to try), why, queue?: true }.
@@ -43,8 +47,12 @@ export function chooseGate({ local, remotes = [], mode = "any", machine = null, 
   const localOk = local?.hasWb !== false;
   if (mode === "local" || machine === "local") return { where: "local", why: mode === "local" ? "--local" : "pinned to this PC" };
   const wb = remotes.filter((r) => (r.caps ?? []).includes("workbench") && (!machine || r.name === machine));
-  const reachable = wb.filter((r) => r.state);
+  const answered = wb.filter((r) => r.state);
+  const gpuBad = answered.filter((r) => r.state.gpu?.ok === false);
+  const reachable = answered.filter((r) => r.state.gpu?.ok !== false);
   if (machine) {
+    const pinned = answered[0];
+    if (pinned?.state.gpu?.ok === false) return { where: "none", why: pinned.state.gpu.line };
     const pick = reachable[0];
     if (pick) return { where: pick.name, why: `pinned (--remote/--machine ${machine}); ${pick.state.freeMb ?? "?"} MB free there` };
     if (!localOk) return { where: "wait", why: `${machine} with the workbench cap does not answer, and this PC has no workbench cap to fall back on` };
@@ -59,6 +67,7 @@ export function chooseGate({ local, remotes = [], mode = "any", machine = null, 
     cands.push({ name: r.name, freeMb: r.state.freeMb, multiplier: r.multiplier, slot: (r.state.wbAlive ?? 0) < (r.state.wbLimit ?? 1), slotText: `${r.state.wbAlive ?? 0}/${r.state.wbLimit ?? 1} busy` });
   }
   if (!cands.length) {
+    if (gpuBad.length && !localOk) return { where: "none", why: gpuBad.map((r) => r.state.gpu.line).join("; ") };
     if (!localOk) {
       if (exclude.filter((n) => n !== "local").length) return { where: "none", why: `no other machine with the workbench cap answers (tried ${exclude.join(", ")}), and this PC has no workbench cap` };
       return { where: "wait", why: "no pool machine with the workbench cap answers, and this PC has no workbench cap to run it on" };
@@ -128,6 +137,7 @@ export function chooseRefresh({ local, remotes = [], mode = "auto", needCap = "r
 // One ssh round trip: the box's live Workbench locks and free RAM. null when it does not answer.
 export function remoteWbState(m) {
   const ps = [
+    PS_GPU_PROBE,
     `$ld = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\locks'`,
     "$n = 0; foreach ($f in @(Get-ChildItem -LiteralPath $ld -Filter 'workbench-*.lock' -File -ErrorAction SilentlyContinue)) { try { $i = [IO.File]::ReadAllText($f.FullName) | ConvertFrom-Json; if (Get-Process -Id $i.pid -ErrorAction SilentlyContinue) { $n++ } } catch {} }",
     "$os = Get-CimInstance Win32_OperatingSystem",
@@ -138,14 +148,16 @@ export function remoteWbState(m) {
   ].join("\n");
   const r = tb.sshPs(m.host, ps, { timeout: 15000, connectTimeout: 4 });
   if (r.status !== 0) return null;
-  return parseWbState(r.stdout ?? "", m.workbenchLimit);
+  return parseWbState(r.stdout ?? "", m.workbenchLimit, m.name);
 }
 
-export function parseWbState(text, limit) {
+export function parseWbState(text, limit, name = "this machine") {
   const mm = /lf-wb: (\d+) (\d+)/.exec(String(text));
   if (!mm) return null;
   const lk = /lf-look: (\d+) (-?\d+)/.exec(String(text));
-  return { wbAlive: Number(mm[1]), freeMb: Number(mm[2]), wbLimit: Number(limit) > 0 ? Number(limit) : 1, ...(lk ? { lookServer: { pid: Number(lk[1]), idleS: Math.max(0, Number(lk[2])) } } : {}) };
+  const probe = parseProbe(text);
+  const v = probe ? verdict(probe, name) : null;
+  return { ...(v ? { gpu: { ok: v.ok, line: v.line, note: v.note } } : {}), wbAlive: Number(mm[1]), freeMb: Number(mm[2]), wbLimit: Number(limit) > 0 ? Number(limit) : 1, ...(lk ? { lookServer: { pid: Number(lk[1]), idleS: Math.max(0, Number(lk[2])) } } : {}) };
 }
 
 // The live view of every machine with the workbench cap, for chooseGate: this PC's Workbench slots and
