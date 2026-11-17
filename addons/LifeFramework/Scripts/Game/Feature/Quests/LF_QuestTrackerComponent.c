@@ -20,6 +20,8 @@ class LF_QuestTrackerComponent : ScriptComponent
 	protected ref map<string, bool> m_mInsideAreas = new map<string, bool>();
 	protected float m_fTickAccumulator;
 	protected string m_sClientLogCache;
+	//! Test fixtures only: a stand-in player uid for a body no player controls (SetUidForTests).
+	protected string m_sTestUid;
 
 	protected ref ScriptInvoker m_OnLogReceived;
 
@@ -179,18 +181,10 @@ class LF_QuestTrackerComponent : ScriptComponent
 			return false;
 		}
 
-		IEntity owner = GetOwner();
-		int level = LF_JobLevels.LevelOfBody(owner, JobOf(def));
-
-		LF_EJobType job = LF_EJobType.UNEMPLOYED;
-		LF_PlayerJobComponent jobComp = LF_Component<LF_PlayerJobComponent>.Find(owner);
-		if (jobComp)
-			job = jobComp.GetJob();
-
-		string faction = manager.GetCharacterFaction(owner);
+		LF_QuestOwnerStanding standing = new LF_QuestOwnerStanding(GetOwner(), manager);
 		float now = GetGame().GetWorld().GetWorldTime() / 1000.0;
 
-		if (!m_Tracker.Accept(def, level, job, faction, now, m_Tracker.GetCompletedQuestIds()))
+		if (!m_Tracker.Accept(def, standing.LevelFor(def), standing.JobType(), standing.FactionKey(), now, m_Tracker.GetCompletedQuestIds()))
 		{
 			LF_Debug.Log("Quests", string.Format("accept rejected quest=%1 (prerequisites or cooldown)", questId));
 			Notify("#LF-Quest_Rejected", "#LF-Quest_Title");
@@ -325,6 +319,23 @@ class LF_QuestTrackerComponent : ScriptComponent
 			return false;
 		}
 
+		// The turn-in is saved against the player's uid: no uid, no turn-in (it would pay and then be
+		// forgotten at the next respawn, so the quest would come back and pay again).
+		string uid = OwnerUid();
+		if (uid.IsEmpty())
+		{
+			LF_Debug.Error("Quests", string.Format("turn-in refused quest=%1 (no player uid behind the body, it could not be saved)", questId));
+			Notify("#LF-Quest_Rejected", "#LF-Quest_Title");
+			return false;
+		}
+
+		// A reward that has to go into the pockets needs pockets: refuse before anything is taken.
+		if (!CanReceiveReward(def))
+		{
+			Notify("#LF-Quest_Rejected", "#LF-Quest_Title");
+			return false;
+		}
+
 		// Collect objectives hand the items over: take them before paying, all or nothing.
 		if (!TakeCollectedItems(def))
 		{
@@ -332,9 +343,11 @@ class LF_QuestTrackerComponent : ScriptComponent
 			return false;
 		}
 
-		GrantReward(def);
+		// Record first, pay last: a script error inside GrantReward must leave the quest turned in
+		// (and remembered), never completed and payable a second time.
 		m_Tracker.TurnIn(questId, GetGame().GetWorld().GetWorldTime() / 1000.0);
-		LF_Progression.NoteTurnedIn(LF_Utils.GetPlayerUID(GetOwner()), questId);
+		LF_Progression.NoteTurnedIn(uid, questId);
+		GrantReward(def);
 
 		int rewardItems = 0;
 		if (def.m_aRewardItems)
@@ -413,13 +426,41 @@ class LF_QuestTrackerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The job a quest's level gate reads and its reward XP goes to; CIVILIAN when none.
+	//! \return The job a quest's level gate reads and its reward XP goes to; CIVILIAN when none.
 	static string JobOf(notnull LF_QuestDefinition def)
 	{
 		if (def.m_sJob.IsEmpty())
 			return LF_JobLevels.JOB_CIVILIAN;
 
 		return def.m_sJob;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The items the quest hands over: its own, then the welcome gift a pack gives it
+	//! (LF_WelcomeGiftTable).
+	protected array<ResourceName> RewardItemsOf(LF_QuestDefinition def)
+	{
+		array<ResourceName> giftItems = {};
+		if (def.m_aRewardItems)
+			giftItems.Copy(def.m_aRewardItems);
+		LF_WelcomeGiftTable.ItemsOf(def.m_sQuestId, giftItems);
+		return giftItems;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: whether this character can take the quest's reward items. A body with no inventory
+	//! manager would lose them without a word, so the turn-in is refused instead.
+	protected bool CanReceiveReward(LF_QuestDefinition def)
+	{
+		array<ResourceName> items = RewardItemsOf(def);
+		if (items.IsEmpty())
+			return true;
+
+		if (LF_Component<SCR_InventoryStorageManagerComponent>.Find(GetOwner()))
+			return true;
+
+		LF_Debug.Error("Quests", string.Format("turn-in refused quest=%1 (the reward items have no inventory to go into)", def.m_sQuestId));
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -437,28 +478,22 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		// A giver hands the reward over: the player hears it land in their pockets.
 		// The quest's own items, then the welcome gift a pack gives it (LF_WelcomeGiftTable).
-		array<ResourceName> giftItems = {};
-		if (def.m_aRewardItems)
-			giftItems.Copy(def.m_aRewardItems);
-		LF_WelcomeGiftTable.ItemsOf(def.m_sQuestId, giftItems);
+		array<ResourceName> giftItems = RewardItemsOf(def);
 
 		if (def.m_iRewardMoney > 0 || def.m_bRewardIdCard || !giftItems.IsEmpty())
 			LF_PlayerInteraction.PlayHandoverSound(owner, HANDOVER_SOUND);
 
 		if (def.m_fRewardXp > 0)
-		{
-			string uid = LF_Utils.GetPlayerUID(owner);
-			if (uid.IsEmpty())
-				LF_Debug.Warn("Quests", string.Format("turn-in %1: no player behind the body, %2 reward xp not given", def.m_sQuestId, def.m_fRewardXp));
-			else
-				LF_JobLevels.AddXp(uid, JobOf(def), Math.Round(def.m_fRewardXp), "quest " + def.m_sQuestId);
-		}
+			LF_JobLevels.AddXp(OwnerUid(), JobOf(def), Math.Round(def.m_fRewardXp), "quest " + def.m_sQuestId);
 
 		if (!giftItems.IsEmpty())
 		{
 			SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(owner);
 			if (!inventory)
+			{
+				LF_Debug.Error("Quests", string.Format("reward items of quest=%1 lost: the player has no inventory", def.m_sQuestId));
 				return;
+			}
 
 			EntitySpawnParams spawnParams();
 			spawnParams.Transform[3] = owner.GetOrigin();
@@ -481,6 +516,24 @@ class LF_QuestTrackerComponent : ScriptComponent
 				}
 			}
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player uid this character's turn-ins are saved under; empty when no player controls it.
+	protected string OwnerUid()
+	{
+		if (!m_sTestUid.IsEmpty())
+			return m_sTestUid;
+
+		return LF_Utils.GetPlayerUID(GetOwner());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test fixtures only: a body no player controls has no uid, so its turn-ins are refused. A
+	//! fixture gives it a stand-in here, as a film actor has one (LF_FilmIdentity).
+	void SetUidForTests(string uid)
+	{
+		m_sTestUid = uid;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -561,6 +614,24 @@ class LF_QuestTrackerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: counts one client ask against the player's QUEST bucket (a refusal is logged, not toasted).
+	protected bool Admit(string request)
+	{
+		return LF_RateLimit.AllowCharacter(GetOwner(), LF_ERequestKind.QUEST, request, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a dead or downed body does not talk, read or hand in.
+	protected bool IsLiving(string verb)
+	{
+		if (LF_Utils.IsAliveState(GetOwner()))
+			return true;
+
+		LF_Debug.Warn("Quests", string.Format("%1 refused (the character is not alive)", verb));
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Client asks the server to (re)report the giver interaction, recount
 	//! collect objectives and push the fresh log - the open of a giver menu is
 	//! what completes TALK objectives.
@@ -578,6 +649,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_OpenGiver(string giverId)
 	{
+		if (!Admit("quest giver open"))
+			return;
+
 		RequestOpenGiver(giverId);
 	}
 
@@ -588,6 +662,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 	bool RequestOpenGiver(string giverId)
 	{
 		if (!Replication.IsServer())
+			return false;
+
+		if (!IsLiving("open giver"))
 			return false;
 
 		LF_QuestManager manager = LF_QuestManager.GetInstance();
@@ -607,6 +684,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 	//! Server: true when the caller stands at the giver that offers questId. Logs the refusal.
 	protected bool IsAtQuestGiver(string questId, string verb)
 	{
+		if (!IsLiving(verb))
+			return false;
+
 		LF_QuestManager manager = LF_QuestManager.GetInstance();
 		string giverId = manager.GetGiverOfQuest(questId);
 		if (manager.IsNearGiver(GetOwner(), giverId))
@@ -631,6 +711,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_Accept(string questId)
 	{
+		if (!Admit("quest accept"))
+			return;
+
 		RequestAccept(questId);
 	}
 
@@ -670,6 +753,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_Converse(string giverId)
 	{
+		if (!Admit("quest converse"))
+			return;
+
 		RequestConverse(giverId);
 	}
 
@@ -682,6 +768,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 	bool RequestConverse(string giverId)
 	{
 		if (!Replication.IsServer())
+			return false;
+
+		if (!IsLiving("talk"))
 			return false;
 
 		LF_QuestManager manager = LF_QuestManager.GetInstance();
@@ -775,22 +864,8 @@ class LF_QuestTrackerComponent : ScriptComponent
 	protected LF_QuestDefinition NextOffer(LF_QuestGiverComponent giver)
 	{
 		float now = GetGame().GetWorld().GetWorldTime() / 1000.0;
-		array<string> completed = m_Tracker.GetCompletedQuestIds();
-		foreach (LF_QuestDefinition def : giver.GetQuests())
-		{
-			if (!def || !def.HasObjectives())
-				continue;
-
-			LF_EQuestStatus status = m_Tracker.GetStatus(def.m_sQuestId);
-			bool previousDone = def.m_sRequiredPreviousQuestId.IsEmpty() || m_Tracker.HasTurnedIn(def.m_sRequiredPreviousQuestId);
-			if (!def.IsListed(status, previousDone))
-				continue;
-
-			if (m_Tracker.CanAccept(def, 1, LF_EJobType.UNEMPLOYED, "", now, completed))
-				return def;
-		}
-
-		return null;
+		LF_QuestOwnerStanding standing = new LF_QuestOwnerStanding(GetOwner(), LF_QuestManager.GetInstance());
+		return m_Tracker.NextOffer(giver.GetQuests(), standing, now);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -810,6 +885,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_SignRead(string signId)
 	{
+		if (!Admit("sign read"))
+			return;
+
 		RequestSignRead(signId);
 	}
 
@@ -820,6 +898,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 	bool RequestSignRead(string signId)
 	{
 		if (!Replication.IsServer())
+			return false;
+
+		if (!IsLiving("sign read"))
 			return false;
 
 		if (!LF_QuestSignals.IsSignNear(GetOwner(), signId, SIGN_READ_RADIUS))
@@ -847,6 +928,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_TurnIn(string questId)
 	{
+		if (!Admit("quest turn-in"))
+			return;
+
 		RequestTurnIn(questId);
 	}
 
@@ -873,6 +957,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_RequestLog()
 	{
+		if (!Admit("quest log"))
+			return;
+
 		PushLog();
 	}
 

@@ -62,7 +62,7 @@ class LF_Test_RateLimit : LF_Test
 		ctx.True(allLocalAdmitted, "server-local requests (player 0) are not limited");
 
 		// Every kind has a positive window and burst, and the idle span outlasts every window.
-		array<LF_ERequestKind> kinds = {LF_ERequestKind.PURCHASE, LF_ERequestKind.TRAVEL, LF_ERequestKind.COMMS, LF_ERequestKind.SPAWN, LF_ERequestKind.INVENTORY};
+		array<LF_ERequestKind> kinds = {LF_ERequestKind.PURCHASE, LF_ERequestKind.TRAVEL, LF_ERequestKind.COMMS, LF_ERequestKind.SPAWN, LF_ERequestKind.INVENTORY, LF_ERequestKind.CRIME, LF_ERequestKind.CHESS, LF_ERequestKind.QUEST};
 		foreach (LF_ERequestKind kind : kinds)
 		{
 			string name = typename.EnumToString(LF_ERequestKind, kind);

@@ -210,6 +210,9 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 			LF_PlayerIdentity.Forget(playerId);
 			// Player ids are reused by the next arrival: no pick or register offer may outlive the connection (#2415).
 			LF_CharacterCreationManager.ForgetPlayer(playerId);
+			// Per-player conversation and town-board gap state is keyed by the reused player id too (#2403).
+			LF_Dialogue.Forget(playerId);
+			LF_TownBoardMapKnown.Forget(playerId);
 		}
 
 		super.OnPlayerDisconnected(playerId, cause, timeout);

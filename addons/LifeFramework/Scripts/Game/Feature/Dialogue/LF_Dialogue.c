@@ -46,6 +46,52 @@ class LF_Dialogue
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: opens a session for the player at the NPC (replacing any they had). Start uses it.
+	static LF_DialogueSession Track(int playerId, EntityID npcId)
+	{
+		LF_DialogueSession session = new LF_DialogueSession();
+		session.m_NpcId = npcId;
+		Sessions().Set(playerId, session);
+		return session;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many players hold a session.
+	static int SessionCount()
+	{
+		return Sessions().Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a player left the server. Player ids are reused by the next arrival, so the session
+	//! must not outlive the connection. Nothing is sent: the client is gone.
+	static void Forget(int playerId)
+	{
+		if (!s_mSessions)
+			return;
+
+		if (s_mSessions.Contains(playerId))
+			LF_Debug.Info(FEATURE, string.Format("player %1 left the server mid-conversation", playerId));
+
+		s_mSessions.Remove(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: counts one dialogue ask against the player's QUEST bucket. A refused ask closes the
+	//! player's scene at once, so the client is not left waiting for its 5 s watchdog.
+	static bool Admit(SCR_PlayerController controller, string request)
+	{
+		if (!controller)
+			return false;
+
+		if (LF_RateLimit.Allow(controller.GetPlayerId(), LF_ERequestKind.QUEST, request, false))
+			return true;
+
+		End(controller, true);
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool InReach(IEntity player, IEntity npc)
 	{
 		return player && npc && vector.Distance(player.GetOrigin(), npc.GetOrigin()) <= REACH;
@@ -61,21 +107,29 @@ class LF_Dialogue
 		int playerId = controller.GetPlayerId();
 		IEntity player = controller.GetControlledEntity();
 		LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
+		// Every refusal closes the scene the client already opened, or it waits out its 5 s watchdog frozen.
+		if (!LF_Utils.IsAliveState(player))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("start refused for player %1: the character is not alive", playerId));
+			controller.LF_DialogueClose();
+			return false;
+		}
+
 		if (LF_NpcStun.BlocksTalk(npc))
 		{
 			LF_Debug.Info(FEATURE, string.Format("start refused for player %1: the NPC is stunned", playerId));
+			controller.LF_DialogueClose();
 			return false;
 		}
 
 		if (!config || !InReach(player, npc))
 		{
 			LF_Debug.Warn(FEATURE, string.Format("start refused for player %1: no playable dialogue on that NPC, or not within %2 m", playerId, REACH));
+			controller.LF_DialogueClose();
 			return false;
 		}
 
-		LF_DialogueSession session = new LF_DialogueSession();
-		session.m_NpcId = npc.GetID();
-		Sessions().Set(playerId, session);
+		LF_DialogueSession session = Track(playerId, npc.GetID());
 		LF_Debug.Info(FEATURE, string.Format("player %1 talks to '%2'", playerId, config.m_sId));
 		Enter(controller, session, npc, config, config.m_sStart, null);
 		return true;
@@ -93,15 +147,17 @@ class LF_Dialogue
 		if (!session)
 		{
 			LF_Debug.Warn(FEATURE, string.Format("reply %1 refused for player %2: not in a conversation", index, playerId));
+			// The client is waiting for an answer: tell it the talk is over.
+			controller.LF_DialogueClose();
 			return false;
 		}
 
 		IEntity player = controller.GetControlledEntity();
 		IEntity npc = GetGame().GetWorld().FindEntityByID(session.m_NpcId);
 		LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
-		if (!config || !InReach(player, npc) || LF_NpcStun.BlocksTalk(npc))
+		if (!LF_Utils.IsAliveState(player) || !config || !InReach(player, npc) || LF_NpcStun.BlocksTalk(npc))
 		{
-			LF_Debug.Warn(FEATURE, string.Format("reply %1 refused for player %2: the NPC is gone, out of reach or stunned; conversation ended", index, playerId));
+			LF_Debug.Warn(FEATURE, string.Format("reply %1 refused for player %2: the player is down, or the NPC is gone, out of reach or stunned; conversation ended", index, playerId));
 			End(controller, true);
 			return false;
 		}
@@ -111,7 +167,9 @@ class LF_Dialogue
 		// The condition is asked again: the world may have changed since the replies were offered.
 		if (!option || !LF_DialogueHook.Offers(option, player, npc))
 		{
-			LF_Debug.Warn(FEATURE, string.Format("reply %1 refused for player %2 at '%3/%4': not offered", index, playerId, config.m_sId, session.m_sNode));
+			LF_Debug.Warn(FEATURE, string.Format("reply %1 refused for player %2 at '%3/%4': not offered; conversation ended", index, playerId, config.m_sId, session.m_sNode));
+			// The client is waiting for the next node, which will not come: end the talk on both sides.
+			End(controller, true);
 			return false;
 		}
 

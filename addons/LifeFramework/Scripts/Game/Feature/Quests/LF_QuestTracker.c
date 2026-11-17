@@ -4,9 +4,67 @@
 // owns replication, persistence and reward application. Keeping the logic pure
 // here is what makes the whole lifecycle testable in the fast tier.
 
+//! Where a player stands against a quest's level, job and faction gates, as the server reads it.
+//! One reader feeds both the accept check and the conversation's offer, so a gated quest is
+//! offered to exactly the players who can take it (#2403). The base answers "nobody in particular";
+//! LF_QuestOwnerStanding reads the live character and tests pass fixed values.
+class LF_QuestStanding
+{
+	//! The level in the job the quest's level gate reads.
+	int LevelFor(LF_QuestDefinition def)
+	{
+		return 0;
+	}
+
+	LF_EJobType JobType()
+	{
+		return LF_EJobType.UNEMPLOYED;
+	}
+
+	string FactionKey()
+	{
+		return "";
+	}
+}
+
 class LF_QuestTracker
 {
 	protected ref map<string, ref LF_QuestState> m_mStates = new map<string, ref LF_QuestState>();
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a quest can be accepted right now, with the gates read from `standing`.
+	bool CanTake(LF_QuestDefinition def, notnull LF_QuestStanding standing, float now, array<string> completedQuestIds)
+	{
+		if (!def)
+			return false;
+
+		return CanAccept(def, standing.LevelFor(def), standing.JobType(), standing.FactionKey(), now, completedQuestIds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first quest of `quests` a giver lists to this player that the player can take on now.
+	LF_QuestDefinition NextOffer(array<ref LF_QuestDefinition> quests, notnull LF_QuestStanding standing, float now)
+	{
+		if (!quests)
+			return null;
+
+		array<string> completed = GetCompletedQuestIds();
+		foreach (LF_QuestDefinition def : quests)
+		{
+			if (!def || !def.HasObjectives())
+				continue;
+
+			LF_EQuestStatus status = GetStatus(def.m_sQuestId);
+			bool previousDone = def.m_sRequiredPreviousQuestId.IsEmpty() || HasTurnedIn(def.m_sRequiredPreviousQuestId);
+			if (!def.IsListed(status, previousDone))
+				continue;
+
+			if (CanTake(def, standing, now, completed))
+				return def;
+		}
+
+		return null;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Whether a quest can be accepted right now.
