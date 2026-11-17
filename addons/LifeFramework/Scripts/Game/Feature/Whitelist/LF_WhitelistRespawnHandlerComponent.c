@@ -1,8 +1,7 @@
 //------------------------------------------------------------------------------------------------
-//! Server whitelist manager attached to the game mode. Owns the whitelist configs,
-//! enforces the optional CONNECT gate on join, and pushes flag sets to players on spawn.
-//! The fork's version extended a fork-only respawn handler; this one extends the base game's
-//! SCR_BaseGameModeComponent and receives the spawn hook via LF_GameModeRoleplay.OnPlayerSpawned.
+//! Whitelist handler on the game mode. Owns the legacy whitelist configs: moves each file into the
+//! roster once at start (#2575) and enforces the optional CONNECT gate on join. It extends the base
+//! game's SCR_BaseGameModeComponent.
 [ComponentEditorProps(category: "EveronLife/Feature/Whitelist", description: "Server Whitelist Manager")]
 class LF_WhitelistRespawnHandlerComponentClass : SCR_BaseGameModeComponentClass
 {
@@ -79,31 +78,10 @@ class LF_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawn hook, forwarded from LF_GameModeRoleplay.OnPlayerSpawned. Pushes the
-	//! player's whitelist flags to their character's owner-replicated component.
+	//! Spawn hook, still forwarded from LF_GameModeRoleplay.OnPlayerSpawned. A no-op: the client flag
+	//! copy it used to push is gone (#2576), and police duty reads LF_WhitelistManager.
 	void OnPlayerSpawned(int playerId, IEntity controlledEntity)
 	{
-		if (!GetGameMode() || !GetGameMode().IsMaster())
-			return;
-
-		LF_PlayerWhitelistComponent playerWhitelistComponent = LF_PlayerWhitelistComponent.Cast(controlledEntity.FindComponent(LF_PlayerWhitelistComponent));
-		if (!playerWhitelistComponent)
-			return;
-
-		LoadAllWhitelists(playerWhitelistComponent);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void LoadAllWhitelists(LF_PlayerWhitelistComponent playerWhitelistComponent)
-	{
-		LF_WhitelistType whitelistFlags;
-		string uuid = LF_Utils.GetAccountUID(playerWhitelistComponent.GetOwner());
-		foreach (LF_Whitelist whitelist : m_aWhitelists)
-		{
-			if (whitelist && whitelist.VerifyPlayer(uuid))
-				whitelistFlags |= whitelist.m_eType;
-		}
-		playerWhitelistComponent.RpcSetWhitelists(whitelistFlags);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -127,88 +105,5 @@ class LF_WhitelistRespawnHandlerComponent : SCR_BaseGameModeComponent
 				return whitelist.VerifyPlayer(uuid);
 		}
 		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server: save the UUID on the roster, then enable the flag on the player if they are online.
-	//! The legacy file is no longer written (#2575).
-	void EnableWhitelistOnPlayer(string uuid, LF_WhitelistType whitelistType)
-	{
-		if (whitelistType == LF_WhitelistType.POLICE)
-			LF_WhitelistManager.AddFactionWhitelist(uuid, LF_EFactionType.POLICE);
-		else
-			LF_Debug.Warn("Whitelist", string.Format("grant of %1 to %2 is session only: that type has no roster", typename.EnumToString(LF_WhitelistType, whitelistType), uuid));
-
-		AddUUIDToWhitelist(uuid, whitelistType);
-
-		IEntity targetPlayer = GetPlayerByUID(uuid);
-		if (!targetPlayer)
-			return;
-
-		LF_PlayerWhitelistComponent playerWhitelistComponent = LF_PlayerWhitelistComponent.Cast(targetPlayer.FindComponent(LF_PlayerWhitelistComponent));
-		if (playerWhitelistComponent)
-			playerWhitelistComponent.RpcEnableWhitelist(whitelistType);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void AddUUIDToWhitelist(string uuid, LF_WhitelistType whitelistType)
-	{
-		foreach (LF_Whitelist whitelist : m_aWhitelists)
-		{
-			if (whitelist && whitelist.m_eType == whitelistType)
-				whitelist.AddNewUuidToFile(uuid);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server: remove the UUID, then disable the flag on the player if they are online.
-	void DisableWhitelistOnPlayer(string uuid, LF_WhitelistType whitelistType)
-	{
-		if (!WhitelistExists(whitelistType))
-		{
-			Print(string.Format("[%1-WHITELIST] Trying to remove a UUID from a whitelist that is not active in the gamemode", typename.EnumToString(LF_WhitelistType, whitelistType)), LogLevel.WARNING);
-			return;
-		}
-
-		if (whitelistType == LF_WhitelistType.POLICE)
-			LF_WhitelistManager.RemoveFactionWhitelist(uuid, LF_EFactionType.POLICE);
-
-		RemoveUUIDFromWhitelist(uuid, whitelistType);
-
-		IEntity targetPlayer = GetPlayerByUID(uuid);
-		if (!targetPlayer)
-			return;
-
-		LF_PlayerWhitelistComponent playerWhitelistComponent = LF_PlayerWhitelistComponent.Cast(targetPlayer.FindComponent(LF_PlayerWhitelistComponent));
-		if (playerWhitelistComponent)
-			playerWhitelistComponent.RpcDisableWhitelist(whitelistType);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void RemoveUUIDFromWhitelist(string uuid, LF_WhitelistType whitelistType)
-	{
-		foreach (LF_Whitelist whitelist : m_aWhitelists)
-		{
-			if (whitelist && whitelist.m_eType == whitelistType)
-				whitelist.RemoveUUIDFromFile(uuid);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! \return the currently controlled entity of the player with the given platform UID, or null.
-	protected IEntity GetPlayerByUID(string uuid)
-	{
-		if (uuid.IsEmpty())
-			return null;
-
-		PlayerManager playerManager = GetGame().GetPlayerManager();
-		array<int> playerIds = {};
-		playerManager.GetPlayers(playerIds);
-		foreach (int playerId : playerIds)
-		{
-			if (LF_Utils.GetAccountUID(playerId) == uuid)
-				return playerManager.GetPlayerControlledEntity(playerId);
-		}
-		return null;
 	}
 }
