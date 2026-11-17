@@ -3,6 +3,7 @@
 //! #2002: a drink's impairment values come from a table keyed by prefab that packs overlay. A row
 //! the core table has is read, a pack overlay patches one row and adds another, a drink with no row
 //! keeps the component's values, and a row naming a prefab that does not load is skipped.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DrinkImpairmentTable : LF_Test
 {
 	static const ResourceName OVERLAY = "{81D226215C0DD606}Configs/Tests/LF_Test_DrinkImpairmentOverlay.conf";

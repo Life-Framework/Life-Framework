@@ -4,6 +4,7 @@
 //! police/call-board (#2479, parent #234): the police dispatch board carries a "Take a call" action. An
 //! off-duty user is not offered it, an on-duty officer is; performing it on the server makes that officer
 //! the holder of the oldest open call their rank may see, and a call above their rank stays open.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PoliceCallBoard : LF_Test
 {
 	protected static const ResourceName BOARD_PREFAB = "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et";

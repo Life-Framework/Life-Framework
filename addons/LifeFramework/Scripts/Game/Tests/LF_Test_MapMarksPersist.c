@@ -4,6 +4,7 @@
 //! 21st mark is refused (D-M11), a networked marker add is refused (D-M7), and a re-applied load is
 //! idempotent. Across a restart (`tools\cli wt e2e`): the save boot gives E2E_CHARACTER two marks;
 //! the reload boot finds both with their icon and note.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_MapMarksPersist : LF_Test
 {
 	protected static const string CHARACTER = "mapmarks-persist-character";

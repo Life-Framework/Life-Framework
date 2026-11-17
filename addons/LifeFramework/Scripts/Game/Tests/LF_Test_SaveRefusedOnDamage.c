@@ -10,6 +10,7 @@
 //! SaveGame(), a direct AutoSave(), an admin save and the engine's shutdown save overwrite the save on
 //! disk. Every save request through the manager is now refused with the reason logged, and the
 //! re-apply turns engine saving off until a clean load clears the damage.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_SaveRefusedOnDamage : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

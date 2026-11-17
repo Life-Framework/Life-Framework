@@ -3,6 +3,7 @@
 //! organization/static-reset (#2415): the organization config cache and the open ledger page are
 //! process statics. A config loaded for one world's pack outlived it; the ledger page pointed at a
 //! screen the old world had torn down.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OrgStaticReset : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

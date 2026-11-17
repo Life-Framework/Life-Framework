@@ -10,6 +10,7 @@
 //! the run started and the run took at least the configured share of the expected driving time at road speed; a
 //! taxi fare also needs a seated passenger. The cargo deposit is held for the run, returned once on delivery and
 //! kept when the run is abandoned. The numbers are the jobs config's. Pure run state, no entity.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobRunRules : LF_Test
 {
 	protected static const string UID = "job-run-rules-courier";

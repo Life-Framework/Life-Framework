@@ -4,6 +4,7 @@
 //! A carried prop hangs from the hand (#2174 grip): for any hand pose, the slot transform that
 //! LF_CarriedPropComponent.SolveHanging returns puts the prop's handle on the hand bone, keeps the
 //! prop upright and turns its long side along the carrier's forward axis.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CarriedPropHang : LF_Test
 {
 	override string GetName()

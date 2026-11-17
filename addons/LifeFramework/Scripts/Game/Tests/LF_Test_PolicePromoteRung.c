@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! #2095: on a ladder longer than two rungs the promoter must hold a rank above the rung the target
 //! is promoted INTO. A one- or two-rung ladder keeps the old rule (any senior may promote).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PolicePromoteRung : LF_Test
 {
 	override string GetName()

@@ -4,6 +4,7 @@
 //! request; a missing persistence system is expected only in Workbench play with no mission header;
 //! the stand-in mission header is the one for the open world that lists the most overlays, else the
 //! pack's (DebugWorld has no header with overlays: the dialogue voices came from the pack's).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WorkbenchPlay : LF_Test
 {
 	override string GetName()

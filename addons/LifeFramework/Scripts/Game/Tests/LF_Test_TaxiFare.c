@@ -4,6 +4,7 @@
 //! the drop-off into a fare. A short hop pays the floor, a longer run pays the floor plus the rate per
 //! metre, and a very long run pays the cap. A config that is zero or negative falls back to the
 //! shipped numbers (and logs an LF_Debug.Error) instead of paying nothing or an unbounded fare.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_TaxiFare : LF_Test
 {
 	override string GetName()

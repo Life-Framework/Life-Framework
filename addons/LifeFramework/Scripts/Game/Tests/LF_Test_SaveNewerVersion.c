@@ -4,6 +4,7 @@
 //! A save written by a newer build (a rollback, or a merge the main guard reverted after it saved)
 //! carries a version above this build's payload list. Its known payloads still load, but the load
 //! counts as damaged so autosave pauses: saving over it would drop the payloads this build cannot read.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_SaveNewerVersion : LF_Test
 {
 	protected static const string UID = "newer-save-bank-uid";

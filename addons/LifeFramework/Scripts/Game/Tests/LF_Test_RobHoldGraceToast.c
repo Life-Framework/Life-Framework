@@ -3,6 +3,7 @@
 //! A held robbery refused by the grace period tells the robber why (#2157, #2075): the grace toast
 //! every other refused crime shows, and the grace text as the attendant's conversation caption.
 //! Other refusals send no toast.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RobHoldGraceToast : LF_Test
 {
 	override string GetName()

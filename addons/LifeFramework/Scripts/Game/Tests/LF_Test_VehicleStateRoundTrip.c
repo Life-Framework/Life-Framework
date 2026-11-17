@@ -5,6 +5,7 @@
 //! #752a through the real save path ("vehiclestate" payload). A towed, inspected car with a fitted
 //! compartment and a police-impounded car come back with every field after the store is written and
 //! read, twice; a stock car writes no row and loads untowed. The "vehicles" records are unchanged.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_VehicleStateRoundTrip : LF_Test
 {
 	protected static const string OWNER = "vehicle-state-trip-owner";

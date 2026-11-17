@@ -3,6 +3,7 @@
 // `- a car above the cash ceiling points the buyer to the bank (expected '#LF-Vehicle_BankShort', got '#EL-Vehicle_CannotAfford')`. Restored; green.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehicleBankRefusal : LF_Test
 {
 	override string GetName()

@@ -3,6 +3,7 @@
 // assertion goes red. Observed red: expected GetCash 201 with AddCash(200)
 // added, then reverted.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_E2EInventory : LF_Test
 {
 	protected static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";

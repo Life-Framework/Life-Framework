@@ -5,6 +5,7 @@
 //! The town board prop: one card context over each face slot (where LF_TownBoardFace draws the card),
 //! each carrying the read action for its own slot, an empty slot offering nothing; and a card pointed
 //! at a placed sign finds it through LF_Places and reads a distance and a direction from the board.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TownBoardWorld : LF_Test
 {
 	static const ResourceName PREFAB = "{EE587A113AF85FC5}Prefabs/Props/Signs/LF_TownBoard.et";

@@ -5,6 +5,7 @@
 //! Quest turn-in guards (#2403): a body no player controls has no uid to save the turn-in under, so the
 //! turn-in is refused and nothing is paid (it used to pay and be forgotten at the next respawn). With a uid the
 //! turn-in is recorded and paid once, and a dead or downed character is not alive for a talk or a hand-in.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_QuestTurnInGuards : LF_Test
 {
 	protected static const string QUEST_ID = "hardening_turnin";

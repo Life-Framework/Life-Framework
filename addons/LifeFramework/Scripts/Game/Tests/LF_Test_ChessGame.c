@@ -7,6 +7,7 @@
 //! #1933: a chess game wraps the board. Fool's mate ends in mate for black, a queen move into a
 //! known stalemate ends drawn, a move out of turn is refused, resignation hands the other side the
 //! game, and nothing is playable once a game is over.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ChessGame : LF_Test
 {
 	override string GetName()

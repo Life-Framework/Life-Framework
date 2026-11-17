@@ -3,6 +3,7 @@
 //! #2404: an item taken from one logout body re-captures that body's snapshot only. Before, any item
 //! change on any kept body re-captured every kept body (RecaptureAll), so looting one body item by
 //! item while dozens were kept serialised all of them per item.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LogoutBodyDirty : LF_Test
 {
 	protected static const int BODIES = 3;

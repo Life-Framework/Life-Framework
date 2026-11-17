@@ -3,6 +3,7 @@
 //! Combat-logout rule (#1972, #1794): where a logout rejoins. Cuffed goes to jail; wanted within
 //! the police contact window goes to jail like a cuffed logout and is a flagged logout; wanted
 //! after the window rejoins in place; downed goes to the hospital; anything else is in place.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_LogoutRule : LF_Test
 {
 	override string GetName()

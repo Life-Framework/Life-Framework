@@ -3,6 +3,7 @@
 //! #2098: the record board prop at the race track's start line. RaceRecordBoard.et carries the read
 //! action the "racerecords" board kind names and a printed title, and what it reads is the course the
 //! start sign enters: a time recorded on that course comes back in the board's answer.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RaceBoardProp : LF_Test
 {
 	protected static const ResourceName BOARD = "{3A0DF994654216AF}Prefabs/Props/Roleplay/Racing/RaceRecordBoard.et";

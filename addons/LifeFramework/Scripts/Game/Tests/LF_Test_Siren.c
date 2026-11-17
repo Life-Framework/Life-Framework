@@ -3,6 +3,7 @@
 // run `tools\cli test --tier all`; the prefab load / spawn / manager assertions fail.
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Siren : LF_Test
 {
 	protected static const ResourceName POLICE_PREFAB = "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et";

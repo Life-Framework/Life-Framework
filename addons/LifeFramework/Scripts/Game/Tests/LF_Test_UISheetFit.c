@@ -5,6 +5,7 @@
 //! #2462: a kit sheet grows to fit its content up to the screen's safe height. LF_UISheetFit.Height keeps
 //! the skin height when the content fits, grows to the content when it does not, stops at the cap, and
 //! never shrinks a sheet under its skin. ListHeight squeezes a list to scroll once the sheet is capped.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UISheetFit : LF_Test
 {
 	override string GetName()

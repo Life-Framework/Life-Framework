@@ -5,6 +5,7 @@
 //! instead of deleting a digit: LF_UIScreen.Back() kept Backspace only for a focused text field.
 //! A sheet that binds LF_KeypadBack as a hotkey now keeps Backspace too; Escape and gamepad B
 //! still close it, and a sheet without the keypad still closes on Backspace.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_KeypadBackspace : LF_Test
 {
 	override string GetName()

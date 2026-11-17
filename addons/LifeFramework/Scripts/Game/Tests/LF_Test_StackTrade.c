@@ -3,6 +3,7 @@
 // while the assertion still expected one unit instead of five. Restored to 35.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StackTrade : LF_Test
 {
 	override string GetName()

@@ -5,6 +5,7 @@
 // tier: WORLD (needs the organization hideout door: GridWorld's Grid_orgs_vehicles.layer; LOGIC runs on any map, #1047)
 //! M1-17 registry rules: names, duplicates, face-to-face offers (rank, accept, wrong inviter,
 //! lapse, a leader who lost the rank), founder cannot be removed, leave, and the hideout lease.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_OrgRegistry : LF_Test
 {
 	override string GetName()

@@ -4,6 +4,7 @@
 //! shipped record each, an out-of-range number, a prefab that does not load and a key that is no
 //! licence are refused with the shipped value kept, and `police` reaches a client through the
 //! config stream with the ranks in ladder order.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigSectionsA : LF_Test
 {
 	override string GetName()

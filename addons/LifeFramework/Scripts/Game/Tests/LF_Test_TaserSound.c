@@ -4,6 +4,7 @@
 //! shot and handling sound projects in place of the vanilla M9's, the three projects load, the
 //! stun flag a client reads follows the stun, and the buzz rule starts and stops on that flag.
 //! That a sound is heard is a client matter (harness `sound`, and ears).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TaserSound : LF_Test
 {
 	static const ResourceName TASER_PREFAB = "{6D583A40C5C5C150}Prefabs/Weapons/Handguns/Taser/Handgun_Taser.et";

@@ -13,6 +13,7 @@
 //! were, twice without change. A version 23 save (the format before #331) loads its one character
 //! into slot 1, keyed by the account uid, with its bank, rank and wanted level. A roster whose first
 //! character is gone keeps its saved key, and its rank follows the key.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_CharacterSlotsPersist : LF_Test
 {
 	protected static const string UID = "cps-two-uid";

@@ -3,6 +3,7 @@
 //! A robber holds one till at a time, and a downed or dead attendant ends the hold unpaid (#2540).
 //! Goes through LF_RobHold's seams: a seated hold, the refusal a second demand gets, and the hold
 //! settled the way the tick settles it once the attendant is down.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RobHoldOnePerRobber : LF_Test
 {
 	static const int ROBBER = 4242;

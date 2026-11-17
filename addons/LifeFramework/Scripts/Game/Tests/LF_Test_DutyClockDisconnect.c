@@ -3,6 +3,7 @@
 //! police/duty-clock-disconnect (#2622): a disconnect settles the duty clock at the disconnect time,
 //! so the time away is never paid at the next clock-out, and one shift pays at most the police
 //! config's dutyShiftMaxSeconds (0 means no cap). Rank time counts only the paid seconds.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DutyClockDisconnect : LF_Test
 {
 	protected static const string LEAVER = "duty-disconnect-leaver";

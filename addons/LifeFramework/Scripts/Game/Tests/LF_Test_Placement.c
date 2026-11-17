@@ -5,6 +5,7 @@
 //! reason for the log and the refusal while a valid one carries none. The confirm (#1026) takes a
 //! proposal within reach of where the player stands now, measures its heading against straight
 //! across a road, and refuses one that is not finite, not in the world, or has no horizontal forward.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Placement : LF_Test
 {
 	override string GetName()

@@ -9,6 +9,7 @@
 //! (Runtime override + Hierarchy, as vanilla Character_Base): without it the dedicated client
 //! renders the NPC in underwear (#150). The dedicated-client screenshots in the PR are the proof
 //! of the client side; this guards the server-side half cheaply.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NpcClothesReplicate : LF_Test
 {
 	override string GetName()

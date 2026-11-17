@@ -3,6 +3,7 @@
 //! Chop shop rules (#415): the payout is a capped fraction of the vehicle value, an owned car whose
 //! key the worker holds is refused, only a stolen car is taken, the cooldown holds, and a hot car
 //! scrapped from the ownership record leaves no record behind.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ChopShopPayout : LF_Test
 {
 	override string GetName()

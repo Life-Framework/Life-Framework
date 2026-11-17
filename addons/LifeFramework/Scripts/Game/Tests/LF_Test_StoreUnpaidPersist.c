@@ -13,6 +13,7 @@
 //! once it has been inside again, or the grace ran out, walking around outside with the goods is.
 //! A second load binds the same tags, never doubled. A tag whose item or store is gone is dropped.
 //! A version 24 save leaves the waiting tags alone. The test puts back what it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_StoreUnpaidPersist : LF_Test
 {
 	protected static const string SHOPPER_KEY = "store-unpaid-shopper";

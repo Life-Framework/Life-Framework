@@ -4,6 +4,7 @@
 //! test police call and a test medic call, a police board and a medic board that can take a call)
 //! and the dedicated test till offers the robbery action.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DispatchArea : LF_Test
 {
 	override string GetName()

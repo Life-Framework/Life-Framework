@@ -19,6 +19,7 @@ class LF_Test_VehicleColoursOverlaySource : LF_ConfigPackSource
 }
 
 //------------------------------------------------------------------------------------------------
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VehicleColoursOverlay : LF_Test
 {
 	override string GetName()

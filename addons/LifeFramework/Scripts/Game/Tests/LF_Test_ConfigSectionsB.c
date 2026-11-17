@@ -4,6 +4,7 @@
 //! one field of a shipped value each; a bad value is refused with the shipped one kept; a changed
 //! default rank right reaches a new organization's ladder; and `organizations` reaches a client
 //! through the config stream.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigSectionsB : LF_Test
 {
 	override string GetName()

@@ -24,6 +24,7 @@ class LF_Test_PrefabSlotsPackStub : LF_ConfigPackSource
 //! slot pointed at an apple (no LF_IdCardComponent) and the money bag at a missing file fall back
 //! to the core default; a pack removing a slot keeps the core default; an unknown slot is empty.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PrefabSlots : LF_Test
 {
 	static const ResourceName CASH = "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et";

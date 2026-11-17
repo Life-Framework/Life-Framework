@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! Scene pieces (#148), with no world: which crimes leave a footprint card, that a burst's casings
 //! land apart on a ring around the shooter, and how a statement's note is written.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ScenePieces : LF_Test
 {
 	override string GetName()

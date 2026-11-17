@@ -4,6 +4,7 @@
 //! the clean-record question for a window of days; the stamp survives the "convictions" payload.
 //! Across a restart (`tools\cli wt e2e`): the save boot leaves one conviction on today's clock day
 //! for E2E_UID, so the shutdown save carries it; the reload boot finds it back and still recent.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_ConvictionRecord : LF_Test
 {
 	protected static const string UID = "conviction-test-uid";

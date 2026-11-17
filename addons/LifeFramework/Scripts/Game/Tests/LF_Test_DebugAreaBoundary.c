@@ -4,6 +4,7 @@
 // no longer the full ±size box around the origin.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DebugAreaBoundary : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! Staff webhook seam (#1346): with a capture installed Send records lines in order; with none it
 //! only logs and returns. The real HTTP POST (S4) goes behind the same call.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StaffWebhookSeam : LF_Test
 {
 	override string GetName()

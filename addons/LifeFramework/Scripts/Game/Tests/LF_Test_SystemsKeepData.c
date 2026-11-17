@@ -12,6 +12,7 @@
 //! is written with Farming off. The reload boot (LF_E2E_LOAD_BOOT) starts with Farming off from
 //! that file, finds the crop loaded, deletes the file, turns Farming on and finds the crop still
 //! there. A normal suite run compiles neither branch and writes no file.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_SystemsKeepData : LF_Test
 {
 	static const string E2E_PLOT = "e2e-systems-farm";

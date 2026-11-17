@@ -4,6 +4,7 @@
 
 // tier: WORLD
 //! A spawned courier parcel describes where it goes.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ParcelDescription : LF_Test
 {
 	override string GetName()

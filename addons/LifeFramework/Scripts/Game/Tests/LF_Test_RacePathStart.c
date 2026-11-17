@@ -6,6 +6,7 @@
 //! A racer's checkpoint path never joins two bodies (docs/reviews/2026-11-17-life.md #2). The tick
 //! kept the last spot while the racer had no living body, so the first tick after a respawn tested
 //! the line from where they died to the hospital and passed any checkpoint on it.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RacePathStart : LF_Test
 {
 	override string GetName()

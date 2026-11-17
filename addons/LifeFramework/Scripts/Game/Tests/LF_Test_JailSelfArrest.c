@@ -2,6 +2,7 @@
 // tier: WORLD (needs a cell origin, like jail/work)
 //! An on-duty officer who is also wanted cannot arrest themself (crime review 2026-11-17). The police
 //! menu RPC passed any uid in reach, and the officer's own body is always in reach.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JailSelfArrest : LF_Test
 {
 	override string GetName()

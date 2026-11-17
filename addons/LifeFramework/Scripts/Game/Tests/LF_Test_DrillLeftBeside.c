@@ -6,6 +6,7 @@
 // tier: LOGIC
 //! A drill left at a vault or the cash van box rests beside the robber, not under their feet: the bench drill
 //! spawned at the robber's origin and the robber stood inside it for the whole work animation (#571 trailer take).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DrillLeftBeside : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

@@ -3,6 +3,7 @@
 //! Event scene check (#2067): lists of marker orders and roles go in, one fault line per broken
 //! scene comes out. A gap in the route, waypoints with no target and no spawn marker are each named
 //! once; a clean scene reports clean; a bad scene never stops the others. No world.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_EventSceneCheck : LF_Test
 {
 	override string GetName()

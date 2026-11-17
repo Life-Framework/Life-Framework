@@ -4,6 +4,7 @@
 //! the door stays locked, so a stranger after them is still refused. The owner passes without a key;
 //! a cleared owner does not. Before the fix the vanilla door action called Unlock() on every keyed
 //! open, which opened the house to everyone until a restart.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HouseKeyedOpen : LF_Test
 {
 	protected static const ResourceName DOOR = "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et";

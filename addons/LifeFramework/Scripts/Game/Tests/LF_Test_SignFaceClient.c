@@ -3,6 +3,7 @@
 // "the longest word sets the font (expected 66, got 96)".
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignFaceClient : LF_Test
 {
 	override string GetName()

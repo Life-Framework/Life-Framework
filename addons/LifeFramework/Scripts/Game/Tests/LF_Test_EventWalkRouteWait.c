@@ -5,6 +5,7 @@
 //! AddWaypointsStatic), the walk hands out its route only once every planned walker has spawned. A
 //! walker waiting at the spawn marker for the rest of its family is not stuck; once the route is out,
 //! a walker that stands still times out as before. GridWorld cell `event-scene` (Grid_event_scene.layer).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventWalkRouteWait : LF_Test
 {
 	static const string SCENE = "grid_event_scene";

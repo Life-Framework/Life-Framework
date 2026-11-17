@@ -6,6 +6,7 @@
 //! character id, which differs from the record key for an account's first character (its record key
 //! is the account uid), so that character never got its job stop mark or waypoint. The organization
 //! must still resolve by character id (LF_Test_OrgMarkCharacterId).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapShareMemberKey : LF_Test
 {
 	protected static const string ACCOUNT_UID = "sharekey-account";

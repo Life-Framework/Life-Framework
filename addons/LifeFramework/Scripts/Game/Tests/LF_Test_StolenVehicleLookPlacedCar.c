@@ -4,6 +4,7 @@
 //! on the wanted board with its prefab's GUID, the same as a spawned car. The report read the
 //! prefab name raw, which a layer override does not carry, so the poster had no car to draw
 //! (the bug class #1307 found in the chop shop payout).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_StolenVehicleLookPlacedCar : LF_Test
 {
 	override string GetName()

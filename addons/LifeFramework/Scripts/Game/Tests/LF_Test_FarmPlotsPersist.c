@@ -8,6 +8,7 @@
 //! stage and still ripens, and reading twice changes nothing. A saved crop whose plot is not in the
 //! world waits and is kept, and a crop for a plot that now grows something else is dropped. The
 //! test puts every plot back the way it found it.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_FarmPlotsPersist : LF_Test
 {
 	override string GetName()

@@ -2,6 +2,7 @@
 // tier: WORLD
 //! #2641 case (a): the server calls a bare Rpc() on an entity it owns, with a valid RplId (a listen host's own
 //! body). Settles which receivers need a host branch. Findings: docs/architecture/rpc-routing.md.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RpcRoutingOwned : LF_Test
 {
 	static const ResourceName PROBE_PREFAB = "{69B26F072FCDC869}Prefabs/Debug/LF_TestRpcProbe.et";

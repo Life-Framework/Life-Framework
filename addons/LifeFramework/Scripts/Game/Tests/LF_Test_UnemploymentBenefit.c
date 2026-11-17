@@ -6,6 +6,7 @@
 // [LFTEST]   - a balance at the threshold is refused (expected 0, got 100)
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UnemploymentBenefit : LF_Test
 {
 	override string GetName()

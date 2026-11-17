@@ -3,6 +3,7 @@
 //! The owner's `vehicles` section (#283): a vehicle's price in config.json changes what the car lot
 //! charges, merged field by field per vehicle (keyed by prefab GUID), and a number outside the
 //! schema's range is refused with the shipped value kept.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehiclePriceOwner : LF_Test
 {
 	override string GetName()

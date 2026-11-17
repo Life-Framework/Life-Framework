@@ -2,6 +2,7 @@
 // tier: WORLD
 //! World cleanup (#690): an old dropped item far from players is removed; one near a player, an
 //! owned parked car and a named entity are kept; an unowned car left alone goes too.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CleanupSweep : LF_Test
 {
 	protected static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

@@ -3,6 +3,7 @@
 //! Officers question witnesses in person (#267): a town NPC that stood in range gives a statement,
 //! one out of range saw nothing, a low-accuracy roll leaves a statement partial, a player witness
 //! says everything it could see, and the statement reaches the board.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_NpcWitness : LF_Test
 {
 	protected static const string NPC_NEAR = "npc:test-near";

@@ -3,6 +3,7 @@
 //! The practice patient in a world: the prefab is the patient, lethal damage downs it as it would a
 //! player, it does not bleed out, the medic actions are on it, a reset puts a treated one back
 //! healed at its spot and downs it again, and the world reset has a step for it.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DownedPatientWorld : LF_Test
 {
 	static const ResourceName PATIENT_PREFAB = "{686A77317FE9AD1B}Prefabs/Medic/LF_DownedPatient.et";

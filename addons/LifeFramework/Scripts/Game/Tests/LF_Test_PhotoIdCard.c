@@ -7,6 +7,7 @@
 //! a holder is valid and an older one void, the rows survive an export and apply (idempotent, the
 //! number keeps counting), the clerk's and the spawn's rules, the police request's window, and the
 //! card sheet's parts.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PhotoIdCard : LF_Test
 {
 	override string GetName()

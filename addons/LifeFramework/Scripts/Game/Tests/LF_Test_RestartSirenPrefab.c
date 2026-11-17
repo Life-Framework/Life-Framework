@@ -2,6 +2,7 @@
 // tier: WORLD
 //! ops/siren-prefab: the restart siren prefab is a placeable prop (#1345). Spawned, it registers
 //! with LF_Places under the kind "restart-siren" and its mesh resolves (not an empty MeshObject).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RestartSirenPrefab : LF_Test
 {
 	protected static const ResourceName PREFAB = "{947559670A40E3A5}Prefabs/Props/Ops/LF_RestartSiren.et";

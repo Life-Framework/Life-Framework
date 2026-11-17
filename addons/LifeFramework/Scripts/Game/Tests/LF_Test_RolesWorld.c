@@ -5,6 +5,7 @@
 //! NPC roles in the world: every outfit prefab spawns dressed (jacket, pants and boots worn, held in the
 //! NPC's loadout storage), carries its role, and offers its role conversation with its strings in the
 //! table; the variants of a role wear different clothes; every placed town NPC has a role.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RolesWorld : LF_Test
 {
 	protected ref array<IEntity> m_aFound = {};

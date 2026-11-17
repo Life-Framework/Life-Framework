@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! Race course (#1922): checkpoints count in order, a skipped one is refused, laps count, the
 //! finish order is by time. A course here is built in script from ids; no world, no coordinates.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RaceCourse : LF_Test
 {
 	protected LF_RaceCourseRecord BuildCourse(int laps)

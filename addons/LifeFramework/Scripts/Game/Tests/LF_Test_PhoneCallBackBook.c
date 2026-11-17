@@ -5,6 +5,7 @@
 //! request per caller and a bounded book; the pad lists it; a ring-back claims it, a pick-up closes
 //! it, a ring-out reopens it; requests expire, never while being rung back.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PhoneCallBackBook : LF_Test
 {
 	override string GetName()

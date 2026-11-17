@@ -6,6 +6,7 @@
 //! organization hideout, and its id is the key the state is saved under (the door's own hideout id; the
 //! town's is still "Roadmap_Hideout"). A door placed in a test is not the organization hideout. The
 //! film street scene finds its till by kind and id. GridWorld places both in Grid_orgs_vehicles.layer.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacesOrgHideout : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

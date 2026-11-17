@@ -5,6 +5,7 @@
 //! the world, applies a row that loads before its house registers, re-syncs a door that drifted, and a
 //! re-applied load is idempotent. Across a restart (`tools\cli wt e2e`): the save boot stores a locked,
 //! owned house; the reload boot finds it.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_HouseRegistryPersist : LF_Test
 {
 	protected static const ResourceName BUILDING = "{74676598DF38F201}Prefabs/Structures/Core/EL_Building_Base.et";

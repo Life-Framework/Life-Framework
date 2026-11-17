@@ -3,6 +3,7 @@
 // diff (expected 'error:oops', got 'error:null_shot'), then reverted.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ScreenshotFailSafe : LF_Test
 {
 	override string GetName()

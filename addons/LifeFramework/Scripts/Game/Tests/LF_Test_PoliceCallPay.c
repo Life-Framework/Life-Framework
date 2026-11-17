@@ -4,6 +4,7 @@
 //! Police call pay (#2478, parent #234): a fine by another officer or outside the radius completes
 //! nothing; the holder's fine inside the radius completes the call and pays the reward once. The site
 //! comes from the police service call that follows the wanted change (a crime's real order).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceCallPay : LF_Test
 {
 	protected static const string SUSPECT = "police-pay-suspect";

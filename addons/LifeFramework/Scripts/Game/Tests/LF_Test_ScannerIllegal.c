@@ -4,6 +4,7 @@
 //! a search that finds none adds nothing, and legality is config: a legal scanner is no offence.
 //! The offence reaches the hidden crime record like any other crime.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ScannerIllegal : LF_Test
 {
 	protected static const string UID = "scanner-illegal-a";

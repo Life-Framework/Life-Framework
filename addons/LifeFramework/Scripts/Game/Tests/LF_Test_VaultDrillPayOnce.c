@@ -3,6 +3,7 @@
 //! A drill that runs its full time, held at the door, opens the vault and pays exactly once: the
 //! haul spawns on the tick the server clock passes the drill time; further ticks, a second rob and
 //! a repeated finish pay nothing more, and the drill is left at the vault.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VaultDrillPayOnce : LF_Test
 {
 	override string GetName()

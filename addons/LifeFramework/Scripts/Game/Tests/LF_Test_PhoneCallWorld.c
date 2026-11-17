@@ -6,6 +6,7 @@
 //! picks up; both lines show who talks; a talker who walks away ends it; the bus hears every
 //! transition; nobody on duty takes no coin and rings nothing.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PhoneCallWorld : LF_Test
 {
 	static const ResourceName PAYPHONE = "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et";

@@ -4,6 +4,7 @@
 // tier: WORLD
 //! A locked car's cargo is closed on the server (#2411): no inventory move puts an item in or
 //! takes one out, whatever the client's UI showed. Unlocked, the same moves work.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VehicleLockedCargo : LF_Test
 {
 	protected static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

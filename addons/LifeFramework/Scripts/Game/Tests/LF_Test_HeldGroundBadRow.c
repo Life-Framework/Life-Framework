@@ -8,6 +8,7 @@
 //! points read as 0; the other rows still apply. A second apply gives the same sites, an empty apply
 //! leaves every site unheld, and a released lease loses its held ground. The site ids are not in the
 //! world: a lease outlives a missing site, so its held ground does too.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HeldGroundBadRow : LF_Test
 {
 	protected static const string GOOD_SITE = "held-ground-bad-good";

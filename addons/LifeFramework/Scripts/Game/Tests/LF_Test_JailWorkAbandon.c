@@ -3,6 +3,7 @@
 //! A prisoner who logs out mid-task is not left busy (crime review 2026-11-17). The work timer
 //! returned on a missing worker before clearing the busy mark, so after rejoining every task
 //! was refused as BUSY until the world reset.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JailWorkAbandon : LF_Test
 {
 	override string GetName()

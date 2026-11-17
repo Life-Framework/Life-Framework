@@ -3,6 +3,7 @@
 //! A stamped fence tool carried by a character keeps its serial through the real save path (the
 //! "itemserials" payload, save version 22, #470): captured from the live item, written, wiped, read
 //! back, applied onto a fresh character. A row that no longer matches its snapshot is skipped.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_CarriedSerialPersist : LF_Test
 {
 	protected static const string CHARACTER_ID = "carried-serial-character";

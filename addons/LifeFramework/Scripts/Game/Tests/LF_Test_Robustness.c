@@ -3,6 +3,7 @@
 // and "half a second after a robbery is still active". Restored, it passes.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Robustness : LF_Test
 {
 	override string GetName()

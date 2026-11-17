@@ -5,6 +5,7 @@
 // tier: LOGIC
 //! The core/pack string split (#325): flavour keys the core still shows keep neutral core text; the
 //! pack's table overrides them when it is loaded. Passes on the core alone and with the pack.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StringSplit : LF_Test
 {
 	override string GetName()

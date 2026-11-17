@@ -8,6 +8,7 @@
 //! The `perf` harness verb's summary: the percentiles and fps a board measurement is judged on
 //! (docs/architecture/visual-boards-budget.md). Nearest-rank percentiles of the frame times, the
 //! mean, and the memory delta, from a fixed set of frames.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HarnessPerf : LF_Test
 {
 	override string GetName()

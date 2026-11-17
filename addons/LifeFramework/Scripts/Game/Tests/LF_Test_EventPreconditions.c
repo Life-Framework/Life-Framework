@@ -3,6 +3,7 @@
 //! Event preconditions and aborts (#1949): an hour range that wraps midnight, a player count that
 //! does not hold below the minimum, a cooldown condition, conditions AND-ed and aborts OR-ed, and
 //! the two feeding LF_EventPhaseRules.Decide. No world.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_EventPreconditions : LF_Test
 {
 	override string GetName()

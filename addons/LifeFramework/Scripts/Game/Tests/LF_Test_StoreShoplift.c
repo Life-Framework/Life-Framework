@@ -7,6 +7,7 @@
 //! stands outside the boundary is a thief (the alarm sounds at the store, dispatch is called, the
 //! report names them, the tags close); a shopper who paid walks out clean; an item eaten in the shop
 //! stays on the bill; two shoppers are judged separately. Deletes what it spawns.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_StoreShoplift : LF_Test
 {
 	override string GetName()

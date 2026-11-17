@@ -10,6 +10,7 @@
 //! "wanted" with their looks from "wantedlooks", twice the same (idempotent); a version 28 save
 //! loads the reports with no look; a row for a report the save does not hold is skipped. The test
 //! puts back what it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_WantedLooksPersist : LF_Test
 {
 	protected static const string ROBBER = "test-wantedlooks-robber";

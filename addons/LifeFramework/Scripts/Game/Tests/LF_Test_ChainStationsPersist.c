@@ -6,6 +6,7 @@
 //! work and still finishes with the remaining units, and reading twice changes nothing. A saved
 //! batch whose barrel is not in the world waits and is kept, and a batch for a changed step is
 //! dropped. The test puts every barrel back the way it found it.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_ChainStationsPersist : LF_Test
 {
 	override string GetName()

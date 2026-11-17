@@ -6,6 +6,7 @@
 //! become map areas through LF_MapAreas.AppendConfigRows; a row with no outline is skipped; a name
 //! already in the list (a zone entity, a layer entity) is not drawn twice. A pack's own rows, merged
 //! over the core file, are tested in the pack.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapAreaConf : LF_Test
 {
 	//------------------------------------------------------------------------------------------------
