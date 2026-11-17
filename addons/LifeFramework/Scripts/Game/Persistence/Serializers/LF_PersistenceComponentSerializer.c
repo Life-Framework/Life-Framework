@@ -1289,6 +1289,8 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("identity card rows failed to read; carried cards print again at the next spawn");
+				// The rows, and with them the highest number printed, are gone: do not number from 1 (#2413).
+				LF_PhotoIdCard.NoteRegistryUnreadable();
 			}
 		}
 		else if (payload == "caseboard")
