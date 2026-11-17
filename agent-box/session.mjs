@@ -1310,7 +1310,7 @@ async function runWhereSession(rest) {
 }
 
 // `pull [dest]`: copies the remote session's evidence here: the run folder's
-// agent-box/reports (journey.html, films) and each client's newest el-captures.
+// agent-box/reports (journey.html, films), each client's newest el-captures and the server's console.log (server/console.log).
 // Lands in tmp/session-pull/<machine>-<time>/ unless dest is given.
 async function pullFromSession(rest) {
   const ptr = readRemotePointer();
@@ -1336,6 +1336,10 @@ async function pullFromSession(rest) {
     "  $newest = Get-ChildItem -LiteralPath $logs -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
     "  if ($newest) { $to = Join-Path $stage $_.Name; New-Item -ItemType Directory -Force $to | Out-Null; Copy-Item -Force (Join-Path $newest.FullName 'console.log') $to -ErrorAction SilentlyContinue; $cap = Join-Path $newest.FullName 'el-captures'; if (Test-Path $cap) { Copy-Item -Recurse -Force $cap $to } }",
     "}",
+    // The server's newest console.log: `town ready` reads the boot log from it (the "no ... placed on this map: off" lines).
+    "$slogs = Join-Path $session 'server\\logs'",
+    "$sn = Get-ChildItem -LiteralPath $slogs -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+    "if ($sn) { $to = Join-Path $stage 'server'; New-Item -ItemType Directory -Force $to | Out-Null; Copy-Item -Force (Join-Path $sn.FullName 'console.log') $to -ErrorAction SilentlyContinue }",
     `if (Test-Path ${tb.psQuote(zip)}) { Remove-Item -Force ${tb.psQuote(zip)} }`,
     `Compress-Archive -Path (Join-Path $stage '*') -DestinationPath ${tb.psQuote(zip)}`,
     "exit 0",

@@ -3,16 +3,18 @@
 // its own restart, a full machine queues, the floor holds), the mirror decision, the in-place viewer write on a
 // real temporary git repo (same file identity, git clean afterwards), the warm remote argv and --cold, a bad
 // target failing before the queue, the box's resident-server state line, and the pool's reap of it.
-// inputs: tools/lib/look-job.mjs, tools/lib/pool-ram.mjs, tools/lib/wb-gate.mjs, tools/visual/look.mjs, tools/visual/look-serve.mjs, tools/remote/pool.mjs, tools/validation/look-job-selftest.mjs
+// inputs: tools/commands/evidence.mjs, tools/lib/look-job.mjs, tools/lib/pool-ram.mjs, tools/lib/wb-gate.mjs, tools/visual/look.mjs, tools/visual/look-serve.mjs, tools/remote/pool.mjs, tools/validation/look-job-selftest.mjs
 // red-proof: 2026-11-16, idleVerdict ignoring `starved` failed "a starved machine closes the resident Workbench
 // at once"; mirrorViewer using `git checkout` instead of an in-place write failed "the viewer file keeps its identity";
 // lookStartVerdict not adding the resident's working set failed "a restart gets the resident's memory back".
+// 2026-11-17: mirrorMode without the REOPEN_SAFE_EXT check failed "a modified addons/A/Prefabs/Shop.et restarts even
+// when listed for reopen"; renderProblem returning null always failed "another tree rendered: refused".
 
 import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, statSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { idleVerdict, lookStartVerdict, mirrorMode, phaseText, requestNeedsRam, timeline, LOOK_IDLE_MIN } from "../lib/look-job.mjs";
+import { idleVerdict, lookStartVerdict, mirrorMode, phaseText, renderProblem, requestNeedsRam, samePairProblem, timeline, LOOK_IDLE_MIN } from "../lib/look-job.mjs";
 import { parseWbState } from "../lib/wb-gate.mjs";
 import { parseArgs, remoteLookArgs, targetProblem } from "../visual/look.mjs";
 import { classifyChange, mirrorViewer, viewerAt } from "../visual/look-serve.mjs";
@@ -56,6 +58,19 @@ check("docs only: reopen", mirrorMode({ changes: [M("M", "docs/x.md")] }).reload
 check("a modified .layer restarts by default (nothing proven)", mirrorMode({ changes: [M("M", "addons/A/W.layer")] }).reload === "restart");
 check("a modified .layer reopens when its extension is proven", mirrorMode({ changes: [M("M", "addons/A/W.layer")], reopenExt: [".layer"] }).reload === "reopen");
 check("an added .layer always restarts", mirrorMode({ changes: [M("A", "addons/A/W.layer")], reopenExt: [".layer"] }).reload === "restart");
+// A prefab, material or config is a resource a live Workbench keeps across a world reopen: listing it in
+// LF_LOOK_REOPEN_EXT must not let the warm server shoot the old one (#2364 suspicion, 2026-11-17).
+for (const p of ["addons/A/Prefabs/Shop.et", "addons/A/M.emat", "addons/A/C.conf"]) {
+  check(`a modified ${p} restarts even when listed for reopen`, mirrorMode({ changes: [M("M", p)], reopenExt: [".layer", ".et", ".emat", ".conf"] }).reload === "restart");
+  check(`the server classifier restarts on a modified ${p} even when listed`, classifyChange({ from: "a", to: "b", changes: [M("M", p)], reopenExt: [".et", ".emat", ".conf"] }).reload === "restart");
+}
+// ---- what a picture shows (index.json inputs)
+check("the requested tree rendered: trusted", renderProblem({ expected: "abc123", rendered: "abc123" }) === null);
+check("another tree rendered: refused", /rendered addons tree def456/.test(renderProblem({ expected: "abc123", rendered: "def456" }) || ""));
+check("no rendered hash: refused", renderProblem({ expected: "abc123", rendered: null }) !== null);
+check("a before and after of the same addon files is refused", /same addon files/.test(samePairProblem("t1", "t1") || ""));
+check("a before and after of different files passes", samePairProblem("t1", "t2") === null);
+check("a picture with no recorded tree is not judged", samePairProblem(null, "t1") === null && samePairProblem("t1", null) === null);
 check("a script restarts even when .layer is proven", mirrorMode({ changes: [M("M", "addons/A/S.c")], reopenExt: [".layer"] }).reload === "restart");
 check("classifyChange delegates the same rule", classifyChange({ from: "a", to: "b", changes: [M("M", "addons/A/W.layer")], reopenExt: [".layer"] }).reload === "reopen" && classifyChange({ from: "a", to: "b", changes: [M("D", "addons/A/W.layer")], reopenExt: [".layer"] }).reload === "restart");
 

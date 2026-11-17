@@ -7,14 +7,17 @@
 // 1. Branch guard. Only a `ws/town-draft-<place>-<slot>` branch may change an island layer, and only its own
 //    `Place_<place>_<slot>.layer`. The branch is GITHUB_HEAD_REF in CI, else the checked-out branch; main and a detached HEAD
 //    outside CI are not checked. The change set is the diff against the merge base with origin/main, untracked files included.
-// 2. Claims. Every island layer has its claim `tools/town/claims/<place>-<slot>.json` and every claim its layer; the claim agrees with
-//    the place's approved mapping; no two claims name one building (or plot), except a street slot marked `shared`.
+// 2. Claims, per slot. Every island layer has its claim `tools/town/claims/<place>-<slot>.json` and every claim its layer; the claim
+//    agrees with the place's approved mapping; no two claims name one building (or plot), except a street slot marked `shared`.
+//    A mapped slot with neither layer nor claim is not fitted yet and passes: drafts fit one slot at a time (#2347).
+//    Place completeness (every mapped slot fitted) is `town check <place> --complete` and `town ready`, never validate.
 // 3. Footprints. Each layer's top-level entities stand inside the claimed building's footprint (or plot) plus the slot's margin,
 //    read from `docs/everon/places/<place>/dossier.json`.
 // A claim or layer whose place has no dossier or mapping fails: the footprint is unknown. With no island layer and no claim the
-// check passes at once. The per-place completeness (required slots, kinds, perf budget) is `tools\cli town check <place>`.
+// check passes at once. Kinds, the perf budget and completeness are `tools\cli town check <place> [--complete]`.
 // red-proof: tools/validation/island-zones-selftest.mjs runs the fixture places in tools/town/fixtures/check-place/ (a complete one, a
-// missing slot, an entity outside its footprint, a double claim, a non-town-draft branch) and asserts each result.
+// one-slot draft, a claim without its layer, a missing slot, an entity outside its footprint, a double claim, a non-town-draft branch)
+// in both modes and asserts each result.
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";

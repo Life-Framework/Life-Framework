@@ -54,6 +54,12 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	[RplProp()]
 	protected string m_sVehicleIdentifier;
 
+	//! The id a key must carry (#2411). Empty means the vehicle identifier, which is what every key
+	//! carried before locks could be changed. Changing the locks gives it a new value, so every
+	//! older key stops matching while the vehicle identifier (plates, records, crime) stays put.
+	[RplProp()]
+	protected string m_sKeyId;
+
 	//------------------------------------------------------------------------------------------------
 	//! A key matches when both identifiers are non-empty and equal. Two empty identifiers must not
 	//! match: an unbound key opens nothing.
@@ -317,8 +323,38 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return The id a key must carry: the changed-locks key id, else the vehicle identifier.
+	string GetKeyId()
+	{
+		if (!m_sKeyId.IsEmpty())
+			return m_sKeyId;
+
+		return m_sVehicleIdentifier;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the id a key must carry from now on (#2411). Empty or the vehicle identifier means
+	//! the original key. A key bound to any other id stops opening this vehicle.
+	void SetKeyId(string keyId)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		if (keyId == m_sVehicleIdentifier)
+			keyId = string.Empty;
+
+		if (m_sKeyId == keyId)
+			return;
+
+		m_sKeyId = keyId;
+		Replication.BumpMe();
+		LF_Debug.Log("VehicleLock", string.Format("key id rebound on %1: %2", m_sVehicleIdentifier, GetKeyId()));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \param key The item to test.
-	//! \return True when the key carries an LF_VehicleKeyComponent whose identifier matches.
+	//! \return True when the key carries an LF_VehicleKeyComponent bound to this lock's current key
+	//! id. Action CanBePerformed runs this every frame, so it does not log (#2411).
 	bool IsValidKey(IEntity key)
 	{
 		if (!key)
@@ -328,10 +364,7 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 		if (!keyComponent)
 			return false;
 
-		bool matches = IdentifiersMatch(keyComponent.GetVehicleIdentifier(), m_sVehicleIdentifier);
-		LF_Debug.Log("VehicleLock", string.Format("key check: key=%1 vehicle=%2 match=%3",
-			keyComponent.GetVehicleIdentifier(), m_sVehicleIdentifier, matches));
-		return matches;
+		return IdentifiersMatch(keyComponent.GetVehicleIdentifier(), GetKeyId());
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,18 @@
+{
+  "about": "Fence workshop yard, before pass 1: the street front, the yard, the bay, the office, the washroom and the annex back room, by day and at night. Points are building space (tools/buildings/pipeline/scenario.mjs); the front faces +z, x runs along the facade, the floor is at y 0.19. The annex stands behind the bay at x -3.26, z -6.45.",
+  "session": { "profile": "full", "mission": "grid" },
+  "steps": [
+    { "shot": "warmup", "look": [0.0, 2.0, 3.9], "from": [-6, -0.5, 12], "wait": 6000, "why": "the first frames after a teleport draw the building before it streams in" },
+    { "do": { "verb": "time", "hour": 14 }, "wait": 1500 },
+    { "shot": "street", "look": [0.0, 2.0, 3.9], "from": [-6, -0.5, 12], "why": "the yard from the street: it must read as a garage" },
+    { "shot": "yard_side", "look": [-3.26, 2.0, -6.45], "from": [-9, -0.5, 4], "why": "the annex behind the workshop, seen from the side yard" },
+    { "shot": "bay", "look": [2.8, 1.0, 0.0], "from": [-2.2, 0.6, 3.0], "why": "the workshop bay from inside the industrial door" },
+    { "shot": "office", "look": [-3.2, 1.0, 1.5], "from": [2.0, 0.6, 1.2], "why": "the office and parts counter from the bay door" },
+    { "shot": "wc", "look": [-1.9, 1.2, -3.0], "from": [0.8, 0.4, 2.0] },
+    { "shot": "backroom", "look": [-3.26, 1.0, -6.45], "from": [1.6, 0.6, 1.4], "why": "the fence's back room in the annex" },
+    { "do": { "verb": "time", "hour": 22 }, "wait": 2000 },
+    { "shot": "night_street", "look": [0.0, 2.0, 3.9], "from": [-6, -0.5, 12] },
+    { "shot": "night_bay", "look": [2.8, 1.0, 0.0], "from": [-2.2, 0.6, 3.0] },
+    { "shot": "night_backroom", "look": [-3.26, 1.0, -6.45], "from": [1.6, 0.6, 1.4] }
+  ]
+}

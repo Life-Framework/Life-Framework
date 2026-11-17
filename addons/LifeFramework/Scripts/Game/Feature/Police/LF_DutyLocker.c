@@ -201,6 +201,7 @@ class LF_DutyLocker
 		LF_PoliceRanks.OnDutyChanged(account, false);
 		account.SetOnDuty(false);
 		account.SetFaction(LF_Faction.CIVILIAN);
+		RefreshMapShares(account);
 		LF_Debug.Info(FEATURE, string.Format("shift ended by death for %1: civilian inventory returns at respawn=%2", AccountId(account), civilian != null));
 		return true;
 	}
@@ -228,6 +229,29 @@ class LF_DutyLocker
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (accounts)
 			accounts.SaveAndReleaseAccount(account);
+
+		RefreshMapShares(account);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The duty change takes effect on the map at once: dispatch marks arrive on clock-in and leave on
+	//! clock-out or death, instead of on the share sweep (LF_MapShares.SWEEP_MS).
+	protected static void RefreshMapShares(LF_PlayerAccount account)
+	{
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (!accounts || !GetGame().GetPlayerManager())
+			return;
+
+		array<int> playerIds = {};
+		GetGame().GetPlayerManager().GetPlayers(playerIds);
+		foreach (int playerId : playerIds)
+		{
+			if (accounts.GetAccount(playerId) == account)
+			{
+				LF_MapShares.Refresh(playerId);
+				return;
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

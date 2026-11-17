@@ -16,7 +16,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { conflictKind, healMerge, isLive, predictConflicts, pushBranch, LIVE_MS } from "../prs.mjs";
-import { safeRemoveTree } from "../link-safety.mjs";
+import { describeRun, removeScratch, useHermeticGit } from "../lib/selftest-git.mjs";
+
+useHermeticGit(); // no machine git config, no auto-gc beside the scratch repos (tools/lib/selftest-git.mjs)
 
 const failures = [];
 const fail = (m) => failures.push(m);
@@ -29,7 +31,7 @@ function git(dir, args) {
 }
 function must(dir, args) {
   const r = git(dir, args);
-  if (r.status !== 0) throw new Error(`git ${args.join(" ")} in ${dir}: ${r.stderr || r.stdout}`);
+  if (r.status !== 0) throw new Error(`git ${args.join(" ")} in ${dir}: ${describeRun(r)}`);
   return r.stdout.trim();
 }
 function write(dir, rel, text) {
@@ -222,7 +224,7 @@ ${t}`);
 } catch (e) {
   fail(`scenario threw: ${e.message}`);
 } finally {
-  safeRemoveTree(temp);
+  removeScratch(temp);
 }
 
 if (failures.length) {

@@ -1,0 +1,106 @@
+{
+ "schema": 1,
+ "kit": "fit-nested",
+ "system": "fixture",
+ "source": {
+  "file": "tools/town/fixtures/fit-nested-source.layer",
+  "group": "*",
+  "origin": "fixture",
+  "frame": "origin-entity"
+ },
+ "scope": "room",
+ "anchoring": {
+  "floorY": 0,
+  "floors": [
+   {
+    "id": "f0",
+    "y": 0
+   }
+  ],
+  "footprint": {
+   "source": "rows",
+   "min": [
+    -3,
+    -1
+   ],
+   "max": [
+    3,
+    4
+   ]
+  },
+  "front": "-x",
+  "counters": [],
+  "adapt": "fixture"
+ },
+ "rows": [
+  {
+   "id": "nx-sign",
+   "prefab": "{AAAAAAAAAAAAAA30}Prefabs/Structures/Fixture/Vanilla_Plate.et",
+   "role": "sign",
+   "verb": "on floor",
+   "offset": [
+    0,
+    1,
+    0
+   ],
+   "yaw": 0,
+   "config": [
+    {
+     "component": "MeshObject",
+     "set": {},
+     "blocks": [
+      "Materials"
+     ]
+    }
+   ],
+   "wall": "free",
+   "floor": "f0"
+  },
+  {
+   "id": "nx-alarm",
+   "prefab": "{AAAAAAAAAAAAAA10}Prefabs/Structures/Fixture/Vanilla_Box.et",
+   "role": "alarm",
+   "verb": "on floor",
+   "offset": [
+    1,
+    1,
+    0
+   ],
+   "yaw": 0,
+   "config": [
+    {
+     "component": "LF_AlarmMountComponent",
+     "set": {
+      "m_fReach": "7"
+     },
+     "blocks": []
+    }
+   ],
+   "wall": "free",
+   "floor": "f0"
+  },
+  {
+   "id": "nx-vanilla",
+   "prefab": "{AAAAAAAAAAAAAA20}Prefabs/Structures/Fixture/Vanilla_Sign.et",
+   "role": "sign",
+   "verb": "on floor",
+   "offset": [
+    2,
+    1,
+    0
+   ],
+   "yaw": 0,
+   "config": [
+    {
+     "component": "MeshObject",
+     "set": {},
+     "blocks": [
+      "Materials"
+     ]
+    }
+   ],
+   "wall": "free",
+   "floor": "f0"
+  }
+ ]
+}

@@ -86,6 +86,9 @@ class LF_RobVehicleAction : ScriptedUserAction
 			return null;
 		}
 
+		if (LF_CuffEnforcement.Refuse(user, "vehicle robbery"))
+			return null;
+
 		if (vehiclePrefab.IsEmpty())
 		{
 			LF_Debug.Error("Crime", "vehicle robbery failed: no vehicle prefab configured on the action");

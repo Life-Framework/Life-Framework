@@ -89,8 +89,8 @@ export function confOf(rows) {
   const lines = ["LF_MapAreaConfig {", " m_aAreas {"];
   for (const r of rows) {
     lines.push(`  LF_MapAreaRow "${guidOf(r.id)}" {`, `   m_sId "${r.id}"`, `   m_eStyle ${r.style}`, `   m_eShape ${r.shape}`);
-    if (r.shape === "CIRCLE") lines.push(`   m_vCentre "${r.centre[0]} 0 ${r.centre[1]}"`, `   m_fRadius ${r.radius}`);
-    else lines.push(`   m_aPoints { ${r.points.map(([x, z]) => `"${x} 0 ${z}"`).join(" ")} }`);
+    if (r.shape === "CIRCLE") lines.push(`   m_vCentre ${r.centre[0]} 0 ${r.centre[1]}`, `   m_fRadius ${r.radius}`);
+    else lines.push(`   m_aPoints { ${r.points.map(([x, z]) => `${x} 0 ${z}`).join(" ")} }`); // unquoted: a quoted vector loads as zeros in game
     lines.push("  }");
   }
   lines.push(" }", "}", "");

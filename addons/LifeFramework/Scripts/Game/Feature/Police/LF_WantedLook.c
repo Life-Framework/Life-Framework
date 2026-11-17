@@ -63,6 +63,38 @@ class LF_WantedLook
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the prefab of every item in the suspect's loadout slots, for what the clothes hide.
+	static void WornPrefabs(IEntity suspect, notnull array<ResourceName> outWorn)
+	{
+		outWorn.Clear();
+		if (!suspect)
+			return;
+
+		EquipedLoadoutStorageComponent storage = EquipedLoadoutStorageComponent.Cast(suspect.FindComponent(EquipedLoadoutStorageComponent));
+		if (!storage)
+			return;
+
+		for (int slot = 0; slot < storage.GetSlotsCount(); slot++)
+		{
+			IEntity item = storage.Get(slot);
+			if (item)
+				outWorn.Insert(LF_Utils.GetPrefabName(item));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a witness could draw from `look`: a covered face leaves no portrait (the poster keeps its
+	//! empty photo frame). A hidden build keeps it: the portrait is head and shoulders, and the
+	//! dressed character already wears the item that covers the build. The photo ID calls Capture, not this.
+	static string Witnessed(string look, bool faceHidden)
+	{
+		if (faceHidden)
+			return string.Empty;
+
+		return look;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Client: a look back into the character prefab and the slot -> item prefabs.
 	//! \return False when there is no character to draw.
 	static bool Parse(string look, out ResourceName character, notnull array<int> outSlots, notnull array<ResourceName> outItems)

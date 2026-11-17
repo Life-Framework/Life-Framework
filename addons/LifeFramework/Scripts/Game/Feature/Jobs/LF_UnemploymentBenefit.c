@@ -2,7 +2,7 @@
 //! Unemployment benefit, collected in person at the job counter. The safety net that replaced
 //! the passive paycheck (decision 2026-11-08).
 //!
-//! Rule: an account may collect when its bank balance is strictly below the configured
+//! Rule: an account may collect when its bank balance plus the cash it carries is strictly below the configured
 //! threshold, it is not on duty as police, it has no active delivery run, and its last
 //! collection is at least the configured cooldown ago. Everything is read on the server.
 //! The cooldown ledger is saved as seconds since the last collection (LF_Progression, save
@@ -147,6 +147,23 @@ class LF_UnemploymentBenefit
 			return 0;
 		}
 
+		return CollectFor(uid, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server seam of CollectAtCounter with the account id already resolved (a test body has none).
+	//! \return Cash placed on the player.
+	static int CollectFor(string uid, IEntity user)
+	{
+		if (!Replication.IsServer() && Replication.IsRunning())
+			return 0;
+
+		if (uid.IsEmpty() || !user)
+		{
+			LF_Debug.Error("Benefit", "benefit refused: no account id or no player entity");
+			return 0;
+		}
+
 		LF_JobsConfig config = LF_JobsConfig.Get();
 		if (!config)
 		{
@@ -158,6 +175,10 @@ class LF_UnemploymentBenefit
 		int balance = 0;
 		if (bank)
 			balance = bank.GetBalance();
+
+		// The means test counts the cash the player carries as well as the bank: a player who keeps
+		// their money in their pockets is not broke (economy review 2026-11-17).
+		balance += Math.Max(LF_MoneyUtils.GetCash(user), 0);
 
 		string reason;
 		int owed = Claim(uid, balance, IsWorking(uid), LF_JobGuards.Now(), config.m_iBenefitBalanceThreshold, config.m_iBenefitAmount, config.m_fBenefitCooldownSeconds, reason);

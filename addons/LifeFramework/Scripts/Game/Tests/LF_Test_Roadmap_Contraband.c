@@ -45,6 +45,7 @@ class LF_Test_Roadmap_Contraband : LF_Test
 		ctx.EqualStr("convoy refused: not a member", LF_Contraband.GetLastRefusal(), "the non-member start is logged");
 
 		ctx.True(LF_Contraband.Start(member, null), "a member starts the convoy");
+		LF_Contraband.MarkDriven(member);
 		ctx.Equal(0, LF_Contraband.Deliver(member, 0, null), "delivery without contraband pays nothing");
 		ctx.EqualStr("delivery refused: no contraband", LF_Contraband.GetLastRefusal(), "the empty delivery is logged");
 		ctx.Equal(LF_Contraband.PAYOUT, LF_Contraband.Deliver(member, 1, null), "delivery pays the configured cash once");
@@ -165,10 +166,12 @@ class LF_Test_Roadmap_ContrabandWorld : LF_Test
 		LF_Hideout.Assign(LF_Hideout.OrgHideoutId(), org.GetId());
 
 		ctx.True(LF_Contraband.Start(arriving, null), "the arriving driver starts a run");
+		LF_Contraband.MarkDriven(arriving);
 		ctx.False(LF_Contraband.LeftVehicleAt(arriving, dropOrigin + "6 0 4"), "getting out beside the drop does not fail the run");
 		ctx.Equal(LF_Contraband.PAYOUT, LF_Contraband.Deliver(arriving, 1, null), "the driver who got out at the drop is paid");
 
 		ctx.True(LF_Contraband.Start(quitting, null), "the quitting driver starts a run");
+		LF_Contraband.MarkDriven(quitting);
 		ctx.True(LF_Contraband.LeftVehicleAt(quitting, dropOrigin + "200 0 0"), "getting out 200 m from the drop fails the run");
 		ctx.Equal(0, LF_Contraband.Deliver(quitting, 1, null), "the driver who got out on the way is not paid");
 

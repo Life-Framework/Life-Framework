@@ -1,0 +1,13 @@
+GenericEntity Fit_shop_Place {
+ components {
+  LF_PlaceComponent "{AAAAAAAAAAAAAAA1}" {
+   m_sKind "StoreCounter"
+   m_sId "sample-square.shop"
+  }
+ }
+ coords 980 12.4 2015
+}
+GenericEntity Fit_shop_Counter : "{BBBBBBBBBBBBBBB1}Prefabs/Fx/Table.et" {
+ coords 982 12.4 2014
+ angleY 90
+}

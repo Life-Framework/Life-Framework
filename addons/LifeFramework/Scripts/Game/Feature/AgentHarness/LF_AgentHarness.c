@@ -605,7 +605,7 @@ class LF_AgentCommand
 		}
 
 		cmd.Arg1 = parts[2];
-		if (cmd.Arg1 == "show" || cmd.Arg1 == "hide" || cmd.Arg1 == "terminal" || cmd.Arg1 == "credits")
+		if (cmd.Arg1 == "show" || cmd.Arg1 == "hide" || cmd.Arg1 == "terminal" || cmd.Arg1 == "credits" || cmd.Arg1 == "policeapps" || cmd.Arg1 == "policeapps_read" || cmd.Arg1 == "policeapps_approve")
 			return true;
 
 		if (cmd.Arg1 == "theme")
@@ -3416,6 +3416,8 @@ class LF_AgentHarness
 
 		if (!action.CanBePerformedScript(user))
 		{
+			// The reply stays the bare token (proofs compare it); the reason a player would read goes to the log.
+			LF_Debug.Info("AgentHarness", string.Format("use %1 on %2: cannot_perform reason=%3", className, target.GetName(), action.GetCannotPerformReason()));
 			UseReply(user, commandId, "error", "cannot_perform");
 			return;
 		}
@@ -3533,6 +3535,36 @@ class LF_AgentHarness
 
 			LF_Debug.Log(FEATURE, "kit terminal");
 			WriteResult(cmd.Id, "ok", "opened");
+			return;
+		}
+
+		// #1288: the police applications panel (what /applications opens), Read on the first row, Approve.
+		if (cmd.Arg1 == "policeapps")
+		{
+			LF_PoliceApplicationGmPanel.Open();
+			if (!LF_PoliceApplicationGmPanel.Current())
+			{
+				WriteResult(cmd.Id, "error", "open_failed");
+				return;
+			}
+
+			WriteResult(cmd.Id, "ok", "opened");
+			return;
+		}
+
+		if (cmd.Arg1 == "policeapps_read" || cmd.Arg1 == "policeapps_approve")
+		{
+			string press = LF_PoliceApplicationGmPanel.ROW_PREFIX + "0";
+			if (cmd.Arg1 == "policeapps_approve")
+				press = LF_PoliceApplicationGmPanel.PART_APPROVE;
+
+			if (!LF_PoliceApplicationGmPanel.Press(press))
+			{
+				WriteResult(cmd.Id, "error", "not_open");
+				return;
+			}
+
+			WriteResult(cmd.Id, "ok", press);
 			return;
 		}
 

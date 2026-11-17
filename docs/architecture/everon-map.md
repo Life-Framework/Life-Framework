@@ -103,11 +103,16 @@ What this means for us:
 A POI is **a live `LF_Places` entry whose kind has a row in the POI table**. Nothing else feeds it.
 
 ```
-LF_PlaceComponent (kind, id) ──> LF_Places (every machine) ──> LF_MapPois (client) ──> LF_MapPlacesUI
+LF_PlaceComponent (kind, id) ──> LF_Places (public kinds: every machine; private: server) ──> LF_MapPois (client) ──> LF_MapPlacesUI
                                                  ^                    ^
                                      #2208 live states       LF_MapPoiConfig rows (core default + pack overlay)
 ```
 
+- **Private kinds stay on the server (#2492).** A kind whose row is not `PUBLIC` never registers in a
+  client's `LF_Places`. The server sends each player, to their own controller, the private places the
+  visibility rule gives them (`LF_MapPrivatePlaces`), on the join sync and whenever what they know or
+  their duty changes; discovery is the server's own scan (`LF_MapDiscoverScan`). `LF_MapPois` on a client
+  draws its public places plus that set.
 - `Configs/Map/LF_MapPois.conf`, class `LF_MapPoiConfig`, one `LF_MapPoiKind` row per place kind:
   `m_sKind` (the `LF_Places` kind, e.g. `Bank`, `Hospital`, `PoliceStation`), `m_sCategory` (`civic`,
   `shop`, `work`, `law`, `health`, `travel`, `story`, `underworld`), `m_sIcon` (imageset quad),
@@ -157,6 +162,21 @@ placed with `SCR_MapEntity.WorldToScreen` on `OnMapPan` and `OnMapZoom`, culled 
 - **The native route** (engine `MapItem`s via `CreateCustomMapItem`) would draw cheaper, but its icons
   come from the map's descriptor imageset and its text props are thin. Probe it in card M4 against 300
   POIs; take it only if the widget path costs more than 1 ms a frame with the map open.
+
+  **M4 probe (#2232), what is measured and what is owed.** The widget route is built (`LF_MapPlacesUI`).
+  The cluster rule (`LF_MapClusterRules`, node twin `tools/map/rules/cluster.mjs`, one case table) buckets
+  400 POIs in about 0.09 ms a pass in node (`tools/validation/map-cluster-selftest.mjs`), and in the game
+  it runs only when a zoom ends: a pan moves each icon with one `WorldToScreen` and one `FrameSlot.SetPos`
+  and hides what is off screen, no clustering and no allocation. The in-engine numbers come from the layer's
+  own probe: start a client with `-lfMapPlacesProbe` and open the map; it logs
+  `[LFDebug:MapPlaces] probe widgets: 400 POIs ... rebuild N us, reposition N us per pass`. The native
+  `MapItem` route is not built: there are no numbers for it, so the decision "take it only if widgets cost
+  more than 1 ms a frame" rests on the probe line above, which the final in-game proof records here.
+  Owed: the probe numbers (needs a session; `map-shots` is card M0b #2228) and the `MapItem` comparison, which
+  card M18's PERF test (400 POIs, 40 areas) is the place to settle.
+  The cluster bucket is one eighth of the view width in world space and a stamp appears below zoom 4 (view
+  800 m); at zoom 4 and closer every place is its own icon. A bucket is a grid, so two places a few metres
+  apart on a cell edge stay two icons; a nearest-neighbour merge would fix it at a higher cost and is not worth it yet.
 
 ### Visibility
 
@@ -250,6 +270,7 @@ controller. Every shared mark is a row:
 | `icon`, `colour` | u8 each | Indexes into the shared-mark config |
 | `text` | string, at most 32 chars | Localization key or a short player text (org marks go through the profanity filter) |
 | `expires` | world time, or 0 | Dispatch and taxi marks expire; org marks do not |
+| `areaRadius`, `areaStyle` | int16 metres (0 none, at most 5000), u8 | Optional circle around `pos` in an area style (section 2); the client draws it as a local area named after the key and removes it with the mark |
 
 - **Who receives it.** The server resolves the audience and sends `RpcDo_MapShareAdd(row)` with
   `RplRcver.Owner` on each recipient's controller. Nobody outside the audience gets a byte. Removal is
