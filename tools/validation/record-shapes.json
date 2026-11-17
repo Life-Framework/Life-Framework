@@ -1,5 +1,5 @@
 {
-  "saveVersion": 49,
+  "saveVersion": 50,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -51,7 +51,8 @@
     "houses": "LF_HouseLockRecord",
     "itemkeys": "LF_StorageItemKeyRecord",
     "graceclock": "LF_GraceClockRow",
-    "jobruns": "LF_JobRunRow"
+    "jobruns": "LF_JobRunRow",
+    "leaseidle": "LF_HideoutIdleRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -608,6 +609,14 @@
         "string m_sPlayerUid",
         "int m_iAmount",
         "int m_iJob"
+      ]
+    },
+    "LF_HideoutIdleRow": {
+      "since": 50,
+      "fields": [
+        "int m_iVersion",
+        "string m_sHideoutId",
+        "int m_iLastActive"
       ]
     }
   }
