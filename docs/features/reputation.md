@@ -13,5 +13,9 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
 - ✅ `LF_OnReputationChanged` (`LF_ReputationEvents.c`) publishes only when a tier changes.
 - ✅ Config `Configs/Reputation/LF_Reputation.conf` (`LF_ReputationConfig`): three factions with neutral
   `#LF-Reputation_*` labels, a 60 a day cap, the underworld not shown, three conservative awards.
-- 🔲 Event subscriptions, persistence payload, job gates, contracts, owner RPC and screens, the pack's words,
+- ✅ **Standing survives a restart** (#2698, merged, in-dev): the `reputation` payload (save version 53,
+  `LF_ReputationRow`: row version, character record key, faction, points). 0 rows are not written; on load a
+  removed faction is skipped with a warning and points clamp to the current thresholds. Cooldowns and daily caps
+  stay session state. Proof: `LF_Test_ReputationPersist` and `tools/cli wt e2e`.
+- 🔲 Event subscriptions, job gates, contracts, owner RPC and screens, the pack's words,
   pack overlay and the owner `config.json` section `reputation` (later cards of #1018).

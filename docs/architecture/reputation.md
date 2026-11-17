@@ -132,13 +132,12 @@ A refusal always names the faction and the tier word in its reason key, never a 
 
 ## 6. Persistence
 
-Payload `standing`, appended to `RegisterPersistencePayloads` with a version bump
+Payload `reputation` (save version 53, #2698; `LF_ReputationRow`), appended to `RegisterPersistencePayloads` with a version bump
 (`validate-persistence-version`).
 
 | Field | Type | Note |
 |---|---|---|
-| version | int | Written first |
-| count | int | Rows that follow |
+| version | int | Row format, written first in each row (1). The row count is the array's own |
 | characterKey | string | The character record key, never an entity or `EntityID` |
 | faction | string | The faction id, so a removed faction is skipped with a warning on load |
 | points | int | Clamped on load to the current thresholds |

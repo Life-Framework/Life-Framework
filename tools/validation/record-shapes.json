@@ -1,5 +1,5 @@
 {
-  "saveVersion": 52,
+  "saveVersion": 53,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -54,7 +54,8 @@
     "jobruns": "LF_JobRunRow",
     "leaseidle": "LF_HideoutIdleRow",
     "properties": "LF_PropertyRecord",
-    "placements": "LF_PlacementRow"
+    "placements": "LF_PlacementRow",
+    "reputation": "LF_ReputationRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -648,6 +649,15 @@
         "string m_sKind",
         "string m_sPropertyId",
         "string m_sItemPrefab"
+      ]
+    },
+    "LF_ReputationRow": {
+      "since": 53,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterKey",
+        "string m_sFaction",
+        "int m_iPoints"
       ]
     }
   }

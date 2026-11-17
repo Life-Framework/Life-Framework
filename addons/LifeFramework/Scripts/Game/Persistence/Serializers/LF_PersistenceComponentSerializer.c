@@ -36,7 +36,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, properties, placements. The written version is that list's length (52). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, properties, placements, reputation. The written version is that list's length (53). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -120,6 +120,8 @@
 //! loads empty.
 //! A version 51 save includes the property rows and has no permanent placements (#1032): nothing a
 //! player placed was kept, which is what that build did.
+//! A version 52 save includes the permanent placements and has no standing rows (#2698): every
+//! character loads with no standing, which is what that build did.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -293,6 +295,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("leaseidle");
 		order.Insert("properties");
 		order.Insert("placements");
+		order.Insert("reputation");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -326,7 +329,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 52);
+		context.WriteValue("version", 53);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -925,6 +928,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_PlacementRow> placementRows = LF_PlacementSave.ExportAll();
 			context.Write(placementRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 permanent placement(s)", placementRows.Count()));
+		}
+		else if (payload == "reputation")
+		{
+			// Standing per character and faction (#2698): character record key, faction id, points; 0 rows are not written.
+			array<ref LF_ReputationRow> reputationRows = LF_Reputation.ExportAll();
+			context.Write(reputationRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 standing row(s)", reputationRows.Count()));
 		}
 		else
 		{
@@ -1704,6 +1714,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 				LF_PlacementSave.ApplyAll(placementRows);
 			else
 				ReadFailed("permanent placements failed to read, nothing placed is restored");
+		}
+		else if (payload == "reputation")
+		{
+			// A version 1-52 save never reaches this payload: every character starts with no standing.
+			array<ref LF_ReputationRow> reputationRows = new array<ref LF_ReputationRow>();
+			if (context.Read(reputationRows))
+			{
+				int reputationKept = LF_Reputation.ApplyAll(reputationRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 standing row(s)", reputationKept, reputationRows.Count()));
+			}
+			else
+			{
+				ReadFailed("standing rows failed to read, standing stays as it was");
+			}
 		}
 		else
 		{
