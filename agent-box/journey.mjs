@@ -20,7 +20,7 @@
 // passes the gate through the LF_HARNESS build.
 
 import { spawnSync } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -38,6 +38,10 @@ export const DEPOSIT = 1200;
 // Without the debug-menu fixture (playtest mission) a courier carries a few hundred.
 export const SMALL_DEPOSIT = 100;
 export const GIVE = 50;
+// The earn step's drop is 158 m from the depot and the shipped runMinDistance is 300 m: the step lowers it to this.
+export const EARN_MIN_DISTANCE = 100;
+// Time on the run before the drop: 0.6 x 158 m / 10 m/s is about 9.5 s, plus slack.
+export const EARN_RUN_MS = 12000;
 export const ORG_NAME = "Journeymen";
 
 // "faction=CIVILIAN cash=500 ..." -> numbers where they are numbers.
@@ -100,7 +104,12 @@ export const STEPS = [
     id: "earn",
     title: "Earn cash: one parcel run",
     clients: [1],
-    judge: ({ before, after }) => (num(after[1], "cash") > num(before[1], "cash") ? [] : [`cash ${before[1].cash} -> ${after[1].cash}, expected a payout`]),
+    // The run takes a cargo deposit and gives it back with the pay, so the payout is measured against
+    // the cash after any funding the action did (ctx.cashBase), not the cash before the step.
+    judge: ({ before, after, ctx }) => {
+      const base = ctx.cashBase ?? num(before[1], "cash");
+      return num(after[1], "cash") > base ? [] : [`cash ${base} -> ${after[1].cash}, expected a payout`];
+    },
   },
   {
     id: "fund",
@@ -329,7 +338,7 @@ export function selectSteps(ids, mission, clients = 2) {
     if (s.needsThree && clients < 3) continue;
     let list = s.clients.map((n) => (n === "c" ? c : n));
     if ((s.id === "arrive" || s.all) && clients >= 3) list = [1, 2, 3];
-    out.push({ ...s, clients: list, c });
+    out.push({ ...s, clients: list, c, mission });
   }
   return out;
 }
@@ -357,12 +366,32 @@ export const ACTIONS = {
     h.pause(1500);
   },
   earn(h) {
-    h.on(1, { verb: "use", className: "LF_JobStartRunAction", entityName: "Roadmap_Job_Depot" }, 10000);
-    h.pause(1500);
-    h.on(1, { verb: "stand", entityName: "Roadmap_Job_Drop" });
-    h.pause(1500);
-    h.on(1, { verb: "use", className: "LF_JobDropoffAction", entityName: "Roadmap_Job_Drop" }, 10000);
-    h.pause(2000);
+    // The run rules (#2408): a cargo deposit from cash, a drop at least runMinDistance from the depot, and
+    // at least runMinTimeFraction of the road time on the run. The bare DebugWorld gets all three: the
+    // debug menu funds the deposit, the owner config lowers the distance for this step only (the drop is
+    // 158 m from the depot and no world entity moves), and the action waits out the time rule because
+    // `stand` teleports.
+    if (h.ctx.mission !== "playtest") {
+      h.on(1, { verb: "open", menu: "DebugMenu", mode: "show" });
+      h.pause(800);
+      h.on(1, { verb: "click", widget: "GiveCashButton" });
+      h.on(1, { verb: "open", menu: "DebugMenu", mode: "hide" });
+      h.pause(1500);
+    }
+    h.ctx.cashBase = num(h.state(1), "cash");
+    h.config?.({ runMinDistance: EARN_MIN_DISTANCE });
+    try {
+      h.on(1, { verb: "stand", entityName: "Roadmap_Job_Depot" });
+      h.pause(1500);
+      h.on(1, { verb: "use", className: "LF_JobStartRunAction", entityName: "Roadmap_Job_Depot" }, 10000);
+      h.pause(1500);
+      h.on(1, { verb: "stand", entityName: "Roadmap_Job_Drop" });
+      h.pause(EARN_RUN_MS);
+      h.on(1, { verb: "use", className: "LF_JobDropoffAction", entityName: "Roadmap_Job_Drop" }, 10000);
+      h.pause(2000);
+    } finally {
+      h.config?.(null);
+    }
   },
   fund(h) {
     h.on(1, { verb: "open", menu: "DebugMenu", mode: "show" });
@@ -588,7 +617,7 @@ function foundOrg(h, n, name) {
 export function runJourney(steps, driver) {
   const rows = [];
   for (const step of steps) {
-    const ctx = { c: step.c ?? 1 };
+    const ctx = { c: step.c ?? 1, mission: step.mission };
     const shots = [];
     const log = [];
     const h = {
@@ -608,6 +637,14 @@ export function runJourney(steps, driver) {
         return r;
       },
       state: (n) => parseState(driver.state(n)),
+      // The owner config's jobs section for this step: config({ key: value }) streams it to the server,
+      // config(null) takes it away again. A driver without one (the selftest's) leaves the shipped rules.
+      config: driver.config
+        ? (jobs) => {
+            driver.config(jobs);
+            log.push(`owner config jobs ${jobs ? JSON.stringify(jobs) : "restored"}`);
+          }
+        : undefined,
       shot: (n, name) => {
         const r = driver.send(n, { verb: "capture", mode: "ui", name: name.replaceAll("-", "_") }, 25000);
         // The engine can answer warn:file_not_found while the BMP is still landing; resolveCapture
@@ -862,6 +899,34 @@ export function selftestJourney() {
   const filmPage = readFileSync(writeJourney(filmRows, scratch, { mission: "debug", when: "now" }), "utf8");
   if (filmed.join() !== "begin atm,end atm") failures.push(`film hooks ran ${filmed.join()}`);
   if (!filmPage.includes('Video (client 1): <a href="film/j-atm.mp4">')) failures.push("a filmed step does not link its clip");
+
+  // earn under the run rules (#2507): fund the deposit, lower the distance for the run only, wait out the
+  // time rule, restore the config; the judge counts the payout from the cash after funding, so a refused
+  // drop (the deposit stays taken) fails even though the funding raised the cash.
+  const earnRun = (mission, paysOut) => {
+    let wallet = 500;
+    const calls = [];
+    const earnDriver = {
+      ...driver,
+      send: (n, spec) => {
+        calls.push(spec.widget || spec.className || spec.verb);
+        if (spec.widget === "GiveCashButton") wallet += 1000;
+        if (spec.className === "LF_JobStartRunAction") wallet -= 100;
+        if (spec.className === "LF_JobDropoffAction") wallet += paysOut ? 100 + 80 : 0;
+        return { status: "ok", detail: spec.verb === "capture" ? "$logs:x.png" : "ok", line: `1 ${spec.verb}` };
+      },
+      state: () => `faction=CIVILIAN cash=${wallet} bank=0 job=PARCEL org=none`,
+      pause: (ms) => calls.push(`pause${ms}`),
+      config: (jobs) => calls.push(jobs ? `config${JSON.stringify(jobs)}` : "config-restored"),
+    };
+    const rows = runJourney(selectSteps(["earn"], mission, 2).filter((s) => s.id === "earn"), earnDriver);
+    return { row: rows[0], calls: calls.join(",") };
+  };
+  const paid = earnRun("debug", true);
+  if (paid.row.failures.length) failures.push(`fake earn run failed: ${paid.row.failures.join("; ")}`);
+  if (!/GiveCashButton.*config\{"runMinDistance":100\}.*LF_JobStartRunAction.*pause12000,LF_JobDropoffAction.*config-restored/.test(paid.calls)) failures.push(`earn ran ${paid.calls}`);
+  if (!earnRun("debug", false).row.failures.length) failures.push("earn judge passed a refused drop because the funding raised the cash");
+  if (earnRun("playtest", true).calls.includes("GiveCashButton")) failures.push("earn used the debug menu on the playtest mission");
   return failures;
 }
 
@@ -926,6 +991,19 @@ async function main(argv) {
     },
     resolve: (r) => h.resolveCapture(r.detail),
     pause: (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms),
+    config: (jobs) => {
+      const file = join(ses.sessionPaths(dir).server, "profile", "LifeFramework", "config.json");
+      if (jobs) {
+        mkdirSync(dirname(file), { recursive: true });
+        writeFileSync(file, JSON.stringify({ schemaVersion: 1, jobs }, null, 2));
+      } else {
+        rmSync(file, { force: true });
+      }
+      at(1);
+      const r = h.sendCommand({ verb: "configreload" }, 10000);
+      if (r.status !== "ok") console.log(`journey: configreload: ${r.status} ${r.detail}`);
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 3500);
+    },
     restart: () => {
       const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "session", "restart"], { windowsHide: true, stdio: "inherit" });
       return { code: r.status ?? 1 };

@@ -6,6 +6,19 @@
 
 import { conflictPaths, humanConflicts } from "./ship-queue.mjs";
 
+// Merge origin/<base> for ship the way `prs heal` does (prs.mjs healMerge, passed in as heal): a conflict only
+// in the generated registry or language confs is regenerated and committed instead of failing the ship.
+// 28 of 55 failed ships on 2026-11-17 were a registry conflict the agent then fixed by hand.
+export function shipMergeBase(wtRoot, base, heal, log = () => {}) {
+  const m = heal(wtRoot, { base: `origin/${base}` });
+  if (m.status === "up-to-date" || m.status === "merged" || m.status === "healed") {
+    if (m.status === "healed") log(`ship: merged origin/${base}; regenerated ${(m.resolved ?? []).join(", ")}`);
+    return m;
+  }
+  const files = (m.conflicted ?? []).length ? `conflicts in: ${m.conflicted.join(", ")} (` : "(";
+  throw new Error(`merge origin/${base} into this branch failed: ${files}${m.reason}); run git merge origin/${base}, fix, commit, re-run`);
+}
+
 export const BEHIND = /base branch was modified|not up to date|is behind|out of date|update the branch/i;
 export const isBehindRefusal = (text) => BEHIND.test(String(text ?? ""));
 

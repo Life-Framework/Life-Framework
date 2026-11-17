@@ -13,18 +13,18 @@
 // world and profile", "an island client grows to the island client peak" and machinePeaks checks fail.
 
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import * as pr from "../lib/pool-ram.mjs";
 import * as q from "../lib/pool-queue.mjs";
 import * as pool from "../remote/pool.mjs";
 import { WB_RESERVE_MB } from "../lib/wb-gate.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 // A scratch git checkout: the pool derives its hub (tmp/wt) from the checkout it is given.
 const scratchRepo = (tag) => {
-  const dir = mkdtempSync(join(tmpdir(), tag));
+  const dir = scratchDir(tag);
   spawnSync("git", ["init", "-q", dir], { windowsHide: true });
   return dir;
 };
@@ -60,7 +60,7 @@ check(pr.recordPeak({ "server:small": Array(pr.MAX_SAMPLES).fill(700) }, "server
   const live2 = pr.trackPeaks(live1.live, [{ pid: 7, kind: "workbench", world: pr.SMALL, wsMb: 3500 }], live1.peaks);
   const gone = pr.trackPeaks(live2.live, [], live2.peaks);
   check(gone.recorded === 1 && gone.peaks["workbench:small"]?.[0] === 3500, `an ended Workbench records its highest working set (${JSON.stringify(gone.peaks)})`);
-  const dir = mkdtempSync(join(tmpdir(), "lf-pool-ram-"));
+  const dir = scratchDir("lf-pool-ram-");
   try {
     pr.recordLive(dir, [{ pid: 9, kind: "server", world: pr.ISLAND, wsMb: 2600 }], { tag: "lf-testbox" });
     pr.recordLive(dir, [], { tag: "lf-testbox" });

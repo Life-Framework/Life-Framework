@@ -159,6 +159,28 @@ class LF_ServiceCallMapMarks
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: a service closed the calls of one caller (the suspect is no longer wanted). Removes
+	//! every mark of that service and caller; other callers' marks stay. \return How many went.
+	static int OnClosed(notnull LF_OnServiceCallClosed closed)
+	{
+		Prune();
+		int removed;
+		for (int i = Marks().Count() - 1; i >= 0; i--)
+		{
+			LF_ServiceCallMapMark mark = Marks()[i];
+			if (mark.m_sService != closed.m_sService || mark.m_sCallerUid != closed.m_sCallerUid)
+				continue;
+
+			LF_MapShares.Remove(mark.m_sKey);
+			Marks().Remove(i);
+			removed++;
+			LF_Debug.Info(FEATURE, string.Format("%1 call '%2' closed: map mark %3 removed", mark.m_sService, mark.m_sPlace, mark.m_sKey));
+		}
+
+		return removed;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the calls closed (world reset). Removes every dispatch mark. \return How many went.
 	static int CloseAll()
 	{
@@ -245,6 +267,13 @@ class LF_ServiceCallMapMarkSubscriber : LF_EventSubscriber
 			return true;
 		}
 
+		LF_OnServiceCallClosed closed = LF_OnServiceCallClosed.Cast(busEvent);
+		if (closed)
+		{
+			LF_ServiceCallMapMarks.OnClosed(closed);
+			return true;
+		}
+
 		return false;
 	}
 
@@ -255,11 +284,13 @@ class LF_ServiceCallMapMarkSubscriber : LF_EventSubscriber
 		{
 			LF_EventBus.Unsubscribe(LF_OnServiceCall, s_Subscriber);
 			LF_EventBus.Unsubscribe(LF_OnServiceCallTaken, s_Subscriber);
+			LF_EventBus.Unsubscribe(LF_OnServiceCallClosed, s_Subscriber);
 		}
 
 		s_Subscriber = new LF_ServiceCallMapMarkSubscriber();
 		LF_EventBus.Subscribe(LF_OnServiceCall, s_Subscriber);
 		LF_EventBus.Subscribe(LF_OnServiceCallTaken, s_Subscriber);
+		LF_EventBus.Subscribe(LF_OnServiceCallClosed, s_Subscriber);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -269,6 +300,7 @@ class LF_ServiceCallMapMarkSubscriber : LF_EventSubscriber
 		{
 			LF_EventBus.Unsubscribe(LF_OnServiceCall, s_Subscriber);
 			LF_EventBus.Unsubscribe(LF_OnServiceCallTaken, s_Subscriber);
+			LF_EventBus.Unsubscribe(LF_OnServiceCallClosed, s_Subscriber);
 		}
 
 		s_Subscriber = null;

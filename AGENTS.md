@@ -47,6 +47,8 @@ agent per area. `tools\cli usage` shows where the tokens went.
 4. **Binary assets are plain blobs** marked `-text` in `.gitattributes`.
    Text is LF in the repo and in every checkout (`* text=auto eol=lf`; `.cmd`/`.bat`
    stay CRLF). Generators write LF; scripts that patch files need not handle `\r\n`.
+   A lone CR byte in a text file is a bug: a `\return` in a doc comment written through a shell
+   becomes CR plus `eturn` and splits the comment. `validate-no-lone-cr` fails it.
 5. **All classes are `LF_`; tests are `LF_Test_*`.** The `EL_` to `LF_` rename
    landed 2026-11-09 (#334). The real EveronLife mod (`EL_`) can load on the same
    server, so an `EL_` name can collide. `validate-no-el-prefix.mjs` rejects any
@@ -103,7 +105,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `tools\cli wt new <slug> [--wait]` | Create worktree `Life-Framework-ws-<slug>` on `ws/<slug>` with its own ports; claims a ready warm checkout (about 2 s) when the pool has one (`wt warm`, `docs/worktrees.md` "Fast `wt new`") |
 | `tools\cli feature new <Area> <Name> [--kind logic\|world\|ui\|item] [--issue N]` | Scaffold a feature: script, tests with red-proof slots, session proof, string rows, docs rows, `tmp/pr-body-<slug>.md` and `tmp/feature-<name>.md` (the ordered checklist). `feature check` lists the `TODO(scaffold)` markers left |
 | `tools\cli evidence <issue> before\|after <area\|png>` / `... table` | Keep `look` pictures in `website/public/docs-images/<issue>/` and print the before and after markdown for the PR |
-| `tools\cli validate [--full\|--all]` | The repo checks in `tools/validation/` whose declared inputs changed since their last green run in this worktree (it says how many it skipped). The default also skips the Workbench compile (`validate-scripts.ps1`). `--all` runs every check; `--full`, `ci` and `wt gate` run every check plus the compile |
+| `tools\cli validate [--full\|--all]` | The repo checks in `tools/validation/` except those already green on the exact same input content in this or any other worktree (it says how many it skipped). The default also skips the Workbench compile (`validate-scripts.ps1`). `--all` runs every check; `--full`, `ci` and `wt gate` run every check plus the compile |
 | `tools\cli test --no-build --tier fast\|all\|persistence` | Boot DebugWorld, run the `LF_Test` suite; exit code is pass/fail; a compile error fails it |
 | `tools\cli test --no-build --only <LF_Test_Class\|name\|LF_Test_File>[,...]` | Run just those tests (the iteration loop); prints `SUMMARY tier=only` |
 | `tools\cli test --no-build --red <LF_Test_Class\|name\|LF_Test_File>[,...]` | Batched red proof: ONE boot, each test's `RedProof()` hook on; exit 0 only if every listed test FAILED, else names the hollow ones; prints `SUMMARY tier=red` |
@@ -113,7 +115,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
 | `tools\cli logs <pattern>` | Grep the newest server `console.log` |
 | `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
-| `tools\cli wt ship <slug> [--refs N] [--body-file F]` | No pre-merge gate (maintainer, 2026-11-15). PR body checks (`tools/lib/pr-quality.mjs`: a body file for an `addons/` change, `## Manual testing`, a picture for a player-visible change, no open finding in `tmp/review-<slug>.md`), a seconds-long preflight (merge-tree, `validate` of changed inputs), push, PR, `gh pr merge --auto --merge` at once; a branch GitHub calls behind gets main merged in and pushed again. GitHub's `validate` is the only pre-merge check (docs/worktrees.md "Ship"). `--refs N` puts `Refs #N` in the body; merging never closes an issue |
+| `tools\cli wt ship <slug> [--refs N] [--body-file F] [--commit "<subject>"]` | No pre-merge gate (maintainer, 2026-11-15). `--commit` commits leftover changes first; a main conflict only in the test registry or language confs is regenerated, not returned to you. PR body checks (`tools/lib/pr-quality.mjs`: a body file for an `addons/` change, `## Manual testing`, a picture for a player-visible change, no open finding in `tmp/review-<slug>.md`), a seconds-long preflight (merge-tree, `validate` of changed inputs), push, PR, `gh pr merge --auto --merge` at once; a branch GitHub calls behind gets main merged in and pushed again. GitHub's `validate` is the only pre-merge check (docs/worktrees.md "Ship"). `--refs N` puts `Refs #N` in the body; merging never closes an issue |
 | `tools\cli wt gate <slug>` | Optional manual gate for the diff's tier (`tools/lib/gate-tier.mjs`); not part of ship |
 | `tools\cli main-guard start\|stop\|status` | The gate, on main after the merge: the Workbench compile first on each new head (a red compile is bisected and reverted at once), then build, full suite, placement audit and e2e (flake rule: red twice). Each head's `compiled-ok`/`green`/`red` is in `tmp/wt/main-guard-state.json` and a `main-guard` commit status. `wt new` and `world-sync` pin to the newest `compiled-ok` commit (`--unchecked-main` / `--unchecked` override); `promote --confirm` needs `green` (docs/worktrees.md "Main guard") |
 | `toolscli playtest checklist [--all] [--budget 60]` / `playtest verdicts <file>` | One playtest session for many `needs-playtest` issues: collects the `## Manual testing` steps of their merged PRs, drops repeats, orders them as a walking route (two-player, restart and JIP marked), estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass/fail box per issue, the fixed smoke list (`docs/playtest/smoke-list.md`) first. Default is the top hour: open M2 chapter and epic work first, then big player flows, polish last; one line can cover several issues. `verdicts` reads the ticked file and PRINTS the `gh` label and comment commands; the maintainer or lead runs them, agents never do |
@@ -198,6 +200,10 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
 - **A node selftest that builds a scratch git repo** calls `useHermeticGit()` and cleans up with `removeScratch()`
   (`tools/lib/selftest-git.mjs`): no machine git config, a fixed identity and branch, no auto-gc holding the folder
   (EBUSY on the Windows CI runner), and a failure message that says the exit code and what git printed (`describeRun`).
+- **A node selftest's temp folder comes from `scratchDir(prefix)`** (`tools/lib/scratch.mjs`), never a bare
+  `mkdtempSync(join(tmpdir(), ...))`: it is removed when the process ends, even on a failed check or `process.exit`.
+  400,000 leaked `lf-*` folders (18 GB) piled up on lf-testbox in a week (#2589); `selftest-scratch-selftest` fails a
+  bare call. `toolscli tmp-sweep [--hours N] [--dry-run]` deletes older `lf-*` leftovers.
 - Persistence tests go through public mutators and accessors only. In-session
   round trips prove nothing about restarts; use `wt e2e` or a real restart.
 - **Pass cache.** `test` (and the suite inside `ci`, `wt gate`) reuses a pass whose key matches: `addons/` (tracked and untracked), its `resourceDatabase.rdb`, `tools/test/`, the selection, the addon list and the server build. A failure is never reused; persistence tier, `--red`, `dev`, `e2e` and the placement audit always run (`docs/worktrees.md` "Pass cache").
@@ -221,6 +227,11 @@ bug for each one; they transfer here because the engine is the same.
 - **No ternary operator.** `cond ? a : b` is a compile error. Write `if/else`.
 - **No null-coalescing operator.** Initialize in the declaration or guard with
   `if (!x)`.
+- **`Substring` and `string.Format` cut at 8191 chars, silently.** Rebuilding a
+  long string (a save, a config, a payload) with `a.Substring(..) + b` loses its
+  tail with no error; join pieces under 8 KB with `+` or write through a JSON
+  context. `validate-string-splice` fails a new site; a bounded one is marked
+  `// lf-bounded: <why>` (the baseline only shrinks).
 - **Strong refs (`ref`) for Managed classes.** A Managed field not marked `ref`
   is garbage-collected at end of frame. Put `ref` on BOTH the collection and
   its elements: `ref array<ref LF_Foo>`, `ref map<string, ref LF_Foo>`.
@@ -235,8 +246,12 @@ bug for each one; they transfer here because the engine is the same.
   `Replication.BumpMe()` after changing it. Throttle to significant changes or
   batch; per-frame `BumpMe` floods the network.
 - **RPC direction.** `RplRcver.Server` = client→server (name `RpcAsk_*`);
-  `RplRcver.Broadcast`/`Owner` = server→client (name `RpcDo_*`). Host check:
-  `if (Replication.IsServer())` call the handler directly, else `Rpc(...)`.
+  `RplRcver.Broadcast`/`Owner` = server→client (name `RpcDo_*`). On the server
+  (a listen host too), `Rpc()` runs a `Server` handler, or an `Owner` handler
+  on an entity the server owns, at once inside the call: no host branch, and a
+  direct call beside it runs the handler twice. A `Broadcast` never runs on the
+  server; call its effect locally when the host's player must see it. An entity
+  with no `RplComponent` drops every Rpc (`docs/architecture/rpc-routing.md`).
 - **A client can only RPC on entities it owns.** Inter-player communication
   goes through the server. Validate client requests on the server (money,
   inventory, RPC payloads); never trust the client.

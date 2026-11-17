@@ -15,12 +15,12 @@
 //   handle_line() without the hmac.compare_digest test -> FAIL (python) no token: unauthorized, and the handler never ran
 import net from "node:net";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, utimesSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, utimesSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { BridgeError, KNOWN_INSTALLS, LineReader, NEEDS, bridge, encodeRequest, liveSource, locate, parseResponse, tokenFile, userExtensionsDir, userRepoRoot, versionOf } from "../lib/blender.mjs";
 import { parseArgs, resolveShowTarget } from "../commands/blender.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -103,7 +103,7 @@ export async function main() {
   ok(threw === "protocol", "client: a non-JSON answer is a protocol error");
   ok(parseResponse('{"ok":true,"x":1}').x === 1, "client: a normal answer parses");
 
-  const tmp = mkdtempSync(join(tmpdir(), "lf-bridge-selftest-"));
+  const tmp = scratchDir("lf-bridge-selftest-");
   const fileEnv = { LF_BRIDGE_TOKEN_FILE: join(tmp, "token") };
   try {
     ok(tokenFile(fileEnv) === join(tmp, "token") && /\.life-framework[\\/]blender-bridge-token$/.test(tokenFile({})), "client: the token file is ~/.life-framework/blender-bridge-token, overridable");
@@ -169,7 +169,7 @@ export async function main() {
   ok(pa.pos[0] === "x.py" && pa.flags.has("--live") && pa.val["--needs"] === "archbuilder" && pa.rest.join(",") === "--live,a", "command: arguments after -- belong to the script");
 
   // `show`: what a target resolves to, in a scratch repo
-  const rt = mkdtempSync(join(tmpdir(), "lf-show-selftest-"));
+  const rt = scratchDir("lf-show-selftest-");
   try {
     const put = (rel, mtimeS) => {
       const f = join(rt, rel);

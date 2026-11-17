@@ -10,11 +10,11 @@
 // red-proof: before tools/host/crashloop.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/crashloop.mjs'" (2026-11-15).
 
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const cl = await import(pathToFileURL(join(ROOT, "tools", "host", "crashloop.mjs")).href);
@@ -99,7 +99,7 @@ const off = drive({ runs: [{}], guard: null });
 if (off.r.reason !== "max-crashes") fail(`with no guard the loop ended ${JSON.stringify(off.r)}`);
 
 // 3. The alert reaches the webhook when one is set, and never prints it.
-const base = mkdtempSync(join(tmpdir(), "lf-host-crashloop-"));
+const base = scratchDir("lf-host-crashloop-");
 try {
   const SECRET = "https://example.invalid/api/webhooks/123/SECRET-TOKEN-xyz";
   const bare = join(base, "bare");

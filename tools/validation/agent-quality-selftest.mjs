@@ -2,12 +2,12 @@
 // inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // (tools/lib/pr-quality.mjs) and the evidence table (tools/commands/evidence.mjs). No game, no git.
 // red-proof: see the two observed lines in docs/architecture/agent-quality.md "Proof of the checks".
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import * as feature from "../feature/new.mjs";
 import * as pq from "../lib/pr-quality.mjs";
 import { fitWidth, pairs, table } from "../commands/evidence.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -17,7 +17,7 @@ const check = (ok, msg) => {
 // ------------------------------------------------------------- the scaffold
 const ST_TAIL = "\n  }\n }\n}\n";
 function scratchTree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-feature-ws-selftest-"));
+  const root = scratchDir("lf-feature-ws-selftest-");
   const put = (rel, text) => {
     mkdirSync(dirname(join(root, rel)), { recursive: true });
     writeFileSync(join(root, rel), text);

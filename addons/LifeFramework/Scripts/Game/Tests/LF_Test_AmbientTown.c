@@ -49,3 +49,20 @@ class LF_Test_AmbientTown : LF_Test
 		return c;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! Self-registration (LF_TestRegistration.c): this file is the whole of adding this test.
+class LF_TestRegistration_AmbientTown : LF_TestRegistration
+{
+	protected static bool s_bRegistered = LF_TestManager.Enqueue(new LF_TestRegistration_AmbientTown());
+
+	override LF_TestTier Tier()
+	{
+		return LF_TestTier.LOGIC;
+	}
+
+	override LF_Test Create()
+	{
+		return new LF_Test_AmbientTown();
+	}
+}

@@ -12,10 +12,10 @@
 // red-proof: before tools/town/lib/poi-check.mjs existed this printed "FAIL cannot load tools/town/lib/poi-check.mjs: ERR_MODULE_NOT_FOUND" (2026-11-17).
 // red-proof: with the `kinds.has(poi)` test removed from checkSlotPois this printed "FAIL a slot whose front kind has no POI row passes (the acceptance)" (2026-11-17).
 
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = 0;
@@ -81,7 +81,7 @@ async function run() {
   check(poi.checkSlotPois(clone(town), new Set()).length > 0, "an empty POI table passes a template that names kinds");
 
   // ---- `town map <slug> --check` carries it (a temp root: the confs, the templates, the fixture dossier, a mapping)
-  const tmp = mkdtempSync(join(tmpdir(), "lf-poi-check-"));
+  const tmp = scratchDir("lf-poi-check-");
   try {
     for (const rel of [join("addons", "LifeFramework", "Configs", "Map"), join("addons", "LF_Everon1989", "Configs", "Map")]) {
       mkdirSync(join(tmp, rel), { recursive: true });

@@ -59,12 +59,13 @@ import { isTemplateMission } from "../tools/server-template/template.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
+import * as rdbCache from "./lib/rdb-cache.mjs";
 import { boxMode, missingForHostStart } from "./lib/host-box.mjs";
 import { addonsArgs, addonsDirArgs, addonDir, flagshipMission, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE, PACK, PACK_MISSION } from "./lib/addons.mjs";
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
-import { cmdPrs } from "./prs.mjs";
+import { cmdPrs, healMerge as healMergeSync } from "./prs.mjs";
 import { cmdPromote } from "./promote.mjs";
 import { runRelease } from "./release/release.mjs";
 import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
@@ -1475,6 +1476,10 @@ function refreshUntilFresh(exe, args, gameDir, addon, tag, profile) {
   return { status: r.exited ? 0 : r.done ? 0 : null, error: r.timedOut ? { code: "ETIMEDOUT" } : undefined };
 }
 
+function rdbLockName(root) {
+  return `rdb-${String(root).replace(/\\/g, "/").split("/").pop().replace(/[^A-Za-z0-9._-]/g, "_")}`;
+}
+
 function ensureAddonResourceDatabase(root, name) {
   const addon = addonDir(root, name);
   const tag = name === CORE ? "" : ` [${name}]`;
@@ -1499,11 +1504,22 @@ function ensureAddonResourceDatabase(root, name) {
     return 1;
   }
   const exe = workbenchExe();
+  // A worktree that already refreshed the identical resource set left its rdb in the hub (tools/lib/rdb-cache.mjs).
+  const shared = rdbCache.open({ hub: wt.ensureHub(root), addonName: name, addonDir: addon, exe });
+  const reused = () => {
+    if (!shared?.take()) return false;
+    console.log(`resource database${tag}: reused shared rdb ${shared.key.slice(0, 8)} (no Workbench)`);
+    return true;
+  };
+  if (reused()) return 0;
   if (!existsSync(exe)) {
     console.log(`WARN  resource database stale${tag}: ${what}; Workbench not found (${exe}), cannot refresh`);
     return 1;
   }
   console.log(`resource database stale${tag}: ${what} -> refreshing (headless Workbench, takes ~${RDB_REFRESH_TYPICAL_S}s)`);
+  // Per worktree, not the hub-wide "build" lock: the refresh writes only this worktree's rdb with its own profile
+  // (server/profile/rdb), so refreshes of different worktrees may overlap; the Workbench slot still caps them for RAM.
+  const rdbLock = rdbLockName(root);
   let locked = false;
   let wbSlot = null;
   const queuedAt = Date.now();
@@ -1511,14 +1527,24 @@ function ensureAddonResourceDatabase(root, name) {
     // One of this machine's Workbench slots, so a pool machine running this refresh shows busy to the
     // next chooseRefresh/chooseGate (tools/lib/wb-lock.mjs); the order matches cmdBuild (slot, then lock).
     // Its wait is drawn from the same budget as the build lock's (rdbBudget, lock-wait.mjs).
-    wbSlot = wbRoute.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs: rdbBudget().remaining() });
-    const lockFile = join(wt.ensureHub(root), "locks", "build.lock");
-    waitForLock({
-      what: `the build lock for the rdb refresh${tag}`,
+    wbSlot = wbRoute.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs: rdbBudget().remaining(), until: shared?.has });
+    if (wbSlot.satisfied) {
+      if (reused()) return 0;
+      // The entry was stale (deleted): queue for a real slot.
+      wbSlot = wbRoute.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs: rdbBudget().remaining() });
+    }
+    const lockFile = join(wt.ensureHub(root), "locks", `${rdbLock}.lock`);
+    const gotLock = waitForLock({
+      until: shared?.has,
+      what: `the rdb lock for the refresh${tag}`,
       budget: rdbBudget(),
       holder: () => describeHolder(lockFile),
-      acquire: (waitMs) => wt.acquireLock(root, "build", { waitMs, meta: { what: `rdb refresh${tag}`, root } }),
+      acquire: (waitMs) => wt.acquireLock(root, rdbLock, { waitMs, meta: { what: `rdb refresh${tag}`, root } }),
     });
+    if (gotLock?.satisfied) {
+      if (reused()) return 0;
+      throw new Error("the rdb lock is held: shared rdb entry was stale");
+    }
     locked = true;
     const started = Date.now();
     const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
@@ -1537,6 +1563,7 @@ function ensureAddonResourceDatabase(root, name) {
     const after = rdbFreshness(addon);
     const secs = ((Date.now() - started) / 1000).toFixed(0);
     if (after.missing.length === 0) {
+      shared?.store();
       console.log(`resource database${tag} refreshed on ${os.hostname()} in ${secs}s, ${started - queuedAt > 1000 ? `${Math.round((started - queuedAt) / 1000)}s queued first, ` : ""}(${after.total} resources registered)`);
       return 0;
     }
@@ -1551,7 +1578,7 @@ function ensureAddonResourceDatabase(root, name) {
     }
     return 1;
   } finally {
-    if (locked) wt.releaseLock(root, "build");
+    if (locked) wt.releaseLock(root, rdbLock);
     wbSlot?.release();
   }
 }
@@ -5204,7 +5231,7 @@ async function wtSyncBaseCmd(args) {
 
 async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody }) {
   const draft = flags.includes("--draft"); // a draft PR, auto-merge never requested
-  const { shipDirect } = await import("./lib/ship-direct.mjs");
+  const { shipDirect, shipMergeBase } = await import("./lib/ship-direct.mjs");
   const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
   const body = refsBody(customBody ?? [`Automated ship from worktree \`${slug}\`.`, "", "## Commits", ...subjects.map((x) => `- ${x}`)].join("\n"), closes);
   const gh = (a) => wt.run(wt.ghBin(), a, { cwd: wtRoot });
@@ -5213,7 +5240,7 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
     mergeTree: () => wt.git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", `origin/${base}`]),
     mergeBase: () => {
       wt.git(wtRoot, ["fetch", "origin", "--prune"]);
-      wt.wtSync(ROOT, slug);
+      shipMergeBase(wtRoot, base, healMergeSync, (l) => console.log(l));
     },
     validate: () => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1,
     push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
@@ -5266,8 +5293,19 @@ async function wtShipCmd(args) {
   }
   const dirty = wt.git(wtRoot, ["status", "--porcelain"]).stdout.trim();
   if (dirty) {
-    console.log(`FAIL  worktree ${slug} has uncommitted changes; commit before shipping`);
-    return 1;
+    const commitMsg = argValue(flags, "--commit");
+    if (!commitMsg) {
+      const files = dirty.split(/\r?\n/);
+      console.log(`FAIL  worktree ${slug} has ${files.length} uncommitted change(s): ${files.slice(0, 6).map((l) => l.trim()).join(", ")}${files.length > 6 ? ", ..." : ""}; commit them, or re-run with --commit "<subject>" to commit everything (git add -A) and ship in one step`);
+      return 1;
+    }
+    wt.git(wtRoot, ["add", "-A"]);
+    const c = wt.git(wtRoot, ["commit", "-q", "-m", commitMsg]);
+    if (c.status !== 0) {
+      console.log(`FAIL  --commit: git commit failed (the pre-commit hook names what to fix): ${String(c.stdout + c.stderr).trim().split(/\r?\n/).slice(0, 4).join(" | ")}`);
+      return 1;
+    }
+    console.log(`ship: committed ${dirty.split(/\r?\n/).length} change(s) as "${commitMsg}"`);
   }
   let customBody = null;
   if (bodyFile) {

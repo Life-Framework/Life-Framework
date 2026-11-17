@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{EA0FF46221761B76}Configs/Dialogue/LF_Dialogue_HarbourMaster.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -32,6 +32,7 @@ harmless to your editor because the worktree is a separate directory.
   the redirect off. A holder started by older code in the old file still blocks until it ends.
   The per-worktree `(gamePort, a2sPort)` pair from `wt list` is still passed
   and is what a2s uses.
+- **Shared rdb cache** — a refresh that leaves the rdb fresh stores it in `<hub>/rdb-cache/<addon>/<key>.rdb` (key = sha1 of addon, every `path`+GUID of its `.meta` files and the Workbench exe size:mtime; 40 entries per addon, `tools/lib/rdb-cache.mjs`). The next worktree with the identical resource set copies it in (~0.4 s, verified with `rdbFreshness`) and logs `reused shared rdb <key8> (no Workbench)`; a refresh already queued for the Workbench slot or the build lock polls the cache each wait and stops waiting when the entry appears. A stale entry is deleted. The refresh itself takes a per-worktree `rdb-<slug>` lock, not the hub-wide `build` lock, so refreshes of different worktrees overlap up to the Workbench slot limit. `LF_RDB_CACHE=0` turns the cache off. `rdb-cache-selftest` proves it.
 - **Resource database** — `resourceDatabase.rdb` is gitignored and only Workbench
   writes it. `wt new`, `test`, `dev`, `serve`, `session up`, `host start`, and `wt e2e`
   copy `<main-checkout>/addons/LifeFramework/resourceDatabase.rdb` into the worktree when that
@@ -97,6 +98,7 @@ second one failed with `lock 'wt' is held`. Now:
   off), `LF_WT_WARM_MIN_FREE_GB`, `LF_WT_WARM_KICK=0` (no background filler).
   `tools\cli wt warm` shows the pool, `wt warm fill` fills it in the foreground,
   `wt warm drain` removes the ready trees, `wt new <slug> --no-warm` forces a fresh one.
+- **Where worktrees go.** `wt new` and the warm pool put `Life-Framework-ws-<slug>` and `Life-Framework-warm-<id>` in the parent of the main checkout, unless `LF_WT_ROOT` (env) or `lf.local.json` `"wt": { "root": "D:/LF/worktrees" }` names another folder (made if missing; the free-disk floors read that drive). Worktrees already elsewhere stay, are listed by `wt list`/`lead` and found by slug; ports, locks and the registry do not depend on the folder. Proof: `tools/validation/wt-root-selftest.mjs`.
 - Proof: `tools/validation/wt-warm-selftest.mjs` (fixture repo: fill, stale claim,
   fresh fallback, junction refusal, prune, drain).
 
@@ -275,6 +277,12 @@ from <ref>`). The string-table driver refuses a side it cannot parse whole
 and writes git's line merge with exit 1 instead. `merge-content-selftest`
 merges real branches and compares the result byte for byte (#1154, #1161).
 
+The registry driver (`regen-generated.mjs`) reads the three sides' test sources with one `ls-tree` per side and one
+`git cat-file --batch`, never a git child per file: on a loaded laptop a spawn costs about 230 ms, and the old per-file
+`git show` (about 2300 children for 760 tests) ran past the 240 s backstop on every merge, in `git merge` and in
+`wt ship`'s merge alike. `LF_MERGE_DRIVER_TRACE=<file>` appends `<ms> <command>` per child process, which is how to
+see where a slow merge goes; `merge-drivers-selftest` caps the git children at 12.
+
 - **`DIRTY` or `BEHIND`, worktree not LIVE.** In its worktree (or a temporary
   detached `Life-Framework-heal-<n>` worktree at the PR head when it is gone,
   removed afterwards with the junction-safe helper) it merges `origin/main` with
@@ -377,6 +385,7 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   tried first while it has RAM room (the placement tool's probe uses it; a short job
   where a sync costs more than the run); `LF_TESTBOX_AUTO=0` makes the
   default `--local`.
+- **Run folders on a second drive.** A pool machine's `runRoot` (`"runRoot": "D:/LF/runs"`, ssh machines) is where its run and lane worktrees (`Life-Framework-rt-*`, `Life-Framework-lane-*`, about 1.5 GB each) are made and cleaned; unset, they sit beside its clone. A run folder is a worktree of the clone, so the folder can live on another drive.
 - **Machines.** `tools/pool.json` lists them: `name`, `via` (`local` or
   `ssh`), `host` (ssh alias), `root` (the remote main clone), `slots`, `caps`
   (`server`, `clients`, `workbench`, `rdb`: refreshes a stale
@@ -1014,6 +1023,8 @@ the world, the script heap and the physics are the 1 GB, and no flag shrinks the
 reserve per lowspec client is 800 MB instead of 850 (`pool.json` `sessionReserve`); the server's is
 unchanged at 600.
 
+**VRAM.** A client also takes GPU memory (reserve per client: lowspec 700 MB, full 1800 MB; `sessionReserveClientVramMb`), and the 8 GB laptop card runs out before its RAM with 2 full clients. `tools/lib/pool-vram.mjs` reads the free VRAM (`nvidia-smi`, bounded by a timeout); the queue's machine choice (`rankMachines`) and `vramGate` leave a machine without room for a client session while another has it. A test-lane job ignores VRAM, and an unreadable card (no `nvidia-smi`, a failed read) skips the rule and is logged once, so RAM alone decides (`tools/validation/pool-vram-selftest.mjs`). `tools/remote/pool.mjs` feeds it (#2634): the session router reads this PC's free VRAM with `nvidia-smi` and the laptop's in its one state read (`lf-pool: vram` and `vramtotal` lines), orders machines with `vramReserveMb` and refuses a start on one whose card cannot hold the clients (a request then goes to the other machine or queues, naming VRAM). `tools/pool.json` and the `pool` key of `lf.local.json` set `sessionReserveClientVramMb` (`{ "lowspec": 700, "full": 1800 }`) and `minFreeVramMb` (256, or `LF_POOL_MIN_FREE_VRAM_MB`). `tools\cli pool status` prints each machine's `VRAM 5.7/8.0 GB free (2.3 GB used)` beside its RAM; nothing when the card does not answer (`pool-selftest`, "GPU memory end to end"). The `acquire` path of a test or a pinned run does not read VRAM: a pin stays a pin.
+
 **What does free RAM is trimming.** A session waiting for the next harness command touches a
 fraction of its resident pages. `EmptyWorkingSet` (`tools/lib/ws-trim.mjs`) moves the rest to the
 standby list: still cached, counted as available by Windows and by the gate, faulted back on use.
@@ -1491,9 +1502,10 @@ to prune and about any registry inconsistency.
 
 ## Incremental validate
 
-Plain `tools\cli validate` (and `dev`) runs a check only when something it reads changed since its last green run in
-this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `validate --full`, `ci`, `wt gate`,
-`wt ship` and CI (`CI` or `GITHUB_ACTIONS` set, or `LF_VALIDATE_ALL=1`) always run every check.
+Plain `tools\cli validate` (and `dev`, and the `wt ship` preflight) runs a check only when it has not already passed on
+the exact same input content, in this worktree or any other, and says `incremental: ran N, skipped M`.
+`validate --all`, `validate --full`, `ci`, `wt gate` and CI (`CI` or `GITHUB_ACTIONS` set, or `LF_VALIDATE_ALL=1`)
+always run every check.
 
 Checks run 8-12 at once (by CPU count); when free RAM is short each one is counted at 80 MB and only as many start
 as fit over the pool's 1.5 GB floor, never fewer than 2 (`tools/lib/validate-concurrency.mjs`, 2026-11-17: a full
@@ -1503,9 +1515,13 @@ fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/r
   (`# inputs:` in a .ps1). `*` stays in one folder, `**` crosses folders; the check's own file, `tools/validation/*.json`
   and `tools/validation/fixtures/**` are always inputs. `inputs: always` runs every time (a check that reads machine or
   git state: the worktree registry, `origin/main`); `inputs: ttl=300` trusts a green run for 300 s. No header means always.
-- State is `tmp/validate-state.json`: a fingerprint (path, size, mtime of every matching file from
-  `git ls-files --cached --others --exclude-standard`) written only when the check passed, so a failing check is never
-  skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
+- State is `tmp/validate-state.json`: a fingerprint (path and git blob id of every matching file: `git ls-files -s`
+  for clean tracked files, a blob hash of the bytes for modified and untracked ones) written only when the check
+  passed, so a failing check is never skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
+- Green fingerprints are also merged into `<git common dir>/lf/validate-green.json` (12 per check), shared by every
+  worktree: a fresh worktree skips each check another worktree passed on identical inputs (2026-11-17: 318 of 361
+  checks skipped on a fresh worktree; before, each slice's first validate ran all of them, ~4-6 min under load).
+  `always` and `ttl=` checks never use it. Delete the file to stop sharing.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
 - Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile. A check over it
   prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the

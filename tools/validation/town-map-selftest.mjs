@@ -24,10 +24,10 @@
 // red-proof: with "At 4503, 10772." added to a template's `about` this printed "FAIL template town has problems: .about: ... holds a coordinate pair" (2026-11-16).
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIXTURE = join(ROOT, "tools", "town", "fixtures", "map-dossier.json");
@@ -270,7 +270,7 @@ function throws(fn) {
 }
 
 // ---- the CLI: `town map`, `--check`, and no overwrite of a reviewed mapping
-const tmp = mkdtempSync(join(tmpdir(), "lf-town-map-"));
+const tmp = scratchDir("lf-town-map-");
 try {
   const out = join(tmp, "mapping.json");
   const cli = (...args) => spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "town", ...args], { cwd: ROOT, encoding: "utf8", timeout: 60000, windowsHide: true });
