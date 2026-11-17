@@ -39,6 +39,7 @@
 - [Inventory / Quantity](features/inventory-quantity.md)
 - [Jobs / Level / Licenses / Whitelist](features/jobs-level-licenses-whitelist.md)
 - [Map emulator](features/map-emulator.md)
+- [The Everon map (epic #2223)](features/map.md)
 - [Money & Economy](features/money-economy.md)
 - [Notifications](features/notifications.md)
 - [NPC dialogue scenes (spike, 2026-11-13)](features/npc-dialogue-scenes.md)

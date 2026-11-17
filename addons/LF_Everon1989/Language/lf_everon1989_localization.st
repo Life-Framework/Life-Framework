@@ -414,6 +414,11 @@ StringTable {
      Target_en_us "Republic of Everon, Identity Card"
      Comment "Title of the ID card view another player holds up."
     }
+    CustomStringTableItem "{CD045ABAD59FC6B4}" {
+     Id "LF-MapPoi_Fence"
+     Target_en_us "Fence"
+     Comment "Map POI kind name (#2230): the fence. A hidden kind, never public; shown only as a personal pencil mark after the player met them."
+    }
     CustomStringTableItem "{6E1A4D2B9C70F358}" {
      Id "LF-Mission_Everon1989_Details"
      Target_en_us "Everon, 1989. Pick this scenario and host a local game to play alone, or host it for friends. Your first spawn opens form R-89 at the registry; sign it to start. Then take a job, bank your pay, buy at a shop and see how the police answer a crime. Police duty needs an approved application. A local game is a preview: how saving behaves on a dedicated server is not promised there. Report problems on the Life Framework Discord or GitHub."

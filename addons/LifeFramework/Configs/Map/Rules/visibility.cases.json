@@ -1,0 +1,48 @@
+{
+  "rule": "visibility",
+  "version": 1,
+  "about": "The map POI visibility rule (docs/architecture/everon-map.md section 1), in the loader format of tools/map/rules/index.mjs: cases = [{ name, input, expect }]. Run by LF_Test_MapPois (Enforce, LF_MapPoiRules.Resolve) and tools/validation/map-visibility-selftest.mjs (node, evaluate() of tools/map/rules/visibility.mjs): one table, so the two cannot drift. input: visibility PUBLIC|DISCOVER|ROLE|HIDDEN (the POI row), role (for ROLE rows), live (the place is registered), known none|heard|visited (what this player knows of the place), roles (what the player holds now). expect: hidden|faded|full|pencil. 'lists' is read by the same two tests: kind rows, fixture places in order, and what each audience sees.",
+  "cases": [
+    { "name": "public live place shows full to a fresh player", "input": { "visibility": "PUBLIC", "role": "", "live": true, "known": "none", "roles": [] }, "expect": "full" },
+    { "name": "public place that is not live is not on the map", "input": { "visibility": "PUBLIC", "role": "", "live": false, "known": "none", "roles": [] }, "expect": "hidden" },
+    { "name": "discover unknown stays blank", "input": { "visibility": "DISCOVER", "role": "", "live": true, "known": "none", "roles": [] }, "expect": "hidden" },
+    { "name": "discover heard of is faded", "input": { "visibility": "DISCOVER", "role": "", "live": true, "known": "heard", "roles": [] }, "expect": "faded" },
+    { "name": "discover visited is full", "input": { "visibility": "DISCOVER", "role": "", "live": true, "known": "visited", "roles": [] }, "expect": "full" },
+    { "name": "discover visited but not live is not on the map", "input": { "visibility": "DISCOVER", "role": "", "live": false, "known": "visited", "roles": [] }, "expect": "hidden" },
+    { "name": "discover ignores a role the player holds", "input": { "visibility": "DISCOVER", "role": "", "live": true, "known": "none", "roles": ["police"] }, "expect": "hidden" },
+    { "name": "role row shows full to the role holder", "input": { "visibility": "ROLE", "role": "police", "live": true, "known": "none", "roles": ["police"] }, "expect": "full" },
+    { "name": "role row shows full when one of several roles matches", "input": { "visibility": "ROLE", "role": "medic", "live": true, "known": "none", "roles": ["police", "medic"] }, "expect": "full" },
+    { "name": "role row stays blank for a player without the role", "input": { "visibility": "ROLE", "role": "police", "live": true, "known": "visited", "roles": ["medic"] }, "expect": "hidden" },
+    { "name": "role row with no role named is blank (fail safe)", "input": { "visibility": "ROLE", "role": "", "live": true, "known": "none", "roles": ["police"] }, "expect": "hidden" },
+    { "name": "role row that is not live is blank", "input": { "visibility": "ROLE", "role": "medic", "live": false, "known": "none", "roles": ["medic"] }, "expect": "hidden" },
+    { "name": "hidden unknown never shows", "input": { "visibility": "HIDDEN", "role": "", "live": true, "known": "none", "roles": [] }, "expect": "hidden" },
+    { "name": "hidden stays blank for police too", "input": { "visibility": "HIDDEN", "role": "", "live": true, "known": "none", "roles": ["police"] }, "expect": "hidden" },
+    { "name": "hidden heard of is a personal pencil mark", "input": { "visibility": "HIDDEN", "role": "", "live": true, "known": "heard", "roles": [] }, "expect": "pencil" },
+    { "name": "hidden visited is a personal pencil mark", "input": { "visibility": "HIDDEN", "role": "", "live": true, "known": "visited", "roles": [] }, "expect": "pencil" },
+    { "name": "hidden known but not live is blank", "input": { "visibility": "HIDDEN", "role": "", "live": false, "known": "heard", "roles": [] }, "expect": "hidden" }
+  ],
+  "lists": {
+    "about": "Objects keyed by name and comma lists, because the Enforce JSON reader lists the keys of a named object safely and not of an anonymous one. expect is a comma list of id:state for every place that shows, in place order. known is keyed by place id.",
+    "kinds": {
+      "Bank": { "visibility": "PUBLIC", "role": "" },
+      "Pub": { "visibility": "DISCOVER", "role": "" },
+      "Fence": { "visibility": "HIDDEN", "role": "" },
+      "Armoury": { "visibility": "ROLE", "role": "police" }
+    },
+    "places": {
+      "bank-1": { "kind": "Bank", "live": true },
+      "pub-1": { "kind": "Pub", "live": true },
+      "fence-1": { "kind": "Fence", "live": true },
+      "armoury-1": { "kind": "Armoury", "live": true },
+      "vault-1": { "kind": "Vault", "live": true },
+      "pub-dark": { "kind": "Pub", "live": false }
+    },
+    "scenarios": {
+      "a fresh player sees the public place only": { "roles": "", "known": {}, "expect": "bank-1:full" },
+      "a player who heard of the pub sees it faded": { "roles": "", "known": { "pub-1": "heard" }, "expect": "bank-1:full,pub-1:faded" },
+      "a player who visited the pub and met the fence": { "roles": "", "known": { "pub-1": "visited", "fence-1": "visited" }, "expect": "bank-1:full,pub-1:full,fence-1:pencil" },
+      "a police player also sees the armoury": { "roles": "police", "known": {}, "expect": "bank-1:full,armoury-1:full" },
+      "knowing a place that is not live shows nothing": { "roles": "", "known": { "pub-dark": "visited", "vault-1": "visited" }, "expect": "bank-1:full" }
+    }
+  }
+}
