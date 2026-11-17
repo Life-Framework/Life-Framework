@@ -371,6 +371,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OpsEventsContract(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OreYield(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgInviteRole(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_OrgMapMarks(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_OrgRegistry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_OrgRights(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE);
