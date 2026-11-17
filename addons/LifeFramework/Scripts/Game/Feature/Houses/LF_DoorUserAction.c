@@ -15,12 +15,14 @@ modded class SCR_DoorUserAction
 {
 	protected LF_LockComponent m_pHouseLock;
 	protected LF_HideoutDoorComponent m_pHideoutDoor;
+	protected IEntity m_pDoorEntity;
 
 	//------------------------------------------------------------------------------------------------
 	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
 	{
 		super.Init(pOwnerEntity, pManagerComponent);
 
+		m_pDoorEntity = pOwnerEntity;
 		m_pHouseLock = LF_Component<LF_LockComponent>.Find(pOwnerEntity);
 		m_pHideoutDoor = LF_Component<LF_HideoutDoorComponent>.Find(pOwnerEntity);
 	}
@@ -97,6 +99,10 @@ modded class SCR_DoorUserAction
 			return true;
 		}
 
+		// Anyone may close an open door on a locked house (#2472); only the owner and key holders open it.
+		if (LF_HouseDoorClose.IsOpen(m_pDoorEntity))
+			return true;
+
 		// The owner and key holders pass; the door stays locked behind them (#2410).
 		if (!m_pHouseLock.UserMayEnter(user))
 		{
@@ -121,9 +127,9 @@ modded class SCR_DoorUserAction
 		}
 
 		// The server decides again here rather than trusting that the client's gate ran: a locked
-		// house door moves only for its owner or a key holder.
+		// house door opens only for its owner or a key holder; anyone may close it (#2472).
 		if (Replication.IsServer() && !m_pHideoutDoor && m_pHouseLock && m_pHouseLock.IsLocked()
-			&& LF_Systems.IsEnabled(LF_LockComponent.SYSTEM) && !m_pHouseLock.UserMayEnter(pUserEntity))
+			&& LF_Systems.IsEnabled(LF_LockComponent.SYSTEM) && !LF_HouseDoorClose.IsOpen(pOwnerEntity) && !m_pHouseLock.UserMayEnter(pUserEntity))
 		{
 			LF_Debug.Warn("Houses", string.Format("locked door refused on the server: house=%1", m_pHouseLock.GetHouseIdentifier()));
 			return;
@@ -133,6 +139,10 @@ modded class SCR_DoorUserAction
 
 		if (!Replication.IsServer() || m_pHideoutDoor)
 			return;
+
+		// A house door left open closes itself while its house is locked (#2472); the tick re-checks the lock.
+		if (m_pHouseLock && LF_HouseDoorClose.IsOpen(pOwnerEntity))
+			LF_HouseDoorClose.Arm(pOwnerEntity);
 
 		if (m_pHouseLock && m_pHouseLock.IsLocked())
 			LF_Debug.Log("Houses", string.Format("locked door opened by owner or key holder, lock kept: house=%1", m_pHouseLock.GetHouseIdentifier()));

@@ -84,7 +84,12 @@
   refused. The server decides in `SCR_DoorUserAction.CanBePerformedScript` (`LF_LockComponent.UserMayEnter`);
   the owner's character key is replicated on the door so a client's prompt matches. Only
   `LF_HouseManagerComponent.SetHouseLocked` changes a house's lock, and it re-syncs a door a breach or a
-  lockpick opened. No in-world lock/unlock action yet, and a door the owner opened stays open (#2435).
+  lockpick opened. No in-world lock/unlock action yet (#2435).
+- ✅ **A locked house door left open can be closed and closes itself** (#2472, WORLD `houses/door-auto-close`):
+  on a locked house anyone may close an open door, only the owner or a key holder opens it (the server
+  re-checks in `PerformAction`), and the server closes a door left open after `LF_HouseDoorClose` delay
+  (default 20 s, `SetDelaySeconds`; 0 turns it off; no owner-config key yet). An unlocked house's door and a
+  hideout door are untouched; the lock never changes.
 - ✅ **Lock state, owner and carried keys survive a restart** (#2410, PERSISTENCE `houses/registry-persist`,
   `houses/carried-key-persist`, `wt e2e`): `LF_Houses` keeps one row per house with a stable identifier
   (the editor identifier, or `BindIdentifier`) in the `houses` payload (save version 46); a carried house
