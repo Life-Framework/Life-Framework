@@ -33,6 +33,9 @@ class LF_OrgConfig
 	static const int DEFAULT_HELD_GROUND_MAX_POINTS = 1000;
 	static const int HELD_GROUND_POINTS_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int HELD_GROUND_POINTS_MAX = 1000000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DEFAULT_HIDEOUT_LEASE_IDLE_DAYS = 14;
+	static const int HIDEOUT_LEASE_IDLE_DAYS_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int HIDEOUT_LEASE_IDLE_DAYS_MAX = 3650;	// lf-fixed: the schema limit, mirrors the attribute params
 
 	[Attribute("250", UIWidgets.Auto, "Carried cash the founder hands over at the registry desk to found an organization", params: "0 10000000")]
 	int m_iFoundingFee;
@@ -63,6 +66,9 @@ class LF_OrgConfig
 
 	[Attribute("1000", UIWidgets.Auto, "Most points an organization banks by holding its hideout (#751); a saved total above it is clamped on load", params: "0 1000000")]
 	int m_iHeldGroundMaxPoints;
+
+	[Attribute("14", UIWidgets.Auto, "Real days a hideout lease may stand with no member of its organization connected before the lease lapses (#2573); 0 = leases never lapse", params: "0 3650")]
+	int m_iHideoutLeaseIdleDays;
 
 	[Attribute("", UIWidgets.Object, "Rights of the default ranks a new organization starts with, one entry per rank id (founder, officer, member). A rank with no entry keeps its shipped rights. Applies to organizations founded after the change; a saved organization keeps its own ranks")]
 	ref array<ref LF_OrgRankDefault> m_aRankDefaults;
@@ -154,7 +160,7 @@ class LF_OrgConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"foundingFee", "nameMin", "nameMax", "offerMs", "maxCashMove", "priceExtraStorage", "priceProcessingSlot", "priceParkedVehicle", "deskRange", "heldGroundMaxPoints", "rankDefaults"};
+		array<string> ownerKeys = {"foundingFee", "nameMin", "nameMax", "offerMs", "maxCashMove", "priceExtraStorage", "priceProcessingSlot", "priceParkedVehicle", "deskRange", "heldGroundMaxPoints", "hideoutLeaseIdleDays", "rankDefaults"};
 		reader.WarnUnknownKeys(ownerKeys);
 		int nameMin = m_iNameMin;
 		int nameMax = m_iNameMax;
@@ -167,6 +173,7 @@ class LF_OrgConfig
 		reader.ReadInt("priceProcessingSlot", m_iPriceProcessingSlot, FEE_MIN, FEE_MAX);
 		reader.ReadInt("priceParkedVehicle", m_iPriceParkedVehicle, FEE_MIN, FEE_MAX);
 		reader.ReadInt("heldGroundMaxPoints", m_iHeldGroundMaxPoints, HELD_GROUND_POINTS_MIN, HELD_GROUND_POINTS_MAX);
+		reader.ReadInt("hideoutLeaseIdleDays", m_iHideoutLeaseIdleDays, HIDEOUT_LEASE_IDLE_DAYS_MIN, HIDEOUT_LEASE_IDLE_DAYS_MAX);
 		reader.ReadFloat("deskRange", m_fDeskRange, DESK_RANGE_MIN, DESK_RANGE_MAX);
 
 		if (m_iNameMin > m_iNameMax)
@@ -333,6 +340,17 @@ class LF_OrgConfig
 			return DEFAULT_HELD_GROUND_MAX_POINTS;
 
 		return config.m_iHeldGroundMaxPoints;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real days a hideout lease may stand with no member connected before it lapses (#2573). 0 = never.
+	static int HideoutLeaseIdleDays()
+	{
+		LF_OrgConfig config = Get();
+		if (!config || config.m_iHideoutLeaseIdleDays < 0)
+			return DEFAULT_HIDEOUT_LEASE_IDLE_DAYS;
+
+		return config.m_iHideoutLeaseIdleDays;
 	}
 }
 

@@ -297,6 +297,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HeldGroundLegacy(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HeldGroundRoundTrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutLeaseEmptyOrg(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HideoutLeaseIdle(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutLoadRelock(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HideoutOrgBase(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutRelock(), LF_TestTier.LOGIC);
