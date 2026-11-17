@@ -22,6 +22,7 @@
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { iconProblems } from "../map/lib/icons.mjs";
 
 export const BASELINE = "tools/validation/ui-kit-baseline.json";
 export const THEME_FONTS = ["{EABA4FE9D014CCEF}", "{3E7733BAC8C831F6}"];
@@ -93,6 +94,24 @@ function walk(root, rel, out) {
   return out;
 }
 
+// Card M3 (#2231): the map icon set. Every quad the POI confs (core Configs/Map/LF_MapPois.conf and a
+// pack's LF_MapPois*.conf overlay) name exists in the LF_MapIcons imagesets, both imagesets carry the
+// manifest's quads, and their textures and hatches are present with matching GUIDs (tools/map/lib/icons.mjs).
+export function mapIconProblems(root) {
+  const confs = [];
+  const addons = join(root, "addons");
+  if (existsSync(addons)) {
+    for (const addon of readdirSync(addons)) {
+      const dir = join(addons, addon, "Configs", "Map");
+      if (!existsSync(dir)) continue;
+      for (const f of readdirSync(dir)) {
+        if (/^LF_MapPois.*\.conf$/.test(f)) confs.push({ path: `addons/${addon}/Configs/Map/${f}`, text: readFileSync(join(dir, f), "utf8") });
+      }
+    }
+  }
+  return iconProblems(root, confs);
+}
+
 export function scan(root) {
   const out = [];
   const addons = join(root, "addons");
@@ -119,7 +138,7 @@ if (isMain) {
     process.exit(0);
   }
   const baseline = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : { layouts: [], exceptions: {} };
-  const bad = [...problems(layouts, baseline), ...colorProblems(scanScripts(root))];
+  const bad = [...problems(layouts, baseline), ...colorProblems(scanScripts(root)), ...mapIconProblems(root)];
   if (bad.length) {
     console.log("validate-ui-kit: FAIL");
     for (const b of bad) console.log(`  ${b}`);

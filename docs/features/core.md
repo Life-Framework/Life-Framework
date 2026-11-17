@@ -402,3 +402,19 @@
 ### `LF_NamedPlaces` — `Scripts/Game/Core/LF_NamedPlaces.c` (#1943, chapter #1014)
 - 🧪 (2026-11-16, #1943) `LF_NamedPlaces.Nearest(pos, maxRadius = 600)` returns the display name of the nearest map location (the editor comment entities every map places for its town, village and landmark labels; a pack adds a name by placing one), or empty when none is within the radius or the world has no editable-entity core. The name is the map's own, usually a `#` localization key for a widget's SetText. The core holds no town list. Test `world/named-place`.
 - 🔧 (2026-11-16, #1771; merged, in-dev) **The 1989 Everon pack fills the starting kit.** `LF_Catalogue_Kit_Everon1989.conf` offers under `starting_kit`: a brown denim jacket (its shirt is part of the prefab; shirts and jackets share the one upper slot), dark-brown trousers, the dirty work boots, a flat cap and `cash_start` (the `MoneyStack` default of 100, carried in a pocket, the same cash the game mode's M88 jacket held). No M88 or M70 pieces, Soviet panama, ALICE pack, police kit or weapon. Fixture `tools/validation/fixtures/everon/starting-kit.json` (kind `outlets`, `present:false` for the military pieces) is read by `validate-everon-config`. Vanilla has no civilian shoe, so the boots are the pack's existing `boots_work`; a civilian shoe asset is a follow-up.
+
+### `LF_FittedBuildings` — `Scripts/Game/Core/LF_FittedBuildings.c`, `LF_FittedBuildingComponent.c` (D15)
+- 🔧 (2026-11-17; merged, in-dev) **Fitted vanilla buildings are indestructible.** `town fit` puts
+  `LF_FittedBuildingComponent` on the slot's place marker (beside `LF_PlaceComponent`, inside the
+  building) and records the claim's `destruction.mode: "hooked"`; a slot with no marker stays
+  `needs-hook`. On the server, one frame after load, the component runs one sphere query (radius
+  `m_fSearchRadius`, default 25 m) for entities with `SCR_DestructibleBuildingComponent`, takes the one
+  whose bounds hold the marker (else the closest within 3 m) and calls
+  `DamageManagerComponent.EnableDamageHandling(false)` on it and its child destructibles. Every
+  vanilla hit (explosive, shell, vehicle contact) goes through `HandleDamage`, so the building never
+  reaches DESTROYED, never sends the destroy RPC and has no JIP state to replicate. Logs
+  `[LFDebug:FittedBuildings] <place id>: building ... is indestructible`; no building found is an
+  `Error` and the building stays destructible. No coordinates in core; no per-frame cost. A game
+  master `SetHealth(0)` still bypasses it (vanilla's own invulnerability rule). Test
+  `world/fitted-building-indestructible` (DebugWorld spawns two garages; on CoreOnEveron it uses two
+  real buildings near the map's middle).

@@ -13,8 +13,9 @@
 // building-local offsets (`kit apply`). The kit turns so its `front` faces the entrance, in quarter turns from the building's yaw.
 // A slot's layer holds the slot's LF_PlaceComponent marker(s) (kind from the template, id `<place>.<slot>`) and one entity per kit row.
 // A slot whose mapping entry is a free plot (D9) also gets the purpose-built building, written with its destruction off (D15).
-// A vanilla building stands in the terrain, not in a layer, so a layer cannot switch its destruction off: the claim records
-// `destruction.mode: "needs-hook"` until the core hook exists (the PR for this card says so).
+// A vanilla building stands in the terrain, not in a layer, so a layer cannot switch its destruction off: the slot's place
+// marker carries LF_FittedBuildingComponent, which turns the building's damage off on the server, and the claim records
+// `destruction.mode: "hooked"`. A slot with no place marker keeps `needs-hook`.
 // Pure functions (planFit and what it calls) are what tools/validation/town-fit-selftest.mjs runs; main() reads and writes files.
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -247,7 +248,7 @@ export function planFit(opts, ctx = {}) {
   let destruction;
   if (building) {
     host = building;
-    destruction = { mode: "needs-hook", reason: "a vanilla building stands in the terrain; a layer cannot switch its destruction off (D15 hook)" };
+    destruction = null; // decided below: hooked through the place marker, or needs-hook without one
   } else {
     if (!opts.buildingPrefab || !REF_RE.test(opts.buildingPrefab)) return (errors.push(`slot ${slotId} is a free plot: the purpose-built building must be resolved first (asset_search) and passed as --building-prefab {GUID}path`), { ...fail(), notes });
     const guid = opts.destructionGuid ?? componentGuid(opts.buildingPrefab, "SCR_DestructionMultiPhaseComponent", root);
@@ -269,6 +270,17 @@ export function planFit(opts, ctx = {}) {
     yaw: 0,
   }));
   if (!markers.length) warnings.push(`slot ${slotId} lists no LF_Places kind: the layer carries no place marker`);
+  // A vanilla building stands in the terrain, so a layer cannot switch its destruction off. The core hook does it
+  // (LF_FittedBuildingComponent on the place marker inside the building, D15); without a marker it stays open.
+  if (!destruction) {
+    if (markers.length) {
+      markers[0].comps.push({ cls: "LF_FittedBuildingComponent", guid: guidOf(place, slotId, "fitted-building"), set: {} });
+      destruction = { mode: "hooked", component: "LF_FittedBuildingComponent", marker: markers[0].name };
+    } else {
+      destruction = { mode: "needs-hook", reason: "a vanilla building stands in the terrain and the slot has no place marker to carry LF_FittedBuildingComponent (D15)" };
+      warnings.push(`slot ${slotId}: no place marker, so the vanilla building stays destructible (needs-hook)`);
+    }
+  }
 
   const srcRows = new Map(kit.rows.map((r) => [r.id, r]));
   const rowEnts = rows.map((r) => {

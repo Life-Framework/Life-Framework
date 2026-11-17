@@ -1,4 +1,4 @@
-// tools/validation/town-fit-selftest.mjs
+﻿// tools/validation/town-fit-selftest.mjs
 // inputs: tools/town/**, tools/commands/town.mjs
 //
 // Proves `tools\cli town fit <place> <slot>` (docs/architecture/everon-world.md 3.3, 3.4) in dry mode, on the fixture
@@ -10,7 +10,7 @@
 //     coordinate flag is refused;
 //   - the claim file names the place, slot, building, layer and kit;
 //   - a placed building (D9, a free plot) is written with its destruction switched off (D15); a vanilla building the
-//     layer cannot override is recorded in the claim so `town check` and the lead see it;
+//     layer cannot override gets LF_FittedBuildingComponent on its place marker (claim `hooked`), or `needs-hook` with no marker;
 //   - a building another claim holds on origin/main, in an open PR (#2021 read) or in a sibling worktree is refused,
 //     and so is a slot the mapping leaves out or marks `none`;
 //   - --dry writes nothing.
@@ -102,7 +102,15 @@ const claim = plan.claim;
 check(claim && claim.place === "sample-square" && claim.slot === "shop" && claim.building === "b03" && claim.kit === "fit-kit", `claim is ${JSON.stringify(claim)}`);
 check(claim && /^addons\/LF_Everon1989\/Worlds\/MainWorld\/MainWorld_Layers\/Place_.*shop\.layer$/.test(claim.layer || ""), `claim layer is ${claim?.layer}`);
 check(plan.claimFile === "tools/town/claims/sample-square-shop.json", `claim file is ${plan.claimFile}`);
-check(claim?.destruction?.mode === "needs-hook", "a vanilla building's claim does not say its destruction override is still open");
+check(claim?.destruction?.mode === "hooked" && claim.destruction.component === "LF_FittedBuildingComponent", `a vanilla building with a place marker is not hooked (${JSON.stringify(claim?.destruction)})`);
+check(/LF_PlaceComponent "\{[0-9A-F]{16}\}" \{[^}]*\}\s*LF_FittedBuildingComponent "\{[0-9A-F]{16}\}" \{\s*\}/.test(text), "the place marker does not carry LF_FittedBuildingComponent beside LF_PlaceComponent");
+check((text.match(/LF_FittedBuildingComponent/g) || []).length === 1, "LF_FittedBuildingComponent is not written exactly once");
+{
+  const bare = { ...base.template, slots: base.template.slots.map((s) => (s.id === "shop" ? { ...s, places: [] } : s)) };
+  const noMarker = fitMod.planFit({ ...base, template: bare }, ctx());
+  check(noMarker.ok && noMarker.claim?.destruction?.mode === "needs-hook", `a vanilla building with no place marker is not left needs-hook (${JSON.stringify(noMarker.claim?.destruction)})`);
+  check(!/LF_FittedBuildingComponent/.test(noMarker.layerText || ""), "a slot with no marker still wrote LF_FittedBuildingComponent");
+}
 
 // ---- D9, a placed building: the layer carries it, indestructible
 const bar = fitMod.planFit({ ...base, slot: "bar", buildingPrefab: "{0123456789ABCDEF}Prefabs/Structures/Sample/Pub_Sample.et", destructionGuid: "{58F896B4CD371A8B}" }, ctx());

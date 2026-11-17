@@ -596,7 +596,11 @@ if ($lastSummary) {
   Write-Host "test-e2e: log $($lastSummary.LogDir)"
 
   $console = Read-Console $lastSummary.LogDir
-  $fails = @($console -split "`n" | Where-Object { $_ -match '\[LFTEST\]   - ' })
+  # The FAIL header names the test; without it a red run's output has assertion text and no test name (2026-11-17,
+  # the main guard could not bisect). The red tier prints its FAIL lines below, so it keeps the assertions only.
+  $failPattern = '\[LFTEST\] FAIL |\[LFTEST\]   - '
+  if ($lastSummary.Tier -eq "red") { $failPattern = '\[LFTEST\]   - ' }
+  $fails = @($console -split "`n" | Where-Object { $_ -match $failPattern })
   foreach ($f in $fails) { Write-Host "  $f" }
   if ($lastSummary.Tier -eq "red") {
     # The proof's evidence: each test's red verdict and the assertion it failed on.

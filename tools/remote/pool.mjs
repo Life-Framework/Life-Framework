@@ -30,6 +30,7 @@ import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
 import * as q from "../lib/pool-queue.mjs";
 import * as pr from "../lib/pool-ram.mjs";
+import { idleVerdict } from "../lib/look-job.mjs";
 import * as gc from "../lib/session-gc.mjs";
 import * as rt from "../lib/rt-gc.mjs";
 import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionBase, sessionDirOf } from "../lib/session-lease.mjs";
@@ -1502,10 +1503,42 @@ export function reapIdleSessions(root, locals, tickets, settings = poolSettings(
 // its own `session.mjs down` (reaped.json says why). At most once a minute per machine. opts:
 // waiting (a job here wants m), now, read/close (test seams). Returns the sessions closed.
 const remoteReapAt = new Map();
+
+// The resident look Workbench on a pool machine (tools/visual/look-serve.mjs; tools/lib/look-job.mjs idleVerdict):
+// one ssh read of its state, and a stop.txt in its raw folder (the plugin then exits cleanly) when it has been idle
+// LOOK_IDLE_MIN, or at once when a job waits on this machine for RAM or a lane (`waiting`). Never while a request is
+// running (no fresh heartbeat). opts.read / opts.stop / opts.now are test seams. Returns the verdict it acted on, or null.
+export function reapRemoteLookServer(root, m, { waiting = false, now = Date.now(), read, stop } = {}) {
+  const row = (read ?? readRemoteLookServer)(m);
+  if (!row) return null;
+  const v = idleVerdict({ lastUsedMs: now - row.idleS * 1000, now, starved: waiting, busy: !row.idleBeat });
+  if (!v.close) return null;
+  (stop ?? stopRemoteLookServer)(m, row);
+  console.log(`pool: closing the resident look Workbench on ${m.name}: ${v.why}`);
+  return v;
+}
+
+function readRemoteLookServer(m) {
+  const ps = [
+    `$ls = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\look-serve.json'`,
+    "if (Test-Path -LiteralPath $ls) { try { $j = [IO.File]::ReadAllText($ls) | ConvertFrom-Json; if (Get-Process -Id $j.pid -ErrorAction SilentlyContinue) { $raw = Join-Path $j.profile 'profile\\lf-visual'; $a = Join-Path $raw 'alive.txt'; $beat = 0; if (Test-Path -LiteralPath $a) { if (((Get-Date) - (Get-Item -LiteralPath $a).LastWriteTime).TotalSeconds -lt 15) { $beat = 1 } }; $idle = [int]((Get-Date).ToUniversalTime() - ([datetime]$j.lastUsed).ToUniversalTime()).TotalSeconds; Write-Host \"lf-look: $($j.pid) $idle $beat $raw\" } } catch {} }",
+  ].join("\n");
+  const r = tb.sshPs(m.host, ps, { timeout: PROBE_TIMEOUT_MS, connectTimeout: 4 });
+  const mm = r.status === 0 ? /lf-look: (\d+) (-?\d+) ([01]) (.+)/.exec(r.stdout ?? "") : null;
+  return mm ? { pid: Number(mm[1]), idleS: Math.max(0, Number(mm[2])), idleBeat: mm[3] === "1", raw: mm[4].trim() } : null;
+}
+
+function stopRemoteLookServer(m, row) {
+  tb.sshPs(m.host, `Set-Content -LiteralPath ${tb.psQuote(`${row.raw}\\stop.txt`)} -Value 1`, { timeout: PROBE_TIMEOUT_MS, connectTimeout: 4 });
+}
+
 export function reapRemoteIdleSessions(root, m, settings = poolSettings(root), opts = {}) {
   const now = opts.now ?? Date.now();
   if (!opts.read && now - (remoteReapAt.get(m.name) ?? 0) < 60000) return [];
   remoteReapAt.set(m.name, now);
+  try {
+    reapRemoteLookServer(root, m, { waiting: !!opts.waiting, now, read: opts.lookRead, stop: opts.lookStop });
+  } catch {}
   const rows = (opts.read ?? readRemoteSessions)(m) ?? [];
   const out = [];
   for (const r of rows) {
