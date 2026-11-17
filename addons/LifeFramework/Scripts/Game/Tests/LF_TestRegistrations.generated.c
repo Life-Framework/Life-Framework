@@ -738,6 +738,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UIKitClose(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIKitFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIPaperSheet(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_UISheetFit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UiSheetStaticReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIThemePack(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UIThemeTokens(), LF_TestTier.LOGIC);
