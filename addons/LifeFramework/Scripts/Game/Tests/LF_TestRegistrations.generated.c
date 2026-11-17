@@ -363,6 +363,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JumpPadSeen(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_KeyItemName(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_KeypadBackspace(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Knockout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LateIdentity(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_LawlessHud(), LF_TestTier.LOGIC);
@@ -757,6 +758,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_UiSheetStaticReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIThemePack(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UIThemeTokens(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_UIWorldEndReset(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UnemploymentBenefit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VaultDoorSwing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VaultDrillAction(), LF_TestTier.WORLD);

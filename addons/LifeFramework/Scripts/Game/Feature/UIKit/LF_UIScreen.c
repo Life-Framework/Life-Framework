@@ -1715,6 +1715,13 @@ class LF_UIScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Called by LF_UIScreen_StaticResetHook when a world ends: no sheet of the old world holds the prompt.
+	static void ResetStatics()
+	{
+		s_iPromptHolds = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void DisarmInput()
 	{
 		if (GetGame() && GetGame().GetCallqueue())
@@ -1731,7 +1738,7 @@ class LF_UIScreen
 	//! \return true when this call closed the sheet.
 	bool Back()
 	{
-		if (!m_wRoot || LF_UIBack.IsTyping(IsFieldFocused()) || !LF_UIBack.Fresh())
+		if (!m_wRoot || LF_UIBack.IsTyping(IsFieldFocused() || KeepsBackspace()) || !LF_UIBack.Fresh())
 			return false;
 
 		LF_Debug.Info("UIKit", "closed: back");
@@ -1751,6 +1758,14 @@ class LF_UIScreen
 			return false;
 
 		return EditBoxWidget.Cast(workspace.GetFocusedWidget()) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a hotkey of this sheet is the keypad's Backspace (the ATM): Backspace deletes a digit
+	//! there and does not close the sheet. Escape and gamepad B still go Back.
+	bool KeepsBackspace()
+	{
+		return m_aHotkeyActions.Find(LF_UIBack.KEYPAD_BACK) != -1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1797,5 +1812,25 @@ class LF_UIScreen
 	protected void OnBackAction()
 	{
 		Back();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_UIScreen's statics (registered at script load; Core/LF_StaticReset.c).
+//! A sheet still open when the world ends (a quiz page at the kick, a form at a disconnect) never
+//! runs Close, so its prompt hold would outlive the world and hide every interaction prompt in the
+//! next session of the same game process.
+class LF_UIScreen_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_UIScreen_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_UIScreen";
+	}
+
+	override void Apply()
+	{
+		LF_UIScreen.ResetStatics();
 	}
 }
