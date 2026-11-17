@@ -6,7 +6,8 @@
 //! authored before the policy still works. LF_PlacementService and LF_PlacementCompositions ask
 //! `Check`; the ghost's action gate asks it too (through MayPlace), so the answer is one rule on both
 //! sides. An entry may also name a zone (`m_eWhere`, #2447; LF_PlacementZones) that limits where the
-//! kind goes; the server's Confirm asks `ZoneAt` with the spot. A refusal names its rule in the log (`reason`) and in the toast (`toastKey`).
+//! kind goes; the server's Confirm asks `ZoneAt` with the spot. An entry may name a cost (`m_eCost`, #2448;
+//! LF_PlacementCost) the server's Confirm takes once the spot is VALID. A refusal names its rule in the log (`reason`) and in the toast (`toastKey`).
 //! Ownership, keys and ranks are read from Houses and Organizations; this file edits neither.
 //------------------------------------------------------------------------------------------------
 
@@ -28,6 +29,18 @@ class LF_PlacementPolicyEntry
 
 	[Attribute("30", UIWidgets.EditBox, "ORG_BASE only: how many metres from the organization's base the kind may be placed")]
 	float m_fBaseRadius;
+
+	[Attribute("0", UIWidgets.ComboBox, desc: "What placing this kind costs (#2448): free, cash from the player's pockets, or items used up; taken on the server once the spot is valid", enums: ParamEnumArray.FromEnum(LF_EPlacementCost))]
+	LF_EPlacementCost m_eCost;
+
+	[Attribute("0", UIWidgets.EditBox, "CASH: the price; ITEM: how many items are used up. Zero or less is free")]
+	int m_iCostAmount;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "ITEM only: the prefab used up from the player's inventory (never the placeable item itself)", "et")]
+	ResourceName m_sCostItem;
+
+	[Attribute("0", UIWidgets.CheckBox, "Whether picking the placement up gives the cost back, once, to the player who paid")]
+	bool m_bRefundOnPickup;
 }
 
 //------------------------------------------------------------------------------------------------

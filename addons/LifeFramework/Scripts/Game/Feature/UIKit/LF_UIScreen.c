@@ -32,6 +32,11 @@ class LF_UIScreen
 	static const float PORTRAIT_HEIGHT = 225;	// lf-fixed: the layout's photo window
 	static const int PORTRAIT_LINES = 6;	// lf-fixed: the layout's line widgets
 
+	//! Space kept above and below a sheet that fills the screen, units.
+	static const float SHEET_EDGE_MARGIN = 16;
+	//! Frame bottom margin plus the last part's bottom padding, under the lowest part of the content.
+	static const float SHEET_CONTENT_TAIL = 34;	// lf-fixed: LF_UIFrame Content OffsetBottom 24 + LF_UITheme.PAD_BOTTOM
+
 	//! Open kit sheets that hold the world interaction prompt off.
 	protected static int s_iPromptHolds;
 
@@ -54,6 +59,13 @@ class LF_UIScreen
 	protected ref array<int> m_aFocusOrder = {};
 	protected ref map<string, int> m_mListOrder = new map<string, int>();
 	protected int m_iPartSeq;
+	protected bool m_bFitQueued;
+	//! The sheet's height and top as the skin and layout set them, before any growth to fit content.
+	protected float m_fSkinHeight;
+	protected float m_fSkinTop;
+	//! The first list's height before any squeeze, and how much of it the sheet cap has taken (#2462).
+	protected float m_fListBase;
+	protected float m_fListSqueezed;
 	protected int m_iCurrentOrder;
 	protected ref LF_UIButtonInvoker m_OnButton;
 	protected ref LF_UIClosedInvoker m_OnClosed;
@@ -172,6 +184,7 @@ class LF_UIScreen
 		BindBack();
 		FocusInitial(workspace);
 		SetActionPromptShown(false);
+		QueueFit();
 
 		LF_Debug.Info("UIKit", "screen open");
 		return true;
@@ -204,6 +217,7 @@ class LF_UIScreen
 		}
 
 		line.SetText(text);
+		QueueFit();
 		return true;
 	}
 
@@ -410,6 +424,7 @@ class LF_UIScreen
 			return false;
 
 		textButton.SetText(text);
+		QueueFit();
 		return true;
 	}
 
@@ -605,6 +620,104 @@ class LF_UIScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Asks for the sheet to be fitted to its content once the layout has run (next frames). Lines and
+	//! buttons that change text ask again, so the Receipt line of a price list grows the sheet.
+	protected void QueueFit()
+	{
+		if (m_bFitQueued || !m_wRoot || !GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		m_bFitQueued = true;
+		GetGame().GetCallqueue().CallLater(FitSheet, 50, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A sheet taller content than its skin grows down to the screen's safe height, and past that its
+	//! first list gives up the overflow and scrolls (#2462). Rule: LF_UISheetFit.
+	protected void FitSheet()
+	{
+		m_bFitQueued = false;
+		if (!m_wRoot)
+			return;
+
+		WorkspaceWidget workspace;
+		if (GetGame())
+			workspace = GetGame().GetWorkspace();
+
+		Widget sheet = m_wRoot.FindAnyWidget("Sheet");
+		Widget content = m_wRoot.FindAnyWidget("Content");
+		if (!workspace || !sheet || !content)
+			return;
+
+		float sheetX, sheetTop;
+		sheet.GetScreenPos(sheetX, sheetTop);
+
+		// The lowest edge of any visible part: parts stack from the top, so this does not depend on
+		// the sheet's current height.
+		float lowest = sheetTop;
+		for (Widget child = content.GetChildren(); child; child = child.GetSibling())
+		{
+			if (!child.IsVisible())
+				continue;
+
+			float childX, childY, childW, childH;
+			child.GetScreenPos(childX, childY);
+			child.GetScreenSize(childW, childH);
+			if (childY + childH > lowest)
+				lowest = childY + childH;
+		}
+
+		float needed = workspace.DPIUnscale(lowest - sheetTop) + SHEET_CONTENT_TAIL + m_fListSqueezed;
+		float current = FrameSlot.GetSizeY(sheet);
+		// A tall sheet may slide up from its resting top toward the screen edge, so the cap is the
+		// screen less a margin on each side.
+		float screenHeight = workspace.DPIUnscale(workspace.GetHeight());
+		float cap = screenHeight - 2 * SHEET_EDGE_MARGIN;
+		float height = LF_UISheetFit.Height(needed, m_fSkinHeight, cap);
+		if (Math.AbsFloat(height - current) > 0.5)
+			FrameSlot.SetSizeY(sheet, height);
+
+		float top = m_fSkinTop;
+		if (top + height > screenHeight - SHEET_EDGE_MARGIN)
+			top = Math.Max(SHEET_EDGE_MARGIN, screenHeight - SHEET_EDGE_MARGIN - height);
+
+		if (Math.AbsFloat(top - FrameSlot.GetPosY(sheet)) > 0.5)
+			FrameSlot.SetPosY(sheet, top);
+
+		SqueezeList(needed - height);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes `overflow` units off the first list's height so it scrolls; 0 gives its height back.
+	protected void SqueezeList(float overflow)
+	{
+		SizeLayoutWidget listSize;
+		foreach (LF_UIPart part : m_aParts)
+		{
+			if (part && part.GetKind() == LF_EUIPartKind.LIST)
+			{
+				listSize = SizeLayoutWidget.Cast(WidgetNamed(part.GetName()));
+				break;
+			}
+		}
+
+		if (!listSize)
+			return;
+
+		if (m_fListBase <= 0)
+			m_fListBase = listSize.GetHeightOverride();
+
+		if (m_fListBase <= 0)
+			return;
+
+		float target = LF_UISheetFit.ListHeight(m_fListBase, overflow);
+		m_fListSqueezed = m_fListBase - target;
+		listSize.SetHeightOverride(target);
+		if (m_fListSqueezed > 0)
+			LF_Debug.Info("UIKit", "sheet at the screen cap: the list scrolls in " + target + " units");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void PaintFrame()
 	{
 		Paint("Metal", GetSkin().m_Metal);
@@ -623,6 +736,12 @@ class LF_UIScreen
 
 		if (sheet && GetSkin().m_fHeight > 0)
 			FrameSlot.SetSizeY(sheet, GetSkin().m_fHeight);
+
+		if (sheet)
+		{
+			m_fSkinHeight = FrameSlot.GetSizeY(sheet);
+			m_fSkinTop = FrameSlot.GetPosY(sheet);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1543,6 +1662,11 @@ class LF_UIScreen
 		m_bCheckDeath = false;
 		m_bCheckLost = false;
 		m_bCheckDistance = false;
+
+		if (m_bFitQueued && GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(FitSheet);
+
+		m_bFitQueued = false;
 
 		if (!m_wRoot)
 			return;
