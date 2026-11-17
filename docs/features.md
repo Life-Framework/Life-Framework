@@ -49,6 +49,7 @@
 - [Property](features/property.md)
 - [Quests](features/quests.md)
 - [Racing](features/racing.md)
+- [Reputation (standing)](features/reputation.md)
 - [Residents](features/residents.md)
 - [Rules](features/rules.md)
 - [Service calls (#248)](features/service-calls.md)

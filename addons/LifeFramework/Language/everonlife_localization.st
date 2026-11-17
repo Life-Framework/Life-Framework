@@ -8746,6 +8746,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Civil Registry, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
     }
+    CustomStringTableItem "{C80275F691522CBC}" {
+     Id "LF-Reputation_Faction_Police"
+     Target_en_us "The law"
+     Comment "Standing: neutral core label of the police faction. The pack overlays the words."
+    }
+    CustomStringTableItem "{AE91EA1CF28E3574}" {
+     Id "LF-Reputation_Faction_Town"
+     Target_en_us "Locals"
+     Comment "Standing: neutral core label of the town faction. The pack overlays the words."
+    }
+    CustomStringTableItem "{B97574F5460AB27E}" {
+     Id "LF-Reputation_Faction_Underworld"
+     Target_en_us "Underworld"
+     Comment "Standing: neutral core label of the underworld faction. Never shown to the player."
+    }
+    CustomStringTableItem "{067374E8D35098CE}" {
+     Id "LF-Reputation_Tier_0"
+     Target_en_us "Unknown"
+     Comment "Standing: neutral core label of tier 0. The pack overlays the words."
+    }
+    CustomStringTableItem "{EB0E8494CA8497EB}" {
+     Id "LF-Reputation_Tier_1"
+     Target_en_us "Known"
+     Comment "Standing: neutral core label of tier 1. The pack overlays the words."
+    }
+    CustomStringTableItem "{F014E5DE1DBB6EB7}" {
+     Id "LF-Reputation_Tier_2"
+     Target_en_us "Trusted"
+     Comment "Standing: neutral core label of tier 2. The pack overlays the words."
+    }
+    CustomStringTableItem "{37CF03FD90EA2650}" {
+     Id "LF-Reputation_Tier_3"
+     Target_en_us "Respected"
+     Comment "Standing: neutral core label of tier 3. The pack overlays the words."
+    }
+    CustomStringTableItem "{33DDEE3DC227F790}" {
+     Id "LF-Reputation_Tier_Neg1"
+     Target_en_us "Doubted"
+     Comment "Standing: neutral core label of tier -1. The pack overlays the words."
+    }
+    CustomStringTableItem "{00CAD4E0C49A2EC2}" {
+     Id "LF-Reputation_Tier_Neg2"
+     Target_en_us "Distrusted"
+     Comment "Standing: neutral core label of tier -2. The pack overlays the words."
+    }
     CustomStringTableItem "{C96808FBA0407AFE}" {
      Id "LF-Restrain_Action"
      Target_en_us "Cuff"
