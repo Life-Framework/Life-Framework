@@ -543,6 +543,12 @@ class LF_PlacementService
 		if (!LF_PlacementGeometry.WithinReach(playerTransform[3], proposal, maxDistance, MAX_RISE, offBy))
 			return Refuse(player, "refused: the proposal is " + offBy, "#LF-Placement_Moved");
 
+		// Where this kind may go (#2447): roads only, an owned property, an organization base.
+		string zoneToast;
+		string zoneWhy = LF_PlacementPolicy.ZoneAt(player, placeable.GetKind(), proposal[3], zoneToast);
+		if (!zoneWhy.IsEmpty())
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), zoneWhy), zoneToast);
+
 		if (placeable.GetSnap() == LF_EPlacementSnap.ACROSS_ROAD)
 		{
 			string roadNote;
