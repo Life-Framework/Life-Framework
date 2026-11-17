@@ -7,38 +7,11 @@ GenericEntity Fit_saint_philippe_gun_counter_Place {
   LF_FittedBuildingComponent "{7EC535672B158F20}" {
   }
  }
- coords 4552.55 17.9 10774
+ coords 4552.9 17.9 10774.1
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_store_furniture_01 : "{3C567594DE66D4C8}Prefabs/Buildings/GunStore/Furniture/GunStore_furniture_01.et" {
- coords 4552.55 17.9 10774
- angleY 170
-}
-GenericEntity Fit_saint_philippe_gun_counter_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
- components {
-  MeshObject "{5111E74D5E891458}" {
-   Materials {
-    MaterialAssignClass "{5EF79D9074AC18CC}" {
-     SourceMaterial "SignCommercial_01"
-     AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
-    }
-    MaterialAssignClass "{7EAFD7FF46F56085}" {
-     SourceMaterial "MLOD"
-     AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
-    }
-   }
-  }
-  LF_SignComponent "{6E3FF3980D87CACE}" {
-   m_sSignId "gun_store"
-   m_vRimColor 0.85 0.68 0.3
-   m_vPaintColor 0.12 0.16 0.12
-   m_vTextColor 0.93 0.86 0.66
-  }
-  Hierarchy "{612AE78C95E98EEB}" {
-   PivotID "socket_win_420x275_01"
-  }
- }
- coords 4552.571 19.332 10774.17
- angleY -10
+ coords 4552.9 17.7 10774.1
+ angleY 80
 }
 GenericEntity Fit_saint_philippe_gun_counter_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
  components {
@@ -47,24 +20,24 @@ GenericEntity Fit_saint_philippe_gun_counter_electricity_box_small_01 : "{CDE403
    m_fReach 10
   }
  }
- coords 4554.765 20.5 10766.623
- angleY 170
-}
-GenericEntity Fit_saint_philippe_gun_counter_lf_weapon_rack_cabinet_display : "{12BFA4BF5A703816}Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et" {
- coords 4546.992 18.099 10772.411
+ coords 4560.169 20.3 10776.296
  angleY 80
 }
+GenericEntity Fit_saint_philippe_gun_counter_lf_weapon_rack_cabinet_display : "{12BFA4BF5A703816}Prefabs/Props/Commercial/LF_WeaponRackCabinet_Display.et" {
+ coords 4554.489 17.899 10768.542
+ angleY -10
+}
 GenericEntity Fit_saint_philippe_gun_counter_lf_weapon_rack_stand_display : "{96114332715F34A3}Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et" {
- coords 4550.759 18.099 10766.881
- angleY 170
+ coords 4560.019 17.899 10772.309
+ angleY 80
 }
 GenericEntity Fit_saint_philippe_gun_counter_shelf_shop_01 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
- coords 4554.785 18.099 10770.079
- angleY -100
+ coords 4556.821 17.899 10776.335
+ angleY 170
 }
 GenericEntity Fit_saint_philippe_gun_counter_cashier_shop_01 : "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et" {
- coords 4549.935 19.138 10774.148
- angleY 170
+ coords 4552.752 18.938 10771.485
+ angleY 80
 }
 GenericEntity Fit_saint_philippe_gun_counter_lf_gun_counter : "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et" {
  components {
@@ -72,6 +45,6 @@ GenericEntity Fit_saint_philippe_gun_counter_lf_gun_counter : "{F7EEC900E44C3CCA
    m_sOutletId "gun_counter"
   }
  }
- coords 4549.509 18.099 10773.971
- angleY 170
+ coords 4552.929 17.899 10771.059
+ angleY 80
 }
