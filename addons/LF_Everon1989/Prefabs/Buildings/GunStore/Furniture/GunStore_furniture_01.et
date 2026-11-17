@@ -604,7 +604,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
      }
     }
    }
-   coords 0.4 3.918 3.3
+   coords 3 3.918 -0.5
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "DC1F40B527CEA5BA"
@@ -618,7 +618,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
      }
     }
    }
-   coords 3 3.918 -0.5
+   coords 0.4 3.918 3.3
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "DC1F59C6F6101B1C"
@@ -1098,12 +1098,32 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    scale 0.9
    coords 5.532 2.266 5.647
   }
-  GameEntity : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
-   ID "DC1FCC0FBFCBEC18"
+  GenericEntity : "{62482F79CF1B97FD}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01.et" {
+   ID "DC1F2E4071828E9E"
+   components {
+    MeshObject "{5111E74D5E891458}" {
+     Materials {
+      MaterialAssignClass "{DC1F4C6A3B712362}" {
+       SourceMaterial "LampIndustrial_01_glass"
+       AssignedMaterial "{D82B09F425E06153}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/LampIndustrial_01_glass_on_orange.emat"
+      }
+     }
+    }
+   }
    coords -0.9 3.4 7.73
   }
-  GameEntity : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
-   ID "DC1FD45A10E49FCD"
+  GenericEntity : "{62482F79CF1B97FD}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01.et" {
+   ID "DC1FE02A77B2BFC0"
+   components {
+    MeshObject "{5111E74D5E891458}" {
+     Materials {
+      MaterialAssignClass "{DC1FBB9EB6A7A319}" {
+       SourceMaterial "LampIndustrial_01_glass"
+       AssignedMaterial "{D82B09F425E06153}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/LampIndustrial_01_glass_on_orange.emat"
+      }
+     }
+    }
+   }
    coords 4.9 3.4 7.73
   }
   GenericEntity : "{027DFD4BB8D66F61}Prefabs/Props/Furniture/BenchWooden_03.et" {
@@ -1132,15 +1152,16 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   LightEntity {
    ID "DC1F6A4EAEA81D30"
-   coords 2.99 3.7 4.668
+   coords 3 3.7 -0.5
    angles -90 0 0
-   Color 1 0.86 0.64 1
-   LV 5.5
+   Color 1 0.82 0.55 1
+   LV 6.5
+   CastShadow 1
    ClipEV -10
    Type Spot
-   Radius 7
+   Radius 5
    NearPlane 0.3
-   SpotAngle 140
+   SpotAngle 110
    LensFlareType Disabled
   }
   LightEntity {
@@ -1149,6 +1170,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    angles -90 0 0
    Color 1 0.86 0.64 1
    LV 5.5
+   CastShadow 0
    ClipEV -10
    Type Spot
    Radius 7
@@ -1158,96 +1180,44 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   LightEntity {
    ID "DC1FEEC8E3CE875F"
-   coords 0.4 3.7 3.3
+   coords 2.99 3.7 4.668
    angles -90 0 0
    Color 1 0.86 0.64 1
-   LV 5.5
+   LV 6.5
+   CastShadow 0
    ClipEV -10
    Type Spot
-   Radius 7
+   Radius 8
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
   }
   LightEntity {
    ID "DC1F79AE2E5F5342"
-   coords 3 3.7 -0.5
-   angles -90 0 0
-   Color 1 0.82 0.55 1
-   LV 6.5
+   coords 1.4 3 2.4
+   Color 1 0.88 0.68 1
+   LV 3.2
+   CastShadow 0
    ClipEV -10
-   Type Spot
-   Radius 5
+   Type Point
+   Radius 7
    NearPlane 0.3
-   SpotAngle 110
    LensFlareType Disabled
   }
-  LightEntity {
+  LightEntity : "{6FF329B097CE4B0A}Prefabs/Structures/BuildingParts/Lights/LightPrefabs/LampIndustrial_01_light_spot_exterior.et" {
    ID "DC1F8DB90A310B8E"
-   coords 3 3.7 6.3
-   angles -90 0 0
-   Color 1 0.93 0.8 1
-   LV 7.5
-   ClipEV -10
-   Type Spot
-   Radius 4.5
-   NearPlane 0.3
-   SpotAngle 90
+   coords -0.9 3.245 7.997
+   angles -38.791 0 0
+   CastShadow 0
+   ProjectionMap "{465C9BD0684E85FF}Common/Textures/Light_profiles/LampIndustrial_01_Mask.edds"
    LensFlareType Disabled
   }
-  LightEntity {
+  LightEntity : "{6FF329B097CE4B0A}Prefabs/Structures/BuildingParts/Lights/LightPrefabs/LampIndustrial_01_light_spot_exterior.et" {
    ID "DC1FD58667683C06"
-   coords 2.99 3 4.668
-   Color 1 0.88 0.68 1
-   LV 2.2
-   ClipEV -10
-   Type Point
-   Radius 5.5
-   NearPlane 0.3
-   LensFlareType Disabled
-  }
-  LightEntity {
-   ID "DC1FAE4A04F24944"
-   coords 2.962 3 0.922
-   Color 1 0.88 0.68 1
-   LV 2.2
-   ClipEV -10
-   Type Point
-   Radius 5.5
-   NearPlane 0.3
-   LensFlareType Disabled
-  }
-  LightEntity {
-   ID "DC1F4F557AFE867C"
-   coords 0.4 3 3.3
-   Color 1 0.88 0.68 1
-   LV 2.2
-   ClipEV -10
-   Type Point
-   Radius 5.5
-   NearPlane 0.3
-   LensFlareType Disabled
-  }
-  LightEntity {
-   ID "DC1F79E0695C6561"
-   coords 1.1 1.449 -2.55
-   Color 1 0.84 0.6 1
-   LV 2.6
-   ClipEV -10
-   Type Point
-   Radius 3.5
-   NearPlane 0.3
-   LensFlareType Disabled
-  }
-  LightEntity {
-   ID "DC1F985C2BEE147A"
-   coords -1.2 1.7 2
-   Color 1 0.8 0.52 1
-   LV 2.6
-   ClipEV -10
-   Type Point
-   Radius 4.2
-   NearPlane 0.3
+   coords 4.9 3.245 7.997
+   angles -38.791 0 0
+   CastShadow 0
+   ProjectionMap "{465C9BD0684E85FF}Common/Textures/Light_profiles/LampIndustrial_01_Mask.edds"
    LensFlareType Disabled
   }
  }
