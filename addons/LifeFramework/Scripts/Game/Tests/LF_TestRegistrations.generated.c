@@ -408,6 +408,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapPrivateRegistry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MapSearch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareAreas(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapShareCapWarnOnce(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareMemberKey(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareNotPersonal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShares(), LF_TestTier.LOGIC);
