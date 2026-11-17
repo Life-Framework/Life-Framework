@@ -1,0 +1,9 @@
+{
+ "branch": "ws/fix-bug",
+ "files": [
+  "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_sample-square_shop.layer"
+ ],
+ "guardErrors": [
+  "only a town-draft-<place>-<slot> branch may change an island layer"
+ ]
+}

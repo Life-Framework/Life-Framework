@@ -21,8 +21,20 @@ const PLACES = {
   square: { x: 4592, z: 10818, zoom: 4 },
 };
 
-export function resolveView({ place, bbox, zoom, size }, catalog) {
+// --place fit: the extent of the overlay's places, with a margin (a world that is not Everon has no named place).
+function fitBbox(overlay, size) {
+  const e = overlay?.info?.extent;
+  if (!e) throw new Error("--place fit needs places: this world has none with a POI kind (see --world)");
+  const cx = (e.x0 + e.x1) / 2, cz = (e.z0 + e.z1) / 2;
+  const aspect = size ? size[0] / size[1] : 1;
+  let hw = Math.max((e.x1 - e.x0) * 0.6, 40), hh = Math.max((e.z1 - e.z0) * 0.6, 40);
+  if (size) { hw = Math.max(hw, hh * aspect); hh = hw / aspect; }
+  return [cx - hw, cz - hh, cx + hw + hw * 0.5, cz + hh]; // extra room east: labels run right of their icon
+}
+
+export function resolveView({ place, bbox, zoom, size }, catalog, overlay) {
   let x0, z0, x1, z1, z;
+  if (place === "fit" && !bbox) bbox = fitBbox(overlay, size);
   if (bbox) {
     [x0, z0, x1, z1] = bbox;
     z = Math.log2(WORLD_M / (x1 - x0));
@@ -168,6 +180,7 @@ function drawBuildings(cv, view, catalog) {
 
 const circle = (x, z, r, n = 40) => Array.from({ length: n }, (_, i) => [x + r * Math.cos((i / n) * Math.PI * 2), z + r * Math.sin((i / n) * Math.PI * 2)]);
 const KIND_GLYPH = { CLINIC: "+", POLICE: "P", GOVERNMENT: "H", FUEL: "F", FIRE: "F", CHURCH: "C", PUB: "B", SHOP: "S", FENCE: "X", DEPOT: "D" };
+const CATEGORY_GLYPH = { law: "P", health: "+", civic: "C", work: "W", shop: "S", travel: "T", story: "!", underworld: "X" };
 const ACCESS_COLOR = { CIVIC: [40, 70, 120], PUBLIC: [70, 56, 44], DISCOVER: [170, 118, 38], POLICE: [30, 60, 170], UNDERWORLD: [150, 40, 40] };
 
 function drawAreas(cv, view, overlay, hits) {
@@ -227,7 +240,7 @@ function drawPois(cv, view, overlay, persona, rules, taken, hits) {
     } else {
       cv.disc(cx, cy, r + 1, PAPER, 0.9 * alpha);
       cv.disc(cx, cy, r, base, alpha);
-      const g = state === "faded" ? "?" : KIND_GLYPH[p.kind] || p.kind[0];
+      const g = state === "faded" ? "?" : KIND_GLYPH[p.kind] || CATEGORY_GLYPH[p.category] || p.kind[0];
       cv.text(g, cx - 2, cy - 3, [250, 244, 226], 1, null, alpha);
     }
     const label = state === "faded" ? `${p.name} (HEARD OF)` : p.name;
@@ -237,7 +250,7 @@ function drawPois(cv, view, overlay, persona, rules, taken, hits) {
       taken.push([lx, ly, tw, 7 * sc]);
       cv.text(label, lx, ly, state === "pencil" ? [110, 40, 40] : INK, sc, PAPER, alpha);
     }
-    hits.push({ kind: "poi", x: cx, y: cy, r: r + 2, label: p.name, detail: `${p.kind} / ${p.access} / ${state}` });
+    hits.push({ kind: "poi", x: cx, y: cy, r: r + 2, label: p.name, detail: `${p.kind}${p.source ? ` ${p.id}` : ""} / ${p.visibility || p.access}${p.role ? ` ${p.role}` : ""} / ${state}` });
     n++;
   }
   return n;
@@ -259,28 +272,42 @@ function drawFrame(cv, view, persona, layer) {
   cv.text("N", w - 23, 40, INK, 1, PAPER);
 }
 
-// opts: place, bbox [x0,z0,x1,z1], zoom, as, night, size [w,h], html, root, cacheRoot, extract (default true).
+// A world that is not Everon has no terrain here: plain paper with a metre grid, so the places read on their own.
+function drawPlain(cv, view, night) {
+  const step = view.x1 - view.x0 > 600 ? 100 : view.x1 - view.x0 > 150 ? 20 : 10;
+  const grid = [206, 194, 166];
+  for (let gx = Math.ceil(view.x0 / step) * step; gx < view.x1; gx += step) cv.line((gx - view.x0) * view.scale, 0, (gx - view.x0) * view.scale, cv.h, grid, 1, 1);
+  for (let gz = Math.ceil(view.z0 / step) * step; gz < view.z1; gz += step) cv.line(0, (view.z1 - gz) * view.scale, cv.w, (view.z1 - gz) * view.scale, grid, 1, 1);
+  if (night) night(cv);
+}
+
+// opts: place (also "fit"), bbox [x0,z0,x1,z1], zoom, as, night, size [w,h], html, root, cacheRoot, extract (default true),
+//   world (main|town|debug|grid|path: whose places the POIs are), fixture (the stand-in rows), base ("everon" | "plain":
+//   plain is the default for any world but main), liveStates (override the mission header's list).
 export async function renderMap(opts = {}) {
   const t0 = Date.now();
   const root = opts.root;
   const catalog = loadCatalog(root);
-  const overlay = loadOverlay(root);
+  const overlay = loadOverlay(root, { world: opts.world, fixture: opts.fixture, liveStates: opts.liveStates, files: opts.files });
   const rules = await loadRules();
   const persona = opts.as || "new";
-  const view = resolveView(opts, catalog);
-  const base = await ensureBase({ cacheRoot: opts.cacheRoot, extract: opts.extract !== false, log: opts.log });
+  const world = opts.world || "main";
+  const plain = (opts.base || (world === "main" || opts.fixture ? "everon" : "plain")) === "plain";
+  const view = resolveView({ ...opts, place: opts.place || (!opts.fixture && world !== "main" && !opts.bbox ? "fit" : opts.place) }, catalog, overlay);
+  const base = plain ? null : await ensureBase({ cacheRoot: opts.cacheRoot, extract: opts.extract !== false, log: opts.log });
   const cv = new Canvas(view.w, view.h, PAPER);
   const night = opts.night ? (c) => { for (let i = 0; i < c.data.length; i += 3) { c.data[i] *= 0.34; c.data[i + 1] *= 0.42; c.data[i + 2] *= 0.62; } } : null;
-  const layer = base ? "raster" : "fallback";
-  if (base) drawRaster(cv, view, base, night);
+  const layer = plain ? "plain" : base ? "raster" : "fallback";
+  if (plain) drawPlain(cv, view, night);
+  else if (base) drawRaster(cv, view, base, night);
   else drawFallback(cv, view, catalog, night);
   const hits = [];
-  const stats = { buildings: 0, places: 0, pois: 0, areas: 0, overlay: overlay.source };
-  if (view.scale >= (base ? 0.5 : 0.04)) stats.buildings = drawBuildings(cv, view, catalog);
+  const stats = { buildings: 0, places: 0, pois: 0, areas: 0, overlay: overlay.source, info: overlay.info };
+  if (!plain && view.scale >= (base ? 0.5 : 0.04)) stats.buildings = drawBuildings(cv, view, catalog);
   stats.areas = drawAreas(cv, view, overlay, hits);
   const taken = [];
   stats.pois = drawPois(cv, view, overlay, persona, rules, taken, hits);
-  stats.places = drawPlaces(cv, view, catalog, taken);
+  if (!plain) stats.places = drawPlaces(cv, view, catalog, taken);
   drawFrame(cv, view, persona, layer);
   const png = encodePng(cv.image(), 3);
   stats.ms = Date.now() - t0;

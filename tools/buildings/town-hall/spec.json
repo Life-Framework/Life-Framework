@@ -1,0 +1,51 @@
+{
+  "slug": "town-hall",
+  "name": "TownHall",
+  "concept": "The town hall of the Everon flagship: the vanilla MunicipalOffice_E_01 (24 x 18 m, ground floor, first floor and attic) fitted out as the place a newcomer walks into at dawn. The entrance corridor is the arrival point (a spawn marker for the town fit) with the town board on its wall; the registry clerk stands behind the post counter in the east hall, the licence desk is the counter's second window, and the green benches on the customer side are the waiting area. The infirmary of the base game's set, the extra WCs and the duplicated switches and radiators are cut so the building spends about 115 entities (the island budget). Lit by four ceiling lights, a first-floor light and one lit facade lamp, with the ceiling lamp meshes glowing through an emissive cover. Base-game props only. The handbook is a pause-menu page, so there is no pickup to place.",
+  "red_line": "pack",
+  "addon": "LF_Everon1989",
+  "prefab_dir": "Prefabs/Buildings/TownHall",
+  "vanilla": {
+    "base": "{76D7178C2C1F92A9}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01_Base.et",
+    "building": "TownHall",
+    "furniture": "Furniture/TownHall_furniture_01"
+  },
+  "budget": { "min_doors": 1, "lights": 6, "shadow_casters": 2, "decor_entities": 150 },
+  "host": {
+    "prefab": "{363A616E6C64BB7F}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et",
+    "note": "Saint-Philippe has one at about 4419, 10648 (docs/architecture/everon-world.md). The kit is placed there later by town fit; until then the building stands in the debug grid, claim town-hall (3 x 2 cells)."
+  },
+  "grid": {
+    "claim": "tools/grid/cells/town-hall.json",
+    "layer": "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_town_hall.layer",
+    "entity": "TownHall",
+    "stage": "tools/buildings/town-hall/stage/",
+    "note": "The layer names pack prefabs, so it is not committed to the core addon until the pack grid layers land (the lead, 2026-11-16): node tools/buildings/town-hall/looks.mjs --stage copies it from stage/ into GridWorld for a look, --unstage removes it before validate or ship. The building entity's coords and angleY in it are the only world numbers; every point below is building space (front +z)."
+  },
+  "rooms": [
+    { "id": "arrival-corridor", "floor": 0, "box": [-2.0, -3.0, 4.6, 7.6], "use": "arrival point (spawn marker TownHall_ArrivalPoint), town board TownHall_Board, entrance doors" },
+    { "id": "registry-counter", "floor": 0, "box": [4.8, 1.5, 10.9, 4.1], "use": "the registry clerk TownHall_Clerk behind the post counter; the licence desk is the counter window at x 9.1" },
+    { "id": "waiting", "floor": 0, "box": [4.8, 4.1, 10.9, 7.4], "use": "the green office benches facing the counter" },
+    { "id": "stair", "floor": 0, "box": [-4.7, -7.4, 4.7, -3.0], "use": "the stair to the first floor" },
+    { "id": "first-floor", "floor": 1, "box": [-10.7, -7.4, 10.7, 7.4], "use": "offices (vanilla desks, cabinets, WC)" }
+  ],
+  "interactables": [
+    { "system": "registry clerk, arrival chain (#1815)", "entity": "TownHall_Clerk", "prefab": "LF_Npc_Clerk_1" },
+    { "system": "licence desk (#1991, #2019, #2040)", "entity": "the counter child LF_LicenceDesk in the furniture prefab" },
+    { "system": "town board (#1801)", "entity": "TownHall_Board", "prefab": "LF_TownBoard" },
+    { "system": "registry sign card", "entity": "TownHall_Registry_Sign", "prefab": "LF_Sign_Posts" },
+    { "system": "arrival point", "entity": "TownHall_ArrivalPoint", "note": "an LF_PlaceComponent of kind ArrivalSpawn; the spawn point itself joins in town fit, so the grid test spawn stays at the gate" }
+  ],
+  "looks": {
+    "about": "node tools/buildings/town-hall/looks.mjs [--set exterior|rooms|all] [--hour 14|22] [--run] turns these building-space centres into tools\\cli look calls (grid:town-hall, or --interior x,y,z in world space)",
+    "exterior": true,
+    "rooms": [
+      { "name": "corridor", "at": [0.2, 0.2, 3.0], "radius": 4 },
+      { "name": "counter", "at": [7.8, 0.2, 2.8], "radius": 4 },
+      { "name": "waiting", "at": [7.4, 0.2, 6.0], "radius": 4 },
+      { "name": "stair", "at": [1.2, 0.2, -2.0], "radius": 4 },
+      { "name": "first-floor", "at": [0, 4.0, 1.0], "radius": 5 }
+    ],
+    "hours": [14, 22]
+  }
+}

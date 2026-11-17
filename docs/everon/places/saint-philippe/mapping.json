@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "template": "town",
+  "place": "saint-philippe",
+  "status": "proposed",
+  "note": "A proposal for the lead to approve (D10). Approval is a reviewed PR holding only this file (label town-mapping). `toolscli town map <place> --check` passes.",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-17",
+    "buildings": 128,
+    "freePlots": 4
+  },
+  "slots": {
+    "arrival": {
+      "building": "b45",
+      "why": [
+        "MunicipalOffice_E_01 (government), 429 m2, 91 m from the scout centre, interior yes",
+        "lead-approved: the vanilla town hall, south of the square (4419, 10648)",
+        "the scout went inside (civic-b45 interior pictures)"
+      ]
+    },
+    "hostel": {
+      "building": "b14",
+      "alternatives": [
+        {
+          "building": "b39"
+        },
+        {
+          "building": "b05"
+        }
+      ],
+      "why": [
+        "House_Town_E_2I02 (townhouse), 247.9 m2, 50.6 m from the scout centre, interior yes",
+        "converted town house, the largest kind (247.9 m2, 3 floors, 15 doors) beside the square (D9 mix rule: no hotel in range)"
+      ]
+    },
+    "cafe": {
+      "building": "b03",
+      "why": [
+        "PubVillage_E_2L01_V8_ProgresBar (pub), 304.3 m2, 28.7 m from the scout centre, interior yes",
+        "lead-approved: the pub with the wall sign (4455, 10700), near the town hall"
+      ]
+    },
+    "bank": {
+      "building": "b79",
+      "why": [
+        "Office_E_01 (industrial), 255 m2, 125.9 m from the scout centre, interior yes",
+        "lead-approved: Office_E_01 beside the town hall (4369, 10656); the vault room is a fitting question, not a mapping one"
+      ]
+    },
+    "police": {
+      "building": "b32",
+      "why": [
+        "Villa_E_2I01_Police (police), 194.3 m2, 79.9 m from the scout centre, interior yes",
+        "lead-approved: the vanilla police villa (4553, 10748)"
+      ]
+    },
+    "clinic": {
+      "building": "b39",
+      "alternatives": [
+        {
+          "building": "b20"
+        },
+        {
+          "building": "b43"
+        }
+      ],
+      "why": [
+        "House_Town_E_2I02_v2 (townhouse), 247.9 m2, 84.8 m from the scout centre, interior yes",
+        "converted town house on the square (247.9 m2, 3 floors), next to the clothes shop (D9 mix rule)"
+      ]
+    },
+    "general-store": {
+      "building": "b12",
+      "why": [
+        "ShopHouse_E_2I01t_householdwares (shop), 208.3 m2, 47 m from the scout centre, interior yes",
+        "lead-approved: the household-wares shop-house east of the square (4515, 10746)"
+      ]
+    },
+    "clothing": {
+      "building": "b38",
+      "why": [
+        "ShopHouse_E_2I01t_clothesstore (shop), 208.3 m2, 83.3 m from the scout centre, interior yes",
+        "lead-approved: the clothes shop-house on the square (4441, 10789)"
+      ]
+    },
+    "gun-counter": {
+      "building": "b48",
+      "why": [
+        "ShopHouse_E_2I01t_drugstore (shop), 208.3 m2, 93.8 m from the scout centre, interior yes",
+        "lead-approved: the east drugstore shop-house beside the police villa (4553, 10774); the north drugstore b88 stays the drug store"
+      ]
+    },
+    "fuel": {
+      "building": "b107",
+      "why": [
+        "FuelStation_E_01_building (fuel), 60 m2, 147.7 m from the scout centre, interior yes",
+        "lead-approved: the fuel station on the south-east road in (4617, 10659); b97 is its small kiosk building"
+      ]
+    },
+    "fence": {
+      "building": "b33",
+      "alternatives": [
+        {
+          "building": "b59"
+        },
+        {
+          "building": "b36"
+        }
+      ],
+      "why": [
+        "Workshop_01_Main (garage), 92.7 m2, 80 m from the scout centre, interior yes",
+        "the workshop yard on the south-east road, with Workshop_01_Side b36 beside it; the east-edge yard in the old note is outside the dossier"
+      ]
+    },
+    "board": {
+      "building": "b38",
+      "shared": true,
+      "why": [
+        "ShopHouse_E_2I01t_clothesstore (shop), 208.3 m2, 83.3 m from the scout centre, interior yes",
+        "street furniture on the square frontage; the kit sets it against the kerb"
+      ]
+    },
+    "taxi": {
+      "building": "b39",
+      "shared": true,
+      "why": [
+        "House_Town_E_2I02_v2 (townhouse), 247.9 m2, 84.8 m from the scout centre, interior yes",
+        "kerb on the square, beside the clinic house; the kit sets it against the kerb"
+      ]
+    },
+    "parcel": {
+      "building": "b21",
+      "alternatives": [
+        {
+          "building": "b13"
+        }
+      ],
+      "why": [
+        "NewspaperBooth_E_01_redyellow (kiosk), 20.5 m2, 67.3 m from the scout centre, interior yes",
+        "kiosk on the west side of the square (4425, 10754)"
+      ]
+    }
+  }
+}

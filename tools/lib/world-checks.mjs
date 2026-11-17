@@ -17,6 +17,7 @@ export const HARD_CHECKS = [
   "validate-repo.ps1", // duplicate resource GUIDs, orphan .meta files
   "validate-guid-paths.mjs", // a {GUID}path that does not resolve
   "validate-world-zones.mjs", // an edit outside the town layers (needs a town- branch)
+  "validate-island-zones.mjs", // an island Place_* layer changed off a town-draft branch, or outside its claim or footprint (#2206)
   "validate-debugworld.ps1", // required layers exist and parse
   "validate-debugworld-layout.ps1",
   "validate-debugworld-layer-order.ps1",
