@@ -27,6 +27,7 @@ class LF_BreachTargetComponent : ScriptComponent
 	protected float m_fSwingYaw;
 
 	protected bool m_bFusePending;
+	protected float m_fPendingFuseSeconds;
 
 	//! A live open or repair turns the door over this long (a heavy vault door, not a snap). A load or a late
 	//! join inside SWING_SETTLE_MS of the component's start snaps it, so a saved open vault is simply open.
@@ -79,6 +80,14 @@ class LF_BreachTargetComponent : ScriptComponent
 			return;
 		}
 
+		// A bank vault (LF_BankVaultComponent on the same entity) configures its breach target itself, with
+		// the safe type's fuse; configuring it here too would reset that fuse to this component's 0.
+		if (LF_Component<LF_BankVaultComponent>.Find(owner))
+		{
+			LF_Debug.Log("Breach", string.Format("target %1 is a bank vault; LF_Bank configures its fuse", targetId));
+			return;
+		}
+
 		LF_Breach.Configure(targetId, m_fFuseSeconds, m_sOwnerOrganization);
 	}
 
@@ -92,6 +101,13 @@ class LF_BreachTargetComponent : ScriptComponent
 			return GetOwner().GetName();
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gives a script-spawned target (no attribute, unnamed entity) its id, so its fuse fires under it.
+	void SetTargetId(string targetId)
+	{
+		m_sTargetId = targetId;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -378,20 +394,42 @@ class LF_BreachTargetComponent : ScriptComponent
 		if (delayMs < 1)
 			delayMs = 1;
 
-		GetGame().GetCallqueue().CallLater(OnFuse, delayMs, false);
+		GetGame().GetCallqueue().CallLater(FireFuse, delayMs, false);
 		m_bFusePending = true;
+		m_fPendingFuseSeconds = fuseSeconds;
 		LF_Debug.Log("Breach", string.Format("fuse scheduled %1 ms=%2", GetTargetId(), delayMs));
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void OnFuse()
+	//! True while a charge's fuse timer runs on this target.
+	bool IsFusePending()
 	{
+		return m_bFusePending;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the fuse timer fired (the callqueue calls it; a test calls it to skip the wait).
+	void FireFuse()
+	{
+		// One charge, one fuse: a second call (a test firing it early, then the timer) does nothing.
+		if (!m_bFusePending)
+			return;
+
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(FireFuse);
+
 		m_bFusePending = false;
 		if (!Replication.IsServer())
 			return;
 
-		LF_Breach.Advance(GetTargetId(), m_fFuseSeconds);
+		// The fuse runs for the seconds LF_Breach scheduled (a vault's comes from its safe type; this
+		// component's own m_fFuseSeconds is 0 there). A bank vault goes through LF_Bank so the haul pays.
+		float seconds = m_fPendingFuseSeconds;
+		m_fPendingFuseSeconds = 0;
+		string targetId = GetTargetId();
+		if (!LF_Bank.FuseFired(targetId, seconds))
+			LF_Breach.Advance(targetId, seconds);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -403,7 +441,7 @@ class LF_BreachTargetComponent : ScriptComponent
 		{
 			m_bFusePending = false;
 			if (GetGame() && GetGame().GetCallqueue())
-				GetGame().GetCallqueue().Remove(OnFuse);
+				GetGame().GetCallqueue().Remove(FireFuse);
 
 			LF_Breach.CancelCharge(GetTargetId(), "door deleted before the fuse fired");
 		}
