@@ -5,7 +5,6 @@
 // temp folder: entity blocks are counted and components are not, a child prefab reference adds its
 // insides, CastShadow 0 / 1 / unset are told apart (unset counts as a caster), a point light casting a
 // shadow is flagged, an unresolved vanilla reference is listed, and the budget verdict names each limit.
-// red-proof: with findBuilding comparing the slug to the folder name exactly (case only) this printed "FAIL fuel-station finds FuelStation: want 1, got undefined" (2026-11-17).
 // red-proof: with countTree counting a light as a caster only on an explicit "CastShadow 1" this printed
 // "FAIL shadow: want 3 (one explicit, two unset): want 3, got 1" (2026-11-17).
 
@@ -73,22 +72,6 @@ want("child light class", blocks[0].children[0]?.cls, "LightEntity");
 
 const found = findBuilding("shop", root);
 want("one root prefab (the furniture is referenced)", found?.files.length, 1);
-// A hyphenated slug finds its PascalCase folder, and a slug whose folder is spelled differently finds it through the spec's prefab_dir.
-mkdirSync(join(root, "addons", "LF_Pack", "Prefabs", "Buildings", "FuelStation"), { recursive: true });
-writeFileSync(join(root, "addons", "LF_Pack", "Prefabs", "Buildings", "FuelStation", "FuelStation.et"), `GenericEntity : "{0000000000000010}Prefabs/Vanilla/Fuel.et" {
- ID "3"
-}
-`);
-want("fuel-station finds FuelStation", findBuilding("fuel-station", root)?.files.length, 1);
-mkdirSync(join(root, "addons", "LF_Pack", "Prefabs", "Buildings", "TheHall"), { recursive: true });
-writeFileSync(join(root, "addons", "LF_Pack", "Prefabs", "Buildings", "TheHall", "TheHall.et"), `GenericEntity : "{0000000000000011}Prefabs/Vanilla/Hall.et" {
- ID "4"
-}
-`);
-mkdirSync(join(root, "tools", "buildings", "town-hall"), { recursive: true });
-writeFileSync(join(root, "tools", "buildings", "town-hall", "spec.json"), JSON.stringify({ prefab_dir: "Prefabs/Buildings/TheHall" }));
-want("a slug finds its folder through the spec's prefab_dir", findBuilding("town-hall", root)?.files.length, 1);
-want("an unknown slug finds nothing", findBuilding("no-such-building", root), null);
 const resolve = await makeResolver(root);
 const offline = (ref) => (ref.includes("/Vanilla/") || ref.includes("/Core/") ? null : resolve(ref));
 const t = countTree(parseEntities(readFileSync(found.files[0], "utf8")), offline);

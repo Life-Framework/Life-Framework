@@ -56,10 +56,7 @@ tools\cli look grid:<slug>             the look pictures of that cell, from its 
 1. **Bounds.** The same reader `toolscli place` uses (`prefabInfo`: the measured list, else the mesh's `.xob` header from
    the paks, offline, no Workbench): footprint, height, the footprint centre's offset from the pivot (a MunicipalOffice's
    is 0.36, 0.56 m; a Villa's pivot is 1.4 m off its centre), and the entity class read from the prefab's root
-   (`SCR_DestructibleBuildingEntity` for the vanilla buildings), never hard-coded. A prefab with an annex child (FenceYard:
-   Workshop_01_Main plus Workshop_01_Side) is measured as the root and its children together; a child at exactly `0 0 0`
-   (a socket-attached door or entry) adds nothing. The frame (poles, plates, gravel path) draws nothing on or inside a
-   claim that spans several cells.
+   (`SCR_DestructibleBuildingEntity` for the vanilla buildings), never hard-coded.
 2. **Span.** `ceil((footprint + margin) / 12)` per axis, margin 4 m by default (2 m each side from the block's edge, 1 m
    inside the yard fence; `--margin M`). It tries yaw 0/180 and yaw 90/270 and takes the smaller block; of two blocks of the same
    size it takes the one whose front can face the yard's gap. A 15.3 x 12.7 m villa is 2x2, a 1 m crate 1x1, a 24 x 17.8 m
