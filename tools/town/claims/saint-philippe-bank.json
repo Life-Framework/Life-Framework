@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "bank",
+  "building": "b79",
+  "kit": "bank",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_bank.layer",
+  "kinds": [
+    "Bank",
+    "BankVault",
+    "BankCounter"
+  ],
+  "rows": 8,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_bank_Place"
+  },
+  "date": "2026-11-17"
+}

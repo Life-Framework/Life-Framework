@@ -1,0 +1,74 @@
+GenericEntity Fit_saint_philippe_bank_Place {
+ components {
+  LF_PlaceComponent "{9417497109F2DFA6}" {
+   m_sKind "Bank"
+   m_sId "saint-philippe.bank"
+  }
+  LF_FittedBuildingComponent "{AEAE14321BDDC0BD}" {
+  }
+ }
+ coords 4369.11 13.1 10656.05
+}
+GenericEntity Fit_saint_philippe_bank_Place_BankVault {
+ components {
+  LF_PlaceComponent "{E78A833484AC8843}" {
+   m_sKind "BankVault"
+   m_sId "saint-philippe.bank"
+  }
+ }
+ coords 4369.11 13.1 10656.05
+}
+GenericEntity Fit_saint_philippe_bank_Place_BankCounter {
+ components {
+  LF_PlaceComponent "{7A3C18C63101C808}" {
+   m_sKind "BankCounter"
+   m_sId "saint-philippe.bank"
+  }
+ }
+ coords 4369.11 13.1 10656.05
+}
+GenericEntity Fit_saint_philippe_bank_bank_furniture_01 : "{054FFEA0FE082CAE}Prefabs/Buildings/Bank/Furniture/Bank_furniture_01.et" {
+ coords 4369.11 13.1 10656.05
+ angleY 173
+}
+GameEntity Fit_saint_philippe_bank_ladder_office_e_01_317_b : "{C6D39474528BDB97}Prefabs/Structures/BuildingParts/Ladders/Ladder_Office_E_01_317_B.et" {
+ coords 4369.11 12.87 10656.05
+ angleY 173
+}
+GameEntity Fit_saint_philippe_bank_ladder_metal_900_b : "{CCBFEA66D534BC9C}Prefabs/Structures/BuildingParts/Ladders/Ladder_Metal_900_B.et" {
+ coords 4369.11 13.1 10656.05
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_lf_bank_vault : "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et" {
+ components {
+  LF_BankVaultComponent "{3B1F6C0A7D2E4858}" {
+   m_sVaultId "bank_vault"
+  }
+ }
+ coords 4359.77 13.107 10650.47
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_lf_bank_vault_small_roof : "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay/BankVault/LF_BankVault_SmallRoof.et" {
+ coords 4359.828 16.007 10650.824
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_lf_money_bag : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
+ coords 4359.528 13.597 10652.445
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ coords 4370.411 16.1 10648.734
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "bank"
+   m_vRimColor 0.85 0.68 0.3
+   m_vPaintColor 0.42 0.07 0.07
+   m_vTextColor 0.92 0.78 0.42
+  }
+ }
+ coords 4373.002 17.2 10648.972
+ angleY 173
+}
