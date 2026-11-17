@@ -5897,6 +5897,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Taser cartridge"
      Comment "Inventory name of the taser's single-shot cartridge."
     }
+    CustomStringTableItem "{71DFE7C94DAE37F2}" {
+     Id "LF-Map_AreaGated"
+     Target_en_us "Restricted"
+     Comment "Map label of a gated area (police yard, hospital back, the prison)."
+    }
+    CustomStringTableItem "{66EFF29951500B8B}" {
+     Id "LF-Map_AreaLawless"
+     Target_en_us "No {police}"
+     Comment "Map label of a lawless area, stamped in red."
+    }
+    CustomStringTableItem "{5DCCFFA00AEF5C7D}" {
+     Id "LF-Map_AreaSafe"
+     Target_en_us "Safe zone"
+     Comment "Map label of a safe zone at the closest zoom."
+    }
     CustomStringTableItem "{3C71B0A2D4E5F612}" {
      Id "LF-Medic_Downed"
      Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
