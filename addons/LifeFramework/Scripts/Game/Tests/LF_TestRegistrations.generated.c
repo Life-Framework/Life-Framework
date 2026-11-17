@@ -358,6 +358,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobLevelsConfig(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobLevelsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JobLevelSync(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_JobLevelWords(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobMapMarks(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobPacing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobRunCargoWorld(), LF_TestTier.WORLD);

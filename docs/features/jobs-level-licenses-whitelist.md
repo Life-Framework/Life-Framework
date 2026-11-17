@@ -118,6 +118,13 @@
   pacing), licence purchase (`LF_LicenseGate`: the licence family's job at the catalog level,
   or a `jobs.licenceGates` row), chain steps and quests (`m_sLevelJob` / `m_sJob`, CIVILIAN by
   default), lockpicking skill (CIVILIAN).
+- ✅ (2026-11-17, #2700) **A job-level gate refuses in words, never a number.**
+  `LF_JobLevelWords.Refusal(job, have, need)` returns a `#LF-Level_Near_<Family>` key one level
+  short and `#LF-Level_Far_<Family>` further (Farmer, Miner, Lumberjack, Medic, Police, Delivery,
+  `Any` for other jobs; "Do more runs first" for DELIVERY). `LF_ChainGate.LevelKey/ReasonKey` and
+  `LF_LicenseGate.RefusalKey` take their keys from it, and a refused paid licence unlock toasts
+  the words. Test `level/job-level-words`. Job sign-up and run-start refusals (`LF_JobAction`)
+  and the chain station's `RefusalKey` still show the old line until #R4 / a follow-up wire them.
 - ✅ **Saved as the `joblevels` payload (save version 28)**: one `LF_JobXpRow` per (character,
   job). A version 7-27 save migrates: the single level goes onto CIVILIAN and the delivery
   career onto DELIVERY at the same levels; every other job starts at 0. Load is idempotent.
