@@ -705,7 +705,7 @@ try {
   // the GC scripts then find the clone by its own path, not as <parent>\Life-Framework.
   // red-proof 2026-11-17: with runParent ignoring runRoot "runRoot is not honoured: C:/LF/Life-Framework-rt-x".
   {
-    const base = mkdtempSync(join(tmpdir(), "lf-runroot-"));
+    const base = scratchDir("lf-runroot-");
     try {
       writeFileSync(join(base, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "bx", via: "ssh", host: "bx", root: "C:/LF/Life-Framework", runRoot: "D:\\LF\\" }, { name: "by", via: "ssh", host: "by", root: "C:/LF/Life-Framework" }] } }));
       const ms = pool.loadMachines(base);
