@@ -200,8 +200,11 @@ supplies every coordinate the later steps use. No step types a coordinate.
   the kit. The relative geometry is kept; the absolute positions are dropped.
 - **Placed buildings (D9).** Where the mapping names a free plot, `town fit` first places the
   purpose-built building with `place ground` on the plot, then fits its kit like any other building.
-- **Indestructible (D15).** `town fit` writes each fitted vanilla building's destruction override into the
-  slot layer, so a fitted floor never falls in.
+- **Indestructible (D15).** A placed building (D9) is written into the slot layer with its destruction
+  off. A vanilla building stands in the terrain, so no layer can override it: `town fit` puts
+  `LF_FittedBuildingComponent` on the slot's place marker inside the building, and on the server the
+  core turns that building's damage handling off (`docs/features/core.md` "LF_FittedBuildings"). The
+  claim says `destruction.mode: "hooked"`; a slot with no place marker stays `needs-hook`.
 - **Apply:** `tools\cli town fit <place> <slot>` resolves the building from the mapping and its anchors
   from the dossier. It runs each kit row through `place on|against|ground` (the same bound reads, surface
   probes, checks and audit), writes `MainWorld_Layers/Place_<place>_<slot>.layer`, adds the slot's
