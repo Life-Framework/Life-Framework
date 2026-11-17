@@ -35,7 +35,7 @@ const LOOK_TIMEOUT_MS = 40 * 60 * 1000;
 // running tests took 96 s to load it and enter play (2026-11-16), over look's default of 90.
 export const LOOK_BOOT_BUDGET_S = 240;
 
-export const USAGE = `usage: tools\\cli scout <place name | x,z> [--radius 120] [--view 60] [--civic 6] [--interiors 2] [--quick] [--from-dump file] [--slug s] [--out dir] [--machine m] [--wait] [--budget s] [--catalog file]
+export const USAGE = `usage: tools\\cli scout <place name | x,z> [--radius 120] [--view 60] [--civic 6] [--interiors 2] [--quick] [--from-dump file] [--slug s] [--out dir] [--machine m] [--wait] [--budget s] [--catalog file] [--template town|village]
        tools\\cli scout list [filter]      tools\\cli scout types`;
 
 // Pure: "Saint-Philippe" -> "saint-philippe"; accents folded, anything else a dash.
@@ -49,7 +49,7 @@ export const slugOf = (name) =>
 
 // Pure: argv -> { pos, flags }. The valued flags take the next word.
 export function parseScoutArgs(argv) {
-  const valued = new Set(["radius", "view", "civic", "interiors", "slug", "out", "machine", "from-dump", "dumpstep", "budget", "catalog"]);
+  const valued = new Set(["radius", "view", "civic", "interiors", "slug", "out", "machine", "from-dump", "dumpstep", "budget", "catalog", "template"]);
   const flags = {};
   const pos = [];
   for (let i = 0; i < argv.length; i++) {
@@ -122,7 +122,7 @@ export const areaName = (x, z) => `xz-${Math.round(Math.round(x * 10) / 10)}-${M
 export function buildDossier({ target, radius, analysis, pictures, build, world, at, command, nearby }) {
   return {
     schema: SCHEMA,
-    place: { name: target.name, key: target.key, kind: target.kind, source: target.source, slug: target.slug, x: target.x, y: target.y, z: target.z },
+    place: { name: target.name, key: target.key, kind: target.kind, ...(target.template ? { template: target.template } : {}), source: target.source, slug: target.slug, x: target.x, y: target.y, z: target.z },
     radius,
     generated: { at, tool: "tools\\cli scout", command, gameBuild: build, world },
     nearbyPlaces: nearby,
@@ -240,6 +240,14 @@ export async function main(argv, { root = ROOT } = {}) {
     return 2;
   }
   if (flags.slug) target.slug = slugOf(flags.slug);
+  // The gazetteer's kind (urban, natural, other) is not a town plan's template: `--template` records which one the place is for.
+  if (flags.template) {
+    if (!/^(town|village)$/.test(flags.template)) {
+      console.log(`scout: --template is town or village, not '${flags.template}'`);
+      return 2;
+    }
+    target.template = flags.template;
+  }
   const radius = num(flags.radius, target.radius ?? 120);
   const view = num(flags.view, 60);
   const placeDir = resolve(root, flags.out || join("docs", "everon", "places", target.slug));

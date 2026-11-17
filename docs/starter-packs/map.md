@@ -13,7 +13,9 @@ Read your card in everon-map.md and the `Feature.md` of the area it touches. Not
 ## Order of work: emulator, LOGIC tests, one in-game shot
 1. **Emulator first.** Render the map layout offline: `tools\cli map render <fixture> [--zoom z]` (card M0; until it
    merges `tools\cli map` says "unknown command", so check `tools\cli help` and do not write your own renderer). Iterate
-   on cluster, label and hatch rules here; it needs no Workbench and no session.
+   on cluster, label and hatch rules here; it needs no Workbench and no session. POIs are the live places of
+   `--world` (default `main`, the pack island; `town` for the playtest village; `grid`) joined to the POI kind table,
+   so a world with no place of a POI kind draws none and says so; `--fixture` is the stand-in rows only.
 2. **LOGIC tests** hold the rules (clusters by zoom, visibility, area outlines, waypoint, shares, known-state):
    ```
    tools\cli test --no-build --only LF_Test_MapPois            # the loop
