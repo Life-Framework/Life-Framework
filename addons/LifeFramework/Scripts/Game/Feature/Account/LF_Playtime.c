@@ -8,6 +8,8 @@ class LF_PlaytimeClock
 	int m_iLastUnix;
 	//! The job the last credit went to: the disconnect credit falls back to it.
 	string m_sLastJob;
+	//! The character the last credit went to (LF_GraceCharacterClock, #2443): the disconnect falls back to it.
+	string m_sLastCharacter;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -179,6 +181,7 @@ class LF_Playtime
 		clock.m_sAccountUid = accountUid;
 		clock.m_iLastUnix = nowUnix;
 		clock.m_sLastJob = JobOf(accountUid, JOB_CIVILIAN);
+		clock.m_sLastCharacter = LF_GraceCharacterClock.CharacterOf(accountUid, "");
 		Clocks().Set(playerId, clock);
 		LF_Debug.Log(FEATURE, string.Format("clock started for player %1 (%2)", playerId, accountUid));
 		return true;
@@ -219,6 +222,8 @@ class LF_Playtime
 
 		clock.m_sLastJob = JobOf(clock.m_sAccountUid, clock.m_sLastJob);
 		Credit(clock.m_sAccountUid, clock.m_sLastJob, seconds);
+		clock.m_sLastCharacter = LF_GraceCharacterClock.CharacterOf(clock.m_sAccountUid, clock.m_sLastCharacter);
+		LF_GraceCharacterClock.Credit(clock.m_sLastCharacter, seconds);
 		return seconds;
 	}
 

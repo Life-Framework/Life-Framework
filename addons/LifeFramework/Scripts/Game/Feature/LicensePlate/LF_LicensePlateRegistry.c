@@ -17,6 +17,13 @@ class LF_LicensePlateRegistry
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: forget every live plate; the next world rebuilds them from its saved vehicles.
+	static void ResetStatics()
+	{
+		s_mPlates = null;
+	}
+
+//------------------------------------------------------------------------------------------------
 	static bool IsLive(string plate)
 	{
 		if (plate.IsEmpty())
@@ -87,5 +94,22 @@ class LF_LicensePlateRegistry
 
 		LF_Debug.Error("LicensePlate", string.Format("issue failed: no unique plate for %1", vehicleId));
 		return "";
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_LicensePlateRegistry's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_LicensePlateRegistry_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_LicensePlateRegistry_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_LicensePlateRegistry";
+	}
+
+	override void Apply()
+	{
+		LF_LicensePlateRegistry.ResetStatics();
 	}
 }

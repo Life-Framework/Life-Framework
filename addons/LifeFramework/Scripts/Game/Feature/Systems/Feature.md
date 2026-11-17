@@ -33,7 +33,7 @@ just before a reload) is refused with a log line and, where the player sees a re
   - Economy (#1074): `Banking` (account deposits and withdrawals), `ATM` (machine action and its
     server requests; needs Banking), `Shop` (counters, the till, back-room search, buy and sell),
     `Catalogue` (an outlet counter stocks nothing and refuses a sale), `Trader` (the trader stall),
-    `Jobs` (workplace actions, job requests, fruit rounds, run and reward payouts, the benefit),
+    `Jobs` (workplace actions, job requests, run and reward payouts, the benefit),
     `Level` (no XP is earned; saved XP and levels are still read), `License` (no licence is unlocked
     or granted; held licences are still read), `Whitelist` (nothing is restricted and the join gate is
     open; the list file is untouched), `Organizations` (the desk, the ledger requests, invite and rank

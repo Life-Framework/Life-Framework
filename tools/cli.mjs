@@ -97,6 +97,7 @@ import { trimProcs } from "./lib/ws-trim.mjs";
 import { Budget, describeHolder, waitForLock } from "./lib/lock-wait.mjs";
 import { helpRequest, usageText } from "./lib/help-guard.mjs";
 import { checkBudgetMs, createWatchdog } from "./lib/check-budget.mjs";
+import { silentFailureNote } from "./lib/silent-failure.mjs";
 import { killTreeSync, pidAlive as wbPidAlive, waitUntilDone } from "./lib/wb-until.mjs";
 import { findFreezeDump, stallReason, steamSignedIn } from "./lib/wb-launch-health.mjs";
 
@@ -677,7 +678,7 @@ function invokeScriptAsync(full, opts = {}) {
     child.stdout.on("data", (d) => { stdout += d; });
     child.stderr.on("data", (d) => { stderr += d; });
     child.on("error", (e) => done({ status: 1, stdout, stderr: stderr + `failed to spawn ${cmd}: ${e.message}` }));
-    child.on("close", (code) => done({ status: code ?? 1, stdout, stderr }));
+    child.on("close", (code, signal) => done({ status: code ?? 1, signal, stdout, stderr }));
     // kill(why): end the check and its children now and settle with a failure (the budget ran out).
     // Settles without waiting for `close`: a grandchild holding the pipes open must not hold the run.
     onSpawn?.({
@@ -783,6 +784,9 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     const ok = res.status === 0;
     const warnOnly = !ok && area === "validate" && worldChecks.judgeChecks([{ s: job.s, status: res.status }], { demote }).warned.length > 0;
     console.log(`${ok ? "PASS" : warnOnly ? "WARN" : "FAIL"}  ${area}/${job.s} (${job.secs.toFixed(1)} s${job.frozen >= 1 ? `; plus ${job.frozen.toFixed(0)} s this process was frozen` : ""})${warnOnly ? " layout check on the town (hand-edited): a warning, never blocking" : ""}`);
+    // A failing check that printed nothing says how it ended (tools/lib/silent-failure.mjs).
+    const silent = !warnOnly ? silentFailureNote(job.s, res) : "";
+    if (silent) console.log(silent);
     if (res.stdout) process.stdout.write(res.stdout + (res.stdout.endsWith("\n") ? "" : "\n"));
     if (res.stderr) process.stderr.write(res.stderr + (res.stderr.endsWith("\n") ? "" : "\n"));
     if (!ok && !warnOnly) failed++;
@@ -4259,10 +4263,11 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   asset new <slug> --kind weapon|gadget|deployable --prompt "..." | run <slug> [--from s] [--only s] [--force] | status | doctor | selftest
                                 roadmap item to asset: Meshy generation (paid, capped per asset), headless Blender clean-up,
                                 Workbench import, prefab scaffold; resumable per stage in tmp/assets/<slug>/ (docs/asset-pipeline/README.md)
-  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] [--serve|--fresh] | item <prefab|slug> [--states ground,inventory] | selftest
+  look <area | x,z | all | place:<place>/<slot>> [--world island] [--interior auto] [--edit] [--close N] [--hour h] [--measure] [--wait] [--serve|--fresh] | item <prefab|slug> [--states ground,inventory] | selftest
                                 area pictures with no session: a hidden Workbench plays DebugWorld, shoots a wide,
                                 three obliques, a top view and close-ups, and writes tmp/look/<area>/contact.jpg
-                                (about 20 s; a few seconds through a live look server; docs/visual-testing.md)
+                                (about 20 s; a few seconds through a live look server; docs/visual-testing.md);
+                                place:<place>/<slot> shoots a fitted town slot on the island (MainWorld, about 2-4 min)
   look serve [--status | --stop [--remove]]
                                 one Workbench for every worktree's looks, on the Life-Framework-look-viewer checkout;
                                 each look is served from a snapshot of the caller's worktree, stops after 10 min idle

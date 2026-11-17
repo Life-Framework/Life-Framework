@@ -16,6 +16,9 @@
 //   - --dry writes nothing.
 // red-proof: before tools/town/fit.mjs existed this printed "FAIL cannot load tools/town/fit.mjs: ERR_MODULE_NOT_FOUND" (2026-11-16).
 // red-proof: with the claim conflicts ignored in planFit() this printed "FAIL a building claimed on origin/main was fitted again" (and the open-PR and same-slot cases) (2026-11-16).
+// red-proof: with the nested blocks dropped from the layer text (renderBlock writing nothing) this printed "FAIL the sign lost its nested Materials block" (2026-11-17).
+// red-proof: with componentGuid reading addons only and no kit-source fallback this printed "FAIL a component the prefab lacks did not take its guid from the kit's source" and the vanilla-guid case (2026-11-17).
+// red-proof: before verifySteps existed (audit and look steps inline in main, the audit on no world, `look` on a bare x,z) this threw "fitMod.verifySteps is not a function" (2026-11-17).
 // red-proof: with the kit rows' yaw ignored (anchor yaw 0) this printed "FAIL shop row fit-display is not where kit apply puts it" (2026-11-16).
 
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
@@ -144,6 +147,45 @@ const absent = fitMod.planFit({ ...base, slot: "garage" }, ctx());
 check(!absent.ok, "a slot the mapping lacks was fitted");
 const self = fitMod.planFit(base, ctx((cmd, args) => (cmd === "git" && args[0] === "ls-tree" ? { status: 0, stdout: "tools/town/claims/sample-square-shop.json\n", stderr: "" } : cmd === "git" && args[0] === "show" ? { status: 0, stdout: JSON.stringify({ schema: 1, place: "sample-square", slot: "shop", building: "b03" }), stderr: "" } : noGit(cmd, args))));
 check(!self.ok, "a slot already fitted on origin/main was fitted again");
+
+// ---- nested blocks and component GUIDs of a kit row's overrides (a sign rendered white, an alarm box lost its component)
+{
+  const nested = JSON.parse(readFileSync(join(FIX, "fit-nested-kit.json"), "utf8"));
+  // The vanilla sign's prefab is in the game's paks, not addons/: `readGame` stands in for them and carries its own MeshObject guid.
+  const game = (rel) => (rel === "Prefabs/Structures/Fixture/Vanilla_Sign.et" ? 'GenericEntity : "{AAAAAAAAAAAAAA99}Prefabs/Structures/Fixture/Vanilla_Base.et" {\n components {\n  MeshObject "{D0D0D0D0D0D0D0D0}" {\n  }\n }\n}\n' : null);
+  const np = fitMod.planFit({ ...base, kits: { "fit-kit": nested } }, { ...ctx(), readGame: game });
+  check(np.ok, `a kit with nested blocks did not plan: ${(np.errors || []).join("; ")}`);
+  const t = np.layerText ?? "";
+  const ent = (id) => {
+    const at = t.indexOf(`Fit_sample_square_shop_${id} :`);
+    return at < 0 ? "" : t.slice(at, t.indexOf("\n}", at) + 2);
+  };
+  const sign = ent("nx_sign");
+  check(/MeshObject "\{AAAAAAAAAAAAAA01\}" \{\s*Materials \{\s*MaterialAssignClass "\{0000AAAA00000001\}" \{\s*SourceMaterial "Plate"\s*AssignedMaterial "\{FC236CB65AE3141F\}Assets\/Fixture\/Red\.emat"\s*\}\s*\}\s*\}/.test(sign), `the sign lost its nested Materials block:\n${sign}`);
+  const alarm = ent("nx_alarm");
+  check(/LF_AlarmMountComponent "\{BBBBBBBBBBBBBB02\}" \{\s*m_fReach 7/.test(alarm), `a component the prefab lacks did not take its guid from the kit's source:\n${alarm}`);
+  const van = ent("nx_vanilla");
+  check(/MeshObject "\{D0D0D0D0D0D0D0D0\}"/.test(van) && !/EEEEEEEEEEEEEE05/.test(van), `an inherited guid from the game's paks did not win over the source's:\n${van}`);
+  check(/AssignedMaterial "\{FC236CB65AE3141F\}Assets\/Fixture\/Blue\.emat"/.test(van), "the vanilla sign lost its Materials block");
+  check(!(np.warnings || []).some((w) => /no guid|names the blocks/.test(w)), `a resolvable override warned: ${(np.warnings || []).join("; ")}`);
+  check((t.match(/MeshObject "/g) || []).length === 2 && (t.match(/LF_AlarmMountComponent "/g) || []).length === 1, "an override was written twice or a second component was added");
+  // Without the game paks the vanilla sign has no inherited guid: the source's guid stands in, with its blocks.
+  const offline = fitMod.planFit({ ...base, kits: { "fit-kit": nested } }, ctx());
+  check(/MeshObject "\{EEEEEEEEEEEEEE05\}"/.test(offline.layerText ?? ""), "with no game paks the kit's source guid was not used");
+}
+
+// ---- the verify steps: the audit is scoped to the slot's layer and its world; `look place:` replaces a bare x,z; nothing pins a machine
+{
+  const steps = fitMod.verifySteps("sample-square", "shop", "Place_sample-square_shop.layer");
+  const audit = steps.find(([n]) => n === "audit")?.[1] ?? [];
+  check(audit.includes("--world") && audit[audit.indexOf("--world") + 1] === "MainWorld" && audit[audit.indexOf("--layer") + 1] === "Place_sample-square_shop.layer", `the audit is not scoped to the slot's layer on MainWorld: ${audit.join(" ")}`);
+  check(audit.includes("--hard-layer"), "the slot's layer is not the hard layer of its audit");
+  const looks = steps.filter(([n]) => n.startsWith("look")).map(([, a]) => a);
+  check(looks.length === 2 && looks.every((a) => a[1] === "place:sample-square/shop"), `look does not use place:<place>/<slot>: ${JSON.stringify(looks)}`);
+  check(looks.some((a) => a.join(" ").endsWith("--interior auto")), "the interior look lacks --interior auto");
+  check(!steps.some(([, a]) => a.some((x) => x === "--local" || x === "--machine" || x === "--remote")), "a verify step pins a machine");
+  check(fitMod.verifySteps("p", "s", "L.layer", { "no-audit": true, "no-look": true }).length === 0, "--no-audit --no-look still ran a step");
+}
 
 // ---- dry writes nothing
 const out = mkdtempSync(join(tmpdir(), "lf-fit-"));

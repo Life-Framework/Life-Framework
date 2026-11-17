@@ -25,6 +25,9 @@ class LF_EventSceneOperation : LF_EventOperation
 	protected float m_fStagedPhaseAt;
 	protected float m_fSinceWalkOver;
 	protected float m_fSinceDespawnTry;
+	//! Seconds the despawn has been due (the walk is over and the delay has run); a watcher holds it
+	//! only up to the plan's m_fForceDespawnSeconds (#2406).
+	protected float m_fDespawnDueS;
 
 	//------------------------------------------------------------------------------------------------
 	void LF_EventSceneOperation(string moduleId, LF_EventScene scene)
@@ -76,6 +79,7 @@ class LF_EventSceneOperation : LF_EventOperation
 			m_fStagedPhaseAt = ctx.m_fPhaseStartedAt;
 		m_fSinceWalkOver = 0;
 		m_fSinceDespawnTry = DESPAWN_RETRY_S;
+		m_fDespawnDueS = 0;
 		LF_Debug.Info(FEATURE, string.Format("event %1 phase %2: module %3 put scene %4 on stage (%5 walkers)", eventId, phaseName, m_sModuleId, crew.m_sSceneId, plan.m_aNpcs.Count()));
 
 		if (!LF_EventSceneWalk.Begin(crew, m_bDriveAi, m_bTick))
@@ -125,12 +129,14 @@ class LF_EventSceneOperation : LF_EventOperation
 		if (m_fSinceWalkOver < m_Crew.m_Plan.m_fDespawnDelaySeconds)
 			return false;
 
+		m_fDespawnDueS += seconds;
 		m_fSinceDespawnTry += seconds;
 		if (m_fSinceDespawnTry < DESPAWN_RETRY_S)
 			return false;
 
 		m_fSinceDespawnTry = 0;
-		if (!LF_EventSceneSpawn.TryDespawn(m_Crew, eyes, bodies))
+		bool force = m_fDespawnDueS >= m_Crew.m_Plan.m_fForceDespawnSeconds;
+		if (!LF_EventSceneSpawn.TryDespawn(m_Crew, eyes, bodies, force))
 			return false;
 
 		if (ourWalk)

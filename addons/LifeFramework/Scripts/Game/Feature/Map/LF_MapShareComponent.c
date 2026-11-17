@@ -7,9 +7,11 @@ class LF_MapShareComponentClass : ScriptComponentClass
 //! The owner RPC channel of shared map marks, on the player controller (card M9, everon-map.md
 //! section 3). The server calls ServerAdd/ServerRemove/ServerClear for this one player; each is an
 //! RplRcver.Owner RPC, so only the owning client receives it. Nothing is broadcast and no entity id
-//! goes on the wire: a row is its key, a position in metres, icon and colour indexes and a short text.
+//! goes on the wire: a row is its key, a position in metres, icon and colour indexes, a short text and an
+//! optional area (a radius in metres and an LF_MapAreaStyle id, radius 0 none).
 //! On the client each row becomes a local vanilla static marker the player cannot delete (D-M7: the
-//! vanilla networked marker path is not used).
+//! vanilla networked marker path is not used), and its area, when it has one, a local LF_MapAreas
+//! circle (LF_MapShareAreas) that lives and goes with the mark.
 class LF_MapShareComponent : ScriptComponent
 {
 	//! Client: the marker of each shared key, so a remove or a replace finds it.
@@ -52,9 +54,9 @@ class LF_MapShareComponent : ScriptComponent
 			return;
 
 		if (IsLocalOwner())
-			RpcDo_MapShareAdd(row.m_sKey, row.m_iX, row.m_iZ, row.m_iIcon, row.m_iColour, row.m_sText);
+			RpcDo_MapShareAdd(row.m_sKey, row.m_iX, row.m_iZ, row.m_iIcon, row.m_iColour, row.m_sText, row.m_iAreaRadius, row.m_iAreaStyle);
 		else
-			Rpc(RpcDo_MapShareAdd, row.m_sKey, row.m_iX, row.m_iZ, row.m_iIcon, row.m_iColour, row.m_sText);
+			Rpc(RpcDo_MapShareAdd, row.m_sKey, row.m_iX, row.m_iZ, row.m_iIcon, row.m_iColour, row.m_sText, row.m_iAreaRadius, row.m_iAreaStyle);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -98,10 +100,11 @@ class LF_MapShareComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_MapShareAdd(string key, int x, int z, int icon, int colour, string text)
+	protected void RpcDo_MapShareAdd(string key, int x, int z, int icon, int colour, string text, int areaRadius, int areaStyle)
 	{
 		DropMarker(key);
 		m_aKeys.Insert(key);
+		LF_MapShareAreas.Show(key, x, z, areaRadius, areaStyle, text);
 
 		SCR_MapMarkerManagerComponent markers = SCR_MapMarkerManagerComponent.GetInstance();
 		if (!markers)
@@ -156,6 +159,7 @@ class LF_MapShareComponent : ScriptComponent
 	protected void DropMarker(string key)
 	{
 		m_aKeys.RemoveItemOrdered(key);
+		LF_MapShareAreas.Hide(key);
 		SCR_MapMarkerBase marker = m_mMarkers.Get(key);
 		if (!marker)
 			return;

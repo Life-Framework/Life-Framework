@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{E9A9C2F594DBAEF2}.edds"
+ Name "{E9A9C2F594DBAEF2}UI/Imagesets/LF_MapIcons_Everon1989.edds"
  Configurations {
   TIFFResourceClass PC : "{3549C665CAA9A8EA}Configs/System/ResourceTypes/PC/TextureUI.conf" {
   }

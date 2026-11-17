@@ -169,6 +169,7 @@ under "Hard-coded flagship values in script".
 | `Assets/Props/Roleplay/BankVault/` (in `LF_Everon1989`) | pack | Meshes and materials of the vault kit (door generated with Meshy, `docs/credits.md`; the rest built by `tools/assets/bank-vault/build.py`) |
 | `Prefabs/Props/Commercial/LF_Mannequin.et`, `LF_MannequinGarment.et`, `Assets/Props/Mannequin/` | core | Shop-window mannequin: the base-game male body and head meshes in one matte off-white material, no face texture, standing in the body's bind pose; `LF_MannequinGarment` holds one worn clothing model as a static mesh at the body origin. Display only, any store can dress one |
 | `Prefabs/Props/Clothing/LF_Mannequin_*.et` (in `LF_Everon1989`) | pack | The clothing store's dressed mannequins (denim, suit, raincoat), base-game worn models and colour materials on `LF_Mannequin` |
+| `Prefabs/Items/LF_TouristMap.et` (in `LF_Everon1989`) | pack | The "Tourist map of Everon": the vanilla folded paper map with the core `LF_TouristMapAction`, which pencils every live discoverable place onto the player's map as heard of (#2242, M14). Pack because the item and its name are this server's; the action and the rule are core |
 | `Assets/Props/Roleplay/SpikeStrip/` | split | Mesh of the strip above (generated with Meshy, `docs/credits.md`): example in core, the police stinger in pack |
 | `Resources/` | core | Ore, trees, logs |
 | `Structures/` | core | Doors, jail door, bank, concrete plant |

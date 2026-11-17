@@ -25,8 +25,11 @@
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
-// World class of a job: "island" is vanilla Everon (CoreOnEveron: terrain, navmesh, AI streaming),
-// "small" is every other world the pool boots (TestLogic, GridWorld, DebugWorld, the town).
+// World class of a job: "island" is vanilla Everon (CoreOnEveron: terrain, navmesh, AI streaming) and the
+// pack's own island (MainWorld, a SubScene of Eden; the LF_EveronIsland mission), named by a path, a bare
+// name or a mission header. "small" is every other world the pool boots (TestLogic, GridWorld, DebugWorld,
+// the town). A test or audit run on an island world reserves the island server peak and gets an island
+// budget (pool-queue budgetSeconds): #2394, the gun-counter audit on MainWorld was admitted as a small test.
 export const ISLAND = "island";
 export const SMALL = "small";
 
@@ -42,7 +45,9 @@ export const SEED_PEAKS_MB = {
   "test:small": 800,
   "test:island": 2500,
   "workbench:small": 3700,
-  "workbench:island": 3700,
+  // A look Workbench on the pack's island (MainWorld, play mode) streams Everon like a server and a client in one
+  // process: seeded at the island session's 2.5 + 2.9 GB until real samples come in (#2347).
+  "workbench:island": 5400,
   // A Workbench that is not the look viewer (rdb refresh, compile, pack): measured 2026-11-17 on the laptop at
   // 1.0-1.2 GB working set, against 2.5-2.65 GB for the look viewer (docs/architecture/ram-budget.md).
   "workbench:small:tool": 1300,
@@ -55,7 +60,8 @@ export const MIN_SAMPLE_MB = 200;
 
 export function worldClass(world) {
   const w = String(world ?? "");
-  return w === ISLAND || /CoreOnEveron/i.test(w) || /^everon$/i.test(w.trim()) ? ISLAND : SMALL;
+  // CoreOnEveron (vanilla Everon plus the core mode), the pack's MainWorld (a SubScene of Eden), Eden itself.
+  return w === ISLAND || /CoreOnEveron|LF_EveronIsland|(^|[/}])MainWorld(\.ent)?$|(^|\/)Eden(\.ent)?$/i.test(w.trim()) || /^(everon|island)$/i.test(w.trim()) ? ISLAND : SMALL;
 }
 
 export function peakKey(kind, world = SMALL, profile) {

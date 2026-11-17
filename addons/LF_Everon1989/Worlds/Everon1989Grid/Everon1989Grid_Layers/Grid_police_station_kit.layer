@@ -87,7 +87,7 @@ GenericEntity Grid_police_station_kit_Spawn {
  coords 63.4 0 57.7
  angleY 180
 }
-SCR_DestructibleBuildingEntity PoliceKit_Villa : "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et" {
+SCR_DestructibleBuildingEntity PoliceKit_Villa : "{F10B7BFC04480ACF}Prefabs/Buildings/PoliceStation/PoliceStation.et" {
  coords 67.5 0 40
 }
 GenericEntity PoliceKit_LicenceDesk : "{0970D6C0210F9612}Prefabs/Props/Commercial/LF_LicenceDesk.et" {
@@ -271,6 +271,20 @@ GenericEntity PoliceKit_SpikeStrip : "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/S
  }
  coords 76.5 0.002 53.5
 }
+GenericEntity PoliceKit_Sign_Front : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "police_front"
+   m_vRimColor 0.85 0.85 0.88
+   m_vPaintColor 0.08 0.16 0.38
+   m_vTextColor 0.95 0.95 0.97
+  }
+ }
+ coords 66.43 2.95 46.93
+}
+Vehicle PoliceKit_EscortCar : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
+ coords 72.1 0.001 52
+}
 GenericEntity PoliceKit_Display_taser_1 {
  components {
   MeshObject "{D15C000000000001}" {
@@ -427,62 +441,163 @@ GenericEntity PoliceKit_Decor_10 : "{03DE957D8161212B}Prefabs/Props/Civilian/Not
  coords 70 0.907 38.3
 }
 GenericEntity PoliceKit_Decor_11 : "{A9DC69EC1CE466A0}Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_on.et" {
- coords 71.6 4.706 44.4
- angleY 200
+ coords 71.95 4.706 44.75
+ angleY -90
 }
-GenericEntity PoliceKit_Decor_12 : "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et" {
- components {
-  RigidBody "{5872F0EB7DFB5A9D}" {
-   Static 1
-  }
- }
- coords 71.1 4.706 44.3
- angleY 190
-}
-GenericEntity PoliceKit_Decor_13 : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
+GenericEntity PoliceKit_Decor_12 : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
  coords 65.8 3.8 39.9
  angleY 180
 }
-GenericEntity PoliceKit_Decor_14 : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+GenericEntity PoliceKit_Decor_13 : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
  coords 65.8 3.8 38.1
 }
-GenericEntity PoliceKit_Decor_15 : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
- coords 65.9 4.55 39
+GenericEntity PoliceKit_Decor_14 : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
+ coords 65.9 4.699 39
  angleY 90
 }
-GenericEntity PoliceKit_Decor_16 : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
- coords 65.6 4.55 38.8
+GenericEntity PoliceKit_Decor_15 : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
+ coords 65.6 4.699 38.8
  angleY 60
 }
-GenericEntity PoliceKit_Decor_17 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et" {
+GenericEntity PoliceKit_Decor_16 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
   }
  }
- coords 65.8 4.55 39.2
+ coords 65.8 4.699 39.2
 }
-GenericEntity PoliceKit_Decor_18 : "{D5DCF3520C2A8C41}Prefabs/Props/Furniture/Flipchart_01/Flipchart_01.et" {
+GenericEntity PoliceKit_Decor_17 : "{D5DCF3520C2A8C41}Prefabs/Props/Furniture/Flipchart_01/Flipchart_01.et" {
  coords 69.5 3.8 42.8
  angleY 150
 }
-GenericEntity PoliceKit_Decor_19 : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+GenericEntity PoliceKit_Decor_18 : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
  coords 70.55 0 41.4
 }
-GenericEntity PoliceKit_Decor_20 : "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et" {
+GenericEntity PoliceKit_Decor_19 : "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et" {
  coords 73.4 5 41.2
  angleY -90
 }
-GenericEntity PoliceKit_Decor_21 : "{260B7CE9F8CB21CB}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V2.et" {
+GenericEntity PoliceKit_Decor_20 : "{260B7CE9F8CB21CB}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V2.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
   }
  }
- coords 64.5 1.6 36.31
+ coords 64.5 1.6 36.345
+}
+GenericEntity PoliceKit_Decor_21 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
+ components {
+  MeshObject "{5111E74D5E891458}" {
+   Materials {
+    MaterialAssignClass "{D0C0000000000015}" {
+     SourceMaterial "Glass"
+     AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
+    }
+   }
+  }
+ }
+ coords 68.95 2.55 46.9
+}
+GenericEntity PoliceKit_Decor_22 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
+ components {
+  MeshObject "{5111E74D5E891458}" {
+   Materials {
+    MaterialAssignClass "{D0C0000000000016}" {
+     SourceMaterial "Glass"
+     AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
+    }
+   }
+  }
+ }
+ coords 67.75 2.45 43.76
+}
+GenericEntity PoliceKit_Decor_23 : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ coords 67.65 0 37.02
+}
+GenericEntity PoliceKit_Decor_24 : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ coords 66.8 0 36.65
+}
+GenericEntity PoliceKit_Decor_25 : "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et" {
+ components {
+  RigidBody "{5872F0EB7DFB5A9D}" {
+   Static 1
+  }
+ }
+ coords 67.35 0.907 37.5
+ angleY 170
+}
+GenericEntity PoliceKit_Decor_26 : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et" {
+ components {
+  RigidBody "{5872F0EB7DFB5A9D}" {
+   Static 1
+  }
+ }
+ coords 66.75 0.904 37.4
+ angleY 180
+}
+GenericEntity PoliceKit_Decor_27 : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+ components {
+  RigidBody "{5872F0EB7DFB5A9D}" {
+   Static 1
+  }
+ }
+ coords 66.3 0.907 37.55
+ angleY 200
+}
+GenericEntity PoliceKit_Decor_28 : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+ coords 66.15 0.907 37.2
+ angleY 90
+}
+GenericEntity PoliceKit_Decor_29 : "{023137B960DC5A3D}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V3.et" {
+ coords 66.8 1.2 36.34
+}
+GenericEntity PoliceKit_Decor_30 : "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et" {
+ coords 67.95 0 36.7
+ angleY 30
+}
+GenericEntity PoliceKit_Decor_31 : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
+ coords 65.75 0 36.6
+}
+GenericEntity PoliceKit_Decor_32 : "{20B9C968AAE98DCF}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V3.et" {
+ components {
+  RigidBody "{5872F0EB7DFB5A9D}" {
+   Static 1
+  }
+ }
+ coords 63.2 1.55 36.345
+}
+GenericEntity PoliceKit_Decor_33 : "{944594496FA41CBD}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V6.et" {
+ components {
+  RigidBody "{5872F0EB7DFB5A9D}" {
+   Static 1
+  }
+ }
+ coords 63.55 1.55 36.345
+}
+SCR_DestructibleEntity PoliceKit_Decor_34 : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et" {
+ coords 70.5 0 47.3
+}
+SCR_DestructibleEntity PoliceKit_Decor_35 : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
+ coords 68.95 0.502 46.92
+}
+SCR_DestructibleEntity PoliceKit_Decor_36 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 64.2 0 47.4
+}
+SCR_DestructibleEntity PoliceKit_Decor_37 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 68.55 0 47.4
+}
+GenericEntity PoliceKit_Decor_38 : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+ coords 75.3 0 53
+}
+GenericEntity PoliceKit_Decor_39 : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+ coords 77.7 0 53
+}
+GenericEntity PoliceKit_Decor_40 : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+ coords 75.3 0 54
 }
 LightEntity PoliceKit_Light_1 {
- coords 66.5 3.5 44.5
+ coords 66.5 3.4 40.3
  angles -90 0 0
  Color 1 0.9 0.72 1
  LV 5.5
@@ -543,6 +658,17 @@ LightEntity PoliceKit_Light_5 {
  Radius 5
  NearPlane 0.3
  SpotAngle 130
+ CastShadow 0
+ LensFlareType Disabled
+}
+LightEntity PoliceKit_Light_6 {
+ coords 66.5 3.3 47.6
+ Color 1 0.84 0.6 1
+ LV 3.4
+ ClipEV -10
+ Type Point
+ Radius 7
+ NearPlane 0.3
  CastShadow 0
  LensFlareType Disabled
 }

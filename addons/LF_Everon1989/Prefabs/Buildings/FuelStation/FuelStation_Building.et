@@ -1,0 +1,55 @@
+SCR_DestructibleBuildingEntity : "{D2A960D237D786F5}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_building_base.et" {
+ ID "F0DBA538AC2A0552"
+ {
+  GenericEntity : "{80114FAF11346656}Prefabs/Structures/BuildingParts/Doors/DoorSet_Fuelstation_01_L_EXT_B.et" {
+   ID "555CCC869B4E34AC"
+   components {
+    Hierarchy "{612AE78C85563E26}" {
+     Enabled 1
+     PivotID "socket_door_left_01"
+     AutoTransform 1
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{8391C71E9E3D1DC6}Prefabs/Structures/BuildingParts/Doors/DoorSet_Fuelstation_01_R_EXT_B.et" {
+   ID "555CCC869B4E34F2"
+   components {
+    Hierarchy "{612AE78C85563E26}" {
+     Enabled 1
+     PivotID "socket_door_right_01"
+     AutoTransform 1
+    }
+   }
+   coords 0 0 0
+  }
+  $grp GenericEntity : "{909DF42FAE53A015}Prefabs/Structures/BuildingParts/Windows/Glass_198x190/Glass_198x190.et" {
+   {
+    ID "555CCC869B4E3401"
+    components {
+     Hierarchy "{51C4DA20F011E284}" {
+      Enabled 1
+      PivotID "socket_glass_198x190_02"
+      AutoTransform 1
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "555CCC869B4E34EF"
+    components {
+     Hierarchy "{51C4DA20F011E284}" {
+      Enabled 1
+      PivotID "socket_glass_198x190_01"
+      AutoTransform 1
+     }
+    }
+    coords 0 0 0
+   }
+  }
+  GenericEntity : "{AFC1A907AD771C0A}Prefabs/Buildings/FuelStation/Furniture/FuelStation_Building_furniture_01.et" {
+   ID "5B20ACED1D206A6F"
+   coords 0 0 0
+  }
+ }
+}

@@ -55,6 +55,11 @@ class LF_LogoutBodyRejoin
 		if (character && character.LF_IsStunned())
 			EndLogoutKnockout(character);
 
+		// The logout parked the tags of unpaid goods under the uid (LF_Stores.ParkCarrier); the body
+		// still carries those goods, so the tags go back on it. A fresh spawn does this in
+		// LF_SpawnLogic.OnCharacterCreated, which a take-back never reaches.
+		LF_Stores.ReattachUnpaid(uid, body);
+
 		LF_Debug.Info(FEATURE, string.Format("%1 rejoins inside the window: takes back the body at %2", uid, body.GetOrigin()));
 		return body;
 	}
@@ -247,7 +252,7 @@ modded class LF_LogoutBody
 
 		Recapture(record);
 		s_mBodies.Remove(uid);
-		Watch(body, false);
+		Watch(body, false, uid);
 		// The body is the player's character again: clear the replicated Logged out flag, or every client
 		// (a late joiner too) keeps tracking it and a later release of control would show the tag.
 		LF_LogoutBodyTag.Mark(body, false);

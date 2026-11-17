@@ -10,25 +10,6 @@ FrameWidgetClass : "{E6B607B27BCC1477}UI/layouts/Menus/Dialogs/ConfigurableDialo
       Padding 0 20 0 10
      }
     }
-    VerticalLayoutWidgetClass "{4EABB61008DB162A}" {
-     Slot LayoutSlot "{9CC11AC7F8B00E84}" {
-      Padding 20 10 20 10
-     }
-     {
-      ButtonWidgetClass "{2054CAE4FF7C4148}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
-       Name "SearchButton"
-       Slot LayoutSlot "{9E70EF369D89C8FB}" {
-        Padding 0 5 0 5
-       }
-      }
-      ButtonWidgetClass "{2114694A16642DF5}" : "{51898FF369FE5EB8}UI/layouts/WidgetLibrary/Buttons/DialogButtonConfirm.layout" {
-       Name "ArrestButton"
-       Slot LayoutSlot "{E8D7D743C04EFDE0}" {
-        Padding 0 5 0 5
-       }
-      }
-     }
-    }
     ButtonWidgetClass "{B6928D408D90C295}" : "{0114A06AD44D49BD}UI/layouts/WidgetLibrary/Buttons/DialogButtonCancel.layout" {
      Name "CloseButton"
      Slot LayoutSlot "{7AADEA1583F94841}" {

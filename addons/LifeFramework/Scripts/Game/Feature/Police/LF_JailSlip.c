@@ -4,7 +4,9 @@
 //! online minutes left. The prisoner reads it by hovering it in the inventory (LF_JailSlipUIInfo).
 //! Server-authoritative: only the server prints, refreshes, and stamps a slip. The fields
 //! replicate as RplProps so the holder's client can read them; the minutes are bumped only when
-//! the whole-minute value changes.
+//! the whole-minute value changes. The prisoner's platform uid is NOT replicated (#2416): every
+//! client that streams the paper reads its RplProps, so the uid lives in a plain field that stays
+//! on the server, and clients get the display name and a printed flag.
 //!
 //! PERSISTENCE. Nothing new is saved. The source of truth is the LF_Jail sentence (remaining
 //! seconds, the "jail" payload) and the account (name, wanted level). A carried slip comes back
@@ -19,8 +21,13 @@ class LF_JailSlipComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_JailSlipComponent : ScriptComponent
 {
+	//! Server only. No RplProp: a plain field never leaves the server. Names the prisoner the paper
+	//! was printed for; empty on a blank slip and always empty on a client.
+	protected string m_sHolderKey;
+
+	//! Replicated: the slip carries a sentence (a client cannot read the key above).
 	[RplProp()]
-	protected string m_sHolderUid;
+	protected bool m_bPrinted;
 
 	[RplProp()]
 	protected string m_sPrisonerName;
@@ -48,13 +55,14 @@ class LF_JailSlipComponent : ScriptComponent
 			return false;
 		}
 
-		if (!m_sHolderUid.IsEmpty() && m_sHolderUid != holderUid)
+		if (!m_sHolderKey.IsEmpty() && m_sHolderKey != holderUid)
 		{
 			LF_Debug.Warn("Jail", "slip not printed: it belongs to another prisoner");
 			return false;
 		}
 
-		m_sHolderUid = holderUid;
+		m_sHolderKey = holderUid;
+		m_bPrinted = true;
 		m_sPrisonerName = prisonerName;
 		m_iWantedLevel = wantedLevel;
 		m_iMinutesLeft = LF_JailSlipRules.MinutesLeft(remainingSeconds);
@@ -95,9 +103,10 @@ class LF_JailSlipComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server only: a client reads "" (the uid is never replicated).
 	string GetHolderUid()
 	{
-		return m_sHolderUid;
+		return m_sHolderKey;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -127,7 +136,7 @@ class LF_JailSlipComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	bool IsPrinted()
 	{
-		return !m_sHolderUid.IsEmpty();
+		return m_bPrinted;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -137,7 +146,11 @@ class LF_JailSlipComponent : ScriptComponent
 		if (!IsPrinted())
 			return WidgetManager.Translate("#LF-JailSlip_Blank");
 
-		string text = WidgetManager.Translate("#LF-JailSlip_Prisoner", m_sPrisonerName);
+		string who = m_sPrisonerName;
+		if (who.IsEmpty())
+			who = WidgetManager.Translate("#LF-JailSlip_Unnamed");
+
+		string text = WidgetManager.Translate("#LF-JailSlip_Prisoner", who);
 		text = text + "\n" + WidgetManager.Translate("#LF-JailSlip_Offence", m_iWantedLevel);
 		if (m_bReleased)
 			return text + "\n" + WidgetManager.Translate("#LF-JailSlip_Stamped");
