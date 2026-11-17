@@ -10,6 +10,8 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   counts the in-game day (2 real hours) and compares the stored day key on the next gain, with no tick; a
   loss is never capped. Cooldowns and caps are session state. Unknown faction or action: `LF_Debug.Warn`, no
   change. Test `reputation/rules`.
+- ✅ A character wipe resets standing (#2771, merged, in-dev): the admin wipe chain `LF_Progression.Forget`
+  calls `LF_Reputation.Forget`. Test `reputation/wipe`.
 - ✅ `LF_OnReputationChanged` (`LF_ReputationEvents.c`) publishes only when a tier changes.
 - ✅ Config `Configs/Reputation/LF_Reputation.conf` (`LF_ReputationConfig`): three factions with neutral
   `#LF-Reputation_*` labels, a 60 a day cap, the underworld not shown, three conservative awards.
