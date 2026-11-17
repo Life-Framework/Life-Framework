@@ -5,8 +5,8 @@
   "red_line": "pack",
   "addon": "LF_Everon1989",
   "kit": {
-    "claim": "police-station-kit (c3r1, 2x2)",
-    "layer": "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_police_station_kit.layer",
+    "claim": "police-station-kit (c3r1, 2x2, pack cell)",
+    "layer": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_police_station_kit.layer",
     "script": "tools/buildings/police-station/fitout.mjs",
     "origin": "origin.mjs (where the villa stands in the claim; the kit rows are building space, front toward +z)",
     "passes": { "1": "BUILD: systems, boards, yard, cell", "2": "POLISH 1: lights, walls, desks, interview room", "3": "POLISH 2: facade, yard dressing, night mood" }

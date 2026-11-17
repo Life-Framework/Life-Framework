@@ -277,7 +277,7 @@ GenericEntity PoliceKit_Display_taser_1 {
    Object "{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob"
   }
  }
- coords 69.4 0.935 41.45
+ coords 69.15 0.926 41.62
  angles 0 10 90
 }
 GenericEntity PoliceKit_Display_taser_2 {
@@ -286,7 +286,7 @@ GenericEntity PoliceKit_Display_taser_2 {
    Object "{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob"
   }
  }
- coords 69.65 0.935 41.45
+ coords 69.45 0.926 41.62
  angles 0 -8 90
 }
 GenericEntity PoliceKit_Display_taser_3 {
@@ -295,7 +295,7 @@ GenericEntity PoliceKit_Display_taser_3 {
    Object "{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob"
   }
  }
- coords 69.9 0.935 41.45
+ coords 69.75 0.926 41.62
  angles 0 6 90
 }
 GenericEntity PoliceKit_Display_m9_4 {
@@ -304,7 +304,7 @@ GenericEntity PoliceKit_Display_m9_4 {
    Object "{1E38513800383D64}Assets/Weapons/Handguns/M9/M9_body.xob"
   }
  }
- coords 69.45 0.933 41.8
+ coords 70.1 0.924 41.65
  angles 0 90 90
 }
 GenericEntity PoliceKit_Display_m9_5 {
@@ -313,7 +313,7 @@ GenericEntity PoliceKit_Display_m9_5 {
    Object "{1E38513800383D64}Assets/Weapons/Handguns/M9/M9_body.xob"
   }
  }
- coords 69.85 0.933 41.8
+ coords 70.4 0.924 41.65
  angles 0 80 90
 }
 GenericEntity PoliceKit_Display_cuffs_6 {
@@ -322,7 +322,7 @@ GenericEntity PoliceKit_Display_cuffs_6 {
    Object "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
   }
  }
- coords 69.4 0.932 42.1
+ coords 69.2 0.923 41.95
  angles 0 0 0
 }
 GenericEntity PoliceKit_Display_cuffs_7 {
@@ -331,7 +331,7 @@ GenericEntity PoliceKit_Display_cuffs_7 {
    Object "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
   }
  }
- coords 69.7 0.932 42.1
+ coords 69.5 0.923 41.95
  angles 0 25 0
 }
 GenericEntity PoliceKit_Display_cuffs_8 {
@@ -340,7 +340,7 @@ GenericEntity PoliceKit_Display_cuffs_8 {
    Object "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
   }
  }
- coords 70 0.932 42.1
+ coords 69.8 0.923 41.95
  angles 0 -15 0
 }
 GenericEntity PoliceKit_Decor_1 : "{25B473F35DCBDA7A}Prefabs/Props/Civilian/ClockUniversal_01.et" {
@@ -466,8 +466,8 @@ GenericEntity PoliceKit_Decor_18 : "{D5DCF3520C2A8C41}Prefabs/Props/Furniture/Fl
  coords 69.5 3.8 42.8
  angleY 150
 }
-GenericEntity PoliceKit_Decor_19 : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
- coords 69.8 0 41.7
+GenericEntity PoliceKit_Decor_19 : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ coords 70.55 0 41.4
 }
 GenericEntity PoliceKit_Decor_20 : "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et" {
  coords 73.4 5 41.2

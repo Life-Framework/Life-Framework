@@ -23,7 +23,7 @@ import { gameDb } from "../pipeline/gamedb.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const LAYERS = join(ROOT, "addons", "LifeFramework", "Worlds");
-const GRID_LAYER = join(LAYERS, "GridWorld", "GridWorld_Layers", "Grid_police_station_kit.layer");
+const GRID_LAYER = join(ROOT, "addons", "LF_Everon1989", "Worlds", "Everon1989Grid", "Everon1989Grid_Layers", "Grid_police_station_kit.layer"); // the pack grid cell (red line: pack)
 const POLICE_LAYER = join(LAYERS, "DebugWorld", "DebugWorld_Layers", "Street_Police.layer");
 const JAIL_LAYER = join(LAYERS, "DebugWorld", "DebugWorld_Layers", "Street_Jail.layer");
 const LICENCE_LAYER = join(LAYERS, "GridWorld", "GridWorld_Layers", "Grid_licence_desk.layer");
@@ -53,6 +53,7 @@ const P = {
   radio: "Prefabs/Props/Civilian/RadioSmall_01_black.et",
   flipchart: "Prefabs/Props/Furniture/Flipchart_01/Flipchart_01.et",
   table: "Prefabs/Props/Furniture/Table_01.et",
+  desk: "Prefabs/Props/Furniture/Desk_01_short.et",
   chairRed: "Prefabs/Props/Furniture/Chair_02/Chair_02_red.et",
   chairGreen: "Prefabs/Props/Furniture/Chair_02/Chair_02_green.et",
   coatRack: "Prefabs/Props/Furniture/CoatRack_05/CoatRack_05.et",
@@ -185,17 +186,18 @@ if (PASS >= 2) {
   put(P.deskLamp, -1.9, F1 + 0.75, -1.2, 60);
   put(P.ashtray, -1.7, F1 + 0.75, -0.8, 0);
   put(P.flipchart, 2.0, F1, 2.8, 150);
-  // The armory table (duty room, free floor by the door): what the issue desk hands out, laid out as models. Table_01's top
-  // is 0.915 above its pivot; each piece sits on it by its own thickness. Models only: nothing here can be taken.
-  put(P.table, 2.3, 0, 1.7, 0);
-  display("taser", 1.9, 0.915, 1.45, 10);
-  display("taser", 2.15, 0.915, 1.45, -8);
-  display("taser", 2.4, 0.915, 1.45, 6);
-  display("m9", 1.95, 0.915, 1.8, 90);
-  display("m9", 2.35, 0.915, 1.8, 80);
-  display("cuffs", 1.9, 0.915, 2.1, 0);
-  display("cuffs", 2.2, 0.915, 2.1, 25);
-  display("cuffs", 2.5, 0.915, 2.1, -15);
+  // The armory desk (duty room, free floor by the door): what the issue desk hands out, laid out as models. A plain office
+  // desk (Table_01 comes with a gingham cloth): its probed top is 0.906, its pivot the right-hand end, so it spans x 1.35..3.05
+  // and z 1.4..2.15. Each piece sits on the top by its own thickness. Models only: nothing here can be taken.
+  put(P.desk, 3.05, 0, 1.4, 0);
+  display("taser", 1.65, 0.906, 1.62, 10);
+  display("taser", 1.95, 0.906, 1.62, -8);
+  display("taser", 2.25, 0.906, 1.62, 6);
+  display("m9", 2.6, 0.906, 1.65, 90);
+  display("m9", 2.9, 0.906, 1.65, 80);
+  display("cuffs", 1.7, 0.906, 1.95, 0);
+  display("cuffs", 2.0, 0.906, 1.95, 25);
+  display("cuffs", 2.3, 0.906, 1.95, -15);
   put(P.corkboard2, 5.9, F1 + 1.2, 1.2, -90);
 
   // The cell: a bucket and a blanket-less bunk are the point; add a bench lamp-free corner and a notice of rules.
