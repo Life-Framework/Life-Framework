@@ -27,6 +27,7 @@ import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import { buildSupport } from "./support.mjs";
 import { buildGallery } from "./gallery.mjs";
+import { liveNowMarkdown, withLiveNow } from "./live-now.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const site = path.resolve(here, "..");
@@ -191,6 +192,12 @@ roadmapFiles.forEach((rel, i) => {
 
 // The public world vision; docs/everon/world-bible-internal.md holds the spoilers and stays off the site.
 addRepoDoc("docs/everon/world-bible.md", { slug: "world-of-everon", group: "Current plan", order: 0.5, title: "World of Everon" });
+// Its "Live now" section is generated from the flagship header's live states and the place dossiers
+// (scripts/live-now.mjs); empty until a state is live. validate-public-bible guards the spoilers.
+{
+  const bible = docs.find((d) => d.slug === "world-of-everon");
+  if (bible) bible.body = withLiveNow(bible.body, liveNowMarkdown(repo, { publicDir: path.join(site, "public", "everon-live") }));
+}
 
 // Pages with their own route instead of /docs/<slug>.
 const ownRoute = { decisions: "/decisions", credits: "/credits" };

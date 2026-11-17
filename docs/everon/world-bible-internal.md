@@ -66,6 +66,21 @@ These are roles only. Names and voices follow the voice pipeline's licence rules
 | 3 | The lighthouse signal; the cove landing; the shipment heist | Coast and military sites |
 | 4 | The anniversary on the square; the choice | The hub |
 
+## Spoiler terms
+
+The website check (`tools\cli validate`, `validate-public-bible`) fails when the public page, a place dossier's
+picture caption or the generated "Live now" section contains one of these, case-insensitive. One bullet per term;
+pick phrases that appear only here, and add a term when a new twist is written down above.
+
+- sealed drums
+- second copy
+- second filing cabinet
+- drums' markings
+- the contract is a cover
+- informant
+- keeps his old house key
+- night boats
+
 ## Open questions (internal)
 
 1. **The repo is public.** Anyone can read this file on GitHub. Recommend keeping the arc's shape here and
