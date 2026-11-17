@@ -23,7 +23,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync, writeSync } from "node:fs";
 import { freemem, hostname as osHostname, totalmem } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -266,6 +266,9 @@ function normalize(m) {
     host: via === "ssh" ? String(m.host || m.name) : null,
     root: via === "ssh" ? String(m.root || "C:/LF/Life-Framework").replace(/\\/g, "/").replace(/\/$/, "") : null,
     slots: Math.max(1, Number(m.slots) || 1),
+    // The folder the machine's run and lane worktrees (Life-Framework-rt-*, -lane-*) go under when it is not
+    // the parent of its clone (a bigger second drive, "D:/LF"). Unset: the clone's parent.
+    runRoot: via === "ssh" && m.runRoot ? String(m.runRoot).replace(/\\/g, "/").replace(/\/$/, "") : null,
     // lanes: { test: N, session: K } gives tests their own servers beside the session servers
     // (ports in pool-queue.mjs, "Lane ports"). Without it the machine keeps one shared lane (slots).
     // Scales the seeded run budgets for a slower machine (the laptop).
@@ -773,8 +776,13 @@ export function heldSlotFromEnv(root) {
 
 // ---------------------------------------------------------------- remote slots
 
+// Where a pool machine keeps its run and lane worktrees: its runRoot, else the parent of its clone.
+export function runParent(m) {
+  return m.runRoot || dirname(m.root).replace(/\\/g, "/");
+}
+
 export function remoteRunDir(m, slug, i = 1, suffix = "") {
-  return `${dirname(m.root).replace(/\\/g, "/")}/Life-Framework-rt-${slug}${suffix}${i > 1 ? `-s${i}` : ""}`;
+  return `${runParent(m)}/Life-Framework-rt-${slug}${suffix}${i > 1 ? `-s${i}` : ""}`;
 }
 
 // The run folder of one test lane on a pool machine, shared by every worktree: whoever holds the
@@ -784,7 +792,7 @@ export function remoteRunDir(m, slug, i = 1, suffix = "") {
 // tools/link-safety.mjs cleanRunFolder). pool prune leaves these; --lanes removes the idle ones.
 export const LANE_DIR_PREFIX = "Life-Framework-lane-";
 export function laneRunDir(m, lock) {
-  return `${dirname(m.root).replace(/\\/g, "/")}/${LANE_DIR_PREFIX}${lock}`;
+  return `${runParent(m)}/${LANE_DIR_PREFIX}${lock}`;
 }
 
 // The holder: acquire (when cfg.slots is non-empty), prepare the run folder,
@@ -1030,10 +1038,10 @@ function sshPsAsync(host, script, { timeout = 90000, connectTimeout = 4 } = {}) 
 // opts.ssh / opts.now are test seams.
 export async function rtGcMachine(root, m, { keep = [], idleMin, targetGb = 0, dry = false, log = console.log, ssh = sshPsAsync, now = Date.now } = {}) {
   const idle = idleMin ?? poolSettings(root).rtIdleMin;
-  const parent = dirname(m.root).replace(/\\/g, "/");
+  const parent = runParent(m);
   const res = { machine: m.name, freeGb: null, removed: [], failed: 0 };
   try {
-    const seen = rt.parseRtScan((await ssh(m.host, rt.rtScanScript(parent, targetGb), { timeout: 90000 })).stdout);
+    const seen = rt.parseRtScan((await ssh(m.host, rt.rtScanScript(parent, targetGb, m.root), { timeout: 90000 })).stdout);
     res.freeGb = seen.freeGb;
     if (seen.freeGb === null) {
       log(`WARN  pool: ${m.name}: run-folder cleanup skipped (the box did not report its free disk)`);
@@ -1052,7 +1060,7 @@ export async function rtGcMachine(root, m, { keep = [], idleMin, targetGb = 0, d
       return res;
     }
     log(`pool: ${lead}; removing idle run folders, oldest first (${plan.remove.length} idle for ${idle} min or more)`);
-    const done = rt.parseRtRemove((await ssh(m.host, rt.rtRemoveScript(parent, plan.remove.map((r) => r.dir), { targetGb, cutoffMs: now() - idle * 60000 }), { timeout: 900000 })).stdout);
+    const done = rt.parseRtRemove((await ssh(m.host, rt.rtRemoveScript(parent, plan.remove.map((r) => r.dir), { targetGb, cutoffMs: now() - idle * 60000, mainDir: m.root }), { timeout: 900000 })).stdout);
     const byDir = new Map(plan.remove.map((r) => [rt.normDir(r.dir), r]));
     let before = seen.freeGb;
     for (const d of done.removed) {
@@ -1331,9 +1339,15 @@ export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = 
 // left that run with no remote. Now one process at a time takes it, under a lock in the worktree's
 // tmp/remote, and a snapshot taken there less than shareMs ago at the same HEAD and index is reused:
 // the worktree as it was when the burst was asked for. A failed take is retried (twice).
+// Two things made this share nothing under load (a ship gate on a busy box took 3 snapshots for 6 runs):
+// a waiter gave up on the lock after 30 s and took a private snapshot (one take under load took that long),
+// and the window ran from the END of a take, so the 5th and 6th waiter, each held up behind a git call of
+// the ones ahead, found it over 10 s old. A run now waits as long as the lock holder is alive (the lock file
+// holds its pid), and a snapshot that finished after the run asked is always its own: that is what a
+// private take would have captured.
 // opts.take / opts.now are test seams.
 export const SNAPSHOT_SHARE_MS = 10000;
-export function sharedSnapshot(root, { take = tb.snapshotCommit, now = Date.now, shareMs = SNAPSHOT_SHARE_MS, lockWaitMs = 30000 } = {}) {
+export function sharedSnapshot(root, { take = tb.snapshotCommit, now = Date.now, shareMs = SNAPSHOT_SHARE_MS, lockWaitMs = 180000 } = {}) {
   const dir = join(root, "tmp", "remote");
   mkdirSync(dir, { recursive: true });
   const lock = join(dir, "snapshot.lock");
@@ -1357,19 +1371,36 @@ export function sharedSnapshot(root, { take = tb.snapshotCommit, now = Date.now,
       }
     }
   };
+  const alive = (pid) => {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch (e) {
+      return e.code === "EPERM";
+    }
+  };
   let held = false;
-  const until = now() + lockWaitMs;
+  const askedAt = now();
+  const until = askedAt + lockWaitMs;
   while (!held) {
     try {
-      closeSync(openSync(lock, "wx"));
+      const fd = openSync(lock, "wx");
+      try {
+        writeSync(fd, String(process.pid));
+      } finally {
+        closeSync(fd);
+      }
       held = true;
     } catch (e) {
       // EPERM/EACCES/EBUSY: another process is deleting the lock right now (Windows); that is contention, not
       // a reason to go on without the lock (which skipped the shared snapshot and took a private one).
       if (!["EEXIST", "EPERM", "EACCES", "EBUSY"].includes(e.code)) break;
-      // A lock left by a process that died mid-snapshot goes after a minute.
+      // A lock left by a process that died mid-snapshot goes after a minute; one whose holder still lives
+      // is a slow take (a loaded box) and is waited for, up to ten minutes.
       try {
-        if (Date.now() - statSync(lock).mtimeMs > 60000) unlinkSync(lock);
+        const age = Date.now() - statSync(lock).mtimeMs;
+        const pid = Number.parseInt(readFileSync(lock, "utf8"), 10);
+        if (age > 600000 || (age > 60000 && !(pid > 0 && alive(pid)))) unlinkSync(lock);
       } catch {}
       if (now() > until) break;
       Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100);
@@ -1378,7 +1409,7 @@ export function sharedSnapshot(root, { take = tb.snapshotCommit, now = Date.now,
   try {
     const k = held ? key() : null;
     const hit = k ? readJson(cacheFile, null) : null;
-    if (hit?.snap?.sha && hit.head === k.head && hit.indexMs === k.indexMs && now() - hit.at >= 0 && now() - hit.at < shareMs) return hit.snap;
+    if (hit?.snap?.sha && hit.head === k.head && hit.indexMs === k.indexMs && (hit.at >= askedAt || (now() - hit.at >= 0 && now() - hit.at < shareMs))) return hit.snap;
     const snap = takeRetried();
     if (k) {
       try {
@@ -2088,6 +2119,8 @@ export async function acquireSlot(root, opts = {}) {
   const purpose = opts.purpose ?? "test";
   const mode = opts.mode ?? "any";
   const started = Date.now();
+  // opts.queuedAt (a test seam): the age the ticket carries, to prove promotion without waiting for it.
+  const queuedAt = Number(opts.queuedAt) || started;
   if (process.env[SLOT_ENV]) {
     const s = heldSlotFromEnv(root);
     s.waitedMs = 0;
@@ -2181,8 +2214,8 @@ export async function acquireSlot(root, opts = {}) {
   let stuck = "";
   let needMb;
   let grantedOn = null;
-  const ticketBody = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name), ...(opts.world ? { world: opts.world } : {}), ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}), ...(grantedOn ? { granted: grantedOn } : {}) });
-  const ticket = writeTicket(root, ticketBody());
+  const ticketBody = () => ({ pid: process.pid, at: new Date(queuedAt).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name), ...(opts.world ? { world: opts.world } : {}), ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}), ...(grantedOn ? { granted: grantedOn } : {}) });
+  const ticket = writeTicket(root, ticketBody(), queuedAt);
   let lastReap = 0;
   const lastTry = new Map();
   let degraded = false;

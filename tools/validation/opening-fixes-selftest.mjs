@@ -15,10 +15,10 @@
 
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { spawn, spawnSync } from "node:child_process";
-import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures");
@@ -42,7 +42,7 @@ const waitDead = (pid, ms = 4000) => {
   return !alive(pid);
 };
 
-const scratch = mkdtempSync(join(tmpdir(), "lf-opening-fixes-"));
+const scratch = scratchDir("lf-opening-fixes-");
 const repoScratch = join(ROOT, "tmp", `opening-fixes-selftest-${process.pid}`);
 const spawned = [];
 

@@ -21,10 +21,10 @@
 //   cutWalls returning []                                        -> FAIL clip: a counter half through a wall was not refused (and the shallow one stayed in it)
 //   anchorFor ignoring sameShell                                 -> FAIL same shell: the kit was not anchored at the host's origin and yaw (yaw -90)
 
-import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, readdirSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "town", "fixtures");
@@ -182,7 +182,7 @@ const ctx = { root: ROOT, run: noGit, shell: reader(shells) };
 
 // ---- town fit --check: per-row corrections against the layer on disk, nothing written
 {
-  const out = mkdtempSync(join(tmpdir(), "lf-fit-seat-"));
+  const out = scratchDir("lf-fit-seat-");
   const kits = join(out, "kits");
   mkdirSync(kits);
   writeFileSync(join(kits, "fit-kit.json"), JSON.stringify(kit));

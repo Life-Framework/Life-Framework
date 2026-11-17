@@ -14,12 +14,12 @@
 // The held-open checks run on Windows only (elsewhere a rename over an open file just works); the retry rules are pure.
 
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as af from "../lib/atomic-file.mjs";
 import * as sq from "../lib/ship-queue.mjs";
 import { update } from "../ship-queue.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const check = (ok, msg) => {
@@ -62,7 +62,7 @@ const err = (code) => Object.assign(new Error(`${code}: simulated`), { code });
 }
 
 // ---- 2. a real file held open by another process
-const dir = mkdtempSync(join(tmpdir(), "lf-shipq-eperm-"));
+const dir = scratchDir("lf-shipq-eperm-");
 const hubOf = (root) => join(root, "tmp", "wt");
 
 // Holds `file` open with the given FileShare ("Read": others read, nobody writes or replaces it; "None": nobody

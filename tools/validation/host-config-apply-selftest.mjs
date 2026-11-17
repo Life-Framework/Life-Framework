@@ -13,12 +13,12 @@
 // red-proof: before tools/host/config-apply.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/config-apply.mjs'" (2026-11-15).
 
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const { applyConfig } = await import(pathToFileURL(join(ROOT, "tools", "host", "config-apply.mjs")).href);
@@ -35,7 +35,7 @@ const MOD_UID = "modmodmod-2";
 const ANNOUNCE = "https://discord.com/api/webhooks/777/ANNOUNCE-TOKEN-qq";
 const SECRETS = [PASSWORD, ADMIN_PASSWORD, WEBHOOK, "SECRETTOKEN-xyz", ANNOUNCE, "ANNOUNCE-TOKEN-qq"];
 
-const base = mkdtempSync(join(tmpdir(), "lf-host-config-apply-"));
+const base = scratchDir("lf-host-config-apply-");
 const repo = join(base, "repo");
 mkdirSync(repo, { recursive: true });
 for (const f of ["config.json", "server.json"]) cpSync(join(ROOT, "server", "flagship", f), join(repo, f));

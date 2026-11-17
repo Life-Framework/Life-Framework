@@ -32,9 +32,10 @@ No player-facing rung. It is a gate that other features call.
 
 ## Current state
 
-- `LF_WhitelistManager`, `LF_Whitelist`, `LF_WhitelistAction`,
-  `LF_WhitelistComponent`, `LF_WhitelistManagerComponent`,
-  `LF_WhitelistRestrictionComponent` (`Feature/Whitelist/`).
+- `LF_WhitelistManager` (the roster), `LF_Whitelist` and `LF_WhitelistLegacyMigration` (legacy
+  files, read once), `LF_WhitelistRespawnHandlerComponent` (the migration at start and the CONNECT
+  join gate) (`Feature/Whitelist/`). The sign action, the client flag component and the GM context
+  actions are gone (#2576); the whitelist sign is a readable sign.
 - `LF_EFactionType` is defined on the manager. The faction and job lists are
   the manager's own versioned file (`Load` replaces the cache; a missing file
   logs `LF_Debug.Error` and leaves police closed). The police button calls

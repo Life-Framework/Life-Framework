@@ -12,15 +12,15 @@
 // red-proof: before waitForHostLog existed every case failed with "FAIL waitForHostLog missing"
 // (2026-11-15).
 
-import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { mkdirSync, rmSync } from "node:fs";
 import { spawn } from "node:child_process";
-import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "host-start-nolog");
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-nolog-"));
+const tmp = scratchDir("lf-host-nolog-");
 let failed = 0;
 function fail(msg) {
   console.log(`FAIL  ${msg}`);
