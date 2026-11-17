@@ -181,7 +181,9 @@
     "trialSweepSeconds": 60,
     "ticketRateWindowSeconds": 10,
     "ticketRateBurst": 3,
-    "spikeStripMaxPerOfficer": 2
+    "spikeStripMaxPerOfficer": 2,
+    "callReward": 150,
+    "callRadius": 50
   },
   "respawn": {
     "wakeInHospital": true,
