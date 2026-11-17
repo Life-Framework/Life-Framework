@@ -73,6 +73,10 @@ class LF_HideoutState : Managed
 	//! Banked points, 0 to LF_OrgConfig.HeldGroundMaxPoints().
 	int m_iHoldPoints;
 
+	//! Runtime only, never saved: the organization this site's door is registered for as its base
+	//! (LF_Places "org_base", #2504); "" = none registered.
+	string m_sBaseOrgId;
+
 	//------------------------------------------------------------------------------------------------
 	void ResetHeldGround()
 	{
@@ -414,6 +418,13 @@ class LF_Hideout
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True while a relock sweep is queued (tests read it).
+	static bool IsRelockScheduled()
+	{
+		return s_bRelockScheduled;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void CancelRelockSweep()
 	{
 		if (s_bRelockScheduled && GetGame() && GetGame().GetCallqueue())
@@ -493,8 +504,8 @@ class LF_Hideout
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: whether the character may use the hideout stash. Membership of the owning
-	//! organization is the only key: the door's lock state (breached or open) does not matter.
+	//! Server: whether the character may use the hideout stash. Membership of the owning organization
+	//! and the rank's stash right are the key: the door's lock state (breached or open) does not matter.
 	static bool AllowsStash(string characterId, string hideoutId, bool report)
 	{
 		if (!Server())
@@ -516,6 +527,15 @@ class LF_Hideout
 		{
 			if (report)
 				Refuse("stash refused: not a member");
+			return false;
+		}
+
+		// The rank's stash right (LF_EOrganizationPermission.USE_STASH): every shipped rung has it, and an
+		// owner who takes it off a rank in the config shuts that rank out of the stash.
+		if (!org.Allows(characterId, LF_EOrganizationPermission.USE_STASH))
+		{
+			if (report)
+				Refuse("stash refused: the rank lacks the stash right");
 			return false;
 		}
 
@@ -574,6 +594,7 @@ class LF_Hideout
 		}
 
 		set<string> loaded = new set<string>();
+		bool anyOpen = false;
 		foreach (LF_HideoutRecord record : records)
 		{
 			if (!record)
@@ -590,7 +611,14 @@ class LF_Hideout
 			state.m_sOrganizationId = record.m_sOrganizationId;
 			state.m_bLocked = record.m_bLocked;
 			PushLock(state);
+			if (!state.m_bLocked)
+				anyOpen = true;
 		}
+
+		// A gate saved open has no member at it after a restart; only TryUnlock started the sweep, so it
+		// stayed open for anyone until a member next used it. The sweep relocks it once nobody is near.
+		if (anyOpen)
+			ScheduleRelockSweep();
 
 		// Idempotent: a site leased live but absent from the save is unleased by this load, as a
 		// fresh load would have left it.
@@ -771,6 +799,8 @@ class LF_Hideout
 		if (!door)
 			return;
 
+		SyncOrgBase(state, door);
+
 		LF_LockComponent lock = LF_Component<LF_LockComponent>.Find(door);
 		if (!lock)
 			return;
@@ -790,6 +820,39 @@ class LF_Hideout
 		}
 
 		lock.SetLocked(state.m_bLocked);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A leased hideout is its organization's base for placement (#2504): the door is registered in
+	//! LF_Places as "org_base" under the organization id, and the place goes when the lease does. Runs
+	//! from PushLock, so every lease change, load and door bind keeps it right, and is idempotent.
+	//! Server only. An organization that leases a second site takes its base over (last lease wins).
+	protected static void SyncOrgBase(notnull LF_HideoutState state, notnull IEntity door)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		string baseKind = LF_PlacementZones.ORG_BASE_KIND;
+		if (!state.m_sBaseOrgId.IsEmpty() && state.m_sBaseOrgId != state.m_sOrganizationId)
+		{
+			if (LF_Places.Find(baseKind, state.m_sBaseOrgId) == door)
+				LF_Places.Unregister(baseKind, state.m_sBaseOrgId);
+
+			state.m_sBaseOrgId = "";
+		}
+
+		if (state.m_sOrganizationId.IsEmpty() || state.m_sBaseOrgId == state.m_sOrganizationId)
+			return;
+
+		IEntity held = LF_Places.Find(baseKind, state.m_sOrganizationId);
+		if (held && held != door)
+		{
+			LF_Debug.Info("Hideout", string.Format("base of org=%1 moves to hideout=%2: the last lease wins", state.m_sOrganizationId, state.m_sHideoutId));
+			LF_Places.Unregister(baseKind, state.m_sOrganizationId);
+		}
+
+		if (LF_Places.Register(baseKind, state.m_sOrganizationId, door))
+			state.m_sBaseOrgId = state.m_sOrganizationId;
 	}
 
 	//------------------------------------------------------------------------------------------------

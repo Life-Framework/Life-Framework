@@ -40,6 +40,9 @@ class LF_LicensePlateManagerComponent: ScriptComponent
 	
 	[RplProp(onRplName: "OnRegistrationUpdated")]
 	string m_Registration;
+
+	//! The plate this manager's EOnInit issued; empty once released. Server only, never replicated.
+	protected string m_sIssuedPlate;
 	
 	override void EOnInit(IEntity owner)
 	{
@@ -57,7 +60,8 @@ class LF_LicensePlateManagerComponent: ScriptComponent
 		
 		RplComponent rpl = RplComponent.Cast(owner.FindComponent(RplComponent));
 		
-		if (GetGame().InPlayMode() && rpl && rpl.IsMaster())
+		// An entity with no RplComponent is local and its own authority (the test fixture).
+		if (GetGame().InPlayMode() && (!rpl || rpl.IsMaster()))
 		{
 			Resource container = BaseContainerTools.LoadContainer("{B1DD7B5D4812AB19}Configs/Vehicles/VehicleSettings.conf");
 			if (!container || !container.GetResource())
@@ -82,6 +86,7 @@ class LF_LicensePlateManagerComponent: ScriptComponent
 				LF_Debug.Error("LicensePlate", "registration skipped: no unique plate");
 				return;
 			}
+			m_sIssuedPlate = m_Registration;
 		}
 		
 		if (!m_Plates)
@@ -134,6 +139,17 @@ class LF_LicensePlateManagerComponent: ScriptComponent
 	{
 		if (m_Registration == plate)
 			return;
+
+		// The spawn's plate is replaced by the owner's: free it, once, and only if this manager issued it.
+		if (!m_sIssuedPlate.IsEmpty())
+		{
+			if (m_sIssuedPlate != plate)
+			{
+				LF_LicensePlateRegistry.Release(m_sIssuedPlate);
+				LF_Debug.Log("LicensePlate", string.Format("released spawn plate %1, now %2", m_sIssuedPlate, plate));
+			}
+			m_sIssuedPlate = "";
+		}
 
 		m_Registration = plate;
 		Replication.BumpMe();

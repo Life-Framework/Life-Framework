@@ -24,8 +24,24 @@ class LF_SplitQuantityDialog : DialogUI
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The stack can be merged, moved or deleted on the server while the dialog is open: then the
+	//! dialog closes instead of reading a null source (a VME on the next keystroke or slider move).
+	protected bool SourceAlive()
+	{
+		if (m_pQuantitySource)
+			return true;
+
+		LF_Debug.Warn("Quantity", "split dialog closed: the stack is gone");
+		CloseAnimated();
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool OnChange(Widget w, bool finished)
 	{
+		if (!SourceAlive())
+			return super.OnChange(w, finished);
+
 		if ((w == m_wKeepAmount || w == m_wSplitAmount) && m_wKeepAmount.GetText() && m_wSplitAmount.GetText())
 		{
 			int quantity = m_pQuantitySource.GetQuantity();
@@ -53,6 +69,9 @@ class LF_SplitQuantityDialog : DialogUI
 	//------------------------------------------------------------------------------------------------
 	protected void OnSliderValueChanged(float value, bool final)
 	{
+		if (!SourceAlive())
+			return;
+
 		int splitSize = value + 1;
 		m_wKeepAmount.SetText(string.Format("%1", m_pQuantitySource.GetQuantity() - splitSize));
 		m_wSplitAmount.SetText(string.Format("%1", splitSize));

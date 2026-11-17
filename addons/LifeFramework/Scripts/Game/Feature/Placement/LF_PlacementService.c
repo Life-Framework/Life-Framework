@@ -7,7 +7,8 @@
 //!   Confirm  (server) the client proposes a spot; the server rejects a malformed one, accepts it
 //!            within the item's reach plus TOLERANCE_METRES of where the player stands now (and,
 //!            across a road, within TOLERANCE_DEGREES of straight across), re-probes it, refuses
-//!            anything not VALID, rate-limits (SPAWN), spawns the placed prefab and uses the item up
+//!            anything not VALID, rate-limits (SPAWN), takes the kind's cost (LF_PlacementCost, #2448),
+//!            spawns the placed prefab and uses the item up
 //! The proposal arrives through the placing action's own data (OnSaveActionData/OnLoadActionData,
 //! LF_SpikeStripDeployAction), so there is no extra RPC. The ghost is never replicated.
 //------------------------------------------------------------------------------------------------
@@ -567,10 +568,29 @@ class LF_PlacementService
 		if (verdict != LF_EPlacementVerdict.VALID)
 			return Refuse(player, "refused: " + LF_PlacementRules.Reason(verdict, probe, MAX_STEP), "#LF-Placement_NoGround");
 
+		// The cost (#2448): taken once, only now the spot is VALID; given back if the spawn fails.
+		LF_PlacementCostTerms terms = LF_PlacementCost.TermsFor(placeable.GetKind());
+		if (LF_PlacementCost.CostIsItself(terms, item))
+		{
+			LF_Debug.Error(FEATURE, string.Format("the policy names the placeable itself (%1) as the cost of %2; refusing", terms.m_sItem, placeable.GetKind()));
+			return Refuse(player, "refused: the cost item is the placeable itself", "");
+		}
+
+		string costWhy;
+		string costToast;
+		LF_PlacementCharge charge = LF_PlacementCost.Take(player, terms, costWhy, costToast);
+		if (!charge)
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), costWhy), costToast);
+
 		IEntity placed = SpawnAt(placeable.GetPlacedPrefab(), transform);
 		if (!placed)
+		{
+			LF_PlacementCost.Refund(player, charge, "spawn failed");
 			return Refuse(player, string.Format("refused: spawn failed for %1", placeable.GetPlacedPrefab()), "");
+		}
 
+		array<EntityID> placedIds = {placed.GetID()};
+		LF_PlacementCost.Keep(charge, placedIds);
 		SCR_EntityHelper.DeleteEntityAndChildren(item);
 		LF_Debug.Info(FEATURE, string.Format("placed %1 for %2 at %3 heading %4 (%5), %6", LF_PlacementRules.Describe(placed), LF_PoliceRanks.ResolveUid(player), transform[3], transform[2], typename.EnumToString(LF_EPlacementLifetime, placeable.GetLifetime()), offBy));
 		return placed;
