@@ -159,6 +159,7 @@
   attributes. `LF_ShopAction` opens only on the acting machine for its own
   character. Closes on Leave, MenuBack, death, or 3.5 m from the counter.
   Tests: `shop/refusal-reasons`, `counter/local-only`, `counter/screen-layout`.
+- 🧪 (2026-11-17, #2440) **The slip shows the picked item.** Picking a line draws its real prefab in a 100-unit square on the order slip (`LF_ShopItemPreview`: a UI kit `PORTRAIT` part with no lines, resized, drawn through `ItemPreviewManagerEntity` like the wanted portrait). The window stays hidden until a pick; a line without a prefab hides it again. Car lot and fence previews are follow-ups. Test: `shop/item-preview`.
 - ✅ (2026-11-12, #278) `ShopPrices.conf` is the core layer of
   the config service: `LF_ShopManagerComponent.LoadConfig` applies pack
   overlays and the owner's `shops` section before it builds the catalog

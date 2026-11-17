@@ -633,6 +633,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ShopTotalPrice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMAmountGuard(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopBuyPartialFunds(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_ShopItemPreview(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopPriceRuleMatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopPriceResolve(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ShopPriceHidden(), LF_TestTier.LOGIC);
