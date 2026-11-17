@@ -1,5 +1,5 @@
 {
-  "saveVersion": 48,
+  "saveVersion": 49,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -50,7 +50,8 @@
     "armorykits": "LF_ArmoryKitRow",
     "houses": "LF_HouseLockRecord",
     "itemkeys": "LF_StorageItemKeyRecord",
-    "graceclock": "LF_GraceClockRow"
+    "graceclock": "LF_GraceClockRow",
+    "jobruns": "LF_JobRunRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -599,6 +600,14 @@
       "fields": [
         "string m_sRecordKey",
         "int m_iSeconds"
+      ]
+    },
+    "LF_JobRunRow": {
+      "since": 49,
+      "fields": [
+        "string m_sPlayerUid",
+        "int m_iAmount",
+        "int m_iJob"
       ]
     }
   }
