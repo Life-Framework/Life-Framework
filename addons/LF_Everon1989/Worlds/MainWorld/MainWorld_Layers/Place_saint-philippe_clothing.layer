@@ -1,0 +1,67 @@
+GenericEntity Fit_saint_philippe_clothing_Place {
+ components {
+  LF_PlaceComponent "{70DEE3A43FA8971C}" {
+   m_sKind "ClothingCounter"
+   m_sId "saint-philippe.clothing"
+  }
+  LF_FittedBuildingComponent "{556BBCD1B59328B0}" {
+  }
+ }
+ coords 4441.27 11.5 10789.1
+}
+GenericEntity Fit_saint_philippe_clothing_sign_commercial_01_clothes_store : "{134DBD739E0790EC}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_ClothesStore.et" {
+ coords 4441.44 12.935 10789.13
+ angleY 63
+}
+GenericEntity Fit_saint_philippe_clothing_shop_house_e_2_i01t_furniture_clothesstore_lf_01 : "{75EAFBE6D0099EB8}Prefabs/Buildings/ClothingStore/Furniture/ShopHouse_E_2I01t_furniture_clothesstore_lf_01.et" {
+ coords 4441.27 11.5 10789.1
+ angleY -117
+}
+GenericEntity Fit_saint_philippe_clothing_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ coords 4431.846 14.1 10789.798
+ angleY -117
+}
+GenericEntity Fit_saint_philippe_clothing_counter_shop_01 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4440.845 11.699 10790.646
+ angleY -117
+}
+GenericEntity Fit_saint_philippe_clothing_cashier_shop_01 : "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et" {
+ coords 4441.033 12.738 10790.281
+ angleY 63
+}
+GenericEntity Fit_saint_philippe_clothing_shelf_shop_01 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+ coords 4438.031 11.699 10785.766
+ angleY -27
+}
+GenericEntity Fit_saint_philippe_clothing_shelf_shop_01_2 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+ coords 4436.878 11.699 10793.315
+ angleY 153
+}
+GenericEntity Fit_saint_philippe_clothing_shelf_shop_01_3 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+ coords 4434.561 11.699 10792.135
+ angleY 153
+}
+GenericEntity Fit_saint_philippe_clothing_counter_shop_01_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4437.955 11.699 10789.88
+ angleY -117
+}
+GenericEntity Fit_saint_philippe_clothing_counter_shop_01_3 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4435.905 11.699 10788.836
+ angleY -117
+}
+GenericEntity Fit_saint_philippe_clothing_lf_mannequin_denim : "{F55D2611E095EBAB}Prefabs/Props/Clothing/LF_Mannequin_Denim.et" {
+ coords 4434.216 11.699 10787.526
+ angleY -117
+}
+GenericEntity Fit_saint_philippe_clothing_lf_mannequin_raincoat : "{918EEED162D663F2}Prefabs/Props/Clothing/LF_Mannequin_Raincoat.et" {
+ coords 4433.353 11.699 10789.219
+ angleY -117
+}
+GenericEntity Fit_saint_philippe_clothing_lf_mannequin_knit : "{4DC523B95D7DFD0F}Prefabs/Props/Clothing/LF_Mannequin_Knit.et" {
+ coords 4434.185 11.699 10788.577
+ angleY -117
+}
+GenericEntity Fit_saint_philippe_clothing_lf_mannequin_suit : "{88F59F323FF25661}Prefabs/Props/Clothing/LF_Mannequin_Suit.et" {
+ coords 4435.662 11.699 10785.569
+ angleY -117
+}
