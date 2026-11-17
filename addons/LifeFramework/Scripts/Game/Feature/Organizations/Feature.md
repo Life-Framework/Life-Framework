@@ -46,7 +46,7 @@ processing upgrade are kept at the desk.
   map gains or loses the marks at once (`docs/features/map.md`).
 - `LF_OrgWars` — the war record (#2666, M7 gang war W1): `LF_OrgWarRecord` moves DECLARED -> ACCEPTED ->
   ENDED, or DECLARED -> LAPSED when the answer window passes. Server statics saved as payload `orgwars`
-  (save version 53, #2672): `ExportForSave(now)` writes open wars, closed ones still inside a pair
+  (save version 54, #2672): `ExportForSave(now)` writes open wars, closed ones still inside a pair
   cooldown and always the newest war (so a war id is never reused after a restart); `ApplyAll` replaces the table, drops a row whose organization is gone (warn line) and never
   ticks, so a deadline passed during downtime closes on the first sweep at the deadline. Keyed by org id,
   all times unix seconds. `Declare`, `Accept`, `Tick`,

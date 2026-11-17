@@ -482,7 +482,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_OrgUpgradeUnwired(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_OrgWarConfig(), LF_TestTier.LOGIC;
 		manager.Register(new LF_Test_OrgWarDeclare(), LF_TestTier.WORLD);
-		manager.Register(new LF_Test_OrgWarPersist(), LF_TestTier.PERSISTENCE);
+		// self-registered: new LF_Test_OrgWarPersist(), LF_TestTier.PERSISTENCE;
 		// self-registered: new LF_Test_OrgWarState(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_OutletSerial(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_OutletSerialWired(), LF_TestTier.WORLD;
@@ -617,6 +617,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_RegistrationRules(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_RejoinSafeSpot(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_RemovedTomatoSkip(), LF_TestTier.WORLD;
+		// self-registered: new LF_Test_ReputationPersist(), LF_TestTier.PERSISTENCE;
 		// self-registered: new LF_Test_ReputationRules(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ReputationWipe(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ResidentTimetable(), LF_TestTier.LOGIC;

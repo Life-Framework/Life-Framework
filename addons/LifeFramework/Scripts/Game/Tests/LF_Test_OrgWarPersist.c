@@ -6,6 +6,7 @@
 //! gives the same set; a row naming a deleted organization is dropped; a save from the version before
 //! this payload loads no wars. Across a restart (`tools\cli wt e2e`): the save boot stores an accepted
 //! war; the reload boot finds it with the same end time. The test puts back the tables it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_OrgWarPersist : LF_Test
 {
 	protected static const string E2E_FOUNDER_A = "org-war-e2e-founder-a";
