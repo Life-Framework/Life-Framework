@@ -47,6 +47,7 @@
 - [Payphone (#247)](features/payphone.md)
 - [Quests](features/quests.md)
 - [Racing](features/racing.md)
+- [Reputation (standing)](features/reputation.md)
 - [Rules](features/rules.md)
 - [Service calls (#248)](features/service-calls.md)
 - [Telephone calls (#147)](features/telephone-calls.md)
