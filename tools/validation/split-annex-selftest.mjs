@@ -1,11 +1,11 @@
 // Proves tools/grid/split-annex.mjs (docs/architecture/three-worlds.md): --copy keeps each entity's
 // text byte for byte, a wholly-inside layer comes out identical to its source, Crimes splits 2 inside
-// and 7 outside, Shops stays in town, and --strip deletes or rewrites in a scratch copy. Warns when
+// and 8 outside, Shops stays in town, and --strip deletes or rewrites in a scratch copy. Warns when
 // the committed GridWorld layers differ from what --copy writes today. Does not boot the game.
 // inputs: tools/grid/split-annex.mjs, tools/lib/worlds.mjs, tools/lib/world-zones.mjs, tools/validation/split-annex-selftest.mjs, addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers, addons/LifeFramework/Worlds/GridWorld
 //
 // red-proof: 2026-11-16, each break run through LF_SPLIT_ANNEX_MODULE=<broken copy> (15, 13, 2 failures):
-//   isInside always false                  -> FAIL "Crimes splits 2 inside, 7 outside (got ... inside 0, outside 9)";
+//   isInside always false                  -> FAIL "Crimes splits 2 inside, 8 outside (got ... inside 0, outside 10)";
 //   a block ends on an indented "}" too     -> FAIL "Annex is 130 entities, all inside", "Annex.layer is copied byte for byte";
 //   blank lines between blocks dropped     -> FAIL "Crimes inside + outside together keep every byte".
 import { existsSync, mkdtempSync, readFileSync, readdirSync, cpSync } from "node:fs";
@@ -54,7 +54,7 @@ const src = worlds.playtestLayerDirs(root)[0];
 const dst = mkdtempSync(join(tmpdir(), "split-annex-"));
 const plan = sa.copyAnnex(src, dst);
 const byFile = Object.fromEntries(plan.map((x) => [x.file, x]));
-check(byFile["Crimes.layer"]?.inside === 2 && byFile["Crimes.layer"]?.outside === 7, `Crimes splits 2 inside, 7 outside (got ${JSON.stringify(byFile["Crimes.layer"])})`);
+check(byFile["Crimes.layer"]?.inside === 2 && byFile["Crimes.layer"]?.outside === 8, `Crimes splits 2 inside, 8 outside (got ${JSON.stringify(byFile["Crimes.layer"])})`);
 check(byFile["Annex.layer"]?.inside === 130 && byFile["Annex.layer"]?.outside === 0, "Annex is 130 entities, all inside");
 check(byFile["Shops.layer"]?.inside === 0 && !existsSync(join(dst, "Shops.layer")), "Shops stays in town and is not copied");
 for (const f of ["default.layer", "Gamemode.layer", "Factions.layer", "Signs.layer", "Street_Bank.layer"]) {
@@ -80,7 +80,7 @@ sa.stripAnnex(strip);
 check(!existsSync(join(strip, "Annex.layer")) && !existsSync(join(strip, "Tests.layer")), "--strip deletes a wholly-inside layer");
 check(existsSync(join(strip, "Shops.layer")) && existsSync(join(strip, "default.layer")), "--strip keeps town and system layers");
 const crimesLeft = existsSync(join(strip, "Crimes.layer")) ? readFileSync(join(strip, "Crimes.layer"), "utf8") : "";
-check(sa.parseLayer(crimesLeft).blocks.length === 7 && crimesLeft.includes("FenceNpc") && !crimesLeft.includes("CrimeScene"), "--strip leaves Crimes with its 7 town entities");
+check(sa.parseLayer(crimesLeft).blocks.length === 8 && crimesLeft.includes("FenceNpc") && !crimesLeft.includes("CrimeScene"), "--strip leaves Crimes with its 8 town entities");
 
 // 4. The committed GridWorld layers are what --copy writes from today's DebugWorld. A warning, not a
 // failure: an annex edit in DebugWorld before W3's guard must not block an unrelated PR.
