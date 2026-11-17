@@ -367,6 +367,7 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 	protected ref array<ref LF_MapArea> m_aAreas = {};
 	protected float m_fBuildX;
 	protected float m_fBuildY;
+	protected bool m_bBuilt;	// false until a build ran on a settled view (the first Update after open)
 
 	//------------------------------------------------------------------------------------------------
 	protected static string ThemeTokens()
@@ -397,12 +398,12 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 		OriginOnScreen(m_fBuildX, m_fBuildY);
 		LF_MapAreas.Collect(m_aAreas);
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
-		float viewW;
-		float viewH;
-		m_wCanvas.GetScreenSize(viewW, viewH);
-		viewW = workspace.DPIUnscale(viewW);
-		viewH = workspace.DPIUnscale(viewH);
-		float ppu = m_wCanvas.PixelPerUnit();
+		// Canvas draw commands take screen pixels, as SCR_MapEntity.WorldToScreen gives them (vanilla feeds
+		// them unscaled too); DPIUnscale is for FrameSlot positions only. The canvas fills the map root, which
+		// is the whole screen, and a canvas made this frame reports no size yet, so the view is the workspace's.
+		float viewW = workspace.GetWidth();
+		float viewH = workspace.GetHeight();
+		float ppu = m_MapEntity.GetCurrentZoom();
 		string tokens = ThemeTokens();
 		m_aCommands.Clear();
 		foreach (LF_MapArea area : m_aAreas)
@@ -413,7 +414,7 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 				float sx;
 				float sy;
 				m_MapEntity.WorldToScreen(world[0], world[2], sx, sy, true);
-				screen.Insert(Vector(workspace.DPIUnscale(sx), workspace.DPIUnscale(sy), 0));
+				screen.Insert(Vector(sx, sy, 0));
 			}
 
 			string label = LF_MapAreas.LabelKeyOf(area);
@@ -427,6 +428,16 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 		}
 
 		m_wCanvas.SetDrawCommands(m_aCommands);
+		m_bBuilt = true;
+		LF_Debug.Info(LF_MapAreas.FEATURE, string.Format("drew %1 area(s) as %2 command(s) at %3 px/m on %4x%5", m_aAreas.Count(), m_aCommands.Count(), ppu, viewW, viewH));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The map's view is only final a frame after it opens: build again on the first frame.
+	override void Update(float timeSlice)
+	{
+		if (m_wCanvas && !m_bBuilt)
+			Redraw();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -521,6 +532,7 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 		SCR_MapEntity.GetOnMapPanEnd().Insert(OnMapPanEnd);
 		SCR_MapEntity.GetOnMapZoomEnd().Insert(OnMapZoomEnd);
 		Redraw();
+		m_bBuilt = false; // the first Update builds once more on the settled view
 	}
 
 	//------------------------------------------------------------------------------------------------
