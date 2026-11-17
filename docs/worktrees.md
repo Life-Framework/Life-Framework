@@ -1169,6 +1169,15 @@ signed-in session.
 
 ### Desktop on the box (virtual display, recording, clients from ssh)
 
+**GPU routes.** Every route that renders on a pool machine goes through the desktop session (`tools/lib/gpu-session.mjs`):
+the `ci --wb-only` steps (`build`, the compile, `validate --full`) re-run in it (`ciWorkbenchInSession`); `look` (and the warm
+`look serve` Workbench), the rdb refresh, `npc dress`, the main guard and every `session up` client start their process there
+through `interactiveSpawnDetached`; `ui-image`, `asset run`, `pack` and `call wb_*` re-run in it when started over ssh. With no
+signed-in (or a disconnected) session each stops at once with `<machine> has no signed-in desktop session: log in once`;
+`chooseGate` never picks such a machine (a pin or "all of them" is `none`, not a wait) and `pool status` shows its
+`desktop:` line. The `LF-DesktopHelper` logon task (`toolscli desktop-helper setup <machine>`, docs/setup.md "Desktop helper")
+keeps the session awake and writes the heartbeat `pool status` reads.
+
 ssh runs in session 0. The box's signed-in desktop is session 1, so
 `tools/remote/desktop/run-interactive.ps1` runs a program there through a
 one-shot scheduled task (LogonType Interactive, the ssh user) and removes the
