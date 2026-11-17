@@ -144,6 +144,13 @@
   glow from the street at night, one more spot lights the frontage. The vanilla `SignCommercial_01_FoodStore`
   panel (which read DROGERIE) is now `LF_Sign_Fascia` with sign id `general_store`, like the gun store (#1903);
   the DebugWorld overlay `Sign_GeneralStore` is removed as the building carries the sign.
+- ✅ **The general store meets the medium building budget** (2026-11-17, #2327). `perf building GeneralStore
+  --size medium` was 845 entities, 11 lights, 11 casters (4 point lights casting, all unset); it is now 289
+  entities, 6 lights, 1 caster. `dress.mjs` writes `CastShadow` on every light (one shadowed spot over the
+  counter, the rest fills; a point light never casts), the shop floor has one point fill (`spec.lights`),
+  shelf rows are `dress.thin` times sparser, and `spec.prune` cuts the vanilla set's light switches,
+  radiators, bathroom and utility fittings and the attic above `above_y`, keeping the flat's bones. The store
+  lines, shelf picks and the counter are unchanged.
 
 ### Shop price list — `Feature/Shop/LF_ShopPriceList.c` (was `LF_ShopMenu`)
 - ✅ (2026-11-08, M1-13) Typed price list on `LF_UIScreen` with the

@@ -30,6 +30,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..", "..");
 const spec = JSON.parse(readFileSync(join(HERE, "spec.json"), "utf8"));
 const FILE = join(ROOT, "addons", spec.addon, spec.prefab_dir, `${spec.vanilla.furniture}.et`);
+// spec.dress.thin: how many times sparser the shelf rows are than the 1.0 pitch below (perf budget, #2327: fewer props,
+// each one still reads from the aisle). spec.dress.stockMax caps the items on one board.
+const THIN = spec.dress?.thin ?? 1;
 const num = (n) => String(+(+n).toFixed(3));
 const id = (seed) => "D0" + createHash("sha1").update(`general-store|${seed}`).digest("hex").slice(0, 14).toUpperCase();
 
@@ -64,7 +67,7 @@ function stockBoard(board, seed, band) {
   const zF = board.z[1] - 0.07; // front row
   const zB = board.z[0] + 0.1; // back row
   const row = (keys, pitch, z, lift = 0, jitter = 0.012) => {
-    for (let x = x0 + 0.05; x < x1 - 0.02; x += pitch) {
+    for (let x = x0 + 0.05; x < x1 - 0.02; x += pitch * THIN) {
       const k = keys[Math.floor(r() * keys.length)];
       out.push({ key: k, x: x + (r() - 0.5) * jitter, z: z + (r() - 0.5) * jitter, y: lift, yaw: Math.round(r() * 360) });
     }
@@ -100,7 +103,7 @@ function stockRow(board, seed, z) {
   const r = rng(seed);
   const out = [];
   const keys = ["tin1", "beerG", "tin2", "beerB", "vodka", "beerS"];
-  for (let x = board.x[0] + 0.12; x < board.x[1] - 0.1; x += 0.14) out.push({ key: keys[Math.floor(r() * keys.length)], x: x + (r() - 0.5) * 0.01, z, y: 0, yaw: Math.round(r() * 360) });
+  for (let x = board.x[0] + 0.12; x < board.x[1] - 0.1; x += 0.14 * THIN) out.push({ key: keys[Math.floor(r() * keys.length)], x: x + (r() - 0.5) * 0.01, z, y: 0, yaw: Math.round(r() * 360) });
   return out;
 }
 
@@ -258,6 +261,40 @@ export function doorClashes(entities) {
   return bad;
 }
 
+
+// ---- pruning the vanilla set ---------------------------------------------------------------------
+// spec.prune { prefabs: [regex source of a prefab file name], above_y, keep: [prefab names] }: children of the furniture
+// prefab that the generator did not write and the building does not need are cut (every entity counts against the
+// building budget, docs/architecture/performance.md): light switches, radiators, and the attic's stock (above_y).
+// The fixtures the store lines pick from (spec.layer_store.lines) are never cut, so their pick indexes hold.
+export function pruneVanilla(text) {
+  const rule = spec.prune;
+  if (!rule) return text;
+  const names = (rule.prefabs ?? []).map((r) => new RegExp(`^(?:${r})$`));
+  const keep = new Set([...(rule.keep ?? []), ...spec.layer_store.lines.map((l) => l.fixture), ...Object.keys(spec.dress?.shelves ?? {})]);
+  const lines = text.split("\n");
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    const h = /^ {2}\w+(?: \w+)? ?(?:: "[^"]*\/([^\/"]+)\.et")? \{$/.exec(lines[i]);
+    if (!h) {
+      out.push(lines[i]);
+      continue;
+    }
+    let j = i + 1;
+    while (j < lines.length && lines[j] !== "  }") j++;
+    const block = lines.slice(i, j + 1);
+    const name = h[1] ?? "";
+    const joined = block.join("\n");
+    const coords = /^ {3}coords (\S+) (\S+) (\S+)$/m.exec(joined);
+    const y = coords ? +coords[2] : 0;
+    const gen = /^ {3}ID "D0/m.test(joined);
+    const cut = !gen && name && !keep.has(name) && (names.some((r) => r.test(name)) || (rule.above_y !== undefined && y > rule.above_y));
+    if (!cut) out.push(...block);
+    i = j;
+  }
+  return out.join("\n");
+}
+
 // ---- writing --------------------------------------------------------------------------------
 let DB;
 function ref(path) {
@@ -279,6 +316,8 @@ function text(e) {
       `   Color ${l.color ?? "1 0.96 0.88 1"}`,
       `   LV ${l.lv ?? 6}`,
       "   ClipEV -10",
+      // every light states its shadow: one shadowed spot over the counter, the rest fills (a point light never casts)
+      `   CastShadow ${l.shadow && (l.type ?? "Spot") === "Spot" ? 1 : 0}`,
       // a Point light is the base game's default LightEntity type, which its own prefabs leave unwritten
       ...((l.type ?? "Spot") === "Spot" ? ["   Type Spot"] : []),
       `   Radius ${l.radius ?? 7}`,
@@ -300,7 +339,7 @@ function text(e) {
 export async function build() {
   const original = readFileSync(FILE, "utf8");
   // strip what an earlier run wrote
-  const stripped = original.replace(/^ {2}\w+(?: : "[^"]*")? \{\n {3}ID "D0[0-9A-F]{14}"\n(?: {3,}[^\n]*\n)*? {2}\}\n/gm, "");
+  const stripped = pruneVanilla(original).replace(/^ {2}\w+(?: : "[^"]*")? \{\n {3}ID "D0[0-9A-F]{14}"\n(?: {3,}[^\n]*\n)*? {2}\}\n/gm, "");
   const fixtures = { ...FIXTURES };
   for (const n of Object.keys(spec.dress?.shelves ?? {})) {
     if (!fixtures[n]) {

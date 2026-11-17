@@ -273,7 +273,7 @@ Per place (a slot set within 60 m, the square plus its streets):
 | Shop | Entities | Lights | Shadow casters (all unset) | Point lights casting |
 |---|---:|---:|---:|---:|
 | GunStore | 293 | 14 | 14 | 9 |
-| GeneralStore | 845 | 11 | 11 | 4 |
+| GeneralStore | 845 (289 since #2327) | 11 (6) | 11 (1) | 4 (0) |
 | ClothingStore | 258 | 11 | 11 | 11 |
 | Drugstore | 468 | 12 | 12 | 2 |
 | Supermarket | 133 | 16 | 16 | 4 |

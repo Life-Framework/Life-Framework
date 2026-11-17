@@ -32,21 +32,25 @@
   "dress": {
     "why": "dress.mjs: plain props on every shelf board the store lines do not use, the wall, counter and floor dressing below and the ceiling lights",
     "shelves": { "ShelfShop_01": [1, 2, 3, 4, 5], "ShelfUniversal_01_wide": [0, 1, 2, 3, 4], "ShelfUniversal_01_Base": [0, 1] },
-    "tops": { "ShelfUniversal_01_wide": [0, 1, 2, 3, 4], "ShelfUniversal_01_Base": [0, 1] },
+    "thin": 6,
+    "tops": { "ShelfUniversal_01_wide": [0, 2, 4], "ShelfUniversal_01_Base": [0] },
     "cards": [
-      { "fixture": "ShelfShop_01", "picks": [1, 2, 3, 4, 5], "boards": [1, 2, 3], "variants": ["Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et", "Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et", "Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et"], "scale": 0.17, "step": 0.3, "drop": 0.03, "out": 0.012, "why": "a strip of small price cards on the front edge of each board of the self-serve gondolas" }
+      { "fixture": "ShelfShop_01", "picks": [1, 2, 3, 4, 5], "boards": [2], "variants": ["Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et", "Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et", "Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et"], "scale": 0.17, "step": 0.8, "drop": 0.03, "out": 0.012, "why": "a strip of small price cards on the front edge of each board of the self-serve gondolas" }
     ]
+  },
+  "prune": {
+    "why": "perf budget (docs/architecture/performance.md, medium: 300 entities): the vanilla furniture set carries 17 light switches, 6 radiators, bathroom and utility fittings, an attic of stock and a flat furnished with 40 pieces nobody sees from the shop; dress.mjs cuts them above above_y, keeping the flat's bones (keep) and never a fixture the store lines or shelves use",
+    "prefabs": ["LightSwitch_02", "RadiatorCastIron_01_[0-9]+", "PlantRoom_01", "WashingMachine_01", "Boiler_01", "Shower_01_addon", "Faucet_01", "MirrorBathroom_01", "PaintingBig_01_base", "LightWall_01", "LightTable_01", "LightCeiling_01", "LampIndustrial_01", "FlowerpotPelargonia_01_Base"],
+    "above_y": 3.5,
+    "keep": ["LampFluorescent_01", "Bed_01", "Kitchen_01_base", "Fridge_01", "Stove_01", "Table_01", "Chair_02_red", "Armchair_01", "Wardrobe_01", "Toilet_01", "Bathtub_01", "Sink_01"]
   },
   "dressing": [
     { "prefab": "Prefabs/Props/PersonalBelongings/Notebooks/Notebook_01_Personal_Civilian.et", "at": [2.05, 1.24, -0.6], "yaw": 15, "why": "the cash ledger" },
     { "prefab": "Prefabs/Props/Furniture/PhoneTable_01_Base.et", "at": [1.72, 1.24, -0.14], "yaw": 200, "why": "the shop telephone" },
     { "prefab": "Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_newspaper_V1.et", "at": [2.12, 1.24, -0.05], "yaw": -8, "why": "today's paper" },
-    { "prefab": "Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_newspaper_V3.et", "at": [2.12, 1.25, -0.05], "yaw": 14 },
     { "prefab": "Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et", "at": [1.6, 1.24, -0.64], "yaw": 40, "why": "the shopkeeper's mug" },
-    { "prefab": "Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et", "at": [1.55, 1.24, 0.02], "yaw": 170 },
     { "prefab": "Prefabs/Props/Commercial/Posters/PosterSingle_A1_Cans_V1.et", "at": [-1.53, 1.75, 0.65], "yaw": 90 },
     { "prefab": "Prefabs/Props/Commercial/Posters/PosterSingle_A3_AirMail_V1.et", "at": [-1.53, 1.7, 1.35], "yaw": 90 },
-    { "prefab": "Prefabs/Props/Commercial/Posters/PosterSingle_A3_Insurance_V1.et", "at": [-1.53, 1.7, 1.8], "yaw": 90 },
     { "prefab": "Prefabs/Props/Furniture/ClockWall_01.et", "at": [5.752, 2.45, 2.5], "yaw": -90, "why": "the wall clock" },
     { "prefab": "Prefabs/Props/Civilian/Freezer_01.et", "at": [-1.12, 0.199, 1.85], "yaw": 90, "why": "chest freezer by the west wall" },
     { "prefab": "Prefabs/Props/Furniture/Stool_01.et", "at": [1.35, 0.199, -1.9], "yaw": 30, "why": "the shopkeeper's stool behind the counter" },
@@ -60,17 +64,10 @@
     { "prefab": "Prefabs/Props/Civilian/SodaBottle_01.et", "at": [3.4, 0.899, 6.4], "yaw": 0 },
     { "prefab": "Prefabs/Props/Civilian/SodaBottle_01.et", "at": [3.6, 0.899, 6.55], "yaw": 0 },
     { "prefab": "Prefabs/Props/S2/S2_Bread/S2_Bread.et", "at": [3.3, 0.899, 6.7], "yaw": 0 },
-    { "prefab": "Prefabs/Props/S2/S2_Bread/S2_Bread.et", "at": [3.5, 1, 6.7], "yaw": 12 },
-    { "prefab": "Prefabs/Props/Civilian/BeerBottle_01_green.et", "at": [3.15, 0.899, 6.7], "yaw": 0 },
-    { "prefab": "Prefabs/Props/Civilian/BeerBottle_01_brown.et", "at": [3.62, 0.899, 6.7], "yaw": 0 },
     { "prefab": "Prefabs/Props/Crates/Crate_01_orange.et", "at": [2.4, 0.199, 6.75], "yaw": 0, "why": "produce crates in the window" },
-    { "prefab": "Prefabs/Props/Crates/Crate_01_green.et", "at": [2.45, 0.425, 6.75], "yaw": 6 },
     { "prefab": "Prefabs/Props/Civilian/BasketWicker_01.et", "at": [4.2, 0.199, 6.7], "yaw": 0 },
     { "prefab": "Prefabs/Props/Crates/Crate_01_green.et", "at": [2.2, 0, 8.25], "yaw": 0, "why": "produce crates outside" },
     { "prefab": "Prefabs/Props/Crates/Crate_01_orange.et", "at": [2.85, 0, 8.25], "yaw": 0 },
-    { "prefab": "Prefabs/Props/Crates/Crate_01_green.et", "at": [3.5, 0, 8.25], "yaw": 0 },
-    { "prefab": "Prefabs/Props/Crates/Crate_01_orange.et", "at": [2.5, 0.226, 8.25], "yaw": 5 },
-    { "prefab": "Prefabs/Props/Crates/Crate_01_green.et", "at": [3.2, 0.226, 8.25], "yaw": -4 },
     { "prefab": "Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_Base.et", "at": [5.2, 0, 8.3], "yaw": 0, "why": "bench by the door" },
     { "prefab": "Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et", "at": [1.0, 0, 8.05], "yaw": 0, "why": "planter under the window" },
     { "prefab": "Prefabs/Props/Furniture/Sunshade_01/Sunshade_01_yellow.et", "at": [2.85, 0, 9.4], "yaw": 0, "why": "a parasol over the produce crates" },
@@ -83,19 +80,14 @@
     { "prefab": "Prefabs/Props/Crates/Crate_01_green.et", "at": [3.0, 0.426, 1.85], "yaw": 4 },
     { "prefab": "Prefabs/Props/Civilian/SodaBottle_01.et", "at": [2.82, 0.658, 1.85], "yaw": 0 },
     { "prefab": "Prefabs/Props/Civilian/SodaBottle_01.et", "at": [3.0, 0.658, 1.8], "yaw": 0 },
-    { "prefab": "Prefabs/Props/Civilian/SodaBottle_01.et", "at": [3.18, 0.658, 1.88], "yaw": 0 },
     { "prefab": "Prefabs/Props/Civilian/NoticeBoardCork_01_posters.et", "at": [-1.53, 2.78, 1.3], "yaw": 90, "why": "the price board and notices on the west wall above the shop door, in front of anyone walking in" },
     { "prefab": "Prefabs/Props/Decorations/Paintings/PaintingSmall_01_V3.et", "at": [-1.53, 2.5, 2.62], "yaw": 90, "scale": 0.6, "why": "the shop licence, framed above the message board" },
     { "prefab": "Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et", "at": [3.35, 0.199, -7.55], "yaw": 90, "why": "stockroom: cartons stacked beside the back door, seen through the stockroom door's window" },
     { "prefab": "Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et", "at": [3.36, 0.631, -7.55], "yaw": 94 },
-    { "prefab": "Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et", "at": [3.34, 1.063, -7.55], "yaw": 86 },
     { "prefab": "Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et", "at": [5.4, 0.199, -7.55], "yaw": 90 },
-    { "prefab": "Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et", "at": [5.42, 0.631, -7.55], "yaw": 88 },
     { "prefab": "Prefabs/Props/Crates/CardboardBoxStack_01.et", "at": [4.65, 0.199, -5.0], "yaw": 6, "why": "stockroom: delivered cartons in line with the back door, the glimpse from the shop" },
     { "prefab": "Prefabs/Props/Crates/Crate_01_yellow.et", "at": [3.85, 0.199, -4.7], "yaw": 90, "why": "stockroom: empties by the door" },
-    { "prefab": "Prefabs/Props/Crates/Crate_01_yellow.et", "at": [3.85, 0.426, -4.7], "yaw": 84 },
-    { "prefab": "Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et", "at": [5.2, 0.199, -6.4], "yaw": 90, "why": "stockroom: boxes being unpacked by the east wall" },
-    { "prefab": "Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et", "at": [5.2, 0.631, -6.4], "yaw": 80 }
+    { "prefab": "Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et", "at": [5.2, 0.199, -6.4], "yaw": 90, "why": "stockroom: boxes being unpacked by the east wall" }
   ],
   "doors": {
     "why": "the ground-floor door leaves (the placement audit's door rows for Village_GeneralStore, building space): the front door is the arch double door in the hall at the west end of the front wall, not by the window; the shop is entered from the hall through the west door pair; the stockroom door is in the back wall. dress.mjs refuses a prop whose centre stands inside a door's clearance (the leaf pushed 1 m out each way)",
@@ -107,17 +99,12 @@
     ]
   },
   "lights": [
-    { "at": [2.962, 3.72, 0.922], "lv": 6 },
-    { "at": [2.99, 3.72, 4.668], "lv": 6 },
-    { "at": [0.2, 3.72, 0.922], "lv": 6, "lamp": "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et", "lamp_at": [0.2, 3.919, 0.922], "yaw": -89.583 },
-    { "at": [0.2, 3.72, 4.668], "lv": 6, "lamp": "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et", "lamp_at": [0.2, 3.919, 4.668], "yaw": -89.583 },
-    { "at": [1.9, 3.72, -1.5], "lv": 5, "lamp": "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et", "lamp_at": [1.9, 3.919, -1.5], "yaw": -89.583 },
-    { "at": [2.0, 3.72, 6.4], "lv": 4, "radius": 5, "lamp": "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et", "lamp_at": [2.0, 3.919, 6.4], "yaw": -89.583 },
+    { "at": [1.9, 3.72, -1.5], "lv": 5, "shadow": 1, "lamp": "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et", "lamp_at": [1.9, 3.919, -1.5], "yaw": -89.583, "why": "the one shadowed spot, over the counter (perf budget: 1 caster per medium building)" },
+    { "at": [2.962, 3.72, 0.922], "lv": 6, "why": "spot under the vanilla tube; a fill, CastShadow 0" },
+    { "at": [2.99, 3.72, 4.668], "lv": 6, "why": "spot under the vanilla tube; a fill, CastShadow 0" },
+    { "at": [1.2, 3.0, 2.8], "type": "Point", "attenuation": 0.8, "near": 0.45, "lv": 2.4, "radius": 10, "color": "1 0.87 0.7 1", "why": "the one ceiling fill for the whole shop floor: a spot downlight never reaches the ceiling, so it was black at night; the base game's ceiling lamp pairs its glass with a point LightAmbient the same way (replaces three fills and two more spots, perf budget: 6 lights)" },
     { "at": [4.267, 3.3, -5.488], "type": "Point", "attenuation": 0.8, "near": 0.45, "lv": 2.4, "radius": 6, "why": "the stockroom tube: a point light so the walls and ceiling of the room seen through the door are lit too" },
-    { "at": [2.0, 3.4, 8.6], "lv": 3, "radius": 7, "color": "1 0.85 0.6 1", "why": "outside: the frontage at night" },
-    { "at": [0.6, 3.0, 5.4], "type": "Point", "attenuation": 0.8, "near": 0.45, "lv": 1.6, "radius": 8, "color": "1 0.87 0.7 1", "why": "ceiling fill: a spot downlight never reaches the ceiling, so it was black at night; the base game's ceiling lamp pairs its glass with a point LightAmbient the same way" },
-    { "at": [4.4, 3.0, 2.2], "type": "Point", "attenuation": 0.8, "near": 0.45, "lv": 1.6, "radius": 8, "color": "1 0.87 0.7 1", "why": "ceiling fill over the main aisle" },
-    { "at": [0.9, 3.0, -0.4], "type": "Point", "attenuation": 0.8, "near": 0.45, "lv": 1.6, "radius": 8, "color": "1 0.87 0.7 1", "why": "ceiling fill over the counter" }
+    { "at": [2.0, 3.4, 8.6], "lv": 3, "radius": 7, "color": "1 0.85 0.6 1", "why": "outside: the frontage at night" }
   ],
   "check_supports": [
     { "prefab": "Prefabs/Props/Commercial/CounterShop_01.et", "at": [1.57, 0.199, -0.323], "yaw": 0, "id": "till-counter", "why": "the store entity Shop_GeneralStore_Debug (Shops.layer) is the counter; building space = counter_at, unturned" }
