@@ -5,7 +5,7 @@
 //! outsider and a too-fast add are refused; the cap is 20 per organization; the "orgmarks" payload
 //! round trips and re-puts the shares; a re-applied load is idempotent; leaving the org takes the
 //! marks off that player's map. Across a restart (`tools\cli wt e2e`): the save boot records
-//! E2E_ORG's mark 1, the reload boot finds it in the store and in the share table.
+//! an organization and its mark 1 (every non-reload run does), the reload boot finds it in the store and in the share table.
 class LF_Test_OrgMapMarks : LF_Test
 {
 	protected static const string FOUNDER = "orgmarks-founder";
@@ -166,8 +166,8 @@ class LF_Test_OrgMapMarks : LF_Test
 		ctx.Equal(0, LF_MapShares.DeliveredCount(P_MEMBER), "a player who left holds no org marks");
 
 		Restore(before, orgsBefore, ranksBefore);
-#ifdef LF_E2E_HOST_STOP
-		// The save boot: the shutdown save carries one organization with one org mark.
+		// Every non-reload run (the e2e save boot among them) leaves one organization with one org mark
+		// for the reload boot, as LF_Test_E2E_SaveStateWrite does.
 		LF_Organization e2eOrg = LF_OrganizationManager.FindByName(E2E_ORG_NAME);
 		if (!e2eOrg)
 			e2eOrg = LF_OrganizationManager.Create(E2E_FOUNDER, E2E_ORG_NAME);
@@ -179,7 +179,6 @@ class LF_Test_OrgMapMarks : LF_Test
 				LF_OrgMapMarks.Add(E2E_FOUNDER, 640, 480, 0, 0, "e2e", LF_MapShares.Now() + 1000);
 			ctx.True(LF_OrgMapMarks.Has(e2eKey), "the save boot recorded the e2e org mark");
 		}
-#endif
 	}
 
 	//------------------------------------------------------------------------------------------------
