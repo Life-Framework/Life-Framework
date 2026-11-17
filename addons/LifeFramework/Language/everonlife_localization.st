@@ -5897,6 +5897,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Taser cartridge"
      Comment "Inventory name of the taser's single-shot cartridge."
     }
+    CustomStringTableItem "{D920AB80A60A3625}" {
+     Id "LF-MapKnown_ArrivalMarked"
+     Target_en_us "The clerk pencils %1 places on the square onto your map."
+     Comment "Map discovery (#2242): toast at the end of the arrival chain. %1 = places new to the player's map."
+    }
+    CustomStringTableItem "{13F7361AFE5B4C57}" {
+     Id "LF-MapKnown_Title"
+     Target_en_us "Your map"
+     Comment "Map discovery (#2242): the toast title for the clerk's arrival marks."
+    }
     CustomStringTableItem "{DE2AC99F6166AB0D}" {
      Id "LF-MapPlaces_ClusterNote"
      Target_en_us "Zoom in for each"
@@ -9617,6 +9627,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Ticket_Written"
      Target_en_us "Ticket handed over: %1"
      Comment "Toast to the officer. %1 is the amount."
+    }
+    CustomStringTableItem "{7038FBC3DB7D537B}" {
+     Id "LF-TouristMap_Marked"
+     Target_en_us "You pencil %1 new places onto your map."
+     Comment "Tourist map item (#2242): toast after studying it. %1 = places new to the player's map."
+    }
+    CustomStringTableItem "{59CD849C9814E8C3}" {
+     Id "LF-TouristMap_Nothing"
+     Target_en_us "Your map already shows everything this one lists."
+     Comment "Tourist map item (#2242): toast when it adds nothing."
+    }
+    CustomStringTableItem "{23CAFD3EFF424E4F}" {
+     Id "LF-TouristMap_Title"
+     Target_en_us "Tourist map"
+     Comment "Tourist map item (#2242): the toast title."
+    }
+    CustomStringTableItem "{E999310EC10150C2}" {
+     Id "LF-TouristMap_Use"
+     Target_en_us "Study the tourist map"
+     Comment "Tourist map item (#2242): the action that pencils every discoverable place onto the player's map."
     }
     CustomStringTableItem "{65D7E4795D634FBD}" {
      Id "LF-TownBoard_Dir_E"
