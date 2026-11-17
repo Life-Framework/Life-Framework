@@ -616,6 +616,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_RegistrationRules(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_RejoinSafeSpot(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_RemovedTomatoSkip(), LF_TestTier.WORLD;
+		// self-registered: new LF_Test_ReputationGate(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ReputationPersist(), LF_TestTier.PERSISTENCE;
 		// self-registered: new LF_Test_ReputationRules(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ReputationWipe(), LF_TestTier.LOGIC;

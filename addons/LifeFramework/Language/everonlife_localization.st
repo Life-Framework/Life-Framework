@@ -8856,6 +8856,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Underworld"
      Comment "Standing: neutral core label of the underworld faction. Never shown to the player."
     }
+    CustomStringTableItem "{F38A5D16B04E927C}" {
+     Id "LF-Reputation_Refuse_Any"
+     Target_en_us "You are not well enough known for this yet."
+     Comment "Standing gate refusal (#2701) for a faction with no words of its own. Never a number."
+    }
+    CustomStringTableItem "{91E4B7035CA2D68F}" {
+     Id "LF-Reputation_Refuse_Police"
+     Target_en_us "The law doesn't trust you enough for this yet. You would need to be at least: %1."
+     Comment "Standing gate refusal (#2701). %1 = the minimum tier word. Never a number. The pack overlays the words."
+    }
+    CustomStringTableItem "{2C7A91E45B03D8F6}" {
+     Id "LF-Reputation_Refuse_Town"
+     Target_en_us "The locals don't know you well enough for this work yet. You would need to be at least: %1."
+     Comment "Standing gate refusal (#2701): job sign-up or run start. %1 = the minimum tier word. Never a number. The pack overlays the words."
+    }
+    CustomStringTableItem "{6D0F3A82E715C4B9}" {
+     Id "LF-Reputation_Refuse_Underworld"
+     Target_en_us "Nobody in those circles knows you well enough."
+     Comment "Standing gate refusal (#2701). The underworld's tier is never shown, so no tier word. The pack overlays the words."
+    }
     CustomStringTableItem "{067374E8D35098CE}" {
      Id "LF-Reputation_Tier_0"
      Target_en_us "Unknown"
