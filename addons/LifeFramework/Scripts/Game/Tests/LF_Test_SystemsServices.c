@@ -5,6 +5,7 @@
 //! owner config, one server entry point of it refuses (or one prompt hides) and what it saved stays;
 //! with it on again the same call goes through. Police and Investigation are turned off with what
 //! they need turned off too: a config that cut Crime under Police would be refused (#279).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SystemsServices : LF_Test
 {
 	static const ResourceName POLICE_CAR = "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et";

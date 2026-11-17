@@ -21,6 +21,7 @@ class LF_TestToastSender : LF_RestartToastSender
 // tier: LOGIC
 //! O6 (#1265): every LF_OnRestartWarning on the server bus becomes one toast with the minutes
 //! left in it; a repeat of the same lead inside the same minute sends nothing.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestartToast : LF_Test
 {
 	override string GetName()

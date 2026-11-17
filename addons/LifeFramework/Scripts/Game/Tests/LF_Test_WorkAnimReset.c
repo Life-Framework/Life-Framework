@@ -3,6 +3,7 @@
 //! #2419: a work-animation reset takes its repeating Watch call off the call queue. Each reset used
 //! to leak a 400 ms ticker. The queue defers a removal made inside its own pass (a test runs inside
 //! one), so the test reads the removal counter, not the queue.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WorkAnimReset : LF_Test
 {
 	override string GetName()

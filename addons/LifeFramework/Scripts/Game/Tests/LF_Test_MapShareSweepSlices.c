@@ -6,6 +6,7 @@
 //! by the slice count, rounded up), every player once per cycle; the first tick of a cycle expires rows and forgets
 //! players who left; a player who left mid-cycle is skipped, not sent anything.
 //! Pure script: 45 fixture players (a batch of 3), an ORG row, the ticks driven by hand.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapShareSweepSlices : LF_Test
 {
 	protected static const int PLAYERS = 45;

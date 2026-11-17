@@ -2,6 +2,7 @@
 // [LFTEST] FAIL police/rank-table - patrol promotes after an hour on duty (expected 3600, got 1800). Restored to 3600; green.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceRankTable : LF_Test
 {
 	override string GetName()

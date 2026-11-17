@@ -4,6 +4,7 @@
 //! walkers at the scene's spawn markers in the role's outfit, the NPC cap holds the count, a second
 //! scene cannot start while it runs, and the despawn waits while a test eye has line of sight and
 //! removes everyone once nobody sees them.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventSceneSpawn : LF_Test
 {
 	static const string SCENE = "grid_event_scene";

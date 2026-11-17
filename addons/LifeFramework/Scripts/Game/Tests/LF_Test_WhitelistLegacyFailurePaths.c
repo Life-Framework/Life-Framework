@@ -4,6 +4,7 @@
 //! A roster this build cannot read stops the migration before it adds anything, and a roster save
 //! that fails leaves the file unmarked. Each is followed by the next start (a fresh load of a
 //! readable roster), which must migrate every uid and write the marker.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WhitelistLegacyFailurePaths : LF_Test
 {
 	protected static const string ROSTER = "$profile:TestResults/whitelist-fail-roster.txt";

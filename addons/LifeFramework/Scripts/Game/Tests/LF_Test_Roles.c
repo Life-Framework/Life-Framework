@@ -3,6 +3,7 @@
 // tier: LOGIC
 //! NPC roles, with no world: every role has outfits and a playable conversation, the outfit an NPC
 //! wears is stable for its seed and differs between seeds, and a bare caption key is a valid line.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roles : LF_Test
 {
 	override string GetName()

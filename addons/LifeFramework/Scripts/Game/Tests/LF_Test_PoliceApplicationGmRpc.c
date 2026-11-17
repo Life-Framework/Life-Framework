@@ -3,6 +3,7 @@
 //! #1288: the server handlers behind the Game Master applications panel. A non-staff sender is
 //! refused and changes nothing; staff approve and reject; a bad verb or target is refused; free text
 //! cannot forge a row or a string key.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceApplicationGmRpc : LF_Test
 {
 	override string GetName()

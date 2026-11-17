@@ -1,6 +1,7 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --only` (all four broken in one run, 0/4 passed), then restored; green. Breaking `distance > REACH` to `REACH * 100` in LF_PlayerInteraction.CheckReach failed
 // `[LFTEST] FAIL interaction/offers`, `- 2.5 m away is refused as too far (expected 5, got 0)`.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_InteractionOffers : LF_Test
 {
 	override string GetName()

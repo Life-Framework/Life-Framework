@@ -4,6 +4,7 @@
 //! property's, is refused with that cap named; a temporary kind (the spike strip) is never capped nor
 //! recorded; the owner within reach picks a placement up, which deletes its row and the entity, and
 //! nobody else (or the owner from too far) can.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementCap : LF_Test
 {
 	static const ResourceName STRIP_ITEM = "{4B8BDB727DEE59B8}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et";

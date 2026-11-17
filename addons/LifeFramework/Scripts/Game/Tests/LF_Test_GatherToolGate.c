@@ -16,6 +16,7 @@ class LF_TestGatherToolRecorder : LF_EventSubscriber
 	}
 }
 
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_GatherToolGate : LF_Test
 {
 	protected const string SHOVEL = "{0619993AE6CDBF85}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.et";

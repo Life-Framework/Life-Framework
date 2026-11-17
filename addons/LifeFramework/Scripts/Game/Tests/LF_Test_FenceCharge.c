@@ -2,6 +2,7 @@
 // tier: WORLD
 //! The fence charge (LF_Charge.et) spawns, goes into a character's inventory and counts as a
 //! breach charge for LF_Breach. Deletes everything it spawns.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FenceCharge : LF_Test
 {
 	override string GetName()

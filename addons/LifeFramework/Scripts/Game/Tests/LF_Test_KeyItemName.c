@@ -5,6 +5,7 @@
 // tier: WORLD
 //! houses/key-item-name (#2470): every house and car key names its own house or vehicle in the inventory, read
 //! from the replicated identifier, and the UIInfo every key of the prefab shares keeps its prefab name.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_KeyItemName : LF_Test
 {
 	protected static const ResourceName HOUSE_KEY = "{3735389521255DBE}Prefabs/Items/HouseKeyItem.et";

@@ -6,6 +6,7 @@
 //! existing example is never overwritten, the example itself is a valid owner file, and a real
 //! file is read. Uses a scratch folder under $profile, never the server's own config.json.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigOwnerFile : LF_Test
 {
 	static const string DIR = "$profile:LifeFramework/test-config";

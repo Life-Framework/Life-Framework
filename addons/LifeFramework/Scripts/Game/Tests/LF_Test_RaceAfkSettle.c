@@ -4,6 +4,7 @@
 //! AFK grace is dropped (the fee stays in the pot) and the race settles for the finishers; with the
 //! settle delay set, the race also pays out that long after the first finisher, and a racer still out
 //! forfeits. Time is passed to LF_RaceRunner.TickAt, so nothing waits. Bodies are fixture characters.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RaceAfkSettle : LF_Test
 {
 	protected static const string UID_A = "race-afk-a";

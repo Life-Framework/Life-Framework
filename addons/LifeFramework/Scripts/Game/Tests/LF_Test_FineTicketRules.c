@@ -5,6 +5,7 @@
 // tier: LOGIC
 //! The paper ticket's rules without a world: rank cap, online-time deadlines (doubles once, then
 //! +1 wanted once), payment from carried cash only and only once, and the save records.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FineTicketRules : LF_Test
 {
 	protected static const string HOLDER = "ticket-rules-holder";

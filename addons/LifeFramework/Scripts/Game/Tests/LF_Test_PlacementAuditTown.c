@@ -5,6 +5,7 @@
 //! the test measures each one with LF_PlacementAudit and writes out.txt, which the command ranks.
 //! In a normal suite run there is no in.txt: the test checks the walk on the evidence locker instead,
 //! which stood half inside the police station wall until this audit found it (2026-11-11).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementAuditTown : LF_Test
 {
 	static const string IN_PATH = "$profile:place-audit/in.txt";

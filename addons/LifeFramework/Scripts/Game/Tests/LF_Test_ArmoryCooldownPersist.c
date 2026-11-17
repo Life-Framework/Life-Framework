@@ -4,6 +4,7 @@
 //! are saved in the "armorykits" payload, come back on load (idempotent), and hold across a clock-out.
 //! Across a restart (`tools\cli wt e2e`): every non-reload run books one e2e officer's kit; the
 //! reload boot finds it with its issue time and serial.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_ArmoryCooldownPersist : LF_Test
 {
 	protected static const string OFFICER = "armory-cooldown-officer";

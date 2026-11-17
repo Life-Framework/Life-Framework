@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! Workbench "Play from camera" keeps the player at the camera: the spawn takes the replaced editor
 //! body's pose only inside Workbench, only when such a body was replaced, and never with no position.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PlayFromCamera : LF_Test
 {
 	override string GetName()

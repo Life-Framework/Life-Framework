@@ -4,6 +4,7 @@
 // the ctx.True assertion fails.
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_IDCard : LF_Test
 {
 	protected static const ResourceName IDCARD_PREFAB = "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et";

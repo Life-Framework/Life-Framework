@@ -3,6 +3,7 @@
 //! The placement audit (LF_PlacementAudit, `tools\cli audit placement`) on fixtures spawned on open
 //! ground south of the DebugWorld town (300, 100): a crate on the ground and one stacked on it are clean, a crate 1 m up is floating, a crate
 //! at three times its size is scaled, and a crate pushed half off a table overhangs without floating.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementAudit : LF_Test
 {
 	protected static const ResourceName CRATE = "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et";

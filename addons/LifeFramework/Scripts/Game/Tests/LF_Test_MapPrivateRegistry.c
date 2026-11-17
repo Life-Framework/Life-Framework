@@ -4,6 +4,7 @@
 //! POI kind, so a modified client has neither its id nor its position. The server holds it and sends a player
 //! only what that player may see: a stranger gets neither the role place nor an unheard discover place; once the
 //! character has heard of the discover place it is in their set, and the role place still is not.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MapPrivateRegistry : LF_Test
 {
 	//! Core rows: PoliceArmoury is ROLE (police), Workplace is DISCOVER (Configs/Map/LF_MapPois.conf).

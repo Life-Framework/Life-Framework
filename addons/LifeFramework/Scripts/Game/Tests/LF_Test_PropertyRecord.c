@@ -3,6 +3,7 @@
 //! property/record (#2646): a property row is created by its stable id, takes a build stage and an
 //! owner, exports and applies back to the same rows; a row whose property is not in the world waits
 //! in the book and is exported again. The test puts back the book it found.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PropertyRecord : LF_Test
 {
 	protected static const string PLOT = "property-record-plot";

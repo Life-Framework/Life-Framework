@@ -6,6 +6,7 @@
 //! a second dose stacks to the cap, death clears it, a restart (world-end static reset) clears it,
 //! and replication bumps only on a significant change.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Impairment : LF_Test
 {
 	override string GetName()

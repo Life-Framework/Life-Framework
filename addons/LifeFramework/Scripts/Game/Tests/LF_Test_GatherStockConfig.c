@@ -2,6 +2,7 @@
 // tier: WORLD
 //! gather/stock-config (#2409): the free gather spots carry a stock and a regrow time in
 //! ResourceChains.conf, and ripe crops stay on their own growth timer.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_GatherStockConfig : LF_Test
 {
 	override string GetName()

@@ -4,6 +4,7 @@
 //! loaded the whitelist file (LF_PoliceApplications.ExpireTrials on the first duty desk use after a
 //! restart) loads the file and removes the entry. It used to return false on the empty cache, so the
 //! trial was marked expired while the officer stayed on the roster for good.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WhitelistRemoveUnloaded : LF_Test
 {
 	protected static const string PATH = "$profile:LifeFramework/test_whitelist_remove_unloaded.txt";

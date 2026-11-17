@@ -5,6 +5,7 @@
 //! loads with no rows; loading twice changes nothing.
 //! Across a restart (`tools\cli wt e2e`): the save boot records E2E_ID, the shutdown save carries it,
 //! and the reload boot finds the same position, heading and time.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_PersistLastPosition : LF_Test
 {
 	protected static const string CHAR_ID = "lastpos-persist-character";

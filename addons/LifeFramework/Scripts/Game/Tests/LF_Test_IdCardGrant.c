@@ -5,6 +5,7 @@
 // The same run caught a real bug: GetItems listed the card twice (`expected 1, got 2`), so
 // LF_IdCard.FindCarried now counts each card once.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_IdCardGrant : LF_Test
 {
 	override string GetName()

@@ -3,6 +3,7 @@
 //! What a questioned witness says (#615): NPC names are stable per spot and varied across spots,
 //! and an NPC that saw nothing answers with one of the noncommittal lines, never "you didn't see
 //! anything".
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WitnessDialogue : LF_Test
 {
 	override string GetName()

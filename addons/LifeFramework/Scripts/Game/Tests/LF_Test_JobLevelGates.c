@@ -4,6 +4,7 @@
 // tier: LOGIC
 //! Gates read job levels (#749, D12): delivery sign-up reads DELIVERY, a licence reads its family's
 //! job (or the jobs config's licenceGates row), a chain step and a quest read the job they name.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobLevelGates : LF_Test
 {
 	static const string COURIER = "test-jobgates-courier";

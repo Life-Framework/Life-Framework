@@ -5,6 +5,7 @@
 //! cases with cards come first; the look and the name only go out once identified; a field never
 //! carries the separator; burning the case file clears the cards; a closed case is not saved; and
 //! the face's string runs pin to pin.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CaseBoard : LF_Test
 {
 	protected static const string ROBBER = "caseboard-test-robber";

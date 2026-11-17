@@ -2,6 +2,7 @@
 // tier: WORLD
 //! A till robbery whose cash the robber cannot carry (crime review 2026-11-17). It used to pay 0
 //! and still start the till cooldown, raise wanted and call dispatch. Now nothing happens.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RobNoRoom : LF_Test
 {
 	override string GetName()

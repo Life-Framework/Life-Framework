@@ -3,6 +3,7 @@
 //! npc/loiter (#1928): an NPC of a loiter role takes a free seat near it (the same LF_SitAction a player
 //! sits on), the seat reads taken, a second NPC finds no free place, and releasing frees it. The role and
 //! pose choices are pure rules.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NpcLoiter : LF_Test
 {
 	protected static const ResourceName CHAIR = "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et";

@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! zones/ruleset-backcompat (#755): a config with only the two old booleans resolves to the rule
 //! sets today's zones had, and the shipped table matches that. A table entry overrides the flags.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ZoneRuleSetBackcompat : LF_Test
 {
 	override string GetName()

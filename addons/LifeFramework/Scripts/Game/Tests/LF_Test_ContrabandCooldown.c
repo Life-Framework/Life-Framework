@@ -3,6 +3,7 @@
 //! #2419: a contraband run is paid only for a crate that was driven (a run begun on foot arms a
 //! vehicle watch, so a walk to the drop never fails), and a character that was paid waits out a
 //! cooldown before the next run.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ContrabandCooldown : LF_Test
 {
 	override string GetName()

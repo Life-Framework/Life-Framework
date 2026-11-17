@@ -4,6 +4,7 @@
 //! casing, a shot outside leaves none, a scene's casings are capped, an item dropped in the scene
 //! gets a marker, untouched evidence expires, and bagging records the report, the place and the
 //! time on the bag and takes the piece off the ground.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EvidenceCasing : LF_Test
 {
 	protected static const vector SCENE = "1000 0 1000";

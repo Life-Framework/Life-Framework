@@ -104,6 +104,7 @@ class LF_Test_MapShareFacts : LF_MapShareFacts
 //! Then four fixture players through LF_MapShares with a recording sink: each row reaches its audience
 //! only, going on and off duty and leaving an org add and remove rows, a spawn clears and resends the
 //! full set, an expired row leaves everyone, and moving a row's audience takes it from the old one.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapShares : LF_Test
 {
 	protected static const int OFFICER = 1;

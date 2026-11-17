@@ -4,6 +4,7 @@
 //! the call sites carried before it: wanted per offence, the ticket form, and a sentence that stays
 //! the wanted level's unless a catalog entry asks for more. An id the catalog does not list falls back to
 //! one wanted level and does not VME.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CrimeCatalogBackcompat : LF_Test
 {
 	protected static const string UID = "crime-catalog-backcompat";

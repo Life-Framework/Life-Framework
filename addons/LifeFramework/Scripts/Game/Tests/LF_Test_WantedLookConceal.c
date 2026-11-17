@@ -6,6 +6,7 @@
 //! face-concealing catalogue item hides the face; the description says so, a hidden face leaves no
 //! wanted portrait, a hidden build keeps it, and a plain outfit is described as before. The photo ID's
 //! LF_WantedLook.Capture stays the full face.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WantedLookConceal : LF_Test
 {
 	protected static const ResourceName BALACLAVA = "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et";

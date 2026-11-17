@@ -3,6 +3,7 @@
 // `[LFTEST] FAIL prefabs-load-and-spawn`,
 // `- prefab loads: {0000000000000002}Prefabs/Items/Food/Missing.et`. Restored; green.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Prefabs : LF_Test
 {
 	override string GetName()

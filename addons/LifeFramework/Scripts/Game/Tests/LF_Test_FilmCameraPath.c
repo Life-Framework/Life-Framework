@@ -14,6 +14,7 @@
 // Restored; the fast suite is green.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FilmCameraPath : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

@@ -4,6 +4,7 @@
 //! The lease registers the hideout's door in LF_Places as "org_base" under the organization id, and
 //! LF_PlacementZones judges a spot inside the base radius as allowed; ending the lease unregisters it
 //! and the same spot is refused. A load that holds the lease registers it and a load that omits it removes it.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HideoutOrgBase : LF_Test
 {
 	protected static const float RADIUS = 30;

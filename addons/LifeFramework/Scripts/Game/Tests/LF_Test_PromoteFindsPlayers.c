@@ -3,6 +3,7 @@
 //! police/promote-finds-players (#2416): the station promote action looks for the lower-rank officer
 //! among the connected players, not only bodies a test bound with BindOfficer. Synthetic players
 //! stand in for the player manager.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PromoteFindsPlayers : LF_Test
 {
 	protected static const string PROMOTER = "promote-players-senior";

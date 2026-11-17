@@ -5,6 +5,7 @@
 //! Across a restart (`tools\cli wt e2e`): the save boot marks E2E_PENDING and marks then spawns
 //! E2E_SPAWNED, so the shutdown save carries only the first; the reload boot finds E2E_PENDING first
 //! and E2E_SPAWNED not.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_FirstSpawnPersist : LF_Test
 {
 	protected static const string PENDING_ID = "firstspawn-persist-pending";

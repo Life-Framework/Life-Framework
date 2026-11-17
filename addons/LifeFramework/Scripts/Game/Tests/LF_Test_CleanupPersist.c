@@ -2,6 +2,7 @@
 // tier: PERSISTENCE
 //! World cleanup (#690): a sweep never deletes a saved vehicle record. A swept stray car leaves the
 //! saved vehicle records as they were, and the owned car's record still serializes.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_CleanupPersist : LF_Test
 {
 	protected static const string OWNED_ID = "cleanup-persist-owned";

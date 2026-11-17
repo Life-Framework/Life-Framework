@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! #2419: the police application list has a world-end reset hook, and the roster notice's sent list
 //! is trimmed instead of growing for ever.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceStaticsReset : LF_Test
 {
 	protected static const string PATH = "$profile:LifeFramework/test_police_statics_reset.txt";

@@ -2,6 +2,7 @@
 // with "the image name defaults to full (expected 'full', got '')" until m_sImageName got its initializer.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignImage : LF_Test
 {
 	override string GetName()

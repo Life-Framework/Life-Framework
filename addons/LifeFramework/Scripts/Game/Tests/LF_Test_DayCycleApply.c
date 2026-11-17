@@ -4,6 +4,7 @@
 //! An accelerated 60-minute day reads back as 3600 s from GetDayDuration() with the clock advancing on its
 //! own and the start hour set; realtime keeps a 24 h day at the server's clock; vanilla touches nothing.
 //! The test puts the manager's day length, auto-advance and time back so later tests see the world it found.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DayCycleApply : LF_Test
 {
 	override string GetName()

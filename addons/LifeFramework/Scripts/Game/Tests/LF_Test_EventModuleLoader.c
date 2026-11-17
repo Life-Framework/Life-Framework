@@ -7,6 +7,7 @@
 //! walkers on the grid cell `event-scene` and starts their walk. The busy scene holds the phase; once
 //! the walk is over and nobody sees the walkers they are removed and the event ends into cooldown.
 //! GridWorld has no AIWorld, so the test passes the AI budget and steps the scene's end by hand.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventModuleLoader : LF_Test
 {
 	static const string EVENT_ID = "test_module_loader";

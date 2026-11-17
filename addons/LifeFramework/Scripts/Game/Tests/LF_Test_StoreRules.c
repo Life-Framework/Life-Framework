@@ -4,6 +4,7 @@
 //! The pure rules of the physical store (#202): how many display copies stand on a shelf, the
 //! restock step, the saved-stock clamp, the boundary box, the restock clock, the till total and the
 //! till toast keys. No world, no entity.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StoreRules : LF_Test
 {
 	override string GetName()

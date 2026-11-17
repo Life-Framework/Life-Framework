@@ -5,6 +5,7 @@
 //! with a reason where removing makes no sense), and `op: patch` of an id no lower layer has is
 //! refused, not added. Police ranks also keep every saved index: a shipped rung and a rung under
 //! another cannot go.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigListsOverlay : LF_Test
 {
 	override string GetName()

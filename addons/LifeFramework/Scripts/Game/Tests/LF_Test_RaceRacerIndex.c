@@ -4,6 +4,7 @@
 //! one uid compare, not by scanning every player's uid per racer every 250 ms. A synthetic
 //! population of 128 players stands in for the PlayerManager (LF_RaceRunner.SetPlayers). A racer
 //! whose player switched character is scanned for once, then not again before RESCAN_MS.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RaceRacerIndex : LF_Test
 {
 	static const int PLAYERS = 128;

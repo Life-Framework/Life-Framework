@@ -7,6 +7,7 @@
 //! header (Configs/Tests/LF_Test_PackHeader.conf, no pack resources) lists two shops overlays;
 //! precedence is owner over later overlay over earlier overlay over core.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ConfigPackHeader : LF_Test
 {
 	static const ResourceName HEADER = "{5D83B0A6C417E92F}Configs/Tests/LF_Test_PackHeader.conf";

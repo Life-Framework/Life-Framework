@@ -4,6 +4,7 @@
 //! Beer and moonshine are real drink items (#2001): both prefabs load with a mesh and carry the
 //! impairment effect, the beer processor's output is the beer bottle, and the moonshine still
 //! turns out the moonshine bottle.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_AlcoholDrinks : LF_Test
 {
 	static const ResourceName BEER = "{4CBB1F9A04D15772}Prefabs/Items/Drinks/BeerBottle.et";

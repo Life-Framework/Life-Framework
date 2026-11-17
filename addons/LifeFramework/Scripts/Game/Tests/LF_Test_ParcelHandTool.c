@@ -6,6 +6,7 @@
 //! (weapon quick slot, held by the wrench graph), not a hand-carry gadget on the hands storage.
 //! The job gives it to a character, it goes into a 1-0 quick slot and the hands, and it still
 //! reads as in a slot (not on the ground) wherever it is carried.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ParcelHandTool : LF_Test
 {
 	override string GetName()

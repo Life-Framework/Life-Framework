@@ -4,6 +4,7 @@
 //! SearchAndSeize on a carrier with two unlawful kinds fills an out list of display names (a count
 //! in front when more than one), and the toast text built from it names both; a long list is cut
 //! to three with "and N more".
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SearchSeizedList : LF_Test
 {
 	protected static const string UID = "search-seized-list-a";

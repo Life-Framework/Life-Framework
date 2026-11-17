@@ -3,6 +3,7 @@
 //! #2419: the bench takes the nearest STOLEN car in its drop area, so an unstolen car parked beside
 //! it cannot block the yard. With no stolen car it still names the nearest one, so the worker reads
 //! why the bench refuses.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ChopShopDropPick : LF_Test
 {
 	override string GetName()

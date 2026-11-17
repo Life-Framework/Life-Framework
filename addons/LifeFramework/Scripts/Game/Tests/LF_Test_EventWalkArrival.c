@@ -4,6 +4,7 @@
 //! The scene walk's arrival rule (#2174): a walker that passed every waypoint arrives near the target;
 //! once the AI group has finished its route, a member standing in the group's formation around the
 //! target has arrived too, instead of timing out as stuck.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_EventWalkArrival : LF_Test
 {
 	override string GetName()

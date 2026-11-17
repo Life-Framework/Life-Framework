@@ -3,6 +3,7 @@
 //! #2658 (slice L1 of #1038, specs #753, #776): the locker rules. One locker per character per site;
 //! rent paid until a moment, then a grace period, then the contents move to the site's lost-and-found,
 //! where reclaiming costs the configured fee. `rentPeriodDays 0` never lapses. Times are UTC seconds.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_LockerRules : LF_Test
 {
 	override string GetName()

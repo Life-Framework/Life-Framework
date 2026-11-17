@@ -3,6 +3,7 @@
 //! police/armory-kit-cap (#2416): an officer holds one issued kit. While its serials are out the
 //! armory issues nothing, clocking out and in changes nothing, a second use with none of it carried
 //! reports it lost, and a kit handed back clears its serials.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ArmoryKitCap : LF_Test
 {
 	protected static const string OFFICER = "armory-kit-cap-officer";

@@ -6,6 +6,7 @@
 //! is what holds an empty car. Since 1.9 an empty car also self-steers, so an engine update that
 //! flips the prefab default would let every spawned car roll. This test names that default for
 //! every vehicle prefab we spawn, so an update turns it red before a player sees a car roll.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ParkBrakeWorld : LF_Test
 {
 	override string GetName()

@@ -3,6 +3,7 @@
 //! Property config (#2647, slice P2 of #747): Configs/Property/LF_Property.conf describes plots (id,
 //! tier, price), house tiers with four build stages and what each stage needs (prefab and count, work
 //! units). A missing config logs LF_Debug.Error and every getter returns a safe default.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PropertyConfig : LF_Test
 {
 	protected static const ResourceName MISSING = "Configs/Property/LF_NoSuchProperty.conf";
