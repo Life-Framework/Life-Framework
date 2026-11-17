@@ -8,11 +8,10 @@
 //   6. an issue whose PR lists no manual steps needs no confirmation.
 // red-proof: with the `pass >= size` check in evaluateQuorum changed to `pass >= 1` it printed
 // "two confirmations promoted".
-import { spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as rg from "../lib/release-gates.mjs";
-import { describeRun, removeScratch, useHermeticGit } from "../lib/selftest-git.mjs";
+import { describeRun, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
 import { evaluateQuorum } from "../lib/quorum.mjs";
 import { cmdPromote } from "../promote.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
@@ -31,7 +30,7 @@ const sh = (cwd, ...args) => {
   const tries = ["push", "fetch", "clone"].includes(args[0]) ? 3 : 1;
   let r;
   for (let i = 0; i < tries; i++) {
-    r = spawnSync("git", args, { cwd, encoding: "utf8", windowsHide: true });
+    r = runGit(cwd, args);
     if (r.status === 0) break;
   }
   if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${describeRun(r)}`);

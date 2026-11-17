@@ -1212,7 +1212,19 @@ class LF_OrganizationManager : Managed
 		GetInstance().m_mMembership.Remove(targetCharacterId);
 		LF_OrgMapMarks.RefreshCharacter(targetCharacterId);
 		LF_Debug.Log("Organizations", string.Format("kick org=%1 member=%2", orgId, targetCharacterId));
+		PublishIfEmptied(org, "kick");
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: publishes LF_OnOrganizationEmptied (#2571) when the organization has no member left.
+	protected static void PublishIfEmptied(LF_Organization org, string reason)
+	{
+		if (!org || org.GetMemberCount() > 0)
+			return;
+
+		LF_Debug.Info("Organizations", string.Format("emptied org=%1 reason=%2", org.GetId(), reason));
+		LF_EventBus.Publish(LF_OnOrganizationEmptied.Create(org.GetId(), reason));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1313,6 +1325,7 @@ class LF_OrganizationManager : Managed
 		GetInstance().m_mMembership.Remove(characterId);
 		LF_OrgMapMarks.RefreshCharacter(characterId);
 		LF_Debug.Log("Organizations", string.Format("leave org=%1 member=%2", org.GetId(), characterId));
+		PublishIfEmptied(org, "leave");
 		return true;
 	}
 
@@ -1370,6 +1383,7 @@ class LF_OrganizationManager : Managed
 		GetInstance().m_mMembership.Remove(characterId);
 		LF_OrgMapMarks.RefreshCharacter(characterId);
 		LF_Debug.Log("Organizations", string.Format("direct leave org=%1 member=%2", org.GetId(), characterId));
+		PublishIfEmptied(org, "leave");
 		return true;
 	}
 

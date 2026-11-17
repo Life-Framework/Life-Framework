@@ -701,6 +701,26 @@ try {
       rmSync(base, { recursive: true, force: true });
     }
   }
+  // 4b2. runRoot: a machine's run and lane folders go under its "runRoot" (a second drive), else its clone's parent;
+  // the GC scripts then find the clone by its own path, not as <parent>\Life-Framework.
+  // red-proof 2026-11-17: with runParent ignoring runRoot "runRoot is not honoured: C:/LF/Life-Framework-rt-x".
+  {
+    const base = mkdtempSync(join(tmpdir(), "lf-runroot-"));
+    try {
+      writeFileSync(join(base, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "bx", via: "ssh", host: "bx", root: "C:/LF/Life-Framework", runRoot: "D:\\LF\\" }, { name: "by", via: "ssh", host: "by", root: "C:/LF/Life-Framework" }] } }));
+      const ms = pool.loadMachines(base);
+      const bx = ms.find((m) => m.name === "bx");
+      const by = ms.find((m) => m.name === "by");
+      check(bx && by && pool.remoteRunDir(bx, "x") === "D:/LF/Life-Framework-rt-x", `runRoot is not honoured: ${bx && pool.remoteRunDir(bx, "x")}`);
+      check(pool.laneRunDir(bx, "server-test-1") === "D:/LF/Life-Framework-lane-server-test-1", "runRoot is not honoured by lane folders");
+      check(pool.remoteRunDir(by, "x") === "C:/LF/Life-Framework-rt-x", "no runRoot: run folders left the clone's parent");
+      const scan = rt.rtScanScript("D:/LF", 0, "C:/LF/Life-Framework");
+      check(/\$parent = 'D:\\LF'/.test(scan) && /\$main = 'C:\\LF\\Life-Framework'/.test(scan), "rt scan does not use the clone path beside runRoot");
+      check(/\$main = Join-Path \$parent 'Life-Framework'/.test(rt.rtRemoveScript("C:/LF", [])), "rt remove lost its default clone path");
+    } finally {
+      rmSync(base, { recursive: true, force: true });
+    }
+  }
   // 4c. remote run-folder GC (tools/lib/rt-gc.mjs): which folders, in which order, busy ones kept.
   {
     const base0 = scratchDir("lf-rtgc-");
@@ -848,7 +868,7 @@ try {
   // A pool entry whose "hostname" is this machine's is the local machine there (the box's own lanes), the PC's entry is dropped.
   writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
   const selfView = pool.loadMachines(dir);
-  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 2 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
+  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 4 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
   // Laptop view: on the box itself (hostname PC1, the committed pool.json entry) the machines are lf-testbox as local and nothing
   // else, with no TypeError ranking them; a PC (any other hostname) keeps local plus an ssh lf-testbox.
   writeFileSync(join(dir, "lf.local.json"), "{}");
