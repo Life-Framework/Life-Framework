@@ -18,9 +18,12 @@ class LF_PoliceCall : Managed
 
 //------------------------------------------------------------------------------------------------
 //! The server's list of police calls (#2477, scope card police-missions). A player's first wanted
-//! report (LF_OnWantedChanged from 0 to above 0) posts a FINE call. An officer takes a call only on
-//! duty and at or above its rank; one officer per call; Complete closes it once. Session only: the
-//! list is not saved. Nothing here pays or marks a target; later slices read the list.
+//! report posts a FINE call carrying the report's place. A crime raises the wanted level before it
+//! files its report (#2516), so a level rising from 0 with no report yet waits: the call is posted when
+//! LF_OnWantedReportFiled arrives. A level back at 0 closes the suspect's open call (served time,
+//! expiry, an arrest by another officer). An officer takes a call only on duty and at or above its
+//! rank; one officer per call; Complete closes it once. Session only: the list is not saved. Nothing
+//! here pays or marks a target; LF_PoliceCallPay does.
 class LF_PoliceCalls
 {
 	static const string FEATURE = "PoliceCalls";
@@ -29,6 +32,8 @@ class LF_PoliceCalls
 	static const int MAX_CALLS = 64;	// lf-fixed: a list bound, not gameplay
 
 	protected static ref array<ref LF_PoliceCall> s_aCalls;
+	//! Suspects whose wanted level rose before any report: their call is posted with the first report.
+	protected static ref array<string> s_aWaiting;
 	protected static int s_iNextId;
 	protected static ref LF_PoliceCallsSubscriber s_Subscriber;
 
@@ -36,9 +41,13 @@ class LF_PoliceCalls
 	static void ResetStatics()
 	{
 		s_aCalls = null;
+		s_aWaiting = null;
 		s_iNextId = 0;
 		if (s_Subscriber)
+		{
 			LF_EventBus.Unsubscribe(LF_OnWantedChanged, s_Subscriber);
+			LF_EventBus.Unsubscribe(LF_OnWantedReportFiled, s_Subscriber);
+		}
 
 		s_Subscriber = null;
 	}
@@ -53,7 +62,16 @@ class LF_PoliceCalls
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: listens for a wanted level change. Called when the game mode starts.
+	protected static array<string> Waiting()
+	{
+		if (!s_aWaiting)
+			s_aWaiting = new array<string>();
+
+		return s_aWaiting;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: listens for wanted level changes and filed reports. Called when the game mode starts.
 	static bool Install()
 	{
 		if (!Replication.IsServer())
@@ -63,22 +81,66 @@ class LF_PoliceCalls
 			return true;
 
 		s_Subscriber = new LF_PoliceCallsSubscriber();
-		return LF_EventBus.Subscribe(LF_OnWantedChanged, s_Subscriber);
+		bool wanted = LF_EventBus.Subscribe(LF_OnWantedChanged, s_Subscriber);
+		bool reports = LF_EventBus.Subscribe(LF_OnWantedReportFiled, s_Subscriber);
+		return wanted && reports;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: a wanted level changed. Only the first report (0 to above 0) posts a call.
+	//! Server: a wanted level changed. A level back at 0 closes the suspect's open call. A rise from 0
+	//! posts the call with the newest report's place, or waits for the report when none is filed yet.
 	static void OnWantedChanged(LF_OnWantedChanged busEvent)
 	{
-		if (!busEvent || busEvent.m_iOldLevel > 0 || busEvent.m_iNewLevel <= 0)
+		if (!busEvent)
 			return;
 
-		string site;
-		array<ref LF_WantedReportRecord> reports = LF_WantedReports.GetFor(busEvent.m_sPlayerUid);
-		if (reports && reports.Count() > 0)
-			site = reports[reports.Count() - 1].m_sPlace;
+		if (busEvent.m_iNewLevel <= 0)
+		{
+			Waiting().RemoveItem(busEvent.m_sPlayerUid);
+			CloseFor(busEvent.m_sPlayerUid, "no longer wanted");
+			return;
+		}
 
-		Post(KIND_FINE, busEvent.m_sPlayerUid, site, LF_PoliceRanks.PATROL);
+		if (busEvent.m_iOldLevel > 0)
+			return;
+
+		array<ref LF_WantedReportRecord> reports = LF_WantedReports.GetFor(busEvent.m_sPlayerUid);
+		if (!reports || reports.IsEmpty())
+		{
+			if (Waiting().Find(busEvent.m_sPlayerUid) < 0)
+				Waiting().Insert(busEvent.m_sPlayerUid);
+
+			LF_Debug.Info(FEATURE, string.Format("call for %1 waits for the crime report", busEvent.m_sPlayerUid));
+			return;
+		}
+
+		Post(KIND_FINE, busEvent.m_sPlayerUid, reports[reports.Count() - 1].m_sPlace, LF_PoliceRanks.PATROL);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a crime report was filed. Posts the call of a suspect whose wanted level rose first.
+	static void OnReportFiled(LF_OnWantedReportFiled busEvent)
+	{
+		if (!busEvent || Waiting().Find(busEvent.m_sPlayerUid) < 0)
+			return;
+
+		Waiting().RemoveItem(busEvent.m_sPlayerUid);
+		Post(KIND_FINE, busEvent.m_sPlayerUid, busEvent.m_sPlace, LF_PoliceRanks.PATROL);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: closes the suspect's open call without an officer completing it (the suspect is no longer
+	//! wanted). Pays nothing; LF_PoliceCallPay pays only through Complete.
+	//! eturn True when a call was open.
+	static bool CloseFor(string suspectUid, string reason)
+	{
+		LF_PoliceCall call = FindOpenFor(suspectUid);
+		if (!call)
+			return false;
+
+		call.m_bClosed = true;
+		LF_Debug.Info(FEATURE, string.Format("call #%1 closed for %2: %3 (officer '%4')", call.m_iId, suspectUid, reason, call.m_sOfficerUid));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -272,6 +334,13 @@ class LF_PoliceCallsSubscriber : LF_EventSubscriber
 	//------------------------------------------------------------------------------------------------
 	override bool Handle(notnull LF_Event busEvent)
 	{
+		LF_OnWantedReportFiled filed = LF_OnWantedReportFiled.Cast(busEvent);
+		if (filed)
+		{
+			LF_PoliceCalls.OnReportFiled(filed);
+			return true;
+		}
+
 		LF_OnWantedChanged changed = LF_OnWantedChanged.Cast(busEvent);
 		if (!changed)
 			return false;

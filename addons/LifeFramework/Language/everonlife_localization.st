@@ -5384,6 +5384,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Trabajo"
      Comment "Hint title for work results"
     }
+    CustomStringTableItem "{280FC8E5DDE60C95}" {
+     Id "LF-Keybind_OpenEmote"
+     Target_en_us "Open emote menu"
+     Comment "Key binding menu label: hold to open the emote radial."
+    }
+    CustomStringTableItem "{15BA4CF2BECFEB7F}" {
+     Id "LF-Keybind_SirenDouble"
+     Target_en_us "Cycle siren mode (alternate)"
+     Comment "Key binding menu label: cycle the vehicle siren modes (double click)."
+    }
+    CustomStringTableItem "{EBE5A15AF131A672}" {
+     Id "LF-Keybind_SirenSingle"
+     Target_en_us "Cycle siren mode"
+     Comment "Key binding menu label: cycle the vehicle siren modes (single click)."
+    }
     CustomStringTableItem "{C8B8911B5F3A014D}" {
      Id "LF-Keybind_VehicleLock"
      Target_en_us "Lock or unlock vehicle"
@@ -7886,6 +7901,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-PoliceApp_Why"
      Target_en_us "Why you want to serve"
      Comment "Police application blank: reason."
+    }
+    CustomStringTableItem "{95E584A32913873F}" {
+     Id "LF-PoliceCall_Paid"
+     Target_en_us "Call closed: {currency:sym}%1 cash"
+     Comment "Toast to the officer when fining the call's suspect at the site completes their police call; %1 is the reward"
+    }
+    CustomStringTableItem "{6EB531AC99FDCC19}" {
+     Id "LF-PoliceCall_Title"
+     Target_en_us "Call for {police}"
+     Comment "Toast title for a police call event"
     }
     CustomStringTableItem "{57D1AD3E97B72422}" {
      Id "LF-PoliceRoster_Approved"

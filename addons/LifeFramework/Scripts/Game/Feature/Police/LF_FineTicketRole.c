@@ -126,6 +126,8 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 		if (!record)
 			return null;
 
+		// A police call for this suspect completes when its officer fines them at the site (#2478).
+		LF_EventBus.Publish(LF_OnFineIssued.Create(officerUid, holderUid, officer.GetOrigin(), record.m_iNumber, record.m_iAmount));
 		LF_FineTicketComponent ticket = LF_FineTicketItem.Grant(target, record);
 		LF_PlayerInteraction.PlayGesture(officer, LF_PlayerInteraction.GESTURE_POINT);
 		if (ticket)

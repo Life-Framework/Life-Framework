@@ -155,6 +155,7 @@ class LF_WantedReports
 		}
 
 		list.Insert(record);
+		LF_EventBus.Publish(LF_OnWantedReportFiled.Create(playerUid, record.m_iSequence, place));
 		return record;
 	}
 
@@ -603,5 +604,22 @@ class LF_WantedReports
 		}
 
 		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_WantedReports's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_WantedReports_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_WantedReports_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_WantedReports";
+	}
+
+	override void Apply()
+	{
+		LF_WantedReports.ResetStatics();
 	}
 }

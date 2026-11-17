@@ -411,6 +411,21 @@
       "additionalProperties": false,
       "x-class": "LF_GraceConfig"
     },
+    "houses": {
+      "type": "object",
+      "description": "The houses owner-config section: Configs/Houses/LF_Houses.conf with the owner's `houses` section layered over it.",
+      "properties": {
+        "doorCloseDelaySeconds": {
+          "type": "number",
+          "description": "Seconds a locked house's open door stays open before it closes itself. 0 turns the auto-close off",
+          "default": 20,
+          "minimum": 0,
+          "maximum": 600
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_HousesConfig"
+    },
     "idCard": {
       "type": "object",
       "description": "The photo identity card: Configs/Identity/LF_PhotoIdCard.conf with the owner's `idCard` section layered over it.",
@@ -1253,6 +1268,20 @@
           "default": 2,
           "minimum": 1,
           "maximum": 20
+        },
+        "callReward": {
+          "type": "integer",
+          "description": "Cash an officer is paid, once, when their fine of a taken police call suspect at the call site completes the call",
+          "default": 150,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "callRadius": {
+          "type": "number",
+          "description": "Metres from a police call site within which the fine by the officer holding the call completes it",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 2000
         }
       },
       "additionalProperties": false,

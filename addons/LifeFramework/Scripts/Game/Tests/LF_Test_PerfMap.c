@@ -73,6 +73,10 @@ class LF_PerfMapFacts : LF_MapShareFacts
 //!    frame, so it has its own budget and does not weaken the frame gate.
 //!  - share fan-out (`FANOUT_BUDGET_MS`, 2 ms): one EVERYONE share put to 128 synthetic players who already hold
 //!    24 rows; the 40 puts of a repeat fill the 64-row cap.
+//!  - discovery scan (`SCAN_BUDGET_MS`, 2 ms, #2492): the server's look-around pass, 128 players each standing at
+//!    one of 400 DISCOVER places in the grid; it runs every 2 s.
+//!  - private set (`PRIVATE_BUDGET_MS`, 1 ms, #2492): one player's private places, 400 rows through the rule and
+//!    the wire encoding; it runs on join, a heard-of or visited place and a duty change.
 //!
 //! What it cannot show: the engine's widget calls (`FrameSlot` positions, `SetDrawCommands`) and the owner RPCs of
 //! the real sink. The widget route was measured in the engine by the `-lfMapPlacesProbe` pass (everon-map.md,
@@ -90,6 +94,12 @@ class LF_Test_PerfMap : LF_Test
 	protected static const float FRAME_BUDGET_MS = 1.0;
 	protected static const float REBUILD_BUDGET_MS = 8.0;
 	protected static const float FANOUT_BUDGET_MS = 2.0;
+	//! One server discovery scan pass (#2492): every player against the grid of DISCOVER places, every 2 s.
+	protected static const float SCAN_BUDGET_MS = 2.0;
+	//! One player's private-place set built and encoded (#2492): join, a heard or visited place, a duty change.
+	protected static const float PRIVATE_BUDGET_MS = 1.0;
+	protected static const int SCAN_PASSES = 20;
+	protected static const int PRIVATE_PASSES = 20;
 
 	//! Map view the layout runs against: a 1080p screen, solo zoom (zoom 4 is 800 m wide; 1920 px / 800 m = 2.4).
 	protected static const float VIEW_W = 1920;
@@ -232,6 +242,88 @@ class LF_Test_PerfMap : LF_Test
 
 		RunLayout(ctx, load);
 		RunFanout(ctx, load);
+		RunPrivate(ctx, load);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The server side of private places (#2492): the discovery scan of 128 players over 400 DISCOVER places
+	//! (each player stands at a place, the worst case: every lookup finds one) and one player's private set.
+	protected void RunPrivate(LF_TestContext ctx, int load)
+	{
+		array<ref LF_MapPoi> pois = {};
+		FillPois(POIS * load, pois);
+		LF_MapDiscoverIndex index = new LF_MapDiscoverIndex();
+		LF_MapPoiConfig config = new LF_MapPoiConfig();
+		config.m_aKinds = new array<ref LF_MapPoiKind>();
+		config.m_aKinds.Insert(LF_MapPoiKind.Make("PerfDiscover", LF_EMapPoiVisibility.DISCOVER));
+		array<ref LF_MapPoiPlace> places = {};
+		foreach (LF_MapPoi poi : pois)
+		{
+			index.Add(poi.m_sId, poi.m_vPos);
+			places.Insert(LF_MapPoiPlace.Make("PerfDiscover", poi.m_sId, poi.m_vPos, true));
+		}
+
+		int players = RECIPIENTS * load;
+		array<vector> standing = {};
+		array<string> characters = {};
+		for (int p = 0; p < players; p++)
+		{
+			standing.Insert(pois[(p * 3) % pois.Count()].m_vPos + "2 0 2");
+			characters.Insert("perf-scan-" + p.ToString());
+		}
+
+		array<string> found = {};
+		for (int one = 0; one < players; one++)
+		{
+			LF_MapDiscoverScan.VisitsAt(index, characters[one], standing[one], found);
+		}
+
+		ctx.True(found.Count() >= players, "every standing player is in reach of a place");
+
+		LF_MapPoiAudience audience = new LF_MapPoiAudience();
+		for (int k = 0; k < places.Count(); k += 4)
+		{
+			audience.SetKnown(places[k].m_sId, LF_EMapPoiKnown.HEARD);
+		}
+
+		Mute(true);
+		float bestScan = -1;
+		float bestPrivate = -1;
+		for (int rep = 0; rep < m_iRepeats; rep++)
+		{
+			int t = System.GetTickCount();
+			for (int pass = 0; pass < SCAN_PASSES; pass++)
+			{
+				for (int i = 0; i < players; i++)
+				{
+					found.Clear();
+					LF_MapDiscoverScan.VisitsAt(index, characters[i], standing[i], found);
+				}
+			}
+
+			float scanMs = (System.GetTickCount(t) * 1.0) / SCAN_PASSES;
+			if (bestScan < 0 || scanMs < bestScan)
+				bestScan = scanMs;
+
+			t = System.GetTickCount();
+			for (int send = 0; send < PRIVATE_PASSES; send++)
+			{
+				array<ref LF_MapPoiPlace> entitled = {};
+				LF_MapPrivatePlaces.Entitled(config, audience, places, entitled);
+				array<string> kinds = {};
+				array<string> ids = {};
+				array<int> positions = {};
+				LF_MapPrivatePlaces.Encode(entitled, kinds, ids, positions);
+			}
+
+			float privateMs = (System.GetTickCount(t) * 1.0) / PRIVATE_PASSES;
+			if (bestPrivate < 0 || privateMs < bestPrivate)
+				bestPrivate = privateMs;
+		}
+
+		Mute(false);
+		Check(ctx, "map-discover-scan-ms", bestScan, SCAN_BUDGET_MS);
+		Check(ctx, "map-private-set-ms", bestPrivate, PRIVATE_BUDGET_MS);
 	}
 
 	//------------------------------------------------------------------------------------------------
