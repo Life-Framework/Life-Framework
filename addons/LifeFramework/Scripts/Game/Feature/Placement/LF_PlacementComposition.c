@@ -354,6 +354,11 @@ class LF_PlacementCompositions
 		if (!LF_PlacementGeometry.WithinReach(playerTransform[3], proposal, composition.m_fReach + TOLERANCE_METRES, LF_PlacementService.MAX_RISE, offBy))
 			return Refuse(player, "refused: the proposal is " + offBy, "#LF-Placement_Moved");
 
+		// Where this kind may go (#2447).
+		string zoneWhy = LF_PlacementPolicy.ZoneAt(player, composition.m_sName, proposal[3], toastKey);
+		if (!zoneWhy.IsEmpty())
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), zoneWhy), toastKey);
+
 		LF_PlacementCompositionPlan plan = new LF_PlacementCompositionPlan();
 		LF_EPlacementVerdict verdict = Plan(player, composition, ignore, proposal, plan);
 		if (verdict == LF_EPlacementVerdict.BLOCKED)
