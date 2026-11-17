@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "general-store",
+  "building": "b12",
+  "kit": "general-store",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_general-store.layer",
+  "kinds": [
+    "StoreCounter"
+  ],
+  "rows": 6,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_general_store_Place"
+  },
+  "date": "2026-11-17"
+}

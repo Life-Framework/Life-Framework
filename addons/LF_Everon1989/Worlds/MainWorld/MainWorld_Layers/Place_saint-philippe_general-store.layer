@@ -1,0 +1,43 @@
+GenericEntity Fit_saint_philippe_general_store_Place {
+ components {
+  LF_PlaceComponent "{32055E3C09F36A53}" {
+   m_sKind "StoreCounter"
+   m_sId "saint-philippe.general-store"
+  }
+  LF_FittedBuildingComponent "{DFE66634FC4AA29B}" {
+  }
+ }
+ coords 4515.25 15.5 10746.45
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_furniture_01 : "{5E0CC4C3522C8E2B}Prefabs/Buildings/GeneralStore/Furniture/GeneralStore_furniture_01.et" {
+ coords 4515.25 15.5 10746.45
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_general_store_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "general_store"
+   m_vRimColor 0.9 0.82 0.55
+   m_vPaintColor 0.1 0.28 0.17
+   m_vTextColor 0.96 0.93 0.82
+  }
+ }
+ coords 4515.42 16.932 10746.426
+ angleY 81
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ coords 4515.229 16.738 10748.52
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_radio : "{6E621E4B599F06FD}Prefabs/Atmosphere/LF_Radio_Store.et" {
+ coords 4515.707 16.737 10747.588
+ angleY -99
+}
+LF_NpcBaseEntity Fit_saint_philippe_general_store_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 4516.165 15.694 10748.691
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_alarm_box : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ coords 4507.804 18.1 10744.562
+ angleY -99
+}
