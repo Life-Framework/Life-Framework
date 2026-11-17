@@ -32,6 +32,16 @@ class LF_PoliceApplications
 	protected static int s_iLastSecondsLeft;
 
 	//------------------------------------------------------------------------------------------------
+	//! World end (LF_PoliceApplications_StaticResetHook): the cached rows, the file override and the
+	//! last wait are dropped; the next read loads the profile file again.
+	static void ResetStatics()
+	{
+		s_aApplications = null;
+		s_sPath = "";
+		s_iLastSecondsLeft = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Tests point this at a private file. An empty path uses the profile file.
 	static void SetSavePath(string path)
 	{
@@ -347,5 +357,22 @@ class LF_PoliceApplications
 			handle.WriteLine(string.Format("%1|%2|%3|%4|%5|%6|%7|%8", app.m_sStatus, app.m_sUid, app.m_sName, app.m_sWhy, app.m_sAvailability, app.m_iTime, app.m_iRejectedAt, app.m_iTrialEndsAt));
 		}
 		handle.Close();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_PoliceApplications's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PoliceApplications_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PoliceApplications_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_PoliceApplications";
+	}
+
+	override void Apply()
+	{
+		LF_PoliceApplications.ResetStatics();
 	}
 }

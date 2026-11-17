@@ -94,6 +94,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChessScreenLayout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChessTable(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChopShopCollect(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ChopShopDropPick(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChopShopPlacedCar(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ChopShopSteal(), LF_TestTier.WORLD);
@@ -132,6 +133,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ConfZeroConfigs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConsumableEffectLoads(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ContentReload(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_ContrabandCooldown(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ConvictionRecord(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CoreOnlyBoot(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ATMKeypad(), LF_TestTier.LOGIC);
@@ -222,6 +224,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_EventWalkArrival(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventWalkRouteWait(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventWaypoints(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_EvidenceBagHeld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceCasing(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EvidenceLockerPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JobSwitchGuards(), LF_TestTier.LOGIC);
@@ -285,6 +288,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HeldGroundBadRow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HeldGroundLegacy(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HeldGroundRoundTrip(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_HideoutRelock(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HideoutStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutStashFind(), LF_TestTier.WORLD);
@@ -482,6 +486,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceRankPermissions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceRankTable(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceRosterNotice(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceStaticsReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceDutySwap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceDeathOnDuty(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceWantedBoard(), LF_TestTier.LOGIC);
@@ -752,6 +757,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_WitnessDialogue(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WoodcuttingDamage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorkAnim(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_WorkAnimReset(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorkAnimTargets(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WorkbenchPlay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Workplace(), LF_TestTier.WORLD);
