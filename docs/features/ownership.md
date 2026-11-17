@@ -79,8 +79,19 @@
   and an editor-bound `LF_KeyComponent` now set the INIT event mask, as `LF_LockComponent` and
   `LF_VehicleKeyComponent` do. Before, a building never got its identifier or synced its doors, and
   an editor-bound house key (`HouseKey_Matching_Debug`) stayed unbound.
-- ⚠️ A keyed open unlocks the door for everyone with no way to relock; lock state and identifiers
-  are not saved (#2410).
+- ✅ **A keyed open keeps the lock** (#2410, WORLD `houses/keyed-open-keeps-lock`): the owner and a
+  key holder pass a locked house door and the door stays locked, so a stranger after them is still
+  refused. The server decides in `SCR_DoorUserAction.CanBePerformedScript` (`LF_LockComponent.UserMayEnter`);
+  the owner's character key is replicated on the door so a client's prompt matches. Only
+  `LF_HouseManagerComponent.SetHouseLocked` changes a house's lock, and it re-syncs a door a breach or a
+  lockpick opened. No in-world lock/unlock action yet, and a door the owner opened stays open (#2435).
+- ✅ **Lock state, owner and carried keys survive a restart** (#2410, PERSISTENCE `houses/registry-persist`,
+  `houses/carried-key-persist`, `wt e2e`): `LF_Houses` keeps one row per house with a stable identifier
+  (the editor identifier, or `BindIdentifier`) in the `houses` payload (save version 46); a carried house
+  key keeps the house it opens in the `itemkeys` payload (version 47). A house with no editor identifier
+  gets a per-boot id and is not saved (logged). Nothing assigns an owner in play yet (purchase flow).
+- ⚠️ House key names: `LF_KeyComponent` renames the prefab's shared `UIInfo`, so the name is wrong on
+  clients and would be shared between keys; needs a per-item inventory info class (#2435).
 
 ### `LF_Hideout` — `Feature/Hideouts/` (verified 2026-10-11)
 - ✅ One building owned by one organization. Members unlock

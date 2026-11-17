@@ -17,8 +17,13 @@
 //! (LF_VehicleLockComponent.IdentifiersMatch): both identifiers non-empty and equal. One rule,
 //! one implementation, shared by vehicles and houses.
 //!
-//! PERSISTENCE GAP. Lock state is in-session until the house save/load contract in
-//! LF_HouseSaveData.c is wired into a serializer; see that file.
+//! OWNER. m_sOwnerKey is the character key (LF_Houses.CharacterKeyOf) of the house owner, synced
+//! from LF_HouseManagerComponent. The owner passes a locked door without a key. Empty on doors that
+//! belong to no owned house (vaults, cells, armories), so those keep the key-only rule.
+//!
+//! PERSISTENCE. A door's lock state and owner come from its house (LF_HouseManagerComponent), which
+//! LF_Houses saves under the house identifier (the "houses" payload). A door with no house manager
+//! keeps its editor state on a restart.
 //------------------------------------------------------------------------------------------------
 [ComponentEditorProps(category: "EveronLife/Feature/Houses", description: "Locks a house door to players holding a matching key.")]
 class LF_LockComponentClass : ScriptComponentClass
@@ -42,6 +47,11 @@ class LF_LockComponent : ScriptComponent
 
 	[RplProp()]
 	protected string m_sHouseIdentifier;
+
+	//! Character key of the house owner, empty when nobody owns it. Replicated so a client's prompt
+	//! matches the server's decision; the server still decides.
+	[RplProp()]
+	protected string m_sOwnerKey;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -68,6 +78,13 @@ class LF_LockComponent : ScriptComponent
 			if (m_bDebugLocked)
 				m_bLocked = true;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when the editor set this door to start locked (read before its own init ran).
+	bool StartsLocked()
+	{
+		return m_bDebugLocked;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -134,9 +151,55 @@ class LF_LockComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return The character key of the house owner, empty when nobody owns it.
+	string GetOwnerKey()
+	{
+		return m_sOwnerKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server-authoritative: only the house manager assigns the owner.
+	//! \param ownerKey Character key of the owner, empty for none.
+	void SetOwnerKey(string ownerKey)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		if (m_sOwnerKey == ownerKey)
+			return;
+
+		m_sOwnerKey = ownerKey;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param user The character to test.
+	//! \return True when the door's house has an owner and the user is that character.
+	bool IsOwner(IEntity user)
+	{
+		if (m_sOwnerKey.IsEmpty())
+			return false;
+
+		return LF_VehicleLockComponent.IdentifiersMatch(LF_Houses.CharacterKeyOf(user), m_sOwnerKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who may pass this door while it is locked: the house owner and anyone holding a matching key.
+	//! Passing never unlocks the door (#2410).
+	//! \param user The character at the door.
+	//! \return True when the user may open the locked door.
+	bool UserMayEnter(IEntity user)
+	{
+		if (IsOwner(user))
+			return true;
+
+		return UserHasValidKey(user);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \param key The item to test.
 	//! \return True when the key carries an LF_KeyComponent whose identifier matches this door's
-	//! house identifier.
+	//! house identifier. Door actions run this every frame, so it does not log (#2411).
 	bool IsValidKey(IEntity key)
 	{
 		if (!key)
@@ -146,10 +209,7 @@ class LF_LockComponent : ScriptComponent
 		if (!keyComponent)
 			return false;
 
-		bool matches = LF_VehicleLockComponent.IdentifiersMatch(keyComponent.GetHouseIdentifier(), m_sHouseIdentifier);
-		LF_Debug.Log("Houses", string.Format("key check: key=%1 house=%2 match=%3",
-			keyComponent.GetHouseIdentifier(), m_sHouseIdentifier, matches));
-		return matches;
+		return LF_VehicleLockComponent.IdentifiersMatch(keyComponent.GetHouseIdentifier(), m_sHouseIdentifier);
 	}
 
 	//------------------------------------------------------------------------------------------------

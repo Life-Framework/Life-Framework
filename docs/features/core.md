@@ -175,6 +175,14 @@
   `persist/character-slots`, `e2e/pass*` (`e2e --legacy-save`). ⚠️ The "start a
   new life" form and retiring a character are not built yet; the incident log
   keeps character keys.
+- ✅ **Arrival-only flow (#2413, merged, in-dev).** The server keeps a set of players whose arrival
+  flow is open (`m_FlowOpen`: filled on connect, cleared in `SpawnPlayer`, forgotten on disconnect).
+  `ContinueAfterQuiz` (the quiz's `RpcAsk_LF_QuizContinue`), `ServerCreateCharacter` (form R-89) and
+  `ContinueFlow` itself refuse anyone not in it (`LF_CharacterCreationRules.RefuseFlowRequest`): a
+  dead, downed, cuffed, jailed or combat-logout-held player, all of whom are already past arrival,
+  can no longer restart the flow to reach the character pick or an instant respawn. A refusal toasts
+  `#LF-CharSel_Refused` and logs `[LFDebug:CharacterCreation] ... refused: not arriving`. Test
+  `character/flow-gate` (LOGIC).
 
 ### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
 - ✅ One list on another player's body (`Character_Roleplay.et`, context

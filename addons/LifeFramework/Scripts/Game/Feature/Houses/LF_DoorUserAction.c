@@ -97,7 +97,8 @@ modded class SCR_DoorUserAction
 			return true;
 		}
 
-		if (!m_pHouseLock.UserHasValidKey(user))
+		// The owner and key holders pass; the door stays locked behind them (#2410).
+		if (!m_pHouseLock.UserMayEnter(user))
 		{
 			SetCannotPerformReason("#EL-HouseLock_Reason");
 			return false;
@@ -107,7 +108,9 @@ modded class SCR_DoorUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: a member unlocks a hideout door. A valid key still unlocks a house door.
+	//! Server: a member unlocks a hideout door. A house door is never unlocked by opening it: the
+	//! owner or a key holder passes the gate and the lock stays on for everyone else (#2410). Only
+	//! the house manager (LF_HouseManagerComponent.SetHouseLocked) changes a house's lock state.
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (m_pHideoutDoor && Replication.IsServer())
@@ -117,15 +120,21 @@ modded class SCR_DoorUserAction
 				return;
 		}
 
+		// The server decides again here rather than trusting that the client's gate ran: a locked
+		// house door moves only for its owner or a key holder.
+		if (Replication.IsServer() && !m_pHideoutDoor && m_pHouseLock && m_pHouseLock.IsLocked()
+			&& LF_Systems.IsEnabled(LF_LockComponent.SYSTEM) && !m_pHouseLock.UserMayEnter(pUserEntity))
+		{
+			LF_Debug.Warn("Houses", string.Format("locked door refused on the server: house=%1", m_pHouseLock.GetHouseIdentifier()));
+			return;
+		}
+
 		super.PerformAction(pOwnerEntity, pUserEntity);
 
 		if (!Replication.IsServer() || m_pHideoutDoor)
 			return;
 
-		if (m_pHouseLock && m_pHouseLock.IsLocked() && m_pHouseLock.UserHasValidKey(pUserEntity))
-		{
-			m_pHouseLock.Unlock();
-			LF_Debug.Log("Houses", "door unlocked by valid key");
-		}
+		if (m_pHouseLock && m_pHouseLock.IsLocked())
+			LF_Debug.Log("Houses", string.Format("locked door opened by owner or key holder, lock kept: house=%1", m_pHouseLock.GetHouseIdentifier()));
 	}
 };

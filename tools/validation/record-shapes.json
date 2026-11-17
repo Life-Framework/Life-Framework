@@ -1,5 +1,5 @@
 {
-  "saveVersion": 45,
+  "saveVersion": 47,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -47,7 +47,9 @@
     "mapknown": "LF_MapKnownRow",
     "mapmarks": "LF_MapMarkRow",
     "orgmarks": "LF_OrgMapMarkRow",
-    "armorykits": "LF_ArmoryKitRow"
+    "armorykits": "LF_ArmoryKitRow",
+    "houses": "LF_HouseLockRecord",
+    "itemkeys": "LF_StorageItemKeyRecord"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -573,6 +575,22 @@
         "string m_sOfficerUid",
         "int m_iLastIssueUnix",
         "array<string> m_aSerials"
+      ]
+    },
+    "LF_HouseLockRecord": {
+      "since": 46,
+      "fields": [
+        "string m_sHouseIdentifier",
+        "bool m_bLocked",
+        "string m_sOwnerKey"
+      ]
+    },
+    "LF_StorageItemKeyRecord": {
+      "since": 47,
+      "fields": [
+        "string m_sOwnerKey",
+        "string m_sSlot",
+        "array<string> m_aHouseKeys"
       ]
     }
   }
