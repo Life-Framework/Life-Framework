@@ -67,7 +67,8 @@ class LF_WantedPosters
 		if (!Replication.IsServer())
 			return false;
 
-		if (s_Subscriber && LF_EventBus.SubscriberCount(LF_OnWantedChanged) > 0)
+		// Its own subscription, not any listener: LF_Dispatch listens to the same event (#2579).
+		if (s_Subscriber && LF_EventBus.IsSubscribed(LF_OnWantedChanged, s_Subscriber))
 			return true;
 
 		s_Subscriber = new LF_WantedPostersSubscriber();
