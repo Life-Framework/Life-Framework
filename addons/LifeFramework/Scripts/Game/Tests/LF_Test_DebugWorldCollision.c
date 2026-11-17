@@ -2,6 +2,11 @@
 // red-proof: 2026-09-19 dedicated-server run failed both apple crate physics and
 // sweep assertions (fraction=1) with the world entity in Terrain.layer. Moving
 // world initialization to default.layer gave both sweeps fraction=0.386069.
+// order-proof (#2699): a name-sorted --tier all run failed this test. LF_Test_BreachChargeExploit
+// left a character's vest and jacket at <75,0,75> and LF_Test_Siren left a police vehicle with its
+// cargo props; both tests now delete what they spawn. Items a body carries are skipped
+// (the save-write test keeps three bodies alive on purpose). Green with this test last and in
+// full name order.
 class LF_Test_DebugWorldCollision : LF_Test
 {
 	protected static int s_iEntities;
@@ -19,6 +24,24 @@ class LF_Test_DebugWorldCollision : LF_Test
 		typename type = entity.Type();
 		if (type.IsInherited(GenericTerrainEntity) || type.IsInherited(GenericWorldEntity) || type.IsInherited(SCR_ChimeraCharacter))
 			return true;
+
+		// An item sitting in an inventory slot (a worn jacket, a backpack, a drill in it) is carried
+		// equipment, not a prop of the world: it has no collision of its own. A test that keeps a body
+		// alive on purpose (e2e/pass1-write-save holds three through the shutdown save) leaves such
+		// items behind; they must not fail this scan whatever order the suite runs in (#2699).
+		InventoryItemComponent carried = InventoryItemComponent.Cast(entity.FindComponent(InventoryItemComponent));
+		if (carried && carried.GetParentSlot())
+			return true;
+
+		// Likewise a part attached to a character's body (the vest's belt dummy hangs on the vest slot).
+		IEntity parent = entity.GetParent();
+		while (parent)
+		{
+			if (parent.Type().IsInherited(SCR_ChimeraCharacter))
+				return true;
+
+			parent = parent.GetParent();
+		}
 
 		s_iEntities++;
 		EntityPrefabData prefab = entity.GetPrefabData();

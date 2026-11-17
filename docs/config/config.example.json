@@ -140,6 +140,15 @@
       "officer": {
         "withdraw": true
       }
+    },
+    "wars": {
+      "fee": 5000,
+      "answerSeconds": 600,
+      "lengthSeconds": 7200,
+      "cooldownSeconds": 86400,
+      "minMembers": 3,
+      "warKillsAreMurder": false,
+      "tagWarKills": true
     }
   },
   "persistence": {
@@ -238,6 +247,12 @@
   },
   "systems": {
     "switches": {}
+  },
+  "taxiFares": {
+    "floor": 80,
+    "ratePerMetre": 0.04,
+    "cap": 300,
+    "shortHopMetres": 100
   },
   "vehicles": {
     "buyPercent": 100,

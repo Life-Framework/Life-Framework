@@ -33,5 +33,9 @@ class LF_Test_Siren : LF_Test
 
 		LF_SirenManagerComponent manager = LF_Component<LF_SirenManagerComponent>.Find(police);
 		ctx.NotNull(manager, "spawned police vehicle carries LF_SirenManagerComponent");
+
+		// The vehicle and its cargo props are not traceable; leaving them in the world fails
+		// debugworld/entity-collision when it runs later (#2699).
+		SCR_EntityHelper.DeleteEntityAndChildren(police);
 	}
 };

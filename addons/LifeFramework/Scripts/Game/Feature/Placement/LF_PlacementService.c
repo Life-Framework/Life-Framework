@@ -568,6 +568,12 @@ class LF_PlacementService
 		if (verdict != LF_EPlacementVerdict.VALID)
 			return Refuse(player, "refused: " + LF_PlacementRules.Reason(verdict, probe, MAX_STEP), "#LF-Placement_NoGround");
 
+		// Permanent kinds are capped per owner and per property (#1032, LF_PlacementSave).
+		string capToast;
+		string capWhy = LF_PlacementSave.CheckBeforePlace(player, placeable, transform[3], capToast);
+		if (!capWhy.IsEmpty())
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), capWhy), capToast);
+
 		// The cost (#2448): taken once, only now the spot is VALID; given back if the spawn fails.
 		LF_PlacementCostTerms terms = LF_PlacementCost.TermsFor(placeable.GetKind());
 		if (LF_PlacementCost.CostIsItself(terms, item))
@@ -591,6 +597,7 @@ class LF_PlacementService
 
 		array<EntityID> placedIds = {placed.GetID()};
 		LF_PlacementCost.Keep(charge, placedIds);
+		LF_PlacementSave.OnPlaced(player, placeable, item, placed);
 		SCR_EntityHelper.DeleteEntityAndChildren(item);
 		LF_Debug.Info(FEATURE, string.Format("placed %1 for %2 at %3 heading %4 (%5), %6", LF_PlacementRules.Describe(placed), LF_PoliceRanks.ResolveUid(player), transform[3], transform[2], typename.EnumToString(LF_EPlacementLifetime, placeable.GetLifetime()), offBy));
 		return placed;

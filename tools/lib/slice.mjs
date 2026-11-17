@@ -368,9 +368,9 @@ export function brief(issue, card, worktreeSlug) {
   const town = card.type === "town";
   const slug = worktreeSlug || (town ? `town-${issue.number}` : `slice-${issue.number}`);
   const gate = {
-    T0: "validate only (wt ship runs just validate when addons/ is untouched)",
-    T1: "light gate: validate plus the targeted test; wt ship still runs the full gate for an addons/ change",
-    T2: "full gate (wt ship: validate --full, build, suite)",
+    T0: "validate only",
+    T1: "the targeted --only tests green; wt ship runs validate itself",
+    T2: "the targeted --only tests green, then one tools\\cli test --no-build --tier all; wt ship runs validate itself (no pre-merge gate: the main guard runs the suite after the merge)",
   }[card.tier] || "wt ship";
   const agent = AGENT_OF[card.model] || "lf-builder";
   const lines = [
@@ -391,7 +391,7 @@ export function brief(issue, card, worktreeSlug) {
     "3. Implement the smallest change inside owns; run the targeted test until green.",
     `4. Gate ${card.tier}: ${gate}.${card.risk.length ? ` Risk ${card.risk.join(", ")}: an independent reviewer (lf-hard, interrogate) reads the diff before merge; findings in tmp/review-${slug}.md.` : ""}`,
     `5. Ship: tools\\cli wt ship ${slug} --refs ${issue.number}. Visible change: one look picture; polish nitpicks become follow-up issues, not blockers.`,
-    `6. Record: tools\\cli slice record ${issue.number} --model ${card.model || "sonnet"} --outcome merged|handoff|split|failed --gate pass|fail --minutes N.`,
+    `6. Record as soon as ship says ok, then stop: tools\\cli slice record ${issue.number} --model ${card.model || "sonnet"} --outcome merged --gate pass|fail --minutes N (an open auto-merge PR is recorded as shipped; never wait for GitHub to merge). Unfinished: --outcome handoff|split|failed.`,
     "Starter pack: tools\\cli brief slice (the exact commands, the red-proof loop, known traps); a map, town, grid or building slice also reads its own kind.",
     "Stay in your lane: do not re-verify other slices, start no helper agents, no wait loops. Report in five lines; say merged, in-dev.",
   ];
@@ -401,7 +401,9 @@ export function brief(issue, card, worktreeSlug) {
 
 // --- the ledger ------------------------------------------------------------------------------------------------------
 
-export const OUTCOMES = ["merged", "handoff", "split", "failed"];
+// shipped: wt ship succeeded and auto-merge is on, GitHub has not merged yet. Recorded instead of making the
+// agent wait (28 refused records and ~40 min of PR polling across slices on 2026-11-17).
+export const OUTCOMES = ["merged", "shipped", "handoff", "split", "failed"];
 
 export function ledgerRow(o) {
   const p = [];
@@ -425,7 +427,8 @@ export function mergeVerdict(prs, issue) {
   const hint = "record --outcome handoff while the PR is unmerged, or --force to record merged anyway";
   if (!mine.length) return { ok: false, reason: `no PR found for #${n} (branch ws/slice-${n} or a body that refs it); ${hint}` };
   const seen = mine.map((p) => `#${p.number} ${String(p.state || "open").toLowerCase()}`).join(", ");
-  return { ok: false, reason: `#${n} has no merged PR (${seen}); ${hint}` };
+  const open = mine.some((p) => String(p.state || "OPEN").toUpperCase() === "OPEN" && !p.mergedAt);
+  return { ok: false, open, reason: `#${n} has no merged PR (${seen}); ${hint}` };
 }
 
 const median = (xs) => {
@@ -448,7 +451,7 @@ export function stats(rows) {
       key: k,
       n: rs.length,
       firstPass: rs.filter((r) => r.gate === "pass").length / rs.length,
-      rework: rs.filter((r) => r.outcome !== "merged").length / rs.length,
+      rework: rs.filter((r) => r.outcome !== "merged" && r.outcome !== "shipped").length / rs.length,
       minutes: median(rs.map((r) => r.minutes)),
       wait: median(rs.filter((r) => r.wait >= 0).map((r) => r.wait)),
     }));
