@@ -4,11 +4,10 @@
 //! full behavior; the lock check is an extra gate on both CanBeShownScript (client UI) and
 //! CanBePerformedScript (perform path).
 //!
-//! SECURITY POSTURE. This is a soft UI gate matching the vanilla model: SCR_InventoryAction is
-//! a local-effect action, so the gate runs on the client and a modified client can bypass it.
-//! The vanilla faction checks on inventory have the same softness. Server-side enforcement of
-//! the lock against inventory transfers is not wired here; that is a follow-up when vehicle
-//! ownership lands.
+//! SECURITY POSTURE. This is the UI gate: SCR_InventoryAction is a local-effect action, so it
+//! runs on the client. The server-side lock is LF_VehicleStorageLockGate (#2411): every storage
+//! on a locked vehicle refuses CanRemoveItem and CanStoreItem on the server, so a client that
+//! skips this action still cannot take or stash anything.
 //!
 //! The gate reads LF_VehicleStorageAccessControl on m_Vehicle, so it only applies to vehicles
 //! that carry the access control component. Vanilla vehicles without it behave exactly as

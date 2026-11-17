@@ -136,7 +136,7 @@ class LF_LockComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	//! \param key The item to test.
 	//! \return True when the key carries an LF_KeyComponent whose identifier matches this door's
-	//! house identifier.
+	//! house identifier. Door actions run this every frame, so it does not log (#2411).
 	bool IsValidKey(IEntity key)
 	{
 		if (!key)
@@ -146,10 +146,7 @@ class LF_LockComponent : ScriptComponent
 		if (!keyComponent)
 			return false;
 
-		bool matches = LF_VehicleLockComponent.IdentifiersMatch(keyComponent.GetHouseIdentifier(), m_sHouseIdentifier);
-		LF_Debug.Log("Houses", string.Format("key check: key=%1 house=%2 match=%3",
-			keyComponent.GetHouseIdentifier(), m_sHouseIdentifier, matches));
-		return matches;
+		return LF_VehicleLockComponent.IdentifiersMatch(keyComponent.GetHouseIdentifier(), m_sHouseIdentifier);
 	}
 
 	//------------------------------------------------------------------------------------------------
