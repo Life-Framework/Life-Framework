@@ -650,8 +650,21 @@
   concept and the rooms, `proof.json` the shot list and the booking walkthrough. The public hall has the licence and
   permit desk (`LF_LicenceDesk`) and the wanted board; the duty room has the duty desk (clock in), the armory locker and
   `LF_ArmoryStore`, the evidence locker and the dispatch board; the records room has the case board; the villa's own barred
-  cell is the holding cell (`--with-cell` stages `LF_JailCell`: one placed cell per world, and GridWorld has one already).
+  cell is the holding cell (the cell door decision is under POLISH 2 below).
   Patrol cars, a spike strip and the payphone stand in the yard. Budget (maintainer): at most 6 dynamic lights
-  per building and 2 shadow casters, about 150 decor entities, static vanilla props, no per-frame scripts; `fitout.mjs --report`
+  per building and 1 shadow caster, 300 entities for the building with its furniture, static vanilla props, no per-frame scripts; `fitout.mjs --report`
   prints the counts. Saint-Philippe placement is later, through `town fit`.
+- 🧪 **Police station POLISH 2** (#2275, merged, in-dev). The villa is now the pack prefab `Prefabs/Buildings/PoliceStation/PoliceStation.et`
+  (`tools/buildings/police-station/shell.mjs`): the vanilla villa with its furniture cut from 231 props to 143 (the attic's junk,
+  16 light switches, repeats) and its ceiling lamps given a lit cover, so the building totals 215 of the 300 entities (MEDIUM).
+  The facade carries an `LF_Sign_Fascia` over the loggia with the pack card `police_front` ("Gendarmerie"; the name is in
+  the pack table) and two wall lamps whose glass is lit with no light of their own; the sixth light is one warm glow under
+  the loggia. The hall has a front counter facing the door, its notices and the benches either side of the duty-room door;
+  the cell has its rules pinned by the door; the yard has a bench, a wall bin, planters, cones and the escort car.
+  Every prop height is snapped by `surface.mjs`; `tools\cli building check police-station` reads the kit's layer rows too
+  (`spec.json` `check_layer`). **The cell door, decided:** the kit always shows the villa's own barred cell and door and
+  carries no jail component, because one placed cell is allowed per world and GridWorld has one. `fitout.mjs --with-cell`
+  (for `town fit` into a world with no cell) stages only the `LF_JailCell` marker, its zone fitted to the room (2 m), the
+  release point in the hall and no door target; no `EL_JailDoor`, which would hang a second door in the villa's doorway.
+  Breach and jailbreak on that cell need the villa door to carry `LF_BreachTarget` (#2373).
 - ✅ **Map area data** (#2233, epic #2223, test `map/areas`; node twin `tools/map/rules/areas.mjs`). `LF_MapAreas` (`Feature/Map/LF_MapAreas.c`) turns an area into an outline vertex list: a polygon is its points, a circle a 32-gon, a box its four corners turned by yaw the way `LF_ZoneArea.Contains` turns it, a polyline corridor a mitred strip. `Collect` merges every `LF_Zones` zone that has a style (SAFE and LAWLESS draw; NORMAL draws nothing) with the map-only areas (`LF_MapAreaComponent`: town line, gated, custom; a polygon local to the entity, or a circle). Styles are tokens for the `map-*` theme rows (M6). The outline, centroid, style and rule cases are one table, `Configs/Map/Rules/areas.cases.json`, that the Enforce test and the emulator's node rule both run; `LF_MapAreaCases.generated.c` carries it as script because the game cannot read a loose `.json` from an addon (`node tools/map/rules/areas.mjs --gen` rewrites it; the selftest fails when stale). `LF_Zones.GetAll()` is the one hook in the zone service. Nothing draws yet (M6).

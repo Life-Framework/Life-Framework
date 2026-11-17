@@ -70,8 +70,8 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -10.022 0.2 0.695
   }
   GenericEntity : "{29BA0E995E24468D}Prefabs/Props/Furniture/PlantRoom_03.et" {
-   ID "56E0A76E3BB8D4F2"
-   coords -6.971 4.903 5.254
+   ID "56E0A76E3BB8D4EA"
+   coords 5.985 4.903 4.755
   }
   GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
    ID "56E0A76E3BB8D405"

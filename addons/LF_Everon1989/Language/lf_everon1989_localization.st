@@ -1484,6 +1484,31 @@ StringTable {
      Target_en_us "Open cases, one column each: the crime, where and when, the suspect, and the evidence pinned against it."
      Comment "Case board Read card (#148)."
     }
+    CustomStringTableItem "{B36E6F94CE8AA8A7}" {
+     Id "LF-Sign_PoliceFront_How"
+     Target_en_us "Licences and permits: the desk in the porch|Enquiries: the front counter in the hall|Wanted notices: the board on the hall wall|Officers: the duty room, through the door between the hall benches"
+     Comment "Police station fascia sign card, How section (Everon 1989 pack). Items separated by |."
+    }
+    CustomStringTableItem "{BB9BA6C4A8677A06}" {
+     Id "LF-Sign_PoliceFront_Needs"
+     Target_en_us "Cash for a licence or permit fee"
+     Comment "Police station fascia sign card, Needs section (Everon 1989 pack)."
+    }
+    CustomStringTableItem "{3D32D85B2CC2A704}" {
+     Id "LF-Sign_PoliceFront_Next"
+     Target_en_us "Officers on duty: the patrol cars wait in the yard."
+     Comment "Police station fascia sign card, Next section (Everon 1989 pack)."
+    }
+    CustomStringTableItem "{DE2A7A265D6907E9}" {
+     Id "LF-Sign_PoliceFront_Title"
+     Target_en_us "Gendarmerie"
+     Comment "Title of the fascia sign over the police station's front door (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Gendarmerie."
+    }
+    CustomStringTableItem "{2EEE13F78C153D7D}" {
+     Id "LF-Sign_PoliceFront_What"
+     Target_en_us "The police post of Everon. Licences and permits at the porch desk, enquiries at the front counter, the wanted board in the hall."
+     Comment "Police station fascia sign card, What section (Everon 1989 pack)."
+    }
     CustomStringTableItem "{1A20ADB3E49DD4E0}" {
      Id "LF-Sign_PoliceStation_How"
      Target_en_us "Punch the clock on the duty desk: *Clock in* puts your own clothes and pockets in the locker and hands you the police uniform; *Clock out* gives them back|Read the wanted board beside the desk|At the armory: *Draw kit*"

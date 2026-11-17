@@ -43,20 +43,15 @@ tools\cli evidence <issue> before|after grid-<slug>|<png> [--name n]            
 `look` writes `tmp\look\grid-<slug>` (exterior) and `grid-<slug>-interior`, which the next room overwrites: copy each
 room's folder (town-hall `looks.mjs --tag pass1 --run` does) or pass the PNG path. Pass N's after is pass N+1's before. Past about 2 h, ship BUILD and POLISH 1 and file POLISH 2.
 
-## Fitting a vault room (`bank_room` safe type)
-The bank safe is a room in the building, not the standalone `LF_BankVault.et` (the reserve vault).
-- Doorway: `{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et` (origin = the front's centre, door hinges 1.271 m
-  to its right). The layer entity name is the vault id: unique per door. Bag inside: copy `Roadmap_Bank_Bag`, `m_sId` = that id.
-- Do not type the numbers on the placement: `bank_room` supplies them (an attribute at its class default reads as unset).
-  Shop safe: `{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et`. Tiers: `docs/features/crime-police.md`.
+## Vault room (`bank_room`)
+Doorway `{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et` (origin the front's centre, hinge 1.271 m to its
+right; entity name = vault id); bag: copy `Roadmap_Bank_Bag`, `m_sId` = that id; `bank_room` supplies the numbers. Shop safe:
+`{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et`. Not the standalone `LF_BankVault.et`. Tiers: `docs/features/crime-police.md`.
 
 ## Props stand on something (heights are snapped, never typed)
-A typed y floated phones and lamps over desks (maintainer, 2026-11-17). A generator gives each prop a hint y and calls
-`snapItems(items, { fixed })` from `tools/buildings/pipeline/surface.mjs`: `{ on: "<id>" }` stands it on that row, otherwise it
-drops onto the top under it. Gun-store `decor.mjs` is the model; the detail is in `docs/building-pipeline/README.md`.
-**`toolsi building check <slug>` is required** (about 1 s, offline): every small prop within 2 cm of the top under it, a floor or
-the ground. `wt ship` runs it for a PR touching `tools/buildings/<slug>/` or the pack's `Prefabs/Buildings/<Dir>/` and refuses
-while it fails. No generator: `building check <slug> --fix`. Keep `audit placement --grid --strict` as the in-world check per pass.
+Give each prop a hint y and call `snapItems(items, { fixed })` (`tools/buildings/pipeline/surface.mjs`; `{ on: "<id>" }` names the
+support). **`tools\cli building check <slug>` is required** (1 s, offline; `wt ship` refuses while it fails; `--fix` without a
+generator). A kit whose rows live in a grid layer names it in `spec.json` `check_layer` (police station). Detail: `docs/building-pipeline/README.md`.
 
 ## Performance (docs/architecture/performance.md covers script cost; `test --tier perf` once if you touch script)
 Report in the PR, per pass: dynamic lights, shadow casters, decorative entities. The limit is in your brief. Short-range
@@ -70,16 +65,12 @@ pass, the counts table, `## Manual testing`. No town layers, no `ws/town-maintai
 
 ## Known traps
 - `scenario.mjs`'s header says "-Z the street front". Every building's proof and look files use **front +z**. Follow +z.
-- Wall items face the room: yaw 0 on a wall facing +z, 180 facing -z, 90 or -90 facing +x or -x (a trophy board sticks
-  out the other way: gun-store `decor.mjs` header).
+- Wall items face the room: yaw 0 on a +z wall, 180 on -z, 90 or -90 on +x or -x (trophy boards differ: gun-store `decor.mjs`).
 - Vanilla ceiling lamps are dead meshes: add a `LightEntity` (ClipEV -10, NearPlane 0.3, short radius) and an emissive cover.
-- A vanilla furniture set is big (town hall: 242 children). Flatten to one child per prop, prune repeats (switches,
-  radiators, infirmary, extra WCs); every kept entity counts.
-- Your building is a pack prefab, so its cell is a pack cell: `grid place <slug> <pack prefab>` (or `--pack`) writes
-  `LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_<slug>.layer`, claims the cell in the shared lattice with
-  `"pack": true`, and the layer is committed like any other. Never keep a layer untracked, never put a pack prefab in
-  `GridWorld_Layers/` (`validate-addon-boundary`). A layer already written there: `grid free <slug>`, then place again.
-  `look grid:<slug>`, `audit placement --grid` and `session up --mission grid` load it through the pack grid world.
+- A vanilla furniture set is big (town hall 242, police villa 231): flatten and prune it (`shell.mjs`); every kept entity counts.
+- A pack building gets a pack cell: `grid place <slug> <pack prefab>` (or `--pack`) writes `Everon1989Grid_Layers/Grid_<slug>.layer`
+  (committed; never a pack prefab in `GridWorld_Layers/`: `grid free <slug>`, place again). `look grid:<slug>`, `audit placement
+  --grid` and `session up --mission grid` load it.
 - A GUID is made once and kept (rule 2). A typed coordinate is only allowed in a building-space row the script writes.
 - `look` needs a Workbench: it queues on the pool (laptop or lf-testbox), never here.
 
