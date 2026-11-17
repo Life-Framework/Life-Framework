@@ -95,37 +95,6 @@
   },
   "rows": [
     {
-      "id": "sign-commercial-01-clothes-store",
-      "prefab": "{134DBD739E0790EC}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_ClothesStore.et",
-      "role": "sign",
-      "verb": "against wall",
-      "offset": [
-        -0.05,
-        1.435,
-        -0.165
-      ],
-      "yaw": 180,
-      "from": "ShopHouse_E_2I01t_clothesstore_lf.et",
-      "config": [
-        {
-          "component": "MeshObject",
-          "set": {},
-          "blocks": [
-            "Materials"
-          ]
-        },
-        {
-          "component": "Hierarchy",
-          "set": {
-            "PivotID": "\"socket_win_420x275_01\""
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
       "id": "shop-house-e-2-i01t-furniture-clothesstore-lf-01",
       "prefab": "{75EAFBE6D0099EB8}Prefabs/Buildings/ClothingStore/Furniture/ShopHouse_E_2I01t_furniture_clothesstore_lf_01.et",
       "role": "furniture",

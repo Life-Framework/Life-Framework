@@ -9,10 +9,6 @@ GenericEntity Fit_saint_philippe_clothing_Place {
  }
  coords 4441.27 11.5 10789.1
 }
-GenericEntity Fit_saint_philippe_clothing_sign_commercial_01_clothes_store : "{134DBD739E0790EC}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_ClothesStore.et" {
- coords 4441.44 12.935 10789.13
- angleY 63
-}
 GenericEntity Fit_saint_philippe_clothing_shop_house_e_2_i01t_furniture_clothesstore_lf_01 : "{75EAFBE6D0099EB8}Prefabs/Buildings/ClothingStore/Furniture/ShopHouse_E_2I01t_furniture_clothesstore_lf_01.et" {
  coords 4441.27 11.5 10789.1
  angleY -117
