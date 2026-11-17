@@ -302,6 +302,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HideoutStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStashPersistence(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutStashFind(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HideoutStashPutCarrier(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HideoutStashQuantity(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutStashRight(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HoldUp(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HospitalRejoinPersist(), LF_TestTier.PERSISTENCE);
@@ -532,6 +534,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceCallBoard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceCallLifecycle(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCallPay(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceCallPosition(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceContactStamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceDutyNpcNoMenu(), LF_TestTier.WORLD);

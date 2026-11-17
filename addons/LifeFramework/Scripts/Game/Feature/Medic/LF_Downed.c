@@ -85,7 +85,7 @@ class LF_Downed
 	//! vanilla never kills it; damage to a downed player is cut to nothing. Nothing is changed
 	//! here but the number (the engine may ask speculatively); a lethal cut is remembered on the
 	//! zone and OnHealthDamaged, which follows the real damage, downs the player.
-	//! eturn The damage the zone takes.
+	//! \return The damage the zone takes.
 	static float CapHealthDamage(notnull SCR_CharacterHealthHitZone zone, notnull BaseDamageContext damageContext, float damage)
 	{
 		zone.LF_SetLethalPending(false);
@@ -626,6 +626,31 @@ modded class SCR_InventoryStorageManagerComponent
 			return false;
 
 		return super.HandleAccessValidation(instigatorManager, item, operation);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A quantity transfer or split changes a stack in place and skips HandleAccessValidation. A
+//! stack a downed body carries (a logout body has no player, so the ownership gate lets it by)
+//! follows the same search rule (#2585).
+modded class ScriptedInventoryStorageManagerComponent
+{
+	//------------------------------------------------------------------------------------------------
+	override protected bool LF_AllowsRestrictedStorage(notnull IEntity item)
+	{
+		if (!super.LF_AllowsRestrictedStorage(item))
+			return false;
+
+		IEntity holder = LF_HolderOf(item);
+		while (holder)
+		{
+			if (!LF_Downed.AllowsAccess(holder, this))
+				return false;
+
+			holder = LF_HolderOf(holder);
+		}
+
+		return true;
 	}
 }
 
