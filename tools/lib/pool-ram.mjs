@@ -42,7 +42,9 @@ export const SEED_PEAKS_MB = {
   "test:small": 800,
   "test:island": 2500,
   "workbench:small": 3700,
-  "workbench:island": 3700,
+  // A look Workbench on the pack's island (MainWorld, play mode) streams Everon like a server and a client in one
+  // process: seeded at the island session's 2.5 + 2.9 GB until real samples come in (#2347).
+  "workbench:island": 5400,
 };
 export const MIN_SAMPLES = 3;
 export const MAX_SAMPLES = 40;
@@ -52,7 +54,8 @@ export const MIN_SAMPLE_MB = 200;
 
 export function worldClass(world) {
   const w = String(world ?? "");
-  return w === ISLAND || /CoreOnEveron/i.test(w) || /^everon$/i.test(w.trim()) ? ISLAND : SMALL;
+  // CoreOnEveron (vanilla Everon plus the core mode), the pack's MainWorld (a SubScene of Eden), Eden itself.
+  return w === ISLAND || /CoreOnEveron|(^|[/}])MainWorld\.ent$|(^|\/)Eden\.ent$/i.test(w) || /^(everon|island)$/i.test(w.trim()) ? ISLAND : SMALL;
 }
 
 export function peakKey(kind, world = SMALL, profile) {

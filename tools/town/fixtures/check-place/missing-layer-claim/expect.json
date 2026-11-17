@@ -3,5 +3,12 @@
  "errors": [
   "slot shop: no claim",
   "slot shop: no layer"
- ]
+ ],
+ "partial": {
+  "ok": true,
+  "errors": [],
+  "notes": [
+   "not fitted yet: shop"
+  ]
+ }
 }

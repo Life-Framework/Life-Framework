@@ -1,12 +1,14 @@
 // tools/town/check.mjs - `tools\cli town check <place>`: the static checks of one place (docs/architecture/everon-world.md 3.5, card #2206).
 //
-//   town check <place> [--json] [--template-file f] [--catalog f] [--no-perf]
+//   town check <place> [--complete] [--json] [--template-file f] [--catalog f] [--no-perf]
 //
 // Reads  docs/everon/places/<place>/dossier.json and mapping.json, tools/town/templates/<kind>.json, tools/town/claims/<place>-*.json,
 //        addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_<place>_*.layer, addons/LifeFramework/Configs/Systems/LF_SystemCatalog.conf
 // Reports (an ERROR fails; a WARN does not):
 //   - every required slot of the template is mapped (a mapped optional slot is checked like a required one);
-//   - every mapped slot has its layer and its claim, and the claim agrees with the mapping (place, slot, building or plot);
+//   - per slot: a fitted slot (one with a layer or a claim) has both, and the claim agrees with the mapping (place, slot, building or
+//     plot). Slots are fitted one draft at a time, so a mapped slot with neither is "not fitted yet", a note;
+//   - with --complete (and in `town ready`): every mapped slot is fitted. Place COMPLETENESS is never part of `validate`;
 //   - every layer registers the LF_Places kinds its slot promises (`LF_PlaceComponent` m_sKind, id `<place>.<slot>`); a promised
 //     kind that no system lists in `m_aPlaces` of LF_SystemCatalog.conf is a WARN (the layer is right, nothing reads the kind yet);
 //   - every entity of a layer stands inside its claimed building's footprint (or plot) plus the slot's margin;
@@ -25,7 +27,7 @@ import { topLevelCoords } from "../validation/validate-world-zones.mjs";
 import { checkSlotPois, loadPoiKinds } from "./lib/poi-check.mjs";
 import { loadTemplate } from "./map.mjs";
 
-export const help = "check <place> [--json] [--no-perf]   one place: required slots mapped, layers and claims, kinds against m_aPlaces, footprints, perf budget; exit 1 on an error";
+export const help = "check <place> [--complete] [--json] [--no-perf]   one place: required slots mapped, per-slot layers and claims (--complete: every mapped slot fitted), kinds against m_aPlaces, footprints, perf budget; exit 1 on an error";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const LAYER_DIR = "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers";
@@ -117,12 +119,16 @@ export function marginOf(slot, entry) {
 // ------------------------------------------------------------------ claims and footprints (shared with validate-island-zones)
 
 // data: { place, dossier, mapping, template, claims: { <file name>: claim }, layers: { <layer file name>: text } }
-// Returns { errors, warnings, slots: [{ slot, entry, ground, claim, layer }] }.
-export function checkClaimsAndFootprints(data) {
+// opts.complete: a mapped slot with neither layer nor claim is an error (place completeness: `town check --complete`, `town ready`).
+// Without it (validate-island-zones, plain `town check`) such a slot is only listed in `unfitted`: drafts fit one slot at a time.
+// A slot with one of the two and not the other is an error either way.
+// Returns { errors, warnings, slots: [{ slot, entry, ground, claim, layer }], unfitted: [slot ids] }.
+export function checkClaimsAndFootprints(data, { complete = false } = {}) {
   const { place, dossier, mapping, template } = data;
   const errors = [];
   const warnings = [];
   const slots = [];
+  const unfitted = [];
   const slotsById = new Map(template.slots.map((s) => [s.id, s]));
   const claimsByName = data.claims ?? {};
   const layers = data.layers ?? {};
@@ -143,11 +149,16 @@ export function checkClaimsAndFootprints(data) {
     const claimName = claimNameOf(place, id);
     const claim = claimsByName[claimName] ?? null;
     const text = layers[layerName];
+    if (!claim && text === undefined && !complete) {
+      unfitted.push(id);
+      continue;
+    }
     const ground = slotGround(entry, dossier);
     const row = { slot: id, entry, ground, claim, layer: text ?? null, layerName };
     slots.push(row);
-    if (!claim) errors.push(`slot ${id}: no claim ${CLAIMS_DIR}/${claimName}`);
-    if (text === undefined) errors.push(`slot ${id}: no layer ${LAYER_DIR}/${layerName}`);
+    const why = complete ? " (--complete: every mapped slot is fitted)" : ` (a fitted slot has both; ${text === undefined ? "the claim has no layer" : "the layer has no claim"})`;
+    if (!claim) errors.push(`slot ${id}: no claim ${CLAIMS_DIR}/${claimName}${why}`);
+    if (text === undefined) errors.push(`slot ${id}: no layer ${LAYER_DIR}/${layerName}${why}`);
     if (claim) {
       if (claim.place !== place || claim.slot !== id) errors.push(`slot ${id}: ${claimName} names ${claim.place}.${claim.slot}`);
       if ((entry.building && claim.building !== entry.building) || (entry.plot && claim.plot !== entry.plot)) {
@@ -186,20 +197,21 @@ export function checkClaimsAndFootprints(data) {
     byClaim.get(key).push(name);
   }
   for (const [key, names] of byClaim) if (names.length > 1) errors.push(`${key} is named by claims ${names.join(", ")}`);
-  return { errors: [...new Set(errors)], warnings, slots };
+  return { errors: [...new Set(errors)], warnings, slots, unfitted };
 }
 
 // ------------------------------------------------------------------ the full place check
 
-// Pure but for `resolve` (a `{GUID}path` -> { text } reader; null skips the perf count). opts: { resolve, perf }.
+// Pure but for `resolve` (a `{GUID}path` -> { text } reader; null skips the perf count). opts: { resolve, complete }.
 export function checkPlace(data, opts = {}) {
   const { place, template } = data;
-  const base = checkClaimsAndFootprints(data);
+  const base = checkClaimsAndFootprints(data, { complete: !!opts.complete });
   const errors = [...base.errors];
   const warnings = [...base.warnings];
   const notes = [];
   const slotsById = new Map(template.slots.map((s) => [s.id, s]));
   const mapping = data.mapping;
+  if (base.unfitted.length) notes.push(`not fitted yet: ${base.unfitted.join(", ")} (fine for a draft; --complete and town ready demand every slot)`);
 
   // Required slots are mapped.
   for (const slot of template.slots) {
@@ -244,7 +256,7 @@ export function checkPlace(data, opts = {}) {
     }
     for (const o of placeOver(perf)) errors.push(o);
   }
-  return { ok: errors.length === 0, errors: [...new Set(errors)], warnings, notes, slots: base.slots.map((s) => s.slot), perf };
+  return { ok: errors.length === 0, errors: [...new Set(errors)], warnings, notes, slots: base.slots.map((s) => s.slot), unfitted: base.unfitted, perf };
 }
 
 // Pure: the per-place limits. For each slot as the centre, the slots whose centres lie within 60 m share one view; their added
@@ -341,7 +353,7 @@ export async function main(args, { root = ROOT } = {}) {
   const skip = new Set([val("--template-file"), val("--catalog")].filter(Boolean));
   const place = args.find((a) => !a.startsWith("--") && !skip.has(a));
   if (!place || !SLUG_RX.test(place)) {
-    console.log("usage: tools\\cli town check <place> [--json] [--no-perf] [--template-file f] [--catalog f]");
+    console.log("usage: tools\\cli town check <place> [--complete] [--json] [--no-perf] [--template-file f] [--catalog f]");
     return 2;
   }
   let data;
@@ -351,7 +363,7 @@ export async function main(args, { root = ROOT } = {}) {
     console.log(`SUMMARY town-check fail ${place}: ${e.message}`);
     return 1;
   }
-  const result = checkPlace(data, { resolve: flags.has("--no-perf") ? null : await makeResolver(root) });
+  const result = checkPlace(data, { resolve: flags.has("--no-perf") ? null : await makeResolver(root), complete: flags.has("--complete") });
   if (flags.has("--json")) {
     console.log(JSON.stringify({ place, ...result }, null, 2));
   } else {
@@ -360,7 +372,7 @@ export async function main(args, { root = ROOT } = {}) {
     for (const e of result.errors) console.log(`ERROR ${e}`);
     const lights = result.perf.reduce((n, p) => n + p.lights, 0);
     const ents = result.perf.reduce((n, p) => n + p.entities, 0);
-    console.log(`SUMMARY town-check ${result.ok ? "ok" : "fail"} ${place}: ${result.slots.length} mapped slot(s), ${result.errors.length} error(s), ${result.warnings.length} warning(s)${result.perf.length ? `, ${ents} entities and ${lights} lights added` : ""}`);
+    console.log(`SUMMARY town-check ${result.ok ? "ok" : "fail"} ${place}: ${result.slots.length} fitted slot(s)${result.unfitted.length ? ` (${result.unfitted.length} not fitted yet)` : ""}${flags.has("--complete") ? ", --complete" : ""}, ${result.errors.length} error(s), ${result.warnings.length} warning(s)${result.perf.length ? `, ${ents} entities and ${lights} lights added` : ""}`);
   }
   return result.ok ? 0 : 1;
 }
