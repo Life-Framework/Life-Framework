@@ -495,6 +495,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PhoneCallWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhoneExchange(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PhoneVoiceBand(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PhoneVoiceConnectFail(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhoneVoiceWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhotoIdCard(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PhotoIdCardsPersist(), LF_TestTier.PERSISTENCE);
