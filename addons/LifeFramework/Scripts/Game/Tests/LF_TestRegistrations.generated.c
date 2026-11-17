@@ -85,6 +85,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChainTrace(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CharacterCreationReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CharacterFlowGate(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CharacterSheetsReset(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CharacterSlotsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CharactersPerAccount(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
@@ -376,6 +377,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LicenceDesk(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicenceRevokeCuffs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicensePlateFormat(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_LicensePlateClientApply(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicensePlateNoLeak(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicensePlateParenting(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicenseWhitelist(), LF_TestTier.LOGIC);
@@ -633,6 +635,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RobberyAlarmsShipped(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobHold(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobHoldGraceToast(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RobHoldOnePerRobber(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RobNoRoom(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobReward(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RobWeaponVehicle(), LF_TestTier.WORLD);
@@ -640,6 +643,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RobustnessWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roles(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RolesWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RpcHostPathPoliceQuest(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SafeTypes(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SafeZone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SamePrefab(), LF_TestTier.LOGIC);
