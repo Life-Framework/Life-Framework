@@ -5038,6 +5038,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You were handed a sentence slip. Check your inventory."
      Comment "Toast when a prisoner receives the sentence slip."
     }
+    CustomStringTableItem "{3E7A91C0D5B24F68}" {
+     Id "LF-JobMap_Fare"
+     Target_en_us "Fare"
+     Comment "Map mark and waypoint label: the destination of an accepted taxi fare (driver and passenger)."
+    }
+    CustomStringTableItem "{8C41F6B2A09D3E75}" {
+     Id "LF-JobMap_Stop"
+     Target_en_us "Delivery stop"
+     Comment "Map mark and waypoint label: the current stop of a delivery run (courier, fuel)."
+    }
     CustomStringTableItem "{CDE67184D007F114}" {
      Id "LF-Job_AccessDenied"
      Target_en_us "Access denied"
