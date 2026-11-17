@@ -219,6 +219,10 @@ class LF_ConfigService
 		if (key == LF_JoinNoticeConfig.SECTION || key == LF_HousesConfig.SECTION)
 			return true;
 
+		// The lockers section (#2658): rent, grace and reclaim fee.
+		if (key == LF_LockerConfig.SECTION)
+			return true;
+
 		// The arrival sections (#1779): rejoin at the saved spot and the new-character grace.
 		if (key == LF_RespawnConfig.SECTION || key == LF_GraceConfig.SECTION)
 			return true;

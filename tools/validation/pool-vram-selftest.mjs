@@ -99,6 +99,12 @@ v.noteVramUnknown("lf-cloud", (s) => lines.push(s));
 check(lines.length === 2 && /lf-testbox/.test(lines[0]) && /RAM only/.test(lines[0]), "unknown VRAM is logged once per machine");
 check(v.vramStatusText(6000) === " VRAM 5.9 GB free" && v.vramStatusText(null) === "", "the status text shows VRAM only when known");
 
+// --- pool status: free and used (#2634)
+check(v.vramUsageText(5800, 8192) === " VRAM 5.7/8.0 GB free (2.3 GB used)", "status text shows free, total and used VRAM: " + v.vramUsageText(5800, 8192));
+check(v.vramUsageText(6000, null) === " VRAM 5.9 GB free" && v.vramUsageText(null, 8192) === "", "status text without the total shows free only, unknown shows nothing");
+check(v.parseVramTotalLine("lf-pool: vramtotal 8192") === 8192 && v.parseVramTotalLine("lf-pool: vram 5800") === null && v.parseVramLine("lf-pool: vramtotal 8192") === null, "the total line parses apart from the free line");
+check(v.readVramTotalMb({ exec: (c, args) => ({ status: 0, stdout: args.join(" ").includes("memory.total") ? "8192" : "1" }) }) === 8192, "the total read asks nvidia-smi for memory.total");
+
 if (failures.length) {
   for (const f of failures) console.log(`pool-vram-selftest: FAIL ${f}`);
   console.log("pool-vram-selftest: FAIL");

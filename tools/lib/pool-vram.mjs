@@ -34,15 +34,37 @@ export function parseVramFreeMb(text) {
 // Free VRAM (MB) now, or null when unknown. exec(cmd, args, { timeout }) -> { status, stdout, error? } is the
 // seam: the default runs nvidia-smi on this machine (timeout-bounded, no window); a pool machine passes
 // an executor that goes through its bounded ssh (tools/remote/toolbox sshPs), so a dead link fails in seconds.
-export function readVramFreeMb({ exec = localExec, timeoutMs = VRAM_READ_TIMEOUT_MS } = {}) {
+export function readVramFreeMb({ exec = localExec, timeoutMs = VRAM_READ_TIMEOUT_MS, args = NVIDIA_SMI_ARGS } = {}) {
   let r;
   try {
-    r = exec("nvidia-smi", NVIDIA_SMI_ARGS, { timeout: timeoutMs });
+    r = exec("nvidia-smi", args, { timeout: timeoutMs });
   } catch {
     return null;
   }
   if (!r || r.error || r.status !== 0) return null;
   return parseVramFreeMb(r.stdout);
+}
+
+// Total VRAM (MB) of the card, for `pool status` (free and used); null when unknown. Same seam as the free read.
+export const NVIDIA_SMI_TOTAL_ARGS = ["--query-gpu=memory.total", "--format=csv,noheader,nounits"];
+export function readVramTotalMb(o = {}) {
+  return readVramFreeMb({ ...o, args: NVIDIA_SMI_TOTAL_ARGS });
+}
+
+// The same for a remote read: one `lf-pool: vramtotal <mb>` line, nothing when the card does not answer.
+export const PS_VRAM_TOTAL_READ = String.raw`try { $t = & nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits 2>$null; $n = ($t | ForEach-Object { [string]$_ } | Where-Object { $_ -match '^\s*\d+\s*$' } | ForEach-Object { [int]$_.Trim() } | Measure-Object -Maximum).Maximum; if ($null -ne $n) { Write-Host ('lf-pool: vramtotal ' + $n) } } catch {}`;
+export function parseVramTotalLine(text) {
+  const m = /^lf-pool: vramtotal (\d+)\s*$/m.exec(String(text ?? ""));
+  return m ? Number(m[1]) : null;
+}
+
+// `pool status` text for one machine: " VRAM 5.9/8.0 GB free (2.1 GB used)" with the total known, the older
+// " VRAM 5.9 GB free" without it, "" when the free VRAM is unknown (vramStatusText).
+export function vramUsageText(freeMb, totalMb) {
+  if (!Number.isFinite(freeMb)) return "";
+  if (!Number.isFinite(totalMb) || totalMb < freeMb) return vramStatusText(freeMb);
+  const gb = (x) => (x / 1024).toFixed(1);
+  return ` VRAM ${gb(freeMb)}/${gb(totalMb)} GB free (${gb(totalMb - freeMb)} GB used)`;
 }
 
 function localExec(cmd, args, { timeout }) {

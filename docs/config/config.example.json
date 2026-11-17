@@ -113,6 +113,13 @@
     "permitWaitDays": 1,
     "permitConvictionDays": 7
   },
+  "lockers": {
+    "rentPrice": 100,
+    "rentPeriodDays": 7,
+    "gracePeriodDays": 2,
+    "reclaimFee": 50,
+    "weightCapacity": 60
+  },
   "logoutBody": {
     "windowSeconds": 300,
     "downedWindowSeconds": 600
