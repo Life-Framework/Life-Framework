@@ -101,8 +101,11 @@
   (the editor identifier, or `BindIdentifier`) in the `houses` payload (save version 46); a carried house
   key keeps the house it opens in the `itemkeys` payload (version 47). A house with no editor identifier
   gets a per-boot id and is not saved (logged). Nothing assigns an owner in play yet (purchase flow).
-- ⚠️ House key names: `LF_KeyComponent` renames the prefab's shared `UIInfo`, so the name is wrong on
-  clients and would be shared between keys; needs a per-item inventory info class (#2435).
+- ✅ **Every house and car key shows its own name on every client** (#2470, WORLD `houses/key-item-name`):
+  `LF_KeyItemUIInfo` (an `SCR_InventoryUIInfo` on `HouseKeyItem.et` and `VehicleKey.et`, so `LF_PoliceCarKey.et` too)
+  builds "House Key [id]" / "Vehicle Key [id]" per item from the replicated identifier (`#LF-ItemName_HouseKeyOf`,
+  `#LF-ItemName_VehicleKeyOf`); nothing writes the shared prefab `UIInfo` any more. A late joiner gets the identifier with
+  the item. An unbound key shows the plain prefab name. No save change.
 
 ### `LF_Hideout` — `Feature/Hideouts/` (verified 2026-10-11)
 - ✅ One building owned by one organization. Members unlock

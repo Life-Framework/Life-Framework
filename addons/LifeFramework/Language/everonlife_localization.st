@@ -4923,6 +4923,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Step closer to them."
      Comment "Player interaction refused: the other person is out of reach."
     }
+    CustomStringTableItem "{7C1E4A92B05D3F18}" {
+     Id "LF-ItemName_HouseKeyOf"
+     Target_en_us "House Key [%1]"
+     Comment "Inventory name of a house key bound to a house. %1 is the house identifier it opens (#2470)."
+    }
+    CustomStringTableItem "{2D9B60E7A4C85F31}" {
+     Id "LF-ItemName_VehicleKeyOf"
+     Target_en_us "Vehicle Key [%1]"
+     Comment "Inventory name of a vehicle key bound to a vehicle. %1 is the vehicle identifier it opens (#2470)."
+    }
     CustomStringTableItem "{39E8DFFDB0869E08}" {
      Id "LF-Item_CarParts_Description"
      Target_en_us "Spare parts stripped off a stolen car. A trader pays a little for them."
