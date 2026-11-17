@@ -235,8 +235,12 @@ bug for each one; they transfer here because the engine is the same.
   `Replication.BumpMe()` after changing it. Throttle to significant changes or
   batch; per-frame `BumpMe` floods the network.
 - **RPC direction.** `RplRcver.Server` = client→server (name `RpcAsk_*`);
-  `RplRcver.Broadcast`/`Owner` = server→client (name `RpcDo_*`). Host check:
-  `if (Replication.IsServer())` call the handler directly, else `Rpc(...)`.
+  `RplRcver.Broadcast`/`Owner` = server→client (name `RpcDo_*`). On the server
+  (a listen host too), `Rpc()` runs a `Server` handler, or an `Owner` handler
+  on an entity the server owns, at once inside the call: no host branch, and a
+  direct call beside it runs the handler twice. A `Broadcast` never runs on the
+  server; call its effect locally when the host's player must see it. An entity
+  with no `RplComponent` drops every Rpc (`docs/architecture/rpc-routing.md`).
 - **A client can only RPC on entities it owns.** Inter-player communication
   goes through the server. Validate client requests on the server (money,
   inventory, RPC payloads); never trust the client.
