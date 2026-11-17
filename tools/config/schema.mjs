@@ -6,7 +6,8 @@
 //   node tools/config/schema.mjs --check    exit 1 when either is stale
 //
 // A config class is a `[BaseContainerProps(configRoot: true)]` class with
-// `static const string SECTION = "<name>"`; its section is the owner JSON key.
+// `static const string SECTION = "<name>"`; its section is the owner JSON key. A dotted name
+// (`"organizations.wars"`) is an object nested one level inside the section before the dot (#2667).
 // JSON keys are the member name without its Hungarian prefix, lower camel case
 // (`m_iDefaultBuyPrice` is `defaultBuyPrice`; Core/Config/Feature.md).
 // A list of config objects is a record object keyed by the record's stable key.
@@ -82,7 +83,7 @@ export function parseClasses(files) {
       const start = h.index, end = i + 1 < heads.length ? heads[i + 1].index : text.length;
       const before = text.slice(Math.max(0, start - 240), start).split(/\n\s*\n/).pop();
       const body = text.slice(start, end);
-      const sec = /static\s+const\s+string\s+SECTION\s*=\s*"(\w+)"/.exec(body);
+      const sec = /static\s+const\s+string\s+SECTION\s*=\s*"([\w.]+)"/.exec(body);
       const cls = {
         name: h[1], base: h[2] ?? null, path,
         configRoot: /configRoot\s*:\s*true/.test(before),
@@ -229,7 +230,7 @@ export function schemaVersion(serviceText) {
 /** The top-level keys the core owns: schemaVersion and each config class's section. */
 export function coreKeysOf(files) {
   const keys = new Set(["schemaVersion"]);
-  for (const c of parseClasses(files).values()) if (c.configRoot && c.section) keys.add(c.section);
+  for (const c of parseClasses(files).values()) if (c.configRoot && c.section && !c.section.includes(".")) keys.add(c.section);
   return keys;
 }
 
@@ -250,6 +251,7 @@ export function generate(files, serviceText, overrides, packs = []) {
     },
   };
   const example = { schemaVersion: version };
+  const nested = [];
   for (const c of sections) {
     const sp = {}, ex = {};
     for (const m of allMembers(classes, c)) {
@@ -261,11 +263,23 @@ export function generate(files, serviceText, overrides, packs = []) {
       else if (fs.type === "object") ex[key] = {};
       else if (fs.default !== undefined) ex[key] = fs.default;
     }
-    props[c.section] = {
+    const node = {
       type: "object", description: c.doc || `${c.name} owner section.`,
       properties: sp, additionalProperties: false, "x-class": c.name,
     };
-    example[c.section] = ex;
+    const dot = c.section.indexOf(".");
+    if (dot < 0) {
+      props[c.section] = node;
+      example[c.section] = ex;
+    } else {
+      nested.push({ parent: c.section.slice(0, dot), child: c.section.slice(dot + 1), node, ex });
+    }
+  }
+  // A dotted section is an object inside its parent's section (#2667); the parent must exist.
+  for (const n of nested) {
+    if (!props[n.parent]) throw new Error(`section ${n.parent}.${n.child} has no parent section ${n.parent}`);
+    props[n.parent].properties[n.child] = n.node;
+    example[n.parent][n.child] = n.ex;
   }
   for (const pk of packs) {
     for (const s of pk.sections) if (!s.problem) props[s.name] = sectionSchema(pk.pack, s);
@@ -413,15 +427,21 @@ export function readerProblems(files, schema) {
   const classes = parseClasses(files);
   const text = new Map(files.map((f) => [f.path, f.text]));
   const msgs = [];
+  // A dotted section (#2667) is an object inside its parent: it has its own class, reader and key list.
+  const targets = [];
   for (const [section, node] of Object.entries(schema.properties || {})) {
+    targets.push([section, node]);
+    for (const [k, p] of Object.entries(node.properties || {})) if (p["x-class"]) targets.push([`${section}.${k}`, p]);
+  }
+  for (const [section, node] of targets) {
     const cls = node["x-class"] && classes.get(node["x-class"]);
     if (!cls) continue;
     const src = text.get(cls.path) || "";
     if (!/\bApplyOwner\(/.test(src)) continue; // schema-only section, no owner reader yet
-    const levels = [{ name: section, keys: Object.keys(node.properties || {}) }];
+    const levels = [{ name: section, keys: Object.keys(node.properties || {}), nested: new Set(Object.entries(node.properties || {}).filter(([, p]) => p["x-class"]).map(([k]) => k)) }];
     for (const [k, p] of Object.entries(node.properties || {})) {
       const rec = p.additionalProperties && p.additionalProperties.properties;
-      if (rec) levels.push({ name: `${section}.${k} records`, keys: Object.keys(rec) });
+      if (rec) levels.push({ name: `${section}.${k} records`, keys: Object.keys(rec), nested: new Set() });
     }
     const lists = [];
     for (const m of src.matchAll(/array<string>\s+(\w+)\s*=\s*\{([^}]*)\}\s*;/g)) {
@@ -440,7 +460,7 @@ export function readerProblems(files, schema) {
       for (const k of list) {
         if (!lv.keys.includes(k)) msgs.push(`${lv.name}: the reader in ${cls.name} handles "${k}" but the schema has no such field`);
         // "op" is the overlay verb, read by the shared merge (LF_ConfigOverlay.ApplyRecords).
-        else if (k !== "op" && !new RegExp(String.raw`(?:\.(?:Read\w+|BeginRecords)\(|ApplyRecords\(\s*\w+\s*,)\s*"${k}"`).test(src)) msgs.push(`${lv.name}: "${k}" is in the reader key list but no Read*/BeginRecords call reads it`);
+        else if (k !== "op" && !lv.nested.has(k) && !new RegExp(String.raw`(?:\.(?:Read\w+|BeginRecords)\(|ApplyRecords\(\s*\w+\s*,)\s*"${k}"`).test(src)) msgs.push(`${lv.name}: "${k}" is in the reader key list but no Read*/BeginRecords call reads it`);
       }
     }
     levels.forEach((lv, i) => { if (!used.has(i)) msgs.push(`${lv.name}: the reader in ${cls.name} has no key list for this level`); });

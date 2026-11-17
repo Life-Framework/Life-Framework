@@ -329,6 +329,9 @@ schema, `/config` form and reference page list them. A `config.json` that names 
   configured mask, so a new organization gets it; a saved organization keeps its ranks. A
   `nameMin` above `nameMax` is refused (no name would be valid). The tunables are streamed; the
   rank defaults are not (the server builds an organization's ranks and replicates them).
+  `wars` is a nested object (`LF_OrgWarConfig`, #2667): `fee`, `answerSeconds`, `lengthSeconds`,
+  `cooldownSeconds`, `minMembers`, `warKillsAreMurder`, `tagWarKills`; the schema generator reads the
+  dotted `SECTION` "organizations.wars" as an object inside `organizations`.
 - `persistence` (`LF_PersistenceConfig`, no `.conf`): `enableAutosave` and `autosaveInterval`.
   The shipped values are the `LF_PersistenceManagerComponent` attributes; `Resolve` starts from them,
   so a prefab edit still works. Read once when the timer is scheduled, so it needs a restart

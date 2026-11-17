@@ -154,7 +154,7 @@ class LF_OrgConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"foundingFee", "nameMin", "nameMax", "offerMs", "maxCashMove", "priceExtraStorage", "priceProcessingSlot", "priceParkedVehicle", "deskRange", "heldGroundMaxPoints", "rankDefaults"};
+		array<string> ownerKeys = {"foundingFee", "nameMin", "nameMax", "offerMs", "maxCashMove", "priceExtraStorage", "priceProcessingSlot", "priceParkedVehicle", "deskRange", "heldGroundMaxPoints", "rankDefaults", "wars"};
 		reader.WarnUnknownKeys(ownerKeys);
 		int nameMin = m_iNameMin;
 		int nameMax = m_iNameMax;
