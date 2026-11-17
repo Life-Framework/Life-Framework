@@ -102,7 +102,10 @@ async function runSlug(args) {
   const addonDir = join(ROOT, "addons", spec.addon || "LifeFramework");
   const files = buildingFiles(spec);
   const prefabs = [files.store, files.building].filter(Boolean);
-  const world = loadWorld(ROOT);
+  // The world layers plus the pack's grid world, where a pack building's cell lives (tools\cli grid place --pack).
+  const { PACK_GRID_LAYERS } = await import("../../tools/lib/world-zones.mjs");
+  const packGrid = join(ROOT, ...PACK_GRID_LAYERS.split("/"));
+  const world = [...loadWorld(ROOT), ...(existsSync(packGrid) ? loadWorld(ROOT, packGrid) : [])];
   const named = flag(args, "--entity");
   const place = world.find((e) => (named ? e.name === named : prefabs.some((p) => (e.prefab || "").endsWith(p))));
   if (!place) {

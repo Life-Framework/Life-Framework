@@ -44,7 +44,6 @@ export const P = {
   benchOut: "Prefabs/Props/Furniture/BenchWooden_03.et",
   pot: "Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et",
   corkBoard: "Prefabs/Props/Civilian/NoticeBoardCork_01.et",
-  wallMap: "Prefabs/Props/Civilian/WallMap_01.et",
   extinguisher: "Prefabs/Props/Civilian/FireExtinguisher_01.et",
   fan: "Prefabs/Props/Civilian/Fan_01.et",
   ashtray: "Prefabs/Props/Civilian/Ashtray_01_Full_clear.et",
@@ -100,7 +99,7 @@ put(P.noticeV2, 1.7, F + 1.35, 1.43, 0);
 put(P.insurance, 2.25, F + 1.5, 1.4, 0, { scale: 0.9 });
 put(P.radioPoster, -2.2, F + 1.5, 3.0, 90);
 put(P.noticeV, -2.2, F + 1.5, 2.2, 90, { scale: 0.9 });
-put(P.wallMap, 2.42, F + 0.9, 2.9, 90); // the map's face is on its -z side: turned the other way from the posters
+put(P.painting2, 2.42, F + 1.55, 2.9, -90); // (WallMap_01 renders as a blank roll-down screen, so a picture hangs here)
 put(P.paintingBig, 2.42, F + 1.8, 5.4, -90);
 put(P.noticeV2, 2.42, F + 1.45, 1.8, -90, { scale: 0.9 });
 
@@ -164,7 +163,7 @@ put(P.box, -3.9, F1, -3.7, 15, { id: "box1" });
 put(P.box, -3.85, F1 + 0.4, -3.7, 40, { on: "box1" });
 put(P.box, 0.4, F1, -4.1, 0);
 put(P.fan, 7.1, F1 + 1, 5.4, 200, { on: "515ED7A4C7009476" });
-put(P.wallMap, 1.0, F1 + 0.95, 1.4, 0);
+put(P.paintingBig, 1.0, F1 + 1.6, 1.42, 0);
 put(P.corkBoard, 5.0, F1 + 0.6, 1.42, 0);
 put(P.noticeH, 4.7, F1 + 1.2, 1.43, 0);
 
