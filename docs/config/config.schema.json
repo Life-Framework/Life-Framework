@@ -953,6 +953,59 @@
             },
             "additionalProperties": false
           }
+        },
+        "wars": {
+          "type": "object",
+          "description": "The rules of an organization war: the fee, the answer window, how long a war lasts, the cooldown between the same two organizations, the member minimum and the two kill rules.",
+          "properties": {
+            "fee": {
+              "type": "integer",
+              "description": "Cash the declaring organization pays from its fund to declare a war",
+              "default": 5000,
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "answerSeconds": {
+              "type": "integer",
+              "description": "Seconds the challenged organization has to answer a declaration before it lapses",
+              "default": 600,
+              "minimum": 10,
+              "maximum": 86400
+            },
+            "lengthSeconds": {
+              "type": "integer",
+              "description": "Seconds a war lasts once answered (7200 is one in-game day at the 2 hour day)",
+              "default": 7200,
+              "minimum": 60,
+              "maximum": 604800
+            },
+            "cooldownSeconds": {
+              "type": "integer",
+              "description": "Seconds before the same two organizations may fight another war. 0 means no cooldown",
+              "default": 86400,
+              "minimum": 0,
+              "maximum": 2592000
+            },
+            "minMembers": {
+              "type": "integer",
+              "description": "Members each side needs to declare or answer a war",
+              "default": 3,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "warKillsAreMurder": {
+              "type": "boolean",
+              "description": "When on, a kill between organizations at war is murder like any other",
+              "default": false
+            },
+            "tagWarKills": {
+              "type": "boolean",
+              "description": "When on, a kill between organizations at war is tagged as a war kill in the record",
+              "default": true
+            }
+          },
+          "additionalProperties": false,
+          "x-class": "LF_OrgWarConfig"
         }
       },
       "additionalProperties": false,
@@ -1560,6 +1613,42 @@
       },
       "additionalProperties": false,
       "x-class": "LF_SystemsConfig"
+    },
+    "taxiFares": {
+      "type": "object",
+      "description": "Taxi fare numbers: Configs/Jobs/LF_TaxiFares.conf with the owner's `taxiFares` section layered over it.",
+      "properties": {
+        "floor": {
+          "type": "integer",
+          "description": "Taxi fare: the least a fare pays, and what a short hop pays",
+          "default": 80,
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "ratePerMetre": {
+          "type": "number",
+          "description": "Taxi fare: cash added per metre of straight-line distance beyond a short hop",
+          "default": 0.04,
+          "minimum": 0.001,
+          "maximum": 1000
+        },
+        "cap": {
+          "type": "integer",
+          "description": "Taxi fare: the most a fare pays, however far it went. Must not be below the floor",
+          "default": 300,
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "shortHopMetres": {
+          "type": "number",
+          "description": "Taxi fare: a drop-off this many metres or fewer from the pickup pays the floor only. 0 prices every metre",
+          "default": 100,
+          "minimum": 0,
+          "maximum": 10000
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_TaxiFareConfig"
     },
     "vehicles": {
       "type": "object",

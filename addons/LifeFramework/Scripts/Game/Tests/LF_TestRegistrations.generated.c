@@ -478,6 +478,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_OrgStaticReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgUpgradeUnwired(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_OrgWarConfig(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OutletSerial(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OutletSerialWired(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PackManifest(), LF_TestTier.LOGIC);
@@ -791,6 +792,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SystemsWorldPlaces(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SystemsWorldResources(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TaserSound(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_TaxiFare(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TaxiStandPlaces(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Terms(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TestCarsGrant(), LF_TestTier.WORLD);
