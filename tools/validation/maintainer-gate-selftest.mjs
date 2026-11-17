@@ -11,20 +11,20 @@
 // red-proof: before the fix this printed FAIL for every case below (ownBase, gate-warnings.mjs and the body cap did not
 //   exist; createPrGh passed --body) and exited 1 (2026-11-15); with the fix it passes.
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as gt from "../lib/gate-tier.mjs";
 import * as gw from "../lib/gate-warnings.mjs";
 import * as world from "../commands/world.mjs";
 import * as wt from "../wt.mjs";
 import { diffFiles } from "../lib/world-diff.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const fails = [];
 const check = (ok, msg) => { if (!ok) fails.push(msg); };
 
 // ---- (b) own change only: a temp repo whose local origin/main is stale.
-const dir = mkdtempSync(join(tmpdir(), "lf-maint-gate-"));
+const dir = scratchDir("lf-maint-gate-");
 const g = (...a) => {
   const r = spawnSync("git", ["-C", dir, "-c", "user.email=t@t", "-c", "user.name=t", ...a], { encoding: "utf8", windowsHide: true });
   if (r.status !== 0) throw new Error(`git ${a.join(" ")}: ${r.stderr}`);
@@ -172,7 +172,7 @@ if (typeof gw.applyGateWarnings === "function") {
     if (i >= 0) calls.at(-1).fileText = existsSync(args[i + 1]) ? readFileSync(args[i + 1], "utf8") : null;
     return { status: 0, stdout: "https://github.com/o/r/pull/7\n", stderr: "" };
   };
-  const root = mkdtempSync(join(tmpdir(), "lf-ghbody-"));
+  const root = scratchDir("lf-ghbody-");
   const body = "x".repeat(40000);
   let pr = null;
   try { pr = wt.createPrGh(root, { head: "ws/a", title: "t", body, base: "main" }, { run: fake, gh: "gh" }); } catch (e) { check(false, `createPrGh threw: ${e.message}`); }

@@ -8,8 +8,8 @@
 //
 // red-proof: 2026-11-17 with loneCrLines returning [], "a lone CR in a comment fails" printed FAIL.
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { scratchDir } from "../lib/scratch.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loneCrLines, minusTextMatcher } from "../lib/lone-cr.mjs";
@@ -21,7 +21,7 @@ const check = (ok, msg) => {
 };
 
 const validator = join(dirname(fileURLToPath(import.meta.url)), "validate-no-lone-cr.mjs");
-const dir = mkdtempSync(join(tmpdir(), "lf-no-lone-cr-"));
+const dir = scratchDir("lf-no-lone-cr-");
 const scripts = join(dir, "addons", "LifeFramework", "Scripts", "Game", "Feature", "Map");
 const tools = join(dir, "tools");
 for (const d of [scripts, tools]) mkdirSync(d, { recursive: true });

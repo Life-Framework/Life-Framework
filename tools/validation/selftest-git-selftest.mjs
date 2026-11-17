@@ -15,21 +15,21 @@
 //   missing) where the hermetic child's exits 0 on main; safeRemoveTree on the held folder throws EBUSY where
 //   removeScratch removes it once the holder exits. Both are asserted above, so each fixture is its own red.
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { describeRun, removeScratch, runGit } from "../lib/selftest-git.mjs";
 import { silentFailureNote } from "../lib/silent-failure.mjs";
 import { safeRemoveTree } from "../link-safety.mjs";
 import * as wt from "../wt.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);
 };
 const helperUrl = pathToFileURL(join(import.meta.dirname, "..", "lib", "selftest-git.mjs")).href;
-const root = mkdtempSync(join(tmpdir(), "lf-selftest-git-"));
+const root = scratchDir("lf-selftest-git-");
 
 try {
   // 1. A hostile machine config.

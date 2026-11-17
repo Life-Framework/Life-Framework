@@ -410,8 +410,9 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The tool the robber would use on this vault: "drill", "charge", or "" for none. A drill wins
-	//! over a charge so the charge is kept. toolItem is the drill or fence charge found, if any.
+	//! The tool the robber would use on this vault: "drill", "charge", or "" for none. A drill held in
+	//! the hands wins over a charge so the charge is kept; a drill only in the pack comes last (it
+	//! is the "hold it" hint when nothing else works). toolItem is the drill or fence charge found, if any.
 	static string PickTool(LF_BankVaultState vault, IEntity robber, out IEntity toolItem)
 	{
 		toolItem = null;
@@ -424,16 +425,16 @@ class LF_Bank
 		if (!inventory)
 			return "";
 
-		if (tools.Find(TOOL_DRILL) != -1)
+		// The drill in the hands is the one that works; a spare in the pack is not it, so it does not
+		// beat a keycard or charge the robber can use. A pack drill is the answer only when nothing
+		// else is usable, so the gate can still say "hold the drill".
+		bool wantsDrill = tools.Find(TOOL_DRILL) != -1;
+		if (wantsDrill)
 		{
-			array<IEntity> drills = LF_InventoryUtils.FindItemsByPrefab(inventory, DRILL_PREFAB);
-			if (!drills.IsEmpty())
+			IEntity held = LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID);
+			if (held)
 			{
-				// The drill in the hands is the one that works; a spare in the pack is not it.
-				toolItem = LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID);
-				if (!toolItem)
-					toolItem = drills[0];
-
+				toolItem = held;
 				return TOOL_DRILL;
 			}
 		}
@@ -455,6 +456,16 @@ class LF_Bank
 				toolItem = charges[0];
 
 			return TOOL_CHARGE;
+		}
+
+		if (wantsDrill)
+		{
+			array<IEntity> spares = LF_InventoryUtils.FindItemsByPrefab(inventory, DRILL_PREFAB);
+			if (!spares.IsEmpty())
+			{
+				toolItem = spares[0];
+				return TOOL_DRILL;
+			}
 		}
 
 		return "";

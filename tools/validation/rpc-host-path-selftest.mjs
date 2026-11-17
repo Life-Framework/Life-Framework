@@ -10,11 +10,11 @@
 // red-proof: 2026-11-17 with the hostBranch test in rpcAskSites forced to true, "a bare Rpc(RpcAsk_) is flagged"
 // printed FAIL.
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { rpcAskSites } from "./validate-rpc-host-path.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const check = (ok, msg) => {
@@ -38,7 +38,7 @@ const nested = wrap(`\tvoid A(bool b)\n\t{\n\t\tif (b)\n\t\t{\n\t\t\tif (Replica
 check(sites(nested).length === 1 && sites(nested)[0].hostBranch, "a branch nested in the method body counts");
 
 const validator = join(dirname(fileURLToPath(import.meta.url)), "validate-rpc-host-path.mjs");
-const dir = mkdtempSync(join(tmpdir(), "lf-rpc-host-"));
+const dir = scratchDir("lf-rpc-host-");
 const feature = join(dir, "addons", "LifeFramework", "Scripts", "Game", "Feature", "Demo");
 mkdirSync(feature, { recursive: true });
 const baseline = join(dir, "baseline.json");

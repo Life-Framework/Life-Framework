@@ -4,11 +4,11 @@
 // inputs: tools/merge/**, tools/config/**, tools/economy/profit-loops.mjs, .gitattributes
 // Does not boot the game and does not merge this worktree.
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pickThree } from "../merge/regen-config-schema.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const failures = [];
@@ -42,7 +42,7 @@ function git(cwd, ...args) {
 }
 
 function makeRepo(withAttributes) {
-  const dir = mkdtempSync(join(tmpdir(), "lf-cfg-schema-"));
+  const dir = scratchDir("lf-cfg-schema-");
   git(dir, "init", "-q", "-b", "main");
   cpSync(join(ROOT, "tools", "merge"), join(dir, "tools", "merge"), { recursive: true });
   mkdirSync(join(dir, "tools", "config"), { recursive: true });

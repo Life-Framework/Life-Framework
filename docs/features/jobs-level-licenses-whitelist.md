@@ -190,8 +190,14 @@
   a new entry. `MEDIC`, `CONNECT`, `NONE` (no roster; there is no medic faction type) and a uid
   already on the roster log an `LF_Debug.Warn` and report nothing.
 - ✅ **The job whitelist reads the faction roster by account uid** (2026-11-17, WORLD `whitelist/job-roster`, #2577): `IsWhitelistedForJob(accountUid, job)` passes when the job's faction roster (POLICE job, POLICE faction) holds the account uid, or the old per-job list does (read only, never written). `LF_PlayerJobComponent` and `LF_LicenseManagerComponent` pass `LF_Utils.GetAccountUID`, so a second character of an approved officer passes. Manual: see the PR.
-- ⚠️ Remaining: the legacy `LF_Whitelist`
-  lists, sign action and context actions still write an array nothing fills (#2412 items 2-5).
+- ✅ **The dead legacy whitelist sign action, client flags and GM context actions are gone**
+  (2026-11-17, WORLD `whitelist/legacy-gone`, #2576): `LF_WhitelistAction` (it needed
+  `LF_PlayerWhitelistComponent`, which no character carries, and its flags were set only on the
+  owning client), that component, and `LF_Enable/DisableWhitelistContextAction` (in no editor
+  config) are deleted. `EL_WhitelistSign` keeps `LF_SignReadAction`, so the sign is still readable and
+  no layer changed. `LF_WhitelistRespawnHandlerComponent` keeps the start migration and the CONNECT
+  join gate; its `OnPlayerSpawned` is an empty hook. Police duty reads `LF_WhitelistManager` and is
+  unaffected.
 - ✅ **Legacy whitelist files move into the roster once** (2026-11-17, WORLD
   `whitelist/legacy-migrate`, #2575): on game-mode start `LF_WhitelistRespawnHandlerComponent`
   passes each configured `LF_Whitelist` to `LF_WhitelistLegacyMigration.Migrate`. POLICE uids go to
@@ -200,8 +206,9 @@
   uids are counted and logged, not migrated. The legacy file is only read; a line in
   `$profile:LifeFramework/whitelist-legacy-migrated.txt`, written after the roster saved, stops a
   later start re-adding a uid an admin removed. An unreadable roster or failed save leaves the
-  file unmarked, so the next start retries. `AddNewUuidToFile`, `RemoveUUIDFromFile` and
-  `EnableWhitelistOnPlayer` no longer write the legacy file; a POLICE grant or removal writes the roster.
+  file unmarked, so the next start retries. `AddNewUuidToFile` and `RemoveUUIDFromFile` no longer
+  write the legacy file. To re-run it after restoring an older roster, delete the marker
+  (`docs/owner/rented-host.md` "Backups").
 
 ### `AdminChatChannel` — `Feature/Chat/AdminChatChannel.c`
 - ✅ **Server re-checks the admin role** (verified 2026-11-07):

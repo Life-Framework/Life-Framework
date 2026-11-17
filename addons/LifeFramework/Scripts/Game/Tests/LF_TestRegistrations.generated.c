@@ -297,6 +297,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HeldGroundLegacy(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HeldGroundRoundTrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutLeaseEmptyOrg(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HideoutLeaseIdle(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HideoutLoadRelock(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HideoutOrgBase(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HideoutRelock(), LF_TestTier.LOGIC);
@@ -806,6 +807,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VaultDrillCancel(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VaultDrillPayOnce(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VaultGraceRepair(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_VaultPickToolSpare(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VaultTool(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleBankRefusal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleChangeLocks(), LF_TestTier.WORLD);
@@ -836,6 +838,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_WantedPostersFeed(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WantedPostersStolen(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistChatResources(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_WhitelistLegacyGone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WhitelistLegacyMigrate(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_WhitelistLogic(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistCommandParse(), LF_TestTier.LOGIC);

@@ -276,6 +276,12 @@ from <ref>`). The string-table driver refuses a side it cannot parse whole
 and writes git's line merge with exit 1 instead. `merge-content-selftest`
 merges real branches and compares the result byte for byte (#1154, #1161).
 
+The registry driver (`regen-generated.mjs`) reads the three sides' test sources with one `ls-tree` per side and one
+`git cat-file --batch`, never a git child per file: on a loaded laptop a spawn costs about 230 ms, and the old per-file
+`git show` (about 2300 children for 760 tests) ran past the 240 s backstop on every merge, in `git merge` and in
+`wt ship`'s merge alike. `LF_MERGE_DRIVER_TRACE=<file>` appends `<ms> <command>` per child process, which is how to
+see where a slow merge goes; `merge-drivers-selftest` caps the git children at 12.
+
 - **`DIRTY` or `BEHIND`, worktree not LIVE.** In its worktree (or a temporary
   detached `Life-Framework-heal-<n>` worktree at the PR head when it is gone,
   removed afterwards with the junction-safe helper) it merges `origin/main` with
@@ -1015,6 +1021,8 @@ at idle they save nothing measurable (the client has not streamed the world yet)
 the world, the script heap and the physics are the 1 GB, and no flag shrinks them. So the pool's
 reserve per lowspec client is 800 MB instead of 850 (`pool.json` `sessionReserve`); the server's is
 unchanged at 600.
+
+**VRAM.** A client also takes GPU memory (reserve per client: lowspec 700 MB, full 1800 MB; `sessionReserveClientVramMb`), and the 8 GB laptop card runs out before its RAM with 2 full clients. `tools/lib/pool-vram.mjs` reads the free VRAM (`nvidia-smi`, bounded by a timeout); the queue's machine choice (`rankMachines`) and `vramGate` leave a machine without room for a client session while another has it. A test-lane job ignores VRAM, and an unreadable card (no `nvidia-smi`, a failed read) skips the rule and is logged once, so RAM alone decides (`tools/validation/pool-vram-selftest.mjs`).
 
 **What does free RAM is trimming.** A session waiting for the next harness command touches a
 fraction of its resident pages. `EmptyWorkingSet` (`tools/lib/ws-trim.mjs`) moves the rest to the

@@ -180,4 +180,13 @@
   the lock's house identifier on every push, empty included: a released door reads *Unowned* to everyone
   (`LF_HideoutDoorRules.View`), former members no longer see *Open*, and an empty id matches no house in
   `LF_HouseLockAction`. The `org_base` place goes with the lease and another organisation can lease the
-  site. Test `hideout/lease-empty-org` (WORLD). An inactivity expiry is H3 and a voluntary release verb H2 (#2533).
+  site. Test `hideout/lease-empty-org` (WORLD). A voluntary release verb is H2 (#2533).
+- 🧪 **A hideout lease lapses after 14 real days with no member online** (#2573, part of #2533, merged, in-dev):
+  each lease keeps the last time (unix seconds) a member of its organisation was connected, saved in the
+  `leaseidle` payload (save version 50). A server sweep every 5 minutes (`LF_Hideout.SweepIdle`) restarts
+  the clock of a lease whose organisation has a member connected (the site does not have to be visited) and
+  releases a lease idle longer than `LF_OrgConfig.HideoutLeaseIdleDays()` (owner key
+  `organizations.hideoutLeaseIdleDays`, default 14, 0 = never), logged
+  `[LFDebug:Hideout] released hideout=… org=… reason=idle N days`; the release frees the site like the
+  emptied-organisation release. An old save seeds the clock at the first load, and a saved clock already past
+  the limit at load (the server was down) gets one more day. Test `persist/hideout-lease-idle` (PERSISTENCE).
