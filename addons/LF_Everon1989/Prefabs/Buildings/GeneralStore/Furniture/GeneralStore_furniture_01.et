@@ -1,25 +1,10 @@
 GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_base.et" {
  ID "DB1FE05D3E3AE5AA"
  {
-  GenericEntity : "{00C9C0860D1D8A84}Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_DarkWood.et" {
-   ID "649AACECCE932556"
-   coords -4.989 7.599 1.517
-   angleY -105
-  }
   GenericEntity : "{0164749D6EAA4518}Prefabs/Props/Furniture/Bed_01.et" {
    ID "448D43FEC6844523"
    coords 5.126 4.299 2.105
    angleY -180
-  }
-  GenericEntity : "{078B9372FC15735D}Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_red.et" {
-   ID "5780FA6F9F8F2018"
-   coords -3.902 7.599 -4.361
-   angleY -105
-  }
-  GenericEntity : "{0BE3BDE3910436F2}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et" {
-   ID "55817458CBA26E54"
-   coords -4.899 7.599 2.463
-   angleY -179.449
   }
   GenericEntity : "{10D896F6F525B210}Prefabs/Props/Commercial/ShoppingBasket_01_pile.et" {
    ID "83ED7F340B3A46ED"
@@ -31,127 +16,19 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -0.7 0.2 0.023
    angleY -13
   }
-  GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
-   ID "A757886A8F001F3E"
-   coords -4.931 7.599 3.576
-   angleY -180
-  }
-  GenericEntity : "{163A4F4899E087E8}Prefabs/Props/Furniture/BenchKitchen_01/Dst/BenchKitchen_01_dst_Green.et" {
-   ID "CBC1E7C15F471C97"
-   coords -4.759 7.599 6.374
-   angleY -180
-  }
-  GenericEntity : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
-   ID "EDF00C747B14EF14"
-   coords -5.433 7.599 -0.195
-   angleY 90
-  }
-  GenericEntity : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
-   ID "EEC54189424A4D50"
-   coords -2.102 4.299 -4.289
-   angleY -90
-  }
-  GenericEntity : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
-   ID "756C94442FAB1C37"
-   coords -5.433 7.599 -0.949
-   angleY 90
-  }
-  GenericEntity : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
-   ID "B902D65F809EE083"
-   coords -2.119 4.299 -3.525
-   angleY -90
-  }
-  GenericEntity : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
-   ID "41FABC1CF000DC97"
-   coords -5.433 7.599 0.559
-   angleY 90
-  }
   GenericEntity : "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et" {
    ID "0303F5D14557DEC3"
    coords 5.403 0.295 -4.529
    angleY -105
   }
-  GenericEntity : "{1CA1A9D19D7C8445}Prefabs/Props/Furniture/Rack_01_Short.et" {
-   ID "8BFBD2FF7B704AF2"
-   coords -1.548 7.599 -1.869
-   angleY -180
-  }
-  GenericEntity : "{1ED9E780B8829B78}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_A.et" {
-   ID "7E95B9C877C2A5A5"
-   coords -1.384 4.299 2.859
-   angleY -180
-  }
-  GenericEntity : "{1ED9E780B8829B78}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_A.et" {
-   ID "269C5BEB52487884"
-   coords 5.735 4.299 6.427
-   angleY -90
-  }
-  GenericEntity : "{23EDC2B8CDEE124F}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_F.et" {
-   ID "5FCE791114F103B2"
-   coords -5.645 4.299 6.268
-   angleY 90
-  }
-  GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
-   ID "EACC2DF2BEC0B1AC"
-   coords 5.756 5.514 -4.774
-   angleY -90
-  }
-  GenericEntity : "{313CC1F195E06A6E}Prefabs/Props/Furniture/TVSet_01.et" {
-   ID "9938B7F65B8014C0"
-   coords 5.24 4.799 5.664
-   angleY -89.539
-  }
-  GenericEntity : "{34F74A7DBAD46974}Prefabs/Props/Furniture/LightWall_01.et" {
-   ID "24B63D739A67DA72"
-   coords 5.336 6.755 -3.319
-   angleY -180
-  }
-  GenericEntity : "{3CF7EAA0F05546FF}Prefabs/Props/Furniture/PhoneTable_01_Base.et" {
-   ID "3C4C001B5A75873A"
-   coords 4.571 5.299 3.931
-   angleY -30
-  }
   GenericEntity : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
    ID "D193C6F1D0F6B0A3"
    coords 1.881 4.299 5.789
-  }
-  GenericEntity : "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et" {
-   ID "17825B93E0483C23"
-   scale 1.8
-   coords -2.544 4.299 3.807
-   angleY 169.528
-  }
-  GenericEntity : "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et" {
-   ID "DA223CA75DEBBF03"
-   scale 2
-   coords -2.377 4.299 -5.572
-   angleY -105
-  }
-  GenericEntity : "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et" {
-   ID "C2E5CED0481CA90C"
-   scale 1.4
-   coords 5.213 4.299 6.829
-   angleY -105
   }
   GenericEntity : "{49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et" {
    ID "57D72065AA0E266E"
    coords 5.756 4.35 -4.782
    angleY -90
-  }
-  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "E98D82AB0597750D"
-   coords -0.878 7.599 2.655
-   angleY -105
-  }
-  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "2D85BE0C6AA28439"
-   coords -1.254 7.599 2.854
-   angleY -105
-  }
-  GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
-   ID "2F106CB626784625"
-   coords -1.199 7.599 2.527
-   angleY -60.231
   }
   GenericEntity : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
    ID "7459837E746AE051"
@@ -167,141 +44,11 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "408145C1D7B22599"
    coords 3.27 0.199 -0.445
   }
-  GenericEntity : "{62482F79CF1B97FD}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01.et" {
-   ID "7E524ACA23A15E8E"
-   coords 1.423 11.142 -2.662
-  }
-  GenericEntity : "{660BD816AA043589}Prefabs/Props/Furniture/Piano_01_Base.et" {
-   ID "1B956DBCA2FFF96B"
-   coords -5.767 4.299 4.768
-   angleY 90
-  }
-  GenericEntity : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
-   ID "D7F6BA7E77DAA187"
-   coords 4.381 7.599 3.726
-  }
   GenericEntity : "{6E431E6FBE567DA0}Prefabs/Props/Commercial/Posters/PosterSingle_A1_Cans_V4.et" {
    ID "AA724E05CC7608B9"
    scale 2
    coords 5.754 2.749 3.543
    angleY -90
-  }
-  GenericEntity : "{6FC9E85153AE41B1}Prefabs/Props/Civilian/WoodKindling_Crate_01.et" {
-   ID "6CEAA200CCB0EC9F"
-   coords 2.789 7.599 2.644
-   angleY -82.464
-  }
-  GenericEntity : "{728DD36004461456}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_B.et" {
-   ID "BC2A8C9D3C660663"
-   coords -1.669 4.299 5.727
-   angleY 90
-  }
-  GenericEntity : "{76E3962626F4B633}Prefabs/Props/Furniture/CoatRack_02.et" {
-   ID "E1ACF5B26091491E"
-   coords -5.696 4.595 0.545
-   angleY 90
-  }
-  GenericEntity : "{81629CC060EFF293}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_130.et" {
-   ID "6491A6282B201824"
-   coords 0.445 4.934 -0.171
-  }
-  GenericEntity : "{81629CC060EFF293}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_130.et" {
-   ID "93A20901921EADA1"
-   coords 0.256 4.872 7.235
-   angleY -180
-  }
-  GenericEntity : "{81629CC060EFF293}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_130.et" {
-   ID "2D5E0BE41A140819"
-   coords -3.93 4.83 7.235
-   angleY -180
-  }
-  GenericEntity : "{81629CC060EFF293}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_130.et" {
-   ID "408A33C8A23EDDC5"
-   coords 3.911 4.883 7.235
-   angleY -180
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "F0BC5AFAC5F40B0C"
-   coords 2.332 8.867 -2.661
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "09EC4B419A107A0F"
-   coords -3.022 5.596 -0.185
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "AF48605CE3F54638"
-   coords -1.685 5.589 5.791
-   angleY 90
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "CF3807D19FA6599D"
-   coords 2.764 5.581 0.474
-   angleY 90
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "E76F06C6D24E2FFC"
-   coords 5.164 5.547 -3.006
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "8279A080446B4CE1"
-   coords 2.464 5.567 0.502
-   angleY -90
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "6F8BAE3B59D2F76C"
-   coords -1.536 5.664 -3.264
-   angleY 90
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "3368D3815AE1780C"
-   coords -2.979 5.548 2.909
-   angleY -180
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "0232B9D28FF01E65"
-   coords -3.018 5.594 -0.485
-   angleY -180
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "2F14117A1186D5CF"
-   coords -1.985 5.598 5.806
-   angleY -90
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "591D0835D5C6A63F"
-   coords 3.51 1.477 -7.932
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "E71E5A146CDF9A25"
-   coords -3.018 5.633 3.209
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "A05773B503AD4D90"
-   coords -1.536 1.509 0.435
-   angleY 90
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "F819234BFE5D0293"
-   coords 5.14 1.513 -3.32
-   angleY -180
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "008E1833A9D5999D"
-   coords 2.464 8.898 -3.394
-   angleY -88.188
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "7F18BC7047A870D8"
-   coords 5.17 5.542 -3.327
-   angleY -180
-  }
-  GenericEntity : "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et" {
-   ID "849D9C9873C9EB34"
-   coords 5.131 1.521 -3.019
-  }
-  GenericEntity : "{8CAC93B6377EC1D4}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_Base.et" {
-   ID "1E2AC2C00BEFC219"
-   coords -0.315 4.317 -0.717
   }
   GenericEntity : "{8DBE697AA61EA7E3}Prefabs/Structures/Civilian/MessageBoard/MessageBoardSmall_01/MessageBoardSmall_01.et" {
    ID "32C7459207F09A42"
@@ -333,47 +80,9 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.54 1.438 2.624
    angleY 90
   }
-  GenericEntity : "{97CCD43778D034CF}Prefabs/Props/Furniture/LightCeiling_01.et" {
-   ID "D18166B8127FAB57"
-   coords 0.747 7.299 5.349
-   angleY -105
-  }
-  GenericEntity : "{97CCD43778D034CF}Prefabs/Props/Furniture/LightCeiling_01.et" {
-   ID "3B56286DB1D1CA35"
-   coords -3.728 7.299 5.349
-   angleY -105
-  }
   GenericEntity : "{9E6BB1D7AA5D0FEB}Prefabs/Props/Furniture/Stove_01.et" {
    ID "E05E6FB24280B9EC"
    coords 0.472 4.299 3.094
-  }
-  GenericEntity : "{A0683DD8CEF09277}Prefabs/Props/Decorations/Paintings/PaintingBig_01_base.et" {
-   ID "5F463ADEB8622306"
-   coords 2.764 6.166 -1.005
-   angleY 90
-  }
-  GenericEntity : "{A319C11D446D88B3}Prefabs/Props/Furniture/Dresser_01.et" {
-   ID "E1BCCFA1C9BC11A1"
-   coords 5.749 4.299 3.523
-  }
-  GenericEntity : "{A319C11D446D88B3}Prefabs/Props/Furniture/Dresser_01.et" {
-   ID "59A34DE5773F826E"
-   coords 2.798 4.299 -5.413
-   angleY 90
-  }
-  GenericEntity : "{A319C11D446D88B3}Prefabs/Props/Furniture/Dresser_01.et" {
-   ID "37618E13BF22A2D4"
-   coords -2.995 4.299 -0.496
-   angleY -180
-  }
-  GenericEntity : "{A7E2685F2EC63A0D}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_65.et" {
-   ID "0133F3FBA307C960"
-   coords 4.986 4.878 -7.924
-  }
-  GenericEntity : "{AA25BAA17DCF0A0A}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_D.et" {
-   ID "1B5278CA0ABB3924"
-   coords 5.722 4.299 -0.946
-   angleY -90
   }
   GenericEntity : "{AC98FF880BD0F2C2}Prefabs/Props/Furniture/Chair_01/Chair_01_base.et" {
    ID "40DC118E3C0AE852"
@@ -384,11 +93,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "F4901C6A3A944255"
    coords 2.746 1.072 -0.936
    angleY -89.904
-  }
-  GenericEntity : "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et" {
-   ID "8CFDF8E724A767A2"
-   coords -5.208 7.599 4.501
-   angleY -105
   }
   GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
    ID "99FA558F12836A72"
@@ -450,72 +154,25 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "E2F847B2E845F7E1"
    coords 3.296 0.199 -3.003
   }
-  GenericEntity : "{BBBC235B9B053092}Prefabs/Props/Furniture/Armchair_02.et" {
-   ID "2D03BE371077D819"
-   coords 3.173 4.299 6.393
-   angleY 105
-  }
   SCR_DestructibleEntity : "{BE5D837410B95C7A}Prefabs/Props/Commercial/SignPub_01_V1.et" {
    ID "F23622724EC9AF49"
    coords -5.085 0.199 2.757
    angleY -165
-  }
-  GenericEntity : "{C0CCCB68B7147DEC}Prefabs/Props/Furniture/Chair_02/Chair_02_Base.et" {
-   ID "80C91495E0109DCA"
-   coords -2.739 4.299 6.292
-  }
-  GenericEntity : "{C0CCCB68B7147DEC}Prefabs/Props/Furniture/Chair_02/Chair_02_Base.et" {
-   ID "02A68C9CD23474CB"
-   coords 1.33 4.299 6.435
-   angleY 90
-  }
-  GenericEntity : "{C260F0E07274ACA1}Prefabs/Props/Furniture/Boiler_01.et" {
-   ID "82E929355C11CAB3"
-   coords 2.772 6.406 -4.466
-   angleY 90
   }
   GenericEntity : "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_01_red.et" {
    ID "4B773E9B74128461"
    coords 3.296 0.199 -6.651
    angleY -15
   }
-  GenericEntity : "{CB6D914A907F4378}Prefabs/Props/Furniture/WashingMachine_01.et" {
-   ID "013524F9F31B32B3"
-   coords 4.505 4.299 -7.846
-  }
   GenericEntity : "{CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et" {
    ID "C26B5E2BCC66D014"
    coords -1.986 4.299 2.385
    angleY 179.223
   }
-  GenericEntity : "{D0BD7A55306FC46B}Prefabs/Props/Furniture/Faucet_01/Faucet_01.et" {
-   ID "48A18782B5CD8EDF"
-   coords 2.259 5.5 3.096
-  }
-  GenericEntity : "{D0BD7A55306FC46B}Prefabs/Props/Furniture/Faucet_01/Faucet_01.et" {
-   ID "4F3B9AB7F6CACCD1"
-   coords 5.756 5.419 -4.774
-   angleY -90
-  }
-  GenericEntity : "{D19D5E8950BC4DD1}Prefabs/Props/Furniture/ChairOffice_01.et" {
-   ID "20A38988C147EB81"
-   coords -4.656 4.299 4.922
-   angleY -105
-  }
   GenericEntity : "{D2990433DD2D8B43}Prefabs/Props/Furniture/Bathtub_01.et" {
    ID "8B7D2F0855BB82D1"
    coords 2.764 4.299 -5.766
    angleY -180
-  }
-  GenericEntity : "{D5247F493225CA91}Prefabs/Props/Civilian/WateringCan_01.et" {
-   ID "F29F1A720B34E05A"
-   coords 2.333 7.599 2.553
-   angleY -105
-  }
-  GenericEntity : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
-   ID "3369192FCAB95F68"
-   coords 5.525 5.299 3.7
-   angleY -111.558
   }
   GenericEntity : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
    ID "4D158536F3B121A3"
@@ -540,19 +197,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "3F19C1D862D0C62F"
    coords 5.749 0.199 -0.453
    angleY -90
-  }
-  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
-   ID "FACDDB37D5516027"
-   coords -4.693 7.599 -2.976
-   angleY -105
-  }
-  GenericEntity : "{DAFA84A74B550694}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_95.et" {
-   ID "84DC2BBEA127681D"
-   coords -3.762 4.884 -6.222
-  }
-  GenericEntity : "{DEE73EC3DF43A836}Prefabs/Props/Furniture/Shower_01_addon.et" {
-   ID "50FD0DB941103AD6"
-   coords 3.239 5.225 -7.934
   }
   GenericEntity : "{E66C895D628B01A2}Prefabs/Props/Furniture/Kitchen_01_base.et" {
    ID "A19F2471F12E3514"
@@ -585,31 +229,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   GenericEntity : "{F49E9F098C6069AD}Prefabs/Props/Furniture/Toilet_01.et" {
    ID "AEFE901C3FA19C8F"
    coords 5.752 4.299 -6.124
-   angleY -90
-  }
-  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "C61C4B08DA8DD2C3"
-   coords -0.55 7.599 3.161
-   angleY -105
-  }
-  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "FDE0CB8076188545"
-   coords -0.084 7.599 3.615
-   angleY -14.2
-  }
-  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "44633E192FBE8C9E"
-   coords -0.805 7.599 3.848
-   angleY -3.152
-  }
-  GenericEntity : "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et" {
-   ID "137EFD339F71951B"
-   coords 5.709 7.599 0.324
-   angleY -90
-  }
-  GenericEntity : "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et" {
-   ID "2434374D46EA131C"
-   coords -4.965 4.299 -3.779
    angleY -90
   }
   GenericEntity : "{F6D1E024E82511F9}Prefabs/Props/Crates/Crate_01_base.et" {
@@ -683,11 +302,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    angleY -90
   }
   GenericEntity : "{F6D1E024E82511F9}Prefabs/Props/Crates/Crate_01_base.et" {
-   ID "1A2B627742BD3A24"
-   coords -3.87 7.599 2.962
-   angleY -105
-  }
-  GenericEntity : "{F6D1E024E82511F9}Prefabs/Props/Crates/Crate_01_base.et" {
    ID "C852DDA911F7AB6F"
    coords 5.441 0.427 1.294
    angleY -180
@@ -701,16 +315,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "768A11312640838C"
    coords 3.055 0.199 -4.18
    angleY 90
-  }
-  GenericEntity : "{F77F7F847CC6455F}Prefabs/Props/Furniture/Bookshelf_01/Bookshelf_01.et" {
-   ID "781835A84749A295"
-   coords 5.774 4.299 0.558
-   angleY -90
-  }
-  GenericEntity : "{FA2806411E2B8AE7}Prefabs/Props/Furniture/Desk_01_Base.et" {
-   ID "68F5A155B9F360A3"
-   coords -3.892 4.299 7.105
-   angleY -180
   }
   GenericEntity : "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et" {
    ID "F1BEF346E4345B68"
@@ -734,2281 +338,546 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "D06F913916627D7E"
-   coords 1.642 0.307 2.506
+   coords 1.642 0.307 3.131
    angleY -90
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "D01E654261CE5403"
-   coords 1.648 0.307 2.629
+   coords 1.648 0.307 3.879
    angleY -72
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "D0C40496211E0288"
-   coords 1.648 0.307 2.761
+   coords 1.648 0.307 4.636
    angleY 148
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
    ID "D0719AC8D211EB0E"
-   coords 1.648 0.307 2.885
+   coords 1.945 0.307 2.385
    angleY 137
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "D08A79F31ECA9902"
-   coords 1.645 0.307 3.004
+   coords 1.942 0.307 3.939
    angleY -137
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D00BF2FC844F50A5"
-   coords 1.649 0.307 3.129
-   angleY -31
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0E322ED2254BE8B"
-   coords 1.648 0.307 3.261
-   angleY 40
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D07D082BE8DEA00B"
-   coords 1.638 0.307 3.389
-   angleY 28
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D037AA9C9EA2FF57"
-   coords 1.649 0.307 3.515
-   angleY -6
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0356B3C9AE33480"
-   coords 1.646 0.307 3.63
-   angleY -81
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0ACD87551AC8BCE"
-   coords 1.642 0.307 3.755
-   angleY -42
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0D33896C77EACB1"
-   coords 1.645 0.307 3.887
-   angleY -176
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0BEE4D07F0494DD"
-   coords 1.647 0.307 4.01
-   angleY 23
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0CE12043451B8C6"
-   coords 1.647 0.307 4.139
-   angleY -153
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D09E76E54DD9E733"
-   coords 1.638 0.307 4.263
-   angleY 68
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0D97C808AEFF55C"
-   coords 1.643 0.307 4.384
-   angleY 8
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D02C57D7309FB38B"
-   coords 1.646 0.307 4.512
-   angleY 3
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0F304307834F1D7"
-   coords 1.644 0.307 4.631
-   angleY -179
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0017B32DED579A4"
-   coords 1.94 0.307 2.388
-   angleY -69
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0CB991C7C1FD819"
-   coords 1.938 0.307 2.646
-   angleY -52
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0024B97CB2F67EE"
-   coords 1.936 0.307 2.901
-   angleY -111
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0B4EF1F1971ED87"
-   coords 1.942 0.307 3.168
-   angleY -159
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D05D70F651432D9F"
-   coords 1.934 0.307 3.43
-   angleY -121
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0BF339603D4B7A6"
-   coords 1.945 0.307 3.689
-   angleY -13
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0BA5DB793EDCA53"
-   coords 1.936 0.307 3.946
-   angleY -167
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0B48200DD34E70B"
-   coords 1.939 0.307 4.209
-   angleY 130
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0AB09DBE109B85C"
-   coords 1.934 0.307 4.464
-   angleY -133
-  }
   GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0A6CB1A04E78F17"
+   ID "D070E57D1081A8AD"
    coords 1.962 0.633 2.431
    angleY 166
   }
   GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D07821C6BD1A6A19"
-   coords 1.962 0.633 2.571
+   ID "D0EB4D1170474E6B"
+   coords 1.962 0.633 3.271
   }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D01E9D0304901F27"
-   coords 1.962 0.633 2.709
+   ID "D0B08165CC74A287"
+   coords 1.962 0.633 4.109
    angleY -2
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0D3F9D16F7D5F36"
-   coords 1.962 0.633 2.856
-   angleY 10
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D02E181B11DC9547"
-   coords 1.962 0.633 2.994
-   angleY 84
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D02B0ACA8DDF524F"
-   coords 1.962 0.633 3.127
-   angleY 46
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0C24670EB16BAFB"
-   coords 1.962 0.633 3.27
-   angleY 8
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0260F4CA06292E7"
-   coords 1.962 0.633 3.412
-   angleY 2
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D085B4F1BCC563CF"
-   coords 1.962 0.633 3.554
-   angleY -28
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D001EF4DBB12152E"
-   coords 1.962 0.633 3.687
-   angleY 109
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0919D8C812A8805"
-   coords 1.962 0.633 3.833
-   angleY -147
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D066766668976F33"
-   coords 1.962 0.633 3.969
-   angleY 9
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D08362DFAFB6192E"
-   coords 1.962 0.633 4.112
-   angleY 64
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D0F589A176FB354B"
-   coords 1.962 0.633 4.248
-   angleY 109
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D08217B2348E1502"
-   coords 1.962 0.633 4.388
-   angleY -34
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0E07B3D9F0B3903"
-   coords 1.962 0.633 4.528
-   angleY -133
-  }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0873F7810F2CAF6"
+   ID "D0D3B7CA50988DBA"
    coords 2.51 0.307 4.627
    angleY 83
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0555798EAE4FEBA"
-   coords 2.505 0.307 4.498
+   ID "D0351D13F12C3348"
+   coords 2.505 0.307 3.873
    angleY -56
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D06D710F34085502"
-   coords 2.502 0.307 4.375
+   ID "D0F73E3E4673A6DC"
+   coords 2.502 0.307 3.125
    angleY 28
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D06E33EF14DD8F8E"
-   coords 2.506 0.307 4.251
+   ID "D09DD623153D9BA1"
+   coords 2.506 0.307 2.376
    angleY 168
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0A713FE0D4027DB"
-   coords 2.509 0.307 4.13
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "D004B3B83C5B5EEF"
+   coords 2.212 0.307 4.63
    angleY 28
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0BBCE055D38E1D5"
-   coords 2.506 0.307 4.004
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+   ID "D09FF94D6A1990DC"
+   coords 2.209 0.307 3.069
    angleY -54
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0BF648D1259F5D9"
-   coords 2.501 0.307 3.879
-   angleY 22
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0E7579D4796FCB7"
-   coords 2.505 0.307 3.747
-   angleY 95
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0C96A8F3F56D759"
-   coords 2.5 0.307 3.621
-   angleY 130
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0D1F8B9D0D4072D"
-   coords 2.505 0.307 3.507
-   angleY -114
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0D09843B02672FE"
-   coords 2.5 0.307 3.374
-   angleY 85
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D04A3750D409A16F"
-   coords 2.504 0.307 3.247
-   angleY 175
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0D28F8C02EDC477"
-   coords 2.505 0.307 3.124
-   angleY 122
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0815B5BBC733ED2"
-   coords 2.502 0.307 2.999
-   angleY 71
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D038D9CB8BAF343F"
-   coords 2.51 0.307 2.88
-   angleY 87
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D03CCE268DB28384"
-   coords 2.504 0.307 2.757
-   angleY 111
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0D8D13A77E09C3D"
-   coords 2.499 0.307 2.624
-   angleY 14
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0219C7FAB23849B"
-   coords 2.507 0.307 2.503
-   angleY 55
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D05FA81D35BE6252"
-   coords 2.5 0.307 2.376
-   angleY 3
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D041BDF80AB2E5F0"
-   coords 2.211 0.307 4.63
-   angleY -56
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D05A64C0F0E34C09"
-   coords 2.213 0.307 4.367
-   angleY 116
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D015FE34B51D01EC"
-   coords 2.207 0.307 4.108
-   angleY 101
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0E8D5C87D17E9D7"
-   coords 2.205 0.307 3.849
-   angleY -59
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D057D23B141EBB3B"
-   coords 2.21 0.307 3.588
-   angleY 75
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0DF577B8D8D8C60"
-   coords 2.204 0.307 3.331
-   angleY -24
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0062AA0411F428D"
-   coords 2.212 0.307 3.066
-   angleY 124
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0960C5FB2341F19"
-   coords 2.204 0.307 2.807
-   angleY 158
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D095E1A4C489D169"
-   coords 2.214 0.307 2.546
-   angleY -153
-  }
   GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D09730358A1FC9C0"
+   ID "D05257A9CAC0FDB3"
    coords 2.186 0.633 4.584
    angleY 89
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D02A7EBBECC60F1C"
-   coords 2.186 0.633 4.444
+   ID "D07096D389368B58"
+   coords 2.186 0.633 3.744
    angleY -80
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D01FCE386A516C76"
-   coords 2.186 0.633 4.303
+   ID "D0F9A8F40CCB1EA4"
+   coords 2.186 0.633 2.903
    angleY 164
   }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0BFD02F643A656F"
-   coords 2.186 0.633 4.165
-   angleY 118
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D00CD4ADB6F414EA"
-   coords 2.186 0.633 4.024
-   angleY 49
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D03816E002ACD603"
-   coords 2.186 0.633 3.88
-   angleY 30
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D04A908F262FB180"
-   coords 2.186 0.633 3.737
-   angleY 29
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D031D6A55D42FD0C"
-   coords 2.186 0.633 3.599
-   angleY 140
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D05E287B9BE98D98"
-   coords 2.186 0.633 3.462
-   angleY -16
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D052151B86AC47A3"
-   coords 2.186 0.633 3.32
-   angleY -56
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0FCCB9DC5859F26"
-   coords 2.186 0.633 3.184
-   angleY -37
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0E1ED0416A27078"
-   coords 2.186 0.633 3.036
-   angleY 30
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0BD661EB0A790ED"
-   coords 2.186 0.633 2.904
-   angleY -35
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D0BADD5A5A879B7D"
-   coords 2.186 0.633 2.758
-   angleY -138
-  }
   GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D09DFD5FD62AA959"
-   coords 2.186 0.633 2.616
-   angleY 158
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0190DA1DA2875B6"
-   coords 2.186 0.633 2.481
-   angleY -164
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0C97A3346B249B7"
+   ID "D0F44F6DA0B68DAA"
    coords 2.186 1.025 4.58
    angleY -44
   }
   GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0A1A49FFD56F5CD"
-   coords 2.186 1.025 4.443
+   ID "D0C26063EEEC1851"
+   coords 2.186 1.025 3.743
    angleY -76
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D07CEED65057EB9C"
-   coords 2.186 1.025 4.304
+   ID "D0C2BC8273CBCB4F"
+   coords 2.186 1.025 2.904
    angleY -137
   }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D09A1FA97E971811"
-   coords 2.186 1.025 4.162
-   angleY 5
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0F9BF1D89048671"
-   coords 2.186 1.025 4.017
-   angleY 132
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D00A12ED60FA6E40"
-   coords 2.186 1.025 3.878
-   angleY 54
-  }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D068AE80A8875DA4"
-   coords 2.186 1.025 3.735
-   angleY -95
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0B4164580176B83"
-   coords 2.186 1.025 3.605
-   angleY -159
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0EDC405CD82C466"
-   coords 2.186 1.025 3.459
-   angleY 134
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D08302E1CFBC35C6"
-   coords 2.186 1.025 3.319
-   angleY 111
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0EA9CBBA8B5FC42"
-   coords 2.186 1.025 3.18
-   angleY -160
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0699DBC017E89A1"
-   coords 2.186 1.025 3.042
-   angleY 64
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D02DE36999FC24DA"
-   coords 2.186 1.025 2.904
-   angleY 99
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D0A21CAFAEFA6E04"
-   coords 2.186 1.025 2.762
-   angleY 104
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D08A560DB255569F"
-   coords 2.186 1.025 2.623
-   angleY 20
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D0A3D221EFCCA6C1"
-   coords 2.186 1.025 2.482
-   angleY 37
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0969F2BE3AA2A9D"
+   ID "D01D76F184784422"
    coords 1.641 0.307 4.867
    angleY -121
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D09945404710FDF5"
-   coords 1.647 0.307 4.989
+   ID "D04C84B0EBBAB561"
+   coords 1.647 0.307 5.614
    angleY 67
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D046B11E042CDF0A"
-   coords 1.641 0.307 5.117
+   ID "D07E989F948E9A30"
+   coords 1.641 0.307 6.367
    angleY 83
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0E5132C647F7EAB"
-   coords 1.645 0.307 5.241
+   ID "D080AF49E46CFE67"
+   coords 1.645 0.307 7.116
    angleY -27
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D08F7F8CC65640B0"
-   coords 1.648 0.307 5.366
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "D0775F54DA59E420"
+   coords 1.945 0.307 4.866
    angleY -38
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0FB33860BDE191C"
-   coords 1.648 0.307 5.484
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "D0ED3D86094D4599"
+   coords 1.945 0.307 6.419
    angleY -81
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0CCB75D1B3F5DBE"
-   coords 1.647 0.307 5.611
-   angleY -48
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D054835CF6521DB0"
-   coords 1.64 0.307 5.741
-   angleY 72
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0E1E311F23BB6A1"
-   coords 1.648 0.307 5.864
-   angleY -113
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D035AACF9ABC920B"
-   coords 1.637 0.307 5.982
-   angleY 21
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D094EF3EDCA070A2"
-   coords 1.648 0.307 6.116
-   angleY -68
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0120D08FB110F96"
-   coords 1.644 0.307 6.237
-   angleY 127
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0A7A40CA62A4BF8"
-   coords 1.637 0.307 6.365
-   angleY 8
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D03C5F33B3A0A16A"
-   coords 1.648 0.307 6.485
-   angleY -79
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0E6A8203A6BE5B7"
-   coords 1.644 0.307 6.607
-   angleY -133
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D06E81974972A169"
-   coords 1.643 0.307 6.733
-   angleY 42
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0E4D13FE34A8CA6"
-   coords 1.641 0.307 6.865
-   angleY -180
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0C6982CF5194E60"
-   coords 1.645 0.307 6.989
-   angleY 136
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D038EB704199114E"
-   coords 1.641 0.307 7.113
-   angleY -37
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D03DE8B0E01C1FFC"
-   coords 1.935 0.307 4.867
-   angleY -62
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D024E1553A6C1837"
-   coords 1.941 0.307 5.121
-   angleY 47
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0EA7E0977798EF6"
-   coords 1.938 0.307 5.383
-   angleY -78
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0C98C42D5C15629"
-   coords 1.936 0.307 5.637
-   angleY 5
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0CE3463DE0EB5EA"
-   coords 1.937 0.307 5.904
-   angleY 80
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D055DECAB74A3D59"
-   coords 1.943 0.307 6.162
-   angleY 56
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D09B659DE8534F93"
-   coords 1.944 0.307 6.424
-   angleY 84
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0575B6E7796FD5A"
-   coords 1.939 0.307 6.68
-   angleY 8
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0C7FD56FA2EFB2C"
-   coords 1.937 0.307 6.946
-   angleY 88
-  }
   GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0DDEC0B612DE000"
+   ID "D0E99934FB8BF45D"
    coords 1.962 0.633 4.91
    angleY -48
   }
   GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D0E143B5D1AAE310"
-   coords 1.962 0.633 5.047
+   ID "D06B0BDA65D82B0B"
+   coords 1.962 0.633 5.747
    angleY -10
   }
   GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D0FC8272247DDDB4"
-   coords 1.962 0.633 5.185
+   ID "D00C01FF40F96E9A"
+   coords 1.962 0.633 6.585
    angleY 106
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D09D8AC20A5A8AF8"
-   coords 1.962 0.633 5.331
-   angleY -65
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D00986F2FE9B3D4D"
-   coords 1.962 0.633 5.465
-   angleY 39
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D004A98758D053F7"
-   coords 1.962 0.633 5.609
-   angleY 82
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0AA72AAA220B798"
-   coords 1.962 0.633 5.745
-   angleY -101
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D07762FA3C96BECB"
-   coords 1.962 0.633 5.889
-   angleY 28
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0FFAAE859268EB2"
-   coords 1.962 0.633 6.027
-   angleY 58
-  }
   GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0D90D86D467F4F5"
-   coords 1.962 0.633 6.172
-   angleY -75
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D033E57E8FCE4885"
-   coords 1.962 0.633 6.308
-   angleY 65
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D0DD86FC44D2A7ED"
-   coords 1.962 0.633 6.45
-   angleY 69
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0AA146A018A5CCF"
-   coords 1.962 0.633 6.591
-   angleY -179
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D04DD4AC2CD2C997"
-   coords 1.962 0.633 6.731
-   angleY 56
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0C69177D1EB1C63"
-   coords 1.962 0.633 6.865
-   angleY 140
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0F88EF887759A30"
-   coords 1.962 0.633 7.013
-   angleY 95
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D09576E9293CCBF4"
+   ID "D080095E948E2542"
    coords 2.133 0.307 7.106
    angleY 54
   }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D073238E89C75BF5"
-   coords 2.133 0.307 6.964
+   ID "D0101267377E6A16"
+   coords 2.133 0.307 6.264
    angleY -170
   }
   GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D01F67A9667139D7"
-   coords 2.133 0.307 6.828
+   ID "D03021EEECD4963A"
+   coords 2.133 0.307 5.428
    angleY 19
   }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D09954E050BD0808"
-   coords 2.133 0.307 6.681
-   angleY -150
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D06F94C08D804922"
-   coords 2.133 0.307 6.542
-   angleY -16
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D01B3400C338108B"
-   coords 2.133 0.307 6.403
-   angleY 136
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0D63502B311DB29"
-   coords 2.133 0.307 6.265
-   angleY 144
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0C1D94B6616B00C"
-   coords 2.133 0.307 6.123
-   angleY 9
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0E80CC222EACDE5"
-   coords 2.133 0.307 5.981
-   angleY 166
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D05D3477225A707D"
-   coords 2.133 0.307 5.848
-   angleY -31
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D09D3C1288D731AC"
-   coords 2.133 0.307 5.7
-   angleY -162
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D09A970F793D8720"
-   coords 2.133 0.307 5.569
-   angleY 126
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0E801AF87B44D3F"
-   coords 2.133 0.307 5.424
-   angleY 39
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0E7A7713030F135"
-   coords 2.133 0.307 5.284
-   angleY -35
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D059147853336398"
-   coords 2.133 0.307 5.143
-   angleY 177
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0D09D8374C91935"
-   coords 2.133 0.307 5.002
-   angleY 49
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D03AB570B6E76ACD"
-   coords 2.133 0.307 4.865
-   angleY 160
-  }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0EFFA1FD5B649CD"
+   ID "D0B89E0EBB5044F0"
    coords 5.32 0.306 2.265
    angleY 25
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D093990CDAE67EAF"
-   coords 5.315 0.306 2.383
+   ID "D0EA12DF8B5EC0E4"
+   coords 5.315 0.306 3.008
    angleY 99
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0FDB5A7FC517048"
-   coords 5.323 0.306 2.507
+   ID "D006F9F02C4A354C"
+   coords 5.323 0.306 3.757
    angleY 158
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D08694D4672628F2"
-   coords 5.323 0.306 2.639
+   ID "D05BB04A79DCD4D2"
+   coords 5.323 0.306 4.514
    angleY 87
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0FAA6AFF9A4DBBE"
-   coords 5.324 0.306 2.761
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "D019F7E55D571466"
+   coords 5.621 0.306 2.261
    angleY -107
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0C61B1708F45B35"
-   coords 5.315 0.306 2.883
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+   ID "D04DE2CD541D467E"
+   coords 5.612 0.306 3.818
    angleY -6
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0B022054B209553"
-   coords 5.325 0.306 3.004
-   angleY -110
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0546A7678DCC242"
-   coords 5.318 0.306 3.133
-   angleY 109
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0273F86804A23E3"
-   coords 5.314 0.306 3.258
-   angleY 165
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D04BC96754BADFBC"
-   coords 5.321 0.306 3.381
-   angleY 109
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0E48B1FFE85433D"
-   coords 5.323 0.306 3.505
-   angleY 45
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0BAC71525713ECF"
-   coords 5.32 0.306 3.629
-   angleY -35
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0BA62297F917F9C"
-   coords 5.315 0.306 3.764
-   angleY -148
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D07618EACCBEF885"
-   coords 5.32 0.306 3.881
-   angleY 69
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0599D8AE8271589"
-   coords 5.315 0.306 4.013
-   angleY 2
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D05625DE3BEF75E6"
-   coords 5.322 0.306 4.136
-   angleY -159
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0224591940B43C7"
-   coords 5.315 0.306 4.262
-   angleY 33
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0CCCBB1B9B68D60"
-   coords 5.314 0.306 4.383
-   angleY -117
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0DA2E40AE7682CE"
-   coords 5.325 0.306 4.505
-   angleY 93
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0D3C1F62DC729AD"
-   coords 5.613 0.306 2.257
-   angleY 95
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D038E30FF079882C"
-   coords 5.62 0.306 2.524
-   angleY -171
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0A61BA728874EA0"
-   coords 5.614 0.306 2.786
-   angleY -116
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D084C9D0CE8092B2"
-   coords 5.62 0.306 3.035
-   angleY 100
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0E94BD632C1D2A9"
-   coords 5.621 0.306 3.305
-   angleY 112
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D08B32DEC7BA1BCC"
-   coords 5.617 0.306 3.555
-   angleY -65
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0AA5F04CD0AB605"
-   coords 5.616 0.306 3.817
-   angleY -68
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D021AEC043D0A8FD"
-   coords 5.612 0.306 4.076
-   angleY -95
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D08DC1C7F8C02BEF"
-   coords 5.612 0.306 4.339
-   angleY 36
-  }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D032F2A7D1DF3BF1"
+   ID "D02CDCE73C3D5BF9"
    coords 5.639 0.632 2.309
    angleY -50
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D020F19FA23994F5"
-   coords 5.639 0.632 2.444
+   ID "D07D420918CE5E33"
+   coords 5.639 0.632 3.144
    angleY 39
   }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D08D6EBEB73A8DA1"
-   coords 5.639 0.632 2.582
+   ID "D0986B39DE1DDF55"
+   coords 5.639 0.632 3.982
    angleY -94
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0096D4A659F5C83"
-   coords 5.639 0.632 2.726
-   angleY -142
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0288FE7C85A0AEA"
-   coords 5.639 0.632 2.869
-   angleY -132
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D04F16EA74E12596"
-   coords 5.639 0.632 3.008
-   angleY 58
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0155DA1FC3D362B"
-   coords 5.639 0.632 3.146
-   angleY -54
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0BF866CADE52B92"
-   coords 5.639 0.632 3.291
-   angleY 168
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D07CE61E2F68248A"
-   coords 5.639 0.632 3.43
-   angleY -83
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0CBE5816C6D737C"
-   coords 5.639 0.632 3.567
-   angleY -157
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0B215A4064BB7B5"
-   coords 5.639 0.632 3.702
-   angleY -176
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0850C99C4CF645F"
-   coords 5.639 0.632 3.851
-   angleY 161
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D09AB24AF3FB3FA1"
-   coords 5.639 0.632 3.986
-   angleY -6
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D042E97007394E90"
-   coords 5.639 0.632 4.126
-   angleY 124
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0966FF29D30E967"
-   coords 5.639 0.632 4.269
-   angleY 103
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D009B01248B14A95"
-   coords 5.639 0.632 4.411
-   angleY -120
-  }
   GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
-   ID "D0C79B2A46A74161"
+   ID "D0D810957176D6F5"
    coords -1.286 0.316 4.145
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "D0A11C42DA140CFF"
+   ID "D0DBF7B24CC83E46"
    coords -1.286 0.316 3.642
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D004E9F7D53EDBFB"
+   ID "D06EA97EB6A03F2A"
    coords -1.197 1.778 4.432
    angleY 121
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0C54331F16AA6B4"
-   coords -1.196 1.778 4.307
+   ID "D0FE3471A0CB83F4"
+   coords -1.196 1.778 3.682
    angleY -60
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0D549D05AFB42CE"
-   coords -1.203 1.778 4.181
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "D000817C39FFC26F"
+   coords -1.344 1.778 4.431
    angleY -125
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D09F045E3CC9F1CC"
-   coords -1.194 1.778 4.057
-   angleY 66
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0A9D725BF7F128B"
-   coords -1.2 1.778 3.939
-   angleY -108
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0A663B83AEA28A4"
-   coords -1.2 1.778 3.81
-   angleY -88
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0C0FCA35B0E701E"
-   coords -1.198 1.778 3.679
-   angleY 161
-  }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D09C890EDC41D88F"
-   coords -1.198 1.778 3.559
-   angleY 59
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0B9A9C4A8385DBB"
-   coords -1.192 1.778 3.431
-   angleY -141
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D098648ED56523DC"
-   coords -1.338 1.778 4.43
-   angleY 77
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D091F4EFA018E118"
-   coords -1.339 1.778 4.177
-   angleY 89
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D05A5B525527E3D6"
-   coords -1.342 1.778 3.913
-   angleY 68
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0671776337A3435"
-   coords -1.333 1.778 3.658
-   angleY 80
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0372776844B1BAE"
-   coords -1.34 1.778 3.391
-   angleY -28
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0B3118C8874EB6B"
+   ID "D07132F076CE057B"
    coords -1.191 2.271 4.432
    angleY -30
   }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D041E33A6FBE7587"
-   coords -1.197 2.271 4.23
+  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
+   ID "D01922B6F7502B60"
+   coords -1.331 2.271 4.43
    angleY -142
   }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D09D5AE121FD06E7"
-   coords -1.193 2.271 4.036
-   angleY 145
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0C57117AE46352C"
-   coords -1.195 2.271 3.832
-   angleY 35
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0D4753A5A396B3D"
-   coords -1.197 2.271 3.64
-   angleY 6
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D08479F292F762C6"
-   coords -1.2 2.271 3.431
-   angleY 91
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D0293A51AABB659E"
-   coords -1.325 2.271 4.433
-   angleY 83
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D0C92D6D3D94CDB1"
-   coords -1.331 2.271 4.179
-   angleY -107
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0D0F780D41C4E5A"
-   coords -1.322 2.271 3.933
-   angleY -174
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D05E21C541989F28"
-   coords -1.327 2.271 3.684
-   angleY -97
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D059E676CA5D7D03"
-   coords -1.326 2.271 3.433
-   angleY -43
-  }
   GenericEntity : "{F3421D70839BA998}Prefabs/Props/Crates/CardboardBox/CardboardBox_04.et" {
-   ID "D0E30F4DC5C6F7DF"
+   ID "D04557345985E84B"
    coords -1.287 0.316 5.599
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "D01DAEFA966EF71F"
+   ID "D048BF6B35A296B3"
    coords -1.287 0.316 5.096
    angleY -180
   }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0FC620212169312"
+   ID "D06A7EBEFD46CFAE"
    coords -1.201 1.778 5.886
    angleY 84
   }
   GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0F2A003690673D9"
-   coords -1.192 1.778 5.749
+   ID "D0DFB0982A2CC26F"
+   coords -1.192 1.778 5.074
    angleY -102
   }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0A78016ACB7B949"
-   coords -1.194 1.778 5.614
+  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
+   ID "D080D2115FDDE19B"
+   coords -1.335 1.778 5.884
    angleY -69
   }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D09FA86B296BDB78"
-   coords -1.2 1.778 5.484
-   angleY -122
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0932C4F4541A33A"
-   coords -1.195 1.778 5.343
-   angleY 106
-  }
   GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D0B3ECD8729C0715"
-   coords -1.2 1.778 5.215
-   angleY -114
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0C907D4938996D6"
-   coords -1.192 1.778 5.074
-   angleY -139
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0A7D89CE076AFF6"
-   coords -1.2 1.778 4.94
-   angleY -146
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D080A83B70D90761"
-   coords -1.202 1.778 4.807
-   angleY 111
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D012578DBEB22368"
-   coords -1.339 1.778 5.887
-   angleY 144
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0077682314843CE"
-   coords -1.334 1.778 5.587
-   angleY -153
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0C5132897916536"
-   coords -1.341 1.778 5.29
-   angleY 122
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0E3E5A62B84DFF2"
-   coords -1.341 1.778 4.985
-   angleY -63
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D08D75906005D6FA"
+   ID "D092701644B4A038"
    coords -1.19 2.271 5.884
    angleY 10
   }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D08B1BAD23483946"
-   coords -1.192 2.271 5.69
+  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
+   ID "D034DF620F272534"
+   coords -1.326 2.271 5.89
    angleY 72
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D08C59B1857D5A3F"
-   coords -1.2 2.271 5.489
-   angleY 73
-  }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D087726A019FDEE0"
-   coords -1.193 2.271 5.294
-   angleY 9
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0FF73B3A5FB1C64"
-   coords -1.19 2.271 5.084
-   angleY -99
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D08C5BCA76F82F3F"
-   coords -1.19 2.271 4.887
-   angleY 70
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0B14A6450785257"
-   coords -1.325 2.271 5.89
-   angleY 32
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D02195FB03ADF8A2"
-   coords -1.333 2.271 5.64
-   angleY -104
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D06BCE3C739F544D"
-   coords -1.326 2.271 5.385
-   angleY -53
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D0DC0D167556BE06"
-   coords -1.331 2.271 5.143
-   angleY -51
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D00FC167F5C99828"
-   coords -1.325 2.271 4.891
-   angleY 164
-  }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "D0F086B35C94D9F9"
+   ID "D0FE032696B96EC1"
    coords 1.324 0.316 -2.738
    angleY 90
   }
   GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "D02DA281E55F6D16"
+   ID "D0CE564EBD8468BF"
    coords 1.827 0.316 -2.738
    angleY -90
   }
   GenericEntity : "{941CEFF0C87EAD84}Prefabs/Props/S2/S2_Bread/S2_Bread.et" {
-   ID "D0DF542C89E32679"
+   ID "D0E649999BE63E3E"
    coords 1.204 0.792 -2.647
   }
   GenericEntity : "{941CEFF0C87EAD84}Prefabs/Props/S2/S2_Bread/S2_Bread.et" {
-   ID "D05BD66FA6D0A29D"
+   ID "D0F2D4A7FFF9A9CC"
    coords 1.191 0.892 -2.647
    angleY -4
   }
   GenericEntity : "{941CEFF0C87EAD84}Prefabs/Props/S2/S2_Bread/S2_Bread.et" {
-   ID "D04D585D34F2B98C"
+   ID "D075F9713F694CBD"
    coords 1.624 0.792 -2.647
   }
   GenericEntity : "{941CEFF0C87EAD84}Prefabs/Props/S2/S2_Bread/S2_Bread.et" {
-   ID "D043D9E872CD140C"
+   ID "D0FFDB9EA92B198D"
    coords 1.622 0.892 -2.647
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0C99939EFBF342A"
+   ID "D031EA9F49836DA4"
    coords 1.036 0.792 -2.805
    angleY -102
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D025F8A21F1EC05A"
-   coords 1.336 0.792 -2.805
-   angleY 27
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0676E66F984F123"
-   coords 1.639 0.792 -2.793
-   angleY 15
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0388B3CB5BC26A2"
-   coords 1.936 0.792 -2.799
-   angleY -146
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D07B6C1922BE3037"
+   ID "D0AAA0336BDD5FF4"
    coords 1.034 1.285 -2.643
    angleY 49
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0083593F3D552DA"
-   coords 1.159 1.285 -2.643
+   ID "D084054266EEA2D6"
+   coords 1.784 1.285 -2.643
    angleY 135
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D01D5302C5749992"
-   coords 1.283 1.285 -2.649
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "D0BAF1E0D4B397F6"
+   coords 1.033 1.285 -2.791
    angleY 69
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D03480F14525B25B"
-   coords 1.404 1.285 -2.646
-   angleY -19
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D047498410F7DA59"
-   coords 1.539 1.285 -2.652
-   angleY 85
-  }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D019F931CFD97397"
-   coords 1.653 1.285 -2.642
-   angleY 11
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D03B9E0101F1776E"
-   coords 1.785 1.285 -2.645
-   angleY -89
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D018DAC6AB335459"
-   coords 1.915 1.285 -2.649
-   angleY 3
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0E461DA42626D8B"
-   coords 2.036 1.285 -2.65
-   angleY -59
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0938A38775AF4D2"
-   coords 1.029 1.285 -2.794
-   angleY -147
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0DFE260A467963C"
-   coords 1.29 1.285 -2.793
-   angleY -38
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0A6391C4E8CE9AD"
-   coords 1.552 1.285 -2.794
-   angleY 101
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0CA0111DC09DD3D"
-   coords 1.813 1.285 -2.786
-   angleY 140
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0BF853E892623A3"
-   coords 2.078 1.285 -2.785
-   angleY -30
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0D031AC4D963445"
+   ID "D0AD4BFFBD80E223"
    coords 1.039 1.778 -2.644
    angleY 6
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0958E4F85B57ED4"
-   coords 1.161 1.778 -2.652
+   ID "D09F475D9070D4CC"
+   coords 1.786 1.778 -2.652
    angleY -51
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0EA54EA64DD723B"
-   coords 1.282 1.778 -2.649
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "D0FA56BE268F7111"
+   coords 1.032 1.778 -2.79
    angleY 36
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D05D8EF9259FD737"
-   coords 1.41 1.778 -2.648
-   angleY 121
-  }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D07E518CEE7E3903"
-   coords 1.533 1.778 -2.654
-   angleY 156
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D036FF928D7211DF"
-   coords 1.663 1.778 -2.644
-   angleY -10
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0D476B5D1EB92EA"
-   coords 1.781 1.778 -2.643
-   angleY 47
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D00401D7437131A0"
-   coords 1.905 1.778 -2.643
-   angleY -149
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D034EAC76D22639D"
-   coords 2.04 1.778 -2.649
-   angleY 55
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0CED697DAB1AC3E"
-   coords 1.035 1.778 -2.784
-   angleY 80
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0FB4DDED6492EBE"
-   coords 1.293 1.778 -2.784
-   angleY 79
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D01E3C62D209DB3A"
-   coords 1.553 1.778 -2.788
-   angleY -136
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0ED8FC3C611E515"
-   coords 1.812 1.778 -2.785
-   angleY 111
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D02ED6B33A58DD51"
-   coords 2.073 1.778 -2.792
-   angleY 82
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0475FFAADA581E0"
+   ID "D02E632112D18D00"
    coords 1.031 2.271 -2.648
    angleY 3
   }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D0A3EFDE896A240F"
-   coords 1.23 2.271 -2.644
+  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
+   ID "D0B1EBFD4B2B8D73"
+   coords 1.03 2.271 -2.778
    angleY -111
   }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0918B7E65FD6EBF"
-   coords 1.43 2.271 -2.647
-   angleY -25
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D048C905E36B9B6D"
-   coords 1.631 2.271 -2.651
-   angleY 157
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0F41CFE5F05DB2D"
-   coords 1.829 2.271 -2.645
-   angleY 8
-  }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D063CAEBC1EBD976"
-   coords 2.036 2.271 -2.644
-   angleY 5
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D03A982C8E67B123"
-   coords 1.033 2.271 -2.777
-   angleY -177
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0ACB368A61EE797"
-   coords 1.29 2.271 -2.783
-   angleY -49
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D0EAC22AB402B60E"
-   coords 1.537 2.271 -2.774
-   angleY 20
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D030A271D8A562B8"
-   coords 1.784 2.271 -2.783
-   angleY -66
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D004D9DF9FD58089"
-   coords 2.035 2.271 -2.785
-   angleY -120
-  }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "D0BEAB066141FF3F"
+   ID "D06EE0BF6E66171A"
    coords 5.531 0.316 -1.426
    angleY -180
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "D06E28FBDCF01251"
+   ID "D0835323E87E04D3"
    coords 5.531 0.316 -0.923
    angleY -180
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0D93F5754823E1D"
+   ID "D076CCBCF0648A32"
    coords 5.435 0.792 -1.72
    angleY -45
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0BECD0A8AE06E60"
-   coords 5.436 0.792 -1.587
+   ID "D085CDE48DD26355"
+   coords 5.436 0.792 -0.962
    angleY 14
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D027996F30699579"
-   coords 5.442 0.792 -1.463
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+   ID "D046F1BEA8B3C614"
+   coords 5.584 0.792 -1.713
    angleY -168
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D07EE4551DBF59BF"
-   coords 5.445 0.792 -1.346
-   angleY -22
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D052F5F2A64C89A4"
-   coords 5.445 0.792 -1.216
-   angleY 42
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D01C3665F569B66B"
-   coords 5.439 0.792 -1.085
-   angleY -20
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D013921ED2E0BCD6"
-   coords 5.435 0.792 -0.972
-   angleY -146
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0A22DF54246D5B0"
-   coords 5.445 0.792 -0.844
-   angleY 106
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D05D380744E3A7FF"
-   coords 5.436 0.792 -0.722
-   angleY -26
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0E51A22C15B4A33"
-   coords 5.583 0.792 -1.717
-   angleY -37
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0435D05DB900F1B"
-   coords 5.582 0.792 -1.451
-   angleY 26
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D01D3F55132131C1"
-   coords 5.589 0.792 -1.193
-   angleY -56
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0D65D2B2B7E2F5B"
-   coords 5.585 0.792 -0.93
-   angleY -177
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D037CB791FA7F323"
-   coords 5.578 0.792 -0.674
-   angleY -175
-  }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0968D94D1D49DA6"
+   ID "D0208CC4AF24321C"
    coords 5.442 1.285 -1.721
    angleY 94
   }
   GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D028ACA45D3090A3"
-   coords 5.442 1.285 -1.584
+   ID "D0F3502C13A9510D"
+   coords 5.442 1.285 -0.909
    angleY 126
   }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D094BA773E4AEDA6"
-   coords 5.443 1.285 -1.45
+  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
+   ID "D0055B6278087687"
+   coords 5.585 1.285 -1.72
    angleY -124
   }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D035974019CFF1CB"
-   coords 5.444 1.285 -1.314
-   angleY 62
-  }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0AE6FB9925D76BD"
-   coords 5.439 1.285 -1.179
-   angleY 87
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0121F158D45B47D"
-   coords 5.447 1.285 -1.038
-   angleY -48
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0944291A59B5676"
-   coords 5.442 1.285 -0.906
-   angleY -3
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D088EFC6E7BF7C03"
-   coords 5.443 1.285 -0.774
-   angleY 145
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0A8A1D348200FEA"
-   coords 5.438 1.285 -0.631
-   angleY 65
-  }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D0CDE3CBDB7B0B5A"
-   coords 5.589 1.285 -1.712
-   angleY -86
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D090E943AC5EB09B"
-   coords 5.58 1.285 -1.419
-   angleY 29
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D082311D11D160EB"
-   coords 5.579 1.285 -1.113
-   angleY 145
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0A1443577F08B97"
-   coords 5.586 1.285 -0.81
-   angleY -106
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0FD1018F087E03A"
+   ID "D0DF9DC1577E10EE"
    coords 5.445 1.778 -1.711
    angleY 125
   }
   GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D058E03AE2E7701C"
-   coords 5.446 1.778 -1.586
+   ID "D05AE5222E831F01"
+   coords 5.446 1.778 -0.911
    angleY 35
   }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0BA0154F324B4C1"
-   coords 5.439 1.778 -1.444
+  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
+   ID "D0736E9F885F7403"
+   coords 5.58 1.778 -1.714
    angleY -40
   }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D02B6DA1B4691E83"
-   coords 5.44 1.778 -1.317
-   angleY -118
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D037573A17E8F582"
-   coords 5.437 1.778 -1.178
-   angleY 131
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D042BB0B4CBC1028"
-   coords 5.438 1.778 -1.047
-   angleY 160
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0EF0AE54F757B39"
-   coords 5.436 1.778 -0.905
-   angleY 176
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D04D228DE2F81122"
-   coords 5.443 1.778 -0.767
-   angleY 39
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0FF692497E39BE8"
-   coords 5.439 1.778 -0.631
-   angleY 37
-  }
   GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D05F8A81CB4E04F2"
-   coords 5.58 1.778 -1.718
-   angleY -68
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D09285F478B18603"
-   coords 5.587 1.778 -1.418
-   angleY -15
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0A9A6BAA88B9459"
-   coords 5.58 1.778 -1.118
-   angleY 172
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D065E8E6E8699A12"
-   coords 5.581 1.778 -0.816
-   angleY 33
-  }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D0409D65775C6E38"
+   ID "D088FA46739A1368"
    coords 5.434 2.271 -1.711
    angleY -62
   }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0DBB4AD7A942F14"
-   coords 5.437 2.271 -1.52
+  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
+   ID "D044411DBE2AD658"
+   coords 5.571 2.271 -1.72
    angleY 117
   }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D02B4596CD292B35"
-   coords 5.442 2.271 -1.32
-   angleY -156
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D02D08B0BC36778A"
-   coords 5.435 2.271 -1.111
-   angleY 29
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0E3C32DBB050D12"
-   coords 5.435 2.271 -0.917
-   angleY 157
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D04A7ACA2660C69B"
-   coords 5.435 2.271 -0.721
-   angleY 121
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D0696A6006CE94BE"
-   coords 5.578 2.271 -1.712
-   angleY -119
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D09FC2E6EFC1424C"
-   coords 5.571 2.271 -1.464
-   angleY 137
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0DF8B976A4D7E4D"
-   coords 5.574 2.271 -1.214
-   angleY 165
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D015BA9C647AEBA8"
-   coords 5.571 2.271 -0.963
-   angleY 140
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D0BFD95485B69701"
-   coords 5.578 2.271 -0.722
-   angleY -42
-  }
   GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "D0266176D914D620"
+   ID "D0E263AEBFF3FDD0"
    coords 5.527 0.316 5.084
   }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "D0FC250F206B51B1"
+   ID "D0870097978C453A"
    coords 5.527 0.316 5.587
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D015C58B8C84701B"
+   ID "D0B12636732B958C"
    coords 5.438 1.778 4.79
    angleY -7
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D078BE5D2A6FDC9D"
-   coords 5.438 1.778 4.916
+   ID "D0F1B2784F0DE40D"
+   coords 5.438 1.778 5.541
    angleY 32
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0315912FFAE0A26"
-   coords 5.442 1.778 5.04
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "D00C36B8C4A42D6B"
+   coords 5.583 1.778 4.79
    angleY -150
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D03075D4C1F19563"
-   coords 5.436 1.778 5.173
-   angleY -144
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0FE96F58B79E2A1"
-   coords 5.436 1.778 5.289
-   angleY -4
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D06EA614CABFE8D2"
-   coords 5.442 1.778 5.414
-   angleY -13
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D024D7E27DF8DF16"
-   coords 5.439 1.778 5.546
-   angleY -62
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0549037C0A8BAA6"
-   coords 5.437 1.778 5.667
-   angleY 16
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D08DE6E23891F920"
-   coords 5.443 1.778 5.799
-   angleY 69
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D07A1FBB4E92245B"
-   coords 5.576 1.778 4.799
-   angleY -165
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0B4C6648B05A094"
-   coords 5.577 1.778 5.052
-   angleY 101
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D06462E8A920CEBC"
-   coords 5.573 1.778 5.311
-   angleY -122
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D02D9D4E78F130F7"
-   coords 5.578 1.778 5.571
-   angleY -150
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D071F4C361278B32"
-   coords 5.579 1.778 5.84
-   angleY 128
   }
   GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D03B11C973DAFBB3"
+   ID "D07D100BA1D23D3C"
    coords 5.438 2.271 4.797
    angleY -55
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D00DAA8C0AEBF6E1"
-   coords 5.44 2.271 5
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "D0D9FE7CFEE32A57"
+   coords 5.574 2.271 4.8
    angleY -14
   }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D066B9007F9A2761"
-   coords 5.434 2.271 5.196
-   angleY 114
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D07BD01E1A1F9D1B"
-   coords 5.438 2.271 5.397
-   angleY 61
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D090D4CC6EDB4A9F"
-   coords 5.441 2.271 5.592
-   angleY 129
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D00C75D6F88C7DD3"
-   coords 5.438 2.271 5.793
-   angleY -125
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0110C512BB3C4C2"
-   coords 5.564 2.271 4.791
-   angleY 134
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D0E2E9260FE3599D"
-   coords 5.567 2.271 5.042
-   angleY -162
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D08EEEF19E25D9F3"
-   coords 5.575 2.271 5.29
-   angleY 12
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D0C1AD8AF33B3A45"
-   coords 5.568 2.271 5.546
-   angleY 85
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D06C43F2328EBA09"
-   coords 5.569 2.271 5.793
-   angleY -174
-  }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "D0D8AF99BD7C7297"
+   ID "D04549A1168E2CDE"
    coords 2.742 0.318 -2.791
    angleY 90
   }
   GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
-   ID "D01B3A19AA736097"
+   ID "D0C23407557A20E8"
    coords 2.827 0.318 -2.791
    angleY 90
   }
   GenericEntity : "{941CEFF0C87EAD84}Prefabs/Props/S2/S2_Bread/S2_Bread.et" {
-   ID "D01EE1AACEF72B77"
+   ID "D0FCE3861691F864"
    coords 2.622 0.795 -2.695
   }
   GenericEntity : "{941CEFF0C87EAD84}Prefabs/Props/S2/S2_Bread/S2_Bread.et" {
-   ID "D0EDEC7ED35C9C12"
+   ID "D05231F2ADE526B5"
    coords 2.625 0.895 -2.695
    angleY -4
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0F7F310F75E7257"
+   ID "D06099203713194F"
    coords 2.451 0.795 -2.838
    angleY -128
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0FE7B10BD7FE6CC"
-   coords 2.758 0.795 -2.849
-   angleY 134
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D085E4A360C5011C"
-   coords 3.056 0.795 -2.84
-   angleY -162
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0F242839BC536EF"
+   ID "D073E25087A1C70A"
    coords 2.455 1.292 -2.702
    angleY -71
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D043316D5E396BB1"
-   coords 2.583 1.292 -2.699
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+   ID "D0391B44E0C620A7"
+   coords 2.458 1.292 -2.837
    angleY 76
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D07FD363BA41DDF3"
-   coords 2.7 1.292 -2.692
-   angleY 153
-  }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0E848EC20B5B576"
-   coords 2.823 1.292 -2.693
-   angleY 8
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D08D79CA8ACAF3BC"
-   coords 2.948 1.292 -2.693
-   angleY -148
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D03E426825E23ECC"
-   coords 3.072 1.292 -2.699
-   angleY -98
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D02121EB2260A1E1"
-   coords 2.447 1.292 -2.839
-   angleY 171
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D05CBF68EB7E4FD4"
-   coords 2.715 1.292 -2.83
-   angleY -20
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D032449DD7BC6A62"
-   coords 2.978 1.292 -2.83
-   angleY 144
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0D5D1107CEDB475"
+   ID "D08158DA251120D8"
    coords 2.456 1.781 -2.696
    angleY -39
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0B97B4B1D8D34E3"
-   coords 2.573 1.781 -2.698
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+   ID "D060107769FF4941"
+   coords 2.448 1.781 -2.836
    angleY 38
   }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D05D5BC0CF8C1AA6"
-   coords 2.706 1.781 -2.694
-   angleY -61
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0B9A4798D55E347"
-   coords 2.823 1.781 -2.696
-   angleY 170
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0933A1087B96D0C"
-   coords 2.951 1.781 -2.696
-   angleY 90
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D057D4CE5478E937"
-   coords 3.08 1.781 -2.697
-   angleY -36
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D078B218E61F0D6F"
-   coords 2.45 1.781 -2.837
-   angleY 173
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D04A67E598E06C72"
-   coords 2.709 1.781 -2.839
-   angleY 81
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D053A71DBB0436A8"
-   coords 2.975 1.781 -2.831
-   angleY -173
-  }
   GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D070D859BB9D2731"
+   ID "D05E0C00960D9658"
    coords 2.446 2.274 -2.7
    angleY -140
   }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0FC5F96AC667550"
-   coords 2.651 2.274 -2.7
+  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
+   ID "D01914C99C79D767"
+   coords 2.451 2.274 -2.828
    angleY 155
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0D2197CD274CB36"
-   coords 2.855 2.274 -2.699
-   angleY -70
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D048F620915A4449"
-   coords 3.048 2.274 -2.699
-   angleY -67
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0B428072F2228A7"
-   coords 2.447 2.274 -2.825
-   angleY -46
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D0AFC74B12F4DEBE"
-   coords 2.702 2.274 -2.824
-   angleY 13
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0F8D62CC0152197"
-   coords 2.949 2.274 -2.82
-   angleY -135
-  }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "D034D7FA5A87A248"
+   ID "D0E655765C756EAD"
    coords 5.547 0.318 -2.484
   }
   GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
-   ID "D0249857B476F293"
+   ID "D06D4FBBFB3C5544"
    coords 5.547 0.318 -2.399
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0B7AF58718DB8F5"
+   ID "D0ACF4CBCE3D4675"
    coords 5.455 0.795 -2.772
    angleY -156
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D055699E09A9E4B5"
-   coords 5.455 0.795 -2.648
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "D005A2C2700A8CD7"
+   coords 5.594 0.795 -2.773
    angleY 163
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D031A71F8462ECA2"
-   coords 5.454 0.795 -2.523
-   angleY -60
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0FC00AC8B010FF1"
-   coords 5.447 0.795 -2.394
-   angleY 66
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D06B7FA88942BCC6"
-   coords 5.454 0.795 -2.27
-   angleY 132
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0DFAEC0F568F91A"
-   coords 5.45 0.795 -2.152
-   angleY -180
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D0C944BE5CA293ED"
-   coords 5.585 0.795 -2.77
-   angleY -180
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0EF2ABCB88351C4"
-   coords 5.595 0.795 -2.517
-   angleY -18
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D07AEAD8119C4643"
-   coords 5.597 0.795 -2.252
-   angleY 56
-  }
   GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0E77F8BD135EBE8"
+   ID "D0603C52B3CAC66F"
    coords 5.456 1.292 -2.77
    angleY 86
   }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0BB2EDD6FA8577E"
-   coords 5.448 1.292 -2.635
+  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
+   ID "D0117E4ECC9796AD"
+   coords 5.586 1.292 -2.77
    angleY -80
   }
   GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0CC596BCC928148"
-   coords 5.453 1.292 -2.501
-   angleY 94
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0A6AFD60EC35CFD"
-   coords 5.458 1.292 -2.369
-   angleY -31
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D0DC9499D30DE9B7"
-   coords 5.452 1.292 -2.233
-   angleY -179
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D07386F6F8B3897E"
-   coords 5.452 1.292 -2.092
-   angleY -47
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D07320809B005D4C"
-   coords 5.591 1.292 -2.77
-   angleY 2
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D048643AE603628A"
-   coords 5.594 1.292 -2.47
-   angleY 163
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0E08DF25E2EC8F2"
-   coords 5.596 1.292 -2.173
-   angleY 24
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D0BE50E1F187361D"
+   ID "D0BA5B8D75EC873C"
    coords 5.458 1.781 -2.773
    angleY 41
   }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0B8DC531C98D422"
-   coords 5.448 1.781 -2.643
+  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
+   ID "D0AFEF25B6795161"
+   coords 5.586 1.781 -2.778
    angleY -99
   }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D070162B23143FF8"
-   coords 5.459 1.781 -2.5
-   angleY -23
-  }
-  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
-   ID "D0098CAB5F786BE3"
-   coords 5.453 1.781 -2.366
-   angleY -17
-  }
   GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D00857E65152022C"
-   coords 5.453 1.781 -2.237
-   angleY 48
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D0507E9E3D9980D4"
-   coords 5.451 1.781 -2.099
-   angleY 178
-  }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D02E7A3FAD251CDC"
-   coords 5.586 1.781 -2.779
-   angleY 81
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D010239ECABEFD06"
-   coords 5.587 1.781 -2.474
-   angleY 87
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D00096A4878970B4"
-   coords 5.593 1.781 -2.175
-   angleY -40
-  }
-  GenericEntity : "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et" {
-   ID "D0582209237518BA"
+   ID "D0AC237F18CA9F7E"
    coords 5.449 2.274 -2.774
    angleY -105
   }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D06C072998EA7B9D"
-   coords 5.448 2.274 -2.579
+  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
+   ID "D0B77A6607897A53"
+   coords 5.576 2.274 -2.779
    angleY 16
-  }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D087E90A998F2AB1"
-   coords 5.457 2.274 -2.375
-   angleY -78
-  }
-  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "D0D369F1A489F40D"
-   coords 5.452 2.274 -2.171
-   angleY 171
-  }
-  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D035D49300B484FB"
-   coords 5.579 2.274 -2.777
-   angleY -164
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D05DCFA37F5E9426"
-   coords 5.58 2.274 -2.52
-   angleY -103
-  }
-  GenericEntity : "{AA97525310A49056}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_cigarettes_V1.et" {
-   ID "D06E7BECD21A64BA"
-   coords 5.58 2.274 -2.271
-   angleY 77
   }
   GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
    ID "D0E90B788F3FB364"
@@ -3030,21 +899,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -1.262 3.206 3.545
    angleY -173
   }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "D0ABEA8527664ACB"
-   coords -1.244 2.796 5.701
-   angleY -179
-  }
-  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
-   ID "D0F7A1FFBEA3234A"
-   coords -1.254 2.796 4.992
-   angleY 176
-  }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "D0086A3BF818795E"
-   coords -1.244 3.205 4.995
-   angleY -178
-  }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "D079F46884581CD1"
    coords 1.215 2.796 -2.691
@@ -3059,26 +913,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "D03008A1A2451A7D"
    coords 1.939 2.796 -2.708
    angleY 89
-  }
-  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "D04A3A93813B663D"
-   coords 5.507 2.796 -1.542
-   angleY 3
-  }
-  GenericEntity : "{F3421D70839BA998}Prefabs/Props/Crates/CardboardBox/CardboardBox_04.et" {
-   ID "D0A524B490ACA99C"
-   coords 5.485 3.204 -1.525
-   angleY -5
-  }
-  GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
-   ID "D06CA5D39E854033"
-   coords 5.511 2.796 -0.805
-   angleY 5
-  }
-  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "D09FB0D70628D77B"
-   coords 5.494 3.205 -0.796
-   angleY 1
   }
   GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
    ID "D06706932409D0C6"
@@ -3100,58 +934,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.776 2.796 -2.752
    angleY 88
   }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "D0B795A90A80660F"
-   coords 5.524 2.796 -2.459
-   angleY 5
-  }
-  GenericEntity : "{E57E63E0D58634D8}Prefabs/Props/Crates/CardboardBox/CardboardBox_09.et" {
-   ID "D0C424C7A7D2B935"
-   coords 5.497 3.204 -2.441
-   angleY 6
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0DC90143EAFAB31"
-   coords 1.577 0.598 2.512
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D04E188112B43C30"
-   coords 1.577 0.598 2.812
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0350B5893257D88"
-   coords 1.577 0.598 3.112
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0AEE0C35D24E4F8"
-   coords 1.577 0.598 3.412
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0DC8D1CA0739C0B"
-   coords 1.577 0.598 3.712
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0C67AF05080EC71"
-   coords 1.577 0.598 4.012
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0500C7880FDB8CF"
-   coords 1.577 0.598 4.312
-   angleY -90
-   scale 0.17
-  }
   GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
    ID "D07842D0286E5644"
    coords 1.669 0.99 2.512
@@ -3160,122 +942,14 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
    ID "D04411F11153E099"
-   coords 1.669 0.99 2.812
+   coords 1.669 0.99 3.312
    angleY -90
    scale 0.17
   }
   GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
    ID "D06BE523BD88EE99"
-   coords 1.669 0.99 3.112
+   coords 1.669 0.99 4.112
    angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0E961B1D8601DAC"
-   coords 1.669 0.99 3.412
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0AA3E51050BD5C8"
-   coords 1.669 0.99 3.712
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0D5B91BA16A6B17"
-   coords 1.669 0.99 4.012
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0995287609FD1E8"
-   coords 1.669 0.99 4.312
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0875F40EA5B1C8A"
-   coords 1.729 1.347 2.512
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0C37CA7CAFD00C8"
-   coords 1.729 1.347 2.812
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D01343DA8879AC85"
-   coords 1.729 1.347 3.112
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D07EC3700EBC2EE0"
-   coords 1.729 1.347 3.412
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D06A58535638ED4C"
-   coords 1.729 1.347 3.712
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D075A706DF1A0BC8"
-   coords 1.729 1.347 4.012
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0C3B2441095048F"
-   coords 1.729 1.347 4.312
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0C31D58338359DE"
-   coords 2.571 0.598 4.5
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0FDAD97891A36E6"
-   coords 2.571 0.598 4.2
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D016E0D6488294A8"
-   coords 2.571 0.598 3.9
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D03CD538D8C3B70B"
-   coords 2.571 0.598 3.6
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0E90D5792566C65"
-   coords 2.571 0.598 3.3
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D055ACEB489EF5E6"
-   coords 2.571 0.598 3
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0AB0D2F30015939"
-   coords 2.571 0.598 2.7
-   angleY 90
    scale 0.17
   }
   GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
@@ -3286,122 +960,14 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
    ID "D091C51D8B46F76B"
-   coords 2.479 0.99 4.2
+   coords 2.479 0.99 3.7
    angleY 90
    scale 0.17
   }
   GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
    ID "D08A90923E031B98"
-   coords 2.479 0.99 3.9
+   coords 2.479 0.99 2.9
    angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0B404BEAA594E73"
-   coords 2.479 0.99 3.6
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D08C255F81E4797E"
-   coords 2.479 0.99 3.3
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D05DF5CFD976E685"
-   coords 2.479 0.99 3
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0E1BDE2ACB98030"
-   coords 2.479 0.99 2.7
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D05D862F14C87C9E"
-   coords 2.419 1.347 4.5
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0B38CF7803BDFC6"
-   coords 2.419 1.347 4.2
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0625D62E90A44BD"
-   coords 2.419 1.347 3.9
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D067800068981475"
-   coords 2.419 1.347 3.6
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0BA4A2FF397620C"
-   coords 2.419 1.347 3.3
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D05AAF145C3D08AD"
-   coords 2.419 1.347 3
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D00234B152A15C3C"
-   coords 2.419 1.347 2.7
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D02FDF63E8621020"
-   coords 1.577 0.598 4.989
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0B1031DC072FE9E"
-   coords 1.577 0.598 5.289
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D09D2D83444266AB"
-   coords 1.577 0.598 5.589
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0BF4ADBCB52F31E"
-   coords 1.577 0.598 5.889
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0B6851A266C81FB"
-   coords 1.577 0.598 6.189
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D09DF2FE267CF9E4"
-   coords 1.577 0.598 6.489
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0BCC979221B0F0E"
-   coords 1.577 0.598 6.789
-   angleY -90
    scale 0.17
   }
   GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
@@ -3412,122 +978,14 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
    ID "D0E8DF83D395540F"
-   coords 1.669 0.99 5.289
+   coords 1.669 0.99 5.789
    angleY -90
    scale 0.17
   }
   GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
    ID "D05242FD45B9782A"
-   coords 1.669 0.99 5.589
+   coords 1.669 0.99 6.589
    angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0140B635773697C"
-   coords 1.669 0.99 5.889
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D00F028D20929CE5"
-   coords 1.669 0.99 6.189
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D05047629012C51C"
-   coords 1.669 0.99 6.489
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0BC4DDD9B763A38"
-   coords 1.669 0.99 6.789
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D09C797B16CED98B"
-   coords 1.729 1.347 4.989
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D03740B115D662B5"
-   coords 1.729 1.347 5.289
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D01885D8C808E9C5"
-   coords 1.729 1.347 5.589
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D07C738B349CEFC6"
-   coords 1.729 1.347 5.889
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D00C8EC7671127AE"
-   coords 1.729 1.347 6.189
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D07A6F45998B25D8"
-   coords 1.729 1.347 6.489
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0EB0B2D30842C28"
-   coords 1.729 1.347 6.789
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0AD3826FEDED337"
-   coords 2.571 0.598 6.977
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0C2E15BCE93B1D7"
-   coords 2.571 0.598 6.677
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0A85B9C6EF47D0C"
-   coords 2.571 0.598 6.377
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0518BFDB88A672F"
-   coords 2.571 0.598 6.077
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0D330BA8A4C461C"
-   coords 2.571 0.598 5.777
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D00FE1CB228EC247"
-   coords 2.571 0.598 5.477
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0E438D3E98D8CDB"
-   coords 2.571 0.598 5.177
-   angleY 90
    scale 0.17
   }
   GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
@@ -3538,122 +996,14 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
    ID "D059CBD8AEA160DB"
-   coords 2.479 0.99 6.677
+   coords 2.479 0.99 6.177
    angleY 90
    scale 0.17
   }
   GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
    ID "D07C01F37421819B"
-   coords 2.479 0.99 6.377
+   coords 2.479 0.99 5.377
    angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0A665F631C60767"
-   coords 2.479 0.99 6.077
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0E9D69D8974320A"
-   coords 2.479 0.99 5.777
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0943AD19167ADBC"
-   coords 2.479 0.99 5.477
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D053EB9AF21D2FC5"
-   coords 2.479 0.99 5.177
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0170645980BE213"
-   coords 2.419 1.347 6.977
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0A972D6FA352BD9"
-   coords 2.419 1.347 6.677
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D01DEA74312EE10A"
-   coords 2.419 1.347 6.377
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D08716290CD6DC20"
-   coords 2.419 1.347 6.077
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0DE17C857FAF1EE"
-   coords 2.419 1.347 5.777
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D017C6C31CB1EF29"
-   coords 2.419 1.347 5.477
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0B8159D7C254944"
-   coords 2.419 1.347 5.177
-   angleY 90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D014871C163CFD5A"
-   coords 5.254 0.597 2.387
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0A7B5A0346935E6"
-   coords 5.254 0.597 2.687
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0ED7B081D398079"
-   coords 5.254 0.597 2.987
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D095DD60EE8517F6"
-   coords 5.254 0.597 3.287
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0674CAA02F5D88E"
-   coords 5.254 0.597 3.587
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D00164B42FD4138A"
-   coords 5.254 0.597 3.887
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D08190BF260B11FE"
-   coords 5.254 0.597 4.187
-   angleY -90
    scale 0.17
   }
   GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
@@ -3664,79 +1014,13 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
    ID "D0A399CD8AE6B5DD"
-   coords 5.346 0.989 2.687
+   coords 5.346 0.989 3.187
    angleY -90
    scale 0.17
   }
   GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
    ID "D05FDC029E721008"
-   coords 5.346 0.989 2.987
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0A3F3ADD753B913"
-   coords 5.346 0.989 3.287
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D04E6DF57E20B37C"
-   coords 5.346 0.989 3.587
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D05B0B1761701CDD"
-   coords 5.346 0.989 3.887
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0E6A04F422F70A0"
-   coords 5.346 0.989 4.187
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D05600BC7EABADB8"
-   coords 5.406 1.346 2.387
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D075E3BC807F3CFC"
-   coords 5.406 1.346 2.687
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D0DC598B9B50D49D"
-   coords 5.406 1.346 2.987
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
-   ID "D0C82B90DBE130E8"
-   coords 5.406 1.346 3.287
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D044D25594A4D1F5"
-   coords 5.406 1.346 3.587
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{92F721C83D86B0B9}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V7.et" {
-   ID "D03080171E583418"
-   coords 5.406 1.346 3.887
-   angleY -90
-   scale 0.17
-  }
-  GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et" {
-   ID "D0A00CB4359A62F0"
-   coords 5.406 1.346 4.187
+   coords 5.346 0.989 3.987
    angleY -90
    scale 0.17
   }
@@ -3755,266 +1039,201 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.12 1.24 -0.05
    angleY -8
   }
-  GenericEntity : "{E51888BE58201388}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_newspaper_V3.et" {
-   ID "D03E1105578C87B7"
-   coords 2.12 1.25 -0.05
-   angleY 14
-  }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
-   ID "D06235DCFC4BC000"
+   ID "D096A9FCFEF994BD"
    coords 1.6 1.24 -0.64
    angleY 40
   }
-  GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
-   ID "D0A8CFAB32E07BA3"
-   coords 1.55 1.24 0.02
-   angleY 170
-  }
   GenericEntity : "{DABF434E7B1BECD2}Prefabs/Props/Commercial/Posters/PosterSingle_A1_Cans_V1.et" {
-   ID "D086F418EA54D838"
+   ID "D09493C8F0063A88"
    coords -1.53 1.75 0.65
    angleY 90
   }
   GenericEntity : "{53495A391947BBE1}Prefabs/Props/Commercial/Posters/PosterSingle_A3_AirMail_V1.et" {
-   ID "D03BE5A5AB941943"
+   ID "D0ED050532CFC8DA"
    coords -1.53 1.7 1.35
    angleY 90
   }
-  GenericEntity : "{7480053B4EE198D3}Prefabs/Props/Commercial/Posters/PosterSingle_A3_Insurance_V1.et" {
-   ID "D059536E4EF22473"
-   coords -1.53 1.7 1.8
-   angleY 90
-  }
   GenericEntity : "{D51E223FD6EDB039}Prefabs/Props/Furniture/ClockWall_01.et" {
-   ID "D0E10E2FB9AFB6F4"
+   ID "D00D256793DCF72C"
    coords 5.752 2.45 2.5
    angleY -90
   }
   GenericEntity : "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et" {
-   ID "D0C576CDC51D29D4"
+   ID "D0F8713F1AEE8EB0"
    coords -1.12 0.199 1.85
    angleY 90
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
-   ID "D0D4705C6C3CEA6B"
+   ID "D09BA5DB2D09DAB4"
    coords 1.35 0.199 -1.9
    angleY 30
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "D029624AAD897C8D"
+   ID "D071C258798DF580"
    coords 4.85 0.199 -2.75
   }
   GenericEntity : "{9C231B6AC1BD0A26}Prefabs/Props/Civilian/Broom_01.et" {
-   ID "D0E25632340DB741"
+   ID "D02963C17639862D"
    coords 5.3 0.199 -3.05
   }
   GenericEntity : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
-   ID "D0A7A120218668C6"
+   ID "D0FD73DF6B32DD73"
    coords 4.3 0.199 -2.75
   }
   GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
-   ID "D04A98ED43858C56"
+   ID "D0AE05418E74EA3F"
    coords 3.75 0.199 -2.7
    angleY 10
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "D08964BFB365DEBB"
+   ID "D01062E59AB0DD2F"
    coords 3.8 0.609 -2.72
    angleY -20
   }
   GenericEntity : "{00C9C0860D1D8A84}Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_DarkWood.et" {
-   ID "D0F93F6F69433D28"
+   ID "D0DD5917BF422533"
    coords 3.4 0.199 6.55
   }
   GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D06DB698B0F2D3E9"
+   ID "D071D89173DFD097"
    coords 3.2 0.899 6.5
   }
   GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D02E6DA9C6749140"
+   ID "D0E57D15CEED6E12"
    coords 3.4 0.899 6.4
   }
   GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D09DBC67FA817CA8"
+   ID "D04E1415837E5EC6"
    coords 3.6 0.899 6.55
   }
   GenericEntity : "{941CEFF0C87EAD84}Prefabs/Props/S2/S2_Bread/S2_Bread.et" {
-   ID "D01C8287453717B3"
+   ID "D0FA52F4FCD99A8F"
    coords 3.3 0.899 6.7
   }
-  GenericEntity : "{941CEFF0C87EAD84}Prefabs/Props/S2/S2_Bread/S2_Bread.et" {
-   ID "D0195959C82E693B"
-   coords 3.5 1 6.7
-   angleY 12
-  }
-  GenericEntity : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
-   ID "D01251697112088E"
-   coords 3.15 0.899 6.7
-  }
-  GenericEntity : "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et" {
-   ID "D09DFC00D09873DB"
-   coords 3.62 0.899 6.7
-  }
   GenericEntity : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
-   ID "D0DD9EA1FFD51629"
+   ID "D05D3A7FA7691DDD"
    coords 2.4 0.199 6.75
   }
-  GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
-   ID "D0D5B17B28499A1F"
-   coords 2.45 0.425 6.75
-   angleY 6
-  }
   GenericEntity : "{D5C3CF5996B43A27}Prefabs/Props/Civilian/BasketWicker_01.et" {
-   ID "D066C6DD62438F18"
+   ID "D0C6972D06AEC42F"
    coords 4.2 0.199 6.7
   }
   GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
-   ID "D0CFDBFA080FB1E4"
+   ID "D0D813BEE64A9C27"
    coords 2.2 0 8.25
   }
   GenericEntity : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
-   ID "D019FEB24C323211"
+   ID "D0B8EED13328371E"
    coords 2.85 0 8.25
   }
-  GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
-   ID "D017E43DD8933D48"
-   coords 3.5 0 8.25
-  }
-  GenericEntity : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
-   ID "D0142048AD2140DE"
-   coords 2.5 0.226 8.25
-   angleY 5
-  }
-  GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
-   ID "D09EDC65BCE5F7F5"
-   coords 3.2 0.226 8.25
-   angleY -4
-  }
   GenericEntity : "{8D3CBF3A91BE18C9}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_Base.et" {
-   ID "D0798294F959F98A"
+   ID "D0D622380639C0D6"
    coords 5.2 0 8.3
   }
   GenericEntity : "{0BE3BDE3910436F2}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_red.et" {
-   ID "D06586FCF8F0C21B"
+   ID "D02675C397BAE544"
    coords 1 0 8.05
   }
   GenericEntity : "{383FC69DFD96BB6F}Prefabs/Props/Furniture/Sunshade_01/Sunshade_01_yellow.et" {
-   ID "D047B309131C39D2"
+   ID "D0044D112722CD53"
    coords 2.85 0 9.4
   }
   GenericEntity : "{473922A1279485A9}Prefabs/Props/Furniture/Carpet_01.et" {
-   ID "D00547E685A8D9D2"
+   ID "D036B38EDB86BA12"
    coords -0.95 0.199 1.3
    scale 0.65
   }
   GenericEntity : "{473922A1279485A9}Prefabs/Props/Furniture/Carpet_01.et" {
-   ID "D0A8B5A41A888D0A"
+   ID "D0172B7E9F812F11"
    coords -3.8 0.005 8
    scale 0.65
   }
   GenericEntity : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
-   ID "D0C2D3D7BB5D5169"
+   ID "D060041A95F6F991"
    coords 2.08 0.199 1.8
   }
   GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
-   ID "D0E7EF0608EA2649"
+   ID "D08FEE10B635B8D8"
    coords 1.95 1.005 1.8
    angleY 10
   }
   GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
-   ID "D0DA82B58B581025"
+   ID "D0BAEFB8D7311C61"
    coords 2.22 0.6 1.78
    angleY -15
   }
   GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
-   ID "D00DEA1DC72EB620"
+   ID "D0BC48BE282EACAB"
    coords 3 0.199 1.85
   }
   GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
-   ID "D0BD990E41E23424"
+   ID "D02B263D28793D49"
    coords 3 0.426 1.85
    angleY 4
   }
   GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D0B886E879B090FB"
+   ID "D0239D0A353A9CEB"
    coords 2.82 0.658 1.85
   }
   GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D0D3D363116CECDC"
+   ID "D0446EA4D0EB98A1"
    coords 3 0.658 1.8
   }
-  GenericEntity : "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et" {
-   ID "D0A12BA495B93A2D"
-   coords 3.18 0.658 1.88
-  }
   GenericEntity : "{83E6FF1C73E92AA3}Prefabs/Props/Civilian/NoticeBoardCork_01_posters.et" {
-   ID "D091A1512FC4909E"
+   ID "D03827D3E57F979C"
    coords -1.53 2.78 1.3
    angleY 90
   }
   GenericEntity : "{A08D6C886BE1B004}Prefabs/Props/Decorations/Paintings/PaintingSmall_01_V3.et" {
-   ID "D070F31A79E4648E"
+   ID "D0CE37AE334CB9A3"
    coords -1.53 2.5 2.62
    angleY 90
    scale 0.6
   }
   GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
-   ID "D09BC461C4C3D21E"
+   ID "D0477C9646EE94C3"
    coords 3.35 0.199 -7.55
    angleY 90
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
-   ID "D0037D6A48414A4C"
+   ID "D086F4DC385974BD"
    coords 3.36 0.609 -7.55
    angleY 94
   }
-  GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "D0E81A6B3350CFF3"
-   coords 3.34 1.018 -7.55
-   angleY 86
-  }
   GenericEntity : "{16DE51898F7E3EF3}Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et" {
-   ID "D088955AD91BB184"
+   ID "D09E0CBD4DEAE16F"
    coords 5.4 0.199 -7.55
    angleY 90
   }
-  GenericEntity : "{00E22F19D963A3B3}Prefabs/Props/Crates/CardboardBox/CardboardBox_08.et" {
-   ID "D0E289A2F5AF54EB"
-   coords 5.42 0.607 -7.55
-   angleY 88
-  }
   GenericEntity : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
-   ID "D03FA498D51E97EA"
+   ID "D0E3D6DFEEEC4738"
    coords 4.65 0.199 -5
    angleY 6
   }
   GenericEntity : "{9545DA837C6C4E3F}Prefabs/Props/Crates/Crate_01_yellow.et" {
-   ID "D0238E9D653B11D3"
+   ID "D02F6C0018D1B46F"
    coords 3.85 0.199 -4.7
    angleY 90
   }
-  GenericEntity : "{9545DA837C6C4E3F}Prefabs/Props/Crates/Crate_01_yellow.et" {
-   ID "D00C4B63D4DD0B36"
-   coords 3.85 0.426 -4.7
-   angleY 84
-  }
   GenericEntity : "{2BEA74B1FA12B7C4}Prefabs/Props/Crates/CardboardBox/CardboardBox_02.et" {
-   ID "D05B7737FDAC1B76"
+   ID "D0049C993EB3AC75"
    coords 5.2 0.199 -6.4
    angleY 90
   }
-  GenericEntity : "{9F1629903F5F26B6}Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et" {
-   ID "D07BC56C91BAF907"
-   coords 5.2 0.609 -6.4
-   angleY 80
+  GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
+   ID "D034B08FF9F6B7D5"
+   coords 1.9 3.919 -1.5
+   angleY -89.583
   }
   LightEntity {
    ID "D0E38A14AF7A817F"
-   coords 2.962 3.72 0.922
+   coords 1.9 3.72 -1.5
    angles -90 0 0
    Color 1 0.96 0.88 1
-   LV 6
+   LV 5
    ClipEV -10
+   CastShadow 1
    Type Spot
    Radius 7
    NearPlane 0.3
@@ -4023,148 +1242,70 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   LightEntity {
    ID "D01E8419DFB91A7B"
+   coords 2.962 3.72 0.922
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 6
+   ClipEV -10
+   CastShadow 0
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "D05073537EC263C3"
    coords 2.99 3.72 4.668
    angles -90 0 0
    Color 1 0.96 0.88 1
    LV 6
    ClipEV -10
+   CastShadow 0
    Type Spot
    Radius 7
    NearPlane 0.3
    SpotAngle 140
    LensFlareType Disabled
-  }
-  GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
-   ID "D06DA3EF94851A45"
-   coords 0.2 3.919 0.922
-   angleY -89.583
-  }
-  LightEntity {
-   ID "D05073537EC263C3"
-   coords 0.2 3.72 0.922
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
-  }
-  GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
-   ID "D0A7BCC990090B0B"
-   coords 0.2 3.919 4.668
-   angleY -89.583
   }
   LightEntity {
    ID "D0F636E7843CFD72"
-   coords 0.2 3.72 4.668
+   coords 1.2 3 2.8
    angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
+   Color 1 0.87 0.7 1
+   LV 2.4
    ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
+   CastShadow 0
+   Radius 10
+   DistanceAttenuation 0.8
+   NearPlane 0.45
    LensFlareType Disabled
-  }
-  GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
-   ID "D05AF4F8C2957626"
-   coords 1.9 3.919 -1.5
-   angleY -89.583
   }
   LightEntity {
    ID "D094CAFA5F04A1E2"
-   coords 1.9 3.72 -1.5
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 5
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
-  }
-  GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
-   ID "D05D53C36E1367D5"
-   coords 2 3.919 6.4
-   angleY -89.583
-  }
-  LightEntity {
-   ID "D001478DB1602BB6"
-   coords 2 3.72 6.4
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 4
-   ClipEV -10
-   Type Spot
-   Radius 5
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
-  }
-  LightEntity {
-   ID "D03D86C30E1A040F"
    coords 4.267 3.3 -5.488
    angles -90 0 0
    Color 1 0.96 0.88 1
    LV 2.4
    ClipEV -10
+   CastShadow 0
    Radius 6
    DistanceAttenuation 0.8
    NearPlane 0.45
    LensFlareType Disabled
   }
   LightEntity {
-   ID "D0CDEA73CEBEC549"
+   ID "D001478DB1602BB6"
    coords 2 3.4 8.6
    angles -90 0 0
    Color 1 0.85 0.6 1
    LV 3
    ClipEV -10
+   CastShadow 0
    Type Spot
    Radius 7
    NearPlane 0.3
    SpotAngle 140
-   LensFlareType Disabled
-  }
-  LightEntity {
-   ID "D01023046A3BEF8B"
-   coords 0.6 3 5.4
-   angles -90 0 0
-   Color 1 0.87 0.7 1
-   LV 1.6
-   ClipEV -10
-   Radius 8
-   DistanceAttenuation 0.8
-   NearPlane 0.45
-   LensFlareType Disabled
-  }
-  LightEntity {
-   ID "D0D6D8FCE6AAE736"
-   coords 4.4 3 2.2
-   angles -90 0 0
-   Color 1 0.87 0.7 1
-   LV 1.6
-   ClipEV -10
-   Radius 8
-   DistanceAttenuation 0.8
-   NearPlane 0.45
-   LensFlareType Disabled
-  }
-  LightEntity {
-   ID "D0CD0A9FBF16D044"
-   coords 0.9 3 -0.4
-   angles -90 0 0
-   Color 1 0.87 0.7 1
-   LV 1.6
-   ClipEV -10
-   Radius 8
-   DistanceAttenuation 0.8
-   NearPlane 0.45
    LensFlareType Disabled
   }
  }
