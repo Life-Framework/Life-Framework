@@ -265,7 +265,7 @@ modded class ScriptedInventoryStorageManagerComponent
 			return false;
 
 		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(storageOwner);
-		if (vehicleLock && vehicleLock.IsVehicleLocked())
+		if (vehicleLock && vehicleLock.IsVehicleLocked() && LF_Systems.IsEnabled("VehicleLock"))
 			return true;
 
 		LF_LockComponent houseLock = LF_Component<LF_LockComponent>.Find(storageOwner);
@@ -292,8 +292,10 @@ modded class ScriptedInventoryStorageManagerComponent
 			}
 		}
 
+		// A seated character hangs from its vehicle: stop at a living character, so what an
+		// occupant carries stays theirs and a locked car does not freeze it (#2411).
 		IEntity parent = entity.GetParent();
-		while (parent)
+		while (parent && !LF_VehicleStorageLockGate.IsLiveCharacter(entity))
 		{
 			entity = parent;
 			parent = entity.GetParent();
