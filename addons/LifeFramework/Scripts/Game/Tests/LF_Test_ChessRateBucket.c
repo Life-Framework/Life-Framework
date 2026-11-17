@@ -3,6 +3,7 @@
 // tier: LOGIC
 //! #2405 (review 2026-11-17): chess asks have their own rate bucket. Three phone or board reads
 //! (the COMMS burst) must not refuse a chess move, and a chess flood must not refuse the phone.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ChessRateBucket : LF_Test
 {
 	protected static const int PLAYER = 990405;

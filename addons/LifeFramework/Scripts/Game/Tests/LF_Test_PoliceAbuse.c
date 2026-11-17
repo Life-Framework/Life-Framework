@@ -3,6 +3,7 @@
 
 // tier: LOGIC
 //! Police menu reach. The armory's one-kit rule is LF_Test_ArmoryKitCap. Fines are paper tickets (LF_Test_FineTicket*).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceAbuse : LF_Test
 {
 	override string GetName()

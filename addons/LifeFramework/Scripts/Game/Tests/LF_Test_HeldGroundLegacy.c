@@ -6,6 +6,7 @@
 //! #751: a save from before the "heldground" payload (the version before it, and version 23, the e2e
 //! legacy save) has no held-ground rows. Each loads, twice, with every site unheld (no holder, no hold
 //! time, no points) and the "hideout" lease and lock unchanged. The test puts back the stores it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_HeldGroundLegacy : LF_Test
 {
 	protected static const string SITE = "held-ground-legacy-site";

@@ -4,6 +4,7 @@
 //! car carries the offer's name and price, the sign built from the answer shows the same title the
 //! price list gives (name and grouped price), a changed price changes the answer on the next read,
 //! and the kind is registered but not readable over the network (it names no read action).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PricedSignProvider : LF_Test
 {
 	override string GetName()

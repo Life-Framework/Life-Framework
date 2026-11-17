@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! tools\cli shots area: `probe` measures the world (ground, trace, cam, ent) and a world capture
 //! takes an optional clock hour that means a clean shot. Both ride the harness line parser.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HarnessProbe : LF_Test
 {
 	override string GetName()

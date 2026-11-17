@@ -6,6 +6,7 @@
 //! five of a course, fastest first.
 //! Across a restart (`tools\cli wt e2e`): the save boot records E2E_UID on E2E_COURSE, the shutdown
 //! save carries it, and the reload boot finds the same time.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_RaceRecords : LF_Test
 {
 	protected static const string COURSE = "test_records_loop";

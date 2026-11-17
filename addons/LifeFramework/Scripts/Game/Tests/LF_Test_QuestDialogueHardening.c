@@ -7,6 +7,7 @@
 //! to the players who meet its gates (one reader shared with accept), a late node does not reopen a
 //! closed scene, a disconnect frees the dialogue session and the town-board gap, and the quest and
 //! dialogue asks have their own rate bucket.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_QuestDialogueHardening : LF_Test
 {
 	protected static const int PLAYER = 990403;

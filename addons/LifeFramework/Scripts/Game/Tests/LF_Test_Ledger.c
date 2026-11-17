@@ -3,6 +3,7 @@
 //! The money ledger records every change that reaches the bus (docs/architecture/events.md):
 //! a bank deposit and withdrawal through LF_BankAccount, a transfer that sums to zero, the
 //! newest-first listing the incident log reads, and the rebuild-and-compare check on the bank.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Ledger : LF_Test
 {
 	protected static const string UID_A = "ledger-test-a";

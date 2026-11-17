@@ -5,6 +5,7 @@
 //! the folded time it pops back up by itself. No scoring here: the range manager is not placed.
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RangeTargets : LF_Test
 {
 	protected static const ResourceName RANGE_TARGET = "{4D1A82E96B30C7F5}Prefabs/Props/Range/LF_RangeTarget.et";

@@ -3,6 +3,7 @@
 //! The vault needs a fence tool (#273). No drill: refused and nothing opens. With a drill: the
 //! breach starts, the drill is left at the vault and its serial names the buyer through the evidence
 //! path. A jammed drill opens nothing. A charge also works and is consumed.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VaultTool : LF_Test
 {
 	override string GetName()

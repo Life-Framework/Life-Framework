@@ -3,6 +3,7 @@
 //! Event phase rules (#1948): phases advance in order when their conditions hold, an idle timeout
 //! or an abort ends the event into cooldown, a cooldown blocks a restart until it runs out, and a
 //! malformed definition is refused. No world.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_EventPhaseRules : LF_Test
 {
 	override string GetName()

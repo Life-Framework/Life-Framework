@@ -3,6 +3,7 @@
 // `tools\cli test --tier fast`; each breakage below fails.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_QuantityVisuals : LF_Test
 {
 	protected static const ResourceName MODEL_SMALL = "{AAA0000000000001}Models/Small.xob";

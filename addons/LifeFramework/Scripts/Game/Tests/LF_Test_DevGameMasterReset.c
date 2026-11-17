@@ -4,6 +4,7 @@
 //! outlives the world. Without a world-end reset a production world loaded after a dev-tools world
 //! in one process kept granting EDIT. The reset hook takes the handler off and clears the install
 //! flag, and a grant re-checks the dev-tools gate.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DevGameMasterReset : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

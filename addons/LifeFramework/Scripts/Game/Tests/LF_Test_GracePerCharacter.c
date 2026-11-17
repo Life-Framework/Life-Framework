@@ -4,6 +4,7 @@
 //! character on an account with 10 hours played is protected; the same character after N minutes of
 //! its own play (credited through LF_Playtime.Settle) is not; a character with a crime never is. A save
 //! from before the grace clock seeds each existing character with its account's playtime.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_GracePerCharacter : LF_Test
 {
 	protected static const string UID = "gpc-account-uid";

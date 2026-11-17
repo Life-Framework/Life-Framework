@@ -6,6 +6,7 @@
 // because this workstream may not boot the test server (port collision gate).
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MiningAreaWeightedSpawns : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

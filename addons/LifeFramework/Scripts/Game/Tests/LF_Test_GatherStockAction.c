@@ -2,6 +2,7 @@
 // tier: WORLD
 //! gather/stock-action (#2409): the server stops paying when a spot is empty. The spot is the shipped
 //! apple tree; ten gathers pay, the eleventh pays nothing.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_GatherStockAction : LF_Test
 {
 	static const ResourceName TREE = "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et";

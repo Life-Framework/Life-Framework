@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! #2406: the jump pad remembers a visitor only while it stands on the pad (the list never outgrows the
 //! people on it), and only a living body is thrown: a corpse or a downed player is not.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JumpPadSeen : LF_Test
 {
 	override string GetName()

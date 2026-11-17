@@ -4,6 +4,7 @@
 //! stays in reach and the cuffing rule holds; reach is judged first; a hold the server never hears the
 //! end of times out; and the server accepts the end of a hold only after most of the action's duration,
 //! so a client cannot cuff in an instant.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CuffingRules : LF_Test
 {
 	override string GetName()

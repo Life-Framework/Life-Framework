@@ -5,6 +5,7 @@
 //! gone, and numbering used to restart at 1. A new holder then got the number an old card still
 //! carries, and that card printed as the new holder. Numbering now resumes past
 //! LF_PhotoIdCard.UNREADABLE_FLOOR, and the old number reads as unregistered.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_IdRegistryUnreadable : LF_Test
 {
 	protected static const string OLD_HOLDER = "lf-test-unreadable-old";

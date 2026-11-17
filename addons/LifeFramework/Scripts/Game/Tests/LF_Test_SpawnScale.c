@@ -10,6 +10,7 @@
 //! gunpowder (a vanilla gravel pile at 0.012) would have dropped as a full gravel heap, linen (a sandbag at 0.3)
 //! as a full sandbag. These are all the scaled prefabs the addon spawns; the scaled vanilla gravel piles, bush
 //! and poplar are only ever placed in layers.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SpawnScale : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

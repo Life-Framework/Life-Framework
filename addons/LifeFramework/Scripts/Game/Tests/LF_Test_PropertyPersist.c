@@ -4,6 +4,7 @@
 //! store write and read, a second load of the same save is idempotent, and a save from the version
 //! before this payload loads with no property rows. Across a restart (`tools\cli wt e2e`): the save
 //! boot stores a plot; the reload boot finds it. The test puts back the book it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_PropertyPersist : LF_Test
 {
 	protected static const string PLOT = "property-persist-plot";

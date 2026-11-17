@@ -3,6 +3,7 @@
 //! The `respawn` and `grace` owner sections (#1779, chapter Arrival #1007). The flagship's config.json turns
 //! rejoin-at-the-saved-spot on and gives a new character 30 minutes of grace; the core .conf files stay off.
 //! A config without the sections keeps the .conf values; a bad value keeps the .conf value.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ConfigRespawnGrace : LF_Test
 {
 	static const string FIXTURE = "{\"schemaVersion\":1,\"respawn\":{\"rejoinAtLastPosition\":true,\"rejoinMaxAgeHours\":6},\"grace\":{\"minutes\":30}}";

@@ -4,6 +4,7 @@
 //! incident/log: the log appends, is bounded by count and retention, queries by radius and time
 //! window, only records kinds the config allows, samples damage instead of logging every hit,
 //! and fills itself from the event bus.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_IncidentLog : LF_Test
 {
 	override string GetName()

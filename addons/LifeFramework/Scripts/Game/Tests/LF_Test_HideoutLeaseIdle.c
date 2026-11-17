@@ -6,6 +6,7 @@
 //! 0 days turns the lapse off, and the timestamp goes through the real save path ("leaseidle"
 //! payload): a save without it seeds "now", and a saved stamp already past the limit (the server
 //! was down) gets one grace day instead of lapsing before any member could join.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_HideoutLeaseIdle : LF_Test
 {
 	protected static const string SITE_IDLE = "hideout-idle-site-idle";

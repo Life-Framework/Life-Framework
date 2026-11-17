@@ -7,6 +7,7 @@
 //! name (#1045). The annex bag is found under the annex vault id; an unnamed bag placed under
 //! another id is filled with the vault cash and reads back; a vault with no bag placed fills
 //! nothing and does not fail. Under the old FindEntityByName lookup an unnamed bag was never filled.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacesBankBag : LF_Test
 {
 	protected static const string VAULT_ID = "places-bank-bag-vault";

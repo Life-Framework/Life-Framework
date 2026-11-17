@@ -7,6 +7,7 @@
 //! hunger and thirst hold it at the cap and the character stays alive, eating and drinking gives
 //! back what needs took, and needs never pull down health that vanilla healing raised once fed.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SurvivalRealHealth : LF_Test
 {
 	override string GetName()

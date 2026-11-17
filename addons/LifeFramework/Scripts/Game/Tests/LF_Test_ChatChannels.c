@@ -3,6 +3,7 @@
 // "ooc global channel is reachable via /ooc". Restored to "/ooc".
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ChatChannels : LF_Test
 {
 	override string GetName()

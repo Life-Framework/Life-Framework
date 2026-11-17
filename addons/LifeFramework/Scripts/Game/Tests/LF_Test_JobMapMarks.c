@@ -49,6 +49,7 @@ class LF_JobMarkTestSink : LF_MapShareSink
 //! the passenger's map and waypoint (nobody else's); a delivery stop does the same for its runner and a
 //! new stop replaces the last; finishing the fare or the run clears the row and the waypoint. Three
 //! fixture players, a recording share sink and a recording waypoint sink, no network.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobMapMarks : LF_Test
 {
 	protected static const int DRIVER = 1;

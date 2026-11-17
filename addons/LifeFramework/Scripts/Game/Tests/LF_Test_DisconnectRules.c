@@ -3,6 +3,7 @@
 //! Disconnect rules (#691), the pure decision per state and the owner "disconnect" section:
 //! cuffed jails (or fines, or releases), escorted counts as cuffed, jail falls back to the fine
 //! with no cell, downed dies (not when stunned), the warrant and the sentence stay.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DisconnectRules : LF_Test
 {
 	override string GetName()

@@ -4,6 +4,7 @@
 //! of two stands and names it. Stand A stands beside a vanilla map location and takes its name; stand B
 //! is far from every location and falls back to its place id. The fixtures sit north of the annex, clear
 //! of the grid lattice (same spot as LF_Test_DispatchNamesPlace, which deletes its own fixtures).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TaxiStandPlaces : LF_Test
 {
 	protected static const ResourceName STAND = "{2FD0DE951C3DC94E}Prefabs/Jobs/LF_TaxiStand.et";

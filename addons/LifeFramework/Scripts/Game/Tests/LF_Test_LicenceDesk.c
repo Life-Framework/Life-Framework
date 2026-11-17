@@ -10,6 +10,7 @@
 //! short of the fee, each naming the reason and taking nothing; an application takes the fee once
 //! and waits one in-game day; then the permit is issued and the annex gun counter sells the pistol.
 //! An on-duty officer's revoke takes it again (a non-officer is refused), and the counter refuses.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LicenceDesk : LF_Test
 {
 	protected static const string UID = "lf-test-licence-desk";

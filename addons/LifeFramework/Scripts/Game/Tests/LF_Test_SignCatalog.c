@@ -4,6 +4,7 @@
 // Card redesign (2026-11-10): each section is a label plus a body part, with a rule under the title.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignCatalog : LF_Test
 {
 	override string GetName()

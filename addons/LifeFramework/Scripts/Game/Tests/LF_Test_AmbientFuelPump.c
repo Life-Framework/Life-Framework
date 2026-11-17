@@ -3,6 +3,7 @@
 //! The fuel station's pump hum (#897): a fuelling step on the server pulses the hum prop standing
 //! at the pumps and turns it on; a pump with no hum prop in reach is left alone (a fuel truck, a
 //! station elsewhere).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_AmbientFuelPump : LF_Test
 {
 	protected static const ResourceName HUM = "{D88D0B05DF83772F}Prefabs/Atmosphere/LF_FuelPumpHum.et";

@@ -10,6 +10,7 @@
 //! save (no "joblevels" rows) migrates: the progression records' single level comes back as
 //! CIVILIAN and the delivery career as DELIVERY, at the same levels, and every other job starts at
 //! 0. Bad rows are skipped, a row for an unknown job is kept. The test puts back what it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_JobLevelsPersist : LF_Test
 {
 	protected static const string WORKER = "test-joblevels-persist-worker";

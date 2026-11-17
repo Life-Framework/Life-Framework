@@ -4,6 +4,7 @@
 //! `key`) shows one toast per account uid per session, driven by LF_OnPlayerSpawnedEvent. Enabled
 //! with a key: one toast per uid, none on a respawn, one more for another uid. Disabled (the
 //! default): none. An empty key: one LF_Debug.Warn for the session and no toast.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JoinNotice : LF_Test
 {
 	static const string ON_FIXTURE = "{\"schemaVersion\":1,\"joinNotice\":{\"enabled\":true,\"key\":\"LF_Test_Notice\"}}";

@@ -3,6 +3,7 @@
 // 2026-11-14 (#323 batch 1, mining sign moved to the pack world) it failed for 'mining' until IsPackPlaced.
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SignCoverage : LF_Test
 {
 	protected static ref array<string> s_aIds;

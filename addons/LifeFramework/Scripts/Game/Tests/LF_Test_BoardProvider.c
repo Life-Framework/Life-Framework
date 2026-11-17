@@ -35,6 +35,7 @@ class LF_BoardFakeProvider : LF_BoardProvider
 }
 
 //------------------------------------------------------------------------------------------------
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_BoardProvider : LF_Test
 {
 	override string GetName()

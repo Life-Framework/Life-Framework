@@ -10,6 +10,7 @@
 //! A save from this build reads as this build. A version 31 save has no stamp (unknown build).
 //! A save whose payloads cannot be read leaves the live state alone, logs the damage and pauses
 //! autosave (IsLoadDamaged) instead of wiping.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_SaveStampPersist : LF_Test
 {
 	protected static const string UID = "stamp-bank-uid";

@@ -5,6 +5,7 @@
 //! of its own; the take-back must still release the ragdoll, let it settle and wake the body
 //! through vanilla. A body that was downed for real before the logout stays down. The new owner's
 //! wake on control (WakeOnControl) is a pure rule here; the two-client rejoin is a session proof.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LogoutBodyWake : LF_Test
 {
 	protected static const string UID = "logout-wake-uid";

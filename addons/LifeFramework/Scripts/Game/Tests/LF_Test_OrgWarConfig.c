@@ -4,6 +4,7 @@
 //! and layers the owner's `organizations.wars` keys over it. The core defaults are a 5000 fee from the
 //! fund, a 600 s answer window, a 7200 s war, a 86400 s pair cooldown, 3 members a side, war kills not
 //! murder and tagged. An owner override of the window and fee wins; a negative length keeps the default.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OrgWarConfig : LF_Test
 {
 	override string GetName()

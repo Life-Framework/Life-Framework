@@ -4,6 +4,7 @@
 //! written, an emptied store reads the same points back, a 0 row is not written, a removed faction is
 //! skipped with a warning, points clamp to the current thresholds, and loading twice gives the same
 //! store. The restart itself is proved by `tools\cli wt e2e` (SeedE2E / VerifyE2E below).
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_ReputationPersist : LF_Test
 {
 	static const string UID = "test-reputation-persist";

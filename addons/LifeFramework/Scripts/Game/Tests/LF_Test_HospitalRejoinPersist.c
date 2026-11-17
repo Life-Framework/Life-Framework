@@ -7,6 +7,7 @@
 //! Loading twice gives one pending rejoin; a save from before the payload (version 39) loads nothing.
 //! Across a restart (`tools\cli wt e2e`): the save boot records E2E_UID, the shutdown save carries
 //! it, and the reload boot finds the wake pending and writes the bill.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_HospitalRejoinPersist : LF_Test
 {
 	protected static const string UID = "hospital-rejoin-persist-uid";

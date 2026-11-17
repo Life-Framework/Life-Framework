@@ -5,6 +5,7 @@
 // tier: LOGIC
 //! The painted board face: a title is broken at spaces and set as big as the
 //! board's title box allows, so it reads from the road.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignBoardFace : LF_Test
 {
 	override string GetName()

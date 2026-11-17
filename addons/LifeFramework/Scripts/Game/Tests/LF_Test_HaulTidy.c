@@ -9,6 +9,7 @@
 //! crime/haul-tidy: the money bags a cash van heist spills are bag-sized, lie in a tidy row at the box and rest
 //! on the surface. The trailer showed three 1.4 m sacks scattered across the road behind the van: the spawn
 //! dropped the money bag prefab's scale, and the row stood where the robber works (#571 maintainer review).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HaulTidy : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

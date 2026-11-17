@@ -24,6 +24,7 @@ class LF_Test_ChainTraceCounter : LF_EventSubscriber
 	}
 }
 
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ChainTrace : LF_Test
 {
 	override string GetName()

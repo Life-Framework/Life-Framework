@@ -397,6 +397,11 @@ function cmdStatus() {
   console.log(`  node ${process.version}`);
   const npmv = sh(NPM, ["-v"]).stdout.trim();
   console.log(`  npm  ${npmv}`);
+  try {
+    console.log(`  ${wbRoute.statusLine({ machines: pool.loadMachines(ROOT) })}`);
+  } catch (e) {
+    console.log(`  workbench: unknown (${e.message})`);
+  }
   console.log("");
   console.log("mcp servers (tools/mcp/):");
   let nativeBroken = false;

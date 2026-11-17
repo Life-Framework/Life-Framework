@@ -3,6 +3,7 @@
 //! The NPC's mouth maths (Feature/Dialogue/LF_DialogueMouth.c): the loudness envelope is smoothed
 //! (quick attack, slower release), the opening is capped, syllables differ a little, a pause shuts
 //! the mouth fully, and the idle face nods on stressed peaks and blinks.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DialogueMouth : LF_Test
 {
 	override string GetName()

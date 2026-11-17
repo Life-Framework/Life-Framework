@@ -4,6 +4,7 @@
 //! A collected or bought vehicle key is created at its holder, never at the pad it was collected
 //! from, and lands in the holder's inventory (maintainer playtest 2026-11-10: after an impound
 //! collect, moving the key or the ID card stuck on the loading throbber).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VehicleKeyInventory : LF_Test
 {
 	protected static const string OWNER = "key-inventory-owner";

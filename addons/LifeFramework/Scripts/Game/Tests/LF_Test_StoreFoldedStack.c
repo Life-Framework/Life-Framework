@@ -6,6 +6,7 @@
 //! slot's yaw. A restart that finds the restored copies adopts each one into its own slot and deletes
 //! none (the bottom slot must not swallow the pile). A copy taken from the middle leaves the stock
 //! once and the copies above close the gap. Deletes what it spawns.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_StoreFoldedStack : LF_Test
 {
 	//! The e2e restart proof (LF_Test_E2E_SaveState) keeps its own DarkBrown pile on this same counter

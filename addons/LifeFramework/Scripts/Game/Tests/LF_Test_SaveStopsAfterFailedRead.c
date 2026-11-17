@@ -8,6 +8,7 @@
 //! read can be misaligned, and a later read that happens to succeed would replace live state with
 //! whatever it found. A save whose bank records cannot be read is followed by a survival payload
 //! that reads fine; the load stops at the failure, so the live survival stats stay as they were.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_SaveStopsAfterFailedRead : LF_Test
 {
 	protected static const string CHARACTER = "lf-test-stop-after-failed-read";

@@ -13,6 +13,7 @@
 //! API: talk and register, read the town board, deliver a parcel, bank cash, return. Each
 //! SIGNAL moves only its own step, a returning player is never offered the chain again, and
 //! the ID card is handed over once.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ArrivalChain : LF_Test
 {
 	static const ResourceName CLERK_PREFAB = "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et";

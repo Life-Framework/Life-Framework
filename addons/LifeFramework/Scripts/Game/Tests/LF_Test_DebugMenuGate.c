@@ -6,6 +6,7 @@
 // Restored `return devToolsEnabled || isAdmin;` and the suite went green.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DebugMenuGate : LF_Test
 {
 	override string GetName()

@@ -4,6 +4,7 @@
 //! cash leaves as carried money bags, never a bank balance; a second try on the open box pays
 //! nothing and reports nothing; the next stop stocks it afresh. The route helpers pick the next
 //! stop and hold while a player is near.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CashVan : LF_Test
 {
 	override string GetName()

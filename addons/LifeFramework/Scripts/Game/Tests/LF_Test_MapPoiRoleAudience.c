@@ -5,6 +5,7 @@
 //! takes its roles from the replicated account state. Neither audience builder (LF_MapPlacesUI,
 //! LF_MapPlacesKnown) added a role, so a ROLE kind such as the police armoury never showed, even to an
 //! officer on duty. Off duty, or in another service, it stays hidden.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapPoiRoleAudience : LF_Test
 {
 	override string GetName()

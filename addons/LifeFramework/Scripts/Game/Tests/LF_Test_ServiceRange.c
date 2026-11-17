@@ -6,6 +6,7 @@
 // tier: WORLD
 //! The ATM and organization desk RPCs only move cash at the placed site. Reads the DebugWorld
 //! placements Annex_ATM and Roadmap_Org_Desk.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ServiceRange : LF_Test
 {
 	override string GetName()

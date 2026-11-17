@@ -8,6 +8,7 @@
 //! changes no saved value; turned on again it all works. A vault that was mid-drill when Robbery went
 //! off pays no loot. ATM and Organizations follow Banking.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SystemsEconomy : LF_Test
 {
 	static const string UID = "systems-economy-tester";

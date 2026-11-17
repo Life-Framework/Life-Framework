@@ -5,6 +5,7 @@
 //! unconscious while it settles, then vanilla wakes it. A dead, a medically downed and a vanilla
 //! unconscious character are refused and left exactly as they were; ending a knockout never
 //! revives anyone. Test characters are server-owned and have no player, so the test opts them in.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Knockout : LF_Test
 {
 	override string GetName()

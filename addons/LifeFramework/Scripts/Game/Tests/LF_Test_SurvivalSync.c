@@ -6,6 +6,7 @@
 //! Server-side survival tick helpers: the frame delta is clamped so a hitch does not drop a big
 //! chunk, and replication bumps only when a whole point or the low-needs state changes.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SurvivalSync : LF_Test
 {
 	override string GetName()

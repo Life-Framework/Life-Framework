@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! A job-level gate refuses in words, never a number (#2700, outline decision 7): the helper picks a
 //! `#` key by job family and by distance, the chain gate and the licence gate take their keys from it.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobLevelWords : LF_Test
 {
 	override string GetName()

@@ -3,6 +3,7 @@
 //! The drill is a hand tool (core LF_HandTool): it carries the gadget component with tool id drill,
 //! can be held, goes into a 1-0 quick slot, and once in the hands it reads as held; in the pack it
 //! does not.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HandToolEquip : LF_Test
 {
 	override string GetName()

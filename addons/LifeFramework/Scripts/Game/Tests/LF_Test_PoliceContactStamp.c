@@ -4,6 +4,7 @@
 //! contact on the suspect, so a wanted player who logs out inside the contact window rejoins in jail. A cuffing
 //! the restraint refused (RATE_LIMITED, NO_CUFFS, ...) is no contact. Tests use their own uids and never
 //! reset the shared statics: they forget only the stamps they made.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceContactStamp : LF_Test
 {
 	override string GetName()

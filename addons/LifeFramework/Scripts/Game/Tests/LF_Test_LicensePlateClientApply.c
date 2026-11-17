@@ -4,6 +4,7 @@
 // #2475: a registration that arrives through the replication callback (OnRegistrationUpdated, the RplProp
 // onRpl handler) is applied to every plate the manager spawned. The applied text lives on the manager's plate
 // record so it is readable without a text widget (dedicated server).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LicensePlateClientApply : LF_Test
 {
 	protected static const ResourceName FIXTURE_PREFAB = "{8821AF528FA28E8C}Prefabs/Vehicles/Core/Vehicle_Test_PlateFixture.et";

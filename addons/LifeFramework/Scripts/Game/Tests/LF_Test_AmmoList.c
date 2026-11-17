@@ -4,6 +4,7 @@
 //! up in `AmmoList.conf` when it is created; a round that is missing is a Virtual Machine Exception
 //! the first time a saved taser magazine loads. The list is read here the way the system reads it,
 //! and the live system is asked for the taser round.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_AmmoList : LF_Test
 {
 	static const ResourceName AMMO_LIST = "{DAA31F8A78F30455}Configs/Weapons/Ammo/AmmoList.conf";

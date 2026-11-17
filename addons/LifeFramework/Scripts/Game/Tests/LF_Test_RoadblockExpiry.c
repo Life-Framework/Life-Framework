@@ -5,6 +5,7 @@
 //! default, Configs/Police/LF_Roadblock.conf) and is removed with every piece when the expiry runs.
 //! The second is removed when its officer goes off duty. The third, inside the window and laid by an
 //! officer still on duty, stays; it goes when its officer's account is gone.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RoadblockExpiry : LF_Test
 {
 	protected static const string OFFICER_A_UID = "roadblock-expiry-a";

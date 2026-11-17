@@ -3,6 +3,7 @@
 //! #1741: `op: remove` keyed by the base prefab GUID (the key LF_VehiclePrices.conf lists) takes the
 //! vehicle off the lot. A removed vehicle is unpriced, and the lot used to fall back to the price
 //! written on the offer, so it was still shown and sold.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehicleRemoveByBaseGuid : LF_Test
 {
 	override string GetName()

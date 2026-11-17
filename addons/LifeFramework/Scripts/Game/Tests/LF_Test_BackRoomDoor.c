@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! Back room door (#933): the prompt names the room and, once police have searched it, says it is
 //! shut and why; the shut refusal tells the player what to do (come back later).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_BackRoomDoor : LF_Test
 {
 	override string GetName()

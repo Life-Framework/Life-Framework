@@ -6,6 +6,7 @@
 //! drops the hold. An Uncuff hold opens the cuffs on the suspect's wrists (the replicated character
 //! flag) and any end shuts them. The server accepts the end of a hold only if it saw the hold begin
 //! and only after most of the action's duration. The worn model can open too.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CuffingOpenState : LF_Test
 {
 	static const ResourceName CUFFS_PREFAB = "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et";

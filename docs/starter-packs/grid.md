@@ -32,6 +32,6 @@ takes a block of cells for a big item; `--cell` is its south-west corner.
   decor.
 
 ## Environment
-No Workbench on this PC and never pin a machine. Run in the foreground (timeout up to 600000 ms) or
+No Workbench on the maintainer's PC (Gaming-Box); on lf-testbox (PC1) it is allowed through the pool (`toolscli status` says which you are on). Never pin a machine. Run in the foreground (timeout up to 600000 ms) or
 `t3_background_wait`; never end the turn with a run pending. Never `--force`, `rm -rf` or `Remove-Item -Recurse` a
 worktree (`wt prune`).

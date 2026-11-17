@@ -4,6 +4,7 @@
 //! The Ops bus contract (#1344): the restart warning and the restart-due events reach a
 //! subscriber with their published values, and the two M4 starter stubs the game mode calls run
 //! without a VME and log their line. The toast, siren and close slices subscribe to these events.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OpsEventsContract : LF_Test
 {
 	override string GetName()

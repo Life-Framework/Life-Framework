@@ -1,5 +1,6 @@
 // red-proof: the playtime wait is zeroed in RefuseSubmitGated: '[LFTEST] FAIL police/application-playtime-gate', restored (2026-11-14)
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceApplyPlaytimeGate : LF_Test
 {
 	override string GetName()

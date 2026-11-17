@@ -5,6 +5,7 @@
 //! circle on every member's map) or its position is outside the map, not only outside the int16 wire
 //! range. The limits are read here from the engine's own marker manager and the world's bound box (the dedicated server has no map entity), independent of
 //! the code under test. An in-range mark is still added.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_OrgMapMarkBounds : LF_Test
 {
 	protected static const string FOUNDER = "orgmarkbounds-founder";

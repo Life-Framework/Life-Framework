@@ -7,6 +7,7 @@
 // tier: PERSISTENCE
 //! Rules orientation quiz (#915): a pass is saved with the account's progression and read back, so a
 //! restart does not ask again. A quest log built from the same record does not list the pass as a quest.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_QuizPersist : LF_Test
 {
 	protected static const string PASSED = "quiz-persist-passed";

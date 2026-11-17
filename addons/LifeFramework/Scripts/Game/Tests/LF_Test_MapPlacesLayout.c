@@ -26,6 +26,7 @@ class LF_Test_MapClusterCase
 //! `node tools/map/rules/cluster.mjs --gen`; the node selftest fails when the copy is stale.
 //! Also the pure parts of the layer: clusters over real LF_MapPoi rows, the zoom of a view, the hover
 //! card's title and Set waypoint. No map, no widgets.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapPlacesLayout : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

@@ -4,6 +4,7 @@
 //! LeaveDirect or Kick) publishes LF_OnOrganizationEmptied and LF_Hideout releases every site it
 //! leases: the lease is free, the org_base place is gone, the door lock no longer carries the old
 //! organization id (an empty id reads "Unowned" to everyone), and another organization can lease it.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HideoutLeaseEmptyOrg : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

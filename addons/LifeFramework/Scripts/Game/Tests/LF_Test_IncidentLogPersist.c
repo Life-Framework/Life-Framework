@@ -3,6 +3,7 @@
 // tier: PERSISTENCE
 //! persist/incident-log-roundtrip: incidents ride the real save path (the "incidents" payload,
 //! save version 13) and are queryable after the store is wiped; a second load converges.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_IncidentLogPersist : LF_Test
 {
 	override string GetName()

@@ -4,6 +4,7 @@
 //! The shipped moonshine chain (#420) loads from ResourceChains.conf with every prefab resolving,
 //! is tier 1 with no gate, and its steps hand items on: the mash output is the still input, and
 //! the still makes the moonshine bottle (#2001), and a pack bench turns bottles into a crate (#2441, LF_Test_MoonshineCratePack).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ChainMoonshine : LF_Test
 {
 	override string GetName()

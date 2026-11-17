@@ -9,6 +9,7 @@
 // tier: WORLD
 //! Faction spawn points resolve by faction key. The test spawns one CIVILIAN and one POLICE spawn
 //! point from the core spawn prefab and deletes them, so it needs no town spawns.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FactionSpawn : LF_Test
 {
 	static const ResourceName SPAWN_POINT_PREFAB = "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et";

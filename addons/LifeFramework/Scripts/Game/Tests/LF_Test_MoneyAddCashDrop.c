@@ -3,6 +3,7 @@
 //! LF_MoneyUtils.AddCash's opt-in drop-overflow (#2503): cash that does not fit in the inventory lies
 //! at the target's feet, counts as added, and the ledger hears the full amount once. Without the flag
 //! nothing changes: a full inventory takes nothing and nothing lands on the ground.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MoneyAddCashDrop : LF_Test
 {
 	protected static const string UID = "test-addcash-drop";

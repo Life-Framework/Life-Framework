@@ -6,6 +6,7 @@
 //! prefab carries the component the asset spec generates (one spinning bone, the sparks), its model has
 //! the bone and the socket, the server switches it and poses it, and LF_DrillScene holds it in front of
 //! a robber and lays it back where it was.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_AssetAnim : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

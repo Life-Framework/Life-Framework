@@ -5,6 +5,7 @@
 // tier: LOGIC
 //! M1-17 offer side: which `org_invite` entry a pair sees (invite only with the rank, join only
 //! from the one who offered, remove never the founder), the slot registration, and the ledger page.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OrgInviteRole : LF_Test
 {
 	override string GetName()

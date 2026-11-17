@@ -4,6 +4,7 @@
 //! The pure rule for one hit on a player's Health hit zone (LF_Downed.Decide): lethal damage
 //! downs, non-lethal passes, a downed player absorbs every hit, and config off, an NPC, a
 //! disallowed unconsciousness, or a real-kill request all leave the hit to vanilla.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DownedRules : LF_Test
 {
 	override string GetName()

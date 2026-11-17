@@ -443,7 +443,7 @@ ${clean.stderr}`);
   }
 
   // #2549: a generator that never exits must not hang `git merge`. The stub stands in for PowerShell and
-  // sleeps forever; with a 2 s budget the driver kills it, names the step, removes its scratch dir and exits 1
+  // sleeps forever; with a 2 s stub budget the driver kills it, names the step, removes its scratch dir and exits 1
   // so git marks the file conflicted and the merge finishes. Red on main: the stub is ignored, the real
   // generator runs and the merge succeeds.
   const hangRepo = join(temp, "hang");
@@ -466,7 +466,9 @@ ${clean.stderr}`);
   const hangBudgetMs = 2000;
   const hangEnv = {
     ...process.env,
-    LF_MERGE_DRIVER_TIMEOUT_MS: String(hangBudgetMs),
+    // Only the stub gets the 2 s limit. The driver's own git init / rev-parse keep their 20 s default: under
+    // load (~30 agents) a git spawn passed 2 s and flaked this test twice on 2026-11-18 (#2746).
+    LF_MERGE_DRIVER_STUB_TIMEOUT_MS: String(hangBudgetMs),
     LF_MERGE_DRIVER_GENERATOR_STUB: hangStub,
     TEMP: hangTmp,
     TMP: hangTmp,
@@ -547,6 +549,10 @@ ${unmerged}`);
   // The launcher honours the same override: a backstop of three times it for the wrapped driver.
   if (driverBackstopMs({ LF_MERGE_DRIVER_TIMEOUT_MS: "2000" }) !== 11000) fail("driverBackstopMs should be 3x the override plus 5 s");
   if (driverBackstopMs({}) !== 240_000) fail("driverBackstopMs default should be 240 s");
+  // #2746: the stub-only variable shortens the stub's limit and leaves the git limit alone.
+  const stubVar = "LF_MERGE_DRIVER_STUB_TIMEOUT_MS";
+  if (timeoutFor(20_000, { [stubVar]: "2000" }, stubVar) !== 2000) fail("the stub override should set the stub limit");
+  if (timeoutFor(20_000, { [stubVar]: "2000" }) !== 20_000) fail("the stub override must not shorten the git limit");
   if (timeoutFor(20_000, {}) !== 20_000 || timeoutFor(20_000, { LF_MERGE_DRIVER_TIMEOUT_MS: "abc" }) !== 20_000) {
     fail("timeoutFor should ignore a missing or non-numeric override");
   }

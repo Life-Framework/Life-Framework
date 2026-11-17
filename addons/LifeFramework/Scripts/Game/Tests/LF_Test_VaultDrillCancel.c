@@ -3,6 +3,7 @@
 //! Nothing is paid before the drill has run its time: starting pays nothing; cancelling or putting
 //! the drill away stops the drilling and the vault stays shut with no haul, even after the full
 //! time has passed on the server clock. Walking off and going down stop it too (the pure step).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VaultDrillCancel : LF_Test
 {
 	override string GetName()

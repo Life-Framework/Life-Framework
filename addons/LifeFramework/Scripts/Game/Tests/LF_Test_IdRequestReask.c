@@ -6,6 +6,7 @@
 //! refusal for it (the answered flag was reset only after the close), and the server read that as
 //! the answer to the new request, so the officer heard "refused". Only the citizen's own button, or
 //! closing the sheet they are looking at, answers.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_IdRequestReask : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

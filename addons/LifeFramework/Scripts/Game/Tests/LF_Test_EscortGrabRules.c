@@ -3,6 +3,7 @@
 //! An escort grab needs reach and never takes another officer's prisoner (#2542). The server side of
 //! both escort actions runs LF_JailEscort.Grab: reach first (LF_PlayerInteraction.CheckPair, the rule
 //! the cuff and arrest paths use), then the hold check inside LF_JailEscort.Escort.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_EscortGrabRules : LF_Test
 {
 	override string GetName()

@@ -8,6 +8,7 @@
 //! renews it with the phase's radius and does not duplicate it; a late joiner's spawn resends it; the event's end removes the row from everyone and the area; a
 //! second run's row leaves everyone at its safety expiry. An event with no place, or whose marker is
 //! not placed, shows nothing.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventMapShare : LF_Test
 {
 	static const string SCENE = "grid_event_scene";

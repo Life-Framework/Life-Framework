@@ -2,6 +2,7 @@
 // tier: WORLD
 //! police/armory-kit-turn-in (#2416): an officer carrying their issued rifle uses the armory: the
 //! rifle is taken off them and its serial leaves the book, and nothing new is issued in that use.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ArmoryKitTurnIn : LF_Test
 {
 	protected static const string OFFICER_UID = "armory-turn-in-senior";

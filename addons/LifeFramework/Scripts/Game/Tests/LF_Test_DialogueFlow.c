@@ -5,6 +5,7 @@
 //! The rules of an NPC conversation (Feature/Dialogue/LF_DialogueConfig.c, LF_DialogueFlow): a
 //! reply the server did not offer cannot be picked, what a feature hands back is spoken by the
 //! line voiced for it, broken data is named, and the mouth and camera maths hold their bounds.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DialogueFlow : LF_Test
 {
 	override string GetName()

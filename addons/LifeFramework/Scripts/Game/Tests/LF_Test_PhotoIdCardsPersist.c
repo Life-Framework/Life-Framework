@@ -8,6 +8,7 @@
 //! with the replaced card still void and the photo and the date of issue intact; numbering goes on
 //! after the highest number loaded. A version 29 save has no rows and leaves the registry alone.
 //! The test puts back what it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_PhotoIdCardsPersist : LF_Test
 {
 	protected static const string HOLDER = "test-idcards-holder";

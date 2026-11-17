@@ -2,58 +2,39 @@
 //
 //   node tools/test/convert-self-register.mjs <file-or-glob>... [--dry-run]
 //
-// Appends the LF_TestRegistration subclass (addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistration.c) after the
-// test class of each file that lacks one. The tier comes from the file's `// tier:` line, so the registration's
-// Tier() matches it (gen-test-registry.ps1 checks that). Idempotent: a file with a registration is left alone.
-// Refuses, and does not touch, a file with no `// tier:` line, no test class, or two test classes (one registration
-// per file). A glob uses `*`, `?` and `[A-L]` in the last path segment. Exit 0 when nothing was refused, else 1.
-// After a batch run `tools\cli regen-tests`: converted files leave the Enforce registry.
+// Inserts `[LF_TestInfo(LF_TestTier.<tier>)]` on the line directly above the `class LF_Test_X : LF_Test` of each file
+// that lacks one (Tests/LF_TestInfo.c: LF_TestManager finds the class by reflection, no static initializer). The tier
+// comes from the file's `// tier:` line, which stays (gen-test-registry.ps1 fails when the two disagree). Idempotent: a
+// file that already has an attribute is left alone. Refuses, and does not touch, a file with no `// tier:` line, no
+// test class, or two test classes (multi-class and pack files are #2617). A glob uses `*`, `?` and `[A-L]` in the last
+// path segment. Exit 0 when nothing was refused, else 1.
+// After a batch run `tools\cli regen-tests`: converted files leave the Enforce registry (a comment row remains).
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const TIERS = "LOGIC|WORLD|PERSISTENCE|PERF";
 
-function registrationBlock(testClass, tier) {
-  const name = testClass.replace(/^LF_Test_/, "");
-  return [
-    "//------------------------------------------------------------------------------------------------",
-    "//! Self-registration (LF_TestRegistration.c): this file is the whole of adding this test.",
-    `class LF_TestRegistration_${name} : LF_TestRegistration`,
-    "{",
-    `\tprotected static bool s_bRegistered = LF_TestManager.Enqueue(new LF_TestRegistration_${name}());`,
-    "",
-    "\toverride LF_TestTier Tier()",
-    "\t{",
-    `\t\treturn LF_TestTier.${tier};`,
-    "\t}",
-    "",
-    "\toverride LF_Test Create()",
-    "\t{",
-    `\t\treturn new ${testClass}();`,
-    "\t}",
-    "}",
-  ].join("\n");
+function attributeLine(tier) {
+  return `[LF_TestInfo(LF_TestTier.${tier})]`;
 }
 
 // -> { status: "converted"|"already"|"refused", text, reason? }. Pure: no file access.
 export function convertText(text, fileName = "file") {
-  if (/class\s+\w+\s*:\s*LF_TestRegistration\b/.test(text)) return { status: "already", text };
+  if (/\[LF_TestInfo\(/.test(text)) return { status: "already", text };
   const classes = [...text.matchAll(/class\s+(LF_Test_\w+)\s*:\s*LF_Test\b/g)];
   if (classes.length === 0) return { status: "refused", text, reason: `${fileName}: no 'class LF_Test_X : LF_Test'` };
   if (classes.length > 1) {
-    return { status: "refused", text, reason: `${fileName}: ${classes.length} test classes (${classes.map((c) => c[1]).join(", ")}); one registration per file` };
+    return { status: "refused", text, reason: `${fileName}: ${classes.length} test classes (${classes.map((c) => c[1]).join(", ")}); one attribute per file, multi-class files are #2617` };
   }
   const cls = classes[0];
   const tiers = [...text.slice(0, cls.index).matchAll(/\/\/\s*tier:\s*(LOGIC|WORLD|PERSISTENCE|PERF)\b/g)];
   if (tiers.length === 0) return { status: "refused", text, reason: `${fileName}: no '// tier: ${TIERS}' comment above ${cls[1]}` };
   const tier = tiers[tiers.length - 1][1];
 
-  // The test class closes with a "}" in column 0; the registration goes right after it.
-  const close = text.indexOf("\n}", cls.index);
-  if (close < 0) return { status: "refused", text, reason: `${fileName}: cannot find the end of ${cls[1]}` };
-  const at = close + 2;
-  return { status: "converted", text: `${text.slice(0, at)}\n\n${registrationBlock(cls[1], tier)}${text.slice(at)}`, tier };
+  // The attribute goes on its own line right above the class declaration.
+  const at = text.lastIndexOf("\n", cls.index) + 1;
+  return { status: "converted", text: `${text.slice(0, at)}${attributeLine(tier)}\n${text.slice(at)}`, tier };
 }
 
 function expand(arg) {

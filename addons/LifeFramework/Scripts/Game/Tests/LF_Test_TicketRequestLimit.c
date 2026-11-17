@@ -3,6 +3,7 @@
 //! police/ticket-request-limit (#2416): one officer may send ticketRateBurst ticket requests per
 //! ticketRateWindowSeconds; the rest are refused, another officer is unaffected, and the window
 //! reopens. The ticket paper no longer carries the holder's platform uid as a replicated property.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_TicketRequestLimit : LF_Test
 {
 	protected static const int OFFICER = 7301;
