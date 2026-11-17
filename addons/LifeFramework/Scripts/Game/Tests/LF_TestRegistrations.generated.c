@@ -543,6 +543,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_PlaytestMission(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_PlaytestOffers(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_PlaytimePersist(), LF_TestTier.PERSISTENCE;
+		// self-registered: new LF_Test_PlotBuy(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_PlotLoop(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_PoliceAbuse(), LF_TestTier.LOGIC;
