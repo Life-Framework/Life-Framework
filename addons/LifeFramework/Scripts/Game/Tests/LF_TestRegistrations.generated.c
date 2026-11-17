@@ -842,6 +842,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_WhitelistPersist(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistRemoveUnloaded(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WhitelistStaticReset(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_WipeClearsArmoryBook(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_Witness(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WitnessDialogue(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_WoodcuttingDamage(), LF_TestTier.WORLD);
