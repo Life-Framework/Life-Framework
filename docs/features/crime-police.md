@@ -255,6 +255,9 @@
   prints name, offence (wanted level), and online minutes left; the minutes replicate only when
   the whole minute changes. Hovering it in the inventory reads it (`LF_JailSlipUIInfo`). A
   respawn or a second arrest reprints the carried slip instead of adding one. No new save data.
+  The prisoner's platform uid is not replicated (#2416, test `jail/slip`): the slip keeps it in a plain
+  server-side field and replicates the display name (never the uid: a prisoner with no character name reads
+  "unknown", `#LF-JailSlip_Unnamed`) and a printed flag.
 - ✅ **Visible release** (M1-21, tests `jail/slip`, `jail/online-time`): release opens the cell
   door (`DoorComponent.SetControlValue`, the vanilla door motion and sound; it closes after
   5 s), places the prisoner at the cell release offset (`m_vReleaseOffset`; DebugWorld `0.15 0 10`, outside

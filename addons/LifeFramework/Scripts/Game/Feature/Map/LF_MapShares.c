@@ -8,7 +8,7 @@ class LF_MapShareRow : Managed
 	//! The owning system's stable key: dispatch:<callId>, org:<orgId>:<n>, taxi:<fareId>, event:<eventId>.
 	string m_sKey;
 	LF_EMapShareAudience m_eAudience;
-	//! Character id (PLAYER), service (ROLE: police, medic), org id (ORG); unused for EVERYONE.
+	//! Character record key (PLAYER, LF_Utils.GetPlayerUID), service (ROLE: police, medic), org id (ORG); unused for EVERYONE.
 	string m_sAudienceId;
 	//! World x and z in metres.
 	int m_iX;
@@ -94,14 +94,23 @@ class LF_MapShareGameFacts : LF_MapShareFacts
 		if (!accounts)
 			return null;
 
-		LF_PlayerAccount account = accounts.GetAccount(playerId);
+		return MemberOf(playerId, accounts.GetAccount(playerId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The member for one account. m_sUid is the active character's record key (LF_Utils.GetPlayerUID,
+	//! the key PLAYER rows are put under by the job marks); the organization is looked up by the
+	//! character id, which is what organizations list members under. An account's first character has
+	//! the account uid as its record key and a different character id, so using the character id as
+	//! m_sUid matched no PLAYER row: job and fare marks and their waypoints never reached a first
+	//! character (review 2026-11-17).
+	static LF_MapShareMember MemberOf(int playerId, LF_PlayerAccount account)
+	{
 		if (!account)
 			return null;
 
-		string uid = account.GetPersistentId();
-		LF_PlayerCharacter character = account.GetActiveCharacter();
-		if (character)
-			uid = character.GetId();
+		string uid = account.GetActiveCharacterKey();
+		string characterId = LF_OrgMapMarks.CharacterIdOfAccount(account);
 
 		array<string> roles = {};
 		if (account.IsOnDuty() && account.GetFaction() == LF_Faction.POLICE)
@@ -111,7 +120,7 @@ class LF_MapShareGameFacts : LF_MapShareFacts
 			roles.Insert(LF_MapShares.ROLE_MEDIC);
 
 		string orgId;
-		LF_Organization org = LF_OrganizationManager.GetByCharacter(uid);
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
 		if (org)
 			orgId = org.GetId();
 

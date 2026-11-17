@@ -19,7 +19,8 @@ enum LF_ERequestKind
 	CRIME,		//!< Starting a crime that runs on (a held robbery, LF_RobHold)
 	CHESS,		//!< Chess moves and standing up from a table (its own bucket: a game must not eat the phone's)
 	QUEST,		//!< Quest menu, converse and sign asks and dialogue start and reply (the open-giver ask recounts the inventory)
-	TICKET		//!< Police ticket requests (its own bucket; the limit is police config, LF_RateLimit.AllowWith)
+	TICKET,		//!< Police ticket requests (its own bucket; the limit is police config, LF_RateLimit.AllowWith)
+	MAP			//!< Personal map marks sync and save (its own bucket: the phone and the board must not eat a respawn's mark restore)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -167,6 +168,9 @@ class LF_RateLimit
 	// lf-fixed: anti-spam floor; the dialogue ignores input for 350 ms after each line, so eight asks in two seconds is a script
 	static const int QUEST_WINDOW_MS = 2000;
 	static const int QUEST_BURST = 8; // lf-fixed: see QUEST_WINDOW_MS
+	// lf-fixed: anti-spam floor; the client batches mark edits into one save per 2 s, plus one sync per respawn
+	static const int MAP_WINDOW_MS = 5000;
+	static const int MAP_BURST = 4; // lf-fixed: see MAP_WINDOW_MS
 
 	protected static ref LF_RateLimiter s_Limiter;
 
@@ -183,6 +187,7 @@ class LF_RateLimit
 			case LF_ERequestKind.CRIME: return CRIME_WINDOW_MS;
 			case LF_ERequestKind.CHESS: return CHESS_WINDOW_MS;
 			case LF_ERequestKind.QUEST: return QUEST_WINDOW_MS;
+			case LF_ERequestKind.MAP: return MAP_WINDOW_MS;
 		}
 
 		return SPAWN_WINDOW_MS;
@@ -201,6 +206,7 @@ class LF_RateLimit
 			case LF_ERequestKind.CRIME: return CRIME_BURST;
 			case LF_ERequestKind.CHESS: return CHESS_BURST;
 			case LF_ERequestKind.QUEST: return QUEST_BURST;
+			case LF_ERequestKind.MAP: return MAP_BURST;
 		}
 
 		return SPAWN_BURST;

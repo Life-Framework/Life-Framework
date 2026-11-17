@@ -19,7 +19,7 @@ enum LF_EMapShareAudience
 class LF_MapShareMember : Managed
 {
 	int m_iPlayerId;
-	//! The active character id (the key orgs and PLAYER rows use).
+	//! The active character's record key (LF_Utils.GetPlayerUID; the key PLAYER rows use). Org membership is resolved by character id into m_sOrgId.
 	string m_sUid;
 	//! On-duty services only: "police", "medic". Empty off duty.
 	ref array<string> m_aRoles = {};
