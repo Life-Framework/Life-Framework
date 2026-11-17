@@ -87,6 +87,8 @@ class LF_Evidence
 	static const int SWEEP_MS = 30000;
 	static const int DROP_SETTLE_MS = 1500;
 	static const int MAX_PENDING_DROPS = 64;
+	//! A dropped item farther than this from its marker was moved: it is no longer scene evidence.
+	static const float ITEM_MOVED_M = 2.0;
 
 	protected static ref array<ref LF_EvidenceScene> s_aScenes;
 	protected static ref array<ref LF_EvidenceRow> s_aRows;
@@ -487,6 +489,16 @@ class LF_Evidence
 			return null;
 		}
 
+		// A dropped item is somebody's property again once they pick it up: bagging it would pull it out
+		// of their inventory. Only an item still lying by its marker is evidence.
+		if (row.m_Marker != row.m_Item && !StillAtScene(item, row))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("bag refused: the %1 for report #%2 was picked up or moved away", row.m_sKind, row.m_iReport));
+			Discard(row, "item left the scene");
+			Rows().RemoveItem(row);
+			return null;
+		}
+
 		IEntity bag = LF_Utils.SpawnEntityPrefab(BagPrefab(), item.GetOrigin() + "0 0.1 0");
 		LF_EvidenceBagComponent bagComponent;
 		if (bag)
@@ -523,6 +535,25 @@ class LF_Evidence
 			LF_Debug.Warn(FEATURE, "the officer's inventory is full: the bag lies at the scene");
 
 		return bag;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while a dropped item still lies loose beside its marker: no parent entity, no inventory
+	//! slot, and within ITEM_MOVED_M of the marker.
+	protected static bool StillAtScene(notnull IEntity item, notnull LF_EvidenceRow row)
+	{
+		if (item.GetParent())
+			return false;
+
+		InventoryItemComponent inventoryItem = InventoryItemComponent.Cast(item.FindComponent(InventoryItemComponent));
+		if (inventoryItem && inventoryItem.GetParentSlot())
+			return false;
+
+		IEntity marker = GetGame().GetWorld().FindEntityByID(row.m_Marker);
+		if (marker && vector.Distance(item.GetOrigin(), marker.GetOrigin()) > ITEM_MOVED_M)
+			return false;
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

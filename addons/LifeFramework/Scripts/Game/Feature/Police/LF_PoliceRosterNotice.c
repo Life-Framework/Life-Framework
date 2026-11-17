@@ -50,6 +50,8 @@ class LF_PoliceRosterNotice
 	static const string FEATURE = "Police";
 	static const string KEY_APPROVED = "#LF-PoliceRoster_Approved";
 	static const string KEY_EXPIRED = "#LF-PoliceRoster_Expired";
+	//! Notices kept in memory (SentCount / SentAt); older ones are dropped.
+	static const int MAX_SENT = 64;	// lf-fixed: memory bound for the sent list, not a rule
 
 	protected static ref LF_PoliceRosterNoticeSubscriber s_Subscriber;
 	protected static ref set<string> s_mTold;
@@ -80,6 +82,19 @@ class LF_PoliceRosterNotice
 			return 0;
 
 		return s_aSent.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keeps the sent list for the tests and the log, newest last, trimmed to MAX_SENT so a long-running
+	//! server does not grow it for ever.
+	static void RememberSent(string entry)
+	{
+		if (!s_aSent)
+			s_aSent = new array<string>();
+
+		s_aSent.Insert(entry);
+		while (s_aSent.Count() > MAX_SENT)
+			s_aSent.RemoveOrdered(0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -156,10 +171,7 @@ class LF_PoliceRosterNotice
 
 		Told().Insert(told);
 		SaveTold();
-		if (!s_aSent)
-			s_aSent = new array<string>();
-
-		s_aSent.Insert(string.Format("%1|%2", playerId, key));
+		RememberSent(string.Format("%1|%2", playerId, key));
 		LF_Debug.Info(FEATURE, string.Format("roster notice %1 for %2 (player %3)", key, uid, playerId));
 		if (!s_bQuiet)
 			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-PoliceApp_Title", key, 8.0);

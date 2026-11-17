@@ -81,3 +81,15 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Proof:** `placement/composition` (WORLD: a three-cone set places as one with each piece on the ground, a set on
   a set, a malformed proposal and a far pick-up are refused, a pick-up removes every piece, a cone half on a table is
   `TOO_STEEP`).
+
+## Doorways stay clear (#2445)
+
+- **Player sees:** the ghost turns red, with "a door is in the way", over a door leaf's swing (1 m both ways) or the
+  3 m walk-up in front of a ground-floor door, and the server refuses a confirm there. Furniture behind a door
+  inside its own building is not refused; a low thing (under 0.5 m tall) and a building-sized box are not either.
+- **Owner and side:** `LF_PlacementDoors.Find`, run from `LF_PlacementRules.FindBlocker` after the box trace finds
+  nothing, so the single, aimed and composition placements get it on both sides with no edits and `Judge` stays
+  pure. The maths mirrors the offline audit's door rule (`agent-box/place-audit.mjs`, `docs/placement-tool.md`).
+- **Data:** none; the distances are `lf-fixed` constants of the audit's limits.
+- **Proof:** `placement/door-probe` (WORLD: a house door spawned on open ground; spots in the swing, either side,
+  and in the walk-up are blocked by "a door", 4 m in front and 2.5 m beside are clear, an excluded door does not block).

@@ -58,11 +58,14 @@
 - ✅ **Moonshine (#420, tier 1, config only).** `moonshine` in `ResourceChains.conf`: `mash` at a
   barrel (4 plums and 2 cabbages to 2 water bottles of wash, 12 work), then `distill` at a still
   (2 bottles of wash to 1 `Moonshine` bottle, #2001, 16 work). No gate; heat 3 per work, range 60 m.
-  Nothing packs the bottles into the `LF_ContrabandCrate` the convoy (barn to pub) pays for; a pack step needs a placed station (follow-up). `Prefabs/Chains/LF_ChainStill.et`
+  A third step, `pack` (#2441, station type `bench`, 6 bottles to 1 `LF_ContrabandCrate`, 10 work), makes the crate the
+  convoy (barn to pub) carries; a bench is a `LF_ChainBarrel` placed with `m_sChainId "moonshine"` and `m_sStepId "pack"`
+  (grid cell `slice-2441`; the town bench is #1935). Steps carry `m_bGoods`: `distill` sets it so the bottle stays
+  chain goods for an officer search now that the crate is the last step. `Prefabs/Chains/LF_ChainStill.et`
   is the barrel prefab with the boiler mesh and `distill`. The hidden DebugWorld site
   (`Street_Moonshine.layer`, site `Moonshine_Site`) has three barrels at `380/384/388 0 300`
   and a still at `384 0 305`, about 150 m from the police station. Test: `chains/moonshine`
-  (WORLD). No save change.
+  (WORLD); `chains/moonshine-crate-pack` (WORLD) drives the bench. No save change.
 - ✅ **Smoke and smell (#418).** `LF_ChainTrace` (server): the first accepted work wakes one 5 s
   timer that runs only while a site is warm or a station still smokes; nothing is checked per frame.
   Each sweep sets every station's smoke level from its site heat (`LF_ChainTrace.SmokeLevel`:

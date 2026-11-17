@@ -2625,6 +2625,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1  /  %2  /  %3 UTC"
      Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
     }
+    CustomStringTableItem "{5C1E7A3B90D24F68}" {
+     Id "LF-Contraband_Cooldown"
+     Target_en_us "Your crew needs a breather. Wait a few minutes before the next run."
+     Comment "Convoy start refused: the character was paid for a run in the last ten minutes"
+    }
     CustomStringTableItem "{1D5E4503B79F1A6F}" {
      Id "LF-Contraband_Crate_Desc"
      Target_en_us "Unstamped bottles, no excise paid. The publican on the square buys them at his back door. Police take it on sight."
@@ -2649,6 +2654,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Contraband_Loaded"
      Target_en_us "You have a crate. Drive it to the convoy drop, the empty crate cage, and stay in the vehicle until you get there."
      Comment "Toast when the convoy start hands the player a contraband crate at the barn"
+    }
+    CustomStringTableItem "{B7240E91C5A3D816}" {
+     Id "LF-Contraband_NotDriven"
+     Target_en_us "The crate has to be driven to the drop. Carrying it over on foot pays nothing."
+     Comment "Convoy delivery refused: the run never watched a vehicle, so the crate went on foot"
     }
     CustomStringTableItem "{C6C3575A8274C731}" {
      Id "LF-Contraband_NotHideoutOwner"
@@ -5942,10 +5952,30 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Buy"
      Comment "Car lot row button."
     }
+    CustomStringTableItem "{811F406212DFA1D1}" {
+     Id "LF-Lot_ChangeLocks"
+     Target_en_us "Change the locks"
+     Comment "Car lot sheet row and toast title: the owner pays for new locks on their latest car; every older key stops working (#2411)."
+    }
+    CustomStringTableItem "{8CEDC85FF7E4E4F0}" {
+     Id "LF-Lot_ChangeLocksButton"
+     Target_en_us "Change"
+     Comment "Car lot sheet button on the change-locks row."
+    }
+    CustomStringTableItem "{F332871C9531979A}" {
+     Id "LF-Lot_ChangeLocksRow"
+     Target_en_us "Change the locks: %1"
+     Comment "Car lot sheet row: re-key the car with this plate. %1 = the plate."
+    }
     CustomStringTableItem "{EEBDBD6504C8B4FF}" {
      Id "LF-Lot_Leave"
      Target_en_us "Leave"
      Comment "Car lot sheet close button."
+    }
+    CustomStringTableItem "{0FCCB2C68B85D51F}" {
+     Id "LF-Lot_LocksChanged"
+     Target_en_us "New locks fitted. Your old keys no longer open the car; here is the new one."
+     Comment "Toast after the owner changed the locks on their car."
     }
     CustomStringTableItem "{3E2EC9B19D88B571}" {
      Id "LF-Lot_Money"
@@ -10078,10 +10108,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
+    CustomStringTableItem "{5E0B7D31C9A24F86}" {
+     Id "LF-Wanted_BuildHidden"
+     Target_en_us "build hidden"
+     Comment "Witness report and wanted poster clothing list: something the suspect wore hid the build."
+    }
     CustomStringTableItem "{DA0581F22B573242}" {
      Id "LF-Wanted_Driving"
      Target_en_us "driving %1"
      Comment "Wanted poster: %1 is the vehicle name."
+    }
+    CustomStringTableItem "{A1C7E94B2D603F58}" {
+     Id "LF-Wanted_FaceHidden"
+     Target_en_us "face hidden"
+     Comment "Witness report and wanted poster clothing list: something the suspect wore covered the face."
     }
     CustomStringTableItem "{2AE926B35D391FDA}" {
      Id "LF-Wanted_Level"

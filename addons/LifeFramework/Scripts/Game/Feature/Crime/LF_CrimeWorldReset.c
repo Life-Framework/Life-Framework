@@ -34,7 +34,6 @@ class LF_WorldReset_Crime : LF_WorldResetStep
 			count += accounts.ClearAllWanted();
 
 		count += LF_RobAction.ResetCooldowns();
-		count += LF_Hospital.ResetTillCooldowns();
 		count += LF_Bank.RestockAll();
 		count += LF_ChainSearch.ClearSearchCooldowns();
 		return count;
