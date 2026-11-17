@@ -46,7 +46,7 @@ room's folder (town-hall `looks.mjs --tag pass1 --run` does) or pass the PNG pat
 A typed y floated props over desks (2026-11-17). A generator gives each prop a hint y and calls `snapItems(items, { fixed })` from
 `tools/buildings/pipeline/surface.mjs` (`{ on: "<id>" }` stands it on that row, else it drops onto the top under it; model: gun-store
 `decor.mjs`, detail in `docs/building-pipeline/README.md`). **`tools\cli building check <slug>` is required** (1 s, offline): every small
-prop within 2 cm of a top, floor or the ground. `wt ship` runs it for a PR touching `tools/buildings/<slug>/` or `Prefabs/Buildings/<Dir>/`. No generator: `building check <slug> --fix`.
+prop within 2 cm of a top, floor or the ground. `wt ship` runs it for a PR touching `tools/buildings/<slug>/` or `Prefabs/Buildings/<Dir>/`. No generator: `building check <slug> --fix`. A kit whose rows are in a grid layer: `spec.json` `check_layer` (police station).
 
 ## Fitting a vault room (`bank_room` safe type)
 The bank safe is a room in the building, not the standalone `LF_BankVault.et`. Doorway: `{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et`

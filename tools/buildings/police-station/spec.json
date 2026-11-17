@@ -4,39 +4,123 @@
   "concept": "The gendarmerie post of 1989 Everon: the vanilla Villa_E_2I01_Police (a two-storey villa with a barred holding cell, a hall with stairs, two offices on the ground floor and offices upstairs) fitted out as a working police station. The public comes in the front door into the hall: the licence and permit desk and the wanted board are there. The duty room behind it has the duty desk (clock in and out), the armory locker and the armory store (issue offers), the evidence locker and the dispatch board. Upstairs are the records room with the case board and the commander's office; the interview room is the first-floor desk with two chairs and a tape recorder. The holding cell is the villa's own barred cell. In front, patrol cars, a spike strip and the payphone stand in the yard. Era-current base-game props only (typewriters, grey phones, cork boards, tape recorder, flipchart): no antique or rustic pieces. Built in a GridWorld multi-cell claim as the reusable kit for the Everon town pipeline (epic #2201); Saint-Philippe placement happens later through `town fit`.",
   "red_line": "pack",
   "addon": "LF_Everon1989",
+  "prefab_dir": "Prefabs/Buildings/PoliceStation",
   "kit": {
     "claim": "police-station-kit (c3r1, 2x2, pack cell)",
     "layer": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_police_station_kit.layer",
     "script": "tools/buildings/police-station/fitout.mjs",
     "origin": "origin.mjs (where the villa stands in the claim; the kit rows are building space, front toward +z)",
-    "passes": { "1": "BUILD: systems, boards, yard, cell", "2": "POLISH 1: lights, walls, desks, interview room", "3": "POLISH 2: facade, yard dressing, night mood" }
+    "passes": {
+      "1": "BUILD: systems, boards, yard, cell",
+      "2": "POLISH 1: lights, walls, desks, interview room",
+      "3": "POLISH 2: facade, yard dressing, night mood"
+    },
+    "shell": "tools/buildings/police-station/shell.mjs (PoliceStation.et and its pruned furniture)"
   },
   "vanilla": {
-    "building": "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et",
-    "furniture": "its own Villa_E_2I01_furniture_02 (the villa ships furnished: desks, benches, bunk, kitchenette, files)"
+    "base": "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et",
+    "building": "PoliceStation",
+    "furniture": "Furniture/PoliceStation_furniture_01",
+    "note": "shell.mjs writes PoliceStation.et (the vanilla villa, its furniture child pointed at our copy) and the furniture: Villa_E_2I01_furniture_02 (231 props) flattened and cut to 142 (no attic junk, no switches, repeats limited)"
   },
   "rooms": [
-    { "id": "hall", "floor": 0, "centre": [-1.5, 3], "what": "entrance hall with the stairs: licence and permit desk, wanted board, notices" },
-    { "id": "office", "floor": 0, "centre": [3, 0], "what": "duty room: duty desk, armory locker and store, evidence locker, dispatch board" },
-    { "id": "cell", "floor": 0, "centre": [-4.5, -2], "what": "the villa's barred holding cell (LF_JailCell staged only with --with-cell)" },
-    { "id": "canteen", "floor": 0, "centre": [3.5, 5.5], "what": "the kitchenette and canteen table at the front" },
-    { "id": "records", "floor": 1, "centre": [3, 0], "what": "records room: case board, files, commander's desk across the corridor" },
-    { "id": "interview", "floor": 1, "centre": [-1.7, -1], "what": "interview room: school desk, two chairs, tape recorder, desk lamp" },
-    { "id": "yard", "floor": 0, "centre": [3, 11], "what": "patrol cars, spike strip, payphone, bench and bins in the claim's yard" }
+    {
+      "id": "hall",
+      "floor": 0,
+      "centre": [
+        -1.5,
+        3
+      ],
+      "what": "entrance hall with the stairs: a front counter facing the door, notices, the waiting benches either side of the duty-room door, the wanted board; the licence and permit desk is in the loggia outside the front door"
+    },
+    {
+      "id": "office",
+      "floor": 0,
+      "centre": [
+        3,
+        0
+      ],
+      "what": "duty room: duty desk, armory locker and store, evidence locker, dispatch board"
+    },
+    {
+      "id": "cell",
+      "floor": 0,
+      "centre": [
+        -4.5,
+        -2
+      ],
+      "what": "the villa's barred holding cell and its own door; the rules pinned inside by the door (LF_JailCell staged only with --with-cell)"
+    },
+    {
+      "id": "canteen",
+      "floor": 0,
+      "centre": [
+        3.5,
+        5.5
+      ],
+      "what": "the kitchenette and canteen table at the front"
+    },
+    {
+      "id": "records",
+      "floor": 1,
+      "centre": [
+        3,
+        0
+      ],
+      "what": "records room: case board, files, commander's desk across the corridor"
+    },
+    {
+      "id": "interview",
+      "floor": 1,
+      "centre": [
+        -1.7,
+        -1
+      ],
+      "what": "interview room: school desk, two chairs, tape recorder, desk lamp"
+    },
+    {
+      "id": "yard",
+      "floor": 0,
+      "centre": [
+        3,
+        11
+      ],
+      "what": "patrol cars, spike strip, payphone, bench and bins in the claim's yard"
+    }
   ],
   "systems": {
     "licence_desk": "LF_LicenceDesk (licence framework, the firearm permit #1069)",
     "duty": "LF_PoliceDutyDesk (clock in, duty pay) and LF_ArmoryStore plus the armory cabinet (LF_PoliceRanks armory, issue offers #1763)",
     "evidence": "LF_EvidenceLocker (breach target) and LF_CaseBoard",
     "boards": "LF_WantedBoard and LF_DispatchBoard_Police",
-    "jail": "LF_JailCell and EL_JailDoor, staged with --with-cell (one placed cell per world; GridWorld already has one)",
-    "vehicles": "LF_UAZ469_Police patrol and escort cars, SpikeStrip"
+    "jail": "the villa's own barred cell and door, no jail component in the kit (one placed cell per world; GridWorld has one). --with-cell (town fit, a world with no cell) stages the LF_JailCell marker only: 2 m zone, release in the hall, no door target, no EL_JailDoor (it would hang a second door in the villa's doorway)",
+    "vehicles": "LF_UAZ469_Police patrol and escort cars, SpikeStrip",
+    "sign": "LF_Sign_Fascia over the loggia, pack card police_front (Gendarmerie)"
   },
   "budget": {
     "lights": 6,
     "shadow_casters": 1,
     "decor_entities": 300,
     "size": "medium (docs/architecture/performance.md)",
-    "rules": "CastShadow set on every light and never on a point light; vanilla props with LODs, static decor with no physics, no per-frame scripts on decoration; lamps look lit through an emissive material, not one light per prop"
-  }
+    "rules": "CastShadow set on every light and never on a point light; vanilla props with LODs, static decor with no physics, no per-frame scripts on decoration; lamps look lit through an emissive material, not one light per prop",
+    "note": "300 is the building total: the villa's kept furniture (143, shell.mjs) plus every kit row; fitout.mjs --report prints it"
+  },
+  "check_layer": {
+    "file": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_police_station_kit.layer",
+    "origin": [
+      67.5,
+      40
+    ],
+    "prefix": "PoliceKit_",
+    "skip": [
+      "PoliceKit_Villa"
+    ],
+    "why": "the kit's systems, decor and lights are layer rows (fitout.mjs); origin is where the villa stands in its claim (origin.mjs reads it from here)"
+  },
+  "floaters_allow": [
+    {
+      "match": "58549C7FABB2057C",
+      "why": "the villa's own wall shelf (Shelf_01) in the first-floor records room: it hangs on the wall with a file stack on its board, as the base game places it"
+    }
+  ]
 }
