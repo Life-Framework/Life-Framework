@@ -1,9 +1,10 @@
-// red-proof: pending
+// red-proof: 2026-11-17 `tools/cli test --no-build --only LF_Test_VaultHeldDrill` on the unfixed LF_HandTool.c and LF_Bank.c (origin/main) failed `- the robber holds the drill`, `- a drill in the hands counts as the vault's tool`, `- the rob starts the drill`, `- the robber is drilling`; with the fix 9/9 drill and hand-tool tests pass.
 // tier: WORLD
-//! #2384: a drill in the hands opens a drill vault even when no storage search finds it. The engine
-//! keeps a held gadget in the character's left-hand slot; the tool check reads the hands before
-//! the inventory. Here the drill goes straight from the ground into the hand slot, so only the
-//! hands hold it: the robber holds a drill, the gate passes, and the rob starts the drill.
+//! #2384: on a dedicated server a drill in a remote player's hands is in no storage the inventory
+//! search walks, and the gadget manager does not report it either; the server only gets the drill's
+//! own take-in-hand event (OnModeChanged IN_HAND). The bank proof logged exactly that at the gate:
+//! stored drills 0, held gadget none. Here the drill is in no inventory and gets only that event:
+//! the robber still holds it, the vault gate passes, and the rob starts the drill.
 class LF_Test_VaultHeldDrill : LF_Test
 {
 	override string GetName()
@@ -21,35 +22,26 @@ class LF_Test_VaultHeldDrill : LF_Test
 		LF_TestVaultDrillFixture.Vault(vaultId, robber, 10);
 		LF_VaultDrill.Cancel(vaultId, "test start");
 
-		ChimeraCharacter character = ChimeraCharacter.Cast(robber);
-		CharacterControllerComponent controller;
-		if (character)
-			controller = character.GetCharacterController();
-
 		IEntity drill = LF_Utils.SpawnEntityPrefab(LF_Bank.DRILL_PREFAB, robber.GetOrigin());
-		SCR_GadgetComponent gadget;
-		if (drill)
-			gadget = SCR_GadgetComponent.Cast(drill.FindComponent(SCR_GadgetComponent));
-
-		ctx.NotNull(controller, "the robber has a character controller");
-		ctx.NotNull(gadget, "the drill is a gadget");
-		if (!controller || !gadget)
+		LF_HandToolComponent tool = LF_HandTool.Of(drill);
+		ctx.NotNull(tool, "the drill is a hand tool");
+		if (!tool)
 			return;
 
-		// The quick slot's engine call, without the animation.
-		controller.TakeGadgetInLeftHand(drill, gadget.GetAnimVariable(), false, true);
-		ctx.True(controller.GetAttachedGadgetAtLeftHandSlot() == drill, "the drill sits in the left-hand slot");
-
 		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(robber);
-		int inStorage = -1;
-		if (inventory)
-			inStorage = LF_InventoryUtils.FindItemsByPrefab(inventory, LF_Bank.DRILL_PREFAB).Count();
-		LF_Debug.Info("Test", string.Format("vault-held-drill: storage search finds %1 drill(s) with the drill in the hand slot", inStorage));
+		ctx.True(inventory && LF_InventoryUtils.FindItemsByPrefab(inventory, LF_Bank.DRILL_PREFAB).IsEmpty(), "no storage holds the drill");
+
+		// The server's take-in-hand event, as the animation's finish sends it.
+		tool.OnModeChanged(EGadgetMode.IN_HAND, robber);
 
 		ctx.True(LF_HandTool.Holds(robber, LF_VaultDrill.TOOL_ID), "the robber holds the drill");
 		ctx.True(LF_Bank.HasTool(vaultId, robber), "a drill in the hands counts as the vault's tool");
 		ctx.True(LF_Bank.Rob(vaultId, "vault-held-drill", robber), "the rob starts the drill");
 		ctx.True(LF_VaultDrill.IsDrillingBy(vaultId, robber), "the robber is drilling");
+
 		LF_VaultDrill.Cancel(vaultId, "test end");
+		tool.OnModeChanged(EGadgetMode.ON_GROUND, null);
+		ctx.False(LF_HandTool.Holds(robber, LF_VaultDrill.TOOL_ID), "put down, it is no longer held");
+		SCR_EntityHelper.DeleteEntityAndChildren(drill);
 	}
 }
