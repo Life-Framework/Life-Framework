@@ -1476,6 +1476,10 @@ function refreshUntilFresh(exe, args, gameDir, addon, tag, profile) {
   return { status: r.exited ? 0 : r.done ? 0 : null, error: r.timedOut ? { code: "ETIMEDOUT" } : undefined };
 }
 
+function rdbLockName(root) {
+  return `rdb-${String(root).replace(/\/g, "/").split("/").pop().replace(/[^A-Za-z0-9._-]/g, "_")}`;
+}
+
 function ensureAddonResourceDatabase(root, name) {
   const addon = addonDir(root, name);
   const tag = name === CORE ? "" : ` [${name}]`;
@@ -1513,6 +1517,9 @@ function ensureAddonResourceDatabase(root, name) {
     return 1;
   }
   console.log(`resource database stale${tag}: ${what} -> refreshing (headless Workbench, takes ~${RDB_REFRESH_TYPICAL_S}s)`);
+  // Per worktree, not the hub-wide "build" lock: the refresh writes only this worktree's rdb with its own profile
+  // (server/profile/rdb), so refreshes of different worktrees may overlap; the Workbench slot still caps them for RAM.
+  const rdbLock = rdbLockName(root);
   let locked = false;
   let wbSlot = null;
   const queuedAt = Date.now();
@@ -1526,17 +1533,17 @@ function ensureAddonResourceDatabase(root, name) {
       // The entry was stale (deleted): queue for a real slot.
       wbSlot = wbRoute.acquireWorkbenchSync(root, { purpose: "rdb refresh", waitMs: rdbBudget().remaining() });
     }
-    const lockFile = join(wt.ensureHub(root), "locks", "build.lock");
+    const lockFile = join(wt.ensureHub(root), "locks", `${rdbLock}.lock`);
     const gotLock = waitForLock({
       until: shared?.has,
-      what: `the build lock for the rdb refresh${tag}`,
+      what: `the rdb lock for the refresh${tag}`,
       budget: rdbBudget(),
       holder: () => describeHolder(lockFile),
-      acquire: (waitMs) => wt.acquireLock(root, "build", { waitMs, meta: { what: `rdb refresh${tag}`, root } }),
+      acquire: (waitMs) => wt.acquireLock(root, rdbLock, { waitMs, meta: { what: `rdb refresh${tag}`, root } }),
     });
     if (gotLock?.satisfied) {
       if (reused()) return 0;
-      throw new Error("the build lock is held: shared rdb entry was stale");
+      throw new Error("the rdb lock is held: shared rdb entry was stale");
     }
     locked = true;
     const started = Date.now();
@@ -1571,7 +1578,7 @@ function ensureAddonResourceDatabase(root, name) {
     }
     return 1;
   } finally {
-    if (locked) wt.releaseLock(root, "build");
+    if (locked) wt.releaseLock(root, rdbLock);
     wbSlot?.release();
   }
 }

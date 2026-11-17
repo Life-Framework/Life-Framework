@@ -113,6 +113,21 @@ let n = 0;
 const lw = waitForLock({ what: "x", budget: new Budget(20000), sliceMs: 30, log: () => {}, until: () => ++n >= 3, acquire: () => { throw new Error("x is held"); } });
 check("waitForLock until() ends the wait", lw?.satisfied === true);
 
+// Per-worktree rdb lock: two worktrees refresh at once while a third process holds "build".
+const buildLock = wt.acquireLock(root, "build", { waitMs: 0, meta: { what: "selftest build" } });
+const l1 = wt.acquireLock(root, "rdb-wt-one", { waitMs: 0 });
+const l2 = wt.acquireLock(root, "rdb-wt-two", { waitMs: 0 });
+let sameBlocked = false;
+try {
+  wt.acquireLock(root, "rdb-wt-one", { waitMs: 0 });
+} catch (e) {
+  sameBlocked = /is held/.test(e.message);
+}
+check("two worktrees hold rdb locks while build is held", !!l1 && !!l2);
+check("the same worktree's second refresh is excluded", sameBlocked);
+for (const l of ["rdb-wt-one", "rdb-wt-two", "build"]) wt.releaseLock(root, l);
+void buildLock;
+
 if (failed) {
   console.log(`SUMMARY rdb-cache-selftest fail ${failed}`);
   process.exit(1);
