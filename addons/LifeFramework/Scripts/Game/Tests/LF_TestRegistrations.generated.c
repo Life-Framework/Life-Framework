@@ -422,6 +422,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapShareMemberKey(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareNotPersonal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShares(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapShareSweepSlices(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapWaypoint(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MedicDutyDesk(), LF_TestTier.WORLD);
