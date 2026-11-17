@@ -8,6 +8,7 @@ class LF_RobAction : ScriptedUserAction
 	static const string REFUSED_PAYOUT = "robbery refused: payout is not configured";
 	static const string REFUSED_OFF = "robbery refused: the Robbery system is off";
 	static const string REFUSED_GRACE = "robbery refused: the robber is in its grace period";
+	static const string REFUSED_CUFFED = "robbery refused: the robber is in handcuffs";
 	//! The system id (LF_Systems, #960): till, weapon and vehicle robbery and the till hold.
 	static const string SYSTEM = "Robbery";
 
@@ -171,6 +172,12 @@ class LF_RobAction : ScriptedUserAction
 		if (LF_Systems.Refuses(SYSTEM, "till robbery"))
 		{
 			s_sLastRefusal = REFUSED_OFF;
+			return 0;
+		}
+
+		if (LF_CuffEnforcement.Refuse(user, "till robbery"))
+		{
+			s_sLastRefusal = REFUSED_CUFFED;
 			return 0;
 		}
 

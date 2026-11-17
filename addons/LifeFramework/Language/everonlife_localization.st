@@ -8281,6 +8281,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Only an on-duty officer can do that."
      Comment "Cuff refusal: the player is not clocked in as police."
     }
+    CustomStringTableItem "{7C2E91A5D3B04F68}" {
+     Id "LF-Restrain_NotWhileCuffed"
+     Target_en_us "Not while in handcuffs."
+     Comment "Toast to a cuffed player whose request the server refused: a robbery, a lockpick, a driver's seat, giving cash or an item."
+    }
     CustomStringTableItem "{1069F4CF50C7B5A1}" {
      Id "LF-Restrain_Release"
      Target_en_us "Uncuff"

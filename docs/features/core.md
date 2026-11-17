@@ -418,3 +418,5 @@
   master `SetHealth(0)` still bypasses it (vanilla's own invulnerability rule). Test
   `world/fitted-building-indestructible` (DebugWorld spawns two garages; on CoreOnEveron it uses two
   real buildings near the map's middle).
+
+- **World-end resets (#2415):** the dev Game Master, character-creation manager and offers, pick/registration/ID-request/ledger sheets, vehicle records and plates, garage and organization config, and the whitelist now register `LF_StaticResetHook`s. The dev Game Master hook takes its handler off `SCR_EditorManagerCore` and a grant re-checks the dev-tools gate, so a production world loaded after a dev world grants no EDIT. A disconnect forgets the player's pick/register offers. Tests `moderation/dev-gm-reset`, `character/creation-reset`, `vehicle/state-reset`, `whitelist/static-reset`, `organization/static-reset`, `ui/sheet-static-reset`.

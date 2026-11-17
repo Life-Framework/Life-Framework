@@ -56,6 +56,10 @@ class LF_Stun
 		if (!Replication.IsServer() || damageContext.damageType != EDamageType.KINETIC || !damageContext.instigator)
 			return false;
 
+		// A dart from a cuffed shooter is swallowed whichever damage hook the engine reaches first.
+		if (LF_CuffEnforcement.RefuseHit(damageManager.GetOwner(), damageContext))
+			return true;
+
 		IEntity shooter = damageContext.instigator.GetInstigatorEntity();
 		SCR_ChimeraCharacter victim = SCR_ChimeraCharacter.Cast(damageManager.GetOwner());
 		if (!shooter || !victim || shooter == victim)
