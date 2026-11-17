@@ -19,9 +19,11 @@ class LF_Test_OrgWarLapseCooldown : LF_Test
 
 		LF_Organization a = LF_OrganizationManager.Create("war-lapse-founder-a", "War Lapse Alpha");
 		LF_Organization b = LF_OrganizationManager.Create("war-lapse-founder-b", "War Lapse Bravo");
+		LF_Organization c = LF_OrganizationManager.Create("war-lapse-founder-c", "War Lapse Charlie");
 		ctx.NotNull(a, "org A is registered");
 		ctx.NotNull(b, "org B is registered");
-		if (!a || !b)
+		ctx.NotNull(c, "org C is registered");
+		if (!a || !b || !c)
 			return;
 
 		// The shipped rungs: the officer may declare and answer, the member may not.
@@ -55,6 +57,12 @@ class LF_Test_OrgWarLapseCooldown : LF_Test
 		ctx.Equal(t0 + 600 + 3600, first.m_iCooldownUntil, "the lapse cooldown runs from the end of the answer window");
 		ctx.EqualStr(LF_OrgWars.REFUSE_COOLDOWN, LF_OrgWars.Declare(a.GetId(), b.GetId(), first.m_iCooldownUntil - 1, rules, none), "a declaration that lapsed starts the pair cooldown");
 		ctx.EqualStr(LF_OrgWars.REFUSE_COOLDOWN, LF_OrgWars.Declare(b.GetId(), a.GetId(), first.m_iCooldownUntil - 1, rules, none), "the lapse cooldown holds for the other side too");
+		// The lapsed war is saved while its cooldown runs, so a restart cannot clear it (the newest war is always
+		// saved, so a later open declaration on C stands in for it).
+		LF_OrgWarRecord newest;
+		ctx.EqualStr("", LF_OrgWars.Declare(a.GetId(), c.GetId(), t0 + 700, rules, newest), "A declares on C");
+		ctx.Equal(2, LF_OrgWars.ExportForSave(t0 + 701).Count(), "the lapsed war is saved while its cooldown runs");
+		ctx.Equal(1, LF_OrgWars.ExportForSave(first.m_iCooldownUntil).Count(), "the lapsed war is dropped from the save once the cooldown is over");
 		LF_OrgWarRecord second;
 		ctx.EqualStr("", LF_OrgWars.Declare(a.GetId(), b.GetId(), first.m_iCooldownUntil, rules, second), "the pair can declare once the lapse cooldown is over");
 		ctx.NotNull(second, "the second declaration is recorded");
