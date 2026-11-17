@@ -51,6 +51,9 @@ in-world document; a license is another document you carry.
 - `FIREARM_PERMIT` (#988): a civilian permit an outlet's gate asks for (the gun counter's M9), and
   the licence that makes carrying a `licensed` catalogue item lawful. `/licence <NAME>` grants one in
   dev worlds and to administrators (`LF_LicenceGrantCommand.c`).
+- **Permit at a shop counter** (2026-11-18): a catalogue licence row (`grantsLicence`) lets a counter run the
+  desk visit below, same fee, record checks, wait and collection. While any outlet has the row the desk hides and
+  refuses its permit action (`LF_LicenceDesk.DeskIssuesPermit`); the Everon pack sells the permit at the gun store.
 - **Licence desk** (#1766, `LF_LicenceDesk.c`, `LF_LicenceDeskAction.c`, prefab
   `Prefabs/Props/Commercial/LF_LicenceDesk.et`): a player applies for the firearm permit in person.
   Refused while wanted, with an open crime report, convicted within the last `licences.permitConvictionDays`

@@ -109,11 +109,13 @@ export function checkPack(root, pack) {
     for (const c of r.conflicts) {
       if (c.second === pack || c.first === pack) add("warn", "packs", "", `${list} ${c.id}`, `${c.second} changes an id ${c.first} already changed; ${c.second} wins`);
     }
-    // Duplicate ids inside one overlay are the same refusal; offers must name a catalogue item.
+    // Duplicate ids inside one overlay are the same refusal; offers must name a catalogue item (a licence row names none).
     if (list === "catalogue.offers") {
       const items = (merged ?? mergeList(sectionLayers(addonsDir, SECTIONS["catalogue.items"], [mine], null))).entries;
       for (const ev of r.events.filter((e) => e.layer.kind === "pack" && e.layer.label === pack && (e.result === "added" || e.result === "replaced"))) {
         const item = ev.id.split("/").slice(1).join("/");
+        // A licence row (m_sGrantsLicence) names no catalogue item; its item is only the row key.
+        if (r.entries.get(ev.id)?.fields.get("grantsLicence")?.value) continue;
         if (item && !items.get(item)?.present) add("error", "ids", ev.layer.file, `${list} ${ev.id}`, `the offer names item "${item}", which the merged catalogue.items does not have`);
       }
     }

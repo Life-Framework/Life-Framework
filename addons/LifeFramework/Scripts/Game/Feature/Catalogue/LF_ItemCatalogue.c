@@ -143,12 +143,61 @@ class LF_ItemCatalogue
 
 		foreach (LF_OutletOffer offer : config.m_aOffers)
 		{
-			if (!offer || offer.m_bRemoved || offer.m_sOutlet != outlet)
+			if (!offer || offer.m_bRemoved || offer.m_sOutlet != outlet || offer.IsLicenceRow())
 				continue;
 
 			if (Item(config, offer.m_sItem))
 				outOffers.Insert(offer);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The live licence rows of one outlet (LF_OutletOffer.m_sGrantsLicence), in catalogue order.
+	static void LicenceRows(LF_ItemCatalogueConfig config, string outlet, notnull array<LF_OutletOffer> outOffers)
+	{
+		outOffers.Clear();
+		if (!config || !config.m_aOffers || outlet.IsEmpty())
+			return;
+
+		foreach (LF_OutletOffer offer : config.m_aOffers)
+		{
+			if (offer && !offer.m_bRemoved && offer.m_sOutlet == outlet && offer.IsLicenceRow())
+				outOffers.Insert(offer);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The live licence row of this outlet that grants licence, or null.
+	static LF_OutletOffer LicenceRowFor(LF_ItemCatalogueConfig config, string outlet, LF_ELicenseType licence)
+	{
+		array<LF_OutletOffer> rows = {};
+		LicenceRows(config, outlet, rows);
+		string name = typename.EnumToString(LF_ELicenseType, licence);
+		foreach (LF_OutletOffer row : rows)
+		{
+			if (row.m_sGrantsLicence == name)
+				return row;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether some outlet issues licence over its counter (a live licence row). The licence desk
+	//! then leaves that licence to the counter (#2061 follow-up: the firearm permit at the gun store).
+	static bool AnyCounterGrants(LF_ItemCatalogueConfig config, LF_ELicenseType licence)
+	{
+		if (!config || !config.m_aOffers)
+			return false;
+
+		string name = typename.EnumToString(LF_ELicenseType, licence);
+		foreach (LF_OutletOffer offer : config.m_aOffers)
+		{
+			if (offer && !offer.m_bRemoved && offer.m_sGrantsLicence == name)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

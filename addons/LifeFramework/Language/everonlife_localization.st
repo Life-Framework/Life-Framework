@@ -5459,6 +5459,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Mejora de categoría"
      Comment "Hint title when the character's overall standing rises (replaces an arcade LEVEL UP)"
     }
+    CustomStringTableItem "{7782A81CDE1A5199}" {
+     Id "LF-LicenceCounter_Applied"
+     Target_en_us "Application taken. Your permit will be ready in about %1 hours. Come back to this counter to collect it."
+     Comment "Shop counter licence row: the fee was paid and the permit application filed. %1 = in-game hours until collection."
+    }
+    CustomStringTableItem "{FE21416A8F87EE0C}" {
+     Id "LF-LicenceCounter_Closed"
+     Target_en_us "This counter cannot issue permits right now."
+     Comment "Shop counter licence row: an internal failure; the server log names it."
+    }
+    CustomStringTableItem "{C701799D84A17BED}" {
+     Id "LF-LicenceCounter_Issued"
+     Target_en_us "Here is your firearm permit. This counter will now sell you firearms."
+     Comment "Shop counter licence row: the permit was handed over at the gun store counter."
+    }
     CustomStringTableItem "{97F1EFC77490B5D8}" {
      Id "LF-LicenceDesk_Action"
      Target_en_us "Apply for a firearm permit"
@@ -9027,6 +9042,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shop_Less"
      Target_en_us "One less"
      Comment "Shop order slip key: lower the quantity by one."
+    }
+    CustomStringTableItem "{17C9F77EFE1AEE8C}" {
+     Id "LF-Shop_LicenceNoSellBack"
+     Target_en_us "A permit cannot be sold back."
+     Comment "Shop price list: Sell pressed with a licence row on the slip."
     }
     CustomStringTableItem "{02FFEC0ECB74AFC2}" {
      Id "LF-Shop_LookFor"

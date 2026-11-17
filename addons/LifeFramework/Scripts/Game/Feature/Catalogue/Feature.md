@@ -34,6 +34,10 @@ point; the slip is where the gate's answer is printed.
   minimum rank (`POLICE` is an on-duty officer and the rank is the police rank index; any other job id
   is a job level, `LF_JobLevels`), an organisation right (`LF_EOrganizationPermission` name). Every gate
   that is set must pass; the refusal names the first that does not (licence, job, rank, right).
+- **Licence row:** an offer with `grantsLicence` (`m_sGrantsLicence`, an `LF_ELicenseType` name) sells no item;
+  its item id is only the row key. The counter shows the licence at the licence office fee and Pay runs the
+  office visit (`LF_LicenceDesk.VisitFor`: apply, wait, collect at the same counter). Only `FIREARM_PERMIT`
+  is issued; any other licence row is dropped at load. The Everon pack puts the permit on `gun_counter`.
 - **Legality:** `LF_ItemCatalogue.OffenceFor(item, carrier)` gives the crime catalog id for carrying an
   item: `#LF-Offence_UnlicensedItem` (licensed, no licence), `#LF-Offence_RestrictedItem` (restricted,
   no licence), `#LF-Offence_IllegalItem` (illegal), or nothing. The numbers live in
