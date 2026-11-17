@@ -76,7 +76,7 @@ class LF_Downed
 	//! vanilla never kills it; damage to a downed player is cut to nothing. Nothing is changed
 	//! here but the number (the engine may ask speculatively); a lethal cut is remembered on the
 	//! zone and OnHealthDamaged, which follows the real damage, downs the player.
-	//! eturn The damage the zone takes.
+	//! \return The damage the zone takes.
 	static float CapHealthDamage(notnull SCR_CharacterHealthHitZone zone, notnull BaseDamageContext damageContext, float damage)
 	{
 		zone.LF_SetLethalPending(false);

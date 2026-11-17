@@ -109,7 +109,7 @@ class LF_MapMarksClient
 	//! static marker outside the shown map frame from its static list to its disabled list each map frame
 	//! (SCR_MapMarkerManagerComponent.Update), so a mark off screen is only in the disabled list: counting,
 	//! uploading or restoring from GetStaticMarkers alone misses it (the map proof pass, #2236).
-	//! eturn how many were added.
+	//! \return how many were added.
 	static int CollectPersonal(array<SCR_MapMarkerBase> visible, array<SCR_MapMarkerBase> disabled, notnull array<SCR_MapMarkerBase> into)
 	{
 		return CollectPersonalFrom(visible, into) + CollectPersonalFrom(disabled, into);

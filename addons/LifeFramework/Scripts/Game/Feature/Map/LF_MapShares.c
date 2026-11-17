@@ -41,7 +41,7 @@ class LF_MapShareRow : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Gives the row an area (a circle around its position). eturn the row, so it chains off Make.
+	//! Gives the row an area (a circle around its position). \return the row, so it chains off Make.
 	LF_MapShareRow WithArea(int radius, LF_MapAreaStyle style)
 	{
 		m_iAreaRadius = radius;
