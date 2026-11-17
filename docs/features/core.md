@@ -66,7 +66,7 @@
 
 ### `LF_RateLimit` — `Core/LF_RateLimit.c` (#693b, 2026-11-12)
 - ✅ Server-side request rate limit, per player and per request kind (`LF_ERequestKind`
-  PURCHASE, TRAVEL, COMMS, SPAWN, INVENTORY): a fixed window admits a small burst
+  PURCHASE, TRAVEL, COMMS, SPAWN, INVENTORY, CRIME, CHESS; chess 6 per 5 s, its own bucket, #2405): a fixed window admits a small burst
   (purchases 4 per 2 s, travel 2 per 10 s, comms 3 per 5 s, spawn or move 4 per 1 s,
   inventory 8 per 1 s; named `// lf-fixed:` constants until the #278 config service lands).
   The first refusal in a window logs `[LFDebug:RateLimit]` Warn and toasts the player
