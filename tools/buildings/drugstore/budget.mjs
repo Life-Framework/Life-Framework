@@ -13,7 +13,7 @@
 //   2. thin dressing: shelf bottles, notebooks, cartons, tool cases, buckets and trays on the ground floor keep 60 %
 //      of their 0.5 m cells, so a stack stays whole.
 //   3. lights: the twelve lights become six, each with CastShadow written. One spot over the counter casts; the rest
-//      do not. The two ambient points and their upward spots become a single upward spot (ceiling fill).
+//      do not. The two ambient points and their upward spots become a single ambient point (ceiling fill).
 import { readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
@@ -36,16 +36,20 @@ const THIN = /\/(BeerBottle_01_empty_brown|BeerBottle_01_brown|Notebook_01_Singl
 // The six lights, by the ID the prefab already used. Down-spots sit under the vanilla fluorescents (y 3.9).
 const SPOT = { Color: "0.9 0.96 1 1", ClipEV: -10, Type: "Spot", NearPlane: 0.3, SpotAngle: 140, LensFlareType: "Disabled" };
 const LIGHTS = [
-  { id: "1AD1C720C7E814D9", coords: "2.2 3.7 0.9", angles: "-90 0 0", LV: 9, Radius: 7, shadow: 1, ...SPOT }, // over the counter: the one shadow
-  { id: "811AEC498CCC281D", coords: "2.3 3.7 -1.7", angles: "-90 0 0", LV: 8, Radius: 7, shadow: 0, ...SPOT }, // back of the shop
-  { id: "1FC5AFC6DEF0A438", coords: "2.1 3.7 4.1", angles: "-90 0 0", LV: 7.5, Radius: 7, shadow: 0, ...SPOT }, // mid shop
-  { id: "A73D2CB48B90EE1F", coords: "2.3 3.7 6.6", angles: "-90 0 0", LV: 9, Radius: 7.5, shadow: 0, ...SPOT }, // front shop and window display (was four lights)
+  { id: "1AD1C720C7E814D9", coords: "2.2 3.7 0.9", angles: "-90 0 0", LV: 7, Radius: 7, shadow: 1, ...SPOT }, // over the counter: the one shadow
+  { id: "811AEC498CCC281D", coords: "2.3 3.7 -1.7", angles: "-90 0 0", LV: 6.5, Radius: 7, shadow: 0, ...SPOT }, // back of the shop
+  { id: "1FC5AFC6DEF0A438", coords: "2.1 3.7 4.1", angles: "-90 0 0", LV: 6, Radius: 7, shadow: 0, ...SPOT }, // mid shop
+  { id: "A73D2CB48B90EE1F", coords: "2.3 3.7 6.6", angles: "-90 0 0", LV: 7, Radius: 7.5, shadow: 0, ...SPOT }, // front shop and window display (was four lights)
   { id: "C2D62AC5128977CE", coords: "4.9 3.55 8.4", angles: "-90 0 0", Color: "1 0.95 0.85 1", LV: 5, ClipEV: -10, Type: "Spot", Radius: 5, NearPlane: 0.3, SpotAngle: 120, LensFlareType: "Disabled", shadow: 0 }, // frontage, lights the pavement
-  { id: "E63CBAFB4923848D", coords: "2.2 3.2 4.5", angles: "90 0 0", Color: "0.95 0.95 1 1", LV: 2.5, ClipEV: -10, Type: "Spot", Radius: 9, NearPlane: 0.35, SpotAngle: 150, LensFlareType: "Disabled", shadow: 0 }, // upward, so the night ceiling is not black
+  { id: "E63CBAFB4923848D", coords: "2.2 3.4 4.5", Color: "0.95 0.95 1 1", LV: 0.25, ClipEV: -10, Type: "Point", Radius: 10, NearPlane: 0.45, DistanceAttenuation: 0.8, shadow: 0 }, // ambient fill so the night ceiling is not black (was two points and two upward spots)
 ];
 const lightBlock = (l) => {
-  const o = ["  LightEntity {", `   ID "${l.id}"`, `   coords ${l.coords}`, `   angles ${l.angles}`, `   Color ${l.Color}`, `   LV ${l.LV}`, `   ClipEV ${l.ClipEV}`, `   CastShadow ${l.shadow}`];
-  o.push(`   Type ${l.Type}`, `   Radius ${l.Radius}`, `   NearPlane ${l.NearPlane}`, `   SpotAngle ${l.SpotAngle}`, `   LensFlareType ${l.LensFlareType}`, "  }");
+  const o = ["  LightEntity {", `   ID "${l.id}"`, `   coords ${l.coords}`, ...(l.angles ? [`   angles ${l.angles}`] : []), `   Color ${l.Color}`, `   LV ${l.LV}`, `   ClipEV ${l.ClipEV}`, `   CastShadow ${l.shadow}`];
+  if (l.Type !== "Point") o.push(`   Type ${l.Type}`);
+  o.push(`   Radius ${l.Radius}`, `   NearPlane ${l.NearPlane}`);
+  if (l.DistanceAttenuation) o.push(`   DistanceAttenuation ${l.DistanceAttenuation}`);
+  if (l.Type !== "Point") o.push(`   SpotAngle ${l.SpotAngle}`, `   LensFlareType ${l.LensFlareType}`);
+  o.push("  }");
   return o;
 };
 

@@ -992,7 +992,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.3 3.7 6.6
    angles -90 0 0
    Color 0.9 0.96 1 1
-   LV 9
+   LV 7
    ClipEV -10
    CastShadow 0
    Type Spot
@@ -1014,7 +1014,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.1 3.7 4.1
    angles -90 0 0
    Color 0.9 0.96 1 1
-   LV 7.5
+   LV 6
    ClipEV -10
    CastShadow 0
    Type Spot
@@ -1032,7 +1032,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.2 3.7 0.9
    angles -90 0 0
    Color 0.9 0.96 1 1
-   LV 9
+   LV 7
    ClipEV -10
    CastShadow 1
    Type Spot
@@ -1050,7 +1050,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 2.3 3.7 -1.7
    angles -90 0 0
    Color 0.9 0.96 1 1
-   LV 8
+   LV 6.5
    ClipEV -10
    CastShadow 0
    Type Spot
@@ -1326,17 +1326,14 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   LightEntity {
    ID "E63CBAFB4923848D"
-   coords 2.2 3.2 4.5
-   angles 90 0 0
+   coords 2.2 3.4 4.5
    Color 0.95 0.95 1 1
-   LV 2.5
+   LV 0.25
    ClipEV -10
    CastShadow 0
-   Type Spot
-   Radius 9
-   NearPlane 0.35
-   SpotAngle 150
-   LensFlareType Disabled
+   Radius 10
+   NearPlane 0.45
+   DistanceAttenuation 0.8
   }
  }
 }
