@@ -373,6 +373,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobSignUpPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JobsOverrideModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobsPackOverlay(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_JobWhitelistRoster(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JoinNotice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JumpPadSeen(), LF_TestTier.LOGIC);
