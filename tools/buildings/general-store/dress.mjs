@@ -24,6 +24,7 @@ import { fileURLToPath } from "node:url";
 import { readChildren, fixturesOf, toBuilding, slotsOf, FIXTURES, ITEMS } from "../pipeline/store-slots.mjs";
 import { boardsOf, itemOf, itemKey } from "../pipeline/fixtures.mjs";
 import { gameDb } from "../pipeline/gamedb.mjs";
+import { prefabChildren, snapItems, specSupports } from "../pipeline/surface.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..", "..");
@@ -311,14 +312,22 @@ export async function build() {
   const { measureOne } = await import("../../commands/measure.mjs");
   for (const l of spec.layer_store.lines) if (!items[itemKey(l.item)]) items[itemKey(l.item)] = itemOf((await measureOne(ROOT, l.item, { minSize: 0.05 })).bounds);
   const entities = [...shelfStock(stripped, fixtures, items), ...shelfTops(stripped), ...priceCards(stripped, fixtures), ...dressing(), ...lights()];
+  // Every prop that stands on something is snapped onto the real top under it (surface.mjs): the typed heights floated a bread
+  // loaf 10 cm and stacked cartons 2 cm. Hung kinds (cards, lamps, lights) stay where the spec puts them; a dressing row may name
+  // `on` (an entity ID of the prefab or a spec.check_supports id) or set `free`.
+  const rows = entities.filter((e) => e.prefab && e.at && !["price card", "lamp"].includes(e.kind) && !e.free).map((e) => ({ path: e.prefab, x: e.at[0], y: e.at[1], z: e.at[2], yaw: e.yaw ?? 0, scale: e.scale ?? 1, on: e.on, e }));
+  const snap = await snapItems(rows, { fixed: [...prefabChildren(stripped), ...specSupports(spec)] });
+  for (const r of rows) r.e.at[1] = r.y;
+  if (process.argv.includes("--report")) for (const c of snap.changes) console.log(`  ${c.path.split("/").pop().replace(".et", "")} y ${c.from} -> ${c.to} (on ${c.on})`);
   const at = stripped.lastIndexOf("\n }\n}");
   if (at < 0) throw new Error("no child list in the furniture prefab");
   const body = entities.map(text).join("\n");
-  return { out: `${stripped.slice(0, at + 1)}${body}\n${stripped.slice(at + 1)}`, entities, original };
+  return { out: `${stripped.slice(0, at + 1)}${body}\n${stripped.slice(at + 1)}`, entities, original, snap };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const { out, entities, original } = await build();
+  const { out, entities, original, snap } = await build();
+  console.log(snap.summary);
   const byKind = {};
   for (const e of entities) byKind[e.kind] = (byKind[e.kind] ?? 0) + 1;
   const summary = Object.entries(byKind).map(([k, n]) => `${n} ${k}`).join(", ");
