@@ -1502,9 +1502,10 @@ to prune and about any registry inconsistency.
 
 ## Incremental validate
 
-Plain `tools\cli validate` (and `dev`) runs a check only when something it reads changed since its last green run in
-this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `validate --full`, `ci`, `wt gate`,
-`wt ship` and CI (`CI` or `GITHUB_ACTIONS` set, or `LF_VALIDATE_ALL=1`) always run every check.
+Plain `tools\cli validate` (and `dev`, and the `wt ship` preflight) runs a check only when it has not already passed on
+the exact same input content, in this worktree or any other, and says `incremental: ran N, skipped M`.
+`validate --all`, `validate --full`, `ci`, `wt gate` and CI (`CI` or `GITHUB_ACTIONS` set, or `LF_VALIDATE_ALL=1`)
+always run every check.
 
 Checks run 8-12 at once (by CPU count); when free RAM is short each one is counted at 80 MB and only as many start
 as fit over the pool's 1.5 GB floor, never fewer than 2 (`tools/lib/validate-concurrency.mjs`, 2026-11-17: a full
@@ -1514,9 +1515,13 @@ fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/r
   (`# inputs:` in a .ps1). `*` stays in one folder, `**` crosses folders; the check's own file, `tools/validation/*.json`
   and `tools/validation/fixtures/**` are always inputs. `inputs: always` runs every time (a check that reads machine or
   git state: the worktree registry, `origin/main`); `inputs: ttl=300` trusts a green run for 300 s. No header means always.
-- State is `tmp/validate-state.json`: a fingerprint (path, size, mtime of every matching file from
-  `git ls-files --cached --others --exclude-standard`) written only when the check passed, so a failing check is never
-  skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
+- State is `tmp/validate-state.json`: a fingerprint (path and git blob id of every matching file: `git ls-files -s`
+  for clean tracked files, a blob hash of the bytes for modified and untracked ones) written only when the check
+  passed, so a failing check is never skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
+- Green fingerprints are also merged into `<git common dir>/lf/validate-green.json` (12 per check), shared by every
+  worktree: a fresh worktree skips each check another worktree passed on identical inputs (2026-11-17: 318 of 361
+  checks skipped on a fresh worktree; before, each slice's first validate ran all of them, ~4-6 min under load).
+  `always` and `ttl=` checks never use it. Delete the file to stop sharing.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
 - Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile. A check over it
   prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the

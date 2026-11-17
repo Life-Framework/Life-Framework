@@ -46,6 +46,7 @@
 - [NPC dialogue scenes (spike, 2026-11-13)](features/npc-dialogue-scenes.md)
 - [Ownership](features/ownership.md)
 - [Payphone (#247)](features/payphone.md)
+- [Property](features/property.md)
 - [Quests](features/quests.md)
 - [Racing](features/racing.md)
 - [Residents](features/residents.md)

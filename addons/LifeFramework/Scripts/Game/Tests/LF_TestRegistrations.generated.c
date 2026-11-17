@@ -574,6 +574,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ProgressionOldSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PromoteFindsPlayers(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PropertyConfig(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PropertyPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_PropertyRecord(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuantityStack(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_QuantityOperations(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_QuantityVisuals(), LF_TestTier.LOGIC);

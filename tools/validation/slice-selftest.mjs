@@ -82,7 +82,7 @@ for (const want of ["lf-hard", "Timebox: 45 min / 60 calls", "SPLIT", "LF_Conten
   check(b5.includes(want), `the brief says ${want}`);
 }
 const b2 = brief(issues[1], parseCard(issues[1].body));
-check(b2.includes("lf-builder") && b2.includes("light gate") && !b2.includes("independent reviewer"), "a T1 data brief has the light gate and no reviewer");
+check(b2.includes("lf-builder") && b2.includes("targeted --only tests") && !b2.includes("independent reviewer"), "a T1 data brief has the targeted-test gate and no reviewer");
 
 // 5. the ledger
 check(ledgerRow({ model: "gpt", outcome: "merged", gate: "pass", minutes: 3 }).length === 1, "record refuses an unknown model");
@@ -158,14 +158,14 @@ check(r1.code === 0 && r2.code === 1 && ledgerCount() === 1, "record appends goo
 const ss = await capture(["stats", "--ledger", ledger]);
 check(ss.text.includes("by model") && /opus .*first-pass 100%.*median 41m/.test(ss.text), `stats reads the ledger (got ${ss.text})`);
 const rOpen = await rec(106, "merged", openPr);
-check(rOpen.code === 1 && ledgerCount() === 1 && rOpen.text.includes("handoff") && rOpen.text.includes("#901"), `record refuses merged while the PR is open and suggests handoff (got ${rOpen.text})`);
+check(rOpen.code === 0 && ledgerCount() === 2 && /"outcome":"shipped"/.test(readFileSync(ledger, "utf8")) && rOpen.text.includes("#901"), `record merged with an open PR records shipped, exit 0 (got ${rOpen.text})`);
 const rNone = await rec(107, "merged", noPr);
-check(rNone.code === 1 && ledgerCount() === 1 && rNone.text.includes("handoff"), `record refuses merged when no PR is found (got ${rNone.text})`);
+check(rNone.code === 1 && ledgerCount() === 2 && rNone.text.includes("handoff"), `record refuses merged when no PR is found (got ${rNone.text})`);
 const rForce = await rec(106, "merged", openPr, ["--force"]);
-check(rForce.code === 0 && ledgerCount() === 2, `--force records merged anyway (got ${rForce.text})`);
+check(rForce.code === 0 && ledgerCount() === 3, `--force records merged anyway (got ${rForce.text})`);
 const rHand = await rec(106, "handoff", openPr);
 const rHandNone = await rec(108, "handoff", noPr);
-check(rHand.code === 0 && rHandNone.code === 0 && ledgerCount() === 4, "a handoff needs no merged PR");
+check(rHand.code === 0 && rHandNone.code === 0 && ledgerCount() === 5, "a handoff needs no merged PR");
 const pr = (number, state, head, body, mergedAt = null) => ({ number, state, mergedAt, headRefName: head, body });
 check(mergeVerdict([pr(1, "MERGED", "ws/slice-105", "", "2026-11-15T10:00:00Z")], 105).ok, "mergeVerdict: a merged PR on ws/slice-<N> passes");
 check(mergeVerdict([pr(2, "MERGED", "ws/other", "Closes #105", "2026-11-15T10:00:00Z")], 105).ok, "mergeVerdict: a merged PR whose body refs the issue passes");
