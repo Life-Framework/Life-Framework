@@ -498,6 +498,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceApplyCooldownGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplyPlaytimeGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCallAccept(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceCallBoard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceContactStamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PolicePromoteRung(), LF_TestTier.LOGIC);

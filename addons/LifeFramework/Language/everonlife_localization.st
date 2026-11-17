@@ -7902,6 +7902,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Crime Alert: a person was killed"
      Comment "Police notification when a player kills someone (M1-27)."
     }
+    CustomStringTableItem "{6F303BE1BA9EE09E}" {
+     Id "LF-Police_CallBoardTake"
+     Target_en_us "Take a call"
+     Comment "Action on the police dispatch board: take the oldest open call your rank may see (#2479)."
+    }
+    CustomStringTableItem "{1B0D73A7B04203F5}" {
+     Id "LF-Police_CallNone"
+     Target_en_us "No open call for your rank."
+     Comment "Toast when the police board has no call this officer may take."
+    }
+    CustomStringTableItem "{28DC7CFE99DA35C4}" {
+     Id "LF-Police_CallTaken"
+     Target_en_us "Call taken: %1"
+     Comment "Toast to the officer after taking a police call. %1 = the site."
+    }
+    CustomStringTableItem "{E07B9C887D2B46B5}" {
+     Id "LF-Police_CallTitle"
+     Target_en_us "Dispatch"
+     Comment "Toast title for the police dispatch board."
+    }
     CustomStringTableItem "{C0906C82C890BD00}" {
      Id "LF-Police_Cap_Name"
      Target_en_us "Officer's cap"

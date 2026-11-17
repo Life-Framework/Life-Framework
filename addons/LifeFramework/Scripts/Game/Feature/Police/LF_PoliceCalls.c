@@ -180,6 +180,20 @@ class LF_PoliceCalls
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The oldest call nobody holds yet whose minimum rank this rank meets (#2479: the board's take), or null.
+	static LF_PoliceCall OldestOpenFor(int rank)
+	{
+		array<ref LF_PoliceCall> calls = Calls();
+		for (int i = 0; i < calls.Count(); i++)
+		{
+			if (!calls[i].m_bClosed && calls[i].m_sOfficerUid.IsEmpty() && rank >= calls[i].m_iMinRank)
+				return calls[i];
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: an officer takes a call. The account state is a parameter (LF_AccountStateBits), so no
 	//! character is needed. Refused when off duty, under the call's rank, the call is unknown or closed,
 	//! or another officer has it.
