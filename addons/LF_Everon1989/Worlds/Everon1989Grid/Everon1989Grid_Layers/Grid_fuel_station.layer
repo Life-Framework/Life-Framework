@@ -85,3 +85,17 @@ GenericEntity Grid_fuel_station_Spawn {
 SCR_DestructibleBuildingEntity Grid_fuel_station_Main : "{D8BB8753BC550250}Prefabs/Buildings/FuelStation/FuelStation.et" {
  coords 279.999 0 25.516
 }
+GenericEntity FuelStation_Till : "{9D3A51E060EFE982}Prefabs/Props/Commercial/LF_FuelTill_Attended.et" {
+ components {
+  LF_PlaceComponent "{F5F1B8056177688A}" {
+   m_sKind "DispatchSource"
+   m_sId "FuelStation_Till"
+  }
+ }
+ Flags 0x403 0
+ coords 288.323 1.384 29.726
+}
+LF_NpcBaseEntity FuelStation_Clerk : "{4C624B7D84E8BAFA}Prefabs/Characters/Npcs/Outfits/LF_Npc_FuelClerk_1.et" {
+ coords 287.999 0.345 30.388
+ angleY 180
+}
