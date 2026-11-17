@@ -15,6 +15,7 @@ tools\cli building adopt <slug> [<file.blend>]   keep a scene polished by hand a
 tools\cli building plan <slug>      the facts an agent brief needs: prefabs, sizes, rooms, doors, store slots, parallel parts
 tools\cli building proof <slug>     doors, scale, audit, pictures and the building's proof.json on a full session
 tools\cli building review <slug> --shots   Blender review renders and a contact sheet, no game (polish.md "Review shots")
+tools\cli building check <slug> [--fix]   no small prop floats: bottom within 2 cm of the top under it, offline, about 1 s (starter-packs/building.md "Props stand on something")
 tools\cli building status [<slug>]
 tools\cli building doctor      Blender, the add-on, its licence, one headless generate
 tools\cli building selftest    the offline checks (also part of tools\cli validate)
@@ -223,6 +224,36 @@ compare kept values (`{ "lt": ["paid.cash", "before.cash"] }`, `gt`, `eq`, `ne`,
 (`{ "re": "paid \\d+ for 3 item" }`, or `{ "last": "alarm sounding at <([^>]+)>", "near": [x,y,z], "within": 1.5 }`).
 The supermarket's file talks to the shopkeeper, picks a torch, crackers and a water, pays, leaves clean, then walks out
 with a dressing and checks the alarm on the shop-front box.
+
+## Props stand on something: `surface.mjs` and `building check`
+A typed height floated phones, lamps and small items over desks and counters (maintainer, 2026-11-17). Never type a prop's y
+from a guess. `tools/buildings/pipeline/surface.mjs` snaps it at write time, offline (bounds from `prefabInfo`, the reader
+`grid place` sizes by; support tops from the .xob colliders, `tools\cli measure --surfaces`): y = the top of the support under
+the prop's footprint centre, minus the prop's bottom offset.
+```
+import { prefabChildren, snapItems, specSupports } from "../pipeline/surface.mjs";
+put(P.desk, x, F, z, 0, 1, false, { id: "desk" });              // a row an item can stand on
+put(P.phone, x + 0.2, 1.1, z, 200, 1, false, { on: "desk" });   // y is a hint; it lands on the desk top
+put(P.lamp, x, 1.1, z);                                         // no `on`: the top under it, when one is within 0.4 m
+const fixed = [...prefabChildren(prefabTextWithoutYourBlock), ...specSupports(spec)];  // what the prefab holds, the host, spec.check_supports
+const snap = await snapItems(items, { fixed });                 // mutates item.y; snap.summary, snap.changes for a --report
+```
+- `on` is an item `id`, the 16-hex ID of an entity already in the prefab (or the store prefab), or a row index. A prop with no
+  surface under its centre stops the generator by name.
+- Without `on` a prop snaps only when it is more than 2 cm off a top under it. Wall kinds (posters, notices, clocks, ceiling
+  lamps, switches) and `free: true` rows are left alone. Gun-store `decor.mjs` is the model; the town hall, general store and
+  clothing store do the same.
+- A support the prefabs do not hold (a counter the layer places, such as the general store till): `spec.json`
+  `check_supports: [{ prefab, at, yaw, id, why }]`. The host building's own colliders count as supports.
+- No generator (a hand-written prefab)? `tools\cli building check <slug> --fix` moves each floating or sunk prop onto its top.
+- A prop that stood on a desk or shelf your cut removed (a typewriter on a pruned desk) goes with it (town-hall `shell.mjs`).
+
+**`tools\cli building check <slug>` is required.** About 1 s, no Workbench: every small prop (under 0.8 m high and 1.2 m
+across, not a wall or ceiling kind) of the building's prefabs must have its bottom within 2 cm of the top of what is under it,
+a floor slab or the ground. `wt ship` runs it for a PR that touches `tools/buildings/<slug>/` or the pack's
+`Prefabs/Buildings/<Dir>/` and refuses the ship while it fails (`tools/lib/pr-quality.mjs`); a machine without the game files
+skips it. A prop that must look odd goes in `spec.json` `floaters_allow: [{ "match": "<entity ID or prefab regex>", "why": "..." }]`.
+Keep `audit placement --grid --strict` as the in-world check once per pass: it sees what the offline check cannot.
 
 ## Planning a building's work
 
