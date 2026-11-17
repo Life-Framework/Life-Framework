@@ -136,7 +136,11 @@
   gets the inventory, anyone else hears a refusal sound and gets the
   `#LF-HideoutStash_NotMember` toast, and the refusal is logged
   (`stash refused: not a member`). The server also refuses a non-member moving an
-  item out (`HandleAccessValidation`) or in (`CanStoreItem`). Membership and the
+  item out (`HandleAccessValidation`) or in (`CanStoreItem`). `CanStoreItem` has no
+  instigator, so it only takes an item from a living member's own inventory, the stash
+  itself or a server spawn (restore, seeding); an item in a vehicle, crate or body is
+  refused even for a member, who carries it first (#2574, WORLD `hideout/stash-put-carrier`;
+  items on the ground are a follow-up). Membership and the
   rank's stash right (`USE_STASH`) are the key: an open or breached door does not open the stash.
 - ✅ Stash contents survive a restart through `LF_PersistentStorageComponent`
   keyed `hideout:Roadmap_Hideout` (not an entity id), so the stash keeps its

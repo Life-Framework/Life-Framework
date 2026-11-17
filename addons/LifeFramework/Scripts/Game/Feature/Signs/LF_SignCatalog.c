@@ -47,7 +47,7 @@ class LF_SignConfig
 
 	//------------------------------------------------------------------------------------------------
 	//! Merges each pack overlay of this class the mission header lists, in load order (#323: the
-	//! pack's pictures and text for core sign ids). eturn Signs changed.
+	//! pack's pictures and text for core sign ids). \return Signs changed.
 	int ApplyPackOverlays()
 	{
 		if (!m_aSigns)
@@ -69,7 +69,7 @@ class LF_SignConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Applies one overlay container's m_aSigns by the override verbs. eturn Signs changed.
+	//! Applies one overlay container's m_aSigns by the override verbs. \return Signs changed.
 	int ApplyContainer(notnull BaseContainer container, string source = "pack", LF_ConfigClaims claims = null)
 	{
 		if (!m_aSigns)

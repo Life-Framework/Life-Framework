@@ -105,7 +105,7 @@ class LF_PhoneCallBackBook : Managed
 
 	//------------------------------------------------------------------------------------------------
 	//! Drops every offer and request (the world reset).
-	//! eturn How many entries were dropped.
+	//! \return How many entries were dropped.
 	int Clear()
 	{
 		int dropped = m_aOffers.Count() + m_aRequests.Count();
