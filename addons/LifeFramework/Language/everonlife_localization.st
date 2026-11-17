@@ -7612,6 +7612,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You moved. Look at the spot again and retry."
      Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
     }
+    CustomStringTableItem "{F2BDAD6DBBEFE3E2}" {
+     Id "LF-Placement_NeedBase"
+     Target_en_us "You can only place this at your organization's base."
+     Comment "Toast when the placement policy refuses: the kind needs the organization's base nearby (#2447)."
+    }
     CustomStringTableItem "{A1D7C4E09B3F5202}" {
      Id "LF-Placement_NeedHouse"
      Target_en_us "Only the owner or a key holder of a house nearby can place this."
@@ -7627,10 +7632,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Only on-duty {police} can place this."
      Comment "Toast when the placement policy refuses: the kind needs an on-duty officer (#2446)."
     }
+    CustomStringTableItem "{B4CD02854FD9C6F2}" {
+     Id "LF-Placement_NeedProperty"
+     Target_en_us "You can only place this inside a property you own or hold a key to."
+     Comment "Toast when the placement policy refuses: the kind needs an owned or keyed property (#2447)."
+    }
     CustomStringTableItem "{A1D7C4E09B3F5204}" {
      Id "LF-Placement_NeedRank"
      Target_en_us "Your organization rank is too low to place this."
      Comment "Toast when the placement policy refuses: the kind needs a higher organization rank (#2446)."
+    }
+    CustomStringTableItem "{7D3AE2EE9C995350}" {
+     Id "LF-Placement_NeedRoad"
+     Target_en_us "You can only place this on a road."
+     Comment "Toast when the placement policy refuses: the kind may go on roads only (#2447)."
     }
     CustomStringTableItem "{70A8229A6F903FA6}" {
      Id "LF-Placement_NoGround"
