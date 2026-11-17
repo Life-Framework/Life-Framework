@@ -59,6 +59,7 @@ import { isTemplateMission } from "../tools/server-template/template.mjs";
 import * as shots from "../agent-box/shots.mjs";
 import { safeRemoveTree } from "./link-safety.mjs";
 import { rdbFreshness, describeMissing, addonResources } from "./lib/rdb-fresh.mjs";
+import { staleRdbVerdict } from "./lib/rdb-stale-verdict.mjs";
 import * as rdbCache from "./lib/rdb-cache.mjs";
 import { boxMode, missingForHostStart } from "./lib/host-box.mjs";
 import { addonsArgs, addonsDirArgs, addonDir, flagshipMission, gprojOf, launchAddons, launchAddonsFor, parsePackFlag, playtestMission, rdbAddons, resolveAddon, defaultPackOut, CORE, PACK, PACK_MISSION } from "./lib/addons.mjs";
@@ -676,6 +677,13 @@ function invokeScriptAsync(full, opts = {}) {
       }
     };
     const child = spawn(cmd, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], ...spawnOpts });
+    // Validate checks are batch work: below normal, so a test server or Workbench on the same box keeps its
+    // CPU (lf-testbox sat at 100% CPU with ~130 checks per validate, 2026-11-17). Children inherit the class.
+    if (child.pid && /[\\/]validation[\\/]/.test(full) && process.env.LF_CHECK_PRIORITY !== "normal") {
+      try {
+        os.setPriority(child.pid, os.constants.priority.PRIORITY_BELOW_NORMAL);
+      } catch {}
+    }
     child.stdout.on("data", (d) => { stdout += d; });
     child.stderr.on("data", (d) => { stderr += d; });
     child.on("error", (e) => done({ status: 1, stdout, stderr: stderr + `failed to spawn ${cmd}: ${e.message}` }));
@@ -3370,7 +3378,7 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     avoidLocal = false;
     if (r.requeue) continue;
     lastTestCounts = { passed: r.passed, failed: r.failed, total: r.total };
-    if (cache?.key && r.code === 0) passCacheStore(root, cache, { tier, only, opts, run: r });
+    if (cache?.key && r.code === 0 && !r.rdbStale) passCacheStore(root, cache, { tier, only, opts, run: r });
     return r.code;
   }
 }
@@ -3483,7 +3491,11 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     const sum = lastLocalSummary ?? newestStamp(root, before, opts.coreOnly);
     if (sum) extra = { passed: sum.passed, total: sum.total };
     if (sum) recordTestTimes(root, sum.consoleLog, tier, only, opts);
-    return { code, machine: slot.machine?.name, passed: sum?.passed, total: sum?.total, failed: sum?.failed };
+    // A stale rdb (refresh failed or timed out) never yields a silent pass (tools/lib/rdb-stale-verdict.mjs).
+    const v = red ? { fail: false, warn: false } : staleRdbVerdict({ stale: testbox.staleRdbAddons(root), code, tier, only });
+    if (v.line) console.log(v.line);
+    if (v.fail) code = 1;
+    return { code, machine: slot.machine?.name, passed: sum?.passed, total: sum?.total, failed: sum?.failed, rdbStale: v.fail || v.warn };
   } finally {
     if (tookLocal) shards.dropLocal(root);
     slot.release();
