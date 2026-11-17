@@ -226,13 +226,33 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 3.493 0.096 -0.325
    angleY -90
   }
-  GameEntity : "{9FA626D6505E54F1}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02_on_exterior.et" {
+  GameEntity : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
    ID "B1D45573E11E4908"
+   components {
+    MeshObject "{5111E74D5E891458}" {
+     Materials {
+      MaterialAssignClass "{651C73C66D2E488B}" {
+       SourceMaterial "Glass"
+       AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
+      }
+     }
+    }
+   }
    coords -1.804 2.979 -7
    angleY 180
   }
-  GameEntity : "{9FA626D6505E54F1}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02_on_exterior.et" {
+  GameEntity : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
    ID "C16693CC47892377"
+   components {
+    MeshObject "{5111E74D5E891458}" {
+     Materials {
+      MaterialAssignClass "{651C73C66D2E488B}" {
+       SourceMaterial "Glass"
+       AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
+      }
+     }
+    }
+   }
    coords 1.796 2.979 -7
    angleY 180
   }
@@ -268,205 +288,49 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "6002062CE4D7774A"
    coords -6.063 3.649 -4.375
   }
-  LightEntity {
-   ID "BBB5E43E56DA3B0B"
-   coords -6.063 3.45 -4.375
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
-  }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "D1ACA126230509D8"
    coords -6.063 3.649 -0.125
-  }
-  LightEntity {
-   ID "AD470BA2B733EE67"
-   coords -6.063 3.45 -0.125
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "3B6F1DEFB65A8117"
    coords -1.988 3.649 -4.375
   }
-  LightEntity {
-   ID "C049B0121A9C6122"
-   coords -1.988 3.45 -4.375
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
-  }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "4A05E596E0DFC70D"
    coords -1.988 3.649 -0.125
-  }
-  LightEntity {
-   ID "B01B40160F330DA3"
-   coords -1.988 3.45 -0.125
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "4D6243969914A59E"
    coords 2.087 3.649 -4.375
   }
-  LightEntity {
-   ID "A07B6FE576AD6FA1"
-   coords 2.087 3.45 -4.375
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
-  }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "7182C6D98415F02E"
    coords 2.087 3.649 -0.125
-  }
-  LightEntity {
-   ID "227FDD45B72D1813"
-   coords 2.087 3.45 -0.125
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "FE23011350620EBE"
    coords 6.162 3.649 -4.375
   }
-  LightEntity {
-   ID "37BE371E20DEBAC2"
-   coords 6.162 3.45 -4.375
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
-  }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "668353533E5A342E"
    coords 6.162 3.649 -0.125
-  }
-  LightEntity {
-   ID "A4DD8BE96C6F7AF7"
-   coords 6.162 3.45 -0.125
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "804219CD41ECF8C0"
    coords -6.85 3.649 4.45
   }
-  LightEntity {
-   ID "35F71B9DCD3541D7"
-   coords -6.85 3.45 4.45
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
-  }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "1B2E3D74DEFBAFDE"
    coords -2.175 3.649 4.45
-  }
-  LightEntity {
-   ID "B67870C7C180358F"
-   coords -2.175 3.45 4.45
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
   }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "72AF20F7B5E40A31"
    coords 2.875 3.649 4.45
   }
-  LightEntity {
-   ID "0F360A372E682590"
-   coords 2.875 3.45 4.45
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
-  }
   GenericEntity : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
    ID "2BBDB41B8EAB9641"
    coords 7.25 3.649 4.45
-  }
-  LightEntity {
-   ID "3404ECAA4DC262A0"
-   coords 7.25 3.45 4.45
-   angles -90 0 0
-   Color 1 0.96 0.88 1
-   LV 6
-   ClipEV -10
-   Type Spot
-   Radius 7
-   NearPlane 0.3
-   SpotAngle 140
-   LensFlareType Disabled
   }
   GenericEntity : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
    ID "7F40350A7E30EF7B"
@@ -514,53 +378,53 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
    ID "3ADD258EC3F4CF49"
-   coords -1.9 0.19 2.69
+   coords -1.9 0.213 2.69
    angleY 90
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "03E93F9FC92CF84D"
-   coords -1.95 0.66 2.7
+   coords -1.95 0.6 2.7
    angleY 90
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "F6D6A530E3902C62"
-   coords -1.35 1.08 2.7
+   coords -1.35 0.689 2.7
    angleY 90
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "6AF380B6039A6E38"
-   coords 3.45 0.66 2.7
+   coords 3.45 0.213 2.7
    angleY 90
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "AE83979F1BF84646"
-   coords 4.05 1.08 2.7
+   coords 4.05 0.689 2.7
    angleY 90
   }
   GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
    ID "4922A5C04F4DD03B"
-   coords 3.6 1.56 2.69
+   coords 3.6 1.182 2.69
    angleY 90
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "3C908DA7D583E455"
-   coords -4.84 0.66 5.1
+   coords -4.84 0.213 5.1
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "7BCCB5EC80543374"
-   coords -4.84 1.08 5.8
+   coords -4.84 0.689 5.8
   }
   GenericEntity : "{CE763848F6F720AF}Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et" {
    ID "8BA0AD2D0D3C3A10"
-   coords -4.84 0.19 5.75
+   coords -4.84 0.213 5.75
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "C3A8C839EDA88EE7"
-   coords 5.51 0.66 5.8
+   coords 5.51 0.213 5.8
   }
   GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
    ID "FAE6F984CCA01CED"
-   coords 5.51 1.56 5.1
+   coords 5.51 1.182 5.1
   }
   GenericEntity : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {
    ID "782043393AE16AB7"
@@ -583,6 +447,87 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   GenericEntity : "{10D896F6F525B210}Prefabs/Props/Commercial/ShoppingBasket_01_pile.et" {
    ID "4F28A22A78214FE2"
    coords 1.9 0.1 -6.15
+  }
+  LightEntity {
+   ID "03849B6A297E45E8"
+   coords -4.025 3.45 -2.25
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 5.8
+   ClipEV -10
+   Type Spot
+   Radius 8
+   NearPlane 0.3
+   SpotAngle 150
+   CastShadow 0
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "DEDD2DFAA3D8C077"
+   coords 0.05 3.45 -2.25
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 5.8
+   ClipEV -10
+   Type Spot
+   Radius 8
+   NearPlane 0.3
+   SpotAngle 150
+   CastShadow 0
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "DBED949C412922E8"
+   coords 4.125 3.45 -2.25
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 5.8
+   ClipEV -10
+   Type Spot
+   Radius 8
+   NearPlane 0.3
+   SpotAngle 150
+   CastShadow 0
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "A2701E54FF842A3B"
+   coords -4.5125 3.45 4.45
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 5.7
+   ClipEV -10
+   Type Spot
+   Radius 8
+   NearPlane 0.3
+   SpotAngle 150
+   CastShadow 0
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "17D6D96EAADDBB18"
+   coords 5.0625 3.45 4.45
+   angles -90 0 0
+   Color 1 0.96 0.88 1
+   LV 5.7
+   ClipEV -10
+   Type Spot
+   Radius 8
+   NearPlane 0.3
+   SpotAngle 150
+   CastShadow 0
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "1F74BF22410E9CE6"
+   coords 0 2.7 -7.5
+   Color 1 0.78 0.5
+   LV 8.4
+   ClipEV -10
+   Radius 7
+   NearPlane 0.3
+   CastShadow 0
+   LensFlareType Disabled
   }
  }
 }

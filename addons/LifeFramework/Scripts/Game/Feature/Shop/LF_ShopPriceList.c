@@ -18,6 +18,8 @@ class LF_ShopPriceList
 
 	static const string ROW_PREFIX = "Item";
 	static const string ROW_SUFFIX = "Row";
+	//! A licence row (catalogue m_sGrantsLicence): Licence<i>Row, above the item lines.
+	static const string LICENCE_PREFIX = "Licence";
 	static const string LESS = "QtyLessButton";
 	static const string MORE = "QtyMoreButton";
 	static const string PAY = "PayButton";
@@ -37,6 +39,11 @@ class LF_ShopPriceList
 	//! What the counter pays for one of the selected line (a buyback line has no buy price).
 	protected int m_iSelectedSell;
 	protected int m_iQuantity = 1;
+	//! The licence rows shown (LF_ELicenseType names) and their fees, in row order.
+	protected ref array<string> m_aLicences = {};
+	protected ref array<int> m_aLicenceFees = {};
+	//! The selected licence row's licence; empty when an item line (or nothing) is selected.
+	protected string m_sSelectedLicence;
 	protected bool m_bWaiting;
 	protected string m_sKeySound;
 	protected string m_sTillSound;
@@ -133,12 +140,32 @@ class LF_ShopPriceList
 	//! Line index from a row name, or -1.
 	static int RowIndex(string rowName)
 	{
-		int prefix = ROW_PREFIX.Length();
+		return PrefixedIndex(ROW_PREFIX, rowName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Row name for the licence row at index; its Order button is <row>_Action.
+	static string LicenceRowName(int index)
+	{
+		return LICENCE_PREFIX + index.ToString() + ROW_SUFFIX;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Licence row index from a row name, or -1.
+	static int LicenceRowIndex(string rowName)
+	{
+		return PrefixedIndex(LICENCE_PREFIX, rowName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static int PrefixedIndex(string rowPrefix, string rowName)
+	{
+		int prefix = rowPrefix.Length();
 		int suffix = ROW_SUFFIX.Length();
 		if (rowName.Length() <= prefix + suffix)
 			return -1;
 
-		if (rowName.Substring(0, prefix) != ROW_PREFIX || rowName.Substring(rowName.Length() - suffix, suffix) != ROW_SUFFIX)
+		if (rowName.Substring(0, prefix) != rowPrefix || rowName.Substring(rowName.Length() - suffix, suffix) != ROW_SUFFIX)
 			return -1;
 
 		string digits = rowName.Substring(prefix, rowName.Length() - prefix - suffix);
@@ -198,6 +225,8 @@ class LF_ShopPriceList
 
 		m_Screen.ClearList("Prices");
 		m_aShown.Clear();
+		// The licence rows head the list: the permit is what opens the rest of a gun counter.
+		FillLicenceRows();
 
 		int total = 0;
 		foreach (LF_ShopCatalogItem item : m_Shop.GetShopItems())
@@ -226,6 +255,31 @@ class LF_ShopPriceList
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The counter's licence rows (a permit applied for and collected here), above the item lines.
+	protected void FillLicenceRows()
+	{
+		m_aLicences.Clear();
+		m_aLicenceFees.Clear();
+		array<LF_OutletOffer> rows = {};
+		m_Shop.GetLicenceRows(rows);
+		foreach (LF_OutletOffer row : rows)
+		{
+			LF_ELicenseType licence;
+			if (!LF_ItemCatalogue.ParseLicence(row.m_sGrantsLicence, licence))
+				continue;
+
+			string shownName = WidgetManager.Translate(LF_LicenceDesk.NameKey(licence));
+			if (!Matches(shownName, m_sFilter))
+				continue;
+
+			int fee = row.LicenceFee();
+			m_aLicences.Insert(row.m_sGrantsLicence);
+			m_aLicenceFees.Insert(fee);
+			m_Screen.AddListRow("Prices", LicenceRowName(m_aLicences.Count() - 1), shownName, LF_MoneyFormat.FormatMoney(fee), "#LF-Shop_Order");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The edit box has no change event on the kit, so the list re-reads it a few times a second.
 	protected void PollSearch()
 	{
@@ -251,8 +305,22 @@ class LF_ShopPriceList
 			return;
 		}
 
+		int licenceIndex = LicenceRowIndex(name);
+		if (licenceIndex >= 0)
+		{
+			SelectLicence(licenceIndex);
+			return;
+		}
+
 		if (name == LESS || name == MORE)
 		{
+			// A licence is one document: the quantity stays 1.
+			if (!m_sSelectedLicence.IsEmpty())
+			{
+				LF_UISound.Play(m_sRefuseSound);
+				return;
+			}
+
 			int step = 1;
 			if (name == LESS)
 				step = -1;
@@ -288,6 +356,7 @@ class LF_ShopPriceList
 		}
 
 		LF_ShopCatalogItem item = m_aShown.Get(index);
+		m_sSelectedLicence = string.Empty;
 		m_Selected = item.m_ItemPrefab;
 		m_Preview.Draw(m_Screen, LF_ShopItemPreview.Resolve(m_aShown, index));
 		m_sSelectedName = WidgetManager.Translate(item.m_sDisplayName);
@@ -300,10 +369,41 @@ class LF_ShopPriceList
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected void SelectLicence(int index)
+	{
+		if (index < 0 || index >= m_aLicences.Count())
+		{
+			LF_Debug.Warn("Shop", "order refused: no licence row " + index.ToString());
+			return;
+		}
+
+		LF_ELicenseType licence;
+		LF_ItemCatalogue.ParseLicence(m_aLicences[index], licence);
+		m_sSelectedLicence = m_aLicences[index];
+		m_Selected = ResourceName.Empty;
+		m_Preview.Draw(m_Screen, ResourceName.Empty);
+		m_sSelectedName = WidgetManager.Translate(LF_LicenceDesk.NameKey(licence));
+		m_iSelectedPrice = m_aLicenceFees[index];
+		m_iSelectedSell = 0;
+		m_iQuantity = 1;
+		LF_UISound.Play(m_sKeySound);
+		SetReceipt("");
+		ShowSlip();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void ShowSlip()
 	{
 		if (!m_Screen)
 			return;
+
+		if (!m_sSelectedLicence.IsEmpty())
+		{
+			m_Screen.SetLine("Order", WidgetManager.Translate("#LF-Shop_SlipLine", 1, m_sSelectedName));
+			m_Screen.SetButtonText(PAY, WidgetManager.Translate("#LF-Shop_PayTotal", LF_MoneyFormat.FormatMoney(m_iSelectedPrice)));
+			m_Screen.SetButtonText(SELL, "#LF-Shop_SellBack");
+			return;
+		}
 
 		if (m_Selected.IsEmpty())
 		{
@@ -335,9 +435,16 @@ class LF_ShopPriceList
 			return;
 		}
 
-		if (m_Selected.IsEmpty())
+		if (m_Selected.IsEmpty() && m_sSelectedLicence.IsEmpty())
 		{
 			SetReceipt("#LF-Shop_PickFirst");
+			LF_UISound.Play(m_sRefuseSound);
+			return;
+		}
+
+		if (!m_sSelectedLicence.IsEmpty() && !buy)
+		{
+			SetReceipt("#LF-Shop_LicenceNoSellBack");
 			LF_UISound.Play(m_sRefuseSound);
 			return;
 		}
@@ -356,7 +463,9 @@ class LF_ShopPriceList
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().CallLater(ReplyTimedOut, REPLY_TIMEOUT_MS, false);
 
-		if (buy)
+		if (!m_sSelectedLicence.IsEmpty())
+			bridge.RequestLicence(m_ShopId, m_sSelectedLicence);
+		else if (buy)
 			bridge.RequestBuy(m_ShopId, m_Selected, m_iQuantity);
 		else
 			bridge.RequestSell(m_ShopId, m_Selected, m_iQuantity);
@@ -385,6 +494,50 @@ class LF_ShopPriceList
 		}
 
 		s_Current.ApplyResult(buy, reason, money, cash, missing);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the counter's answer to a licence row (a counter refusal, or the licence office's outcome).
+	static void OnLicenceResult(LF_EShopRefusal reason, int outcome, string arg, int cash)
+	{
+		if (!s_Current)
+		{
+			LF_Debug.Info("Shop", "licence reply arrived after the price list closed");
+			return;
+		}
+
+		s_Current.ApplyLicenceResult(reason, outcome, arg, cash);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The slip text for a licence answer: the counter's refusal, else the office's answer for outcome.
+	static string LicenceReceipt(LF_EShopRefusal reason, int outcome, string arg)
+	{
+		if (reason != LF_EShopRefusal.NONE)
+			return LF_ShopRefusal.Text(reason, string.Empty);
+
+		LF_ELicenceDesk answer = outcome;
+		return WidgetManager.Translate(LF_LicenceDesk.CounterAnswerKey(answer), arg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ApplyLicenceResult(LF_EShopRefusal reason, int outcome, string arg, int cash)
+	{
+		m_bWaiting = false;
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(ReplyTimedOut);
+
+		if (m_Screen)
+			m_Screen.SetLine("Cash", CashText(cash));
+
+		SetReceipt(LicenceReceipt(reason, outcome, arg));
+		bool good = reason == LF_EShopRefusal.NONE && (outcome == LF_ELicenceDesk.ISSUED || outcome == LF_ELicenceDesk.APPLIED || outcome == LF_ELicenceDesk.WAITING || outcome == LF_ELicenceDesk.ALREADY_HELD);
+		if (good)
+			LF_UISound.Play(m_sTillSound);
+		else
+			LF_UISound.Play(m_sRefuseSound);
+
+		LF_Debug.Info("Shop", string.Format("slip shows licence answer %1 / %2", typename.EnumToString(LF_EShopRefusal, reason), typename.EnumToString(LF_ELicenceDesk, outcome)));
 	}
 
 	//------------------------------------------------------------------------------------------------

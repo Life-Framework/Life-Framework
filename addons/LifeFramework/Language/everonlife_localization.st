@@ -3810,6 +3810,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not while restrained"
      Comment "Greyed-out reason on an emote or on Sit while the body is cuffed or stunned (#982)."
     }
+    CustomStringTableItem "{2AB2FE3B951F79E3}" {
+     Id "LF-Escort_HeldByOther"
+     Target_en_us "Another officer already has them."
+     Comment "Toast to an officer whose escort grab was refused: the suspect is held by a different officer."
+    }
     CustomStringTableItem "{5B1F9A3E7C2D4086}" {
      Id "LF-EventMap_Place"
      Target_en_us "Event"
@@ -5453,6 +5458,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Standing improved"
      Target_es_es "Mejora de categoría"
      Comment "Hint title when the character's overall standing rises (replaces an arcade LEVEL UP)"
+    }
+    CustomStringTableItem "{7782A81CDE1A5199}" {
+     Id "LF-LicenceCounter_Applied"
+     Target_en_us "Application taken. Your permit will be ready in about %1 hours. Come back to this counter to collect it."
+     Comment "Shop counter licence row: the fee was paid and the permit application filed. %1 = in-game hours until collection."
+    }
+    CustomStringTableItem "{FE21416A8F87EE0C}" {
+     Id "LF-LicenceCounter_Closed"
+     Target_en_us "This counter cannot issue permits right now."
+     Comment "Shop counter licence row: an internal failure; the server log names it."
+    }
+    CustomStringTableItem "{C701799D84A17BED}" {
+     Id "LF-LicenceCounter_Issued"
+     Target_en_us "Here is your firearm permit. This counter will now sell you firearms."
+     Comment "Shop counter licence row: the permit was handed over at the gun store counter."
     }
     CustomStringTableItem "{97F1EFC77490B5D8}" {
      Id "LF-LicenceDesk_Action"
@@ -8756,6 +8776,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Too far! Back to the counter: %2 m of %1 m"
      Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Shown near the edge of the radius. %1 is the radius, %2 the distance."
     }
+    CustomStringTableItem "{1383AADB0F8627B0}" {
+     Id "LF-RobHold_Fail_Clerk"
+     Target_en_us "Robbery failed: the attendant went down."
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c)."
+    }
     CustomStringTableItem "{C823A75E1A8C79F8}" {
      Id "LF-RobHold_Fail_Downed"
      Target_en_us "Robbery failed: you went down."
@@ -8799,6 +8824,11 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{008CB39C11D31B0D}" {
      Id "LF-RobHold_Refused_Cooldown"
      Target_en_us "(The till was emptied a short while ago. Come back later.)"
+     Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
+    }
+    CustomStringTableItem "{D455F915F3D9F8DF}" {
+     Id "LF-RobHold_Refused_Holding"
+     Target_en_us "(You are already holding up another till.)"
      Comment "Fuel station robbery through the attendant's dialogue (Feature/Crime/LF_RobHold.c). Caption when the robbery cannot start."
     }
     CustomStringTableItem "{66AD4C2125D11C00}" {
@@ -9012,6 +9042,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shop_Less"
      Target_en_us "One less"
      Comment "Shop order slip key: lower the quantity by one."
+    }
+    CustomStringTableItem "{17C9F77EFE1AEE8C}" {
+     Id "LF-Shop_LicenceNoSellBack"
+     Target_en_us "A permit cannot be sold back."
+     Comment "Shop price list: Sell pressed with a licence row on the slip."
     }
     CustomStringTableItem "{02FFEC0ECB74AFC2}" {
      Id "LF-Shop_LookFor"

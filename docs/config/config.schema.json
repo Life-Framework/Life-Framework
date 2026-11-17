@@ -154,6 +154,11 @@
                 "type": "boolean",
                 "description": "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead",
                 "default": false
+              },
+              "grantsLicence": {
+                "type": "string",
+                "description": "Licence row: the counter issues this licence (LF_ELicenseType name) under the licence office's rules (fee, clean record, wait; LF_LicenceDesk) instead of selling an item. m_sItem is then only the row's key and names no catalogue item. Empty is an item row",
+                "default": ""
               }
             },
             "additionalProperties": false

@@ -252,11 +252,90 @@ class LF_JailEscort
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! On-foot escort. Does not seat the prisoner and does not start the sentence.
+	//! The officer holding prisonerUid (on foot or in a car), or "" when nobody does.
+	static string GetHolder(string prisonerUid)
+	{
+		if (prisonerUid.IsEmpty() || !s_mHolds)
+			return "";
+
+		LF_JailEscortHold hold = s_mHolds.Get(prisonerUid);
+		if (!hold || !hold.m_bActive)
+			return "";
+
+		return hold.m_sOfficerUid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Is prisonerUid held by an officer other than officerUid? A hold is never overwritten.
+	static bool HeldByOther(string officerUid, string prisonerUid)
+	{
+		string holder = GetHolder(prisonerUid);
+		return !holder.IsEmpty() && holder != officerUid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: why a grab is refused before the hold changes. `reach` is LF_PlayerInteraction.CheckPair
+	//! (the rule the cuff and arrest paths use). \return The toast key, or "" when the grab may go on.
+	static string GrabRefusal(LF_EInteractionRefusal reach, string officerUid, string prisonerUid)
+	{
+		if (reach != LF_EInteractionRefusal.NONE)
+			return LF_PlayerInteraction.RefusalKey(reach);
+
+		if (HeldByOther(officerUid, prisonerUid))
+			return "#LF-Escort_HeldByOther";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the officer grabs the suspect on foot (both escort actions). Reach first, then the hold
+	//! check; a refusal is logged and the officer is told. \return true when the escort started.
+	static bool Grab(IEntity officer, IEntity prisoner)
+	{
+		if (!Replication.IsServer() || !officer || !prisoner)
+			return false;
+
+		string officerUid = LF_Utils.GetPlayerUid(officer);
+		string prisonerUid = LF_Utils.GetPlayerUid(prisoner);
+		if (officerUid.IsEmpty() || prisonerUid.IsEmpty())
+		{
+			FailNote("escort grab refused: officer or suspect has no account id");
+			return false;
+		}
+
+		LF_EInteractionRefusal reach = LF_PlayerInteraction.CheckPair(officer, prisoner);
+		string refusal = GrabRefusal(reach, officerUid, prisonerUid);
+		if (!refusal.IsEmpty())
+		{
+			LF_Debug.Warn("Jail", string.Format("escort grab refused: %1 -> %2 (%3)", officerUid, prisonerUid, refusal));
+			Tell(officer, refusal);
+			return false;
+		}
+
+		return Escort(officerUid, prisonerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Tell(IEntity officer, string message)
+	{
+		int playerId = LF_PlayerInteraction.PlayerIdOf(officer);
+		if (playerId > 0)
+			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Police_Title", message, 3.0, LF_ENotificationType.WARNING);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On-foot escort. Does not seat the prisoner and does not start the sentence. Another officer's
+	//! prisoner is refused: the hold stays with the first officer.
 	static bool Escort(string officerUid, string prisonerUid)
 	{
 		if (!Gate(officerUid, prisonerUid))
 			return false;
+
+		if (HeldByOther(officerUid, prisonerUid))
+		{
+			Note(string.Format("escort refused: %1 is already held by %2", prisonerUid, GetHolder(prisonerUid)));
+			return false;
+		}
 
 		if (LF_Jail.IsServing(prisonerUid))
 		{
@@ -290,6 +369,12 @@ class LF_JailEscort
 		if (vehicleId.IsEmpty())
 		{
 			FailNote("escort refused: vehicle id is empty");
+			return false;
+		}
+
+		if (HeldByOther(officerUid, prisonerUid))
+		{
+			Note(string.Format("escort refused: %1 is already held by %2", prisonerUid, GetHolder(prisonerUid)));
 			return false;
 		}
 
