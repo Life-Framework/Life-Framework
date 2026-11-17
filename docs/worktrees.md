@@ -152,7 +152,10 @@ gate before a merge; the main guard (next section) checks `main` after it.
    `origin/<base>` in, pushes again and retries.
 4. Prints `SUMMARY ship ok|fail`, then `PR <url>, head <sha>`. No queue, no pool lane, no wait.
 
-`--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
+`--draft` runs the same body checks, preflight and push, then opens the PR with `gh pr create --draft` and never runs
+`gh pr merge --auto`; the summary reads `auto-merge off (draft)`. Town-draft and maintainer-review PRs use it; a human
+marks the PR ready and merges it (`ship-direct.mjs` `draft`, `wt-ship-draft-selftest.mjs`). Re-running on an open PR
+reuses it. `--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
 <slug>` stays as an optional manual check (tiers in `tools/lib/gate-tier.mjs`, `gate-risk.mjs`). The ship queue
 (`tools/ship-queue.mjs`), `wt ship-status`, `wait ship` and the tier selection in ship are retired; their code stays
 on disk until someone deletes it.

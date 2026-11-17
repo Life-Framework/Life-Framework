@@ -1,0 +1,48 @@
+{
+  "about": "Police station: the shot list of the Villa_E_2I01_Police fit-out and the booking walkthrough. A civilian walks in the front door to the licence desk, an officer clocks in at the duty desk and draws kit at the armory, then the cell and the evidence locker are shown (the cuff and jail legs have their own proofs). Points are building space (tools/buildings/pipeline/scenario.mjs); the front (porch, front door) faces +z and the first floor is y 3.8. The same room points are what tools/buildings/police-station/looks.mjs shoots with `look grid:police-station-kit --interior` (no session): hall, office, cell, canteen, records, interview, plus the exterior by day and at night. The walkthrough steps need a session and the station staged in a world with a police roster entry; they were not run in the build pass (see the PR).",
+  "session": { "profile": "full", "mission": "playtest" },
+  "steps": [
+    { "shot": "warmup", "look": [1.5, 3.0, 7.6], "from": [-6, -1.4, 12], "wait": 6000, "why": "the first frames after a teleport draw the building before it streams in" },
+
+    { "shot": "street", "look": [1.5, 3.0, 7.6], "from": [-6, -1.4, 12] },
+    { "shot": "facade", "look": [-1.0, 2.2, 7.5], "from": [1.5, -0.8, 4.5] },
+    { "shot": "yard", "look": [3.0, 1.0, 11.5], "from": [-7, 0.8, 5] },
+    { "shot": "payphone", "look": [5.5, 1.2, 9.0], "from": [-2, 0.2, 3] },
+
+    { "shot": "hall", "look": [-1.5, 1.2, 3.0], "from": [0.5, 0.5, -3.5] },
+    { "shot": "licence_desk", "look": [0.8, 1.0, 6.4], "from": [-3.2, 0.7, -2.6] },
+    { "shot": "wanted_board", "look": [0.86, 1.6, 3.4], "from": [-3.0, 0.1, 0.2] },
+
+    { "shot": "office", "look": [3.0, 1.0, 0.0], "from": [-1.8, 0.6, 3.5] },
+    { "shot": "duty_desk", "look": [3.0, 0.9, 0.0], "from": [-0.5, 0.6, 2.2] },
+    { "shot": "armory", "look": [5.85, 1.0, 1.6], "from": [-3.5, 0.6, 0.5] },
+    { "shot": "evidence_dispatch", "look": [3.5, 1.3, -3.6], "from": [0.0, 0.3, 4.2] },
+
+    { "shot": "cell", "look": [-4.5, 0.8, -2.0], "from": [2.0, 0.8, 2.0] },
+    { "shot": "canteen", "look": [3.5, 1.0, 5.5], "from": [-2.0, 0.6, -1.5] },
+
+    { "shot": "records", "look": [5.9, 4.8, -1.2], "from": [-3.5, 0.2, 2.0] },
+    { "shot": "interview", "look": [-1.7, 4.4, -1.0], "from": [-1.5, 0.4, 2.5] },
+
+    { "do": { "verb": "time", "hour": 22 }, "wait": 2500, "why": "night: the lamps and the lit facade" },
+    { "shot": "night_street", "look": [1.5, 3.0, 7.6], "from": [-6, -1.4, 12], "wait": 1500 },
+    { "shot": "night_office", "look": [3.0, 1.0, 0.0], "from": [-1.8, 0.6, 3.5] },
+    { "do": { "verb": "time", "hour": 14 }, "wait": 1500 },
+
+    { "do": { "verb": "resetplayer", "cash": 500 }, "wait": 1500, "why": "walkthrough: a civilian at the front desk" },
+    { "shot": "visitor", "look": [0.8, 1.0, 6.4], "from": [-2.4, 0.7, -1.4] },
+    { "do": { "verb": "use", "className": "LF_DutyAction", "entityName": "PoliceKit_DutyDesk" }, "wait": 2000, "why": "an on-roster officer clocks in at the duty desk" },
+    { "state": "on_duty" },
+    { "shot": "clocked_in", "look": [3.0, 0.9, 0.0], "from": [-0.5, 0.6, 2.2] },
+    { "do": { "verb": "use", "className": "LF_ArmoryDrawAction", "entityName": "PoliceKit_Armory" }, "wait": 2000, "why": "the armory locker issues the shift's kit" },
+    { "shot": "armory_draw", "look": [5.85, 1.0, 1.6], "from": [-3.5, 0.6, 0.5] },
+    { "shot": "booking", "look": [-4.5, 0.8, -2.0], "from": [2.0, 0.8, 2.0] },
+    { "do": { "verb": "use", "className": "LF_BreachArmAction", "entityName": "PoliceKit_EvidenceLocker" }, "wait": 1500, "status": "any", "why": "the evidence locker is a breach target (a refused arm is fine for police)" }
+  ],
+  "checks": [
+    { "eq": ["on_duty.duty", true], "why": "the duty desk put the officer on duty" }
+  ],
+  "log": [
+    { "re": "LFDebug:Duty", "min": 1, "why": "the clock-in at the duty desk logged" }
+  ]
+}

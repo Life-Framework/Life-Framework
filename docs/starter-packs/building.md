@@ -15,8 +15,7 @@ tools\cli grid place <slug> --cell cXrY --span WxH     # fenced yard + claim fil
 - Template, copy and never edit: `tools/buildings/gun-store/{spec.json,decor.mjs,proof.json}`. Newer fit-outs once merged:
   `tools/buildings/{town-hall,bank,police-station}/` (`prune.mjs` cuts the vanilla furniture set, `decor-lib.mjs` writes
   props and lights, `looks.mjs` re-shoots, `fitout.mjs --report` prints the counts).
-- Measure before placing: `tools\cli measure <prefab> --surfaces` (bounds and shelf and counter tops, no game). Heights are
-  snapped, not typed: see "Props stand on something".
+- Measure before placing: `tools\cli measure <prefab> --surfaces` (bounds and shelf and counter tops, no game).
 
 ## Commit the reproduction: `tools/buildings/<slug>/`
 - `spec.json`: concept, host prefab, rooms, `red_line`.
@@ -33,8 +32,7 @@ tools\cli grid place <slug> --cell cXrY --span WxH     # fenced yard + claim fil
 2. **POLISH 1 (C to B).** A light in every room, the facade lit at night, walls dressed, every surface stocked or used,
    signage. Look again.
 3. **POLISH 2 (B to A).** Lived-in detail, clutter with a story, night mood. Fix whatever the pictures show floating,
-   clipping, empty or white. `tools\cli building check <slug>` (offline, every pass) and `tools\cli audit placement --grid --strict`
-   (in the world, once per pass) clean.
+   clipping, empty or white. `tools\cli audit placement --grid --strict` clean.
 ```
 tools\cli look grid:<slug> --close 0 [--hour 22]
 tools\cli look grid:<slug> --interior x,y,z --radius 5 --close 0 [--hour 22]   # world space, room centre on its floor
@@ -43,13 +41,12 @@ tools\cli evidence <issue> before|after grid-<slug>|<png> [--name n]            
 `look` writes `tmp\look\grid-<slug>` (exterior) and `grid-<slug>-interior`, which the next room overwrites: copy each
 room's folder (town-hall `looks.mjs --tag pass1 --run` does) or pass the PNG path. Pass N's after is pass N+1's before. Past about 2 h, ship BUILD and POLISH 1 and file POLISH 2.
 
-## Props stand on something (heights are snapped, never typed)
-A typed y floated phones and lamps over desks (maintainer, 2026-11-17). A generator gives each prop a hint y and calls
-`snapItems(items, { fixed })` from `tools/buildings/pipeline/surface.mjs`: `{ on: "<id>" }` stands it on that row, otherwise it
-drops onto the top under it. Gun-store `decor.mjs` is the model; the detail is in `docs/building-pipeline/README.md`.
-**`toolsi building check <slug>` is required** (about 1 s, offline): every small prop within 2 cm of the top under it, a floor or
-the ground. `wt ship` runs it for a PR touching `tools/buildings/<slug>/` or the pack's `Prefabs/Buildings/<Dir>/` and refuses
-while it fails. No generator: `building check <slug> --fix`. Keep `audit placement --grid --strict` as the in-world check per pass.
+## Fitting a vault room (`bank_room` safe type)
+The bank safe is a room in the building, not the standalone `LF_BankVault.et` (the reserve vault).
+- Doorway: `{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et` (origin = the front's centre, door hinges 1.271 m
+  to its right). The layer entity name is the vault id: unique per door. Bag inside: copy `Roadmap_Bank_Bag`, `m_sId` = that id.
+- Do not type the numbers on the placement: `bank_room` supplies them (an attribute at its class default reads as unset).
+  Shop safe: `{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et`. Tiers: `docs/features/crime-police.md`.
 
 ## Performance (docs/architecture/performance.md covers script cost; `test --tier perf` once if you touch script)
 Report in the PR, per pass: dynamic lights, shadow casters, decorative entities. The limit is in your brief. Short-range

@@ -63,6 +63,27 @@
   `{363A616E6C64BB7F}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`.
   That building is capture-only and is not placed in the debug row.
 
+### Safe types — `Feature/Crime/LF_SafeType.c`
+- Three safe tiers are data, not three robbery systems. `Configs/Crime/LF_SafeTypes.conf` holds one `LF_SafeTypeRow` per tier and a pack overlays it through its mission header (`LF_SafeTypes_Everon1989.conf`; add, replace, patch or remove a row by id, `LF_ConfigOverlay`). A vault or heist component names a row with `m_sSafeType`; `LF_BankVaultComponent` builds an `LF_SafeTuning` from its own attributes and `LF_SafeTypes.Apply` lets the row fill every value still at its class default. A value the prefab or layer sets to something else wins. A value set equal to the class default reads as "not set", so to pin such a value on a typed safe, change it by at least one step. An empty `m_sSafeType` is the old behaviour. An unknown id logs `[LFDebug:SafeTypes]` an error and the safe keeps its own numbers.
+- The robbery itself is unchanged: `LF_Bank.Rob`, `LF_Breach.Arm`, `LF_VaultDrill`, the fence tools, the alarm and the wanted report all run as before; only where the numbers come from is new.
+
+| Tier | `store_box` | `bank_room` | `reserve_vault` |
+|---|---|---|---|
+| In the world | small box safe in a shop (`LF_SafeBox.et`, the vanilla `Safe_01` mesh) | a vault room fitted into a bank (`LF_BankVault_RoomDoor.et`) | the big standalone vault (`LF_BankVault.et` and its kit); the later reserve building |
+| Haul | 1 bag x 150 = 150 | 1 bag x 500 = 500 | 4 bags x 1000 = 4000 |
+| Tool | none | drill or charge | drill or charge |
+| Timer | 10 s fuse | opens at once (drill: 30 s held at the door) | opens at once (drill: 90 s held at the door) |
+| Jam chance | 0 | 0 | 0.25 |
+| Police on duty needed | 0 | 0 | 2 |
+| Cooldown | 60 s | 60 s | 600 s |
+| Alarm | `store` | `bank` | `bank`, loud |
+| Action name | "Crack the box safe" | "Rob the bank" | "Break into the reserve depot" |
+
+- `store_box` matches the placed shop tills: they ship with 0 police needed and 150 cash a haul (`LF_FuelTill_Attended.et`). `LF_RobAction`'s own code default is 2 police, which every placed till overrides to 0, so the tier follows the placed value. With no tool it opens after the fuse. `m_fDrillSeconds` is 10 only because the setter needs a positive value; no drill is accepted. The Everon pack patches the haul to 120 (1989 till takings).
+- `bank_room` is today's bank: the numbers `LF_BankVault.et` sets (1 bag, 500, 60 s, 0 police, no fuse, drill or charge, bank alarm, no jam, 30 s drill).
+- `reserve_vault` is the big vault for a later "Federal Reserve" building (docs only; in-world text says "reserve depot"). The existing `LF_BankVault.et` prefab keeps its GUID, path and its own explicit numbers and sets no type, because it is the playtest town's bank today; a building that uses it as the reserve vault sets `m_sSafeType "reserve_vault"` on its placement and drops the explicit numbers.
+- Test `crime/safe-types` (LOGIC) and `everon/safe-types` (pack leg). Log `[LFDebug:SafeTypes]`.
+
 ### `LF_Hospital` — `Feature/Crime/LF_Hospital.c`
 - ✅ Hospital till pays `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`
   through the civilian, cooldown, and minimum-police gates and does not deposit
@@ -621,4 +642,16 @@
 - ✅ **The armory and the gun counter stamp their outlet into the serial** (#2153, Refs #2123, #1009): `LF_PoliceRanks.IssueOffer` books the issue with the offer's outlet (`LF-police_armory-0007`). A sale at a shop that is not a fence, of a catalogue weapon sold under a licence-gated offer (the gun counter; the black market and back room are unlicensed and stay unserialled), goes through `LF_FenceSerials.OnWeaponSale` and books `LF-gun_counter-0012` to the buyer; the weapon slot is searched as well as the bags, since a bought weapon lands there. A fence sale still publishes `LF_OnFenceSale`, now with `m_sOutlet`; only fence sales take that path. Test `LF_Test_OutletSerialWired` (`catalogue/outlet-serial-wired`). ⚠️ A weapon prefab with no `LF_SerialComponent` cannot carry a serial: the sale stands and `[LFDebug:Serials]` warns. The gun counter's items are still the plain vanilla prefabs, so they need serialled twins in the catalogue before a counter sale reads a serial in play.
 - ✅ **The armory's AKS-74U carries a serial** (#2152, Refs #2118): the pack's rank-2 issue offer for `rifle_aks74u` sets `issuePrefab` to `LF_ArmoryAKS74U.et` (the vanilla rifle plus `LF_SerialComponent`), so the issue is booked to the officer instead of logging "untracked". The black-market PM is not issued by the armory, so it has no twin. Test `LF_Test_EveronArmorySerials` (pack leg, `everon/armory-serials`).
 - ✅ **The gun counter's PM and M21 carry serials** (#2166, Refs #2153, #1009): the pack's `pistol_pm` and `rifle_m21` catalogue items point at `LF_CounterPM.et` and `LF_CounterM21.et` (`LF_Everon1989/Prefabs/Weapons`, the vanilla weapon plus `LF_SerialComponent`, the `LF_ArmoryM9` pattern), so a licensed counter sale is booked as `LF-gun_counter-NNNN` instead of warning "a weapon prefab needs LF_SerialComponent". The Vz.58 is no live counter offer (the weapons overlay removes it) and has no twin. A plain vanilla PM or M21 a player already carries no longer matches a catalogue row. Test `LF_Test_EveronGunCounterSerials` (pack leg, `everon/gun-counter-serials`).
+
+### Police station kit (#2201 town pipeline)
+- 🧪 **The 1989 police station as a reusable kit** (2026-11-16): the vanilla `Villa_E_2I01_Police` fitted out as a working
+  post in the GridWorld claim `police-station-kit` (c3r1, 2x2), written by `tools/buildings/police-station/fitout.mjs`
+  (building-space rows, three cumulative passes: BUILD, POLISH 1, POLISH 2) and shot by `looks.mjs`; `spec.json` is the
+  concept and the rooms, `proof.json` the shot list and the booking walkthrough. The public hall has the licence and
+  permit desk (`LF_LicenceDesk`) and the wanted board; the duty room has the duty desk (clock in), the armory locker and
+  `LF_ArmoryStore`, the evidence locker and the dispatch board; the records room has the case board; the villa's own barred
+  cell is the holding cell (`--with-cell` stages `LF_JailCell`: one placed cell per world, and GridWorld has one already).
+  Patrol cars, a spike strip and the payphone stand in the yard. Budget (maintainer): at most 6 dynamic lights
+  per building and 2 shadow casters, about 150 decor entities, static vanilla props, no per-frame scripts; `fitout.mjs --report`
+  prints the counts. Saint-Philippe placement is later, through `town fit`.
 - ✅ **Map area data** (#2233, epic #2223, test `map/areas`; node twin `tools/map/rules/areas.mjs`). `LF_MapAreas` (`Feature/Map/LF_MapAreas.c`) turns an area into an outline vertex list: a polygon is its points, a circle a 32-gon, a box its four corners turned by yaw the way `LF_ZoneArea.Contains` turns it, a polyline corridor a mitred strip. `Collect` merges every `LF_Zones` zone that has a style (SAFE and LAWLESS draw; NORMAL draws nothing) with the map-only areas (`LF_MapAreaComponent`: town line, gated, custom; a polygon local to the entity, or a circle). Styles are tokens for the `map-*` theme rows (M6). The outline, centroid, style and rule cases are one table, `Configs/Map/Rules/areas.cases.json`, that the Enforce test and the emulator's node rule both run; `LF_MapAreaCases.generated.c` carries it as script because the game cannot read a loose `.json` from an addon (`node tools/map/rules/areas.mjs --gen` rewrites it; the selftest fails when stale). `LF_Zones.GetAll()` is the one hook in the zone service. Nothing draws yet (M6).
