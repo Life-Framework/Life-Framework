@@ -391,27 +391,20 @@ class LF_Bank
 
 		array<string> tools = {};
 		vault.m_sTools.Split(",", tools, true);
-
-		// The drill in the hands first (#2384): a gadget taken into the hands leaves the storage the
-		// inventory search walks, so a held drill alone would read as no drill.
-		if (tools.Find(TOOL_DRILL) != -1)
-		{
-			toolItem = LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID);
-			if (toolItem)
-				return TOOL_DRILL;
-		}
-
 		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(robber);
 		if (!inventory)
 			return "";
 
 		if (tools.Find(TOOL_DRILL) != -1)
 		{
-			// A drill only in the pack: the gate points the robber to the hands (#LF-Bank_HoldDrill).
 			array<IEntity> drills = LF_InventoryUtils.FindItemsByPrefab(inventory, DRILL_PREFAB);
 			if (!drills.IsEmpty())
 			{
-				toolItem = drills[0];
+				// The drill in the hands is the one that works; a spare in the pack is not it.
+				toolItem = LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID);
+				if (!toolItem)
+					toolItem = drills[0];
+
 				return TOOL_DRILL;
 			}
 		}
@@ -436,37 +429,6 @@ class LF_Bank
 		}
 
 		return "";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! What the tool check sees, for a refusal log: the vault's tools, the drills the storage search
-	//! finds, the held drill, the gadget in the hands and its mode, and the fence charge.
-	static string DescribeTools(string vaultId, IEntity robber)
-	{
-		LF_BankVaultState vault = Vaults().Get(vaultId);
-		string tools = "none";
-		if (vault)
-			tools = vault.m_sTools;
-
-		int stored = -1;
-		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(robber);
-		if (inventory)
-			stored = LF_InventoryUtils.FindItemsByPrefab(inventory, DRILL_PREFAB).Count();
-
-		string hand = "none";
-		SCR_GadgetManagerComponent gadgets;
-		if (robber)
-			gadgets = SCR_GadgetManagerComponent.Cast(robber.FindComponent(SCR_GadgetManagerComponent));
-		if (gadgets && gadgets.GetHeldGadget())
-		{
-			hand = FilePath.StripPath(LF_Utils.GetPrefabName(gadgets.GetHeldGadget()));
-			LF_HandToolComponent heldTool = LF_HandTool.Of(gadgets.GetHeldGadget());
-			if (heldTool)
-				hand = string.Format("%1 id=%2 mode=%3", hand, heldTool.GetToolId(), typename.EnumToString(EGadgetMode, heldTool.GetMode()));
-		}
-
-		return string.Format("vault=%1 tools=[%2] inventory=%3 stored_drills=%4 held_drill=%5 hand=%6 charge=%7",
-			vaultId, tools, inventory != null, stored, LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID) != null, hand, LF_Breach.HasCharge(robber));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -706,7 +668,7 @@ class LF_Bank
 			tool = PickTool(vault, robber, toolItem);
 			if (tool.IsEmpty())
 			{
-				LF_Debug.Warn("Bank", string.Format("rob refused: %1 carries none of the tools [%2] for %3 (%4)", playerUid, vault.m_sTools, vaultId, DescribeTools(vaultId, robber)));
+				LF_Debug.Warn("Bank", string.Format("rob refused: %1 carries none of the tools [%2] for %3", playerUid, vault.m_sTools, vaultId));
 				LF_EventBus.Publish(LF_OnVaultBreach.Create(playerUid, vaultId, "", "", "refused"));
 				return false;
 			}

@@ -22,9 +22,6 @@ class LF_HandToolComponent : SCR_GadgetComponent
 
 	protected bool m_bPickupEquipped;
 
-	//! The character whose hands hold this tool, INVALID when it is not held (#2384).
-	protected EntityID m_Holder = EntityID.INVALID;
-
 	//------------------------------------------------------------------------------------------------
 	string GetToolId()
 	{
@@ -44,6 +41,7 @@ class LF_HandToolComponent : SCR_GadgetComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnModeChanged(EGadgetMode mode, IEntity charOwner)
 	{
+		EGadgetMode was = GetMode();
 		super.OnModeChanged(mode, charOwner);
 		// Vanilla auto-slots only types with a default quick slot; a hand tool takes the first free
 		// tool slot on the owner's machine, where the 1-0 bar lives.
@@ -58,33 +56,13 @@ class LF_HandToolComponent : SCR_GadgetComponent
 			}
 		}
 
-		// The holder is kept here: on a dedicated server a gadget in a remote player's hands is in no
-		// storage the inventory search walks, and the gadget manager and hand slot do not report it
-		// either; this mode change is the one event that reaches every machine (#2384).
-		if (mode == EGadgetMode.IN_HAND && charOwner)
-		{
-			m_Holder = charOwner.GetID();
-			LF_HandTool.NoteHeld(this);
+		if (mode == EGadgetMode.IN_HAND)
 			LF_Debug.Log(LF_HandTool.FEATURE, string.Format("%1 in hand of %2", GetToolId(), LF_Utils.GetPlayerUid(charOwner)));
-		}
-		else
+		else if (was == EGadgetMode.IN_HAND)
 		{
-			if (m_Holder != EntityID.INVALID)
-				LF_Debug.Log(LF_HandTool.FEATURE, string.Format("%1 left the hands: %2", GetToolId(), typename.EnumToString(EGadgetMode, mode)));
-
-			m_Holder = EntityID.INVALID;
-			LF_HandTool.NoteReleased(this);
+			// A fall drops what the hands hold (#2384); the tool's use actions then find no tool.
+			LF_Debug.Log(LF_HandTool.FEATURE, string.Format("%1 left the hands: %2", GetToolId(), typename.EnumToString(EGadgetMode, mode)));
 		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The character holding this tool in the hands, or null.
-	IEntity GetHolder()
-	{
-		if (m_Holder == EntityID.INVALID || GetMode() != EGadgetMode.IN_HAND || !GetGame() || !GetGame().GetWorld())
-			return null;
-
-		return GetGame().GetWorld().FindEntityByID(m_Holder);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -110,8 +88,6 @@ class LF_HandToolComponent : SCR_GadgetComponent
 	{
 		if (m_bPickupEquipped && GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(EquipOnPickup);
-
-		LF_HandTool.NoteReleased(this);
 	}
 }
 
@@ -121,32 +97,6 @@ class LF_HandToolComponent : SCR_GadgetComponent
 class LF_HandTool
 {
 	static const string FEATURE = "HandTool";
-
-	//! Hand tools held right now on this machine (weak: a deleted tool reads null).
-	protected static ref array<LF_HandToolComponent> s_aHeld = {};
-
-	//------------------------------------------------------------------------------------------------
-	static void NoteHeld(LF_HandToolComponent tool)
-	{
-		if (tool && s_aHeld.Find(tool) == -1)
-			s_aHeld.Insert(tool);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static void NoteReleased(LF_HandToolComponent tool)
-	{
-		for (int i = s_aHeld.Count() - 1; i >= 0; i--)
-		{
-			if (!s_aHeld[i] || s_aHeld[i] == tool)
-				s_aHeld.Remove(i);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static void ResetStatics()
-	{
-		s_aHeld.Clear();
-	}
 
 	//------------------------------------------------------------------------------------------------
 	static LF_HandToolComponent Of(IEntity item)
@@ -179,13 +129,6 @@ class LF_HandTool
 			LF_HandToolComponent heldTool = Of(held);
 			if (heldTool && Matches(heldTool.GetToolId(), heldTool.GetMode(), toolId))
 				return held;
-		}
-
-		// The tool's own record of its holder: what a dedicated server knows of a remote player's hands.
-		foreach (LF_HandToolComponent heldBy : s_aHeld)
-		{
-			if (heldBy && heldBy.GetHolder() == character && Matches(heldBy.GetToolId(), heldBy.GetMode(), toolId))
-				return heldBy.GetOwner();
 		}
 
 		// The manager learns of the hand at the end of the take animation; the gadget's own mode is
@@ -283,22 +226,5 @@ class LF_HandTool
 		}
 
 		return -1;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! World-end reset of LF_HandTool's held-tool list (registered at script load; Core/LF_StaticReset.c).
-class LF_HandTool_StaticResetHook : LF_StaticResetHook
-{
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_HandTool_StaticResetHook());
-
-	override string Owner()
-	{
-		return "LF_HandTool";
-	}
-
-	override void Apply()
-	{
-		LF_HandTool.ResetStatics();
 	}
 }
