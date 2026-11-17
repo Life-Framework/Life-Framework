@@ -1,3 +1,7 @@
+> **Rejected 2026-11-15, superseded.** The maintainer rejected this cinematic trailer board. The
+> dev-log video in `tools/film/devlog/storyboard.md` replaces it. This file is kept for reference only;
+> do not film from it.
+
 # Launch trailer: storyboard and script (for sign-off)
 
 Status: **paper only.** Nothing is filmed, no session is up, no music is bought and no voice is
