@@ -1,0 +1,35 @@
+// Fixture for town-fit-selftest: a source whose instances carry nested blocks (a material override) and a component the prefab lacks.
+GenericEntity Nx_Sign : "{AAAAAAAAAAAAAA30}Prefabs/Structures/Fixture/Vanilla_Plate.et" {
+ components {
+  MeshObject "{AAAAAAAAAAAAAA01}" {
+   Materials {
+    MaterialAssignClass "{0000AAAA00000001}" {
+     SourceMaterial "Plate"
+     AssignedMaterial "{FC236CB65AE3141F}Assets/Fixture/Red.emat"
+    }
+   }
+  }
+ }
+ coords 10 1 10
+}
+GenericEntity Nx_Alarm : "{AAAAAAAAAAAAAA10}Prefabs/Structures/Fixture/Vanilla_Box.et" {
+ components {
+  LF_AlarmMountComponent "{BBBBBBBBBBBBBB02}" {
+   m_fReach 7
+  }
+ }
+ coords 11 1 10
+}
+GenericEntity Nx_Vanilla : "{AAAAAAAAAAAAAA20}Prefabs/Structures/Fixture/Vanilla_Sign.et" {
+ components {
+  MeshObject "{EEEEEEEEEEEEEE05}" {
+   Materials {
+    MaterialAssignClass "{0000AAAA00000002}" {
+     SourceMaterial "Face"
+     AssignedMaterial "{FC236CB65AE3141F}Assets/Fixture/Blue.emat"
+    }
+   }
+  }
+ }
+ coords 12 1 10
+}
