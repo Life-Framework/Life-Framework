@@ -1,0 +1,17 @@
+{
+ "ok": false,
+ "errors": [
+  "slot shop: no claim",
+  "slot board: no layer"
+ ],
+ "partial": {
+  "ok": true,
+  "errors": [],
+  "notes": [
+   "not fitted yet: shop, board"
+  ],
+  "warnings": [
+   "slot arrival: destruction is \"needs-hook\""
+  ]
+ }
+}

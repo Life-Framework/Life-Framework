@@ -1,0 +1,224 @@
+{
+  "about": "Pub and cafe: every picture the building needs, as look/from pairs in building space (tools/buildings/pipeline/scenario.mjs; the camera stands at look + from and faces look). Building space is prefab space; the street face with the pub sign is the -z wall, so the street shots stand at -z. The shell (before pass 1): the street and both signs, the taproom bar and tables, the cafe, the keg store, the kitchen, the toilets and the upstairs flat; the _night shots repeat the main ones at 22:00.",
+  "session": {
+    "profile": "full",
+    "mission": "grid"
+  },
+  "steps": [
+    {
+      "shot": "warmup",
+      "look": [
+        0,
+        3,
+        -9.1
+      ],
+      "from": [
+        -8,
+        -1.4,
+        -11
+      ],
+      "wait": 6000,
+      "why": "the first frames after a teleport draw the building before it streams in"
+    },
+    {
+      "shot": "street",
+      "look": [
+        0,
+        3,
+        -9.1
+      ],
+      "from": [
+        -8,
+        -1.4,
+        -11
+      ],
+      "why": "the street face with the pub sign (-z)"
+    },
+    {
+      "shot": "front",
+      "look": [
+        0,
+        4.5,
+        -9
+      ],
+      "from": [
+        0,
+        -2.8,
+        -24
+      ]
+    },
+    {
+      "shot": "side_sign",
+      "look": [
+        8,
+        3.2,
+        -1.4
+      ],
+      "from": [
+        10,
+        -1.4,
+        -4
+      ],
+      "why": "the second wall sign on the +x wall"
+    },
+    {
+      "shot": "taproom",
+      "look": [
+        -6,
+        1.2,
+        -4.6
+      ],
+      "from": [
+        5,
+        0.4,
+        -2.5
+      ],
+      "why": "the bar counter, taps and till from the drinking tables"
+    },
+    {
+      "shot": "taproom_tables",
+      "look": [
+        -3.5,
+        0.8,
+        -7
+      ],
+      "from": [
+        2.5,
+        0.6,
+        4
+      ],
+      "why": "the drinking tables at the street wall"
+    },
+    {
+      "shot": "cafe",
+      "look": [
+        2.5,
+        0.9,
+        -3
+      ],
+      "from": [
+        -1.2,
+        0.5,
+        4
+      ],
+      "why": "the cafe tables"
+    },
+    {
+      "shot": "keg_store",
+      "look": [
+        6.5,
+        0.8,
+        -7
+      ],
+      "from": [
+        -2,
+        0.6,
+        3.5
+      ]
+    },
+    {
+      "shot": "kitchen",
+      "look": [
+        -7,
+        1,
+        -0.5
+      ],
+      "from": [
+        3.5,
+        0.4,
+        -1.5
+      ]
+    },
+    {
+      "shot": "toilets",
+      "look": [
+        5,
+        1,
+        3.3
+      ],
+      "from": [
+        2,
+        0.4,
+        1.2
+      ]
+    },
+    {
+      "shot": "upstairs",
+      "look": [
+        -2,
+        5.2,
+        -3.5
+      ],
+      "from": [
+        3,
+        0.2,
+        3
+      ]
+    },
+    {
+      "do": {
+        "verb": "scene",
+        "args": "start street 22 Clear"
+      },
+      "wait": 4000,
+      "why": "22:00, clear weather"
+    },
+    {
+      "shot": "street_night",
+      "look": [
+        0,
+        3,
+        -9.1
+      ],
+      "from": [
+        -8,
+        -1.4,
+        -11
+      ],
+      "why": "the street face with the pub sign (-z)"
+    },
+    {
+      "shot": "taproom_night",
+      "look": [
+        -6,
+        1.2,
+        -4.6
+      ],
+      "from": [
+        5,
+        0.4,
+        -2.5
+      ],
+      "why": "the bar counter, taps and till from the drinking tables"
+    },
+    {
+      "shot": "cafe_night",
+      "look": [
+        2.5,
+        0.9,
+        -3
+      ],
+      "from": [
+        -1.2,
+        0.5,
+        4
+      ],
+      "why": "the cafe tables"
+    },
+    {
+      "shot": "upstairs_night",
+      "look": [
+        -2,
+        5.2,
+        -3.5
+      ],
+      "from": [
+        3,
+        0.2,
+        3
+      ]
+    }
+  ],
+  "checks": [],
+  "log": []
+}
