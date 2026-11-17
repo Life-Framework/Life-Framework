@@ -22,7 +22,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { applyKit, checkKit } from "./kit.mjs";
+import { applyKit, checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
 
 export const help = "fit <place> <slot> [--dry] [--no-audit] [--no-look]   apply the slot's kit into its mapped building: Place_<place>_<slot>.layer (marker + kit rows) and a claim";
@@ -74,26 +74,96 @@ export function anchorFor(building, kit) {
 function prefabFile(ref, root) {
   const m = REF_RE.exec(ref ?? "");
   if (!m) return null;
-  for (const a of ["LifeFramework", "LF_Everon1989"]) {
-    const f = join(root, "addons", a, m[2]);
+  const addons = join(root, "addons");
+  const names = existsSync(addons) ? readdirSync(addons) : [];
+  for (const a of ["LifeFramework", "LF_Everon1989", ...names]) {
+    const f = join(addons, a, m[2]);
     if (existsSync(f)) return f;
   }
   return null;
 }
 
-// The GUID a component has in a prefab or in the prefab it inherits, so a layer override reuses it (a new one would shadow it).
-export function componentGuid(ref, cls, root, hops = 6) {
+// A prefab's text: an addon file, else the game's own paks through `readGame(path)` (a vanilla prefab is not in addons/), else null.
+function prefabText(ref, root, readGame) {
+  const f = prefabFile(ref, root);
+  if (f) return readFileSync(f, "utf8");
+  const m = REF_RE.exec(ref ?? "");
+  if (!m || !readGame) return null;
+  try {
+    return readGame(m[2]) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// The GUID a component has in a prefab or in the prefab it inherits (addons, then the game's paks), so a layer override reuses
+// it (a second component of the same class would shadow it).
+export function componentGuid(ref, cls, root, hops = 6, readGame = null) {
   let cur = ref;
   for (let i = 0; i < hops && cur; i++) {
-    const f = prefabFile(cur, root);
-    if (!f) return null;
-    const text = readFileSync(f, "utf8");
+    const text = prefabText(cur, root, readGame);
+    if (text == null) return null;
     const hit = new RegExp(`^\\s*${cls}\\s+"\\{([0-9A-Fa-f]{16})\\}"`, "m").exec(text);
     if (hit) return hit[1].toUpperCase();
     const up = /^\s*\w+\s*:\s*"(\{[0-9A-Fa-f]{16}\}[^"]+)"/m.exec(text);
     cur = up ? up[1] : null;
   }
   return null;
+}
+
+// ------------------------------------------------------------------ the kit's source (nested blocks, new components)
+
+const pathOfRef = (p) => String(p ?? "").replace(REF_RE, "$2").toLowerCase();
+const compClass = (c) => c.head.split(/\s+/)[0];
+const walkEntities = (e) => [e, ...e.kids.flatMap(walkEntities)];
+const guidOfHead = (comp) => /"\{([0-9A-Fa-f]{16})\}"/.exec(comp.head)?.[1]?.toUpperCase() ?? null;
+const scalarSet = (comp) => {
+  const set = {};
+  for (const p of comp.props) {
+    const i = p.search(/\s/);
+    if (i > 0) set[p.slice(0, i)] = p.slice(i + 1).trim();
+  }
+  return set;
+};
+
+// Every entity of the files a kit was lifted from (its `source.file` and `source.also`), nested ones included.
+function sourceEntities(kit, root, cache) {
+  if (cache.has(kit)) return cache.get(kit);
+  const out = [];
+  for (const rel of [kit.source?.file, ...(kit.source?.also ?? [])]) {
+    const f = rel ? join(root, rel) : null;
+    if (!f || !existsSync(f) || !/\.(et|layer)$/.test(f)) continue;
+    try {
+      out.push(...entitiesOf(parseBlocks(readFileSync(f, "utf8"))).flatMap(walkEntities));
+    } catch {
+      // an unreadable source file is the same as no source: the caller warns
+    }
+  }
+  cache.set(kit, out);
+  return out;
+}
+
+// The component of a kit row in the kit's source: its own GUID and its nested blocks (Materials, shop items, stock lines),
+// which the kit names but does not copy. Among the source entities of the row's prefab, the one whose scalar overrides and
+// block names agree with the kit wins; a looser match still gives its GUID but no blocks.
+export function sourceComponent(kit, row, c, root, cache = new Map()) {
+  const want = pathOfRef(row.prefab);
+  const names = JSON.stringify(c.blocks ?? []);
+  const cands = [];
+  for (const e of sourceEntities(kit, root, cache)) {
+    if (pathOfRef(e.prefab) !== want) continue;
+    for (const comp of e.comps) {
+      if (compClass(comp) !== c.component) continue;
+      const set = scalarSet(comp);
+      const setOk = Object.entries(c.set ?? {}).every(([k, v]) => set[k] === v);
+      const blocksOk = JSON.stringify(comp.kids.map(compClass)) === names;
+      cands.push({ comp, exact: setOk && blocksOk, score: (setOk ? 2 : 0) + (blocksOk ? 1 : 0) });
+    }
+  }
+  cands.sort((x, y) => y.score - x.score);
+  const best = cands[0];
+  if (!best) return null;
+  return { guid: guidOfHead(best.comp), kids: best.exact ? best.comp.kids : null };
 }
 
 // ------------------------------------------------------------------ claims (origin/main, open PRs, sibling worktrees)
@@ -184,6 +254,16 @@ export function conflicts(claims, { place, slot, building, plot, shared }) {
 
 // ------------------------------------------------------------------ layer text
 
+// A parsed block back to text: its properties, then its nested blocks, one space deeper each.
+function renderBlock(b, indent) {
+  const pad = " ".repeat(indent);
+  const out = [`${pad}${b.head ? `${b.head} {` : "{"}`];
+  for (const p of b.props) out.push(`${pad} ${p}`);
+  for (const k of b.kids) out.push(...renderBlock(k, indent + 1));
+  out.push(`${pad}}`);
+  return out;
+}
+
 function entityText({ cls = "GenericEntity", name, ref, comps = [], coords, yaw }) {
   const lines = [`${cls} ${name}${ref ? ` : "${ref}"` : ""} {`];
   if (comps.length) {
@@ -191,6 +271,7 @@ function entityText({ cls = "GenericEntity", name, ref, comps = [], coords, yaw 
     for (const c of comps) {
       lines.push(`  ${c.cls} "{${c.guid}}" {`);
       for (const [k, v] of Object.entries(c.set)) lines.push(`   ${k} ${v}`);
+      for (const b of c.blocks ?? []) lines.push(...renderBlock(b, 3));
       lines.push("  }");
     }
     lines.push(" }");
@@ -251,7 +332,7 @@ export function planFit(opts, ctx = {}) {
     destruction = null; // decided below: hooked through the place marker, or needs-hook without one
   } else {
     if (!opts.buildingPrefab || !REF_RE.test(opts.buildingPrefab)) return (errors.push(`slot ${slotId} is a free plot: the purpose-built building must be resolved first (asset_search) and passed as --building-prefab {GUID}path`), { ...fail(), notes });
-    const guid = opts.destructionGuid ?? componentGuid(opts.buildingPrefab, "SCR_DestructionMultiPhaseComponent", root);
+    const guid = opts.destructionGuid ?? componentGuid(opts.buildingPrefab, "SCR_DestructionMultiPhaseComponent", root, 6, ctx.readGame);
     if (!guid) return (errors.push(`cannot find the SCR_DestructionMultiPhaseComponent guid of ${opts.buildingPrefab}; pass --destruction-guid {GUID}`), { ...fail(), notes });
     host = { x: plotE.x, y: plotE.ground ? r3((plotE.ground.min + plotE.ground.max) / 2) : plotE.y ?? 0, z: plotE.z, yaw: 0, entrances: [], footprint: null };
     destruction = { mode: "layer-override", component: "SCR_DestructionMultiPhaseComponent" };
@@ -282,18 +363,29 @@ export function planFit(opts, ctx = {}) {
     }
   }
 
+  const sourceCache = new Map();
   const srcRows = new Map(kit.rows.map((r) => [r.id, r]));
   const rowEnts = rows.map((r) => {
     const src = srcRows.get(r.id);
     const comps = [];
     for (const c of src.config ?? []) {
-      if (!Object.keys(c.set ?? {}).length) continue;
-      const guid = componentGuid(r.prefab, c.component, root);
+      const hasSet = Object.keys(c.set ?? {}).length > 0;
+      const named = (c.blocks ?? []).length > 0;
+      if (!hasSet && !named) continue;
+      // Nested blocks, and a component the prefabs do not have, come from the kit's source. An inherited GUID always wins:
+      // the layer overrides that component, it never adds a second one.
+      const fromSrc = sourceComponent(kit, src, c, root, sourceCache);
+      const guid = componentGuid(r.prefab, c.component, root, 6, ctx.readGame) ?? fromSrc?.guid ?? null;
       if (!guid) {
-        warnings.push(`row ${r.id}: no guid for ${c.component} in ${r.prefab}; its overrides were not written`);
+        warnings.push(`row ${r.id}: no guid for ${c.component} in ${r.prefab}, its parents or the kit's source; its overrides were not written`);
         continue;
       }
-      comps.push({ cls: c.component, guid, set: c.set });
+      let blocks = [];
+      if (named) {
+        if (fromSrc?.kids) blocks = fromSrc.kids;
+        else warnings.push(`row ${r.id}: ${c.component} names the blocks ${c.blocks.join(", ")} but the kit's source holds no matching component; they were not written (re-extract the kit)`);
+      }
+      comps.push({ cls: c.component, guid, set: c.set ?? {}, blocks });
     }
     return { cls: src.class && /^\w+$/.test(src.class) ? src.class : "GenericEntity", name: `Fit_${ident(place)}_${ident(slotId)}_${ident(r.id)}`, ref: r.prefab, comps, coords: r.coords, yaw: r.yaw };
   });
@@ -340,6 +432,29 @@ const readJson = (f, what) => {
   return JSON.parse(readFileSync(f, "utf8"));
 };
 
+// The game's own prefab text, for the inherited component GUIDs of a vanilla prefab; null when no game install is readable.
+async function gameReader() {
+  try {
+    const vfs = await (await import("../lib/game-prefab.mjs")).gameVfs();
+    return (rel) => (vfs.exists(rel) ? vfs.readTextFile(rel) : null);
+  } catch {
+    return null;
+  }
+}
+
+// The verify steps after a write: [name, cli args]. The audit is scoped to the slot's own layer (the playtest town's other
+// layers are not this slot's to judge); `look place:` opens the island at the slot (a plain x,z opens DebugWorld, where an
+// island slot is sky). Nothing is pinned to a machine: the pool picks one.
+export function verifySteps(place, slotId, layerName, flags = {}) {
+  const steps = [];
+  if (!flags["no-audit"]) steps.push(["audit", ["audit", "placement", "--strict", "--world", "MainWorld", "--layer", layerName, "--hard-layer", layerName]]);
+  if (!flags["no-look"]) {
+    steps.push(["look", ["look", `place:${place}/${slotId}`]]);
+    steps.push(["look-interior", ["look", `place:${place}/${slotId}`, "--interior", "auto"]]);
+  }
+  return steps;
+}
+
 export async function main(args, { root = ROOT, run } = {}) {
   const { flags, pos, bad } = parseArgs(args);
   if (flags.help) {
@@ -380,7 +495,7 @@ export async function main(args, { root = ROOT, run } = {}) {
       const kf = join(kitsDir, `${entry.kit}.json`);
       if (existsSync(kf)) kits[entry.kit] = readJson(kf, "kit");
     }
-    plan = planFit({ place, slot: slotId, dossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] }, { root, run });
+    plan = planFit({ place, slot: slotId, dossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] }, { root, run, readGame: await gameReader() });
   } catch (e) {
     console.log(`REFUSE  ${e.message}`);
     return 1;
@@ -410,17 +525,11 @@ export async function main(args, { root = ROOT, run } = {}) {
   // Verify: the placement audit on the new layer, then the pictures. Each runs on a pool machine with a Workbench.
   const steps = [];
   const cli = join(root, "tools", process.platform === "win32" ? "cli.cmd" : "cli");
-  const stepRun = (name, a) => {
+  let ok = true;
+  for (const [name, a] of verifySteps(place, slotId, plan.layerName, flags)) {
     const r = spawnSync(cli, a, { cwd: root, encoding: "utf8", shell: process.platform === "win32", timeout: 600000 });
     steps.push(`${name} ${r.status === 0 ? "ok" : "fail"}`);
-    return r.status === 0;
-  };
-  let ok = true;
-  if (!flags["no-audit"]) ok = stepRun("audit", ["audit", "placement", "--strict", "--world", "MainWorld", "--layer", plan.layerName]) && ok;
-  if (!flags["no-look"]) {
-    const at = `${plan.anchor.x},${plan.anchor.z}`;
-    ok = stepRun("look", ["look", at, "--close", "12"]) && ok;
-    ok = stepRun("look-interior", ["look", at, "--interior"]) && ok;
+    ok = r.status === 0 && ok;
   }
   console.log(`SUMMARY town-fit ${ok ? "ok" : "fail"} ${place}.${slotId}: ${shown(layerFile)}, ${shown(claimFile)}${steps.length ? `; ${steps.join(", ")}` : "; audit and look skipped"}`);
   return ok ? 0 : 1;

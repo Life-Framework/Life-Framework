@@ -414,6 +414,16 @@ StringTable {
      Target_en_us "Republic of Everon, Identity Card"
      Comment "Title of the ID card view another player holds up."
     }
+    CustomStringTableItem "{9F32BE4E1F1F7320}" {
+     Id "LF-Item_TouristMap_Description"
+     Target_en_us "A printed tourist and road map of the island. Studying it pencils every place a visitor might look for onto your own map."
+     Comment "Tourist map (#2242): the item's inventory description."
+    }
+    CustomStringTableItem "{27B0683382098CD2}" {
+     Id "LF-Item_TouristMap_Name"
+     Target_en_us "Tourist map of Everon"
+     Comment "Tourist map (#2242): the item's name in the inventory."
+    }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
      Target_en_us "Fence"

@@ -21,6 +21,10 @@ class LF_TownReachRun
 	float m_fRatio = 3;
 	int m_iTicks;
 	float m_fStraight;
+	bool m_bWaitingForNavmesh;
+	vector m_vLast;
+	float m_fTravelled;
+	float m_fStartDist;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -31,7 +35,9 @@ class LF_TownReachHarness
 	static const int TICK_MS = 500; // lf-fixed: harness poll step
 	static const int MAX_TICKS = 24; // lf-fixed: harness wait budget (12 s)
 	static const float DEFAULT_RATIO = 3; // lf-fixed: the pipeline bar (everon-world.md 3.5), not a server setting
-	static const float SNAP_HALF_M = 3;
+	static const float SNAP_HALF_M = 1.5; // lf-fixed: a probe closer than this to the navmesh counts as on it
+	static const float SNAP_HALF_Y_M = 3; // lf-fixed: ground height tolerance
+	static const float MIN_WALK_M = 3; // lf-fixed: a walker that moved less than this found no path
 
 	protected static ref LF_TownReachRun s_Run;
 
@@ -58,6 +64,12 @@ class LF_TownReachHarness
 			return false;
 
 		return LF_Places.FindOrigin(parts[0], parts[1], point);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool OutsideBounds(vector point, vector mins, vector maxs)
+	{
+		return point[0] < mins[0] || point[0] > maxs[0] || point[2] < mins[2] || point[2] > maxs[2];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -89,6 +101,20 @@ class LF_TownReachHarness
 		if (run.m_fRatio <= 1)
 			run.m_fRatio = DEFAULT_RATIO;
 
+		// A point outside the world has no navmesh tile to wait for; refuse it here (the proof's off-map control).
+		BaseWorld world = GetGame().GetWorld();
+		if (world)
+		{
+			vector mins;
+			vector maxs;
+			world.GetBoundBox(mins, maxs);
+			if (OutsideBounds(run.m_vFrom, mins, maxs))
+				return "noreach from " + run.m_vFrom + " is off the navmesh (outside the world bounds)";
+
+			if (OutsideBounds(run.m_vTo, mins, maxs))
+				return "noreach to " + run.m_vTo + " is off the navmesh (outside the world bounds)";
+		}
+
 		run.m_fStraight = vector.DistanceXZ(run.m_vFrom, run.m_vTo);
 
 		AIGroup group = AIGroup.Cast(LF_Utils.SpawnEntityPrefab(LF_EventSceneWalk.GROUP_PREFAB, run.m_vFrom));
@@ -96,27 +122,83 @@ class LF_TownReachHarness
 			return "refused: the AI group did not spawn";
 
 		run.m_Group = group.GetID();
-		// Both ends must be on the navmesh: a point inside a closed building has no navmesh under it.
-		AIPathfindingComponent pathfinding = AIPathfindingComponent.Cast(group.FindComponent(AIPathfindingComponent));
-		if (!pathfinding)
+		if (!AIPathfindingComponent.Cast(group.FindComponent(AIPathfindingComponent)))
 		{
 			Cleanup(run);
 			return "refused: the AI group has no pathfinding component";
 		}
 
-		vector extents = Vector(SNAP_HALF_M, SNAP_HALF_M, SNAP_HALF_M);
-		vector from;
-		vector to;
-		if (!pathfinding.GetClosestPositionOnNavmesh(run.m_vFrom, extents, from))
+		// The island's soldier navmesh streams in by tile: a point far from every player and AI has no tile loaded yet,
+		// which reads as "off the navmesh". Ask for both tiles, then poll for them (Tick, BeginWalk).
+		aiWorld.RequestNavmeshLoad(run.m_vFrom);
+		aiWorld.RequestNavmeshLoad(run.m_vTo);
+		run.m_bWaitingForNavmesh = true;
+		s_Run = run;
+		GetGame().GetCallqueue().CallLater(Tick, TICK_MS, true);
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A run ends before the walk: the verdict goes to the asker and the run's entities go.
+	protected static void Abort(notnull LF_TownReachRun run, string line)
+	{
+		// s_Run holds the only strong reference: keep the run alive until the answer is sent.
+		LF_TownReachRun keep = run;
+		s_Run = null;
+		GetGame().GetCallqueue().Remove(Tick);
+		Cleanup(keep);
+		Answer(keep, false, line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One poll of the navmesh wait: both ends snap to the navmesh, then the walker starts; an end whose tile is loaded and
+	//! still does not snap is off the navmesh at once (a closed building); an end whose tile never loads fails at the budget.
+	protected static void BeginWalk(notnull LF_TownReachRun run)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		IEntity group = null;
+		if (world)
+			group = world.FindEntityByID(run.m_Group);
+
+		AIPathfindingComponent pathfinding = null;
+		if (group)
+			pathfinding = AIPathfindingComponent.Cast(group.FindComponent(AIPathfindingComponent));
+
+		if (!pathfinding)
 		{
-			Cleanup(run);
-			return Verdict(false, run, "from " + run.m_vFrom + " is off the navmesh (inside a closed building or open sea)");
+			Abort(run, "refused: the AI group is gone");
+			return;
 		}
 
-		if (!pathfinding.GetClosestPositionOnNavmesh(run.m_vTo, extents, to))
+		vector extents = Vector(SNAP_HALF_M, SNAP_HALF_Y_M, SNAP_HALF_M);
+		vector from;
+		vector to;
+		bool fromOk = pathfinding.GetClosestPositionOnNavmesh(run.m_vFrom, extents, from);
+		bool toOk = pathfinding.GetClosestPositionOnNavmesh(run.m_vTo, extents, to);
+		if (!fromOk || !toOk)
 		{
-			Cleanup(run);
-			return Verdict(false, run, "to " + run.m_vTo + " is off the navmesh (inside a closed building or open sea)");
+			vector bad = run.m_vFrom;
+			string which = "from ";
+			if (fromOk)
+			{
+				bad = run.m_vTo;
+				which = "to ";
+			}
+
+			NavmeshWorldComponent mesh = pathfinding.GetNavmeshComponent();
+			bool tileLoaded;
+			if (mesh)
+				tileLoaded = mesh.IsTileLoaded(bad);
+
+			if (!tileLoaded && run.m_iTicks < MAX_TICKS)
+				return;
+
+			string why = "the navmesh tile did not load in time";
+			if (tileLoaded)
+				why = "the tile is loaded, inside a closed building or open sea";
+
+			Abort(run, "noreach " + which + bad + " is off the navmesh (" + why + ")");
+			return;
 		}
 
 		IEntity person = LF_Utils.SpawnEntityPrefab(WALKER_PREFAB, from);
@@ -126,56 +208,93 @@ class LF_TownReachHarness
 			if (person)
 				SCR_EntityHelper.DeleteEntityAndChildren(person);
 
-			Cleanup(run);
-			return "refused: the walker or the waypoint did not spawn";
+			Abort(run, "refused: the walker or the waypoint did not spawn");
+			return;
 		}
 
 		run.m_Person = person.GetID();
 		run.m_Waypoint = waypoint.GetID();
 		waypoint.SetCompletionRadius(LF_EventSceneWalk.ARRIVE_M);
 		AIControlComponent control = AIControlComponent.Cast(person.FindComponent(AIControlComponent));
-		if (!control || !control.GetControlAIAgent())
+		AIGroup aiGroup = AIGroup.Cast(group);
+		if (!control || !control.GetControlAIAgent() || !aiGroup)
 		{
-			Cleanup(run);
-			return "refused: the walker has no AI agent";
+			Abort(run, "refused: the walker has no AI agent");
+			return;
 		}
 
 		control.ActivateAI();
-		group.AddAgent(control.GetControlAIAgent());
-		group.AddWaypoint(waypoint);
+		aiGroup.AddAgent(control.GetControlAIAgent());
+		aiGroup.AddWaypoint(waypoint);
 
-		s_Run = run;
-		GetGame().GetCallqueue().CallLater(Tick, TICK_MS, true);
+		run.m_bWaitingForNavmesh = false;
+		run.m_iTicks = 0;
+		run.m_vLast = from;
+		run.m_fTravelled = 0;
+		run.m_fStartDist = vector.DistanceXZ(from, to);
 		LF_Debug.Info(FEATURE, string.Format("townreach started: %1 to %2, %3 m straight, ratio %4", from, to, run.m_fStraight, run.m_fRatio));
-		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Sum of the legs of the path the group's movement holds now; -1 when it holds none.
+	//! Sum of the legs of the path one entity's movement component holds now; -1 when it holds none.
+	protected static float PathLengthOf(IEntity entity, out int count)
+	{
+		count = 0;
+		if (!entity)
+			return -1;
+
+		AIBaseMovementComponent movement = AIBaseMovementComponent.Cast(entity.FindComponent(AIBaseMovementComponent));
+		if (!movement)
+			return -1;
+
+		array<vector> points = {};
+		movement.GetCurrentPath(points);
+		count = points.Count();
+		if (count < 2)
+			return -1;
+
+		float length = 0;
+		for (int i = 1; i < count; i++)
+			length += vector.Distance(points[i - 1], points[i]);
+
+		return length;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The path the run's walker holds now, from the walker's own agent first, then its group; -1 when neither holds one.
+	//! Every few ticks it logs what each held, so a "no path" verdict says which component was empty.
 	protected static float PathLength(notnull LF_TownReachRun run)
 	{
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
 			return -1;
 
-		IEntity group = world.FindEntityByID(run.m_Group);
-		if (!group)
-			return -1;
+		IEntity person = world.FindEntityByID(run.m_Person);
+		IEntity agent;
+		if (person)
+		{
+			AIControlComponent control = AIControlComponent.Cast(person.FindComponent(AIControlComponent));
+			if (control)
+				agent = control.GetControlAIAgent();
+		}
 
-		AIBaseMovementComponent movement = AIBaseMovementComponent.Cast(group.FindComponent(AIBaseMovementComponent));
-		if (!movement)
-			return -1;
+		int agentPoints;
+		int groupPoints;
+		float agentLength = PathLengthOf(agent, agentPoints);
+		float groupLength = PathLengthOf(world.FindEntityByID(run.m_Group), groupPoints);
+		if (run.m_iTicks % 6 == 0)
+		{
+			float toTarget = -1;
+			if (person)
+				toTarget = vector.DistanceXZ(person.GetOrigin(), run.m_vTo);
 
-		array<vector> points = {};
-		movement.GetCurrentPath(points);
-		if (points.Count() < 2)
-			return -1;
+			LF_Debug.Info(FEATURE, string.Format("townreach tick %1: agent %2 (%3 pts), group %4 (%5 pts), walker %6 m from the target", run.m_iTicks, agent != null, agentPoints, groupLength, groupPoints, toTarget));
+		}
 
-		float length = 0;
-		for (int i = 1; i < points.Count(); i++)
-			length += vector.Distance(points[i - 1], points[i]);
+		if (agentLength >= 0)
+			return agentLength;
 
-		return length;
+		return groupLength;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -188,20 +307,57 @@ class LF_TownReachHarness
 		}
 
 		s_Run.m_iTicks++;
-		float length = PathLength(s_Run);
-		if (length < 0 && s_Run.m_iTicks < MAX_TICKS)
+		if (s_Run.m_bWaitingForNavmesh)
+		{
+			BeginWalk(s_Run);
+			return;
+		}
+
+		// The AI does not hold its path where a script can read it after the first moments (GetCurrentPath came back empty
+		// on a walker that was making steady progress), so the walk itself is the proof: sample the walker, and compare the
+		// distance it walked with the distance it closed.
+		float held = PathLength(s_Run);
+		BaseWorld world = GetGame().GetWorld();
+		IEntity person;
+		if (world)
+			person = world.FindEntityByID(s_Run.m_Person);
+
+		float toTarget = s_Run.m_fStraight;
+		if (person)
+		{
+			vector pos = person.GetOrigin();
+			s_Run.m_fTravelled += vector.DistanceXZ(pos, s_Run.m_vLast);
+			s_Run.m_vLast = pos;
+			toTarget = vector.DistanceXZ(pos, s_Run.m_vTo);
+		}
+
+		bool arrived = person && toTarget <= LF_EventSceneWalk.ARRIVE_M;
+		if (!arrived && s_Run.m_iTicks < MAX_TICKS)
 			return;
 
+		float seconds = s_Run.m_iTicks * TICK_MS / 1000;
+		float closed = s_Run.m_fStartDist - toTarget;
+		float travelled = s_Run.m_fTravelled;
 		string detail;
 		bool pass = false;
-		if (length < 0)
-			detail = string.Format("no path after %1 s (%2 m straight)", s_Run.m_iTicks * TICK_MS / 1000, s_Run.m_fStraight);
-		else if (length > s_Run.m_fRatio * Math.Max(s_Run.m_fStraight, 1))
-			detail = string.Format("path %1 m is over %2 times the %3 m straight line", length, s_Run.m_fRatio, s_Run.m_fStraight);
+		if (arrived)
+		{
+			if (travelled > s_Run.m_fRatio * Math.Max(s_Run.m_fStraight, 1))
+				detail = string.Format("arrived, but the walk of %1 m is over %2 times the %3 m straight line", travelled, s_Run.m_fRatio, s_Run.m_fStraight);
+			else
+			{
+				pass = true;
+				detail = string.Format("arrived: walked %1 m, straight %2 m", travelled, s_Run.m_fStraight);
+			}
+		}
+		else if (travelled < MIN_WALK_M)
+			detail = string.Format("no path: the walker moved %1 m in %2 s (%3 m straight)", travelled, seconds, s_Run.m_fStraight);
+		else if (closed <= 0 || travelled > s_Run.m_fRatio * closed)
+			detail = string.Format("the walker detours: walked %1 m and closed %2 m of the %3 m straight line in %4 s (over %5 times)", travelled, closed, s_Run.m_fStraight, seconds, s_Run.m_fRatio);
 		else
 		{
 			pass = true;
-			detail = string.Format("path %1 m, straight %2 m", length, s_Run.m_fStraight);
+			detail = string.Format("path found: the walker closed %1 m of the %2 m straight line in %3 s, %4 m walked (held path %5 m)", closed, s_Run.m_fStraight, seconds, travelled, held);
 		}
 
 		LF_TownReachRun run = s_Run;
