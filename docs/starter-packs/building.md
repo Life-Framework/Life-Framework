@@ -41,6 +41,13 @@ tools\cli evidence <issue> before|after grid-<slug>|<png> [--name n]            
 `look` writes `tmp\look\grid-<slug>` (exterior) and `grid-<slug>-interior`, which the next room overwrites: copy each
 room's folder (town-hall `looks.mjs --tag pass1 --run` does) or pass the PNG path. Pass N's after is pass N+1's before. Past about 2 h, ship BUILD and POLISH 1 and file POLISH 2.
 
+## Fitting a vault room (`bank_room` safe type)
+The bank safe is a room in the building, not the standalone `LF_BankVault.et` (the reserve vault).
+- Doorway: `{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et` (origin = the front's centre, door hinges 1.271 m
+  to its right). The layer entity name is the vault id: unique per door. Bag inside: copy `Roadmap_Bank_Bag`, `m_sId` = that id.
+- Do not type the numbers on the placement: `bank_room` supplies them (an attribute at its class default reads as unset).
+  Shop safe: `{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et`. Tiers: `docs/features/crime-police.md`.
+
 ## Performance (docs/architecture/performance.md covers script cost; `test --tier perf` once if you touch script)
 Report in the PR, per pass: dynamic lights, shadow casters, decorative entities. The limit is in your brief. Short-range
 lights with no shadow, emissive lamp covers, a light per room and never per prop, static props with LODs, no physics on

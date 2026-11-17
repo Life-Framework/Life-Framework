@@ -346,6 +346,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapKnownPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_MapPlacesLayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPois(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapShares(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapWaypoint(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MedicDutySwap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MedicDutyDesk(), LF_TestTier.WORLD);
@@ -445,7 +446,6 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Prefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PrefabSlots(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PrefabSlotsSwapSpawn(), LF_TestTier.WORLD);
-		manager.Register(new LF_Test_PricedSignProvider(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_ProgressionRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ProgressionOldSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_QuantityStack(), LF_TestTier.WORLD);
@@ -533,6 +533,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RobustnessWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roles(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RolesWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SafeTypes(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SafeZone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SamePrefab(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SaveAliases(), LF_TestTier.WORLD);
