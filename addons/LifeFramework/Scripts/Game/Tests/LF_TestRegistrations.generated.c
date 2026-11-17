@@ -474,6 +474,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PerfLife128(), LF_TestTier.PERF);
 		manager.Register(new LF_Test_PerfMap(), LF_TestTier.PERF);
 		manager.Register(new LF_Test_PeriodCars(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PersistenceKeepStash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PersistLastPosition(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PersistOwnersStaticReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PersistStoreStaticReset(), LF_TestTier.WORLD);
