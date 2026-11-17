@@ -559,6 +559,31 @@ modded class SCR_InventoryStorageManagerComponent
 }
 
 //------------------------------------------------------------------------------------------------
+//! A quantity transfer or split changes a stack in place and skips HandleAccessValidation. A
+//! stack a downed body carries (a logout body has no player, so the ownership gate lets it by)
+//! follows the same search rule (#2585).
+modded class ScriptedInventoryStorageManagerComponent
+{
+	//------------------------------------------------------------------------------------------------
+	override protected bool LF_AllowsRestrictedStorage(notnull IEntity item)
+	{
+		if (!super.LF_AllowsRestrictedStorage(item))
+			return false;
+
+		IEntity holder = LF_HolderOf(item);
+		while (holder)
+		{
+			if (!LF_Downed.AllowsAccess(holder, this))
+				return false;
+
+			holder = LF_HolderOf(holder);
+		}
+
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! World-end reset of LF_Downed's statics (registered at script load; Core/LF_StaticReset.c).
 class LF_Downed_StaticResetHook : LF_StaticResetHook
 {
