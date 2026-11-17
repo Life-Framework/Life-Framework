@@ -1,0 +1,89 @@
+// Fixture layer for tools/validation/map-places-selftest.mjs and `map render --world <this file>`. Not a real world:
+// one place per rule the emulator's overlay reader must get right. Kinds are the neutral ones in LF_MapPois.conf
+// (and the pack's Fence). All coordinates are made up.
+GenericEntity Fix_Hospital {
+ components {
+  LF_PlaceComponent "{24218E86E931E2E7}" {
+   m_sKind "HospitalSite"
+  }
+ }
+ coords 100 0 100
+}
+GenericEntity Fix_Clinic_Open {
+ components {
+  LF_PlaceComponent "{24218E86E931E2E7}" {
+   m_sKind "HospitalSite"
+   m_sId "Fix_Clinic_State1"
+   m_iLiveState 1
+  }
+ }
+ coords 100 0 140
+}
+GenericEntity Fix_Clinic_Dark {
+ components {
+  LF_PlaceComponent "{24218E86E931E2E7}" {
+   m_sKind "HospitalSite"
+   m_sId "Fix_Clinic_State2"
+   m_iLiveState 2
+  }
+ }
+ coords 100 0 180
+}
+GenericEntity Fix_Desk {
+ components {
+  LF_PlaceComponent "{24218E86E931E2E7}" {
+   m_sKind "Workplace"
+  }
+ }
+ coords 150 0 100
+}
+GenericEntity Fix_Armoury {
+ components {
+  LF_PlaceComponent "{24218E86E931E2E7}" {
+   m_sKind "PoliceArmoury"
+  }
+ }
+ coords 200 0 100
+}
+GenericEntity Fix_Fence {
+ components {
+  LF_PlaceComponent "{24218E86E931E2E7}" {
+   m_sKind "Fence"
+  }
+ }
+ coords 250 0 100
+}
+GenericEntity Fix_Van {
+ components {
+  LF_PlaceComponent "{24218E86E931E2E7}" {
+   m_sKind "CashVan"
+  }
+ }
+ coords 300 0 100
+}
+GenericEntity Fix_PoliceDesk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
+ coords 150 0 140
+}
+$grp GenericEntity : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
+ Fix_GroupDesk_A {
+  coords 150 0 180
+ }
+ Fix_GroupDesk_B {
+  coords 150 0 220
+ }
+}
+GenericEntity Fix_Parent {
+ coords 300 0 300
+ angleY 90
+ {
+  GenericEntity Fix_Child {
+   components {
+    LF_PlaceComponent "{24218E86E931E2E7}" {
+     m_sKind "HospitalSite"
+     m_sId "Fix_Nested"
+    }
+   }
+   coords 0 0 10
+  }
+ }
+}

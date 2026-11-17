@@ -1,0 +1,6 @@
+{
+ "ok": false,
+ "errors": [
+  "slot shop: the layer registers no LF_PlaceComponent of kind StoreCounter"
+ ]
+}

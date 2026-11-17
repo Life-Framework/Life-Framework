@@ -11,6 +11,7 @@ Facts about vanilla Arma Reforger Everon, for planning the real-Everon flagship 
 | [props/](props/) | the per-group prop catalogs the merged file is built from |
 | [method/](method/) | how the data was made: the in-engine dump script and the build scripts |
 | [pictures.md](pictures.md) | pictures of the building types, taken with `look` on CoreOnEveron (files in `website/public/docs-images/everon/`) |
+| [scout.md](scout.md) / `places/<slug>/` | `tools\cli scout <place>`: a dossier of any named place (buildings from this catalog, roads, junctions, free plots, terrain, pictures); `places/` holds the dossiers |
 
 ## How the data was made
 

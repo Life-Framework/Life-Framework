@@ -11,6 +11,7 @@ tools\cli look grid:<slug>              a debug-grid cell, or grid:annex-gate: o
 tools\cli look grid:all                 every claimed grid cell in one run on GridWorld, plus overview.jpg
 tools\cli look all                       every area of agent-box/areas.json in one run, about 4 min, plus overview.jpg
 tools\cli look item <prefab|slug> ...   a dropped item and its inventory camera view, no session, about 30 s
+tools\cli look <x,z[,r]> --world Worlds/CoreOnEveron/CoreOnEveron.ent [--dump m]   vanilla Everon at a coordinate; `--dump` also writes every entity, road and ground height near it as dump.txt (`tools\cli scout`, docs/everon/scout.md)
 tools\cli look serve                     one Workbench that stays up and takes every look in turn: a few seconds a look
 tools\cli call wb_preview '{"resource":"{GUID}path"}'   one resource in an open Workbench, about 2 s, PNG path returned
 tools\cli shots area <name>              pictures from a game client on a `--profile full` session (docs/agent-area-polish.md)

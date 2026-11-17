@@ -1,0 +1,27 @@
+{
+ "schema": 1,
+ "template": "town",
+ "place": "sample-square",
+ "status": "approved",
+ "slots": {
+  "arrival": {
+   "building": "b01",
+   "why": [
+    "fixture"
+   ]
+  },
+  "shop": {
+   "building": "b03",
+   "why": [
+    "fixture"
+   ]
+  },
+  "board": {
+   "building": "b02",
+   "why": [
+    "fixture"
+   ],
+   "shared": true
+  }
+ }
+}

@@ -9,6 +9,8 @@
 //          --world <path> (override the world; the proof for a failed load)  --keep (leave Workbench's raw output)  --force (skip the RAM gate)  --wait (queue behind a Workbench build)
 //          --budget s (base budget before the per-shot part: 90 fresh, 150 through the server; raise it on a slow box)
 //          --serve (use the look server, starting one) --fresh (never use it); look serve [--status|--stop [--remove]]
+//          --dump <radius> [--dumpstep m] (tools\cli scout: besides the pictures, every entity within radius of each area as
+//          dump.txt beside its shots, plus the ground heights on a grid of step m, default 5; tools/scout/dump.mjs reads it)
 //          --interior x,y,z (one area: shoot from INSIDE a building; x,y,z is the room's centre on the floor, --radius the
 //          room's reach, default 6): four eye-level views from the room's sides, no oblique or top, close-ups of that floor only
 //
@@ -57,7 +59,7 @@ export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 export function parseArgs(argv) {
   const flags = {};
   const pos = [];
-  const valued = new Set(["world", "interior", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget", "machine"]);
+  const valued = new Set(["world", "interior", "dump", "dumpstep", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget", "machine"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith("--")) pos.push(a);
@@ -96,11 +98,12 @@ export function resolveArea(arg, areas, radius, { root = ROOT } = {}) {
   }
   const hit = areas.find((a) => a.name === arg);
   if (hit) return { ...hit, radius: radius ?? hit.radius };
-  const m = /^(-?\d+(?:\.\d+)?)[, ](-?\d+(?:\.\d+)?)$/.exec(String(arg));
-  if (!m) throw new Error(`unknown area "${arg}". Known: ${[...new Set(areas.map((a) => a.name))].join(", ")}; or pass x,z`);
+  // x,z, or x,z,r for a radius of its own (tools\cli scout asks one run for several places of different sizes).
+  const m = /^(-?\d+(?:\.\d+)?)[, ](-?\d+(?:\.\d+)?)(?:[, ](\d+(?:\.\d+)?))?$/.exec(String(arg));
+  if (!m) throw new Error(`unknown area "${arg}". Known: ${[...new Set(areas.map((a) => a.name))].join(", ")}; or pass x,z[,radius]`);
   const x = Number(m[1]);
   const z = Number(m[2]);
-  return { name: `xz-${Math.round(x)}-${Math.round(z)}`, x, y: 0, z, radius: radius ?? 20, front: 180 };
+  return { name: `xz-${Math.round(x)}-${Math.round(z)}`, x, y: 0, z, radius: m[3] === undefined ? radius ?? 20 : Number(m[3]), front: 180 };
 }
 
 // grid:all: a contact sheet of every claimed cell, each resolved like grid:<slug>.
@@ -217,6 +220,7 @@ export function planText(shots, areas, opts = {}) {
     `settle ${opts.settle ?? DEFAULTS.settle}`,
     `first ${opts.first ?? DEFAULTS.first}`,
     `park ${r1(minX - 150)} ${r1(minZ - 150)}`,
+    ...(opts.dump ? areas.map((a) => `dump ${safe(a.name)} ${a.x} ${a.z} ${opts.dump.radius ?? a.radius} ${opts.dump.step}`) : []),
     ...shots.map((s) => s.line),
   ];
   return lines.join("\n") + "\n";
@@ -597,7 +601,8 @@ async function freshRun(exe, profile, raw, plan, shots, opts, args, areas) {
     // Injected like the MCP handlers: Scripts/WorkbenchGame/ is git-ignored, and the copy is removed after the run.
     mkdirSync(injected, { recursive: true });
     cpSync(PLUGIN, join(injected, "LF_VisualShotsPlugin.c"));
-    const budgetS = num(args.flags.budget, BOOT_BUDGET_S) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
+    // A dump asks the editor world for every entity near each area (about 40 s on the laptop for a village), then the shots follow.
+    const budgetS = num(args.flags.budget, BOOT_BUDGET_S) + (opts.dump ? 60 * areas.length : 0) + Math.ceil(shots.length * ((opts.settle + 700) / 1000)) + Math.ceil(opts.first / 1000);
     console.log(`look: ${shots.length} shot(s) of ${areas.length} area(s), ${opts.edit ? "edit" : "play"} mode, hidden Workbench (budget ${budgetS} s)`);
     return await runWorkbench(exe, profile, budgetS, args.flags.measure === true);
   } finally {
@@ -671,7 +676,7 @@ async function run(args) {
     return 2;
   }
   const world = itemPerArea ? null : loadWorld(ROOT, worldOfAreas(areas) === GRID_WORLD ? gridLayersDir(ROOT) : undefined);
-  const opts = { world: typeof args.flags.world === "string" ? args.flags.world : undefined, edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
+  const opts = { dump: args.flags.dump === undefined ? null : { radius: num(args.flags.dump, undefined), step: num(args.flags.dumpstep, 5) }, world: typeof args.flags.world === "string" ? args.flags.world : undefined, edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
   const perArea = itemPerArea ?? areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
   for (const n of itemNotes) console.log(`look: ${n}`);
   const shots = perArea.flatMap((p) => p.shots);
@@ -810,6 +815,9 @@ async function run(args) {
     const dir = join(outRoot, safe(area.name));
     mkdirSync(dir, { recursive: true });
     for (const f of readdirSync(dir)) if (/\.(png|jpg|json)$/.test(f)) rmSync(join(dir, f), { force: true });
+    // tools\cli scout: the plugin's entity rows for this area stay beside its pictures.
+    const dumpRaw = join(raw, `dump-${safe(area.name)}.txt`);
+    if (opts.dump && existsSync(dumpRaw)) renameSync(dumpRaw, join(dir, "dump.txt"));
     const rows = [];
     for (const shot of list) {
       const st = status.shots[shot.name] ?? null;
