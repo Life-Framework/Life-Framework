@@ -97,6 +97,7 @@ second one failed with `lock 'wt' is held`. Now:
   off), `LF_WT_WARM_MIN_FREE_GB`, `LF_WT_WARM_KICK=0` (no background filler).
   `tools\cli wt warm` shows the pool, `wt warm fill` fills it in the foreground,
   `wt warm drain` removes the ready trees, `wt new <slug> --no-warm` forces a fresh one.
+- **Where worktrees go.** `wt new` and the warm pool put `Life-Framework-ws-<slug>` and `Life-Framework-warm-<id>` in the parent of the main checkout, unless `LF_WT_ROOT` (env) or `lf.local.json` `"wt": { "root": "D:/LF/worktrees" }` names another folder (made if missing; the free-disk floors read that drive). Worktrees already elsewhere stay, are listed by `wt list`/`lead` and found by slug; ports, locks and the registry do not depend on the folder. Proof: `tools/validation/wt-root-selftest.mjs`.
 - Proof: `tools/validation/wt-warm-selftest.mjs` (fixture repo: fill, stale claim,
   fresh fallback, junction refusal, prune, drain).
 
@@ -377,6 +378,7 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   tried first while it has RAM room (the placement tool's probe uses it; a short job
   where a sync costs more than the run); `LF_TESTBOX_AUTO=0` makes the
   default `--local`.
+- **Run folders on a second drive.** A pool machine's `runRoot` (`"runRoot": "D:/LF/runs"`, ssh machines) is where its run and lane worktrees (`Life-Framework-rt-*`, `Life-Framework-lane-*`, about 1.5 GB each) are made and cleaned; unset, they sit beside its clone. A run folder is a worktree of the clone, so the folder can live on another drive.
 - **Machines.** `tools/pool.json` lists them: `name`, `via` (`local` or
   `ssh`), `host` (ssh alias), `root` (the remote main clone), `slots`, `caps`
   (`server`, `clients`, `workbench`, `rdb`: refreshes a stale

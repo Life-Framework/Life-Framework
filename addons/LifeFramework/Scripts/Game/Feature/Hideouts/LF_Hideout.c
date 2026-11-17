@@ -113,6 +113,7 @@ class LF_Hideout
 	protected static ref map<string, ref LF_HideoutState> s_mHideouts;
 	protected static string s_sLastRefusal;
 	protected static bool s_bRelockScheduled;
+	protected static ref LF_HideoutEmptiedListener s_Emptied;
 
 	//! Character id of an entity no player controls (a test fixture). A player always resolves
 	//! through the account, never through this map.
@@ -127,6 +128,10 @@ class LF_Hideout
 		s_sLastRefusal = "";
 		s_mBoundCharacters = null;
 		s_mHideouts = null;
+		if (s_Emptied)
+			LF_EventBus.Unsubscribe(LF_OnOrganizationEmptied, s_Emptied);
+
+		s_Emptied = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -299,7 +304,7 @@ class LF_Hideout
 	//! Ends a lease (server): the site has no owner, locks, and loses its held ground (#751: points
 	//! are lost when the lease lapses).
 	//! \return False when the site has no lease.
-	static bool Release(string hideoutId)
+	static bool Release(string hideoutId, string reason = "released")
 	{
 		if (!Server())
 			return false;
@@ -316,8 +321,45 @@ class LF_Hideout
 		state.m_bLocked = true;
 		state.ResetHeldGround();
 		PushLock(state);
-		LF_Debug.Log("Hideout", string.Format("released hideout=%1 org=%2", hideoutId, organizationId));
+		LF_Debug.Info("Hideout", string.Format("released hideout=%1 org=%2 reason=%3", hideoutId, organizationId, reason));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: an organization with no member left (LF_OnOrganizationEmptied, #2571) holds nothing:
+	//! every site it leases is released.
+	//! \return How many sites were released.
+	static int ReleaseAllOf(string organizationId, string reason)
+	{
+		if (!s_mHideouts || organizationId.IsEmpty())
+			return 0;
+
+		array<string> sites = {};
+		foreach (string hideoutId, LF_HideoutState state : s_mHideouts)
+		{
+			if (state && state.m_sOrganizationId == organizationId)
+				sites.Insert(hideoutId);
+		}
+
+		int released;
+		foreach (string site : sites)
+		{
+			if (Release(site, reason))
+				released++;
+		}
+
+		return released;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Subscribes the empty-organization release to the bus. Idempotent: the bus refuses a second
+	//! subscription of the same subscriber, and the subscriber is kept for the world's life.
+	protected static void WatchEmptiedOrganizations()
+	{
+		if (!s_Emptied)
+			s_Emptied = new LF_HideoutEmptiedListener();
+
+		LF_EventBus.Subscribe(LF_OnOrganizationEmptied, s_Emptied);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -805,8 +847,9 @@ class LF_Hideout
 		if (!lock)
 			return;
 
-		if (!state.m_sOrganizationId.IsEmpty())
-			lock.SetHouseIdentifier(state.m_sOrganizationId);
+		// An empty id on a released site makes the door read "Unowned" (LF_HideoutDoorRules.View) and
+		// matches no house (LF_HouseLockAction.GetHouse), so a former owner's id never lingers (#2571).
+		lock.SetHouseIdentifier(state.m_sOrganizationId);
 
 		LF_HideoutDoorComponent doorComponent = LF_Component<LF_HideoutDoorComponent>.Find(door);
 		if (doorComponent)
@@ -879,6 +922,8 @@ class LF_Hideout
 		if (!s_mHideouts)
 			s_mHideouts = new map<string, ref LF_HideoutState>();
 
+		WatchEmptiedOrganizations();
+
 		LF_HideoutState state = s_mHideouts.Get(hideoutId);
 		if (!state)
 		{
@@ -919,6 +964,21 @@ class LF_Hideout
 
 		Refuse("rejected: not the server");
 		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Bus subscriber (#2571): an organization that lost its last member loses its hideout lease.
+class LF_HideoutEmptiedListener : LF_EventSubscriber
+{
+	override bool Handle(notnull LF_Event busEvent)
+	{
+		LF_OnOrganizationEmptied emptied = LF_OnOrganizationEmptied.Cast(busEvent);
+		if (!emptied)
+			return false;
+
+		LF_Hideout.ReleaseAllOf(emptied.m_sOrgId, "organization emptied: " + emptied.m_sReason);
+		return true;
 	}
 }
 

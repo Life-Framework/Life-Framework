@@ -23,6 +23,7 @@
 // red-proof 2026-11-14 (run-overhead rdb): with rdbPlan ignoring staleness (the old syncToSlot) "a stale rdb is sent to a machine that refreshes its own".
 // red-proof 2026-11-14 (run-overhead lane folders), each broken alone: psCheckout without the shared clean "only a shared folder is cleaned after the checkout"; holderConfig with shared = false "remote test lanes do not run in the lane's shared folder".
 // red-proof 2026-11-14 (pool-rt-gc), each broken alone: with the rt gc sort reversed (newest idle first) "rt gc removes the wrong folders or in the wrong order: Life-Framework-rt-b,Life-Framework-rt-a,Life-Framework-rt-oldest"; with the live-lock keep rule off "rt gc removes the wrong folders or in the wrong order: ...oldest,Life-Framework-rt-locked,..." (a locked folder was chosen).
+// red-proof 2026-11-17 (#2594), against the old sharedSnapshot (30 s lock wait, empty lock file, window from the end of a take), each broken alone: "a run that asked before a snapshot finished took its own after the share window passed (N takes)"; "a lock held by a live process was removed as stale".
 // red-proof 2026-11-14 (pool-parallel-start), each broken alone: burstAdmit always refusing (strict FIFO) "a burst of 14 test runs on a box with 16 free lanes and the RAM did not all start together (1 of 14)"; without the in-flight RAM term "a burst start ignored the RAM of the starts in flight ahead of it (14 admitted, 4 fit)"; the holder gate without aheadMb "the holder's gate let a burst start overshoot the floor"; blocks() without the granted check "a ticket that already holds its lane still blocks the queue"; sharedSnapshot never reusing "six runs asked together did not share one snapshot (6 takes, 6 shas)".
 // red-proof 2026-11-14 (pool-lane-caps), each broken alone: with the old Math.min(4, ...) on session lanes back in
 // laneSetting "session lanes are capped below the port range (asked 8, got 4)"; with test lanes on 2001 + k past lane 9
@@ -383,8 +384,8 @@ try {
     process.env.LF_POOL_PROMOTE_MIN = "60";
     hold("server-test-1", { purpose: "test only" });
     const order = [];
-    const run = async (label, priority) => {
-      const slot = await pool.acquireSlot(rdir, { mode: "local", purpose: "test only", priority, waitMs: 60000 });
+    const run = async (label, priority, extra = {}) => {
+      const slot = await pool.acquireSlot(rdir, { mode: "local", purpose: "test only", priority, waitMs: 60000, ...extra });
       order.push(label);
       await new Promise((r) => setTimeout(r, 300));
       slot.release();
@@ -410,9 +411,8 @@ try {
     process.env.LF_POOL_PROMOTE_MIN = "0.02";
     hold("server-test-1", { purpose: "test only" });
     order.length = 0;
-    const pLow2 = run("low", "low");
+    const pLow2 = run("low", "low", { queuedAt: Date.now() - 10 * 60000 }); // a ticket 10 min old against a 1.2 s limit: no sleeping to age it
     await ticketsAtLeast(1);
-    await new Promise((r) => setTimeout(r, 1800)); // from a ticket that exists: the promote limit is 1.2 s
     const pNormal2 = run("normal", "normal");
     await ticketsAtLeast(2);
     rmSync(join(rLockDir, "server-test-1.lock"), { force: true });
@@ -701,6 +701,26 @@ try {
       rmSync(base, { recursive: true, force: true });
     }
   }
+  // 4b2. runRoot: a machine's run and lane folders go under its "runRoot" (a second drive), else its clone's parent;
+  // the GC scripts then find the clone by its own path, not as <parent>\Life-Framework.
+  // red-proof 2026-11-17: with runParent ignoring runRoot "runRoot is not honoured: C:/LF/Life-Framework-rt-x".
+  {
+    const base = mkdtempSync(join(tmpdir(), "lf-runroot-"));
+    try {
+      writeFileSync(join(base, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "bx", via: "ssh", host: "bx", root: "C:/LF/Life-Framework", runRoot: "D:\\LF\\" }, { name: "by", via: "ssh", host: "by", root: "C:/LF/Life-Framework" }] } }));
+      const ms = pool.loadMachines(base);
+      const bx = ms.find((m) => m.name === "bx");
+      const by = ms.find((m) => m.name === "by");
+      check(bx && by && pool.remoteRunDir(bx, "x") === "D:/LF/Life-Framework-rt-x", `runRoot is not honoured: ${bx && pool.remoteRunDir(bx, "x")}`);
+      check(pool.laneRunDir(bx, "server-test-1") === "D:/LF/Life-Framework-lane-server-test-1", "runRoot is not honoured by lane folders");
+      check(pool.remoteRunDir(by, "x") === "C:/LF/Life-Framework-rt-x", "no runRoot: run folders left the clone's parent");
+      const scan = rt.rtScanScript("D:/LF", 0, "C:/LF/Life-Framework");
+      check(/\$parent = 'D:\\LF'/.test(scan) && /\$main = 'C:\\LF\\Life-Framework'/.test(scan), "rt scan does not use the clone path beside runRoot");
+      check(/\$main = Join-Path \$parent 'Life-Framework'/.test(rt.rtRemoveScript("C:/LF", [])), "rt remove lost its default clone path");
+    } finally {
+      rmSync(base, { recursive: true, force: true });
+    }
+  }
   // 4c. remote run-folder GC (tools/lib/rt-gc.mjs): which folders, in which order, busy ones kept.
   {
     const base0 = mkdtempSync(join(tmpdir(), "lf-rtgc-"));
@@ -848,7 +868,7 @@ try {
   // A pool entry whose "hostname" is this machine's is the local machine there (the box's own lanes), the PC's entry is dropped.
   writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
   const selfView = pool.loadMachines(dir);
-  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 2 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
+  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 4 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
   // Laptop view: on the box itself (hostname PC1, the committed pool.json entry) the machines are lf-testbox as local and nothing
   // else, with no TypeError ranking them; a PC (any other hostname) keeps local plus an ssh lf-testbox.
   writeFileSync(join(dir, "lf.local.json"), "{}");
@@ -1052,6 +1072,24 @@ const dir0 = () => {
     const old = new Date(Date.now() - 120000);
     utimesSync(join(sr, "tmp", "remote", "snapshot.lock"), old, old);
     check(pool.sharedSnapshot(sr, { take: fake, now: () => clock + 120000, lockWaitMs: 3000 }).n === 3, "a snapshot lock left by a dead process blocks the next snapshot");
+    // A lock whose holder is alive is a slow take, not a stale lock: it is waited for however old it is (up to
+    // ten minutes), and the waiter does not take the lock from it. The lock file carries the holder's pid.
+    const lockFile = join(sr, "tmp", "remote", "snapshot.lock");
+    writeFileSync(lockFile, String(process.pid));
+    utimesSync(lockFile, old, old);
+    const beforeLive = takes;
+    pool.sharedSnapshot(sr, { take: fake, lockWaitMs: 1500 }); // real clock: a frozen one never reaches its wait limit
+    check(existsSync(lockFile) && readFileSync(lockFile, "utf8") === String(process.pid), "a lock held by a live process was removed as stale");
+    check(takes === beforeLive + 1, "a waiter past its wait took no private snapshot (" + (takes - beforeLive) + " takes)");
+    rmSync(lockFile, { force: true });
+    // A snapshot that finished after the run asked is the run's own, however old it is by the time the run
+    // gets the lock (the end-of-take window made the 5th and 6th run of a burst take another).
+    const base = clock + 300000;
+    pool.sharedSnapshot(sr, { take: fake, now: () => base + 5 });
+    const beforeAsk = takes;
+    let asks = 0;
+    pool.sharedSnapshot(sr, { take: fake, now: () => (asks++ === 0 ? base : base + 60000) });
+    check(takes === beforeAsk, "a run that asked before a snapshot finished took its own after the share window passed (" + (takes - beforeAsk) + " takes)");
     // Six processes at once on a real worktree with a change: one take, one sha for all.
     rmSync(join(sr, "tmp", "remote", "snapshot-shared.json"), { force: true });
     writeFileSync(join(sr, "b.txt"), "b");
