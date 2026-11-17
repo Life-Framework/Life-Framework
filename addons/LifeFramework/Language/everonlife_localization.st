@@ -5384,6 +5384,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Trabajo"
      Comment "Hint title for work results"
     }
+    CustomStringTableItem "{280FC8E5DDE60C95}" {
+     Id "LF-Keybind_OpenEmote"
+     Target_en_us "Open emote menu"
+     Comment "Key binding menu label: hold to open the emote radial."
+    }
+    CustomStringTableItem "{15BA4CF2BECFEB7F}" {
+     Id "LF-Keybind_SirenDouble"
+     Target_en_us "Cycle siren mode (alternate)"
+     Comment "Key binding menu label: cycle the vehicle siren modes (double click)."
+    }
+    CustomStringTableItem "{EBE5A15AF131A672}" {
+     Id "LF-Keybind_SirenSingle"
+     Target_en_us "Cycle siren mode"
+     Comment "Key binding menu label: cycle the vehicle siren modes (single click)."
+    }
     CustomStringTableItem "{C8B8911B5F3A014D}" {
      Id "LF-Keybind_VehicleLock"
      Target_en_us "Lock or unlock vehicle"
