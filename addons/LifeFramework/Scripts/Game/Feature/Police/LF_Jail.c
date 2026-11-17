@@ -945,7 +945,7 @@ class LF_Jail
 		if (!account)
 			return;
 
-		string name; // never the uid: the slip replicates it to every client (#2416); empty prints "unknown"
+		string name = playerUid;
 		LF_PlayerCharacter character = account.GetActiveCharacter();
 		if (character)
 			name = character.GetFirstName() + " " + character.GetLastName();

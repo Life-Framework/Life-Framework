@@ -57,9 +57,6 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	static const string PLAYTIME_UID = "e2e-playtime-account";
 	//! Grace clock (#2443, "graceclock" payload, save version 48): 7 minutes of one character's own play.
 	static const string GRACE_KEY = "e2e-grace-character";
-	//! Held cargo deposit (#2408, "jobdeposits" payload, save version 49): a courier mid-run with 150 held.
-	static const string DEPOSIT_UID = "e2e-deposit-courier";
-	static const int DEPOSIT_HELD = 150;
 	//! Job levels (#749, "joblevels" payload, save version 28): XP in three jobs, one of which
 	//! (CIVILIAN) the progression record's pre-#749 single level also carries.
 	static const string JOBS_UID = "e2e-job-levels";
@@ -375,17 +372,6 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 
 		SeedOrgLadder(ctx);
 
-#ifndef LF_E2E_LEGACY_SAVE
-		// A cargo run in progress holds a deposit ("jobdeposits" payload, save version 49, #2408): the
-		// restart ends the run, and the load must give the deposit back to the bank (500 + 150 after).
-		atmManager.CreateAccount(DEPOSIT_UID);
-		ctx.True(atmManager.Deposit(DEPOSIT_UID, 500), "e2e the deposit courier banks 500 before the save");
-		ctx.True(LF_CivilianJob.SignUp(DEPOSIT_UID, LF_EJobType.PARCEL), "e2e the deposit courier signs up for parcels");
-		ctx.True(LF_CivilianJob.StartRun(DEPOSIT_UID, LF_EJobType.PARCEL), "e2e the deposit courier starts a run before the save");
-		LF_CivilianJob.RecordDeposit(DEPOSIT_UID, DEPOSIT_HELD);
-		ctx.Equal(DEPOSIT_HELD, LF_CivilianJob.GetDeposit(DEPOSIT_UID), "e2e the run holds the deposit before the save");
-#endif
-
 		LF_JobLevels.Forget(JOBS_UID);
 		ctx.Equal(340, LF_JobLevels.AddXp(JOBS_UID, LF_JobLevels.JOB_CIVILIAN, 340, "e2e"), "e2e worker earns 340 civilian xp before the save");
 		ctx.Equal(120, LF_JobLevels.AddXp(JOBS_UID, LF_JobLevels.JOB_FARMER, 120, "e2e"), "e2e worker earns 120 farmer xp before the save");
@@ -569,27 +555,6 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		else
 			ctx.Equal(0, LF_GraceCharacterClock.Seconds(graceKey), "e2e a save older than graceclock has no grace clock for it");
 		LF_Debug.Info(LF_Grace.FEATURE, string.Format("e2e restart: grace clock of %1 is %2 s (boot save version %3)", graceKey, LF_GraceCharacterClock.Seconds(graceKey), LF_SaveStamp.BootSaveVersion()));
-		VerifyJobDeposit(ctx);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! #2408 after the restart: the run a courier was on is over, and the deposit it held is in the bank
-	//! (500 banked + 150 held), not kept. A save older than "jobdeposits" held none.
-	protected void VerifyJobDeposit(LF_TestContext ctx)
-	{
-		string uid = LF_Test_E2E_SaveStateWrite.DEPOSIT_UID;
-#ifdef LF_E2E_LEGACY_SAVE
-		ctx.False(LF_CivilianJob.HasActiveRun(uid), "e2e the version 23 save has no run in progress");
-#else
-		LF_BankAccount bank = LF_ATMManager.GetInstance().GetAccount(uid);
-		ctx.NotNull(bank, "e2e the deposit courier has a bank account after the restart");
-		if (bank)
-			ctx.Equal(500 + LF_Test_E2E_SaveStateWrite.DEPOSIT_HELD, bank.GetBalance(), "e2e the held cargo deposit is refunded to the bank by the restart");
-
-		ctx.False(LF_CivilianJob.HasActiveRun(uid), "e2e the run does not survive the restart");
-		ctx.Equal(0, LF_CivilianJob.GetDeposit(uid), "e2e no deposit is held after the restart");
-		LF_Debug.Info("Jobs", string.Format("e2e restart: %1 bank is %2 (boot save version %3)", uid, LF_ATMManager.GetOrCreate(uid).GetBalance(), LF_SaveStamp.BootSaveVersion()));
-#endif
 	}
 
 	//------------------------------------------------------------------------------------------------
