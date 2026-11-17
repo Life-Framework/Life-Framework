@@ -130,3 +130,23 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Proof:** `placement/policy-where` (WORLD: two bound neighbouring houses, a chair-like kind refused in the neighbour's and
   allowed in the owner's or with a key; a roads-only kind refused off the road by the real probe on DebugWorld, allowed on a
   road by the pure rule; the base rule's cases). The road probe on real Everon roads is a manual step.
+
+## What placing a kind costs (#2448)
+
+- **Player sees:** a kind with a price takes it when the thing appears, never before: a refused spot costs nothing. A player
+  who carries too little is refused with "You don't have enough cash" (or the item toast) and keeps it all. Picking up a
+  refundable kind gives the price back once, to whoever paid; someone else picking it up gets nothing.
+- **Owner and side:** `LF_PlacementCost` (server). `LF_PlacementService.Confirm` and `LF_PlacementCompositions.Confirm`
+  call `Take` after every other check and a VALID probe, `Refund` when the spawn fails, and `Keep` for a refundable
+  charge; `LF_PlacementCompositions.PickUp` calls `OnPickedUp`, which forgets the charge before refunding, so a second
+  pick-up finds none. Cash moves through `LF_MoneyUtils.RemoveCash/AddCash` (reasons `placement`, `placement-refund`,
+  so `LF_OnMoneyMoved` reaches the ledger); items through `LF_InventoryUtils.RemoveAmount/AddAmount` (overflow dropped).
+  A short take is given back and refused. Nothing comes from the client: the kind and price are read on the server.
+- **Data:** the policy entry's `m_eCost` (`FREE`, `CASH`, `ITEM`), `m_iCostAmount` (price or item count; zero or less is
+  free), `m_sCostItem` (`ITEM`; never the placeable itself, refused with an error), `m_bRefundOnPickup`. Core ships every
+  kind free; a pack overrides prices in its copy of the `.conf`. Strings `#LF-Placement_NeedCash`, `_NeedItem`. Charges
+  live in memory like placed sets: a restart forgets both. A single placement (spike strip) keeps its refundable charge
+  until a pick-up path calls `LF_PlacementCost.OnPickedUp`; none does yet.
+- **Proof:** `placement/policy-cost` (WORLD: a refused proposal and an unaffordable set take nothing, a set whose spawn fails
+  is given back, a paid set takes the price once and a set on top takes nothing more, the payer's pick-up refunds once and
+  a bystander's refunds nobody).
