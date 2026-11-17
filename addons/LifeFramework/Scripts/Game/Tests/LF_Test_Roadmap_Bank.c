@@ -95,6 +95,7 @@ class LF_Test_Roadmap_Bank : LF_Test
 		LF_Bank.Advance(vaultId, 60);
 		LF_PlayerAccount police = LF_PlayerAccountManager.GetOrCreate(policeUid);
 		police.SetFaction(LF_Faction.POLICE);
+		police.SetOnDuty(true);
 		ctx.True(LF_Breach.Repair(vaultId, policeUid), "police can lock the vault again");
 		ctx.True(LF_Bank.Rob(vaultId, uid), "a breach after the cooldown refills the vault");
 		ctx.Equal(4, LF_Bank.GetSpawnedBagCount(vaultId), "the refill spawns another configured wave");
@@ -189,6 +190,7 @@ class LF_Test_Roadmap_BankWorld : LF_Test
 		account.SetFaction(LF_Faction.CIVILIAN);
 		LF_PlayerAccount police = LF_PlayerAccountManager.GetOrCreate(policeUid);
 		police.SetFaction(LF_Faction.POLICE);
+		police.SetOnDuty(true);
 		LF_BankAccount bank = LF_ATMManager.GetOrCreate(uid);
 		bank.SetBalance(0);
 

@@ -190,3 +190,12 @@ $grp SCR_DestructibleEntity : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowe
   coords 263.45 0 258.1
  }
 }
+GenericEntity Hospital_AlarmBox : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ components {
+  LF_AlarmMountComponent "{F2A6C9D14B7E3085}" {
+   m_vOffset 0 0.167 0.065
+  }
+ }
+ coords 269 2.631 258.995
+ angleY 180
+}
