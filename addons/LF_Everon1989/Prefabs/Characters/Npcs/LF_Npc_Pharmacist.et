@@ -1,0 +1,18 @@
+LF_NpcBaseEntity : "{AB73D0036F42E73E}Prefabs/Characters/Npcs/LF_Shopkeeper.et" {
+ ID "5B2E9C47A1D03F86"
+ components {
+  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{14346777961E2DDA}Prefabs/Characters/Uniforms/LF/DoctorCoat.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+   }
+  }
+ }
+}

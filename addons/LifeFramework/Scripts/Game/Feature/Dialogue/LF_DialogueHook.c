@@ -22,6 +22,14 @@ class LF_DialogueHook : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Client: the reply that ended the talk ran this hook; the scene has just closed. What the
+	//! player's own screen does next (open a shop's price list). Nothing here may change the world:
+	//! the server already ran Run, and any trade goes through its own validated RPCs.
+	void AfterScene(IEntity player, IEntity npc, string param)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The hook for a name, or null (logged): a dialogue file that names a hook nobody wrote.
 	static LF_DialogueHook Find(string name)
 	{

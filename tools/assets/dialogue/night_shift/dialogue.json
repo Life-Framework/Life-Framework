@@ -1,0 +1,51 @@
+{
+  "id": "night_shift",
+  "name": "NightShift",
+  "speaker_key": "#LF-Townsfolk_NightShift_Name",
+  "addon": "LF_Everon1989",
+  "voice": {
+    "id": "HL6h30e2Rd3SQjMZu1Wz",
+    "name": "Raspy - Convincing and Weary Narrator",
+    "public_owner_id": "8aba776a20ef1207599626c70ba4393e6aa675a1d44749709ccec0685962cd54",
+    "why": "Rémi Duval is a tired man in his thirties at the end of a night shift. Raspy is a young male voice sold as weary, low and worn. Stability 0.4 and speed 0.9 let it sag between sentences instead of narrating.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.4,
+      "similarity_boost": 0.75,
+      "style": 0.1,
+      "speed": 0.9
+    }
+  },
+  "budget_chars": 3000,
+  "hear_range_m": 10,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        { "text": "zone", "next": "zone" },
+        { "text": "move", "next": "move" },
+        { "text": "work", "next": "work" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "zone", "line": "about_zone", "options_from": "greet" },
+    { "id": "move", "line": "about_move", "options_from": "greet" },
+    { "id": "work", "line": "about_work", "options_from": "greet" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Evening. Or morning, I lose track on nights. You are one of the new families, yes? Sit if you like." },
+    "about_zone": { "text": "I worked near the Zone before they moved us. Twelve kilometres from the reactor. They told us three days. That was three years ago. I still keep my house key." },
+    "about_move": { "text": "They gave us one bus and one suitcase each. The island is quiet, and the quiet is hard at first. But nobody asks you to leave in the middle of dinner." },
+    "about_work": { "text": "If you need wages, read the town board on the square. It lists who is hiring. And the clerk's office has a bed upstairs, for the first nights. Ask the clerk." },
+    "bye": { "text": "Good night. Walk safe." }
+  },
+  "replies": {
+    "zone": "You worked near the Zone?",
+    "move": "How was the move?",
+    "work": "Is there work for me?",
+    "bye": "Goodbye."
+  }
+}

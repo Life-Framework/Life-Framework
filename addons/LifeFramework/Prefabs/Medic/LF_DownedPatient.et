@@ -42,30 +42,6 @@ SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base
      }
      Duration 4
     }
-    LF_DragAction "{3A6086A2B4F926DF}" {
-     ParentContextList {
-      "LF_ID"
-     }
-     UIInfo UIInfo "{872120ABF93F4D20}" {
-      Name "#LF-Carry_Drag"
-     }
-    }
-    LF_CarryAction "{97E3384E36C49EFD}" {
-     ParentContextList {
-      "LF_ID"
-     }
-     UIInfo UIInfo "{B5D843DBD86A0F0C}" {
-      Name "#LF-Carry_Carry"
-     }
-    }
-    LF_DropAction "{847E9A26503251CB}" {
-     ParentContextList {
-      "LF_ID"
-     }
-     UIInfo UIInfo "{13230C30689BCAC8}" {
-      Name "#LF-Carry_Drop"
-     }
-    }
     LF_LoadPatientAction "{19C520FB3103628F}" {
      ParentContextList {
       "LF_ID"

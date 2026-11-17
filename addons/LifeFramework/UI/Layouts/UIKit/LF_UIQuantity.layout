@@ -65,7 +65,7 @@ VerticalLayoutWidgetClass "{595E5AA0CAB41E1E}" {
      Text ""
      "Font Size" 18
      "Min Font Size" 18
-     "Horizontal alignment" Right
+     "Horizontal Alignment" Right
      FontProperties FontProperties "{99D596E6EE892C1B}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }

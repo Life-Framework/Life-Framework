@@ -28,8 +28,8 @@ class LF_Test_ScannerHears : LF_Test
 		if (scanner)
 		{
 			array<int> receivers = {};
-			LF_OnServiceCall police = LF_OnServiceCall.Create("caller-uid", "police", "Village payphone", "#LF-Payphone_Summary_Crime", "radio,board,pager", "96.5 0 263", receivers);
-			LF_OnServiceCall taxi = LF_OnServiceCall.Create("caller-uid", "taxi", "Village payphone", "a fare", "pager,board", "96.5 0 263", receivers);
+			LF_OnServiceCall police = LF_OnServiceCall.Create("caller-uid", "police", "Village payphone", "#LF-Payphone_Summary_Crime", "radio,board,pager", "1000 0 1000", receivers);
+			LF_OnServiceCall taxi = LF_OnServiceCall.Create("caller-uid", "taxi", "Village payphone", "a fare", "pager,board", "1000 0 1000", receivers);
 			ctx.True(LF_Scanner.Hears(police), "a police call is on the scanner");
 			ctx.False(LF_Scanner.Hears(taxi), "a taxi call has no radio frequency, so the scanner does not hear it");
 

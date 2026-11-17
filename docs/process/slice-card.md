@@ -107,7 +107,7 @@ Slice #<N>: <title>  (agent lf-builder, model sonnet, tier T2, parent #<chapter>
 
 Goal: <capability>
 Acceptance, written first: <acceptance>
-Owns only: <globs>. Shared append-only files (features.md, string tables, triage) are fine. Anything else: stop and report.
+Owns only: <globs>. Shared append-only files (docs/features/<area>.md, string tables, triage) are fine. Anything else: stop and report.
 Timebox: 45 min / 60 calls, hard. At the limit ship what passes, write tmp/handoff-slice-<N>.md, and say SPLIT with the rest as new cards; never extend.
 Machines: test.
 

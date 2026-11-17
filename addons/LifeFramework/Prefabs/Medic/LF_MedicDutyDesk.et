@@ -1,4 +1,4 @@
-GenericEntity : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
+GenericEntity : "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et" {
  ID "00F81CC40A5C0803"
  components {
   LF_WorkplaceComponent "{BB227AA77D72A6F6}" {

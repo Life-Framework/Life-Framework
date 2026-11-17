@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{304F85569D5FEC87}Configs/Map/LF_MapAreas_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,62 @@
+GenericEntity {
+ ID "688D1FA342A6A14E"
+ components {
+  MeshObject "{939FF7614CD7CBA2}" {
+   Object "{583D24495FE15DD2}Assets/Props/Industrial/Workbench_01/Workbench_01.xob"
+  }
+  RigidBody "{8BED4D8BA00150A7}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_ShopComponent "{8D2375B231877D40}" {
+   m_sShopName "#LF-Shop_Name_FenceStall"
+   m_sShopDescription "#LF-Shop_Desc_Fence"
+   m_bFence 1
+   m_sStockId "fence"
+  }
+  ActionsManagerComponent "{7C31D1B3AFBC0CA5}" {
+   ActionContexts {
+    UserActionContext "{5FF007FA674D7758}" {
+     ContextName "default"
+     Position PointInfo "{0B2E5C9D71A4F3E8}" {
+      Offset 0 0.95 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{C47A1E9B32D6F085}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{9E3B07D4A5C1F286}" {
+      Name "#LF-Shop_Browse"
+      Description "#LF-Shop_OpenDesc_Fence"
+     }
+    }
+   }
+  }
+  RplComponent "{D60F8A2E4B9C1735}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ {
+  GenericEntity : "{174E332EF84362B2}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_base.et" {
+   ID "A3F9C2E07B5D1846"
+   coords -0.45 0.9 0.05
+   angleY 12
+  }
+  GenericEntity : "{7A8A656933BAB1DD}Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et" {
+   ID "B82D6E41F0C93A57"
+   coords 0.4 0.9 -0.05
+   angleY -8
+  }
+  GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+   ID "C5170B9E2DA4F368"
+   coords 1.25 0 0.1
+   angleY 4
+  }
+ }
+}

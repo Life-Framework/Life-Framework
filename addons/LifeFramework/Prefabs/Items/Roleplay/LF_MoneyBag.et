@@ -15,14 +15,13 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
     ItemAnimationAttributes ItemAnimationAttributes "{59E108DB000CCEEB}" {
      AnimationAttachments {
       AnimationAttachmentInfo "{59E33B494D8FF442}" {
-       AnimGraph "{9028A404378C292B}Anims/Workspaces/Player/player_carry.agr"
-       AnimInstance "{7D42F1DF2B857BC5}Anims/Workspaces/Player/player_carry.asi"
-       StartNode "Player Carry"
+       AnimGraph "{7448534CC9BB5495}Assets/Items/Fuel/workspaces/Jerrycan.agr"
+       AnimInstance "{DB71459BEC12E8B1}Assets/Items/Fuel/workspaces/Jerrycan_player.asi"
        BindingName "Gadget"
       }
      }
-     HandAdditiveRotation 0 0 0
-     HandAdditiveTranslation 0 0 0
+     HandAdditiveRotation 0 90 0
+     HandAdditiveTranslation 0.03 0.12 0.05
     }
     CustomAttributes {
      CharacterModifierAttributes "{59E489793FA8F156}" {
@@ -32,8 +31,8 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
       CanBeEquippedInVehicle 0
      }
      PreviewRenderAttributes "{59E4897D1350DC3B}" {
-      CameraPreset Top
-      CameraDistanceToItem 1
+      CameraOrbitAngles -20 30 0
+      CameraDistanceToItem 0.8
      }
     }
     m_Size SLOT_2x1

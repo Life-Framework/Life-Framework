@@ -531,3 +531,20 @@ class LF_AssetAnimComponent : ScriptComponent
 		m_aAudio.Clear();
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_AssetAnimComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_AssetAnimComponent_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_AssetAnimComponent_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_AssetAnimComponent";
+	}
+
+	override void Apply()
+	{
+		LF_AssetAnimComponent.ResetStatics();
+	}
+}

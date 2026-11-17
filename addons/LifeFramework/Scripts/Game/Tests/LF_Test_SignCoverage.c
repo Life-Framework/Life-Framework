@@ -40,7 +40,7 @@ class LF_Test_SignCoverage : LF_Test
 		if (!world)
 			return;
 
-		world.QueryEntitiesBySphere("256 0 256", 1000, CollectSign, null, EQueryEntitiesFlags.ALL);
+		world.QueryEntitiesBySphere("256 0 256", 1000, CollectSign, null, EQueryEntitiesFlags.ALL); // town-layout-ok: a whole-world sweep, not a position
 		ctx.True(s_aIds.Count() > 0, "DebugWorld places signs");
 
 		foreach (string unusable : s_aUnusable)

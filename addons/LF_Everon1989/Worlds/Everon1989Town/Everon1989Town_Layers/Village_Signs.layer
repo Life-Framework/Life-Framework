@@ -1,28 +1,41 @@
+$grp GenericEntity : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
+ Sign_Rules {
+  components {
+   LF_SignComponent "{C8DC6C24E38F2C19}" {
+    m_sSignId "rules"
+    m_vRimColor 0.7 0.12 0.1
+    m_vPaintColor 0.95 0.9 0.78
+    m_vTextColor 0.7 0.12 0.1
+   }
+  }
+  coords 133.492 0.602 255.463
+  angles 0 -90 0
+ }
+ Sign_RunYourOwn {
+  components {
+   LF_SignComponent "{C8DC6C24E38F2C19}" {
+    m_sSignId "run_your_own"
+    m_vRimColor 1 1 1
+    m_vPaintColor 0.12 0.3 0.55
+    m_vTextColor 1 1 1
+   }
+  }
+  coords 118.897 0.603 256.645
+  angles 0 -180 0
+ }
+ Sign_Registry {
+  components {
+   LF_SignComponent "{C8DC6C24E38F2C19}" {
+    m_sSignId "registry"
+    m_vRimColor 0.08 0.18 0.42
+    m_vPaintColor 0.95 0.93 0.86
+    m_vTextColor 0.08 0.18 0.42
+   }
+  }
+  coords 138.659 0.602 243.467
+  angles 0 -78.495 0
+ }
+}
 GenericEntity LF_MiningSign_Debug : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et" {
  coords 172.4 0 170.2
- angleY 0
-}
-GenericEntity Sign_Rules : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
- components {
-  LF_SignComponent "{C8DC6C24E38F2C19}" {
-   m_sSignId "rules"
-   m_vRimColor 0.7 0.12 0.1
-   m_vPaintColor 0.95 0.9 0.78
-   m_vTextColor 0.7 0.12 0.1
-  }
- }
- coords 127.486 0.602 254.5
- angleY -90
-}
-GenericEntity Sign_RunYourOwn : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
- components {
-  LF_SignComponent "{C8DC6C24E38F2C19}" {
-   m_sSignId "run_your_own"
-   m_vRimColor 1 1 1
-   m_vPaintColor 0.12 0.3 0.55
-   m_vTextColor 1 1 1
-  }
- }
- coords 119 0.602 256.986
- angleY 180
 }

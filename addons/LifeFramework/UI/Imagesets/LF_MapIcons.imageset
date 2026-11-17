@@ -1,0 +1,137 @@
+ImageSetClass {
+ RefSize 512 512
+ Textures {
+  ImageSetTextureClass {
+   mpix 1
+   path "{55B25D5294C99C2A}UI/Imagesets/LF_MapIcons.edds"
+  }
+ }
+ Images {
+  ImageSetDefClass cat_civic {
+   Name "cat_civic"
+   Pos 0 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_shop {
+   Name "cat_shop"
+   Pos 64 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_work {
+   Name "cat_work"
+   Pos 128 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_law {
+   Name "cat_law"
+   Pos 192 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_health {
+   Name "cat_health"
+   Pos 256 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_travel {
+   Name "cat_travel"
+   Pos 320 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_story {
+   Name "cat_story"
+   Pos 384 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_underworld {
+   Name "cat_underworld"
+   Pos 448 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pencil_cross {
+   Name "pencil_cross"
+   Pos 0 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pencil_circle {
+   Name "pencil_circle"
+   Pos 64 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pencil_arrow {
+   Name "pencil_arrow"
+   Pos 128 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pencil_note {
+   Name "pencil_note"
+   Pos 192 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pencil_question {
+   Name "pencil_question"
+   Pos 256 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pin_police {
+   Name "pin_police"
+   Pos 320 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pin_org {
+   Name "pin_org"
+   Pos 384 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pin_taxi {
+   Name "pin_taxi"
+   Pos 448 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pin_waypoint {
+   Name "pin_waypoint"
+   Pos 0 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass stamp_town {
+   Name "stamp_town"
+   Pos 64 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass stamp_nopolice {
+   Name "stamp_nopolice"
+   Pos 128 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass stamp_restricted {
+   Name "stamp_restricted"
+   Pos 192 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass stamp_you {
+   Name "stamp_you"
+   Pos 256 128
+   Size 64 64
+   Flags 0
+  }
+ }
+}

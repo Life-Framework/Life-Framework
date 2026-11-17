@@ -152,3 +152,20 @@ class LF_IdCardView
 		s_iOpened = 0;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_IdCardView's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_IdCardView_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_IdCardView_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_IdCardView";
+	}
+
+	override void Apply()
+	{
+		LF_IdCardView.ResetStatics();
+	}
+}

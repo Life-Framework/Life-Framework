@@ -75,7 +75,13 @@ export const LEVERS = {
   sfps: { server: { maxFps: 20 } },
   // No useful client frame cap: a frame-time probe (`perf`) reads frames the 30 fps cap would hide.
   // Measuring only; never in a profile.
-  uncapped: { client: { maxFps: 500 } },
+  // Vsync off too: the game's default holds a laptop client at its 60 Hz panel whatever -maxFPS says.
+  uncapped: { client: { maxFps: 500, engine: { VideoUserSettings: { Vsync: 0 } } } },
+  // The server's own perf line every 2 s (BI wiki "Startup Parameters", -logStats): FPS, frame time
+  // avg/min/max, memory, AI and replicated items. Measuring only (docs/architecture/performance.md).
+  slog: { server: { args: ["-logStats", "2000"] } },
+  // No server frame cap, so -logStats frame time is the server's work, not the 30 fps wait. Measuring only.
+  suncapped: { server: { maxFps: 500 } },
 };
 
 // What each profile turns on. `full` is the session as it always was.

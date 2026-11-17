@@ -1,0 +1,32 @@
+{
+ "schema": 1,
+ "template": "town",
+ "place": "sample-square",
+ "status": "approved",
+ "slots": {
+  "shop": {
+   "building": "b03",
+   "score": 0.9,
+   "why": [
+    "fixture"
+   ]
+  },
+  "bar": {
+   "plot": "p1",
+   "prefab": {
+    "type": "pub",
+    "stem": "PubVillage_E_2L01_V1"
+   },
+   "why": [
+    "fixture"
+   ]
+  },
+  "board": {
+   "building": "b01",
+   "shared": true,
+   "why": [
+    "fixture"
+   ]
+  }
+ }
+}

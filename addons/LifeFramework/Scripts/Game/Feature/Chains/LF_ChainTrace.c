@@ -313,3 +313,20 @@ class LF_ChainSmellLead : LF_EventSubscriber
 		LF_EventBus.Subscribe(LF_OnChainSmell, s_Subscriber);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ChainTrace's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_ChainTrace_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ChainTrace_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_ChainTrace";
+	}
+
+	override void Apply()
+	{
+		LF_ChainTrace.ResetStatics();
+	}
+}

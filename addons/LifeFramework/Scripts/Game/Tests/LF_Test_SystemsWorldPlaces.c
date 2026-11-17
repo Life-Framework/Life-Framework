@@ -4,6 +4,7 @@
 // `- Houses off: the same door is a plain door (expected 1, got 0)`, `- Survival off: starving costs no health (got 0.75)` and
 // `- Survival off: food restores no hunger (expected 0, got 30)`. With it true for Emote alone the run stops with
 // `Virtual Machine Exception ... SCR_EmoteBaseCommand.CanBePerformed` at the Emote-off check (the base command has no radial to run on). Restored; green.
+// red-proof (#1892, 2026-11-16): `tools\cli test --no-build --only <the 7 slice-1892 tests> --world Worlds/GridWorld/GridWorld.ent` before Grid_orgs_vehicles.layer failed all 7 (no org hideout door, no flagged lot, no store, no impound pad); green with it.
 // tier: WORLD
 //! Systems (#1075), the place and body ones: Chains, Hideouts, Houses, Survival and Emote. Each is
 //! turned off in the owner config and the real fixture is asked: a cider barrel refuses a load, a

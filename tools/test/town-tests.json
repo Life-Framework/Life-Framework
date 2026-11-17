@@ -1,0 +1,17 @@
+{
+  "_about": "Tests about the playtest town itself, not about a system that needs a fixture. No suite run carries them (tools\\cli test --tier all|persistence, ci, wt gate, wt ship); `tools\\cli test --no-build --town` runs the whole list in one boot of the playtest world (DebugWorld, mission 3). The main guard runs it as a separate, warn-only stage after the suite (a `main-guard/town` status, never a revert) and the lead runs it before `promote` (docs/worktrees.md \"Main guard\", docs/architecture/three-worlds.md). The tests stay registered; only where they run changes.",
+  "tests": [
+    { "name": "e2e/narrative-loop", "reason": "an end-to-end loop across town places (apple, trader, shop, ATM), which are not in GridWorld" },
+    { "name": "e2e/pass1-write-save", "reason": "an end-to-end save across town places; wt e2e also runs it in its persistence boot on the playtest mission" },
+    { "name": "e2e/roadmap-contraband", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
+    { "name": "e2e/roadmap-jailbreak", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
+    { "name": "e2e/roadmap-jailing", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
+    { "name": "roadmap/contraband", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
+    { "name": "roadmap/escort", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
+    { "name": "roadmap/hideout", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
+    { "name": "roadmap/jailbreak", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
+    { "name": "roadmap/jailing", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
+    { "name": "roadmap/jailing-save", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
+    { "name": "signs/coverage", "reason": "reads the town signs, which are not in GridWorld" }
+  ]
+}

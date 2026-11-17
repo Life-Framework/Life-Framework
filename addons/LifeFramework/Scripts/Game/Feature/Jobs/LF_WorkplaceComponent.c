@@ -41,6 +41,28 @@ class LF_Workplace
 		return false;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Pure: whether a police-only action (apply, review) may show at a desk of this job. A desk of
+	//! another job never offers it; an unbound clock (no workplace) keeps the police actions.
+	static bool JobOffersPolice(string job, bool hasWorkplace)
+	{
+		if (!hasWorkplace)
+			return true;
+
+		return job == JOB_POLICE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the police-only actions may show on this entity (the punch clock of a desk).
+	static bool IsPoliceOrUnbound(IEntity entity)
+	{
+		LF_WorkplaceComponent workplace = FindFor(entity);
+		if (!workplace)
+			return true;
+
+		return JobOffersPolice(workplace.GetJob(), true);
+	}
+
 	//! How far from a workplace its punch clock may stand, metres. The clock is a separate world
 	//! entity placed beside the desk (a prefab child has no parent at runtime).
 	static const float CLOCK_RANGE = 3; // lf-fixed: layout reach of a punch clock beside its desk, not tuning

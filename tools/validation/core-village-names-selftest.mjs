@@ -4,6 +4,8 @@
 // Proves validate-core-village-names fails a core script that quotes a village
 // entity (top-level in a layer, or inside a $grp), lets a baselined pair pass,
 // and ignores comments, Tests/ files, annex names and component override names.
+// red-proof: before the class-aware reader the "unnamed 'Vehicle : prefab {'" case failed with core script names village
+// entity "Vehicle" (2026-11-15).
 // red-proof: with the village-name test in scanCore made always-false this
 // printed "FAIL a core script quotes a top-level village entity: expected
 // /Feature\/Crime\/LF_Bad\.c: core script names village entity "Roadmap_Bank_Vault"/"
@@ -34,7 +36,21 @@ function tree() {
   return root;
 }
 
+// Workbench saves an unnamed entity as `Class : "prefab" {` (no name), top level and nested.
+const UNNAMED = [
+  'GenericEntity Roadmap_Lot : "{7777777777777777}Prefabs/Lot.et" {',
+  ' {',
+  '  Vehicle : "{6666666666666667}Prefabs/Car.et" {',
+  '  }',
+  ' }',
+  '}',
+  'Vehicle : "{6666666666666666}Prefabs/Car.et" {',
+  '}',
+  '',
+].join("\n");
+
 const cases = [
+  { name: "an unnamed 'Vehicle : prefab {' entity is not a village name", plant: (r) => { put(r, `${LAYERS}/Street_Cars.layer`, UNNAMED); put(r, `${SCRIPTS}/Feature/Vehicles/LF_Cars.c`, script(find("Vehicle"))); }, none: true },
   { name: "a core script quotes a top-level village entity", plant: (r) => put(r, `${SCRIPTS}/Feature/Crime/LF_Bad.c`, script(find("Roadmap_Bank_Vault"))), expect: /Feature\/Crime\/LF_Bad\.c: core script names village entity "Roadmap_Bank_Vault"/ },
   { name: "a core script quotes a village entity inside a $grp", plant: (r) => put(r, `${SCRIPTS}/Core/LF_Nest.c`, script(find("Roadmap_Nested_Depot"))), expect: /Core\/LF_Nest\.c: core script names village entity "Roadmap_Nested_Depot"/ },
 ];
@@ -55,7 +71,7 @@ try {
     roots.push(root);
     c.plant(root);
     const { errors } = checkCoreVillageNames(root, {});
-    if (!errors.some((e) => c.expect.test(e))) {
+    if (c.none ? errors.length : !errors.some((e) => c.expect.test(e))) {
       failed++;
       console.log(`FAIL ${c.name}: expected ${c.expect}, got:\n  ${errors.join("\n  ") || "(no errors)"}`);
     }

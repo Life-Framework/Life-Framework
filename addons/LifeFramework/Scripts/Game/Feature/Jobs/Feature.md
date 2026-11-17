@@ -22,9 +22,8 @@ that activity is what pays (gathering/processing already feed this funnel).
 
 ## V1 (shippable)
 
-1. **Security holes — DONE (verified 2026-08-30).** `RpcAsk_ClaimFruitCatcherReward`
-   is server-clamped to `LF_FRUIT_CATCHER_MAX_SCORE` (pin test
-   `security/fruitcatcher-reward-clamp`); `RpcAsk_DebugGrantLicense` is removed.
+1. **Security holes — DONE (verified 2026-08-30).** `RpcAsk_DebugGrantLicense` is removed. The
+   fruit-catcher RPCs were removed with the dead minigame (#2408).
 2. **Paychecks pay cash** (verified 2026-08-30): `ProcessPaycheck` now uses
    `LF_MoneyUtils.GiveCash` — the old `LF_BankAccountComponent` deposit branch
    is gone, and that entity bank is deleted. The only cash↔account boundary is
@@ -60,5 +59,12 @@ that activity is what pays (gathering/processing already feed this funnel).
 
 ## Dependencies
 
-- `Level` (XP/level perks), `License` (job access), `Money` (cash paychecks),
+- `Level` (XP/level perks), `License` (job access), `Money` (cash paychecks, the cargo deposit), `Shop` (the cargo's sell price),
   `Gathering`/`Processing` (job activities), `Whitelist` (restricted jobs).
+## Testing bypass for gated jobs
+
+`LF_JobGates.Unlocked()` is true when `jobs.testUnlockAll` (owner config) or the mission header's
+`m_bLF_TestUnlockAllJobs` asks for it, and the process is not a dedicated server unless the header also sets
+`m_bLF_TestUnlockOnDedicated`. `LF_WhitelistManager.IsFactionRestricted` / `IsJobRestricted` then return false,
+which opens the police roster, the job whitelist and the licence whitelist in one place. It logs
+`LF_Debug.Warn` "job gates bypassed (testing)" once. Never on for the flagship: `validate-flagship-job-gates`.

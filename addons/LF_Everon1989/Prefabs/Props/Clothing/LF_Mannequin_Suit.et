@@ -1,0 +1,33 @@
+GenericEntity : "{DAEBE5DD34859027}Prefabs/Props/Commercial/LF_Mannequin.et" {
+ ID "036233CC8F4E1516"
+ {
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "7FE66BD2D8550C95"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{7449DAACFEBE36CC}Assets/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01.xob"
+     Materials {
+      MaterialAssignClass "{4FF21B79D73EC454}" {
+       SourceMaterial "Jacket_Suit_01"
+       AssignedMaterial "{99EBF808CF181832}Assets/Characters/Uniforms/Jacket_Suit_01/Data/Jacket_Suit_01_Grey.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "4990BAEE2D45F999"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{FCFED36B06EE1D26}Assets/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01.xob"
+     Materials {
+      MaterialAssignClass "{F6482FAF1DA48567}" {
+       SourceMaterial "Pants_Suit_01"
+       AssignedMaterial "{77E2BA90339BE657}Assets/Characters/Uniforms/Pants_Suit_01/Data/Pants_Suit_01_Grey.emat"
+      }
+     }
+    }
+   }
+  }
+ }
+}

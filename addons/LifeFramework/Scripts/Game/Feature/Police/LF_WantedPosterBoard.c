@@ -765,3 +765,37 @@ class LF_WantedPosterBoardComponent : ScriptComponent
 		super.OnDelete(owner);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_WantedPosterFaces's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_WantedPosterFaces_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_WantedPosterFaces_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_WantedPosterFaces";
+	}
+
+	override void Apply()
+	{
+		LF_WantedPosterFaces.ResetStatics();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_WantedPosterBoardComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_WantedPosterBoardComponent_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_WantedPosterBoardComponent_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_WantedPosterBoardComponent";
+	}
+
+	override void Apply()
+	{
+		LF_WantedPosterBoardComponent.ResetStatics();
+	}
+}

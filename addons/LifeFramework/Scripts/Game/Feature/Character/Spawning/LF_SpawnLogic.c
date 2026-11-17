@@ -17,6 +17,10 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! the lot, so a new player can drive on day one; docs/decisions.md). Paid once, at registration.
 	[Attribute("1000", desc: "Bank balance a newly registered character starts with. Paid once, when the registration form is signed.", category: "New character defaults")]
 	protected int m_iStartingBank;
+	//! Workbench play from camera: the pose of the editor body the first spawn replaced (LF_PlayFromCamera).
+	protected vector m_vReplacedBodyPos;
+	protected vector m_vReplacedBodyYpr;
+	protected bool m_bReplacedBody;
 
 	//------------------------------------------------------------------------------------------------
 	int GetStartingBank()
@@ -199,12 +203,27 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		if (questManager)
 			questManager.ReportKill(playerEntity, killerEntity);
 
-		LF_Contraband.FailDiedFromEntity(playerEntity);
+		OnAccountDied_S(LF_Utils.GetPlayerUID(playerId), playerEntity);
+
+		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
+		if (respawn)
+			respawn.NotifyReadyForSpawn_S();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: what a death costs the account, for a played character and for a logout body killed
+	//! while its player was away (LF_LogoutBodyRejoin.OnKilled, #1975).
+	//! \param uid The account that died.
+	//! \param body The dead body, may be null.
+	static void OnAccountDied_S(string uid, IEntity body)
+	{
+		LF_Contraband.FailDiedFromEntity(body);
+		if (uid.IsEmpty())
+			return;
 
 		// Death drops what you carry: the body keeps the items, the account loses the snapshot.
-		string uid = LF_Utils.GetPlayerUID(playerId);
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
-		if (accounts && !uid.IsEmpty())
+		if (accounts)
 		{
 			LF_PlayerAccount account = accounts.GetAccount(uid);
 			if (account && account.GetActiveCharacter())
@@ -217,16 +236,9 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		}
 
 		// You wake up in hospital: the next spawn of this player goes to a bed and pays the bill.
-		if (!uid.IsEmpty())
-		{
-			LF_HospitalRespawn.MarkDied(uid);
-			if (playerEntity)
-				LF_NewLifeRule.RecordDeath(uid, playerEntity.GetOrigin());
-		}
-
-		SCR_RespawnComponent respawn = GetPlayerRespawnComponent_S(playerId);
-		if (respawn)
-			respawn.NotifyReadyForSpawn_S();
+		LF_HospitalRespawn.MarkDied(uid);
+		if (body)
+			LF_NewLifeRule.RecordDeath(uid, body.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -314,6 +326,10 @@ class LF_SpawnLogic : SCR_SpawnLogic
 					ResourceName existingPrefab = LF_Utils.GetPrefabName(controlled);
 					if (!existingCharacter || !LF_Utils.SamePrefab(existingPrefab, activeCharacter.GetPrefab()))
 					{
+						// Play from camera: the new character takes this body's place (LF_PlayFromCamera).
+						m_vReplacedBodyPos = controlled.GetOrigin();
+						m_vReplacedBodyYpr = controlled.GetYawPitchRoll();
+						m_bReplacedBody = true;
 						LF_Debug.Warn("Spawn", "replacing Workbench controlled entity with the account character");
 						SCR_EntityHelper.DeleteEntityAndChildren(controlled);
 					}
@@ -321,12 +337,22 @@ class LF_SpawnLogic : SCR_SpawnLogic
 				#endif
 					{
 				LF_Debug.Warn("Spawn", "player " + playerId + " already controls a character - not spawning another");
+				AdoptLivingBody(LF_Utils.GetPlayerUID(playerId), controlled);
 				return;
 					}
 			}
 		}
 
 		string characterPersistenceId = activeCharacter.GetId();
+
+		// Rejoin inside the logout window: the player takes back their body as it is (#1975). Jail and
+		// hospital come first; TakeBack ends the body for them, so the snapshot below is all they get.
+		IEntity kept = LF_LogoutBodyRejoin.TakeBack(LF_Utils.GetPlayerUID(playerId));
+		if (kept)
+		{
+			TakeBackBody(playerId, kept);
+			return;
+		}
 
 		ResourceName prefab = GetCreationPrefab(playerId, characterPersistenceId);
 		if (!prefab)
@@ -354,12 +380,52 @@ class LF_SpawnLogic : SCR_SpawnLogic
 			return;
 		}
 
+		// Read and clear the new-character mark once the body exists: a spawn that failed above
+		// leaves it for the retry. True on a character's first spawn only (#1964).
+		bool firstSpawn = LF_FirstSpawn.Consume(characterPersistenceId);
+
 		OnCharacterCreated(playerId, characterPersistenceId, character);
 		HandoverToPlayer(playerId, character);
+		if (firstSpawn)
+			OnFirstSpawn(playerId, characterPersistenceId, character);
 
 		// The signed-up delivery job (kept across death and restarts) goes on the new body. After the
 		// hand-over: the job component reads the player id from the body its player controls.
 		LF_CivilianJob.ApplySignUpToCharacter(LF_Utils.GetPlayerUID(playerId), character);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player who takes control of a living body no spawn made here (a save restored it) keeps it,
+	//! and CreateCharacter does not spawn another. Nothing then ran the progression apply that every
+	//! spawned body gets (BindAccountComponents): the body held only its starter licences, so the
+	//! licence desk and the gun counter treated a permit holder as one without a permit (#2413).
+	//! Idempotent: applying again to a body that already has the record changes nothing.
+	//! \param uid The character key progression is stored under (LF_Utils.GetPlayerUID).
+	//! \param body The living body the player controls.
+	//! \return true when the store had a record to apply.
+	static bool AdoptLivingBody(string uid, IEntity body)
+	{
+		if (!body || uid.IsEmpty())
+		{
+			LF_Debug.Warn("Spawn", "a restored body was not given its progression: no body or no character key");
+			return false;
+		}
+
+		bool applied = LF_Progression.ApplyToCharacter(uid, body);
+		LF_Debug.Info("Spawn", string.Format("restored body of %1 given its progression (record found: %2)", uid, applied));
+		return applied;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player gets their logout body back as it is: no snapshot, no kit, nothing re-issued (the
+	//! body still holds its card, tickets and job). Only the hand-over and the per-connection marks.
+	protected void TakeBackBody(int playerId, notnull IEntity body)
+	{
+		// A death after this is a respawn, not a rejoin (LF_RejoinSpot).
+		LF_RejoinSpot.NoteSpawn(LF_Utils.GetPlayerUID(playerId));
+		HandoverToPlayer(playerId, body);
+		TopUpPlayer(playerId, body);
+		LF_Debug.Info("Spawn", "player " + playerId + " took back their logout body");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -371,7 +437,28 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		position = "0 0 0";
 		yawPitchRoll = "0 0 0";
 
+		// Workbench play from camera: spawn where the replaced editor body stood, once.
+		bool useCamera = LF_PlayFromCamera.UseCameraPose(LF_PlayFromCamera.IsWorkbench(), m_bReplacedBody, m_vReplacedBodyPos);
+		m_bReplacedBody = false;
+		if (useCamera)
+		{
+			position = m_vReplacedBodyPos;
+			yawPitchRoll = m_vReplacedBodyYpr;
+			LF_Debug.Info("Spawn", "Workbench play from camera: player " + playerId + " spawns at the camera " + position.ToString());
+			return true;
+		}
+
 		if (LF_HospitalRespawn.ResolveWake(playerId, LF_Utils.GetPlayerUID(playerId), position, yawPitchRoll))
+			return true;
+
+		// A new character's first spawn wakes in a first-spawn bed when one is free (#1965); any later
+		// spawn skips this, and with no such bed placed the normal spawn applies.
+		if (LF_FirstSpawnBeds.Resolve(playerId, characterPersistenceId, position, yawPitchRoll))
+			return true;
+
+		// Order: the jail return (after the spawn, LF_Jail.OnPlayerSpawned), the hospital wake,
+		// the first-spawn bed, then the saved spot (off by default, #1778), then the spawn point below.
+		if (LF_RejoinSpot.Resolve(playerId, LF_Utils.GetPlayerUID(playerId), characterPersistenceId, position, yawPitchRoll))
 			return true;
 
 		SCR_SpawnPoint spawnPoint = ResolveSpawnPoint(playerId);
@@ -418,6 +505,15 @@ class LF_SpawnLogic : SCR_SpawnLogic
 
 		// A body whose content a pack removed still spawns, from a default body (#965).
 		return LF_SaveIds.SpawnablePrefab(activeCharacter.GetPrefab(), m_aDefaultCharacterPrefabs);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Called once per character, after the hand-over of its first spawn. Never after a death, a
+	//! rejoin or a restart. The hook for first-spawn-only rules such as the first night (#1758).
+	protected void OnFirstSpawn(int playerId, string characterPersistenceId, IEntity character)
+	{
+		LF_Debug.Info("Spawn", "player " + playerId + " spawned " + characterPersistenceId + " for the first time");
+		LF_FirstSpawnBeds.OnFirstSpawn(playerId, character);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -669,16 +765,17 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! \return The configured loadout for the faction, or null when none is configured.
 	LF_FactionLoadout GetFactionLoadout(LF_Faction faction)
 	{
+		// A civilian's loadout is the catalogue's starting kit when it has one (#1767).
 		if (!m_aFactionCharacterItems)
-			return null;
+			return LF_FactionLoadout.WithStartingKit(null, faction);
 
 		foreach (LF_FactionLoadout factionLoadout : m_aFactionCharacterItems)
 		{
 			if (factionLoadout && factionLoadout.m_eFaction == faction)
-				return factionLoadout;
+				return LF_FactionLoadout.WithStartingKit(factionLoadout, faction);
 		}
 
-		return null;
+		return LF_FactionLoadout.WithStartingKit(null, faction);
 	}
 
 	//------------------------------------------------------------------------------------------------

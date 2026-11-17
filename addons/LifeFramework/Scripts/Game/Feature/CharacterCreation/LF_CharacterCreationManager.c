@@ -82,6 +82,20 @@ class LF_CharacterCreationRules
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server check of anything that re-enters the arrival flow (the quiz's Continue, a form R-89
+	//! answer): only a player the server is still arriving may. Anyone else is already in the world
+	//! (alive, dead, downed, cuffed, jailed) and must not reach the pick or a fresh spawn (#2413).
+	//! \param flowOpen True while the server has this player's arrival flow open (set on connect,
+	//! cleared when they spawn).
+	static string RefuseFlowRequest(bool flowOpen)
+	{
+		if (!flowOpen)
+			return "#LF-CharSel_Refused";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server check of a form R-89 answer for an account that already has a character: it registers
 	//! only after the player chose "register a new resident" on the pick, and never from a living body.
 	//! \param registerOffered True while the server has a "new resident" form open for this player.
@@ -108,6 +122,8 @@ class LF_CharacterCreationManager : Managed
 	protected static ref LF_CharacterCreationManager s_Instance;
 
 	protected const int FLOW_POLL_DELAY_MS = 100;
+	// lf-fixed: Workbench fast play waits this long for the control hand-over before the ID card
+	protected const int FAST_PLAY_CARD_DELAY_MS = 1000;
 	protected static const ResourceName DEFAULT_CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
 
 	//! Players the server sent the character pick and has no answer from yet (#331). A pick from
@@ -115,6 +131,10 @@ class LF_CharacterCreationManager : Managed
 	protected ref set<int> m_PickOffered = new set<int>();
 	//! Players who chose "register a new resident" on the pick: their form R-89 may add a character.
 	protected ref set<int> m_RegisterOffered = new set<int>();
+	//! Players whose arrival flow is open (#2413): filled on connect, cleared when they spawn. The
+	//! quiz's Continue and the registration form re-enter the flow only for these players, so a dead,
+	//! downed, cuffed or jailed player cannot restart it and pick another character.
+	protected ref set<int> m_FlowOpen = new set<int>();
 	//! Players whose flow waits for their platform identity (logged once per wait).
 	protected ref set<int> m_IdentityWaiting = new set<int>();
 	//! Players told that the server is still connecting them (once per wait).
@@ -139,6 +159,66 @@ class LF_CharacterCreationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: drop the singleton and with it the per-player offer sets, which are keyed by player
+	//! id (ids restart at 1 in the next world).
+	static void ResetStatics()
+	{
+		s_Instance = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a player left; their ids are reused by the next arrival, so no offer or wait may
+	//! outlive the connection (a stale offer lets a new player 1 pass RefuseFurtherCharacter).
+	static void ForgetPlayer(int playerId)
+	{
+		if (!s_Instance)
+			return;
+
+		s_Instance.m_PickOffered.RemoveItem(playerId);
+		s_Instance.m_RegisterOffered.RemoveItem(playerId);
+		s_Instance.m_IdentityWaiting.RemoveItem(playerId);
+		s_Instance.m_IdentityNoticeSent.RemoveItem(playerId);
+		s_Instance.m_FlowOpen.RemoveItem(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: records the pick and register offers for a player id without a controller.
+	void OfferForTest(int playerId)
+	{
+		m_PickOffered.Insert(playerId);
+		m_RegisterOffered.Insert(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a player connected, so their arrival flow is open until they spawn (tests call it too).
+	void OpenFlow(int playerId)
+	{
+		if (!m_FlowOpen.Contains(playerId))
+			m_FlowOpen.Insert(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the player's arrival is over (they spawned), so nothing re-enters the flow.
+	void CloseFlow(int playerId)
+	{
+		m_FlowOpen.RemoveItem(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: "" when this player's arrival flow is open, else the localization key to tell them.
+	string RefuseFlowRequest(int playerId)
+	{
+		return LF_CharacterCreationRules.RefuseFlowRequest(m_FlowOpen.Contains(playerId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true when an offer or wait is still recorded for this player id.
+	bool HasPlayerState(int playerId)
+	{
+		return m_PickOffered.Contains(playerId) || m_RegisterOffered.Contains(playerId) || m_IdentityWaiting.Contains(playerId) || m_IdentityNoticeSent.Contains(playerId) || m_FlowOpen.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void ~LF_CharacterCreationManager()
 	{
 		if (s_Instance == this)
@@ -155,18 +235,38 @@ class LF_CharacterCreationManager : Managed
 		if (!Replication.IsServer())
 			return;
 
+		OpenFlow(playerId);
 		GetGame().GetCallqueue().CallLater(ContinueFlow, FLOW_POLL_DELAY_MS, false, playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: the player read the quiz's pass page. The flow runs again from the top, so a client
-	//! that sends this without passing is asked the questions again.
+	//! that sends this without passing is asked the questions again. Refused unless the server is
+	//! still arriving this player (#2413): the RPC is open to any client, dead or alive.
 	void ContinueAfterQuiz(int playerId)
 	{
 		if (!Replication.IsServer())
 			return;
 
+		if (!AllowFlowRequest(playerId, "quiz continue"))
+			return;
+
 		ContinueFlow(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: gate for the two client answers that re-enter the arrival flow. A refusal is logged and
+	//! the player told, never silent.
+	//! \return true when this player's arrival flow is open.
+	protected bool AllowFlowRequest(int playerId, string what)
+	{
+		string refusal = RefuseFlowRequest(playerId);
+		if (refusal.IsEmpty())
+			return true;
+
+		LF_Debug.Warn("CharacterCreation", string.Format("%1 from player %2 refused: not arriving (already playing, dead, downed, cuffed or jailed)", what, playerId));
+		LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-ID_Information", refusal, 5.0, LF_ENotificationType.WARNING);
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -185,6 +285,14 @@ class LF_CharacterCreationManager : Managed
 	//------------------------------------------------------------------------------------------------
 	protected void ContinueFlow(int playerId)
 	{
+		// Last line of defence: the poll can outlive a disconnect or a spawn, and no caller may
+		// restart the flow for a player the server is not arriving (#2413).
+		if (!RefuseFlowRequest(playerId).IsEmpty())
+		{
+			LF_Debug.Warn("CharacterCreation", string.Format("flow for player %1 dropped: arrival already over", playerId));
+			return;
+		}
+
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		if (!gameMode || gameMode.GetState() != SCR_EGameModeState.GAME)
 		{
@@ -223,6 +331,13 @@ class LF_CharacterCreationManager : Managed
 		}
 
 		LF_Debug.Info("CharacterCreation", "flow start for player " + playerId);
+
+		// Workbench "LF Fast Play" only: no quiz, no form, straight into town (LF_WorkbenchPlay).
+		if (LF_WorkbenchPlay.IsFastPlay())
+		{
+			FastPlay(playerId, playerController, account);
+			return;
+		}
 
 		// The rules orientation (#915) comes first, once per account: nobody registers or spawns
 		// before passing it. Its Continue button re-enters here.
@@ -395,6 +510,11 @@ class LF_CharacterCreationManager : Managed
 		if (!controller)
 			return;
 
+		// The form only ever opens during arrival; an answer from anyone else (a dead or arrested
+		// player replaying it) must not reach the continue-with-character fallback below (#2413).
+		if (!AllowFlowRequest(playerId, "form R-89"))
+			return;
+
 		string accountUid = LF_Utils.GetAccountUID(playerId);
 		if (GateQuiz(playerId, accountUid))
 			return;
@@ -446,6 +566,8 @@ class LF_CharacterCreationManager : Managed
 
 		LF_PlayerCharacter character = LF_PlayerCharacter.Create(DEFAULT_CHARACTER_PREFAB, firstName.Trim(), lastName.Trim(), age);
 		account.AddCharacter(character, true);
+		// Its next spawn is its first (#1964); the spawn logic reads and clears the mark.
+		LF_FirstSpawn.Mark(character.GetId());
 		m_RegisterOffered.RemoveItem(playerId);
 		LF_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
 		LF_AccountReplication.Publish(account);
@@ -456,6 +578,43 @@ class LF_CharacterCreationManager : Managed
 
 		SpawnPlayer(playerId, controller);
 		GrantTestCars(playerId, playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Workbench LF Fast Play: the account gets the dev character (once), its starting bank, a spawn
+	//! and an ID card. The rules quiz is skipped, not passed: nothing about it is recorded. Reached only
+	//! when LF_WorkbenchPlay.IsFastPlay(), which a non-Workbench build never returns.
+	protected void FastPlay(int playerId, PlayerController playerController, notnull LF_PlayerAccount account)
+	{
+		if (!account.HasCharacters())
+		{
+			LF_PlayerCharacter character = LF_PlayerCharacter.Create(DEFAULT_CHARACTER_PREFAB, LF_WorkbenchPlay.DEV_FIRST_NAME, LF_WorkbenchPlay.DEV_LAST_NAME, LF_WorkbenchPlay.DEV_AGE);
+			account.AddCharacter(character, true);
+			LF_FirstSpawn.Mark(character.GetId());
+			LF_PlayerAccountManager.GetInstance().SaveAndReleaseAccount(account);
+			LF_AccountReplication.Publish(account);
+			OpenStartingBank(account.GetActiveCharacterKey());
+			LF_Debug.Info(LF_WorkbenchPlay.FEATURE, "fast play: dev character registered for player " + playerId);
+		}
+
+		SpawnPlayer(playerId, playerController);
+		// The hand-over completes after this frame; the card goes on the body once it is controlled.
+		GetGame().GetCallqueue().CallLater(GiveFastPlayCard, FAST_PLAY_CARD_DELAY_MS, false, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void GiveFastPlayCard(int playerId)
+	{
+		IEntity body = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		LF_PlayerAccount account = FindAccount(LF_Utils.GetAccountUID(playerId));
+		if (!body || !account)
+		{
+			LF_Debug.Error(LF_WorkbenchPlay.FEATURE, "fast play: player " + playerId + " has no body or account a second after the spawn; no ID card");
+			return;
+		}
+
+		bool handed = LF_QuestRewards.HandIdCard(body, account);
+		LF_Debug.Info(LF_WorkbenchPlay.FEATURE, string.Format("fast play: player %1 is in town (new ID card %2)", playerId, handed));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -546,6 +705,8 @@ class LF_CharacterCreationManager : Managed
 		}
 
 		LF_Debug.Info("CharacterCreation", "spawning player " + playerId);
+		// Arrival ends here: from now on nothing re-enters the flow, whatever happens to the body.
+		CloseFlow(playerId);
 		spawnLogic.SpawnPlayer_S(playerId);
 
 		// NOTE: the survival HUD is deliberately not opened here. Opened via OpenMenu it is a
@@ -553,3 +714,20 @@ class LF_CharacterCreationManager : Managed
 		// a proper HUD element before it can come back.
 	}
 };
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CharacterCreationManager's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_CharacterCreationManager_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_CharacterCreationManager_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_CharacterCreationManager";
+	}
+
+	override void Apply()
+	{
+		LF_CharacterCreationManager.ResetStatics();
+	}
+}

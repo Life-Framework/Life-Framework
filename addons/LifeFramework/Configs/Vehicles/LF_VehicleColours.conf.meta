@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{2D5759B91EDDC134}Configs/Vehicles/LF_VehicleColours.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

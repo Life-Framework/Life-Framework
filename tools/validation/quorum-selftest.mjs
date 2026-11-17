@@ -9,10 +9,11 @@
 // red-proof: with the `pass >= size` check in evaluateQuorum changed to `pass >= 1` it printed
 // "two confirmations promoted".
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import * as rg from "../lib/release-gates.mjs";
+import { describeRun, removeScratch, useHermeticGit } from "../lib/selftest-git.mjs";
 import { evaluateQuorum } from "../lib/quorum.mjs";
 import { cmdPromote } from "../promote.mjs";
 
@@ -21,10 +22,19 @@ const check = (ok, msg) => {
   if (!ok) failures.push(msg);
 };
 
-Object.assign(process.env, { GIT_AUTHOR_NAME: "t", GIT_AUTHOR_EMAIL: "t@t", GIT_COMMITTER_NAME: "t", GIT_COMMITTER_EMAIL: "t@t" });
+useHermeticGit(); // identity, no machine git config, no auto-gc (tools/lib/selftest-git.mjs)
+// A network-shaped git command (push, fetch, clone) is
+// retried, because on the Windows CI runner a push into the scratch bare repo dropped now and then
+// ("unexpected disconnect while reading sideband packet"; quorum 2026-11-16, promote 2026-11-16)
+// while the selftests of the whole suite ran in parallel. Each of those commands is idempotent.
 const sh = (cwd, ...args) => {
-  const r = spawnSync("git", args, { cwd, encoding: "utf8", windowsHide: true });
-  if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.stderr}`);
+  const tries = ["push", "fetch", "clone"].includes(args[0]) ? 3 : 1;
+  let r;
+  for (let i = 0; i < tries; i++) {
+    r = spawnSync("git", args, { cwd, encoding: "utf8", windowsHide: true });
+    if (r.status === 0) break;
+  }
+  if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${describeRun(r)}`);
   return r.stdout.trim();
 };
 const mute = async (fn) => {
@@ -106,18 +116,18 @@ try {
 
   // rule on: no file, too few, strangers and a repeat, a fail
   writeRule(true);
-  let r = await mute(() => cmdPromote(work, ["--to", to, "--confirm"], { gh }));
+  let r = await mute(() => cmdPromote(work, ["--to", to, "--confirm"], { gh, guardStatus: () => "green" }));
   check(r.code === 1 && stable() === before, `rule on without a confirmations file moved stable: ${r.out}`);
-  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("two.json", [res(302, "ana"), res(302, "ben")])], { gh }));
+  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("two.json", [res(302, "ana"), res(302, "ben")])], { gh, guardStatus: () => "green" }));
   check(r.code === 1 && /2 of 3/.test(r.out) && stable() === before, `two confirmations promoted: ${r.out}`);
   check(issues[302].state === "open" && !issues[302].labels.includes("verified"), "issue verified without a quorum");
-  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("strangers.json", [res(302, "ana"), res(302, "ana"), res(302, "mallory"), res(302, "zed")])], { gh }));
+  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("strangers.json", [res(302, "ana"), res(302, "ana"), res(302, "mallory"), res(302, "zed")])], { gh, guardStatus: () => "green" }));
   check(r.code === 1 && stable() === before, `strangers and a repeat promoted: ${r.out}`);
-  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("fail.json", [res(302, "ana"), res(302, "ben"), res(302, "cy"), res(302, "dee", "fail")])], { gh }));
+  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("fail.json", [res(302, "ana"), res(302, "ben"), res(302, "cy"), res(302, "dee", "fail")])], { gh, guardStatus: () => "green" }));
   check(r.code === 1 && /failed it/.test(r.out) && stable() === before, `a failed issue promoted: ${r.out}`);
 
   // enough distinct roster testers
-  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("three.json", [res(302, "ana"), res(302, "ben"), res(302, "cy")])], { gh }));
+  r = await mute(() => cmdPromote(work, ["--to", to, "--confirm", "--confirmations", confFile("three.json", [res(302, "ana"), res(302, "ben"), res(302, "cy")])], { gh, guardStatus: () => "green" }));
   check(r.code === 0 && /quorum met/.test(r.out), `three confirmations refused: ${r.out}`);
   check(stable() === m32, "stable did not move on a met quorum");
   check(issues[302].state === "closed" && issues[302].labels.includes("verified"), `302 after promotion: ${issues[302].state} ${issues[302].labels}`);
@@ -129,12 +139,12 @@ try {
   issues[303] = { state: "open", labels: ["needs-playtest"] };
   sh(work, "fetch", "origin");
   writeRule(false);
-  r = await mute(() => cmdPromote(work, ["--to", m33.slice(0, 12), "--confirm"], { gh }));
+  r = await mute(() => cmdPromote(work, ["--to", m33.slice(0, 12), "--confirm"], { gh, guardStatus: () => "green" }));
   check(r.code === 0 && stable() === m33, `rule off, promote failed: ${r.out}`);
 } catch (err) {
   failures.push(`selftest crashed: ${err.stack || err.message}`);
 } finally {
-  try { rmSync(dir, { recursive: true, force: true }); } catch { /* temp scratch only */ }
+  removeScratch(dir);
 }
 
 if (failures.length) {

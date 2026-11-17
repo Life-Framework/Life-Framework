@@ -1,0 +1,68 @@
+// Grid cell c8r1 for lockpick-cars: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_lockpick_cars_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 119 0 35
+}
+SCR_DestructibleEntity Grid_lockpick_cars_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 124 0 35
+}
+SCR_DestructibleEntity Grid_lockpick_cars_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 129 0 35
+ angleY 270
+}
+SCR_DestructibleEntity Grid_lockpick_cars_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 129 0 40
+ angleY 270
+}
+SCR_DestructibleEntity Grid_lockpick_cars_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 129 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_lockpick_cars_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 124 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_lockpick_cars_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 119 0 45
+ angleY 90
+}
+GenericEntity Grid_lockpick_cars_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:lockpick-cars"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 118.2 0.505 35.6
+ angleY -90
+}
+GenericEntity Grid_lockpick_cars_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "lockpick-cars"
+  }
+ }
+ coords 118.3 0 37.5
+ angleY 90
+}
+GenericEntity Annex_Lockpick_Car : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIgnitionLocked 1
+   m_bDebugLocked 1
+  }
+ }
+ coords 121 -0.132 40
+ angleY 0
+}
+GenericEntity Annex_Vehicle_S105 : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIgnitionLocked 0
+  }
+ }
+ coords 127 -0.132 40
+ angleY 0
+}

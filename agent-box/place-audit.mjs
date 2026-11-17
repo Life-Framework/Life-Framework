@@ -4,10 +4,14 @@
 // profile, runs LF_Test_PlacementAuditTown alone on the dedicated test server (which loads the same
 // DebugWorld the playtest mission does), and ranks what LF_PlacementAudit measured there.
 //
-//   audit placement [--top 40] [--area <name>] [--layer A.layer,B.layer] [--annex] [--from <out.txt>] [--out dir] [--strict]
+//   audit placement [--top 40] [--area <name>] [--layer A.layer,B.layer] [--annex | --grid | --world MainWorld] [--from <out.txt>] [--out dir] [--strict]
+//     --world MainWorld: the island (the pack's MainWorld_Layers, where `town fit` writes Place_<place>_<slot>.layer), measured on MainWorld at the town bar;
+//     with --layer it audits only those layers, and an empty selection fails with the layer names instead of measuring something else.
 //   audit selftest
 //
 // red-proof: 2026-11-14, the fixture layer's twin crate moved 1 m away printed "FAILED duplicate not named"; restored, OK.
+// red-proof: 2026-11-15, with the bounds scan reading every "{GUID}path.et" again (loadout-slot clothing counted) the fixture check printed
+//   "FAILED entity prefabs read from a layer: ...CombatBoots_US_01.et..." and exited 1; with layerEntityPrefabs it prints OK.
 // red-proof: 2026-11-14, LIMITS.sharedOverlap set to 0.08 printed "place-audit selftest: FAILED cups on one counter"; restored, OK.
 // In-game (LF_PlacementAudit.c): floating / sunk (a trace down from the bounds base), corners hanging
 // off a surface edge, clips through walls and other surfaces, tilt, scale, reach, oriented boxes, doors.
@@ -18,7 +22,10 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadWorld } from "./layers.mjs";
+import { boundsGapVerdict, layerEntityPrefabs } from "../tools/lib/layer-prefabs.mjs";
+import { judgeStrict } from "../tools/lib/town-findings.mjs";
 import { layerFile, townWorld, worldLayerDirs } from "../tools/lib/addons.mjs";
+import { gridLayerDirs, gridWorldFor, ISLAND_WORLD, islandLayersDir } from "../tools/lib/worlds.mjs";
 import { BUDGET, cellBudget, worldFindings } from "./place-budget.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -29,6 +36,18 @@ const SIZES_FILE = join(ROOT, "tools", "place", "expected-sizes.json");
 // The test server's $profile: (test-e2e.ps1 recreates it on every boot and copies LF_PLACE_AUDIT_IN in).
 export const PROFILE_DIR = join(ROOT, "server", "profile", "test", "profile", "place-audit");
 export const TOWN = { x: 220, z: 260, r: 320 }; // door query circle: the whole town and its outskirts
+export const GRID_CIRCLE = { x: 66, z: 66, r: 80 }; // the same circle for GridWorld: the annex (x, z 20..112) and its fence
+
+// --grid measures GridWorld at the grid bar (docs/architecture/world-zones.md, "Look bar: Low"): props still stand on
+// the ground and are reachable, nothing else is judged (tilt, scale, overlaps, doors and the polish kinds are the town's).
+export const GRID_BAR_KINDS = new Set(["floating", "sunk", "unreachable"]);
+
+// The ranked rows cut to the grid bar: a row keeps only its bar problems and drops out when it has none.
+export function gridBar(ranked) {
+  return ranked
+    .map((r) => ({ ...r, problems: r.problems.filter((p) => GRID_BAR_KINDS.has(p.kind)) }))
+    .filter((r) => r.problems.length > 0);
+}
 
 // Thresholds (metres, degrees). The physical ones match LF_PlacementAudit (GAP, TILT, SCALE_MIN/MAX).
 export const LIMITS = { gap: 0.15, tilt: 5, overlap: 0.08, sharedOverlap: 0.02, door: 0.1, doorClear: 1.0, doorWalk: 3, walk: 1.5, signWalk: 3, scaleMin: 0.5, scaleMax: 2, oddLow: 0.75, oddHigh: 1.6, roadMargin: 0.3, roadMaxWidth: 15 };
@@ -451,8 +470,10 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [], 
 // The debug annex (south-west of the town: the old per-feature test stations) is not part of the playtest town.
 export const inAnnex = (e) => e.x < 110 && e.z < 120;
 
-export function auditRecords({ layers, area, areas, annex } = {}) {
-  let recs = loadWorld(ROOT).filter((e) => !SKIP_LAYERS.has(e.layer) && (annex || !inAnnex(e)));
+export function auditRecords({ layers, area, areas, annex, grid, island } = {}) {
+  // --grid: every entity of GridWorld's own layers (all of it is annex); the town is not read.
+  // --world MainWorld: every entity of the island's own layers (the Place_<place>_<slot>.layer files), the playtest town is not read.
+  let recs = island ? loadWorld(ROOT, islandLayersDir(ROOT)).filter((e) => !SKIP_LAYERS.has(e.layer)) : grid ? loadWorld(ROOT, gridLayerDirs(ROOT)).filter((e) => !SKIP_LAYERS.has(e.layer)) : loadWorld(ROOT).filter((e) => !SKIP_LAYERS.has(e.layer) && (annex || !inAnnex(e)));
   if (layers) recs = recs.filter((e) => layers.includes(e.layer));
   if (area) {
     const a = areas.find((x) => x.name === area);
@@ -464,8 +485,8 @@ export function auditRecords({ layers, area, areas, annex } = {}) {
 
 const tokenOf = (s) => (s && /^[A-Za-z0-9_]+$/.test(s) ? s : "-");
 
-export function inputText(records, extra = []) {
-  const lines = [`town ${TOWN.x} ${TOWN.z} ${TOWN.r}`, ...extra];
+export function inputText(records, extra = [], circle = TOWN) {
+  const lines = [`town ${circle.x} ${circle.z} ${circle.r}`, ...extra];
   records.forEach((e, i) => {
     const base = e.prefab ? e.prefab.split("/").pop().replace(/\.et$/, "") : "";
     lines.push(`${i} ${tokenOf(e.name)} ${tokenOf(base)} ${e.x} ${e.y} ${e.z} ${e.actions?.length ? 1 : 0}`);
@@ -476,27 +497,61 @@ export function inputText(records, extra = []) {
 // The `tools\cli test` arguments of one audit boot. It goes through the pool's "any" choice like every
 // other test run (the machine with the RAM headroom takes it; `tools\cli test` ships the input list up
 // and brings out.txt back); only an interactive caller that wants the quick local loop pins it (local).
-export function auditTestArgs({ local = false } = {}) {
-  return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", townWorld(), ...(local ? ["--local"] : []), "--verbose"];
+// preferLocal: still the pool's choice, but this PC goes first while it has RAM room (the placement tool's
+// probe: seconds on a booted server, so a sync to another machine is the slower path when this PC can run it).
+// The door query circle of an island run: the records' own bounding circle (the island is far from the town's).
+export function islandCircle(records) {
+  if (!records.length) return TOWN;
+  const xs = records.map((e) => e.x), zs = records.map((e) => e.z);
+  const x = (Math.min(...xs) + Math.max(...xs)) / 2, z = (Math.min(...zs) + Math.max(...zs)) / 2;
+  const r = Math.max(...records.map((e) => Math.hypot(e.x - x, e.z - z))) + 60;
+  return { x: Math.round(x), z: Math.round(z), r: Math.ceil(r) };
+}
+
+export function auditTestArgs({ local = false, grid = false, island = false, preferLocal = false } = {}) {
+  return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", island ? ISLAND_WORLD : grid ? gridWorldFor(ROOT) : townWorld(), ...(local ? ["--local"] : preferLocal ? ["--prefer-local"] : []), "--verbose"];
+}
+
+// Why a probe or audit run left no out.txt, in lines an agent can act on: the exit, a timeout or kill, the test run's own log
+// (its SUMMARY `log=` path), the newest server console.log on this machine (a run the pool sent elsewhere leaves none here),
+// and the pool lines. A silent "wrote no output" is what two agents met on the fence yard (#2301); this names where to look.
+export function noOutputDiagnosis({ status, signal, error, text = "", outFile, root = ROOT }) {
+  const lines = [`audit placement: the test server wrote no ${outFile} (exit ${status}${signal ? `, signal ${signal}` : ""}${error ? `, ${error.code ?? error.message}` : ""}): the placement probe or audit did not run to the end`];
+  if (error?.code === "ETIMEDOUT" || (status === null && !signal)) lines.push("  it was killed at the run's 10 minute limit: the server hung or the pool queue never gave it a lane");
+  const runLog = /\blog=(\S+)/.exec(text)?.[1];
+  lines.push(`  test run log:   ${runLog ?? "none printed (the test command died before its SUMMARY; read the lines above, or run: tools\\cli test --no-build --only LF_Test_PlacementAuditTown --verbose)"}`);
+  const logsDir = join(root, "server", "profile", "test", "logs");
+  let newest = null;
+  try {
+    const dirs = readdirSync(logsDir).sort();
+    for (let i = dirs.length - 1; i >= 0 && !newest; i--) if (existsSync(join(logsDir, dirs[i], "console.log"))) newest = join(logsDir, dirs[i], "console.log");
+  } catch {
+    // no logs folder: said below
+  }
+  lines.push(`  server log:     ${newest ?? `none under ${logsDir} (the pool ran it on another machine, or the server never booted; tools\\cli pool status names the machines)`}`);
+  const pool = text.split(/\r?\n/).filter((l) => /^\s*pool:/.test(l)).slice(-2).map((l) => l.trim());
+  if (pool.length) lines.push(`  pool:           ${pool.join(" | ")}`);
+  lines.push("  rerun the same command once; a second miss on a different machine is the machine, a second miss on the same one is the prefab or the layer");
+  return lines;
 }
 
 // One boot of the dedicated test server: LF_Test_PlacementAuditTown measures `records` and traces the
 // `extra` input lines (the placement tool's probe rays). Returns the raw out.txt (null when the server
 // wrote none) and whether the test failed. The list goes in and the result comes out through this
 // checkout's test profile, on whichever machine the pool picked.
-export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit"), extra = [], log = console.log, local = false } = {}) {
+export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit"), extra = [], log = console.log, local = false, preferLocal = false, grid = false, island = false } = {}) {
   mkdirSync(outDir, { recursive: true });
   const inFile = join(outDir, "in.txt");
   const outFile = join(PROFILE_DIR, "out.txt");
   rmSync(outFile, { force: true });
-  writeFileSync(inFile, inputText(records, extra));
+  writeFileSync(inFile, inputText(records, extra, island ? islandCircle(records) : grid ? GRID_CIRCLE : TOWN));
   writeFileSync(join(outDir, "records.json"), JSON.stringify(records));
-  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...auditTestArgs({ local })], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
+  const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...auditTestArgs({ local, grid, island, preferLocal })], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
   const text = `${r.stdout ?? ""}${r.stderr ?? ""}`;
   const keep = text.split(/\r?\n/).filter((l) => /SUMMARY|^pool:|FAILED|TIMEOUT|error/i.test(l));
   for (const l of keep.slice(-4)) log(`  ${l.trim()}`);
   if (!existsSync(outFile)) {
-    log(`audit placement: the test server wrote no ${outFile} (exit ${r.status}); see the lines above`);
+    for (const l of noOutputDiagnosis({ status: r.status, signal: r.signal, error: r.error, text, outFile, root: ROOT })) log(l);
     return { outText: null, failed: true };
   }
   const outText = readFileSync(outFile, "utf8");
@@ -514,7 +569,7 @@ export function readJson(file, fallback) {
 
 function parseArgs(argv) {
   const out = { _: [], flags: {} };
-  const valued = new Set(["top", "area", "layer", "from", "out"]);
+  const valued = new Set(["top", "area", "layer", "from", "out", "hard-layer", "world"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a.startsWith("--")) {
@@ -531,8 +586,31 @@ async function placement(argv) {
   const { flags } = parseArgs(argv);
   const areas = readJson(AREAS_FILE, { areas: [] }).areas;
   const allow = readJson(ALLOW_FILE, { allow: [] }).allow ?? [];
-  const roads = parseRoads(readFileSync(layerFile(ROOT, "Village_Roads.layer"), "utf8"));
-  let records = auditRecords({ layers: flags.layer ? String(flags.layer).split(",") : null, area: flags.area, areas, annex: !!flags.annex });
+  const grid = !!flags.grid;
+  const worldArg = flags.world === undefined ? null : String(flags.world);
+  if (worldArg !== null && !/^MainWorld$/i.test(worldArg)) {
+    console.log(`audit placement: --world ${worldArg} is not one it audits (only MainWorld, the island; the town and --grid have their own flags)`);
+    return 1;
+  }
+  const island = worldArg !== null;
+  if (island && (grid || flags.annex || flags.area)) {
+    console.log("audit placement: --world MainWorld measures the island's layers; --grid, --annex and --area are for the other worlds");
+    return 1;
+  }
+  if (grid && (flags.annex || flags.area)) {
+    console.log("audit placement: --grid measures all of GridWorld; --annex and --area are for the town");
+    return 1;
+  }
+  // GridWorld has no roads: the town's would only mark annex props "in road".
+  const roads = grid || island ? [] : parseRoads(readFileSync(layerFile(ROOT, "Village_Roads.layer"), "utf8"));
+  const layerNames = flags.layer ? String(flags.layer).split(",") : null;
+  let records = auditRecords({ layers: layerNames, area: flags.area, areas, annex: !!flags.annex, grid, island });
+  // A layer scope that selects nothing is a mistake (a layer in another world, a typo), never "the whole world is clean".
+  // On the island it fails; the town's callers (maintainer layers can all be skipped ones) keep their exit code and get the line.
+  if (layerNames && !records.length && !flags.from) {
+    console.log(`audit placement: no entity in ${layerNames.join(", ")} in ${island ? `the island layers (${islandLayersDir(ROOT)})` : grid ? "the GridWorld layers" : "the playtest world's layers"}; nothing was measured (is the layer in another world? pass --world MainWorld for an island layer)`);
+    if (island) return 1;
+  }
   const outDir = resolve(flags.out ?? join(ROOT, "tmp", "place-audit"));
   mkdirSync(outDir, { recursive: true });
   const t0 = Date.now();
@@ -545,13 +623,14 @@ async function placement(argv) {
     if (existsSync(saved)) records = JSON.parse(readFileSync(saved, "utf8"));
     else console.log("audit placement: no records.json beside " + flags.from + "; matching rows to the current layers");
   } else {
-    const run = measureTown(records, { outDir });
+    const run = measureTown(records, { outDir, grid, island });
     if (run.outText == null) return 1;
     outText = run.outText;
     testFailed = run.failed;
     if (testFailed) console.log("audit placement: LF_Test_PlacementAuditTown failed (lines above); ranking what it measured");
   }
   const res = analyse(records, outText, { allow, areas, roads });
+  if (grid) res.ranked = gridBar(res.ranked);
   // Static world checks on the layer entries: duplicates and the per-cell entity budget.
   const world = worldFindings(records, { allow });
   const cells = cellBudget(records);
@@ -560,7 +639,7 @@ async function placement(argv) {
   const byKind = {};
   for (const r of res.ranked) for (const p of r.problems) byKind[p.kind] = (byKind[p.kind] ?? 0) + 1;
   const lines = [
-    `placement audit: ${res.ranked.length} of ${res.measured} entities flagged (${res.missing.length} not found in the world, ${res.doors} door leaves checked, sizes: ${res.sizeCovered} covered by expected-sizes.json), ${((Date.now() - t0) / 1000).toFixed(0)} s`,
+    `placement audit${grid ? " (GridWorld, grid bar: on the ground and reachable)" : ""}: ${res.ranked.length} of ${res.measured} entities flagged (${res.missing.length} not found in the world, ${res.doors} door leaves checked, sizes: ${res.sizeCovered} covered by expected-sizes.json), ${((Date.now() - t0) / 1000).toFixed(0)} s`,
     `by kind: ${Object.entries(byKind).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}`).join(", ") || "none"}`,
     `world: ${cells.length} cells of ${BUDGET.cell} m, busiest ${cells[0] ? `${cells[0].cell} with ${cells[0].count} of ${BUDGET.limit}` : "none"}; ${world.length} world finding(s)`,
     ...world.map((w) => `  ${w.text}`),
@@ -572,11 +651,15 @@ async function placement(argv) {
   console.log(lines.slice(0, 3 + world.length + top).join("\n"));
   if (res.ranked.length > top) console.log(`  ... ${res.ranked.length - top} more`);
   console.log(`report: ${join(outDir, "report.txt")} (json beside it)`);
-  // --strict holds the town to the bar; with --annex the debug grid is listed but never fails it
-  // (docs/architecture/world-zones.md).
-  const townRanked = res.ranked.filter((r) => !inAnnex(r));
-  if (flags.strict && townRanked.length < res.ranked.length) console.log(`audit placement: ${res.ranked.length - townRanked.length} flagged in the debug grid; --strict counts the town only`);
-  return testFailed || (flags.strict && (townRanked.length || world.length)) ? 1 : 0;
+  // --strict: the town is hand-edited and never blocks anyone (maintainer rule 2026-11-15), so a flagged town
+  // entity prints as WARN on every branch. What blocks is a flagged entity in a non-town layer the branch itself
+  // adds or moves (--hard-layer A.layer,B.layer; without it every non-town layer, measured with --annex).
+  // docs/architecture/world-zones.md, tools/lib/town-findings.mjs.
+  if (!flags.strict) return testFailed ? 1 : 0;
+  const hardLayers = flags["hard-layer"] ? String(flags["hard-layer"]).split(",").filter(Boolean) : null;
+  const verdict = judgeStrict(res.ranked, world, { hardLayers });
+  for (const l of verdict.lines) console.log(l);
+  return testFailed || verdict.fail ? 1 : 0;
 }
 
 // The fixture layer (agent-box/fixtures/place-budget/Fixture.layer): a crate and its twin 1 cm apart, a barrel
@@ -604,12 +687,53 @@ function worldSelftest(fail) {
     const addon = join(ROOT, "addons", "LifeFramework");
     const unlisted = new Set();
     for (const f of worldLayerDirs(ROOT).flatMap((d) => readdirSync(d).filter((n) => n.endsWith(".layer")).map((n) => join(d, n)))) {
-      for (const m of readFileSync(f, "utf8").matchAll(/"{[0-9A-Fa-f]{16}}([^"]+.et)"/g)) {
-        if (!existsSync(join(addon, m[1])) && !existsSync(join(ROOT, "addons", "LF_Everon1989", m[1])) && !list.prefabs[m[1]] && !(list.unmeasured ?? []).includes(m[1])) unlisted.add(m[1]);
+      for (const p of layerEntityPrefabs(readFileSync(f, "utf8"))) {
+        if (!existsSync(join(addon, p)) && !existsSync(join(ROOT, "addons", "LF_Everon1989", p)) && !list.prefabs[p] && !(list.unmeasured ?? []).includes(p)) unlisted.add(p);
       }
     }
-    if (unlisted.size) fail(`vanilla prefabs missing from prefab-bounds.json (run tools\cli place measure): ${[...unlisted].slice(0, 3)}`);
+    const verdict = boundsGapVerdict(unlisted.size, currentBranch());
+    const msg = `vanilla prefabs missing from prefab-bounds.json (run tools\cli place measure): ${[...unlisted].slice(0, 3)}`;
+    if (verdict === "fail") fail(msg);
+    else if (verdict === "warn") console.log(`WARN  place-audit selftest: ${msg} (a warning on a maintainer branch)`);
   }
+  // Only a prefab an entity is placed from needs bounds. A clothing prefab in a character's loadout slot, an item in
+  // an inventory or a spawner's resource is a Prefab/ResourceName property, not a world prop (the maintainer's NPC
+  // Dresser wrote 30 of them into the town layer and the audit demanded bounds for each).
+  const layerText = [
+    'LF_NpcBaseEntity Roadmap_Civilian_3 : "{61550FC3CB30580E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_2_Civilian.et" {',
+    " components {",
+    '  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {',
+    "   Slots {",
+    "    SCR_FeetLoadoutSlotInfo Boots {",
+    "     Enabled 1",
+    '     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"',
+    "    }",
+    "   }",
+    "  }",
+    " }",
+    ' {',
+    '  GenericEntity Child : "{1111111111111111}Prefabs/Props/Child_01.et" {',
+    "   coords 0 0 0",
+    "  }",
+    " }",
+    "}",
+    '$grp GenericEntity : "{2222222222222222}Prefabs/Props/Crate_01.et" {',
+    " coords 1 0 1",
+    "}",
+    "",
+  ].join("\n");
+  const seen = [...layerEntityPrefabs(layerText)].sort().join();
+  if (seen !== "Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_2_Civilian.et,Prefabs/Props/Child_01.et,Prefabs/Props/Crate_01.et") fail(`entity prefabs read from a layer: ${seen}`);
+  if (boundsGapVerdict(2, "ws/town-maintainer-edits") !== "warn" || boundsGapVerdict(2, "town-maintainer-x") !== "warn") fail("missing bounds warn on a maintainer branch");
+  if (boundsGapVerdict(2, "ws/some-slice") !== "fail" || boundsGapVerdict(2, "") !== "fail") fail("missing bounds fail off a maintainer branch");
+  if (boundsGapVerdict(0, "ws/town-maintainer-edits") !== "ok" || boundsGapVerdict(0, "main") !== "ok") fail("no gap is ok");
+}
+
+// The branch this checkout is on ("" when unknown); CI passes the PR's head in GITHUB_HEAD_REF.
+function currentBranch() {
+  if (process.env.GITHUB_HEAD_REF) return process.env.GITHUB_HEAD_REF;
+  const r = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd: ROOT, encoding: "utf8", windowsHide: true });
+  return r.status === 0 ? r.stdout.trim() : "";
 }
 
 function selftest() {
@@ -712,15 +836,68 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
   if (!singleProblems(kioskCounter, sunkM).some((p) => p.kind === "sunk")) fail("a backed prop named Roadmap_* sunk 0.35 m into a floor is flagged");
   if (singleProblems({ name: "Roadmap_Sign_Map", prefab: "Prefabs/Props/Signs/Map_01.et" }, sunkM).length !== 0) fail("a real map on a wall is still hung");
   worldSelftest(fail);
+  gridSelftest(fail);
+  islandSelftest(fail);
+  noOutputSelftest(fail);
   if (!process.exitCode) console.log("place-audit selftest: OK");
   return process.exitCode ?? 0;
+}
+
+// A run that leaves no out.txt says why and where to look (#2301). red-proof: 2026-11-17 with the old one-line message the selftest printed
+// "FAILED no-output diagnosis: no test run log line".
+function noOutputSelftest(fail) {
+  const d = noOutputDiagnosis({ status: null, signal: null, text: "  pool: test only on lf-testbox: exit 1\n  test-e2e: SUMMARY tier=only passed=0 failed=1 total=1 log=tmp/logs/test-1.log\n", outFile: "X/out.txt", root: join(ROOT, "tmp", "no-such-root") }).join("\n");
+  if (!d.includes("wrote no X/out.txt")) fail("no-output diagnosis: the missing file is not named");
+  if (!/test run log:\s+tmp\/logs\/test-1\.log/.test(d)) fail("no-output diagnosis: no test run log line");
+  if (!/server log:\s+none under/.test(d)) fail("no-output diagnosis: no server log line");
+  if (!d.includes("10 minute limit")) fail("no-output diagnosis: a kill at the limit is not named");
+  if (!/pool:\s+pool: test only on lf-testbox/.test(d)) fail("no-output diagnosis: the pool line is missing");
+}
+
+// --world MainWorld: the island's layers at the town bar. red-proof: 2026-11-17 before --world existed `audit placement --world MainWorld --layer
+// Place_x.layer` ignored the world, found the layer in no playtest folder and went on; the selftest printed "FAILED island audit: a layer that selects nothing exited 0".
+function islandSelftest(fail) {
+  if (auditTestArgs({ island: true })[auditTestArgs({ island: true }).indexOf("--world") + 1] !== ISLAND_WORLD) fail("--world MainWorld does not boot the island world");
+  if (auditTestArgs().includes(ISLAND_WORLD)) fail("the town audit boots the island");
+  const c = islandCircle([{ x: 1000, z: 2000 }, { x: 1040, z: 2030 }]);
+  if (c.x !== 1020 || c.z !== 2015 || c.r < 25 + 60) fail(`island door circle ${JSON.stringify(c)}`);
+  const run = (...a) => spawnSync(process.execPath, [fileURLToPath(import.meta.url), "placement", ...a], { encoding: "utf8", windowsHide: true, timeout: 60000 });
+  const none = run("--world", "MainWorld", "--layer", "Place_no_such_layer.layer");
+  if (none.status !== 1 || !/no entity in Place_no_such_layer\.layer/.test(none.stdout)) fail(`island audit: a layer that selects nothing exited ${none.status}: ${none.stdout}`);
+  // The test server boots MainWorld alone: with no LF_TestRunner in the island's layers it never runs LF_Test_PlacementAuditTown, so
+  // no out.txt is written and the audit waits for the 10 minute kill (2026-11-17, #2394 proof run).
+  const runner = readdirSync(islandLayersDir(ROOT)).filter((n) => n.endsWith(".layer")).some((n) => readFileSync(join(islandLayersDir(ROOT), n), "utf8").includes("LF_TestRunnerComponent"));
+  if (!runner) fail("island audit: MainWorld_Layers has no LF_TestRunner, so the test server never runs the audit");
+  const bad = run("--world", "Elsewhere");
+  if (bad.status !== 1 || !/not one it audits/.test(bad.stdout)) fail(`island audit: an unknown world was accepted (${bad.status})`);
+}
+
+// --grid (docs/architecture/three-worlds.md): GridWorld at the grid bar. red-proof: 2026-11-16 written before gridBar,
+// auditTestArgs({ grid }) and the grid input circle existed: the selftest threw "gridBar is not defined"; then passed.
+function gridSelftest(fail) {
+  const args = auditTestArgs({ grid: true });
+  // GridWorld, or the pack's grid world (a SubScene of it) once a pack cell exists in the tree.
+  if (args[args.indexOf("--world") + 1] !== gridWorldFor(ROOT)) fail(`--grid boots ${args[args.indexOf("--world") + 1]}, not ${gridWorldFor(ROOT)}`);
+  if (auditTestArgs().includes("Worlds/GridWorld/GridWorld.ent")) fail("the town audit boots GridWorld");
+  const gridText = inputText([], [], GRID_CIRCLE);
+  if (!gridText.startsWith(`town ${GRID_CIRCLE.x} ${GRID_CIRCLE.z} ${GRID_CIRCLE.r}\n`) || GRID_CIRCLE.x > 112 || GRID_CIRCLE.x < 20) fail(`grid input line: ${gridText}`);
+  if (!inputText([]).startsWith(`town ${TOWN.x} `)) fail("the town input line changed");
+  const rows = [
+    { name: "Floater", layer: "Grid_a.layer", score: 3, problems: [{ kind: "floating", text: "floating 1 m" }, { kind: "tilted", text: "tilted 30 deg" }] },
+    { name: "Tilted", layer: "Grid_a.layer", score: 1, problems: [{ kind: "tilted", text: "tilted 30 deg" }, { kind: "overlaps", text: "overlaps X" }, { kind: "odd-scale", text: "scale 1.5" }] },
+    { name: "Boxed", layer: "Grid_a.layer", score: 2, problems: [{ kind: "unreachable", text: "unreachable" }] },
+  ];
+  const kept = gridBar(rows);
+  if (kept.map((r) => r.name).join() !== "Floater,Boxed") fail(`grid bar kept ${kept.map((r) => r.name)}`);
+  if (kept[0].problems.length !== 1 || kept[0].problems[0].kind !== "floating") fail("the grid bar kept a polish problem on a row it kept");
+  if (rows[0].problems.length !== 2) fail("the grid bar rewrote its input");
 }
 
 export async function main(argv) {
   const [sub, ...rest] = argv;
   if (sub === "placement") return placement(rest);
   if (sub === "selftest") return selftest();
-  console.log("usage: tools\\cli audit placement [--top 40] [--area <name>] [--layer A.layer,B.layer] [--from <out.txt>] [--out dir] [--strict]\n       tools\\cli audit selftest");
+  console.log("usage: tools\\cli audit placement [--top 40] [--area <name>] [--layer A.layer,B.layer] [--annex|--grid] [--from <out.txt>] [--out dir] [--strict]\n       tools\\cli audit selftest");
   return 1;
 }
 

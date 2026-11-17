@@ -1,0 +1,9 @@
+{
+  "kind": "ranks",
+  "minCount": 5,
+  "ranks": [
+    { "id": "patrol", "kit": ["SpikeStrip_Item.et"] },
+    { "id": "senior", "kit": ["Rifle_M16A2.et", "SpikeStrip_Item.et", "Roadblock_Kit.et"] },
+    { "id": "lieutenant", "kit": ["SpikeStrip_Item.et", "Roadblock_Kit.et"] }
+  ]
+}

@@ -1,0 +1,25 @@
+GenericEntity : "{00C9C0860D1D8A84}Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_DarkWood.et" {
+ ID "6FA517DDF38316A1"
+ components {
+  LF_ChessTableComponent "{29CDC8FC39C4E97E}" {
+  }
+  ActionsManagerComponent "{4716138F5A5EA65D}" {
+   ActionContexts {
+    UserActionContext "{2A89B54936BB7266}" {
+     ContextName "LF_ChessBoard"
+     Position PointInfo "{BA17209058305068}" {
+      Offset 0 0.8 0
+     }
+     Radius 1.2
+    }
+   }
+   additionalActions {
+    LF_ChessSitAction "{2094CF5F1A51A736}" {
+     ParentContextList {
+      "LF_ChessBoard"
+     }
+    }
+   }
+  }
+ }
+}

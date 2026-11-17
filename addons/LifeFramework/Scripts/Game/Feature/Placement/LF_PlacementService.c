@@ -7,7 +7,8 @@
 //!   Confirm  (server) the client proposes a spot; the server rejects a malformed one, accepts it
 //!            within the item's reach plus TOLERANCE_METRES of where the player stands now (and,
 //!            across a road, within TOLERANCE_DEGREES of straight across), re-probes it, refuses
-//!            anything not VALID, rate-limits (SPAWN), spawns the placed prefab and uses the item up
+//!            anything not VALID, rate-limits (SPAWN), takes the kind's cost (LF_PlacementCost, #2448),
+//!            spawns the placed prefab and uses the item up
 //! The proposal arrives through the placing action's own data (OnSaveActionData/OnLoadActionData,
 //! LF_SpikeStripDeployAction), so there is no extra RPC. The ghost is never replicated.
 //------------------------------------------------------------------------------------------------
@@ -318,10 +319,8 @@ class LF_PlacementService
 		if (!user || !placeable)
 			return false;
 
-		if (placeable.GetWho() == LF_EPlacementWho.ON_DUTY_POLICE)
-			return LF_PoliceUtils.IsOnDutyCharacter(user);
-
-		return true;
+		string toastKey;
+		return LF_PlacementPolicy.Check(user, placeable.GetKind(), placeable.GetWho(), toastKey).IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -510,8 +509,15 @@ class LF_PlacementService
 		if (!placeable || placeable.GetPlacedPrefab().IsEmpty())
 			return Refuse(player, "refused: the item names no placed prefab", "");
 
-		if (!MayPlace(player, placeable))
-			return Refuse(player, string.Format("refused: %1 is not on-duty police", LF_PoliceRanks.ResolveUid(player)), "#LF-Placement_NotAllowed");
+		string toastKey;
+		string why = LF_PlacementPolicy.Check(player, placeable.GetKind(), placeable.GetWho(), toastKey);
+		if (!why.IsEmpty())
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), why), toastKey);
+
+		// An officer's spike strips are capped: each one ticks a wheel check at 20 Hz (#2416).
+		string capProblem = LF_SpikeStrips.CapProblem(player, placeable);
+		if (!capProblem.IsEmpty())
+			return Refuse(player, capProblem, "#LF-SpikeStrip_Cap");
 
 		// Only an item on the ground or in the player's own inventory: not one in someone's car.
 		IEntity holder = LF_InventoryUtils.GetStorageHierachyRoot(item);
@@ -538,6 +544,12 @@ class LF_PlacementService
 		if (!LF_PlacementGeometry.WithinReach(playerTransform[3], proposal, maxDistance, MAX_RISE, offBy))
 			return Refuse(player, "refused: the proposal is " + offBy, "#LF-Placement_Moved");
 
+		// Where this kind may go (#2447): roads only, an owned property, an organization base.
+		string zoneToast;
+		string zoneWhy = LF_PlacementPolicy.ZoneAt(player, placeable.GetKind(), proposal[3], zoneToast);
+		if (!zoneWhy.IsEmpty())
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), zoneWhy), zoneToast);
+
 		if (placeable.GetSnap() == LF_EPlacementSnap.ACROSS_ROAD)
 		{
 			string roadNote;
@@ -556,10 +568,29 @@ class LF_PlacementService
 		if (verdict != LF_EPlacementVerdict.VALID)
 			return Refuse(player, "refused: " + LF_PlacementRules.Reason(verdict, probe, MAX_STEP), "#LF-Placement_NoGround");
 
+		// The cost (#2448): taken once, only now the spot is VALID; given back if the spawn fails.
+		LF_PlacementCostTerms terms = LF_PlacementCost.TermsFor(placeable.GetKind());
+		if (LF_PlacementCost.CostIsItself(terms, item))
+		{
+			LF_Debug.Error(FEATURE, string.Format("the policy names the placeable itself (%1) as the cost of %2; refusing", terms.m_sItem, placeable.GetKind()));
+			return Refuse(player, "refused: the cost item is the placeable itself", "");
+		}
+
+		string costWhy;
+		string costToast;
+		LF_PlacementCharge charge = LF_PlacementCost.Take(player, terms, costWhy, costToast);
+		if (!charge)
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), costWhy), costToast);
+
 		IEntity placed = SpawnAt(placeable.GetPlacedPrefab(), transform);
 		if (!placed)
+		{
+			LF_PlacementCost.Refund(player, charge, "spawn failed");
 			return Refuse(player, string.Format("refused: spawn failed for %1", placeable.GetPlacedPrefab()), "");
+		}
 
+		array<EntityID> placedIds = {placed.GetID()};
+		LF_PlacementCost.Keep(charge, placedIds);
 		SCR_EntityHelper.DeleteEntityAndChildren(item);
 		LF_Debug.Info(FEATURE, string.Format("placed %1 for %2 at %3 heading %4 (%5), %6", LF_PlacementRules.Describe(placed), LF_PoliceRanks.ResolveUid(player), transform[3], transform[2], typename.EnumToString(LF_EPlacementLifetime, placeable.GetLifetime()), offBy));
 		return placed;
@@ -715,5 +746,22 @@ class LF_PlacementService
 			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Placement_Title", toastKey, 3.0, LF_ENotificationType.WARNING);
 
 		return null;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_PlacementService's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PlacementService_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PlacementService_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_PlacementService";
+	}
+
+	override void Apply()
+	{
+		LF_PlacementService.ResetStatics();
 	}
 }

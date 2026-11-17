@@ -234,8 +234,10 @@ class LF_Hotwire
 
 		bool hasKey = driver && vehicleLock.UserHasValidKey(driver);
 		bool may = LF_HotwireRules.MayStart(true, hasKey, vehicleLock.GetHotwiredPlayerId(), PlayerIdOf(driver));
+		// NotifyEntity reaches the driver through the server; LF_Utils.Notify shows a hint on the machine
+		// that calls it, which on a dedicated server is nobody. A client call is a no-op there.
 		if (!may)
-			LF_Utils.Notify("#LF-Hotwire_NoKey", "#LF-Hotwire_Title", 3.0);
+			LF_Utils.NotifyEntity(driver, "#LF-Hotwire_NoKey", "#LF-Hotwire_Title", 3.0);
 
 		return may;
 	}
@@ -483,5 +485,22 @@ modded class SCR_CarControllerComponent
 		super.OnEngineStart();
 
 		LF_Hotwire.NoteStart(GetOwner(), LF_Driver());
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Hotwire's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Hotwire_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Hotwire_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Hotwire";
+	}
+
+	override void Apply()
+	{
+		LF_Hotwire.ResetStatics();
 	}
 }

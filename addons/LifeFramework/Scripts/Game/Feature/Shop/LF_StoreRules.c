@@ -16,8 +16,11 @@ class LF_StoreLine
 	[Attribute("2", UIWidgets.Auto, "Units added each restock interval, up to the maximum")]
 	int m_iRestockAmount;
 
-	[Attribute("", UIWidgets.EditBox, "Shelf points, local to the store entity, written \"x y z | x y z\". One display copy stands at each; more stock than points waits in the back room")]
+	[Attribute("", UIWidgets.EditBox, "Shelf points, local to the store entity, written \"x y z | x y z\". A fourth number is the copy's yaw in degrees, relative to the store. One display copy stands at each; more stock than points waits in the back room")]
 	string m_sSlots;
+
+	[Attribute("0", UIWidgets.Auto, "Copies per pile. 0 or 1: every point is its own spot. N: each run of N points is one folded pile, bottom first; only the bottom copy finds the surface, the others keep their height above it")]
+	int m_iStack;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -83,6 +86,8 @@ class LF_StoreRules
 {
 	//! A shelf item that moves this far from its slot (metres) was taken, even if it is not in a pocket.
 	static const float TAKEN_DISTANCE = 1.0;
+	//! A slot written with three numbers has no yaw of its own: the copy spawns unturned, as before.
+	static const float NO_YAW = 99999;
 	//! The most a payer may stand from the till when the server takes the money (#582) is LF_ShopLimitsConfig.TillReach().
 
 	//------------------------------------------------------------------------------------------------
@@ -153,9 +158,94 @@ class LF_StoreRules
 		text.Split("|", pieces, true);
 		foreach (string piece : pieces)
 		{
-			piece.TrimInPlace();
-			if (!piece.IsEmpty())
-				outSlots.Insert(piece.ToVector());
+			array<float> numbers = {};
+			if (SlotNumbers(piece, numbers))
+				outSlots.Insert(Vector(numbers[0], numbers[1], numbers[2]));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reads the yaw of each shelf point, in the order ParseSlots reads them: the fourth number of
+	//! "x y z yaw", NO_YAW for a point written with three.
+	static void ParseSlotYaws(string text, notnull array<float> outYaws)
+	{
+		outYaws.Clear();
+		array<string> pieces = {};
+		text.Split("|", pieces, true);
+		foreach (string piece : pieces)
+		{
+			array<float> numbers = {};
+			if (!SlotNumbers(piece, numbers))
+				continue;
+
+			if (numbers.Count() >= 4)
+				outYaws.Insert(numbers[3]);
+			else
+				outYaws.Insert(NO_YAW);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return False for an empty piece. Missing numbers of a short piece read as 0.
+	protected static bool SlotNumbers(string piece, notnull array<float> outNumbers)
+	{
+		piece.TrimInPlace();
+		if (piece.IsEmpty())
+			return false;
+
+		array<string> words = {};
+		piece.Split(" ", words, true);
+		foreach (string word : words)
+		{
+			word.TrimInPlace();
+			if (!word.IsEmpty())
+				outNumbers.Insert(word.ToFloat());
+		}
+
+		while (outNumbers.Count() < 3)
+			outNumbers.Insert(0);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The bottom slot of the pile a slot belongs to. With no piles (stack 0 or 1), the slot.
+	static int StackBase(int index, int stack)
+	{
+		if (stack <= 1 || index < 0)
+			return index;
+
+		return index - index % stack;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A copy taken from the middle of a pile leaves a gap the copies above must close: folded
+	//! clothes do not float. Lists the moves that drop every copy onto the lowest free place of its
+	//! own pile, in order (each target is free when its move runs). Piles never mix.
+	static void StackMoves(notnull array<bool> occupied, int stack, notnull array<int> outFrom, notnull array<int> outTo)
+	{
+		outFrom.Clear();
+		outTo.Clear();
+		if (stack <= 1)
+			return;
+
+		for (int first = 0; first < occupied.Count(); first += stack)
+		{
+			int lowest = first;
+			int stop = Math.Min(first + stack, occupied.Count());
+			for (int i = first; i < stop; i++)
+			{
+				if (!occupied[i])
+					continue;
+
+				if (i != lowest)
+				{
+					outFrom.Insert(i);
+					outTo.Insert(lowest);
+				}
+
+				lowest++;
+			}
 		}
 	}
 
@@ -174,7 +264,7 @@ class LF_StoreRules
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn True when a payer is close enough to the register for the server to take the money.
+	//! \return True when a payer is close enough to the register for the server to take the money.
 	static bool TillInReach(float distance)
 	{
 		return distance >= 0 && distance <= LF_ShopLimitsConfig.TillReach();

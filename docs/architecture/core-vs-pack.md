@@ -68,7 +68,8 @@ Chernarus or a custom map works by placing components, with no script change.
   start it switches off with one line when none is placed (#1047). The jail
   cell registers as `JailCell`. `Worlds/CoreOnEveron` boots the core alone on
   vanilla Everon to prove it (`tools\cli test --tier fast --world ...`).
-- Tests keep their annex fixtures and may look them up by name.
+- Tests keep their annex fixtures and may look them up by name. They never name a town entity
+  or write a town position (`world-zones.md` "Tests do not read the town").
 
 
 1. **Delete the pack.** The core still boots DebugWorld, every test passes,
@@ -109,6 +110,7 @@ and counts it in `skipped=N` on the `SUMMARY` line. Today none do. Prefer a core
 | Strings | Functional UI and prompt keys | Flavour copy, in the pack's own string table |
 | Terms (Police, town, currency) | The placeholders (`{police}`) and neutral default words | The pack's own words for a term, in its table, or the owner's (#958, [owner guide](../owner/rename-terms.md)) |
 | DebugWorld | The test annex with neutral fixtures | The village |
+| A debug-grid cell that places pack content (a building fit-out) | The lattice, the claim file and the tools | The cell's `Grid_<slug>.layer`, in `LF_Everon1989/Worlds/Everon1989Grid` (`grid place --pack`, or automatic when a prefab is pack content; `world-zones.md` "Pack cells") |
 | Voice, dialogue, animation | The systems and generic animations | Voice lines and story content |
 
 ## How a split works

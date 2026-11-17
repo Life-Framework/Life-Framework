@@ -1,0 +1,13 @@
+{
+ "ok": false,
+ "errors": [
+  "slot shop: no layer"
+ ],
+ "partial": {
+  "ok": false,
+  "errors": [
+   "slot shop: no layer",
+   "the claim has no layer"
+  ]
+ }
+}

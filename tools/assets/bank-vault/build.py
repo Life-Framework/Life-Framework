@@ -590,6 +590,30 @@ front_cols = [collider("VaultFront", i, lo, hi, cfg) for i, (lo, hi) in enumerat
 model("VaultFront", lod_set("VaultFront", [front_obj], generated=gen_frame), front_cols)
 
 # ---------------------------------------------------------------- VaultDoor: the generated door on its hinge bone, with the plug
+# plate_fill:begin
+def plate_fill(part, cyc, door_r, back_z, fill):
+    """Closes the cut-out in Meshy's door plate between the two hinge arms (the "gap on the left", 2026-11-16).
+
+    The generated plate has no steel in a strip on the hinge side, and the cut face behind it points away from
+    the viewer, so a closed door showed the tunnel through it. This is a flat painted-steel segment of the door
+    disc (x >= x_min, |y - centre| <= half_height, front a hair under the plate's own front at hinge-arm level)
+    so the plate is solid. Its rim runs from the back of the door to the front, on the door radius."""
+    r = door_r - fill["inset"]
+    x0, hh, zf = fill["x_min"], fill["half_height"], fill["front_z"]
+    a1 = math.asin(hh / r)
+    arc = [(r * math.cos(-a1 + 2 * a1 * i / fill["segs"]), cyc + r * math.sin(-a1 + 2 * a1 * i / fill["segs"])) for i in range(fill["segs"] + 1)]
+    outline = [(x0, cyc - hh)] + arc + [(x0, cyc + hh)]
+    cx0 = sum(p[0] for p in outline) / len(outline)
+    cy0 = sum(p[1] for p in outline) / len(outline)
+    for i in range(len(outline)):
+        a, b = outline[i], outline[(i + 1) % len(outline)]
+        part.face([B(cx0, cy0, zf), B(a[0], a[1], zf), B(b[0], b[1], zf)], "BankVault_Paint", B(0, 0, 1))
+    for a, b in zip(arc, arc[1:]):
+        mid = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2 - cyc)
+        part.face([B(a[0], a[1], back_z), B(b[0], b[1], back_z), B(b[0], b[1], zf), B(a[0], a[1], zf)], "BankVault_Paint", B(mid[0], mid[1], 0))
+# plate_fill:end
+
+
 pl = L["plug"]
 door = Part("door_full")
 back_z = cut_z
@@ -615,6 +639,8 @@ for i in range(12):
     centre = B(bx * (pl["radius"] + pl["bolt_length"] / 2 - 0.02), cyc + by * (pl["radius"] + pl["bolt_length"] / 2 - 0.02), zmid)
     bmesh.ops.transform(bm2, matrix=Matrix.Translation(centre) @ rot, verts=bm2.verts)
     door.merge(bm2, "BankVault_Steel")
+plate_fill(door, cyc, door_r, back_z, G["fill"])
+plate_fill(door_simple, cyc, door_r, back_z, G["fill"])
 door_obj = door.finish()
 door_simple_obj = door_simple.finish()
 door_lods = lod_set("VaultDoor", [door_obj], [door_simple_obj], generated=gen_door)

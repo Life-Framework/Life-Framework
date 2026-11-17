@@ -123,7 +123,7 @@ export function reachable(host) {
 
 // The live owner of this machine's server-2001 lock, or null when it is free.
 export function serverSlotOwner(root) {
-  const file = join(wt.hubDirOf(root), "locks", `${SERVER_SLOT}.lock`);
+  const file = wt.lockFileOf(root, SERVER_SLOT);
   if (!existsSync(file)) return null;
   try {
     const info = JSON.parse(readFileSync(file, "utf8"));
@@ -444,7 +444,7 @@ export function remoteFilePlan(rDir, files = {}) {
 // Syncs, then runs `node <script> <args>` in the slot's run folder (cliArgs[0]
 // is the script path relative to the repo, default tools/cli.mjs). Returns
 // { code, summary, localLog }. code 3: the box could not be prepared. files: remoteFilePlan.
-export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", writeSyncState, fetchLog = true, files }) {
+export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", writeSyncState, fetchLog = true, files, env }) {
   const m = slot.machine;
   const slug = bundleSlug(slot.rDir);
   const snap = slot.snap;
@@ -478,6 +478,7 @@ export async function runRemote(root, slot, { args, script = "tools\\cli.mjs", w
       quiet,
       env0,
       ...plan.env,
+      ...Object.entries(env ?? {}).filter(([, v]) => v !== undefined && v !== "").map(([k, v]) => `$env:${k} = ${psQuote(String(v))}`),
       `& node ${psQuote(script)} ${bigArgs.args.map(psArg).join(" ")}`,
       "$code = $LASTEXITCODE",
       "$ld = Get-ChildItem -LiteralPath (Join-Path $dir 'server\\profile\\test\\logs') -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1",

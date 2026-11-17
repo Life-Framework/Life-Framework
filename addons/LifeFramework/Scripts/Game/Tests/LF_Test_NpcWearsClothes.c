@@ -98,7 +98,7 @@ class LF_Test_NpcWearsClothes : LF_Test
 		// Every dressed NPC placed in the DebugWorld town. A bare LF_NpcBaseEntity with no loadout
 		// (TraderChain.layer's PoliceDutyNPC groups the tomato trader) has nothing to wear.
 		m_aFound = new array<IEntity>();
-		GetGame().GetWorld().QueryEntitiesBySphere("200 0 250", 400, InsertFound, FilterNpc);
+		GetGame().GetWorld().QueryEntitiesBySphere("200 0 250", 400, InsertFound, FilterNpc); // town-layout-ok: a whole-world sweep, not a position
 		array<IEntity> placed = {};
 		placed.Copy(m_aFound);
 		ctx.True(placed.Count() > 0, "the town places NPCs");

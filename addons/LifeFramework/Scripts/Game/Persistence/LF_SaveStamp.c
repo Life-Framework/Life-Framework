@@ -189,3 +189,20 @@ class LF_SaveStamp
 		return s_bLoaded && s_sLoadedBuild != CurrentGameBuild();
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_SaveStamp's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_SaveStamp_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_SaveStamp_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_SaveStamp";
+	}
+
+	override void Apply()
+	{
+		LF_SaveStamp.ResetStatics();
+	}
+}

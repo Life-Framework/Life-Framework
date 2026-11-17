@@ -1,0 +1,13 @@
+GenericEntity Fit_board_Place {
+ components {
+  LF_PlaceComponent "{AAAAAAAAAAAAAAA1}" {
+   m_sKind "TownBoard"
+   m_sId "sample-square.board"
+  }
+ }
+ coords 990 12.4 1990
+}
+GenericEntity Fit_board_Post : "{BBBBBBBBBBBBBBB1}Prefabs/Fx/Table.et" {
+ coords 989 12.4 1990
+ angleY 90
+}

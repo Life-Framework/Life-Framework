@@ -13,7 +13,8 @@ enum LF_EHoldUp
 	OK,
 	OUT_OF_RANGE,
 	COOLDOWN,
-	NO_WEAPON
+	NO_WEAPON,
+	GRACE
 }
 
 //------------------------------------------------------------------------------------------------
@@ -74,6 +75,10 @@ class LF_HoldUp
 			last = s_mLast.Get(actorUid);
 
 		LF_EHoldUp result = Decide(distance, LF_IncidentConfig.HoldUpRange(), armed, now, last, LF_IncidentConfig.HoldUpCooldownSeconds());
+		// A new character in its grace (#1780) is neither held up nor holds anyone up.
+		if (result == LF_EHoldUp.OK && (LF_Grace.Refuses(targetUid, "hold-up") || LF_Grace.Refuses(actorUid, "hold-up")))
+			result = LF_EHoldUp.GRACE;
+
 		if (result != LF_EHoldUp.OK)
 		{
 			LF_Debug.Info(FEATURE, string.Format("hold-up refused: %1 -> %2 (%3, %4 m)", actorUid, targetUid, typename.EnumToString(LF_EHoldUp, result), distance));
@@ -98,6 +103,9 @@ class LF_HoldUp
 
 		if (result == LF_EHoldUp.NO_WEAPON)
 			return "#LF-HoldUp_NoWeapon";
+
+		if (result == LF_EHoldUp.GRACE)
+			return LF_Grace.REFUSAL_KEY;
 
 		return "#LF-HoldUp_TooFar";
 	}

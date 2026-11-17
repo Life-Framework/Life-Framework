@@ -190,3 +190,20 @@ class LF_WitnessConfig
 		return config.m_iMaxStatements;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_WitnessConfig's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_WitnessConfig_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_WitnessConfig_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_WitnessConfig";
+	}
+
+	override void Apply()
+	{
+		LF_WitnessConfig.ResetStatics();
+	}
+}

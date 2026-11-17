@@ -27,7 +27,7 @@ class LF_Test_DebugDispatch : LF_Test
 		officer.Insert(LF_ServiceCandidate.Make(1, true, LF_EJobType.UNEMPLOYED));
 		array<ref LF_ServiceCandidate> nobody = {};
 		array<string> board = {};
-		vector spot = "284.3 0 240.2";
+		vector spot = "1000 0 1000";
 		string summary = "#LF-Payphone_Summary_Crime";
 
 		ctx.EqualStr(LF_DebugDispatch.RefusalKey(false, true, true), LF_DebugDispatch.Fire(false, "tester", "police", summary, spot, officer), "the gate off refuses");

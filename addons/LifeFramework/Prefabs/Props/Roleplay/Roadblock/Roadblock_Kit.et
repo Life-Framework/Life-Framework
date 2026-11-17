@@ -1,0 +1,65 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "8A5FCE46044FACB1"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{76C1B2BA574582F0}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 60 0
+      CameraDistanceToItem 1.4999
+      FOV 20
+     }
+    }
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Roadblock_Name"
+     Description "#LF-Roadblock_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 9
+     SizeSetupStrategy Volume
+     ItemVolume 6000
+     RestingAdditiveRotationLS 0 0 0
+     RestingAdditiveOffsetLS 0 0 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{54BF9AEAD2CFA2F4}Assets/Props/Infrastructure/ConeTraffic_01/ConeTraffic_01_stack.xob"
+  }
+  LF_PlaceableComponent "{AB368E29C85278A9}" {
+   m_sPlacedPrefab "{23BFE33133831ECE}Prefabs/Props/Roleplay/Roadblock/Roadblock_Barrier.et"
+   m_vFootprintMins -0.3 0.1 -3.5
+   m_vFootprintMaxs 0.3 1 3.5
+   m_fReach 1
+   m_fAimReach 4
+   m_eSnap ACROSS_ROAD
+   m_eWho ON_DUTY_POLICE
+   m_eLifetime TEMPORARY
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     ContextName "default"
+     Position PointInfo "{508AC2ABEAC4A0F5}" {
+      Offset 0 0.2119 0
+     }
+     Radius 1.07
+    }
+   }
+   additionalActions {
+    LF_RoadblockDeployAction "{3F8A51C6D2E7B094}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  SCR_GadgetComponent "{2098B1EEF3469A6F}" {
+   m_eAnimVariable LF_ITEM
+  }
+ }
+}

@@ -161,3 +161,20 @@ class LF_PhoneConfig
 		return Get().m_sRingSoundEvent;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_PhoneConfig's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PhoneConfig_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PhoneConfig_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_PhoneConfig";
+	}
+
+	override void Apply()
+	{
+		LF_PhoneConfig.ResetStatics();
+	}
+}

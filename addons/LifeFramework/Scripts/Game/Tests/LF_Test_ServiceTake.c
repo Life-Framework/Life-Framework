@@ -62,7 +62,7 @@ class LF_Test_ServiceTake : LF_Test
 
 		ctx.Equal(LF_EServiceTake.NO_CALL, LF_ServiceTake.ServerTake(1, "medic-a", "medic", everyone), "an empty board has nothing to take");
 
-		LF_ServiceCalls.Place("caller-uid", "medic", "Village payphone", "#LF-Payphone_Summary_Emergency", "96.5 0 263", everyone);
+		LF_ServiceCalls.Place("caller-uid", "medic", "Village payphone", "#LF-Payphone_Summary_Emergency", "1000 0 1000", everyone);
 		LF_ServiceBoard.BuildEntries("medic", now, 10, entries);
 		ctx.True(entries.Count() == 1 && entries[0].Contains("|0|"), "the new call shows untaken");
 
@@ -82,7 +82,7 @@ class LF_Test_ServiceTake : LF_Test
 
 		ctx.Equal(2, LF_ServiceCallsConfig.MaxTakers("police"), "police config allows two takers");
 		// Police allow two takers per call (LF_ServiceCalls.conf).
-		LF_ServiceCalls.Place("caller-uid", "police", "Village payphone", "#LF-Payphone_Summary_Crime", "96.5 0 263", everyone);
+		LF_ServiceCalls.Place("caller-uid", "police", "Village payphone", "#LF-Payphone_Summary_Crime", "1000 0 1000", everyone);
 		ctx.Equal(LF_EServiceTake.TAKEN, LF_ServiceTake.ServerTake(4, "officer-a", "police", everyone), "the first officer takes the police call");
 		ctx.Equal(LF_EServiceTake.TAKEN, LF_ServiceTake.ServerTake(5, "officer-b", "police", everyone), "a second officer may also take it");
 		ctx.Equal(LF_EServiceTake.ALREADY_TAKEN, LF_ServiceTake.ServerTake(6, "officer-c", "police", everyone), "a third officer is told it is taken");

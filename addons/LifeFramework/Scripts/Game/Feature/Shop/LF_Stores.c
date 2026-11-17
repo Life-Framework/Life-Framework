@@ -513,7 +513,7 @@ class LF_Stores
 				accountManager.SaveAndReleaseAccount(account);
 		}
 
-		LF_Dispatch.Report(uid, thief, LF_WantedReports.OFFENCE_SHOPLIFTING, store.GetOwner().GetOrigin());
+		LF_Dispatch.Report(uid, thief, LF_WantedReports.OFFENCE_SHOPLIFTING, store.GetOwner().GetOrigin(), -1, false, store.GetAlarmKind());
 		LF_WantedReports.Identify(uid, "leaving a store with unpaid goods");
 		LF_Debug.Info(FEATURE, string.Format("store %1: %2 walked out with %3 unpaid item(s) worth %4; alarm, dispatch, wanted level and name", key, uid, items.Count(), value));
 		LF_Utils.NotifyEntity(thief, "#LF-Store_Thief", "#LF-Store_Title", 5.0);
@@ -1228,5 +1228,22 @@ class LF_ReceiptReadAction : ScriptedUserAction
 		}
 
 		LF_Utils.NotifyEntity(pUserEntity, "#LF-Store_ReceiptText", "#LF-Store_ReceiptTitle", 5.0, receipt.Describe());
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Stores's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Stores_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Stores_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Stores";
+	}
+
+	override void Apply()
+	{
+		LF_Stores.ResetStatics();
 	}
 }

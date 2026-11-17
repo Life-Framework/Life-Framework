@@ -16,7 +16,7 @@ selected; aimed placement with rotate, place and cancel is #1028.
 ## Placement rules and ghost (#928)
 
 - **Player sees:** a blue ghost of the strip where it will lie, red when the spot is refused
-  (no ground, a kerb or slope, something in the way). Only in dev-tools worlds until #928 ships.
+  (no ground, a kerb or slope, something in the way, with the reason). Shipped for every on-duty officer on any world (#1939); the server refuses a confirm for a red spot. LF_Test_SpikeStripPreview.
 - **Owner and side:** `LF_PlacementRules.Judge` is pure and runs on both sides on the same probe;
   the feature's server path (`LF_SpikeStrips.Deploy`) refuses anything but `VALID`.
   `LF_PlacementGhost` is client-local and never replicated.
@@ -61,3 +61,92 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Proof:** `placement/aim` (LOGIC: aim ray to spot, reach clamp, rotation steps, snap to a road axis, wall
   normal), `placement-aim-proof` (two clients on a dedicated server; pictures in
   `website/public/docs-images/1028/`).
+
+## Composition placement (#1940)
+
+- **Player sees:** a set of props (the police roadblock's cones and barriers, #647) is one placement: one
+  ghost made of every piece, blue when every piece sits on valid ground and red when any piece does not, and one
+  confirm that puts the whole set down with each piece on the ground. Picking up any piece takes the whole set
+  away. No consumer wires it to an item yet, so nothing shows in the game until the roadblock item (#647).
+- **Owner and side:** `LF_PlacementCompositions.Plan` runs on both sides (each piece probed like a single placement:
+  ground at its ends and middle, the 0.25 m step, the box over it, what it lies on; the set's verdict is the first
+  piece that is not VALID). `Confirm` is the server's: who (`m_eWho`), `LF_RateLimit` SPAWN, the malformed-proposal
+  check, the reach from where the player stands now, then Plan again, then spawn every piece or none. `PickUp`
+  (server, within 4 m of a piece) removes the set a piece belongs to. `LF_PlacementCompositionGhost` is
+  client-local and never replicated. The service (`LF_PlacementService`) is untouched; the ground sampler is
+  a small copy in the composition file because the service's is protected.
+- **Data:** `LF_PlacementComposition` is a piece list (prefab, offset across and ahead, turn, footprint box), built in
+  script or read from a composition prefab's child props (`FromPrefab`). Refusals reuse the toasts
+  `#LF-Placement_NotAllowed`, `_Moved`, `_Blocked`, `_NoGround`. Nothing persists: a roadblock is temporary.
+- **Proof:** `placement/composition` (WORLD: a three-cone set places as one with each piece on the ground, a set on
+  a set, a malformed proposal and a far pick-up are refused, a pick-up removes every piece, a cone half on a table is
+  `TOO_STEEP`).
+
+## Doorways stay clear (#2445)
+
+- **Player sees:** the ghost turns red, with "a door is in the way", over a door leaf's swing (1 m both ways) or the
+  3 m walk-up in front of a ground-floor door, and the server refuses a confirm there. Furniture behind a door
+  inside its own building is not refused; a low thing (under 0.5 m tall) and a building-sized box are not either.
+- **Owner and side:** `LF_PlacementDoors.Find`, run from `LF_PlacementRules.FindBlocker` after the box trace finds
+  nothing, so the single, aimed and composition placements get it on both sides with no edits and `Judge` stays
+  pure. The maths mirrors the offline audit's door rule (`agent-box/place-audit.mjs`, `docs/placement-tool.md`).
+- **Data:** none; the distances are `lf-fixed` constants of the audit's limits.
+- **Proof:** `placement/door-probe` (WORLD: a house door spawned on open ground; spots in the swing, either side,
+  and in the walk-up are blocked by "a door", 4 m in front and 2.5 m beside are clear, an excluded door does not block).
+
+## Who may place each kind (#2446)
+
+- **Player sees:** a refusal toast under "Placing" that names the rule: only on-duty police, only the owner or a key
+  holder of a house nearby, only an organization member, or "your rank is too low". The ghost's action stays hidden for a
+  player the rule refuses. The spike strip and the roadblock still need an on-duty officer.
+- **Owner and side:** `LF_PlacementPolicy.Check`, asked by `LF_PlacementService.MayPlace` and `Confirm` and by
+  `LF_PlacementCompositions.Confirm` on the server (and by the action gate on a client), instead of the hard-coded
+  `m_eWho`. `Judge` is pure over `LF_PlacementWhoFacts`; `Gather` reads the player (duty, the nearest house within
+  30 m and its owner key or a key in the inventory, the organization and rank) from Police, Houses and Organizations
+  through their public API. The log line is `refused: <uid> <reason> (rule <WHO>)`.
+- **Data:** `Configs/Placement/LF_PlacementPolicy.conf`: one entry per kind (`m_sKind`, `m_eWho`, `m_sMinRank` for
+  `ORG_MEMBER`). A kind is the placeable's `m_sKind`, else its placed prefab's file name (`SpikeStrip`,
+  `Roadblock_Barrier`), or a composition's name (`roadblock`). A kind with no entry keeps the prefab's own `m_eWho`.
+  Core ships the police entries only; a server's rules are pack data. Strings `#LF-Placement_NeedPolice`, `_NeedHouse`,
+  `_NeedOrg`, `_NeedRank`. Nothing persists.
+- **Proof:** `placement/policy-who` (LOGIC: each rule refuses the wrong player with its own reason and toast and passes
+  the right one; the shipped table keeps the strip and the roadblock police-only). House and organization facts are
+  filled from plain values in the test; reading a live house or organization for a player stays a manual step.
+
+## Where each kind may go (#2447)
+
+- **Player sees:** a refusal toast under "Placing" for a kind with a zone: "only on a road", "only inside a property you
+  own or hold a key to", or "only at your organization's base". A house owner places a chair in their own house and is
+  refused in the neighbour's.
+- **Owner and side:** `LF_PlacementZones.Judge` is pure over `LF_PlacementWhereFacts`; `Gather` fills it for the proposed
+  spot (not the player's feet): the AI road network for `ROADS_ONLY` (a road line within 6 m), the live house nearest the
+  spot within 30 m for `OWNED_PROPERTY` (owner key or a key in the inventory, so the neighbour's house is the neighbour's),
+  and `LF_Places` kind `org_base` (id = the organization id) for `ORG_BASE`. `LF_PlacementPolicy.ZoneAt` runs it; the server's
+  `LF_PlacementService.Confirm` and `LF_PlacementCompositions.Confirm` ask it after the reach check (a five-line hook each),
+  so the ghost does not go red for a zone yet. The log line is `refused: <uid> <reason> (zone <WHERE>)`.
+- **Data:** the policy entry's `m_eWhere` (`ANYWHERE` default) and `m_fBaseRadius` (`ORG_BASE`, default 30 m). Core ships no
+  zoned kind: a server's rules are pack data. An organization's leased hideout registers its door as `org_base` (`LF_Hideout.SyncOrgBase`, #2504), so an `ORG_BASE` kind is refused
+  for an organization with no lease. Strings `#LF-Placement_NeedRoad`, `_NeedProperty`, `_NeedBase`. Nothing persists.
+- **Proof:** `placement/policy-where` (WORLD: two bound neighbouring houses, a chair-like kind refused in the neighbour's and
+  allowed in the owner's or with a key; a roads-only kind refused off the road by the real probe on DebugWorld, allowed on a
+  road by the pure rule; the base rule's cases). The road probe on real Everon roads is a manual step.
+
+## What placing a kind costs (#2448)
+
+- **Player sees:** a kind with a price takes it when the thing appears, never before: a refused spot costs nothing. A player
+  who carries too little is refused with "You don't have enough cash" (or the item toast) and keeps it all. Picking up a
+  refundable kind gives the price back once, to whoever paid; someone else picking it up gets nothing.
+- **Owner and side:** `LF_PlacementCost` (server). `LF_PlacementService.Confirm` and `LF_PlacementCompositions.Confirm`
+  call `Take` after every other check and a VALID probe, `Refund` when the spawn fails, and `Keep` for a refundable
+  charge; `LF_PlacementCompositions.PickUp` calls `OnPickedUp`, which forgets the charge before refunding, so a second
+  pick-up finds none. Cash moves through `LF_MoneyUtils.RemoveCash/AddCash` (reasons `placement`, `placement-refund`,
+  so `LF_OnMoneyMoved` reaches the ledger); items through `LF_InventoryUtils.RemoveAmount/AddAmount` (overflow dropped).
+  A short take is given back and refused. Nothing comes from the client: the kind and price are read on the server.
+- **Data:** the policy entry's `m_eCost` (`FREE`, `CASH`, `ITEM`), `m_iCostAmount` (price or item count; zero or less is
+  free), `m_sCostItem` (`ITEM`; never the placeable itself, refused with an error), `m_bRefundOnPickup`. Core ships every
+  kind free; a pack overrides prices in its copy of the `.conf`. Strings `#LF-Placement_NeedCash`, `_NeedItem`. Charges
+  live in memory like placed sets: a restart forgets both. A single placement (spike strip) keeps its refundable charge
+  until a pick-up path calls `LF_PlacementCost.OnPickedUp`; none does yet.
+- **Proof:** `placement/policy-cost` (WORLD: a refused proposal and an unaffordable set take nothing, a set whose spawn fails
+  is given back, a paid set takes the price once and a set on top takes nothing more, the payer's pick-up refunds once and
+  a bystander's refunds nobody).

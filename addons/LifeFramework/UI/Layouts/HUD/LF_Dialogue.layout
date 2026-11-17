@@ -64,7 +64,7 @@ FrameWidgetClass "{47253323036FE400}" {
       Slot LayoutSlot "{240FE0716F6FF230}" {
        Padding 0 3 0 3
       }
-      Visible 0
+      "Is Visible" 0
       Color 0.82 0.8 0.74 1
       Text ""
       "Font Size" 22
@@ -78,7 +78,7 @@ FrameWidgetClass "{47253323036FE400}" {
       Slot LayoutSlot "{DDD6BA13E60CDF06}" {
        Padding 0 3 0 3
       }
-      Visible 0
+      "Is Visible" 0
       Color 0.82 0.8 0.74 1
       Text ""
       "Font Size" 22
@@ -92,7 +92,7 @@ FrameWidgetClass "{47253323036FE400}" {
       Slot LayoutSlot "{60C11822DA90AF14}" {
        Padding 0 3 0 3
       }
-      Visible 0
+      "Is Visible" 0
       Color 0.82 0.8 0.74 1
       Text ""
       "Font Size" 22
@@ -106,7 +106,7 @@ FrameWidgetClass "{47253323036FE400}" {
       Slot LayoutSlot "{B6FBF370C61B3509}" {
        Padding 0 3 0 3
       }
-      Visible 0
+      "Is Visible" 0
       Color 0.82 0.8 0.74 1
       Text ""
       "Font Size" 22

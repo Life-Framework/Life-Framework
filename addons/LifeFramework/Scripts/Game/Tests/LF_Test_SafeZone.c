@@ -1,10 +1,23 @@
 // red-proof: asserted False on the inside-the-zone hit and ran
 // `tools\cli test --no-build --only LF_Test_SafeZone` (2026-11-08). The suite reported
 // `[LFTEST]   - a player shot inside the zone takes no damage`. Restored the assertion to True.
+// red-proof (#1893 fixtures): 2026-11-16 on GridWorld, before the fixture plaza, `--only LF_Test_SafeZone
+// --world Worlds/GridWorld/GridWorld.ent` failed `- the world places a safe zone that registered itself` and
+// `- civilian spawn point at <74,0,108> is inside a safe zone` (the grid gate spawn is outside any zone on
+// purpose). The RedProof() hook skips the fixture zone and the plaza assertions go red.
 
 // tier: WORLD
+//! Safe zone damage rule, plus a fixture plaza (a safe circle with a CIVILIAN spawn point in it) the
+//! test registers and removes itself; GridWorld places no town zones (docs/architecture/three-worlds.md).
 class LF_Test_SafeZone : LF_Test
 {
+	static const ResourceName SPAWN_POINT_PREFAB = "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et";
+	static const string PLAZA_NAME = "sz-fixture-plaza";
+	//! Far from the grid annex (x 18..114, z 18..114) and its gate spawn.
+	static const float PLAZA_X = 480;
+	static const float PLAZA_Z = 400;
+	static const float PLAZA_RADIUS = 20;
+
 	override string GetName()
 	{
 		return "safezone/blocks";
@@ -20,38 +33,41 @@ class LF_Test_SafeZone : LF_Test
 		ctx.False(LF_Zones.ShouldRefuse(0, 2, true, false), "NPC or world damage in the zone is not refused");
 		ctx.False(LF_Zones.ShouldRefuse(1, 0, true, false), "a player hurting an NPC is not refused by the zone");
 
-		// The flagship zone is placed on the square and covers the civilian spawn.
 		BaseWorld world = GetGame().GetWorld();
-		ctx.True(world != null, "DebugWorld is loaded");
+		ctx.True(world != null, "a world is loaded");
 		if (!world)
 			return;
 
-		// The placed safe zone, whichever world places it: read it back, no town coordinates.
-		LF_ZoneArea square = LF_Zones.FindFirstByRule(LF_ZoneRule.SAFE);
-		ctx.True(square != null, "the world places a safe zone that registered itself");
-		if (square)
+		// The fixture plaza: a safe circle with a civilian arrival point inside it.
+		vector plazaCentre = Vector(PLAZA_X, 0, PLAZA_Z);
+		if (!RedProof())
+			ctx.True(LF_Zones.RegisterCircle(PLAZA_NAME, LF_ZoneRule.SAFE, plazaCentre, PLAZA_RADIUS), "the fixture plaza registers");
+
+		SCR_SpawnPoint arrival = SCR_SpawnPoint.Cast(LF_Utils.SpawnEntityPrefab(SPAWN_POINT_PREFAB, plazaCentre + "5 0 5"));
+		ctx.True(arrival != null, "fixture: a civilian spawn point spawns on the plaza");
+		if (arrival)
+			arrival.SetFactionKey("CIVILIAN");
+
+		LF_ZoneArea plaza = LF_Zones.Find(PLAZA_NAME);
+		ctx.True(plaza != null, "the fixture safe zone is registered");
+		ctx.True(LF_Zones.FindFirstByRule(LF_ZoneRule.SAFE) != null, "a safe zone is found by its rule");
+		if (plaza)
 		{
-			ctx.True(square.m_fRadius > 0, "the placed safe zone has a radius");
-			ctx.True(LF_Zones.IsSafe(square.m_vCenter), "the centre of the placed safe zone is safe");
-			ctx.True(LF_Zones.IsSafe(square.m_vCenter + "0 6 0"), "a roof above the placed safe zone is safe");
+			ctx.True(plaza.m_fRadius > 0, "the plaza has a radius");
+			ctx.True(LF_Zones.IsSafe(plaza.m_vCenter), "the centre of the plaza is safe");
+			ctx.True(LF_Zones.IsSafe(plaza.m_vCenter + "0 6 0"), "a roof above the plaza is safe");
 		}
 
-		// Every civilian arrival lands in a zone, whichever spawn point the game picks.
-		int civilianPoints;
-		array<SCR_SpawnPoint> spawnPoints = SCR_SpawnPoint.GetSpawnPoints();
-		if (spawnPoints)
+		// A civilian arriving on the plaza lands in the zone.
+		if (arrival)
 		{
-			foreach (SCR_SpawnPoint spawnPoint : spawnPoints)
-			{
-				if (!spawnPoint || spawnPoint.GetFactionKey() != "CIVILIAN")
-					continue;
-
-				civilianPoints++;
-				ctx.True(LF_Zones.IsSafe(spawnPoint.GetOrigin()), string.Format("civilian spawn point at %1 is inside a safe zone", spawnPoint.GetOrigin()));
-			}
+			ctx.EqualStr("CIVILIAN", arrival.GetFactionKey(), "the plaza spawn point is a CIVILIAN point");
+			ctx.True(LF_Zones.IsSafe(arrival.GetOrigin()), string.Format("the civilian spawn point at %1 is inside the plaza", arrival.GetOrigin()));
+			SCR_EntityHelper.DeleteEntityAndChildren(arrival);
 		}
 
-		ctx.True(civilianPoints > 0, "DebugWorld has civilian spawn points");
+		LF_Zones.Unregister(PLAZA_NAME);
+		ctx.False(LF_Zones.IsSafe(plazaCentre), "the removed plaza protects nothing");
 
 		// A zone registers and unregisters by name; a bad radius is refused.
 		ctx.False(LF_Zones.RegisterCircle("test-zone-bad", LF_ZoneRule.SAFE, "0 0 0", 0), "a zero radius zone is refused");

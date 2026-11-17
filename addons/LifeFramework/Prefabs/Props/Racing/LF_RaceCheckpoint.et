@@ -1,0 +1,8 @@
+GenericEntity : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+ ID "6430A10DBFF80C64"
+ components {
+  LF_RaceCheckpointComponent "{A7BA2D19ECC11C06}" {
+   m_fRadius 1.4
+  }
+ }
+}

@@ -42,10 +42,37 @@ export const BASELINE = "tools/validation/annex-fixtures-baseline.json";
 
 // Declarations look like `GenericEntity Roadmap_Bank_Vault : "{GUID}prefab" {` at the top
 // level; inside a `$grp` or a children block the type is dropped and the line is
-// `Roadmap_Job_Depot {` (or `Name : "{GUID}prefab" {`, or `Type Name {`). A
-// `components { ... }` block holds component overrides, not entities, so it is
+// `Roadmap_Job_Depot {` (or `Name : "{GUID}prefab" {`, or `Type Name {`). Workbench
+// also saves an unnamed entity as `Vehicle : "{GUID}x.et" {` or `Vehicle {` (class,
+// no name), so a lone word is a name only when it is not a class. A class is a word
+// that heads a two-word header or a `$grp` header in any layer, or one of
+// SEED_CLASSES, or a word ending in an entity suffix (the list tools/lib/world-diff.mjs
+// uses). A `components { ... }` block holds component overrides, not entities, so it is
 // skipped by indent (an unnamed override reads `MeshObject {`).
-export function declaredNames(text) {
+export const SEED_CLASSES = new Set(["Vehicle", "Tree", "GenericEntity"]);
+const CLASS_SUFFIX = /(Entity|Effect|Manager|Area|Trigger|Light|Volume|Component|Camera|Sound|Decal|Particle|Prefab|Spawn\w*)$/;
+
+// The classes this text declares: the first word of every `Class Name ... {` and `$grp Class ...` header.
+export function classWords(text) {
+  const out = new Set();
+  for (const line of text.split("\n")) {
+    const grp = line.match(/^\s*\$grp\s+([A-Za-z_]\w*)/);
+    if (grp) {
+      out.add(grp[1]);
+      continue;
+    }
+    const typed = line.match(/^\s*([A-Za-z_]\w*)\s+[A-Za-z_]\w*\s*(?::|\{)/);
+    if (typed) out.add(typed[1]);
+  }
+  return out;
+}
+
+export function isClassWord(word, classes) {
+  if (SEED_CLASSES.has(word) || (classes && classes.has(word))) return true;
+  return CLASS_SUFFIX.test(word) && !word.includes("_");
+}
+
+export function declaredNames(text, classes = classWords(text)) {
   const names = [];
   let skipIndent = -1;
   for (const line of text.split("\n")) {
@@ -64,7 +91,7 @@ export function declaredNames(text) {
       continue;
     }
     const nested = line.match(/^\s+([A-Z]\w*)\s*(?::|\{)/);
-    if (nested) names.push(nested[1]);
+    if (nested && !isClassWord(nested[1], classes)) names.push(nested[1]);
   }
   return names;
 }
@@ -76,10 +103,12 @@ export function villageNames(root) {
   const village = new Map();
   const annex = new Set();
   if (!existsSync(dir)) return village;
-  for (const f of readdirSync(dir)) {
-    if (!f.endsWith(".layer")) continue;
+  const texts = readdirSync(dir).filter((f) => f.endsWith(".layer")).map((f) => [f, readFileSync(join(dir, f), "utf8")]);
+  const classes = new Set();
+  for (const [, t] of texts) for (const c of classWords(t)) classes.add(c);
+  for (const [f, text] of texts) {
     const layer = f.slice(0, -".layer".length);
-    for (const n of declaredNames(readFileSync(join(dir, f), "utf8"))) {
+    for (const n of declaredNames(text, classes)) {
       if (ANNEX_LAYERS.has(layer)) annex.add(n);
       else if (!village.has(n)) village.set(n, layer);
     }

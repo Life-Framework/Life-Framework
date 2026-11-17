@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F57851C9F6EB28C4}Configs/Tests/LF_Test_VehicleColoursOverlay.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -14,8 +14,7 @@ that works from anywhere.
 
 Rung 1 for duty/arrest/confiscate; rung 3 target for the station terminal.
 
-Today: `LF_DutyAction` toggles the on-duty flag; `LF_PoliceMenu` shows the
-wanted list with server-guarded Arrest/Fine; `LF_ConfiscateAction` deletes
+Today: `LF_DutyAction` toggles the on-duty flag; `LF_PoliceMenu` is the duty NPC's menu (Close only; the arrest RPC is server-guarded); `LF_ConfiscateAction` deletes
 weapons from the nearest wanted player within 5 m; `LF_OpenPoliceMenuAction`
 is the entry point.
 
@@ -53,7 +52,7 @@ is the entry point.
   (`Configs/Police/LF_WantedPosters.conf`, owner section `wantedBoard`). The dispatch boards
   inherit the component with `m_bDrawPosters 0`.
 - Wanted board (M1-11): `Roadmap_Police_WantedBoard` (`Prefabs/Police/LF_WantedBoard.et`),
-  `LF_WantedBoardReadAction` -> `LF_WantedBoard` (per-read RPC). Posters come
+  `LF_WantedBoardReadAction` -> `LF_WantedBoardProvider` on the shared board read (`LF_BoardProviders`, Signs). Posters come
   from `LF_WantedReports`: a description at the crime, the name once identified
   (ID check to an on-duty officer, or caught in the act).
 - Alarm and dispatch (M1-20): every crime calls `LF_Dispatch.Report`. The site
@@ -64,7 +63,7 @@ is the entry point.
   On-duty officers
   hear a vanilla radio chirp, then read a dispatch line with the place and the
   description, never a name. The wanted board lists recent dispatches for police.
-- `LF_PoliceMenu` — arrest entry point; the wanted list moved to the board.
+- `LF_PoliceMenu` — arrest entry point (no button calls it yet, #2509); the wanted list moved to the board.
 - Fine as a paper ticket (M1-19): Write ticket (player interaction `fine` slot)
   opens the ticket pad; the holder carries `Prefabs/Items/Roleplay/FineTicket.et`
   and pays it in carried cash at the desk punch clock (Pay ticket). Deadlines
@@ -86,7 +85,9 @@ is the entry point.
   ground in front of you (on-duty police, rate limited; placed where your ghost showed by the
   placement service, #1026, `Feature/Placement`); the server punctures each wheel whose path
   crosses it through the vanilla wheel damage, and an officer picks it up again. It goes after
-  `m_iSpikeStripLifetimeSeconds`. `LF_SpikeStrip.c`, `LF_SpikeStripActions.c`.
+  `m_iSpikeStripLifetimeSeconds`. While Deploy is selected every on-duty officer sees the ghost
+  across the road, green or red with the reason (#1939, `LF_SpikeStripPreview.c`).
+  `LF_SpikeStrip.c`, `LF_SpikeStripActions.c`.
 
 ## Dependencies
 
@@ -115,7 +116,7 @@ is the entry point.
 
 ## Robbery alarms (#740)
 
-- **Player sees:** the alarm at a robbery has its own sound: a bell at the bank vault, an intruder alarm at the fuel till, a small buzzer at a store till, a horn at the cash van. The siren stays for crimes with no kind.
+- **Player sees:** the alarm at a robbery has its own sound: a bell at the bank vault, an intruder alarm at the fuel till, the electronic two-tone retail alarm at a store till and when a shopper walks out of a shop with unpaid goods, a soft rising three-note chime at the hospital till, a horn at the cash van. The siren stays for crimes with no kind.
 - **Owner and side:** `LF_Dispatch.StartAlarm` decides on the server; the alarm prefab replicates and each client plays its sound (`LF_SiteAlarmComponent`).
 - **Data:** `m_aAlarmKinds` in `Configs/Police/LF_Police.conf` (`LF_AlarmKind`), the `m_sAlarmKind` attribute on `LF_RobAction` and `LF_BankVaultComponent`, the prefabs `Prefabs/Police/LF_SiteAlarm_<Kind>[Loud].et`, the sounds `Sounds/Alarm/Robbery/`. Nothing is persisted.
 - **Proof:** `police/robbery-alarms` (LOGIC), `police/robbery-alarms-shipped` (WORLD), `robbery-alarm-proof`.

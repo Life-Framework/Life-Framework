@@ -256,3 +256,20 @@ class LF_DialogueOverrides
 		return summary;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_DialogueOverrides's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_DialogueOverrides_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_DialogueOverrides_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_DialogueOverrides";
+	}
+
+	override void Apply()
+	{
+		LF_DialogueOverrides.Reset();
+	}
+}

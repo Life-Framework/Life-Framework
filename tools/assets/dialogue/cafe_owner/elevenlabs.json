@@ -1,0 +1,102 @@
+{
+  "id": "cafe_owner",
+  "service": "Piper text-to-speech (en_US-ljspeech-high, LJ Speech, public domain); free, offline, no characters billed",
+  "lines": {
+    "greet": {
+      "hash": "1d183c9f72e79dfd",
+      "date": "2026-11-16",
+      "voice_id": "1hIScOW98xkqE5ttC10C",
+      "voice_name": "Mariva Viva Muse - Warm and Energetic",
+      "model": "eleven_multilingual_v2",
+      "text": "Come in, come in. The coffee is hot. You are new here, I can tell. Nobody walks that slowly who has lived here long.",
+      "chars": 116,
+      "chars_total": 46,
+      "request_id": "V10PUYZ7iMlvVJHT9qDN",
+      "seconds": 7.79,
+      "mouth": "049788763102998887510000512494257953139971121010111006999898865899841100008527523685310001111059889476698254881553987688742496477424942499968874332100001100"
+    },
+    "zone": {
+      "hash": "fd56047397ccaa98",
+      "date": "2026-11-16",
+      "voice_id": "1hIScOW98xkqE5ttC10C",
+      "voice_name": "Mariva Viva Muse - Warm and Energetic",
+      "model": "eleven_multilingual_v2",
+      "text": "I came out of the zone. They told us three days. Pack what you can carry, they said, and you will be back by Friday. I took the kettle and my mother's cups. That was three years ago.",
+      "chars": 182,
+      "chars_total": 73,
+      "request_id": "oq9eHjqbZeKtR8OZnU3s",
+      "seconds": 10.62,
+      "mouth": "997239875997822764797532208824897776634377698654343000111003982279335329652898763875559853205988698256178741046322676332110000111110179249225823983897515988788968955316982254200000001987976334786699954852898541000"
+    },
+    "move": {
+      "hash": "b07ff2a7766777c1",
+      "date": "2026-11-16",
+      "voice_id": "1hIScOW98xkqE5ttC10C",
+      "voice_name": "Mariva Viva Muse - Warm and Energetic",
+      "model": "eleven_multilingual_v2",
+      "text": "When they brought us here, the town did not know what to say. So a neighbour brought bread, and nobody asked a single question. I still use the cups. Every day. Someone has to.",
+      "chars": 176,
+      "chars_total": 70,
+      "request_id": "EkbdAG7SmOckDQ8gGt0d",
+      "seconds": 11.54,
+      "mouth": "898896299799552199864100005924997668788834777981336766532310000000002769668998679841897218998845100000007888999579477851179634113578878788223644344223000000496548978863871377315641000004972542454221000000277978854865545433100000000"
+    },
+    "work": {
+      "hash": "ef9c6a83ae91a66e",
+      "date": "2026-11-16",
+      "voice_id": "1hIScOW98xkqE5ttC10C",
+      "voice_name": "Mariva Viva Muse - Warm and Energetic",
+      "model": "eleven_multilingual_v2",
+      "text": "If you need work, ask at the post office. They always need couriers. Walk fast, keep the parcels dry, and you will be paid by the end of the day.",
+      "chars": 145,
+      "chars_total": 58,
+      "request_id": "mFr4VBFS1Soiw6m02O2l",
+      "seconds": 10.45,
+      "mouth": "985799993789983221000009954288227128752562243354200010009821997489636775102998869997534310000004995222699844411000003852572199643964439998775310111108998689536412977854511188726456786210001952394695211000000000"
+    },
+    "clerk": {
+      "hash": "82ff60995b40d2a9",
+      "date": "2026-11-16",
+      "voice_id": "1hIScOW98xkqE5ttC10C",
+      "voice_name": "Mariva Viva Muse - Warm and Energetic",
+      "model": "eleven_multilingual_v2",
+      "text": "Before anything else, see the town clerk at the desk on the square. He keeps the register. A person who is not in it is no one at all, here.",
+      "chars": 140,
+      "chars_total": 56,
+      "request_id": "udQvvBbfqfSjSgNrqpZE",
+      "seconds": 9.01,
+      "mouth": "9537954999829789997343000003779698249976339962363972984427769762198863100000110019524965729779635676499763100000068216984678868988588962798995120395799996996784488532100124984311000"
+    },
+    "handbook": {
+      "hash": "b16787418d60fc89",
+      "date": "2026-11-16",
+      "voice_id": "1hIScOW98xkqE5ttC10C",
+      "voice_name": "Mariva Viva Muse - Warm and Energetic",
+      "model": "eleven_multilingual_v2",
+      "text": "And read the handbook. It is short. It tells you what the town expects of you, and what the police will not forgive.",
+      "chars": 116,
+      "chars_total": 46,
+      "request_id": "iGeVCJpGTMVrfAAApdzV",
+      "seconds": 7.15,
+      "mouth": "07997974885997447311107866555689852120086105998434999843793272138985356462793579358987410111007996973651179787466312998872228435875211100001100"
+    },
+    "bye": {
+      "hash": "0c1254f74fa40b94",
+      "date": "2026-11-16",
+      "voice_id": "1hIScOW98xkqE5ttC10C",
+      "voice_name": "Mariva Viva Muse - Warm and Energetic",
+      "model": "eleven_multilingual_v2",
+      "text": "Come back when you are hungry. Or lonely. It is the same to me.",
+      "chars": 63,
+      "chars_total": 25,
+      "request_id": "CYoTaWojPehyiH2in83P",
+      "seconds": 3.97,
+      "mouth": "04988971188889855975598631000009999876555320000000985546686654435543430000000000"
+    }
+  },
+  "voice": {
+    "id": "1hIScOW98xkqE5ttC10C",
+    "name": "Mariva Viva Muse - Warm and Energetic",
+    "source": "voice library"
+  }
+}

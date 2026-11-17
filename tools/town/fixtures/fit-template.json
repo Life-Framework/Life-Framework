@@ -1,0 +1,66 @@
+{
+ "schema": 1,
+ "kind": "town",
+ "about": "Fixture template for town-fit-selftest: tooling data, no coordinates or place names.",
+ "slots": [
+  {
+   "id": "shop",
+   "required": true,
+   "kit": "fit-kit",
+   "host": "building",
+   "needs": {
+    "interior": "required",
+    "minArea": 40,
+    "prefer": "near",
+    "types": [
+     "shop-*"
+    ]
+   },
+   "places": [
+    "StoreCounter"
+   ]
+  },
+  {
+   "id": "bar",
+   "required": false,
+   "kit": "fit-kit",
+   "host": "building",
+   "needs": {
+    "interior": "required",
+    "minArea": 40,
+    "prefer": "near",
+    "types": [
+     "pub"
+    ]
+   },
+   "plot": {
+    "minWidth": 14,
+    "minDepth": 12,
+    "prefabs": [
+     {
+      "type": "pub",
+      "stem": "PubVillage_E_2L01_V1"
+     }
+    ]
+   },
+   "places": [
+    "CafeTable",
+    "Radio"
+   ]
+  },
+  {
+   "id": "board",
+   "required": true,
+   "kit": "fit-kit",
+   "host": "street",
+   "needs": {
+    "interior": "optional",
+    "prefer": "near",
+    "maxDistance": 80
+   },
+   "places": [
+    "TownBoard"
+   ]
+  }
+ ]
+}

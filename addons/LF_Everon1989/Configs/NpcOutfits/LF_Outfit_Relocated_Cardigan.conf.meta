@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{22D6B19D66CCA5F0}Configs/NpcOutfits/LF_Outfit_Relocated_Cardigan.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -22,8 +22,8 @@ class LF_OnPlayerDowned : LF_Event
 	}
 }
 
-//! A downed player was dragged, carried, dropped or loaded into a vehicle (LF_Carry, #261).
-//! m_sKind is "drag", "carry", "drop" or "load".
+//! A downed player was loaded into a vehicle (LF_Carry, #261). m_sKind is "load"; the drag, carry
+//! and drop kinds ended with the hold on 2026-11-15.
 class LF_OnPlayerCarried : LF_Event
 {
 	string m_sPlayerUid;

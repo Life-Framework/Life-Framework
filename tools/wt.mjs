@@ -25,6 +25,9 @@ import { findReparsePoints, recycleWorktree, removeWorktree, safeRemoveTree } fr
 import { localSetting } from "./lib/local-config.mjs";
 import { ADDONS } from "./lib/addons.mjs";
 import { sessionDirOf } from "./lib/session-lease.mjs";
+import * as pinLib from "./lib/guard-pin.mjs";
+import { refuseMessage } from "./lib/disk-guard.mjs";
+import { isMachineWide, machineLockDir } from "./lib/machine-locks.mjs";
 
 const IS_WIN = process.platform === "win32";
 const GH_ON_PATH = IS_WIN ? "gh.cmd" : "gh";
@@ -50,7 +53,28 @@ export function run(cmd, args, opts = {}) {
   }
   res.stdout = res.stdout ?? "";
   res.stderr = res.stderr ?? "";
+  // A process ended by a signal has status null: report it as a failure that says so, never as an empty one.
+  if (res.status === null) {
+    res.status = 1;
+    res.stderr += `${res.stderr && !res.stderr.endsWith("\n") ? "\n" : ""}${cmd} was ended by ${res.signal ?? "a signal"}`;
+  }
   return res;
+}
+
+// One line saying what a finished run printed and how it ended, for an error message. The old
+// `(res.stderr || res.stdout).trim()` was empty when git failed without a word (a signal, a spawn
+// error, a hook that only set an exit code), which left a CI failure with nothing to read.
+export function describeRun(res) {
+  const parts = [];
+  if (res.error) parts.push(`spawn error ${res.error.code ?? ""} ${res.error.message}`.replace(/\s+/g, " "));
+  if (res.signal) parts.push(`ended by ${res.signal}`);
+  parts.push(`exit ${res.status ?? "none"}`);
+  const err = String(res.stderr ?? "").trim();
+  const out = String(res.stdout ?? "").trim();
+  if (err) parts.push(`stderr: ${err}`);
+  if (out) parts.push(`stdout: ${out}`);
+  if (!err && !out) parts.push("no output");
+  return parts.join("; ");
 }
 
 export function git(root, args) {
@@ -123,6 +147,35 @@ export function ensureHub(root) {
   const hub = hubDirOf(root);
   mkdirSync(join(hub, "locks"), { recursive: true });
   return hub;
+}
+
+// Where lock `name` lives. Most locks are in this checkout's hub. A lock that guards a UDP port
+// (server-2001, server-test-<k>) is machine-wide: on a PC that is also a pool box for another PC, the
+// box clone's hub holds it, because the remote holder writes it there (tools/lib/machine-locks.mjs).
+export function lockFileOf(root, name) {
+  const shared = isMachineWide(name) ? machineLockDir(mainRootOf(root)) : null;
+  if (shared) {
+    mkdirSync(shared, { recursive: true });
+    return join(shared, `${name}.lock`);
+  }
+  return join(ensureHub(root), "locks", `${name}.lock`);
+}
+
+// The lock file this checkout wrote before slot locks were shared, or null. A holder started by older
+// code is still a holder: acquirers treat a live one as busy until it ends.
+function legacyLockFile(root, name) {
+  const own = join(ensureHub(root), "locks", `${name}.lock`);
+  return lockFileOf(root, name) === own ? null : own;
+}
+
+function legacyHeld(file) {
+  if (!file) return false;
+  try {
+    const info = JSON.parse(readFileSync(file, "utf8"));
+    return !!info.pid && info.pid !== process.pid && pidAlive(info.pid);
+  } catch {
+    return false;
+  }
 }
 
 export function readState(root) {
@@ -226,11 +279,19 @@ export function markerPath(root) {
   return join(root, "tmp", "wt.json");
 }
 
-// priority (pool queue order: high|normal|low) is kept across rewrites.
+// priority (pool queue order: high|normal|low) is kept across rewrites. The file is written only when its content
+// changes: `wt list` reconciles every worktree, and rewriting all the markers made each worktree look freshly
+// touched, so `lead prune-safe` pruned nothing (2026-11-17). Returns true when it wrote.
 export function writeMarker(wtRoot, slug, priority) {
-  mkdirSync(join(wtRoot, "tmp"), { recursive: true });
   const keep = priority ?? readMarker(wtRoot)?.priority;
-  writeFileSync(markerPath(wtRoot), JSON.stringify(keep ? { slug, priority: keep } : { slug }) + "\n", "utf8");
+  const text = JSON.stringify(keep ? { slug, priority: keep } : { slug }) + "\n";
+  const p = markerPath(wtRoot);
+  try {
+    if (readFileSync(p, "utf8") === text) return false; // unchanged: leave the mtime alone
+  } catch { /* no marker yet */ }
+  mkdirSync(join(wtRoot, "tmp"), { recursive: true });
+  writeFileSync(p, text, "utf8");
+  return true;
 }
 
 export function readMarker(root) {
@@ -333,10 +394,11 @@ export function pidAlive(pid) {
 // callerPids: while queued, give up when one of these processes is gone, so a queued run whose caller
 // timed out never takes the slot later.
 export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs = 500, meta = {}, callerPids = [] } = {}) {
-  const lockFile = join(ensureHub(root), "locks", `${name}.lock`);
+  const lockFile = lockFileOf(root, name);
+  const legacy = legacyLockFile(root, name);
   const started = Date.now();
   for (;;) {
-    if (tryTakeLock(lockFile, name, meta, stealMs)) return { name, file: lockFile };
+    if (!legacyHeld(legacy) && tryTakeLock(lockFile, name, meta, stealMs)) return { name, file: lockFile };
     lockWaitCheck(name, lockFile, started, waitMs, callerPids);
     sleep(pollMs);
   }
@@ -347,10 +409,11 @@ export function acquireLock(root, name, { waitMs = 0, stealMs = 1200000, pollMs 
 // wait on the `build` lock ran beside `validate --full`, so every check that had already finished sat
 // unreaped and reported the same 908.8 s (2026-11-14). lock-async-selftest proves the loop keeps ticking.
 export async function acquireLockAsync(root, name, { waitMs = 0, stealMs = 1200000, pollMs = 500, meta = {}, callerPids = [] } = {}) {
-  const lockFile = join(ensureHub(root), "locks", `${name}.lock`);
+  const lockFile = lockFileOf(root, name);
+  const legacy = legacyLockFile(root, name);
   const started = Date.now();
   for (;;) {
-    if (tryTakeLock(lockFile, name, meta, stealMs)) return { name, file: lockFile };
+    if (!legacyHeld(legacy) && tryTakeLock(lockFile, name, meta, stealMs)) return { name, file: lockFile };
     lockWaitCheck(name, lockFile, started, waitMs, callerPids);
     await new Promise((r) => setTimeout(r, pollMs));
   }
@@ -410,7 +473,7 @@ function lockWaitCheck(name, lockFile, started, waitMs, callerPids) {
 // transferLock: hand a held lock to another process (a detached server), so
 // the lock stays held while that process lives and goes stale when it exits.
 export function transferLock(root, name, pid) {
-  const file = join(ensureHub(root), "locks", `${name}.lock`);
+  const file = lockFileOf(root, name);
   const info = JSON.parse(readFileSync(file, "utf8"));
   if (info.pid !== process.pid) throw new Error(`lock '${name}' is not held by this process`);
   writeFileSync(file, JSON.stringify({ ...info, pid, at: new Date().toISOString() }));
@@ -419,14 +482,14 @@ export function transferLock(root, name, pid) {
 // Takes a lock over from a process that holds it (a server about to restart),
 // so no queued run can grab it in the gap. Throws when fromPid does not hold it.
 export function adoptLock(root, name, fromPid) {
-  const file = join(ensureHub(root), "locks", `${name}.lock`);
+  const file = lockFileOf(root, name);
   const info = JSON.parse(readFileSync(file, "utf8"));
   if (info.pid !== fromPid) throw new Error(`lock '${name}' is held by pid ${info.pid}, not ${fromPid}`);
   writeFileSync(file, JSON.stringify({ ...info, pid: process.pid, at: new Date().toISOString() }));
 }
 
 export function releaseLock(root, name, owner = process.pid) {
-  const file = join(ensureHub(root), "locks", `${name}.lock`);
+  const file = lockFileOf(root, name);
   try {
     const info = JSON.parse(readFileSync(file, "utf8"));
     if (info.pid !== owner) return;
@@ -456,7 +519,15 @@ export function checkBaseName(base) {
   if (!/^[A-Za-z0-9][A-Za-z0-9._/-]*$/.test(base) || base.includes("..")) throw new Error(`invalid base branch '${base}'`);
 }
 
-export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = true } = {}) {
+function defaultPin(root) {
+  try {
+    return pinLib.resolveChecked(root, { hub: hubDirOf(root), remoteLookups: 15 });
+  } catch {
+    return null;
+  }
+}
+
+export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = true, unchecked = false, resolvePin = defaultPin, freeGb = freeDiskGbAt } = {}) {
   checkBaseName(base);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
     throw new Error(`invalid slug '${slug}': lowercase letters, digits and single hyphens only`);
@@ -468,6 +539,9 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
   const main = mainRootOf(root);
   const branch = `ws/${slug}`;
   const dir = join(dirname(main), `Life-Framework-ws-${slug}`);
+  // A checkout that runs the drive dry fails half way and leaves a broken tree: refuse before touching anything.
+  const tooFull = refuseMessage(freeGb(dirname(main)), "the drive holding the worktrees");
+  if (tooFull) throw new Error(tooFull);
   // Fetch outside the lock: it is network time, and concurrent fetches are safe
   // (a ref-lock clash leaves the refs a moment older, as before).
   git(root, ["fetch", "origin", "--prune"]);
@@ -476,6 +550,18 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
     throw new Error(`base branch origin/${base} does not exist; push it first`);
   }
   const lockWait = Math.max(waitMs, 120000);
+  // main: start from the newest commit the main guard marked compiled-ok or green, never an unchecked head
+  // (--unchecked-main overrides). No checked commit found: origin/main, with a note.
+  let start = "origin/" + base;
+  let pinned = null;
+  let pinNote = null;
+  if (base === "main" && !unchecked) {
+    const p = resolvePin(root);
+    if (p) {
+      start = p.sha;
+      pinned = p.sha.slice(0, 8) + " (" + p.status + ", " + p.behind + " commit(s) behind origin/main)";
+    } else pinNote = "no compiled-ok commit from the main guard found; based on origin/main";
+  }
 
   // Phase 1, locked: reserve the slug and its ports, then either claim a warm
   // tree and create the branch, or register a fresh worktree without checking
@@ -497,11 +583,11 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
     if (existsSync(dir)) throw new Error(`directory already exists: ${dir}`);
     claimed = warm ? takeWarm(root, state, slug) : null;
     if (claimed) {
-      const br = git(root, ["branch", branch, `origin/${base}`]);
+      const br = git(root, ["branch", branch, start]);
       // A throw here skips the state write, so the warm tree stays ready.
       if (br.status !== 0) throw new Error(`git branch ${branch} failed: ${br.stderr || br.stdout}`);
     } else {
-      addFreshNoCheckout(root, dir, branch, base, false);
+      addFreshNoCheckout(root, dir, branch, base, false, start);
     }
     ports = allocatePorts(state);
     state.worktrees[slug] = {
@@ -555,16 +641,16 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
   }, { waitMs: lockWait });
   mark("finish", t2);
   kickWarmFill(root);
-  return { slug, path: dir, branch, ports, base, priority, warm: fromWarm, ms: Date.now() - t0, lockMs, phases };
+  return { slug, path: dir, branch, ports, base, pinned, pinNote, priority, warm: fromWarm, ms: Date.now() - t0, lockMs, phases };
 }
 
 // `git worktree add --no-checkout`: registers the worktree and its branch
 // (same upstream tracking as `worktree add -b <branch> origin/<base>`) without
 // writing the files, which `git reset --hard` does afterwards, unlocked.
-function addFreshNoCheckout(root, dir, branch, base, branchExists) {
+function addFreshNoCheckout(root, dir, branch, base, branchExists, start = `origin/${base}`) {
   const args = branchExists
     ? ["worktree", "add", "--no-checkout", dir, branch]
-    : ["worktree", "add", "--no-checkout", dir, "-b", branch, `origin/${base}`];
+    : ["worktree", "add", "--no-checkout", dir, "-b", branch, start];
   const add = git(root, args);
   if (add.status !== 0) throw new Error(`git worktree add failed: ${add.stderr || add.stdout}`);
 }
@@ -871,8 +957,9 @@ export function branchMerged(root, branch, base, { mergedHeads = mergedPrHeads }
 // Why a worktree must not be pruned right now, or null: a live lock or session that names it.
 export function worktreeBusy(root, e) {
   const want = normalize(resolve(e.path)).toLowerCase();
-  const dir = join(hubDirOf(root), "locks");
-  if (existsSync(dir)) {
+  const dirs = [join(hubDirOf(root), "locks"), machineLockDir(mainRootOf(root))].filter(Boolean);
+  for (const dir of dirs) {
+    if (!existsSync(dir)) continue;
     for (const f of readdirSync(dir)) {
       try {
         const info = JSON.parse(readFileSync(join(dir, f), "utf8"));
@@ -1041,14 +1128,42 @@ export function commitSubjects(root, range) {
   return res.status === 0 ? res.stdout.split(/\r?\n/).filter(Boolean) : [];
 }
 
-export function createPrGh(root, { head, title, body, base = "main" }) {
-  const gh = ghBin();
-  const res = run(gh, ["pr", "create", "--base", base, "--head", head, "--title", title, "--body", body], { cwd: root });
+// The body always goes through a file: a generated body (a world ship's change list) runs to tens of KB, and as a
+// command-line argument it fails with spawnSync ENAMETOOLONG on Windows (~32 KB limit). The file lives in
+// <root>/tmp (scratch, gitignored) under a unique name and is removed afterwards. `deps` is for the selftest.
+export function withBodyFile(root, body, fn, tag = "pr-body-gh") {
+  const dir = join(root, "tmp");
+  mkdirSync(dir, { recursive: true });
+  const file = join(dir, `${tag}-${process.pid}-${Date.now()}.md`);
+  writeFileSync(file, String(body ?? ""), "utf8");
+  try {
+    return fn(file);
+  } finally {
+    rmSync(file, { force: true });
+  }
+}
+
+export function createPrGh(root, { head, title, body, base = "main", draft = false }, deps = {}) {
+  const gh = deps.gh ?? ghBin();
+  const exec = deps.run ?? run;
+  const res = withBodyFile(root, body, (file) => exec(gh, ["pr", "create", "--base", base, "--head", head, "--title", title, "--body-file", file, ...(draft ? ["--draft"] : [])], { cwd: root }));
   if (res.status !== 0) throw new Error(`gh pr create failed: ${res.stderr || res.stdout}`);
   const out = res.stdout.trim();
   const url = (out.match(/https?:\/\/\S+/i) || [])[0] || out.split(/\r?\n/).pop();
   const number = parseInt((url.match(/\/pull\/(\d+)/) || [])[1], 10);
   return { url, number };
+}
+
+// The body of PR #number, or null when gh cannot read it.
+export function prBodyGh(root, number) {
+  const res = run(ghBin(), ["pr", "view", String(number), "--json", "body", "--jq", ".body"], { cwd: root });
+  return res.status === 0 ? res.stdout.replace(/\r?\n$/, "") : null;
+}
+
+// Replaces the body of PR #number (through --body-file, like createPrGh).
+export function setPrBodyGh(root, number, body) {
+  const res = withBodyFile(root, body, (file) => run(ghBin(), ["pr", "edit", String(number), "--body-file", file], { cwd: root }));
+  if (res.status !== 0) throw new Error(`gh pr edit failed: ${res.stderr || res.stdout}`);
 }
 
 // The open PR for a head branch, or null. Lets a re-run of `wt ship` reuse it.

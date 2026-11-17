@@ -22,6 +22,9 @@ class LF_PlaceComponent : ScriptComponent
 	[Attribute("-1", UIWidgets.Auto, desc: "Position in a series that shares the id (a route's stops, from 0). -1: not a series.")]
 	protected int m_iOrder;
 
+	[Attribute("-1", UIWidgets.Auto, desc: "Map state this place belongs to (the pack says what each number means). The place registers only while the mission header's m_aLF_LiveStates lists it; otherwise it stays dark. -1: always live.")]
+	protected int m_iLiveState;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -34,7 +37,7 @@ class LF_PlaceComponent : ScriptComponent
 			return;
 		}
 
-		LF_Places.Register(m_sKind, LF_Places.OrderedId(id, m_iOrder), owner);
+		LF_PlaceLiveState.Register(m_sKind, LF_Places.OrderedId(id, m_iOrder), m_iLiveState, LF_PlaceLiveState.HeaderStates(), owner);
 	}
 
 	//------------------------------------------------------------------------------------------------

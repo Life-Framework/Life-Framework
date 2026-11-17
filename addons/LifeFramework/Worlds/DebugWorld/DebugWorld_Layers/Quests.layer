@@ -1,6 +1,6 @@
 LF_NpcBaseEntity Quest_Clerk : "{446165FE77D592AC}Prefabs/Characters/Npcs/Outfits/LF_Npc_Clerk_1.et" {
- coords 134 0 243.5
- angleY 270
+ coords 137.058 -0.005 240.907
+ angleY -65.2
 }
 LF_NpcBaseEntity Quest_TestGiver : "{E8989175335080B8}Prefabs/Characters/Quests/QuestGiver_Start.et" {
  coords 104 0 70

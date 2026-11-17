@@ -1,0 +1,132 @@
+// Grid cell c7r2 for police-desk: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_police_desk_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 107 0 47
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 111.4 0 47
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 115.8 0 47
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 120.2 0 47
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 124.6 0 47
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 129 0 47
+ angleY 270
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 129 0 52
+ angleY 270
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 129 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 124.6 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 120.2 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 115.8 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 111.4 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_desk_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 107 0 57
+ angleY 90
+}
+GenericEntity Grid_police_desk_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:police-desk"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 106.2 0.505 47.6
+ angleY -90
+}
+GenericEntity Grid_police_desk_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "police-desk"
+  }
+ }
+ coords 106.3 0 49.5
+ angleY 90
+}
+GenericEntity Annex_Police_Desk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
+ Flags 0x403 0
+ coords 112.426 0 51.809
+}
+GenericEntity Annex_Police_Armory {
+ components {
+  MeshObject "{A7C31A9B04D25011}" {
+   Object "{138FB8A2D71B1603}Assets/Props/Furniture/CabinetMetal_01/CabinetMetal_01.xob"
+   Materials {
+    MaterialAssignClass "{A7C31A9B04D25019}" {
+     SourceMaterial "CabinetMetal_01"
+     AssignedMaterial "{50729867FFC0AF7F}Assets/Props/Furniture/CabinetMetal_01/Data/CabinetMetal_01_V1.emat"
+    }
+   }
+  }
+  RigidBody "{A7C31A9B04D25012}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{A7C31A9B04D25013}" {
+   ActionContexts {
+    UserActionContext "{A7C31A9B04D25014}" {
+     ContextName "default"
+     Position PointInfo "{A7C31A9B04D25015}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ArmoryDrawAction "{A7C31A9B04D25016}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_RankPromoteAction "{A7C31A9B04D25017}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{A7C31A9B04D25018}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 115.575 0 52.16
+}
+GenericEntity Annex_Police_WantedBoard : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
+ coords 119.565 0 52.191
+ angleY 0
+}
+GenericEntity Annex_Police_EvidenceLocker : "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et" {
+ components {
+  LF_BreachTargetComponent "{3A7C5E91B4D20F79}" {
+   m_sTargetId "Annex_Police_EvidenceLocker"
+  }
+ }
+ coords 123.575 0 52.16
+}

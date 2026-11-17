@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{75EAFBE6D0099EB8}Prefabs/Buildings/ClothingStore/Furniture/ShopHouse_E_2I01t_furniture_clothesstore_lf_01.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

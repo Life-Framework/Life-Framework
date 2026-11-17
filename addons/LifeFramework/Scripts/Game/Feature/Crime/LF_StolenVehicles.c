@@ -308,6 +308,14 @@ class LF_StolenVehicles
 			return false;
 		}
 
+		// The garage keeps no cargo: the officer searches the car before it goes back (#2411).
+		if (LF_Garage.HasCargo(vehicle))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("recover refused on %1: the vehicle still holds items", vehicleId));
+			LF_Utils.NotifyEntity(officer, "#LF-Garage_EmptyCargo", "#LF-Stolen_CheckTitle", 4.0);
+			return false;
+		}
+
 		bool tracked = LF_VehicleOwnership.GetVehicle(vehicleId) == vehicle;
 		if (!LF_VehicleOwnership.Store(vehicleId, report.m_sOwnerUid))
 		{
@@ -515,5 +523,22 @@ class LF_RecoverVehicleAction : ScriptedUserAction
 	{
 		outName = "#LF-Stolen_RecoverAction";
 		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_StolenVehicles's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_StolenVehicles_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_StolenVehicles_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_StolenVehicles";
+	}
+
+	override void Apply()
+	{
+		LF_StolenVehicles.ResetStatics();
 	}
 }

@@ -104,7 +104,36 @@ class LF_SpikeStrips
 {
 	static const string FEATURE = "SpikeStrip";
 
+	//! The strip an officer lays (what SpikeStrip_Item.et places).
+	static const ResourceName STRIP_PREFAB = "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip.et";
+
 	protected static string s_sLastRefusal;
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: whether an officer with `deployed` strips down may lay one more under `cap`.
+	static bool AtCap(int deployed, int cap)
+	{
+		return deployed >= cap;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, from LF_PlacementService.Confirm before anything is spawned or used up: "" when
+	//! `officer` may lay what `placeable` places, otherwise the log line of the refusal. Each
+	//! deployed strip runs a wheel check 20 times a second, so an officer's strips are capped by
+	//! LF_PoliceConfig.SpikeStripMaxPerOfficer (#2416). Anything but a spike strip passes.
+	static string CapProblem(IEntity officer, LF_PlaceableComponent placeable)
+	{
+		if (!placeable || !LF_Utils.SamePrefab(placeable.GetPlacedPrefab(), STRIP_PREFAB))
+			return "";
+
+		string uid = LF_PoliceRanks.ResolveUid(officer);
+		int deployed = LF_SpikeStripComponent.CountDeployedBy(uid);
+		int cap = LF_PoliceConfig.SpikeStripMaxPerOfficer();
+		if (!AtCap(deployed, cap))
+			return "";
+
+		return string.Format("refused: %1 already has %2 spike strip(s) deployed (cap %3)", uid, deployed, cap);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Deployed strips on this machine (the harness and the tests read them).
@@ -160,7 +189,7 @@ class LF_SpikeStrips
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: an on-duty officer folds the strip up; the item goes into their inventory, or onto the
-	//! ground at their feet when it is full.
+	//! ground at their feet when it is full. A refundable placement charge goes back to its payer.
 	static bool PickUp(IEntity officer, IEntity strip)
 	{
 		if (!Replication.IsServer() || !officer || !strip)
@@ -190,6 +219,8 @@ class LF_SpikeStrips
 
 		int added = LF_InventoryUtils.AddAmount(officer, component.GetItemPrefab(), 1, true);
 		LF_Debug.Info(FEATURE, string.Format("picked up by %1 (into inventory %2)", LF_PoliceRanks.ResolveUid(officer), added));
+		// A priced strip gives its placement charge back once, and only to the officer who paid (#2502).
+		LF_PlacementCost.OnPickedUp(officer, strip.GetID());
 		SCR_EntityHelper.DeleteEntityAndChildren(strip);
 		return true;
 	}
@@ -431,6 +462,24 @@ class LF_SpikeStripComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! How many strips deployer laid that still stand. A strip placed in a world layer (it does not
+	//! expire) has no deployer and is never counted.
+	static int CountDeployedBy(string deployer)
+	{
+		if (!s_aAll || deployer.IsEmpty())
+			return 0;
+
+		int count = 0;
+		foreach (LF_SpikeStripComponent strip : s_aAll)
+		{
+			if (strip && strip.m_bExpires && strip.m_sDeployer == deployer)
+				count++;
+		}
+
+		return count;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static LF_SpikeStripComponent NearestTo(vector pos, float radius)
 	{
 		LF_SpikeStripComponent best;
@@ -607,5 +656,22 @@ class LF_SpikeStripComponent : ScriptComponent
 		added.m_Vehicle = vehicle;
 		m_aTracks.Insert(added);
 		return added;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_SpikeStrips's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_SpikeStrips_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_SpikeStrips_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_SpikeStrips";
+	}
+
+	override void Apply()
+	{
+		LF_SpikeStrips.ResetStatics();
 	}
 }

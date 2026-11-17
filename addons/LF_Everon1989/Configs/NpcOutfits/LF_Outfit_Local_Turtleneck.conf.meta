@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{745FC156BE475B1A}Configs/NpcOutfits/LF_Outfit_Local_Turtleneck.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

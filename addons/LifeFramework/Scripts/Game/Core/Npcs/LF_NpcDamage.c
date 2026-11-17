@@ -97,3 +97,20 @@ class LF_NpcHitZone : SCR_HitZone
 		LF_NpcDamage.OnKilled(GetOwner(), damageContext.instigator);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_NpcDamage's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_NpcDamage_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_NpcDamage_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_NpcDamage";
+	}
+
+	override void Apply()
+	{
+		LF_NpcDamage.ResetStatics();
+	}
+}

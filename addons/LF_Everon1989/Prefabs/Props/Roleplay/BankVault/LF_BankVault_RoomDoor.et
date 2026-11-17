@@ -1,0 +1,46 @@
+GenericEntity {
+ ID "A7D41E0C3B9852F6"
+ components {
+  RplComponent "{A7D41E0C3B985201}" {
+  }
+  LF_LockComponent "{A7D41E0C3B985202}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{A7D41E0C3B985203}" {
+   ActionContexts {
+    UserActionContext "{A7D41E0C3B985204}" {
+     Position PointInfo "{A7D41E0C3B985205}" {
+      Offset 0 1.35 0.45
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_BankRobAction "{A7D41E0C3B985206}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{A7D41E0C3B985207}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_BreachTargetComponent "{A7D41E0C3B985208}" {
+   m_fFuseSeconds 0
+   m_sSwingChild "VaultDoor"
+   m_fSwingYaw 70
+  }
+  LF_BankVaultComponent "{A7D41E0C3B985209}" {
+   m_sSafeType "bank_room"
+  }
+ }
+ {
+  GenericEntity VaultDoor : "{7C7B004BBFE9D599}Prefabs/Props/Roleplay/BankVault/LF_BankVault_Door.et" {
+   ID "A7D41E0C3B98520A"
+   coords 1.271 1.35 0.1624
+  }
+ }
+}

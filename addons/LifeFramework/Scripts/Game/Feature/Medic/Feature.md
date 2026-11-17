@@ -45,7 +45,7 @@ patient it adds config seconds (capped) to the bleed-out clock and publishes `LF
 
 ## V1.3 - #258, the medic job
 
-The hospital duty desk (`Prefabs/Medic/LF_MedicDutyDesk.et`, `LF_DutyAction` with `m_eRole MEDIC`) is the
+The hospital duty desk (`Prefabs/Medic/LF_MedicDutyDesk.et`, an `LF_Workplace` with job MEDIC) is the
 police desk's twin: same swap through `LF_DutyLocker`, own slot `medic_duty`, open to every registered
 player, duty pay at clock-out. On duty the account's faction is MEDIC and `LF_MedicDuty` /
 `LF_ServiceCalls.JobFor` make routing see the medic job (board, take, pager). The kit lives in the
@@ -64,9 +64,15 @@ always fast (`StopLoitering(true)`): the CPR out clip carries no `Gesture_End`, 
 
 ## V1.3 - #261, drag and carry
 
-`LF_Carry` (server hold table, 250 ms follow tick, replicated carrier id on the character), four actions
-on a player character: Drag, Carry, Put down, Load into vehicle. Config `m_bCarryAnyone` and the
-distances in `LF_Medic.conf`. Publishes `LF_OnPlayerCarried`. No animation (ACE's are GPL).
+`LF_Carry`: one action on a player character, Load into vehicle, offered on a downed body within
+`m_fCarryRange` when a vehicle with a free cargo seat is within `m_fLoadRange`; the server seats the body
+through `SCR_CompartmentAccessComponent.MoveInVehicle` (the vanilla casualty path). Config `m_bCarryAnyone`
+and the distances in `LF_Medic.conf`. Publishes `LF_OnPlayerCarried` ("load").
+**Cut 2026-11-15:** Drag, Carry and Put down (the server hold with the 250 ms follow tick). It moved a
+client-owned body with the Game Master teleport every tick, with no animation: the player saw a body
+teleporting around. Vanilla has no carry or drag animation and no attach for a player character; the
+ACE clips are GPL. `m_fDragDistance`, `m_fCarryDistance` and `m_fCarryReleaseDistance` stay in the
+config so an existing `.conf` still loads; nothing reads them.
 
 ## V1.4 - #260, treatment bill
 

@@ -1,0 +1,123 @@
+SCR_DestructibleBuildingEntity : "{9090774B54A3747C}Prefabs/Buildings/Drugstore/ShopHouse_E_2I01t_drugstore_lf.et" {
+ ID "215395EFF7B9FEBA"
+ components {
+  LF_ShopComponent "{75E5F000B8303219}" {
+   m_aShopItems {
+    LF_ShopItem "{550C43CF5A24A440}" {
+     m_ItemPrefab "{C98FCC6CA6C56069}Prefabs/Items/Medicine/AspirinBottle.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{83F42F92AFF69535}" {
+     m_ItemPrefab "{CDCC313B2FB76FE7}Prefabs/Items/Medicine/FieldDressing_01/Gauze_01.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{9BA73B2528EBDD11}" {
+     m_ItemPrefab "{AF3411AAF94D18C2}Prefabs/Items/Medicine/Gauze_02/Gauze_02.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{73D4E396CFFE8CBD}" {
+     m_ItemPrefab "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{D3F66F2A8603AD96}" {
+     m_ItemPrefab "{80E75A71C29190DB}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+   }
+  }
+  LF_StoreComponent "{78AF9451BF9582F9}" {
+   m_sStoreKey "everon_drugstore"
+   m_aLines {
+    LF_StoreLine "{5D755B170F096342}" {
+     m_ItemPrefab "{C98FCC6CA6C56069}Prefabs/Items/Medicine/AspirinBottle.et"
+     m_iMaxStock 20
+     m_iRestockAmount 3
+     m_sSlots "1.219 1.049 5.575 | 1.673 1.049 5.575 | 2.127 1.049 5.575 | 2.58 1.049 5.575 | 3.034 1.049 5.575 | 1.219 1.049 5.681 | 1.673 1.049 5.681 | 2.127 1.049 5.681 | 2.58 1.049 5.681 | 3.034 1.049 5.681 | 1.219 1.406 5.546 | 1.673 1.406 5.546 | 2.127 1.406 5.546 | 2.58 1.406 5.546 | 3.034 1.406 5.546 | 1.219 1.406 5.652 | 1.673 1.406 5.652 | 2.127 1.406 5.652 | 2.58 1.406 5.652 | 3.034 1.406 5.652"
+    }
+    LF_StoreLine "{71B8237EBC46A04E}" {
+     m_ItemPrefab "{CDCC313B2FB76FE7}Prefabs/Items/Medicine/FieldDressing_01/Gauze_01.et"
+     m_iMaxStock 20
+     m_iRestockAmount 3
+     m_sSlots "1.219 1.049 3.107 | 1.673 1.049 3.107 | 2.127 1.049 3.107 | 2.58 1.049 3.107 | 3.034 1.049 3.107 | 1.219 1.049 3.199 | 1.673 1.049 3.199 | 2.127 1.049 3.199 | 2.58 1.049 3.199 | 3.034 1.049 3.199 | 1.219 1.406 3.078 | 1.673 1.406 3.078 | 2.127 1.406 3.078 | 2.58 1.406 3.078 | 3.034 1.406 3.078 | 1.219 1.406 3.17 | 1.673 1.406 3.17 | 2.127 1.406 3.17 | 2.58 1.406 3.17 | 3.034 1.406 3.17"
+    }
+    LF_StoreLine "{CCDACF3629B91A5C}" {
+     m_ItemPrefab "{AF3411AAF94D18C2}Prefabs/Items/Medicine/Gauze_02/Gauze_02.et"
+     m_iMaxStock 20
+     m_iRestockAmount 3
+     m_sSlots "3.034 1.049 5.202 | 2.58 1.049 5.202 | 2.127 1.049 5.202 | 1.673 1.049 5.202 | 1.219 1.049 5.202 | 3.034 1.049 5.103 | 2.58 1.049 5.103 | 2.127 1.049 5.103 | 1.673 1.049 5.103 | 1.219 1.049 5.103 | 3.034 1.406 5.231 | 2.58 1.406 5.231 | 2.127 1.406 5.231 | 1.673 1.406 5.231 | 1.219 1.406 5.231 | 3.034 1.406 5.131 | 2.58 1.406 5.131 | 2.127 1.406 5.131 | 1.673 1.406 5.131 | 1.219 1.406 5.131"
+    }
+    LF_StoreLine "{EBBE647CD6BD9D04}" {
+     m_ItemPrefab "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
+     m_iMaxStock 20
+     m_iRestockAmount 3
+     m_sSlots "3.036 0.657 2.685 | 2.582 0.657 2.685 | 2.128 0.657 2.685 | 1.675 0.657 2.685 | 1.221 0.657 2.685 | 3.036 0.657 2.561 | 2.582 0.657 2.561 | 2.128 0.657 2.561 | 1.675 0.657 2.561 | 1.221 0.657 2.561 | 3.036 1.049 2.731 | 2.582 1.049 2.731 | 2.128 1.049 2.731 | 1.675 1.049 2.731 | 1.221 1.049 2.731 | 3.036 1.049 2.607 | 2.582 1.049 2.607 | 2.128 1.049 2.607 | 1.675 1.049 2.607 | 1.221 1.049 2.607"
+    }
+    LF_StoreLine "{A87FA377EFE69670}" {
+     m_ItemPrefab "{80E75A71C29190DB}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et"
+     m_iMaxStock 20
+     m_iRestockAmount 3
+     m_sSlots "5.531 0.657 2.477 | 5.531 0.657 2.931 | 5.531 0.657 3.385 | 5.531 0.657 3.838 | 5.531 0.657 4.292 | 5.426 0.657 2.477 | 5.426 0.657 2.931 | 5.426 0.657 3.385 | 5.426 0.657 3.838 | 5.426 0.657 4.292 | 5.577 1.049 2.477 | 5.577 1.049 2.931 | 5.577 1.049 3.385 | 5.577 1.049 3.838 | 5.577 1.049 4.292 | 5.473 1.049 2.477 | 5.473 1.049 2.931 | 5.473 1.049 3.385 | 5.473 1.049 3.838 | 5.473 1.049 4.292"
+    }
+   }
+   m_vBoundaryCenter 2.08 0 -0.45
+   m_vBoundaryHalf 3.75 0 7.9
+   m_iRestockSeconds 300
+  }
+  ActionsManagerComponent "{D8751A2EB808849F}" {
+   ActionContexts {
+    UserActionContext "{32B99FF663B2E639}" {
+     ContextName "till1"
+     Position PointInfo "{E41DE748D14A146A}" {
+      Offset 1.16 1.488 -0.325
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_StoreTillAction "{AACB1E7C1694B966}" {
+     ParentContextList {
+      "till1"
+     }
+     UIInfo UIInfo "{AAAC644A087E4F6A}" {
+      Name "#LF-Store_Pay"
+     }
+    }
+   }
+  }
+ }
+ {
+  GenericEntity : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+   ID "93E8C328C797C566"
+   components {
+    LF_AlarmMountComponent "{B18DF3E384CC59BD}" {
+     m_vOffset 0 0.167 0.065
+     m_fReach 10
+    }
+   }
+   coords 4.9 2.6 8.08
+  }
+  GenericEntity : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+   ID "0E754B2C97DA8608"
+   coords 1.57 0.199 -0.323
+  }
+  GenericEntity : "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et" {
+   ID "2E412653EA6F0F2F"
+   coords 1.16 1.238 -0.325
+   angleY -180
+  }
+  GenericEntity : "{E66CFB8EA2048E05}Prefabs/Props/Commercial/LF_PharmacyCounter.et" {
+   ID "4E34FC08EA0EBAF1"
+   components {
+    LF_ShopComponent "{837E80AF6CCDBB47}" {
+     m_sOutletId "pharmacy_counter"
+    }
+   }
+   coords 3.4 0.199 -0.323
+  }
+ }
+}

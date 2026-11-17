@@ -28,12 +28,16 @@ class LF_DialogueScene
 	protected static int s_iFocus;
 	//! MenuUp or MenuDown was down last tick: a held key (the harness holds one 300 ms) steps once.
 	protected static bool s_bStepHeld;
+	protected static bool s_bBackListening;
 	protected static bool s_bChoosing;
 	protected static bool s_bWaiting;
 	protected static int s_iLineEndMs;
 	protected static int s_iGuardUntilMs;
 	protected static int s_iWaitSinceMs;
 	protected static int s_iShown;
+	//! The action hook of the reply this player picked last, run on this client when the talk ends.
+	protected static string s_sAfterHook;
+	protected static string s_sAfterParam;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -48,6 +52,8 @@ class LF_DialogueScene
 		s_bWaiting = false;
 		s_bStepHeld = false;
 		s_iShown = 0;
+		s_sAfterHook = string.Empty;
+		s_sAfterParam = string.Empty;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -190,10 +196,72 @@ class LF_DialogueScene
 		if (!LF_DialogueCamera.Start(npc))
 			LF_Debug.Warn(LF_Dialogue.FEATURE, "the conversation runs without its camera");
 
+
 		LF_DialogueVoice.Attend(npc, true);
 		GetGame().GetCallqueue().CallLater(Tick, 0, true);
+		BindBack();
 		LF_Debug.Info(LF_Dialogue.FEATURE, string.Format("scene open with '%1'", config.m_sId));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: Back (MenuBack: Escape, Backspace, gamepad B) leaves the talk. The same Back path as
+	//! every kit sheet: the MenuBack action listener and the Tick poll both land here, and LF_UIBack
+	//! refuses the second report of one press. Inside the input guard the press is ignored.
+	//! \return true when this call left the conversation.
+	static bool Back()
+	{
+		if (!IsOpen() || System.GetTickCount() < s_iGuardUntilMs || !LF_UIBack.Fresh())
+			return false;
+
+		Close("the player left", true);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while the scene holds its MenuBack listener.
+	static bool HasBackHandler()
+	{
+		return s_bBackListening;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void BindBack()
+	{
+		InputManager input = GetGame().GetInputManager();
+		if (!input || s_bBackListening)
+			return;
+
+		input.AddActionListener(LF_UIBack.ACTION, EActionTrigger.DOWN, OnBackAction);
+		s_bBackListening = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removed one tick after Close, never inside the listener's own call.
+	protected static void UnbindBack()
+	{
+		// A new conversation opened in the same tick keeps the listener the old one bound.
+		if (!s_bBackListening || IsOpen())
+			return;
+
+		s_bBackListening = false;
+		InputManager input = GetGame().GetInputManager();
+		if (input)
+			input.RemoveActionListener(LF_UIBack.ACTION, EActionTrigger.DOWN, OnBackAction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void OnBackAction()
+	{
+		Back();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a node from the server is taken: the scene is open on that NPC and asked for it
+	//! (it is waiting after a start or a reply).
+	static bool AcceptsNode(bool open, bool waiting, bool sameNpc)
+	{
+		return open && waiting && sameNpc;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -207,14 +275,12 @@ class LF_DialogueScene
 			return;
 		}
 
-		if (!IsOpen() || npc.GetID() != s_NpcId)
+		// Only an answer to a start or a reply this scene is waiting for. A late node (the player left
+		// first, the server answered a reply that timed out) must not reopen a closed scene.
+		if (!AcceptsNode(IsOpen(), s_bWaiting, IsOpen() && npc.GetID() == s_NpcId))
 		{
-			if (IsOpen())
-				Close("the server moved the conversation", false);
-
-			LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
-			if (!config || !Open(npc, config))
-				return;
+			LF_Debug.Info(LF_Dialogue.FEATURE, string.Format("node '%1' ignored: the scene is closed or waits for nothing", nodeId));
+			return;
 		}
 
 		s_sNode = nodeId;
@@ -257,7 +323,10 @@ class LF_DialogueScene
 
 		if (s_iMask == 0)
 		{
+			string afterHook = s_sAfterHook;
+			string afterParam = s_sAfterParam;
 			Close("the conversation ended", false);
+			RunAfterScene(afterHook, afterParam, npc);
 			return;
 		}
 
@@ -363,6 +432,15 @@ class LF_DialogueScene
 			return false;
 
 		int index = s_aRows[row];
+		s_sAfterHook = string.Empty;
+		s_sAfterParam = string.Empty;
+		LF_DialogueOption picked = LF_DialogueFlow.Pick(LF_DialogueFlow.FindNode(s_Config, s_sNode), s_iMask, index);
+		if (picked && picked.m_sNext.IsEmpty())
+		{
+			s_sAfterHook = picked.m_sAction;
+			s_sAfterParam = picked.m_sParam;
+		}
+
 		s_bChoosing = false;
 		s_bWaiting = true;
 		s_iWaitSinceMs = System.GetTickCount();
@@ -370,6 +448,19 @@ class LF_DialogueScene
 		SetText("Hint", "");
 		controller.LF_AskDialogueChoose(index);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the reply that ended the talk names a hook; let it act on this screen (a shopkeeper's
+	//! "show me what you've got" opens the price list).
+	protected static void RunAfterScene(string hookName, string param, IEntity npc)
+	{
+		if (hookName.IsEmpty() || !npc)
+			return;
+
+		LF_DialogueHook hook = LF_DialogueHook.Find(hookName);
+		if (hook)
+			hook.AfterScene(LF_Utils.GetLocalCharacter(), npc, param);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -429,9 +520,9 @@ class LF_DialogueScene
 		if (now < s_iGuardUntilMs)
 			return;
 
-		if (input.GetActionTriggered("MenuBack"))
+		if (input.GetActionTriggered(LF_UIBack.ACTION))
 		{
-			Close("the player left", true);
+			Back();
 			return;
 		}
 
@@ -494,6 +585,7 @@ class LF_DialogueScene
 			return;
 
 		GetGame().GetCallqueue().Remove(Tick);
+		GetGame().GetCallqueue().CallLater(UnbindBack, 0, false);
 		BaseWorld world = GetGame().GetWorld();
 		if (world)
 		{
@@ -518,5 +610,22 @@ class LF_DialogueScene
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (controller)
 			controller.LF_AskDialogueLeave();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_DialogueScene's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_DialogueScene_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_DialogueScene_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_DialogueScene";
+	}
+
+	override void Apply()
+	{
+		LF_DialogueScene.ResetStatics();
 	}
 }

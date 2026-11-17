@@ -1,0 +1,134 @@
+// Grid cell c7r5 for first-night-room: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_first_night_room_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 107 0 83
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 111.857 0 83
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 116.714 0 83
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 121.571 0 83
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 126.429 0 83
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 131.286 0 83
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 136.143 0 83
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 141 0 83
+ angleY 270
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 141 0 87.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 141 0 91.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 141 0 96.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 141 0 100.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 141 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 136.143 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 131.286 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 126.429 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 121.571 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 116.714 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_19 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 111.857 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_20 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 107 0 105
+ angleY 90
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_21 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 107 0 100.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_first_night_room_Fence_22 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 107 0 96.2
+ angleY 90
+}
+GenericEntity Grid_first_night_room_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:first-night-room"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 106.2 0.505 83.6
+ angleY -90
+}
+SCR_DestructibleBuildingEntity FirstNightRoom_Hotel : "{39FC44E47347DF5D}Prefabs/Structures/Services/Hotels/MountainHotel_01/MountainHotel_01_green.et" {
+ coords 127.33 0 100.739
+}
+GenericEntity FirstNightRoom_Bed_1 : "{15468371DAC524FC}Prefabs/Medic/LF_FirstSpawnBed.et" {
+ components {
+  LF_FirstSpawnBedComponent "{FCB27F8C7C2E211B}" {
+   m_vStandOffset -0.85 0 0
+  }
+ }
+ coords 131.18 3.4 92.444
+}
+GenericEntity FirstNightRoom_Bed_2 : "{15468371DAC524FC}Prefabs/Medic/LF_FirstSpawnBed.et" {
+ components {
+  LF_FirstSpawnBedComponent "{FCB27F8C7C2E211B}" {
+   m_vStandOffset -0.85 0 0
+  }
+ }
+ coords 135.88 3.4 92.444
+}
+GenericEntity FirstNightRoom_Bed_3 : "{15468371DAC524FC}Prefabs/Medic/LF_FirstSpawnBed.et" {
+ components {
+  LF_FirstSpawnBedComponent "{FCB27F8C7C2E211B}" {
+   m_vStandOffset 0 0 -1.7
+  }
+ }
+ coords 115.92 3.4 101.244
+}
+GenericEntity FirstNightRoom_Nightstand_1 : "{EFCD232A50C15173}Prefabs/Props/Furniture/Nightstand_01.et" {
+ coords 132.18 3.4 91.739
+}
+GenericEntity FirstNightRoom_Nightstand_2 : "{EFCD232A50C15173}Prefabs/Props/Furniture/Nightstand_01.et" {
+ coords 136.78 3.4 91.739
+}
+GenericEntity FirstNightRoom_Locker : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
+ coords 138.73 3.4 91.417
+}
+GenericEntity FirstNightRoom_Suitcase_1 : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
+ coords 115.106 3.401 100.939
+ angleY 90
+}

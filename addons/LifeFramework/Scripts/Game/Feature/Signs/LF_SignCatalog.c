@@ -358,6 +358,59 @@ class LF_SignCatalog
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A sign's text as plain lines (the title in capitals, then each filled section as
+	//! "Label: text"), for the World Editor preview. Keys are resolved; list marks stay as typed.
+	static string PlainText(LF_SignDef sign)
+	{
+		if (!sign)
+			return string.Empty;
+
+		string text = ResolveTitle(sign.m_sTitle);
+		text.ToUpper();
+		text += PlainLine(KEY_WHAT, sign.m_sWhat);
+		text += PlainLine(KEY_HOW, sign.m_sHow);
+		text += PlainLine(KEY_NEEDS, sign.m_sNeeds);
+		text += PlainLine(KEY_RULES, sign.m_sRules);
+		text += PlainLine(KEY_NEXT, sign.m_sNext);
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string PlainLine(string headingKey, string value)
+	{
+		string body = Resolve(value);
+		if (body.IsEmpty())
+			return string.Empty;
+
+		return "\n" + WidgetManager.Translate(headingKey) + ": " + body;
+	}
+
+#ifdef WORKBENCH
+	//------------------------------------------------------------------------------------------------
+	//! Workbench: forget the loaded config, so an edited LF_Signs.conf or pack overlay is read again.
+	static void WbReload()
+	{
+		s_Config = null;
+		s_bLoadAttempted = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Workbench: every sign id the catalog knows, core and pack overlays merged, for the id picker.
+	static void WbIds(notnull array<string> ids)
+	{
+		EnsureLoaded();
+		if (!s_Config || !s_Config.m_aSigns)
+			return;
+
+		foreach (LF_SignDef sign : s_Config.m_aSigns)
+		{
+			if (sign && !sign.m_sId.IsEmpty())
+				ids.Insert(sign.m_sId);
+		}
+	}
+#endif
+
+	//------------------------------------------------------------------------------------------------
 	//! The prompt text: Read: <title>.
 	static string ReadName(LF_SignDef sign)
 	{

@@ -6,8 +6,16 @@ dedicated test server, checks the result, writes the layer, and then runs the pl
 (`docs/placement-audit.md`) on what it wrote. A placement the audit flags is rolled back.
 
 A slice places its props in its own debug-grid cell: `tools\cli grid place <slug> <prefab>...` claims
-the cell and runs `arrange row` there. Only a town-placement pass places in town
+the cell, writes `GridWorld_Layers/Grid_<slug>.layer` and runs `arrange row` there. A `--layer Grid_*.layer`
+argument, and `place on|against|ground` aimed at a grid entity, resolve to GridWorld's layer folder; every
+other layer name is a DebugWorld or pack-town layer. Only a town-placement pass places in town
 (`docs/architecture/world-zones.md`).
+
+The audit follows the target: a command that writes or moves a `Grid_*.layer` entity lists GridWorld's own
+layers, boots GridWorld and judges at the grid bar, exactly as `tools\cli audit placement --grid` does (props
+stand on the ground and are reachable; no roads, no town doors, no overlap or tilt verdicts). Any other layer
+is audited in the playtest world as before. In the grid a prop counts as floating by its bounds bottom and as sunk only when its pivot is under too, as the audit has it (a label sign's pole goes into the gravel mound by its cell). One command works in one world; a mix is refused. So
+`grid place` and `place on|against|ground --layer Grid_<slug>.layer` need no `--no-verify`.
 
 Do not type coordinates into a `.layer` for a prop. Every failure in the table below came from a
 typed number that nobody could see.
@@ -33,7 +41,9 @@ tools\cli place verify <entity>...          the placement audit on those entitie
   prefab it cannot resolve.
 - An unnamed entity is addressed by its prefab file name and a point: `LampStreet_E_01_6m@196,255.4`.
 - `--dry` prints the plan and writes nothing. `--no-verify` skips the audit boot (run `place verify`
-  before you ship). `--keep` leaves a flagged placement in the file. `--force` writes despite an
+  before you ship). The probe and the audit boot go through the pool like `test` (RAM gate, queue, run
+  budget): this PC goes first while it has RAM room (`--prefer-local`), otherwise the machine with headroom
+  runs them, and the output line `pool: test only on <machine>` says which. Never pinned. `--keep` leaves a flagged placement in the file. `--force` writes despite an
   offline finding. `--scale s` sets a scale (a new entity gets a scale line; a `--move` rewrites or adds its scale line); outside 0.5 to 2 is refused.
 
 Run it from a worktree. A probe or an audit is one boot of the test server, about 11 s, queued on the
@@ -99,7 +109,7 @@ tools\cli place arrange on Farm_StandCrate_1 Cabbage --count 4 --layer FarmingCh
 | Command | What it solves | Where the numbers come from |
 |---|---|---|
 | `on` | The prop's mesh base rests on the surface's working top and its whole footprint stays inside the edges (3 cm inset). `--at` picks a side or corner by compass word or `u,v` in -1..1; `--near x,z` clamps a world point to the nearest spot that fits. The prop turns with the surface; `--yaw` is relative to it. | Prop and surface bounds from the `.xob` header. The top from a grid of rays traced down onto the surface (`place probe`, cached per mesh): the most common height is the working top and the cells at that height are the usable rectangle, so a counter's lower shelf or a workbench's raised back is outside it. |
-| `against` | The prop's back face stands 2 cm off the face, its front points away from it, its base is on the floor in front (or `--hang m` above it). | Horizontal rays from the start line toward the face at every 0.15 m of height across the prop's width, and rays down along the centre line for the floor. The face is what the rays hit behind the prop at its own height; the rays pass through the prop being moved. |
+| `against` | The prop's back face stands 2 cm off the face, its front points away from it, its base is on the floor in front (or `--hang m` above it). | Horizontal rays from the start line toward the face at every 0.15 m of height across the prop's width, and rays down along the centre line for the floor. The face is what the rays hit behind the prop at its own height (the largest cluster of hits on the target itself, so a door or window set back from the wall is a recess, refused as uneven, and never the face); the rays pass through the prop being moved. The floor is read in front of the face, not on the wall's own plinth or ledge at its plane. |
 | `ground` | The mesh base (not the pivot) stands on the ground at `x,z`, which is where the footprint centre goes. | Rays down under the centre and four corners; the higher of the hit and the terrain height. More than 0.25 m between them is refused (a slope, a kerb, something standing there). |
 | `arrange on` / `arrange row` | Several props side by side on one top, centred, 5 cm apart, none over an edge; a prop too deep for the top is turned. `row` spaces props evenly between two ground points. | The same top as `on`; the same ground rays as `ground`. |
 
@@ -155,6 +165,18 @@ that slips through still meets the audit there.
   probed on, the date), sorted by mesh path, so two branches that each probed a surface merge as two
   added lines. `place probe <surface>` refreshes an entry after a mesh changes.
 
+## Sizing a block on the grid: `grid place <slug> <prefab>`
+
+`toolscli grid place <slug> <prefab>` (docs/architecture/world-zones.md "One command for a building") reuses this tool
+instead of a second bounds reader: `prefabInfo` gives the bounds, the scale and the entity class (the prefab's root class,
+`SCR_DestructibleBuildingEntity` for a vanilla building); `tools/lib/game-prefab.mjs` `resolvePrefab` turns a bare name such as
+`Villa_E_2I01` into its `{GUID}path` (the paks carry no `.meta`, so `place` alone refuses a vanilla name no layer uses yet). The
+grid command sizes the block from `footprintRect` at yaw 0 and 90 (`ceil((footprint + 4 m) / 12)` per axis), claims it, then calls
+`place ground <block centre> <ref> --layer Grid_<slug>.layer --yaw <Y> --y-hint 0 --name Grid_<slug>_Main`: `ground` puts the
+footprint **centre** at that point whatever the mesh's pivot offset, probes the ground, runs the offline checks and the audit, and
+writes the entity with the class read from the prefab. `grid place ... --dry` prints the sizing and writes nothing; it runs no
+probe, so it needs no pool machine. The audit that follows is `audit placement --grid --strict --layer Grid_<slug>.layer`.
+
 ## Failure classes (2026-11 trailer review, PRs #740 to #743)
 
 | Failure | Root cause | Caught by |
@@ -173,6 +195,7 @@ that slips through still meets the audit there.
 | Dirt lane under the beds | path | only when the lane is a road in `Village_Roads.layer`; a decal or terrain paint is not measured |
 | Physics logs falling over | physics | tall simulated bodies on a raised surface are refused; every simulated body gets a note |
 | Spawned items at the wrong size (#740) | scale lost at spawn | not a layer placement: `LF_Utils.PrefabScale` and its tests; `place bounds` prints a prefab's root scale |
+| Sign refused on `House_Town_E_2I01` ("something stands between"); sacks 0.66 m above the ground on its east wall (2026-11-16, `town-post-office`) | wall face: the farthest hit was a door set back 0.22 m, so the real wall counted as in front of it; the floor sample at the wall plane landed on its ledge | `against` takes the largest cluster of the target's own hits as the face and floors only in front of it |
 | Lamp behind a strongbox | composition: what the camera sees | not measurable; shots |
 
 ## Still needs a shot or a human

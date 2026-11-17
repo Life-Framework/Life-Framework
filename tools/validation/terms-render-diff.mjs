@@ -3,8 +3,9 @@
 // placeholder in the new table with the core terms' default words per language, and lists each
 // key and language whose rendered text differs from the old text.
 //   node tools/validation/terms-render-diff.mjs [ref]
-// Exit 1 when any rendered string differs. Not part of `validate` (it needs a git ref); run it in a
-// terms migration PR and paste the last line into the body.
+// Exit 1 when a string that now uses a placeholder renders differently. A plain copy edit (a key whose
+// new text has no placeholder) is listed as EDIT and passes, so `validate` (which runs every script here)
+// does not fail a PR that rewords a string. Run it in a terms migration PR and paste the last line.
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -38,7 +39,7 @@ export function render(text, lang) {
 }
 
 const oldById = Object.fromEntries(oldItems.map((i) => [i.id, i]));
-let checked = 0, differing = 0, changedKeys = 0;
+let checked = 0, differing = 0, changedKeys = 0, edits = 0;
 for (const item of newItems) {
   const before = oldById[item.id];
   if (!before) continue;
@@ -48,12 +49,16 @@ for (const item of newItems) {
     checked++;
     const was = before.texts[lang] === undefined ? undefined : render(before.texts[lang], lang);
     if (rendered !== was) {
-      differing++;
-      console.log(`DIFF ${item.id} (${lang})\n  was: ${was}\n  now: ${rendered}`);
+      // Only a string that now uses a term placeholder is the migration this proves; a plain copy
+      // edit (new words, no placeholder) is listed and does not fail validate.
+      const migrated = new RegExp(PLACEHOLDER.source).test(text);
+      if (migrated) differing++;
+      else edits++;
+      console.log(`${migrated ? "DIFF" : "EDIT"} ${item.id} (${lang})\n  was: ${was}\n  now: ${rendered}`);
     }
     if (text !== before.texts[lang]) changed = true;
   }
   if (changed) changedKeys++;
 }
-console.log(`terms-render-diff vs ${ref}: ${checked} strings rendered, ${changedKeys} keys rewritten to placeholders, ${differing} differ`);
+console.log(`terms-render-diff vs ${ref}: ${checked} strings rendered, ${changedKeys} keys rewritten to placeholders, ${differing} differ, ${edits} plain copy edit(s)`);
 process.exit(differing ? 1 : 0);

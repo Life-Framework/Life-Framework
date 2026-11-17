@@ -165,3 +165,20 @@ class LF_Introductions
 		s_mKnown = null;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Introductions's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Introductions_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Introductions_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Introductions";
+	}
+
+	override void Apply()
+	{
+		LF_Introductions.ResetStatics();
+	}
+}

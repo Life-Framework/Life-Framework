@@ -194,6 +194,15 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: drop every record, session and the order list; the next world loads its own.
+	static void ResetStatics()
+	{
+		s_mRecords = null;
+		s_mSessions = null;
+		s_aOrder = null;
+	}
+
+//------------------------------------------------------------------------------------------------
 	//! Cash at or below the ceiling. Above it, the bank balance. Never both.
 	//! \return True when the price can be paid from the one source the rule allows.
 	static bool QuotePurchase(int price, int cashCeiling, int cash, int bank, out int cashDebit, out int bankDebit)
@@ -773,7 +782,7 @@ class LF_VehicleOwnership
 			if (GetVehicle(vehicleId) == entity)
 				return true;
 
-			if (!lockId.IsEmpty() && record.m_sKeyId == lockId)
+			if (!lockId.IsEmpty() && (record.m_sVehicleId == lockId || record.m_sKeyId == lockId))
 				return true;
 		}
 
@@ -1033,6 +1042,121 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Change the locks (#2411): the owner pays, the vehicle takes a new key id, and every key cut
+	//! before stops working, wherever it is. The owner gets one new key. The new id lives in the
+	//! record's key id, which the "vehicles" payload already saves, so a restart keeps it.
+	//! \return True when the locks changed and the new key was handed over.
+	static bool ChangeLocks(string vehicleId, string ownerUid, int price, int cashCeiling, IEntity owner, vector origin, out int cashCharged, out string reasonKey)
+	{
+		cashCharged = 0;
+		reasonKey = "#LF-Systems_Off";
+		if (LF_Systems.Refuses("Vehicles", "change locks"))
+			return false;
+
+		if (!Replication.IsServer())
+		{
+			LF_Debug.Error("Vehicle", "change locks refused: not running on the server");
+			return false;
+		}
+
+		reasonKey = "#EL-Vehicle_NotOwner";
+		LF_VehicleRecord record = Records().Get(vehicleId);
+		if (!Owned(record, ownerUid))
+		{
+			LF_Debug.Info("Vehicle", string.Format("change locks refused: %1 does not own %2", ownerUid, vehicleId));
+			return false;
+		}
+
+		reasonKey = RefusalKey(price, cashCeiling);
+		int cash = CashOn(owner);
+		int bank = 0;
+		LF_BankAccount account = LF_ATMManager.GetOrCreate(ownerUid);
+		if (account)
+			bank = account.GetBalance();
+
+		int cashDebit = 0;
+		int bankDebit = 0;
+		if (!QuotePurchase(price, cashCeiling, cash, bank, cashDebit, bankDebit))
+		{
+			LF_Debug.Info("Vehicle", string.Format("change locks refused: %1 cannot pay %2", ownerUid, price));
+			return false;
+		}
+
+		if (!TakePayment(owner, account, cashDebit, bankDebit))
+			return false;
+
+		reasonKey = "#EL-Vehicle_NoSpawn";
+		string keyId = PersistenceIdUtils.Generate();
+		IEntity key = SpawnKey(keyId, KeySpawnOrigin(owner, origin));
+		if (!key)
+		{
+			Refund(owner, account, cashDebit, bankDebit);
+			return false;
+		}
+
+		string oldKeyId = record.m_sKeyId;
+		record.m_sKeyId = keyId;
+
+		LF_VehicleSession session = Sessions().Get(vehicleId);
+		if (!session)
+		{
+			session = new LF_VehicleSession();
+			Sessions().Set(vehicleId, session);
+		}
+
+		session.m_Key = key.GetID();
+		IEntity vehicle = FindLive(session.m_Vehicle);
+		if (vehicle)
+		{
+			LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
+			if (vehicleLock)
+				vehicleLock.SetKeyId(keyId);
+		}
+
+		GiveKey(owner, key);
+		cashCharged = cashDebit;
+		reasonKey = "#LF-Lot_LocksChanged";
+		LF_Debug.Info("Vehicle", string.Format("locks changed on %1 owner=%2: key %3 -> %4", vehicleId, ownerUid, oldKeyId, keyId));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when holder carries a key bound to keyId (left hand or any storage).
+	static bool HoldsKey(IEntity holder, string keyId)
+	{
+		if (!holder || keyId.IsEmpty())
+			return false;
+
+		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(holder);
+		if (controller && KeyMatches(controller.GetAttachedGadgetAtLeftHandSlot(), keyId))
+			return true;
+
+		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(holder);
+		if (!inventory)
+			return false;
+
+		array<IEntity> items = {};
+		inventory.FindItems(items, new LF_VehicleKeyScanPredicate());
+		foreach (IEntity item : items)
+		{
+			if (KeyMatches(item, keyId))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool KeyMatches(IEntity item, string keyId)
+	{
+		if (!item)
+			return false;
+
+		LF_VehicleKeyComponent keyComponent = LF_Component<LF_VehicleKeyComponent>.Find(item);
+		return keyComponent && LF_VehicleLockComponent.IdentifiersMatch(keyComponent.GetVehicleIdentifier(), keyId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool Store(string vehicleId, string ownerUid)
 	{
 		if (LF_Systems.Refuses("Vehicles", "vehicle store"))
@@ -1057,6 +1181,23 @@ class LF_VehicleOwnership
 			IEntity vehicle = FindLive(session.m_Vehicle);
 			if (vehicle)
 			{
+				// The record keeps no inventory and the delete below takes the children with it:
+				// a car holding items, or the owner or a keyholder, stays on the street (#2411).
+				string refusalKey = LF_Garage.StoreRefusalKey(vehicle, vehicleId, ownerUid);
+				if (!refusalKey.IsEmpty())
+				{
+					LF_Debug.Warn("Vehicle", string.Format("store rejected: %1 is not empty (%2)", vehicleId, refusalKey));
+					return false;
+				}
+
+				// Anyone else seated is put out first; a seat that stays taken keeps the car (never delete a player).
+				LF_Garage.StopAndEject(vehicle);
+				if (LF_Garage.HasOccupants(vehicle))
+				{
+					LF_Debug.Warn("Vehicle", string.Format("store rejected: %1 still has someone seated after the eject", vehicleId));
+					return false;
+				}
+
 				LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
 				if (vehicleLock)
 					record.m_bLocked = vehicleLock.IsVehicleLocked();
@@ -1297,6 +1438,9 @@ class LF_VehicleOwnership
 			}
 
 			GiveKey(holder, key);
+			LF_VehicleSession session = new LF_VehicleSession();
+			session.m_Key = key.GetID();
+			Sessions().Set(id, session);
 			string place = "impounded";
 			if (granted == 0)
 			{
@@ -1360,6 +1504,35 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The prefab a respawn uses. The saved spawn prefab is the car's colour (epic #1826); when a
+	//! pack dropped that colour it no longer loads, so the car comes back in the model's base colour
+	//! (the colours config's first, else the locked child the prices config lists) with a warning.
+	//! With nothing better to offer it returns the saved name, so the failure stays the spawn's own.
+	static string RespawnNameFor(string spawnName, string catalogPrefab, bool savedLoads, LF_VehicleColoursConfig colours, LF_VehiclePricesConfig prices)
+	{
+		if (savedLoads)
+			return spawnName;
+
+		string pricesSpawn;
+		if (prices)
+		{
+			LF_VehiclePriceEntry entry = prices.Find(catalogPrefab);
+			if (entry)
+				pricesSpawn = entry.m_SpawnPrefab;
+		}
+
+		string fallback = pricesSpawn;
+		if (colours)
+			fallback = colours.RespawnFallback(catalogPrefab, pricesSpawn);
+
+		if (fallback.IsEmpty() || fallback == spawnName)
+			return spawnName;
+
+		LF_Debug.Warn("Vehicle", string.Format("saved spawn prefab does not load (%1); respawning %2 in its base colour %3", spawnName, catalogPrefab, fallback));
+		return fallback;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Spawns the owner's vehicle at a garage or impound pad, in the owner's presence. When the
 	//! owner holds no live key (a restart unbinds carried keys), a fresh one bound to the same id
 	//! goes into keyHolder's inventory, or onto the pad when there is no holder.
@@ -1369,6 +1542,9 @@ class LF_VehicleOwnership
 		if (spawnName.IsEmpty())
 			spawnName = record.m_sPrefab;
 
+		Resource saved = Resource.Load(spawnName);
+		bool savedLoads = saved && saved.IsValid();
+		spawnName = RespawnNameFor(spawnName, record.m_sPrefab, savedLoads, LF_VehicleColoursConfig.Get(), LF_VehiclePricesConfig.Get());
 		IEntity vehicle = LF_Utils.SpawnEntityPrefab(spawnName, origin, angles);
 		if (!vehicle)
 			return false;
@@ -1381,7 +1557,8 @@ class LF_VehicleOwnership
 			return false;
 		}
 
-		vehicleLock.SetVehicleIdentifier(record.m_sKeyId);
+		vehicleLock.SetVehicleIdentifier(record.m_sVehicleId);
+		vehicleLock.SetKeyId(record.m_sKeyId);
 		vehicleLock.SetLocked(record.m_bLocked);
 
 		LF_VehicleSession session = Sessions().Get(record.m_sVehicleId);
@@ -1391,14 +1568,30 @@ class LF_VehicleOwnership
 			Sessions().Set(record.m_sVehicleId, session);
 		}
 
+		// The owner leaves with a working key (#2411). When the last key handed out is alive but not
+		// on the owner (a thief, a friend, a stash), the garage re-keys the car: the owner gets a
+		// key to a new id and the one elsewhere stops working, so a garage trip never mints a free
+		// duplicate of a key that still opens the car.
 		IEntity key = FindLive(session.m_Key);
-		if (!key)
+		bool keyElsewhere = key && keyHolder && !HoldsKey(keyHolder, record.m_sKeyId);
+		if (!key || keyElsewhere)
 		{
-			key = SpawnKey(record.m_sKeyId, KeySpawnOrigin(keyHolder, origin));
+			string keyId = record.m_sKeyId;
+			if (keyElsewhere)
+				keyId = PersistenceIdUtils.Generate();
+
+			key = SpawnKey(keyId, KeySpawnOrigin(keyHolder, origin));
 			if (!key)
 			{
 				SCR_EntityHelper.DeleteEntityAndChildren(vehicle);
 				return false;
+			}
+
+			if (keyElsewhere)
+			{
+				LF_Debug.Info("Vehicle", string.Format("re-keyed %1 at the pad: the owner came without the last key (%2 -> %3)", record.m_sVehicleId, record.m_sKeyId, keyId));
+				record.m_sKeyId = keyId;
+				vehicleLock.SetKeyId(keyId);
 			}
 
 			session.m_Key = key.GetID();
@@ -1446,7 +1639,8 @@ class LF_VehicleOwnership
 			LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
 			if (vehicleLock)
 			{
-				vehicleLock.SetVehicleIdentifier(record.m_sKeyId);
+				vehicleLock.SetVehicleIdentifier(record.m_sVehicleId);
+				vehicleLock.SetKeyId(record.m_sKeyId);
 				vehicleLock.SetLocked(record.m_bLocked);
 			}
 		}
@@ -1470,5 +1664,22 @@ class LF_VehicleOwnership
 			return null;
 
 		return GetGame().GetWorld().FindEntityByID(id);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_VehicleOwnership's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_VehicleOwnership_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_VehicleOwnership_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_VehicleOwnership";
+	}
+
+	override void Apply()
+	{
+		LF_VehicleOwnership.ResetStatics();
 	}
 }

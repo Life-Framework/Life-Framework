@@ -180,3 +180,20 @@ class LF_JailCellComponent : ScriptComponent
 		LF_Jail.Tick(elapsed);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_JailCellComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_JailCellComponent_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_JailCellComponent_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_JailCellComponent";
+	}
+
+	override void Apply()
+	{
+		LF_JailCellComponent.ResetStatics();
+	}
+}

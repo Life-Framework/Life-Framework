@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

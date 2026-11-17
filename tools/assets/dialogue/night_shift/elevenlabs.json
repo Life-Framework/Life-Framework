@@ -1,0 +1,76 @@
+{
+  "id": "night_shift",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "bcb6f493e2c1e8d6",
+      "date": "2026-11-16",
+      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
+      "voice_name": "Raspy - Convincing and Weary Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Evening. Or morning, I lose track on nights. You are one of the new families, yes? Sit if you like.",
+      "chars": 99,
+      "chars_total": 40,
+      "request_id": "kxp7I192hKMTjUQaxUEA",
+      "seconds": 6.79,
+      "mouth": "9996765439997999999767866669764114588403126776666642002321049999887868985676787521377777655444455568854365445658700355116766555520031100"
+    },
+    "about_zone": {
+      "hash": "ee5d5d0e3b1909bc",
+      "date": "2026-11-16",
+      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
+      "voice_name": "Raspy - Convincing and Weary Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "I worked near the Zone before they moved us. Twelve kilometres from the reactor. They told us three days. That was three years ago. I still keep my house key.",
+      "chars": 158,
+      "chars_total": 63,
+      "request_id": "acAIm1I1dDNl3gnQt656",
+      "seconds": 11.18,
+      "mouth": "39999997108998666665667999762115775656667855455442332210399989951056877767987775327976555555565020266554310299604388728975113678996567654443320579978864115788976667765543456654442139976105886013791048865338863431378654443100"
+    },
+    "about_move": {
+      "hash": "f11c1ec004a655a9",
+      "date": "2026-11-16",
+      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
+      "voice_name": "Raspy - Convincing and Weary Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "They gave us one bus and one suitcase each. The island is quiet, and the quiet is hard at first. But nobody asks you to leave in the middle of dinner.",
+      "chars": 150,
+      "chars_total": 60,
+      "request_id": "4ujGZKK99zlvYnMEHAjx",
+      "seconds": 9.12,
+      "mouth": "869983889579753766796569856564344478765888944367122653337753013311599954998753565322377668732687513364676874676411169741330299699897469965554611868866899985677778886644368997544211000"
+    },
+    "about_work": {
+      "hash": "45acbd31d856272e",
+      "date": "2026-11-16",
+      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
+      "voice_name": "Raspy - Convincing and Weary Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "If you need wages, read the town board on the square. It lists who is hiring. And the clerk's office has a bed upstairs, for the first nights. Ask the clerk.",
+      "chars": 157,
+      "chars_total": 63,
+      "request_id": "FMUTZlqmwsLT6X6LRkmW",
+      "seconds": 10.81,
+      "mouth": "6929998688999678885320000388992843489998656756443452179876654431089601688984631331289997545899987555555301599966770216963458821476538966752488888752791035405877554332101777111796531876544112220399974065146752002007000"
+    },
+    "bye": {
+      "hash": "503fc531502a8351",
+      "date": "2026-11-16",
+      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
+      "voice_name": "Raspy - Convincing and Weary Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Good night. Walk safe.",
+      "chars": 22,
+      "chars_total": 9,
+      "request_id": "3dG1QfrHLHf6pmGlic0E",
+      "seconds": 1.3,
+      "mouth": "499965324688235556421111000"
+    }
+  },
+  "voice": {
+    "id": "HL6h30e2Rd3SQjMZu1Wz",
+    "name": "Raspy - Convincing and Weary Narrator",
+    "source": "voice library"
+  }
+}

@@ -276,3 +276,20 @@ class LF_PersistentStorageComponent : ScriptComponent
 		s_mPlaced = null;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_PersistentStorageComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PersistentStorageComponent_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PersistentStorageComponent_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_PersistentStorageComponent";
+	}
+
+	override void Apply()
+	{
+		LF_PersistentStorageComponent.ResetStatics();
+	}
+}

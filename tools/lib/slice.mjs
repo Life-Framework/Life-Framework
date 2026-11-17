@@ -14,6 +14,7 @@ export const BUDGET = { minutes: 45, calls: 60 };
 // Files with merge drivers (tools/merge/) or generated tables: any slice may append to them.
 export const SHARED = [
   "docs/features.md",
+  "docs/features/**",
   "docs/debug-log-triage.md",
   "addons/LifeFramework/Language/**",
   "addons/LF_Everon1989/Language/**",
@@ -21,7 +22,6 @@ export const SHARED = [
   "tools/validation/enforce-lint-baseline.json",
   "docs/config/config.schema.json",
   "docs/config/config.example.json",
-  "addons/LifeFramework/Scripts/Game/Core/LF_StaticReset.c",
 ];
 // The routing table (docs/process/roadmap-pipeline.md "Model routing"). Risky work goes to Opus whatever its type.
 export const ROUTING = {
@@ -392,6 +392,7 @@ export function brief(issue, card, worktreeSlug) {
     `4. Gate ${card.tier}: ${gate}.${card.risk.length ? ` Risk ${card.risk.join(", ")}: an independent reviewer (lf-hard, interrogate) reads the diff before merge; findings in tmp/review-${slug}.md.` : ""}`,
     `5. Ship: tools\\cli wt ship ${slug} --refs ${issue.number}. Visible change: one look picture; polish nitpicks become follow-up issues, not blockers.`,
     `6. Record: tools\\cli slice record ${issue.number} --model ${card.model || "sonnet"} --outcome merged|handoff|split|failed --gate pass|fail --minutes N.`,
+    "Starter pack: tools\\cli brief slice (the exact commands, the red-proof loop, known traps); a map, town, grid or building slice also reads its own kind.",
     "Stay in your lane: do not re-verify other slices, start no helper agents, no wait loops. Report in five lines; say merged, in-dev.",
   ];
   if (card.notes) lines.push("", "Notes:", card.notes);

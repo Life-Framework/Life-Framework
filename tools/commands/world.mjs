@@ -12,7 +12,9 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import * as wd from "../lib/world-diff.mjs";
-import { selectTests } from "../lib/gate-tier.mjs";
+import { ownBase, selectTests } from "../lib/gate-tier.mjs";
+import { layoutWarnings, MAINTAINER_BRANCH } from "../lib/world-checks.mjs";
+import { judgeWorldTests, testWarningLines, TEST_WARNINGS_HEADING } from "../lib/world-test-judge.mjs";
 
 export const help = "world diff|ship [--wt <slug>] [--json|--dry-run]   semantic diff of .layer edits / commit, check and ship a maintainer world edit";
 
@@ -46,9 +48,9 @@ async function resolveWt(args, root) {
 
 // The .layer files changed against the merge base with origin/<base>, uncommitted and untracked included.
 export function collectLayers(path, base = "main") {
-  const mb = git(path, ["merge-base", `origin/${base}`, "HEAD"]);
-  if (mb.status !== 0) throw new Error(`no merge base with origin/${base}: ${mb.stderr.trim()}`);
-  const ref = mb.stdout.trim();
+  // The newest main the branch merged, not a possibly stale origin/<base> merge base (gate-tier.mjs ownBase).
+  const ref = ownBase((args) => git(path, args), base);
+  if (!ref) throw new Error(`no merge base with origin/${base}`);
   const ns = git(path, ["diff", "--name-status", "--no-renames", ref, "--", "*.layer"]);
   const un = git(path, ["ls-files", "--others", "--exclude-standard", "--", "*.layer"]);
   const files = [];
@@ -113,25 +115,59 @@ export function allowEntries(report, touched, existing = []) {
   return out;
 }
 
-export function prBody(d, { slug, allowed = [], checks = [] }) {
-  const L = [];
-  L.push(`Maintainer world edit from \`${slug}\`, shipped with \`tools\\cli world ship\`.`, "", `**${wd.summaryLine(d)}**`, "", "## Changes", "");
-  for (const f of d.files.filter((x) => !x.noiseOnly)) {
-    L.push(`- \`${f.path}\``);
-    for (const c of f.changes) L.push(`  - ${wd.changeLine(c)}`);
-    for (const n of f.noise) L.push(`  - noise: ${n}`);
-  }
+// GitHub rejects a PR body over 65,536 characters. The change list is what grows (a town pass moves hundreds of
+// entities), so it is what gets cut; the other lists are capped on their own.
+export const BODY_LIMIT = 60000;
+const LIST_CAP = 150;
+const LINE_CAP = 500;
+
+const clip = (s) => (s.length > LINE_CAP ? `${s.slice(0, LINE_CAP)}...` : s);
+
+function cappedList(items, noun) {
+  const out = items.slice(0, LIST_CAP).map((x) => `- ${clip(x)}`);
+  if (items.length > LIST_CAP) out.push(`- +${items.length - LIST_CAP} more ${noun}, see the world ship log`);
+  return out;
+}
+
+export function prBody(d, { slug, allowed = [], checks = [], warnings = [], testWarnings = [], limit = BODY_LIMIT }) {
+  const head = [`Maintainer world edit from \`${slug}\`, shipped with \`tools\\cli world ship\`.`, "", `**${wd.summaryLine(d)}**`, "", "## Changes", ""];
+  const tail = [];
   const reverted = d.files.filter((x) => x.noiseOnly);
-  if (reverted.length) L.push("", `Reverted as noise only: ${reverted.map((f) => `\`${f.path}\` (${f.noise.join("; ")})`).join(", ")}.`);
+  if (reverted.length) tail.push("", `Reverted as noise only: ${reverted.map((f) => `\`${f.path}\` (${f.noise.join("; ")})`).join(", ")}.`);
   if (allowed.length) {
-    L.push("", "## Placements allowlisted", "", `The placement audit flagged these; the maintainer placed them by hand, so they went to \`${ALLOW_FILE}\` with the reason "${ALLOW_REASON}":`, "");
-    for (const a of allowed) L.push(`- \`${a.match}\` ${a.kind}: ${a.why}`);
+    tail.push("", "## Placements allowlisted", "", `The placement audit flagged these; the maintainer placed them by hand, so they went to \`${ALLOW_FILE}\` with the reason "${ALLOW_REASON}":`, "");
+    tail.push(...cappedList(allowed.map((a) => `\`${a.match}\` ${a.kind}: ${a.why}`), "placements"));
   }
-  if (checks.length) L.push("", "## Checks", "", ...checks.map((c) => `- ${c}`));
-  L.push("", "No screenshots: the maintainer placed and looked at these entities in Workbench while editing.", "");
-  L.push("## Manual testing", "", "1. Host DebugWorld from `main` after the merge.", "2. Walk to each entity listed under Changes and check it stands where the maintainer put it.", "");
-  L.push("🤖 Generated with [Claude Code](https://claude.com/claude-code)", "");
-  return L.join("\n");
+  if (warnings.length) {
+    tail.push("", "## Layout warnings", "", "These judge where things stand, not whether the layer is sound, so they did not block this PR (tools/lib/world-checks.mjs). Look at them when you play the world:", "");
+    tail.push(...cappedList(warnings, "warnings"));
+  }
+  if (testWarnings.length) {
+    tail.push("", TEST_WARNINGS_HEADING, "", "These tests failed on the new layout. A failing test never blocks a maintainer world edit, so the PR still merges; each one is either a test that pinned the old layout (fix the test) or a real gameplay break (fix the game):", "");
+    tail.push(...cappedList(testWarnings, "test warnings"));
+  }
+  if (checks.length) tail.push("", "## Checks", "", ...checks.map((c) => `- ${clip(c)}`));
+  tail.push("", "No screenshots: the maintainer placed and looked at these entities in Workbench while editing.", "");
+  tail.push("## Manual testing", "", "1. Host DebugWorld from `main` after the merge.", "2. Walk to each entity listed under Changes and check it stands where the maintainer put it.", "");
+  tail.push("🤖 Generated with [Claude Code](https://claude.com/claude-code)", "");
+
+  // The change list, one line per change under its file, cut at the line that would pass the budget.
+  const rows = [];
+  for (const f of d.files.filter((x) => !x.noiseOnly)) {
+    rows.push(`- \`${f.path}\``);
+    for (const c of f.changes) rows.push(`  - ${clip(wd.changeLine(c))}`);
+    for (const n of f.noise) rows.push(`  - noise: ${clip(n)}`);
+  }
+  let room = limit - head.join("\n").length - tail.join("\n").length - 300;
+  const listed = [];
+  let i = 0;
+  for (; i < rows.length && room >= rows[i].length + 1; i++) {
+    listed.push(rows[i]);
+    room -= rows[i].length + 1;
+  }
+  const more = rows.slice(i).filter((l) => l.startsWith("  - ")).length;
+  if (i < rows.length) listed.push(`- +${more} more change(s) not listed (a PR body is size-limited), see \`tools\\cli world diff --wt ${slug}\``);
+  return [...head, ...listed, ...tail].join("\n");
 }
 
 function cli(cwd, args, extraEnv = {}) {
@@ -211,7 +247,7 @@ async function cmdShip(args, root) {
   const tests = existsSync(testsDir) ? readdirSync(testsDir).filter((f) => /^LF_Test_\w+\.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(testsDir, f), "utf8") })) : [];
   const related = selectTests(tests, wd.testTokens(layers, touched)).related;
   if (dry) {
-    console.log(`dry run: would commit ${real.length} layer file(s), run validate, audit placement --layer ${layers.join(",")}${related.length ? `, test --only ${related.join(",")}` : ", no layer-named tests"}, then wt ship ${w.slug}`);
+    console.log(`dry run: would commit ${real.length} layer file(s), run validate --world (layout checks warn), audit placement --layer ${layers.join(",")}${related.length ? `, test --only ${related.join(",")}` : ", no layer-named tests"}, then wt ship ${w.slug}`);
     return done(true, `dry run: ${wd.summaryLine(d)}`);
   }
 
@@ -229,9 +265,13 @@ async function cmdShip(args, root) {
 
   // 4. Fast checks.
   const checks = [];
-  const v = cli(w.path, ["validate"]);
+  // Only the checks that read .layer files run (validate --world); a layout check that fails is a warning.
+  const warnings = [];
+  const testWarnings = [];
+  const v = cli(w.path, ["validate", "--world"]);
   note(v.out);
-  checks.push(`validate: ${v.status === 0 ? "pass" : "FAIL"}`);
+  for (const lw of layoutWarnings(v.out)) warnings.push(`validate/${lw.check}: ${lw.text || "failed"}`);
+  checks.push(`validate --world: ${v.status === 0 ? `pass${warnings.length ? ` (${warnings.length} layout warning(s))` : ""}` : "FAIL"}`);
   if (v.status !== 0) {
     console.log(`FAIL  validate: ${lastSummary(v.out) || "see log"}`);
     return done(false, "validate failed");
@@ -241,12 +281,13 @@ async function cmdShip(args, root) {
   let report = null;
   try { report = JSON.parse(readFileSync(join(w.path, "tmp", "place-audit", "report.json"), "utf8")); } catch { /* no report */ }
   if (!report) {
-    console.log(`FAIL  audit placement wrote no report: ${lastSummary(a.out) || "see log"}`);
-    return done(false, "placement audit failed to run");
+    console.log(`WARN  audit placement wrote no report: ${lastSummary(a.out) || "see log"}`);
+    warnings.push(`placement audit wrote no report (${lastSummary(a.out) || "see the log"}); the touched placements were not audited`);
   }
   const allowPath = join(w.path, ALLOW_FILE);
   const allowJson = JSON.parse(readFileSync(allowPath, "utf8"));
-  const added = allowEntries(report, touched, allowJson.allow);
+  const added = report ? allowEntries(report, touched, allowJson.allow) : [];
+  for (const e of added) warnings.push(`placement audit ${e.kind}: ${e.why}`);
   if (added.length) {
     allowJson.allow.push(...added);
     writeFileSync(allowPath, `${JSON.stringify(allowJson, null, 2)}\n`);
@@ -258,16 +299,22 @@ async function cmdShip(args, root) {
   if (related.length) {
     const t = cli(w.path, ["test", "--no-build", "--only", related.join(",")]);
     note(t.out);
-    checks.push(`test --only ${related.join(",")}: ${t.status === 0 ? "pass" : "FAIL"}`);
-    if (t.status !== 0) {
-      console.log(`FAIL  layer-named tests: ${lastSummary(t.out) || "see log"}`);
-      return done(false, "layer-named tests failed");
+    // A failing test is a warning on a town-maintainer-* branch; only a run that judged nothing blocks.
+    const maintainer = MAINTAINER_BRANCH.test(w.branch || `ws/${w.slug}`);
+    const verdict = maintainer ? judgeWorldTests({ status: t.status, text: t.out, fallbackTests: related, tests: tests.map((x) => ({ file: x.file, text: x.text })) }) : { blocks: t.status === 0 ? null : "layer-named tests failed", warnings: [] };
+    if (verdict.blocks) {
+      checks.push(`test --only ${related.join(",")}: FAIL`);
+      console.log(`FAIL  layer-named tests: ${verdict.blocks}: ${lastSummary(t.out) || "see log"}`);
+      return done(false, "layer-named tests blocked");
     }
+    for (const x of verdict.warnings) testWarnings.push(...testWarningLines([x]));
+    for (const x of testWarningLines(verdict.warnings)) console.log(`WARN  test failed on the new layout (not blocking): ${x}`);
+    checks.push(`test --only ${related.join(",")}: ${t.status === 0 ? "pass" : `${verdict.failed} failing, listed as warnings`}`);
   } else checks.push("no test names a touched layer or entity");
 
   // 5. Push, PR, queue (wt ship classifies the branch T1w: static validate, audit, layer-named tests).
   const bodyFile = join(w.path, "tmp", `pr-body-world-${w.slug}.md`);
-  writeFileSync(bodyFile, prBody(d, { slug: w.slug, allowed: added, checks }));
+  writeFileSync(bodyFile, prBody(d, { slug: w.slug, allowed: added, checks, warnings, testWarnings }));
   const mainRoot = root;
   const s = cli(mainRoot, ["wt", "ship", w.slug, "--body-file", bodyFile]);
   note(s.out);
@@ -284,7 +331,7 @@ export async function main(args, { root }) {
   try {
     if (sub === "diff") return await cmdDiff(rest, root);
     if (sub === "ship") return await cmdShip(rest, root);
-    // sync: world-sync.mjs (the sync subcommand is added here by tools/lib/world-sync.mjs's author)
+    if (sub === "sync") return await (await import("./world-sync.mjs")).main(rest, { root });
   } catch (err) {
     console.log(`FAIL  world ${sub}: ${err.message}`);
     return 1;

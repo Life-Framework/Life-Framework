@@ -1,6 +1,9 @@
-GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
  ID "0000000000000001"
  components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
     ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
@@ -8,6 +11,9 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
      Description "#LF-Item_Parcel_Desc"
     }
     ItemPhysAttributes ItemPhysicalAttributes "{59E108D9A227B7E3}" {
+     Weight 2
+     SizeSetupStrategy Volume
+     ItemVolume 3000
      DimensionScaler 0
      RestingAdditiveRotationLS 0 0 0
      RestingAdditiveOffsetLS 0 0 0
@@ -15,8 +21,8 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
     ItemAnimationAttributes ItemAnimationAttributes "{59E108DB000CCEEB}" {
      AnimationAttachments {
       AnimationAttachmentInfo "{59E33B494D8FF442}" {
-       AnimGraph "{7448534CC9BB5495}Assets/Items/Fuel/workspaces/Jerrycan.agr"
-       AnimInstance "{DB71459BEC12E8B1}Assets/Items/Fuel/workspaces/Jerrycan_player.asi"
+       AnimGraph "{CEC539E559BB8BA6}Assets/Items/Equipment/workspaces/RepairKit.agr"
+       AnimInstance "{23AF6C3E45B2D948}Assets/Items/Equipment/workspaces/RepairKit.asi"
        BindingName "Gadget"
       }
      }
@@ -32,23 +38,34 @@ GenericEntity : "{6BF776E22ECF67E7}Prefabs/Items/Core/HandCarryItem_Base.et" {
      }
      PreviewRenderAttributes "{59E4897D1350DC3B}" {
       CameraPreset Top
-      CameraDistanceToItem 1
+      CameraDistanceToItem 2.2
      }
     }
-    m_Size SLOT_2x1
    }
   }
+  LF_HandToolComponent "{4A1C9E27B05D3F21}" {
+   m_eAnimVariable ADRIANOV
+   m_sToolId "parcel"
+   m_bEquipOnPickup 1
+  }
   LF_ParcelComponent "{4A1C9E27B05D3F20}" {
+  }
+  SoundComponent "{5A4ADB24952425BA}" {
+   Filenames {
+    "{13F8D0DE67678118}Sounds/Items/_SharedData/PickUp/Items_PickUp_Map.acp"
+   }
   }
   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{75704CF4EB9B297A}Assets/Items/Roleplay/PostParcel/PostParcel.xob"
   }
   RigidBody "{5A4ACBB1A0084DA1}" {
    Active Inactive
-   Mass 2
-   LinearDamping 0.45
-   AngularDamping 0.45
-   ResponseIndex "SmallDestructible"
+   Mass 6
+   LinearDamping 0.8
+   AngularDamping 0.8
+   LayerPreset "PropFireView"
+   ResponseIndex "TinyDestructible"
+   ModelGeometry 1
   }
  }
 }

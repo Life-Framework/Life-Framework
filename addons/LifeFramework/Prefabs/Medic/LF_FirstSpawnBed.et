@@ -1,0 +1,14 @@
+GenericEntity {
+ ID "9756D33334CE140B"
+ components {
+  MeshObject "{3F1574FBE1EAC11A}" {
+   Object "{182E4B9CDAC405D7}Assets/Props/Services/Healthcare/BedMedical_01/BedMedical_01.xob"
+  }
+  RigidBody "{AC87E49C8EB0F1E4}" {
+   ModelGeometry 1
+   Static 1
+  }
+  LF_FirstSpawnBedComponent "{FCB27F8C7C2E211B}" {
+  }
+ }
+}

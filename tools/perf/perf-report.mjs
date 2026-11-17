@@ -71,6 +71,8 @@ function newestLog(root) {
 }
 
 export function runPerf(root, flags = []) {
+  // perf building <slug>: the static building counter (docs/architecture/performance.md "How to check").
+  if (flags[0] === "building") return import("./building-count.mjs").then((m) => m.runPerfBuilding(flags.slice(1), root));
   const logIdx = flags.indexOf("--log");
   let code = 0;
   let logPath = logIdx >= 0 ? flags[logIdx + 1] : null;

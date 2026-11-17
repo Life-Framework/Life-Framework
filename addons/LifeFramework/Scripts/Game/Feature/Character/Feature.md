@@ -62,3 +62,10 @@ Rung 1.
 
 - `Account` (identity), `Quantity` (stacks), `Survival` (body state),
   `Money` (cash in inventory), `Houses` (owned storage).
+
+## Logout body tag (#1974)
+
+- **Player sees:** a small "Logged out" label floating over a logged-out player's body, from 12 m away, until the body dies, despawns or the player rejoins. Same label for every client, a late joiner included.
+- **Owner and side:** `LF_LogoutBody` (server) marks the body through `LF_LogoutBodyTag.Mark`; the mark is `SCR_ChimeraCharacter.LF_IsLoggedOut`, an RplProp bumped on change. Each client with a screen draws the label (`LF_LogoutBodyTagHud`, `UI/Layouts/Character/LogoutBodyTag.layout`); a dedicated server draws nothing.
+- **Data:** string key `LF-LogoutBodyTag_Label`; nothing is saved (the body never outlives its session).
+- **Proof:** `character/logout-body-tag` (LOGIC); `agent-box/proofs/logout-body-tag-proof.mjs` (two clients, a late joiner, camera aimed at the body; #2104). `rejoin/logout-body-takeback` asserts a taken-back body drops the flag.

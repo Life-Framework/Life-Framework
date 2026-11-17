@@ -78,6 +78,14 @@ class LF_AmbientEmitterComponent : ScriptComponent
 		if (m_sProject.IsEmpty() && !m_sSoundSlot.IsEmpty())
 			m_sProject = LF_SoundSlots.Get(m_sSoundSlot);
 
+		// A slot no pack has filled yet is expected while pack audio is made: one summary, not a line
+		// per emitter. A missing event or a slot-less emitter with no project is a broken prefab.
+		if (m_sProject.IsEmpty() && !m_sSoundEvent.IsEmpty() && m_sSoundProject.IsEmpty() && LF_SoundSlots.IsUnfilled(m_sSoundSlot))
+		{
+			LF_SoundSlots.NoteSilentEmitter(Label(), m_sSoundSlot);
+			return;
+		}
+
 		if (m_sProject.IsEmpty() || m_sSoundEvent.IsEmpty())
 		{
 			LF_Debug.Error(LF_Atmosphere.FEATURE, string.Format("%1 has no sound project or event (slot '%2'); it stays silent", Label(), m_sSoundSlot));

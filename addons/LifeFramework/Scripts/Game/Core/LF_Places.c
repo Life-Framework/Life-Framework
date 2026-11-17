@@ -22,9 +22,28 @@ class LF_Places
 	//! \return true when entity now holds the key.
 	static bool Register(string kind, string id, IEntity entity)
 	{
+		return RegisterOn(kind, id, entity, Replication.IsServer());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Register as a given machine would: a client never holds a server-only kind (#2492), so a
+	//! modified client has neither the id nor the position of a place it may not see. The server sends
+	//! each player the private places that player may see (LF_MapPrivatePlaces). Tests pass server
+	//! false to prove a client keeps nothing.
+	//! \param[in] server True on the server (dedicated or listen host), false on a client.
+	//! \return true when entity now holds the key.
+	static bool RegisterOn(string kind, string id, IEntity entity, bool server)
+	{
 		if (kind.IsEmpty() || id.IsEmpty() || !entity)
 		{
 			LF_Debug.Error(FEATURE, string.Format("register refused: kind '%1' id '%2' entity %3", kind, id, entity != null));
+			return false;
+		}
+
+		// Qualified: an unqualified static call here binds to this file's body, not the map's modded one.
+		if (!server && LF_Places.IsServerOnlyKind(kind))
+		{
+			LF_Debug.Info(FEATURE, string.Format("kept off this client: %1 '%2' is a server-only kind", kind, id));
 			return false;
 		}
 
@@ -44,6 +63,37 @@ class LF_Places
 
 		ids.Set(id, entity.GetID());
 		LF_Debug.Log(FEATURE, string.Format("placed %1 '%2'", kind, id));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Registers entity as kind/id only when no live entity holds the key: the first of several
+	//! props that share an id (two safe zone signs) stands for it, and the rest are skipped without
+	//! an error. For places a reader only needs to find, never for a persistence key.
+	//! \return true when entity now holds the key.
+	static bool Claim(string kind, string id, IEntity entity)
+	{
+		if (kind.IsEmpty() || id.IsEmpty() || !entity)
+			return false;
+
+		IEntity held = Find(kind, id);
+		if (held && held != entity)
+			return false;
+
+		return Register(kind, id, entity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removes the place kind/id, for a place that is not tied to a placed component's life (an
+	//! organization's base ends with its lease). \return true when a place was removed.
+	static bool Unregister(string kind, string id)
+	{
+		map<string, EntityID> ids = Kind(kind, false);
+		if (!ids || !ids.Contains(id))
+			return false;
+
+		ids.Remove(id);
+		LF_Debug.Log(FEATURE, string.Format("unplaced %1 '%2'", kind, id));
 		return true;
 	}
 
@@ -123,6 +173,14 @@ class LF_Places
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether a kind stays on the server. None here; the map marks its private POI kinds
+	//! (Feature/Map/LF_MapPrivatePlaces.c).
+	static bool IsServerOnlyKind(string kind)
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! World end: the next world registers its own places.
 	static void ResetStatics()
 	{
@@ -157,5 +215,22 @@ class LF_Places
 			return null;
 
 		return GetGame().GetWorld().FindEntityByID(id);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Places's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Places_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Places_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Places";
+	}
+
+	override void Apply()
+	{
+		LF_Places.ResetStatics();
 	}
 }

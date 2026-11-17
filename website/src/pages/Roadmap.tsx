@@ -105,7 +105,9 @@ const Roadmap = () => {
             ["M1 plan", "/docs/roadmap-m1-playtest-town"],
             ["M2 outline", "/docs/roadmap-m2-outline"],
             ["M3 outline", "/docs/roadmap-m3-outline"],
+            ["M2.5 outline", "/docs/roadmap-m2-5-outline"],
             ["M4 outline", "/docs/roadmap-m4-outline"],
+            ["M5 outline", "/docs/roadmap-m5-outline"],
             ["Scope cards", "/docs/roadmap-scopes"],
             ["Testing plan", "/docs/roadmap-testing"],
           ].map(([label, to]) => (

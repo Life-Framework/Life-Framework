@@ -14,6 +14,9 @@ class LF_SignComponent : ScriptComponent
 {
 	//! The prefab slot (#1128): The face a sign draws its text on.
 	static const string SLOT_FACE = "sign_face";
+	//! LF_Places kind every sign claims under its sign id, so a reader (the town board) finds the
+	//! place a sign stands for by component, never by entity name or coordinates.
+	static const string PLACE_KIND = "Sign";
 
 	//! The prefab (slot "sign_face"), or empty when no usable prefab resolves (logged).
 	static ResourceName FacePrefab()
@@ -50,7 +53,7 @@ class LF_SignComponent : ScriptComponent
 	static const int BOARD_FONT_MIN = 24;
 	static const float BOARD_LINE_HEIGHT = 1.15;
 
-	[Attribute("", UIWidgets.EditBox, "Sign id in Configs/Signs/LF_Signs.conf")]
+	[Attribute("", UIWidgets.EditComboBox, "Sign id in Configs/Signs/LF_Signs.conf (the list is every id the catalog and pack overlays know). Right-click the entity, Edit sign text, to change its words")]
 	protected string m_sSignId;
 
 	[Attribute("1", UIWidgets.CheckBox, "Print the title on a paper sheet on the prop face (rendering clients only)")]
@@ -167,21 +170,21 @@ class LF_SignComponent : ScriptComponent
 	//! or the offer is missing; the board then shows nothing rather than a stale price.
 	protected LF_SignDef PricedSign(LF_SignDef sign)
 	{
-		LF_VehicleLotComponent lot = LF_VehicleLotComponent.FindLot(m_sPriceLotShopId);
-		if (!lot)
+		LF_BoardAnswer answer = LF_PricedSignProvider.AnswerFor(m_sPriceLotShopId, m_PriceVehicle);
+		if (!answer)
 		{
-			LF_Debug.Error("Signs", string.Format("price board '%1' finds no vehicle lot '%2'", m_sSignId, m_sPriceLotShopId));
+			LF_Debug.Error("Signs", string.Format("price board '%1': no price for %2 at lot '%3'", m_sSignId, m_PriceVehicle, m_sPriceLotShopId));
 			return null;
 		}
 
-		LF_VehicleOffer offer = lot.GetOffer(m_PriceVehicle);
-		if (!offer)
-		{
-			LF_Debug.Error("Signs", string.Format("price board '%1': lot '%2' has no offer for %3", m_sSignId, m_sPriceLotShopId, m_PriceVehicle));
-			return null;
-		}
+		return PricedFrom(sign, answer);
+	}
 
-		return LF_SignCatalog.WithTitle(sign, LF_SignCatalog.PricedTitle(sign.m_sTitle, offer.GetNameKey(), offer.GetPrice()));
+	//------------------------------------------------------------------------------------------------
+	//! The config sign with its title filled from a priced-sign answer (the lot's name and price).
+	static LF_SignDef PricedFrom(LF_SignDef sign, notnull LF_BoardAnswer answer)
+	{
+		return LF_SignCatalog.WithTitle(sign, LF_PricedSignProvider.Title(sign.m_sTitle, answer));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -206,6 +209,10 @@ class LF_SignComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
+		// The first prop of an id stands for the place; a second (two safe zone signs) is skipped.
+		if (!m_sSignId.IsEmpty())
+			LF_Places.Claim(PLACE_KIND, m_sSignId, owner);
+
 		if (!m_bShowFace || m_sSignId.IsEmpty())
 			return;
 
@@ -568,10 +575,367 @@ class LF_SignComponent : ScriptComponent
 		m_Face = null;
 	}
 
+#ifdef WORKBENCH
+	// World Editor preview (docs/tooling/sign-editing.md). The game prints the face in play mode only,
+	// so in edit mode a sign whose mesh samples $rendertarget shows nothing. BuildFace does run in
+	// edit mode (lf-cloud 2026-11-16: "face printed" for every sign), but the World Editor viewport
+	// never draws the render target, so the editor writes the sign's text as world-space debug text
+	// on the face instead: the title, or the whole card while the sign is selected. The text comes
+	// from the same catalog and the same FaceText as the game. None of this is compiled into the game.
+	protected static const int WB_MENU_EDIT = 1;
+	protected static const int WB_MENU_RELOAD = 2;
+	protected static int s_iWbGeneration;
+	protected int m_iWbGeneration = -1;
+
+	//------------------------------------------------------------------------------------------------
+	override int _WB_GetAfterWorldUpdateSpecs(IEntity owner, IEntitySource src)
+	{
+		return EEntityFrameUpdateSpecs.CALL_WHEN_ENTITY_VISIBLE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void _WB_AfterWorldUpdate(IEntity owner, float timeSlice)
+	{
+		if (!owner || !GetGame() || GetGame().InPlayMode())
+			return;
+
+		if (m_iWbGeneration != s_iWbGeneration)
+		{
+			m_iWbGeneration = s_iWbGeneration;
+			m_Sign = null;
+			m_bResolved = false;
+		}
+
+		if (m_sSignId.IsEmpty())
+			return;
+
+		WbDrawText(owner, WbIsSelected(owner));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool WbIsSelected(IEntity owner)
+	{
+		GenericEntity entity = GenericEntity.Cast(owner);
+		if (!entity)
+			return false;
+
+		WorldEditorAPI api = entity._WB_GetEditorAPI();
+		if (!api)
+			return false;
+
+		IEntitySource src = api.EntityToSource(owner);
+		return src && api.IsEntitySelected(src);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The title on the sign's face, or (selected) the whole card as plain lines. A sign whose id
+	//! does not resolve says so in red, where the game would only log it.
+	protected void WbDrawText(IEntity owner, bool full)
+	{
+		LF_SignDef sign;
+		if (!m_sSignId.IsEmpty())
+			sign = GetSign();
+
+		string text;
+		int color = ARGBF(1, m_vTextColor[0], m_vTextColor[1], m_vTextColor[2]);
+		int background = ARGBF(0.85, m_vPaintColor[0], m_vPaintColor[1], m_vPaintColor[2]);
+		if (!HasPaintedFace())
+		{
+			color = ARGBF(1, 0.08, 0.08, 0.08);
+			background = ARGBF(0.85, 0.95, 0.93, 0.86);
+		}
+
+		if (!sign)
+		{
+			text = "sign id '" + m_sSignId + "' has no titled entry in LF_Signs.conf";
+			color = ARGBF(1, 1, 1, 1);
+			background = ARGBF(0.85, 0.7, 0.05, 0.05);
+		}
+		else if (full)
+		{
+			text = m_sSignId + "\n" + LF_SignCatalog.PlainText(sign);
+			color = ARGBF(1, 1, 1, 1);
+			background = ARGBF(0.8, 0.05, 0.05, 0.05);
+		}
+		else
+		{
+			text = FaceText(sign);
+		}
+
+		// The text goes on the entity that carries the face: the plate, for a plate on a pole.
+		IEntity face = owner;
+		if (m_bFaceOnChild && owner.GetChildren())
+			face = owner.GetChildren();
+
+		vector mins;
+		vector maxs;
+		face.GetBounds(mins, maxs);
+		vector mat[4];
+		face.GetWorldTransform(mat);
+
+		// A painted face's mesh samples $rendertarget, which the edit view never fills, so it draws
+		// black. The face area's aspect is the board's (115 x 67 plate: 1024 x 596), so the face is
+		// that tall from the top of the bounds; the legs of a board on posts are not face.
+		bool panel = HasPaintedFace() && (m_bFaceOnOwner || m_bFaceOnChild);
+		if (panel)
+		{
+			float faceHeight = (maxs[0] - mins[0]) * m_vFaceArea[1] / m_vFaceArea[0];
+			if (faceHeight < maxs[1] - mins[1])
+				mins[1] = maxs[1] - faceHeight;
+		}
+
+		vector world[4];
+		world[0] = mat[0];
+		world[1] = mat[1];
+		world[2] = mat[2];
+		world[3] = WbToWorld(mat, Vector((mins[0] + maxs[0]) * 0.5, (mins[1] + maxs[1]) * 0.5, maxs[2] + 0.02));
+
+		vector camera[4];
+		owner.GetWorld().GetCurrentCamera(camera);
+		float distance = vector.Distance(camera[3], world[3]);
+
+		float scaleX = mat[0].Length();
+		float scaleY = mat[1].Length();
+		if (scaleX <= 0)
+			scaleX = 1;
+		if (scaleY <= 0)
+			scaleY = 1;
+
+		float width = (maxs[0] - mins[0]) * scaleX;
+		float size = 0.08;
+		if (!full)
+			size = Math.Clamp(width * 1.3 / Math.Max(text.Length(), 6), 0.04, 0.35);
+
+		// Shapes draw after debug text whatever their flags (lf-cloud 2026-11-16), so the panel leaves
+		// a hole a little smaller than the title's paint-coloured background instead of covering it.
+		// A selected sign shows its whole card over the bare face.
+		if (panel && !full && sign)
+		{
+			float holeX = Math.Min(text.Length() * size * 0.33 / scaleX, (maxs[0] - mins[0]) * 0.45);
+			float holeY = Math.Min(size * 0.4 / scaleY, (maxs[1] - mins[1]) * 0.45);
+			WbDrawPanel(mat, mins, maxs, holeX, holeY);
+		}
+
+		if (distance > 0 && size / distance < 0.004)
+			return;
+
+		int flags = DebugTextFlags.CENTER | DebugTextFlags.ONCE | DebugTextFlags.FACE_CAMERA;
+		DebugTextWorldSpace.CreateInWorld(owner.GetWorld(), text, flags, world, size, color, background);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A point in the entity's local space, in world space (mat: the entity's world transform).
+	protected static vector WbToWorld(vector mat[4], vector local)
+	{
+		return mat[0] * local[0] + mat[1] * local[1] + mat[2] * local[2] + mat[3];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The face's front (its local +Z side) in the sign's colours, for this editor frame only: a rim
+	//! ring m_fRimWidth wide (layout units over the face area's width), then paint inside it around
+	//! a hole of half-size holeX x holeY at the centre where the title sits. No two quads overlap, so
+	//! draw order does not matter.
+	protected void WbDrawPanel(vector mat[4], vector mins, vector maxs, float holeX, float holeY)
+	{
+		float rim = 0;
+		if (m_vFaceArea[0] > 0)
+			rim = (maxs[0] - mins[0]) * m_fRimWidth / m_vFaceArea[0];
+
+		float z = maxs[2] + 0.004;
+		float midX = (mins[0] + maxs[0]) * 0.5;
+		float midY = (mins[1] + maxs[1]) * 0.5;
+		int rimColor = ARGBF(1, m_vRimColor[0], m_vRimColor[1], m_vRimColor[2]);
+		int paintColor = ARGBF(1, m_vPaintColor[0], m_vPaintColor[1], m_vPaintColor[2]);
+		WbDrawFrame(mat, mins[0], mins[1], maxs[0], maxs[1], mins[0] + rim, mins[1] + rim, maxs[0] - rim, maxs[1] - rim, z, rimColor);
+		WbDrawFrame(mat, mins[0] + rim, mins[1] + rim, maxs[0] - rim, maxs[1] - rim, midX - holeX, midY - holeY, midX + holeX, midY + holeY, z, paintColor);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ring between an outer and an inner rectangle, as four quads.
+	protected void WbDrawFrame(vector mat[4], float l, float b, float r, float t, float il, float ib, float ir, float it, float z, int color)
+	{
+		WbDrawQuad(mat, l, b, r, ib, z, color);
+		WbDrawQuad(mat, l, it, r, t, z, color);
+		WbDrawQuad(mat, l, ib, il, it, z, color);
+		WbDrawQuad(mat, ir, ib, r, it, z, color);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void WbDrawQuad(vector mat[4], float left, float bottom, float right, float top, float z, int color)
+	{
+		vector a = WbToWorld(mat, Vector(left, bottom, z));
+		vector b = WbToWorld(mat, Vector(right, bottom, z));
+		vector c = WbToWorld(mat, Vector(right, top, z));
+		vector d = WbToWorld(mat, Vector(left, top, z));
+		vector tris[6];
+		tris[0] = a;
+		tris[1] = b;
+		tris[2] = c;
+		tris[3] = a;
+		tris[4] = c;
+		tris[5] = d;
+		Shape.CreateTris(color, ShapeFlags.ONCE | ShapeFlags.NOOUTLINE | ShapeFlags.DOUBLESIDE, tris, 2);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A changed attribute reprints the face with the new value (the editor passes the component source).
+	override bool _WB_OnKeyChanged(IEntity owner, BaseContainer src, string key, BaseContainerList ownerContainers, IEntity parent)
+	{
+		if (src)
+			WbReadAttributes(src);
+
+		m_iWbGeneration = -1;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void WbReadAttributes(notnull BaseContainer src)
+	{
+		src.Get("m_sSignId", m_sSignId);
+		src.Get("m_bShowFace", m_bShowFace);
+		src.Get("m_bFaceOnOwner", m_bFaceOnOwner);
+		src.Get("m_bFaceOnChild", m_bFaceOnChild);
+		src.Get("m_vFaceOffset", m_vFaceOffset);
+		src.Get("m_vFaceAngles", m_vFaceAngles);
+		src.Get("m_fFaceScale", m_fFaceScale);
+		src.Get("m_sFaceLayout", m_sFaceLayout);
+		src.Get("m_fTitleRotation", m_fTitleRotation);
+		src.Get("m_vTitlePos", m_vTitlePos);
+		src.Get("m_vTitleSize", m_vTitleSize);
+		src.Get("m_iTitleFontMax", m_iTitleFontMax);
+		src.Get("m_vFaceArea", m_vFaceArea);
+		src.Get("m_fRimWidth", m_fRimWidth);
+		src.Get("m_vRimColor", m_vRimColor);
+		src.Get("m_vPaintColor", m_vPaintColor);
+		src.Get("m_vTextColor", m_vTextColor);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sign id picker: every id the catalog and its pack overlays know.
+	override array<ref ParamEnum> _WB_GetUserEnums(string varName, IEntity owner, IEntityComponentSource src)
+	{
+		if (varName != "m_sSignId")
+			return null;
+
+		array<string> ids = {};
+		LF_SignCatalog.WbIds(ids);
+		ids.Sort();
+		array<ref ParamEnum> result = {};
+		foreach (string id : ids)
+		{
+			result.Insert(new ParamEnum(id, id, ""));
+		}
+
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override array<ref WB_UIMenuItem> _WB_GetContextMenuItems(IEntity owner)
+	{
+		array<ref WB_UIMenuItem> items = {};
+		items.Insert(new WB_UIMenuItem("Edit sign text (LF_Signs.conf)", WB_MENU_EDIT));
+		items.Insert(new WB_UIMenuItem("Reload sign text", WB_MENU_RELOAD));
+		return items;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Edit opens the sign config in its editor (the entry is the row whose m_sId is this sign's id);
+	//! Reload reads the config and pack overlays again and reprints every sign in the world.
+	override void _WB_OnContextMenu(IEntity owner, int id)
+	{
+		if (id == WB_MENU_EDIT)
+		{
+			string path = LF_SignCatalog.CONFIG_PATH.GetPath();
+			LF_Debug.Info("Signs", string.Format("edit sign '%1': the m_sId '%1' row in %2; a #key title is a string row (tools\\cli regen-localization after)", m_sSignId, path));
+			if (!Workbench.OpenResource(path))
+				LF_Debug.Error("Signs", "could not open " + path);
+
+			return;
+		}
+
+		if (id == WB_MENU_RELOAD)
+		{
+			LF_SignCatalog.WbReload();
+			s_iWbGeneration++;
+			LF_Debug.Info("Signs", "sign text reloaded");
+		}
+	}
+#endif
+
 	//------------------------------------------------------------------------------------------------
 	override void OnDelete(IEntity owner)
 	{
 		ClearFace();
 		super.OnDelete(owner);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The priced sign as a board kind (#1946, chapter #1014): the read of a vehicle lot's price list
+//! goes through the board provider, so the record board and stall boards can follow. The answer is
+//! built per read and not cached, so a changed price in the lot's config is a changed board. The
+//! face is painted on each client from the lot's own config, so nothing crosses the network and the
+//! kind names no read action: LF_BoardProviders.ServerRead refuses a client that asks for it.
+class LF_PricedSignProvider : LF_BoardProvider
+{
+	static const string KIND = "priced";
+
+	override string GetKind()
+	{
+		return KIND;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The answer for one sign: the offer's name key, then its price. Null, with an error, when the lot
+	//! or the offer is missing (the sign adds which board it was), so the board shows nothing
+	//! rather than a stale price.
+	static LF_BoardAnswer AnswerFor(string lotShopId, ResourceName vehicle)
+	{
+		LF_VehicleLotComponent lot = LF_VehicleLotComponent.FindLot(lotShopId);
+		if (!lot)
+		{
+			LF_Debug.Error("Signs", string.Format("price board finds no vehicle lot '%1'", lotShopId));
+			return null;
+		}
+
+		LF_VehicleOffer offer = lot.GetOffer(vehicle);
+		if (!offer)
+		{
+			LF_Debug.Error("Signs", string.Format("price board: lot '%1' has no offer for %2", lotShopId, vehicle));
+			return null;
+		}
+
+		LF_BoardAnswer answer = new LF_BoardAnswer();
+		answer.m_aTexts.Insert(offer.GetNameKey());
+		answer.m_aNumbers.Insert(offer.GetPrice());
+		return answer;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sign's title: its title format filled from an answer (%1 the car name, %2 the grouped price).
+	static string Title(string format, notnull LF_BoardAnswer answer)
+	{
+		if (answer.m_aTexts.IsEmpty() || answer.m_aNumbers.IsEmpty())
+			return format;
+
+		return LF_SignCatalog.PricedTitle(format, answer.m_aTexts[0], answer.m_aNumbers[0]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override array<ref LF_UIPart> Paint(notnull LF_BoardAnswer answer)
+	{
+		array<ref LF_UIPart> parts = {};
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Price", Title("%1 %2", answer)));
+		return parts;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+modded class LF_BoardProviderSet
+{
+	override void Collect(notnull array<ref LF_BoardProvider> providers)
+	{
+		super.Collect(providers);
+		providers.Insert(new LF_PricedSignProvider());
 	}
 }

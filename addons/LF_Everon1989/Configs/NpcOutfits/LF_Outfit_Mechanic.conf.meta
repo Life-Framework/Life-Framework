@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{66D13B163022BCB6}Configs/NpcOutfits/LF_Outfit_Mechanic.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{1CBAE70119ACDC78}Configs/Catalogue/LF_Catalogue_Clothing_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

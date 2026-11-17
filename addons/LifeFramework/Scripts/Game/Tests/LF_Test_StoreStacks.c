@@ -1,3 +1,4 @@
+// red-proof: observed 2026-11-16 (#1891), `tools\cli test --no-build --no-cache --only <the 10 classes>` on GridWorld before the grid fixtures: 10 of 15 failed on `... resolves in the DebugWorld` (Shop_GeneralStore_Debug, Shop_BlackMarket_Debug, FenceNpc are town entities); on Grid_shops_till fixtures 15 of 15 pass.
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --local --only LF_Test_StoreStacks`: LF_Stores.HoldsApart returning false failed `- the shelf apple was not merged away into the stack`, `- the shelf apple is tagged unpaid (expected 1, got 0)` and `- the till charges it (expected 0, got 1)`; restored, green.
 
 // tier: WORLD
@@ -13,8 +14,8 @@ class LF_Test_StoreStacks : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
-		IEntity counter = GetGame().GetWorld().FindEntityByName(LF_Test_StoreShelf.STORE_COUNTER);
-		ctx.NotNull(counter, "the general store counter resolves in the DebugWorld");
+		IEntity counter = GetGame().GetWorld().FindEntityByName(LF_Test_StoreShelf.GRID_STORE);
+		ctx.NotNull(counter, "the general store counter resolves in the GridWorld");
 		if (!counter)
 			return;
 

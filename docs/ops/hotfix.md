@@ -86,7 +86,7 @@ action from you). `tools\cli host next` prints the time and the warnings.
      profile, and RCON is read-only (monitor) on the flagship. Say it in Discord and keep
      the time.
    - A scheduled close is followed by the panel Workflow that starts the server again at
-     06:02 and 18:02 ([the 0grind section](../owner/host-the-flagship.md#workflows-the-0600-and-1800-restarts)).
+     06:02 and 18:02 UTC ([the 0grind section](../owner/host-the-flagship.md#workflows-the-0600-and-1800-restarts)).
 7. **Verify.** Pull the log and read it:
 
    ```
@@ -107,6 +107,7 @@ For a host on your own PC (a scratch host, or the maintainer's box before the mo
 4. **Apply to the host.** It refuses while the host runs, so stop first (step 6).
 
    ```
+   tools\cli host config apply --dry-run
    tools\cli host config apply
    ```
 

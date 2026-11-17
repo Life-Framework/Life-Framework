@@ -203,6 +203,12 @@ class LF_Test_E2E_Narrative : LF_Test
 		if (m9Item)
 			ctx.Equal(500, m9Item.m_iBuyPrice, "M9 buy price is 500 at the black market");
 
+		// The back room is the gated back_room outlet (#1762): the buyer holds its licence.
+		LF_LicenseManagerComponent licences = LF_Component<LF_LicenseManagerComponent>.Find(character);
+		ctx.NotNull(licences, "the character has a licence manager");
+		if (licences)
+			licences.UnlockLicense(LF_ELicenseType.CRIMINAL_WEAPONS, true);
+
 		ctx.True(shop.BuyItem(M9_PREFAB, 1, character), "black market accepts the M9 purchase");
 		ctx.Equal(110, LF_MoneyUtils.GetCash(character), "M9 purchase for 500 leaves cash 110");
 

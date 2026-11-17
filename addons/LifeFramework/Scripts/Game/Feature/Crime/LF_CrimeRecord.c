@@ -180,3 +180,20 @@ class LF_CrimeRecord
 		}
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CrimeRecord's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_CrimeRecord_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_CrimeRecord_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_CrimeRecord";
+	}
+
+	override void Apply()
+	{
+		LF_CrimeRecord.ResetStatics();
+	}
+}

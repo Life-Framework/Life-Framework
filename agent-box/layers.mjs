@@ -18,7 +18,7 @@ function addonFile(root, rel) {
 
 // Every .layer of the town: [{ dir, file }] over the core DebugWorld folder and the pack world's.
 function layerFiles(root, layersDir) {
-  const dirs = layersDir ? [layersDir] : worldLayerDirs(root);
+  const dirs = layersDir ? [].concat(layersDir) : worldLayerDirs(root);
   return dirs.flatMap((dir) => readdirSync(dir).filter((f) => f.endsWith(".layer")).map((file) => ({ dir, file })));
 }
 

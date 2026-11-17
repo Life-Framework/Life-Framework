@@ -1,0 +1,5 @@
+{
+  "schemaVersion": 1,
+  "respawn": { "rejoinAtLastPosition": true, "rejoinMaxAgeHours": 12 },
+  "grace": { "minutes": 30 }
+}

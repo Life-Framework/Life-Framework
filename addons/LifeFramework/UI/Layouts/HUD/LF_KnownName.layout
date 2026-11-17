@@ -3,7 +3,7 @@ FrameWidgetClass "{6C1E5A3F9B2D4E72}" {
  Slot FrameWidgetSlot "{6C1E5A3F9B2D4E73}" {
   Anchor 0 0 1 1
  }
- Visible 0
+ "Is Visible" 0
  {
   TextWidgetClass "{6C1E5A3F9B2D4E74}" {
    Name "Name"

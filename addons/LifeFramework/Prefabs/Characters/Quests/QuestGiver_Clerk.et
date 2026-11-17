@@ -76,7 +76,6 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
      m_sTurnInKey "#LF-Quest_ArrivalDone_TurnIn"
      m_sRequiredPreviousQuestId "arrival_bank"
      m_bAutoAccept 1
-     m_iRewardMoney 250
      m_aObjectives {
       LF_QuestObjective "{F212DFCA9CE7719F}" {
        m_eType TALK

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{059D23B6C343A1DF}Sounds/Dialogue/old_man/Dialogue_old_man.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,7 @@
+addons/LifeFramework/UI/Imagesets/LF_MapIcons.tif
+addons/LifeFramework/UI/Textures/Map/LF_MapHatch_Diagonal.tif
+addons/LifeFramework/UI/Textures/Map/LF_MapHatch_Cross.tif
+addons/LifeFramework/UI/Textures/Map/LF_MapHatch_Dots.tif
+addons/LF_Everon1989/UI/Imagesets/LF_MapIcons_Everon1989.tif
+addons/LF_Everon1989/UI/Imagesets/LF_MapIcons_Everon1989_HatchLawless.tif
+addons/LF_Everon1989/UI/Imagesets/LF_MapIcons_Everon1989_HatchGated.tif

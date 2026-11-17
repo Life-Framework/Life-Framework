@@ -669,3 +669,37 @@ modded class SCR_PlayerController
 		LF_CaseBoardView.Receive(entries, "rpc");
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CaseBoardView's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_CaseBoardView_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_CaseBoardView_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_CaseBoardView";
+	}
+
+	override void Apply()
+	{
+		LF_CaseBoardView.ResetStatics();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CaseBoardComponent's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_CaseBoardComponent_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_CaseBoardComponent_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_CaseBoardComponent";
+	}
+
+	override void Apply()
+	{
+		LF_CaseBoardComponent.ResetStatics();
+	}
+}

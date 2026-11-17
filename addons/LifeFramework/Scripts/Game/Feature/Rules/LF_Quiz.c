@@ -342,3 +342,20 @@ class LF_Quiz
 		LF_QuizBank.Reload();
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Quiz's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Quiz_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Quiz_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Quiz";
+	}
+
+	override void Apply()
+	{
+		LF_Quiz.ResetStatics();
+	}
+}

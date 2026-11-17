@@ -201,9 +201,11 @@ export function ownComponents(text) {
   return "";
 }
 
-// The model a prefab shows and its root scale, through its parents: { mesh, scale, chain }.
+// The model a prefab shows and its root scale, through its parents: { mesh, meshRef, scale, chain }.
+// meshRef is the {GUID}path the prefab names the model by (a MeshObject of its own can show it).
 export function meshOf(root, vfs, path) {
   let mesh = null;
+  let meshRef = null;
   let scale = null;
   const chain = [];
   const seen = new Set();
@@ -212,12 +214,15 @@ export function meshOf(root, vfs, path) {
     const text = readText(root, vfs, p);
     if (!text) break;
     chain.push(p);
-    if (!mesh) mesh = /MeshObject\s+"\{[0-9A-Fa-f]{16}\}"\s*\{[^{}]*?\bObject\s+"\{[0-9A-Fa-f]{16}\}([^"]+\.xob)"/.exec(ownComponents(text))?.[1] ?? null;
+    if (!mesh) {
+      const m = /MeshObject\s+"\{[0-9A-Fa-f]{16}\}"\s*\{[^{}]*?\bObject\s+"(\{[0-9A-Fa-f]{16}\})([^"]+\.xob)"/.exec(ownComponents(text));
+      if (m) [mesh, meshRef] = [m[2], m[1].toUpperCase() + m[2]];
+    }
     if (scale == null) {
       const s = /^ scale\s+(-?\d+(?:\.\d+)?)/m.exec(text)?.[1];
       if (s != null) scale = Number(s);
     }
     p = headerParent(text);
   }
-  return { mesh, scale: scale ?? 1, chain };
+  return { mesh, meshRef, scale: scale ?? 1, chain };
 }

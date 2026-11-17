@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{FA7E269E563ADB3D}Prefabs/Props/Racing/LF_RaceStartSign.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

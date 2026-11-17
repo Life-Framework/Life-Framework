@@ -39,6 +39,8 @@ class LF_SirenManagerComponent : ScriptComponent
 	protected int m_iBroadcasts;
 
 	protected LF_SirenKnobComponent m_Knob;
+	//! The lights of this vehicle's bar (weak): what the proofs and the lit count read.
+	protected ref array<LF_SirenLightComponent> m_Lights = {};
 	protected SignalsManagerComponent m_KnobSigComp;
 
 	// Signals manager of the vehicle, drives the audio graph signals
@@ -67,6 +69,40 @@ class LF_SirenManagerComponent : ScriptComponent
 				LF_Debug.Warn("Siren", "no 'default' mode in config, falling back to index 0");
 			}
 		}
+
+		// A vehicle with no knob has nothing to tick its light animation: the manager does, while a
+		// mode is playing. The mode starts as default, so the bar is dark from the first frame.
+		SetEventMask(owner, EntityEvent.FRAME);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Frame: a vehicle without a knob runs its own light animation (the knob ticks it otherwise).
+	//! Stops asking for frames once the default mode has finished its "Turn Off".
+	override void EOnFrame(IEntity owner, float timeSlice)
+	{
+		if (m_Knob || !m_Modes)
+		{
+			ClearEventMask(owner, EntityEvent.FRAME);
+			return;
+		}
+
+		LF_SirenMode mode = m_CurrentMode;
+		if (!mode)
+			mode = m_Modes.GetMode(m_CurrentModeIndex);
+
+		LF_LightAnimation anim;
+		if (mode)
+			anim = mode.GetAnimation();
+
+		if (!anim)
+		{
+			ClearEventMask(owner, EntityEvent.FRAME);
+			return;
+		}
+
+		anim.Tick(timeSlice);
+		if (mode.GetName() == "default" && anim.IsFinished())
+			ClearEventMask(owner, EntityEvent.FRAME);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -255,6 +291,45 @@ class LF_SirenManagerComponent : ScriptComponent
 	void RegisterLight(LF_SirenLightComponent light)
 	{
 		if (m_Modes) m_Modes.InsertLight(light);
+		m_Lights.Insert(light);
+		WakeTicker();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lights of this vehicle's bar that burn now. A fresh vehicle has none.
+	int CountLitLights()
+	{
+		int lit;
+		foreach (LF_SirenLightComponent light : m_Lights)
+		{
+			if (light && light.IsOn())
+				lit++;
+		}
+		return lit;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int CountLights()
+	{
+		return m_Lights.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ask for frames again so the current mode's animation reaches its lights (no knob only: the
+	//! knob ticks its own).
+	protected void WakeTicker()
+	{
+		if (m_Knob || !GetOwner())
+			return;
+
+		if (m_CurrentMode)
+		{
+			LF_LightAnimation anim = m_CurrentMode.GetAnimation();
+			if (anim)
+				anim.Reset();
+		}
+
+		SetEventMask(GetOwner(), EntityEvent.FRAME);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -343,6 +418,7 @@ class LF_SirenManagerComponent : ScriptComponent
 		}
 
 		m_CurrentMode = mode;
+		WakeTicker();
 
 		string modeName = "<none>";
 		if (mode)
@@ -465,6 +541,16 @@ class LF_SirenManagerComponent : ScriptComponent
 
 		int state = LF_AccountReplication.GetState(user);
 		return LF_SirenRules.DutyAllows(m_eService, true, LF_AccountStateBits.GetFaction(state), LF_AccountStateBits.IsOnDuty(state));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Localization key of why this user may not run the siren: the clock-in the vehicle's service wants.
+	string DutyReasonKey()
+	{
+		if (m_eService == LF_Faction.MEDIC)
+			return "#LF-Siren_NeedMedic";
+
+		return "#LF-Siren_NeedPolice";
 	}
 
 	//------------------------------------------------------------------------------------------------

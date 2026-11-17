@@ -54,12 +54,8 @@ async function runDownedPatientProof() {
   need(lying && lying.downed === "1", `the patient is not downed: ${JSON.stringify(lying)}`);
   shot("downed_patient_lying", 4, 0, -4);
 
-  // 3. Carry him to the ambulance and load him.
-  use("LF_CarryAction", PATIENT);
-  wait(1500);
-  need(patient()?.carrier === 1 || patient()?.carrier > 0, "the carry did not take hold");
-  on(1, { verb: "stand", entityName: "Roadmap_Hospital_Ambulance" });
-  wait(4000);
+  // 3. Load him into the ambulance from where he lies (drag and carry were cut 2026-11-15; the
+  // load needs the ambulance within m_fLoadRange of the medic).
   const load = on(1, { verb: "use", className: "LF_LoadPatientAction", entityName: PATIENT }, 10000);
   need(load.status === "ok", `load returned ${load.status} ${load.detail}`);
   wait(9000);

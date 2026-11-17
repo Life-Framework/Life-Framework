@@ -22,6 +22,13 @@
     "mode": "accelerated",
     "dayLengthMinutes": 120
   },
+  "respawn": {
+    "rejoinAtLastPosition": true,
+    "rejoinMaxAgeHours": 12
+  },
+  "grace": {
+    "minutes": 30
+  },
   "restarts": {
     "times": [
       "06:00",

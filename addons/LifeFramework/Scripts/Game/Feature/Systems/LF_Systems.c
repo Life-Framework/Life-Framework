@@ -996,3 +996,20 @@ class LF_Systems
 		s_bResolved = false;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Systems's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_Systems_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Systems_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_Systems";
+	}
+
+	override void Apply()
+	{
+		LF_Systems.ResetStatics();
+	}
+}

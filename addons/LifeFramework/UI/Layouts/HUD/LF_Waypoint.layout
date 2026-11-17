@@ -1,0 +1,129 @@
+FrameWidgetClass "{0259CA0877B573D0}" {
+ Name "WaypointRoot"
+ Slot FrameWidgetSlot "{FDEFE686102E7165}" {
+  Anchor 0 0 1 1
+ }
+ {
+  FrameWidgetClass "{AD8B3A395DF69506}" {
+   Name "Marker"
+   Slot FrameWidgetSlot "{EB6EFDA1771A6549}" {
+    Anchor 0 0 0 0
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 240
+    OffsetRight -240
+    SizeY 74
+    OffsetBottom -74
+    Alignment 0.5 1
+   }
+   {
+    ImageWidgetClass "{3AA4E0BFCCA3FD9D}" {
+     Name "Back"
+     Slot FrameWidgetSlot "{281C2685560BB197}" {
+      Anchor 0 0 0 0
+      PositionX 20
+      OffsetLeft 20
+      PositionY 0
+      OffsetTop 0
+      SizeX 200
+      OffsetRight -220
+      SizeY 50
+      OffsetBottom -50
+     }
+     Color 0.035 0.033 0.03 0.78
+    }
+    ImageWidgetClass "{963BAB2902F2FA0D}" {
+     Name "Edge"
+     Slot FrameWidgetSlot "{CBB26B2CDD34300C}" {
+      Anchor 0 0 0 0
+      PositionX 20
+      OffsetLeft 20
+      PositionY 0
+      OffsetTop 0
+      SizeX 200
+      OffsetRight -220
+      SizeY 3
+      OffsetBottom -3
+     }
+     Color 0.86 0.66 0.22 1
+    }
+    TextWidgetClass "{757BFF3D57B4C86A}" {
+     Name "Label"
+     Slot FrameWidgetSlot "{419ECCABDA87CB2B}" {
+      Anchor 0 0 0 0
+      PositionX 26
+      OffsetLeft 26
+      PositionY 6
+      OffsetTop 6
+      SizeX 188
+      OffsetRight -214
+      SizeY 20
+      OffsetBottom -26
+     }
+     Color 0.95 0.93 0.88 1
+     Text ""
+     "Font Size" 17
+     "Min Font Size" 12
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{14A289AC7D4E6148}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{8F1E637E517A4B90}" {
+     Name "Distance"
+     Slot FrameWidgetSlot "{F408EFF6104E4EDA}" {
+      Anchor 0 0 0 0
+      PositionX 26
+      OffsetLeft 26
+      PositionY 27
+      OffsetTop 27
+      SizeX 188
+      OffsetRight -214
+      SizeY 18
+      OffsetBottom -45
+     }
+     Color 0.86 0.66 0.22 1
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 12
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{0D3803DA9FDAF621}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    ImageWidgetClass "{95495BE9906FB460}" {
+     Name "Stem"
+     Slot FrameWidgetSlot "{752C778ED1E3AC59}" {
+      Anchor 0 0 0 0
+      PositionX 118
+      OffsetLeft 118
+      PositionY 50
+      OffsetTop 50
+      SizeX 4
+      OffsetRight -122
+      SizeY 14
+      OffsetBottom -64
+     }
+     Color 0.86 0.66 0.22 1
+    }
+    ImageWidgetClass "{50ABE51A3B69E116}" {
+     Name "Pin"
+     Slot FrameWidgetSlot "{9B0A30D5583D3CD7}" {
+      Anchor 0 0 0 0
+      PositionX 113
+      OffsetLeft 113
+      PositionY 62
+      OffsetTop 62
+      SizeX 14
+      OffsetRight -127
+      SizeY 12
+      OffsetBottom -74
+     }
+     Color 0.86 0.66 0.22 1
+    }
+   }
+  }
+ }
+}

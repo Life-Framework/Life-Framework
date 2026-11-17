@@ -1,0 +1,752 @@
+# Crime & Police
+
+### `LF_Breach` — `Feature/Crime/LF_Breach.c`
+- ✅ Configured charge opens an `LF_LockComponent` after the fuse and leaves it
+  open until repair (verified 2026-10-11). `Arm(targetId, playerUid)` is the
+  call later robberies use. Fuse 0 opens in that call. Wanted and the police
+  notify fire once, at arm time, not when the offer refreshes. A second charge
+  on an open target refuses. Police can always repair; the owning organization
+  can repair its own door. `Export` / `Apply` put the open lock back in memory
+  but are not wired into the save serializer, so a restart loses it. The
+  vanilla charge is not detonated. DebugWorld places `Roadmap_Breach_Door` and
+  `Roadmap_Breach_Charge` on `Street_Breach.layer`. The charge prefab is
+  `{33CBDE73AB48172A}Prefabs/Weapons/Explosives/DemoBlock_M112/DemoBlock_M112.et`.
+  **Charge consumed** (verified 2026-11-07): `Arm(targetId, playerUid,
+  chargeCarrier)` takes one charge from `chargeCarrier` before the wanted bump and
+  refuses (`arm refused: ... carries no breach charge`) when there is none. The
+  door, bank vault, and hospital cabinet actions pass the acting player; the
+  door action shows `#EL-Breach_NeedCharge`. A null carrier is the
+  server-scripted arm used by tests. Pin test `security/breach-needs-charge`.
+  `EL_Door_Base` inherits
+  `{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_HouseWooden_E_A_LEFT_EXT_COV_B.et`.
+- ✅ **Client offers** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the target table is server-only, so
+  `LF_BreachTargetComponent` mirrors open/armed as `RplProp`s
+  (`SetReplicatedState`, written from `Open`/`Repair`/`Apply` and the fuse
+  schedule). `CanArmForOffer` / `CanRepairForOffer` ask `LF_Breach` on the
+  server and the mirror on a client. A client offers repair to police and, on an
+  organization door, to anyone; the server decides membership.
+- 🧪 **Evidence at the detonation, not the placement** (2026-11-16): placing a charge (`Arm`) files the crime
+  report, opens the scene and sounds the alarm, but the footprint card the report would leave is only
+  planned (`LF_ScenePieces.PlanFootprint`, held on the target as `LF_PendingFootprint`; `deferPieces` on
+  `LF_Dispatch.Report` and `LF_WantedReports.Report`). `Open` lays it (`LF_ScenePieces.LeaveFootprint`):
+  exactly one card per report, where the robber stood at the charge. `CancelCharge`, `Repair`, `Reset`,
+  `Apply` and `Configure` drop the plan, so a defused charge leaves nothing. Bank vault, hospital cabinet
+  and door charges all go through `Arm`, so they follow the same rule. Test `crime/breach-evidence`.
+- ✅ **Charge lifetime** (2026-11-08): a charge whose fuse cannot
+  fire is dropped with `LF_Debug.Error` (`CancelCharge`) instead of leaving the
+  target armed forever: no world, a placed door without
+  `LF_BreachTargetComponent`, a timer that could not be scheduled, or the door
+  deleted before the fuse fired (`LF_BreachTargetComponent.OnDelete` also
+  removes the callqueue entry). The cancel also clears the replicated armed
+  mirror. An unplaced, script-driven target keeps its charge and opens through
+  `Advance`. `Configure` clears the armed flag and elapsed time; the open flag
+  is kept. Test `robustness/lifetime`.
+
+### `LF_Bank` — `Feature/Crime/LF_Bank.c`
+- ✅ A vault calls `LF_Breach.Arm`, then spills a config number of bags of
+  MoneyStack cash (verified 2026-10-11). The haul never deposits or withdraws
+  `LF_BankAccount`. Civilian-only, cooldown, and minimum police on duty use
+  the same comparisons as `LF_RobAction`. A second breach inside the cooldown
+  spawns nothing. Over-capacity requests are cut to the configured bag count.
+  Carry leaves the cash on the bag; dropping it leaves that cash in the world.
+  `Export` / `Apply` restore the ground bags and do not write a bank balance;
+  they are not wired into the save serializer, so a restart loses the bags.
+  The pack layer `Village_Buildings` (`LF_Everon1989`, #323 batch 3) places `Roadmap_Bank_Vault` as the whole vault kit (`LF_BankVault.et`) at 194.3 0.007 259.6 facing the street,
+  built onto the bank's east wall (see "Bank vault in the bank" below), the bell box
+  `Roadmap_Bank_AlarmBox` on the bank wall above its roof, `Roadmap_Bank_Bag` on the vault floor
+  (194.3 0.5 261.6) and the rob kit chest on the grass beside the door (196.7 0 258.5),
+  all on `Street_Bank.layer`. The bag is
+  `{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et` (a generated grey cloth sack tied with rope,
+  `Assets/Items/Roleplay/MoneyBag/MoneyBag.xob`, 0.46 m tall, origin at its base). Cash is
+  `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`. The shell is
+  `{D1859197E1AB4E8A}Prefabs/Structures/Services/EL_Bank.et`, which inherits
+  `{363A616E6C64BB7F}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01.et`.
+  That building is capture-only and is not placed in the debug row.
+
+### Safe types — `Feature/Crime/LF_SafeType.c`
+- Three safe tiers are data, not three robbery systems. `Configs/Crime/LF_SafeTypes.conf` holds one `LF_SafeTypeRow` per tier and a pack overlays it through its mission header (`LF_SafeTypes_Everon1989.conf`; add, replace, patch or remove a row by id, `LF_ConfigOverlay`). A vault or heist component names a row with `m_sSafeType`; `LF_BankVaultComponent` builds an `LF_SafeTuning` from its own attributes and `LF_SafeTypes.Apply` lets the row fill every value still at its class default. A value the prefab or layer sets to something else wins. A value set equal to the class default reads as "not set", so to pin such a value on a typed safe, change it by at least one step. An empty `m_sSafeType` is the old behaviour. An unknown id logs `[LFDebug:SafeTypes]` an error and the safe keeps its own numbers.
+- The robbery itself is unchanged: `LF_Bank.Rob`, `LF_Breach.Arm`, `LF_VaultDrill`, the fence tools, the alarm and the wanted report all run as before; only where the numbers come from is new.
+
+| Tier | `store_box` | `bank_room` | `reserve_vault` |
+|---|---|---|---|
+| In the world | small box safe in a shop (`LF_SafeBox.et`, the vanilla `Safe_01` mesh) | a vault room fitted into a bank (`LF_BankVault_RoomDoor.et`) | the big standalone vault (`LF_BankVault.et` and its kit); the later reserve building |
+| Haul | 1 bag x 150 = 150 | 1 bag x 500 = 500 | 4 bags x 1000 = 4000 |
+| Tool | none | drill or charge | drill or charge |
+| Timer | 10 s fuse | opens at once (drill: 30 s held at the door) | opens at once (drill: 90 s held at the door) |
+| Jam chance | 0 | 0 | 0.25 |
+| Police on duty needed | 0 | 0 | 2 |
+| Cooldown | 60 s | 60 s | 600 s |
+| Alarm | `store` | `bank` | `bank`, loud |
+| Action name | "Crack the box safe" | "Rob the bank" | "Break into the reserve depot" |
+
+- `store_box` matches the placed shop tills: they ship with 0 police needed and 150 cash a haul (`LF_FuelTill_Attended.et`). `LF_RobAction`'s own code default is 2 police, which every placed till overrides to 0, so the tier follows the placed value. With no tool it opens after the fuse. `m_fDrillSeconds` is 10 only because the setter needs a positive value; no drill is accepted. The Everon pack patches the haul to 120 (1989 till takings).
+- `bank_room` is today's bank: the numbers `LF_BankVault.et` sets (1 bag, 500, 60 s, 0 police, no fuse, drill or charge, bank alarm, no jam, 30 s drill).
+- `reserve_vault` is the big vault for a later "Federal Reserve" building (docs only; in-world text says "reserve depot"). The existing `LF_BankVault.et` prefab keeps its GUID, path and its own explicit numbers and sets no type, because it is the playtest town's bank today; a building that uses it as the reserve vault sets `m_sSafeType "reserve_vault"` on its placement and drops the explicit numbers.
+- Test `crime/safe-types` (LOGIC) and `everon/safe-types` (pack leg). Log `[LFDebug:SafeTypes]`.
+
+### `LF_Hospital` — `Feature/Crime/LF_Hospital.c`
+- ✅ The hospital till is not scripted here: the placed action is `LF_RobAction` on the
+  till's single `ActionsManagerComponent` (civilian, cooldown and minimum-police gates, cash
+  payout, wanted, dispatch; DebugWorld places `Roadmap_Hospital_Till` at `257 0 256.4`, hospital porch,
+  on `Street_Hospital.layer`). `LF_HospitalTillComponent` only registers the till place. The old
+  `LF_Hospital.RobTill` and its helpers had only test callers and read a millisecond clock against a
+  60-second cooldown; deleted in #2419.
+- ✅ The cabinet is a forced-entry container. `BreachCabinet` calls
+  `LF_Breach.Arm`. When that lock opens it spawns the configured medicine
+  prefabs: field dressing, morphine, saline, and tourniquet. A missing prefab
+  logs and that line is skipped. A second breach while the cabinet is open
+  spawns nothing and does not alert again. `Roadmap_Hospital_Cabinet` is at
+  `198 0 120`. Items stay ordinary; confiscation of a contraband flag belongs
+  to the contraband scope.
+
+### `LF_Murder` / `LF_Zones` — `Feature/Crime/`, `Feature/Moderation/` (M1-27, #125; zones #242)
+- ✅ **Murder makes you wanted** (test `crime/murder`). Every character death
+  reaches `LF_GameModeRoleplay.OnControllableDestroyedEx` on the server. A
+  player who kills another player or an NPC gets wanted +the catalog's amount
+  (`#LF-Offence_Murder` in `LF_CrimeCatalog.conf`, default 3), one `LF_WantedReports` report with the
+  `#LF-Offence_Murder` offence and their description (no name), a radio
+  dispatch to every on-duty officer (`LF_Dispatch.Report`, no site alarm), and a toast. Not murder: a death with no player behind
+  it, a self-kill, a destroyed vehicle, and (config
+  `m_bOfficerKillOfWantedExempt`, default on) an on-duty officer killing a
+  wanted suspect. Each decision logs `[LFDebug:Murder]`. No automatic ban.
+- 🧪 (2026-11-16) **Killing a logged-out body is murder of that player (#2103).** The body (`LF_LogoutBody`) has no controlling player, so its kill arrives with `victimPlayerId` 0. `LF_Murder.VictimUid` / `VictimIsPlayer` resolve it through `LF_LogoutBody.UidOfBody`: the victim is the account's uid, the `LF_OnPlayerKilled` event is published with it, and the officer exemption reads that account's wanted level. A plain NPC stays an NPC. Test `crime/murder-logout-body`.
+- ✅ **Zone rule sets as data** (#755, #1077; tests `zones/rules`, `zones/ruleset-backcompat`, `zones/conf-off`). `LF_ZoneRuleSet` and `LF_ZoneConfig` members carry no initializers, so a `.conf` value of 0 is read as 0 (an initializer used to win); script builds one with `CreateDefault`. `LF_Zones.conf`
+  holds a per-rule table `m_aRuleSets` of `LF_ZoneRuleSet` (rule, blocksPlayerDamage, suppressesWanted,
+  allowsRobbery, allowsVehicleTheft, allowsWeaponDraw, fineMultiplier, copsEnter). Shipped: SAFE blocks
+  player damage, LAWLESS and NORMAL change nothing. A rule with no entry falls back to the old
+  `m_bSafeBlocksPlayerDamage` / `m_bLawlessSuppressesWanted` flags. Callers ask
+  `LF_Zones.RuleSetAt(pos)`; today only blocksPlayerDamage and suppressesWanted have consumers (hit
+  refusal, `LF_Murder`). The `EVENT` rule waits on D5 (#757); ids stay NORMAL 0, SAFE 1, LAWLESS 2.
+- ✅ **Spawn safe zone** (test `safezone/blocks`). `LF_ZoneComponent` (rule SAFE) on
+  `LF_SafeZone_Square` (`Gamemode.layer`, fountain 115 0 250, radius 30 m as
+  the component attribute) registers a flat circle. The modded
+  `SCR_CharacterDamageManagerComponent.HijackDamageHandling` swallows a hit
+  when a player hurts a different player and either stands inside: no health,
+  bleeding, or ragdoll. NPC, world, and self damage pass. Weapons still raise
+  and fire. No police exemption: arrest is an interact action. Each refusal
+  logs `[LFDebug:SafeZone] refused ...`; the shooter gets a toast at most every
+  8 s. Two `safe_zone` notice boards (`Sign_SafeZone_Spawn`,
+  `Sign_SafeZone_East`) say so in the world.
+- ✅ **Zone service** (#242, tests `zones/rules`, `safezone/blocks`). The safe zone
+  code is now `LF_Zones` (`Feature/Moderation/LF_Zones.c`): a zone is an entity with
+  `LF_ZoneComponent`, a shape (circle, box turned by entity yaw, polyline corridor
+  with a half-width) and a rule set: SAFE (the damage block above), LAWLESS, NORMAL.
+  `LF_Zones.RuleAt(pos)` answers for every caller; overlaps resolve safe, then
+  lawless, then normal; shapes are flat (XZ). What each rule set does lives in
+  `Configs/Moderation/LF_Zones.conf`: `m_bSafeBlocksPlayerDamage` (on) and
+  `m_bLawlessSuppressesWanted` (off: lawless alone does not switch off wanted; on,
+  `LF_Murder` skips a murder in a lawless zone and logs the reason). A zone added,
+  changed or removed logs `[LFDebug:Zones]` and publishes `LF_OnZoneChanged`. The
+  incident log stamps `m_sZone` (safe/lawless/normal) on each record and in its log
+  line; the stamp is not saved and a loaded record is stamped again from its position.
+  #243 (quarry lawless) is one entity: an `LF_ZoneComponent` with rule LAWLESS.
+- ✅ **Lawless quarry** (#243, test `zones/quarry`). `LF_LawlessZone_Quarry` (`Gamemode.layer`, circle 32 m at 178 0 172 over the mining site) is the one lawless area; the plaza zone stays safe and the town normal. Two `lawless_zone` signs (`Sign_Lawless_Entry` at the lane, just outside; `Sign_Lawless_Pit` at the east edge) say so; the catalog row `lawless_zone` carries the rule text. The harness `state` line now ends its zone as `zone=safe|lawless|normal`; `session.mjs quarry-proof` reads it at both signs and the plaza. No fence or gate yet; no save change.
+- ✅ Both civilian spawn points stand on the square (the second moved from
+  170 0 199, by the quarry, to 121 0 253); `safezone/blocks` asserts every
+  civilian spawn point is inside a zone. The hospital wake (M1-26) is not a
+  spawn and stays outside.
+
+### `LF_RobAction` / `LF_RobWeaponAction` / `LF_RobVehicleAction` — `Feature/Crime/`
+- ✅ Cash/weapon/vehicle robbery; cooldown + civilian-only + min-police-on-duty
+  gates; raises wanted level (+1/+2/+3); notifies police. DebugWorld's three
+  points set the minimum to 0 so one civilian can run them (verified 2026-10-10).
+  The action classes still default to 2 / 1 / 3.
+- ✅ **Cash payout + reliable wanted bump** (verified 2026-08-30): the haul is
+  `LF_MoneyUtils.AddCash` (never the bank — pin test `crime/rob-reward`
+  asserts the bank balance stays 0), and the account cache churn is fixed so
+  every robbery escalates wanted.
+- 🔧 **Fuel till robbed through its attendant** (#936, merged, in-dev): the till is `LF_FuelTill_Attended.et` (its world action is retired) and the voiced `LF_FuelClerk` stands behind it. The robbery reply in the `fuel_clerk` dialogue is offered only while a weapon is drawn (`RobArmed` hook, `LF_RobDialogue.c`). Picking it calls `LF_RobHold.Start` on the server (armed, in range, free till, cooldown, `LF_RateLimit` CRIME), starts a hold timer with a bar and radius warning (`LF_RobHoldHud`), and pays through `PayHeld` when the hold is kept; leaving, weapon away, police arriving or going down each end it with a message and a cry from the attendant. Alarm, dispatch, witness and evidence fire as before. Tests `crime/rob-hold`, `crime/fuel-clerk-dialogue`. Demo: `session.mjs fuel-robbery-proof`.
+- 🔧 **A held robbery refused by the grace period says so** (#2157, #2075, merged, in-dev): when `LF_RobAction.Gate` refuses a new character (`REFUSED_GRACE`), `LF_RobHold.Start` and the `RobRefused` dialogue hook send the grace toast (`LF_Grace.Notify`) through `LF_RobHold.NoteRefusal`, and the attendant's caption (`LF_RobHoldRules.RefusalKey`) names the grace instead of "no till". Test `crime/rob-hold-grace-toast`.
+- 🔧 **A robber holds one till at a time; a downed or dead attendant ends the hold unpaid** (#2540, merged, in-dev): `LF_RobHold.Refusal` refuses a robber who already keeps a hold running (`REFUSED_HOLDING`, caption `#LF-RobHold_Refused_Holding`). Each tick reads the attendant: down or dead turns a running, paying or police end into `LF_ERobHoldEnd.CLERK` (`LF_RobHoldRules.JudgeClerk`), which pays nothing (only `PAID` opens the till, `Pays`), shows `#LF-RobHold_Fail_Clerk` and leaves the attendant silent. Test `crime/rob-hold-one-per-robber`.
+- ✅ **Fuel-station till** (verified 2026-10-11): `Roadmap_Fuel_Till` on
+  `Street_Fuel.layer` at `259 1.04 241.2` (on a counter at the fuel station) is
+  `{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et`, which inherits
+  `{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et`,
+  with `LF_RobAction`. Payout is a config range (`m_iMinPayout`..`m_iMaxPayout`);
+  the server rolls it, and min equal to max pays that fixed amount. The debug
+  till pays 150 MoneyStack cash. The bank balance stays 0. Wanted rises by
+  the catalog's robbery amount (default 1) and still clamps at 5. A second attempt
+  inside the cooldown is refused and logged with `LF_Debug.Error`. The police
+  alert fires once, inside `CommitRobbery`, not while counting on-duty police
+  and not when the offer refreshes. The fuel station building
+  `{9269BD1B6BF3A441}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/FuelStation_E_01_V1.et`
+  is the capture prefab and is not placed in the row. Player strings:
+  `#EL-Fuel_Till_Rob`, `#EL-Rob_Cooldown`, `#EL-Rob_CiviliansOnly`,
+  `#EL-Rob_NeedPolice`.
+- ✅ **Tests call the real actions** (2026-11-07; red-proofs observed
+  2026-11-08). `crime/rob-reward` (WORLD) runs `LF_RobAction.CommitRobbery` with a
+  real character: MoneyStack cash, bank 0, wanted +1, cooldown, civilian gate.
+  The weapon and vehicle grant/spawn, wanted, and alert moved into
+  `LF_RobWeaponAction.CommitWeaponRobbery` and
+  `LF_RobVehicleAction.CommitVehicleRobbery` (wanted from the catalog, weapon theft 2 and carjacking 3;
+  `PerformAction` keeps the server-only guard), and their civilian check into
+  `LF_RobAction.IsFactionAllowedToRob`; `crime/rob-weapon-vehicle` (WORLD)
+  drives them. The earlier `crime/rob-reward` and `crime/rob-wanted-clamp`
+  never called an action and are gone; the clamp is pinned by `roadmap/fuel`.
+- ✅ **Weapon and vehicle robberies are judged on the server (#2538, merged, in-dev).** `CommitVehicleRobbery` and
+  `CommitWeaponRobbery` take the police count, the action's minimum, cooldown, last-rob time and now, and refuse (nothing
+  delivered, no wanted, `LF_Debug` warn plus a `NotifyEntity` toast) a robber in grace (the vehicle had no grace check),
+  a faction that may not rob, too few police on duty, or a robbery inside the cooldown. The pure `Gate` static
+  (`LF_RobVehicleAction.Gate`, `LF_RobWeaponAction.Gate`) is what the client's `CanBePerformedScript` and the server both
+  ask; the offers now read `LF_AccountReplication.GetPoliceOnDutyCount` (the old per-action counter is gone).
+  `PerformAction` judges against the previous rob time and does not start the server's cooldown for a refused robbery.
+  `crime/rob-commit-gates` (WORLD) pins it.
+- ✅ **No account, no robbery** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): `CommitRobbery` refuses and logs
+  `robbery refused: no account` instead of paying without the civilian gate and
+  wanted bump. `PerformAction` runs on the server only; offers read
+  `LF_AccountReplication`, so the till is offered on a dedicated client and the
+  min-police gate uses the replicated count. The success toast goes to the robber
+  only (`LF_Utils.NotifyEntity`), the alert to on-duty police only.
+- ✅ **Weapon/vehicle cooldown in seconds** (2026-11-08, test `robustness/lifetime`): both
+  compare through `LF_RobCooldown.IsActive`, which converts the seconds attribute
+  to world-time milliseconds (before, 300 s was 0.3 s). A never-robbed action
+  has no cooldown. `PerformAction` grants/spawns, raises wanted, and alerts on
+  the server only. `LF_RobVehicleAction` no longer notifies from its on-duty
+  count (that ran every offer refresh) and refuses an empty vehicle prefab with
+  `LF_Debug.Error`; the spawn goes through `LF_Utils.SpawnEntityPrefab`.
+- ⚠️ Near-duplicated guard logic across all three.
+  Police alerts go through `LF_Dispatch.Report` (M1-20).
+
+### `LF_Jail` — `Feature/Police/LF_Jail.c`
+- ✅ Placed cell and timed sentence (verified 2026-10-11). `GetJailPosition()`
+  reads the cell origin. Sentence length is wanted level times the config
+  step, clamped to the config max. Arrest of a clean player refuses. Expiry
+  reduces wanted by the configured amount. Early release refuses. A locked
+  jail door returns a prisoner who leaves the volume; an open door (the shared
+  `LF_Breach.Arm` on `Roadmap_Jail_Door`) does not, and the remaining time
+  stays. `Export` / `Apply` put the remaining seconds back, and `ExportAll` /
+  `ApplyAll` carry every serving sentence through the save. DebugWorld places
+  `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
+  `Street_Jail.layer` (the desk on `Street_Police.layer`). The placed door is
+  `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et`, which
+  inherits
+  `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
+  and adds `LF_LockComponent`, so the prison mesh and the shared breach actions
+  stay together. That vanilla door is the prefab the world test loads.
+  The officer action `LF_JailArrestAction` is on the suspect. `LF_JailEscort`
+  is the vehicle path: an on-duty officer loads a wanted player into the nearest
+  free non-driver seat of a base-game vehicle. The sentence starts when they
+  arrive at the cell, not when they enter the car. A player who is not wanted
+  is refused and logged. Early release stays refused. A reconnect or a
+  restart keeps the remaining sentence. DebugWorld places
+  `Roadmap_Escort_Car` at `247.5 0 238` (beside the police station) on `Street_Jail.layer`, the police M151 with
+  `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
+  still requires an on-duty officer and a prisoner on foot. (verified 2026-10-11)
+- ✅ **Sentences survive a restart** (2026-11-07, tests
+  `restart/jail-serializer-roundtrip` and `e2e/pass2-verify-load` across a real
+  restart, verified 2026-11-07): `LF_Jail.ExportAll` / `ApplyAll` are the `jail` payload of
+  `LF_PersistenceComponentSerializer`, appended at version 5. Only serving
+  sentences with time left are saved; `ApplyAll` replaces the live set, so a
+  second apply converges. A version 1-4 save stops before the payload and leaves
+  live sentences alone.
+- ✅ **One jail tick** (2026-11-08, test `robustness/single-jail-tick`): the first placed
+  `LF_JailCellComponent` owns the jail config and the repeating `LF_Jail.Tick`;
+  a second cell logs `LF_Debug.Error` and neither reconfigures nor ticks (two
+  cells used to run sentences at double speed). `OnDelete` removes the tick.
+  `LF_JailArrestableComponent` hosts `LF_JailEscort.Tick` on one live instance
+  and hands it to the next registered one when that host is deleted.
+- ✅ **Jail work shortens the sentence (#127, merged, in-dev).** Two job spots in the DebugWorld cell: *Scrub the floor* (`Roadmap_Jail_ScrubBucket`, 30 s off, 6 s of work, 45 s cooldown) and *Sort the laundry* (`Roadmap_Jail_LaundryBasket`, 20 s off, 5 s, 30 s). `LF_JailWorkAction` carries the job id, seconds off, cooldown and work time as config; the client sends nothing. `LF_JailWork.Begin` (server) refuses anyone who is not serving, is already working or is inside that job's cooldown (cooldown toast shows the time left), then bends the prisoner into the existing work pose (`LF_WorkAnim`: PICK for the scrub, DRILL for the laundry). When the work time is up and the prisoner is alive and within reach, `LF_JailWork.Complete` calls `LF_Jail.Credit` once, which takes the seconds off the remaining time (a task past the remaining time ends the sentence like any release), refreshes the sentence slip, and toasts "Job done. Time left: m:ss". Nothing new is saved: the reduction lands on the sentence's remaining seconds that the `jail` payload already carries; the cooldown is session-only. Test `jail/work` (LOGIC); demo `node agent-box/session.mjs jail-work-proof` (needs `session.mjs roster 2` before `up --clients 2`). Localized `LF-JailWork_*`. The work poses are reused, so the scrub and laundry both show the existing bend; a mop or laundry clip is not made.
+- ⚠️ Moving a connected prisoner to the cell, or pulling them back into it,
+  goes through `SCR_Global.TeleportPlayer` (the vanilla server-side player
+  teleport) instead of a server-only `SetOrigin` that the owning client can
+  overwrite; a stand-in with no player is still set directly (2026-11-07). A
+  prisoner seated in a vehicle is dismounted straight to the target first
+  (`GetOutVehicle_NoDoor`; a client-owned player through the vanilla Game Master
+  `SCR_EditableCharacterComponent.SetTransform`), so the vehicle stays put (M1-21,
+  test `jail/vehicle-arrest`). Not yet checked on a dedicated server with a remote client.
+- ✅ **Online time** (M1-21, 2026-11-08, tests `jail/online-time`, `e2e/pass2-verify-load`): the
+  sentence counts down only for connected players (`LF_Jail.Tick` reads
+  `PlayerManager.GetPlayers`; `TickOnline` is the testable seam). An offline prisoner keeps
+  the time they had at logoff and logs `sentence paused` / `sentence resumed`. A prisoner who
+  spawns with time left (rejoin, restart) goes back to the cell with their slip (`LF_SpawnLogic`).
+- ✅ **Sentence slip** (M1-21, test `jail/slip`): sentencing hands the prisoner
+  `Prefabs/Items/Roleplay/SentenceSlip.et` (vanilla personal-papers mesh). `LF_JailSlipComponent`
+  prints name, offence (wanted level), and online minutes left; the minutes replicate only when
+  the whole minute changes. Hovering it in the inventory reads it (`LF_JailSlipUIInfo`). A
+  respawn or a second arrest reprints the carried slip instead of adding one. No new save data.
+  The prisoner's platform uid is not replicated (#2416, test `jail/slip`): the slip keeps it in a plain
+  server-side field and replicates the display name (never the uid: a prisoner with no character name reads
+  "unknown", `#LF-JailSlip_Unnamed`) and a printed flag.
+- ✅ **Visible release** (M1-21, tests `jail/slip`, `jail/online-time`): release opens the cell
+  door (`DoorComponent.SetControlValue`, the vanilla door motion and sound; it closes after
+  5 s), places the prisoner at the cell release offset (`m_vReleaseOffset`; DebugWorld `0.15 0 10`, outside
+  the door), stamps the slip, then shows the toast 1.5 s later. Release runs once per sentence.
+  The DebugWorld cell now sentences 60 s per wanted level, max 300 s (it was zero-length).
+- ✅ **Jailbreak** (#235, LOGIC `roadmap/jailbreak`, WORLD `e2e/roadmap-jailbreak`, `session.mjs jailbreak-proof`). A serving prisoner who is outside the cell volume while `Roadmap_Jail_Door` is open has escaped: `LF_Jail.NoteEscape` (called each cell tick) reports it once through `LF_Dispatch.Report` as `#LF-Offence_JailBreak` (so `LF_OnCrimeCommitted` is on the bus, the board and pager carry it) and leaves the sentence and wanted level alone; going back inside re-arms it. The door reuses `LF_Breach` (arm, stay open until police repair). **Fixed:** `m_bDebugLocked` was never applied (the component asked for no init event), so the placed jail door started unlocked; `LF_LockComponent` now sets the INIT mask and applies it, and the per-component `m_bStartLocked` workarounds (jail, breach, lockpick) are gone. Harness verb `charge` hands the player a breach charge (dev gate). No save change.
+
+
+### `LF_PoliceMenu` — `Feature/Police/LF_PoliceMenu.c`
+- ✅ `ArrestPlayer` is the client-side entry point. The wanted list
+  left the menu in M1-11: wanted people are on the station wanted board. The
+  remote fine (`RpcAsk_LF_PoliceFine`, `FinePlayer`, the Fine button) is gone
+  (M1-19): a fine is a paper ticket written face to face (`LF_FineTicket*`).
+  The duty NPC's menu shows only Close (#2509): the blank Search and Arrest
+  buttons are removed, not built. `ArrestPlayer` stays for the wanted-list sheet
+  to call; `LF_Test_PoliceMenuNoDeadButtons` holds the layout and focus ring to
+  working buttons.
+- ✅ **Client→server bridge works** (verified 2026-08-30): the menu routes
+  through `SCR_ChimeraCharacter.LF_AskPoliceArrest`, and the server
+  handler `RpcAsk_LF_PoliceArrest` validates on-duty officer and wanted
+  target before acting. Arrest also requires the configured
+  arrest rank (patrol on the flagship, #165). `LF_PoliceUtils` (pure) holds the
+  sentence-length math and the reach check for tests; `MAX_FINE` is the
+  senior ticket cap.
+  The client-side self-promote RPC is gone (#2416): it only ever refused and logged every call; `LF_PoliceRanks.RequestSelfPromotion` stays as the server rule for a promote that names the caller.
+- ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
+  `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
+  to `"127 1 137"`.
+- ✅ **Hands-on only** (2026-11-07): arrest refuses a
+  target that is not connected or stands beyond `LF_PoliceUtils.POLICE_REACH`
+  (5 m, the in-world arrest range) and shows `#EL-Police_TooFar`. Neither the
+  framework nor vanilla has a restraint state, so reach is the requirement.
+  Test: `security/police-abuse`.
+
+### `LF_FineTickets` — `Feature/Police/LF_FineTicket*.c`
+- ✅ **A fine is a paper ticket paid at the police desk** (M1-19, #104;
+  decision 2026-11-08). An on-duty officer facing a player picks **Write ticket**
+  (the `fine` slot of the player interaction menu, `LF_FineTicketRole`, no
+  prefab edit). The server opens the ticket pad (`LF_FineTicketPad`, paper
+  `LF_UIScreen`) on the officer's machine: one "Write: <offence>, <amount>" button per offence from
+  the crime catalog's offences with a fine (`LF_CrimeCatalog.conf`) at their fixed amount; offences above the
+  officer's rank cap (`LF_PoliceRanks.FineCap`: patrol 1000, senior 5000) print
+  as a plain "senior officers only" line. The server re-checks duty,
+  reach (2 m), the cap, and at most 3 unpaid tickets per holder, then hands
+  over `Prefabs/Items/Roleplay/FineTicket.et`: number, date, holder, offence,
+  amount, deadline, what it rises to, where to pay, officer rank and name. Cues:
+  the officer's point gesture, the paper sound from the ticket, the holder's
+  pick-up gesture, and the ticket card on the holder's screen. Inventory hover
+  and Read (on the ground) show the same text.
+- ✅ **Pay ticket** on the punch clock of `LF_PoliceDutyDesk.et`: carried cash
+  only (`LF_EntityCashWallet`), never the bank, all or nothing, oldest unpaid
+  first. The clock's punch sound stamps it for everyone nearby; the carried
+  paper turns into a receipt ("PAID <date>").
+- ✅ **Deadlines in online time** (like the jail sentence): unpaid after
+  `m_iTicketFirstDeadline` (1800 s) the amount is multiplied once by
+  `m_fTicketLateMultiplier` (x2) and the paper updates; after a further
+  `m_iTicketSecondDeadline` (1800 s) the holder gets the catalog's `#LF-Offence_UnpaidFine` amount (+1)
+  wanted and a named "Unpaid fine" poster on the wanted board. Still payable
+  after; paying does not lift the warrant. Logs: `[LFDebug:Ticket]`.
+- ✅ **Persisted** (save version 12, payload `tickets`). A restart's blank
+  copy is reprinted on spawn; a respawn hands an unpaid ticket back. Up to 3
+  paid receipts per holder are kept for reprinting. Tests:
+  `police/fine-ticket-rules`, `police/fine-ticket`,
+  `police/fine-ticket-serializer`.
+- 🔨 **Ticket request limit and a private paper** (#2416, in-dev). `RpcAsk_LF_WriteTicket` counts each request against
+  `LF_FineTicketRole.AllowWriteRequest`: `ticketRateBurst` (3) per `ticketRateWindowSeconds` (10, at most 60) per officer (police
+  config; `LF_RateLimit.AllowWithAt`, kind `TICKET`). The first refusal in a window logs `[LFDebug:RateLimit]` and toasts
+  `#LF-RateLimit_Slow`; the rest are counted into one line when the window rolls over. The paper's replicated fields
+  (`LF_FineTicketComponent`) no longer include the holder's platform uid, which every client streaming the item could read;
+  the display name stays and the uid lives in the server's `LF_FineTicketRecord`. Test `police/ticket-request-limit`.
+
+### `LF_DutyAction` — `Feature/Police/LF_DutyAction.c`
+- ✅ **The police kit carries the station car key** (2026-11-08, WORLD `police/car-key`):
+  the starter police kit adds `Prefabs/Items/Roleplay/LF_PoliceCarKey.et`, a vehicle key bound
+  to the shared identifier `POLICE`; `Roadmap_Escort_Car`'s lock is bound to the same, so every
+  officer's key opens every station car. The key is part of the duty inventory (clock-out stores
+  it with the uniform). The car is a world entity, not an owned record: no garage, no impound,
+  back at the station after a restart. `LF_VehicleKeyComponent` now asks for its INIT event, so
+  an editor-bound key actually takes its identifier (before, it stayed unbound).
+- ✅ **Clock in / Clock out at the duty desk** (M1-11, 2026-11-08; WORLD
+  `police/duty-swap`, `police/death-on-duty`, `police/station`; restart via
+  `wt e2e`). `Roadmap_Police_Desk` is `Prefabs/Police/LF_PoliceDutyDesk.et`
+  (desk + vanilla `ClockPunch_01`). The offer reads the roster bit of
+  `LF_AccountReplication`; the server re-checks `LF_WhitelistManager` and
+  `LF_DutyLocker` swaps the whole carried inventory, clothes included:
+  clock-in stores the civilian tree as `civilian_stash` and restores
+  `police_duty` (or the starter police kit, the POLICE entry of
+  `LF_SpawnLogic.m_aFactionCharacterItems`); clock-out does the reverse and pays
+  duty pay. The faction is the duty role: POLICE only while clocked in.
+  Feedback: the vanilla pick-up gesture on the acting client, the range control
+  panel button click (`SOUND_RANGECP_STARTBUTTON`) broadcast from the desk, then
+  a toast. Death on duty ends the shift: the body keeps the police gear, the
+  civilian stash becomes the carried snapshot the respawn restores, and the
+  next shift starts from the starter kit. Going on duty starts the rank clock;
+  going off duty settles it. `PoliceStation_Debug` and `PoliceDutyNPC` no
+  longer offer duty. The debug menu's police button still sets the role without
+  a swap (dev only).
+- ✅ **Duty pay at the desk** (verified 2026-11-08: LOGIC test `jobs/duty-pay`;
+  the 2-client cash check is manual). Going off duty pays the shift's on-duty
+  seconds times `m_fPoliceDutyPayPerSecond` (`Configs/Jobs/LF_Jobs.conf`, flagship
+  0.5) as cash through `LF_DutyPay.PayAtClockOut`, with the pick-up sound and a
+  `#EL-Duty_Paid` toast. Seconds settled by an armory draw mid-shift are kept
+  for the clock-out. A second clock-out, a clock-out with no clock-in, and a
+  non-police account pay nothing. Unpaid seconds are session state: a restart
+  during a shift drops that shift's pay, it never pays twice.
+- 🔨 **Duty pay and rank count only a capped, connected shift** (#2416, in-dev). `LF_PoliceRanks.SettleDutyAt` counts at
+  most `dutyShiftMaxMinutes` (police config, 120) of one clock-in for pay and rank (`ShiftCredit`); the clock runs on
+  uncounted until the officer clocks out and in again, so an AFK officer earns at most one capped shift per visit to
+  the desk. A disconnect settles and stops the clock (`LF_PoliceRanks.OnPlayerLeft`, from `OnPlayerDisconnected`): the
+  officer stays on duty with the body and kit, but the time away is never counted. `OnPlayerReturned` (on spawn) starts
+  the clock again inside the same shift cap, which also restarts the clock of an officer whose on-duty flag survived a
+  server restart. The cap applies to every duty role (police and medic). Log `[LFDebug:Ranks] shift cap reached`,
+  `duty clock stopped`, `duty clock resumed`. Not tracked: whether a connected officer is moving (no activity signal
+  exists), so an officer who stays connected but idle earns up to the cap. The shift's counted seconds are session
+  state: a server restart gives a fresh cap. Test `police/duty-shift-cap`.
+- 🔨 **An expired trial ends the shift** (#2416, in-dev). `LF_PoliceTrialSweep` runs on the server every
+  `trialSweepSeconds` (60): it expires trials (`ExpireTrials`), then clocks out each connected on-duty officer whose
+  trial ended unpromoted and who may no longer clock in (`LF_PoliceApplications.TrialExpiredFor`, roster check), through
+  the desk's own `LF_DutyLocker.ClockOut` (shift pay, gear swap) and toasts `#LF-Duty_TrialExpired`. The sweep settles
+  each connected officer's clock before expiring, so seconds that earn the promotion end the trial first. An officer
+  who was offline, or on the spawn screen with no body, is left alone until a sweep finds them with a body; an admin
+  who puts them back on the roster keeps them on duty. Log `[LFDebug:Police] trial of <uid> ended on duty`. Tests `police/trial-expiry-duty`, `police/trial-expiry-clock-out`.
+- ✅ Toggling keeps the account resident: `SaveAndReleaseAccount` re-caches
+  the account instead of evicting it, so the officer can reopen the police
+  menu and re-toggle at once.
+- ✅ **Dedicated client** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the toggle
+  runs on the server only; the offer and the name (`#LF-Duty_ClockIn` /
+  `#LF-Duty_ClockOut`) read `LF_AccountReplication`.
+
+### `LF_WantedReports` / `LF_WantedBoard` — `Feature/Police/`
+- ✅ **Crime reports** (M1-11, LOGIC `police/wanted-board`): each crime that
+  raises wanted (till, vehicle and weapon robbery, breach, hospital till) calls
+  `LF_Dispatch.Report` (M1-20), which calls `LF_WantedReports.Report`. It records the offence and a description of the
+  suspect at that moment: clothing display names, the vehicle they sit in, and
+  the nearest sign title within `m_fPlaceRadius`, else the nearest map town or
+  landmark (`LF_NamedPlaces.Nearest`, #1944, WORLD `police/dispatch-names-place`:
+  "bank robbery, Saint Philippe"), else a 100 m grid square. The place is stored as a
+  localization key and localized where each board and radio line is built; the
+  core holds no place names. In town the hospital till's alarm stands on `Hospital_AlarmBox` (an alarm mount on the hospital front wall, `Street_Hospital.layer`) and the pack names the town "Saint Philippe" (`Place_SaintPhilippe`, town pass #1947).
+  An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)
+  catches it in the act and the report is identified at once. Showing your own
+  ID card to an on-duty officer (`LF_ShowIDAction`) identifies every open
+  report. Reports come down when wanted returns to 0, and persist as the
+  `wanted` payload (save version 10).
+- ✅ **Wanted board** `Roadmap_Police_WantedBoard` (`Prefabs/Police/LF_WantedBoard.et`,
+  a cork `LF_Sign_Board` printing WANTED): "Read the wanted posters" asks the
+  server per read (`RpcAsk_LF_Board` with kind `wanted`, the server finds the board near
+  the reader). On-duty police get offence, stars, clothing, vehicle, and place;
+  everyone else gets the public poster without the place. A name appears only
+  on identified reports. The card is an `LF_UIScreen` paper sheet that closes
+  4 m from the board; reading plays the map pick-up sound and gesture.
+  On-duty police also see the dispatch log under the posters (M1-20).
+- ✅ **Posters on the wanted board's face** (#758, `docs/architecture/visual-boards-spike.md`
+  issue 1, budget in `docs/architecture/visual-boards-budget.md`): every player near the
+  board sees a paper poster per wanted suspect pinned on the cork, without reading it:
+  WANTED, the name once identified (else UNKNOWN PERSON), the offence, what was seen
+  (`Wearing ...; driving ...`, the line left off when nothing was seen) and the wanted
+  level. `LF_WantedPosters` builds the public list on the server (one poster per suspect,
+  newest first, no place) on bus events (`LF_OnCrimeCommitted`, the new `LF_OnWantedChanged`
+  and `LF_OnSuspectIdentified`) and after a load, coalesced to one broadcast; the board's
+  `LF_WantedPosterBoardComponent` sends it by `RplSave`/`RplLoad` (late join, stream-in)
+  and a reliable broadcast. Each client draws one render target over the cork
+  (`Prefabs/Props/Signs/LF_BoardFace.et`, a 16:9 quad, the vanilla cork texture under the
+  posters) within `drawRadius` (30 m) and releases it 5 m beyond; the face renders live for
+  3 s after a change and then freezes, which the budget measured as nearly free. Owner
+  config section `wantedBoard`: `posters` (4, at most 8 in two rows) and `drawRadius`.
+  The Read card and the police-only lines are unchanged; the dispatch boards keep their
+  painted face (`m_bDrawPosters 0`; decision 2026-11-13). Readable to about 4 m at noon;
+  at night it has no light of its own, like every other sign (`session.mjs
+  wanted-posters-look-proof` takes the pictures). Tests `police/wanted-posters-feed`,
+  `police/wanted-poster-face`; proof `session.mjs wanted-posters-proof`.
+- ✅ **Stolen cars on the wanted board's face** (#758, spike issue 5): a car its owner
+  reported stolen (`LF_ReportStolenAction`) takes one of the last places (`wantedBoard.
+  stolenPosters`, 1) as a STOLEN poster: a picture of the model (the prefab's own preview,
+  in its default colour), the plate on a white strip, the car's name and "Seen it? Tell the
+  police." The report carries the vehicle prefab's GUID; no place or owner reaches the face.
+  Rebuilt on `LF_OnVehicleReportedStolen`, `LF_OnVehicleRecovered`, `LF_OnVehicleChopped`
+  and any closed report. Test `police/wanted-posters-stolen`; proof
+  `session.mjs stolen-poster-proof` (`up --clients 2 --mission playtest`).
+- ✅ **Portraits on the wanted posters** (#758, spike issue 4): the server records the
+  suspect's look at the crime (`LF_WantedLook.Capture`: the character prefab and each
+  loadout slot's item as prefab GUIDs, no paths) on the report and in the poster entry.
+  Each client dresses a dummy of that character in the preview world and the poster's
+  `ItemPreviewWidget` draws it as a head-and-shoulders mugshot (a preview three frames
+  wide, clipped by the photo frame), the same framing for a named and an unknown suspect.
+  A report without a look keeps the empty photo frame. The face re-renders at 10 s and
+  30 s after a change so streamed textures land, then the dummies are deleted. The look
+  is saved as the `wantedlooks` payload (save version 29, keyed by report sequence), so
+  the portraits come back after a restart; a version 28 save loads its reports without a
+  picture. Tests `police/wanted-look`, `persist/wanted-looks`; `wt e2e` checks the look
+  across a real restart.
+- 🔧 **What the clothes hide** (#2438, merged, in-dev): a witness report reads
+  `LF_ItemCatalogue.Concealment` over what the suspect wears (`LF_WantedLook.WornPrefabs`,
+  `LF_WantedReports.ApplyConcealment`). A `concealsBuild` item (the green raincoat) adds
+  "build hidden" and a `concealsFace` item adds "face hidden" to the clothing list, so the
+  dispatch call, witness statements, the wanted board and the posters say so. A hidden face
+  leaves no portrait (`LF_WantedLook.Witnessed`: the poster keeps its empty photo frame); a
+  hidden build keeps it, since the portrait is head and shoulders and already wears the
+  coat. The photo ID still calls `LF_WantedLook.Capture` and keeps the full face. Test
+  `police/wanted-look-conceal`.
+
+### `LF_Dispatch` / `LF_SiteAlarmComponent` — `Feature/Police/` (M1-20, #105)
+- ✅ **One crime entry point** (LOGIC `dispatch/once`): `LF_Dispatch.Report`
+  is what every crime calls (till, vehicle and weapon robbery, breach and bank
+  vault, hospital cabinet, murder with no site alarm). It records the crime report, sounds the site alarm,
+  radios on-duty officers, and appends a line to the dispatch log. A refused
+  crime reports nothing; no crime refuses for lack of police (the per-crime
+  minimum stays a framework attribute, 0 on the flagship). `LF_Utils.AlertPolice`
+  is gone.
+- ✅ **Site alarm** (WORLD `dispatch/site-alarm`): a replicated
+  `Prefabs/Police/LF_SiteAlarm.et` spawns at the site, so only players the
+  site streams to get it. It loops the vanilla siren
+  (`Structures_Siren.acp`, `SOUND_SIREN_LP`) and flashes an orange light for
+  `m_fAlarmSeconds` (30). With nobody on duty when the crime starts it is
+  `LF_SiteAlarm_Loud.et`: the vanilla loud siren (`Structures_Siren_Loud.acp`,
+  600 m), a brighter, faster flash, `m_fLoudAlarmSeconds` (60). A newer alarm
+  at the same site replaces the old one. Durations, prefabs, and the radio
+  sound are in `Configs/Police/LF_Police.conf`; the sound, hear range, and
+  light are attributes on the prefabs. The alarm is a small rotating beacon (vanilla `HazardBeacon_01` at 0.4,
+  0.21 m tall, no collision). It stands on the nearest `LF_AlarmMountComponent` within the mount's reach
+  (`LF_Dispatch.AlarmSpot`, WORLD `dispatch/alarm-mount`): the bell box on the bank's east wall above the
+  vault door (`Roadmap_Bank_AlarmBox`, vanilla `ElectricityBox_small_01`) and the cash van roof. A site with
+  no mount (the till counter) keeps the first surface under it (`LF_Dispatch.RestingSpot`, WORLD
+  `dispatch/alarm-rests`). It used to be a 1.6 m beacon (3x) on the ground by the vault door and on the road
+  behind the van (#571 maintainer review, 2026-11-11). The flash is LV 9 over 3 m, 0.3 m above the beacon
+  (loud: LV 10 over 3.5 m); it was LV 12 over 10 m, which lit up the whole van rear on the trailer.
+- ✅ **Radio dispatch**: each on-duty officer's own client (Owner RPC on the
+  controller) hears a vanilla radio chirp from their body
+  (`Props_Radios_Signals.acp`, `SOUND_RADIO_SIGNAL_2`), then a toast
+  "All units: <offence> at <place>. Suspect: <clothing>; on foot/driving ...".
+  The line is built from the report's description snapshot; it has no name field.
+- ✅ **Dispatch log on the wanted board**: the newest `m_iDispatchLogLines` (5)
+  calls, "HH:MM <offence> at <place>: N on duty, radioed" or "nobody on duty,
+  loud alarm". Session-local (the posters are the persisted record).
+- Harness: `state` adds `dispatch=<n> lastdispatch=<offence@place> alarm=none|normal|loud`;
+  `node agent-box/session.mjs dispatch-proof` drives the two-client run.
+- Manual: listening check (the siren loop and the radio chirp) and the light at
+  night; payphones, pagers, and AI police are later.
+
+### `LF_PoliceRanks` — `Feature/Police/LF_PoliceRanks.c`
+- ✅ Two ranks (verified 2026-10-11). Patrol officer draws
+  `{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et`, fines up to
+  1000 (`LF_PoliceConfig.PatrolFineCap`). Senior officer draws
+  `{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et` and fines up
+  to the existing 5000 cap. The resolved kit is the intersection
+  of that rank's list and the station catalog; a prefab that does not load is
+  logged and skipped, and the rank stays usable. An on-duty officer promotes a
+  lower one (rule in the promotion bullet below). 3600 seconds on duty promotes patrol. `RequestSelfPromotion`
+  is the self-promotion RPC body and always refuses. Rank does not change
+  faction and does not write the police whitelist. Lower ranks still open the
+  wanted list. DebugWorld places `Roadmap_Police_Armory` at `241.2 0 244.2`
+  (police station forecourt) on `Street_Police.layer`.
+- 🔨 The flagship ladder (#1769, merged, in-dev; `LF_Police_Everon1989.conf`): five ranks, Cadet, Patrol,
+  Senior Patrol, Sergeant, Lieutenant. Fine caps 500, 1000, 2500, 4000, 5000; pay 0.3, 0.5, 0.65, 0.8, 1
+  per on-duty second; duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
+  the pack patches the core's `patrol` (index 0) into Cadet and `senior` (index 1) into Patrol and appends the other three.
+  Titles are the pack's `LF-Rank_*` rows. A saved rank above the ladder clamps to the top on load.
+- 🔨 Only an officer above the new rank promotes (#2095, in-dev). `LF_PoliceRanks.Promote` (server) refuses
+  unless the on-duty promoter's rank is above the rung the target moves into: on the five-rung flagship ladder a
+  Patrol (1) cannot promote a Cadet (0) into Patrol, a Sergeant (3) promotes a Patrol into Senior Patrol, and a rank
+  equal to the new rung is refused. The top rank is the ceiling (`PromoterRankNeeded` = `min(target + 2, top)`), so
+  the Lieutenant still promotes into Lieutenant and a one- or two-rung core ladder keeps "the senior promotes the
+  patrol". A refusal logs `[LFDebug:Police]` and toasts the promoter `#EL-Rank_PromoteNeedsHigher`. The armory
+  action's server check (`CanPromote`) hides Promote from a rank that can promote nobody;
+  the nearest-officer pick prefers someone the promoter may promote. Test: `police/promote-rung`.
+- 🔨 **The station Promote action finds officers in play** (#2416, in-dev): `FindLowerRankNearby` read only bodies
+  tied by `BindOfficer`, which only tests call, so every real promote was refused "no lower-rank officer nearby". It
+  now lists the connected players (`LF_PromoteCandidates`: each controlled body's account id and position) within
+  `PROMOTE_RADIUS` (5 m). Test: `police/promote-finds-players`.
+- 🔨 The flagship kit (#1942, merged, in-dev; `LF_PoliceKit_Everon1989.conf`, listed after the ladder in the
+  mission header): the pack overlay restates each rung's `m_aKit`. Patrol (index 0) draws the M9 and the spike strip;
+  senior and every rung above draw the M16, the spike strip and the roadblock kit (`LF_Roadblocks.KIT`, added to the
+  station catalog in `LF_PoliceRanks.Catalog`, since a kit line outside it is not issued). A civilian cannot draw.
+  Test: `police/everon-kit`.
+- 🔨 **One issued kit per officer, two hours apart, saved** (#2416, in-dev; replaces the 2026-11-07 per-shift
+  draw mark, which clocking out and in reset). `LF_ArmoryKits` books each kit's serialled lines (the M9, the M16)
+  to the officer's account (all its characters share one book) with the issue time (`System.GetUnixTime`). While any serial is out, the armory action issues
+  nothing: an officer carrying the kit hands it in (the items are removed, `#EL-Rank_KitReturned` or
+  `#EL-Rank_KitPartReturned`); with none of it carried the first use warns `#EL-Rank_KitOutstanding` and a second
+  use within 15 s reports it lost (each serial logged `[LFDebug:Armory] <uid> reported serial <s> lost`,
+  `#EL-Rank_KitReportedLost`). A new kit also waits `armoryCooldownMinutes` (police config, 120) of real time after
+  the last issue (`#EL-Rank_DrawCooldown`). The book is the `armorykits` payload (save version 45), so clock-out and
+  restart keep both. Plain lines (spike strip, roadblock kit) carry no serial and are not booked. Tests:
+  `police/armory-kit-cap`, `police/armory-kit-turn-in`, `police/armory-cooldown-persist` (with a `wt e2e` reload
+  check).
+- ✅ Rank, on-duty seconds, and unpaid duty seconds survive a restart (M1-10,
+  `progression` payload, save version 7).
+- ✅ **Arrest and escort are config, open to every officer** (2026-11-08, #165):
+  `LF_PoliceConfig` (`{916BDC092C01B7D1}Configs/Police/LF_Police.conf`) sets the
+  lowest rank that may arrest (`m_iArrestMinRank`) and escort
+  (`m_iEscortMinRank`), and the patrol fine cap. Flagship: 0, 0, 1000, so a
+  patrol officer arrests on a fresh server. `LF_Jail.Arrest` and
+  `LF_JailEscort` re-check the rank on the server for every path (action,
+  menu, escort to the cell); the offers read the replicated rank and show
+  `#EL-Rank_ArrestDenied` / `#LF-Rank_EscortDenied` when a server raises the
+  minimum. A file that does not resolve logs once and uses the same defaults.
+  Test: `police/rank-permissions`.
+
+### `LF_Contraband` — `Feature/Crime/LF_Contraband.c` (verified 2026-11-08, M1-14)
+- ✅ One convoy. A member of the organization that owns the hideout performs
+  `Start convoy` at `Roadmap_Convoy_Start`, a pallet of wooden crates by the barn
+  out of town (`466 0 331`), and is handed a crate of spirits:
+  `{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et`, a
+  hand-carried item on `HandCarryItem_Base.et` with the vanilla
+  `BoxWooden_01.xob` mesh (carry pose `player_carry`, `SOUND_PICK_UP`). A member
+  already holding one keeps it; full hands log `pickup refused: hands full` and
+  toast `#LF-Contraband_HandsFull`. `Deliver contraband` at `Roadmap_Convoy_Drop`,
+  an empty crate cage behind the pub on the square (`131.5 0 284`, off the farm lane), takes
+  the crate and pays 200 MoneyStack cash in hand once (`SOUND_PICK_UP`). A second
+  delivery on that run pays nothing. A non-member is refused and the refusal is
+  logged. The hideout machine also outputs the crate. Dressing on
+  `Street_Contraband.layer`: crates and a kerosene lamp on the pallet, a parked
+  vanilla `S1203_cargo_brown` van (`Convoy_Barn_Van`) at the barn; beer kegs,
+  empty crates, bottles, and a lamp at the pub's back door. Signs
+  `Sign_ConvoyPickup` (barn front wall) and `Sign_ConvoyDrop` (pub east wall) on
+  `Signs.layer` explain both ends. Both action contexts sit 0.6 m up, on the cage.
+  Player strings: `#EL-Contraband_Start`, `#EL-Contraband_Deliver`,
+  `#EL-Contraband_NotMember`, `#EL-Contraband_Paid`, `#EL-Contraband_Failed`,
+  `#LF-Contraband_Loaded`, `#LF-Contraband_HandsFull`, `#LF-Contraband_Crate_Name`.
+- ✅ The vehicle the member is in at `Start convoy`, or the first one they get
+  into afterwards (`SCR_CompartmentAccessComponent.GetOnCompartmentEntered`), is
+  watched. Getting out of it within `LF_Contraband.DROP_RADIUS_M` (25 m) of the
+  drop ends the drive and keeps the run for the delivery (`convoy reached the
+  drop`); getting out anywhere else, or dying, fails the run and logs it; a
+  failed run pays nothing. WORLD `e2e/roadmap-contraband` covers the crate
+  (mesh, hand-carry, flagged) and both outcomes of getting out.
+- ✅ **Debug drop is close to the barn** (#616). `LF_GameModeRoleplay.m_bConvoyNearDrop`
+  (on in `GameMode_Roleplay_Debug.et`, off on the flagship prefab) picks the drop:
+  on, the run uses `Roadmap_Convoy_Drop_Near` (`466 0 304`, 27 m from the barn pallet, a
+  second crate cage in `Street_Contraband.layer`); off, the pub's `Roadmap_Convoy_Drop`.
+  `LF_Contraband.DropIdFor(bool)` / `ActiveDropId()` choose it; the inactive cage hides its
+  Deliver prompt (`LF_ConvoyDeliverAction`) and refuses. Pickup sign and loaded toast now say
+  "the convoy drop", not "the pub". Test: `roadmap/contraband`, `e2e/roadmap-contraband`.
+- ⚠️ Not driven end to end by automation: whether a player can board with the
+  crate in hand or must stow it in the vehicle's cargo is a manual check.
+- ✅ **Vehicle watch lifetime** (2026-11-08): payment, failure, and
+  `Reset` unregister the `OnCompartmentLeft` handler; a restarted run drops the
+  old watch and watches the vehicle the player is in now. A disconnect fails the
+  running convoy.
+- ✅ **The refusal reaches the player** (2026-11-08, #157): a start refused for
+  membership shows a toast with the reason, `#LF-Contraband_JoinOrg` (no
+  organization: join or found one at the organization desk) or
+  `#LF-Contraband_NotHideoutOwner` (your organization does not hold the
+  hideout). `LF_Contraband.StartRefusalKey` picks it. Before this the server
+  logged `convoy refused: not a member` and the player saw nothing.
+- ⚠️ The crate still offers "Start convoy" to everyone: a client cannot see
+  organization membership, so the reason arrives after the press, not on the
+  offer.
+
+### `LF_Stun` and the taser — `Feature/Police/LF_Stun.c`, `Prefabs/Weapons/Handguns/Taser/` (#341 spike, 2026-11-13)
+- ✅ **A stun weapon downs a player for a few seconds and wounds nobody.** A weapon prefab that carries `LF_StunWeaponComponent` (`m_fStunSeconds`, `m_fRange`) is a stun weapon. On the server, `SCR_CharacterDamageManagerComponent.HijackDamageHandling` hands every kinetic hit to `LF_Stun.TryHit`; when the shooter holds a stun weapon the damage is discarded, and inside the reach the victim enters the downed state (`LF_Downed`: the same replicated flag and vanilla unconsciousness, so a late joiner sees it) marked as a stun. A stun starts no murder attribution, the player cannot give up out of it (`LF_BleedOut.GiveUp` refuses), a disconnect while stunned is not a death, and the server wakes them after `m_fStunSeconds` with the health they had. A stale wake does nothing (token), a revive ends a stun early, an already downed player is not stunned, and a hit out of reach or on an NPC is absorbed with a log line. `LF_Stun.Decide` is the pure rule. Toast `#LF-Police_Stunned`. Logs `[LFDebug:Police] player <uid> is stunned for <n> s`.
+- ✅ **The owner now recomputes consciousness when the downed flag sets, too** (`LF_OnDownedReplicated`): a stun damages no hit zone, so without it the stunned player's own client kept walking.
+- ✅ **Taser** (`Handgun_Taser.et` on the vanilla `Handgun_M9_base.et`, 8 s, 10 m): its own magazine well (`LF_MagazineWellTaser`), so a pistol magazine does not fit, a one-round cartridge (`Magazine_Taser.et`), and a 1-damage projectile (`Ammo_Taser.et`, listed in the `AmmoList.conf` override the magazine system needs; test `resources/ammo_list` and `validate-ammo-list` fail when a round an addon magazine uses is missing from it, #1643). One lies on the DebugWorld police desk (`Roadmap_Police_Taser`). Test `police/stun`; `session.mjs taser-proof` on two clients: taken from the desk, the target is stunned and seen stunned by both, give-up is refused, and they get up.
+- ⚠️ The model (v2, 2026-11-13, a boxy yellow and black body with a slim grip the hand closes around) is a generated placeholder (`docs/asset-inventory.md`); the cartridge wears the vanilla magazine mesh; the muzzle flash is still the M9's. No agent has fired a dart at a player: the proof enters at the damage handler (`shoot` verb). Any kinetic hit by a player holding the taser counts as its hit. The officer gets no taser from the armory or duty kit yet. Manual steps in the PR.
+- ✅ **Taser sounds** (2026-11-13, asset pipeline sound stage): the taser lists its own sound projects in place of the M9's shot and handling (`Sounds/Weapons/Handguns/Taser/`): `SOUND_SHOT` is a pop and a second of electric crackle, `SOUND_DRY` a plastic click (three takes), `SOUND_RELOAD_MAG_REMOVE` and `SOUND_RELOAD_MAG_INSERT` the cartridge out and in. The M9's slide sounds are gone with its handling project; melee, pick-up and drop stay vanilla. All generated with ElevenLabs (`tools/assets/taser/sounds.json`, `docs/credits.md`). Test `police/taser_sound`.
+- ✅ **The stunned body falls, stays down and gets up** (#1857, 2026-11-15): a stun is a knockout (`Feature/Medic/LF_Knockout.c`, reusable for a punch). The server owns the decision and the timer; the replicated knockout flag makes the machine that owns the body start vanilla's ragdoll (`CharacterControllerComponent.Ragdoll`, owner-only; the engine replicates it to proxies) and hold it with `RefreshRagdoll` for the stun. The wake releases it (`RefreshRagdoll(0)`), keeps the character unconscious 1.5 s while it settles prone, then the vanilla wake-up leaves them lying prone and in control. Refused, and nothing changes, on a dead, medically downed or vanilla-unconscious character; ending one never revives anyone. While stunned the target counts as downed, so an officer can cuff them (`LF_Restraint`). Test `medic/knockout`; `session.mjs taser-ragdoll-proof` (2 clients, full): ragdoll on owner and peer, release at 8.0 s of 8, prone, then ALIVE. Harness `state`/`peers` lines carry `ragdoll=` and `stance=`. Logs `[LFDebug:Medic] knockout ragdoll on <uid> starts|released`.
+- ✅ **Stun buzz** (`LF_StunBuzz`, 2026-11-13): while a player is stunned an electric buzz loops on their body (`SOUND_LF_STUN_LP`, heard to about 60 m). The stun flag on the character is now replicated (`m_bLF_Stunned`); each client starts the loop when it sets and ends it when it clears, a host included, with a 30 s cap. `session.mjs taser-sound-proof` on two clients with `--sound`: the taser knows and plays its four events and not the M9's `SOUND_RELOAD_BOLT_PULL`, both clients start the buzz with the stun and stop it at its end, and client 1's audio is recorded.
+- ✅ **A taser hit is police contact; the stun statics reset at world end (#2543, 2026-11-17).** `LF_Stun.Apply` calls `LF_Stun.StampContact`, which stamps `LF_PoliceContact` ("stun") on the victim when the shooter's account is an on-duty officer, so a wanted player who is tased and logs out falls under the logout rule, as with cuffing. A stun from anyone else stamps nothing. `LF_Stun` and `LF_StunBuzz` each have an `LF_StaticResetHook` (`LF_Stun_StaticResetHook`, `LF_StunBuzz_StaticResetHook`): the stun counters, the buzz counters and the playing map clear; the audio sources die with the world. Test `police/stun-contact`.
+- ⚠️ No ear has judged the sounds: an agent read spectrograms and a recording of the client. A fired shot and a real reload (the animation's own events) are manual steps. A client that joins during a stun was not tested. A client out of earshot when the stun starts does not get the buzz by walking closer.
+
+### `LF_ConfiscateAction` — `Feature/Police/LF_ConfiscateAction.c`
+- ✅ (2026-11-08, M1-12) Search in the player interaction menu: shown to on-duty
+  police within the 2 m reach; deletes the weapons of the wanted player in
+  front of them (the action owner), not the nearest wanted player. Weapons are
+  collected before deletion. Earlier contract: on-duty police delete weapons
+  from a wanted player.
+  The offer reads replicated officer and target state; the deletion runs on the
+  server only and re-checks the officer's account (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual).
+- ⚠️ No compensation or wanted reduction.
+- ✅ **The search reads item legality** (#1764, `Feature/Catalogue/LF_ItemSearch.c`): every search, wanted or not, checks each carried item (inventory and equipped weapons) against the item catalogue (`LF_ItemCatalogue.OffenceFor` with the carrier's licences). An item that is an offence for that carrier is listed, dropped and deleted on the server, and each offence kind is filed once through `LF_WantedReports.Report` (`#LF-Offence_UnlicensedItem`, `_RestrictedItem`, `_IllegalItem`); the officer sees "Contraband found and seized". A pistol with `FIREARM_PERMIT` is left alone. An on-duty officer is not checked, because the police kit issues the catalogue's M9 without the civilian permit. Test `catalogue/search-legality`. Logs `[LFDebug:Catalogue] search of <uid> flags <prefab>: <offence>`.
+- ✅ **The duty M9 is lawful police issue** (#2096, Refs #1979): the armory and the patrol kit hand out `Prefabs/Weapons/Police/Handgun_M9_Service.et` (`LF_PoliceRanks.SIDEARM`), a child of the serialled `LF_ArmoryM9` and so of the base-game M9. The catalogue lists it as `pistol_m9_service`, legality `legal`, so an off-duty officer searched with it keeps it and nothing is filed; the plain `pistol_m9` without `FIREARM_PERMIT` is still seized. The pack's `police_armory/pistol_m9` offer issues the service prefab and the kit confs list it. Test `catalogue/service-pistol-lawful`.
+- ✅ **The officer reads what was seized** (#2154, Refs #1978): the search toast is "Seized from <name>: AKS-74U, 2x 30-round magazine", one line per item kind with a count in front when more than one, cut to three kinds and "and N more" (`LF_ItemSearch.SearchAndSeize` out list, `LF_ItemSearch.SeizedText`; test `LF_Test_SearchSeizedList`). A search that took only chain goods keeps "Contraband found and seized".
+- ⚠️ A seized weapon's serial names its outlet (#2153).
+
+### `LF_Restraint` and the handcuffs — `Feature/Police/LF_Restraint.c`, `Prefabs/Items/Roleplay/Handcuffs.et` (#664, 2026-11-13)
+- ✅ **An on-duty officer holding handcuffs cuffs a downed, stunned, or held-up and unarmed player.** Two entries in the player interaction menu (`Character_Roleplay.et`, context `LF_ID`): **Cuff** (`LF_RestrainAction`), offered to an on-duty officer whose left hand holds an item with `LF_HandcuffsComponent`, and **Uncuff** (`LF_ReleaseRestraintAction`), offered to any on-duty officer facing a cuffed player. The server decides (`LF_Restraint.Restrain` / `Release`): the request goes through `LF_RateLimit` (`SPAWN`), the officer's real account must be on duty, the cuffs must be in hand (`HeldCuffs`: the gadget manager's held gadget, else the controller's left-hand attachment, both readable on the server), and the target must be downed (`LF_Downed`, a taser stun included) or compliant: held up (`LF_HoldUp.HeldUpAt`) within `m_iCompliantSeconds` (`LF_Police.conf`, default 60, 0 = downed only) and holding no weapon. Every refusal logs and toasts the reason. `DecideRestrain`, `DecideRelease` and `IsCompliant` are the pure rules (test `police/restraint-rules`).
+- ✅ **The cuffs are consumed onto the suspect and come back.** Cuffing deletes the officer's pair and records its prefab against the prisoner; release puts a pair in the releasing officer's inventory (at their feet when full). An arrest at the cell (`LF_Jail.Arrest`) takes them off and returns them to the arresting officer; a cuffed body that dies (bleed-out, give-up) returns them to the officer who cuffed it; a prisoner who disconnects returns them too. Logs `[LFDebug:Police] restrained <uid> by <uid> (downed|held up, cuffs <prefab>)` and `restraint off <uid> (<why>); cuffs <where>`.
+- ✅ **A cuffed player keeps walking but holds nothing.** The replicated flag `m_bLF_Restrained` on the character reaches every client and a late joiner; the owner's controller disables weapon controls, holsters the weapon and puts away a held gadget, and gives the controls back on release (test `police/handcuffs`). Every client with a renderer shows a cuff on the suspect's right wrist (`Handcuffs_Worn.et`, spawned locally and attached to the `righthandprop` bone the way the vanilla loiter props are, a ring turned onto the forearm; never replicated).
+- ✅ **The server enforces the cuffs (#2417, 2026-11-17, `Feature/Police/LF_CuffEnforcement.c`).** The owner-side weapon block above is UX; a modified client ignores it, so the server refuses a cuffed character's requests itself. Damage whose instigator is cuffed is swallowed in `HijackDamageHandling` on the character damage manager (whose vanilla hook does not call super), on `SCR_DamageManagerComponent` (vehicles, props) and at the top of `LF_Stun.TryHit` (darts); a cuffed character's own fall and bleeding already running are not refused. A cuffed character who reaches a driver's seat (`SCR_CompartmentAccessComponent.OnCompartmentEntered`, which fires on the server) is put out of it the next frame, and a driver who gets cuffed is put out at once; cargo seats stay allowed for prisoner transport. Till (`CommitRobbery`, `REFUSED_CUFFED`), held till (`LF_RobHold.Refusal`/`Start`), vehicle, weapon and vault robbery, `LF_Lockpick.BeginAs`, and the interaction menu's give cash, give item and role actions (`LF_PlayerInteraction.ServerAllows`) are refused; introduce stays open. Each refusal logs `[LFDebug:Police] refused <what> from cuffed <uid>` and toasts `#LF-Restrain_NotWhileCuffed`. Tests `police/cuffs-server-rules`, `police/cuffs-server-refusals`. A cuffed driver is put out beside the vehicle: a body this machine owns here, a remote-owned body through its owner (the `LF_Jail` dismount path), asked again every second up to 5 times; a running lockpick or held robbery ends when the cuffs land. Not covered: vanilla item use (eating, a medkit), opening another storage while cuffed, and damage to mines or destructible buildings (their vanilla hooks never reach the base one).
+- ✅ **The handcuffs** (`Handcuffs.et`, a held gadget on the vanilla `Item_Base.et`) are the first asset of the pipeline's `gadget` kind: first a Meshy model (generation ids in `tools/assets/handcuffs/meshy.json`), since 2026-11-14 a Blender model with articulated strands (`tools/assets/handcuffs/model.py`, no credits). On-duty police get a pair in the DebugWorld police kit; one lies on the police desk (`Roadmap_Police_Handcuffs`). `session.mjs cuffs-proof` on two clients: clock in, down the suspect, hold the cuffs, cuff, both clients read the suspect cuffed, release, both read them free, the cuffs are back; a cuffed player who dies gives them back.
+- ✅ **Held in a closed fist (2026-11-14).** The handcuffs, the lockpick (`LF_Lockpick.et`) and the pager (`LF_Pager.et`) borrow the vanilla MX991 torch's hold pose (`Flashlight_MX991.agr`, `MX991_player.asi`, `m_eAnimVariable MX991`) instead of the gauze graph, whose anim set has no hold clips (the hand stayed open under the item). The cuffs are gripped by their lock boxes with one ring above the fist and one below; the lockpick and pager stand upright in the fist. Dropped, all three lie flat (seen in a session); the lockpick and pager had `RestingUP Forward`, which stood the lockpick's length and the pager's width upright. Values come from each spec's `states` block (`tools\cli asset states <slug>`, `docs/asset-pipeline/states.md`). The cuffs' open state is built (2026-11-14, below).
+- ✅ **Open cuffs (2026-11-14, `asset-states-followups`).** The handcuffs model is built in Blender with a swinging strand per cuff on a hinge bone (`strand_r`, `strand_l`, pivots exact, 70 degrees, `spec.anim.bones`). `LF_AssetAnimComponent` on `Handcuffs.et`: `SetActive(true)` opens both strands (replicated, late joiners included), `false` closes them; `LF_HandcuffsComponent.SetOpen(bool)` wraps it (server). The cuffing hold below calls it. Try: `tools\cli asset states handcuffs --shots` (the `state_use_*` pictures) or harness `itemon` / `itemoff <prefab>`.
+- ✅ **Cuffing is a hold, and the cuffs open and shut in it (2026-11-14, `cuffing-open-state`).** Cuff and Uncuff are short holds (`Duration 1.8` and `1.5` on the actions in `Character_Roleplay.et`: the vanilla progress bar). `OnActionStart` asks the server (`LF_AskCuffing`, suspect as RplId, officer taken from the controller); `LF_Cuffing.Begin` re-runs reach and the rule, then opens what the hold opens: for Cuff the strands of the cuffs in the officer's left hand (`LF_HandcuffsComponent.SetOpen(true)`, the replicated `LF_AssetAnimComponent` flag, a click, `SOUND_LF_OPEN`); for Uncuff the cuffs on the suspect's wrists (the replicated `m_bLF_CuffsOpen` on the character, which every client turns into the swing of the local worn model, `Handcuffs_Worn.et` now carries the same two hinged strands). The server rechecks reach and the rule every 250 ms: either party walking out of reach, going down or dying, the cuffs leaving the hand, or a suspect no longer held up stops the hold, shuts the cuffs and toasts `#LF-Restrain_Interrupted` to the officer; letting go of the hold (`OnActionCanceled`) does the same. The end of the hold (`PerformAction`) is accepted only for a hold the server saw begin and only after 80 percent of the action's duration (`LF_Cuffing.HoldLongEnough`), so a client cannot cuff in an instant or skip the open phase. A finished Cuff swings the strands shut with a click (`SOUND_LF_CLOSE`, `Sounds/Items/Handcuffs`, generated with the sound stage: `tools/assets/handcuffs/sounds.json`), and 650 ms later the cuffs leave the hand and go onto the suspect (`LF_Restraint.Restrain`, unchanged); a finished Uncuff takes them off and back to the officer (`Release`). The pair is rechecked as the cuffs shut: a suspect who stepped away keeps the cuffs in the officer's closed hand. Tests `police/cuffing-rules`, `police/cuffing-open-state`; harness verb `cuffing <player> cuff|release start|cancel|pin|finish` (`pin` holds without the time-out for a picture, `finish` and `pin` behind the dev gate), `session.mjs cuffs-proof`. Logs `[LFDebug:Police] cuffing hold ...`. Not done: the officer's hands do not move on their own (no animation exists for it, #340), and the returned cuffs go back into the inventory shut, not into the hand.
+- ✅ **A lock-picking set (2026-11-14).** `LF_Lockpick.et` keeps its GUID and now shows a stitched leather wallet with a hook pick and a tension wrench under two straps (`tools/assets/lockpick/model.py`, no credits), where Meshy's version read as a pen. Held, it is a bundle in the fist with the tool tips up; on the ground it lies flat.
+- ✅ **Pager on the ground (2026-11-14).** Checked in a session: dropped, it lies screen-up with `ground.up Right`; nothing to change.
+- ⚠️ **The cuffs do not show in the officer's hand.** Holding them raises the hand in the vanilla gauze pose the other held items use (the lockpick's offsets), but the session shot shows an empty hand; the hand offsets (`gadget.hand` in the spec, `HandAdditive*` on the prefab) need a pass in Workbench. Cuffing works the same.
+- ⚠️ **No restrained animation.** The base game has no surrender, hands-up, cuffed or tied animation (`docs/research/animation-pipeline.md`: the ACE captives set is the candidate, #340); a cuffed player stands or lies in the normal pose with the cuffs on one hand. There is no surrender gesture either, so "compliant" means held up and unarmed. Cuffed players can still open their inventory, and the officer cannot lead them by the cuffs (escort is the vehicle escort). Disconnect rejoin rules for cuffed players are #691. The restraint is not saved: a server restart frees every cuffed player and the pairs on them are gone.
+
+### `LF_Roadblocks` — `Feature/Police/LF_Roadblock.c`, `LF_RoadblockActions.c`, `Prefabs/Props/Roleplay/Roadblock/` (#1941, 2026-11-16)
+- ✅ Police roadblock kit. An on-duty officer deploys the folded kit (`Roadblock_Kit.et`, 9 kg) as a composition (#1940, `LF_PlacementCompositions`): one barrier (`RoadBlock_01`) and four cones across the road, each piece on the ground, one server-checked confirm, one pick-up that folds all five back into the kit. Only on-duty police deploy or pick up (refusal logged `[LFDebug:Roadblock]`, toast `#LF-Roadblock_PoliceOnly`). A vehicle seen moving near the set that then stops is logged once (`stopped at the roadblock of <uid>`). Ghost of the whole set while Deploy is selected (`LF_RoadblockPreview`, behind the same dev-tools flag as the spike strip ghost). Test `police/roadblock`; look `grid:roadblock`; proof `session.mjs roadblock-proof`.
+- 🧪 A roadblock clears itself (#2100). A set stands for `m_iExpiryMinutes` (default 20, `Configs/Police/LF_Roadblock.conf`, `LF_RoadblockConfig`), or until the officer who laid it goes off duty or leaves (their account is gone), checked every server tick. Each removal deletes every piece and logs `[LFDebug:Roadblock] cleared the roadblock of <uid>: <reason>`. Nothing persists. Test `police/roadblock-expiry`.
+- ⏳ Not yet: the armory does not hand the kit out (the rank kits in `LF_Police.conf` and the pack conf are a follow-up), the red (blocked) ghost has no picture, and a set does not expire.
+
+### `LF_SpikeStrips` — `Feature/Police/LF_SpikeStrip.c`, `Prefabs/Props/Roleplay/SpikeStrip/` (#646, 2026-11-13)
+- ✅ Police spike strip. Every rank's armory kit carries the folded strip (`SpikeStrip_Item.et`, 6 kg).
+  On the ground, Deploy spike strip (on-duty police only, `LF_RateLimit` SPAWN; through `LF_PlacementService.Confirm` since #1026, at the spot the officer's ghost showed) lays `SpikeStrip.et`
+  (3.5 m) from 1 m in front of the officer: along their facing, or straight across the nearest road
+  within 12 m when the AI road network has one. Its three ground points take the higher of terrain and
+  what stands there; more than 0.25 m between them refuses (`#LF-Placement_NoGround`). Something standing in
+  the footprint (a post, a car) or under it (a strip already laid, anything dynamic) refuses
+  (`#LF-Placement_Blocked`, #928). The item is used up.
+  A spot in a door leaf's swing (1 m both ways) or the 3 m walk-up in front of a ground-floor door is refused the same way, "a door is in the way" (#2445, `LF_PlacementDoors`, for every placement: single, aimed and composition).
+  A kind with a zone in `Configs/Placement/LF_PlacementPolicy.conf` is also refused outside it (#2447, `LF_PlacementZones`): roads only, inside a house the player owns or holds a key to (the house nearest the spot, so not the neighbour's), or within a radius of their organization's base (`LF_Places` kind `org_base`, registered by the leased hideout since #2504: `LF_Hideout.SyncOrgBase` on lease, load and release, last lease wins, server only; test `hideout/org-base`). The server's `Confirm` asks `LF_PlacementPolicy.ZoneAt`; core ships no zoned kind. Test `placement/policy-where` (WORLD).
+  A kind with a cost in the same `.conf` (#2448, `LF_PlacementCost`) pays it on the server only after the spot is VALID, once: cash through `LF_MoneyUtils` (ledger reasons `placement`, `placement-refund`) or items used up; a player who cannot pay is refused (`#LF-Placement_NeedCash`, `_NeedItem`) and keeps everything, a failed spawn gives it back, and a refundable kind refunds once on pick-up to the payer only (compositions, and spike strips through `LF_SpikeStrips.PickUp` since #2502; another officer folding a paid strip up refunds nobody). Core ships every kind free; a pack sets prices. Tests `placement/policy-cost`, `police/spike-strip-refund` (WORLD).
+- ⚠️ Placement preview (#928 prototype, dev-tools worlds only, selecting the action is not automated): while Deploy is selected the officer sees a ghost
+  of the strip where it will lie, blue when the server would accept it and red when not (`LF_SpikeStripPreview`).
+- ✅ The server samples the vehicles within 9.75 m every 50 ms and tests each wheel's path since the last
+  sample against the footprint, so a fast car cannot jump it. A crossing wheel's `SCR_WheelHitZone` (on the
+  wheel slot entity) takes COLLISION damage to DESTROYED; vanilla `UpdateWheelState` then cuts the radius to
+  80 %, the grip to 20 % and adds drag on every machine, so the car slows and pulls. A flat wheel is not hit
+  twice. Logs `[LFDebug:SpikeStrip] punctured wheel N of <vehicle>`.
+- 🔨 **Spike strip cap** (#2416, in-dev): an officer may have `spikeStripMaxPerOfficer` (police config, 2) of their own
+  strips deployed at once, counted by deployer (`LF_SpikeStripComponent.CountDeployedBy`; the strip placed in a world
+  layer is never counted). `LF_PlacementService.Confirm` asks `LF_SpikeStrips.CapProblem` before anything is spawned or
+  used up: the next strip is refused (`[LFDebug:Placement] refused: <uid> already has N spike strip(s) deployed (cap M)`,
+  toast `#LF-SpikeStrip_Cap`) and the item stays. Picking one up or its lifetime running out frees a place. Test
+  `police/spike-strip-cap`. The cap keys on the strip prefab (`LF_SpikeStrips.STRIP_PREFAB`).
+- ✅ Pick up spike strip (on-duty police) puts the folded item back in the inventory, or at the feet when full.
+  The strip goes by itself after `LF_PoliceConfig.m_iSpikeStripLifetimeSeconds` (600). The town has no
+  loose strip: the police armory hands out the kit (town pass #1947; the grid cell `roadblock` keeps the film and test spot).
+- Model: one Meshy link repeated by the asset pipeline's deployable kind (`tools/assets/spike-strip`).
+  Tests `police/spike-strip`, `police/spike-strip-geometry`; proof `session.mjs spike-strip-proof`.
+- ⚠️ Not persisted: a deployed strip is gone after a restart. The road-network alignment did not run in
+  DebugWorld (no AI road network there); the strip follows the officer's facing.
+
+
+### `LF_ConvictionRecord` — `Feature/Police/LF_ConvictionRecord.c` (#1914, 2026-11-16)
+- 🧪 Every arrest (`LF_OnArrested` on the bus) stamps the player uid with the in-game day (the game
+  clock's date as a day number, `DayOrdinal`) and counts it. `IsRecent(uid, days)` answers "convicted
+  in the last N in-game days?" (the stamp day counts as day 0, so a window of 3 is the stamp day and
+  the two after it); the firearm permit desk (#1766) refuses an application on it, with the window
+  from `LF_LicencesConfig`. Server only, never replicated. Saved as the `convictions` payload (save
+  version 36); vanilla persistence restores the clock, so a stamp keeps its age across a restart.
+  A stamp dated after today (an admin set the clock back) still counts as recent. Pin test
+  `police/conviction-record` (also the `wt e2e` restart proof).
+- ✅ **Logging out wanted right after police contact rejoins in jail; downed rejoins at the hospital (#1972).** A suspect identification (ID check, caught in the act, report) stamps police contact on the character (`LF_PoliceContact`, server session state keyed by uid); a person search (`LF_ConfiscateAction`, found or clean) and a completed cuffing (`LF_Cuffing.FinishCuff`, only when `LF_Restraint.Restrain` returned OK) stamp it too with `LF_PoliceContact.Stamp(uid, "search"|"cuffing")` (#2102). A wanted player who logs out within `disconnect.contactWindowSeconds` (default 120, `0` off) is handled like a cuffed logout by `LF_DisconnectRules.Decide`: the jail rule, the leaving-custody charge, a flagged logout row. Wanted past the window rejoins in place with the warrant. `LF_DisconnectRules.RejoinFor` is the pure rule for where the leaver rejoins: jail, hospital (a downed logout dies and wakes in a bed with the bill) or in place. Each logout logs `[LFDebug:Rejoin] <uid> rejoins <jail|hospital|in place>: <reason>`. The sentence is the existing jail payload, so the jail rejoin survives a restart. The pending hospital wake and the contact stamp are session state (a restart between a downed logout and the rejoin spawns at the plaza with no bill); the combat-logout body is #1973.
+- ✅ **A short grace protects a new character (#1780, Arrival #1007, #794).** `LF_Grace` (`Feature/Moderation/LF_Grace.c`, config `Configs/Moderation/LF_Grace.conf`, `m_iMinutes`, core default 0 = off). While the character's own persisted played time (`LF_GraceCharacterClock`, #2443) is under N minutes and the character's crime record (`LF_CrimeRecord.Total`) is empty, the character cannot be held up (`LF_HoldUp.Attempt` returns `GRACE`) or arrested (`LF_JailArrestAction.PerformAction`), and may not rob (`LF_RobAction.Gate` refuses `REFUSED_GRACE`; `LF_RobWeaponAction.CommitWeaponRobbery`; a protected character also cannot hold anyone up). The first completed crime ends it for good. Nothing new is saved: a restart or relog neither restarts nor extends it. The server decides and the refusal toast names the grace (`LF-Grace_Refused`); nothing is replicated, so a client menu may still offer the action and the server refuses it. Both the clock and the end are per character. Pin test `onboarding/grace`.
+- 🧪 (2026-11-17) **Each new character gets its own grace (#2443, #2075 item 3).** The grace clock is the character's own played time: `LF_Playtime.Settle` also credits the account's active character in `LF_GraceCharacterClock` (save version 48, payload `graceclock`), so a second character on an account with hours played is protected for its own first N minutes. An older save seeds each existing character with its account's playtime, so the upgrade gives nobody a fresh grace. Test `onboarding/grace-per-character`.
+- 🧪 (2026-11-16) **The flagship turns the grace on at 30 minutes (#2075, from #1780).** `LF_GraceConfig` reads an owner `grace` section (`minutes`, 0 to 600) over `LF_Grace.conf`; `server/flagship/config.json` sets 30, the core default stays 0. Test `config/respawn-grace`; `flagship-config-selftest` pins the live value.
+- ✅ **The armory issues from its outlet by rank** (#1763, Refs #1066): an offer of the `police_armory` outlet with `issue` set is handed out free (no money moves) as its serialled twin (`issuePrefab`, `LF_ArmoryM16.et`), and a serial is booked to the officer in the book (`LF_FenceSerials`). `LF_PoliceRanks.IssueItem` and the `Draw` kit lines read the offer's job and rank gate; a patrol officer is refused the rifle and the toast names the senior rank (`#EL-Rank_IssueNeedsRank`). Test `LF_Test_ArmoryOutlet` (`catalogue/armory-rank`). ⏳ `LF_PoliceRank.m_aKit` still lists which lines a rank carries (the spike strip, the roadblock kit, the pistol); retiring it is a follow-up card.
+- ✅ **A serial can name the outlet that sold the weapon** (#1765, Refs #1067): `LF_OutletSerial.Mint(outlet, n)` writes `LF-<outlet>-0007` and `LF_OutletSerial.Outlet(serial)` reads the outlet back; `LF_FenceSerials.Issue(uid, prefab, outlet)` books it. The outlet lives inside the serial string, so no record changes shape (save version unchanged) and an old `LF-0001` serial parses to no outlet and still loads. Test `LF_Test_OutletSerial` (`catalogue/outlet-serial`). ⏳ The armory issue path (`LF_PoliceRanks.IssueOffer`) and a shop weapon sale do not pass their outlet yet: a follow-up one-line call each, held back so this slice stays out of the police-issue files.
+- ✅ **The armory and the gun counter stamp their outlet into the serial** (#2153, Refs #2123, #1009): `LF_PoliceRanks.IssueOffer` books the issue with the offer's outlet (`LF-police_armory-0007`). A sale at a shop that is not a fence, of a catalogue weapon sold under a licence-gated offer (the gun counter; the black market and back room are unlicensed and stay unserialled), goes through `LF_FenceSerials.OnWeaponSale` and books `LF-gun_counter-0012` to the buyer; the weapon slot is searched as well as the bags, since a bought weapon lands there. A fence sale still publishes `LF_OnFenceSale`, now with `m_sOutlet`; only fence sales take that path. Test `LF_Test_OutletSerialWired` (`catalogue/outlet-serial-wired`). ⚠️ A weapon prefab with no `LF_SerialComponent` cannot carry a serial: the sale stands and `[LFDebug:Serials]` warns. The gun counter's items are still the plain vanilla prefabs, so they need serialled twins in the catalogue before a counter sale reads a serial in play.
+- ✅ **The armory's AKS-74U carries a serial** (#2152, Refs #2118): the pack's rank-2 issue offer for `rifle_aks74u` sets `issuePrefab` to `LF_ArmoryAKS74U.et` (the vanilla rifle plus `LF_SerialComponent`), so the issue is booked to the officer instead of logging "untracked". The black-market PM is not issued by the armory, so it has no twin. Test `LF_Test_EveronArmorySerials` (pack leg, `everon/armory-serials`).
+- ✅ **The gun counter's PM and M21 carry serials** (#2166, Refs #2153, #1009): the pack's `pistol_pm` and `rifle_m21` catalogue items point at `LF_CounterPM.et` and `LF_CounterM21.et` (`LF_Everon1989/Prefabs/Weapons`, the vanilla weapon plus `LF_SerialComponent`, the `LF_ArmoryM9` pattern), so a licensed counter sale is booked as `LF-gun_counter-NNNN` instead of warning "a weapon prefab needs LF_SerialComponent". The Vz.58 is no live counter offer (the weapons overlay removes it) and has no twin. A plain vanilla PM or M21 a player already carries no longer matches a catalogue row. Test `LF_Test_EveronGunCounterSerials` (pack leg, `everon/gun-counter-serials`).
+
+### Police station kit (#2201 town pipeline)
+- 🧪 **The 1989 police station as a reusable kit** (2026-11-16): the vanilla `Villa_E_2I01_Police` fitted out as a working
+  post in the GridWorld claim `police-station-kit` (c3r1, 2x2), written by `tools/buildings/police-station/fitout.mjs`
+  (building-space rows, three cumulative passes: BUILD, POLISH 1, POLISH 2) and shot by `looks.mjs`; `spec.json` is the
+  concept and the rooms, `proof.json` the shot list and the booking walkthrough. The public hall has the licence and
+  permit desk (`LF_LicenceDesk`) and the wanted board; the duty room has the duty desk (clock in), the armory locker and
+  `LF_ArmoryStore`, the evidence locker and the dispatch board; the records room has the case board; the villa's own barred
+  cell is the holding cell (the cell door decision is under POLISH 2 below).
+  Patrol cars, a spike strip and the payphone stand in the yard. Budget (maintainer): at most 6 dynamic lights
+  per building and 1 shadow caster, 300 entities for the building with its furniture, static vanilla props, no per-frame scripts; `fitout.mjs --report`
+  prints the counts. Saint-Philippe placement is later, through `town fit`.
+- 🧪 **Police station POLISH 2** (#2275, merged, in-dev). The villa is now the pack prefab `Prefabs/Buildings/PoliceStation/PoliceStation.et`
+  (`tools/buildings/police-station/shell.mjs`): the vanilla villa with its furniture cut from 231 props to 143 (the attic's junk,
+  16 light switches, repeats) and its ceiling lamps given a lit cover, so the building totals 215 of the 300 entities (MEDIUM).
+  The facade carries an `LF_Sign_Fascia` over the loggia with the pack card `police_front` ("Gendarmerie"; the name is in
+  the pack table) and two wall lamps whose glass is lit with no light of their own; the sixth light is one warm glow under
+  the loggia. The hall has a front counter facing the door, its notices and the benches either side of the duty-room door;
+  the cell has its rules pinned by the door; the yard has a bench, a wall bin, planters, cones and the escort car.
+  Every prop height is snapped by `surface.mjs`; `tools\cli building check police-station` reads the kit's layer rows too
+  (`spec.json` `check_layer`). **The cell door, decided:** the kit always shows the villa's own barred cell and door and
+  carries no jail component, because one placed cell is allowed per world and GridWorld has one. `fitout.mjs --with-cell`
+  (for `town fit` into a world with no cell) stages only the `LF_JailCell` marker, its zone fitted to the room (2 m), the
+  release point in the hall and no door target; no `EL_JailDoor`, which would hang a second door in the villa's doorway.
+  Breach and jailbreak on that cell need the villa door to carry `LF_BreachTarget` (#2373).
+- ✅ **Map area data** (#2233, epic #2223, test `map/areas`; node twin `tools/map/rules/areas.mjs`). `LF_MapAreas` (`Feature/Map/LF_MapAreas.c`) turns an area into an outline vertex list: a polygon is its points, a circle a 32-gon, a box its four corners turned by yaw the way `LF_ZoneArea.Contains` turns it, a polyline corridor a mitred strip. `Collect` merges every `LF_Zones` zone that has a style (SAFE and LAWLESS draw; NORMAL draws nothing) with the map-only areas (`LF_MapAreaComponent`: town line, gated, custom; a polygon local to the entity, or a circle). Styles are tokens for the `map-*` theme rows (M6). The outline, centroid, style and rule cases are one table, `Configs/Map/Rules/areas.cases.json`, that the Enforce test and the emulator's node rule both run; `LF_MapAreaCases.generated.c` carries it as script because the game cannot read a loose `.json` from an addon (`node tools/map/rules/areas.mjs --gen` rewrites it; the selftest fails when stale). `LF_Zones.GetAll()` is the one hook in the zone service. Nothing draws yet (M6).
+- 🔧 **Crime review fixes** (2026-11-17, `docs/reviews/2026-11-17-crime.md`, merged, in-dev):
+  - **Till robbery with no room for the cash.** `LF_RobAction.CommitRobbery` now refuses with `REFUSED_NO_ROOM` when the robber's inventory takes none of the cash. It starts no till cooldown, adds no wanted and calls no dispatch, and the robber gets the toast `#LF-Robbery_NoRoom`. Test `crime/rob-no-room`.
+  - **Chop-shop COLLECT.** COLLECT pays first. A short payment is rolled back and refused (`NO_ROOM`, `#LF-Chop_NoRoom`), and the car stays. COLLECT also refuses while someone sits in the car (`LF_ChopShopRules.CheckCollect`). Test `chopshop/collect-guard`.
+  - **Escort holds.** `LF_Jail.Imprison` ends the prisoner's escort hold (`LF_JailEscort.Drop`) on every arrest path. Before this, a freed prisoner's next logout counted as escaping custody. Test `jail/escort-drop`.
+  - **Self-arrest.** `LF_Jail.Arrest` refuses when the officer is the prisoner. The police-menu arrest RPC now runs the same `LF_PlayerInteraction.CheckPair` and grace gate as the in-world arrest action, so the menu cannot arrest yourself, a dead player or a new character. Test `jail/self-arrest`.
+  - **Jail work after a logout.** The jail-work timer carries the prisoner's uid, so a prisoner who logs out mid-task is no longer refused as BUSY after rejoining. Test `jail/work-abandon`.
+  - **Escort grab reach and holds** (#2542). Both escort actions (`LF_JailEscortAction`, `LF_JailEscortArrestAction`) run `LF_JailEscort.Grab` on the server: reach first (`LF_PlayerInteraction.CheckPair`, the cuff and arrest rule), then a hold check. `LF_JailEscort.Escort` and `Load` refuse a suspect another officer already holds instead of overwriting the hold (`HeldByOther`; the holder's own repeat grab still works). Each refusal logs through `LF_Debug` ("Jail") and toasts the officer (`#LF-Interact_TooFar`, `#LF-Escort_HeldByOther`). Test `jail/escort-grab-rules`.
+- ✅ **Fence workshop yard, pass 1 BUILD** (#2302, shell #2301, epic #2201; pack). `FenceYard.et` (Workshop_01 main plus the side annex) stands in pack grid cell c14r4 (2x2, `Grid_fence_yard.layer`). The front is a plain garage; the fence's stall (`LF_FenceStall`, stock `fence`) and the fence (`LF_Fence`) are in the annex back room, written by `tools/buildings/fence-yard/fitout.mjs` (`--check` for drift) with the room lights (`FenceYard_Kit.et`: 3 shadowless lights). No sign, string or map place names the fence (D-M5). No stash (the only stash system is the org hideout's) and no car bay (Crime has none for a fence). No script or save change.
+- 🔧 **Crime and policing review fixes** (#2419, merged, in-dev): the evidence bag takes a dropped item only while it still lies loose beside its marker (`LF_Evidence.Bag`: no parent entity, no inventory slot, within `ITEM_MOVED_M` 2 m; otherwise the row is dropped and the item stays with whoever has it). An NPC witness answers an officer once (`LF_WitnessEntry.m_bAsked`; the accuracy roll no longer repeats). The contraband run pays only a driven crate (`LF_ConvoyRun.m_bDriven`, set when the vehicle watch attaches) and a paid character waits `LF_Contraband.COOLDOWN_MS` (10 min) before the next run (`#LF-Contraband_Cooldown`, `#LF-Contraband_NotDriven`); its failure toast and `LF_Hotwire.MayStartEngine` use `LF_Utils.NotifyEntity`. A hideout door a member opened relocks when no member of the owner stands within `LF_Hideout.RELOCK_RADIUS_M` (40 m), checked every `RELOCK_SWEEP_MS`; `ApplyAll` releases a live lease the save does not hold; `LF_Hideout`, `LF_PoliceApplications` have world-end reset hooks; `LF_PoliceRosterNotice.s_aSent` is capped at 64. The chop bench takes the nearest stolen car (`LF_ChopShopRules.PickDropIndex`), so an unstolen car beside it no longer blocks the yard. `LF_WorkAnim.ResetStatics` removes its queued `Watch`. No save format change. Tests `investigation/bag-held`, `investigation/npc-witness`, `crime/contraband-cooldown`, `hideout/relock-and-load`, `crime/chop-drop-pick`, `work/anim-reset`, `police/statics-reset`. ⚠️ Not checked live: the relock sweep with a real member walking away, and the dedicated-server toasts.
+- 🧪 **Police calls, list and take** (#2477, slice of #234; merged, in-dev). `LF_PoliceCalls` (server, session only) keeps a list of calls. A player's first wanted report (`LF_OnWantedChanged` 0 to above 0) posts one `FINE` call naming the suspect uid, the site (the newest report's place text, never a coordinate) and a minimum rank (`LF_PoliceRanks.PATROL`); a suspect has at most one open call. `Take(callId, officerUid, accountState)` accepts only an on-duty police state at or above the call's rank, one officer per call; each refusal logs `LF_Debug.Warn("PoliceCalls", ...)`. `Complete(callId, officerUid)` closes it once, for the officer who holds it. The list holds 64 calls and drops the oldest closed one. `LF_GameModeRoleplay` calls `LF_PoliceCalls.Install()` (one line). No UI, pay or save yet. Test `police/call-accept`.
+- 🧪 **Police dispatch board: take a call** (#2479, slice of #234; merged, in-dev). The police dispatch board (`LF_DispatchBoard_Police.et`) carries `LF_PoliceCallBoardAction` ("Take a call") beside the radio-call take. Only an on-duty police officer is offered it. On perform the server checks the officer is at the board, takes the oldest open call nobody holds whose minimum rank the officer meets (`LF_PoliceCalls.OldestOpenFor`, then `Take`, which re-checks duty and rank), toasts the site, and sends a waypoint on the site to that officer (the owner-channel waypoint the job stops use). A site filed as a grid square marks the square centre, a site filed as a place sign title marks that sign; a site named only by the map label gets the take and the toast but no waypoint. Refusals log `LF_Debug` `PoliceCalls`. Test `police/call-board`. Manual: an officer on duty takes a call at the board in a session.
+- 🧪 **Police call pay: fine at the site completes the call** (#2478, slice of #234; merged, in-dev). `LF_FineTicketRole.Write` publishes `LF_OnFineIssued` (officer and holder uids, the officer's position, ticket number, amount) after a ticket is issued. `LF_PoliceCallPay` (server) completes the suspect's open call when the fine is by the officer who took it, the suspect still has an open wanted report, and the officer stands within `callRadius` (police config, default 50 m, ground plane) of the site. It pays `callReward` (default 150, never more than the fine) cash once through `LF_EntityCashWallet` / `LF_MoneyUtils`, ledger reason `police-call`, toast `#LF-PoliceCall_Paid`; cash that does not all fit is taken back and the call stays open. The site is a position kept per suspect: the alarm site of the police `LF_OnServiceCall` the crime report publishes, else the suspect's body there; a wanted level rising from or dropping to 0 forgets it. With no kept position a `grid X-Z` place resolves to its square's centre (radius at least 71 m); other place text logs a Warn and completes nothing. Refusals log under `[LFDebug:PoliceCallPay]`. `LF_GameModeRoleplay` calls `LF_PoliceCallPay.Install()` (one line). Test `police/call-pay`.
+- 🧪 **Police calls: the report's place, and a call closes with the wanted level** (#2516, fix of #2477; merged, in-dev). Crime paths raise the wanted level before `LF_WantedReports.Report` files the report, so a call posted at the rise had an empty site. `LF_WantedReports.Add` now publishes `LF_OnWantedReportFiled` (uid, sequence, place). A level rising from 0 with a report already filed posts the call at once with the newest report's place; with none filed yet the suspect waits (`call for <uid> waits for the crime report`) and the first report posts the call with its place. A level back at 0 (served time, expiry, another officer's arrest, an admin) drops the wait and closes the suspect's open call, taken or not (`LF_PoliceCalls.CloseFor`, `[LFDebug:PoliceCalls] call #N closed for <uid>: no longer wanted`); a closed call pays nothing and `Complete` refuses it. A report filed after the level cleared posts no call. Test `police/call-lifecycle`.

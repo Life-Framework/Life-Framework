@@ -53,7 +53,7 @@ SizeLayoutWidgetClass "{4C5C38403A9D6402}" {
        Text ""
        "Font Size" 18
        "Min Font Size" 18
-       "Horizontal alignment" Center
+       "Horizontal Alignment" Center
        FontProperties FontProperties "{3A027C32DB5F6D59}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }

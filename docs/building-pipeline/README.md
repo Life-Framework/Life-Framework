@@ -15,6 +15,7 @@ tools\cli building adopt <slug> [<file.blend>]   keep a scene polished by hand a
 tools\cli building plan <slug>      the facts an agent brief needs: prefabs, sizes, rooms, doors, store slots, parallel parts
 tools\cli building proof <slug>     doors, scale, audit, pictures and the building's proof.json on a full session
 tools\cli building review <slug> --shots   Blender review renders and a contact sheet, no game (polish.md "Review shots")
+tools\cli building check <slug> [--fix]   no small prop floats: bottom within 2 cm of the top under it, offline, about 1 s (starter-packs/building.md "Props stand on something")
 tools\cli building status [<slug>]
 tools\cli building doctor      Blender, the add-on, its licence, one headless generate
 tools\cli building selftest    the offline checks (also part of tools\cli validate)
@@ -195,7 +196,10 @@ ArchBuilder's own material colours, not the game's textures: the game look is ch
    - `tools\cli audit placement --strict` on its layer (the dedicated server loads the prefab);
    - in one `session up --profile full`: every door set of `<Name>_Base.et` is offered by the F key, opens, leaves a
      doorway a character wide clear at 0.5, 1.0 and 1.6 m (traces), and closes, with a picture shut and open; the four
-     sides, the street corner and the hall from inside;
+     sides, the street corner and the hall from inside. A building made from a vanilla one (`vanilla` block) keeps the
+     vanilla door sets on the model's sockets, with no coordinates to walk to, so the door walk is skipped (it prints
+     `doors: skipped`) and its `proof.json` carries the proof. The world loader reads a placement's turn from `angleY`
+     only: write `angleY 180`, not `angles 0 180 0`, or every proof point lands on the wrong side;
    - the building's own scenario, `tools/buildings/<slug>/proof.json`, in the same session.
 
    Pictures land in `tmp/buildings/<slug>/proof/`; the last line is `SUMMARY building-proof ok|fail`. `--no-session`
@@ -218,8 +222,42 @@ has the format). Points are building space, so it survives moving the building. 
 Any step takes `expect` (a regex on the reply), `wait` (ms after it) and `why` (printed when it fails). Then `checks`
 compare kept values (`{ "lt": ["paid.cash", "before.cash"] }`, `gt`, `eq`, `ne`, `in`) and `log` reads the server log
 (`{ "re": "paid \\d+ for 3 item" }`, or `{ "last": "alarm sounding at <([^>]+)>", "near": [x,y,z], "within": 1.5 }`).
+A world shot moves the body: it stands the robber at the camera, lifted, and the fall drops a held tool (the drill
+reads `drill left the hands: ON_GROUND`, and the vault then refuses with "needs a drill", #2384); walking off also
+cancels a timed job. So no `shot` follows a `hold` step: take the pictures before the hold, wait out the work with a
+`state` step, and mark a later shot `"handsFree": "<why>"` once the hands are empty. `scenarioProblems` refuses the file otherwise.
 The supermarket's file talks to the shopkeeper, picks a torch, crackers and a water, pays, leaves clean, then walks out
 with a dressing and checks the alarm on the shop-front box.
+
+## Props stand on something: `surface.mjs` and `building check`
+A typed height floated phones, lamps and small items over desks and counters (maintainer, 2026-11-17). Never type a prop's y
+from a guess. `tools/buildings/pipeline/surface.mjs` snaps it at write time, offline (bounds from `prefabInfo`, the reader
+`grid place` sizes by; support tops from the .xob colliders, `tools\cli measure --surfaces`): y = the top of the support under
+the prop's footprint centre, minus the prop's bottom offset.
+```
+import { prefabChildren, snapItems, specSupports } from "../pipeline/surface.mjs";
+put(P.desk, x, F, z, 0, 1, false, { id: "desk" });              // a row an item can stand on
+put(P.phone, x + 0.2, 1.1, z, 200, 1, false, { on: "desk" });   // y is a hint; it lands on the desk top
+put(P.lamp, x, 1.1, z);                                         // no `on`: the top under it, when one is within 0.4 m
+const fixed = [...prefabChildren(prefabTextWithoutYourBlock), ...specSupports(spec)];  // what the prefab holds, the host, spec.check_supports
+const snap = await snapItems(items, { fixed });                 // mutates item.y; snap.summary, snap.changes for a --report
+```
+- `on` is an item `id`, the 16-hex ID of an entity already in the prefab (or the store prefab), or a row index. A prop with no
+  surface under its centre stops the generator by name.
+- Without `on` a prop snaps only when it is more than 2 cm off a top under it. Wall kinds (posters, notices, clocks, ceiling
+  lamps, switches) and `free: true` rows are left alone. Gun-store `decor.mjs` is the model; the town hall, general store and
+  clothing store do the same.
+- A support the prefabs do not hold (a counter the layer places, such as the general store till): `spec.json`
+  `check_supports: [{ prefab, at, yaw, id, why }]`. The host building's own colliders count as supports.
+- No generator (a hand-written prefab)? `tools\cli building check <slug> --fix` moves each floating or sunk prop onto its top.
+- A prop that stood on a desk or shelf your cut removed (a typewriter on a pruned desk) goes with it (town-hall `shell.mjs`).
+
+**`tools\cli building check <slug>` is required.** About 1 s, no Workbench: every small prop (under 0.8 m high and 1.2 m
+across, not a wall or ceiling kind) of the building's prefabs must have its bottom within 2 cm of the top of what is under it,
+a floor slab or the ground. `wt ship` runs it for a PR that touches `tools/buildings/<slug>/` or the pack's
+`Prefabs/Buildings/<Dir>/` and refuses the ship while it fails (`tools/lib/pr-quality.mjs`); a machine without the game files
+skips it. A prop that must look odd goes in `spec.json` `floaters_allow: [{ "match": "<entity ID or prefab regex>", "why": "..." }]`.
+Keep `audit placement --grid --strict` as the in-world check once per pass: it sees what the offline check cannot.
 
 ## Planning a building's work
 
@@ -280,6 +318,11 @@ run; never edit it by hand.
   copies per row as the width takes, evenly spread, at most 20 on a board. A point is the fixture's position plus the
   board point turned by its yaw. `max` is one copy per shelf point and `restock` a sixth of it, unless the line gives
   them; `per_board` and `rows` lower the fill. An item too tall for the gap above a board is refused.
+- **Folded piles.** A line with `"stack": N` turns every shelf point into a pile of N copies, one measured item
+  height apart, bottom first, each with a seeded twist of up to 8 degrees written as the point's fourth number
+  (yaw, relative to the store); the prefab gets `m_iStack N` and `max` counts every copy. The store stands only
+  the bottom copy on the board, closes a gap when a middle copy is taken, and after a restart adopts each
+  restored copy into its own pile slot. A pile taller than the air under the board above is refused.
 - **Nothing in the layout is typed by hand.** `tools/buildings/pipeline/fixtures.json` is generated by
   `tools\cli fixtures` from `tools\cli measure` (collider surfaces of the vanilla models: a gondola's boards, a
   cooler's deck, a counter top; the bounds of every item a spec sells). Rerun it when a spec names a new fixture or item;
@@ -294,6 +337,56 @@ run; never edit it by hand.
 - `alarm` (optional): `{ "prefab": "{GUID}Prefabs/...et", "at": [x, y, z], "yaw": 180, "offset": [x, y, z], "reach": 10 }`,
   a child entity (a bell box on the shop front) with `LF_AlarmMountComponent`: a walk-out's site alarm, raised at the
   store's origin, sounds on it. `reach` must cover the box's distance from the store's origin (at most 12 m).
+
+### A store in a vanilla building
+
+A shop does not need an ArchBuilder export: a spec with a `vanilla` block (and no `archbuilder` block) names our own
+prefab that inherits a base-game building, the way the vanilla variants (`ShopHouse_E_2I01t_foodstore.et`) add windows,
+doors, a furniture child and a sign to their `_Base`. `generate` to `import` are not needed and pass at once (no
+ArchBuilder, no Blender); `prefab` checks that our prefab inherits `vanilla.base`, that our files have their `.meta`,
+and that every base-game reference in them is a real path with its real GUID; `store` writes the store prefab on top.
+`budget` is optional (`min_doors` counts the door sets our prefab adds). `building plan` and `building proof` read the
+same files.
+
+```json
+{
+  "slug": "gun-store", "name": "GunStore", "red_line": "pack", "addon": "LF_Everon1989",
+  "concept": "...", "prefab_dir": "Prefabs/Buildings/GunStore",
+  "vanilla": {
+    "base": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et",
+    "building": "ShopHouse_E_2I01t_gunstore",
+    "furniture": "Furniture/ShopHouse_E_2I01t_furniture_gunstore_01"
+  },
+  "store": { "prefab": "GunStore_Store", "key": "everon_gunstore", "fixtures": [], "counters": [], "lines": [] }
+}
+```
+
+Three store rows matter most for such a building (all optional, any store can use them):
+
+- `fixtures`: `[{ "prefab": "{GUID}Prefabs/...et", "at": [x, y, z], "yaw": 90, "why": "..." }]`, shop fittings (shelves,
+  a counter, a till, a display rack) written as children of the store prefab. `pick` counts them together with the
+  furniture prefab's own children, so a line can stand goods on a shelf placed here, and a `CashierShop_01` placed here is
+  a till.
+- A **display-only** line, `{ "item": "{GUID}...et", "display": true, "fixture": "LF_WeaponRackCabinet_Display",
+  "pick": [0], "kind": "long", "slots": [0, 1, 2] }`: the item's model stands in a display rack's slots. The copy is a
+  plain entity with the item's `MeshObject` only, so it can be looked at and never picked up or taken; it is no stock and
+  not on the till's list (sell it over a counter). Racks: `LF_WeaponRackCabinet_Display` and `LF_WeaponRackStand_Display`
+  (core prefabs that land with the gun store), the FIA arsenal racks' models without the arsenal, service point and faction components, so they hand out
+  nothing. Their slots (`racks` in `fixtures.json`, 10 `long` upright slots each, the cabinet also `pistol` and `other`)
+  are read by `tools\cli fixtures` from the vanilla racks' `SCR_WeaponRackSlotEntity` children; `kind` picks long,
+  pistol or other, `slots` indexes those (default all of that kind). A display line's item needs its model measured
+  (`items[...].mesh`, also from `tools\cli fixtures`).
+- `counters`: `[{ "prefab": "{F7EEC900E44C3CCA}Prefabs/Props/Commercial/LF_GunCounter.et", "at": [x, y, z], "yaw": 180,
+  "outlet": "gun_counter" }]`, a counter child whose own `LF_ShopComponent` (overridden by its GUID) has
+  `m_sOutletId` set: it sells that item-catalogue outlet's offers over the counter, behind their gates (the
+  `FIREARM_PERMIT` on `gun_counter`). The prefab must carry `LF_ShopComponent` and the outlet must have offers in an
+  `LF_ItemCatalogue.conf`.
+
+A licensed counter has its own proof step in `proof.json` (`tools/buildings/pipeline/scenario.mjs`):
+`{ "permit": { "licence": "FIREARM_PERMIT", "look": [x,y,z], "from": [dx,dy,dz], "rows": [0, 3], "items": ["Handgun_M9",
+"Magazine_9x19_M9_15rnd_Ball"] } }`. A buyer with cash and no licence orders those price-list rows and is refused (the
+slip must say "Not without a ..."); the harness `licence` verb then sends the `/licence` request (dev worlds and harness
+builds only) and the same order is paid; the server log must show the refusal, the grant and `bought item=` for each item.
 
 ## Not done yet
 

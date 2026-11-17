@@ -1,0 +1,53 @@
+// Grid cell c18r3 for pack-fixture: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_pack_fixture_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 239 0 59
+}
+SCR_DestructibleEntity Grid_pack_fixture_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 244 0 59
+}
+SCR_DestructibleEntity Grid_pack_fixture_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 249 0 59
+ angleY 270
+}
+SCR_DestructibleEntity Grid_pack_fixture_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 249 0 64
+ angleY 270
+}
+SCR_DestructibleEntity Grid_pack_fixture_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 249 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_pack_fixture_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 244 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_pack_fixture_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 239 0 69
+ angleY 90
+}
+GenericEntity Grid_pack_fixture_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:pack-fixture"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 238.2 0.505 59.6
+ angleY -90
+}
+GenericEntity Grid_pack_fixture_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "pack-fixture"
+  }
+ }
+ coords 238.3 0 61.5
+ angleY 90
+}
+GenericEntity Grid_pack_fixture_R0 : "{88F59F323FF25661}Prefabs/Props/Clothing/LF_Mannequin_Suit.et" {
+ coords 246.531 -0.005 64
+ angleY -90
+}

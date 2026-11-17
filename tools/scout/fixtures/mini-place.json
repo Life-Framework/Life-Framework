@@ -1,0 +1,20 @@
+{
+ "generated": "fixture",
+ "centre": {
+  "x": 1000,
+  "z": 2000
+ },
+ "radiusM": 100,
+ "buildings": [
+  {
+   "type": "church",
+   "prefab": "Church_01_white",
+   "res": "{AAAAAAAAAAAAAAAA}Prefabs/Structures/Cultural/Churches/Church_01_white.et",
+   "x": 1020.2,
+   "z": 2020,
+   "yawDeg": 0,
+   "propsInside": 66,
+   "topProps": "BenchChurch_02_long×12"
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+GenericEntity : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ ID "FCF184212144CFA3"
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:race-start"
+  }
+  ActionsManagerComponent "{C2AEC892676B4809}" {
+   additionalActions {
+    LF_SignReadAction "{A5C2DF9D592A6900}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+    LF_RaceEntryAction "{569EF4393452EEB9}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     m_Courses "{2C323AACA1EACC53}Prefabs/Props/Racing/LF_RaceCourses_TestTrack.conf"
+     m_sCourseId "test_track"
+    }
+   }
+  }
+ }
+}

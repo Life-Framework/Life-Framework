@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "kit": "supermarket",
+  "system": "store",
+  "source": {
+    "file": "addons/LF_Everon1989/Prefabs/Buildings/Supermarket/Supermarket_Store.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local",
+    "also": [
+      "addons/LF_Everon1989/Prefabs/Buildings/Supermarket/Supermarket.et",
+      "addons/LF_Everon1989/Prefabs/Buildings/Supermarket/Supermarket_Base.et",
+      "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers/Village_Buildings.layer"
+    ]
+  },
+  "scope": "building",
+  "building": {
+    "mode": "override",
+    "via": "{BD5FE43FC26CAF21}Prefabs/Buildings/Supermarket/Supermarket.et",
+    "vanilla": "{A43A100E3C377DB2}Prefabs/Structures/Core/Building_Base.et"
+  },
+  "store": {
+    "prefab": "{4338F327E7041386}Prefabs/Buildings/Supermarket/Supermarket_Store.et",
+    "config": [
+      {
+        "component": "LF_ShopComponent",
+        "set": {},
+        "blocks": [
+          "m_aShopItems"
+        ]
+      },
+      {
+        "component": "LF_StoreComponent",
+        "set": {
+          "m_sStoreKey": "\"everon_supermarket\"",
+          "m_vBoundaryCenter": "0 0 0",
+          "m_vBoundaryHalf": "8.6 0 6.6",
+          "m_iRestockSeconds": "120"
+        },
+        "blocks": [
+          "m_aLines"
+        ]
+      },
+      {
+        "component": "ActionsManagerComponent",
+        "set": {},
+        "blocks": [
+          "ActionContexts",
+          "additionalActions"
+        ]
+      }
+    ]
+  },
+  "anchoring": {
+    "floorY": 0.099,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.099
+      }
+    ],
+    "footprint": {
+      "source": "store-boundary",
+      "min": [
+        -8.6,
+        -6.6
+      ],
+      "max": [
+        8.6,
+        6.6
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "supermarket-furniture-01",
+      "prefab": "{11C46B870238004E}Prefabs/Buildings/Supermarket/Furniture/Supermarket_furniture_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "from": "Supermarket.et",
+      "wall": "free",
+      "floor": "all"
+    },
+    {
+      "id": "electricity-box-small-01",
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "role": "alarm",
+      "verb": "against wall",
+      "offset": [
+        -2.4,
+        2.3,
+        -7
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_AlarmMountComponent",
+          "set": {
+            "m_vOffset": "0 0.167 0.065",
+            "m_fReach": "10"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "village-supermarket-shopkeeper",
+      "name": "Village_Supermarket_Shopkeeper",
+      "prefab": "{AB73D0036F42E73E}Prefabs/Characters/Npcs/LF_Shopkeeper.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        7.831,
+        0.099,
+        0.35
+      ],
+      "yaw": -90,
+      "class": "LF_NpcBaseEntity",
+      "from": "Village_Buildings.layer",
+      "wall": "+x",
+      "floor": "f0"
+    }
+  ]
+}

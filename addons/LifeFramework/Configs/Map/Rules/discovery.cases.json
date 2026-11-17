@@ -1,0 +1,23 @@
+{
+  "rule": "discovery",
+  "version": 1,
+  "about": "The map discovery rule (docs/architecture/everon-map.md section 4, card M13), in the loader format of tools/map/rules/index.mjs: cases = [{ name, input, expect }]. Run by LF_Test_MapKnown (Enforce, LF_MapKnownRules.Decide) and tools/map/rules/discovery.mjs (node, evaluate()): one table, so the two cannot drift. input: action visit (a client's RpcAsk_Discover) | hear (the board, the clerk, a quest; server only), known none|heard|visited (what the character knows of the place now), live (the place is registered in LF_Places), distance (metres from the character to the place), radius (the place's discovery radius; 0 means the default 20), recent (asks this player made in the last 60 s, before this one). expect: visited|heard|kept (nothing changes)|refused:rate|refused:dark|refused:range. A visit counts within radius plus 10 m slack; at most 5 asks a minute.",
+  "cases": [
+    { "name": "a visit inside the radius records visited", "input": { "action": "visit", "known": "none", "live": true, "distance": 12, "radius": 0, "recent": 0 }, "expect": "visited" },
+    { "name": "a visit at the radius plus slack still counts", "input": { "action": "visit", "known": "none", "live": true, "distance": 30, "radius": 0, "recent": 0 }, "expect": "visited" },
+    { "name": "a visit out of range is refused", "input": { "action": "visit", "known": "none", "live": true, "distance": 30.5, "radius": 0, "recent": 0 }, "expect": "refused:range" },
+    { "name": "a far visit is refused", "input": { "action": "visit", "known": "none", "live": true, "distance": 900, "radius": 0, "recent": 0 }, "expect": "refused:range" },
+    { "name": "a kind with a wider radius counts further out", "input": { "action": "visit", "known": "none", "live": true, "distance": 55, "radius": 50, "recent": 0 }, "expect": "visited" },
+    { "name": "a visit to a place that is not live is refused", "input": { "action": "visit", "known": "none", "live": false, "distance": 0, "radius": 0, "recent": 0 }, "expect": "refused:dark" },
+    { "name": "the fifth ask in a minute is allowed", "input": { "action": "visit", "known": "none", "live": true, "distance": 5, "radius": 0, "recent": 4 }, "expect": "visited" },
+    { "name": "the sixth ask in a minute is refused", "input": { "action": "visit", "known": "none", "live": true, "distance": 5, "radius": 0, "recent": 5 }, "expect": "refused:rate" },
+    { "name": "the rate limit refuses before the range check", "input": { "action": "visit", "known": "none", "live": true, "distance": 900, "radius": 0, "recent": 9 }, "expect": "refused:rate" },
+    { "name": "a visit to a heard-of place makes it visited", "input": { "action": "visit", "known": "heard", "live": true, "distance": 3, "radius": 0, "recent": 0 }, "expect": "visited" },
+    { "name": "a visit to a visited place changes nothing", "input": { "action": "visit", "known": "visited", "live": true, "distance": 3, "radius": 0, "recent": 0 }, "expect": "kept" },
+    { "name": "hearing of an unknown place records heard of", "input": { "action": "hear", "known": "none", "live": true, "distance": 900, "radius": 0, "recent": 0 }, "expect": "heard" },
+    { "name": "hearing needs no range and no rate", "input": { "action": "hear", "known": "none", "live": true, "distance": 5000, "radius": 0, "recent": 50 }, "expect": "heard" },
+    { "name": "hearing of a dark place is kept for when it goes live", "input": { "action": "hear", "known": "none", "live": false, "distance": 0, "radius": 0, "recent": 0 }, "expect": "heard" },
+    { "name": "hearing again changes nothing", "input": { "action": "hear", "known": "heard", "live": true, "distance": 0, "radius": 0, "recent": 0 }, "expect": "kept" },
+    { "name": "hearing never drops visited back to heard of", "input": { "action": "hear", "known": "visited", "live": true, "distance": 0, "radius": 0, "recent": 0 }, "expect": "kept" }
+  ]
+}

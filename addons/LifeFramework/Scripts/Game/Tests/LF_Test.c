@@ -17,6 +17,7 @@ class LF_Test
 {
 	protected LF_TestTier m_Tier;
 	protected bool m_bRedProof;
+	protected bool m_bPackTest;
 
 	//------------------------------------------------------------------------------------------------
 	string GetName()
@@ -34,6 +35,20 @@ class LF_Test
 	LF_TestTier Tier()
 	{
 		return m_Tier;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Set by LF_TestManager.RegisterPack: the test lives in a pack (its Scripts/Game/Tests) and runs
+	//! only when named, which the pack leg of `tools\cli test` does under the pack's mission header.
+	void SetPackTest(bool on)
+	{
+		m_bPackTest = on;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsPackTest()
+	{
+		return m_bPackTest;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -18,7 +18,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      }
      m_aProcessingOutputs {
       LF_ProcessingOutput "{875A7855899B2B75}" {
-       m_OutputPrefab "{C3B9A61B460BE287}Prefabs/Items/Drinks/BeerBottle.et"
+       m_OutputPrefab "{4CBB1F9A04D15772}Prefabs/Items/Drinks/BeerBottle.et"
        m_iOutputAmount 1
       }
      }

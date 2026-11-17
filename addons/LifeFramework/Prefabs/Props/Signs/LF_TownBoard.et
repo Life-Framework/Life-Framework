@@ -1,0 +1,149 @@
+GenericEntity {
+ ID "2BB676B54B447932"
+ components {
+  LF_SignComponent "{CB0DD0E500C1A1EE}" {
+   m_bShowFace 0
+  }
+  LF_TownBoardComponent "{A661BDE3D5E6D849}" {
+  }
+  ActionsManagerComponent "{4C018650FF74CCFD}" {
+   ActionContexts {
+    UserActionContext "{343B824E218E793F}" {
+     ContextName "LF_TownCard0"
+     Position PointInfo "{F38C5941AB72675D}" {
+      Offset -0.590 1.705 -0.04
+     }
+     Radius 0.19
+    }
+    UserActionContext "{CC68485AD8B16EDA}" {
+     ContextName "LF_TownCard1"
+     Position PointInfo "{55AC65F0997C4DAA}" {
+      Offset -0.197 1.705 -0.04
+     }
+     Radius 0.19
+    }
+    UserActionContext "{12FAEAED925CCB2E}" {
+     ContextName "LF_TownCard2"
+     Position PointInfo "{E15BF4D938C73BE0}" {
+      Offset 0.197 1.705 -0.04
+     }
+     Radius 0.19
+    }
+    UserActionContext "{989D7B573DBF8214}" {
+     ContextName "LF_TownCard3"
+     Position PointInfo "{DE96F6672592C173}" {
+      Offset 0.590 1.705 -0.04
+     }
+     Radius 0.19
+    }
+    UserActionContext "{6B10B0D72397725B}" {
+     ContextName "LF_TownCard4"
+     Position PointInfo "{602B932A61965F09}" {
+      Offset -0.590 1.316 -0.04
+     }
+     Radius 0.19
+    }
+    UserActionContext "{BD250B85AA0B14E1}" {
+     ContextName "LF_TownCard5"
+     Position PointInfo "{1087172FA0FF8F51}" {
+      Offset -0.197 1.316 -0.04
+     }
+     Radius 0.19
+    }
+    UserActionContext "{D71468D18D7F3B53}" {
+     ContextName "LF_TownCard6"
+     Position PointInfo "{AA790D81617C4ADC}" {
+      Offset 0.197 1.316 -0.04
+     }
+     Radius 0.19
+    }
+    UserActionContext "{2D8627B0ADB492D0}" {
+     ContextName "LF_TownCard7"
+     Position PointInfo "{BC40FF8B91F7915A}" {
+      Offset 0.590 1.316 -0.04
+     }
+     Radius 0.19
+    }
+   }
+   additionalActions {
+    LF_TownBoardCardAction "{EAB21489340D882B}" {
+     ParentContextList {
+      "LF_TownCard0"
+     }
+     m_iSlot 0
+    }
+    LF_TownBoardCardAction "{B0133491E41D2213}" {
+     ParentContextList {
+      "LF_TownCard1"
+     }
+     m_iSlot 1
+    }
+    LF_TownBoardCardAction "{739200C802D36630}" {
+     ParentContextList {
+      "LF_TownCard2"
+     }
+     m_iSlot 2
+    }
+    LF_TownBoardCardAction "{FB97E76127C32080}" {
+     ParentContextList {
+      "LF_TownCard3"
+     }
+     m_iSlot 3
+    }
+    LF_TownBoardCardAction "{F1FCCBC4959582B6}" {
+     ParentContextList {
+      "LF_TownCard4"
+     }
+     m_iSlot 4
+    }
+    LF_TownBoardCardAction "{0819DB380280E72E}" {
+     ParentContextList {
+      "LF_TownCard5"
+     }
+     m_iSlot 5
+    }
+    LF_TownBoardCardAction "{748A12D45BF6A810}" {
+     ParentContextList {
+      "LF_TownCard6"
+     }
+     m_iSlot 6
+    }
+    LF_TownBoardCardAction "{EF82AE525342DB5B}" {
+     ParentContextList {
+      "LF_TownCard7"
+     }
+     m_iSlot 7
+    }
+   }
+  }
+ }
+ {
+  GenericEntity Board : "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et" {
+   ID "3A52E2088AEB1E48"
+   components {
+    SCR_DestructionMultiPhaseComponent "{5624A88D86EFE8BA}" {
+     Enabled 0
+    }
+   }
+   coords 0 1 0
+  }
+  GenericEntity PostLeft : "{2F5C4F11D17E1725}Prefabs/Structures/Signs/Generic/SignGeneric_Pole_Base.et" {
+   ID "A2BC0A1DEEAC2C49"
+   components {
+    SCR_DestructionMultiPhaseComponent "{5496C1EF00137501}" {
+     Enabled 0
+    }
+   }
+   coords -0.87 0 0.045
+  }
+  GenericEntity PostRight : "{2F5C4F11D17E1725}Prefabs/Structures/Signs/Generic/SignGeneric_Pole_Base.et" {
+   ID "619A2B81464419C8"
+   components {
+    SCR_DestructionMultiPhaseComponent "{5496C1EF00137501}" {
+     Enabled 0
+    }
+   }
+   coords 0.87 0 0.045
+  }
+ }
+}

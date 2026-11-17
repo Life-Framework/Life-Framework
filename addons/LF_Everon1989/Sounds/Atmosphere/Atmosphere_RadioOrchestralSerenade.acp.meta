@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{AC80A7236E14EEFC}Sounds/Atmosphere/Atmosphere_RadioOrchestralSerenade.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

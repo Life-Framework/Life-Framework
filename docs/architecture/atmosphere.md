@@ -179,6 +179,23 @@ per second of a loop; the price list says 15 and 40. The counter lags a call by 
 so the tool reads the balance once before and once after a run and gives each take its share by
 these rates (`runs` and `generations` in `ambience.json`).
 
+### Period radio tracks (#1015, #1967)
+
+Six more radio tracks sit beside the store and pub tracks, for the story's radio: `radio_estrada_ballad`,
+`radio_estrada_dance`, `radio_accordion_waltz`, `radio_accordion_kolo`, `radio_orchestral_morning` and
+`radio_orchestral_serenade` (`Sounds/Atmosphere/Atmosphere_Radio*.acp`, mono 24 kHz, about 60 s each, 2.8 MB
+a sample). They are ElevenLabs Music (`music_v1`, instrumental, 62 s each) like the store and pub tracks:
+one take per track, prompt, model and date in `ambience.json`, the pick and its reason beside the sound.
+`toolscli asset ambience --only generate` pays for them (it waits and retries on a 429 "system busy"),
+`--only process` band-limits to the small-radio-speaker band, closes the loop with the 2.5 s equal-power
+crossfade and sets the peak to -3 dBFS, and `--only wire` copies them into the pack and writes the projects.
+`radio-tracks-selftest.mjs` checks the spec, the dated record, the credit row ("Music generated with
+ElevenLabs") and that each committed sample is mono 24 kHz, about a minute long and peaks at -3 dBFS.
+The first version (#1967) was composed by a script (`radio-synth.mjs`); it was retired when the maintainer
+ruled that an in-game radio is a game asset, not broadcast radio, so the Music Terms' "radio" exclusion does
+not apply. Nothing plays them yet: the story slice that wires a radio picks one by its `SOUND_LF_AMBIENT_LP`
+project.
+
 ## Licence
 
 ElevenLabs Music Terms (read 2026-11-13, last updated 2026-10-09), Starter column: commercial
@@ -186,7 +203,8 @@ use permitted "except film, TV, radio, and Studio Games"; no attribution require
 distribution prohibited; a "Music Library" (a collection of output offered to third parties to
 use in their own content) prohibited. A "Studio Game" is a monetised game that is not an "Indie
 Game" (under $500,000 revenue). Life Framework is a free mod, so the two tracks are inside the
-terms as part of the mod.
+terms as part of the mod. The six story radio tracks play on an in-game prop, which the maintainer
+ruled (2026-11-16) is a game asset, not broadcast radio.
 
 Two things for the maintainer to decide, recorded in `docs/decisions.md`:
 

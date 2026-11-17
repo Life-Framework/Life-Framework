@@ -16,6 +16,8 @@ import { parseStringTable, coverageError } from "./merge/union-string-table.mjs"
 import * as wt from "./wt.mjs";
 
 export const MARKDOWN_ROWS = ["docs/features.md", "docs/debug-log-triage.md"];
+// MARKDOWN_ROWS plus every docs/features/<area>.md the merge touched (listed from git objects by the caller).
+export const isMarkdownRows = (p) => MARKDOWN_ROWS.includes(p) || (p.startsWith("docs/features/") && p.endsWith(".md"));
 // Rows `tools\cli credits` regenerates from docs/credits.md; a credits regen may rename them.
 export const CREDITS_KEY_PREFIX = "LF-Credits_";
 
@@ -74,7 +76,9 @@ export function safetyCheck(wtPath, { pre, base, credits = false }) {
     }
   }
 
-  for (const path of MARKDOWN_ROWS) {
+  const areaRe = /^docs\/features\/[^/]+\.md$/;
+  const areaMd = [...new Set([...trackedAt(wtPath, base, areaRe), ...trackedAt(wtPath, pre, areaRe)])].sort();
+  for (const path of [...MARKDOWN_ROWS, ...areaMd]) {
     const main = showAt(wtPath, base, path);
     if (main == null) continue;
     const mbLines = lineSet(showAt(wtPath, mb, path));

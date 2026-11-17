@@ -95,3 +95,32 @@ modded class SCR_PlayerController
 		LF_LicenceGrant.ServerRun(GetPlayerId(), licenceName);
 	}
 };
+
+//------------------------------------------------------------------------------------------------
+//! Harness `licence <NAME>` (building proof's permit step): this client sends what /licence sends, since
+//! the harness chat refuses `/` lines (LF_HarnessChat). The server's dev gate decides and logs the verdict.
+modded class LF_AgentHarnessVerbs
+{
+	override bool Handle(LF_AgentCommand cmd)
+	{
+		if (cmd.Verb != "licence")
+			return super.Handle(cmd);
+
+		if (cmd.Arg1.IsEmpty())
+		{
+			LF_AgentHarness.Answer(cmd.Id, "error", "need_licence_name");
+			return true;
+		}
+
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (!controller)
+		{
+			LF_AgentHarness.Answer(cmd.Id, "error", "no_controller");
+			return true;
+		}
+
+		controller.LF_AskLicenceGrant(cmd.Arg1);
+		LF_AgentHarness.Answer(cmd.Id, "ok", "asked " + cmd.Arg1);
+		return true;
+	}
+};
