@@ -461,6 +461,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_OrgStaticReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OrgUpgradeUnwired(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_OrgWarState(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OutletSerial(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_OutletSerialWired(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PackManifest(), LF_TestTier.LOGIC);

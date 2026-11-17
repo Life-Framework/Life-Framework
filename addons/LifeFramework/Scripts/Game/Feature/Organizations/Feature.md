@@ -44,6 +44,14 @@ processing upgrade are kept at the desk.
   marks for the org, shared through `LF_MapShares` (ORG audience), saved in `orgmarks` (save
   version 44). Every membership change calls `LF_OrgMapMarks.RefreshCharacter` so the player's
   map gains or loses the marks at once (`docs/features/map.md`).
+- `LF_OrgWars` — the war record (#2666, M7 gang war W1): `LF_OrgWarRecord` moves DECLARED -> ACCEPTED ->
+  ENDED, or DECLARED -> LAPSED when the answer window passes. Server statics in memory only (persistence
+  is W6: `ExportAll` / `ApplyAll`), keyed by org id, all times unix seconds. `Declare`, `Accept`, `Tick`,
+  `End`, `IsAtWar`, `ActiveFor` take an `LF_OrgWarRules` value (fee, window, length, cooldown, min
+  members; the config is W2). A refusal (self, unknown org, pending or at war with that org, pair
+  cooldown) logs `[LFDebug:OrgWars]` and returns a key. Each transition publishes `LF_OnOrgWarDeclared`,
+  `LF_OnOrgWarAccepted`, `LF_OnOrgWarEnded` (reason `time`, `lapsed`, `forfeit`) from
+  `LF_OrgWarsEvents.c`. No RPC, UI or money here; rights and the fee are W3.
 
 ## Iteration path
 
