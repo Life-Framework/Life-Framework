@@ -302,11 +302,7 @@ GenericEntity PoliceKit_Decor_10 : "{43E4EEB4CDBBFE34}Prefabs/Props/Commercial/P
  coords 70.7 1.55 47.25
  angleY 180
 }
-GenericEntity PoliceKit_Decor_11 : "{40B1E5FC57371D5E}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V1.et" {
- coords 65.5 1.45 43
- angleY 90
-}
-GenericEntity PoliceKit_Decor_12 : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et" {
+GenericEntity PoliceKit_Decor_11 : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -315,7 +311,7 @@ GenericEntity PoliceKit_Decor_12 : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typ
  coords 70.7 0.907 40.2
  angleY 200
 }
-GenericEntity PoliceKit_Decor_13 : "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et" {
+GenericEntity PoliceKit_Decor_12 : "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -324,7 +320,7 @@ GenericEntity PoliceKit_Decor_13 : "{67C2A2742A183D89}Prefabs/Props/Furniture/Ph
  coords 71.5 0.907 40.05
  angleY 160
 }
-GenericEntity PoliceKit_Decor_14 : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+GenericEntity PoliceKit_Decor_13 : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -333,7 +329,7 @@ GenericEntity PoliceKit_Decor_14 : "{03DE957D8161212B}Prefabs/Props/Civilian/Not
  coords 70.4 0.907 40.1
  angleY 15
 }
-GenericEntity PoliceKit_Decor_15 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et" {
+GenericEntity PoliceKit_Decor_14 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -341,7 +337,7 @@ GenericEntity PoliceKit_Decor_15 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ash
  }
  coords 71.2 0.907 40.3
 }
-GenericEntity PoliceKit_Decor_16 : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
+GenericEntity PoliceKit_Decor_15 : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -350,7 +346,7 @@ GenericEntity PoliceKit_Decor_16 : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/Rad
  coords 69.3 0.907 38.3
  angleY 180
 }
-GenericEntity PoliceKit_Decor_17 : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+GenericEntity PoliceKit_Decor_16 : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -358,17 +354,14 @@ GenericEntity PoliceKit_Decor_17 : "{03DE957D8161212B}Prefabs/Props/Civilian/Not
  }
  coords 70 0.907 38.3
 }
-GenericEntity PoliceKit_Decor_18 : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
+GenericEntity PoliceKit_Decor_17 : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
  coords 69.1 0 40.9
 }
-GenericEntity PoliceKit_Decor_19 : "{0686BBADD62096B1}Prefabs/Props/Furniture/CoatRack_05/CoatRack_05.et" {
- coords 68.6 0 43
-}
-GenericEntity PoliceKit_Decor_20 : "{A9DC69EC1CE466A0}Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_on.et" {
+GenericEntity PoliceKit_Decor_18 : "{A9DC69EC1CE466A0}Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_on.et" {
  coords 71.6 4.706 44.4
  angleY 200
 }
-GenericEntity PoliceKit_Decor_21 : "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et" {
+GenericEntity PoliceKit_Decor_19 : "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -377,22 +370,22 @@ GenericEntity PoliceKit_Decor_21 : "{641D6F151390FD47}Prefabs/Props/Furniture/Ph
  coords 71.1 4.706 44.3
  angleY 190
 }
-GenericEntity PoliceKit_Decor_22 : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
+GenericEntity PoliceKit_Decor_20 : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
  coords 65.8 3.8 39.9
  angleY 180
 }
-GenericEntity PoliceKit_Decor_23 : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+GenericEntity PoliceKit_Decor_21 : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
  coords 65.8 3.8 38.1
 }
-GenericEntity PoliceKit_Decor_24 : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
+GenericEntity PoliceKit_Decor_22 : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
  coords 65.9 4.55 39
  angleY 90
 }
-GenericEntity PoliceKit_Decor_25 : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
+GenericEntity PoliceKit_Decor_23 : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
  coords 65.6 4.55 38.8
  angleY 60
 }
-GenericEntity PoliceKit_Decor_26 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et" {
+GenericEntity PoliceKit_Decor_24 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -400,15 +393,15 @@ GenericEntity PoliceKit_Decor_26 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ash
  }
  coords 65.8 4.55 39.2
 }
-GenericEntity PoliceKit_Decor_27 : "{D5DCF3520C2A8C41}Prefabs/Props/Furniture/Flipchart_01/Flipchart_01.et" {
+GenericEntity PoliceKit_Decor_25 : "{D5DCF3520C2A8C41}Prefabs/Props/Furniture/Flipchart_01/Flipchart_01.et" {
  coords 69.5 3.8 42.8
  angleY 150
 }
-GenericEntity PoliceKit_Decor_28 : "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et" {
+GenericEntity PoliceKit_Decor_26 : "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et" {
  coords 73.4 5 41.2
  angleY -90
 }
-GenericEntity PoliceKit_Decor_29 : "{260B7CE9F8CB21CB}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V2.et" {
+GenericEntity PoliceKit_Decor_27 : "{260B7CE9F8CB21CB}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V2.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1

@@ -6,7 +6,7 @@
 //   node tools/buildings/police-station/fitout.mjs --report                       entity, light and shadow counts
 //
 // Passes are cumulative: 1 BUILD (systems, yard, boards, cell), 2 POLISH 1 (lights, walls, desks, interview room),
-// 3 POLISH 2 (night mood, facade, yard dressing, finishing touches). The default is the last pass.
+// 3 POLISH 2 (night mood, facade, yard dressing, finishing touches). The default is 2, the shipped pass; 3 is an unshot draft.
 //
 // Every point is in building space: the villa's own origin, the front (porch, front door) toward +z, floor y 0, first
 // floor y 3.8. The kit holds no world coordinates: ORIGIN below is only where this claim stands (Grid_police_station_kit
@@ -32,11 +32,11 @@ import { ORIGIN } from "./origin.mjs";
 const PREFIX = "PoliceKit_";
 const VILLA = `${PREFIX}Villa`;
 const F1 = 3.8; // first floor
-const BUDGET = { lights: 6, shadows: 1, decor: 300 }; // MEDIUM, docs/architecture/performance.md
+const BUDGET = { lights: 6, shadows: 1, decor: 300, ours: 55 }; // MEDIUM, docs/architecture/performance.md; the villa ships ~245 entities, ours stay under `ours` so the building totals under 300
 
 const args = process.argv.slice(2);
 const flag = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
-const PASS = Number(flag("--pass", "3"));
+const PASS = Number(flag("--pass", "2")); // pass 3 is a draft: its rows were never shot (docs: police station POLISH 2 issue)
 
 // ---- prop paths (base game) ----
 const P = {
@@ -194,12 +194,8 @@ if (PASS >= 3) {
   put(P.bench, 2.6, 0, 7.85, 180);
   put(P.binStreet, -3.0, 0.461, 6.2, 180);
   put(P.pot, -3.4, 0, 7.2, 0);
-  put(P.pot, 0.4, 0, 7.2, 0);
   sys("clone", { src: POLICE_LAYER, name: "Roadmap_Police_Car", to: `${PREFIX}EscortCar`, x: 6.2, y: 0.001, z: 12.0, yaw: 0 });
   // Inside: more paper on the walls, a second phone and a desk tidy.
-  put(P.noticeC, -3.0, 1.55, -3.69, 0);
-  put(P.notebook, 4.6, 0.907, 1.2, 0);
-  put(P.typewriter, 4.3, 0.907, 1.4, 170);
 }
 
 // ---------------------------------------------------------------------------------------------------
@@ -329,7 +325,7 @@ const next = `${stripKit(base)}${(await build()).join("\n")}\n`;
 const c = counts();
 if (args.includes("--report")) {
   console.log(`police-station pass ${PASS}: ${c.decor} decor, ${c.lights} lights (${c.shadows} cast shadows), ${c.systems} system entities`);
-  process.exit(c.lights > BUDGET.lights || c.shadows > BUDGET.shadows || c.decor > BUDGET.decor ? 1 : 0);
+  process.exit(c.lights > BUDGET.lights || c.shadows > BUDGET.shadows || c.decor + c.systems + c.lights > BUDGET.ours ? 1 : 0);
 }
 if (args.includes("--check")) {
   const same = next === base;
@@ -337,6 +333,6 @@ if (args.includes("--check")) {
   process.exit(same ? 0 : 1);
 }
 if (lights.some((l) => l.type === "Point" && l.shadow)) throw new Error("a point light never casts a shadow");
-if (c.lights > BUDGET.lights || c.shadows > BUDGET.shadows || c.decor > BUDGET.decor) throw new Error(`over the budget: ${JSON.stringify(c)} (max ${JSON.stringify(BUDGET)})`);
+if (c.lights > BUDGET.lights || c.shadows > BUDGET.shadows || c.decor + c.systems + c.lights > BUDGET.ours) throw new Error(`over the budget: ${JSON.stringify(c)} (max ${JSON.stringify(BUDGET)})`);
 writeFileSync(GRID_LAYER, next);
 console.log(`police-station: pass ${PASS}: ${c.decor} decor, ${c.lights} lights (${c.shadows} shadow), ${c.systems} system entities written to Grid_police_station_kit.layer`);
