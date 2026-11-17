@@ -207,6 +207,68 @@ minutes the server exits and frees its memory. `look item` stays on the fresh pa
 Server-mode log lines in `console.log` under `Life-Framework-look-viewer/server/profile/visual-serve/logs/`
 start with `[LFVisual]`, like a fresh run's; `ok request <id> reload=<mode>` opens each request.
 
+### `look` on a pool machine: where the time goes, and the warm path (2026-11-16/17)
+
+`tools\cli look <area>` from a worktree on this PC (no Workbench here) runs on a pool machine. Every look prints its
+phases (`look: phases: ...`; the router adds `route-wait, sync, remote-total, copy-back`) and keeps them in `index.json`
+under `timing`. Measured on lf-testbox with three other agents looking at the same time, `look grid:gun-counter --fresh`
+(14 shots, the old path) took **300 s**:
+
+| phase | s |
+|---|---|
+| RAM wait (route-wait: no machine had room for a Workbench) | 132 |
+| the box's one Workbench slot, FIFO behind other agents' looks (slot-wait) | 100 |
+| sync to the box (run folder, bundle) | 4.7 |
+| Workbench start (wb-start) | 23.5 |
+| world load and play | 5.2 |
+| 14 shots | 11.3 |
+| collect, node start and the rest on the box | about 20 |
+| copy back | 3.0 |
+
+So the look itself is 40 to 60 s of 300; the rest is queueing behind other Workbenches. Two things were cut:
+
+- **A target that does not resolve fails before the queue.** `look grid:gunstore` says so in 0.3 s. It used to say so
+  after the slot wait (217 s, once).
+- **A routed look is warm by default.** The box runs it with `--serve`: one resident hidden Workbench per box (its
+  `Life-Framework-look-viewer` checkout) takes the plan, so the slot is held for the request, not a Workbench start. Through
+  the server the same look held the slot for **31 to 39 s** (restart 10 to 17 s when the state changed, 0.1 to 0.3 s when
+  not, world 3.3 to 5.5, shots 10 to 11.5) against about 60 s cold. `--cold` is the old path (a Workbench of its own, no
+  resident server). A warm look that gives no pictures is run once more cold on the same machine, automatically; a dead
+  or hung server inside the box already falls back to a fresh Workbench (below).
+
+What a look from **another worktree** costs is decided by what differs from the state the resident Workbench shows
+(`mirrorMode`, `tools/lib/look-job.mjs`; the viewer is the mirror):
+
+| Difference from the last request | Served as |
+|---|---|
+| nothing | `server-same`: shot as is |
+| only files outside `addons/` | `server-reopen` |
+| a modified addon file whose extension is in `FAST_PATH_EXT` (empty; `LF_LOOK_REOPEN_EXT=.layer` to probe) | `server-reopen`; the file is written **in place** (open, truncate, write: an editor's save), HEAD moves with no worktree write, because `git checkout` unlinks and recreates a file and a reopen after that crashed Workbench 4 of 4 (2026-11-14) |
+| any other addon change (added, deleted, renamed, a script, a `.meta`, the look plugin) | `server-restart`: 10 to 17 s |
+
+**Not proven (2026-11-17):** the in-place reopen. On the shared box every look between mine came from another worktree
+whose state differed by added and deleted files (a kit `.layer` removed, one added), which always restart, so no `.layer`
+edit was ever served by a reopen and `FAST_PATH_EXT` stays empty. A second look of the same cell from a different worktree
+restarts the server today (31 to 39 s of slot time); it is not a few seconds. Proving a reopen needs a quiet box: run
+`LF_LOOK_REOPEN_EXT=.layer tools\cli look grid:<cell>` after editing a `.layer` entity, three times in a row, with no other
+agent's look between.
+
+**RAM is the pool's admission** (`tools/lib/pool-ram.mjs`, docs/worktrees.md "RAM admission"), not a second gate. Starting or
+restarting the look Workbench is a `workbench` job at its measured peak (3.6 GB seed, the p90 of observed peaks once there
+are samples) plus the floor, less what every running ArmaReforger process still grows into; the resident one hands its
+working set back to its own restart. A request to a live resident server needs no new RAM, so the router counts a box that
+has one as having a peak more free for a warm look (`state.lookServer`, read with the Workbench slots in one ssh call).
+`remoteWbState` now reads `tmp\wt\locks` with the right escaping: it read `tmpwtlocks`, so the box always showed
+"0/1 busy" and the router never said "slot busy; queuing there".
+
+**Lifetime (sessions flow like a river).** The resident Workbench exits after 10 idle minutes on its own (the plugin), is
+closed by the pool after 5 (`reapRemoteLookServer`, called from the poll that closes idle sessions) and at once when a session
+request waits on that machine for RAM or a lane; never during a request (no fresh heartbeat). A test waiting for RAM does
+not trigger it yet: it waits for the 5 or 10 minutes. It never runs on this PC and never pins.
+
+**Shared server.** Looks from every worktree use the one resident Workbench on the box, in turn, so two worktrees looking
+alternately restart it each time (the third and fourth rows above). That is still one Workbench instead of one per look.
+
 ### `tools\cli look item`
 
 ```

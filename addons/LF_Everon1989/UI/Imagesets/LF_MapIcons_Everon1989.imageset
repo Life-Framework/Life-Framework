@@ -1,0 +1,257 @@
+ImageSetClass {
+ RefSize 512 512
+ Textures {
+  ImageSetTextureClass {
+   mpix 1
+   path "{E9A9C2F594DBAEF2}UI/Imagesets/LF_MapIcons_Everon1989.edds"
+  }
+ }
+ Images {
+  ImageSetDefClass cat_civic {
+   Name "cat_civic"
+   Pos 0 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_shop {
+   Name "cat_shop"
+   Pos 64 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_work {
+   Name "cat_work"
+   Pos 128 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_law {
+   Name "cat_law"
+   Pos 192 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_health {
+   Name "cat_health"
+   Pos 256 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_travel {
+   Name "cat_travel"
+   Pos 320 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_story {
+   Name "cat_story"
+   Pos 384 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass cat_underworld {
+   Name "cat_underworld"
+   Pos 448 0
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Bank {
+   Name "poi_Bank"
+   Pos 0 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_PoliceStation {
+   Name "poi_PoliceStation"
+   Pos 64 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_PoliceArmoury {
+   Name "poi_PoliceArmoury"
+   Pos 128 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_HospitalSite {
+   Name "poi_HospitalSite"
+   Pos 192 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Workplace {
+   Name "poi_Workplace"
+   Pos 256 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Fence {
+   Name "poi_Fence"
+   Pos 320 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Fuel {
+   Name "poi_Fuel"
+   Pos 384 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Payphone {
+   Name "poi_Payphone"
+   Pos 448 64
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Quarry {
+   Name "poi_Quarry"
+   Pos 0 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Fish {
+   Name "poi_Fish"
+   Pos 64 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Story {
+   Name "poi_Story"
+   Pos 128 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Taxi {
+   Name "poi_Taxi"
+   Pos 192 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Harbour {
+   Name "poi_Harbour"
+   Pos 256 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Farm {
+   Name "poi_Farm"
+   Pos 320 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Shop {
+   Name "poi_Shop"
+   Pos 384 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_TownHall {
+   Name "poi_TownHall"
+   Pos 448 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Church {
+   Name "poi_Church"
+   Pos 0 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Pub {
+   Name "poi_Pub"
+   Pos 64 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Fire {
+   Name "poi_Fire"
+   Pos 128 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Depot {
+   Name "poi_Depot"
+   Pos 192 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pencil_cross {
+   Name "pencil_cross"
+   Pos 256 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pencil_circle {
+   Name "pencil_circle"
+   Pos 320 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pencil_arrow {
+   Name "pencil_arrow"
+   Pos 384 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pencil_note {
+   Name "pencil_note"
+   Pos 448 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pencil_question {
+   Name "pencil_question"
+   Pos 0 256
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pin_police {
+   Name "pin_police"
+   Pos 64 256
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pin_org {
+   Name "pin_org"
+   Pos 128 256
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pin_taxi {
+   Name "pin_taxi"
+   Pos 192 256
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pin_waypoint {
+   Name "pin_waypoint"
+   Pos 256 256
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass stamp_town {
+   Name "stamp_town"
+   Pos 320 256
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass stamp_nopolice {
+   Name "stamp_nopolice"
+   Pos 384 256
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass stamp_restricted {
+   Name "stamp_restricted"
+   Pos 448 256
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass stamp_you {
+   Name "stamp_you"
+   Pos 0 320
+   Size 64 64
+   Flags 0
+  }
+ }
+}

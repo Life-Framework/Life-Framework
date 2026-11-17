@@ -24,3 +24,29 @@
   `{ rule, version, cases: [{ name, input, expect }] }`) that a node selftest and an Enforce LOGIC test both run.
 - ⚠️ No Enforce twin or case table ships here: each belongs to the card that writes the rule (M2, M4, M5, M13).
 - Proof: `node tools/map/map-render.selftest.mjs`.
+
+### Map icon set — `tools/map/icons/`, `tools/map/lib/icons.mjs` (card M3, #2231)
+- ✅ The icon manifest (`tools/map/lib/icons.mjs`) names every quad of the two `LF_MapIcons` imagesets: 8 category
+  fallbacks `cat_<category>`, 20 pack pictograms `poi_<Kind>` (bank coin, police star, clinic cross in a square, fuel
+  pump, handset, crossed hammer and pick, fish, flag, ...), 5 pencil marks, 4 shared pins (police blue, org, taxi
+  yellow, waypoint) and 4 stamps (town cluster, no-police, restricted, you). A POI row's icon is its `m_sIcon`, else
+  `poi_<Kind>` in the pack imageset, else `cat_<category>`.
+- ✅ `node tools/map/icons/build-icons.mjs` draws them (ink palette, 1-2 px stamped edge, red plate a pixel off) and
+  writes the `.tif` sources, `.edds.meta`, `.imageset` and `.imageset.meta` for the core placeholders
+  (`LifeFramework/UI/Imagesets/LF_MapIcons`, neutral dark grey), the 1989 set
+  (`LF_Everon1989/UI/Imagesets/LF_MapIcons_Everon1989`) and the hatch tiles (core white-ink `UI/Textures/Map/LF_MapHatch_*`,
+  pack inked `LF_MapIcons_Everon1989_Hatch{Lawless,Gated}`). It is deterministic, and writes a contact sheet to
+  `tmp/map/icons-<side>.png`.
+- ✅ `validate-ui-kit` checks the set once an imageset is committed: every quad of the manifest, every quad a POI conf
+  row names (core `LF_MapPois.conf` and a pack `LF_MapPois*.conf` overlay), the quads inside the texture, the
+  texture and hatch files with matching GUIDs. Proof: `node tools/validation/map-icons-selftest.mjs`.
+- ✅ `tools\cli ui-image --batch <list.txt>` rebuilds a list of `.tif` files into `.edds` in one Workbench boot
+  (`tools/map/icons/icons-batch.txt` is the icon set's list); it boots again for any texture still missing (see Rebuilding).
+- ✅ The textures are built and committed with their imagesets (7 `.edds`: one core atlas, 3 core hatches, one pack
+  atlas, 2 pack hatches). `validate-ui-kit` now checks the committed set.
+- ⚠️ The hatch tiles use `TextureUI.conf`; check they tile unblurred in `PolygonDrawCommand` when M6 draws them. The
+  emulator (`map render`) still draws 5x7 glyphs, not these icons.
+- Rebuilding: `node tools/map/icons/build-icons.mjs`, then on a Workbench box `tools\cli ui-image --batch
+  tools/map/icons/icons-batch.txt`. A headless boot builds only the first texture without an `.edds`, so `--batch` boots
+  again for the rest (7 textures took 5 boots, 81 s on lf-testbox). From ssh the box has no desktop session: run it through
+  `tools/remote/desktop/run-interactive.ps1` (the box's signed-in session), or Workbench dies at "Couldn't build device list".

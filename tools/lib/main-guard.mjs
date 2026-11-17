@@ -2,6 +2,8 @@
 // may be blamed, the bisect, the flake rule, what may be reverted, and the status line. Proven offline by
 // tools/validation/main-guard-selftest.mjs.
 
+import { ownerOf } from "./world-test-judge.mjs";
+
 export const BATCH_MS = 10 * 60 * 1000; // a burst of merges is checked once, at most every 10 min
 export const PRE_MOVE = ["e2e", "--pre-move", "502ebf39", "--mission", "playtest"];
 
@@ -71,12 +73,25 @@ export function judgeRecheck(firstFailed, recheckFailed) {
   return recheckFailed ? "red" : "flake";
 }
 
-// Failing test names from a test run's output ([LFTEST] FAIL <name> ..., or the CLI's FAIL lines).
-export function failingTests(text) {
+// Failing test names from a test run's output ([LFTEST] FAIL <name> ..., or the CLI's FAIL lines). The compact
+// transcript the CLI prints can carry only the failing assertion lines (`[LFTEST]   - label (expected .., got ..)`)
+// with no FAIL header above them (2026-11-17, #2249: the red suite had no parseable name and the bisect could not
+// act). `tests` ([{ file, text }], the LF_Test_*.c sources) names the owner of such an orphan assertion by its label.
+export function failingTests(text, tests = []) {
   const out = new Set();
+  let headed = false; // an assertion line under a FAIL header belongs to that header's test
   for (const line of String(text ?? "").split(/\r?\n/)) {
-    const m = /\[LFTEST\] FAIL (\S+)/.exec(line) || /^\s*FAIL\s+(LF_Test_\w+)/.exec(line);
-    if (m) out.add(m[1].replace(/[:,]$/, ""));
+    const m =/\[LFTEST\] FAIL (\S+)/.exec(line) || /^\s*FAIL\s+(LF_Test_\w+)/.exec(line);
+    if (m) {
+      out.add(m[1].replace(/[:,]$/, ""));
+      headed = true;
+      continue;
+    }
+    const a = /\[LFTEST\]\s+-\s+(.+?)\s*$/.exec(line);
+    if (a && !headed && tests.length) {
+      const owner = ownerOf(a[1], tests);
+      if (owner) out.add(owner);
+    }
   }
   return [...out];
 }

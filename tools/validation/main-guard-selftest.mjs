@@ -54,6 +54,21 @@ check(!g.isEnvExit(1) && !g.isEnvExit(2) && !g.isEnvExit(0), "ordinary failing e
 // Failing tests from real output lines.
 const ft = g.failingTests("12:28:33.241 SCRIPT       : [LFTEST] FAIL LF_Test_ShopBuy (2 assertions)\nFAIL  LF_Test_Other: boom\n[LFTEST] START LF_Test_X");
 check(ft.join() === "LF_Test_ShopBuy,LF_Test_Other", `failingTests: ${ft}`);
+// The shape of the red at b622741c (2026-11-17): the compact suite output kept the assertion line and dropped the
+// FAIL header, so the guard read no test name and its bisect could not act. The test sources name the owner.
+const orphan = [
+  "test-e2e: SUMMARY tier=only passed=670 failed=1 total=671 (30 s)",
+  "  16:16:47.954 SCRIPT       : [LFTEST]   - no sign near: the report names the location (expected '#AR-MapLocation_Arleville', got 'free')",
+  "test-e2e: FAILED (1 failing test(s))",
+  "SUMMARY test fail tier=all legs=2 passed=684 failed=1 total=685 worlds=GridWorld+LF_Everon1989_Test",
+].join("\n");
+const sources = [
+  { file: "LF_Test_DispatchNamesPlace.c", text: 'ctx.EqualStr(locationName, DescribePlace(beside), "no sign near: the report names the location");' },
+  { file: "LF_Test_Other.c", text: 'ctx.True(x, "something else");' },
+];
+check(g.failingTests(orphan).length === 0, "with no test sources an orphan assertion names nothing");
+check(g.failingTests(orphan, sources).join() === "LF_Test_DispatchNamesPlace", `an assertion line with no FAIL header is named by its owner: ${g.failingTests(orphan, sources)}`);
+check(g.failingTests("[LFTEST] FAIL LF_Test_Other\n[LFTEST]   - no sign near: the report names the location", sources).join() === "LF_Test_Other", "an assertion under a FAIL header stays with that header's test");
 
 // Revert refusals.
 const st = { reverted: [{ pr: 12 }] };

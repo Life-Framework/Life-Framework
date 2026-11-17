@@ -16,7 +16,7 @@
 // One worker per repo (hub lock); state in <hub>/main-guard.json; log tmp/logs/main-guard.log.
 
 import { spawn, spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, openSync, closeSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, openSync, closeSync, readdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
@@ -102,6 +102,24 @@ function ensureRunWorktree(root, slug = RUN_SLUG) {
   return dir;
 }
 
+// The LF_Test_*.c sources of the checkout (core and every pack): names the test behind a failing assertion line when the
+// compact suite output has no FAIL header (mg.failingTests).
+function testSources(dir) {
+  const out = [];
+  let addons = [];
+  try { addons = readdirSync(join(dir, "addons")); } catch { return out; }
+  for (const a of addons) {
+    const t = join(dir, "addons", a, "Scripts", "Game", "Tests");
+    let files = [];
+    try { files = readdirSync(t); } catch { continue; }
+    for (const f of files) {
+      if (!/^LF_Test_\w+\.c$/.test(f)) continue;
+      try { out.push({ file: f, text: readFileSync(join(t, f), "utf8") }); } catch {}
+    }
+  }
+  return out;
+}
+
 function checkout(dir, sha) {
   let last = "";
   for (let i = 0; i < 3; i++) {
@@ -161,7 +179,7 @@ async function checkHead(root, dir, head) {
       writeState(root, { running: null });
       return;
     }
-    const failing = step.name === "suite" ? mg.failingTests(r.text) : [];
+    const failing = step.name === "suite" ? mg.failingTests(r.text, testSources(dir)) : [];
     const what = failing.length ? failing.slice(0, 3).join(", ") : step.name;
     log(root, `${head.slice(0, 8)} ${step.name} RED (exit ${r.code}, ${what}); rechecking at the same head (log ${r.log})`);
     const again = await runCli(root, dir, step.recheck(failing), `${head.slice(0, 8)}-recheck`);
@@ -193,7 +211,7 @@ async function checkHead(root, dir, head) {
         checkout(dir, c.sha);
         const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
         if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
-        const failed = mg.failingTests(x.text);
+        const failed = mg.failingTests(x.text, testSources(dir));
         const hit = mg.setHits(failing, failed);
         log(root, `  bisect ${c.sha.slice(0, 8)} ${hit.length ? `red (${hit.slice(0, 3).join(", ")})` : x.code === 0 ? "green" : `green for the set (exit ${x.code}, other failures: ${failed.slice(0, 3).join(", ") || "none parsed"})`} (${c.subject.slice(0, 60)})`);
         return failed;
