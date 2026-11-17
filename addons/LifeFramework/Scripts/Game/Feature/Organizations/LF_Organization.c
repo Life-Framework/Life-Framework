@@ -31,7 +31,7 @@ enum LF_EOrganizationPermission
 	MANAGE_RANKS,
 	//! Reserved for the war record (#750b).
 	DECLARE_WAR,
-	//! Reserved: the hideout stash still opens for every member.
+	//! Opening, taking from and putting into the hideout stash (LF_Hideout.AllowsStash).
 	USE_STASH,
 	//! Territory (#751, reserved) and the organization's shared map marks (LF_OrgMapMarks, #2240).
 	MANAGE_TERRITORY,
@@ -881,6 +881,14 @@ class LF_OrganizationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True for an upgrade some system reads. Only the processing slot is (LF_Hideout); extra storage
+	//! and the parked vehicle are saved flags nothing honours, so selling them would only burn the fund.
+	static bool IsUpgradeWired(LF_EOrganizationUpgrade upgrade)
+	{
+		return upgrade == LF_EOrganizationUpgrade.PROCESSING_SLOT;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string UpgradeFlagName(LF_EOrganizationUpgrade upgrade)
 	{
 		if (upgrade == LF_EOrganizationUpgrade.EXTRA_STORAGE)
@@ -1387,6 +1395,11 @@ class LF_OrganizationManager : Managed
 			LF_Debug.Error("Organizations", string.Format("deposit refused: %1 is not a member", characterId));
 			return false;
 		}
+		if (org.GetFund() > int.MAX - amount)
+		{
+			LF_Debug.Error("Organizations", string.Format("deposit refused: fund %1 of %2 cannot hold %3 more", org.GetFund(), orgId, amount));
+			return false;
+		}
 
 		org.Credit(amount);
 		LF_Debug.Log("Organizations", string.Format("deposit org=%1 character=%2 amount=%3 fund=%4", orgId, characterId, amount, org.GetFund()));
@@ -1443,6 +1456,11 @@ class LF_OrganizationManager : Managed
 		if (flag.IsEmpty())
 		{
 			LF_Debug.Error("Organizations", "upgrade refused: unknown upgrade");
+			return false;
+		}
+		if (!IsUpgradeWired(upgrade))
+		{
+			LF_Debug.Warn("Organizations", string.Format("upgrade refused: %1 does nothing yet, so the fund is not charged", flag));
 			return false;
 		}
 		if (!org.Allows(characterId, LF_EOrganizationPermission.BUY_UPGRADE))

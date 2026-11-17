@@ -1,4 +1,4 @@
-// red-proof: 2026-11-17, cli test --no-build --red LF_Test_PerfMap: RED-OK (RedProof() lays out 20x the POIs and areas and fans out to 20x the recipients, so all three gates fail: map-frame-ms 1.95 over 1, map-rebuild-ms 108.9 over 8, map-share-fanout-ms 4.7 over 2). Green without it on lf-testbox, --tier perf: frame 0.067 ms, rebuild 3.55 ms, fan-out 0.15 ms.
+// red-proof: 2026-11-17 (map-share-sweep-ms added 2026-11-18 as a report, no assertion on its number), cli test --no-build --red LF_Test_PerfMap: RED-OK (RedProof() lays out 20x the POIs and areas and fans out to 20x the recipients, so all three gates fail: map-frame-ms 1.95 over 1, map-rebuild-ms 108.9 over 8, map-share-fanout-ms 4.7 over 2). Green without it on lf-testbox, --tier perf: frame 0.067 ms, rebuild 3.55 ms, fan-out 0.15 ms.
 //! Counts what LF_MapShares sends and does nothing else, so the fan-out measure times the share table and not a
 //! recording sink's string formatting.
 class LF_PerfMapSink : LF_MapShareSink
@@ -73,6 +73,8 @@ class LF_PerfMapFacts : LF_MapShareFacts
 //!    frame, so it has its own budget and does not weaken the frame gate.
 //!  - share fan-out (`FANOUT_BUDGET_MS`, 2 ms): one EVERYONE share put to 128 synthetic players who already hold
 //!    24 rows; the 40 puts of a repeat fill the 64-row cap.
+//!  - share sweep (`SWEEP_BUDGET_MS`, #2514; reported, not yet gated, it is over budget): `LF_MapShares.RefreshAll`, the server's 5 s membership pass, 128 players
+//!    who each hold the 64-row cap against 300 rows in the table (the steady state: nothing to send).
 //!  - discovery scan (`SCAN_BUDGET_MS`, 2 ms, #2492): the server's look-around pass, 128 players each standing at
 //!    one of 400 DISCOVER places in the grid; it runs every 2 s.
 //!  - private set (`PRIVATE_BUDGET_MS`, 1 ms, #2492): one player's private places, 400 rows through the rule and
@@ -100,6 +102,10 @@ class LF_Test_PerfMap : LF_Test
 	protected static const float PRIVATE_BUDGET_MS = 1.0;
 	protected static const int SCAN_PASSES = 20;
 	protected static const int PRIVATE_PASSES = 20;
+	//! The share sweep (#2514): rows in the table, and one-frame cost of RefreshAll over 128 players.
+	protected static const int SWEEP_ROWS = 300;
+	protected static const int SWEEP_PASSES = 5;
+	protected static const float SWEEP_BUDGET_MS = 8.0;
 
 	//! Map view the layout runs against: a 1080p screen, solo zoom (zoom 4 is 800 m wide; 1920 px / 800 m = 2.4).
 	protected static const float VIEW_W = 1920;
@@ -242,6 +248,7 @@ class LF_Test_PerfMap : LF_Test
 
 		RunLayout(ctx, load);
 		RunFanout(ctx, load);
+		RunSweep(ctx, load);
 		RunPrivate(ctx, load);
 	}
 
@@ -461,20 +468,68 @@ class LF_Test_PerfMap : LF_Test
 			}
 		}
 
-		// The sweep's steady state: nothing changed, every recipient is checked against every row.
-		float bestSweep = -1;
-		for (int sweep = 0; sweep < m_iRepeats; sweep++)
+		Mute(false);
+		Check(ctx, "map-share-fanout-ms", best, FANOUT_BUDGET_MS);
+
+		LF_MapShares.ResetStatics();
+		LF_MapShares.EnsureStarted();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The recurring cost (#2514): LF_MapShares.Sweep runs RefreshAll every 5 s on the server, in one frame. 128 players
+	//! each hold the 64-row cap (64 EVERYONE rows) and 236 more rows are in the table for an org nobody is in, so the
+	//! sweep checks all 300 rows for every player and nothing changes (the steady state, no sink calls).
+	protected void RunSweep(LF_TestContext ctx, int load)
+	{
+		LF_MapShares.ResetStatics();
+		LF_PerfMapSink sink = new LF_PerfMapSink();
+		LF_PerfMapFacts facts = new LF_PerfMapFacts();
+		facts.Fill(RECIPIENTS * load);
+		LF_MapShares.SetSink(sink);
+		LF_MapShares.SetFacts(facts);
+
+		Mute(true);
+		int row;
+		for (row = 0; row < LF_MapShares.SEND_CAP; row++)
 		{
-			int sweepStart = System.GetTickCount();
-			LF_MapShares.RefreshAll();
-			float sweepMs = System.GetTickCount(sweepStart);
-			if (bestSweep < 0 || sweepMs < bestSweep)
-				bestSweep = sweepMs;
+			LF_MapShares.Put(LF_MapShareRow.Make("perf-sweep-all-" + row.ToString(), LF_EMapShareAudience.EVERYONE, "", row, row, 0, 0, "sweep", 0));
+		}
+
+		for (row = LF_MapShares.SEND_CAP; row < SWEEP_ROWS; row++)
+		{
+			LF_MapShares.Put(LF_MapShareRow.Make("perf-sweep-org-" + row.ToString(), LF_EMapShareAudience.ORG, "perf-org-none", row, row, 0, 0, "sweep", 0));
 		}
 
 		Mute(false);
-		Check(ctx, "map-share-fanout-ms", best, FANOUT_BUDGET_MS);
+		ctx.Equal(SWEEP_ROWS, LF_MapShares.Count(), "the sweep table holds 300 rows");
+		ctx.Equal(LF_MapShares.SEND_CAP, LF_MapShares.DeliveredCount(1), "a player holds the cap");
+		ctx.Equal(0, LF_MapShares.CapWarnings(), "nobody is over the cap, so the sweep logs nothing");
+
+		int adds = sink.m_iAdds;
+		int removes = sink.m_iRemoves;
+		Mute(true);
+		float bestSweep = -1;
+		for (int rep = 0; rep < m_iRepeats; rep++)
+		{
+			int t = System.GetTickCount();
+			for (int pass = 0; pass < SWEEP_PASSES; pass++)
+			{
+				LF_MapShares.RefreshAll();
+			}
+
+			float ms = (System.GetTickCount(t) * 1.0) / SWEEP_PASSES;
+			if (bestSweep < 0 || ms < bestSweep)
+				bestSweep = ms;
+		}
+
+		Mute(false);
+		ctx.Equal(adds, sink.m_iAdds, "a steady sweep sends nothing");
+		ctx.Equal(removes, sink.m_iRemoves, "a steady sweep removes nothing");
+		// Measured 50.8 ms on lf-testbox (2026-11-18), over the budget: spreading the sweep over frames is its own
+		// card, and until it lands this reports instead of failing, so the perf tier stays green for other map work.
 		Report("map-share-sweep-ms", bestSweep);
+		if (bestSweep > SWEEP_BUDGET_MS)
+			Say(string.Format("BENCH map-share-sweep-ms OVER BUDGET %1 ms (budget %2 ms): not yet gated", bestSweep, SWEEP_BUDGET_MS));
 
 		LF_MapShares.ResetStatics();
 		LF_MapShares.EnsureStarted();
