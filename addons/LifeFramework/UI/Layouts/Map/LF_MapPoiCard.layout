@@ -1,0 +1,102 @@
+FrameWidgetClass "{55C98E70E6C6354A}" {
+ Name "CardRoot"
+ Slot FrameWidgetSlot "{80A347D1D6029B2F}" {
+  Anchor 0 0 0 0
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 220
+  OffsetRight -220
+  SizeY 92
+  OffsetBottom -92
+ }
+ {
+  ImageWidgetClass "{6A6C1B8528246406}" {
+   Name "Metal"
+   Slot FrameWidgetSlot "{46CA23A89467997E}" {
+    Anchor 0 0 1 1
+   }
+   Color 0.243 0.251 0.227 1
+  }
+  ImageWidgetClass "{C0D243B7227BDFFB}" {
+   Name "Paper"
+   Slot FrameWidgetSlot "{34FD7B1173008791}" {
+    Anchor 0 0 1 1
+    OffsetLeft 3
+    OffsetTop 3
+    OffsetRight 3
+    OffsetBottom 3
+   }
+   Color 0.933 0.902 0.839 1
+  }
+  TextWidgetClass "{5025B414F7CFDB13}" {
+   Name "Title"
+   Slot FrameWidgetSlot "{22314B6A902AF2F0}" {
+    Anchor 0 0 1 0
+    OffsetLeft 12
+    OffsetTop 8
+    OffsetRight 12
+    OffsetBottom -30
+   }
+   Color 0.110 0.102 0.086 1
+   Text ""
+   "Font Size" 18
+   "Min Font Size" 12
+   FontProperties FontProperties "{87C5E0BEEDDC5867}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{EC982CCA0BFB54D6}" {
+   Name "Note"
+   Slot FrameWidgetSlot "{C49289CD45F188A9}" {
+    Anchor 0 0 1 0
+    OffsetLeft 12
+    OffsetTop 32
+    OffsetRight 12
+    OffsetBottom -50
+   }
+   Color 0.478 0.4 0.251 1
+   Text ""
+   "Font Size" 14
+   "Min Font Size" 10
+   FontProperties FontProperties "{0D3803DA9FDAF621}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  ButtonWidgetClass "{E17A0C34B52D8F61}" {
+   Name "SetWaypoint"
+   Slot FrameWidgetSlot "{0C6F3D8A91B4E257}" {
+    Anchor 0 1 1 1
+    OffsetLeft 10
+    OffsetTop -38
+    OffsetRight 10
+    OffsetBottom 8
+   }
+   {
+    ImageWidgetClass "{B3F81D5C27A90E46}" {
+     Name "ButtonBack"
+     Slot FrameWidgetSlot "{7D2E94A0C1385B6F}" {
+      Anchor 0 0 1 1
+     }
+     Color 0.243 0.251 0.227 1
+    }
+    TextWidgetClass "{4A9C6E21D8F3B057}" {
+     Name "ButtonText"
+     Slot FrameWidgetSlot "{91E5B7C3A02D4F68}" {
+      Anchor 0 0 1 1
+     }
+     Color 0.933 0.902 0.839 1
+     Text "#LF-MapPlaces_SetWaypoint"
+     "Font Size" 16
+     "Min Font Size" 10
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{2F60A8B5C94E1D73}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

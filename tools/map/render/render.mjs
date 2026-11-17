@@ -225,12 +225,31 @@ function drawPois(cv, view, overlay, persona, rules, taken, hits) {
   const { scale, x0, z1, zoom } = view;
   let n = 0;
   const vis = rules.visibility?.visible || personaVisibility;
+  // What the persona sees, then the layer's cluster rule (tools/map/rules/cluster.mjs: the same one LF_MapPlacesUI runs):
+  // kinds below their min zoom drop, a town shows one stamp with a count below the solo zoom.
+  const shown = [];
   for (const p of overlay.pois) {
-    if (p.minZoom > zoom + 1e-6) continue;
     const state = vis(p, persona);
-    if (state === "hidden") continue;
-    const cx = (p.x - x0) * scale, cy = (z1 - p.z) * scale;
+    if (state !== "hidden") shown.push({ p, state });
+  }
+  const groups = rules.cluster
+    ? rules.cluster.build(shown.map((s, i) => ({ id: i, x: s.p.x, z: s.p.z, minZoom: s.p.minZoom })), zoom)
+    : shown.filter((s) => s.p.minZoom <= zoom + 1e-6).map((s, i) => ({ ids: [shown.indexOf(s)], x: s.p.x, z: s.p.z }));
+  for (const g of groups) {
+    const cx = (g.x - x0) * scale, cy = (z1 - g.z) * scale;
     if (cx < -10 || cy < -10 || cx > cv.w + 10 || cy > cv.h + 10) continue;
+    const members = g.ids.map((i) => shown[i]);
+    if (members.length > 1) {
+      const r = 11;
+      cv.disc(cx, cy, r + 1, PAPER, 0.95);
+      cv.disc(cx, cy, r, INK, 1);
+      const count = String(members.length);
+      cv.text(count, cx - cv.textWidth(count) / 2, cy - 3, [250, 244, 226], 1, null, 1);
+      hits.push({ kind: "poi", x: cx, y: cy, r: r + 2, label: `${members.length} places`, detail: `cluster: ${members.map((m) => m.p.name).join(", ")}` });
+      n++;
+      continue;
+    }
+    const { p, state } = members[0];
     const base = ACCESS_COLOR[p.access] || [110, 60, 130];
     const r = zoom >= 4 ? 8 : 6;
     const alpha = state === "faded" ? 0.45 : 1;
@@ -240,8 +259,8 @@ function drawPois(cv, view, overlay, persona, rules, taken, hits) {
     } else {
       cv.disc(cx, cy, r + 1, PAPER, 0.9 * alpha);
       cv.disc(cx, cy, r, base, alpha);
-      const g = state === "faded" ? "?" : KIND_GLYPH[p.kind] || CATEGORY_GLYPH[p.category] || p.kind[0];
-      cv.text(g, cx - 2, cy - 3, [250, 244, 226], 1, null, alpha);
+      const gl = state === "faded" ? "?" : KIND_GLYPH[p.kind] || CATEGORY_GLYPH[p.category] || p.kind[0];
+      cv.text(gl, cx - 2, cy - 3, [250, 244, 226], 1, null, alpha);
     }
     const label = state === "faded" ? `${p.name} (HEARD OF)` : p.name;
     const sc = zoom >= 4 ? 2 : 1;
