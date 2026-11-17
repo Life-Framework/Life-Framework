@@ -1,3 +1,4 @@
+// red-proof: 2026-11-17 (#2405): with `CreateDefault().m_bCarryAnyone` true, `--only LF_Test_Carry` failed `- by default a bystander may not load a downed player (#2405)`. With the default off, green.
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_Carry`: LF_Carry.DecideStart ignoring the range failed it with `- out of range is refused (expected 5, got 0)`. Restored; green.
 // red-proof: 2026-11-15 (the drag and carry hold cut, Load offered straight on the body): RedProof() skips the Load call; `tools\cli test --no-build --red LF_Test_Carry` names this test RED-OK.
 // Why the seat itself is not asserted here: the engine seats a character a frame after the request
@@ -45,6 +46,12 @@ class LF_Test_Carry : LF_Test
 		ctx.True(LF_Carry.MayCarry(true, false), "anyone may when config says anyone");
 		ctx.False(LF_Carry.MayCarry(false, false), "a civilian may not when config says medics only");
 		ctx.True(LF_Carry.MayCarry(false, true), "an on-duty medic may when config says medics only");
+		ctx.True(LF_Carry.MayCarry(false, false, true), "on-duty police may when config says medics only");
+		ctx.False(LF_Carry.MayCarry(false, false, false), "a civilian may not when nobody on duty is asking");
+		ctx.True(LF_Carry.MayUseVehicle(false, false), "a civilian vehicle is open to police and anyone who may load");
+		ctx.False(LF_Carry.MayUseVehicle(true, false), "a stretcher vehicle is not open to a non-medic");
+		ctx.True(LF_Carry.MayUseVehicle(true, true), "a stretcher vehicle is open to an on-duty medic");
+		ctx.False(LF_MedicConfig.CreateDefault().m_bCarryAnyone, "by default a bystander may not load a downed player (#2405)");
 
 		bool wasEnabled = config.m_bDownedEnabled;
 		bool wasAnyone = config.m_bCarryAnyone;
@@ -96,6 +103,12 @@ class LF_Test_Carry : LF_Test
 
 		damage.Kill(Instigator.CreateInstigator(null));
 		ctx.True(body.LF_IsDowned(), "the patient is downed");
+
+		// #2405: a bystander with no duty cannot load a downed player when config is at its default.
+		LF_MedicConfig.Get().m_bCarryAnyone = false;
+		ctx.False(LF_Carry.CanOfferLoad(carrier, patient), "Load is not offered to a civilian bystander");
+		ctx.Equal(LF_ECarryRefusal.NOT_ALLOWED, LF_Carry.Load(carrier, patient), "the server refuses a civilian bystander");
+		LF_MedicConfig.Get().m_bCarryAnyone = true;
 
 		// Too far, then in reach.
 		patient.SetOrigin(carrier.GetOrigin() + "30 0 0");

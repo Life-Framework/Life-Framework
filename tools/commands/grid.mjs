@@ -42,7 +42,8 @@ import { dirname, join } from "node:path";
 import { CELL, isFrameClaim } from "../grid/lattice.mjs";
 import { loadWorld } from "../../agent-box/layers.mjs";
 import { withSpawn } from "../grid/cell-spawn.mjs";
-import { MARGIN, blockText, chooseYaw, footprintOf, largestFree, noFitMessage, pivotAt, spanOptions } from "../grid/autosize.mjs";
+import { MARGIN, blockText, boundsWithChildren, chooseYaw, footprintOf, largestFree, noFitMessage, pivotAt, spanOptions } from "../grid/autosize.mjs";
+import { readResource } from "../actions/place-action-contexts.mjs";
 import { resolvePrefab } from "../lib/game-prefab.mjs";
 import {
   CELLS_DIR, GRID_LAYERS, PACK_GRID_LAYERS, SLUG_RX, allCells, allocate, blockers, cellBounds, claimCellIds, claimRect, entityPrefix, gapSide, gridLayersOfClaim, isPackPrefab, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, rowLine, worktreeClaims, yardPlan, yawAlong,
@@ -228,7 +229,16 @@ async function readPrefab(root, P, arg, ctx) {
     if (!r.ref) throw new Error(`no GUID known for ${r.path}`);
     const info = P.prefabInfo(P.ROOT, r.path);
     if (!info.bounds) throw new Error(`${r.path} has no mesh the tool can measure (${info.error || "no MeshObject in its chain"})`);
-    return { ref: r.ref, info };
+    // The block takes the prefab's annex children too (FenceYard: a main building and a side one), not the root mesh alone.
+    let sized = info;
+    try {
+      const text = readResource(P.ROOT, r.path);
+      const kids = text ? P.modelOf(P.ROOT, text, r.path, { prefabRoot: r.path }) : [];
+      sized = { ...info, bounds: boundsWithChildren(P, info.bounds, info.scale, kids) };
+    } catch {
+      // a child the tool cannot read leaves the root's own bounds
+    }
+    return { ref: r.ref, info: sized };
   } catch (e) {
     console.log(`grid: cannot size ${arg}: ${e.message}`);
     return null;
@@ -271,19 +281,24 @@ async function place(root, args, flags, ctx = {}) {
     console.log(`  sizing with a ${margin} m walk-around margin: ${opts.map((o) => `${o.span[0]}x${o.span[1]} at yaw ${o.yaw}/${(o.yaw + 180) % 360}`).join(", ")}`);
   }
   if (!entry) {
-    const { onMain } = mainView(root, flags, claims);
-    const dup = onMain.find((c) => c.slug === slug);
-    if (dup) {
-      console.log(`grid: origin/main already has a claim for ${slug} (cell ${dup.cell}); merge origin/main into this branch, or pick another slug`);
+    const { onMain: mainAll } = mainView(root, flags, claims);
+    const dup = mainAll.find((c) => c.slug === slug);
+    // `grid free <slug>` then `grid place <slug> ... --again` re-places a merged claim (a core layer moving to the pack grid,
+    // or a fresh layer): the slug's own claim on origin/main no longer holds its cells here.
+    if (dup && !flags.again) {
+      console.log(`grid: origin/main already has a claim for ${slug} (cell ${dup.cell}); merge origin/main into this branch, or pick another slug (after grid free ${slug}, --again re-places it)`);
       return 1;
     }
+    const onMain = mainAll.filter((c) => c.slug !== slug);
     const { inFlight } = prView(root, flags, ctx, claims, onMain);
     const dupPr = inFlight.find((c) => c.slug === slug);
     if (dupPr) {
       console.log(`grid: open PR #${dupPr.pr} (${dupPr.branch}) already claims ${slug} (cell ${dupPr.cell}); work on that branch, or pick another slug`);
       return 1;
     }
-    const { inTrees } = treeView(root, ctx, [...claims, ...onMain, ...inFlight]);
+    // --again: a checkout still holding the merged claim (the main checkout) is the claim being moved, not a rival.
+    const merged = (c) => flags.again && dup && c.slug === slug && c.cell === dup.cell;
+    const inTrees = treeView(root, ctx, [...claims, ...onMain, ...inFlight]).inTrees.filter((c) => !merged(c));
     const dupTree = inTrees.find((c) => c.slug === slug);
     if (dupTree) {
       console.log(`grid: worktree ${dupTree.worktree} (${dupTree.branch}) already claims ${slug} (cell ${dupTree.cell}); work there, or pick another slug`);

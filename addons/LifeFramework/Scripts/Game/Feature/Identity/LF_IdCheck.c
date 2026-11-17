@@ -324,6 +324,14 @@ class LF_IdRequestSheet
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: forget the open request sheet and its answered flag.
+	static void ResetStatics()
+	{
+		s_Screen = null;
+		s_bAnswered = false;
+	}
+
+//------------------------------------------------------------------------------------------------
 	static LF_UIScreen Current()
 	{
 		return s_Screen;
@@ -344,5 +352,22 @@ class LF_IdCheck_StaticResetHook : LF_StaticResetHook
 	override void Apply()
 	{
 		LF_IdCheck.ResetStatics();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_IdRequestSheet's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_IdRequestSheet_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_IdRequestSheet_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_IdRequestSheet";
+	}
+
+	override void Apply()
+	{
+		LF_IdRequestSheet.ResetStatics();
 	}
 }

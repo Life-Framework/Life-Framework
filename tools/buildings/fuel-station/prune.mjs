@@ -1,4 +1,4 @@
-// The fuel station's pack prefabs, from the base game's FuelStation_E_01_V1 (forecourt slab, two canopies with a
+﻿// The fuel station's pack prefabs, from the base game's FuelStation_E_01_V1 (forecourt slab, two canopies with a
 // pump each, the shop building and the kiosk), with the vanilla furniture flattened and pruned.
 //
 //   node tools/buildings/fuel-station/prune.mjs          write the prefabs below
@@ -94,7 +94,7 @@ function furniture(text) {
   if (!root) throw new Error("cannot read the vanilla furniture root");
   const all = entities(text);
   const kept = prune(all);
-  return { text: `${root}\n {\n${kept.map(emitEntity).join("\n")}\n }\n}\n`, kept: kept.length, of: all.length };
+  return { text: `${root}\n {\n${kept.map((e) => emitEntity(e)).join("\n")}\n }\n}\n`, kept: kept.length, of: all.length };
 }
 
 async function main() {
@@ -113,6 +113,11 @@ async function main() {
   const LAMP = '"{B61A08FB644D2050}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01_exterior.et"';
   if (!station.includes(LAMP)) throw new Error("no exterior canopy lamps in the vanilla station");
   station = station.replace(LAMP, '"{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et"');
+  // Pass 1: the systems kit (fitout.mjs writes it) as the station's last child, at the station origin.
+  const at = station.lastIndexOf("\n }\n}");
+  if (at < 0) throw new Error("the vanilla station has no child list");
+  const kitRef = `  GenericEntity : "{${guidOf("FuelStation_Kit.et")}}${REL}/FuelStation_Kit.et" {\n   ID "F5F1000000000001"\n   coords 0 0 0\n  }`;
+  station = `${station.slice(0, at)}\n${kitRef}${station.slice(at)}`;
   guidOf("FuelStation.et");
 
   const outs = [

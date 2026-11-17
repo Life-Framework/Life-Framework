@@ -192,6 +192,9 @@ class LF_JobStartRunAction : ScriptedUserAction
 			return;
 		}
 
+		// The nearest drop goes on the map and the waypoint (LF_JobMapMarks; a taxi run gets none).
+		LF_JobMapMarks.OnRunStarted(uid, m_eJob, pUserEntity.GetOrigin());
+
 		// A first-time courier does not know where the drop is; the toast says.
 		string started = LF_CivilianJob.RunStartedKey(m_eJob);
 		if (!started.IsEmpty())

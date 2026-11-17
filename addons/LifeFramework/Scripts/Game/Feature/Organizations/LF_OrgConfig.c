@@ -548,3 +548,20 @@ class LF_OrgRankDefaultList : LF_ConfigList
 		reader.ReadBool("spendFund", entry.m_bSpendFund);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_OrgConfig's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_OrgConfig_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_OrgConfig_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_OrgConfig";
+	}
+
+	override void Apply()
+	{
+		LF_OrgConfig.Reload();
+	}
+}

@@ -6,14 +6,18 @@
 // "a full machine queues", "a Workbench is counted" and "a test is admitted only if it leaves the floor"
 // checks fail.
 // red-proof 2026-11-17: with the old scan (servers only, no profile column) and peaks keyed by the asking
+// red-proof 2026-11-17 (#2394, island test classification): with worldClass matching only "MainWorld.ent", acquireSlot not
+// handing opts.world to the lock meta, the holder config and the ticket, and budgetSeconds ignoring the world, the
+// "island audit" checks below fail (the gun-counter audit on lf-testbox was admitted as a 0.8 GB test with a 30 s budget).
 // job's profile, the classifier, "a test server records a test peak", "a client records under its own
 // world and profile", "an island client grows to the island client peak" and machinePeaks checks fail.
 
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import * as pr from "../lib/pool-ram.mjs";
+import * as q from "../lib/pool-queue.mjs";
 import * as pool from "../remote/pool.mjs";
 import { WB_RESERVE_MB } from "../lib/wb-gate.mjs";
 
@@ -109,6 +113,43 @@ try {
   check(pr.lockGapMb(fresh, settings, none) === 5400 && pr.lockGapMb([{ ...fresh[0], at: new Date(Date.now() - 120000).toISOString() }], settings, none) === 0, "a lane lock counts by its reserve only in its first 45 s");
 } finally {
   rmSync(root, { recursive: true, force: true });
+}
+
+// --- a test or audit run on an island world is island-sized (#2394)
+{
+  const ISLAND_WORLD = "Worlds/MainWorld/MainWorld.ent";
+  for (const w of [ISLAND_WORLD, "MainWorld", "Worlds/CoreOnEveron/CoreOnEveron.ent", "{5E2A9C41B7D08F36}Missions/LF_EveronIsland.conf", "everon"]) check(pr.worldClass(w) === pr.ISLAND, `island audit: ${w} is an island world`);
+  for (const w of ["Worlds/GridWorld/GridWorld.ent", "Worlds/DebugWorld/DebugWorld.ent", "Worlds/Everon1989Town/Everon1989Town.ent", "Worlds/Everon1989Grid/Everon1989Grid.ent", "{3626CFA069A75D46}Missions/LF_Everon1989_Test.conf", undefined]) check(pr.worldClass(w) === pr.SMALL, `island audit: ${w} stays a small world`);
+  check(pr.jobReserveMb(settings, none, { kind: "test", world: ISLAND_WORLD }) === 2500 && pr.jobReserveMb(settings, none, { kind: "test", world: "Worlds/GridWorld/GridWorld.ent" }) === 800, "island audit: an island test reserves the island server peak (2.5 GB), a small one 0.8 GB");
+  const iroot = scratchRepo("lf-pool-ram-island-");
+  try {
+    const adm = (meta, opts) => pool.localAdmission(iroot, m, "server-test-1", meta, settings, { peaks: {}, ...opts });
+    check(!adm({ purpose: "test only", world: ISLAND_WORLD }, { freeMb: 3.5 * GB, procs: [] }).ok, "island audit: an island test is not admitted at 3.5 GB free (2.5 GB peak + 1.5 GB floor)");
+    check(adm({ purpose: "test only" }, { freeMb: 3.5 * GB, procs: [] }).ok, "island audit: a small test still fits at 3.5 GB free");
+    check(adm({ purpose: "test only", world: ISLAND_WORLD }, { freeMb: 4.5 * GB, procs: [] }).ok, "island audit: an island test is admitted at 4.5 GB free");
+    // An island test booting beside another job counts by its island peak in its first 45 s.
+    check(pr.lockGapMb([{ purpose: "test only", at: new Date().toISOString(), world: ISLAND_WORLD }], settings, none) === 2500, "island audit: a fresh island test lock counts 2.5 GB");
+    const hm = { name: "lf-testbox", via: "ssh", host: "x", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 3, session: 2 } };
+    const cfg = pool.holderConfig(iroot, hm, { sha: "a", head: "a" }, { purpose: "test only", settings, world: ISLAND_WORLD });
+    check(cfg.ram.reserveMb === 2500 && cfg.world === pr.ISLAND && cfg.ram.peaks["test:island"] === 2500, `island audit: the holder config reserves the island peak and names the world (${cfg.ram.reserveMb}, ${cfg.world})`);
+    check(pool.holderConfig(iroot, hm, { sha: "a", head: "a" }, { purpose: "test only", settings }).ram.reserveMb === 800, "island audit: no world keeps the small test reserve");
+  } finally {
+    rmSync(iroot, { recursive: true, force: true });
+  }
+  const laptop = { name: "lf-testbox", via: "ssh", lanes: { test: 3, session: 2 } };
+  const st = { locks: {}, freeMb: 3.5 * GB, totalMb: 15.2 * GB, procs: [] };
+  check(!pool.remoteAdmission(laptop, st, settings, { kind: "test", world: ISLAND_WORLD, peaks: {} }).ok && pool.remoteAdmission(laptop, st, settings, { kind: "test", peaks: {} }).ok, "island audit: a 3.5 GB laptop queues an island test and admits a small one");
+  // Budgets: an island run gets an island seed and its own history, never the small runs' 30 s.
+  const passes = (purpose, durS, n, world) => Array.from({ length: n }, () => ({ purpose, machine: "lf-testbox", result: "pass", durS, ...(world ? { world } : {}) }));
+  check(q.budgetSeconds([], "test only", "lf-testbox", { world: ISLAND_WORLD }).runS >= 300 && q.budgetSeconds([], "test only", "lf-testbox").runS === 30, "island audit: an island run is seeded at 300 s, a small one stays at 30 s");
+  const smallOnly = passes("test only", 9, 20);
+  check(q.budgetSeconds(smallOnly, "test only", "lf-testbox", { world: ISLAND_WORLD }).source.includes("island") && q.budgetSeconds(smallOnly, "test only", "lf-testbox", { world: ISLAND_WORLD }).runS >= 300, "island audit: small-world history does not give an island run a 30 s budget");
+  const both = [...smallOnly, ...passes("test only", 100, 6, ISLAND_WORLD)];
+  check(q.budgetSeconds(both, "test only", "lf-testbox", { world: ISLAND_WORLD }).runS === 300 && q.budgetSeconds(both, "test only", "lf-testbox").runS === 30, "island audit: island history (3 x 100 s) sets the island budget and leaves the small one alone");
+  // The wiring: acquireSlot hands the world to the ticket, the local lock and the holder.
+  const src = readFileSync(new URL("../remote/pool.mjs", import.meta.url), "utf8");
+  check(src.includes("tryLocal(root, m, lane, { slug, purpose, root, priority, ...(opts.world ? { world: opts.world } : {})") && src.includes("holderConfig(root, m, snap, { purpose, world: opts.world") && src.includes("machines: machines.map((m) => m.name), ...(opts.world ? { world: opts.world } : {})"), "island audit: acquireSlot passes opts.world to the local lock, the holder and the ticket");
+  check(pool.PS_RAM_GATE.includes("$h.world -eq 'island'") && src.includes("world = $cfg.world"), "island audit: the holder's lock record carries the world and its gate counts an island test boot");
 }
 
 // --- the remote gate reads the box's scan

@@ -1,5 +1,5 @@
 {
-  "saveVersion": 43,
+  "saveVersion": 44,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -45,7 +45,8 @@
     "hospitalrejoin": "LF_HospitalRejoinRow",
     "worldevents": "LF_EventShellRow",
     "mapknown": "LF_MapKnownRow",
-    "mapmarks": "LF_MapMarkRow"
+    "mapmarks": "LF_MapMarkRow",
+    "orgmarks": "LF_OrgMapMarkRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -548,6 +549,20 @@
         "int m_iConfigId",
         "int m_iFlags",
         "string m_sText"
+      ]
+    },
+    "LF_OrgMapMarkRow": {
+      "since": 44,
+      "fields": [
+        "int m_iVersion",
+        "string m_sOrgId",
+        "int m_iSerial",
+        "int m_iX",
+        "int m_iZ",
+        "int m_iIcon",
+        "int m_iColour",
+        "string m_sText",
+        "string m_sAuthorId"
       ]
     }
   }

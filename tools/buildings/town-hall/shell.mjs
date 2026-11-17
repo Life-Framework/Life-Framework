@@ -27,7 +27,7 @@ const VANILLA_FURNITURE = "Prefabs/Structures/Services/Government/MunicipalOffic
 export const BUILDING = "TownHall.et";
 export const FURNITURE = "Furniture/TownHall_furniture_01.et";
 const CHECK = process.argv.includes("--check");
-const PASS = process.argv.includes("--pass") ? Number(process.argv[process.argv.indexOf("--pass") + 1]) : 2; // 0 BUILD, 1 POLISH 1, 2 POLISH 2
+const PASS = process.argv.includes("--pass") ? Number(process.argv[process.argv.indexOf("--pass") + 1]) : 3; // 0 BUILD, 1 POLISH 1, 2 POLISH 2, 3 the A pass (#2309)
 
 const metaText = (guid, path) => `MetaFileClass {
  Name "{${guid}}${path}"

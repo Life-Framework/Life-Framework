@@ -186,6 +186,12 @@
   missing file is a first run and saving stays allowed. A later good `Load`
   clears the flag.
 - ⚠️ Getter returns the live internal array (callers can mutate without logging).
+- ✅ **A remove before the first load still removes** (2026-11-17 property review, LOGIC
+  `whitelist/remove-before-load`): `RemoveFactionWhitelist` and `RemoveJobWhitelist` load the
+  file first. They returned false on an empty cache, so a police trial that expired on the first
+  duty desk use after a restart was marked expired while the officer stayed on the roster.
+- ⚠️ `!wadd` stores nothing since the Police/Medic lists left `GameMode_Roleplay.et` but still
+  reports the grant; the job whitelist is checked by character key and never written (#2412).
 
 ### `AdminChatChannel` — `Feature/Chat/AdminChatChannel.c`
 - ✅ **Server re-checks the admin role** (verified 2026-11-07):
@@ -206,7 +212,8 @@
 ### `LF_UnemploymentBenefit` — `Feature/Jobs/LF_UnemploymentBenefit.c`
 - ✅ "Collect benefit" (`LF_CollectBenefitAction`) at `Roadmap_Job_Depot`
   (verified 2026-11-08: LOGIC test `jobs/unemployment-benefit`; in-world collection
-  is manual). The server reads the bank balance (`LF_ATMManager`) and pays
+  is manual). The server reads the bank balance (`LF_ATMManager`) plus the cash the
+  player carries (economy review 2026-11-17, test `jobs/benefit-counts-cash`) and pays
   `m_iBenefitAmount` cash when the balance is strictly below
   `m_iBenefitBalanceThreshold`, the player is not on duty as police and has no
   active delivery run, and `m_fBenefitCooldownSeconds` passed since that
@@ -225,3 +232,5 @@
   a player interaction, but only once the holder is cuffed (`LF_Restraint`; #1916): the
   interaction stays hidden and the server's `Revoke` refuses and logs for a free player. Test `licence/revoke-cuffs`. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
   `e2e/licence-desk` (the open application, a revoke and a conviction that still blocks the permit across `wt e2e`).
+
+- **Map marks (#2239):** a fare destination and a delivery stop become a shared mark plus the waypoint for their player, cleared when the run completes (`Feature/Jobs/LF_JobMapMarks.c`, `docs/features/map.md`; test `jobs/job-map-marks`). The marks are driven by `OnFareAccepted`/`OnStop`; nothing in the run code calls them until fares and stops exist.

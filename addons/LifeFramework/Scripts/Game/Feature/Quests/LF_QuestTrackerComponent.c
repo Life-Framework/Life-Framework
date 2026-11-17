@@ -504,10 +504,14 @@ class LF_QuestTrackerComponent : ScriptComponent
 	int RestoreTurnedIn(notnull array<string> questIds)
 	{
 		LF_QuestManager manager = LF_QuestManager.GetInstance();
+		float now = 0;
+		if (GetGame().GetWorld())
+			now = GetGame().GetWorld().GetWorldTime() / 1000.0;
+
 		int restored = 0;
 		foreach (string questId : questIds)
 		{
-			if (!m_Tracker.RestoreTurnedIn(questId))
+			if (!m_Tracker.RestoreTurnedIn(questId, now))
 				continue;
 
 			restored++;

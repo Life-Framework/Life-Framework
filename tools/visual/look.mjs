@@ -35,7 +35,7 @@ import { townWorld } from "../lib/addons.mjs";
 import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
 import { GRID_WORLD, ISLAND_WORLD, PACK_GRID_WORLD, gridLayerDirs, gridWorldFor, islandLayersDir } from "../lib/worlds.mjs";
 import { PLACE_RX, resolvePlace } from "./look-place.mjs";
-import { lookStartVerdict, phaseText, requestNeedsRam, timeline } from "../lib/look-job.mjs";
+import { lookStartVerdict, phaseText, renderProblem, requestNeedsRam, timeline } from "../lib/look-job.mjs";
 import * as poolRam from "../lib/pool-ram.mjs";
 import { SEED_PEAKS_MB } from "../lib/pool-ram.mjs";
 
@@ -603,6 +603,13 @@ function takeBuildLock(wt, waitMs) {
   }
 }
 
+// The git tree of addons/ in commit `sha` of checkout `root` (the hash of every file a Workbench loads), or null.
+export function addonsTree(root, sha) {
+  if (!sha) return null;
+  const r = spawnSync("git", ["-C", root, "rev-parse", `${sha}:addons`], { encoding: "utf8", windowsHide: true, timeout: 60000 });
+  return r.status === 0 ? r.stdout.trim() || null : null;
+}
+
 // The snapshot commit of this checkout (HEAD plus uncommitted and untracked files): what the pictures show.
 function snapshotSha() {
   try {
@@ -762,6 +769,9 @@ async function run(args) {
   let served = "fresh";
   let sha = null;
   let profile = join(ROOT, "server", "profile", "visual");
+  // What the pictures must show: the addon files of this checkout now (index.json inputs.addons).
+  const askedTree = addonsTree(ROOT, snapshotSha());
+  let renderedTree = null;
   try {
     if (useServer) {
       // A request includes leaving play, maybe a reopen, and entering play again: about 10 s on a PC, a minute on lf-cloud.
@@ -791,6 +801,7 @@ async function run(args) {
       if (r.ok) {
         served = r.served;
         sha = r.sha;
+        renderedTree = r.renderedTree ?? null;
         raw = r.raw;
         status = parseStatus(r.statusText);
         res = { code: 0, timedOut: false, seconds: r.seconds, peakMb: 0 };
@@ -812,6 +823,7 @@ async function run(args) {
         return envFail;
       }
       sha = snapshotSha();
+      renderedTree = addonsTree(ROOT, sha); // a fresh Workbench loads this checkout's own files
       raw = join(profile, "profile", "lf-visual");
       res = await freshRun(exe, profile, raw, plan, shots, opts, args, areas);
       const statusFile = join(raw, "status.txt");
@@ -884,7 +896,7 @@ async function run(args) {
     const { cols } = sheetLayout(tiles.length);
     const contact = join(dir, "contact.jpg");
     image({ op: "sheet", tiles, out: contact, cols, maxWidth: cols * 480, quality: 74 });
-    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, timing: { ...TL.get(), collect: Math.round((Date.now() - collectT0) / 100) / 10 }, contact, shots: rows }, null, 2) + "\n");
+    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, inputs: { addons: askedTree, rendered: renderedTree }, timing: { ...TL.get(), collect: Math.round((Date.now() - collectT0) / 100) / 10 }, contact, shots: rows }, null, 2) + "\n");
     const bad = rows.filter((r) => r.flags.length);
     summaries.push({ area: area.name, contact, bad, count: rows.length });
     if (rows[0].file) overview.push({ file: rows[0].file, label: `${area.name}${bad.length ? `  [${bad.length} flagged]` : ""}`, marks: [] });
@@ -896,6 +908,12 @@ async function run(args) {
   // A server's raw folder also holds serve.txt and alive.txt, which are the server's; only request files go.
   if (!args.flags.keep) for (const f of readdirSync(raw)) if (served === "fresh" || serve.REQUEST_FILES.test(f)) rmSync(join(raw, f), { force: true });
 
+  const stale = renderProblem({ expected: askedTree, rendered: renderedTree });
+  if (stale) {
+    console.log(`FAIL  look: ${stale}; do not use these pictures (tools/lib/look-job.mjs renderProblem)`);
+    return 1;
+  }
+
   if (identicalFrames(frameHashes)) {
     console.log(`FAIL  look: all ${frameHashes.length} frames are byte-identical, so the camera never saw the requested world (Workbench likely rendered a fallback scene). Retry when RAM is free; do not use these pictures.`);
     return 1;
@@ -906,7 +924,7 @@ async function run(args) {
   const startLabel = served === "fresh" ? "Workbench start" : "request to first step";
   TL.add("collect", (Date.now() - collectT0) / 1000);
   console.log(`look: phases: ${phaseText(TL.get())}`);
-  console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, world and play ${r1((status.readyMs ?? 0) / 1000)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
+  console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} addons=${renderedTree ? renderedTree.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, world and play ${r1((status.readyMs ?? 0) / 1000)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
   for (const s of summaries) {
     console.log(`  ${s.area}: ${s.contact}`);
     for (const b of s.bad) console.log(`    ${b.flags.join(",")}: ${b.kind} ${b.label}${b.size ? ` ${sizeText(b.size)}` : ""}`);
@@ -1383,6 +1401,7 @@ async function remoteLook(m, args, argv, pool, { warm = !args.flags.cold && !arg
   const outRel = `tmp/look-routed/${id}`;
   const t0 = Date.now();
   let syncedAt = null;
+  const askedTree = addonsTree(ROOT, snapshotSha()); // this checkout's addon files, compared with what the box rendered
   const r = await pool.syncAndRun(ROOT, m, { script: "tools\\cli.mjs", args: remoteLookArgs(argv, outRel, { warm }), suffix: "-look", purpose: "look", onSlot: () => (syncedAt = Date.now()), env: { LF_LOOK_REOPEN_EXT: process.env.LF_LOOK_REOPEN_EXT } });
   const remoteEnd = Date.now();
   if (!r.rDir || r.code === 255) {
@@ -1405,9 +1424,18 @@ async function remoteLook(m, args, argv, pool, { warm = !args.flags.cold && !arg
   }
   console.log(`look: ran on ${m.name} in ${s} s (sync, Workbench, copy back); the pictures are here:`);
   let remotePhases = null;
-  try {
-    remotePhases = JSON.parse(readFileSync(join(dirname(pulled.areas[0].contact), "index.json"), "utf8")).timing ?? null;
-  } catch {}
+  for (const a of pulled.areas) {
+    let idx = null;
+    try {
+      idx = JSON.parse(readFileSync(join(dirname(a.contact), "index.json"), "utf8"));
+    } catch {}
+    remotePhases ??= idx?.timing ?? null;
+    const stale = renderProblem({ expected: askedTree, rendered: idx?.inputs?.rendered });
+    if (stale) {
+      console.log(`FAIL  look: ${a.name} on ${m.name}: ${stale} (this checkout's addons tree); do not use these pictures`);
+      return 1;
+    }
+  }
   console.log(`look: phases here: ${phaseText(TL.get())}${remotePhases ? `; on ${m.name}: ${phaseText(remotePhases)}` : ""}`);
   for (const a of pulled.areas) console.log(`  ${a.name}: ${a.contact}`);
   if (pulled.overview) console.log(`  overview: ${pulled.overview}`);

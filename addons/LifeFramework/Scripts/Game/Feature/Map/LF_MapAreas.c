@@ -348,6 +348,24 @@ class LF_MapAreas
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Adds or replaces a circular map-only area by name (an event place, a shared row's area). False and
+	//! logged when the radius makes no outline.
+	static bool RegisterCircle(string name, LF_MapAreaStyle style, string label, vector centre, float radius)
+	{
+		LF_MapArea area = new LF_MapArea();
+		area.m_sName = name;
+		area.m_eStyle = style;
+		area.m_sLabel = label;
+		if (!CircleOutline(centre, radius, DEFAULT_SEGMENTS, area.m_aOutline))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("map area %1 has no radius: not drawn", name));
+			return false;
+		}
+
+		return Register(area);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void Unregister(string name)
 	{
 		LF_MapArea area = Find(name);

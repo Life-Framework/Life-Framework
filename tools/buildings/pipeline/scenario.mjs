@@ -98,8 +98,13 @@ export function scenarioProblems(sc) {
   const out = [];
   const v3 = (a) => Array.isArray(a) && a.length === 3 && a.every((n) => typeof n === "number");
   for (const [i, p] of (sc?.permits || []).entries()) out.push(...permitProblems(p, `permit ${i}`));
+  // A world shot stands the body at the camera, lifted, and it falls: the fall drops what the hands hold, and
+  // walking off a timed job cancels it (#2384). After a `hold`, a shot says why the hands are free (`handsFree`).
+  let held = null;
   for (const [i, s] of (sc?.steps || []).entries()) {
     const at = `steps[${i}]`;
+    if (s.do?.verb === "hold") held = s.do.item || "the held item";
+    if ("shot" in s && held && !s.handsFree) out.push(`${at}: shot "${s.shot}" after hold ${held}: a world shot moves the body and the fall drops ${held}; take it before the hold, or set handsFree "<why>" once the hands are empty`);
     const kinds = ["shot", "ui", "do", "pickup", "state"].filter((k) => k in s);
     if (kinds.length !== 1) out.push(`${at}: one of shot, ui, do, pickup, state (has ${kinds.join(", ") || "none"})`);
     if ("shot" in s && !(v3(s.look) && v3(s.from))) out.push(`${at}: a shot needs look [x,y,z] and from [dx,dy,dz]`);

@@ -35,7 +35,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks. The written version is that list's length (43). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks. The written version is that list's length (44). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -98,6 +98,8 @@
 //! starts knowing only the public places and fills its map again by visiting.
 //! A version 42 save includes the map knowledge and has no personal map marks (#2236): every
 //! character starts with a clean map.
+//! A version 43 save includes the personal map marks and has no org map marks (#2240): every
+//! organization starts with an empty shared map.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -230,6 +232,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("worldevents");
 		order.Insert("mapknown");
 		order.Insert("mapmarks");
+		order.Insert("orgmarks");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -263,7 +266,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 43);
+		context.WriteValue("version", 44);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -766,6 +769,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_MapMarkRow> mapMarkRows = LF_MapMarks.ExportAll();
 			context.Write(mapMarkRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 personal map mark(s)", mapMarkRows.Count()));
+		}
+		else if (payload == "orgmarks")
+		{
+			// Each organization's shared map marks (#2240), keyed by org id and serial.
+			array<ref LF_OrgMapMarkRow> orgMarkRows = LF_OrgMapMarks.ExportAll();
+			context.Write(orgMarkRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 org map mark(s)", orgMarkRows.Count()));
 		}
 		else
 		{
@@ -1416,6 +1426,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("personal map marks failed to read, every character starts with no marks");
+			}
+		}
+		else if (payload == "orgmarks")
+		{
+			// A version 1-43 save never reaches this payload: every organization starts with no marks.
+			array<ref LF_OrgMapMarkRow> orgMarkRows = new array<ref LF_OrgMapMarkRow>();
+			if (context.Read(orgMarkRows))
+			{
+				int orgMarksApplied = LF_OrgMapMarks.ApplyAll(orgMarkRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 org map mark(s)", orgMarksApplied, orgMarkRows.Count()));
+			}
+			else
+			{
+				ReadFailed("org map marks failed to read, every organization starts with no marks");
 			}
 		}
 		else

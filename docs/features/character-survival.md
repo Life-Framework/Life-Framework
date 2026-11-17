@@ -104,6 +104,12 @@
 - Amplitude is `max * (level / fullLevel)^power`, zero at level 0, capped at the maximum
   (`LF_ImpairmentViewConfig`: full level 40, power 1.5, max 1.6 degrees yaw, pitch 60%).
   Script defaults, no `.conf` yet. Test: `survival/impairment-view`.
+- ✅ Cost at 128 players (#2404): the frame is armed only on the local controlled body, and only while it
+  sways or has an offset left to unwind. A level change (the owner-only RplProp callback, or the
+  server on a listen host), a control change (`SCR_PlayerController.OnControlledEntityChanged`) or the
+  harness pin arms it; the frame clears itself once the sway is unwound. Before, every survival
+  component armed `EOnFrame` on every rendering client, proxies included (127 early-return calls a
+  frame per client at 128 players). Tests `survival/impairment-view-frame`, `perf/life-128`.
 - Harness `impair <0-100|off>` pins the local view level for a session proof.
 
 ### `LF_SurvivalStatsSaveData` — `Feature/Survival/Persistence/`
@@ -259,3 +265,12 @@
 
 ### Logged-out tag — `Feature/Character/LF_LogoutBodyTag.c` (#1974, 2026-11-16)
 - A logged-out player's body (#1973) shows a small "Logged out" label over it to everyone within 12 m. The server flags the body (`SCR_ChimeraCharacter.LF_IsLoggedOut`, an RplProp), so a late joiner sees it too; the label goes when the body dies, despawns or its player rejoins (a rejoin that takes the body back clears the flag, #2104, so no client keeps tracking it). The session proof (2 clients, then client 1 as a late joiner, #2104) aims the camera at the body: a late joiner tracks and draws the label from the entity snapshot. Tests: `character/logout-body-tag` (LOGIC); two-client and late-joiner session proof pending.
+
+### Clinic building kit — `LF_Everon1989/Prefabs/Buildings/Clinic/`, `tools/buildings/clinic/` (#2286, epic #2201, 2026-11-17)
+- 🧪 The Saint-Philippe `clinic` slot (the converted town house b39, vanilla `House_Town_E_2I02_v2`) fitted as a village practice, a pack kit placed in the pack grid world (`Grid_clinic.layer`, cell c23r0, 2x2): the east wing is the waiting room (benches, the medic dispatch board) closed by the reception counter (the medic duty desk, so clock-in and the treatment bill pay, the hospital till and the doctor `LF_Npc_Medic_1`), the old bedroom is the treatment room (exam couch, the hospital medicine cabinet with its breach flow), the tiled west room is the ward with two `LF_HospitalBed`s (respawn and put-patient-in-bed), the kitchen stays the staff kitchen and the first floor the doctor's flat. The site alarm mount is a bell box on the front wall; a fascia sign (card `hospital`) and a facade glow light the entrance. Every interactable is an existing system (`Feature/Medic/Feature.md`, `LF_Hospital`); the dressing is static base-game props, 6 point lights without shadows. `tools/buildings/clinic/` (`spec.json`, `layout.mjs`, `shell.mjs`, `layer.mjs`, `proof.json`, `looks.mjs`) rebuilds and re-shoots it.
+
+### Medic and hospital statics reset at world end (life review, 2026-11-17)
+- ✅ `LF_TreatmentBills`, `LF_ReviveAnim` and `LF_HospitalRespawn` (with `LF_NewLifeRule`) register an `LF_StaticResetHook`. Their reset functions had been called only from tests, so a Workbench play restart or a mission change kept the last world's bills, pending wakes and wristbands. It also left the debt-sweep, wristband and CPR-watch flags set, so those timers never started again. Test: `medic/reset-hooks` (LOGIC). Review: `docs/reviews/2026-11-17-life.md`.
+
+### Loading a downed player is not for bystanders (#2405, life review 2026-11-17)
+- ✅ `m_bCarryAnyone` now defaults to off: only an on-duty medic or on-duty police may load a downed player into a vehicle (`LF_Carry.MayCarry`, server and the client's offer). A stretcher vehicle (`m_aStretcherVehicles`, its seat pauses the bleed-out, #262) takes an on-duty medic only, whatever the config (`LF_Carry.MayUseVehicle`). In any other vehicle the patient bleeds out as normal. On a stretcher the bleed-out stays paused but the give-up clock runs (`LF_BleedOut.Advance` -> `LF_AdvanceDownedFor`), so a seated player can always give up. Refusal text `LF-Carry_NotAllowedDuty`. Tests `medic/carry`, `medic/bleed-out`. ⚠️ Not covered: an on-duty medic who leaves a patient on a stretcher keeps the bleed-out paused.

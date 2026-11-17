@@ -1,12 +1,8 @@
 // Re-shoot the town hall's pictures from the committed files alone.
 //
-//   node tools/buildings/town-hall/looks.mjs --stage | --unstage | --snapshot
-//   node tools/buildings/town-hall/looks.mjs [--set exterior|rooms|all] [--hour 14|22] [--tag pass1] [--run]
+//   node tools/buildings/town-hall/looks.mjs [--set exterior|rooms|all] [--rooms a,b] [--hour 14|22] [--tag pass1] [--run]
 //
-// The grid layer that stands the building up (Grid_town_hall.layer and its claim) names pack prefabs, so it is NOT
-// committed to the core addon (validate-addon-boundary) until the pack grid layers land. `stage/` holds a copy:
-// --stage puts it in GridWorld (local, never commit it), --unstage takes it out again (before validate or ship),
-// --snapshot refreshes the copy from the working layer.
+// The building stands in the pack grid (Grid_town_hall.layer in LF_Everon1989's Everon1989Grid, cell c11r2, PR #2277).
 //
 // Reads spec.json "looks" (centres in building space, the front is +z) and the building's placement in the grid
 // layer (spec.grid), turns each centre into world space and prints the `tools\cli look` calls. With --run it runs them
@@ -23,6 +19,7 @@ const args = process.argv.slice(2);
 const flag = (k, d) => (args.includes(`--${k}`) ? args[args.indexOf(`--${k}`) + 1] : d);
 const set = flag("set", "all");
 const tag = flag("tag", "shot");
+const only = flag("rooms") ? flag("rooms").split(",") : null; // --rooms corridor,first-floor: just those rooms
 const hours = flag("hour") ? [Number(flag("hour"))] : spec.looks.hours;
 
 // The placement: the building entity's coords and angleY in its grid layer.
@@ -49,7 +46,7 @@ export function calls(p) {
     const h = hour === 14 ? "" : ` --hour ${hour}`;
     if (set === "exterior" || set === "all") out.push({ name: `exterior${night ? "-night" : ""}`, cmd: `look grid:town-hall --close 0${h}` });
     if (set === "rooms" || set === "all") {
-      for (const r of spec.looks.rooms) {
+      for (const r of spec.looks.rooms.filter((r) => !only || only.includes(r.name))) {
         const [x, y, z] = toWorld(p, r.at);
         out.push({ name: `${r.name}${night ? "-night" : ""}`, cmd: `look grid:town-hall --interior ${x},${y},${z} --radius ${r.radius} --close 0${h}`, shot: r.name });
       }
@@ -58,27 +55,7 @@ export function calls(p) {
   return out;
 }
 
-const STAGE = join(ROOT, "tools", "buildings", "town-hall", "stage");
-const pairs = [
-  [join(STAGE, "Grid_town_hall.layer"), join(ROOT, spec.grid.layer)],
-  [join(STAGE, "town-hall.claim.json"), join(ROOT, spec.grid.claim)],
-];
-if (args.includes("--stage")) {
-  for (const [from, to] of pairs) cpSync(from, to);
-  console.log("staged the town hall grid layer and claim (local only: do not commit them)");
-  process.exit(0);
-}
-if (args.includes("--unstage")) {
-  for (const [, to] of pairs) rmSync(to, { force: true });
-  console.log("unstaged the town hall grid layer and claim");
-  process.exit(0);
-}
-if (args.includes("--snapshot")) {
-  for (const [to, from] of pairs) cpSync(from, to);
-  console.log("refreshed stage/ from the working layer");
-  process.exit(0);
-}
-const layer = readFileSync(existsSync(pairs[0][1]) ? pairs[0][1] : pairs[0][0], "utf8");
+const layer = readFileSync(join(ROOT, spec.grid.layer), "utf8");
 const list = calls(placement(layer, spec.grid.entity));
 for (const c of list) console.log(`tools\\cli ${c.cmd}   -> tmp/look/${tag}-${c.name}`);
 if (args.includes("--run")) {

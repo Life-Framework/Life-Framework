@@ -34,6 +34,15 @@ class LF_HouseManagerComponent : ScriptComponent
 	protected bool m_bHouseLocked;
 
 	//------------------------------------------------------------------------------------------------
+	//! A ScriptComponent gets EOnInit only when it asks for it. Without this a house never got an
+	//! identifier and never synced its doors, so no key could match them.
+	override void OnPostInit(IEntity owner)
+	{
+		super.OnPostInit(owner);
+		SetEventMask(owner, EntityEvent.INIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void EOnInit(IEntity owner)
 	{
 		super.EOnInit(owner);

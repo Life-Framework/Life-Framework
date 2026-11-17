@@ -45,3 +45,12 @@ LOGIC `townboard/cards` (slots, where text, compass and distance words, slot geo
 HUD edge pinning). WORLD `townboard/board-world` (each card context sits on its face slot and reads its
 own slot, empty slots offer nothing, a card finds the post office sign through `LF_Places`). Session
 proof `node agent-box/session.mjs town-board-proof` (`up --profile full --mission playtest`).
+
+## Map knowledge (#2242, M14)
+
+Reading a card whose place is a map POI kind (`m_sPlaceKind` has a row in `Configs/Map/LF_MapPois.conf`) marks that
+place "heard of" on the reader's map. `LF_TownBoardMapKnown.c` adds one ask beside the read (`LF_AskTownCardHeard`
+on the player's own controller, sent only for such a card); the server checks a town board stands within 12 m,
+the slot holds a card of a POI kind and the player's ask gap (500 ms), then calls `LF_MapKnown.Hear`. The 1989
+cards point at sign ids (kind `Sign`, not a POI), so they mark nothing until a pack points a card at a POI kind.
+Test `map/places-known`.

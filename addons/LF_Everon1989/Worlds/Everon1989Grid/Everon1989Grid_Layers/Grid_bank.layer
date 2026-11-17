@@ -88,3 +88,19 @@ GenericEntity Grid_bank_Spawn {
  coords 154.3 0 27.4
  angleY 90
 }
+SCR_DestructibleBuildingEntity Grid_bank_Main : "{D59DAC3BC0F482D9}Prefabs/Buildings/Bank/Bank_Kit.et" {
+ coords 165.861 0.05 34.301
+ angleY -90
+}
+LF_NpcBaseEntity Grid_bank_Stage_Bank_Teller_1 : "{5B2A1E072C8DD6B7}Prefabs/Characters/Npcs/Outfits/LF_Npc_Teller_2.et" {
+ coords 160.861 1.103 36.001
+ angleY 90
+}
+LF_NpcBaseEntity Grid_bank_Stage_Bank_Teller_2 : "{5B2A1E072C8DD6B7}Prefabs/Characters/Npcs/Outfits/LF_Npc_Teller_2.et" {
+ coords 160.861 1.103 34.401
+ angleY 90
+}
+GenericEntity Grid_bank_Stage_RobKit : "{6EAEEC207EBAB7C5}Prefabs/Props/Debug/LF_BankRobKitStand.et" {
+ coords 165.561 1.103 36.301
+ angleY -90
+}
