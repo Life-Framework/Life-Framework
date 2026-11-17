@@ -98,17 +98,49 @@ class LF_MapMarksClient
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Local personal marks the manager holds.
-	static int CountLocal(notnull SCR_MapMarkerManagerComponent manager)
+	//! The local personal marks among `visible` and `disabled`, into `into`. The marker manager moves every
+	//! static marker outside the shown map frame from its static list to its disabled list each map frame
+	//! (SCR_MapMarkerManagerComponent.Update), so a mark off screen is only in the disabled list: counting,
+	//! uploading or restoring from GetStaticMarkers alone misses it (the map proof pass, #2236).
+	//! eturn how many were added.
+	static int CollectPersonal(array<SCR_MapMarkerBase> visible, array<SCR_MapMarkerBase> disabled, notnull array<SCR_MapMarkerBase> into)
 	{
-		int count = 0;
-		foreach (SCR_MapMarkerBase marker : manager.GetStaticMarkers())
+		return CollectPersonalFrom(visible, into) + CollectPersonalFrom(disabled, into);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static int CollectPersonalFrom(array<SCR_MapMarkerBase> list, notnull array<SCR_MapMarkerBase> into)
+	{
+		if (!list)
+			return 0;
+
+		int added = 0;
+		foreach (SCR_MapMarkerBase marker : list)
 		{
-			if (marker && marker.GetMarkerID() == -1 && IsPersonal(marker))
-				count++;
+			if (marker && marker.GetMarkerID() == -1 && IsPersonal(marker) && !into.Contains(marker))
+			{
+				into.Insert(marker);
+				added++;
+			}
 		}
 
-		return count;
+		return added;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every local personal mark the manager holds, on screen or off.
+	static array<SCR_MapMarkerBase> PersonalOf(notnull SCR_MapMarkerManagerComponent manager)
+	{
+		array<SCR_MapMarkerBase> marks = {};
+		CollectPersonal(manager.GetStaticMarkers(), manager.GetDisabledMarkers(), marks);
+		return marks;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Local personal marks the manager holds, on screen or off.
+	static int CountLocal(notnull SCR_MapMarkerManagerComponent manager)
+	{
+		return PersonalOf(manager).Count();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -135,11 +167,8 @@ class LF_MapMarksClient
 
 		array<int> ints = {};
 		array<string> texts = {};
-		foreach (SCR_MapMarkerBase marker : manager.GetStaticMarkers())
+		foreach (SCR_MapMarkerBase marker : PersonalOf(manager))
 		{
-			if (!marker || marker.GetMarkerID() != -1 || !IsPersonal(marker))
-				continue;
-
 			int pos[2];
 			marker.GetWorldPos(pos);
 			LF_MapMarkRow row = LF_MapMarkRow.Make("", marker.GetType(), pos[0], pos[1], marker.GetIconEntry(), marker.GetColorEntry(), marker.GetRotation(), marker.GetMarkerConfigID(), marker.GetFlags(), marker.GetCustomText());
@@ -168,10 +197,11 @@ class LF_MapMarksClient
 		}
 
 		s_bRestoring = true;
-		foreach (SCR_MapMarkerBase old : manager.GetStaticMarkers())
+		foreach (SCR_MapMarkerBase old : PersonalOf(manager))
 		{
-			if (old && old.GetMarkerID() == -1 && IsPersonal(old))
-				manager.RemoveStaticMarker(old);
+			// A local remove only searches the shown list: bring an off-screen mark back to it first.
+			manager.SetStaticMarkerDisabled(old, false);
+			manager.RemoveStaticMarker(old);
 		}
 
 		ChimeraWorld world = GetGame().GetWorld();

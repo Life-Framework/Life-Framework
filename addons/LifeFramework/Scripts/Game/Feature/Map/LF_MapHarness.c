@@ -30,6 +30,8 @@ class LF_MapHarness
 
 	//! A pan or zoom this short is as good as a jump; the entity refuses a zero time.
 	static const float PAN_SECONDS = 0.05; // lf-fixed: harness jump, not an owner knob
+	//! `map mark <x> <z> <n>` lays n marks in a row this far apart, so each one shows on the map.
+	static const int MARK_SPACING_M = 25; // lf-fixed: harness layout, not an owner knob
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The map gadget component of the carried item that has one, or null.
@@ -185,7 +187,7 @@ class LF_MapHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Places `count` personal marks at world (x, z), one metre apart, through InsertStaticMarker.
+	//! Places `count` personal marks in a row from world (x, z), MARK_SPACING_M apart, through InsertStaticMarker.
 	//! \return false with no marker manager; the detail is `before=N after=M asked=K`.
 	static bool Mark(float x, float z, int count, out string detail)
 	{
@@ -207,7 +209,7 @@ class LF_MapHarness
 			marker.SetType(SCR_EMapMarkerType.PLACED_CUSTOM);
 			marker.SetIconEntry(0);
 			marker.SetColorEntry(0);
-			marker.SetWorldPos(x + i, z);
+			marker.SetWorldPos(x + i * MARK_SPACING_M, z);
 			if (world)
 				marker.SetTimestamp(world.GetServerTimestamp());
 
@@ -294,7 +296,14 @@ modded class LF_AgentHarnessVerbs
 			if (cmd.Arg2.IsEmpty() || cmd.Arg3.IsEmpty() || cmd.Arg4.IsEmpty())
 				detail = "usage: map pan <x> <z> <zoom>";
 			else
-				ok = LF_MapHarness.Pan(cmd.Arg2.ToFloat(), cmd.Arg3.ToFloat(), cmd.Arg4.ToFloat(), detail, cmd.Arg5.ToFloat());
+			{
+				// An empty argument's ToFloat is a VME ("Wrong parameter value"): read the time only when given.
+				float seconds = LF_MapHarness.PAN_SECONDS;
+				if (!cmd.Arg5.IsEmpty())
+					seconds = cmd.Arg5.ToFloat();
+
+				ok = LF_MapHarness.Pan(cmd.Arg2.ToFloat(), cmd.Arg3.ToFloat(), cmd.Arg4.ToFloat(), detail, seconds);
+			}
 		}
 		else if (cmd.Arg1 == "probe")
 		{
