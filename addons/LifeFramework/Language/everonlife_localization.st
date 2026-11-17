@@ -7552,6 +7552,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You moved. Look at the spot again and retry."
      Comment "Toast when the spot the player's machine proposed is too far from where the server sees them place it (#1026)."
     }
+    CustomStringTableItem "{A1D7C4E09B3F5202}" {
+     Id "LF-Placement_NeedHouse"
+     Target_en_us "Only the owner or a key holder of a house nearby can place this."
+     Comment "Toast when the placement policy refuses: the kind needs the house owner or a key holder (#2446)."
+    }
+    CustomStringTableItem "{A1D7C4E09B3F5203}" {
+     Id "LF-Placement_NeedOrg"
+     Target_en_us "Only a member of an organization can place this."
+     Comment "Toast when the placement policy refuses: the kind needs an organization member (#2446)."
+    }
+    CustomStringTableItem "{A1D7C4E09B3F5201}" {
+     Id "LF-Placement_NeedPolice"
+     Target_en_us "Only on-duty {police} can place this."
+     Comment "Toast when the placement policy refuses: the kind needs an on-duty officer (#2446)."
+    }
+    CustomStringTableItem "{A1D7C4E09B3F5204}" {
+     Id "LF-Placement_NeedRank"
+     Target_en_us "Your organization rank is too low to place this."
+     Comment "Toast when the placement policy refuses: the kind needs a higher organization rank (#2446)."
+    }
     CustomStringTableItem "{70A8229A6F903FA6}" {
      Id "LF-Placement_NoGround"
      Target_en_us "There is no flat ground there."
