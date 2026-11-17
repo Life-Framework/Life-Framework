@@ -11,12 +11,12 @@
 // else: ... }Configs/ShopPrices.conf" ...` and exits 1 (observed 2026-11-15; the first version of this check
 // passed it, so it now matches the header's whole tail).
 
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { scaffoldPack } from "../pack/new.mjs";
 import { applyRetheme, loadFixture } from "../pack/retheme-fixture.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -27,7 +27,7 @@ function put(root, path, text) {
 }
 
 function tree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-retheme-"));
+  const root = scratchDir("lf-retheme-");
   put(root, "addons/LifeFramework/LifeFramework.gproj", 'GameProject {\n ID "LifeFramework"\n GUID "4550A2B656E1B569"\n}\n');
   put(root, "addons/LifeFramework/Scripts/Game/Feature/Packs/LF_PackManifest.c", 'class LF_PackManifest\n{\n\tstatic const string CORE_VERSION = "0.1.0";\n}\n');
   put(root, "addons/LifeFramework/Worlds/DebugWorld/DebugWorld.ent.meta", 'MetaFileClass {\n Name "{F3AA388E8466788C}Worlds/DebugWorld/DebugWorld.ent"\n}\n');

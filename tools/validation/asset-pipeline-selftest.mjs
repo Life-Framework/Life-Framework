@@ -24,8 +24,7 @@
 //   writeVariantMetas drawing a fresh emat GUID -> FAIL variants: a variant keeps the GUID of the emat it names
 //   variantEmatText ignoring the template     -> FAIL variants: the template's $BCR and $NMO are filled in
 //   specProblems without the material check   -> FAIL spec: a material asset with no variant is refused
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { STAGES, recordProvenance, run, specProblems } from "../assets/pipeline/asset.mjs";
@@ -39,6 +38,7 @@ import { variantPlans } from "../assets/pipeline/materials.mjs";
 import { ammoListWith, ammoPrefab, magazinePrefab, weaponPrefab } from "../assets/pipeline/prefab.mjs";
 import { checkModel, parse, worldPositions } from "../assets/pipeline/xob.mjs";
 import { checkKitModel, kitModelMeta, kitProblems } from "../assets/pipeline/kit.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -58,7 +58,7 @@ export async function main() {
       ok(pattern.test(e.message), `${what} (got: ${e.message})`);
     }
   };
-  const tmp = mkdtempSync(join(tmpdir(), "lf-asset-selftest-"));
+  const tmp = scratchDir("lf-asset-selftest-");
   const weapon = KINDS.weapon;
   const spec = () => ({
     slug: "stick", name: "Stick", kind: "weapon", prompt: "A police baton, single object, no text, no logos.", texture_prompt: "",
@@ -302,7 +302,7 @@ export async function main() {
 
   // ---- provenance: tools/assets/<slug>/meshy.json keeps every generation id --------------------------
   {
-    const root = mkdtempSync(join(tmpdir(), "lf-prov-"));
+    const root = scratchDir("lf-prov-");
     mkdirSync(join(root, "tools", "assets", "stick"), { recursive: true });
     const spec = { slug: "stick", prompt: "a stick", texture_prompt: "brown", meshy: { ai_model: "latest" } };
     recordProvenance(root, spec, { previewId: "p1", refineId: "r1" }, new Date("2026-11-13T10:00:00Z"));

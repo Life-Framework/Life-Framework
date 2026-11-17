@@ -9,11 +9,11 @@
 // red-proof: before tools/host/commands/post.mjs existed the import failed with
 // "Cannot find module .../tools/host/commands/post.mjs" (2026-11-15).
 
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
-import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = 0;
@@ -47,7 +47,7 @@ globalThis.fetch = (url, ...rest) => {
   return realFetch(url, ...rest);
 };
 
-const dir = mkdtempSync(join(tmpdir(), "lf-host-post-"));
+const dir = scratchDir("lf-host-post-");
 const hostDir = join(dir, "host");
 const sessions = join(dir, "sessions.json");
 const secrets = join(hostDir, "secrets.json");

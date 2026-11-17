@@ -18,10 +18,10 @@
 // the boundary", "e2e: the PERSISTENCE pack test gets a leg on the pack test header" and "the modded LF_TestManager
 // is not a pack class". Green with the change: pack-test-leg-selftest: OK.
 
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const here = fileURLToPath(new URL(".", import.meta.url));
 const root = join(here, "..", "..");
@@ -107,7 +107,7 @@ const PACK = boundary.PACK ?? "LF_Everon1989";
 const TEST_OK = `// tier: WORLD\nclass LF_Test_EveronX : LF_Test\n{\n}\n`;
 const REG_OK = `modded class LF_TestManager\n{\n\tprotected override void RegisterPackTests()\n\t{\n\t\tRegisterPack(new LF_Test_EveronX(), LF_TestTier.WORLD);\n\t}\n}\n`;
 function tree(extra) {
-  const r = mkdtempSync(join(tmpdir(), "lf-packleg-"));
+  const r = scratchDir("lf-packleg-");
   put(r, `${CORE}/Scripts/Game/Tests/LF_TestManager.c`, `class LF_TestManager\n{\n}\n`);
   put(r, `${PACK}/Scripts/Game/Tests/LF_Test_EveronX.c`, TEST_OK);
   put(r, `${PACK}/Scripts/Game/Tests/LF_PackTestRegistrations.generated.c`, REG_OK);

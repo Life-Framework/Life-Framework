@@ -10,12 +10,12 @@
 // red-proof: before tools/playtest/opening/b9-wipe.mjs existed this file failed on its first run:
 // "tools/playtest/opening/b9-wipe.mjs is missing" (2026-11-15).
 
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SCRIPT = join(ROOT, "tools", "playtest", "opening", "b9-wipe.mjs");
@@ -38,7 +38,7 @@ const run = (args, env = {}) =>
   spawnSync(process.execPath, [SCRIPT, ...args], { cwd: ROOT, encoding: "utf8", timeout: 240000, windowsHide: true, env: { ...process.env, ...env } });
 
 const sessionsBefore = existsSync(SESSIONS) ? readFileSync(SESSIONS, "utf8") : null;
-const outside = mkdtempSync(join(tmpdir(), "lf-b9-outside-"));
+const outside = scratchDir("lf-b9-outside-");
 const scratchRoot = join(ROOT, "tmp", "opening-b9");
 
 try {
