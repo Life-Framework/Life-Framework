@@ -1,0 +1,12 @@
+LF_NpcBaseEntity PostOffice_Clerk : "{B56AEE932B667E9C}Prefabs/Characters/Npcs/Outfits/LF_Npc_Office_1.et" {
+ coords 160.981 0.195 260.7
+ angleY -90
+}
+GenericEntity PostOffice_Ledger : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+ coords 160.184 1.107 261.399
+ angleY -90
+}
+GenericEntity PostOffice_ParcelStack : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
+ coords 160.943 0.2 260.037
+ angleY -90
+}

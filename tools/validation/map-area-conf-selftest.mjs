@@ -8,13 +8,13 @@
 // LF_Test_EveronMapAreas.
 // red-proof: observed 2026-11-17: the pack file with the safe square's x moved one metre made this fail
 // "is stale: run node tools/map/areas-from-dossier.mjs"; regenerated, it passes.
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { confOf, OUT, rowsOf } from "../map/areas-from-dossier.mjs";
 import { parseConf, vecListXZ, vecXZ } from "../map/lib/conf.mjs";
 import { loadAreas } from "../map/lib/overlay.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = false;
@@ -64,7 +64,7 @@ if (!row || row.props.m_aPoints?.length !== 3) fail(`a multi-line m_aPoints did 
 }
 
 // 4. Layering: a later file's row with the same Id replaces, op remove drops.
-const dir = mkdtempSync(join(tmpdir(), "lf-area-conf-"));
+const dir = scratchDir("lf-area-conf-");
 try {
   for (const d of ["addons/LifeFramework/Configs/Map", "addons/LF_Everon1989/Configs/Map"]) mkdirSync(join(dir, d), { recursive: true });
   const body = (id, extra) => `LF_MapAreaConfig {\n m_aAreas {\n  LF_MapAreaRow "{0000000000000002}" {\n   m_sId "${id}"\n   m_eStyle SAFE\n   m_eShape CIRCLE\n   m_vCentre "10 0 20"\n   m_fRadius ${extra}\n  }\n }\n}\n`;

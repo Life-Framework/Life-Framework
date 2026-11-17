@@ -9,12 +9,12 @@
 // red-proof: before tools/host/watchdog.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/watchdog.mjs'" (2026-11-15).
 
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const wd = await import(pathToFileURL(join(ROOT, "tools", "host", "watchdog.mjs")).href);
@@ -41,7 +41,7 @@ for (const [name, state, action, crash] of cases) {
   if (d.action !== action || d.crash !== crash) fail(`${name}: got ${JSON.stringify(d)}`);
 }
 
-const base = mkdtempSync(join(tmpdir(), "lf-host-watchdog-"));
+const base = scratchDir("lf-host-watchdog-");
 const dir = join(base, "host");
 const paths = hostPaths(dir);
 const T0 = new Date(2026, 10, 15, 12, 0, 0);

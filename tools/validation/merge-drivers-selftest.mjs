@@ -495,6 +495,55 @@ ${unmerged}`);
   const hangLeft = readdirSync(hangTmp).filter((name) => name.startsWith("lf-regen-"));
   if (hangLeft.length) fail(`the driver left scratch dirs behind: ${hangLeft.join(", ")}`);
 
+  // Laptop merge failures (2026-11-17): the registry driver ran `git show` once per test file and side, about
+  // 2300 children for 760 tests. At 230 ms a spawn on a loaded Windows box that is over the 240 s backstop, so
+  // every `git merge origin/main` (and `wt ship`'s merge) left the registry conflicted. The git calls must not
+  // grow with the number of tests. The stub generator writes the registry from the scratch tree, so this also
+  // proves the incoming, local and old test files all reach it. Red on the per-file code: ~190 git children.
+  const manyRepo = join(temp, "many");
+  const manyTrace = join(temp, "many-trace.log");
+  const manyStub = join(temp, "many-stub.mjs");
+  writeFileSync(
+    manyStub,
+    [
+      'import { readdirSync, writeFileSync } from "node:fs";',
+      `const dir = ${JSON.stringify(testsRel)};`,
+      'const names = readdirSync(dir).filter((n) => n.endsWith(".c") && !n.includes("Registrations")).map((n) => n.slice(0, -2)).sort();',
+      'writeFileSync(`${dir}/LF_TestRegistrations.generated.c`, names.map((n) => `new ${n}()\n`).join(""));',
+      "",
+    ].join("\n"),
+  );
+  initRepo(manyRepo);
+  configureDriver(manyRepo, "lf-regen-tests", "regen-generated.mjs");
+  writeFileSync(join(manyRepo, ".gitattributes"), "LF_TestRegistrations.generated.c merge=lf-regen-tests\n");
+  const manyCount = 60;
+  for (let i = 0; i < manyCount; i++) writeTest(manyRepo, `LF_Test_Many${String(i).padStart(2, "0")}`);
+  writeFileSync(join(manyRepo, registryRel), "base-registry\n");
+  commitAll(manyRepo, "base");
+  git(manyRepo, ["checkout", "-q", "-b", "theirs"]);
+  writeTest(manyRepo, "LF_Test_ManyIncoming");
+  writeFileSync(join(manyRepo, registryRel), "theirs-registry\n");
+  commitAll(manyRepo, "theirs");
+  git(manyRepo, ["checkout", "-q", "master"]);
+  writeTest(manyRepo, "LF_Test_ManyLocal");
+  writeFileSync(join(manyRepo, registryRel), "ours-registry\n");
+  commitAll(manyRepo, "ours");
+  const manyMerge = git(manyRepo, ["merge", "theirs", "--no-edit"], {
+    ...process.env,
+    LF_MERGE_DRIVER_GENERATOR_STUB: manyStub,
+    LF_MERGE_DRIVER_TRACE: manyTrace,
+  });
+  const manyOut = `${manyMerge.stdout}\n${manyMerge.stderr}`;
+  if (manyMerge.status !== 0) fail(`registry driver merge of ${manyCount} tests should be clean:\n${manyOut}`);
+  else {
+    const registry = readFileSync(join(manyRepo, registryRel), "utf8");
+    for (const name of ["LF_Test_Many00", `LF_Test_Many${manyCount - 1}`, "LF_Test_ManyIncoming", "LF_Test_ManyLocal"]) {
+      if (!registry.includes(`new ${name}()`)) fail(`regenerated registry is missing ${name}:\n${registry}`);
+    }
+  }
+  const manyGit = existsSync(manyTrace) ? readFileSync(manyTrace, "utf8").split("\n").filter((line) => / git /.test(line)).length : -1;
+  if (manyGit < 0 || manyGit > 12) fail(`the registry driver ran ${manyGit} git children for ${manyCount + 2} tests; it must batch its reads (limit 12)`);
+
   // The launcher honours the same override: a backstop of three times it for the wrapped driver.
   if (driverBackstopMs({ LF_MERGE_DRIVER_TIMEOUT_MS: "2000" }) !== 11000) fail("driverBackstopMs should be 3x the override plus 5 s");
   if (driverBackstopMs({}) !== 240_000) fail("driverBackstopMs default should be 240 s");

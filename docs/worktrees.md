@@ -97,6 +97,7 @@ second one failed with `lock 'wt' is held`. Now:
   off), `LF_WT_WARM_MIN_FREE_GB`, `LF_WT_WARM_KICK=0` (no background filler).
   `tools\cli wt warm` shows the pool, `wt warm fill` fills it in the foreground,
   `wt warm drain` removes the ready trees, `wt new <slug> --no-warm` forces a fresh one.
+- **Where worktrees go.** `wt new` and the warm pool put `Life-Framework-ws-<slug>` and `Life-Framework-warm-<id>` in the parent of the main checkout, unless `LF_WT_ROOT` (env) or `lf.local.json` `"wt": { "root": "D:/LF/worktrees" }` names another folder (made if missing; the free-disk floors read that drive). Worktrees already elsewhere stay, are listed by `wt list`/`lead` and found by slug; ports, locks and the registry do not depend on the folder. Proof: `tools/validation/wt-root-selftest.mjs`.
 - Proof: `tools/validation/wt-warm-selftest.mjs` (fixture repo: fill, stale claim,
   fresh fallback, junction refusal, prune, drain).
 
@@ -275,6 +276,12 @@ from <ref>`). The string-table driver refuses a side it cannot parse whole
 and writes git's line merge with exit 1 instead. `merge-content-selftest`
 merges real branches and compares the result byte for byte (#1154, #1161).
 
+The registry driver (`regen-generated.mjs`) reads the three sides' test sources with one `ls-tree` per side and one
+`git cat-file --batch`, never a git child per file: on a loaded laptop a spawn costs about 230 ms, and the old per-file
+`git show` (about 2300 children for 760 tests) ran past the 240 s backstop on every merge, in `git merge` and in
+`wt ship`'s merge alike. `LF_MERGE_DRIVER_TRACE=<file>` appends `<ms> <command>` per child process, which is how to
+see where a slow merge goes; `merge-drivers-selftest` caps the git children at 12.
+
 - **`DIRTY` or `BEHIND`, worktree not LIVE.** In its worktree (or a temporary
   detached `Life-Framework-heal-<n>` worktree at the PR head when it is gone,
   removed afterwards with the junction-safe helper) it merges `origin/main` with
@@ -377,6 +384,7 @@ tools\cli pool prune --idle <min> [--dry-run]              # every remote run fo
   tried first while it has RAM room (the placement tool's probe uses it; a short job
   where a sync costs more than the run); `LF_TESTBOX_AUTO=0` makes the
   default `--local`.
+- **Run folders on a second drive.** A pool machine's `runRoot` (`"runRoot": "D:/LF/runs"`, ssh machines) is where its run and lane worktrees (`Life-Framework-rt-*`, `Life-Framework-lane-*`, about 1.5 GB each) are made and cleaned; unset, they sit beside its clone. A run folder is a worktree of the clone, so the folder can live on another drive.
 - **Machines.** `tools/pool.json` lists them: `name`, `via` (`local` or
   `ssh`), `host` (ssh alias), `root` (the remote main clone), `slots`, `caps`
   (`server`, `clients`, `workbench`, `rdb`: refreshes a stale
@@ -1013,6 +1021,8 @@ at idle they save nothing measurable (the client has not streamed the world yet)
 the world, the script heap and the physics are the 1 GB, and no flag shrinks them. So the pool's
 reserve per lowspec client is 800 MB instead of 850 (`pool.json` `sessionReserve`); the server's is
 unchanged at 600.
+
+**VRAM.** A client also takes GPU memory (reserve per client: lowspec 700 MB, full 1800 MB; `sessionReserveClientVramMb`), and the 8 GB laptop card runs out before its RAM with 2 full clients. `tools/lib/pool-vram.mjs` reads the free VRAM (`nvidia-smi`, bounded by a timeout); the queue's machine choice (`rankMachines`) and `vramGate` leave a machine without room for a client session while another has it. A test-lane job ignores VRAM, and an unreadable card (no `nvidia-smi`, a failed read) skips the rule and is logged once, so RAM alone decides (`tools/validation/pool-vram-selftest.mjs`). `tools/remote/pool.mjs` feeds it (#2634): the session router reads this PC's free VRAM with `nvidia-smi` and the laptop's in its one state read (`lf-pool: vram` and `vramtotal` lines), orders machines with `vramReserveMb` and refuses a start on one whose card cannot hold the clients (a request then goes to the other machine or queues, naming VRAM). `tools/pool.json` and the `pool` key of `lf.local.json` set `sessionReserveClientVramMb` (`{ "lowspec": 700, "full": 1800 }`) and `minFreeVramMb` (256, or `LF_POOL_MIN_FREE_VRAM_MB`). `tools\cli pool status` prints each machine's `VRAM 5.7/8.0 GB free (2.3 GB used)` beside its RAM; nothing when the card does not answer (`pool-selftest`, "GPU memory end to end"). The `acquire` path of a test or a pinned run does not read VRAM: a pin stays a pin.
 
 **What does free RAM is trimming.** A session waiting for the next harness command touches a
 fraction of its resident pages. `EmptyWorkingSet` (`tools/lib/ws-trim.mjs`) moves the rest to the

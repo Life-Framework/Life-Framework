@@ -12,7 +12,10 @@
 #      Scripts/Game/Tests/ must declare a `// tier: LOGIC|WORLD|PERSISTENCE|PERF`
 #      comment above its declaration. The tier drives which suites run it.
 #   2. The generated file LF_TestRegistrations.generated.c registers every such
-#      class through LF_TestManager.Register, in deterministic file order.
+#      class that does not register itself (an LF_TestRegistration subclass in its file,
+#      LF_TestRegistration.c; its Tier() must match the `// tier:` comment); a
+#      self-registered class gets a comment line only. Registration is
+#      through LF_TestManager.Register, in deterministic file order.
 #   3. The generated file is never edited by hand; regenerate it instead.
 #
 # Modes:
@@ -42,6 +45,20 @@ Get-ChildItem $testsDir -Filter "*.c" | Where-Object { $_.Name -ne $generatedNam
   $file = $_
   $text = Get-Content $file.FullName -Raw
 
+  # Self-registration (#2610): an LF_TestRegistration subclass whose Create() returns `new LF_Test_X()`
+  # and whose Tier() returns the tier. Such a class is left out of the Enforce registry.
+  $selfRegistered = @{}
+  foreach ($r in [regex]::Matches($text, '(?s)class\s+\w+\s*:\s*LF_TestRegistration\b.*?\n\}')) {
+    $body = $r.Value
+    $created = [regex]::Match($body, 'return\s+new\s+(LF_Test_\w+)\s*\(')
+    $regTier = [regex]::Match($body, 'return\s+LF_TestTier\.(LOGIC|WORLD|PERSISTENCE|PERF)\b')
+    if (-not $created.Success -or -not $regTier.Success) {
+      $violations += "$($file.Name): an LF_TestRegistration class needs 'return LF_TestTier.<TIER>;' in Tier() and 'return new LF_Test_X();' in Create()"
+      continue
+    }
+    $selfRegistered[$created.Groups[1].Value] = $regTier.Groups[1].Value
+  }
+
   $matches = [regex]::Matches($text, 'class\s+(LF_Test_\w+)\s*:\s*LF_Test')
   foreach ($m in $matches) {
     $cls = $m.Groups[1].Value
@@ -54,7 +71,12 @@ Get-ChildItem $testsDir -Filter "*.c" | Where-Object { $_.Name -ne $generatedNam
     }
 
     $tier = $tierMatch[$tierMatch.Count - 1].Groups[1].Value
-    $entries += [PSCustomObject]@{ File = $file.Name; Class = $cls; Tier = $tier }
+    $self = $selfRegistered[$cls]
+    if ($self -and $self -ne $tier) {
+      $violations += "$($file.Name): $cls self-registers with tier $self but its '// tier:' comment says $tier"
+      continue
+    }
+    $entries += [PSCustomObject]@{ File = $file.Name; Class = $cls; Tier = $tier; Self = [bool]$self }
   }
 }
 
@@ -68,7 +90,13 @@ $sb = New-Object System.Text.StringBuilder
 [void]$sb.AppendLine("`tstatic void RegisterAll(LF_TestManager manager)")
 [void]$sb.AppendLine("`t{")
 foreach ($e in $entries) {
-  [void]$sb.AppendLine("`t`tmanager.Register(new $($e.Class)(), LF_TestTier.$($e.Tier));")
+  if ($e.Self) {
+    # Registered by its own file. The comment keeps the text readers (test-shards, test-world, prs)
+    # seeing the test until they read the test files instead (#2610 R4).
+    [void]$sb.AppendLine("`t`t// self-registered: new $($e.Class)(), LF_TestTier.$($e.Tier);")
+  } else {
+    [void]$sb.AppendLine("`t`tmanager.Register(new $($e.Class)(), LF_TestTier.$($e.Tier));")
+  }
 }
 [void]$sb.AppendLine("`t}")
 [void]$sb.AppendLine("}")
