@@ -427,8 +427,7 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			}
 		}
 
-		LF_MapPoiAudience audience = new LF_MapPoiAudience();
-		LF_MapKnown.FillAudience(audience);
+		LF_MapPoiAudience audience = LF_MapPoiAudience.Local();
 		LF_MapPois.CollectLive(audience, m_aPois);
 
 		m_MapEntity.GetOnMapPan().Insert(OnMapPan);
