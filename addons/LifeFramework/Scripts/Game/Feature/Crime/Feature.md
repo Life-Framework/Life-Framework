@@ -86,6 +86,11 @@ ob refused logged, offer reads #LF-Bank_NeedTool.
 - Every attempt publishes LF_OnVaultBreach (opened, jammed, refused). Test crime/vault-tool; proof session.mjs vault-proof.
 
 
+## Safe types
+
+- `LF_SafeType.c`: `Configs/Crime/LF_SafeTypes.conf` (core rows `store_box`, `bank_room`, `reserve_vault`, a pack overlays it) names the numbers of a safe tier. A component sets `m_sSafeType`; `LF_SafeTypes.Apply` fills every attribute still at its default (`LF_SafeTuning` mirrors the defaults), a changed attribute wins, an unknown id logs `LF_Debug.Error` and degrades. No second robbery system: `LF_Bank.Rob` and `LF_VaultDrill` read the result. Tier table: `docs/features/crime-police.md`. Test `crime/safe-types`.
+- Keep `LF_SafeTuning.DEFAULT_*` equal to the `[Attribute]` defaults of `LF_BankVaultComponent`.
+
 ## Cash van (#274)
 
 - The van box is a `LF_HeistVaultComponent` (a `LF_BankVaultComponent` whose haul is spilled money bags, `LF_BankLoot.SpillBags`). Same gates, tool, jam and evidence path as the bank vault; the offence reads `#LF-Offence_CashVan` (`LF_Breach.SetAlarm`).

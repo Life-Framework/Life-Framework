@@ -14,6 +14,9 @@ class LF_EventSceneHarness
 
 	//! The control walker stands this far behind the spawn marker, clear of the scene's line.
 	static const float CONTROL_BEHIND_M = 3;
+	//! The walker prefabs' suitcase slot and the hand bone it hangs from.
+	static const string SUITCASE_SLOT = "Suitcase";
+	static const string HAND_BONE = "RightHandProp";
 
 	protected static ResourceName s_sFixture;
 	protected static EntityID s_ControlId = EntityID.INVALID;
@@ -184,6 +187,92 @@ class LF_EventSceneHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Grip diagnosis (#2174 follow-up): reads each running walker's `Suitcase` slot and its hand bone.
+	//! `handle` ("x,y,z", the handle's point in the suitcase model) empty: reports the slot's local
+	//! transform in prefab notation. Set: solves the local transform that puts that point on the
+	//! RightHandProp bone with the case upright and its long side along the walker's forward axis,
+	//! applies it (OverrideTransformLS) and reports it, with the handle's distance to the bone after.
+	static string Grip(string handle)
+	{
+		LF_EventSceneCrew crew = LF_EventSceneSpawn.Running();
+		BaseWorld world = GetGame().GetWorld();
+		if (!crew || !world)
+			return "refused: grip needs a running scene";
+
+		array<string> parts = {};
+		handle.Split(",", parts, true);
+		bool apply = parts.Count() == 3;
+		vector point;
+		if (apply)
+			point = Vector(parts[0].ToFloat(), parts[1].ToFloat(), parts[2].ToFloat());
+
+		string text = "";
+		foreach (EntityID id : crew.m_aPeople)
+		{
+			IEntity person = world.FindEntityByID(id);
+			if (!person)
+				continue;
+
+			SlotManagerComponent slots = SlotManagerComponent.Cast(person.FindComponent(SlotManagerComponent));
+			EntitySlotInfo slot;
+			if (slots)
+				slot = slots.GetSlotByName(SUITCASE_SLOT);
+			IEntity suitcase;
+			if (slot)
+				suitcase = slot.GetAttachedEntity();
+			Animation anim = person.GetAnimation();
+			if (!suitcase || !anim)
+			{
+				text += " | no suitcase slot";
+				continue;
+			}
+
+			vector local[4];
+			if (apply)
+			{
+				vector pivot[4];
+				if (!LF_CarriedPropComponent.HandPivot(person, HAND_BONE, pivot))
+					return "refused: no " + HAND_BONE + " bone";
+
+				vector body[4];
+				person.GetWorldTransform(body);
+				LF_CarriedPropComponent.SolveHanging(pivot, body[2], point, local);
+				slot.OverrideTransformLS(local);
+			}
+			else
+			{
+				suitcase.GetLocalTransform(local);
+			}
+
+			text += string.Format(" | %1 %2", LF_Utils.GetPrefabName(person), PrefabNotation(local));
+			if (apply)
+			{
+				vector after[4];
+				suitcase.GetWorldTransform(after);
+				vector pivotNow[4];
+				LF_CarriedPropComponent.HandPivot(person, HAND_BONE, pivotNow);
+				vector handleWorld = after[3] + after[0] * point[0] + after[1] * point[1] + after[2] * point[2];
+				text += string.Format(" handle-to-hand %1 m, case up %2", vector.Distance(handleWorld, pivotNow[3]), after[1][1]);
+			}
+		}
+
+		LF_Debug.Info(FEATURE, "eventscene grip:" + text);
+		return "ok:" + text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A local transform as an EntitySlotInfo writes it in a prefab: `Offset x y z Angles pitch yaw roll`.
+	static string PrefabNotation(vector local[4])
+	{
+		vector rotation[3];
+		rotation[0] = local[0];
+		rotation[1] = local[1];
+		rotation[2] = local[2];
+		vector ypr = Math3D.MatrixToAngles(rotation);
+		return string.Format("Offset %1 %2 %3 Angles %4 %5 %6", local[3][0], local[3][1], local[3][2], ypr[1], ypr[0], ypr[2]);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The control's distance to the target, "" when none was spawned.
 	static string ControlText()
 	{
@@ -240,10 +329,10 @@ modded class LF_AgentHarnessVerbs
 			return super.Handle(cmd);
 
 		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
-		bool known = cmd.Arg1 == "start" || cmd.Arg1 == "status" || cmd.Arg1 == "stop" || cmd.Arg1 == "control";
+		bool known = cmd.Arg1 == "start" || cmd.Arg1 == "status" || cmd.Arg1 == "stop" || cmd.Arg1 == "control" || cmd.Arg1 == "grip";
 		if (!known || !character)
 		{
-			LF_AgentHarness.Answer(cmd.Id, "error", "usage: eventscene start <{GUID}fixture.conf> [hour] | status [eventId] | control <{GUID}prefab> | stop (needs a character)");
+			LF_AgentHarness.Answer(cmd.Id, "error", "usage: eventscene start <{GUID}fixture.conf> [hour] | status [eventId] | control <{GUID}prefab> | grip [x,y,z] | stop (needs a character)");
 			return true;
 		}
 
@@ -294,6 +383,8 @@ modded class SCR_ChimeraCharacter
 			detail = LF_EventSceneHarness.Stop();
 		else if (action == "control")
 			detail = LF_EventSceneHarness.Control(arg);
+		else if (action == "grip")
+			detail = LF_EventSceneHarness.Grip(arg);
 		else
 			detail = LF_EventSceneHarness.Status(arg);
 

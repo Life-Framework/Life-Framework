@@ -40,6 +40,12 @@ class LF_BankVaultComponent : ScriptComponent
 	[Attribute("30", UIWidgets.Auto, desc: "Seconds the drill must run, held at the door, before the vault opens. Cancelled earlier pays nothing.")]
 	protected float m_fDrillSeconds;
 
+	[Attribute("", UIWidgets.EditBox, desc: "Safe type id (Configs/Crime/LF_SafeTypes.conf): store_box, bank_room or reserve_vault. The type supplies every value above that is left at its default; a value set here still wins. Empty keeps the values above as they are.")]
+	protected string m_sSafeType;
+
+	//! The numbers this safe runs with: the attributes above with the safe type's row applied (LF_SafeTypes).
+	protected ref LF_SafeTuning m_Tuning;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -53,6 +59,8 @@ class LF_BankVaultComponent : ScriptComponent
 			// its lock there. A vault prefab that also carries LF_BreachTargetComponent registers the same entity.
 			LF_Places.Register(LF_Breach.PLACE_KIND, vaultId, owner);
 		}
+
+		m_Tuning = BuildTuning(vaultId);
 
 		if (!Replication.IsServer())
 			return;
@@ -69,11 +77,35 @@ class LF_BankVaultComponent : ScriptComponent
 			return;
 		}
 
-		LF_Bank.Configure(vaultId, m_iBagCount, m_iCashPerBag, m_fCooldownSeconds, m_iMinPoliceOnDuty, m_fFuseSeconds);
-		LF_Bank.ConfigureTools(vaultId, m_sRequiredTools, m_fJamChance);
-		LF_Bank.ConfigureDrillSeconds(vaultId, m_fDrillSeconds);
-		LF_Bank.ConfigureAlarmKind(vaultId, m_sAlarmKind);
+		LF_Bank.Configure(vaultId, m_Tuning.m_iBagCount, m_Tuning.m_iCashPerBag, m_Tuning.m_fCooldownSeconds, m_Tuning.m_iMinPoliceOnDuty, m_Tuning.m_fFuseSeconds);
+		LF_Bank.ConfigureTools(vaultId, m_Tuning.m_sRequiredTools, m_Tuning.m_fJamChance);
+		LF_Bank.ConfigureDrillSeconds(vaultId, m_Tuning.m_fDrillSeconds);
+		LF_Bank.ConfigureAlarmKind(vaultId, m_Tuning.m_sAlarmKind);
+		if (m_Tuning.m_bLoud)
+			LF_Breach.SetAlarm(vaultId, "", true);
+
 		ConfigureHeist(vaultId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The entity's own attributes with its safe type applied over every value left at the default.
+	//! An unknown type id logs LF_Debug.Error and keeps the attributes (LF_SafeTypes.Resolve).
+	protected LF_SafeTuning BuildTuning(string vaultId)
+	{
+		LF_SafeTuning tuning = new LF_SafeTuning();
+		tuning.m_iBagCount = m_iBagCount;
+		tuning.m_iCashPerBag = m_iCashPerBag;
+		tuning.m_fCooldownSeconds = m_fCooldownSeconds;
+		tuning.m_iMinPoliceOnDuty = m_iMinPoliceOnDuty;
+		tuning.m_fFuseSeconds = m_fFuseSeconds;
+		tuning.m_sRequiredTools = m_sRequiredTools;
+		tuning.m_sAlarmKind = m_sAlarmKind;
+		tuning.m_fJamChance = m_fJamChance;
+		tuning.m_fDrillSeconds = m_fDrillSeconds;
+		if (!m_sSafeType.IsEmpty())
+			LF_SafeTypes.Resolve(LF_SafeTypeConfig.Get(), m_sSafeType, vaultId, tuning);
+
+		return tuning;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -86,6 +118,9 @@ class LF_BankVaultComponent : ScriptComponent
 	//! Localization key of the action name. The bank reads "Rob the bank".
 	string GetActionName()
 	{
+		if (m_Tuning && !m_Tuning.m_sActionName.IsEmpty())
+			return m_Tuning.m_sActionName;
+
 		return "#EL-Bank_Rob";
 	}
 

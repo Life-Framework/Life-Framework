@@ -26,6 +26,7 @@ export function gridRelevant(file) {
   const f = String(file).split("\\").join("/");
   if (!f.startsWith("addons/")) return false;
   if (/\/Worlds\/GridWorld\/(GridWorld_Layers\/[^/]+\.layer|GridWorld\.ent)$/.test(f)) return true;
+  if (/\/Worlds\/Everon1989Grid\/(Everon1989Grid_Layers\/[^/]+\.layer|Everon1989Grid\.ent)$/.test(f)) return true;
   if (/\/Worlds\/GridWorld\//.test(f)) return false;
   if (f.endsWith(".layer")) return false;
   return placementRelevant(f);

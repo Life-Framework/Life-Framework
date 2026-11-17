@@ -50,6 +50,12 @@ drops onto the top under it. Gun-store `decor.mjs` is the model; the detail is i
 **`toolsi building check <slug>` is required** (about 1 s, offline): every small prop within 2 cm of the top under it, a floor or
 the ground. `wt ship` runs it for a PR touching `tools/buildings/<slug>/` or the pack's `Prefabs/Buildings/<Dir>/` and refuses
 while it fails. No generator: `building check <slug> --fix`. Keep `audit placement --grid --strict` as the in-world check per pass.
+## Fitting a vault room (`bank_room` safe type)
+The bank safe is a room in the building, not the standalone `LF_BankVault.et` (the reserve vault).
+- Doorway: `{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et` (origin = the front's centre, door hinges 1.271 m
+  to its right). The layer entity name is the vault id: unique per door. Bag inside: copy `Roadmap_Bank_Bag`, `m_sId` = that id.
+- Do not type the numbers on the placement: `bank_room` supplies them (an attribute at its class default reads as unset).
+  Shop safe: `{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et`. Tiers: `docs/features/crime-police.md`.
 
 ## Performance (docs/architecture/performance.md covers script cost; `test --tier perf` once if you touch script)
 Report in the PR, per pass: dynamic lights, shadow casters, decorative entities. The limit is in your brief. Short-range
@@ -68,8 +74,11 @@ pass, the counts table, `## Manual testing`. No town layers, no `ws/town-maintai
 - Vanilla ceiling lamps are dead meshes: add a `LightEntity` (ClipEV -10, NearPlane 0.3, short radius) and an emissive cover.
 - A vanilla furniture set is big (town hall: 242 children). Flatten to one child per prop, prune repeats (switches,
   radiators, infirmary, extra WCs); every kept entity counts.
-- A committed grid layer that names a pack prefab: the bank agent kept it out of git (local `stage.mjs`, `--remove` before
-  a commit); the town hall commits it. Run `tools\cli validate` and follow what it says.
+- Your building is a pack prefab, so its cell is a pack cell: `grid place <slug> <pack prefab>` (or `--pack`) writes
+  `LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_<slug>.layer`, claims the cell in the shared lattice with
+  `"pack": true`, and the layer is committed like any other. Never keep a layer untracked, never put a pack prefab in
+  `GridWorld_Layers/` (`validate-addon-boundary`). A layer already written there: `grid free <slug>`, then place again.
+  `look grid:<slug>`, `audit placement --grid` and `session up --mission grid` load it through the pack grid world.
 - A GUID is made once and kept (rule 2). A typed coordinate is only allowed in a building-space row the script writes.
 - `look` needs a Workbench: it queues on the pool (laptop or lf-testbox), never here.
 

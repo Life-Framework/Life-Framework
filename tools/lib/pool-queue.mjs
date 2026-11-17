@@ -510,7 +510,7 @@ export function budgetSeconds(runs, kind, machine, { multiplier = 1, override } 
 export const BIG_WORLD_BOOT_S = 150;
 export const BOOT_CAP_S = 600;
 export const WORLD_BOOT_S = { CoreOnEveron: 150 };
-const SMALL_WORLDS = new Set(["", "DebugWorld", "GridWorld", "TestLogic", "Everon1989Town"]);
+const SMALL_WORLDS = new Set(["", "DebugWorld", "GridWorld", "TestLogic", "Everon1989Town", "Everon1989Grid"]);
 
 // "Worlds/CoreOnEveron/CoreOnEveron.ent", a "{GUID}Missions/X.conf" header or a bare name -> "CoreOnEveron".
 export function worldKey(world) {

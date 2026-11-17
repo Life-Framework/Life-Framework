@@ -194,7 +194,7 @@ function drawAreas(cv, view, overlay, hits) {
     else if (a.style === "SAFE") { cv.polygon(pts, [70, 130, 80], 0.2); cv.outline(pts, [50, 110, 62], 0.9, 0, 2); }
     else cv.outline(pts, [90, 80, 70], 0.7, 4);
     const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length, cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
-    if (scale >= 0.3) cv.text(a.name, cx - cv.textWidth(a.name) / 2, cy - 3, a.style === "LAWLESS" ? [150, 30, 24] : [40, 100, 56], 1, PAPER);
+    if (scale >= 0.3 && a.name) cv.text(a.name, cx - cv.textWidth(a.name) / 2, cy - 3, a.style === "LAWLESS" ? [150, 30, 24] : [40, 100, 56], 1, PAPER);
     hits.push({ kind: "area", label: a.name, detail: `${a.style} area`, pts });
     n++;
   }

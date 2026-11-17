@@ -152,7 +152,10 @@ gate before a merge; the main guard (next section) checks `main` after it.
    `origin/<base>` in, pushes again and retries.
 4. Prints `SUMMARY ship ok|fail`, then `PR <url>, head <sha>`. No queue, no pool lane, no wait.
 
-`--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
+`--draft` runs the same body checks, preflight and push, then opens the PR with `gh pr create --draft` and never runs
+`gh pr merge --auto`; the summary reads `auto-merge off (draft)`. Town-draft and maintainer-review PRs use it; a human
+marks the PR ready and merges it (`ship-direct.mjs` `draft`, `wt-ship-draft-selftest.mjs`). Re-running on an open PR
+reuses it. `--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
 <slug>` stays as an optional manual check (tiers in `tools/lib/gate-tier.mjs`, `gate-risk.mjs`). The ship queue
 (`tools/ship-queue.mjs`), `wt ship-status`, `wait ship` and the tier selection in ship are retired; their code stays
 on disk until someone deletes it.
@@ -1169,6 +1172,15 @@ signed-in session.
 
 ### Desktop on the box (virtual display, recording, clients from ssh)
 
+**GPU routes.** Every route that renders on a pool machine goes through the desktop session (`tools/lib/gpu-session.mjs`):
+the `ci --wb-only` steps (`build`, the compile, `validate --full`) re-run in it (`ciWorkbenchInSession`); `look` (and the warm
+`look serve` Workbench), the rdb refresh, `npc dress`, the main guard and every `session up` client start their process there
+through `interactiveSpawnDetached`; `ui-image`, `asset run`, `pack` and `call wb_*` re-run in it when started over ssh. With no
+signed-in (or a disconnected) session each stops at once with `<machine> has no signed-in desktop session: log in once`;
+`chooseGate` never picks such a machine (a pin or "all of them" is `none`, not a wait) and `pool status` shows its
+`desktop:` line. The `LF-DesktopHelper` logon task (`toolscli desktop-helper setup <machine>`, docs/setup.md "Desktop helper")
+keeps the session awake and writes the heartbeat `pool status` reads.
+
 ssh runs in session 0. The box's signed-in desktop is session 1, so
 `tools/remote/desktop/run-interactive.ps1` runs a program there through a
 one-shot scheduled task (LogonType Interactive, the ssh user) and removes the
@@ -1497,6 +1509,7 @@ parallel, each with its own timeout; one that fails prints one line and the rest
   When the budget itself cuts a machine the section ends with `pool budget N s exceeded ... partial rows for ...`. A machine whose
   free RAM is under the pool floor (`minFreeMb`, 1.5 GB) adds `WARN RAM: <machine> has 0.5 GB free, under its 1.5 GB floor`: it takes no new job.
 - SHIP QUEUE: `SHIP QUEUE 1 gating, 2 queued, oldest wait 14 min (<slug> #<pr>)`, from the same file `ship-queue status` prints.
+- USAGE: one line, the Gaming plan's real 5h and weekly utilization, pace and advice from `usage --plan` (docs/agent-budget.md "Plan utilization"); `USAGE Gaming: plan usage unavailable (why)` when the endpoint or token fails.
 - ACCOUNTS and SLICES appear when `usage --accounts` and `slice list --ready` exist; until then each prints one skip line.
 
 `tools\cli lead prune-safe [--dry-run]` prunes the merged-prunable worktrees through `wt prune` (never `--force`) and prints one line each:
