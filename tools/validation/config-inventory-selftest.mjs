@@ -6,19 +6,18 @@
 // staleMessage/checkDoc existed, this file failed to import (`buildInventory`/`checkDoc`
 // were missing) and the stale message named `node tools/config/inventory.mjs --write`; with
 // the new code it prints "config-inventory-selftest: OK".
-import { mkdirSync, mkdtempSync, writeFileSync, rmSync, readFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { spawnSync } from "node:child_process";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 import { buildInventory, render, checkDoc, writeDoc, staleMessage } from "../config/inventory.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fails = [];
 const expect = (ok, msg) => { if (!ok) fails.push(msg); };
 
-const dir = mkdtempSync(join(tmpdir(), "lf-config-inventory-"));
-try {
+const dir = scratchDir("lf-config-inventory-");
+{
   const addon = join(dir, "addon");
   const feature = join(addon, "Scripts", "Game", "Feature");
   mkdirSync(join(feature, "Jobs"), { recursive: true });
@@ -59,11 +58,12 @@ try {
   writeFileSync(doc, readFileSync(doc, "utf8") + "stray\n");
   expect(checkDoc(buildInventory(opts), doc) !== null, "an edited doc must be stale");
 
-  // The command file exists and answers help.
-  const cmd = spawnSync(process.execPath, [join(here, "..", "cli.mjs"), "help"], { encoding: "utf8" });
-  expect(/regen-config-inventory/.test((cmd.stdout ?? "") + (cmd.stderr ?? "")), "tools\\cli help must list regen-config-inventory");
-} finally {
-  rmSync(dir, { recursive: true, force: true });
+  // `tools\cli help` lists every tools/commands/*.mjs that exports `help`, and cli dispatches any file there.
+  const cmdFile = join(here, "..", "commands", "regen-config-inventory.mjs");
+  expect(existsSync(cmdFile), "tools/commands/regen-config-inventory.mjs must exist");
+  const mod = await import(pathToFileURL(cmdFile).href);
+  expect(/^regen-config-inventory\s/.test(mod.help ?? ""), `the command must export a help line starting with its name, got ${mod.help}`);
+  expect(typeof mod.main === "function", "the command must export main");
 }
 
 if (fails.length) {
