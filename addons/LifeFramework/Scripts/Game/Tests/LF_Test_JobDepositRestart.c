@@ -1,7 +1,7 @@
 // red-proof: #2408 follow-up. `--red` skips the refund (ApplyDeposits is not called), so 'the restart gives
 // the held deposit back to the bank' fails. On the unfixed code ExportDeposits and ApplyDeposits did not exist
 // (nothing was saved, the deposit stayed taken); the restart proof is `wt e2e` (pass 2 reads the bank).
-// Observed 2026-11-18 `--red LF_Test_StoreStrangerEject,LF_Test_JobDepositRestart`: RED PROOF OK (expected 650, got 500). Restart proof: `tools/cli wt e2e fix-review-followups`, bank 500 -> 650 (boot save version 49).
+// Observed 2026-11-18 `--red LF_Test_StoreStrangerEject,LF_Test_JobDepositRestart`: RED PROOF OK (expected 650, got 500). Restart proof: `tools/cli wt e2e fix-review-followups`, bank 500 -> 650 (boot save version 49). #2481: rows are LF_JobRunRow (jobruns, save version 50); re-observed 2026-11-18 `--red`: RED-OK jobs/deposit-restart (17 assertions); the cargo half is LF_Test_JobDepositCargo.
 // tier: LOGIC
 //! A server restart ends a cargo run; the deposit it held goes back to the player's bank account on
 //! the load instead of being kept. In-session round trip of the rows only: the restart itself is `wt e2e`.
@@ -31,14 +31,15 @@ class LF_Test_JobDepositRestart : LF_Test
 		ctx.True(LF_CivilianJob.StartRun(UID, LF_EJobType.PARCEL), "the run starts");
 		LF_CivilianJob.RecordDeposit(UID, 150);
 
-		array<ref LF_JobDepositRow> rows = LF_CivilianJob.ExportDeposits();
+		array<ref LF_JobRunRow> rows = LF_CivilianJob.ExportDeposits();
 		int mine = 0;
-		foreach (LF_JobDepositRow row : rows)
+		foreach (LF_JobRunRow row : rows)
 		{
 			if (row.m_sPlayerUid == UID)
 			{
 				mine++;
 				ctx.Equal(150, row.m_iAmount, "the saved row holds the deposit");
+				ctx.Equal(LF_EJobType.PARCEL, row.m_iJob, "the saved row names the job whose cargo was handed out");
 			}
 		}
 
@@ -53,11 +54,11 @@ class LF_Test_JobDepositRestart : LF_Test
 		ctx.True(LF_CivilianJob.SignUp(LIVE_UID, LF_EJobType.PARCEL), "the second courier signs up");
 		ctx.True(LF_CivilianJob.StartRun(LIVE_UID, LF_EJobType.PARCEL), "the second run starts");
 		LF_CivilianJob.RecordDeposit(LIVE_UID, 70);
-		array<ref LF_JobDepositRow> loaded = {};
-		loaded.Insert(LF_JobDepositRow.Create(UID, 150));
-		loaded.Insert(LF_JobDepositRow.Create(LIVE_UID, 70));
-		loaded.Insert(LF_JobDepositRow.Create("", 99));
-		loaded.Insert(LF_JobDepositRow.Create(UID, 0));
+		array<ref LF_JobRunRow> loaded = {};
+		loaded.Insert(LF_JobRunRow.Create(UID, 150, LF_EJobType.PARCEL));
+		loaded.Insert(LF_JobRunRow.Create(LIVE_UID, 70, LF_EJobType.PARCEL));
+		loaded.Insert(LF_JobRunRow.Create("", 99, LF_EJobType.PARCEL));
+		loaded.Insert(LF_JobRunRow.Create(UID, 0, LF_EJobType.PARCEL));
 		int refunded = 0;
 		if (!RedProof())
 			refunded = LF_CivilianJob.ApplyDeposits(loaded);

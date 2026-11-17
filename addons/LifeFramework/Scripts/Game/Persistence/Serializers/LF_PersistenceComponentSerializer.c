@@ -37,7 +37,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobdeposits. The written version is that list's length (49). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobdeposits, jobruns. The written version is that list's length (50). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -112,6 +112,9 @@
 //! is seeded with its account's playtime (LF_GraceCharacterClock.SeedFromAccounts), what the grace read then.
 //! A version 48 save includes the grace clocks and has no held job deposits (#2408): a run's deposit
 //! was not saved, which is what that build did (a restart kept it).
+//! A version 49 save includes the held job deposits without the job (#2408) and has no job-run rows (#2481):
+//! the load refunds each saved deposit and takes any cargo the player carried out of the carried snapshot.
+//! A version 50 save writes "jobdeposits" empty and holds those rows, with the job, in "jobruns".
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -250,6 +253,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("itemkeys");
 		order.Insert("graceclock");
 		order.Insert("jobdeposits");
+		order.Insert("jobruns");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -283,7 +287,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 49);
+		context.WriteValue("version", 50);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -829,10 +833,17 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		}
 		else if (payload == "jobdeposits")
 		{
-			// Cargo deposits held against runs in progress (#2408): a restart ends the run, so the load gives them back.
-			array<ref LF_JobDepositRow> depositRows = LF_CivilianJob.ExportDeposits();
+			// Superseded by "jobruns" at version 50 (#2481): the position stays, the rows are written there.
+			array<ref LF_JobDepositRow> depositRows = new array<ref LF_JobDepositRow>();
 			context.Write(depositRows);
-			LF_Debug.Log("Persistence", string.Format("saved %1 held job deposit(s)", depositRows.Count()));
+		}
+		else if (payload == "jobruns")
+		{
+			// Cargo deposits held against runs in progress (#2408, #2481): a restart ends the run, so the load takes
+			// the cargo still carried out of the snapshot and gives the deposit back.
+			array<ref LF_JobRunRow> runRows = LF_CivilianJob.ExportDeposits();
+			context.Write(runRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 held job deposit(s)", runRows.Count()));
 		}
 		else
 		{
@@ -1563,16 +1574,31 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		}
 		else if (payload == "jobdeposits")
 		{
-			// A version 1-48 save never reaches this payload: it held no deposits (runs took none).
+			// A version 1-48 save never reaches this payload: it held no deposits (runs took none). A version 49
+			// save holds rows without the job (the cargo is looked for under both kinds); version 50 writes it empty.
 			array<ref LF_JobDepositRow> depositRows = new array<ref LF_JobDepositRow>();
 			if (context.Read(depositRows))
 			{
-				int refunded = LF_CivilianJob.ApplyDeposits(depositRows);
-				LF_Debug.Info("Persistence", string.Format("gave back %1 held job deposit(s) of %2 row(s) to the bank", refunded, depositRows.Count()));
+				int refunded = LF_CivilianJob.ApplyDeposits(LF_CivilianJob.RowsFromLegacy(depositRows));
+				LF_Debug.Info("Persistence", string.Format("gave back %1 held job deposit(s) of %2 version 49 row(s) to the bank", refunded, depositRows.Count()));
 			}
 			else
 			{
 				ReadFailed("held job deposits failed to read, the deposits are not refunded");
+			}
+		}
+		else if (payload == "jobruns")
+		{
+			// A version 1-49 save never reaches this payload.
+			array<ref LF_JobRunRow> runRows = new array<ref LF_JobRunRow>();
+			if (context.Read(runRows))
+			{
+				int runRefunded = LF_CivilianJob.ApplyDeposits(runRows);
+				LF_Debug.Info("Persistence", string.Format("gave back %1 held job deposit(s) of %2 row(s) to the bank", runRefunded, runRows.Count()));
+			}
+			else
+			{
+				ReadFailed("held job runs failed to read, the deposits are not refunded");
 			}
 		}
 		else

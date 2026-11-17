@@ -1,8 +1,7 @@
 //------------------------------------------------------------------------------------------------
-//! Persisted cargo deposit held against one player's run in progress, keyed by the player uid (the
-//! account key). Saved as the "jobdeposits" payload (save version 49) by
-//! LF_PersistenceComponentSerializer. A run is session state and a restart ends it, so the load
-//! gives every saved deposit back to the player's bank account (LF_CivilianJob.ApplyDeposits).
+//! Version 49 shape of a held cargo deposit (the "jobdeposits" payload, #2408), keyed by the player uid.
+//! Kept only so a version 49 save still reads: from version 50 the payload is written empty and the
+//! rows, with the job, are LF_JobRunRow in "jobruns" (#2481). LF_CivilianJob.RowsFromLegacy converts them.
 //------------------------------------------------------------------------------------------------
 class LF_JobDepositRow : Managed
 {

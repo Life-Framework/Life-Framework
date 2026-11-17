@@ -342,6 +342,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JailWork(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailWorkAbandon(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobClientOffers(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_JobDepositCargo(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobDepositRestart(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobGateBypass(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobLevelGates(), LF_TestTier.LOGIC);

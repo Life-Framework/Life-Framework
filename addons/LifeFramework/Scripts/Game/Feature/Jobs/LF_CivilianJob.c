@@ -602,33 +602,88 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Persistence seam: the deposit each active run holds right now, one row per player. A run is
-	//! session state and is not saved, but the cash taken for it must not vanish with a restart.
-	static array<ref LF_JobDepositRow> ExportDeposits()
+	//! Persistence seam ("jobruns" payload): the deposit each active run holds right now, one row per
+	//! player, with the job so the load knows which cargo the run handed out. A run is session state
+	//! and is not saved, but the cash taken for it must not vanish with a restart.
+	static array<ref LF_JobRunRow> ExportDeposits()
 	{
-		array<ref LF_JobDepositRow> rows = new array<ref LF_JobDepositRow>();
+		array<ref LF_JobRunRow> rows = new array<ref LF_JobRunRow>();
 		if (!s_mWorkers)
 			return rows;
 
 		foreach (string playerUid, LF_JobWorker worker : s_mWorkers)
 		{
 			if (worker && worker.m_bActive && worker.m_iDeposit > 0)
-				rows.Insert(LF_JobDepositRow.Create(playerUid, worker.m_iDeposit));
+				rows.Insert(LF_JobRunRow.Create(playerUid, worker.m_iDeposit, worker.m_eActiveJob));
 		}
 
 		return rows;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Persistence seam: a restart ended every saved run, so each saved deposit goes back to the
-	//! player's bank account (their account may be offline: the bank does not need a body). A player
-	//! whose run is live in this session (a re-applied load) keeps the live deposit and gets no
-	//! second one. The saved bank balances load first, so the credit is never overwritten.
+	//! A version 49 save held the deposit without the job: each row becomes a run row whose job is
+	//! unknown, so the load looks for any cargo the player carried.
+	static array<ref LF_JobRunRow> RowsFromLegacy(notnull array<ref LF_JobDepositRow> legacy)
+	{
+		array<ref LF_JobRunRow> rows = new array<ref LF_JobRunRow>();
+		foreach (LF_JobDepositRow old : legacy)
+		{
+			if (old)
+				rows.Insert(LF_JobRunRow.Create(old.m_sPlayerUid, old.m_iAmount, LF_EJobType.UNEMPLOYED));
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cargo prefabs a saved run may have left on the player: the job's own, or both when unknown.
+	protected static void CargoPrefabsOf(int job, notnull array<ResourceName> prefabs)
+	{
+		if (job == LF_EJobType.PARCEL || job == LF_EJobType.FUEL_DELIVERY)
+		{
+			prefabs.Insert(PrefabFor(job));
+			return;
+		}
+
+		prefabs.Insert(ParcelPrefab());
+		prefabs.Insert(FUEL_PREFAB);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A restart ended the run, so its cargo must not outlive the deposit: takes one cargo item of the
+	//! run out of the player's saved carried snapshot (the snapshot goes back on the player when they
+	//! spawn). A cargo no longer carried (dropped, lost at death) is simply not there.
+	//! \return How many cargo items were taken out (0 or 1).
+	static int StripSavedCargo(string playerUid, int job)
+	{
+		array<ResourceName> prefabs = {};
+		CargoPrefabsOf(job, prefabs);
+		string characterId = LF_PlayerAccountManager.CharacterIdOfKey(playerUid);
+		foreach (ResourceName prefab : prefabs)
+		{
+			int removed = LF_StorageSnapshot.StripOne(characterId, LF_StorageSnapshot.SLOT_CARRIED, prefab);
+			if (removed <= 0 && characterId != playerUid)
+				removed = LF_StorageSnapshot.StripOne(playerUid, LF_StorageSnapshot.SLOT_CARRIED, prefab);
+
+			if (removed > 0)
+				return removed;
+		}
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: a restart ended every saved run. Each saved deposit goes back to the player's
+	//! bank account (their account may be offline: the bank does not need a body), and the run's cargo
+	//! still in the saved carried snapshot is taken out first, so a restart never pays the deposit and
+	//! lets the player keep the cargo too (#2481). A player whose run is live in this session (a
+	//! re-applied load) keeps the live deposit and the cargo and gets no second refund. The saved
+	//! bank balances and carried snapshots load first, so the credit is never overwritten.
 	//! \return How many deposits were given back.
-	static int ApplyDeposits(notnull array<ref LF_JobDepositRow> rows)
+	static int ApplyDeposits(notnull array<ref LF_JobRunRow> rows)
 	{
 		int refunded = 0;
-		foreach (LF_JobDepositRow row : rows)
+		foreach (LF_JobRunRow row : rows)
 		{
 			if (!row || row.m_sPlayerUid.IsEmpty() || row.m_iAmount <= 0)
 				continue;
@@ -639,10 +694,14 @@ class LF_CivilianJob
 				continue;
 			}
 
+			int cargoTaken = StripSavedCargo(row.m_sPlayerUid, row.m_iJob);
 			LF_BankAccount bank = LF_ATMManager.GetOrCreate(row.m_sPlayerUid);
 			bank.Deposit(row.m_iAmount, REASON_DEPOSIT_BACK);
 			refunded++;
-			LF_Debug.Info("Jobs", string.Format("restart ended the run of %1: deposit %2 refunded to the bank", row.m_sPlayerUid, row.m_iAmount));
+			if (cargoTaken > 0)
+				LF_Debug.Info("Jobs", string.Format("restart ended the run of %1: the carried cargo is taken back and deposit %2 refunded to the bank", row.m_sPlayerUid, row.m_iAmount));
+			else
+				LF_Debug.Info("Jobs", string.Format("restart ended the run of %1: no cargo carried, deposit %2 refunded to the bank", row.m_sPlayerUid, row.m_iAmount));
 		}
 
 		return refunded;

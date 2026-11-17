@@ -376,14 +376,19 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		SeedOrgLadder(ctx);
 
 #ifndef LF_E2E_LEGACY_SAVE
-		// A cargo run in progress holds a deposit ("jobdeposits" payload, save version 49, #2408): the
-		// restart ends the run, and the load must give the deposit back to the bank (500 + 150 after).
+		// A cargo run in progress holds a deposit ("jobruns" payload, save version 50, #2408, #2481): the
+		// restart ends the run, and the load must give the deposit back to the bank (500 + 150 after) and
+		// take the parcel the courier still carries out of the saved inventory (never both).
 		atmManager.CreateAccount(DEPOSIT_UID);
 		ctx.True(atmManager.Deposit(DEPOSIT_UID, 500), "e2e the deposit courier banks 500 before the save");
 		ctx.True(LF_CivilianJob.SignUp(DEPOSIT_UID, LF_EJobType.PARCEL), "e2e the deposit courier signs up for parcels");
 		ctx.True(LF_CivilianJob.StartRun(DEPOSIT_UID, LF_EJobType.PARCEL), "e2e the deposit courier starts a run before the save");
 		LF_CivilianJob.RecordDeposit(DEPOSIT_UID, DEPOSIT_HELD);
 		ctx.Equal(DEPOSIT_HELD, LF_CivilianJob.GetDeposit(DEPOSIT_UID), "e2e the run holds the deposit before the save");
+		LF_StorageSnapshotRecord courierGear = LF_StorageSnapshotRecord.Create(DEPOSIT_UID, LF_StorageSnapshot.SLOT_CARRIED);
+		courierGear.m_aItems.Insert(LF_StorageItemRecord.Create(LF_Bank.DRILL_PREFAB, 1, -1, 0, 0));
+		courierGear.m_aItems.Insert(LF_StorageItemRecord.Create(LF_CivilianJob.PrefabFor(LF_EJobType.PARCEL), 1, -1, 0, 1));
+		LF_StorageSnapshot.Set(courierGear);
 #endif
 
 		LF_JobLevels.Forget(JOBS_UID);
@@ -574,7 +579,8 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 	//------------------------------------------------------------------------------------------------
 	//! #2408 after the restart: the run a courier was on is over, and the deposit it held is in the bank
-	//! (500 banked + 150 held), not kept. A save older than "jobdeposits" held none.
+	//! (500 banked + 150 held), not kept, and the parcel it carried is gone from the saved inventory (#2481).
+	//! A save older than "jobdeposits" held none.
 	protected void VerifyJobDeposit(LF_TestContext ctx)
 	{
 		string uid = LF_Test_E2E_SaveStateWrite.DEPOSIT_UID;
@@ -588,6 +594,14 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 		ctx.False(LF_CivilianJob.HasActiveRun(uid), "e2e the run does not survive the restart");
 		ctx.Equal(0, LF_CivilianJob.GetDeposit(uid), "e2e no deposit is held after the restart");
+		LF_StorageSnapshotRecord gear = LF_StorageSnapshot.Get(uid, LF_StorageSnapshot.SLOT_CARRIED);
+		ctx.NotNull(gear, "e2e the courier's carried inventory is saved");
+		if (gear)
+		{
+			ctx.Equal(0, gear.CountPrefab(LF_CivilianJob.PrefabFor(LF_EJobType.PARCEL)), "e2e the restart took the parcel back with the deposit: never both");
+			ctx.Equal(1, gear.CountPrefab(LF_Bank.DRILL_PREFAB), "e2e the rest of the courier's gear is kept");
+		}
+
 		LF_Debug.Info("Jobs", string.Format("e2e restart: %1 bank is %2 (boot save version %3)", uid, LF_ATMManager.GetOrCreate(uid).GetBalance(), LF_SaveStamp.BootSaveVersion()));
 #endif
 	}
