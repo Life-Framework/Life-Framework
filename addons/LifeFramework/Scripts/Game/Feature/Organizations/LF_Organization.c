@@ -83,13 +83,14 @@ class LF_OrganizationConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The rights a default rank has with no owner config.
+	//! The rights a default rank has with no owner config. The officer holds DECLARE_WAR (#2769), so a
+	//! declaration is not lost whenever the founder is offline; an org's saved rank mask keeps what it saved.
 	static int ShippedRights(string rankId)
 	{
 		if (rankId == RANK_FOUNDER)
 			return LF_OrgRights.ALL;
 		if (rankId == RANK_OFFICER)
-			return LF_OrgRights.Bit(LF_EOrganizationPermission.INVITE) | LF_OrgRights.Bit(LF_EOrganizationPermission.KICK) | LF_OrgRights.Bit(LF_EOrganizationPermission.USE_STASH);
+			return LF_OrgRights.Bit(LF_EOrganizationPermission.INVITE) | LF_OrgRights.Bit(LF_EOrganizationPermission.KICK) | LF_OrgRights.Bit(LF_EOrganizationPermission.DECLARE_WAR) | LF_OrgRights.Bit(LF_EOrganizationPermission.USE_STASH);
 		if (rankId == RANK_MEMBER)
 			return LF_OrgRights.Bit(LF_EOrganizationPermission.USE_STASH);
 

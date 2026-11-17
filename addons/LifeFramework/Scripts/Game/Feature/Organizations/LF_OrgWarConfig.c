@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
 //! The rules of an organization war: the fee, the answer window, how long a war lasts, the cooldown
-//! between the same two organizations, the member minimum and the two kill rules (#2667). Loaded from
+//! between the same two organizations, the shorter cooldown after a declaration lapses, the member minimum and the two kill rules (#2667). Loaded from
 //! Configs/Organizations/LF_OrgWars.conf, then each pack overlay of it in load order, then the owner's
 //! `organizations.wars` keys. A bad owner value logs an error and keeps the value below it.
 //!
@@ -22,6 +22,8 @@ class LF_OrgWarConfig
 	static const int LENGTH_MAX = 604800;	// lf-fixed: the schema limit, one week
 	static const int COOLDOWN_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int COOLDOWN_MAX = 2592000;	// lf-fixed: the schema limit, thirty days
+	static const int LAPSE_COOLDOWN_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int LAPSE_COOLDOWN_MAX = 2592000;	// lf-fixed: the schema limit, thirty days
 	static const int MEMBERS_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int MEMBERS_MAX = 100;	// lf-fixed: the schema limit, mirrors the attribute params
 
@@ -29,6 +31,7 @@ class LF_OrgWarConfig
 	static const int DEFAULT_ANSWER_SECONDS = 600;
 	static const int DEFAULT_LENGTH_SECONDS = 7200;
 	static const int DEFAULT_COOLDOWN_SECONDS = 86400;
+	static const int DEFAULT_LAPSE_COOLDOWN_SECONDS = 3600;
 	static const int DEFAULT_MIN_MEMBERS = 3;
 
 	[Attribute("5000", UIWidgets.Auto, "Cash the declaring organization pays from its fund to declare a war", params: "0 100000000")]
@@ -42,6 +45,9 @@ class LF_OrgWarConfig
 
 	[Attribute("86400", UIWidgets.Auto, "Seconds before the same two organizations may fight another war. 0 means no cooldown", params: "0 2592000")]
 	int m_iCooldownSeconds;
+
+	[Attribute("3600", UIWidgets.Auto, "Seconds before the same two organizations may declare again after a declaration lapsed unanswered, so a fund cannot be drained by re-declaring on a loop. 0 means no cooldown", params: "0 2592000")]
+	int m_iLapseCooldownSeconds;
 
 	[Attribute("3", UIWidgets.Auto, "Members each side needs to declare or answer a war", params: "1 100")]
 	int m_iMinMembers;
@@ -101,6 +107,7 @@ class LF_OrgWarConfig
 		rules.m_iAnswerSeconds = config.m_iAnswerSeconds;
 		rules.m_iLengthSeconds = config.m_iLengthSeconds;
 		rules.m_iCooldownSeconds = config.m_iCooldownSeconds;
+		rules.m_iLapseCooldownSeconds = config.m_iLapseCooldownSeconds;
 		rules.m_iMinMembers = config.m_iMinMembers;
 		rules.m_bWarKillsAreMurder = config.m_bWarKillsAreMurder;
 		rules.m_bTagWarKills = config.m_bTagWarKills;
@@ -147,6 +154,8 @@ class LF_OrgWarConfig
 			changed++;
 		if (container.IsVariableSetDirectly("m_iCooldownSeconds") && container.Get("m_iCooldownSeconds", m_iCooldownSeconds))
 			changed++;
+		if (container.IsVariableSetDirectly("m_iLapseCooldownSeconds") && container.Get("m_iLapseCooldownSeconds", m_iLapseCooldownSeconds))
+			changed++;
 		if (container.IsVariableSetDirectly("m_iMinMembers") && container.Get("m_iMinMembers", m_iMinMembers))
 			changed++;
 		if (container.IsVariableSetDirectly("m_bWarKillsAreMurder") && container.Get("m_bWarKillsAreMurder", m_bWarKillsAreMurder))
@@ -162,12 +171,13 @@ class LF_OrgWarConfig
 	//! \param[in] reader A reader inside the wars object.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"fee", "answerSeconds", "lengthSeconds", "cooldownSeconds", "minMembers", "warKillsAreMurder", "tagWarKills"};
+		array<string> ownerKeys = {"fee", "answerSeconds", "lengthSeconds", "cooldownSeconds", "lapseCooldownSeconds", "minMembers", "warKillsAreMurder", "tagWarKills"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("fee", m_iFee, FEE_MIN, FEE_MAX);
 		reader.ReadInt("answerSeconds", m_iAnswerSeconds, ANSWER_MIN, ANSWER_MAX);
 		reader.ReadInt("lengthSeconds", m_iLengthSeconds, LENGTH_MIN, LENGTH_MAX);
 		reader.ReadInt("cooldownSeconds", m_iCooldownSeconds, COOLDOWN_MIN, COOLDOWN_MAX);
+		reader.ReadInt("lapseCooldownSeconds", m_iLapseCooldownSeconds, LAPSE_COOLDOWN_MIN, LAPSE_COOLDOWN_MAX);
 		reader.ReadInt("minMembers", m_iMinMembers, MEMBERS_MIN, MEMBERS_MAX);
 		reader.ReadBool("warKillsAreMurder", m_bWarKillsAreMurder);
 		reader.ReadBool("tagWarKills", m_bTagWarKills);
@@ -183,6 +193,7 @@ class LF_OrgWarRules
 	int m_iAnswerSeconds = LF_OrgWarConfig.DEFAULT_ANSWER_SECONDS;
 	int m_iLengthSeconds = LF_OrgWarConfig.DEFAULT_LENGTH_SECONDS;
 	int m_iCooldownSeconds = LF_OrgWarConfig.DEFAULT_COOLDOWN_SECONDS;
+	int m_iLapseCooldownSeconds = LF_OrgWarConfig.DEFAULT_LAPSE_COOLDOWN_SECONDS;
 	int m_iMinMembers = LF_OrgWarConfig.DEFAULT_MIN_MEMBERS;
 	bool m_bWarKillsAreMurder;
 	bool m_bTagWarKills = true;

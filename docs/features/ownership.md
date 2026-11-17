@@ -46,7 +46,7 @@
   (`LF_OrgRights`; bit = `LF_EOrganizationPermission`: withdraw, invite, kick,
   buy upgrade, manage ranks, use stash, and the reserved declare war, manage
   territory, spend fund). A new organization gets founder (every right), officer
-  (invite, kick, stash) and member (stash); an invite joins on the bottom rung.
+  (invite, kick, declare war since #2769, stash) and member (stash); an invite joins on the bottom rung.
   Face to face, a member with manage ranks sees "Promote in <org>" on a member
   whose next rung up is still below them and "Demote in <org>" on one who has a
   rung below (`org_promote` / `org_demote` slots, `LF_OrgRankRole`); nobody

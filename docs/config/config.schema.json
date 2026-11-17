@@ -932,7 +932,7 @@
               },
               "declareWar": {
                 "type": "boolean",
-                "description": "Reserved for the war record: no effect yet",
+                "description": "May declare a war on another organization and answer a declaration made on it",
                 "default": false
               },
               "useStash": {
@@ -956,7 +956,7 @@
         },
         "wars": {
           "type": "object",
-          "description": "The rules of an organization war: the fee, the answer window, how long a war lasts, the cooldown between the same two organizations, the member minimum and the two kill rules.",
+          "description": "The rules of an organization war: the fee, the answer window, how long a war lasts, the cooldown between the same two organizations, the shorter cooldown after a declaration lapses, the member minimum and the two kill rules.",
           "properties": {
             "fee": {
               "type": "integer",
@@ -983,6 +983,13 @@
               "type": "integer",
               "description": "Seconds before the same two organizations may fight another war. 0 means no cooldown",
               "default": 86400,
+              "minimum": 0,
+              "maximum": 2592000
+            },
+            "lapseCooldownSeconds": {
+              "type": "integer",
+              "description": "Seconds before the same two organizations may declare again after a declaration lapsed unanswered, so a fund cannot be drained by re-declaring on a loop. 0 means no cooldown",
+              "default": 3600,
               "minimum": 0,
               "maximum": 2592000
             },
