@@ -41,6 +41,7 @@ class LF_HandToolComponent : SCR_GadgetComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnModeChanged(EGadgetMode mode, IEntity charOwner)
 	{
+		EGadgetMode was = GetMode();
 		super.OnModeChanged(mode, charOwner);
 		// Vanilla auto-slots only types with a default quick slot; a hand tool takes the first free
 		// tool slot on the owner's machine, where the 1-0 bar lives.
@@ -57,6 +58,11 @@ class LF_HandToolComponent : SCR_GadgetComponent
 
 		if (mode == EGadgetMode.IN_HAND)
 			LF_Debug.Log(LF_HandTool.FEATURE, string.Format("%1 in hand of %2", GetToolId(), LF_Utils.GetPlayerUid(charOwner)));
+		else if (was == EGadgetMode.IN_HAND)
+		{
+			// A fall drops what the hands hold (#2384); the tool's use actions then find no tool.
+			LF_Debug.Log(LF_HandTool.FEATURE, string.Format("%1 left the hands: %2", GetToolId(), typename.EnumToString(EGadgetMode, mode)));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

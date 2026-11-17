@@ -227,22 +227,6 @@
     },
     {
       "do": {
-        "verb": "drill"
-      },
-      "expect": "added=1",
-      "wait": 1500,
-      "why": "the dev gate hands over a drill, standing in for the fence's sale"
-    },
-    {
-      "do": {
-        "verb": "hold",
-        "item": "LF_Drill"
-      },
-      "wait": 3500,
-      "why": "the drill works only from the hands (LF_HandTool)"
-    },
-    {
-      "do": {
         "verb": "stand",
         "entityName": "Grid_bank_Stage_RobKit",
         "side": "n"
@@ -265,6 +249,31 @@
     },
     {
       "do": {
+        "verb": "drill"
+      },
+      "expect": "added=1",
+      "wait": 1500,
+      "why": "the dev gate hands over a drill, standing in for the fence's sale"
+    },
+    {
+      "do": {
+        "verb": "stand",
+        "entityName": "Grid_bank_Stage_RobKit",
+        "side": "n"
+      },
+      "wait": 2500,
+      "why": "back at the vault door: the shot stood the body at the camera"
+    },
+    {
+      "do": {
+        "verb": "hold",
+        "item": "LF_Drill"
+      },
+      "wait": 3500,
+      "why": "the drill works only from the hands (LF_HandTool)"
+    },
+    {
+      "do": {
         "verb": "use",
         "className": "LF_BankRobAction"
       },
@@ -272,36 +281,9 @@
       "why": "the F key at the vault door starts the drill"
     },
     {
-      "shot": "robbery_drilling",
-      "look": [
-        3.9,
-        2.4,
-        -0.7
-      ],
-      "from": [
-        -0.3,
-        -0.4,
-        1.1
-      ],
-      "wait": 2000
-    },
-    {
-      "state": "drilling"
-    },
-    {
-      "shot": "robbery_alarm",
-      "look": [
-        0.07,
-        3,
-        6.6
-      ],
-      "from": [
-        1.2,
-        -1.8,
-        4
-      ],
+      "state": "drilling",
       "wait": 36000,
-      "why": "30 s of drilling, then the bell box sounds"
+      "why": "30 s of drilling with the drill in the hands; a world shot now would drop it and walk off (#2384)"
     },
     {
       "shot": "robbery_open",
@@ -315,7 +297,8 @@
         0.6,
         2.7
       ],
-      "why": "through the open door: the vault room and the bag"
+      "why": "through the open door: the vault room and the bag",
+      "handsFree": "the drill was left at the vault when it opened"
     },
     {
       "state": "robbed"
