@@ -6987,6 +6987,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Signed. The page is yours."
      Comment "Ledger notice line after founding."
     }
+    CustomStringTableItem "{15CA4CCA7E9E4914}" {
+     Id "LF-Org_GiveUpLease"
+     Target_en_us "Give up the lease"
+     Comment "Ledger row action: the holder gives the hideout yard lease back (#2572)."
+    }
     CustomStringTableItem "{6D53E58AC9FADED3}" {
      Id "LF-Org_Hideout"
      Target_en_us "Alley yard lease"
@@ -7027,6 +7032,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Free"
      Comment "Hideout lease status: nobody holds it."
     }
+    CustomStringTableItem "{FAF2A876ADF64AE5}" {
+     Id "LF-Org_LeaseGivenUp"
+     Target_en_us "You gave the alley yard back. Its gate is shut."
+     Comment "Ledger notice after the lease is given up (#2572)."
+    }
     CustomStringTableItem "{22205B2B89D3D298}" {
      Id "LF-Org_LeaseOurs"
      Target_en_us "Yours - members enter"
@@ -7036,6 +7046,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Org_LeaseRefused"
      Target_en_us "The lease was refused."
      Comment "Ledger notice: lease refused."
+    }
+    CustomStringTableItem "{3BCB98DA6F2D4899}" {
+     Id "LF-Org_LeaseReleaseRefused"
+     Target_en_us "Only a rank that may buy can give the lease up."
+     Comment "Toast and ledger notice when giving up the lease is refused (#2572)."
     }
     CustomStringTableItem "{717EDA57B8114856}" {
      Id "LF-Org_LeaseTaken"
