@@ -1659,16 +1659,26 @@ async function cmdUiImageBatch(flags) {
     mkdirSync(join(root, "tmp"), { recursive: true });
     const started = Date.now();
     ui.installPlugin(root);
-    quietSpawnSync(exe, [
-      "-gproj", join(root, "addons", "LifeFramework", "LifeFramework.gproj"),
-      "-wbModule=ResourceManager", "-noSplash", "-run", "-exitAfterInit",
-      "-plugin=LF_ImageImportPlugin", "-lfImage=" + tifs.join("|"),
-      "-profile", profile,
-      ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
-    ], { cwd: gameDir, timeoutMs: Number(process.env.LF_UI_IMAGE_TIMEOUT_S || 150 + 30 * tifs.length) * 1000, stdout: logFile, stderr: logFile });
+    // A headless boot builds only the first texture that has no .edds yet (measured 2026-11-17: the
+    // rest of a RebuildResourceFiles list is dropped until they are registered), so boot again for
+    // what is still missing; each boot is ~12 s. Stops when a boot builds nothing.
+    const eddsOf = (t) => t.replace(/\.tif$/i, ".edds");
+    let boots = 0;
+    for (let pending = tifs.filter((t) => !existsSync(eddsOf(t))); pending.length && boots <= tifs.length; pending = tifs.filter((t) => !existsSync(eddsOf(t)))) {
+      const before = pending.length;
+      boots++;
+      quietSpawnSync(exe, [
+        "-gproj", join(root, "addons", "LifeFramework", "LifeFramework.gproj"),
+        "-wbModule=ResourceManager", "-noSplash", "-run", "-exitAfterInit",
+        "-plugin=LF_ImageImportPlugin", "-lfImage=" + pending.join("|"),
+        "-profile", profile,
+        ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
+      ], { cwd: gameDir, timeoutMs: Number(process.env.LF_UI_IMAGE_TIMEOUT_S || 150) * 1000, stdout: logFile, stderr: logFile });
+      if (tifs.filter((t) => !existsSync(eddsOf(t))).length >= before) break;
+    }
     const secs = ((Date.now() - started) / 1000).toFixed(0);
-    const bad = tifs.filter((t) => !existsSync(t.replace(/\.tif$/i, ".edds")));
-    console.log(`SUMMARY ui-image batch ${bad.length ? "fail" : "ok"} textures=${tifs.length} built=${tifs.length - bad.length} secs=${secs} log=${logFile}${bad.length ? " missing=" + bad.map((b) => b.replace(root, "")).join(",") : ""}`);
+    const bad = tifs.filter((t) => !existsSync(eddsOf(t)));
+    console.log(`SUMMARY ui-image batch ${bad.length ? "fail" : "ok"} textures=${tifs.length} built=${tifs.length - bad.length} boots=${boots} secs=${secs} log=${logFile}${bad.length ? " missing=" + bad.map((b) => b.replace(root, "")).join(",") : ""}`);
     return bad.length ? 1 : 0;
   } finally {
     if (locked) wt.releaseLock(root, "build");

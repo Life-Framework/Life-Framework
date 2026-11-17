@@ -34,11 +34,11 @@ class LF_ImageImportPlugin : WorkbenchPlugin
 		// One path, or several joined with "|" (ui-image --batch: one boot for a whole icon set).
 		array<string> paths = {};
 		path.Split("|", paths, true);
+		// RebuildResourceFiles takes the whole list in one call; a RebuildResourceFile per path queued
+		// the work and the headless boot exited with only the first texture built.
 		foreach (string one : paths)
-		{
 			Print("LF_IMAGE_IMPORT rebuilding " + one);
-			rm.RebuildResourceFile(one, "PC", false);
-			Print("LF_IMAGE_IMPORT done " + one);
-		}
+		rm.RebuildResourceFiles(paths, "PC");
+		Print("LF_IMAGE_IMPORT done " + path);
 	}
 }
