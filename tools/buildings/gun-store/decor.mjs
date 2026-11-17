@@ -4,6 +4,10 @@
 //   node tools/buildings/gun-store/decor.mjs          rewrite the decor block in the furniture prefab
 //   node tools/buildings/gun-store/decor.mjs --check  exit 1 when the prefab is not what this script writes
 //
+// Lights meet the medium building budget (docs/architecture/performance.md, `toolscli perf building GunStore --size medium`):
+// 6 lights in all (4 inside, 1 per facade lamp), CastShadow written on every one, one shadow caster (the spot over
+// the counter) and no point light casting. Fixtures that only have to look on are emissive meshes, not lights.
+//
 // Everything here is a base-game prop standing on its own: no inventory item, nothing pickable, no store
 // slot. The sold goods stay in GunStore_Store.et (spec.json, `tools\cli building run gun-store`).
 // Decor entities carry IDs that start with DC1F, so a re-run removes the old block and writes the new one.
@@ -26,7 +30,10 @@ const ID_PREFIX = "DC1F";
 
 const P = {
   lamp: "Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et",
-  wallLampOn: "Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et",
+  // the dead lamp mesh: the vanilla `_on_exterior` prefab drags in two lights (one casting), so this one gets the
+  // lit glass and a single light of our own (wallLamp)
+  wallLamp: "Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01.et",
+  wallLampLight: "Prefabs/Structures/BuildingParts/Lights/LightPrefabs/LampIndustrial_01_light_spot_exterior.et",
   skull1: "Prefabs/Props/Forest/DeerSkull_01/DeerSkull_01_board.et",
   skull2: "Prefabs/Props/Forest/DeerSkull_01/DeerSkull_02_board.et",
   skull3: "Prefabs/Props/Forest/DeerSkull_01/DeerSkull_03_board.et",
@@ -68,31 +75,39 @@ const P = {
 // The base game's lit diffuser for the fluorescent lamps' "cover" slot (the lamp meshes ship dark).
 const LAMP_COVER_LIT = "Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat";
 // The two lamps the building pipeline flattened into the furniture prefab: their covers glow too.
+// The facade lamps' glass, lit orange as vanilla's `_on_exterior` lamp has it, and the light's projection mask.
+const WALL_GLASS_LIT = "Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/LampIndustrial_01_glass_on_orange.emat";
+const WALL_GLASS = { mesh: "{5111E74D5E891458}", source: "LampIndustrial_01_glass" };
+const WALL_LIGHT_MASK = "{465C9BD0684E85FF}Common/Textures/Light_profiles/LampIndustrial_01_Mask.edds";
 const VANILLA_LAMPS = ["52640E95D114237B", "E99B992F704FA5F1"];
 
 const items = []; // { path, x, y, z, yaw, scale }
-const lights = []; // { x, y, z, angles, color, lv, radius, angle }
+const lights = []; // { x, y, z, angles, color, lv, radius, angle, shadow } or a facade lamp's { wall: true, x, y, z }
 const put = (path, x, y, z, yaw = 0, scale = 1, lit = false) => items.push({ path, x, y, z, yaw, scale, lit });
-const spot = (x, y, z, o = {}) => lights.push({ type: "Spot", x, y, z, angles: "-90 0 0", color: "1 0.86 0.64 1", lv: 5.5, radius: 7, angle: 140, ...o });
+// Every light writes CastShadow: only a spot with `shadow: true` casts (the budget allows one a building).
+const spot = (x, y, z, o = {}) => lights.push({ type: "Spot", x, y, z, angles: "-90 0 0", color: "1 0.86 0.64 1", lv: 5.5, radius: 7, angle: 140, shadow: false, ...o });
 // A point light has no cone: it is what lights the ceiling and the upper walls, which the downward spots never reach.
-const glow = (x, y, z, o = {}) => lights.push({ type: "Point", x, y, z, color: "1 0.88 0.68 1", lv: 2.2, radius: 5.5, ...o });
+// It never casts a shadow (six shadow maps).
+const glow = (x, y, z, o = {}) => lights.push({ type: "Point", x, y, z, color: "1 0.88 0.68 1", lv: 2.2, radius: 5.5, shadow: false, ...o });
+// A lit lamp on the facade: the lamp mesh with the lit glass and one spot (vanilla's own, no shadow) aimed at the pavement.
+const wallLamp = (x, y, z) => {
+  put(P.wallLamp, x, y, z, 0, 1, "wall");
+  lights.push({ wall: true, x, y: y - 0.155, z: z + 0.267 });
+};
 const lamp = (x, z) => put(P.lamp, x, 3.918, z, 0, 1, true);
 
 // ---- Lights: ceiling lamps over the shop floor (the vanilla set's two lamps at x 3 are dead meshes) ----
-spot(2.99, 3.7, 4.668); // over the window end of the shop (lamp mesh already in the furniture)
+// Four lights inside (the budget is six with the two facade lamps): the spot over the till and the clerk is the
+// building's one shadow caster; a spot over the middle and one over the window end (lamp meshes already in the
+// furniture); a soft point light with no shadow that lights the ceiling and the walls the spots never reach (#2012).
+// All five lamp meshes carry the lit cover, so a fixture without a light of its own still looks on.
+lamp(3.0, -0.5); // the lamp over the till and the clerk
+spot(3.0, 3.7, -0.5, { color: "1 0.82 0.55 1", lv: 6.5, radius: 5, angle: 110, shadow: true });
 spot(2.962, 3.7, 0.922); // over the middle (lamp mesh already in the furniture)
 lamp(0.4, 3.3);
-spot(0.4, 3.7, 3.3);
-lamp(3.0, -0.5); // the lamp over the till and the clerk
-spot(3.0, 3.7, -0.5, { color: "1 0.82 0.55 1", lv: 6.5, radius: 5, angle: 110 });
-lamp(3.0, 6.3); // the window display: a spot on the rack the street sees
-spot(3.0, 3.7, 6.3, { color: "1 0.93 0.8 1", lv: 7.5, radius: 4.5, angle: 90 });
-// The black ceiling at night (#2012 second pass): every spot above points down and the ceiling is 0.2 m over it,
-// so nothing reached it and the covers were dark meshes. A soft point light hangs under three of the fittings
-// (it lights the ceiling above it and the walls) and the covers of all five lamps carry the lit material.
-glow(2.99, 3.0, 4.668);
-glow(2.962, 3.0, 0.922);
-glow(0.4, 3.0, 3.3);
+lamp(3.0, 6.3); // the window display
+spot(2.99, 3.7, 4.668, { lv: 6.5, radius: 8 }); // over the window end; its cone reaches the display rack
+glow(1.4, 3.0, 2.4, { lv: 3.2, radius: 7 }); // ceiling and walls, centre of the shop
 
 // ---- Walls ----
 // x -1.54 wall (faces +x): a trophy beside the door to the entry hall. Behind it, for z below -0.4, is the stair
@@ -167,8 +182,6 @@ put(P.notice, 0.93, 1.85, -1.8, 90);
 put(P.skull2, 0.93, 2.55, -2.2, 90);
 // A floor lamp on the right wall between the hall door and the notice board.
 put(P.floorLamp, -1.2, F, 2.0, 90);
-glow(1.1, BT + 0.4, -2.55, { color: "1 0.84 0.6 1", lv: 2.6, radius: 3.5 });
-glow(-1.2, 1.7, 2.0, { color: "1 0.8 0.52 1", lv: 2.6, radius: 4.2 });
 
 // ---- The back shelves: stock boxes, tool cases and solvent tins ----
 // unit: origin and yaw of the vanilla shelf; boards are y above the shelf origin, x the usable width.
@@ -210,8 +223,8 @@ shelf({ ox: 3.296, oz: -3.003, yaw: 0, x0: -0.96, width: 0.91 }, narrow); // beh
 shelf({ ox: 5.745, oz: 6.057, yaw: -90, x0: -1.38, width: 1.32 }, wide); // on the x 5.75 wall by the window
 
 // ---- Outside: the pavement in front of the shop (the front wall is at z 7.75) ----
-put(P.wallLampOn, -0.9, 3.4, 7.73, 0); // a lit lamp between the window and the arch
-put(P.wallLampOn, 4.9, 3.4, 7.73, 0); // and one right of the window
+wallLamp(-0.9, 3.4, 7.73); // a lit lamp between the window and the arch
+wallLamp(4.9, 3.4, 7.73); // and one right of the window
 put(P.bench3, 1.7, 0, 8.3, 180);
 put(P.crate, 0.3, 0, 8.35, 8);
 put(P.crate, 0.3, 0.223, 8.35, -12);
@@ -241,21 +254,41 @@ async function build() {
   const litGuid = db.guidOf(LAMP_COVER_LIT);
   if (!litGuid) throw new Error(`no GUID for ${LAMP_COVER_LIT} in the game's resource database`);
   const litRef = `{${litGuid}}${LAMP_COVER_LIT}`;
+  const wallGuid = db.guidOf(WALL_GLASS_LIT);
+  if (!wallGuid) throw new Error(`no GUID for ${WALL_GLASS_LIT} in the game's resource database`);
+  const wallRef = `{${wallGuid}}${WALL_GLASS_LIT}`;
   const rows = [];
   items.forEach((it, i) => {
     const { ref, cls } = info(it.path);
     const lines = [`  ${cls} : "${ref}" {`, `   ID "${hex16(`gun-store|decor|${i}|${it.path}`)}"`];
-    if (it.lit) lines.push(...litCover(litRef, hex16(`gun-store|decor|lit|${i}`)));
+    if (it.lit === "wall") lines.push(...litCover(wallRef, hex16(`gun-store|decor|lit|${i}`), WALL_GLASS));
+    else if (it.lit) lines.push(...litCover(litRef, hex16(`gun-store|decor|lit|${i}`)));
     if (it.scale !== 1) lines.push(`   scale ${num(it.scale)}`);
     lines.push(`   coords ${num(it.x)} ${num(it.y)} ${num(it.z)}`);
     if (it.yaw) lines.push(`   angleY ${num(it.yaw)}`);
     lines.push("  }");
     rows.push(lines.join("\n"));
   });
+  const wallLight = info(P.wallLampLight);
   lights.forEach((l, i) => {
+    if (l.wall) {
+      rows.push(
+        [
+          `  LightEntity : "${wallLight.ref}" {`,
+          `   ID "${hex16(`gun-store|decor|light|${i}`)}"`,
+          `   coords ${num(l.x)} ${num(l.y)} ${num(l.z)}`,
+          "   angles -38.791 0 0",
+          "   CastShadow 0",
+          `   ProjectionMap "${WALL_LIGHT_MASK}"`,
+          "   LensFlareType Disabled",
+          "  }",
+        ].join("\n"),
+      );
+      return;
+    }
     const r = ["  LightEntity {", `   ID "${hex16(`gun-store|decor|light|${i}`)}"`, `   coords ${num(l.x)} ${num(l.y)} ${num(l.z)}`];
     if (l.type === "Spot") r.push(`   angles ${l.angles}`);
-    r.push(`   Color ${l.color}`, `   LV ${l.lv}`, "   ClipEV -10", `   Type ${l.type}`, `   Radius ${l.radius}`, "   NearPlane 0.3");
+    r.push(`   Color ${l.color}`, `   LV ${l.lv}`, `   CastShadow ${l.shadow ? 1 : 0}`, "   ClipEV -10", `   Type ${l.type}`, `   Radius ${l.radius}`, "   NearPlane 0.3");
     if (l.type === "Spot") r.push(`   SpotAngle ${l.angle}`);
     r.push("   LensFlareType Disabled", "  }");
     rows.push(r.join("\n"));
@@ -264,13 +297,13 @@ async function build() {
 }
 
 // The lamp meshes' "cover" slot, assigned the base game's lit diffuser (the component id is the lamp prefabs' MeshObject).
-function litCover(litRef, id) {
+function litCover(litRef, id, slot = { mesh: "{5872F0EB7FA40561}", source: "LampFluorescent_01_cover" }) {
   return [
     "   components {",
-    `    MeshObject "{5872F0EB7FA40561}" {`,
+    `    MeshObject "${slot.mesh}" {`,
     "     Materials {",
     `      MaterialAssignClass "{${id.slice(0, 16)}}" {`,
-    `       SourceMaterial "LampFluorescent_01_cover"`,
+    `       SourceMaterial "${slot.source}"`,
     `       AssignedMaterial "${litRef}"`,
     "      }",
     "     }",
