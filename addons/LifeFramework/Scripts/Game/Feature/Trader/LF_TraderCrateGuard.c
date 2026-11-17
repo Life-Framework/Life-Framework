@@ -55,3 +55,30 @@ class LF_TraderCrateGuard
 		return true;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! A quantity transfer or split changes a stack in place and skips the crate's CanStoreItem. A
+//! trader's crate belongs to the trader: no player changes a stack in it (#2585).
+modded class ScriptedInventoryStorageManagerComponent
+{
+	//------------------------------------------------------------------------------------------------
+	override protected bool LF_AllowsRestrictedStorage(notnull IEntity item)
+	{
+		if (!super.LF_AllowsRestrictedStorage(item))
+			return false;
+
+		IEntity holder = LF_HolderOf(item);
+		while (holder)
+		{
+			if (holder.FindComponent(LF_TraderManagerComponent))
+			{
+				LF_Debug.Warn("Trader", string.Format("crate kept %1: a quantity change on the trader's stock", LF_Utils.GetPrefabName(item)));
+				return false;
+			}
+
+			holder = LF_HolderOf(holder);
+		}
+
+		return true;
+	}
+}

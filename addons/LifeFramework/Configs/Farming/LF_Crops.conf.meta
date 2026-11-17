@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9B4C2E71D3A85F06}Configs/Farming/LF_Crops.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

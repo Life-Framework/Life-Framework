@@ -15,11 +15,11 @@
 // red-proof: 2026-11-17, three breaks, each restored: gpuRoute always "direct" failed 7 cases ("over ssh a GPU launch goes
 // through the desktop session" ...); chooseGate ignoring state.gpu failed 5 ("a machine with no GPU session is never
 // chosen", "pinned to a machine with no GPU session: none, no wait" ...); verdict not looking at the session state failed
-// "a disconnected session is not usable".
+// "a disconnected session is not usable". #2590, 2026-11-17: on the old setupScript (powershell.exe run directly, no
+// conhost --headless) "the action is conhost.exe --headless" and "the headless action runs the helper script" failed; green after.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as gs from "../lib/gpu-session.mjs";
 import { interactiveNeeded, interactiveSpawnDetached } from "../lib/interactive-launch.mjs";
@@ -28,6 +28,7 @@ import { pickWorkbenchMachine } from "../lib/wb-route.mjs";
 import { cliInDesktopSession, desktopSessionOrSay, needsDesktopSession } from "../remote/desktop/in-session.mjs";
 import { parseRemoteState } from "../remote/pool.mjs";
 import { parseArgs } from "../commands/desktop-helper.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const check = (name, ok, detail = "") => {
@@ -120,7 +121,7 @@ check("explorer in session 0 only is nobody", gs.verdict({ ...active, session: 0
   }
   check("interactiveSpawnDetached throws NoDesktopSession before starting anything", threw?.code === gs.NO_SESSION_CODE && threw.message === LINE, String(threw?.message));
   // The whole-CLI re-run returns 3 at once, one line, and writes nothing.
-  const root = mkdtempSync(join(tmpdir(), "lf-gpu-"));
+  const root = scratchDir("lf-gpu-");
   const said = [];
   const keep = console.log;
   console.log = (...a) => said.push(a.join(" "));
@@ -184,6 +185,8 @@ const withLocal = { ...noLocal, hasWb: true };
   const setup = gs.setupScript({ user: "PC1\\jaspe" });
   check("the task is At log on for the user", /New-ScheduledTaskTrigger -AtLogOn -User \$user/.test(setup) && /'PC1\\jaspe'/.test(setup));
   check("the task is interactive (the desktop session)", /-LogonType Interactive/.test(setup));
+  check("the action is conhost.exe --headless (no console window to close, #2590)", /New-ScheduledTaskAction -Execute 'conhost\.exe' -Argument '--headless powershell\.exe /.test(setup), setup.split("\n").find((l) => l.includes("New-ScheduledTaskAction")));
+  check("the headless action runs the helper script", /--headless powershell\.exe [^']*-File "C:\\LF\\desktop\\desktop-helper\.ps1"'/.test(setup));
   check("setup is idempotent: the task is replaced with -Force", /Register-ScheduledTask -TaskName 'LF-DesktopHelper'.* -Force/.test(setup));
   check("one instance at a time", /MultipleInstances IgnoreNew/.test(setup));
   const helper = gs.desktopHelperScript();
@@ -196,7 +199,7 @@ const withLocal = { ...noLocal, hasWb: true };
   check("desktop-helper rejects another verb", !!parseArgs(["frobnicate"]).error);
   // Every generated PowerShell parses (the real parser; Windows only).
   if (process.platform === "win32") {
-    const dir = mkdtempSync(join(tmpdir(), "lf-gpu-ps-"));
+    const dir = scratchDir("lf-gpu-ps-");
     const scripts = { probe: gs.PS_GPU_PROBE, heartbeat: gs.PS_READ_HEARTBEAT, setup, helper };
     for (const [name, text] of Object.entries(scripts)) {
       const file = join(dir, `${name}.ps1`);

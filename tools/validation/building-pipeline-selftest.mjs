@@ -18,8 +18,7 @@
 //   alarmChild written inside the components block (#1143 PR 2) -> FAIL store: the alarm bell box is a child entity carrying the alarm mount, after the components
 //   slotsOf without the clearance check (2026-11-15, #1143)      -> FAIL store: goods taller than the gap above a board are refused
 //   addProps inserting before the children's opening brace       -> FAIL polish: a hand-placed prop lands at the end of the furniture child list
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { checkBuildingModel, metaDrift, metaMaterials, metaSurfaces, planImport, skipped, targetPath, writePlan, importBuilding } from "../buildings/pipeline/import.mjs";
@@ -30,6 +29,7 @@ import { guidIn, rdbRecord } from "../buildings/pipeline/gamedb.mjs";
 import { applyLighting, fixturePlan } from "../buildings/pipeline/lighting.mjs";
 import { ROOM_TINT, surfaceOf } from "../buildings/pipeline/materials.mjs";
 import { storePlan, storePrefab, toBuilding } from "../buildings/pipeline/store-slots.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = join(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "..", "..");
 const FAKE_BUYER = "Test.Buyer@example.invalid";
@@ -72,7 +72,7 @@ export async function main() {
     failed++;
     console.log(`FAIL ${what}`);
   };
-  const tmp = mkdtempSync(join(tmpdir(), "lf-building-"));
+  const tmp = scratchDir("lf-building-");
   const savedEnv = { ...process.env };
   try {
     // ---- spec

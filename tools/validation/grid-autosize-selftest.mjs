@@ -11,13 +11,13 @@
 // red-proof: with spanFor made `Math.floor((extent + margin) / CELL.size)` (no margin rounding up) this printed 22 FAILs, from
 // "a 15.3 x 12.7 m villa takes a 2x2 block" to "a 2x2 in an open PR is avoided" (2026-11-16); restored, it passes.
 
-import { mkdirSync, mkdtempSync, readFileSync, existsSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, existsSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
 import { main as gridMain } from "../commands/grid.mjs";
 import { MARGIN, boundsWithChildren, chooseYaw, largestFree, noFitMessage, spanFor, spanOptions } from "../grid/autosize.mjs";
 import { CELLS_DIR, GRID_LAYERS, allCells, blockers, claimCellIds, claimRect, gapSide, layerOfSlug, openPrClaims } from "../lib/world-zones.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const ok = (cond, what) => {
@@ -94,7 +94,7 @@ async function run(root, argv, extra = {}) {
     console.log = real;
   }
 }
-const tmp = mkdtempSync(join(tmpdir(), "lf-grid-autosize-"));
+const tmp = scratchDir("lf-grid-autosize-");
 try {
   const fresh = (name) => {
     const r = join(tmp, name);

@@ -4108,6 +4108,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 is waiting on the pad in front of the garage."
      Comment "Retrieve succeeded. %1 is the plate"
     }
+    CustomStringTableItem "{4F4F48DC707A84B4}" {
+     Id "LF-Garage_SlotsFull"
+     Target_en_us "Your garage is full: %1 vehicles at most. Retrieve one before storing another."
+     Comment "Garage store refused (#2655): the owner's stored vehicles fill every garage slot. %1 is the cap."
+    }
     CustomStringTableItem "{A1C4E87B62D94F05}" {
      Id "LF-Garage_StepOut"
      Target_en_us "Step out of the vehicle first"
@@ -5441,6 +5446,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Sin bonos activos"
      Comment "Character standing summary when there are no bonuses"
     }
+    CustomStringTableItem "{502AD651193AD12E}" {
+     Id "LF-Level_Far_Any"
+     Target_en_us "You are not experienced enough for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{3AF129B888C991B7}" {
+     Id "LF-Level_Far_Delivery"
+     Target_en_us "Do more runs first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{99637675CD655B38}" {
+     Id "LF-Level_Far_Farmer"
+     Target_en_us "You have not worked the land enough for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{1A467AE1429D59EA}" {
+     Id "LF-Level_Far_Lumberjack"
+     Target_en_us "You have not spent enough time in the forest for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{F468C3116863E4C2}" {
+     Id "LF-Level_Far_Medic"
+     Target_en_us "You are not experienced enough in medicine for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{B9DCBE4AEED66191}" {
+     Id "LF-Level_Far_Miner"
+     Target_en_us "You have not spent enough time mining for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{41FE6820DDF1221C}" {
+     Id "LF-Level_Far_Police"
+     Target_en_us "You are not experienced enough in the force for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{21C91A1344B91226}" {
+     Id "LF-Level_Near_Any"
+     Target_en_us "You are almost experienced enough for this. A little more practice first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{83D47B50E56450B1}" {
+     Id "LF-Level_Near_Delivery"
+     Target_en_us "Nearly there. A few more runs first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{96C6CD7CEE27AED3}" {
+     Id "LF-Level_Near_Farmer"
+     Target_en_us "Nearly there. A little more work in the fields first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{0001301D204BDAFA}" {
+     Id "LF-Level_Near_Lumberjack"
+     Target_en_us "Nearly there. A few more days felling timber first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{CE9DF1FD414FC63E}" {
+     Id "LF-Level_Near_Medic"
+     Target_en_us "Nearly there. A little more practice with patients first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{601CF8826758D265}" {
+     Id "LF-Level_Near_Miner"
+     Target_en_us "Nearly there. A few more shifts digging first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{01E474CC353E1714}" {
+     Id "LF-Level_Near_Police"
+     Target_en_us "Nearly there. A little more time on duty first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
     CustomStringTableItem "{2024E806595907BF}" {
      Id "LF-Level_Promoted"
      Target_en_us "Your record now reads grade %1. Your supervisor has put you down for further training."
@@ -5894,6 +5969,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Search powers"
      Target_es_es "Facultad de registro"
      Comment "Licence name: authority to search"
+    }
+    CustomStringTableItem "{61B7DF5E288DB590}" {
+     Id "LF-License_Refused_Title"
+     Target_en_us "Not yet"
+     Comment "Job-level gate refusal in words, never a number (#2700)."
     }
     CustomStringTableItem "{78705B86BC3B43C0}" {
      Id "LF-License_Unemployed_Desc"
@@ -6987,6 +7067,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Signed. The page is yours."
      Comment "Ledger notice line after founding."
     }
+    CustomStringTableItem "{15CA4CCA7E9E4914}" {
+     Id "LF-Org_GiveUpLease"
+     Target_en_us "Give up the lease"
+     Comment "Ledger row action: the holder gives the hideout yard lease back (#2572)."
+    }
     CustomStringTableItem "{6D53E58AC9FADED3}" {
      Id "LF-Org_Hideout"
      Target_en_us "Alley yard lease"
@@ -7027,6 +7112,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Free"
      Comment "Hideout lease status: nobody holds it."
     }
+    CustomStringTableItem "{FAF2A876ADF64AE5}" {
+     Id "LF-Org_LeaseGivenUp"
+     Target_en_us "You gave the alley yard back. Its gate is shut."
+     Comment "Ledger notice after the lease is given up (#2572)."
+    }
     CustomStringTableItem "{22205B2B89D3D298}" {
      Id "LF-Org_LeaseOurs"
      Target_en_us "Yours - members enter"
@@ -7036,6 +7126,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Org_LeaseRefused"
      Target_en_us "The lease was refused."
      Comment "Ledger notice: lease refused."
+    }
+    CustomStringTableItem "{3BCB98DA6F2D4899}" {
+     Id "LF-Org_LeaseReleaseRefused"
+     Target_en_us "Only a rank that may buy can give the lease up."
+     Comment "Toast and ledger notice when giving up the lease is refused (#2572)."
     }
     CustomStringTableItem "{717EDA57B8114856}" {
      Id "LF-Org_LeaseTaken"
@@ -7726,6 +7821,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Placement_Title"
      Target_en_us "Placing"
      Comment "Toast title for every placement refusal (#1026)."
+    }
+    CustomStringTableItem "{91F3B6D2C0E8A474}" {
+     Id "LF-Plant_CharacterCap"
+     Target_en_us "You are already tending as many plants as you can."
+     Comment "Toast: the character has reached the per-character plant cap (12)."
+    }
+    CustomStringTableItem "{2B96D1F4A8C03E57}" {
+     Id "LF-Plant_InVehicle"
+     Target_en_us "You can't plant from a vehicle."
+     Comment "Toast: planting is refused while the player is in a vehicle."
+    }
+    CustomStringTableItem "{E4A07C5B1D3F9268}" {
+     Id "LF-Plant_SafeZone"
+     Target_en_us "Nothing grows in the safe zone."
+     Comment "Toast: planting is refused inside a safe zone."
+    }
+    CustomStringTableItem "{A8D5E2073B1C96F0}" {
+     Id "LF-Plant_ServerCap"
+     Target_en_us "The land is full; no more plants fit right now."
+     Comment "Toast: the server-wide plant cap (300) is reached."
+    }
+    CustomStringTableItem "{5C1E8A3D70B94F21}" {
+     Id "LF-Plant_TooClose"
+     Target_en_us "Too close to another plant."
+     Comment "Toast: a seed cannot be planted within 1.5 m of another plant."
+    }
+    CustomStringTableItem "{7D2F4B90E3A618C5}" {
+     Id "LF-Plant_TooFar"
+     Target_en_us "Too far away to plant there."
+     Comment "Toast: the spot is beyond the 4 m planting reach."
     }
     CustomStringTableItem "{F875CB040C3C2526}" {
      Id "LF-PoliceAppGm_Approve"
@@ -8740,6 +8865,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Revive_Done"
      Target_en_us "You brought them back."
      Comment "Toast to the medic after a revive."
+    }
+    CustomStringTableItem "{F0336D48D1263225}" {
+     Id "LF-Revive_MedicDown"
+     Target_en_us "You cannot help anyone while you are down."
+     Comment "Revive refusal: the medic is downed or dead."
     }
     CustomStringTableItem "{7A30C5E1D49B6B01}" {
      Id "LF-Revive_NoItem"
@@ -9972,6 +10102,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-TestOrgSign_NotIn"
      Target_en_us "You are not in an organisation."
      Comment "Greyed-out reason and toast: Leave with no organisation (#934)."
+    }
+    CustomStringTableItem "{7581DEC7A2972FB8}" {
+     Id "LF-TestOrgSign_OtherOrg"
+     Target_en_us "The test sign only takes you out of the test organisation."
+     Comment "Toast: the test org sign's Leave refused because the player belongs to a different organisation (#2536)."
     }
     CustomStringTableItem "{C3D98F355E87E01F}" {
      Id "LF-TestOrgSign_Title"
