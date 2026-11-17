@@ -39,6 +39,26 @@ class LF_OnWantedChanged : LF_Event
 	}
 }
 
+//! A crime report was stored for a character (#2516). Published by LF_WantedReports.Add, so it comes
+//! after the wanted level rose in the crime paths that raise the level first.
+class LF_OnWantedReportFiled : LF_Event
+{
+	//! The character key the reports use (#331).
+	string m_sPlayerUid;
+	int m_iSequence;
+	//! The report's place text (a sign title key or "grid X-Z"), never a coordinate.
+	string m_sPlace;
+
+	static LF_OnWantedReportFiled Create(string playerUid, int sequence, string place)
+	{
+		LF_OnWantedReportFiled e = new LF_OnWantedReportFiled();
+		e.m_sPlayerUid = playerUid;
+		e.m_iSequence = sequence;
+		e.m_sPlace = place;
+		return e;
+	}
+}
+
 //! A suspect's open reports were marked identified: their name goes on the posters.
 class LF_OnSuspectIdentified : LF_Event
 {
