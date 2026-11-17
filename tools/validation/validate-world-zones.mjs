@@ -33,7 +33,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { FRAME_CELL, claimCellIds, claimRect, isFrameClaim, latticeRect } from "../grid/lattice.mjs";
-import { DEBUG_LAYERS, GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
+import { DEBUG_LAYERS, GRID_LAYERS, PACK_GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
 
 export const BASELINE = "tools/validation/zone-guard-baseline.json";
 export const TOWN_PASS = /^town-/;
@@ -119,11 +119,16 @@ export function checkClaims(root, { mainClaims: onMain = [], prClaims = [] } = {
     }
     const layer = layerOfSlug(c.slug);
     if (c.layer !== layer) errors.push(`${c.file}: layer should be ${layer}`);
-    const file = join(root, GRID_LAYERS, layer);
+    const layersDir = c.pack === true ? PACK_GRID_LAYERS : GRID_LAYERS;
+    const file = join(root, layersDir, layer);
+    if (c.pack !== undefined && c.pack !== true) errors.push(`${c.file}: "pack" is true or absent`);
     if (!existsSync(file)) {
-      errors.push(`${c.file}: ${GRID_LAYERS}/${layer} is missing (tools\\cli grid place ${c.slug} writes it)`);
+      errors.push(`${c.file}: ${layersDir}/${layer} is missing (tools\\cli grid place ${c.slug}${c.pack === true ? " --pack" : ""} writes it)`);
       continue;
     }
+    // A cell lives in one world: the claim and the folder agree (a pack cell is marked "pack": true).
+    const other = join(root, c.pack === true ? GRID_LAYERS : PACK_GRID_LAYERS, layer);
+    if (existsSync(other)) errors.push(`${c.file}: ${layer} is in both ${GRID_LAYERS} and ${PACK_GRID_LAYERS}; a cell lives in one world (grid free ${c.slug} and place it again)`);
     const b = rect;
     for (const e of topLevelCoords(readFileSync(file, "utf8"))) {
       if (e.x < b.x0 - 0.5 || e.x > b.x1 + 0.5 || e.z < b.z0 - 0.5 || e.z > b.z1 + 0.5) {
@@ -131,11 +136,14 @@ export function checkClaims(root, { mainClaims: onMain = [], prClaims = [] } = {
       }
     }
   }
-  const claimed = new Set(claims.map((c) => layerOfSlug(c.slug ?? "")));
-  const gridDir = join(root, GRID_LAYERS);
-  if (existsSync(gridDir)) {
-    for (const f of readdirSync(gridDir).filter((n) => /^Grid_.*\.layer$/.test(n))) {
-      if (!claimed.has(f)) errors.push(`${GRID_LAYERS}/${f}: no claim in tools/grid/cells/ (write grid layers with tools\\cli grid place)`);
+  const claimed = new Set(claims.filter((c) => c.pack !== true).map((c) => layerOfSlug(c.slug ?? "")));
+  const claimedPack = new Set(claims.filter((c) => c.pack === true).map((c) => layerOfSlug(c.slug ?? "")));
+  for (const [rel, set] of [[GRID_LAYERS, claimed], [PACK_GRID_LAYERS, claimedPack]]) {
+    const dir = join(root, rel);
+    if (!existsSync(dir)) continue;
+    const pack = rel === PACK_GRID_LAYERS;
+    for (const f of readdirSync(dir).filter((n) => /^Grid_.*\.layer$/.test(n))) {
+      if (!set.has(f)) errors.push(`${rel}/${f}: no ${pack ? '"pack": true ' : ""}claim in tools/grid/cells/ (write grid layers with tools\\cli grid place${pack ? " --pack" : ""})`);
     }
   }
   const debugDir = join(root, DEBUG_LAYERS);

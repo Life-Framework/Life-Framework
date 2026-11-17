@@ -10,7 +10,15 @@ export function parseConf(text) {
     if (!line) continue;
     const cur = stack[stack.length - 1];
     if (line === "}") {
-      if (stack.length > 1) stack.pop();
+      if (stack.length > 1) {
+        const done = stack.pop();
+        // A multi-line scalar array (`m_aPoints {` then one quoted value per line) is a prop, not a block.
+        if (done.items && !done.children.length && !Object.keys(done.props).length) {
+          const parent = stack[stack.length - 1];
+          parent.children.splice(parent.children.indexOf(done), 1);
+          parent.props[done.class] = done.items;
+        }
+      }
       continue;
     }
     const arr = line.match(/^([A-Za-z_]\w*)\s*\{\s*(.*?)\s*\}$/);
@@ -29,7 +37,10 @@ export function parseConf(text) {
     if (kv) {
       const t = tokens(kv[2]);
       cur.props[kv[1]] = t.length === 1 ? t[0] : t;
+      continue;
     }
+    // A bare value line inside a block: an item of a multi-line scalar array.
+    if (stack.length > 1) (cur.items ||= []).push(...tokens(line));
   }
   return root.children.length === 1 && !Object.keys(root.props).length ? root.children[0] : root;
 }

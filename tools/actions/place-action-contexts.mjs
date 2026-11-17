@@ -66,6 +66,14 @@ export function addonOf(root) {
   return join(root, "addons", "LifeFramework");
 }
 
+// A resource the core holds, else the pack's (a pack building or prop: addons/LF_Everon1989/<key>); the core path when neither does.
+export function addonFileOf(root, key) {
+  const core = join(addonOf(root), ...key.split("/"));
+  if (existsSync(core)) return core;
+  const pack = join(root, "addons", "LF_Everon1989", ...key.split("/"));
+  return existsSync(pack) ? pack : core;
+}
+
 export function bracesBalanced(text) {
   let depth = 0;
   for (const ch of text) {
@@ -103,7 +111,7 @@ export const textCache = new Map();
 export function readResource(root, rel) {
   const key = rel.replace(/\\/g, "/");
   if (textCache.has(key)) return textCache.get(key);
-  const local = join(addonOf(root), ...key.split("/"));
+  const local = addonFileOf(root, key);
   let text = null;
   // The pack addon (LF_Everon1989) holds prefabs of its own (a building, its furniture) that a grid cell places.
   const packFile = join(root, "addons", "LF_Everon1989", ...key.split("/"));
@@ -270,7 +278,7 @@ export function isHandheld(rel, entityText) {
 
 export function boundsOf(root, rel) {
   const key = rel.replace(/\\/g, "/");
-  const local = join(addonOf(root), ...key.split("/"));
+  const local = addonFileOf(root, key);
   let buf = null;
   if (existsSync(local)) buf = readFileSync(local);
   else if (pak()?.exists(key)) buf = pak().readFile(key);

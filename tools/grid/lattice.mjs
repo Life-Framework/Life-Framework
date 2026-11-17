@@ -209,8 +209,9 @@ export const frameClaimText = (created) => `${JSON.stringify({ slug: FRAME_SLUG,
 async function stateOnDisk(root) {
   const Z = await import("../lib/world-zones.mjs");
   const { loadWorld } = await import("../../agent-box/layers.mjs");
-  const dir = join(root, Z.GRID_LAYERS);
-  const ents = existsSync(dir) ? loadWorld(root, dir) : [];
+  const { gridLayerDirs } = await import("../lib/worlds.mjs");
+  const dirs = gridLayerDirs(root).filter((d) => existsSync(d));
+  const ents = dirs.length ? loadWorld(root, dirs) : [];
   const claims = Z.readCells(root);
   const blocked = new Set(allCells().filter((c) => !claims.some((x) => x.cell === c.id) && Z.blockers(c, ents).length).map((c) => c.id));
   return { Z, claims, states: cellStates(claims, blocked) };

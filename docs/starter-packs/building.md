@@ -58,8 +58,11 @@ pass, the counts table, `## Manual testing`. No town layers, no `ws/town-maintai
 - Vanilla ceiling lamps are dead meshes: add a `LightEntity` (ClipEV -10, NearPlane 0.3, short radius) and an emissive cover.
 - A vanilla furniture set is big (town hall: 242 children). Flatten to one child per prop, prune repeats (switches,
   radiators, infirmary, extra WCs); every kept entity counts.
-- A committed grid layer that names a pack prefab: the bank agent kept it out of git (local `stage.mjs`, `--remove` before
-  a commit); the town hall commits it. Run `tools\cli validate` and follow what it says.
+- Your building is a pack prefab, so its cell is a pack cell: `grid place <slug> <pack prefab>` (or `--pack`) writes
+  `LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_<slug>.layer`, claims the cell in the shared lattice with
+  `"pack": true`, and the layer is committed like any other. Never keep a layer untracked, never put a pack prefab in
+  `GridWorld_Layers/` (`validate-addon-boundary`). A layer already written there: `grid free <slug>`, then place again.
+  `look grid:<slug>`, `audit placement --grid` and `session up --mission grid` load it through the pack grid world.
 - A GUID is made once and kept (rule 2). A typed coordinate is only allowed in a building-space row the script writes.
 - `look` needs a Workbench: it queues on the pool (laptop or lf-testbox), never here.
 

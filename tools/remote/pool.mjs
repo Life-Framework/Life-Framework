@@ -29,6 +29,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
 import * as q from "../lib/pool-queue.mjs";
+import { PS_GPU_PROBE, PS_READ_HEARTBEAT, desktopLine, parseProbe, readLocalProbe } from "../lib/gpu-session.mjs";
 import * as pr from "../lib/pool-ram.mjs";
 import { idleVerdict } from "../lib/look-job.mjs";
 import * as gc from "../lib/session-gc.mjs";
@@ -2502,6 +2503,8 @@ export function remoteState(m) {
     `foreach ($n in @(${names.map(tb.psQuote).join(",")})) { $f = Join-Path $ld ($n + '.lock'); if (Test-Path -LiteralPath $f) { $raw = [IO.File]::ReadAllText($f).Trim(); $alive = $false; try { $i = $raw | ConvertFrom-Json; $alive = [bool](Get-Process -Id $i.pid -ErrorAction SilentlyContinue) } catch {}; Write-Host \"lf-pool: lock $n $alive $raw\" } else { Write-Host \"lf-pool: lock $n free\" } }`,
     "$os = Get-CimInstance Win32_OperatingSystem; Write-Host \"lf-pool: ram $([int]($os.FreePhysicalMemory / 1024)) $([int]($os.TotalVisibleMemorySize / 1024))\"",
     pr.PS_PROC_SCAN,
+    PS_GPU_PROBE,
+    PS_READ_HEARTBEAT,
     ...(m.thermalLog ? [`$thermDir = ${tb.psQuote(m.thermalLog)}`, PS_THERMAL, "if ($thermC -ne $null) { Write-Host ('lf-pool: thermal ' + $thermC.ToString([Globalization.CultureInfo]::InvariantCulture)) }"] : []),
   ].join("\n");
   const r = tb.sshPs(m.host, ps, { timeout: PROBE_TIMEOUT_MS, connectTimeout: 4 });
@@ -2528,7 +2531,7 @@ export function parseRemoteState(text) {
   // The ArmaReforger processes there (Workbench, servers, clients: the pool's or not); null when the box
   // answered without the scan lines (an older holder), so its gate falls back to lock-based pending.
   const procs = freeMb !== null ? pr.parseScan(text) : null;
-  return { locks, freeMb, totalMb, thermalC, procs };
+  return { locks, freeMb, totalMb, thermalC, procs, gpuProbe: parseProbe(text), heartbeat: (/^lf-gpu-hb: (.*)$/m.exec(String(text)) ?? [])[1] ?? null };
 }
 
 function remoteLocks(m) {
@@ -2776,6 +2779,8 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
       console.log(head);
       continue;
     }
+    // Can a GPU tool render there? ssh has no display output; the signed-in desktop session does (tools/lib/gpu-session.mjs).
+    const desk = desktopLine(m.name, m.via === "local" ? readLocalProbe() : st?.gpuProbe ?? null, m.via === "local" ? null : st?.heartbeat ?? null);
     const laneRows = [];
     const infos = {};
     const capMin = {};
@@ -2803,6 +2808,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     const idle = laneRows.filter(isIdleLaneRow);
     const shown = verbose ? laneRows : laneRows.filter((r) => !idle.includes(r));
     console.log(verbose || !idle.length ? head : `${head}  (${idle.length} lane(s) free or stale)`);
+    console.log(`  desktop: ${desk}`);
     for (const r of shown) console.log(r);
     const freeMb = m.via === "local" ? Math.round(freemem() / 1048576) : st?.freeMb;
     seen.set(m.name, { m, infos, capMin, freeMb });

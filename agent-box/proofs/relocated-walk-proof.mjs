@@ -164,11 +164,77 @@ async function walk(args) {
   return ok ? 0 : 1;
 }
 
+// grip [out] [x,y,z]: close-ups of the suitcase in the hand, standing and walking. With x,y,z (the
+// handle's point in the Suitcase_01 model) the harness first solves and applies the slot transform
+// that puts it on the RightHandProp bone and prints it in prefab notation; without, the prefab's own.
+async function grip(args) {
+  const out = args[0] ? resolve(String(args[0])) : "";
+  const handle = args[1] ?? "";
+  const { on, wait } = await setup(out);
+  const start = on({ verb: "eventscene", words: ["start", FIXTURE, "6"] }, 15000);
+  if (start.status !== "ok") {
+    console.log(`grip: FAIL eventscene start: ${start.detail}`);
+    return 1;
+  }
+  const at = (s) => {
+    const m = /walker at <([-\d.]+),([-\d.]+),([-\d.]+)>/.exec(s);
+    return m ? { x: Number(m[1]), y: Number(m[2]), z: Number(m[3]) } : null;
+  };
+  // The walker's right side (its suitcase side) and its front-right; the first leg heads north-north-east.
+  // Aimed between the hand and the case (the hand hangs about 0.75 m up), about 2 m out.
+  const views = [{ tag: "side", ox: 1.9, oy: 0.05, oz: 0.3 }, { tag: "front", ox: 1.5, oy: 0.1, oz: 1.8 }];
+  const shot = (phase, v, p) =>
+    on({ verb: "capture", mode: "world", name: `grip_${phase}_${v.tag}`, x: p.x, y: p.y + 0.4, z: p.z, ox: v.ox, oy: v.oy, oz: v.oz, hour: 12 }, 25000);
+  // A walking walker is aimed where it will be when the picture is taken: two status reads give its
+  // velocity, LEAD_S is the measured status-to-frame delay of a capture.
+  const LEAD_S = 2.0;
+  const read = () => {
+    const s = on({ verb: "eventscene", words: ["status", "relocated_arrival"] }, 10000).detail;
+    return { p: at(s), t: Date.now() / 1000 };
+  };
+  const ahead = () => {
+    const a = read();
+    wait(1000);
+    const b = read();
+    if (!a.p || !b.p) return b.p;
+    const dt = Math.max(0.1, b.t - a.t);
+    const lead = LEAD_S + (Date.now() / 1000 - b.t);
+    return { x: b.p.x + ((b.p.x - a.p.x) / dt) * lead, y: b.p.y, z: b.p.z + ((b.p.z - a.p.z) / dt) * lead };
+  };
+  const t0 = Date.now();
+  let stood = false;
+  let walked = false;
+  while ((Date.now() - t0) / 1000 < 120 && !walked) {
+    wait(1500);
+    const s = on({ verb: "eventscene", words: ["status", "relocated_arrival"] }, 10000).detail;
+    const spawned = Number(/(\d+) spawned/.exec(s)?.[1] ?? 0);
+    const elapsed = Number(/, ([\d.]+) s(;|$)/.exec(s)?.[1] ?? 0);
+    const p = at(s);
+    if (!stood && spawned >= 1 && p) {
+      on({ verb: "eventscene", words: ["grip"] }, 10000);
+      if (handle) on({ verb: "eventscene", words: ["grip", handle] }, 10000);
+      for (const v of views) shot("stand", v, p);
+      stood = true;
+    } else if (stood && spawned >= 6 && elapsed >= 22 && p) {
+      if (handle) on({ verb: "eventscene", words: ["grip", handle] }, 10000);
+      for (const v of views) {
+        const q = ahead();
+        if (q) shot("walk", v, q);
+      }
+      walked = true;
+    }
+  }
+  console.log(stood && walked ? "grip: pictures taken standing and walking" : `grip: FAIL (standing ${stood}, walking ${walked})`);
+  return stood && walked ? 0 : 1;
+}
+
 export default {
   name: "relocated-walk-proof",
-  usage: "relocated-walk-proof [out] [--control] | survey [x,z] [radius] [out]   (run in a --mission everon --profile full session)",
+  usage: "relocated-walk-proof [out] [--control] | survey [x,z] [radius] [out] | grip [out] [x,y,z]   (run in a --mission everon --profile full session)",
   run: (ctx) => {
     const args = ctx?.args ?? [];
-    return args[0] === "survey" ? survey(args.slice(1)) : walk(args);
+    if (args[0] === "survey") return survey(args.slice(1));
+    if (args[0] === "grip") return grip(args.slice(1));
+    return walk(args);
   },
 };

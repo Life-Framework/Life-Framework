@@ -70,6 +70,8 @@ import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
+import { cliInDesktopSession, desktopSessionOrSay, needsDesktopSession } from "./remote/desktop/in-session.mjs";
+import { needsDesktopRerun } from "./lib/gpu-session.mjs";
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
@@ -3242,6 +3244,14 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     }
     console.log("test: " + onlyFlag + " " + only.join(","));
   }
+  if (!exact && only.length) {
+    // An unknown name must stop the run: it would otherwise run the whole suite or nothing (#2276).
+    const sel = testWorld.splitSelection({ only, names: testWorld.testNames(root), tiers: testWorld.testTiers(root), registry: shards.readRegistry(root), pack: testWorld.readPackTests(root) });
+    if (sel.unknown.length) {
+      console.log(`FAIL  test: ${onlyFlag} names no test: ${sel.unknown.join(", ")} (a LF_Test_ class, its GetName() or its file; pack tests are LF_Test_Everon*)`);
+      return 2;
+    }
+  }
   guardHeavy(root, "test", opts.force);
   // A LOGIC-only selection boots the minimal world (tools/lib/test-world.mjs). It is decided here,
   // before the pass cache key, so a TestLogic pass is never reused for a DebugWorld request.
@@ -3931,6 +3941,7 @@ async function ciWorkbench(root, opts = {}) {
 // (tools/remote/desktop/run-interactive.ps1); its transcript and exit code come back through files.
 // No one signed in, or no exit code: 3, so the caller runs the steps on its own machine.
 function ciWorkbenchInSession(root, stepFlags = []) {
+  if (!desktopSessionOrSay()) return 3;
   const dir = join(root, "tmp", "wb-session");
   mkdirSync(dir, { recursive: true });
   const [log, codeFile, ps1, pidFile] = ["ci.log", "ci.code", "ci.ps1", "ci.pid"].map((n) => join(dir, n));
@@ -5631,6 +5642,10 @@ try {
   const helpReq = helpRequest(cmd, rest);
   if (helpReq) {
     code = printUsage(helpReq);
+  } else if (needsDesktopSession() && needsDesktopRerun([cmd, ...rest])) {
+    // Over ssh (session 0, no display output) a command that starts Workbench in-process runs again in the signed-in
+    // desktop session; with none it stops with one line (tools/lib/gpu-session.mjs).
+    code = cliInDesktopSession(ROOT, [cmd, ...rest], { name: `gpu-${cmd}` });
   } else if (cmd === "mcp") {
     const sub = cmds[a];
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
