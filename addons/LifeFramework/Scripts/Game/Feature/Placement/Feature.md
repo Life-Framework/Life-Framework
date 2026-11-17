@@ -150,3 +150,20 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Proof:** `placement/policy-cost` (WORLD: a refused proposal and an unaffordable set take nothing, a set whose spawn fails
   is given back, a paid set takes the price once and a set on top takes nothing more, the payer's pick-up refunds once and
   a bystander's refunds nobody).
+
+## Permanent placements (#1032, slice #2653)
+
+- **Player sees:** a chair (any placeable whose lifetime is PERMANENT) is still where they put it after a restart.
+  Past 40 placements of their own, or 25 on one property, the server refuses with "Pick one up first". The owner
+  standing within 4 m picks one up; it is gone for good, the item comes back, a refundable price is refunded.
+- **Owner and side:** server. `LF_PlacementService.Confirm` asks `LF_PlacementSave.CheckBeforePlace` before it charges
+  and calls `OnPlaced` after the spawn (a hook each). `LF_PlacementSave` keeps one row per placement (stable id,
+  prefab, position and angles, owner character key, kind, property = nearest bound house within 30 m, item prefab)
+  and a session-only EntityID map. `LF_PlacementPickup.PickUp` checks owner and reach, then forgets the row, deletes
+  the entity, calls `LF_PlacementCost.OnPickedUp` and gives the item back (at the feet when it does not fit).
+- **Data:** payload `placements` (save version 52, last in `RegisterPersistencePayloads`); `m_iOwnerCap` (40) and
+  `m_iPropertyCap` (25) on `LF_PlacementPolicyConfig`. Temporary kinds never get a row. Strings
+  `#LF-Placement_CapOwner`, `_CapProperty`. No shipped placeable is PERMANENT yet and no player action calls the
+  pick-up: the chair item and its "Pick up" action are follow-up cards.
+- **Proof:** `placement/persist` (PERSISTENCE: payload round trip, no duplicate on a second apply, missing prefab
+  skipped; the e2e reload boot finds the kept chair and not the picked-up one), `placement/cap` (WORLD).

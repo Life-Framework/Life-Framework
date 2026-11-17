@@ -7742,6 +7742,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Something is in the way."
      Comment "Toast when a placement is refused because something stands where it would go: a car, a post, a spike strip already lying there (#928)."
     }
+    CustomStringTableItem "{1C32E2DFC53A052C}" {
+     Id "LF-Placement_CapOwner"
+     Target_en_us "You already have as many things placed as you may keep. Pick one up first."
+     Comment "Toast when a permanent placement is refused: the player reached the per-player cap (#1032)."
+    }
+    CustomStringTableItem "{0E908C127EF9F835}" {
+     Id "LF-Placement_CapProperty"
+     Target_en_us "This property already holds as many placed things as it may. Pick one up first."
+     Comment "Toast when a permanent placement is refused: the property reached its cap (#1032)."
+    }
     CustomStringTableItem "{7D3F102C9E5B6C43}" {
      Id "LF-Placement_KeyCancel"
      Target_en_us "Cancel placing"

@@ -517,9 +517,11 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PlacementAim(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacementAudit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementAuditTown(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacementCap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementComposition(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementConfirm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementDoorProbe(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacementPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PlacementPolicyCost(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementPolicyWhere(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementPolicyWho(), LF_TestTier.LOGIC);
