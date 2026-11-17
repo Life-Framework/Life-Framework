@@ -703,10 +703,10 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -2.2 2.553 2.2
    angleY 90
   }
-  GenericEntity : "{DCBC472CDA3EA9B2}Prefabs/Props/Civilian/WallMap_01.et" {
-   ID "BA4CFE753BC6C689"
-   coords 2.42 1.953 2.9
-   angleY 90
+  GenericEntity : "{EA00F95E0F2A342D}Prefabs/Props/Decorations/Paintings/PaintingBig_02_V3.et" {
+   ID "BA4C585D5D54F22B"
+   coords 2.42 2.603 2.9
+   angleY -90
   }
   GenericEntity : "{DD918C2BCC564E9D}Prefabs/Props/Decorations/Paintings/PaintingBig_01_V4.et" {
    ID "BA4CAE9CCE6D66DA"
@@ -955,9 +955,9 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 7.1 5.159 5.4
    angleY 200
   }
-  GenericEntity : "{DCBC472CDA3EA9B2}Prefabs/Props/Civilian/WallMap_01.et" {
-   ID "BA4C54236D28CC78"
-   coords 1 5.204 1.4
+  GenericEntity : "{DD918C2BCC564E9D}Prefabs/Props/Decorations/Paintings/PaintingBig_01_V4.et" {
+   ID "BA4C7C48B9D3AD16"
+   coords 1 5.854 1.42
   }
   GenericEntity : "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et" {
    ID "BA4C751EF71C2C64"

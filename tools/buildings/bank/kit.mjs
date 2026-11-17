@@ -51,9 +51,9 @@ const child = (cls, ref, key, body, pos, yaw, scale, name = "") =>
   [`  ${cls}${name ? ` ${name}` : ""} : "${ref}" {`, `   ID "${id(key)}"`, ...body.map((l) => `   ${l}`), ...(scale ? [`   scale ${scale}`] : []), ...at(pos, yaw).map((l) => `  ${l}`), "  }"].join("\n");
 
 const rows = [
-  // the vault room's door (safe type bank_room supplies the haul, tools and timers); the id is explicit, the swing is
-  // cut to 55 degrees so the leaf clears the corridor's far wall
-  child("GenericEntity", ROOM_DOOR, "vault-door", ["components {", ` LF_BreachTargetComponent "{A7D41E0C3B985208}" {`, `  m_fSwingYaw ${vault.swing}`, " }", ` LF_BankVaultComponent "{A7D41E0C3B985209}" {`, `  m_sVaultId "${vault.id}"`, " }", "}"], [vault.x, vault.y, vault.z], vault.yaw, null, "BankVault"),
+  // the vault room's door (safe type bank_room supplies the haul, tools and timers). A prefab child has no entity name,
+  // so both ids are explicit (vault and breach target); the swing is cut to 55 degrees so the leaf clears the far wall
+  child("GenericEntity", ROOM_DOOR, "vault-door", ["components {", ` LF_BreachTargetComponent "{A7D41E0C3B985208}" {`, `  m_sTargetId "${vault.id}"`, `  m_fSwingYaw ${vault.swing}`, " }", ` LF_BankVaultComponent "{A7D41E0C3B985209}" {`, `  m_sVaultId "${vault.id}"`, " }", "}"], [vault.x, vault.y, vault.z], vault.yaw, null, "BankVault"),
   child("GenericEntity", BAG, "bag", ["components {", ` LF_PlaceComponent "{24218E86E931E2E7}" {`, '  m_sKind "BankBag"', `  m_sId "${vault.id}"`, " }", "}", "Flags 0x403 0"], kit.bag, 0)
     .replace(/\n  }$/, `\n   {\n    GenericEntity : "${CASH}" {\n     ID "${id("bag-cash")}"\n     coords 0 0.15 0\n    }\n   }\n  }`),
   child("GenericEntity", ALARM, "alarm", ["components {", " LF_AlarmMountComponent \"{9ACA0BDAD2FE2665}\" {", "  m_vOffset 0 0.167 0.065", "  m_fReach 12", " }", "}"], [kit.alarmBox.x, kit.alarmBox.y, kit.alarmBox.z], kit.alarmBox.yaw),

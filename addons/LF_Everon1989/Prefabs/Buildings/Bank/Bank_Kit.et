@@ -5,6 +5,7 @@ SCR_DestructibleBuildingEntity : "{F550115D39FD56BA}Prefabs/Buildings/Bank/Bank.
    ID "08CB8283D9EE23C0"
    components {
     LF_BreachTargetComponent "{A7D41E0C3B985208}" {
+     m_sTargetId "bank_vault"
      m_fSwingYaw 55
     }
     LF_BankVaultComponent "{A7D41E0C3B985209}" {

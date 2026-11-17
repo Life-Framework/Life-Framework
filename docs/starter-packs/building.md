@@ -47,7 +47,7 @@ room's folder (town-hall `looks.mjs --tag pass1 --run` does) or pass the PNG pat
   `{ on: "<id>" }` names the support, gun-store `decor.mjs` is the model). **`tools\cli building check <slug>` is required**
   (offline, 1 s; `wt ship` refuses while it fails; no generator: `--fix`). Detail: `docs/building-pipeline/README.md`.
 - A bank's vault is a room fitted with `{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et` (origin the
-  front's centre, hinge 1.271 m to its right; safe type `bank_room` supplies the numbers, set only `m_sVaultId`) and the bag
+  front's centre, hinge 1.271 m to its right; safe type `bank_room` supplies the numbers; set `m_sVaultId`, and in a prefab `m_sTargetId` too) and the bag
   inside (`m_sId` = that id). The standalone `LF_BankVault.et` is the reserve vault. Worked example: `tools/buildings/bank/`.
 
 ## Performance (docs/architecture/performance.md covers script cost; `test --tier perf` once if you touch script)
