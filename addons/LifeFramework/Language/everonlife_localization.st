@@ -7467,6 +7467,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Placing"
      Comment "Toast title for every placement refusal (#1026)."
     }
+    CustomStringTableItem "{F875CB040C3C2526}" {
+     Id "LF-PoliceAppGm_Approve"
+     Target_en_us "Approve"
+     Comment "Applications sheet button."
+    }
+    CustomStringTableItem "{1296E6499AD624E5}" {
+     Id "LF-PoliceAppGm_Approved"
+     Target_en_us "APPROVED: %1"
+     Comment "Applications sheet status after approving; %1 is the applicant name."
+    }
+    CustomStringTableItem "{0E3BC446BA9C4943}" {
+     Id "LF-PoliceAppGm_BadRequest"
+     Target_en_us "Request refused."
+     Comment "Applications sheet status when the server refused a malformed request."
+    }
+    CustomStringTableItem "{1EA5C56CC7684B12}" {
+     Id "LF-PoliceAppGm_Busy"
+     Target_en_us "Too fast. Press again in a moment."
+     Comment "Applications sheet status when the server dropped a request sent too quickly (#1288)."
+    }
+    CustomStringTableItem "{58CA4203A5B3554F}" {
+     Id "LF-PoliceAppGm_Close"
+     Target_en_us "Close"
+     Comment "Applications sheet close button."
+    }
+    CustomStringTableItem "{15339673DC6E1BB0}" {
+     Id "LF-PoliceAppGm_Count"
+     Target_en_us "OPEN APPLICATIONS .... %1"
+     Comment "Applications sheet status; %1 is how many are open."
+    }
+    CustomStringTableItem "{1DB18896201F1A7B}" {
+     Id "LF-PoliceAppGm_Detail"
+     Target_en_us "%1. Why: %2. Hours: %3."
+     Comment "Applications sheet detail line; %1 name, %2 reason, %3 availability."
+    }
+    CustomStringTableItem "{8A45E10EB5B5A7DF}" {
+     Id "LF-PoliceAppGm_NeedAdministrator"
+     Target_en_us "Only an administrator can approve or reject. Moderators may read."
+     Comment "Applications sheet status when a moderator or operator tries to decide (#1288)."
+    }
+    CustomStringTableItem "{95CC9997DB5D0E03}" {
+     Id "LF-PoliceAppGm_PickFirst"
+     Target_en_us "Read an application, then approve or reject it."
+     Comment "Applications sheet detail line before one is picked."
+    }
+    CustomStringTableItem "{3B80676FFF309851}" {
+     Id "LF-PoliceAppGm_Read"
+     Target_en_us "Read"
+     Comment "Applications sheet row action: show this application."
+    }
+    CustomStringTableItem "{343D76BAE52282A8}" {
+     Id "LF-PoliceAppGm_Reject"
+     Target_en_us "Reject"
+     Comment "Applications sheet button."
+    }
+    CustomStringTableItem "{5957CB471E7B660E}" {
+     Id "LF-PoliceAppGm_Rejected"
+     Target_en_us "REJECTED: %1"
+     Comment "Applications sheet status after rejecting; %1 is the applicant name."
+    }
+    CustomStringTableItem "{1EF55798C921D26C}" {
+     Id "LF-PoliceAppGm_Title"
+     Target_en_us "Applications to the {police}"
+     Comment "Game Master applications sheet title (#1288)."
+    }
+    CustomStringTableItem "{7064E4B84B8AE16A}" {
+     Id "LF-PoliceAppGm_Waited"
+     Target_en_us "waited %1 h"
+     Comment "Applications sheet row status; %1 is whole hours since filing."
+    }
+    CustomStringTableItem "{FC7DA9A04AC8D7ED}" {
+     Id "LF-PoliceAppGm_Waiting"
+     Target_en_us "Reading the file..."
+     Comment "Applications sheet status while the server answers."
+    }
     CustomStringTableItem "{AD999D02320AA8DB}" {
      Id "LF-PoliceApp_Action"
      Target_en_us "Apply to the police"
