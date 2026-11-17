@@ -83,6 +83,7 @@
 - `bank_room` is today's bank: the numbers `LF_BankVault.et` sets (1 bag, 500, 60 s, 0 police, no fuse, drill or charge, bank alarm, no jam, 30 s drill).
 - `reserve_vault` is the big vault for a later "Federal Reserve" building (docs only; in-world text says "reserve depot"). The existing `LF_BankVault.et` prefab keeps its GUID, path and its own explicit numbers and sets no type, because it is the playtest town's bank today; a building that uses it as the reserve vault sets `m_sSafeType "reserve_vault"` on its placement and drops the explicit numbers.
 - Test `crime/safe-types` (LOGIC) and `everon/safe-types` (pack leg). Log `[LFDebug:SafeTypes]`.
+- **Store box in the pack** (#2331): `LF_Everon1989/Prefabs/Props/Safes/LF_StoreBox.et` inherits the core `LF_SafeBox.et` and names `store_box` itself, so a shop fit-out places the pack prefab and the pack's 120 cash takings apply. The pack grid cell `store-box` (`Grid_store_box.layer`, cell c19r4) stands one till and one box beside it. Test `everon/store-box-safe` (pack leg, `LF_Test_EveronStoreBoxSafe`) asserts the box registers under its entity name with one bag, 120 a bag and a 10 s drill, and that a script-driven robbery with no tool and no police arms it and spills exactly that haul after the fuse. Putting a box in each shop is a later per-shop card.
 
 ### `LF_Hospital` — `Feature/Crime/LF_Hospital.c`
 - ✅ The hospital till is not scripted here: the placed action is `LF_RobAction` on the

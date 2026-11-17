@@ -397,6 +397,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LicensePlateParenting(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicenseWhitelist(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LocalIdentity(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_LockerRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LockpickDoor(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LockpickDoorWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LockpickKeepsPick(), LF_TestTier.WORLD);
@@ -570,6 +571,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ProgressionRoundtrip(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_ProgressionOldSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PromoteFindsPlayers(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PropertyConfig(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuantityStack(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_QuantityOperations(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_QuantityVisuals(), LF_TestTier.LOGIC);
