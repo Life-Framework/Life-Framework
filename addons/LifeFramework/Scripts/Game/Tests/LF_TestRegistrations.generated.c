@@ -673,6 +673,9 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Roles(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RolesWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_RpcHostPathPoliceQuest(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RpcRoutingNoRplId(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RpcRoutingNotOwned(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_RpcRoutingOwned(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SafeTypes(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SafeZone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SamePrefab(), LF_TestTier.LOGIC);
