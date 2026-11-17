@@ -85,6 +85,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_ChainTrace(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CharacterCreationReset(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_CharacterFlowGate(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_CharacterSheetsReset(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_CharacterSlotsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_CharactersPerAccount(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ChatChannels(), LF_TestTier.LOGIC);
@@ -413,6 +414,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapPrivateRegistry(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MapSearch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareAreas(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapShareCapWarnOnce(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareMemberKey(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShareNotPersonal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShares(), LF_TestTier.LOGIC);
@@ -424,6 +426,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MiningDamage(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MiningPrefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MoneyCash(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_MoneyAddCashDrop(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MoneyRework(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MoonshineCratePack(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MovedPrefab(), LF_TestTier.WORLD);
