@@ -16,7 +16,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { conflictKind, healMerge, isLive, predictConflicts, pushBranch, LIVE_MS } from "../prs.mjs";
-import { describeRun, removeScratch, useHermeticGit } from "../lib/selftest-git.mjs";
+import { describeRun, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
 
 useHermeticGit(); // no machine git config, no auto-gc beside the scratch repos (tools/lib/selftest-git.mjs)
 
@@ -30,7 +30,7 @@ function git(dir, args) {
   return spawnSync("git", args, { cwd: dir, windowsHide: true, encoding: "utf8" });
 }
 function must(dir, args) {
-  const r = git(dir, args);
+  const r = runGit(dir, args); // a probe through git() may fail quietly on purpose; a must() may not
   if (r.status !== 0) throw new Error(`git ${args.join(" ")} in ${dir}: ${describeRun(r)}`);
   return r.stdout.trim();
 }
