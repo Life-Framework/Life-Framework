@@ -170,6 +170,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Dispatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DispatchAlarm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DispatchArea(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DispatchMapMarks(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DispatchNamesPlace(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DoorLock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Downed(), LF_TestTier.WORLD);
@@ -341,9 +342,11 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_M4ConfigSections(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapAreaConf(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapAreas(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapAreasDraw(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapConfig(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MapKnown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapKnownPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_MapMarksPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_MapPois(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShares(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapWaypoint(), LF_TestTier.LOGIC);
@@ -534,6 +537,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_RobustnessWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Roles(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_RolesWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SafeTypes(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SafeZone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SamePrefab(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SaveAliases(), LF_TestTier.WORLD);

@@ -681,7 +681,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{A5E64994411BA6A0}Prefabs/Props/Civilian/Pen_01/Pen_01_base.et" {
    ID "DC1FFF9D5725815F"
-   coords 1.98 1.245 -0.2
+   coords 1.98 1.271 -0.2
    angleY 25
   }
   GenericEntity : "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et" {

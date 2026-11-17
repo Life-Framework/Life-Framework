@@ -24,6 +24,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gameVfs, readText } from "../../lib/game-prefab.mjs";
 import { gameDb } from "../pipeline/gamedb.mjs";
+import { snapItems } from "../pipeline/surface.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 export const ID_PREFIX = "DC1F";
@@ -63,7 +64,8 @@ const P = {
 
 const items = []; // { pass, path, x, y, z, yaw, scale, lit }
 const lights = []; // { pass, x, y, z, angles, color, lv, radius, angle, type, shadow }
-const put = (pass, path, x, y, z, yaw = 0, scale = 1, until = 9) => items.push({ pass, path, x, y, z, yaw, scale, until });
+// y is a hint: decorBlock snaps every prop onto the top under it (tools/buildings/pipeline/surface.mjs); `o.on` names a support.
+const put = (pass, path, x, y, z, yaw = 0, scale = 1, until = 9, o = {}) => items.push({ pass, path, x, y, z, yaw, scale, until, ...o });
 const spot = (pass, x, y, z, o = {}) => lights.push({ pass, type: "Spot", x, y, z, angles: "-90 0 0", color: "1 0.86 0.64 1", lv: 5.5, radius: 6.5, angle: 130, shadow: false, ...o });
 const glow = (pass, x, y, z, o = {}) => lights.push({ pass, type: "Point", x, y, z, color: "1 0.88 0.68 1", lv: 2.4, radius: 5, shadow: false, ...o });
 
@@ -102,10 +104,10 @@ put(2, P.coatRack, -1.3, F, 5.7, 90);
 put(2, P.bin, 4.4, F, 7.0);
 put(2, P.carpet, 0.2, F, 4.6, 0, 0.9);
 put(2, P.stool, 5.6, F, 3.2, 40);
-put(2, P.frame, 9.4, 1.106, 3.6, 200);
-put(2, P.radio, 9.9, 1.106, 3.0, 190);
+put(2, P.frame, 9.4, 1.106, 3.95, 200); // the clerk desks behind the counter are cut (prune.mjs), so the props stand on the counter
+put(2, P.radio, 9.95, 1.106, 3.95, 190);
 put(2, P.fileStack, 5.0, 1.106, 3.7, 15);
-put(2, P.deskLamp, 6.9, 1.106, 3.7, 160);
+put(2, P.deskLamp, 6.9, 1.106, 3.95, 160);
 put(2, P.box, 10.2, F, 2.4, 20, 0.6);
 put(2, P.box, 10.2, F + 0.21, 2.4, 70, 0.6);
 put(2, P.noticeH1, 10.8, 1.5, 6.3, -90, 0.9);
@@ -127,7 +129,10 @@ export function budget(pass) {
 }
 
 // The decor block (child entities of the furniture prefab) for every row up to `pass`.
-export async function decorBlock(pass) {
+export async function decorBlock(pass, fixed = []) {
+  const snap = await snapItems(items.filter((i) => i.pass <= pass && (i.until ?? 9) >= pass), { fixed });
+  console.log(`decor: ${snap.summary}`);
+  if (process.argv.includes("--report")) for (const c of snap.changes) console.log(`  ${c.path.split("/").pop().replace(".et", "")} y ${c.from} -> ${c.to} (on ${c.on})`);
   const vfs = await gameVfs();
   const db = gameDb();
   if (!db) throw new Error("the game's resource database is not readable here (ENFUSION_GAME_PATH)");

@@ -431,12 +431,12 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{D24CDD53ECAA296C}Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_Base.et" {
    ID "837C3AFEFD500017"
-   coords -1.027 0.479 -0.006
+   coords -1.027 0.401 -0.006
    angleY -89.28
   }
   GenericEntity : "{D24CDD53ECAA296C}Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_Base.et" {
    ID "7DC0A2871AAFF0AD"
-   coords -1.027 0.417 -0.006
+   coords -1.027 0.391 -0.006
    angleY -89.28
   }
   GenericEntity : "{D24CDD53ECAA296C}Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_Base.et" {
@@ -446,7 +446,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{D24CDD53ECAA296C}Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_Base.et" {
    ID "5B9290216DD02D92"
-   coords -1.027 0.313 -0.006
+   coords -1.027 0.226 -0.006
    angleY -89.28
   }
   GenericEntity : "{D24CDD53ECAA296C}Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_Base.et" {
@@ -456,7 +456,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{D24CDD53ECAA296C}Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_Base.et" {
    ID "D272CEE2937A916D"
-   coords -1.031 0.26 -0.006
+   coords -1.031 0.216 -0.006
    angleY -89.28
   }
   GenericEntity : "{D2990433DD2D8B43}Prefabs/Props/Furniture/Bathtub_01.et" {
@@ -1640,7 +1640,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{A5E64994411BA6A0}Prefabs/Props/Civilian/Pen_01/Pen_01_base.et" {
    ID "14E51077CF3765E7"
-   coords 1.95 1.268 -0.78
+   coords 1.95 1.245 -0.78
    angleY 70
   }
   GenericEntity : "{F76340CCD79DCC5A}Prefabs/Props/Civilian/RadioSmall_01_red.et" {
@@ -1746,7 +1746,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et" {
    ID "C49E2AF459B7DA1A"
-   coords 0 0.629 -1.7
+   coords 0 0.608 -1.7
    angleY -10
   }
   GenericEntity : "{E3382F292BA2A27D}Prefabs/Props/Furniture/TableCoffee_01.et" {
