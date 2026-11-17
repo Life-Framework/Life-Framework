@@ -1,10 +1,11 @@
 //------------------------------------------------------------------------------------------------
 //! Organization war record (M7 gang war W1, #2666; #766, #858). A war moves DECLARED -> ACCEPTED ->
-//! ENDED, or DECLARED -> LAPSED when nobody answers. Server state in memory only: persistence is W6
-//! (ExportAll / ApplyAll). Every time is real unix seconds the caller passes in, so a restart mid-war
+//! ENDED, or DECLARED -> LAPSED when nobody answers. Saved as the "orgwars" payload (W6, #2672:
+//! ExportForSave / ApplyAll). Every time is real unix seconds the caller passes in, so a restart mid-war
 //! keeps its clock. Keyed by organization id, never name. No RPC, no UI, no money: rights and the fee
 //! are W3, `LF_OrgWarRules` (from `LF_OrgWarConfig.Rules()`, W2 #2667) is the rules value.
 //------------------------------------------------------------------------------------------------
+//! Saved by position in the "orgwars" payload: append new states at the end, never reorder.
 enum LF_EOrgWarState
 {
 	DECLARED,
@@ -14,9 +15,12 @@ enum LF_EOrgWarState
 }
 
 //------------------------------------------------------------------------------------------------
-//! One war. Flat on purpose: W6 saves these fields as they are.
+//! One war. Flat on purpose: the "orgwars" payload saves these fields as they are (row version first).
 class LF_OrgWarRecord : Managed
 {
+	static const int ROW_VERSION = 1;
+
+	int m_iVersion = ROW_VERSION;
 	string m_sWarId;
 	string m_sDeclarerOrgId;
 	string m_sTargetOrgId;
@@ -258,7 +262,7 @@ class LF_OrgWars
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! W6 persistence hook: the records as they are. Left for W6 to wrap in a payload.
+	//! Every record as it is, closed ones included.
 	static array<ref LF_OrgWarRecord> ExportAll()
 	{
 		array<ref LF_OrgWarRecord> result = {};
@@ -271,9 +275,37 @@ class LF_OrgWars
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! W6 persistence hook: replace the table with loaded records. Idempotent; the id counter moves past
-	//! the highest "war-N" loaded. Dropping a record whose org is gone is W6's job.
-	static void ApplyAll(notnull array<ref LF_OrgWarRecord> records)
+	//! The "orgwars" payload rows at unix second `now`: every DECLARED or ACCEPTED war, plus a closed one
+	//! whose pair cooldown is still running (so the cooldown survives a restart), plus the newest war
+	//! always, so ApplyAll's id counter never hands a used "war-N" out again. No Tick here: a war whose
+	//! deadline passed is saved open and closes on the first sweep after the load, at its deadline.
+	static array<ref LF_OrgWarRecord> ExportForSave(int now)
+	{
+		array<ref LF_OrgWarRecord> result = {};
+		LF_OrgWarRecord newest;
+		foreach (LF_OrgWarRecord war : Table())
+		{
+			if (!war)
+				continue;
+
+			newest = war;
+			bool open = war.m_eState == LF_EOrgWarState.DECLARED || war.m_eState == LF_EOrgWarState.ACCEPTED;
+			if (open || now < war.m_iCooldownUntil)
+				result.Insert(war);
+		}
+
+		if (newest && !result.Contains(newest))
+			result.Insert(newest);
+
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Replace the table with loaded records. Idempotent (plain replacement); the id counter moves past
+	//! the highest "war-N" loaded, dropped rows included. A row naming an organization that is gone is
+	//! dropped with a log line. Never ticks: times are unix seconds, so the next sweep closes what the
+	//! downtime passed. Returns the rows kept.
+	static int ApplyAll(notnull array<ref LF_OrgWarRecord> records)
 	{
 		s_aWars = new array<ref LF_OrgWarRecord>();
 		s_iNextId = 1;
@@ -282,14 +314,23 @@ class LF_OrgWars
 			if (!war)
 				continue;
 
-			s_aWars.Insert(war);
 			if (war.m_sWarId.StartsWith("war-"))
 			{
 				int n = war.m_sWarId.Substring(4, war.m_sWarId.Length() - 4).ToInt();
 				if (n >= s_iNextId)
 					s_iNextId = n + 1;
 			}
+
+			if (!LF_OrganizationManager.Get(war.m_sDeclarerOrgId) || !LF_OrganizationManager.Get(war.m_sTargetOrgId))
+			{
+				LF_Debug.Warn(FEATURE, string.Format("%1 dropped on load: organization %2 or %3 is gone", war.m_sWarId, war.m_sDeclarerOrgId, war.m_sTargetOrgId));
+				continue;
+			}
+
+			s_aWars.Insert(war);
 		}
+
+		return s_aWars.Count();
 	}
 
 	//------------------------------------------------------------------------------------------------
