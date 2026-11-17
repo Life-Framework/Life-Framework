@@ -136,7 +136,11 @@
   gets the inventory, anyone else hears a refusal sound and gets the
   `#LF-HideoutStash_NotMember` toast, and the refusal is logged
   (`stash refused: not a member`). The server also refuses a non-member moving an
-  item out (`HandleAccessValidation`) or in (`CanStoreItem`). Membership and the
+  item out (`HandleAccessValidation`) or in (`CanStoreItem`). `CanStoreItem` has no
+  instigator, so it only takes an item from a living member's own inventory, the stash
+  itself or a server spawn (restore, seeding); an item in a vehicle, crate or body is
+  refused even for a member, who carries it first (#2574, WORLD `hideout/stash-put-carrier`;
+  items on the ground are a follow-up). Membership and the
   rank's stash right (`USE_STASH`) are the key: an open or breached door does not open the stash.
 - ✅ Stash contents survive a restart through `LF_PersistentStorageComponent`
   keyed `hideout:Roadmap_Hideout` (not an entity id), so the stash keeps its
@@ -159,3 +163,13 @@
   so a restart no longer leaves it open for anyone. Tests `organization/upgrade-unwired`,
   `organization/fund-overflow`, `hideout/stash-right`, `hideout/load-relock` (LOGIC). The lease that
   never ends is #2533.
+- 🧪 **A hideout lease ends with its organisation's last member** (#2571, part of #2533, merged, in-dev):
+  when the last member leaves or is kicked (`LF_OrganizationManager.Leave`, `LeaveDirect`, `Kick`) the
+  organisation publishes `LF_OnOrganizationEmptied` (`Feature/Organizations/LF_OrganizationsEvents.c`)
+  and `LF_Hideout` releases every site it leases (`ReleaseAllOf`, logged
+  `[LFDebug:Hideout] released hideout=… reason=organization emptied: …`). There is no disband verb
+  (#2415), so this is the disband; the organisation record stays on the register. `PushLock` now writes
+  the lock's house identifier on every push, empty included: a released door reads *Unowned* to everyone
+  (`LF_HideoutDoorRules.View`), former members no longer see *Open*, and an empty id matches no house in
+  `LF_HouseLockAction`. The `org_base` place goes with the lease and another organisation can lease the
+  site. Test `hideout/lease-empty-org` (WORLD). An inactivity expiry is H3 and a voluntary release verb H2 (#2533).
