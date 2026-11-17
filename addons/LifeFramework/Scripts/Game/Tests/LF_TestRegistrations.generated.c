@@ -288,8 +288,11 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HospitalWard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HostSay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HotwireWanted(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_HouseCarriedKeyPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HouseIdentifierInit(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HouseKeyedOpen(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HouseKeyMatch(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_HouseRegistryPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HouseSaveData(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IDCard(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_IdCardGrant(), LF_TestTier.WORLD);

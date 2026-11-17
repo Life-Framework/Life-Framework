@@ -37,7 +37,10 @@ receive keys, walk to the property, unlock your door. Police/bailiffs raiding
 ## Current state
 
 - `LF_DoorUserAction`, `LF_KeyComponent`, `LF_LockComponent`,
-  `LF_HouseManagerComponent`, `LF_HouseSaveData` (`Feature/Houses/`).
+  `LF_HouseManagerComponent`, `LF_HouseSaveData`, `LF_Houses` (`Feature/Houses/`).
+- Opening a locked door never unlocks it: the owner and key holders pass, the server decides (#2410).
+- `LF_Houses` saves lock state and owner per stable house identifier (`houses` payload); carried keys
+  keep their house (`itemkeys` payload). A house needs an editor identifier to be saved.
 - `Prefabs/Structures/` (buildings and building parts) back the physical shell.
 
 ## Dependencies

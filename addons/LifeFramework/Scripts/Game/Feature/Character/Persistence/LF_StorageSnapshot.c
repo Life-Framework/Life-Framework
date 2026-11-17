@@ -25,6 +25,11 @@ class LF_StorageItemRecord : Managed
 	[NonSerialized()]
 	bool m_bStolen;
 
+	//! House a key opens (LF_KeyComponent, #2410), empty for anything that is not a bound house
+	//! key. Travels in the separate itemkeys payload (save version 46), like the serial.
+	[NonSerialized()]
+	string m_sHouseKey;
+
 	//------------------------------------------------------------------------------------------------
 	static LF_StorageItemRecord Create(string prefab, int quantity, int parent, int storage, int slot)
 	{
@@ -56,6 +61,16 @@ class LF_StorageItemSerialRecord : Managed
 	string m_sOwnerKey;
 	string m_sSlot;
 	ref array<string> m_aSerials = {};
+}
+
+//------------------------------------------------------------------------------------------------
+//! House keys of one snapshot (#2410), parallel to its item list ("" = not a bound house key). The
+//! itemkeys payload (save version 46), keyed by the snapshot's stable owner key and slot name.
+class LF_StorageItemKeyRecord : Managed
+{
+	string m_sOwnerKey;
+	string m_sSlot;
+	ref array<string> m_aHouseKeys = {};
 }
 
 //------------------------------------------------------------------------------------------------
@@ -255,6 +270,7 @@ class LF_StorageSnapshot
 			copy.m_iAmmo = source.m_iAmmo;
 			copy.m_sSerial = source.m_sSerial;
 			copy.m_bStolen = source.m_bStolen;
+			copy.m_sHouseKey = source.m_sHouseKey;
 			int parent = source.m_iParent;
 			if (parent >= 0 && parent < heldIndex && held[parent])
 			{
@@ -648,6 +664,10 @@ class LF_StorageSnapshot
 
 				record.m_bStolen = LF_StolenGoods.IsStolen(item);
 
+				LF_KeyComponent houseKey = LF_KeyComponent.Cast(item.FindComponent(LF_KeyComponent));
+				if (houseKey)
+					record.m_sHouseKey = houseKey.GetHouseIdentifier();
+
 				items.Insert(record);
 				CaptureChildren(item, items.Count() - 1, items, visited);
 			}
@@ -732,6 +752,7 @@ class LF_StorageSnapshot
 			SetAmmo(occupants[match], item);
 			SetSerial(occupants[match], item);
 			SetStolen(occupants[match], item);
+			SetHouseKey(occupants[match], item);
 		}
 
 		// What the snapshot does not list is not carried: default prefab contents included.
@@ -818,6 +839,24 @@ class LF_StorageSnapshot
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: a house key gets back the house it opens (#2410). An item without the component is
+	//! skipped with a warning.
+	protected static void SetHouseKey(IEntity entity, LF_StorageItemRecord item)
+	{
+		if (item.m_sHouseKey.IsEmpty())
+			return;
+
+		LF_KeyComponent key = LF_KeyComponent.Cast(entity.FindComponent(LF_KeyComponent));
+		if (!key)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("house key %1 not restored: %2 has no key component", item.m_sHouseKey, item.m_sPrefab));
+			return;
+		}
+
+		key.SetHouseIdentifier(item.m_sHouseKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: a stamped item gets its serial back. An item without the component is skipped.
 	protected static void SetSerial(IEntity entity, LF_StorageItemRecord item)
 	{
@@ -901,6 +940,78 @@ class LF_StorageSnapshot
 			{
 				if (index >= 0 && index < record.m_aItems.Count() && record.m_aItems[index])
 					record.m_aItems[index].m_bStolen = true;
+			}
+
+			matched++;
+		}
+
+		return matched;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The itemkeys payload (#2410): one record per stored snapshot that holds a bound house key.
+	static array<ref LF_StorageItemKeyRecord> ExportItemKeys()
+	{
+		array<ref LF_StorageItemKeyRecord> rows = new array<ref LF_StorageItemKeyRecord>();
+		if (!s_mSnapshots)
+			return rows;
+
+		foreach (string key, LF_StorageSnapshotRecord record : s_mSnapshots)
+		{
+			if (!record || !record.m_aItems)
+				continue;
+
+			LF_StorageItemKeyRecord row = new LF_StorageItemKeyRecord();
+			row.m_sOwnerKey = record.m_sOwnerKey;
+			row.m_sSlot = record.m_sSlot;
+			bool any;
+			foreach (LF_StorageItemRecord item : record.m_aItems)
+			{
+				string houseKey;
+				if (item)
+					houseKey = item.m_sHouseKey;
+				else
+					houseKey = "";
+
+				if (!houseKey.IsEmpty())
+					any = true;
+
+				row.m_aHouseKeys.Insert(houseKey);
+			}
+
+			if (any)
+				rows.Insert(row);
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Runs after the carried payload loaded the snapshots. A row whose snapshot is gone or whose item
+	//! count differs is skipped with a warning (those keys come back unbound).
+	//! \return Number of snapshots that took their house keys.
+	static int ApplyItemKeys(array<ref LF_StorageItemKeyRecord> rows)
+	{
+		if (!rows)
+			return 0;
+
+		int matched;
+		foreach (LF_StorageItemKeyRecord row : rows)
+		{
+			if (!row || !row.m_aHouseKeys)
+				continue;
+
+			LF_StorageSnapshotRecord record = Get(row.m_sOwnerKey, row.m_sSlot);
+			if (!record || !record.m_aItems || record.m_aItems.Count() != row.m_aHouseKeys.Count())
+			{
+				LF_Debug.Warn(FEATURE, string.Format("house keys for %1/%2 skipped: no matching snapshot", row.m_sOwnerKey, row.m_sSlot));
+				continue;
+			}
+
+			for (int index = 0; index < record.m_aItems.Count(); index++)
+			{
+				if (record.m_aItems[index])
+					record.m_aItems[index].m_sHouseKey = row.m_aHouseKeys[index];
 			}
 
 			matched++;
@@ -1076,6 +1187,7 @@ class LF_StorageSnapshot
 		SetAmmo(entity, item);
 		SetSerial(entity, item);
 		SetStolen(entity, item);
+		SetHouseKey(entity, item);
 
 		// A restored stack keeps its own slot instead of merging into a neighbour.
 		bool isStack = entity.FindComponent(LF_QuantityComponent) != null;

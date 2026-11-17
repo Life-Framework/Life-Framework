@@ -188,6 +188,23 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 			LF_Debug.Info(LF_PhotoIdCard.FEATURE, "e2e save: identity card " + LF_IdCard.NumberOf(LF_IdCard.FindShown(carrier, ID_HOLDER)));
 		}
 
+		// A house key bound to a house rides in the pocket (#2410): its binding must survive the restart
+		// ("itemkeys", save version 46).
+		if (carrier)
+		{
+			IEntity houseKey = LF_Utils.SpawnEntityPrefab(LF_Test_E2E_SaveStateVerify.HOUSE_KEY_PREFAB, carrier.GetOrigin());
+			LF_KeyComponent houseKeyComponent;
+			if (houseKey)
+				houseKeyComponent = LF_Component<LF_KeyComponent>.Find(houseKey);
+			ctx.NotNull(houseKeyComponent, "e2e a house key spawns for the carrier");
+			if (houseKeyComponent)
+			{
+				houseKeyComponent.SetHouseIdentifier(LF_Test_E2E_SaveStateVerify.HOUSE_KEY_HOUSE);
+				InventoryStorageManagerComponent keyStorage = LF_InventoryUtils.GetResponsibleStorageManager(carrier);
+				ctx.True(keyStorage && keyStorage.TryInsertItem(houseKey, EStoragePurpose.PURPOSE_DEPOSIT), "e2e the bound house key is carried before the save");
+			}
+		}
+
 		if (carrier)
 			ctx.True(LF_StorageSnapshot.CaptureCarried(CARRIED_CHARACTER_ID, carrier), "e2e carried inventory captured before the save");
 
@@ -421,6 +438,10 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 // tier: PERSISTENCE
 class LF_Test_E2E_SaveStateVerify : LF_Test
 {
+	//! #2410: the carried house key and the house it opens.
+	static const ResourceName HOUSE_KEY_PREFAB = "{3735389521255DBE}Prefabs/Items/HouseKeyItem.et";
+	static const string HOUSE_KEY_HOUSE = "e2e-carried-key-house";
+
 	protected static int s_iLooseApples;
 
 	//------------------------------------------------------------------------------------------------
@@ -587,6 +608,35 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! #2410: the carried house key comes back bound to its house. A legacy save (--legacy-save, no
+	//! build stamp) restores it unbound, as that build did; a ref build from before the house payloads
+	//! (--pre-move) carried no key.
+	protected void VerifyHouseKey(LF_TestContext ctx, IEntity restored)
+	{
+		int bootVersion = LF_SaveStamp.BootSaveVersion();
+		if (bootVersion > 0 && bootVersion < LF_PersistenceComponentSerializer.PayloadSinceVersion("houses"))
+		{
+			ctx.Pass("e2e a save older than the house payloads carries no house key");
+			return;
+		}
+
+		array<IEntity> keys = LF_InventoryUtils.FindItemsByPrefab(LF_InventoryUtils.GetResponsibleStorageManager(restored), HOUSE_KEY_PREFAB);
+		ctx.Equal(1, keys.Count(), "e2e the carried house key is back after the restart");
+		if (keys.IsEmpty())
+			return;
+
+		LF_KeyComponent key = LF_Component<LF_KeyComponent>.Find(keys[0]);
+		string bound;
+		if (key)
+			bound = key.GetHouseIdentifier();
+
+		if (bootVersion >= LF_PersistenceComponentSerializer.PayloadSinceVersion("itemkeys"))
+			ctx.EqualStr(HOUSE_KEY_HOUSE, bound, "e2e the carried house key still opens its house after the restart");
+		else
+			ctx.EqualStr("", bound, "e2e a save older than itemkeys restores the house key unbound");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! #750a after the restart: the three members on their rungs, rights checked through the
 	//! manager. A version 27 save brings the whole masks back from "orgranks"; a version 23 save
 	//! (--legacy-save) has record version 1 organizations, so the masks come from the four bools.
@@ -673,6 +723,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 				LF_StorageSnapshot.Apply(restored, carried);
 				ctx.Equal(237, LF_MoneyUtils.GetCash(restored), "e2e 237 cash carried across the restart");
 				ctx.Equal(3, LF_InventoryUtils.GetAmount(restored, LF_TestCarriedInventoryKit.APPLE_PREFAB), "e2e 3 apples carried across the restart");
+				VerifyHouseKey(ctx, restored);
 				ctx.Equal(1, LF_TestCarriedInventoryKit.CountInside(restored, LF_TestCarriedInventoryKit.BACKPACK_PREFAB, LF_TestCarriedInventoryKit.WATER_PREFAB), "e2e water bottle still inside the backpack after the restart");
 				array<IEntity> backDrills = LF_InventoryUtils.FindItemsByPrefab(LF_InventoryUtils.GetResponsibleStorageManager(restored), LF_Bank.DRILL_PREFAB);
 				ctx.Equal(1, backDrills.Count(), "e2e carried drill is back after the restart");

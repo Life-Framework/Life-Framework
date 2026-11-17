@@ -1,5 +1,5 @@
 {
-  "saveVersion": 44,
+  "saveVersion": 46,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -46,7 +46,9 @@
     "worldevents": "LF_EventShellRow",
     "mapknown": "LF_MapKnownRow",
     "mapmarks": "LF_MapMarkRow",
-    "orgmarks": "LF_OrgMapMarkRow"
+    "orgmarks": "LF_OrgMapMarkRow",
+    "houses": "LF_HouseLockRecord",
+    "itemkeys": "LF_StorageItemKeyRecord"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -563,6 +565,22 @@
         "int m_iColour",
         "string m_sText",
         "string m_sAuthorId"
+      ]
+    },
+    "LF_HouseLockRecord": {
+      "since": 45,
+      "fields": [
+        "string m_sHouseIdentifier",
+        "bool m_bLocked",
+        "string m_sOwnerKey"
+      ]
+    },
+    "LF_StorageItemKeyRecord": {
+      "since": 46,
+      "fields": [
+        "string m_sOwnerKey",
+        "string m_sSlot",
+        "array<string> m_aHouseKeys"
       ]
     }
   }
