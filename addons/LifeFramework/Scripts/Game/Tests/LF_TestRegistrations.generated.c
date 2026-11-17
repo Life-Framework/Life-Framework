@@ -714,12 +714,14 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VaultDrillPayOnce(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VaultTool(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleBankRefusal(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehicleChangeLocks(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleColours(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleColoursOverlay(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_GarageLedger(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleImpound(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_VehicleKeyInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLock(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_VehicleLockedCargo(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleLockIdMatch(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLockPolish(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleLotSheet(), LF_TestTier.LOGIC);
@@ -727,6 +729,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_VehiclePriceModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehiclePriceOwner(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleRemoveByBaseGuid(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_VehicleRetrieveKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_VehicleStateBadRow(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_VehicleStateLegacy(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_VehicleStateReset(), LF_TestTier.LOGIC);
