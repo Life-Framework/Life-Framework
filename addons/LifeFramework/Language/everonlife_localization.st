@@ -9853,6 +9853,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1, right here"
      Comment "Where a town board card's place is when it stands beside the board. %1 place name."
     }
+    CustomStringTableItem "{3C7E19B2D54A806F}" {
+     Id "LF-Trader_SaleRefused"
+     Target_en_us "The trader won't take that."
+     Comment "Toast to the seller: the server refused a trader sale (not bought, out of reach, not carried, or the black market)."
+    }
+    CustomStringTableItem "{8D20F4A6B1957C3E}" {
+     Id "LF-Trader_SaleRefused_Title"
+     Target_en_us "No sale"
+     Comment "Title of the refused-sale toast."
+    }
     CustomStringTableItem "{D820B2BCD7FC410A}" {
      Id "LF-UIKit_Keep"
      Target_en_us "Keep %1"
