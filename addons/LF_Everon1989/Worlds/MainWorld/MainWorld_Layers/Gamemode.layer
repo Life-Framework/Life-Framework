@@ -3,6 +3,13 @@ LF_GameModeRoleplay GameMode_Roleplay1 : "{03913608C59017A3}Prefabs/MP/Modes/Rol
 SCR_SpawnPoint : "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et" {
  coords 4471.854 21.689 10535.136
 }
+GenericEntity LF_TestRunner {
+ components {
+  LF_TestRunnerComponent "{5B1C7E23D49A8F06}" {
+  }
+ }
+ coords 4471.854 21.689 10530.136
+}
 SCR_AIWorld AIWorld_MainWorld : "{70CCCF16487C927F}Prefabs/AI/SCR_AIWorld_Eden.et" {
  components {
   NavmeshWorldComponent "{5584F30E67F617AD}" {

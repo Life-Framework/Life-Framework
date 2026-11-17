@@ -45,6 +45,21 @@ class LF_MapShareMember : Managed
 //! run Configs/Map/Rules/shares.cases.json (LF_Test_MapShares), so they cannot drift.
 class LF_MapShareRules
 {
+	//! The widest area a share row may carry, in metres (Everon is 12.8 km across).
+	static const int AREA_RADIUS_MAX = 5000; // lf-fixed: wire limit of a shared-mark area (everon-map.md section 3)
+
+	//------------------------------------------------------------------------------------------------
+	//! Is this a drawable area for a row: a radius of 1 to AREA_RADIUS_MAX metres and a style id that
+	//! LF_MapAreaStyle holds (ids are appended only: a new last style is added here and to AREA_STYLE_IDS
+	//! in tools/map/rules/shares.mjs, which the selftest compares). Radius 0 is "no area", not an error.
+	static bool AreaValid(int radius, int style)
+	{
+		if (radius <= 0 || radius > AREA_RADIUS_MAX)
+			return false;
+
+		return style >= 0 && style <= LF_MapAreaStyle.EVENT;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Does this player receive a row for this audience? An empty id matches nobody (fail safe).
 	static bool InAudience(LF_EMapShareAudience audience, string audienceId, LF_MapShareMember member)
