@@ -312,6 +312,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobLevelsConfig(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobLevelsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JobLevelSync(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_JobMapMarks(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobPacing(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobSignUpPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JobsOverrideModel(), LF_TestTier.LOGIC);
@@ -348,6 +349,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapKnown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapKnownPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_MapKnownSyncGate(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_MapMarksOffscreen(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapMarksPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_MapPlacesKnown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPlacesLayout(), LF_TestTier.LOGIC);
