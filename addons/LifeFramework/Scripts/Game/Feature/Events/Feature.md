@@ -73,6 +73,6 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 ## Event places on the map (#2243)
 
 - **Player sees:** while an event runs, its place is a mark on everyone's map (and an EVENT-style circle where the area is drawn); it leaves when the event ends.
-- **Owner and side:** server; `LF_EventMapShare` listens to `LF_OnEventPhase` and puts or removes the `EVERYONE` row `event:<eventId>` in `LF_MapShares`, plus the area in `LF_MapAreas`. Nothing is saved.
+- **Owner and side:** server; `LF_EventMapShare` listens to `LF_OnEventPhase` and puts or removes the `EVERYONE` row `event:<eventId>` in `LF_MapShares`; the row carries the radius and the `EVENT` style, and each client draws the circle in its own `LF_MapAreas` (`LF_MapShareAreas`). Nothing is saved.
 - **Data:** the place is the `LF_EventPlace` binding (scene id, radius) resolved to the `event_target` marker through `LF_Places`; label `#LF-EventMap_Place`.
 - **Proof:** `events/map-share` (WORLD).

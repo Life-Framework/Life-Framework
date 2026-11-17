@@ -3,9 +3,9 @@
 //! Event places on the map (#2243, card M15). The test event is bound to the target of the scene in
 //! grid cell `event-scene` (scene `grid_event_scene`, found through LF_Places by component) with a 10 m
 //! radius and driven through the real shell. Starting it puts an `EVERYONE` row `event:test_ems` in
-//! LF_MapShares (sent to a civilian, an on-duty officer and an org member alike) and an EVENT-style
-//! circle in LF_MapAreas; a phase change renews it with the phase's radius and does not duplicate it; a
-//! late joiner's spawn resends it; the event's end removes the row from everyone and the area; a
+//! LF_MapShares (sent to a civilian, an on-duty officer and an org member alike) carrying an EVENT-style
+//! area, which the sink draws as the client does (LF_MapShareAreas, a circle in LF_MapAreas); a phase change
+//! renews it with the phase's radius and does not duplicate it; a late joiner's spawn resends it; the event's end removes the row from everyone and the area; a
 //! second run's row leaves everyone at its safety expiry. An event with no place, or whose marker is
 //! not placed, shows nothing.
 class LF_Test_EventMapShare : LF_Test
@@ -29,10 +29,12 @@ class LF_Test_EventMapShare : LF_Test
 	{
 		LF_MapShares.ResetStatics();
 		LF_MapAreas.ResetStatics();
+		LF_MapShareAreas.ResetStatics();
 		LF_EventMapShare.ResetStatics();
 		RunShare(ctx);
 		LF_MapShares.ResetStatics();
 		LF_MapAreas.ResetStatics();
+		LF_MapShareAreas.ResetStatics();
 		LF_EventMapShare.ResetStatics();
 		LF_MapShares.EnsureStarted();
 		LF_EventMapShare.Install();
@@ -52,7 +54,7 @@ class LF_Test_EventMapShare : LF_Test
 		vector centre;
 		ctx.True(LF_Places.FindOrigin(LF_EventWaypointComponent.KIND_TARGET, SCENE, centre), "the grid cell's target is placed");
 
-		LF_Test_MapShareSink sink = new LF_Test_MapShareSink();
+		LF_MapShareAreaTestSink sink = new LF_MapShareAreaTestSink();
 		LF_Test_MapShareFacts facts = new LF_Test_MapShareFacts();
 		facts.Set(CIVILIAN, "char-civilian", "", "");
 		facts.Set(OFFICER, "char-officer", LF_MapShares.ROLE_POLICE, "");
@@ -126,6 +128,10 @@ class LF_Test_EventMapShare : LF_Test
 		facts.Set(LATE, "char-late", "", "");
 		LF_MapShares.OnSpawned(LATE);
 		ctx.True(sink.Got("add:4:" + KEY), "a late joiner is sent the running event's row");
+		area = LF_MapAreas.Find(KEY);
+		ctx.True(area != null, "a late joiner's resend brings the area back");
+		if (area)
+			ctx.True(Math.AbsFloat(RadiusOfArea(area, centre) - 20) < 0.01, "the resent area has the running phase's radius");
 
 		// End: the row leaves everyone, the area goes.
 		positions.Clear();

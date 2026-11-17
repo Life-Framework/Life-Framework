@@ -111,7 +111,7 @@ export function poolSettings(root) {
 export function budgetsFor(root, m, purpose, override, { world, bootOverride } = {}) {
   const settings = poolSettings(root);
   const runs = readRuns(root);
-  const b = q.budgetSeconds(runs, purpose, m.name, { multiplier: m.budgetMultiplier ?? 1, override: Number(override) });
+  const b = q.budgetSeconds(runs, purpose, m.name, { multiplier: m.budgetMultiplier ?? 1, override: Number(override), world });
   const boot = q.bootBudgetSeconds(runs, { world, machine: m.name, base: settings.bootBudgetS, multiplier: m.budgetMultiplier ?? 1, override: Number(bootOverride) });
   return { ...b, bootS: boot.bootS, bootSource: boot.source };
 }
@@ -841,7 +841,7 @@ if ($cfg.ram -and $slots.Count -gt 0) {
     if (-not (Test-Alive $h.pid)) { continue }
     $running++
     if ($h.purpose -eq 'session') { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt $sWin) { $c = 1; if ($h.clients) { $c = [int]$h.clients }; $pending += $cfg.ram.serverMb + $cfg.ram.clientMb * $c } } catch {} }
-    elseif ($h.purpose -and $cfg.ram.testMb) { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt $tWin) { $pending += [int]$cfg.ram.testMb } } catch {} }
+    elseif ($h.purpose -and $cfg.ram.testMb) { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt $tWin) { $tm = [int]$cfg.ram.testMb; if ($h.world -eq 'island') { $ti = 0; try { $ti = [int]$cfg.ram.peaks.'test:island' } catch {}; if ($ti -gt $tm) { $tm = $ti } }; $pending += $tm } } catch {} }
   }
   # What every ArmaReforger process on the box (Workbench, guard, other pool jobs, the user's own) still grows
   # into: its kind's peak less the working set it holds now. A second island job also needs both peaks.
@@ -889,7 +889,7 @@ for ($i = 0; $i -lt $slots.Count -and $got -lt 0; $i++) {
     $fs = $null
     try { $fs = [IO.File]::Open($f, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write) } catch { $fs = $null }
     if ($fs) {
-      $info = [ordered]@{ pid = $PID; at = (Get-Date).ToUniversalTime().ToString('o'); name = $s.lock; token = $cfg.token; rDir = $s.dir; slug = $cfg.slug; purpose = $cfg.purpose; origin = $cfg.origin; originPid = $cfg.originPid; root = $s.dir }
+      $info = [ordered]@{ pid = $PID; at = (Get-Date).ToUniversalTime().ToString('o'); name = $s.lock; token = $cfg.token; rDir = $s.dir; slug = $cfg.slug; purpose = $cfg.purpose; world = $cfg.world; origin = $cfg.origin; originPid = $cfg.originPid; root = $s.dir }
       $bytes = $enc.GetBytes(($info | ConvertTo-Json -Compress))
       $fs.Write($bytes, 0, $bytes.Length); $fs.Close()
       $got = $i; break
@@ -1311,6 +1311,9 @@ export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = 
     token: randomBytes(8).toString("hex"),
     slug,
     purpose,
+    // The world class of the job (island or small): the lock record carries it so a second job's gate counts
+    // an island test by its island peak while it boots.
+    world: pr.worldClass(world),
     origin: hostname(),
     originPid: process.pid,
     worktree: root.replace(/\\/g, "/"),
@@ -2178,7 +2181,7 @@ export async function acquireSlot(root, opts = {}) {
   let stuck = "";
   let needMb;
   let grantedOn = null;
-  const ticketBody = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name), ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}), ...(grantedOn ? { granted: grantedOn } : {}) });
+  const ticketBody = () => ({ pid: process.pid, at: new Date(started).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name), ...(opts.world ? { world: opts.world } : {}), ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}), ...(grantedOn ? { granted: grantedOn } : {}) });
   const ticket = writeTicket(root, ticketBody());
   let lastReap = 0;
   const lastTry = new Map();
@@ -2325,7 +2328,7 @@ export async function acquireSlot(root, opts = {}) {
             let s = null;
             try {
               const bud = budgetsOf(m);
-              s = tryLocal(root, m, lane, { slug, purpose, root, priority, ...(bud ? { budgetS: bud.runS } : {}) }, { blocked, noRam: degraded, aheadMb: burst?.aheadMb ?? 0 });
+              s = tryLocal(root, m, lane, { slug, purpose, root, priority, ...(opts.world ? { world: opts.world } : {}), ...(bud ? { budgetS: bud.runS } : {}) }, { blocked, noRam: degraded, aheadMb: burst?.aheadMb ?? 0 });
               if (s && bud) {
                 s.budgetS = bud.runS;
                 s.bootS = bud.bootS;
@@ -2347,7 +2350,7 @@ export async function acquireSlot(root, opts = {}) {
         if (Date.now() - (lastTry.get(m.name) ?? 0) < REMOTE_RETRY_MS) continue;
         lastTry.set(m.name, Date.now());
         if (!usable(m)) continue;
-        const cfg = holderConfig(root, m, snap, { purpose, aheadMb: burst?.aheadMb ?? 0, freeLocks: burst?.freeLocks, position: burst?.position ?? 0 });
+        const cfg = holderConfig(root, m, snap, { purpose, world: opts.world, aheadMb: burst?.aheadMb ?? 0, freeLocks: burst?.freeLocks, position: burst?.position ?? 0 });
         const attemptAt = Date.now();
         const r = await startHolder(root, m, cfg, {
           onLost: (s) => console.log(`WARN  pool: lost the ssh session holding ${s.machine.name} ${s.lockName}; the run there is being stopped`),

@@ -1,6 +1,8 @@
 //------------------------------------------------------------------------------------------------
 //! One shared map mark (everon-map.md section 3, "Shared marks"). Server side; the wire carries its
-//! plain fields only (LF_MapShareComponent), never the audience or the expiry.
+//! plain fields only (LF_MapShareComponent), never the audience or the expiry. A row may also carry an
+//! area: a circle of m_iAreaRadius metres around its position, drawn in the LF_MapAreaStyle m_iAreaStyle
+//! (radius 0 is no area). The client registers it in LF_MapAreas beside the mark (LF_MapShareAreas).
 class LF_MapShareRow : Managed
 {
 	//! The owning system's stable key: dispatch:<callId>, org:<orgId>:<n>, taxi:<fareId>, event:<eventId>.
@@ -18,6 +20,9 @@ class LF_MapShareRow : Managed
 	string m_sText;
 	//! World seconds; 0 never expires.
 	float m_fExpires;
+	//! Optional area around the position: radius in metres (0 none) and an LF_MapAreaStyle id.
+	int m_iAreaRadius;
+	int m_iAreaStyle;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_MapShareRow Make(string key, LF_EMapShareAudience audience, string audienceId, int x, int z, int icon, int colour, string text, float expires)
@@ -33,6 +38,15 @@ class LF_MapShareRow : Managed
 		row.m_sText = text;
 		row.m_fExpires = expires;
 		return row;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gives the row an area (a circle around its position). eturn the row, so it chains off Make.
+	LF_MapShareRow WithArea(int radius, LF_MapAreaStyle style)
+	{
+		m_iAreaRadius = radius;
+		m_iAreaStyle = style;
+		return this;
 	}
 }
 
@@ -268,6 +282,13 @@ class LF_MapShares
 
 		if (row.m_sText.Length() > TEXT_CAP)
 			row.m_sText = row.m_sText.Substring(0, TEXT_CAP);
+
+		if (row.m_iAreaRadius != 0 && !LF_MapShareRules.AreaValid(row.m_iAreaRadius, row.m_iAreaStyle))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("share %1 area dropped: radius %2 style %3 is not drawable", row.m_sKey, row.m_iAreaRadius, row.m_iAreaStyle));
+			row.m_iAreaRadius = 0;
+			row.m_iAreaStyle = 0;
+		}
 
 		EnsureTables();
 		if (!s_mRows.Contains(row.m_sKey))
