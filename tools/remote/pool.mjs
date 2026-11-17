@@ -29,6 +29,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
 import * as q from "../lib/pool-queue.mjs";
+import { PS_GPU_PROBE, PS_READ_HEARTBEAT, desktopLine, parseProbe, readLocalProbe } from "../lib/gpu-session.mjs";
 import * as pr from "../lib/pool-ram.mjs";
 import { idleVerdict } from "../lib/look-job.mjs";
 import * as gc from "../lib/session-gc.mjs";
@@ -36,6 +37,7 @@ import * as rt from "../lib/rt-gc.mjs";
 import { lastActiveMs, markReaped, noteHoldWarning, readLease, sessionBase, sessionDirOf } from "../lib/session-lease.mjs";
 import { localConfig, localSetting } from "../lib/local-config.mjs";
 import * as tb from "./testbox.mjs";
+import { reapOrphansThrottled } from "../lib/ram.mjs";
 import { trimProcs } from "../lib/ws-trim.mjs";
 import { statusLine } from "../lib/wb-lock.mjs";
 import { setMachineHostnameForTest } from "../lib/machine-locks.mjs";
@@ -845,16 +847,14 @@ if ($cfg.ram -and $slots.Count -gt 0) {
   # into: its kind's peak less the working set it holds now. A second island job also needs both peaks.
   $growth = 0; $islands = 0
   if ($cfg.ram.peaks) {
-    foreach ($p in @(Get-CimInstance Win32_Process -Filter "Name LIKE 'ArmaReforger%'")) {
-      $c = [string]$p.CommandLine; $nm = [string]$p.Name; $k = $null
-      if ($nm -like '*Workbench*') { $k = 'workbench' } elseif ($nm -like 'ArmaReforgerServer*') { $k = 'server' } elseif ($nm -like 'ArmaReforgerSteam*') { $k = 'client' }
-      if (-not $k) { continue }
-      $w = 'small'; if ($c -match 'CoreOnEveron') { $w = 'island'; if ($k -ne 'workbench') { $islands++ } }
-      $key = $k + ':' + $w
+${pr.PS_PROC_ROWS}
+    foreach ($lfRow in @(Get-LfArmaRows)) {
+      $w = 'small'; if ($lfRow.isl -eq 1) { $w = 'island'; if ($lfRow.k -ne 'workbench') { $islands++ } }
+      $key = $lfRow.k + ':' + $w
+      if ($lfRow.k -eq 'workbench' -and $lfRow.prof -eq 'tool') { $key = 'workbench:small:tool' } elseif ($lfRow.k -eq 'client' -and $w -eq 'small' -and $lfRow.prof -eq 'lowspec') { $key = 'client:small:lowspec' }
       $pk = 0; try { $pk = [int]$cfg.ram.peaks.$key } catch {}
-      $ws = [int]($p.WorkingSetSize / 1MB)
-      $pv = [int]($p.PrivatePageCount / 1MB)
-      if ($pk -gt $ws -and $pv -lt $pk) { $growth += ($pk - $ws) }
+      if (-not $pk) { try { $pk = [int]$cfg.ram.peaks.($lfRow.k + ':' + $w) } catch {} }
+      if ($pk -gt $lfRow.ws -and $lfRow.priv -lt $pk) { $growth += ($pk - $lfRow.ws) }
     }
   }
   $need = $cfg.ram.reserveMb + $pending + $growth + $cfg.ram.floorMb + [int]$cfg.ram.aheadMb
@@ -1279,10 +1279,15 @@ export function slugFor(root) {
 
 // The peak a job reserves in the holder's gate: a session its server and one client, a test its test
 // server (the floor used to be all a test left itself).
-function holderReserveMb(root, settings, purpose, world) {
-  const peaks = pr.readPeaks(wt.hubDirOf(root));
+function holderReserveMb(root, settings, purpose, world, peaks = pr.readPeaks(wt.hubDirOf(root))) {
   if (laneKind(purpose) === "session") return pr.jobReserveMb(settings, peaks, { kind: "session", clients: 1, profile: "full", world });
   return pr.jobReserveMb(settings, peaks, { kind: "test", world });
+}
+
+// The peaks a job on machine m is admitted by: this PC's hub, with m's own measured keys over them (its
+// remoteState read carries its hub's pool-peaks.json; the cached read, so this costs no ssh).
+export function machinePeaks(root, m, state = m?.via === "local" ? null : stateCache.get(m?.name)?.state) {
+  return pr.mergePeaks(pr.readPeaks(wt.hubDirOf(root)), state?.peaks);
 }
 
 // slots: how many of the machine's lanes of this kind the holder may try (all of them by default;
@@ -1313,7 +1318,7 @@ export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = 
     candidates: [...new Set([snap.sha, snap.head, last, base].filter(Boolean))],
     slots: q.rotateSlots(slotList, freeLocks, position),
     dir: remoteRunDir(m, slug, 1, suffix),
-    ram: { ...(m.thermalLog ? { thermal: { dir: m.thermalLog, holdC: m.thermalHoldC } } : {}), locks: q.allLaneLocks(m), floorMb: settings.minFreeMb, reserveMb: holderReserveMb(root, settings, purpose, world), island: laneKind(purpose) === "session" && pr.worldClass(world) === pr.ISLAND, peaks: pr.peakTable(pr.readPeaks(wt.hubDirOf(root))), serverMb: settings.sessionReserveServerMb, clientMb: settings.sessionReserveClientMb, testMb: settings.testReserveMb, testBootS: settings.testBootS, aheadMb: Math.max(0, Math.round(Number(aheadMb) || 0)) },
+    ram: { ...(m.thermalLog ? { thermal: { dir: m.thermalLog, holdC: m.thermalHoldC } } : {}), locks: q.allLaneLocks(m), floorMb: settings.minFreeMb, reserveMb: holderReserveMb(root, settings, purpose, world, machinePeaks(root, m)), island: laneKind(purpose) === "session" && pr.worldClass(world) === pr.ISLAND, peaks: pr.peakTable(machinePeaks(root, m)), serverMb: settings.sessionReserveServerMb, clientMb: settings.sessionReserveClientMb, testMb: settings.testReserveMb, testBootS: settings.testBootS, aheadMb: Math.max(0, Math.round(Number(aheadMb) || 0)) },
   };
 }
 
@@ -1886,6 +1891,10 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
       if (now - lastReap > 10000) {
         lastReap = now;
         reapIdleSessions(root, all.filter((x) => x.via === "local"), tickets, settings);
+        // Game and Workbench processes no lane, session or look owns (tools/lib/ram.mjs), each machine every 10 min.
+        try {
+          reapOrphansThrottled(wt.hubDirOf(root), all, { sshPs: tb.sshPs });
+        } catch {}
       }
       // A machine that was down (or came back) counts again within a probe window.
       if (now - lastProbe > (opts.reprobeMs ?? 10000)) {
@@ -2500,8 +2509,14 @@ export function remoteState(m) {
   const ps = [
     `$ld = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\locks'`,
     `foreach ($n in @(${names.map(tb.psQuote).join(",")})) { $f = Join-Path $ld ($n + '.lock'); if (Test-Path -LiteralPath $f) { $raw = [IO.File]::ReadAllText($f).Trim(); $alive = $false; try { $i = $raw | ConvertFrom-Json; $alive = [bool](Get-Process -Id $i.pid -ErrorAction SilentlyContinue) } catch {}; Write-Host \"lf-pool: lock $n $alive $raw\" } else { Write-Host \"lf-pool: lock $n free\" } }`,
+    // Free space of the drive holding the worktrees (lead's DISK block); a failure prints nothing.
+    `try { $dr = Get-PSDrive -Name ((Split-Path -Qualifier ${tb.psQuote(m.root)}).TrimEnd(':')) -ErrorAction Stop; Write-Host ('lf-pool: disk ' + ([math]::Round($dr.Free / 1GB, 1)).ToString([Globalization.CultureInfo]::InvariantCulture)) } catch {}`,
     "$os = Get-CimInstance Win32_OperatingSystem; Write-Host \"lf-pool: ram $([int]($os.FreePhysicalMemory / 1024)) $([int]($os.TotalVisibleMemorySize / 1024))\"",
     pr.PS_PROC_SCAN,
+    // The box's own measured peaks (its look, rdb and holder jobs record there), one JSON line.
+    `$pf = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\pool-peaks.json'; if (Test-Path -LiteralPath $pf) { Write-Host ('lf-pool: peaks ' + ([IO.File]::ReadAllText($pf)).Trim()) }`,
+    PS_GPU_PROBE,
+    PS_READ_HEARTBEAT,
     ...(m.thermalLog ? [`$thermDir = ${tb.psQuote(m.thermalLog)}`, PS_THERMAL, "if ($thermC -ne $null) { Write-Host ('lf-pool: thermal ' + $thermC.ToString([Globalization.CultureInfo]::InvariantCulture)) }"] : []),
   ].join("\n");
   const r = tb.sshPs(m.host, ps, { timeout: PROBE_TIMEOUT_MS, connectTimeout: 4 });
@@ -2513,7 +2528,16 @@ export function parseRemoteState(text) {
   let freeMb = null;
   let totalMb = null;
   let thermalC = null;
+  let peaks = null;
+  let diskGb = null;
   for (const l of String(text).split(/\r?\n/)) {
+    if (l.startsWith("lf-pool: peaks ")) {
+      const v = readJsonText(l.slice("lf-pool: peaks ".length).trim());
+      if (v && typeof v === "object" && !Array.isArray(v) && Object.keys(v).length) peaks = v;
+      continue;
+    }
+    const dk = /^lf-pool: disk (-?[\d.]+)$/.exec(l.trim());
+    if (dk) diskGb = Number(dk[1]);
     const th = /^lf-pool: thermal ([\d.]+)$/.exec(l.trim());
     if (th) thermalC = Number(th[1]);
     const t = l.trim();
@@ -2528,7 +2552,7 @@ export function parseRemoteState(text) {
   // The ArmaReforger processes there (Workbench, servers, clients: the pool's or not); null when the box
   // answered without the scan lines (an older holder), so its gate falls back to lock-based pending.
   const procs = freeMb !== null ? pr.parseScan(text) : null;
-  return { locks, freeMb, totalMb, thermalC, procs };
+  return { locks, freeMb, totalMb, thermalC, diskGb, procs, peaks, gpuProbe: parseProbe(text), heartbeat: (/^lf-gpu-hb: (.*)$/m.exec(String(text)) ?? [])[1] ?? null };
 }
 
 function remoteLocks(m) {
@@ -2572,7 +2596,7 @@ export function rankedMachines(root, machines, settings, { reserveMb = 0, stateO
       return { name: m.name, freeMb: localFreeMb ?? Math.round(freemem() / 1048576), pendingMb, multiplier: m.budgetMultiplier };
     }
     const st = stateOf(m);
-    const pendingMb = st ? (st.procs ? pr.unrealisedMb(st.procs, pr.readPeaks(wt.hubDirOf(root))) : remotePendingMb(settings, Object.values(st.locks ?? {}).filter((i) => i?.alive))) : 0;
+    const pendingMb = st ? (st.procs ? pr.unrealisedMb(st.procs, pr.mergePeaks(pr.readPeaks(wt.hubDirOf(root)), st.peaks)) : remotePendingMb(settings, Object.values(st.locks ?? {}).filter((i) => i?.alive))) : 0;
     return { name: m.name, freeMb: st?.freeMb ?? null, pendingMb, multiplier: m.budgetMultiplier };
   });
   return q.rankMachines(views, { minFreeMb: settings.minFreeMb, reserveMb, roomyMb: settings.roomyMb });
@@ -2612,10 +2636,10 @@ export function remotePendingMb(settings, infos, now = Date.now()) {
 // The recorded peaks, after noting the processes a remote scan saw (an ended one leaves a sample).
 export function remotePeaks(root, m, st) {
   try {
-    if (!st?.procs) return pr.readPeaks(wt.hubDirOf(root));
+    if (!st?.procs) return pr.mergePeaks(pr.readPeaks(wt.hubDirOf(root)), st?.peaks);
     const peaks = pr.recordLive(wt.hubDirOf(root), st.procs, { tag: m.name });
     st.procs = pr.withSeenMax(wt.hubDirOf(root), st.procs, m.name);
-    return peaks;
+    return pr.mergePeaks(peaks, st.peaks);
   } catch {
     return {};
   }
@@ -2757,6 +2781,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     for (const m of machines.filter((x) => x.via === "ssh")) {
       if (probe(root, m).reachable) reapRemoteIdleSessions(root, m, settings, { waiting: tickets.some((t) => (t.lane ?? "session") === "session" && (t.machines ?? []).includes(m.name)) });
     }
+    reapOrphansThrottled(wt.hubDirOf(root), machines.filter((x) => x.via === "local" || probe(root, x).reachable), { sshPs: tb.sshPs });
   } catch (e) {
     console.log(`WARN  pool: idle-session check failed (${String(e?.message ?? e).split("\n")[0]})`);
   }
@@ -2776,6 +2801,8 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
       console.log(head);
       continue;
     }
+    // Can a GPU tool render there? ssh has no display output; the signed-in desktop session does (tools/lib/gpu-session.mjs).
+    const desk = desktopLine(m.name, m.via === "local" ? readLocalProbe() : st?.gpuProbe ?? null, m.via === "local" ? null : st?.heartbeat ?? null);
     const laneRows = [];
     const infos = {};
     const capMin = {};
@@ -2803,6 +2830,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     const idle = laneRows.filter(isIdleLaneRow);
     const shown = verbose ? laneRows : laneRows.filter((r) => !idle.includes(r));
     console.log(verbose || !idle.length ? head : `${head}  (${idle.length} lane(s) free or stale)`);
+    console.log(`  desktop: ${desk}`);
     for (const r of shown) console.log(r);
     const freeMb = m.via === "local" ? Math.round(freemem() / 1048576) : st?.freeMb;
     seen.set(m.name, { m, infos, capMin, freeMb });
@@ -3028,7 +3056,7 @@ export function poolSnapshot(root, m, report = () => {}) {
   const settings = poolSettings(root);
   const rows = m.lanes ? [...lanesFor(m, "session"), ...lanesFor(m, "test")] : lanesFor(m, "test");
   const gb = (mb) => Math.round((mb / 1024) * 10) / 10;
-  const snap = { name: m.name, health: "?", freeGb: null, totalGb: null, floorGb: gb(settings.minFreeMb), tempC: null, lanes: m.lanes ? m.lanes.test + m.lanes.session : m.slots, busy: 0 };
+  const snap = { name: m.name, via: m.via, health: "?", freeGb: null, totalGb: null, diskGb: null, floorGb: gb(settings.minFreeMb), tempC: null, lanes: m.lanes ? m.lanes.test + m.lanes.session : m.slots, busy: 0 };
   const h = probe(root, m, { fresh: true });
   snap.health = healthWord(h).replace(/\s*\(.*\)$/, "");
   report({ ...snap });
@@ -3036,6 +3064,7 @@ export function poolSnapshot(root, m, report = () => {}) {
   if (m.via === "local") {
     snap.freeGb = gb(Math.round(freemem() / 1048576));
     snap.totalGb = gb(Math.round(totalmem() / 1048576));
+    snap.diskGb = wt.freeDiskGbAt(wt.mainRootOf(root));
     snap.busy = rows.filter((l) => {
       const info = readJson(localLockFile(root, l.lock), null);
       return info && pidAlive(info.pid);
@@ -3048,6 +3077,7 @@ export function poolSnapshot(root, m, report = () => {}) {
         snap.totalGb = gb(st.totalMb);
       }
       if (Number.isFinite(st.thermalC)) snap.tempC = st.thermalC;
+      if (Number.isFinite(st.diskGb)) snap.diskGb = st.diskGb;
       snap.busy = rows.filter((l) => st.locks[l.lock]?.alive).length;
     } else {
       snap.health = "slow";

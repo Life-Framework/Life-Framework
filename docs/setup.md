@@ -204,6 +204,41 @@ the GitHub CLI signed in once (`gh auth login`). If you do not, fork the repo,
 push your branch to your fork, and open the PR from there (`gh pr create` or the
 GitHub page); the same `validate` check runs on it.
 
+## Desktop helper (a pool machine that renders)
+
+Workbench (`look`, `build`, `rdb`, `ui-image`) and game clients need a display output. A process started over ssh lives
+in session 0, which has none, and dies with `RENDER (E): Couldn't build device list for any adapter`
+(lf-testbox, 2026-11-17: after a reboot every GPU job failed that way until its desktop session was usable). So every GPU
+launch on a pool machine goes through the signed-in desktop session: `tools/lib/interactive-launch.mjs` for a detached
+process, `tools/remote/desktop/in-session.mjs` (a one-shot scheduled task, `run-interactive.ps1`) for a whole CLI run, and
+`ui-image`, `asset run`, `pack` and `call wb_*` re-run themselves there when started over ssh
+(`tools/lib/gpu-session.mjs` holds the rule).
+
+A machine with no usable desktop session fails fast with one line, before anything is registered or started, and the pool
+never picks it for a Workbench step:
+
+```
+lf-testbox has no signed-in desktop session: log in once
+```
+
+Log in on the machine once (the user the pool uses over ssh; set Windows to sign in automatically if it reboots unattended).
+A session that is signed in but disconnected (a closed remote-desktop window) has no display output either: reconnect to it
+at the machine.
+
+**The logon helper.** A scheduled task `LF-DesktopHelper`, At log on for that user, keeps the session ready: it asks the
+display to stay awake and writes a heartbeat (`C:LFdesktopgpu-session.json`) every 5 s. Create or refresh it once per
+machine, from this PC or on the machine itself (idempotent; it starts the helper at once when the desktop is up):
+
+```
+toolscli desktop-helper setup lf-testbox     # over ssh
+toolscli desktop-helper setup --local        # on the machine
+toolscli desktop-helper status lf-testbox    # session verdict, heartbeat age, task state
+toolscli desktop-helper remove lf-testbox
+```
+
+`toolscli pool status` shows a `desktop:` line per machine: `GPU session ok: PC1jaspe, session 1, Active, 2 monitor(s);
+logon helper alive (3 s ago)`, or `NO GPU SESSION: <the line above>`. `docs/worktrees.md` "Desktop on the box" has the rest.
+
 ## Troubleshooting
 
 | Problem | Fix |

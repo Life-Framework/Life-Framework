@@ -1,5 +1,5 @@
 {
-  "saveVersion": 41,
+  "saveVersion": 44,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -43,7 +43,10 @@
     "racerecords": "LF_RaceRecordRow",
     "lastpos": "LF_LastPositionRow",
     "hospitalrejoin": "LF_HospitalRejoinRow",
-    "worldevents": "LF_EventShellRow"
+    "worldevents": "LF_EventShellRow",
+    "mapknown": "LF_MapKnownRow",
+    "mapmarks": "LF_MapMarkRow",
+    "orgmarks": "LF_OrgMapMarkRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -521,6 +524,45 @@
         "float m_fEndedAgo",
         "array<string> m_aIntKeys",
         "array<int> m_aIntValues"
+      ]
+    },
+    "LF_MapKnownRow": {
+      "since": 42,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterId",
+        "string m_sPlaceId",
+        "int m_iState"
+      ]
+    },
+    "LF_MapMarkRow": {
+      "since": 43,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterId",
+        "int m_iType",
+        "int m_iPosX",
+        "int m_iPosY",
+        "int m_iIcon",
+        "int m_iColor",
+        "int m_iRotation",
+        "int m_iConfigId",
+        "int m_iFlags",
+        "string m_sText"
+      ]
+    },
+    "LF_OrgMapMarkRow": {
+      "since": 44,
+      "fields": [
+        "int m_iVersion",
+        "string m_sOrgId",
+        "int m_iSerial",
+        "int m_iX",
+        "int m_iZ",
+        "int m_iIcon",
+        "int m_iColour",
+        "string m_sText",
+        "string m_sAuthorId"
       ]
     }
   }

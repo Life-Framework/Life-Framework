@@ -1,0 +1,57 @@
+{
+  "slug": "fence-yard",
+  "name": "Fence workshop yard",
+  "concept": "Saint-Philippe's motor and scrap workshop, 1989: the vanilla Workshop_01_Main (b33) with Workshop_01_Side (b36) as the annex behind it, fitted whole. The front is a working yard: an open bay with workbenches, a vice, tyres, fuel drums and a parts counter, the mechanic's office and WC to one side. The fence's trade is hidden: the annex behind the bay is a back room reached through the workshop, where the fence (LF_Fence) buys and sells over a stall. Nothing on the street, the sign or the public map says fence (D-M5); the yard reads as a garage to anyone walking past.",
+  "red_line": "pack",
+  "addon": "LF_Everon1989",
+  "prefab_dir": "Prefabs/Buildings/FenceYard",
+  "vanilla": {
+    "base": "{CFF7F6F7042AFFEF}Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Main.et",
+    "annex": "{F9F2F6D2BD65B719}Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Side.et",
+    "building": "FenceYard",
+    "annex_building": "FenceYard_Side",
+    "furniture": ["Furniture/FenceYard_furniture_01", "Furniture/FenceYard_Side_furniture_01"]
+  },
+  "host": {
+    "prefab": "Workshop_01_Main",
+    "building_id": "b33",
+    "annex_id": "b36",
+    "world_xz": [4546.2, 10670],
+    "yaw": -11,
+    "town": "saint-philippe",
+    "slot": "fence-yard",
+    "front": "+z",
+    "footprint": { "min": [-6.19, -9.15], "max": [5.96, 3.91] },
+    "floor_y": 0.19,
+    "annex": { "x": -3.26, "z": -6.45, "yaw": -90, "why": "b36 relative to b33 in the main building's space, pushed 0.16 m back to clear the main's back wall collider" }
+  },
+  "rooms": [
+    { "id": "bay", "floor": 0, "x": [-0.4, 5.9], "z": [-3.6, 3.6], "role": "the open workshop bay behind the industrial door: workbenches, vice, tyre pile, fuel drums, the concrete mixer; the public face of the yard" },
+    { "id": "office", "floor": 0, "x": [-5.9, -0.6], "z": [-0.6, 3.6], "role": "the mechanic's office and parts counter by the front door: card files, wall map, crates" },
+    { "id": "wc", "floor": 0, "x": [-3.4, -0.6], "z": [-3.6, -0.8], "role": "washroom and coat hooks: sink, mirror, towel rack, first-aid box" },
+    { "id": "backroom", "floor": "annex", "x": [-6.0, -0.5], "z": [-8.9, -4.0], "role": "the fence's back room in the annex: the stall, the fence NPC, the stove and the armchair; never signed, never on the map" }
+  ],
+  "interactables": [
+    "fence NPC (LF_Fence.et, back room)",
+    "fence stall (LF_FenceStall.et, back room; LF_FenceSerials books what it sells)",
+    "front: no public interactable beyond the vanilla doors"
+  ],
+  "map": "No public map marker or sign names the fence (D-M5). The street sign, if any, names the garage.",
+  "budget": {
+    "size": "small",
+    "lights": 3,
+    "shadow_casters": 0,
+    "decor_entities": 150,
+    "physics_props": 0,
+    "per_frame_scripts": 0,
+    "check": "tools\\cli perf building FenceYard --size small"
+  },
+  "scripts": {
+    "shell": "node tools/buildings/fence-yard/prune.mjs",
+    "check": "node tools/buildings/fence-yard/prune.mjs --check",
+    "proof": "tools/buildings/fence-yard/proof.json"
+  },
+  "counts": {
+    "shell": { "entities": 63, "lights": 0, "shadow_casters": 0, "vanilla_props": "workshop 29 of 42, annex 14 of 18" }
+  }
+}

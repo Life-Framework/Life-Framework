@@ -107,6 +107,27 @@ export function mergedVerdict({ branch, tip, base = "main" }, prs) {
   return { merged: false, via: "no merged PR" };
 }
 
+// Files under <worktree>/tmp/ that the tooling rewrites on its own: the registry marker `wt list` and `wt new`
+// write (tmp/wt.json), its temp and lock files. They say nothing about an agent working there. 2026-11-17 `wt list`
+// rewrote the marker of every worktree at once, every one looked "touched 1 min ago" and `lead prune-safe` pruned none.
+const BOOKKEEPING_TMP = new Set(["wt.json"]);
+export function isBookkeeping(path) {
+  const name = String(path).replace(/\\/g, "/").split("/").pop();
+  return BOOKKEEPING_TMP.has(name) || /^wt\.json\./.test(name) || /\.lock$/.test(name);
+}
+
+// The newest real activity in one worktree, in ms. reflogMs: last HEAD reflog entry; entries: [{ path, mtimeMs }] for the
+// files git reports changed or untracked, the children of tmp/ (logs, test and session output, run folders) and the server
+// logs. Bookkeeping files are dropped; everything else counts.
+export function newestActivityMs(reflogMs, entries) {
+  let last = Number.isFinite(reflogMs) ? reflogMs : 0;
+  for (const e of entries ?? []) {
+    if (isBookkeeping(e.path)) continue;
+    if (Number.isFinite(e.mtimeMs) && e.mtimeMs > last) last = e.mtimeMs;
+  }
+  return last;
+}
+
 // e: { slug, branch, base, tip, exists, isGit, dirty, lastMs, busy }. `kept` says why a merged one is not prunable.
 export function classifyWorktree(e, mergedPrs, now = Date.now(), idleMs = IDLE_MS) {
   if (!e.exists) return { cls: "orphan", why: "registered, directory missing" };

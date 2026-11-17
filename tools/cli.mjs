@@ -38,6 +38,7 @@
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
+import { areaConcurrency } from "./lib/validate-concurrency.mjs";
 import "./lib/quiet-gate.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -70,6 +71,8 @@ import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
 import { refsBody } from "./lib/release-gates.mjs";
 import { listHidden, quietSpawn, quietSpawnDetached, quietSpawnSync } from "./lib/quiet-launch.mjs";
 import { interactiveNeeded, interactiveSpawnDetached } from "./lib/interactive-launch.mjs";
+import { cliInDesktopSession, desktopSessionOrSay, needsDesktopSession } from "./remote/desktop/in-session.mjs";
+import { needsDesktopRerun } from "./lib/gpu-session.mjs";
 import { localEnv } from "./lib/local-config.mjs";
 import * as testbox from "./remote/testbox.mjs";
 import * as pool from "./remote/pool.mjs";
@@ -649,8 +652,9 @@ function toolEnv() {
 const FULL_ONLY = new Set(["validate-scripts.ps1"]);
 
 // Checks are independent read-only scripts, so they run concurrently (most of
-// their time is PowerShell start-up). Output is printed in file order.
-const AREA_CONCURRENCY = Math.max(8, Math.min(12, os.cpus().length));
+// their time is PowerShell start-up), fewer at once when free RAM is short (tools/lib/validate-concurrency.mjs).
+// Output is printed in file order.
+const AREA_CONCURRENCY = areaConcurrency(os.cpus().length, Math.round(os.freemem() / 1048576));
 
 function invokeScriptAsync(full, opts = {}) {
   let cmd = process.execPath;
@@ -3242,6 +3246,14 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     }
     console.log("test: " + onlyFlag + " " + only.join(","));
   }
+  if (!exact && only.length) {
+    // An unknown name must stop the run: it would otherwise run the whole suite or nothing (#2276).
+    const sel = testWorld.splitSelection({ only, names: testWorld.testNames(root), tiers: testWorld.testTiers(root), registry: shards.readRegistry(root), pack: testWorld.readPackTests(root) });
+    if (sel.unknown.length) {
+      console.log(`FAIL  test: ${onlyFlag} names no test: ${sel.unknown.join(", ")} (a LF_Test_ class, its GetName() or its file; pack tests are LF_Test_Everon*)`);
+      return 2;
+    }
+  }
   guardHeavy(root, "test", opts.force);
   // A LOGIC-only selection boots the minimal world (tools/lib/test-world.mjs). It is decided here,
   // before the pass cache key, so a TestLogic pass is never reused for a DebugWorld request.
@@ -3931,6 +3943,7 @@ async function ciWorkbench(root, opts = {}) {
 // (tools/remote/desktop/run-interactive.ps1); its transcript and exit code come back through files.
 // No one signed in, or no exit code: 3, so the caller runs the steps on its own machine.
 function ciWorkbenchInSession(root, stepFlags = []) {
+  if (!desktopSessionOrSay()) return 3;
   const dir = join(root, "tmp", "wb-session");
   mkdirSync(dir, { recursive: true });
   const [log, codeFile, ps1, pidFile] = ["ci.log", "ci.code", "ci.ps1", "ci.pid"].map((n) => join(dir, n));
@@ -4246,10 +4259,11 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
   asset new <slug> --kind weapon|gadget|deployable --prompt "..." | run <slug> [--from s] [--only s] [--force] | status | doctor | selftest
                                 roadmap item to asset: Meshy generation (paid, capped per asset), headless Blender clean-up,
                                 Workbench import, prefab scaffold; resumable per stage in tmp/assets/<slug>/ (docs/asset-pipeline/README.md)
-  look <area | x,z | all> [--edit] [--close N] [--hour h] [--measure] [--wait] [--serve|--fresh] | item <prefab|slug> [--states ground,inventory] | selftest
+  look <area | x,z | all | place:<place>/<slot>> [--world island] [--interior auto] [--edit] [--close N] [--hour h] [--measure] [--wait] [--serve|--fresh] | item <prefab|slug> [--states ground,inventory] | selftest
                                 area pictures with no session: a hidden Workbench plays DebugWorld, shoots a wide,
                                 three obliques, a top view and close-ups, and writes tmp/look/<area>/contact.jpg
-                                (about 20 s; a few seconds through a live look server; docs/visual-testing.md)
+                                (about 20 s; a few seconds through a live look server; docs/visual-testing.md);
+                                place:<place>/<slot> shoots a fitted town slot on the island (MainWorld, about 2-4 min)
   look serve [--status | --stop [--remove]]
                                 one Workbench for every worktree's looks, on the Life-Framework-look-viewer checkout;
                                 each look is served from a snapshot of the caller's worktree, stops after 10 min idle
@@ -4490,7 +4504,7 @@ function wtHelpFull() {
   tools\\cli wt sync-base <base> [--source main]
                                        PR that merges origin/<source> into origin/<base> (merge commit on a
                                        sync/ branch, never a force push); auto-merges when green
-  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local] [--wait] [--no-preflight]
+  tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--draft] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local] [--wait] [--no-preflight]
                                        clean-tree and PR-body checks, preflight (merge-tree conflicts, validate of changed
                                        inputs) -> push -> PR (auto-merge off) -> ship queue: merge origin/<base> once,
                                        ci --remote on a pool machine, push, auto-merge (docs/worktrees.md "Async ship").
@@ -4509,6 +4523,7 @@ flags:
   --base B     branch to cut from and ship to (default main; 'wt new' records it for 'wt ship')
   --wait       queue behind the build/worktree lock instead of failing fast
   --pr-only    open the PR but leave it for review (no auto-merge)
+--draft      body checks, preflight and push, then a draft PR; auto-merge is never requested
   --refs N     start the PR body with 'Refs #N' (N >= 1; leave it out when there is no issue); --closes N is the same. Merging never closes an issue:
                it moves to in-dev / needs-playtest and 'promote --confirm' verifies and closes it
   --body-file F  PR body from F (e.g. tmp/pr-body.md in the worktree; end it with the attribution line)
@@ -5184,6 +5199,7 @@ async function wtSyncBaseCmd(args) {
 }
 
 async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody }) {
+  const draft = flags.includes("--draft"); // a draft PR, auto-merge never requested
   const { shipDirect } = await import("./lib/ship-direct.mjs");
   const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
   const body = refsBody(customBody ?? [`Automated ship from worktree \`${slug}\`.`, "", "## Commits", ...subjects.map((x) => `- ${x}`)].join("\n"), closes);
@@ -5198,14 +5214,15 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
     validate: () => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1,
     push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
     findPr: () => wt.findOpenPrGh(wtRoot, e.branch),
-    createPr: () => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base }),
+    createPr: (o) => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base, draft: o?.draft === true }),
     autoMerge: (n) => gh(["pr", "merge", String(n), "--auto", "--merge"]),
     mergeState: (n) => String(gh(["pr", "view", String(n), "--json", "mergeStateStatus", "-q", ".mergeStateStatus"]).stdout ?? "").trim(),
-  }, { base, slug, preflight: !flags.includes("--no-preflight") });
+  }, { base, slug, preflight: !flags.includes("--no-preflight"), draft });
   const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
-  console.log(`SUMMARY ship ${r.code === 0 ? "ok" : "fail"} ${slug}${r.pr ? ` PR #${r.pr.number}` : ""} auto-merge ${r.code === 0 ? "on" : "off"}`);
+  console.log(`SUMMARY ship ${r.code === 0 ? "ok" : "fail"} ${slug}${r.pr ? ` PR #${r.pr.number}` : ""} auto-merge ${r.code === 0 && !draft ? "on" : "off"}${draft ? " (draft)" : ""}`);
   if (r.pr) console.log(`PR ${r.pr.url}, head ${head}`);
-  if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
+  if (r.code === 0 && draft) console.log(`ship: draft PR left open for review. Prune after it merges: 'cli wt prune ${slug}'`);
+  else if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
   return r.code;
 }
 
@@ -5213,7 +5230,8 @@ async function wtShipCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
   const flags = args.slice(1);
-  const prOnly = flags.includes("--pr-only");
+  const draft = flags.includes("--draft"); // draft PR, never auto-merged (also on the --gate and no-gh paths)
+  const prOnly = flags.includes("--pr-only") || draft;
   const skipGate = flags.includes("--skip-gate");
   const skipSync = flags.includes("--skip-sync");
   let closes = null;
@@ -5276,6 +5294,30 @@ async function wtShipCmd(args) {
       reviewText,
       hasBodyFile: customBody !== null,
     });
+    {
+      // A building PR must pass `building check` (no floating props, offline): tools/lib/pr-quality.mjs buildingCheckProblems.
+      const { buildingCheckProblems } = await import("./lib/pr-quality.mjs");
+      const specs = [];
+      const bdir = join(wtRoot, "tools", "buildings");
+      if (existsSync(bdir)) {
+        for (const d of readdirSync(bdir)) {
+          try {
+            const s = JSON.parse(readFileSync(join(bdir, d, "spec.json"), "utf8"));
+            if (s.prefab_dir) specs.push({ slug: s.slug ?? d, addon: s.addon, prefab_dir: s.prefab_dir });
+          } catch {}
+        }
+      }
+      problems.push(
+        ...buildingCheckProblems({
+          files: changed,
+          specs,
+          run: (slug) => {
+            const res = spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "building", "check", slug], { cwd: wtRoot, encoding: "utf8", timeout: 180000, windowsHide: true });
+            return { code: res.status ?? 2, out: `${res.stdout ?? ""}${res.stderr ?? ""}` };
+          },
+        }),
+      );
+    }
     if (problems.length) {
       console.log("FAIL  the PR is not ready to ship:");
       for (const p of problems) console.log(`  - ${p}`);
@@ -5289,7 +5331,7 @@ async function wtShipCmd(args) {
   // No pre-merge gate (maintainer decision 2026-11-15): preflight, push, PR, auto-merge on. GitHub's validate
   // check gates the merge; the main guard checks main after it (docs/worktrees.md "Ship"). The ship queue
   // (tools/ship-queue.mjs) is retired from the flow; --gate runs the old local gate before the push.
-  if (!prOnly && !flags.includes("--gate") && wt.ghAvailable()) return shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody });
+  if (!flags.includes("--pr-only") && !flags.includes("--gate") && wt.ghAvailable()) return shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody });
   // Merge main only when it conflicts. A clean branch goes up as is: the PR's
   // validate check and auto-merge cover the combination with main.
   if (!skipSync) {
@@ -5348,7 +5390,7 @@ async function wtShipCmd(args) {
     if (wt.ghAvailable()) {
       pr = wt.findOpenPrGh(wtRoot, e.branch);
       if (pr) console.log(`ship: PR already open, pushed ${head.slice(0, 7)} to it`);
-      else pr = wt.createPrGh(wtRoot, { head: e.branch, title, body, base });
+      else pr = wt.createPrGh(wtRoot, { head: e.branch, title, body, base, draft });
     } else {
       const token = process.env.GITHUB_TOKEN;
       if (!token) {
@@ -5363,7 +5405,7 @@ async function wtShipCmd(args) {
   }
   console.log(`PR: ${pr.url}`);
   if (prOnly) {
-    console.log("ship: PR left open for review (--pr-only)");
+    console.log(draft ? "ship: draft PR left open for review (--draft)" : "ship: PR left open for review (--pr-only)");
     console.log(`PR ${pr.url}, head ${head}`);
     return 0;
   }
@@ -5631,6 +5673,10 @@ try {
   const helpReq = helpRequest(cmd, rest);
   if (helpReq) {
     code = printUsage(helpReq);
+  } else if (needsDesktopSession() && needsDesktopRerun([cmd, ...rest])) {
+    // Over ssh (session 0, no display output) a command that starts Workbench in-process runs again in the signed-in
+    // desktop session; with none it stops with one line (tools/lib/gpu-session.mjs).
+    code = cliInDesktopSession(ROOT, [cmd, ...rest], { name: `gpu-${cmd}` });
   } else if (cmd === "mcp") {
     const sub = cmds[a];
     code = sub ? sub(b) : (console.log(`unknown mcp subcommand: ${a}\n`), cmdHelp());
