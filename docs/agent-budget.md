@@ -113,6 +113,38 @@ problem. The Sonnet agent stops and reports what it tried, and the lead
 restarts the job on `lf-hard` with that report as the brief. Running out of
 budget is a handoff to a fresh `lf-builder`, not an escalation.
 
+## Plan utilization: aim for 100% of the week
+
+The target (maintainer, 2026-11-17): the Gaming plan's WEEKLY limit used up by its reset, without the 5-hour
+limit ever blocking agents hard. `toolscli usage --accounts` only estimates from local logs and is unreliable
+(it once said 184%); `toolscli usage --plan [--account gaming|personal|all] [--json]` reads the real figures
+the way `/usage` does: a GET to `https://api.anthropic.com/api/oauth/usage` with the account's OAuth token from
+`~/.claude-gaming/.credentials.json` (`~/.claude` for Personal), header `anthropic-beta: oauth-2025-04-20`. The token
+is held in memory only and never printed or stored; an expired one is not refreshed (the next Claude Code run on
+that account refreshes it) and prints `plan usage unavailable (...)`, as does any network or HTTP failure.
+
+One line per account:
+
+```
+Gaming: 5h 2% (resets 13:00, in 4h48m) | week 0% (resets Thu 19:00, in 2d11h) | Fable week 0% | PACE 0% used vs 65% of week gone, no burn rate yet | ADVICE under-using: start ~5 more agents (18 active, assumed 0.4%/h each)
+```
+
+- **PACE** is the weekly % used against the share of the week gone (the weekly window is 168 h back from its reset),
+  and the % projected at reset from the burn rate of the last 4 h of samples (`tmp/usage-plan-samples.json`, one
+  per run at least 3 min apart, kept 48 h, gitignored). Without a 20-minute span it falls back to the week average.
+- **ADVICE** is one of: `under-using: start ~N more agents` (projection under 90%; N closes the gap at the per-agent
+  burn, rate / agents seen, assumed 0.4%/h until measured, and is capped so the 5-hour window stays under 90%),
+  `on pace`, `over pace: hold new agents until <5h reset>` (projection over 110%), or `5h window ...: hold new agents
+  until <reset>` (5-hour use at 90% or projecting past 100%, whatever the week says).
+- **Active agents** are Claude logs written in the last 10 min on this PC plus the laptop (the laptop is read over ssh,
+  6 s; if it does not answer the line says `laptop agents not counted`).
+
+**The lead** reads the `USAGE` line of `toolscli lead` at every check-in, like POOL RAM. Under-using: start the
+next ready slices on the Gaming provider (`usage --pick`) up to N, one agent per file-disjoint slice, and hardware
+lanes permitting. On pace: keep the current rate. Over pace or 5h tight: start nothing new until the printed reset;
+agents already running finish. The first hours after a plan change have no samples, so N rests on the assumed
+per-agent burn; it corrects itself after two or three check-ins.
+
 ## Where the tokens went
 
 **M1 (2026-11-07 to 11-09):** every subagent ran on Opus, one orchestrator
