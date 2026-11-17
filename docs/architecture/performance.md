@@ -275,7 +275,7 @@ Per place (a slot set within 60 m, the square plus its streets):
 | GunStore | 293 | 14 | 14 | 9 |
 | GeneralStore | 845 | 11 | 11 | 4 |
 | ClothingStore | 258 | 11 | 11 | 11 |
-| Drugstore | 468 | 12 | 12 | 2 |
+| Drugstore (meets the budget since #2329: 289 / 6 / 1 / 0) | 468 | 12 | 12 | 2 |
 | Supermarket | 133 | 16 | 16 | 4 |
 
 All five are over on lights and shadow casters, and the general store and drugstore on entities. The
