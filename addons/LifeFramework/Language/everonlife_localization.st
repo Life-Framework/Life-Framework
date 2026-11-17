@@ -3988,6 +3988,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
      Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
     }
+    CustomStringTableItem "{58906F560E794544}" {
+     Id "LF-Garage_EmptyCargo"
+     Target_en_us "Empty the vehicle's storage first"
+     Comment "Garage store refused (#2411): the vehicle still holds items, and a stored vehicle keeps no cargo."
+    }
     CustomStringTableItem "{7DACF581EBBB4514}" {
      Id "LF-Garage_Engine"
      Target_en_us "Engine"
@@ -4057,6 +4062,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Garage_NothingStored"
      Target_en_us "You have no vehicle in the garage."
      Comment "Retrieve refused: nothing stored"
+    }
+    CustomStringTableItem "{4D580A2D0F314D42}" {
+     Id "LF-Garage_Occupied"
+     Target_en_us "Everyone must step out of the vehicle first"
+     Comment "Garage store refused (#2411): someone is still seated in the vehicle."
     }
     CustomStringTableItem "{A103BFA88FF840F0}" {
      Id "LF-Garage_PadBusy"
