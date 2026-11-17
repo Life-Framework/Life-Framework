@@ -2,9 +2,9 @@
 //
 // The lattice (constants and cell maths) is a leaf module: tools/lib/world-zones.mjs imports and
 // re-exports it. The frame is GridWorld_Layers/Grid_frame.layer, written from here:
-//   - GridMarker_cXrY  a pole plate at each cell's west edge reading its id (c3r1);
+//   - GridMarker_cXrY  a pole plate at each cell's west edge reading its id (c3r1); none inside a claim that spans several cells;
 //   - GridPlate_cXrY   the plate above it: the slug of the cell's claim, FREE, or BLOCKED;
-//   - GridPath_rR_N    gravel mounds in a line along the south edge of each row (not through a claim spanning two rows);
+//   - GridPath_rR_N    gravel mounds in a line along the south edge of each row (not on or through a claim spanning several cells);
 //   - GridMapBoard     at the gate spawn, listing cell to system.
 // The frame is one claim, tools/grid/cells/frame.json, whose cell is "lattice": the checks accept its
 // entities anywhere inside the lattice rectangle instead of inside one cell.
@@ -166,13 +166,27 @@ function signBlock(name, id, at, yaw, colour) {
   return lines;
 }
 
+// The rectangles of the claims that cover more than one cell (a building the size of a pub or a hostel): the joined cells of
+// each slug. The frame draws nothing inside one: its poles and paths would stand in the building.
+export function spanRects(states) {
+  const bySlug = new Map();
+  for (const s of states) if (s.state === "claimed") bySlug.set(s.label, [...(bySlug.get(s.label) ?? []), s]);
+  return [...bySlug.values()]
+    .filter((cells) => cells.length > 1)
+    .map((cells) => ({ x0: Math.min(...cells.map((c) => c.x0)), z0: Math.min(...cells.map((c) => c.z0)), x1: Math.max(...cells.map((c) => c.x1)), z1: Math.max(...cells.map((c) => c.z1)) }));
+}
+
 // Every entity of the frame: [{ name, x, z }] with `lines` of layer text. Pure.
 export function framePlan(states) {
   const out = [];
+  const spans = spanRects(states);
+  // On or inside a span claim's rectangle: the edge counts, a path laid on it is half in the building.
+  const inSpan = (x, z) => spans.some((r) => x >= r.x0 && x <= r.x1 && z >= r.z0 && z <= r.z1);
   for (const c of states) {
     // The west edge, in the 2 m corridor between columns: marker 1.5 m and plate 3.5 m north of the row's path.
     const mAt = [c.x0 + 0.5, c.z0 + 1.5];
     const pAt = [c.x0 + 0.5, c.z0 + 3.5];
+    if (inSpan(mAt[0], mAt[1]) || inSpan(pAt[0], pAt[1])) continue;
     out.push({ name: markerName(c.col, c.row), x: mAt[0], z: mAt[1], lines: signBlock(markerName(c.col, c.row), c.id, mAt, YAW.south, COLOURS.marker) });
     out.push({ name: plateName(c.col, c.row), x: pAt[0], z: pAt[1], lines: signBlock(plateName(c.col, c.row), c.label, pAt, YAW.south, COLOURS[c.state]) });
   }
@@ -183,10 +197,12 @@ export function framePlan(states) {
     const n = Math.floor((r.x1 - r.x0 - 2 * 1.2) / GRAVEL.step) + 1;
     for (let k = 0; k < n; k++) {
       const x = r.x0 + 1.2 + k * GRAVEL.step - GRAVEL.pivotX;
-      // The path stops at a multi-row claim: its props may stand on the line between two of its rows.
+      // The path stops at a multi-cell claim: its props may stand on the line between two of its rows, and the building
+      // fills the strip along its own edges.
       const col = Math.min(CELL.cols - 1, Math.max(0, Math.floor((x - CELL.origin) / CELL.size)));
       const above = slugAt.get(`${col}_${row - 1}`);
       if (above && above === slugAt.get(`${col}_${row}`)) continue;
+      if (inSpan(x, z)) continue;
       const name = `GridPath_r${row}_${k + 1}`;
       out.push({ name, x, z, lines: [`${GRAVEL.cls} ${name} : "${GRAVEL.ref}" {`, ` coords ${num(x)} ${GRAVEL.y} ${num(z)}`, ` scale ${GRAVEL.scale}`, "}"] });
     }
