@@ -51,6 +51,7 @@ banked.
   delete-then-pay not atomic, stacks sell as one item, wrong "not tradable"
   return code, black-market check likely fails open.
 - Sale resolves on the server (#2407): the client drag sends an RPC, `LF_TraderSale.Sell` validates (reach, carried, price list, black market), pays, then deletes.
+- A trader crate refuses any insert on the server (#2506, `LF_TraderCrateGuard`): a vicinity move or direct storage insert that skips the sale fails and the item stays with its owner.
 - `LF_OpenTraderAction` — the interaction entry point.
 - Prefabs: `Prefabs/Trader/UniversalTrader.et`. The black market is no longer a trader prefab: it is the `black_market` catalogue outlet (#1762).
 
