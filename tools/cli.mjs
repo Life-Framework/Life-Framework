@@ -3627,7 +3627,7 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
 function sourceTests(root) {
   const dir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
   return () => {
-    try { return readdirSync(dir).filter((f) => /^LF_Test_w+.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(dir, f), "utf8") })); } catch { return []; }
+    try { return readdirSync(dir).filter((f) => /^LF_Test_\w+\.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(dir, f), "utf8") })); } catch { return []; }
   };
 }
 
