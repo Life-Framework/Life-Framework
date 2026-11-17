@@ -414,6 +414,13 @@ class LF_Hideout
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True while a relock sweep is queued (tests read it).
+	static bool IsRelockScheduled()
+	{
+		return s_bRelockScheduled;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void CancelRelockSweep()
 	{
 		if (s_bRelockScheduled && GetGame() && GetGame().GetCallqueue())
@@ -493,8 +500,8 @@ class LF_Hideout
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: whether the character may use the hideout stash. Membership of the owning
-	//! organization is the only key: the door's lock state (breached or open) does not matter.
+	//! Server: whether the character may use the hideout stash. Membership of the owning organization
+	//! and the rank's stash right are the key: the door's lock state (breached or open) does not matter.
 	static bool AllowsStash(string characterId, string hideoutId, bool report)
 	{
 		if (!Server())
@@ -516,6 +523,15 @@ class LF_Hideout
 		{
 			if (report)
 				Refuse("stash refused: not a member");
+			return false;
+		}
+
+		// The rank's stash right (LF_EOrganizationPermission.USE_STASH): every shipped rung has it, and an
+		// owner who takes it off a rank in the config shuts that rank out of the stash.
+		if (!org.Allows(characterId, LF_EOrganizationPermission.USE_STASH))
+		{
+			if (report)
+				Refuse("stash refused: the rank lacks the stash right");
 			return false;
 		}
 
@@ -574,6 +590,7 @@ class LF_Hideout
 		}
 
 		set<string> loaded = new set<string>();
+		bool anyOpen = false;
 		foreach (LF_HideoutRecord record : records)
 		{
 			if (!record)
@@ -590,7 +607,14 @@ class LF_Hideout
 			state.m_sOrganizationId = record.m_sOrganizationId;
 			state.m_bLocked = record.m_bLocked;
 			PushLock(state);
+			if (!state.m_bLocked)
+				anyOpen = true;
 		}
+
+		// A gate saved open has no member at it after a restart; only TryUnlock started the sweep, so it
+		// stayed open for anyone until a member next used it. The sweep relocks it once nobody is near.
+		if (anyOpen)
+			ScheduleRelockSweep();
 
 		// Idempotent: a site leased live but absent from the save is unleased by this load, as a
 		// fresh load would have left it.
