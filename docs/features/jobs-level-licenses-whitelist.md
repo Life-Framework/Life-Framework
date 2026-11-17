@@ -206,9 +206,16 @@
   uids are counted and logged, not migrated. The legacy file is only read; a line in
   `$profile:LifeFramework/whitelist-legacy-migrated.txt`, written after the roster saved, stops a
   later start re-adding a uid an admin removed. An unreadable roster or failed save leaves the
-  file unmarked, so the next start retries. `AddNewUuidToFile` and `RemoveUUIDFromFile` no longer
-  write the legacy file. To re-run it after restoring an older roster, delete the marker
+  file unmarked, so the next start retries. Nothing writes the legacy file (`AddNewUuidToFile` and
+  `RemoveUUIDFromFile` are deleted). To re-run it after restoring an older roster, delete the marker
   (`docs/owner/rented-host.md` "Backups").
+- ✅ **A migrated legacy file that still changes warns once per start** (2026-11-17, WORLD
+  `whitelist/legacy-ignored-count`, `whitelist/legacy-failure-paths`, #2607): when a POLICE legacy
+  file is already marked, `Migrate` counts its uids that are not on the roster
+  (`LF_WhitelistLegacyMigration.CountIgnored`: added to the file after the move, or removed from the
+  roster since) and logs `LF_Debug.Warn` `<n> uids in the legacy POLICE file are not on the roster and
+  are ignored`. An unreadable roster (adds nothing, no marker) and a failed roster save (no marker)
+  are tested, each followed by the next start migrating in full.
 
 ### `AdminChatChannel` — `Feature/Chat/AdminChatChannel.c`
 - ✅ **Server re-checks the admin role** (verified 2026-11-07):
