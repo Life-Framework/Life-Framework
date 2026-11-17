@@ -192,6 +192,7 @@ class LF_TestLegacySnapshot : Managed
 {
 	protected ref array<ref LF_OrganizationRecord> m_aRecords;
 	protected ref array<ref LF_OrganizationRankRow> m_aRanks;
+	protected ref array<ref LF_OrgWarRecord> m_aWars;	// #2672: an org-less reload drops the e2e war
 	protected ref array<ref LF_JobXpRow> m_aJobXp;
 	//! The crime reports with their looks (#758): an older save has no "wantedlooks", so loading
 	//! one wipes the looks the shutdown save of `wt e2e` pass 1 must still hold.
@@ -217,6 +218,7 @@ class LF_TestLegacySnapshot : Managed
 		LF_TestLegacySnapshot snapshot = new LF_TestLegacySnapshot();
 		snapshot.m_aRecords = LF_OrganizationManager.ExportAll();
 		snapshot.m_aRanks = LF_OrganizationManager.ExportRanks();
+		snapshot.m_aWars = LF_OrgWars.ExportAll();
 		snapshot.m_aJobXp = LF_JobLevels.ExportAll();
 		snapshot.m_aWanted = LF_WantedReports.ExportAll();
 		snapshot.m_aIdCards = LF_PhotoIdCard.ExportAll();
@@ -244,6 +246,7 @@ class LF_TestLegacySnapshot : Managed
 	{
 		LF_OrganizationManager.ApplyAll(m_aRecords);
 		LF_OrganizationManager.ApplyRanks(m_aRanks);
+		LF_OrgWars.ApplyAll(m_aWars);
 		LF_JobLevels.ApplyAll(m_aJobXp);
 		LF_WantedReports.ApplyAll(m_aWanted);
 		LF_PhotoIdCard.ApplyAll(m_aIdCards);

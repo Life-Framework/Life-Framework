@@ -1,5 +1,5 @@
 {
-  "saveVersion": 52,
+  "saveVersion": 53,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -54,7 +54,8 @@
     "jobruns": "LF_JobRunRow",
     "leaseidle": "LF_HideoutIdleRow",
     "properties": "LF_PropertyRecord",
-    "placements": "LF_PlacementRow"
+    "placements": "LF_PlacementRow",
+    "orgwars": "LF_OrgWarRecord"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -648,6 +649,22 @@
         "string m_sKind",
         "string m_sPropertyId",
         "string m_sItemPrefab"
+      ]
+    },
+    "LF_OrgWarRecord": {
+      "since": 53,
+      "fields": [
+        "int m_iVersion",
+        "string m_sWarId",
+        "string m_sDeclarerOrgId",
+        "string m_sTargetOrgId",
+        "LF_EOrgWarState m_eState",
+        "int m_iDeclaredAt",
+        "int m_iAcceptedAt",
+        "int m_iEndsAt",
+        "int m_iAnswerWindowSec",
+        "int m_iCooldownSec",
+        "int m_iCooldownUntil"
       ]
     }
   }
