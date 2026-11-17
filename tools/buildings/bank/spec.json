@@ -1,7 +1,7 @@
 {
   "slug": "bank",
   "name": "Bank",
-  "concept": "The savings bank of Saint-Philippe, 1989: the two-storey vanilla Office_E_01 beside the town hall, fitted whole. A public banking hall with glazed teller counters and the bank-account teller, a deposit-slip desk, a queue rope and a wall clock; a manager's office; and the strongroom with its round door, drill and cash-bag robbery flow, the bell box on the front wall. The vanilla desks and bunk beds are cleared out of the rooms the bank uses; everything added is a static base-game prop.",
+  "concept": "The savings bank of Saint-Philippe, 1989: the two-storey vanilla Office_E_01 beside the town hall, fitted whole. A public banking hall with glazed teller counters and the bank-account teller, a deposit-slip desk, a queue tape and a wall clock; a manager's office; and the vault room behind the corridor, closed by a round vault door (safe type bank_room) with safe-deposit walls, a cash trolley and the cash bag inside; the bell box on the front wall and a lit lamp by the street door. The vanilla furniture is cleared out of the rooms the bank uses; everything added is a static base-game prop.",
   "red_line": "pack",
   "addon": "LF_Everon1989",
   "prefab_dir": "Prefabs/Buildings/Bank",
@@ -35,53 +35,79 @@
   },
   "rooms": [
     {
-      "id": "hall",
+      "id": "stairhall",
       "floor": 0,
       "x": [
-        -1.4,
-        3.4
+        -4.86,
+        -2.65
       ],
       "z": [
         1.3,
-        6.6
+        6.29
       ],
-      "role": "public banking hall: three glazed teller counters across the room, two tellers (LF_Npc_Teller_2, the account teller with the ATM action), deposit-slip desk, queue rope, bench, wall clock, rates board"
+      "role": "the street door and six steps up to the floor: notice board, opening hours, plant, its own light"
+    },
+    {
+      "id": "hall",
+      "floor": 0,
+      "x": [
+        -2.28,
+        2.6
+      ],
+      "z": [
+        1.3,
+        6.29
+      ],
+      "role": "public banking hall: three glazed teller counters across the room, two tellers (LF_Npc_Teller_2, the account teller with the ATM action), deposit-slip desk, queue tape, bench, wall clock, rates board, island map"
     },
     {
       "id": "manager",
       "floor": 0,
       "x": [
-        3.55,
-        7.7
+        2.75,
+        7.72
       ],
       "z": [
         1.3,
-        6.6
+        6.29
       ],
-      "role": "manager's office: desk, chairs, safe, shelves, carpet"
+      "role": "manager's office: desk with phone, typewriter and ledgers, visitor chairs, safe, shelves, coat rack, carpet"
+    },
+    {
+      "id": "corridor",
+      "floor": 0,
+      "x": [
+        -8.38,
+        7.72
+      ],
+      "z": [
+        -1.37,
+        1.03
+      ],
+      "role": "the corridor: the vault door on its south wall, lit; extinguisher, strongroom notice, the guard's chair"
     },
     {
       "id": "vault",
-      "floor": "annex",
+      "floor": 0,
       "x": [
-        8.25,
-        11.65
+        2.75,
+        7.72
       ],
       "z": [
-        1.2,
-        4.4
+        -4.62,
+        -1.55
       ],
-      "role": "strongroom on the east wall (LF_BankVault: round door, drill and charge, cash bag, hood roof); built onto the wall as the playtest town's bank vault is, since no back room of Office_E_01 is 3.4 m clear"
+      "role": "vault room (safe type bank_room, LF_BankVault_RoomDoor in the doorway at x 3.92): safe-deposit walls, cash trolley, counting table, the cash bag; high small windows only. The standalone LF_BankVault is the reserve vault (#2283), not used here"
     },
     {
       "id": "upstairs",
       "floor": 1,
-      "role": "staff floor: vanilla offices kept, beds and bath removed"
+      "role": "staff floor: vanilla offices kept with typewriters, ledgers, desk lamps, a radio and the archive boxes; beds and bath removed; the wall lamps glow"
     }
   ],
   "interactables": [
     "teller counters (LF_ATMAction on the teller NPC)",
-    "vault LF_BankVault (LF_BankVaultComponent, drill and charge)",
+    "vault room door LF_BankVault_RoomDoor (LF_BankVaultComponent, safe type bank_room, drill and charge)",
     "bell box (LF_AlarmMountComponent, kind bank)",
     "cash bag (LF_PlaceComponent BankBag)"
   ],
@@ -110,7 +136,18 @@
       "entities": 205,
       "lights": 6,
       "shadow_casters": 0
+    },
+    "pass2": {
+      "entities": 0,
+      "lights": 6,
+      "shadow_casters": 0
     }
   },
-  "stage": "The kit is pack content, so the core GridWorld layer cannot name it (validate-addon-boundary): node tools/buildings/bank/stage.mjs writes an uncommitted Grid_zz_bankstage.layer (the kit, two tellers and the rob kit chest) at 300,300; look it with `tools\\cli look 300,300 --world Worlds/GridWorld/GridWorld.ent`. Remove it (stage.mjs --remove) before a commit."
+  "stage": "The kit is pack content, so its grid cell is a pack cell: tools\\cli grid place bank Prefabs/Buildings/Bank/Bank_Kit.et --pack writes LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_bank.layer (committed), and node tools/buildings/bank/stage.mjs adds the two tellers and the rob kit chest to that layer, in building space from the kit row. Look it with tools\\cli look grid:bank.",
+  "floaters_allow": [
+    {
+      "match": "557D9771ADA29FF5",
+      "why": "the MoneyStack inside the cash bag (a child of LF_MoneyBag, carried with it)"
+    }
+  ]
 }

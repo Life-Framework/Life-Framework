@@ -1,19 +1,17 @@
 SCR_DestructibleBuildingEntity : "{F550115D39FD56BA}Prefabs/Buildings/Bank/Bank.et" {
  ID "6C6389257705BA37"
  {
-  GenericEntity : "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et" {
-   ID "999C3939CF4F3FE1"
+  GenericEntity BankVault : "{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et" {
+   ID "08CB8283D9EE23C0"
    components {
-    LF_BankVaultComponent "{3B1F6C0A7D2E4858}" {
+    LF_BreachTargetComponent "{A7D41E0C3B985208}" {
+     m_fSwingYaw 55
+    }
+    LF_BankVaultComponent "{A7D41E0C3B985209}" {
      m_sVaultId "bank_vault"
     }
    }
-   coords 9.95 0.007 4.4
-  }
-  GenericEntity : "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay/BankVault/LF_BankVault_SmallRoof.et" {
-   ID "562E2D74B52EBF31"
-   scale 1.2
-   coords 9.85 2.907 4.056
+   coords 3.785 1.053 -1.17
   }
   GenericEntity : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
    ID "DE3FF9CB9A04A0D8"
@@ -24,7 +22,7 @@ SCR_DestructibleBuildingEntity : "{F550115D39FD56BA}Prefabs/Buildings/Bank/Bank.
     }
    }
    Flags 0x403 0
-   coords 9.95 0.497 2.41
+   coords 5.2 1.053 -3.75
    {
     GenericEntity : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
      ID "557D9771ADA29FF5"
@@ -40,7 +38,7 @@ SCR_DestructibleBuildingEntity : "{F550115D39FD56BA}Prefabs/Buildings/Bank/Bank.
      m_fReach 12
     }
    }
-   coords -0.4 3 7.42
+   coords 0.07 3 6.58
   }
   GenericEntity : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
    ID "13F9E08CEB38D5EC"
@@ -52,16 +50,30 @@ SCR_DestructibleBuildingEntity : "{F550115D39FD56BA}Prefabs/Buildings/Bank/Bank.
      m_vTextColor 0.92 0.78 0.42
     }
    }
-   coords -3 4.1 7.5
+   coords -3.4 3.95 6.61
+  }
+  GenericEntity : "{34F74A7DBAD46974}Prefabs/Props/Furniture/LightWall_01.et" {
+   ID "76510567312E6395"
+   components {
+    MeshObject "{5872F0EB7FA40561}" {
+     Materials {
+      MaterialAssignClass "{E056330D34F638C4}" {
+       SourceMaterial "LightWall_01_Glass"
+       AssignedMaterial "{71C4DB9B2591501B}Assets/Props/Furniture/LightWall_01/data/LightWall_01_Glass_lit.emat"
+      }
+     }
+    }
+   }
+   coords -2.42 2.55 6.58
   }
   LightEntity {
    ID "DC7CB9CB1138FC42"
-   coords -1.75 2.9 8.45
-   Color 1 0.78 0.5 1
-   LV 9
+   coords -2.42 2.45 7.18
+   Color 1 0.8 0.55 1
+   LV 4.5
    ClipEV -10
    CastShadow 0
-   Radius 9
+   Radius 8
    NearPlane 0.3
    LensFlareType Disabled
   }

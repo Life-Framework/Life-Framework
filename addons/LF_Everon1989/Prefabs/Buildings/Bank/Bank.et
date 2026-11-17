@@ -97,14 +97,6 @@ SCR_DestructibleBuildingEntity : "{74CBD673D67C58FF}Prefabs/Structures/Industria
     coords 0 0 0
    }
    {
-    ID "5D46D459E7DF6276"
-    components {
-     Hierarchy "{612AE78C85563E26}" {
-      PivotID "socket_door_int_left_02"
-     }
-    }
-   }
-   {
     ID "5EAEA0E11843A700"
     components {
      Hierarchy "{612AE78C85563E26}" {
