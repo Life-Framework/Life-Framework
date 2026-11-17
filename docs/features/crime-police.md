@@ -628,6 +628,7 @@
   what stands there; more than 0.25 m between them refuses (`#LF-Placement_NoGround`). Something standing in
   the footprint (a post, a car) or under it (a strip already laid, anything dynamic) refuses
   (`#LF-Placement_Blocked`, #928). The item is used up.
+  A spot in a door leaf's swing (1 m both ways) or the 3 m walk-up in front of a ground-floor door is refused the same way, "a door is in the way" (#2445, `LF_PlacementDoors`, for every placement: single, aimed and composition).
 - ⚠️ Placement preview (#928 prototype, dev-tools worlds only, selecting the action is not automated): while Deploy is selected the officer sees a ghost
   of the strip where it will lie, blue when the server would accept it and red when not (`LF_SpikeStripPreview`).
 - ✅ The server samples the vehicles within 9.75 m every 50 ms and tests each wheel's path since the last
