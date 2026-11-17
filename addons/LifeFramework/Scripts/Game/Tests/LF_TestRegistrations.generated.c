@@ -51,6 +51,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BanRecord(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_BedDelivery(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BeerChainRuns(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_BenefitCountsCash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BillDebt(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BlackMarketOutlet(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BleedOut(), LF_TestTier.WORLD);
