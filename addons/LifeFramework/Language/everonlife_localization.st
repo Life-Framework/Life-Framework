@@ -2625,6 +2625,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1  /  %2  /  %3 UTC"
      Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
     }
+    CustomStringTableItem "{5C1E7A3B90D24F68}" {
+     Id "LF-Contraband_Cooldown"
+     Target_en_us "Your crew needs a breather. Wait a few minutes before the next run."
+     Comment "Convoy start refused: the character was paid for a run in the last ten minutes"
+    }
     CustomStringTableItem "{1D5E4503B79F1A6F}" {
      Id "LF-Contraband_Crate_Desc"
      Target_en_us "Unstamped bottles, no excise paid. The publican on the square buys them at his back door. Police take it on sight."
@@ -2649,6 +2654,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Contraband_Loaded"
      Target_en_us "You have a crate. Drive it to the convoy drop, the empty crate cage, and stay in the vehicle until you get there."
      Comment "Toast when the convoy start hands the player a contraband crate at the barn"
+    }
+    CustomStringTableItem "{B7240E91C5A3D816}" {
+     Id "LF-Contraband_NotDriven"
+     Target_en_us "The crate has to be driven to the drop. Carrying it over on foot pays nothing."
+     Comment "Convoy delivery refused: the run never watched a vehicle, so the crate went on foot"
     }
     CustomStringTableItem "{C6C3575A8274C731}" {
      Id "LF-Contraband_NotHideoutOwner"

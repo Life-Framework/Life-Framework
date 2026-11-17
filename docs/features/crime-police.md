@@ -85,12 +85,12 @@
 - Test `crime/safe-types` (LOGIC) and `everon/safe-types` (pack leg). Log `[LFDebug:SafeTypes]`.
 
 ### `LF_Hospital` — `Feature/Crime/LF_Hospital.c`
-- ✅ Hospital till pays `{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et`
-  through the civilian, cooldown, and minimum-police gates and does not deposit
-  to the bank (verified 2026-10-11). The placed action is `LF_RobAction` on the
-  till's single `ActionsManagerComponent`. Wanted rises by 1. One police alert per
-  successful rob; an offer refresh does not alert. DebugWorld places
-  `Roadmap_Hospital_Till` at `257 0 256.4` (hospital porch) on `Street_Hospital.layer`.
+- ✅ The hospital till is not scripted here: the placed action is `LF_RobAction` on the
+  till's single `ActionsManagerComponent` (civilian, cooldown and minimum-police gates, cash
+  payout, wanted, dispatch; DebugWorld places `Roadmap_Hospital_Till` at `257 0 256.4`, hospital porch,
+  on `Street_Hospital.layer`). `LF_HospitalTillComponent` only registers the till place. The old
+  `LF_Hospital.RobTill` and its helpers had only test callers and read a millisecond clock against a
+  60-second cooldown; deleted in #2419.
 - ✅ The cabinet is a forced-entry container. `BreachCabinet` calls
   `LF_Breach.Arm`. When that lock opens it spawns the configured medicine
   prefabs: field dressing, morphine, saline, and tourniquet. A missing prefab
@@ -685,3 +685,4 @@
   - **Self-arrest.** `LF_Jail.Arrest` refuses when the officer is the prisoner. The police-menu arrest RPC now runs the same `LF_PlayerInteraction.CheckPair` and grace gate as the in-world arrest action, so the menu cannot arrest yourself, a dead player or a new character. Test `jail/self-arrest`.
   - **Jail work after a logout.** The jail-work timer carries the prisoner's uid, so a prisoner who logs out mid-task is no longer refused as BUSY after rejoining. Test `jail/work-abandon`.
 - ✅ **Fence workshop yard, pass 1 BUILD** (#2302, shell #2301, epic #2201; pack). `FenceYard.et` (Workshop_01 main plus the side annex) stands in pack grid cell c14r4 (2x2, `Grid_fence_yard.layer`). The front is a plain garage; the fence's stall (`LF_FenceStall`, stock `fence`) and the fence (`LF_Fence`) are in the annex back room, written by `tools/buildings/fence-yard/fitout.mjs` (`--check` for drift) with the room lights (`FenceYard_Kit.et`: 3 shadowless lights). No sign, string or map place names the fence (D-M5). No stash (the only stash system is the org hideout's) and no car bay (Crime has none for a fence). No script or save change.
+- 🔧 **Crime and policing review fixes** (#2419, merged, in-dev): the evidence bag takes a dropped item only while it still lies loose beside its marker (`LF_Evidence.Bag`: no parent entity, no inventory slot, within `ITEM_MOVED_M` 2 m; otherwise the row is dropped and the item stays with whoever has it). An NPC witness answers an officer once (`LF_WitnessEntry.m_bAsked`; the accuracy roll no longer repeats). The contraband run pays only a driven crate (`LF_ConvoyRun.m_bDriven`, set when the vehicle watch attaches) and a paid character waits `LF_Contraband.COOLDOWN_MS` (10 min) before the next run (`#LF-Contraband_Cooldown`, `#LF-Contraband_NotDriven`); its failure toast and `LF_Hotwire.MayStartEngine` use `LF_Utils.NotifyEntity`. A hideout door a member opened relocks when no member of the owner stands within `LF_Hideout.RELOCK_RADIUS_M` (40 m), checked every `RELOCK_SWEEP_MS`; `ApplyAll` releases a live lease the save does not hold; `LF_Hideout`, `LF_PoliceApplications` have world-end reset hooks; `LF_PoliceRosterNotice.s_aSent` is capped at 64. The chop bench takes the nearest stolen car (`LF_ChopShopRules.PickDropIndex`), so an unstolen car beside it no longer blocks the yard. `LF_WorkAnim.ResetStatics` removes its queued `Watch`. No save format change. Tests `investigation/bag-held`, `investigation/npc-witness`, `crime/contraband-cooldown`, `hideout/relock-and-load`, `crime/chop-drop-pick`, `work/anim-reset`, `police/statics-reset`. ⚠️ Not checked live: the relock sweep with a real member walking away, and the dedicated-server toasts.

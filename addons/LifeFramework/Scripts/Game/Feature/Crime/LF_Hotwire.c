@@ -234,8 +234,10 @@ class LF_Hotwire
 
 		bool hasKey = driver && vehicleLock.UserHasValidKey(driver);
 		bool may = LF_HotwireRules.MayStart(true, hasKey, vehicleLock.GetHotwiredPlayerId(), PlayerIdOf(driver));
+		// NotifyEntity reaches the driver through the server; LF_Utils.Notify shows a hint on the machine
+		// that calls it, which on a dedicated server is nobody. A client call is a no-op there.
 		if (!may)
-			LF_Utils.Notify("#LF-Hotwire_NoKey", "#LF-Hotwire_Title", 3.0);
+			LF_Utils.NotifyEntity(driver, "#LF-Hotwire_NoKey", "#LF-Hotwire_Title", 3.0);
 
 		return may;
 	}
