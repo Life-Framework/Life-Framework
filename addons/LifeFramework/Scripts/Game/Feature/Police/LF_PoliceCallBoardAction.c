@@ -62,7 +62,7 @@ class LF_PoliceCallBoardAction : ScriptedUserAction
 
 	//------------------------------------------------------------------------------------------------
 	//! Where a call's site text points: a grid square (its centre) or a place sign's title. A site
-	//! named only by the map's location label has no point to mark.
+	//! named only by the map's location label has no point here; the call's stored position covers it (CallOrigin).
 	//! \return false when the site resolves to no point.
 	static bool SiteOrigin(string site, out vector origin)
 	{
@@ -119,12 +119,29 @@ class LF_PoliceCallBoardAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the waypoint on the officer's client at the call's site. \return true when one was sent.
+	//! Where a call points: the position its crime was filed at (#2578), else the site text's point.
+	//! \return false when neither resolves to a point.
+	static bool CallOrigin(LF_PoliceCall call, out vector origin)
+	{
+		if (!call)
+			return false;
+
+		if (call.m_bHasPosition)
+		{
+			origin = call.m_vPosition;
+			return true;
+		}
+
+		return SiteOrigin(SiteOf(call), origin);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the waypoint on the officer's client at the call's position or site. \return true when one was sent.
 	static bool SendWaypoint(int playerId, LF_PoliceCall call)
 	{
 		string site = SiteOf(call);
 		vector origin;
-		if (!SiteOrigin(site, origin))
+		if (!CallOrigin(call, origin))
 		{
 			LF_Debug.Info(FEATURE, string.Format("call #%1 site '%2' has no point to mark", call.m_iId, site));
 			return false;
