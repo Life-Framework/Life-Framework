@@ -1,41 +1,4 @@
 {
   "note": "Each entry is one file::method that calls Rpc(RpcAsk_...) with no Replication.IsServer() branch. Explicit list only; delete an entry when the site is fixed (validate-rpc-host-path fails on a stale one).",
-  "sites": [
-    {
-      "site": "addons/LifeFramework/Scripts/Game/Feature/Organizations/LF_OrganizationCharacter.c::LF_AskOrganizationView",
-      "reason": "Real gap, not judged: the bare Rpc is dropped on a listen host. Outside slice #2511; fix in the follow-up and delete this entry."
-    },
-    {
-      "site": "addons/LifeFramework/Scripts/Game/Feature/Organizations/LF_OrganizationCharacter.c::LF_AskOrganizationCreate",
-      "reason": "Real gap, not judged: the bare Rpc is dropped on a listen host. Outside slice #2511; fix in the follow-up and delete this entry."
-    },
-    {
-      "site": "addons/LifeFramework/Scripts/Game/Feature/Organizations/LF_OrganizationCharacter.c::LF_AskOrganizationDeposit",
-      "reason": "Real gap, not judged: the bare Rpc is dropped on a listen host. Outside slice #2511; fix in the follow-up and delete this entry."
-    },
-    {
-      "site": "addons/LifeFramework/Scripts/Game/Feature/Organizations/LF_OrganizationCharacter.c::LF_AskOrganizationWithdraw",
-      "reason": "Real gap, not judged: the bare Rpc is dropped on a listen host. Outside slice #2511; fix in the follow-up and delete this entry."
-    },
-    {
-      "site": "addons/LifeFramework/Scripts/Game/Feature/Organizations/LF_OrganizationCharacter.c::LF_AskOrganizationBuy",
-      "reason": "Real gap, not judged: the bare Rpc is dropped on a listen host. Outside slice #2511; fix in the follow-up and delete this entry."
-    },
-    {
-      "site": "addons/LifeFramework/Scripts/Game/Feature/Organizations/LF_OrganizationCharacter.c::LF_AskOrganizationLeave",
-      "reason": "Real gap, not judged: the bare Rpc is dropped on a listen host. Outside slice #2511; fix in the follow-up and delete this entry."
-    },
-    {
-      "site": "addons/LifeFramework/Scripts/Game/Feature/Organizations/LF_OrganizationCharacter.c::LF_AskOrganizationLease",
-      "reason": "Real gap, not judged: the bare Rpc is dropped on a listen host. Outside slice #2511; fix in the follow-up and delete this entry."
-    },
-    {
-      "site": "addons/LifeFramework/Scripts/Game/Feature/Police/LF_PoliceMenu.c::LF_AskPoliceArrest",
-      "reason": "Real gap, not judged: the bare Rpc is dropped on a listen host. Outside slice #2511; fix in the follow-up and delete this entry."
-    },
-    {
-      "site": "addons/LifeFramework/Scripts/Game/Feature/Quests/LF_QuestTrackerComponent.c::AskRequestLog",
-      "reason": "Real gap, not judged: the bare Rpc is dropped on a listen host. Outside slice #2511; fix in the follow-up and delete this entry."
-    }
-  ]
+  "sites": []
 }

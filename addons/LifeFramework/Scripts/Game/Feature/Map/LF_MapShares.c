@@ -202,6 +202,10 @@ class LF_MapShares
 	protected static ref LF_MapShareFacts s_Facts;
 	protected static ref LF_MapShareSpawnSubscriber s_Subscriber;
 	protected static bool s_bSweeping;
+	//! Players already warned about being over SEND_CAP, until they drop under it.
+	protected static ref map<int, bool> s_mOverCap;
+	//! How many over-cap warnings were logged since the last reset (a test seam).
+	protected static int s_iCapWarnings;
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: subscribe to spawns and start the expiry and membership sweep. Safe to call again.
@@ -241,6 +245,8 @@ class LF_MapShares
 		s_mDelivered = null;
 		s_Sink = null;
 		s_Facts = null;
+		s_mOverCap = null;
+		s_iCapWarnings = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -458,6 +464,7 @@ class LF_MapShares
 		foreach (int playerId : gone)
 		{
 			s_mDelivered.Remove(playerId);
+			s_mOverCap.Remove(playerId);
 		}
 
 		foreach (int playerId : players)
@@ -473,6 +480,13 @@ class LF_MapShares
 			return 0;
 
 		return s_mRows.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many over-cap warnings were logged since the last reset.
+	static int CapWarnings()
+	{
+		return s_iCapWarnings;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -506,8 +520,12 @@ class LF_MapShares
 		wanted.Clear();
 		LF_MapShareMember member = Facts().Of(playerId);
 		if (!member)
+		{
+			s_mOverCap.Remove(playerId);
 			return;
+		}
 
+		bool over;
 		foreach (string key : s_aOrder)
 		{
 			LF_MapShareRow row = s_mRows.Get(key);
@@ -516,12 +534,33 @@ class LF_MapShares
 
 			if (wanted.Count() >= SEND_CAP)
 			{
-				LF_Debug.Warn(FEATURE, string.Format("player %1 is in more than %2 shares: the rest wait", playerId, SEND_CAP));
-				return;
+				over = true;
+				break;
 			}
 
 			wanted.Insert(key);
 		}
+
+		NoteOverCap(playerId, over);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The over-cap warning is logged when a player first goes over the cap, not on every sweep; dropping
+	//! under it arms it again.
+	protected static void NoteOverCap(int playerId, bool over)
+	{
+		if (!over)
+		{
+			s_mOverCap.Remove(playerId);
+			return;
+		}
+
+		if (s_mOverCap.Contains(playerId))
+			return;
+
+		s_mOverCap.Set(playerId, true);
+		s_iCapWarnings++;
+		LF_Debug.Warn(FEATURE, string.Format("player %1 is in more than %2 shares: the rest wait", playerId, SEND_CAP));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -548,6 +587,9 @@ class LF_MapShares
 
 		if (!s_mDelivered)
 			s_mDelivered = new map<int, ref array<string>>();
+
+		if (!s_mOverCap)
+			s_mOverCap = new map<int, bool>();
 	}
 
 	//------------------------------------------------------------------------------------------------

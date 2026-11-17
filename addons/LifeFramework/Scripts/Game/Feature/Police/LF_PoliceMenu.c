@@ -5,18 +5,35 @@
 //! authoritative action; replies go through LF_NotificationManagerComponent.
 modded class SCR_ChimeraCharacter
 {
+	protected int m_iPoliceArrestRequests;
+
 	//------------------------------------------------------------------------------------------------
 	//! Ask the server to arrest the player with the given UID.
 	//! \param targetPlayerUid Platform-stable UID of the wanted player.
 	void LF_AskPoliceArrest(string targetPlayerUid)
 	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_PoliceArrest(targetPlayerUid);
+			return;
+		}
+
 		Rpc(RpcAsk_LF_PoliceArrest, targetPlayerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many arrest requests this character's handler has taken (a test reads it; no gameplay use).
+	int LF_PoliceArrestRequests()
+	{
+		return m_iPoliceArrestRequests;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_PoliceArrest(string targetPlayerUid)
 	{
+		m_iPoliceArrestRequests++;
 		IEntity officer = this;
 		if (!officer)
 			return;
