@@ -1632,10 +1632,64 @@ async function runWorkbenchPluginUntil(root, plugin, pluginArgs, { timeoutMs, lo
 
 // tools/cli ui-image <svg|png> <name>: see tools/ui-image/ui-image.mjs and
 // docs/research/ui-illustration-pipeline.md.
+// ui-image --batch <list.txt>: rebuild every listed .tif (repo-relative, one per line, next to a
+// .edds.meta already written) in ONE headless Workbench boot. The map icon set uses it
+// (tools/map/icons/build-icons.mjs writes tmp/map/icons-batch.txt). Needs a Workbench machine.
+async function cmdUiImageBatch(flags) {
+  const root = ROOT;
+  const list = flags[flags.indexOf("--batch") + 1];
+  if (!list || list.startsWith("--") || !existsSync(resolve(root, list))) { console.log("usage: tools\\cli ui-image --batch <list.txt>  (repo-relative .tif paths, one per line)"); return 2; }
+  if (wt.isMainCheckout(root)) { console.log("FAIL  ui-image runs only in a worktree"); return 1; }
+  const tifs = readFileSync(resolve(root, list), "utf8").split(/\r?\n/).map((l) => l.trim()).filter(Boolean).map((p) => resolve(root, p));
+  const missing = tifs.filter((t) => !existsSync(t) || !existsSync(t.replace(/\.tif$/i, ".edds.meta")));
+  if (!tifs.length || missing.length) { console.log("FAIL  batch list is empty or lacks a .tif/.edds.meta: " + missing.join(", ")); return 1; }
+  const ui = await import("./ui-image/ui-image.mjs");
+  const polUi = wbRoute.localWorkbench(root);
+  if (!polUi.allowed) { console.log(`FAIL  ${wbRoute.refusalText("ui-image import", polUi.host)}`); return 1; }
+  const exe = workbenchExe();
+  if (!existsSync(exe)) { console.log("FAIL  Workbench not found: " + exe); return 1; }
+  let locked = false;
+  try {
+    wt.acquireLock(root, "build", { waitMs: 900000 });
+    locked = true;
+    const gameDir = envOf().ENFUSION_GAME_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger";
+    const profile = join(root, "server", "profile", "rdb");
+    mkdirSync(profile, { recursive: true });
+    const logFile = join(root, "tmp", "ui-image-batch.log");
+    mkdirSync(join(root, "tmp"), { recursive: true });
+    const started = Date.now();
+    ui.installPlugin(root);
+    // A headless boot builds only the first texture that has no .edds yet (measured 2026-11-17: the
+    // rest of a RebuildResourceFiles list is dropped until they are registered), so boot again for
+    // what is still missing; each boot is ~12 s. Stops when a boot builds nothing.
+    const eddsOf = (t) => t.replace(/\.tif$/i, ".edds");
+    let boots = 0;
+    for (let pending = tifs.filter((t) => !existsSync(eddsOf(t))); pending.length && boots <= tifs.length; pending = tifs.filter((t) => !existsSync(eddsOf(t)))) {
+      const before = pending.length;
+      boots++;
+      quietSpawnSync(exe, [
+        "-gproj", join(root, "addons", "LifeFramework", "LifeFramework.gproj"),
+        "-wbModule=ResourceManager", "-noSplash", "-run", "-exitAfterInit",
+        "-plugin=LF_ImageImportPlugin", "-lfImage=" + pending.join("|"),
+        "-profile", profile,
+        ...addonsDirArgs([join(root, "addons"), workbenchGameAddons(root, "rdb")]),
+      ], { cwd: gameDir, timeoutMs: Number(process.env.LF_UI_IMAGE_TIMEOUT_S || 150) * 1000, stdout: logFile, stderr: logFile });
+      if (tifs.filter((t) => !existsSync(eddsOf(t))).length >= before) break;
+    }
+    const secs = ((Date.now() - started) / 1000).toFixed(0);
+    const bad = tifs.filter((t) => !existsSync(eddsOf(t)));
+    console.log(`SUMMARY ui-image batch ${bad.length ? "fail" : "ok"} textures=${tifs.length} built=${tifs.length - bad.length} boots=${boots} secs=${secs} log=${logFile}${bad.length ? " missing=" + bad.map((b) => b.replace(root, "")).join(",") : ""}`);
+    return bad.length ? 1 : 0;
+  } finally {
+    if (locked) wt.releaseLock(root, "build");
+  }
+}
+
 async function cmdUiImage(flags) {
   const root = ROOT;
   const pos = (flags ?? []).filter((f, i, a) => !f.startsWith("--") && a[i - 1] !== "--size");
   const [src, name] = pos;
+  if ((flags ?? []).includes("--batch")) return cmdUiImageBatch(flags);
   const sizeIdx = (flags ?? []).indexOf("--size");
   const size = sizeIdx >= 0 ? Number(flags[sizeIdx + 1]) : 0;
   if (!src || !name || !/^[A-Za-z0-9_]+$/.test(name)) {
@@ -3627,7 +3681,7 @@ async function cmdDev(tier = "all", root = ROOT, opts = {}) {
 function sourceTests(root) {
   const dir = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests");
   return () => {
-    try { return readdirSync(dir).filter((f) => /^LF_Test_w+.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(dir, f), "utf8") })); } catch { return []; }
+    try { return readdirSync(dir).filter((f) => /^LF_Test_\w+\.c$/.test(f)).map((f) => ({ file: f, text: readFileSync(join(dir, f), "utf8") })); } catch { return []; }
   };
 }
 
