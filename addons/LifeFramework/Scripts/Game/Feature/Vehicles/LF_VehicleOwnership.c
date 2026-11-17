@@ -1182,19 +1182,11 @@ class LF_VehicleOwnership
 			if (vehicle)
 			{
 				// The record keeps no inventory and the delete below takes the children with it:
-				// a car holding items, or the owner or a keyholder, stays on the street (#2411).
-				string refusalKey = LF_Garage.StoreRefusalKey(vehicle, vehicleId, ownerUid);
+				// a car holding items or people stays on the street (#2411).
+				string refusalKey = LF_Garage.StoreRefusalKey(vehicle);
 				if (!refusalKey.IsEmpty())
 				{
 					LF_Debug.Warn("Vehicle", string.Format("store rejected: %1 is not empty (%2)", vehicleId, refusalKey));
-					return false;
-				}
-
-				// Anyone else seated is put out first; a seat that stays taken keeps the car (never delete a player).
-				LF_Garage.StopAndEject(vehicle);
-				if (LF_Garage.HasOccupants(vehicle))
-				{
-					LF_Debug.Warn("Vehicle", string.Format("store rejected: %1 still has someone seated after the eject", vehicleId));
 					return false;
 				}
 

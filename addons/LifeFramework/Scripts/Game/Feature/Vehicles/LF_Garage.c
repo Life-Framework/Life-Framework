@@ -275,48 +275,12 @@ class LF_Garage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The store rule for one person seated in the car (#2411 follow-up): the owner and anyone
-	//! carrying the car's key block the store (they step out themselves); everyone else is ejected
-	//! by the store, so a stranger in an unlocked car cannot keep its owner from garaging it.
-	static bool OccupantBlocksStore(bool isOwner, bool holdsKey)
-	{
-		return isOwner || holdsKey;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! \return True when the owner, or a player carrying the car's key, is seated in vehicle.
-	static bool KeyholderInside(IEntity vehicle, string vehicleId, string ownerUid)
-	{
-		if (!vehicle)
-			return false;
-
-		SCR_BaseCompartmentManagerComponent compartments = SCR_BaseCompartmentManagerComponent.Cast(vehicle.FindComponent(SCR_BaseCompartmentManagerComponent));
-		if (!compartments)
-			return false;
-
-		array<IEntity> occupants = {};
-		compartments.GetOccupants(occupants);
-		string keyId = LF_VehicleOwnership.GetKeyId(vehicleId);
-		foreach (IEntity occupant : occupants)
-		{
-			string uid = LF_Utils.GetPlayerUID(occupant);
-			bool isOwner = !ownerUid.IsEmpty() && uid == ownerUid;
-			if (OccupantBlocksStore(isOwner, LF_VehicleOwnership.HoldsKey(occupant, keyId)))
-				return true;
-		}
-
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Why vehicle cannot go into the garage as it is, as a string key; empty when it can.
-	//! Storing deletes the vehicle entity and its children, so a car that still holds items is
-	//! refused instead of losing them (#2411), and so is one with the owner or a keyholder still
-	//! seated. Other occupants do not refuse: the store ejects them (StopAndEject) and Store
-	//! checks the seats again before deleting, so a player is never deleted with the car.
-	static string StoreRefusalKey(IEntity vehicle, string vehicleId, string ownerUid)
+	//! Storing deletes the vehicle entity and its children, so a car that still holds items or
+	//! people is refused instead of losing them (#2411).
+	static string StoreRefusalKey(IEntity vehicle)
 	{
-		if (KeyholderInside(vehicle, vehicleId, ownerUid))
+		if (HasOccupants(vehicle))
 			return "#LF-Garage_Occupied";
 
 		if (HasCargo(vehicle))
