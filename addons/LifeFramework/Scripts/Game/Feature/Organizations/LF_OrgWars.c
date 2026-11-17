@@ -316,8 +316,6 @@ class LF_OrgWars
 //! World-end reset of LF_OrgWars' statics (registered at script load; Core/LF_StaticReset.c).
 class LF_OrgWars_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_OrgWars_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_OrgWars";
