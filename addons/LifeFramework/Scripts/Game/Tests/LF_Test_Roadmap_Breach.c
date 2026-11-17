@@ -57,6 +57,7 @@ class LF_Test_Roadmap_Breach : LF_Test
 
 		LF_PlayerAccount police = LF_PlayerAccountManager.GetOrCreate(policeUid);
 		police.SetFaction(LF_Faction.POLICE);
+		police.SetOnDuty(true);
 		ctx.True(LF_Breach.Repair(targetId, policeUid), "police repair succeeds");
 		ctx.True(LF_Breach.IsLocked(targetId), "repair sets the lock");
 
@@ -143,6 +144,7 @@ class LF_Test_Roadmap_BreachWorld : LF_Test
 		LF_PlayerAccountManager.GetOrCreate(uid);
 		LF_PlayerAccount police = LF_PlayerAccountManager.GetOrCreate(policeUid);
 		police.SetFaction(LF_Faction.POLICE);
+		police.SetOnDuty(true);
 
 		if (!doorLock.IsLocked())
 			LF_Breach.Repair(LF_TestAnnex.BREACH_DOOR, policeUid);
@@ -186,6 +188,7 @@ class LF_Test_Roadmap_BreachPersistence : LF_Test
 		LF_PlayerAccountManager.GetOrCreate(uid);
 		LF_PlayerAccount police = LF_PlayerAccountManager.GetOrCreate(policeUid);
 		police.SetFaction(LF_Faction.POLICE);
+		police.SetOnDuty(true);
 
 		if (!doorLock.IsLocked())
 			LF_Breach.Repair(LF_TestAnnex.BREACH_DOOR, policeUid);
