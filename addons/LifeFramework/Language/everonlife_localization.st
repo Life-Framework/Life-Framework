@@ -8223,6 +8223,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
     }
+    CustomStringTableItem "{C1E9F68FC02150FF}" {
+     Id "LF-Property_Bought"
+     Target_en_us "Plot %1 is yours."
+     Comment "Toast: the plot purchase went through (#2649). %1 = the plot."
+    }
+    CustomStringTableItem "{55D1BC2D7557DA0C}" {
+     Id "LF-Property_Buy"
+     Target_en_us "Buy plot (%1)"
+     Comment "Action on a for-sale plot sign (#2649). %1 = the formatted price (LF_MoneyFormat)."
+    }
+    CustomStringTableItem "{2E4ED8FC8172E6AA}" {
+     Id "LF-Property_NoCash"
+     Target_en_us "You do not carry enough cash for this plot."
+     Comment "Toast: plot purchase refused, short of cash; nothing was taken (#2649)."
+    }
+    CustomStringTableItem "{5CC34CD87EB4192B}" {
+     Id "LF-Property_NotHere"
+     Target_en_us "There is no plot for sale here."
+     Comment "Toast: plot purchase refused, no for-sale plot sign in reach (#2649)."
+    }
+    CustomStringTableItem "{7A2A3649718F2743}" {
+     Id "LF-Property_Owned"
+     Target_en_us "This plot is already owned."
+     Comment "Toast: plot purchase refused, somebody owns it (#2649)."
+    }
+    CustomStringTableItem "{92136B0C3106B107}" {
+     Id "LF-Property_Title"
+     Target_en_us "Property"
+     Comment "Toast title for a plot purchase answer (#2649)."
+    }
    CustomStringTableItem "{468EF5CBF215416A}" {
     Id "LF-Quest_Accept"
     Target_en_us "Accept"
