@@ -191,6 +191,16 @@
   already on the roster log an `LF_Debug.Warn` and report nothing.
 - ⚠️ The job whitelist is checked by character key and never written; the legacy `LF_Whitelist`
   lists, sign action and context actions still write an array nothing fills (#2412 items 2-5).
+- ✅ **Legacy whitelist files move into the roster once** (2026-11-17, WORLD
+  `whitelist/legacy-migrate`, #2575): on game-mode start `LF_WhitelistRespawnHandlerComponent`
+  passes each configured `LF_Whitelist` to `LF_WhitelistLegacyMigration.Migrate`. POLICE uids go to
+  `AddFactionWhitelist(uid, POLICE)`, repeats and rostered uids skipped, and log
+  `migrated <n> legacy POLICE uids from <file>`. CONNECT and MEDIC have no account roster: their
+  uids are counted and logged, not migrated. The legacy file is only read; a line in
+  `$profile:LifeFramework/whitelist-legacy-migrated.txt`, written after the roster saved, stops a
+  later start re-adding a uid an admin removed. An unreadable roster or failed save leaves the
+  file unmarked, so the next start retries. `AddNewUuidToFile`, `RemoveUUIDFromFile` and
+  `EnableWhitelistOnPlayer` no longer write the legacy file; a POLICE grant or removal writes the roster.
 
 ### `AdminChatChannel` — `Feature/Chat/AdminChatChannel.c`
 - ✅ **Server re-checks the admin role** (verified 2026-11-07):
