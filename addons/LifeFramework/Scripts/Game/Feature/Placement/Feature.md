@@ -125,8 +125,8 @@ selected; aimed placement with rotate, place and cancel is #1028.
   `LF_PlacementService.Confirm` and `LF_PlacementCompositions.Confirm` ask it after the reach check (a five-line hook each),
   so the ghost does not go red for a zone yet. The log line is `refused: <uid> <reason> (zone <WHERE>)`.
 - **Data:** the policy entry's `m_eWhere` (`ANYWHERE` default) and `m_fBaseRadius` (`ORG_BASE`, default 30 m). Core ships no
-  zoned kind: a server's rules are pack data. Nothing registers an `org_base` place yet, so an `ORG_BASE` kind is refused
-  until a base component does. Strings `#LF-Placement_NeedRoad`, `_NeedProperty`, `_NeedBase`. Nothing persists.
+  zoned kind: a server's rules are pack data. An organization's leased hideout registers its door as `org_base` (`LF_Hideout.SyncOrgBase`, #2504), so an `ORG_BASE` kind is refused
+  for an organization with no lease. Strings `#LF-Placement_NeedRoad`, `_NeedProperty`, `_NeedBase`. Nothing persists.
 - **Proof:** `placement/policy-where` (WORLD: two bound neighbouring houses, a chair-like kind refused in the neighbour's and
   allowed in the owner's or with a key; a roads-only kind refused off the road by the real probe on DebugWorld, allowed on a
   road by the pure rule; the base rule's cases). The road probe on real Everon roads is a manual step.
