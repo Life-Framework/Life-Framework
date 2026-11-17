@@ -23,7 +23,7 @@ import { loadWorld } from "./layers.mjs";
 import { boundsGapVerdict, layerEntityPrefabs } from "../tools/lib/layer-prefabs.mjs";
 import { judgeStrict } from "../tools/lib/town-findings.mjs";
 import { layerFile, townWorld, worldLayerDirs } from "../tools/lib/addons.mjs";
-import { GRID_WORLD, gridLayersDir } from "../tools/lib/worlds.mjs";
+import { gridLayerDirs, gridWorldFor } from "../tools/lib/worlds.mjs";
 import { BUDGET, cellBudget, worldFindings } from "./place-budget.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -470,7 +470,7 @@ export const inAnnex = (e) => e.x < 110 && e.z < 120;
 
 export function auditRecords({ layers, area, areas, annex, grid } = {}) {
   // --grid: every entity of GridWorld's own layers (all of it is annex); the town is not read.
-  let recs = grid ? loadWorld(ROOT, gridLayersDir(ROOT)).filter((e) => !SKIP_LAYERS.has(e.layer)) : loadWorld(ROOT).filter((e) => !SKIP_LAYERS.has(e.layer) && (annex || !inAnnex(e)));
+  let recs = grid ? loadWorld(ROOT, gridLayerDirs(ROOT)).filter((e) => !SKIP_LAYERS.has(e.layer)) : loadWorld(ROOT).filter((e) => !SKIP_LAYERS.has(e.layer) && (annex || !inAnnex(e)));
   if (layers) recs = recs.filter((e) => layers.includes(e.layer));
   if (area) {
     const a = areas.find((x) => x.name === area);
@@ -497,7 +497,7 @@ export function inputText(records, extra = [], circle = TOWN) {
 // preferLocal: still the pool's choice, but this PC goes first while it has RAM room (the placement tool's
 // probe: seconds on a booted server, so a sync to another machine is the slower path when this PC can run it).
 export function auditTestArgs({ local = false, grid = false, preferLocal = false } = {}) {
-  return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", grid ? GRID_WORLD : townWorld(), ...(local ? ["--local"] : preferLocal ? ["--prefer-local"] : []), "--verbose"];
+  return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", grid ? gridWorldFor(ROOT) : townWorld(), ...(local ? ["--local"] : preferLocal ? ["--prefer-local"] : []), "--verbose"];
 }
 
 // One boot of the dedicated test server: LF_Test_PlacementAuditTown measures `records` and traces the
@@ -793,7 +793,8 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
 // auditTestArgs({ grid }) and the grid input circle existed: the selftest threw "gridBar is not defined"; then passed.
 function gridSelftest(fail) {
   const args = auditTestArgs({ grid: true });
-  if (args[args.indexOf("--world") + 1] !== "Worlds/GridWorld/GridWorld.ent") fail(`--grid boots ${args[args.indexOf("--world") + 1]}, not GridWorld`);
+  // GridWorld, or the pack's grid world (a SubScene of it) once a pack cell exists in the tree.
+  if (args[args.indexOf("--world") + 1] !== gridWorldFor(ROOT)) fail(`--grid boots ${args[args.indexOf("--world") + 1]}, not ${gridWorldFor(ROOT)}`);
   if (auditTestArgs().includes("Worlds/GridWorld/GridWorld.ent")) fail("the town audit boots GridWorld");
   const gridText = inputText([], [], GRID_CIRCLE);
   if (!gridText.startsWith(`town ${GRID_CIRCLE.x} ${GRID_CIRCLE.z} ${GRID_CIRCLE.r}\n`) || GRID_CIRCLE.x > 112 || GRID_CIRCLE.x < 20) fail(`grid input line: ${gridText}`);

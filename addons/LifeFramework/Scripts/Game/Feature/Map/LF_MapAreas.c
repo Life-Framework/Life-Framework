@@ -373,7 +373,8 @@ class LF_MapAreas
 
 	//------------------------------------------------------------------------------------------------
 	//! Every area the map draws: the zones LF_Zones holds that have a style (safe, lawless), then the
-	//! map-only areas, each as a fresh LF_MapArea built now, so it never disagrees with LF_Zones. A zone
+	//! map-only areas, then the rows of Configs/Map/LF_MapAreas.conf and its pack overlays (a name already
+	//! in the list is not added twice), each as a fresh LF_MapArea built now, so it never disagrees with LF_Zones. A zone
 	//! whose numbers make no outline is skipped and logged. The caller keeps the result until the next
 	//! pan or zoom end (the map re-reads then), not per frame.
 	static void Collect(notnull array<ref LF_MapArea> into)
@@ -401,6 +402,77 @@ class LF_MapAreas
 
 		foreach (LF_MapArea own : Areas())
 			into.Insert(own);
+
+		// Last: a zone or a layer entity of the same name already in the list wins over the conf row.
+		AppendConfigRows(LF_MapAreaConfig.Get(), into);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One conf row as an area: its outline, style and label. False (nothing made) when the row's own
+	//! numbers make no outline (a polygon under three points, a circle with no radius).
+	static bool AreaFromRow(notnull LF_MapAreaRow row, notnull LF_MapArea area)
+	{
+		area.m_sName = row.m_sId;
+		area.m_eStyle = row.m_eStyle;
+		area.m_sLabel = row.m_sLabel;
+		area.m_aOutline.Clear();
+		bool made;
+		if (row.m_eShape == LF_MapAreaShape.CIRCLE)
+		{
+			made = CircleOutline(row.m_vCentre, row.m_fRadius, DEFAULT_SEGMENTS, area.m_aOutline);
+		}
+		else
+		{
+			array<vector> points = {};
+			if (row.m_aPoints)
+				points.Copy(row.m_aPoints);
+
+			made = PolygonOutline(points, area.m_aOutline);
+		}
+
+		if (made)
+			area.m_vCentroid = Centroid(area.m_aOutline);
+
+		return made;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Adds the conf rows of `config` to `into` (null config adds none). A row with no outline is
+	//! skipped and logged. A row whose name is already in `into` is skipped, so a zone entity (safe,
+	//! lawless) of the same name stays the one drawn: the rule owns the picture. \return Rows added.
+	static int AppendConfigRows(LF_MapAreaConfig config, notnull array<ref LF_MapArea> into)
+	{
+		if (!config || !config.m_aAreas)
+			return 0;
+
+		int added;
+		foreach (LF_MapAreaRow row : config.m_aAreas)
+		{
+			if (!row || row.m_sId.IsEmpty())
+				continue;
+
+			bool taken;
+			foreach (LF_MapArea have : into)
+			{
+				if (have.m_sName == row.m_sId)
+					taken = true;
+			}
+
+			if (taken)
+				continue;
+
+			LF_MapArea area = new LF_MapArea();
+			if (!AreaFromRow(row, area))
+			{
+				LF_Debug.Warn(FEATURE, string.Format("area row %1 makes no outline, not on the map", row.m_sId));
+				continue;
+			}
+
+			into.Insert(area);
+			added++;
+		}
+
+		return added;
 	}
 }
 

@@ -13,9 +13,9 @@
 - ✅ Fallback layer (no cache, or `--fallback`): a 100 m / 500 m / 1 km grid, a schematic road net (a minimum spanning
   tree between the named places, not real roads) and the 6,514 catalog buildings. No contours: the heights live only in
   the cache.
-- ✅ Overlays read the game's confs: `LF_MapPoi` and `LF_MapArea` blocks in `Configs/Map/LF_MapPois.conf` and
-  `LF_MapAreas.conf` of the core and the pack. Until M2 and M5 land, `tools/map/render/fixtures/map-overlay.fixture.conf`
-  stands in. Places and buildings come from `docs/everon/catalog-buildings.json`.
+- ✅ Overlays read the game's confs: `LF_MapPoiKind` rows in `Configs/Map/LF_MapPois*.conf` and `LF_MapAreaRow` rows in
+  `Configs/Map/LF_MapAreas*.conf` of the core and the pack (same Id: the pack row replaces; `m_sOp "remove"` drops).
+  `tools/map/render/fixtures/map-overlay.fixture.conf` is the stand-in for `--fixture` only. Places and buildings come from `docs/everon/catalog-buildings.json`.
 - ✅ `--as` personas use a built-in reading of D-M3 to D-M6 (`personaVisibility`); a `tools/map/rules/visibility.mjs`
   exporting `visible(poi, persona)` replaces it.
 - ✅ `--html` writes the PNG with hover tooltips on POIs and areas and a live world coordinate.
