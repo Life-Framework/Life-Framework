@@ -54,6 +54,9 @@
   "grace": {
     "minutes": 0
   },
+  "houses": {
+    "doorCloseDelaySeconds": 20
+  },
   "idCard": {
     "replacementFee": 50,
     "showSeconds": 8

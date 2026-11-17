@@ -155,6 +155,7 @@ class LF_WantedReports
 		}
 
 		list.Insert(record);
+		LF_EventBus.Publish(LF_OnWantedReportFiled.Create(playerUid, record.m_iSequence, place));
 		return record;
 	}
 
