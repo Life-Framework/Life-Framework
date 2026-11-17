@@ -8346,6 +8346,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Safe zone"
      Comment "Toast title when a shot is refused in the spawn safe zone."
     }
+    CustomStringTableItem "{4EE60B1CA1D7C2F3}" {
+     Id "LF-Safe_BoxRob"
+     Target_en_us "Crack the box safe"
+     Comment "Action: a small box safe in a shop (safe type store_box)."
+    }
+    CustomStringTableItem "{E04945AFDC28CB9A}" {
+     Id "LF-Safe_ReserveRob"
+     Target_en_us "Break into the reserve depot"
+     Comment "Action: the big standalone vault (safe type reserve_vault). Neutral name; the docs call the building the Federal Reserve."
+    }
     CustomStringTableItem "{59E2E4A1484842B5}" {
      Id "LF-Scanner_Heard"
      Target_en_us "Heard on the scanner: %1"
