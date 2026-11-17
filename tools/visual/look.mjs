@@ -30,7 +30,7 @@ import { quietSpawn } from "../lib/quiet-launch.mjs";
 import * as tb from "../remote/testbox.mjs";
 import { townWorld } from "../lib/addons.mjs";
 import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
-import { GRID_WORLD, gridLayersDir } from "../lib/worlds.mjs";
+import { GRID_WORLD, PACK_GRID_WORLD, gridLayerDirs, gridWorldFor } from "../lib/worlds.mjs";
 import { lookStartVerdict, phaseText, requestNeedsRam, timeline } from "../lib/look-job.mjs";
 import * as poolRam from "../lib/pool-ram.mjs";
 import { SEED_PEAKS_MB } from "../lib/pool-ram.mjs";
@@ -88,7 +88,7 @@ export function resolveArea(arg, areas, radius, { root = ROOT } = {}) {
     const entry = readCells(root).find((c) => c.slug === zoned[2]);
     const area = (entry && zoneLookArea(entry)) || GRID_PLACES[zoned[2]];
     if (!area) throw new Error(`no grid cell for "${zoned[2]}" (tools\\cli grid list; places: ${Object.keys(GRID_PLACES).join(", ")})`);
-    return { ...area, world: "grid", radius: radius ?? area.radius };
+    return { ...area, world: "grid", ...(entry?.pack ? { pack: true } : {}), radius: radius ?? area.radius };
   }
   if (zoned) {
     const town = areas.find((a) => a.name === zoned[2]);
@@ -126,6 +126,8 @@ export function resolveInterior(area, spec, radius) {
 export function worldOfAreas(areas) {
   const grid = areas.filter((a) => a.world === "grid").length;
   if (grid && grid !== areas.length) throw new Error("a look opens one world: grid: targets (GridWorld) and town areas (the playtest world) need separate runs");
+  // A pack cell (claim "pack": true) lives in the pack's grid world, a SubScene of GridWorld that holds the core cells too.
+  if (grid && areas.some((a) => a.world === "grid" && a.pack)) return PACK_GRID_WORLD;
   return grid ? GRID_WORLD : WORLD;
 }
 
@@ -675,7 +677,7 @@ async function run(args) {
     console.log(`FAIL  ${e.message}`);
     return 2;
   }
-  const world = itemPerArea ? null : loadWorld(ROOT, worldOfAreas(areas) === GRID_WORLD ? gridLayersDir(ROOT) : undefined);
+  const world = itemPerArea ? null : loadWorld(ROOT, [GRID_WORLD, PACK_GRID_WORLD].includes(worldOfAreas(areas)) ? gridLayerDirs(ROOT) : undefined);
   const opts = { dump: args.flags.dump === undefined ? null : { radius: num(args.flags.dump, undefined), step: num(args.flags.dumpstep, 5) }, world: typeof args.flags.world === "string" ? args.flags.world : undefined, edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
   const perArea = itemPerArea ?? areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
   for (const n of itemNotes) console.log(`look: ${n}`);
