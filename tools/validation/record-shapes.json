@@ -1,5 +1,5 @@
 {
-  "saveVersion": 50,
+  "saveVersion": 51,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -52,7 +52,8 @@
     "itemkeys": "LF_StorageItemKeyRecord",
     "graceclock": "LF_GraceClockRow",
     "jobruns": "LF_JobRunRow",
-    "leaseidle": "LF_HideoutIdleRow"
+    "leaseidle": "LF_HideoutIdleRow",
+    "placements": "LF_PlacementRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -617,6 +618,20 @@
         "int m_iVersion",
         "string m_sHideoutId",
         "int m_iLastActive"
+      ]
+    },
+    "LF_PlacementRow": {
+      "since": 51,
+      "fields": [
+        "int m_iVersion",
+        "string m_sPlacementId",
+        "string m_sPrefab",
+        "vector m_vPos",
+        "vector m_vAngles",
+        "string m_sOwnerKey",
+        "string m_sKind",
+        "string m_sPropertyId",
+        "string m_sItemPrefab"
       ]
     }
   }

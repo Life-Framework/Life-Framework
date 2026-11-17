@@ -54,6 +54,11 @@ class LF_PlacementPolicyConfig
 	[Attribute("", UIWidgets.Object, "One entry per placeable kind")]
 	ref array<ref LF_PlacementPolicyEntry> m_aEntries;
 
+	[Attribute("40", UIWidgets.EditBox, "Most permanent placements one player keeps (#1032, LF_PlacementSave)")]
+	int m_iOwnerCap;
+	[Attribute("25", UIWidgets.EditBox, "Most permanent placements one property holds (#1032, LF_PlacementSave)")]
+	int m_iPropertyCap;
+
 	protected static ref LF_PlacementPolicyConfig s_Config;
 	protected static bool s_bLoadAttempted;
 

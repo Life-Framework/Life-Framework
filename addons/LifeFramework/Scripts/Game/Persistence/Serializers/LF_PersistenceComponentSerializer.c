@@ -36,7 +36,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle. The written version is that list's length (50). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, placements. The written version is that list's length (51). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -116,6 +116,8 @@
 //! was not saved, which is what that build did (a restart kept it).
 //! A version 49 save includes the held job runs and has no hideout idle clocks (#2573): every lease loads with
 //! its clock at the load time, so no lease lapses on the first boot after the update.
+//! A version 50 save includes the hideout idle clocks and has no permanent placements (#1032): nothing a player
+//! placed was kept, which is what that build did.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -287,6 +289,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("graceclock");
 		order.Insert("jobruns");
 		order.Insert("leaseidle");
+		order.Insert("placements");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -320,7 +323,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 50);
+		context.WriteValue("version", 51);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -905,6 +908,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_HideoutIdleRow> idleRows = LF_Hideout.ExportIdle();
 			context.Write(idleRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 hideout idle clock(s)", idleRows.Count()));
+		}
+		else if (payload == "placements")
+		{
+			// Permanent placements (#1032): prefab, spot, owner and kind; never an EntityID.
+			array<ref LF_PlacementRow> placementRows = LF_PlacementSave.ExportAll();
+			context.Write(placementRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 permanent placement(s)", placementRows.Count()));
 		}
 		else
 		{
@@ -1661,6 +1671,15 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			{
 				ReadFailed("hideout idle clocks failed to read, every lease keeps a fresh clock");
 			}
+		}
+		else if (payload == "placements")
+		{
+			// A version 1-50 save never reaches this payload: nothing placed was kept.
+			array<ref LF_PlacementRow> placementRows = new array<ref LF_PlacementRow>();
+			if (context.Read(placementRows))
+				LF_PlacementSave.ApplyAll(placementRows);
+			else
+				ReadFailed("permanent placements failed to read, nothing placed is restored");
 		}
 		else
 		{
