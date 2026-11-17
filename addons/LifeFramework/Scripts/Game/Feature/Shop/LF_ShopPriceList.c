@@ -12,7 +12,7 @@ class LF_ShopPriceList
 	static const float CLOSE_DISTANCE = 3.5;
 	//! Lines drawn at once; typing narrows a larger catalog to its matches.
 	static const int MAX_ROWS = 40;
-	static const float LIST_HEIGHT = 400;
+	static const float LIST_HEIGHT = 170;	// lf-fixed: leaves the slip, preview, keys and Leave room on the 900-unit sheet
 	static const int SEARCH_POLL_MS = 250;
 	static const int REPLY_TIMEOUT_MS = 5000;
 
@@ -27,6 +27,7 @@ class LF_ShopPriceList
 
 	protected ref LF_UIScreen m_Screen;
 	protected ref array<ref LF_ShopCatalogItem> m_aShown = {};
+	protected ref LF_ShopItemPreview m_Preview = new LF_ShopItemPreview();
 	protected LF_ShopComponent m_Shop;
 	protected RplId m_ShopId;
 	protected string m_sFilter;
@@ -160,6 +161,7 @@ class LF_ShopPriceList
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, "Search", "#LF-Shop_LookFor"));
 		parts.Insert(LF_UIPart.CreateList("Prices"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Order", "#LF-Shop_SlipEmpty"));
+		parts.Insert(LF_ShopItemPreview.Part());
 		parts.Insert(LF_ATMTerminal.Keys("Quantity", LESS + "," + MORE, "#LF-Shop_Less,#LF-Shop_More"));
 		parts.Insert(LF_ATMTerminal.Keys("Till", PAY + "," + SELL, "#LF-Shop_Pay,#LF-Shop_SellBack"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Receipt", ""));
@@ -173,6 +175,7 @@ class LF_ShopPriceList
 		}
 
 		m_Screen.SetListHeight("Prices", LIST_HEIGHT);
+		m_Preview.Attach(m_Screen);
 		m_Screen.GetOnButton().Insert(OnButton);
 		m_Screen.GetOnClosed().Insert(OnClosed);
 		m_Screen.CloseOnDeath();
@@ -286,6 +289,7 @@ class LF_ShopPriceList
 
 		LF_ShopCatalogItem item = m_aShown.Get(index);
 		m_Selected = item.m_ItemPrefab;
+		m_Preview.Draw(m_Screen, LF_ShopItemPreview.Resolve(m_aShown, index));
 		m_sSelectedName = WidgetManager.Translate(item.m_sDisplayName);
 		m_iSelectedPrice = item.m_iBuyPrice;
 		m_iSelectedSell = item.m_iSellPrice;
@@ -445,6 +449,7 @@ class LF_ShopPriceList
 	//------------------------------------------------------------------------------------------------
 	protected void OnClosed()
 	{
+		m_Preview.Clear();
 		if (GetGame() && GetGame().GetCallqueue())
 		{
 			GetGame().GetCallqueue().Remove(PollSearch);
