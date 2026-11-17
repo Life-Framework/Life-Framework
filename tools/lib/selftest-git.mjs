@@ -9,11 +9,11 @@
 //   3. A failed git call showed `stderr || stdout`, which is empty when git is ended without a word.
 //      `gitMust` and `describeRun` always say the exit code, the signal and what git printed.
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
 import { describeRun } from "../wt.mjs";
+import { scratchDir } from "./scratch.mjs";
 
 export { describeRun };
 
@@ -38,7 +38,7 @@ const IDENTITY = { GIT_AUTHOR_NAME: "t", GIT_AUTHOR_EMAIL: "t@t", GIT_COMMITTER_
 let emptyConfig = null;
 export function hermeticGitEnv(base = process.env) {
   if (!emptyConfig) {
-    emptyConfig = join(mkdtempSync(join(tmpdir(), "lf-gitcfg-")), "empty.gitconfig");
+    emptyConfig = join(scratchDir("lf-gitcfg-"), "empty.gitconfig");
     writeFileSync(emptyConfig, "");
   }
   const empty = emptyConfig;

@@ -9,13 +9,13 @@
 // red-proof: with the `pass >= size` check in evaluateQuorum changed to `pass >= 1` it printed
 // "two confirmations promoted".
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as rg from "../lib/release-gates.mjs";
 import { describeRun, removeScratch, useHermeticGit } from "../lib/selftest-git.mjs";
 import { evaluateQuorum } from "../lib/quorum.mjs";
 import { cmdPromote } from "../promote.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -64,7 +64,7 @@ v = evaluateQuorum({ issues: [], results: [], roster, size: 3 });
 check(v.ok, "no issues needed confirmation but the rule refused");
 
 // ---- the command
-const dir = mkdtempSync(join(tmpdir(), "lf-quorum-"));
+const dir = scratchDir("lf-quorum-");
 const origin = join(dir, "origin.git");
 const work = join(dir, "work");
 try {

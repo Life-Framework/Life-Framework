@@ -8,14 +8,14 @@
 // red-proof: before tools/host/disk.mjs existed the import failed:
 // "FAIL disk.mjs missing (Cannot find module ...)" (2026-11-15).
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const GB = 1024 ** 3;
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-disk-"));
+const tmp = scratchDir("lf-host-disk-");
 let failed = 0;
 function fail(msg) {
   console.log(`FAIL  ${msg}`);

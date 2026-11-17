@@ -11,12 +11,12 @@
 // red-proof (2026-11-08): without `git merge --abort` in healMerge's abort path
 //   it printed "real-conflict: merge left in progress"; with the registry
 //   unclassified it printed "registry-only: expected healed, got needs-human".
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { conflictKind, healMerge, isLive, predictConflicts, pushBranch, LIVE_MS } from "../prs.mjs";
 import { describeRun, removeScratch, useHermeticGit } from "../lib/selftest-git.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 useHermeticGit(); // no machine git config, no auto-gc beside the scratch repos (tools/lib/selftest-git.mjs)
 
@@ -73,7 +73,7 @@ for (const [p, k] of [
   if (conflictKind(p) !== k) fail(`conflictKind(${p}) = ${conflictKind(p)}, expected ${k}`);
 }
 
-const temp = mkdtempSync(join(tmpdir(), "lf-pr-keeper-"));
+const temp = scratchDir("lf-pr-keeper-");
 try {
   const origin = join(temp, "origin.git");
   const seed = join(temp, "seed");

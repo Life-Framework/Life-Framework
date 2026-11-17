@@ -3,10 +3,10 @@
 // server/flagship/server.json has the listing name and the same scenario and mods as server/example; neither
 // file holds a secret (passwords, admin uids, a webhook URL). Secrets live only in the host's secrets.json.
 // red-proof: adding game.password, a webhook URL or a changed name to a fixture copy below prints a FAIL line.
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { checkText } from "../config/check.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const NAME = "Life Framework | Everon 1989 (Alpha)";
 const SECRET_KEY = /password|passwd|secret|token|webhook|apikey|api_key|credential/i;
@@ -65,7 +65,7 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, "/")}` || proc
   expect(real.length === 0, `the committed flagship files have problems: ${real.join(" | ")}`);
 
   const copy = () => {
-    const root = mkdtempSync(join(tmpdir(), "lf-flagship-"));
+    const root = scratchDir("lf-flagship-");
     mkdirSync(join(root, "server"), { recursive: true });
     cpSync("server/flagship", join(root, "server", "flagship"), { recursive: true });
     cpSync("server/example", join(root, "server", "example"), { recursive: true });

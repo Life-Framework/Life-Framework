@@ -12,11 +12,11 @@
 // "the token was printed" and exited 1 (2026-11-15).
 // red-proof: before `--only staff` existed this printed "FAILED --only staff: not a game field config push knows" and 5 failure(s) (2026-11-15).
 import { createServer } from "node:http";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const imp = (p) => import(pathToFileURL(join(ROOT, ...p.split("/"))).href);
@@ -116,7 +116,7 @@ const server = createServer((req, res) => {
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const base = `http://127.0.0.1:${server.address().port}/v2`;
 
-const work = mkdtempSync(join(tmpdir(), "lf-0grind-"));
+const work = scratchDir("lf-0grind-");
 const remote = join(work, "host-0grind");
 mkdirSync(remote, { recursive: true });
 const tokenFile = join(work, "token");

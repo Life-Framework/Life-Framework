@@ -198,6 +198,10 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
 - **A node selftest that builds a scratch git repo** calls `useHermeticGit()` and cleans up with `removeScratch()`
   (`tools/lib/selftest-git.mjs`): no machine git config, a fixed identity and branch, no auto-gc holding the folder
   (EBUSY on the Windows CI runner), and a failure message that says the exit code and what git printed (`describeRun`).
+- **A node selftest's temp folder comes from `scratchDir(prefix)`** (`tools/lib/scratch.mjs`), never a bare
+  `mkdtempSync(join(tmpdir(), ...))`: it is removed when the process ends, even on a failed check or `process.exit`.
+  400,000 leaked `lf-*` folders (18 GB) piled up on lf-testbox in a week (#2589); `selftest-scratch-selftest` fails a
+  bare call. `toolscli tmp-sweep [--hours N] [--dry-run]` deletes older `lf-*` leftovers.
 - Persistence tests go through public mutators and accessors only. In-session
   round trips prove nothing about restarts; use `wt e2e` or a real restart.
 - **Pass cache.** `test` (and the suite inside `ci`, `wt gate`) reuses a pass whose key matches: `addons/` (tracked and untracked), its `resourceDatabase.rdb`, `tools/test/`, the selection, the addon list and the server build. A failure is never reused; persistence tier, `--red`, `dev`, `e2e` and the placement audit always run (`docs/worktrees.md` "Pass cache").

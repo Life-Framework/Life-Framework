@@ -4,10 +4,10 @@
 // fails it; a comment, a Tests/ file, the harness folder, an offset literal and a
 // baselined finding pass; a stale or issue-less or new baseline entry fails.
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { SCRIPTS, checkMapIndependence } from "./validate-map-independence.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 function put(root, path, text) {
   const full = join(root, SCRIPTS, path);
@@ -18,7 +18,7 @@ function put(root, path, text) {
 const script = (body) => `class LF_X\n{\n\tstatic void Run()\n\t{\n${body}\n\t}\n}\n`;
 
 function tree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-mapindep-"));
+  const root = scratchDir("lf-mapindep-");
   put(root, "Feature/Crime/LF_Good.c", script([
     "\t\t// FindEntityByName(\"Roadmap_Bank\") and \"300 0 300\" are the old way",
     "\t\t/* Sign_SafeZone_Pub */",

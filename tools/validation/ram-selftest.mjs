@@ -6,10 +6,10 @@
 // profile guard removed the "the user's own game is never a candidate" check fails.
 
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { rmSync } from "node:fs";
 import { join } from "node:path";
 import * as ram from "../lib/ram.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -71,7 +71,7 @@ const check = (ok, msg) => {
 
 // --- throttle: once per machine per window, off under the selftest seams
 {
-  const hub = mkdtempSync(join(tmpdir(), "lf-ram-"));
+  const hub = scratchDir("lf-ram-");
   try {
     const calls = [];
     const fake = { name: "fake", via: "ssh", host: "fake" };

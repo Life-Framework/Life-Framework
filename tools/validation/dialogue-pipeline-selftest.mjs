@@ -14,13 +14,13 @@
 //   confText writing events for a text_only spec    -> FAIL text only: the conf has no event, no length, no audio project
 //   voiceStage skipped for a voiced patch           -> FAIL voiced patch: every line has its wav in the pack
 //   patchConfText without the voiced rows           -> FAIL voiced patch: the conf sets the audio project and each recording
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import * as patchTool from "../assets/pipeline/dialogue-patch.mjs";
 import * as dlg from "../assets/pipeline/dialogue.mjs";
 import * as eleven from "../assets/pipeline/elevenlabs.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const ADDON = "addons/LifeFramework";
@@ -118,7 +118,7 @@ export async function main() {
 
   // ---- cache, budget and the key: a fake service that counts what it is asked for --------------
   {
-    const root = mkdtempSync(join(tmpdir(), "lf-dialogue-selftest-"));
+    const root = scratchDir("lf-dialogue-selftest-");
     const keyFile = join(root, "key");
     const KEY = "sk_selftest_0123456789";
     writeFileSync(keyFile, KEY + "\n");
@@ -167,7 +167,7 @@ export async function main() {
       spoken = [];
       ok(existsSync(dlg.cacheDir(root, "baker")), "cache: raw downloads are kept under tmp/");
       // A fresh worktree: the tracked provenance and the addon wavs are there, tmp/ is not.
-      const fresh = mkdtempSync(join(tmpdir(), "lf-dialogue-selftest-fresh-"));
+      const fresh = scratchDir("lf-dialogue-selftest-fresh-");
       for (const rel of ["tools/assets/dialogue/baker/dialogue.json", "tools/assets/dialogue/baker/elevenlabs.json", `${ADDON}/Language/everonlife_localization.st`]) {
         mkdirSync(dirname(join(fresh, rel)), { recursive: true });
         writeFileSync(join(fresh, rel), readFileSync(join(root, rel)));
@@ -287,7 +287,7 @@ export async function main() {
 
   // A text-only core dialogue and a pack's voiced patch of it (#323): no recordings in the core, the recordings in the pack.
   {
-    const root = mkdtempSync(join(tmpdir(), "lf-dialogue-selftest-voice-"));
+    const root = scratchDir("lf-dialogue-selftest-voice-");
     const keyFile = join(root, "key");
     writeFileSync(keyFile, "sk_selftest_0123456789\n");
     const oldKeyFile = process.env.LF_ELEVENLABS_KEY_FILE;

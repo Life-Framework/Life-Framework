@@ -66,8 +66,7 @@
 // floor "3x p95 of 9 s runs is under the 30 s floor but was not floored"; with the
 // RAM verdict always ok "RAM gate: a second server started with 0.9 GB free".
 import { spawn, spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as q from "../lib/pool-queue.mjs";
@@ -82,6 +81,7 @@ import { isolatePool } from "../lib/pool-isolation.mjs";
 import { sessionBase } from "../lib/session-lease.mjs";
 import * as wtLib from "../wt.mjs";
 import { useHermeticGit } from "../lib/selftest-git.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 useHermeticGit(); // no machine git config or identity, no auto-gc beside the scratch repos (tools/lib/selftest-git.mjs)
 
@@ -96,7 +96,7 @@ useHermeticGit(); // no machine git config or identity, no auto-gc beside the sc
 const REAL_REPO = resolve(import.meta.dirname, "..", "..");
 const REAL_HUB = wtLib.hubDirOf(REAL_REPO);
 const REAL_SESSION_BASE = sessionBase();
-const ISO = mkdtempSync(join(tmpdir(), "lf-pool-iso-"));
+const ISO = scratchDir("lf-pool-iso-");
 mkdirSync(join(ISO, "home", "AppData", "Local"), { recursive: true });
 mkdirSync(join(ISO, "cwd"), { recursive: true });
 spawnSync("git", ["init", "-q", join(ISO, "cwd")], { windowsHide: true });
@@ -157,7 +157,7 @@ try {
   failures.push(`holder script: ${e.message}`);
 }
 
-const dir = mkdtempSync(join(tmpdir(), "lf-pool-selftest-"));
+const dir = scratchDir("lf-pool-selftest-");
 try {
   spawnSync("git", ["init", "-q", dir], { windowsHide: true });
 
@@ -315,7 +315,7 @@ try {
   check(q.projectedRelease({ atMs: T0 - 1400000, now: T0, typicalMs: 300000, capMs: 1500000 }) === T0 + 100000, "projectedRelease ignores the hold cap");
   {
     // #563: a late join is RAM-gated like `up`: trim first, refuse (one line) when still under the floor.
-    const jroot = mkdtempSync(join(tmpdir(), "lf-join-"));
+    const jroot = scratchDir("lf-join-");
     const run = (freeSeq, trimGain) => {
       let free = freeSeq, trims = 0;
       return { r: pool.gateJoin(jroot, 800, { freeMb: () => free, trim: () => { trims++; free += trimGain; return 3; } }), trims };
@@ -347,7 +347,7 @@ try {
   const st = q.sessionStats([{ waitS: 60, heldS: 600, boots: 1, closedBy: "owner" }, { waitS: 180, heldS: 1800, boots: 3, closedBy: "hold-cap" }]);
   check(st.avgWaitS === 120 && st.avgHeldS === 1200 && st.avgBoots === 2 && st.closed.owner === 1 && st.closed["hold-cap"] === 1, "sessionStats averages");
 
-  const rdir = mkdtempSync(join(tmpdir(), "lf-pool-lanes-"));
+  const rdir = scratchDir("lf-pool-lanes-");
   const live = spawn(process.execPath, ["-e", "setTimeout(()=>{},120000)"], { stdio: "ignore", windowsHide: true });
   const rLockDir = join(rdir, "tmp", "wt", "locks");
   mkdirSync(rLockDir, { recursive: true });
@@ -633,7 +633,7 @@ try {
   }
   // #675: old session folders are removed (never in use, film, or this checkout's), and a low disk refuses.
   {
-    const base = mkdtempSync(join(tmpdir(), "lf-gc-"));
+    const base = scratchDir("lf-gc-");
     try {
       const nowMs = Date.now();
       const mk = (name, ageH, session) => {
@@ -654,7 +654,7 @@ try {
       mk("wt-film-take", 30);
       mk("wt-mine", 30);
       // a junction inside an old folder must not be followed: its target survives
-      const target = mkdtempSync(join(tmpdir(), "lf-gc-target-"));
+      const target = scratchDir("lf-gc-target-");
       writeFileSync(join(target, "keep.txt"), "keep");
       mk("wt-linked", 30);
       symlinkSync(target, join(base, "wt-linked", "link"), "junction");
@@ -703,7 +703,7 @@ try {
   }
   // 4c. remote run-folder GC (tools/lib/rt-gc.mjs): which folders, in which order, busy ones kept.
   {
-    const base0 = mkdtempSync(join(tmpdir(), "lf-rtgc-"));
+    const base0 = scratchDir("lf-rtgc-");
     const NOW = 10_000_000_000;
     const ago = (min) => NOW - min * 60000;
     const ent = (name, idleMin, busy = null) => ({ dir: `C:\\LF\\${name}`, busy, lastMs: idleMin === null ? 0 : ago(idleMin) });
@@ -877,7 +877,7 @@ try {
 }
 
 const dir0 = () => {
-  const d = mkdtempSync(join(tmpdir(), "lf-holdercfg2-"));
+  const d = scratchDir("lf-holdercfg2-");
   spawnSync("git", ["init", "-q", d], { windowsHide: true });
   return d;
 };
@@ -899,7 +899,7 @@ const dir0 = () => {
   check(pool.remoteSessionVerdict(laptop, allBusy, settings).lane === false, "a laptop with every session lane taken has a lane");
   check(pool.heldMbOf(settings, [{ purpose: "session", clients: 2, profile: "full" }, { purpose: "test only" }, { purpose: "session", clients: 1, profile: "lowspec", alive: false }]) === 2300 + 600, "heldMbOf");
   // Remote tests use every test lane of the laptop (54 of 54 laptop test runs used server-test-1 only), behind the RAM gate.
-  const tdir = mkdtempSync(join(tmpdir(), "lf-holdercfg-"));
+  const tdir = scratchDir("lf-holdercfg-");
   spawnSync("git", ["init", "-q", tdir], { windowsHide: true });
   const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
   const hc = pool.holderConfig(tdir, laptop, snap, { purpose: "test only", settings });
@@ -909,7 +909,7 @@ const dir0 = () => {
   rmSync(tdir, { recursive: true, force: true });
   // The holder's RAM gate itself, in PowerShell, against a fake lock dir.
   {
-    const ld = mkdtempSync(join(tmpdir(), "lf-ramgate-"));
+    const ld = scratchDir("lf-ramgate-");
     writeFileSync(join(ld, "server-test-1.lock"), JSON.stringify({ pid: process.pid, purpose: "test only", at: new Date().toISOString() }));
     const gate = (reserveMb, floorMb) => {
       const cfg = { slots: [{ lock: "server-test-2" }], ram: { locks: ["server-test-1", "server-test-2"], floorMb, reserveMb, serverMb: 600, clientMb: 850 } };
@@ -963,13 +963,13 @@ const dir0 = () => {
     // Starts in flight together spread over the free lanes: the k-th tries the k-th free lane first.
     const sl = ["server-test-1", "server-test-2", "server-test-3", "server-test-4"].map((lock) => ({ lock }));
     check(q.rotateSlots(sl, ["server-test-2", "server-test-4"], 1).map((x) => x.lock).join() === "server-test-4,server-test-1,server-test-2,server-test-3" && q.rotateSlots(sl, ["server-test-2"], 0) === sl, "rotateSlots");
-    const tdir2 = mkdtempSync(join(tmpdir(), "lf-burstcfg-"));
+    const tdir2 = scratchDir("lf-burstcfg-");
     spawnSync("git", ["init", "-q", tdir2], { windowsHide: true });
     const hb = pool.holderConfig(tdir2, cloud, { sha: "a".repeat(40), head: "b".repeat(40) }, { purpose: "test fast", settings: bst, aheadMb: 2400, freeLocks: ["server-test-3", "server-test-5"], position: 1 });
     check(hb.ram.aheadMb === 2400 && hb.ram.testMb === 800 && hb.ram.testBootS === 60 && hb.slots[0].lock === "server-test-5" && /Life-Framework-lane-server-test-5$/.test(hb.slots[0].dir) && hb.slots.length === 16, "the holder of a burst start does not carry the in-flight reserves or its own first lane");
     rmSync(tdir2, { recursive: true, force: true });
     // The holder's gate itself (PowerShell): the reserves in flight ahead and a test lock still booting.
-    const ld = mkdtempSync(join(tmpdir(), "lf-burstgate-"));
+    const ld = scratchDir("lf-burstgate-");
     const gate = (aheadMb, booting) => {
       for (const n of ["server-test-1"]) rmSync(join(ld, n + ".lock"), { force: true });
       if (booting) writeFileSync(join(ld, "server-test-1.lock"), JSON.stringify({ pid: process.pid, purpose: "test fast", at: new Date().toISOString() }));
@@ -991,12 +991,12 @@ const dir0 = () => {
     const src = pool.holderScript({ main: "C:/x", slots: [] });
     const loop = src.slice(src.indexOf("for ($i = 0; $i -lt $slots.Count"), src.indexOf("if ($slots.Count -gt 0 -and $got -lt 0)"));
     check(loop.includes("[IO.FileMode]::CreateNew") && loop.length > 200, "the holder no longer takes its lane with an atomic create");
-    const rd = mkdtempSync(join(tmpdir(), "lf-lockrace-"));
+    const rd = scratchDir("lf-lockrace-");
     // The racers start together on a file barrier, not a wall-clock instant (a start time 4 s ahead was missed
     // when PowerShell took longer than that to start under load, and a racer that exits frees its lane for a late
     // one: 4 winners). Each racer reports ready, waits for `go`, races, writes its result, and stays alive (so its
     // lock is not reclaimable) until `done`.
-    const rb = mkdtempSync(join(tmpdir(), "lf-lockrace-b-"));
+    const rb = scratchDir("lf-lockrace-b-");
     const racer = ["$ld = '" + rd + "'", "$rb = '" + rb + "'", "$enc = New-Object System.Text.UTF8Encoding($false)", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", "function Stop-Under($d) {}", "function Test-Server($d) { return $false }", "$cfg = [pscustomobject]@{ token = 'x'; slug = 's'; purpose = 'test'; origin = 'h'; originPid = 1 }", "$got = -1", "$slots = @(@{ lock = 'server-test-1'; dir = 'a' }, @{ lock = 'server-test-2'; dir = 'b' }, @{ lock = 'server-test-3'; dir = 'c' })", "Set-Content -LiteralPath (Join-Path $rb ('ready-' + $PID)) -Value 1", "while (-not (Test-Path -LiteralPath (Join-Path $rb 'go'))) { Start-Sleep -Milliseconds 10 }", loop, "$tmpf = Join-Path $rb ('tmp-' + $PID)", "if ($got -ge 0) { Set-Content -LiteralPath $tmpf -Value ('won ' + $slots[$got].lock) } else { Set-Content -LiteralPath $tmpf -Value 'lost' }", "Move-Item -LiteralPath $tmpf -Destination (Join-Path $rb ('result-' + $PID))", "while (-not (Test-Path -LiteralPath (Join-Path $rb 'done'))) { Start-Sleep -Milliseconds 20 }"].join(String.fromCharCode(10));
     const racerFiles = (prefix) => readdirSync(rb).filter((f) => f.startsWith(prefix));
     const until = async (what, fn) => {
@@ -1032,7 +1032,7 @@ const dir0 = () => {
     rmSync(rd, { recursive: true, force: true });
     // One snapshot per burst: runs asked together from one worktree share it (14 private snapshots at
     // once took 5-19 s and one failed on a loose object another was writing).
-    const sr = mkdtempSync(join(tmpdir(), "lf-snapshare-"));
+    const sr = scratchDir("lf-snapshare-");
     spawnSync("git", ["init", "-q", sr], { windowsHide: true });
     writeFileSync(join(sr, "a.txt"), "a");
     spawnSync("git", ["-C", sr, "add", "-A"], { windowsHide: true });
@@ -1076,7 +1076,7 @@ const dir0 = () => {
   check(!hot.ok && hot.lane && /93.1 °C/.test(hot.ram), "a session started on a laptop at 93 °C");
   check(pool.remoteSessionVerdict({ ...laptop, thermalHoldC: 90 }, { ...st, freeMb: 9000, thermalC: 84 }, settings, { clients: 1, profile: "lowspec" }).ok, "a cool laptop held a session for heat");
   {
-    const td = mkdtempSync(join(tmpdir(), "lf-thermal-"));
+    const td = scratchDir("lf-thermal-");
     const csv = join(td, "thermal-2026-11-14.csv");
     writeFileSync(csv, ["time,thrm_c,cpu_load", "2026-11-14T20:54:28,88.0,38", "2026-11-14T20:55:16,93.1,37"].join(String.fromCharCode(13, 10)) + String.fromCharCode(13, 10));
     const read = () => {
@@ -1095,7 +1095,7 @@ const dir0 = () => {
   // Idle sessions on the laptop are judged from this PC: 15 min while a job here waits for it, 30 with
   // nobody waiting; a lease protects one; a fresh client command counts as activity.
   {
-    const rroot = mkdtempSync(join(tmpdir(), "lf-rreap-"));
+    const rroot = scratchDir("lf-rreap-");
     spawnSync("git", ["init", "-q", rroot], { windowsHide: true });
     const now = Date.parse("2026-11-14T12:00:00Z");
     const ago2 = (min) => new Date(now - min * 60000).toISOString();
@@ -1111,7 +1111,7 @@ const dir0 = () => {
   }
   // A machine that went away mid-run: the run is queued again, the machine marked down.
   {
-    const groot = mkdtempSync(join(tmpdir(), "lf-gone-"));
+    const groot = scratchDir("lf-gone-");
     spawnSync("git", ["init", "-q", groot], { windowsHide: true });
     const slot = { local: false, machine: laptop, lost: false };
     check(pool.machineGone(groot, slot, 255, { probe: () => ({ reachable: false }) }) === true, "a run whose machine stopped answering was not queued again");
@@ -1126,7 +1126,7 @@ const dir0 = () => {
   // 2026-11-14: lf-cloud ran 3 servers, 6 clients and 2 Workbenches with 18 GB free, one ssh probe
   // timed out, and `pool status` said DOWN. A busy machine that answered lately stays in use as "slow".
   {
-    const hroot = mkdtempSync(join(tmpdir(), "lf-health-"));
+    const hroot = scratchDir("lf-health-");
     spawnSync("git", ["init", "-q", hroot], { windowsHide: true });
     const hf = join(hroot, "tmp", "wt", "pool", "health.json");
     const cloud = { name: "lf-cloud", via: "ssh", host: "lf-cloud", root: "C:/LF/Life-Framework" };
@@ -1200,7 +1200,7 @@ const dir0 = () => {
   // to this PC and queued there pinned for an hour while the laptop came back with free lanes. Now a
   // request keeps every machine and takes the laptop as soon as it answers.
   {
-    const croot = mkdtempSync(join(tmpdir(), "lf-choose-"));
+    const croot = scratchDir("lf-choose-");
     spawnSync("git", ["init", "-q", croot], { windowsHide: true });
     writeFileSync(join(croot, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "local", lanes: { test: 1, session: 1 } }] } }));
     const holder = spawn(process.execPath, ["-e", "setTimeout(()=>{},60000)"], { stdio: "ignore", windowsHide: true });
@@ -1326,7 +1326,7 @@ const dir0 = () => {
 // box-side checkout of a shared folder drops what the last run left under addons/ (rdb kept), through
 // the box clone's link-safe delete, and never follows a junction.
 {
-  const lroot = mkdtempSync(join(tmpdir(), "lf-lanes-"));
+  const lroot = scratchDir("lf-lanes-");
   try {
     spawnSync("git", ["init", "-q", lroot], { windowsHide: true });
     const box = { name: "lf-x", via: "ssh", host: "lf-x", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 2, session: 1 } };
@@ -1380,7 +1380,7 @@ const dir0 = () => {
 // its own run, so this PC neither starts its Workbench for it nor sends it the stale copy; a fresh rdb
 // is still sent by hash, and a machine without Workbench still gets this PC's.
 {
-  const rr = mkdtempSync(join(tmpdir(), "lf-rdbplan-"));
+  const rr = scratchDir("lf-rdbplan-");
   try {
     const core = join(rr, "addons", "LifeFramework");
     mkdirSync(core, { recursive: true });

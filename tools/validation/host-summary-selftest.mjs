@@ -9,11 +9,11 @@
 // red-proof: before tools/host/summary.mjs existed this printed
 // "FAIL cannot load tools/host/summary.mjs: ERR_MODULE_NOT_FOUND" (2026-11-15).
 
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "host-summary");
@@ -51,7 +51,7 @@ async function run(args, ctx) {
   return { code, out: lines.join("\n") };
 }
 
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-summary-"));
+const tmp = scratchDir("lf-host-summary-");
 try {
   // A host folder: the log under profile/logs/logs_<stamp>/, crash backups, one perf file.
   const host = join(tmp, "host");

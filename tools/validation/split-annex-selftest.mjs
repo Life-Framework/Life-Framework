@@ -8,10 +8,10 @@
 //   isInside always false                  -> FAIL "Crimes splits 2 inside, 7 outside (got ... inside 0, outside 9)";
 //   a block ends on an indented "}" too     -> FAIL "Annex is 130 entities, all inside", "Annex.layer is copied byte for byte";
 //   blank lines between blocks dropped     -> FAIL "Crimes inside + outside together keep every byte".
-import { existsSync, mkdtempSync, readFileSync, readdirSync, cpSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readFileSync, readdirSync, cpSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const here = fileURLToPath(new URL(".", import.meta.url));
 const root = join(here, "..", "..");
@@ -51,7 +51,7 @@ check(s.inside === p.blocks[0]?.text, "an inside entity's text is copied unchang
 
 // 2. The real DebugWorld layers into a scratch folder.
 const src = worlds.playtestLayerDirs(root)[0];
-const dst = mkdtempSync(join(tmpdir(), "split-annex-"));
+const dst = scratchDir("split-annex-");
 const plan = sa.copyAnnex(src, dst);
 const byFile = Object.fromEntries(plan.map((x) => [x.file, x]));
 check(byFile["Crimes.layer"]?.inside === 2 && byFile["Crimes.layer"]?.outside === 7, `Crimes splits 2 inside, 7 outside (got ${JSON.stringify(byFile["Crimes.layer"])})`);
@@ -74,7 +74,7 @@ const sc = sa.splitLayer(crimesSrc);
 check((sc.inside || "").length + (sc.outside || "").length === crimesSrc.length, "Crimes inside + outside together keep every byte");
 
 // 3. --strip on a scratch copy of DebugWorld's layers.
-const strip = mkdtempSync(join(tmpdir(), "split-annex-strip-"));
+const strip = scratchDir("split-annex-strip-");
 cpSync(src, strip, { recursive: true });
 sa.stripAnnex(strip);
 check(!existsSync(join(strip, "Annex.layer")) && !existsSync(join(strip, "Tests.layer")), "--strip deletes a wholly-inside layer");
