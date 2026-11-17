@@ -305,6 +305,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_HotwireWanted(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_HouseCarriedKeyPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_HouseDoorAutoClose(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_HouseDoorDelayConfig(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HouseIdentifierInit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HouseKeyedOpen(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_HouseKeyMatch(), LF_TestTier.LOGIC);

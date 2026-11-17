@@ -216,7 +216,7 @@ class LF_ConfigService
 		if (key == LF_RestartConfig.SECTION || key == LF_StaffWebhookConfig.SECTION || key == LF_DayCycleConfig.SECTION)
 			return true;
 
-		if (key == LF_JoinNoticeConfig.SECTION)
+		if (key == LF_JoinNoticeConfig.SECTION || key == LF_HousesConfig.SECTION)
 			return true;
 
 		// The arrival sections (#1779): rejoin at the saved spot and the new-character grace.
