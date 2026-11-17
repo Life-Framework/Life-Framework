@@ -69,3 +69,10 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Owner and side:** `LF_EventSceneHarness` on the server, asked by the `eventscene` harness verb through the character's dev-gated RPC (like `eventjip`).
 - **Data:** a fixture `.conf` of root `LF_EventsConfig`, laid over `LF_EventOverlay.Get()` like a pack overlay; `[hour]` goes to `LF_EventShell.ForceHour`.
 - **Proof:** `events/scene-harness` (WORLD): applies a fixture, the event starts at the forced hour, refuses no conf, a missing conf and a wrong root, and `stop` restores the list.
+
+## Event places on the map (#2243)
+
+- **Player sees:** while an event runs, its place is a mark on everyone's map (and an EVENT-style circle where the area is drawn); it leaves when the event ends.
+- **Owner and side:** server; `LF_EventMapShare` listens to `LF_OnEventPhase` and puts or removes the `EVERYONE` row `event:<eventId>` in `LF_MapShares`, plus the area in `LF_MapAreas`. Nothing is saved.
+- **Data:** the place is the `LF_EventPlace` binding (scene id, radius) resolved to the `event_target` marker through `LF_Places`; label `#LF-EventMap_Place`.
+- **Proof:** `events/map-share` (WORLD).

@@ -3765,6 +3765,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not while restrained"
      Comment "Greyed-out reason on an emote or on Sit while the body is cuffed or stunned (#982)."
     }
+    CustomStringTableItem "{5B1F9A3E7C2D4086}" {
+     Id "LF-EventMap_Place"
+     Target_en_us "Event"
+     Comment "Map mark and area label: where a story event is running, shown to everyone until it ends. A pack may override the Id with a place or event name."
+    }
     CustomStringTableItem "{4587AF3655D18A21}" {
      Id "LF-Evidence_Bag_Action"
      Target_en_us "Bag as evidence"
