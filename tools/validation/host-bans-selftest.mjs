@@ -8,10 +8,10 @@
 // red-proof: before tools/host/bans.mjs existed this printed
 // "FAIL cannot load tools/host/bans.mjs or commands/bans.mjs: ERR_MODULE_NOT_FOUND" (2026-11-15).
 
-import { readFileSync, mkdtempSync, mkdirSync, copyFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, mkdirSync, copyFileSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "host-bans");
@@ -88,7 +88,7 @@ function run(args, hostDir) {
     .then(() => ({ code, out: lines.join("\n") }));
 }
 
-const host = mkdtempSync(join(tmpdir(), "lf-host-bans-"));
+const host = scratchDir("lf-host-bans-");
 try {
   mkdirSync(join(host, "profile", "LifeFramework"), { recursive: true });
   copyFileSync(join(FIX, "ban_record.txt"), join(host, "profile", "LifeFramework", "ban_record.txt"));
@@ -111,7 +111,7 @@ try {
   const r4 = await run(["--player"], host);
   check(r4.code !== 0, "--player with no uid is a usage error");
 
-  const empty = mkdtempSync(join(tmpdir(), "lf-host-bans-empty-"));
+  const empty = scratchDir("lf-host-bans-empty-");
   try {
     const r5 = await run([], empty);
     check(r5.code === 1 && r5.out.includes("[LFHost:bans]"), `no ban record: exit ${r5.code}, want 1 with the [LFHost:bans] prefix`);

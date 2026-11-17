@@ -145,7 +145,7 @@
 - ✅ **Search and robbery.** `m_bDownedCanBeSearched` (flagship on) lets other players open a
   downed body's inventory; off, `HandleAccessValidation` refuses everyone but the owner. A dead
   body is always lootable. The body keeps its inventory either way.
-- ✅ Logs `[LFDebug:Medic]` (downed, absorbed hit, cleared, killed for real, search refused).
+- ✅ Logs `[LFDebug:Medic]` (downed, absorbed hit, cleared, killed for real, search refused). A body under fire logs one absorbed-hit line per 5 s carrying the hit count; a revive logs one wake line (the +1/+4/+9 s follow-ups of #427 are `LF_Downed.SetWakeTrace(true)`, off by default; test `medic/downed-log-rate`, #2582).
   The incident log records each downing as kind `downed` (victim, downer, position).
 - ⚠️ Not built (own issues): bleed-out timer and give-up (#256), revive (#259), screen effects for
   the downed client, disconnect while downed. A downed player who disconnects loses the state

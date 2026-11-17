@@ -20,13 +20,13 @@
 // "FAIL a slice that edits Street_Hospital.layer is refused" and exited 1 (2026-11-15); restored, it passes.
 
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
 import { main as gridMain, yardLayer } from "../commands/grid.mjs";
 import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, claimCellIds as claimCellIdsOf, gapSide, inGrid, layerOfSlug, lookArea, mainClaims as mainClaimsOf, openPrClaims, rowLine, worktreeClaims, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
 import { checkClaims, checkFreeze, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const ok = (cond, what) => {
@@ -84,7 +84,7 @@ function put(root, path, body) {
   writeFileSync(full, body);
 }
 const claim = (slug, c) => JSON.stringify({ slug, cell: c, layer: layerOfSlug(slug), rows: 0, created: "2026-11-15" });
-const root = mkdtempSync(join(tmpdir(), "lf-grid-"));
+const root = scratchDir("lf-grid-");
 try {
   put(root, `${CELLS_DIR}/alpha.json`, claim("alpha", "c0r6"));
   put(root, `${GRID_LAYERS}/${layerOfSlug("alpha")}`, yardLayer("alpha", cell, P));
@@ -133,7 +133,7 @@ try {
 // A temp repo whose origin/main already holds a claim the working tree has not merged yet.
 const natural = allocate("clash-probe");
 const mainClaim = (slug, c) => JSON.stringify({ slug, cell: c, layer: layerOfSlug(slug), rows: 0, created: "2026-11-15" });
-const root2 = mkdtempSync(join(tmpdir(), "lf-grid-main-"));
+const root2 = scratchDir("lf-grid-main-");
 try {
   const git = (...a) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", ...a], { cwd: root2, encoding: "utf8" });
   git("init", "-q");
@@ -168,7 +168,7 @@ try {
 }
 {
   // validate: a branch claim on a cell origin/main gives to another slug fails; its own claim never does
-  const r3 = mkdtempSync(join(tmpdir(), "lf-grid-v-"));
+  const r3 = scratchDir("lf-grid-v-");
   try {
     put(r3, `${CELLS_DIR}/signs.json`, claim("signs", "c2r4"));
     put(r3, `${GRID_LAYERS}/${layerOfSlug("signs")}`, yardLayer("signs", { id: "c2r4", col: 2, row: 4, ...cellBounds(2, 4) }, P));
@@ -207,7 +207,7 @@ try {
   const big = rowLine(r, 0);
   ok(big && big.a[0] >= r.x0 && big.b[0] <= r.x1 && big.a[1] >= r.z0 && big.b[1] <= r.z1, "the first row of a big yard stays inside it");
   ok(lookArea({ slug: "hotel", cell: "c7r0", span: [3, 2] }).radius === 24 && lookArea({ slug: "x", cell: "c0r0" }).radius === 8, "a big claim's look area is wider");
-  const r4 = mkdtempSync(join(tmpdir(), "lf-grid-span-"));
+  const r4 = scratchDir("lf-grid-span-");
   try {
     put(r4, `${CELLS_DIR}/hotel.json`, JSON.stringify({ slug: "hotel", cell: "c7r0", span: [3, 2], layer: layerOfSlug("hotel"), rows: 0, created: "2026-11-16" }));
     put(r4, `${GRID_LAYERS}/${layerOfSlug("hotel")}`, yardLayer("hotel", r, P) + ["GenericEntity Grid_hotel_Lobby : \"{99D61E9EDBDF3CC8}Prefabs/x.et\" {", " coords 140 0 44", "}", ""].join("\n"));
@@ -222,7 +222,7 @@ try {
   } finally {
     rmSync(r4, { recursive: true, force: true });
   }
-  const r5 = mkdtempSync(join(tmpdir(), "lf-grid-spanplace-"));
+  const r5 = scratchDir("lf-grid-spanplace-");
   try {
     mkdirSync(join(r5, GRID_LAYERS), { recursive: true });
     mkdirSync(join(r5, CELLS_DIR), { recursive: true });
@@ -246,7 +246,7 @@ try {
 
 // ---- claims in flight: open PRs count as taken (#2014 `jobs` and #2016 `shooting-range` both took c0r6)
 {
-  const dir = mkdtempSync(join(tmpdir(), "lf-grid-pr-"));
+  const dir = scratchDir("lf-grid-pr-");
   try {
     const cache = join(dir, "cache.json");
     const calls = [];
@@ -336,7 +336,7 @@ try {
 // ---- claims in sibling worktrees: an uncommitted claim in another local worktree counts as taken
 // (ws/police-station-kit and ws/building-bank both took c3r1 for a 2x2, 2026-11-16). Real git worktrees.
 {
-  const dir = mkdtempSync(join(tmpdir(), "lf-grid-wt-"));
+  const dir = scratchDir("lf-grid-wt-");
   const git = (cwd, ...args) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd, encoding: "utf8" });
   try {
     const mainTree = join(dir, "main");

@@ -9,10 +9,10 @@
 // red-proof: before tools/host/errors.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/errors.mjs'" (2026-11-15).
 
-import { appendFileSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { appendFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const errors = await import(pathToFileURL(join(ROOT, "tools", "host", "errors.mjs")).href);
@@ -21,7 +21,7 @@ const { loadTriageRows } = await import(pathToFileURL(join(ROOT, "tools", "lib",
 const failures = [];
 const fail = (m) => failures.push(m);
 
-const dir = mkdtempSync(join(tmpdir(), "lf-host-errors-"));
+const dir = scratchDir("lf-host-errors-");
 try {
   const triage = join(dir, "triage.md");
   writeFileSync(

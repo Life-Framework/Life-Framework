@@ -14,12 +14,12 @@
 // "TypeError: checkWipeNotice is not a function" (2026-11-15); with the rule stubbed to always allow,
 // the 23-hour case printed "a notice 23 h old: the wipe was accepted".
 
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const { wipeHost, checkWipeNotice, WIPES_LOG } = await import(pathToFileURL(join(ROOT, "tools", "host", "wipe.mjs")).href);
@@ -28,7 +28,7 @@ const { findSavePoints, hostPaths, writeHostState, saveRoot } = await import(pat
 const failures = [];
 const fail = (m) => failures.push(m);
 
-const base = mkdtempSync(join(tmpdir(), "lf-host-wipe-"));
+const base = scratchDir("lf-host-wipe-");
 const dir = join(base, "host");
 mkdirSync(dir, { recursive: true });
 const sp = join(dir, "profile", "profile", ".save", "u", "game", "M", "playthrough000", "savepoint000");

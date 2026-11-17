@@ -6,15 +6,15 @@
 // validate-features-index (the red case).
 // red-proof: with the comparison in checkIndex disabled the red case printed
 // "FAIL hand-added row in the index was accepted" and exited 1 (2026-11-16).
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { renderIndex, splitSections } from "../lib/features-index.mjs";
 import { checkIndex } from "./validate-features-index.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = false;
 const fail = (m) => { console.log(`FAIL ${m}`); failed = true; };
-const root = mkdtempSync(join(tmpdir(), "lf-features-"));
+const root = scratchDir("lf-features-");
 try {
   mkdirSync(join(root, "docs", "features"), { recursive: true });
   const put = (f, t) => writeFileSync(join(root, f), t);

@@ -209,9 +209,8 @@ export async function gatherWorktrees(root, gh) {
     if (e.status === "creating" || inGit.has(normalize(e.path).toLowerCase())) continue;
     rows.push({ slug, path: e.path, branch: e.branch, cls: "orphan", why: existsSync(e.path) ? "registry only, not in git" : "registry only, dir missing" });
   }
-  const parent = dirname(main);
   const prefix = `${basename(main)}-ws-`;
-  const dirs = childrenOf(parent).filter((p) => basename(p).startsWith(prefix));
+  const dirs = [...new Set([wt.wtParent(root), dirname(main)].map((d) => normalize(d)))].flatMap((d) => childrenOf(d)).filter((p) => basename(p).startsWith(prefix));
   const known = [...listed.map((w) => w.path), ...Object.values(state.worktrees ?? {}).map((e) => e.path), ...warmPaths(state)];
   const orphanDirs = unregisteredDirs(dirs, known);
   return { rows, orphanDirs, allDirs: [...new Set([...dirs])], main };
@@ -430,7 +429,7 @@ async function pruneSafe(root, args) {
 // The size walk is synchronous, so it runs in its own process beside the others (`lead --disk-worker`).
 function diskWorker(root) {
   const main = wt.mainRootOf(root);
-  const dirs = childrenOf(dirname(main)).filter((p) => basename(p).startsWith(`${basename(main)}-ws-`));
+  const dirs = [...new Set([wt.wtParent(root), dirname(main)].map((d) => normalize(d)))].flatMap((d) => childrenOf(d)).filter((p) => basename(p).startsWith(`${basename(main)}-ws-`));
   console.log(JSON.stringify(diskUse(main, dirs, 9000)));
   return 0;
 }
