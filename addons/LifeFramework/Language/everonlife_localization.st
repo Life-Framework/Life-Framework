@@ -7822,6 +7822,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Placing"
      Comment "Toast title for every placement refusal (#1026)."
     }
+    CustomStringTableItem "{91F3B6D2C0E8A474}" {
+     Id "LF-Plant_CharacterCap"
+     Target_en_us "You are already tending as many plants as you can."
+     Comment "Toast: the character has reached the per-character plant cap (12)."
+    }
+    CustomStringTableItem "{2B96D1F4A8C03E57}" {
+     Id "LF-Plant_InVehicle"
+     Target_en_us "You can't plant from a vehicle."
+     Comment "Toast: planting is refused while the player is in a vehicle."
+    }
+    CustomStringTableItem "{E4A07C5B1D3F9268}" {
+     Id "LF-Plant_SafeZone"
+     Target_en_us "Nothing grows in the safe zone."
+     Comment "Toast: planting is refused inside a safe zone."
+    }
+    CustomStringTableItem "{A8D5E2073B1C96F0}" {
+     Id "LF-Plant_ServerCap"
+     Target_en_us "The land is full; no more plants fit right now."
+     Comment "Toast: the server-wide plant cap (300) is reached."
+    }
+    CustomStringTableItem "{5C1E8A3D70B94F21}" {
+     Id "LF-Plant_TooClose"
+     Target_en_us "Too close to another plant."
+     Comment "Toast: a seed cannot be planted within 1.5 m of another plant."
+    }
+    CustomStringTableItem "{7D2F4B90E3A618C5}" {
+     Id "LF-Plant_TooFar"
+     Target_en_us "Too far away to plant there."
+     Comment "Toast: the spot is beyond the 4 m planting reach."
+    }
     CustomStringTableItem "{F875CB040C3C2526}" {
      Id "LF-PoliceAppGm_Approve"
      Target_en_us "Approve"
