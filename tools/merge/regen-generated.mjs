@@ -29,8 +29,10 @@ const REGISTRY_NAME = "LF_TestRegistrations.generated.c";
 // Every child runs with a time limit, no stdin and a kill signal, so a stuck git or PowerShell can never
 // hang `git merge` (#2549). A timeout or spawn error throws BoundedRunError; runDriver turns it into one stderr
 // line and exit 1, which leaves the file conflicted for git and lets the merge finish.
-// LF_MERGE_DRIVER_TIMEOUT_MS overrides both limits (the selftest); LF_MERGE_DRIVER_GENERATOR_STUB runs
-// `node <script>` in place of PowerShell (the selftest's child that never exits).
+// LF_MERGE_DRIVER_TIMEOUT_MS overrides every limit (the selftest); LF_MERGE_DRIVER_GENERATOR_STUB runs
+// `node <script>` in place of PowerShell (the selftest's child that never exits) and
+// LF_MERGE_DRIVER_STUB_TIMEOUT_MS bounds only that stub, so the selftest can kill a hung stub in 2 s while
+// the driver's own git calls keep their 20 s limit on a loaded box (#2746).
 // LF_MERGE_DRIVER_TRACE=<file> appends one line per child process (`<ms> <command>`); the selftest counts them.
 // A child costs about 230 ms to spawn on a loaded Windows box, so the driver's git calls are O(1), never one per file.
 const GIT_TIMEOUT_MS = 20_000;
@@ -38,13 +40,13 @@ const GENERATOR_TIMEOUT_MS = 90_000;
 
 export class BoundedRunError extends Error {}
 
-export function timeoutFor(defaultMs, env = process.env) {
-  const override = Number(env.LF_MERGE_DRIVER_TIMEOUT_MS);
+export function timeoutFor(defaultMs, env = process.env, name = "LF_MERGE_DRIVER_TIMEOUT_MS") {
+  const override = Number(env[name]);
   return Number.isFinite(override) && override > 0 ? override : defaultMs;
 }
 
-export function runBounded(step, command, args, options, defaultMs) {
-  const limit = timeoutFor(defaultMs);
+export function runBounded(step, command, args, options, defaultMs, overrideName) {
+  const limit = timeoutFor(defaultMs, process.env, overrideName);
   const started = Date.now();
   const result = spawnSync(command, args, {
     windowsHide: true,
@@ -229,7 +231,7 @@ function runPowershell(scratch, script, args) {
   const init = git(["init", "-q"], { cwd: scratch, env });
   if (init.status !== 0) return init;
   const stub = process.env.LF_MERGE_DRIVER_GENERATOR_STUB;
-  if (stub) return runBounded("generator stub", process.execPath, [stub], { cwd: scratch, env }, GENERATOR_TIMEOUT_MS);
+  if (stub) return runBounded("generator stub", process.execPath, [stub], { cwd: scratch, env }, GENERATOR_TIMEOUT_MS, "LF_MERGE_DRIVER_STUB_TIMEOUT_MS");
   return runBounded(
     `powershell ${script}`,
     powershell,

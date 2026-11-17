@@ -134,8 +134,12 @@ agent per area. `tools\cli usage` shows where the tokens went.
 
 Launch tools through `tools/lib/quiet-launch.{mjs,ps1}` (hidden `LF-Agents` desktop; node spawns get `windowsHide: true`), never in front of the user; `tools\cli hidden [--close]` lists them, `LF_SHOW_WINDOWS=1` shows them (`docs/setup.md`).
 
-**No Workbench on this PC.** The maintainer's world editor lives here, so this PC's pool caps lack
-`workbench` (`lf.local.json`) and no agent starts a headless Workbench on it. `ci`, `validate --full`,
+**No Workbench on the maintainer's PC (Gaming-Box).** Its world editor lives there, so that machine's pool caps lack
+`workbench` (`lf.local.json`) and no agent starts a headless Workbench on it. This is about that one machine, not
+about you: on lf-testbox (PC1, the laptop, now the primary dev box) Workbench is allowed through the pool, so a
+rdb refresh, compile or `look` that runs there is correct and you never kill it. `toolscli status` prints
+`workbench: ALLOWED` or `NOT allowed` for the machine you are on.
+On Gaming-Box: `ci`, `validate --full`,
 `build`, `look`, `rdb` and the rdb refresh before `test` and `session up` go to a pool machine with the cap
 (`lf-cloud`, `lf-testbox`) or wait for one within a budget; `pack`, `asset` plugin runs, `ui-image` and
 every `cli call wb_*` tool refuse here (`wb_read_props` too: use `api_search`, `game_read`, `asset_search`,
