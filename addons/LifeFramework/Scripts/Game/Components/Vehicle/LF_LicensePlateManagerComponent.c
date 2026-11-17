@@ -6,6 +6,20 @@ class LF_LicensePlateManagerComponentClass: ScriptComponentClass
 class LF_LicensePlatePointInfo: PointInfo
 {	
 	LF_LicensePlateEntity m_Object;
+
+	// The registration last applied to this plate. Kept here so it is readable where no text widget exists
+	// (dedicated server, tests); the widget, when there is one, shows the same text.
+	protected string m_sAppliedText;
+
+	string GetAppliedText()
+	{
+		return m_sAppliedText;
+	}
+
+	void SetAppliedText(string text)
+	{
+		m_sAppliedText = text;
+	}
 	
 	void ~LF_LicensePlatePointInfo()
 	{
@@ -75,6 +89,12 @@ class LF_LicensePlateManagerComponent: ScriptComponent
 			m_sIssuedPlate = m_Registration;
 		}
 		
+		if (!m_Plates)
+		{
+			LF_Debug.Warn("LicensePlate", "manager has no plate points configured");
+			return;
+		}
+
 		for (int i = 0; i < m_Plates.Count(); i++)
 		{
 			auto plate = m_Plates[i];
@@ -88,6 +108,31 @@ class LF_LicensePlateManagerComponent: ScriptComponent
 			}
 			plate.m_Object.m_LicensePlateManager = this;
 		}
+
+		// A late joiner or a streamed-in vehicle can receive the registration (RplLoad) before the plates exist.
+		if (!m_Registration.IsEmpty())
+			ApplyRegistration();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// JIP and stream-in: the client gets the registration as part of the vehicle's initial state.
+	override bool RplSave(ScriptBitWriter writer)
+	{
+		writer.WriteString(m_Registration);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool RplLoad(ScriptBitReader reader)
+	{
+		string registration;
+		if (!reader.ReadString(registration))
+			return false;
+
+		m_Registration = registration;
+		if (!m_Registration.IsEmpty())
+			ApplyRegistration();
+		return true;
 	}
 	
 	void SetRegistration(string plate)
@@ -112,17 +157,44 @@ class LF_LicensePlateManagerComponent: ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	// RplProp callback: runs on clients when the server changes the registration.
 	void OnRegistrationUpdated()
 	{
-		foreach (auto plate : m_Plates)
+		ApplyRegistration();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Puts the current registration on every plate this manager spawned. Plates that have not spawned yet
+	// get it at the end of EOnInit.
+	protected void ApplyRegistration()
+	{
+		if (!m_Plates)
+			return;
+
+		int applied;
+		foreach (LF_LicensePlatePointInfo plate : m_Plates)
 		{
-			if (!plate.m_Object || !plate.m_Object.m_TextWidget)
-			{
-				LF_Debug.Warn("LicensePlate", "plate entity or text widget missing, cannot render registration");
+			if (!plate || !plate.m_Object)
 				continue;
-			}
-			plate.m_Object.m_TextWidget.SetText(m_Registration);
+
+			// RplLoad and the onRpl handler can both deliver the same value: apply and log a change once.
+			if (plate.GetAppliedText() == m_Registration)
+				continue;
+
+			plate.SetAppliedText(m_Registration);
+			applied++;
+			if (plate.m_Object.m_TextWidget)
+				plate.m_Object.m_TextWidget.SetText(m_Registration);
 		}
+
+		if (applied == 0)
+			return;
+
+		string side = "client";
+		if (Replication.IsServer())
+			side = "server";
+		// The entity name is empty on clients; the plate itself is unique (LF_LicensePlateRegistry).
+		LF_Debug.Info("LicensePlate", string.Format("%1 applied plate %2 on %3 (%4 plates)", side, m_Registration, GetOwner().GetName(), applied));
 	}
 	
 	override void OnPostInit(IEntity owner)
