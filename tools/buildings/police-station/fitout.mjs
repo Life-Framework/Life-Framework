@@ -93,11 +93,23 @@ const G = {
   taser: "{6D583A40C5C5C150}Prefabs/Weapons/Handguns/Taser/Handgun_Taser.et",
 };
 
+const raw = []; // verbatim entity blocks
 const systems = []; // { kind: "clone", src, name, to, x,y,z,yaw } | { kind: "prefab", name, ref, x,y,z,yaw, extra }
 const props = []; // { path, x,y,z, yaw, scale, lit }
 const lights = []; // { x,y,z, type, color, lv, radius, angle, angles, shadow }
 
 const sys = (kind, o) => systems.push({ kind, ...o });
+// A wall time clock: the base game's punch clock with the duty action (the desk's DutyClock child, LF_Workplace.et).
+// Outside a workplace the action uses its own role, POLICE.
+const clock = (name, x, y, z, yaw) => sys("clock", { name, x, y, z, yaw });
+// A display piece: a model only (no inventory item, no pickup, no body), seated on its surface by the mesh's own
+// bounds: the pivot y is the surface top plus half the thickness it lies on.
+const MESH = {
+  taser: ["{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob", 0.02, [0, 0, 90]],
+  m9: ["{1E38513800383D64}Assets/Weapons/Handguns/M9/M9_body.xob", 0.018, [0, 0, 90]],
+  cuffs: ["{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob", 0.017, [0, 0, 0]],
+};
+const display = (kind, x, top, z, yaw = 0) => raw.push({ kind, x, y: +(top + MESH[kind][1]).toFixed(3), z, yaw });
 const put = (path, x, y, z, yaw = 0, scale = 1, lit = false) => props.push({ path, x, y, z, yaw, scale, lit });
 const spot = (x, y, z, o = {}) => lights.push({ type: "Spot", x, y, z, angles: "-90 0 0", color: "1 0.86 0.64 1", lv: 5, radius: 6, angle: 130, shadow: false, ...o });
 const glow = (x, y, z, o = {}) => lights.push({ type: "Point", x, y, z, color: "1 0.88 0.68 1", lv: 2, radius: 5, shadow: false, ...o });
@@ -126,6 +138,10 @@ if (PASS >= 1) {
     sys("clone", { src: JAIL_LAYER, name: "Roadmap_Jail_Cell", to: `${PREFIX}Jail_Cell`, x: -4.5, y: 0, z: -2.0, yaw: 0, retarget: ["Roadmap_Jail_Door", `${PREFIX}Jail_Door`] });
     sys("clone", { src: JAIL_LAYER, name: "Roadmap_Jail_Door", to: `${PREFIX}Jail_Door`, x: -3.0, y: 0, z: -1.5, yaw: 90 });
   }
+  // Time clocks: the duty action on a wall punch clock (ClockPunch_01), by the front door in the hall and by the door of
+  // the duty room, so an officer clocks in on the way in. The desk keeps its own. Pivot y = mesh bottom - 0.692.
+  clock(`${PREFIX}DutyClock_Hall`, 0.725, 1.2 - 0.692, -1.64, -90);
+  clock(`${PREFIX}DutyClock_Room`, 1.005, 1.2 - 0.692, 1.0, 90);
   // The yard in front (the claim's north gap): patrol car, the escort car, a spike strip, the payphone.
   sys("clone", { src: POLICE_LAYER, name: "Roadmap_Police_Car", to: `${PREFIX}PatrolCar`, x: 1.5, y: 0.001, z: 11.5, yaw: 0 });
   sys("clone", { src: POLICE_LAYER, name: "Roadmap_Police_Payphone", to: `${PREFIX}Payphone`, x: 5.5, y: 0, z: 9.0, yaw: 180 });
@@ -137,33 +153,28 @@ if (PASS >= 1) {
 // ============================================================================================================
 if (PASS >= 2) {
   // Lights: five dynamic spots (hall, office, cell, records room upstairs, canteen), none shadow-casting but the
-  // office one. A lit lamp mesh hangs under each (no light of its own).
-  lamp(-1.0, 3.7, 4.5);
+  // office one. The fittings are not modelled: the villa's ceilings are slab, and a lamp mesh inside it floats or hides.
   spot(-1.0, 3.5, 4.5, { color: "1 0.9 0.72 1", lv: 5.5, radius: 6 });
-  lamp(3.0, 3.7, 0.0);
   spot(3.0, 3.5, 0.0, { color: "1 0.86 0.64 1", lv: 6, radius: 6.5, angle: 140, shadow: true });
-  lamp(-4.6, 2.9, -2.0);
   spot(-4.6, 2.7, -2.0, { color: "0.95 0.9 0.8 1", lv: 4, radius: 4.5, angle: 120 });
-  lamp(3.0, F1 + 3.0, 0.0);
   spot(3.0, F1 + 2.8, 0.0, { color: "1 0.88 0.68 1", lv: 5, radius: 6 });
-  lamp(3.8, 3.7, 5.5);
   spot(3.8, 3.5, 5.5, { color: "1 0.9 0.72 1", lv: 4.5, radius: 5 });
 
   // Walls: notices, the radio poster and the clock by the duty desk, a flipchart of the duty roster.
   put(P.clock, 5.9, 2.2, 2.4, -90);
-  put(P.noticeA, 0.72, 1.55, -1.1, 90);
-  put(P.noticeB, 0.72, 1.55, -1.6, 90);
-  put(P.noticeC, 0.72, 1.55, -2.1, 90);
-  put(P.poster, 3.2, 1.55, 7.25, 180); // inside the front window wall of the canteen
+  // The duty room's west wall (x 1.0, faces +x): notices and the roster beside the door; the hall's east wall carries the
+  // wanted board, the licence desk and a time clock.
+  put(P.noticeA, 1.0, 1.5, 2.0, -90);
+  put(P.noticeB, 1.0, 1.5, 2.35, -90);
+  put(P.noticeC, 1.0, 1.5, 2.7, -90);
 
   // Desks: typewriters and phones, the dispatch radio, a computer on the commander's desk, ashtrays, ledgers.
   put(P.typewriter, 3.2, 0.907, 0.2, 200);
-  put(P.phoneRed, 4.0, 0.907, 0.05, 160);
+  put(P.phoneRed, 3.55, 0.907, -0.2, 160);
   put(P.notebook, 2.9, 0.907, 0.1, 15);
   put(P.ashtray, 3.7, 0.907, 0.3, 0);
   put(P.radio, 1.8, 0.907, -1.7, 180);
   put(P.notebook, 2.5, 0.907, -1.7, 0);
-  put(P.binIn, 1.6, 0, 0.9, 0);
   put(P.computer, 4.1, F1 + 0.906, 4.4, 200);
   put(P.phone, 3.6, F1 + 0.906, 4.3, 190);
 
@@ -174,6 +185,17 @@ if (PASS >= 2) {
   put(P.deskLamp, -1.9, F1 + 0.75, -1.2, 60);
   put(P.ashtray, -1.7, F1 + 0.75, -0.8, 0);
   put(P.flipchart, 2.0, F1, 2.8, 150);
+  // The armory table (duty room, free floor by the door): what the issue desk hands out, laid out as models. Table_01's top
+  // is 0.915 above its pivot; each piece sits on it by its own thickness. Models only: nothing here can be taken.
+  put(P.table, 2.3, 0, 1.7, 0);
+  display("taser", 1.9, 0.915, 1.45, 10);
+  display("taser", 2.15, 0.915, 1.45, -8);
+  display("taser", 2.4, 0.915, 1.45, 6);
+  display("m9", 1.95, 0.915, 1.8, 90);
+  display("m9", 2.35, 0.915, 1.8, 80);
+  display("cuffs", 1.9, 0.915, 2.1, 0);
+  display("cuffs", 2.2, 0.915, 2.1, 25);
+  display("cuffs", 2.5, 0.915, 2.1, -15);
   put(P.corkboard2, 5.9, F1 + 1.2, 1.2, -90);
 
   // The cell: a bucket and a blanket-less bunk are the point; add a bench lamp-free corner and a notice of rules.
@@ -248,6 +270,18 @@ function stripKit(text) {
   return out.join("\n").replace(/\n+$/, "\n");
 }
 
+// The wall time clock: components copied from LF_Workplace.et's DutyClock (sound, the clock-in action).
+function clockBlock(name, wx, y, wz, yaw) {
+  return [`GenericEntity ${name} : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {`, " components {",
+    '  SCR_SoundDataComponent "{BC459247BBA4457F}" {', "   m_aAudioSourceConfiguration {", '    SCR_AudioSourceConfiguration "{B46B5DD6F8897BFD}" {',
+    '     m_sSoundProject "{5A46144CB8BFC66B}Sounds/Structures/Military/Training/RangeCP/Structures_RangeCP.acp"', '     m_sSoundEventName "SOUND_RANGECP_STARTBUTTON"',
+    "    }", "   }", "  }", '  ActionsManagerComponent "{775836274AF8BE66}" {', "   ActionContexts {", '    UserActionContext "{22A17EEEA2399F2D}" {',
+    '     ContextName "LF_DutyClock"', '     Position PointInfo "{B046DE7E017B07C6}" {', "      Offset -0.0228 0.928 0.1792", "     }", "     Radius 1.58", "    }", "   }",
+    "   additionalActions {", '    LF_DutyAction "{E0CCF06A3D9A2E06}" {', "     ParentContextList {", '      "LF_DutyClock"', "     }", '     UIInfo UIInfo "{857016BF95624B25}" {',
+    '      Name "#LF-Duty_ClockIn"', '      Description "#LF-Duty_ClockDesc"', "     }", '     "Sort Priority" 1', "    }", "   }", "  }", " }",
+    ` coords ${wx} ${num(y)} ${wz}`, ` angleY ${num(yaw)}`, "}"].join("\n");
+}
+
 async function build() {
   const vfs = await gameVfs();
   const db = gameDb();
@@ -272,6 +306,11 @@ async function build() {
   const sources = new Map();
   const srcText = (f) => { if (!sources.has(f)) sources.set(f, readFileSync(f, "utf8")); return sources.get(f); };
   for (const s of systems) {
+    if (s.kind === "clock") {
+      const [wx, wz] = world(s.x, s.z);
+      blocks.push(clockBlock(s.name, wx, s.y, wz, s.yaw));
+      continue;
+    }
     if (s.kind === "clone") {
       const renames = s.retarget ? [s.retarget] : [];
       blocks.push(retarget(extract(srcText(s.src), s.name), s.to, s.x, s.y, s.z, s.yaw, renames).join("\n"));
@@ -281,6 +320,13 @@ async function build() {
       blocks.push([`${cls} ${s.name} : "${s.ref}" {`, ` coords ${wx} ${num(s.y)} ${wz}`, ...(s.yaw ? [` angleY ${num(s.yaw)}`] : []), "}"].join("\n"));
     }
   }
+  raw.forEach((d, i) => {
+    const [ref, , angles] = MESH[d.kind];
+    const [wx, wz] = world(d.x, d.z);
+    const id = (0xD15C000000000000n + BigInt(i + 1)).toString(16).toUpperCase();
+    blocks.push([`GenericEntity ${PREFIX}Display_${d.kind}_${i + 1} {`, " components {", `  MeshObject "{${id}}" {`, `   Object "${ref}"`, "  }", " }",
+      ` coords ${wx} ${num(d.y)} ${wz}`, ` angles ${angles[0]} ${num(d.yaw)} ${angles[2]}`, "}"].join("\n"));
+  });
   props.forEach((p, i) => {
     const { ref, cls } = info(p.path);
     const [wx, wz] = world(p.x, p.z);
@@ -314,7 +360,7 @@ async function build() {
 }
 
 export const counts = () => ({
-  decor: props.length,
+  decor: props.length + raw.length,
   lights: lights.length,
   shadows: lights.filter((l) => l.shadow).length,
   systems: systems.length,

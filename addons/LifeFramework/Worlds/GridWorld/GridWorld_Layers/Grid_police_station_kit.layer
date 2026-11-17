@@ -181,6 +181,80 @@ GenericEntity PoliceKit_CaseBoard : "{C8B78C628082CA0D}Prefabs/Investigation/LF_
  coords 73.4 4.8 38.8
  angleY 90
 }
+GenericEntity PoliceKit_DutyClock_Hall : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {
+ components {
+  SCR_SoundDataComponent "{BC459247BBA4457F}" {
+   m_aAudioSourceConfiguration {
+    SCR_AudioSourceConfiguration "{B46B5DD6F8897BFD}" {
+     m_sSoundProject "{5A46144CB8BFC66B}Sounds/Structures/Military/Training/RangeCP/Structures_RangeCP.acp"
+     m_sSoundEventName "SOUND_RANGECP_STARTBUTTON"
+    }
+   }
+  }
+  ActionsManagerComponent "{775836274AF8BE66}" {
+   ActionContexts {
+    UserActionContext "{22A17EEEA2399F2D}" {
+     ContextName "LF_DutyClock"
+     Position PointInfo "{B046DE7E017B07C6}" {
+      Offset -0.0228 0.928 0.1792
+     }
+     Radius 1.58
+    }
+   }
+   additionalActions {
+    LF_DutyAction "{E0CCF06A3D9A2E06}" {
+     ParentContextList {
+      "LF_DutyClock"
+     }
+     UIInfo UIInfo "{857016BF95624B25}" {
+      Name "#LF-Duty_ClockIn"
+      Description "#LF-Duty_ClockDesc"
+     }
+     "Sort Priority" 1
+    }
+   }
+  }
+ }
+ coords 68.225 0.508 38.36
+ angleY -90
+}
+GenericEntity PoliceKit_DutyClock_Room : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {
+ components {
+  SCR_SoundDataComponent "{BC459247BBA4457F}" {
+   m_aAudioSourceConfiguration {
+    SCR_AudioSourceConfiguration "{B46B5DD6F8897BFD}" {
+     m_sSoundProject "{5A46144CB8BFC66B}Sounds/Structures/Military/Training/RangeCP/Structures_RangeCP.acp"
+     m_sSoundEventName "SOUND_RANGECP_STARTBUTTON"
+    }
+   }
+  }
+  ActionsManagerComponent "{775836274AF8BE66}" {
+   ActionContexts {
+    UserActionContext "{22A17EEEA2399F2D}" {
+     ContextName "LF_DutyClock"
+     Position PointInfo "{B046DE7E017B07C6}" {
+      Offset -0.0228 0.928 0.1792
+     }
+     Radius 1.58
+    }
+   }
+   additionalActions {
+    LF_DutyAction "{E0CCF06A3D9A2E06}" {
+     ParentContextList {
+      "LF_DutyClock"
+     }
+     UIInfo UIInfo "{857016BF95624B25}" {
+      Name "#LF-Duty_ClockIn"
+      Description "#LF-Duty_ClockDesc"
+     }
+     "Sort Priority" 1
+    }
+   }
+  }
+ }
+ coords 68.505 0.508 41
+ angleY 90
+}
 Vehicle PoliceKit_PatrolCar : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
  coords 69 0.001 51.5
 }
@@ -197,112 +271,110 @@ GenericEntity PoliceKit_SpikeStrip : "{8FEC063EE8B0100B}Prefabs/Props/Roleplay/S
  }
  coords 76.5 0.002 53.5
 }
-GenericEntity PoliceKit_Decor_1 : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+GenericEntity PoliceKit_Display_taser_1 {
  components {
-  MeshObject "{5872F0EB7FA40561}" {
-   Materials {
-    MaterialAssignClass "{D0C0000000000001}" {
-     SourceMaterial "LampFluorescent_01_cover"
-     AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
-    }
-   }
+  MeshObject "{D15C000000000001}" {
+   Object "{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob"
   }
  }
- coords 66.5 3.7 44.5
+ coords 69.4 0.935 41.45
+ angles 0 10 90
 }
-GenericEntity PoliceKit_Decor_2 : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+GenericEntity PoliceKit_Display_taser_2 {
  components {
-  MeshObject "{5872F0EB7FA40561}" {
-   Materials {
-    MaterialAssignClass "{D0C0000000000002}" {
-     SourceMaterial "LampFluorescent_01_cover"
-     AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
-    }
-   }
+  MeshObject "{D15C000000000002}" {
+   Object "{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob"
   }
  }
- coords 70.5 3.7 40
+ coords 69.65 0.935 41.45
+ angles 0 -8 90
 }
-GenericEntity PoliceKit_Decor_3 : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+GenericEntity PoliceKit_Display_taser_3 {
  components {
-  MeshObject "{5872F0EB7FA40561}" {
-   Materials {
-    MaterialAssignClass "{D0C0000000000003}" {
-     SourceMaterial "LampFluorescent_01_cover"
-     AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
-    }
-   }
+  MeshObject "{D15C000000000003}" {
+   Object "{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob"
   }
  }
- coords 62.9 2.9 38
+ coords 69.9 0.935 41.45
+ angles 0 6 90
 }
-GenericEntity PoliceKit_Decor_4 : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+GenericEntity PoliceKit_Display_m9_4 {
  components {
-  MeshObject "{5872F0EB7FA40561}" {
-   Materials {
-    MaterialAssignClass "{D0C0000000000004}" {
-     SourceMaterial "LampFluorescent_01_cover"
-     AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
-    }
-   }
+  MeshObject "{D15C000000000004}" {
+   Object "{1E38513800383D64}Assets/Weapons/Handguns/M9/M9_body.xob"
   }
  }
- coords 70.5 6.8 40
+ coords 69.45 0.933 41.8
+ angles 0 90 90
 }
-GenericEntity PoliceKit_Decor_5 : "{DF9B306707F2BD15}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_02.et" {
+GenericEntity PoliceKit_Display_m9_5 {
  components {
-  MeshObject "{5872F0EB7FA40561}" {
-   Materials {
-    MaterialAssignClass "{D0C0000000000005}" {
-     SourceMaterial "LampFluorescent_01_cover"
-     AssignedMaterial "{51611E400CB6FB8A}Assets/Props/Furniture/LampFluorescent_02/Data/LampFluorescent_02_cover_emissive.emat"
-    }
-   }
+  MeshObject "{D15C000000000005}" {
+   Object "{1E38513800383D64}Assets/Weapons/Handguns/M9/M9_body.xob"
   }
  }
- coords 71.3 3.7 45.5
+ coords 69.85 0.933 41.8
+ angles 0 80 90
 }
-GenericEntity PoliceKit_Decor_6 : "{25B473F35DCBDA7A}Prefabs/Props/Civilian/ClockUniversal_01.et" {
+GenericEntity PoliceKit_Display_cuffs_6 {
+ components {
+  MeshObject "{D15C000000000006}" {
+   Object "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
+  }
+ }
+ coords 69.4 0.932 42.1
+ angles 0 0 0
+}
+GenericEntity PoliceKit_Display_cuffs_7 {
+ components {
+  MeshObject "{D15C000000000007}" {
+   Object "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
+  }
+ }
+ coords 69.7 0.932 42.1
+ angles 0 25 0
+}
+GenericEntity PoliceKit_Display_cuffs_8 {
+ components {
+  MeshObject "{D15C000000000008}" {
+   Object "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
+  }
+ }
+ coords 70 0.932 42.1
+ angles 0 -15 0
+}
+GenericEntity PoliceKit_Decor_1 : "{25B473F35DCBDA7A}Prefabs/Props/Civilian/ClockUniversal_01.et" {
  coords 73.4 2.2 42.4
  angleY -90
 }
-GenericEntity PoliceKit_Decor_7 : "{20B9C968AAE98DCF}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V3.et" {
+GenericEntity PoliceKit_Decor_2 : "{20B9C968AAE98DCF}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V3.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
   }
  }
- coords 68.22 1.55 38.9
- angleY 90
+ coords 68.5 1.5 42
+ angleY -90
 }
-GenericEntity PoliceKit_Decor_8 : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
+GenericEntity PoliceKit_Decor_3 : "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
   }
  }
- coords 68.22 1.55 38.4
- angleY 90
+ coords 68.5 1.5 42.35
+ angleY -90
 }
-GenericEntity PoliceKit_Decor_9 : "{944594496FA41CBD}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V6.et" {
+GenericEntity PoliceKit_Decor_4 : "{944594496FA41CBD}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V6.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
   }
  }
- coords 68.22 1.55 37.9
- angleY 90
+ coords 68.5 1.5 42.7
+ angleY -90
 }
-GenericEntity PoliceKit_Decor_10 : "{43E4EEB4CDBBFE34}Prefabs/Props/Commercial/Posters/PosterSingle_27x41_01_RadioEveron.et" {
- components {
-  RigidBody "{5872F0EB7DFB5A9D}" {
-   Static 1
-  }
- }
- coords 70.7 1.55 47.25
- angleY 180
-}
-GenericEntity PoliceKit_Decor_11 : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et" {
+GenericEntity PoliceKit_Decor_5 : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -311,16 +383,16 @@ GenericEntity PoliceKit_Decor_11 : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typ
  coords 70.7 0.907 40.2
  angleY 200
 }
-GenericEntity PoliceKit_Decor_12 : "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et" {
+GenericEntity PoliceKit_Decor_6 : "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
   }
  }
- coords 71.5 0.907 40.05
+ coords 71.05 0.907 39.8
  angleY 160
 }
-GenericEntity PoliceKit_Decor_13 : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+GenericEntity PoliceKit_Decor_7 : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -329,7 +401,7 @@ GenericEntity PoliceKit_Decor_13 : "{03DE957D8161212B}Prefabs/Props/Civilian/Not
  coords 70.4 0.907 40.1
  angleY 15
 }
-GenericEntity PoliceKit_Decor_14 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et" {
+GenericEntity PoliceKit_Decor_8 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -337,7 +409,7 @@ GenericEntity PoliceKit_Decor_14 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ash
  }
  coords 71.2 0.907 40.3
 }
-GenericEntity PoliceKit_Decor_15 : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
+GenericEntity PoliceKit_Decor_9 : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -346,7 +418,7 @@ GenericEntity PoliceKit_Decor_15 : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/Rad
  coords 69.3 0.907 38.3
  angleY 180
 }
-GenericEntity PoliceKit_Decor_16 : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+GenericEntity PoliceKit_Decor_10 : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -354,14 +426,11 @@ GenericEntity PoliceKit_Decor_16 : "{03DE957D8161212B}Prefabs/Props/Civilian/Not
  }
  coords 70 0.907 38.3
 }
-GenericEntity PoliceKit_Decor_17 : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
- coords 69.1 0 40.9
-}
-GenericEntity PoliceKit_Decor_18 : "{A9DC69EC1CE466A0}Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_on.et" {
+GenericEntity PoliceKit_Decor_11 : "{A9DC69EC1CE466A0}Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_on.et" {
  coords 71.6 4.706 44.4
  angleY 200
 }
-GenericEntity PoliceKit_Decor_19 : "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et" {
+GenericEntity PoliceKit_Decor_12 : "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -370,22 +439,22 @@ GenericEntity PoliceKit_Decor_19 : "{641D6F151390FD47}Prefabs/Props/Furniture/Ph
  coords 71.1 4.706 44.3
  angleY 190
 }
-GenericEntity PoliceKit_Decor_20 : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
+GenericEntity PoliceKit_Decor_13 : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
  coords 65.8 3.8 39.9
  angleY 180
 }
-GenericEntity PoliceKit_Decor_21 : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+GenericEntity PoliceKit_Decor_14 : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
  coords 65.8 3.8 38.1
 }
-GenericEntity PoliceKit_Decor_22 : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
+GenericEntity PoliceKit_Decor_15 : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
  coords 65.9 4.55 39
  angleY 90
 }
-GenericEntity PoliceKit_Decor_23 : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
+GenericEntity PoliceKit_Decor_16 : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
  coords 65.6 4.55 38.8
  angleY 60
 }
-GenericEntity PoliceKit_Decor_24 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et" {
+GenericEntity PoliceKit_Decor_17 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -393,15 +462,18 @@ GenericEntity PoliceKit_Decor_24 : "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ash
  }
  coords 65.8 4.55 39.2
 }
-GenericEntity PoliceKit_Decor_25 : "{D5DCF3520C2A8C41}Prefabs/Props/Furniture/Flipchart_01/Flipchart_01.et" {
+GenericEntity PoliceKit_Decor_18 : "{D5DCF3520C2A8C41}Prefabs/Props/Furniture/Flipchart_01/Flipchart_01.et" {
  coords 69.5 3.8 42.8
  angleY 150
 }
-GenericEntity PoliceKit_Decor_26 : "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et" {
+GenericEntity PoliceKit_Decor_19 : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
+ coords 69.8 0 41.7
+}
+GenericEntity PoliceKit_Decor_20 : "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et" {
  coords 73.4 5 41.2
  angleY -90
 }
-GenericEntity PoliceKit_Decor_27 : "{260B7CE9F8CB21CB}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V2.et" {
+GenericEntity PoliceKit_Decor_21 : "{260B7CE9F8CB21CB}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V2.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
