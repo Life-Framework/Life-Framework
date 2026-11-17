@@ -7007,6 +7007,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Withdraw from the fund"
      Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
     }
+    CustomStringTableItem "{C65C0D31073BC4C5}" {
+     Id "LF-OrgWarAnnounce_Accepted"
+     Target_en_us "War begins: %1"
+     Comment "Island toast: the target answered, the two organizations are at war; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{E7E4127834BBA4FA}" {
+     Id "LF-OrgWarAnnounce_Declared"
+     Target_en_us "War declared: %1"
+     Comment "Island toast: one organization declared war on another; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{7B94EDBB4BFE6C05}" {
+     Id "LF-OrgWarAnnounce_Forfeit"
+     Target_en_us "War forfeited, an organization has no members left: %1"
+     Comment "Island toast: an organization emptied and forfeited its war; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{BED6AA1BA673F932}" {
+     Id "LF-OrgWarAnnounce_Lapsed"
+     Target_en_us "Declaration lapsed, nobody answered: %1"
+     Comment "Island toast: a declaration went unanswered; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{7ABE18BB5495091F}" {
+     Id "LF-OrgWarAnnounce_MemberAccepted"
+     Target_en_us "Your organization is at war with %1."
+     Comment "Member notice: the war started; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{D7EF843062AAD3B6}" {
+     Id "LF-OrgWarAnnounce_MemberDeclaredIn"
+     Target_en_us "%1 declared war on your organization. Answer at the war desk before the window closes."
+     Comment "Member notice: your side was challenged; %1 is the declaring organization (#2669)."
+    }
+    CustomStringTableItem "{32DA70C1A2DADF42}" {
+     Id "LF-OrgWarAnnounce_MemberDeclaredOut"
+     Target_en_us "Your organization declared war on %1. They have a while to answer."
+     Comment "Member notice: your side declared; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{3AD6CA5542B4E1BC}" {
+     Id "LF-OrgWarAnnounce_MemberForfeit"
+     Target_en_us "Your war with %1 ended: an organization has no members left."
+     Comment "Member notice: forfeit; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{EFC7E0BD1866B610}" {
+     Id "LF-OrgWarAnnounce_MemberLapsed"
+     Target_en_us "The war declaration between your organization and %1 lapsed."
+     Comment "Member notice: the declaration went unanswered; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{B4C1B2C3C2F5929B}" {
+     Id "LF-OrgWarAnnounce_MemberTime"
+     Target_en_us "Your war with %1 is over, time is up."
+     Comment "Member notice: the war ran out; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{C90E4128872ED67A}" {
+     Id "LF-OrgWarAnnounce_Time"
+     Target_en_us "War over, time is up: %1"
+     Comment "Island toast: a war ran out; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{B604BC0B97BFA7A1}" {
+     Id "LF-OrgWarAnnounce_Title"
+     Target_en_us "Gang war"
+     Comment "Toast title for organization war announcements (#2669)."
+    }
     CustomStringTableItem "{7E0E46C2E4A95435}" {
      Id "LF-OrgWar_Accepted"
      Target_en_us "Declaration answered. Your organizations are at war."

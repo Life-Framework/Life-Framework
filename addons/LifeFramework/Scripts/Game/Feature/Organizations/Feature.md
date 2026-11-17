@@ -61,6 +61,12 @@ processing upgrade are kept at the desk.
   `LF_OrgWarCharacter.c` holds `RpcAsk_LF_OrgWarDeclare` / `RpcAsk_LF_OrgWarAnswer` on the character with
   the lease ask's guards (systems switch, PURCHASE bucket, desk range); no host branch. No UI (W7).
 
+- `LF_OrgWarSweep` / `LF_OrgWarAnnounce` — the war clock and the island notice (#2669, W4). `LF_OrgWarSweep.Start()` (game mode, server)
+  calls `LF_OrgWars.Tick` every 30 s; `SweepAt(now)` is the same pass with the clock passed in. A subscriber on
+  `LF_OnOrganizationEmptied` calls `ForfeitOf`: every open war of that org ends with reason `forfeit`. `LF_OrgWarAnnounce`
+  turns `LF_OnOrgWarDeclared` / `Accepted` / `Ended` into one `NotifyAll` toast each plus a longer `NotifyPlayer` notice for
+  online members of both sides; texts are `#LF-OrgWarAnnounce_*` keys, neutral in core, worded by the pack.
+
 ## Iteration path
 
 - A membership card item handed over on Join (the card prop and inventory slot).
