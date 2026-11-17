@@ -14,7 +14,6 @@
 //! the lock identifier. Jail sentences live in LF_Jail, keyed by the player uid. Carried
 //! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name. Placed
 //! storage (LF_PersistentStorageComponent, the hideout stash) rides the same store under its key.
-//! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name.
 //! Progression (career, police rank and duty seconds, benefit cooldown, level, licences, quest
 //! turn-ins) lives in LF_Progression and its owners, keyed by the player uid.
 //! "Player uid" in this list means the character record key (#331, LF_Utils.GetPlayerUID): slot 1 of
@@ -90,6 +89,9 @@
 //! with no holder, no hold time and no points, which is exact (nobody held ground before #751).
 //! A version 34 save includes the held ground and has no stolen-item rows (#1855): carried items
 //! stolen before that restart come back unflagged, which is what that build did.
+//! A version 35 save includes the stolen flags and has no conviction rows (#1914): every record loads clean.
+//! A version 36 save includes the convictions and has no first-spawn marks (#1964): no character counts as new.
+//! A version 37 save includes the first-spawn marks and has no race records (#1925): the board starts empty.
 //! A version 38 save includes the race records and has no last positions (#1777): every character loads
 //! with no last position kept, which is what that build had.
 //! A version 39 save includes the last positions and has no hospital rejoins (#2101): a downed logout
@@ -114,6 +116,11 @@
 //! was not saved, which is what that build did (a restart kept it).
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
+//!
+//! NEWER SAVES. A save whose version is above this list's length was written by a newer build (a
+//! rollback, or a merge the main guard reverted). Its known payloads load, the rest are not read,
+//! and the load counts as damaged: the next save would drop the payloads this build cannot read,
+//! so autosave pauses and the save on disk is kept (the #980 fail-safe).
 //!
 //! IDEMPOTENT ON A LIVE SESSION. Deserialize also runs when saved data is re-applied to a running
 //! session. The manager ApplyAll() implementations are plain replacement of cached state, and the
@@ -161,6 +168,15 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		s_bLoadDamaged = false;
 		s_iReadFailures = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! World teardown (LF_StaticReset): the next world has not read its store yet. A stale true here
+	//! hid a continued save that never reached the store in the next world, so autosave overwrote it.
+	static void ResetStatics()
+	{
+		s_bStoreLoaded = false;
+		ClearLoadDamaged();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -402,6 +418,11 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 
 			ReadPersistencePayload(persistence, context, order.Get(index));
 		}
+
+		// A newer build wrote this save: what it holds past this list cannot be read, and saving
+		// over it would drop that. Damaged, so autosave pauses and the save on disk is kept.
+		if (version > order.Count())
+			ReadFailed(string.Format("save version %1 is newer than this build's %2: %3 payload(s) at the end are not read; autosave pauses so they are not dropped", version, order.Count(), version - order.Count()));
 
 		// The owner's persistence switches (#689): each switched-off field is reset to its default
 		// now that every payload is read. Before the poster prune, so a cleared warrant's posters go.
@@ -1580,5 +1601,22 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		{
 			LF_Debug.Error("Persistence", string.Format("load skipped unknown payload '%1'", payload));
 		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_PersistenceComponentSerializer's statics (registered at script load; Core/LF_StaticReset.c).
+class LF_PersistenceComponentSerializer_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PersistenceComponentSerializer_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_PersistenceComponentSerializer";
+	}
+
+	override void Apply()
+	{
+		LF_PersistenceComponentSerializer.ResetStatics();
 	}
 }

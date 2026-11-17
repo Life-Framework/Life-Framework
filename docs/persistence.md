@@ -399,6 +399,12 @@ across the `wt e2e` restart, keepLicences off from the owner file).
   and logs `LF_Debug.Error`. When it is the boot load, saving is turned off at `ACTIVE`
   (`SaveGameManager.SetSavingAllowed(false)`), which also stops the engine's shutdown save:
   the save on disk stays the newest save point for `host restore` (#980).
+- A save whose version is above the payload list's length was written by a newer build (a
+  rollback, or a merge the main guard reverted after it saved). The known payloads load and the
+  load counts as damaged, so no save drops the payloads this build cannot read
+  (`persist/save-newer-version`). The serializer's own statics (`WasStoreLoaded`, the damage
+  flag) reset at world end, so an in-process scenario restart checks its own store again
+  (`persist/store-static-reset`).
 
 ## Rules (paid for by real bugs)
 

@@ -7637,10 +7637,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You can only place this at your organization's base."
      Comment "Toast when the placement policy refuses: the kind needs the organization's base nearby (#2447)."
     }
+    CustomStringTableItem "{2448C0A51B7E4D01}" {
+     Id "LF-Placement_NeedCash"
+     Target_en_us "You don't have enough cash to place that."
+     Comment "Toast when a placement is refused because the player carries less cash than the kind costs (#2448)."
+    }
     CustomStringTableItem "{A1D7C4E09B3F5202}" {
      Id "LF-Placement_NeedHouse"
      Target_en_us "Only the owner or a key holder of a house nearby can place this."
      Comment "Toast when the placement policy refuses: the kind needs the house owner or a key holder (#2446)."
+    }
+    CustomStringTableItem "{2448C0A51B7E4D02}" {
+     Id "LF-Placement_NeedItem"
+     Target_en_us "You don't have what it takes to place that."
+     Comment "Toast when a placement is refused because the player lacks the items the kind uses up (#2448)."
     }
     CustomStringTableItem "{A1D7C4E09B3F5203}" {
      Id "LF-Placement_NeedOrg"
