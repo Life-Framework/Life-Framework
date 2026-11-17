@@ -3,7 +3,7 @@
 //! ENDED, or DECLARED -> LAPSED when nobody answers. Server state in memory only: persistence is W6
 //! (ExportAll / ApplyAll). Every time is real unix seconds the caller passes in, so a restart mid-war
 //! keeps its clock. Keyed by organization id, never name. No RPC, no UI, no money: rights and the fee
-//! are W3, the rules value comes from the config in W2.
+//! are W3, `LF_OrgWarRules` (from `LF_OrgWarConfig.Rules()`, W2 #2667) is the rules value.
 //------------------------------------------------------------------------------------------------
 enum LF_EOrgWarState
 {
@@ -11,17 +11,6 @@ enum LF_EOrgWarState
 	ACCEPTED,
 	ENDED,
 	LAPSED
-}
-
-//------------------------------------------------------------------------------------------------
-//! The numbers a war runs by, passed in as a plain value so this layer does not wait for the config.
-class LF_OrgWarRules : Managed
-{
-	int m_iFee;
-	int m_iAnswerWindowSec = 600;
-	int m_iLengthSec = 3600;
-	int m_iCooldownSec = 7200;
-	int m_iMinMembers = 1;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -144,13 +133,13 @@ class LF_OrgWars
 		record.m_sTargetOrgId = targetOrgId;
 		record.m_eState = LF_EOrgWarState.DECLARED;
 		record.m_iDeclaredAt = now;
-		record.m_iAnswerWindowSec = rules.m_iAnswerWindowSec;
-		record.m_iCooldownSec = rules.m_iCooldownSec;
+		record.m_iAnswerWindowSec = rules.m_iAnswerSeconds;
+		record.m_iCooldownSec = rules.m_iCooldownSeconds;
 		Table().Insert(record);
 		war = record;
 
-		LF_Debug.Info(FEATURE, string.Format("%1 declared: %2 on %3, answer by %4", record.m_sWarId, declarerOrgId, targetOrgId, now + rules.m_iAnswerWindowSec));
-		LF_EventBus.Publish(LF_OnOrgWarDeclared.Create(record.m_sWarId, declarerOrgId, targetOrgId, now, now + rules.m_iAnswerWindowSec));
+		LF_Debug.Info(FEATURE, string.Format("%1 declared: %2 on %3, answer by %4", record.m_sWarId, declarerOrgId, targetOrgId, now + rules.m_iAnswerSeconds));
+		LF_EventBus.Publish(LF_OnOrgWarDeclared.Create(record.m_sWarId, declarerOrgId, targetOrgId, now, now + rules.m_iAnswerSeconds));
 		return "";
 	}
 
@@ -175,8 +164,8 @@ class LF_OrgWars
 
 		war.m_eState = LF_EOrgWarState.ACCEPTED;
 		war.m_iAcceptedAt = now;
-		war.m_iEndsAt = now + rules.m_iLengthSec;
-		war.m_iCooldownSec = rules.m_iCooldownSec;
+		war.m_iEndsAt = now + rules.m_iLengthSeconds;
+		war.m_iCooldownSec = rules.m_iCooldownSeconds;
 		LF_Debug.Info(FEATURE, string.Format("%1 accepted: %2 and %3 are at war until %4", warId, war.m_sDeclarerOrgId, war.m_sTargetOrgId, war.m_iEndsAt));
 		LF_EventBus.Publish(LF_OnOrgWarAccepted.Create(warId, war.m_sDeclarerOrgId, war.m_sTargetOrgId, now, war.m_iEndsAt));
 		return "";

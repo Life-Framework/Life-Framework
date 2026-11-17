@@ -61,9 +61,9 @@ class LF_Test_OrgWarState : LF_Test
 
 		LF_OrgWarRules rules = new LF_OrgWarRules();
 		rules.m_iFee = 500;
-		rules.m_iAnswerWindowSec = 600;
-		rules.m_iLengthSec = 3600;
-		rules.m_iCooldownSec = 7200;
+		rules.m_iAnswerSeconds = 600;
+		rules.m_iLengthSeconds = 3600;
+		rules.m_iCooldownSeconds = 7200;
 		rules.m_iMinMembers = 1;
 
 		int t0 = 1800000000;
