@@ -403,7 +403,8 @@ class LF_StorageSnapshot
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The quantity of the prefab removed from one record (only items nothing sits in).
-	static int StripPrefabFrom(notnull LF_StorageSnapshotRecord record, ResourceName prefab)
+	//! \param[in] limit At most this many (a bigger stack is cut by the part needed); 0 removes them all.
+	static int StripPrefabFrom(notnull LF_StorageSnapshotRecord record, ResourceName prefab, int limit = 0)
 	{
 		int count = record.m_aItems.Count();
 		array<bool> holds = {};
@@ -421,7 +422,19 @@ class LF_StorageSnapshot
 		for (int index = 0; index < count; index++)
 		{
 			LF_StorageItemRecord entry = record.m_aItems[index];
-			if (entry && !holds[index] && LF_Utils.SamePrefab(entry.m_sPrefab, prefab))
+			bool wanted = entry && !holds[index] && LF_Utils.SamePrefab(entry.m_sPrefab, prefab);
+			if (wanted && limit > 0 && removed >= limit)
+				wanted = false;
+
+			if (wanted && limit > 0 && entry.m_iQuantity > limit - removed)
+			{
+				// A stack bigger than what is still to go: cut it and keep the rest.
+				entry.m_iQuantity = entry.m_iQuantity - (limit - removed);
+				removed = limit;
+				wanted = false;
+			}
+
+			if (wanted)
 			{
 				removed += entry.m_iQuantity;
 				newIndex[index] = -1;
@@ -433,7 +446,7 @@ class LF_StorageSnapshot
 		}
 
 		if (kept.Count() == count)
-			return 0;
+			return removed;
 
 		foreach (LF_StorageItemRecord moved : kept)
 		{
@@ -443,6 +456,21 @@ class LF_StorageSnapshot
 
 		record.m_aItems = kept;
 		return removed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removes one item of the prefab from one stored snapshot (a held cargo the restart refunds, #2481).
+	//! \return How many were removed (0 or 1); 0 when the snapshot is not stored or holds none.
+	static int StripOne(string ownerKey, string slot, ResourceName prefab)
+	{
+		if (ownerKey.IsEmpty() || prefab.IsEmpty())
+			return 0;
+
+		LF_StorageSnapshotRecord record = Get(ownerKey, slot);
+		if (!record || !record.m_aItems)
+			return 0;
+
+		return StripPrefabFrom(record, prefab, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
