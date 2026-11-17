@@ -675,6 +675,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_TownBoard(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TownBoardWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TraderSellRules(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_TraderServerSale(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TreatmentBill(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBillPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_UIBackPath(), LF_TestTier.WORLD);
