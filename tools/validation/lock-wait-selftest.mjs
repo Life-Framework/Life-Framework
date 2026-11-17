@@ -6,12 +6,12 @@
 //   printed every slice" fails (one silent wait for the whole budget, the 25-minute gate of 2026-11-14).
 // inputs: tools/lib/lock-wait.mjs, tools/validation/lock-wait-selftest.mjs, tools/cli.mjs, tools/wt.mjs
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Budget, describeHolder, waitForLock } from "../lib/lock-wait.mjs";
 import * as wt from "../wt.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -100,7 +100,7 @@ const held = () => {
 
 // --- a real lock file held by a live process, in a throwaway repo
 {
-  const dir = mkdtempSync(join(tmpdir(), "lf-lockwait-"));
+  const dir = scratchDir("lf-lockwait-");
   try {
     execFileSync("git", ["init", "-q", dir], { windowsHide: true });
     const lockFile = join(wt.ensureHub(dir), "locks", "build.lock");

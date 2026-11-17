@@ -86,8 +86,16 @@ class LF_PhoneLineTransport : LF_PhoneVoiceTransport
 			return false;
 		}
 
-		if (!LF_PhoneVoice.Tune(a, link.m_iFrequency, link.m_sKey) || !LF_PhoneVoice.Tune(b, link.m_iFrequency, link.m_sKey))
+		if (!LF_PhoneVoice.Tune(a, link.m_iFrequency, link.m_sKey))
 		{
+			LF_Debug.Error(LF_PhoneVoice.FEATURE, string.Format("call %1 has no voice: a line has no radio (%2)", call.m_iId, LF_PhoneComponent.LINE_PREFAB));
+			return false;
+		}
+
+		if (!LF_PhoneVoice.Tune(b, link.m_iFrequency, link.m_sKey))
+		{
+			// A is already on the call's channel: put it back so nobody near it hears the next call there.
+			LF_PhoneVoice.Tune(a, LF_PhoneVoice.BAND_MIN, LF_PhoneVoice.IdleKey());
 			LF_Debug.Error(LF_PhoneVoice.FEATURE, string.Format("call %1 has no voice: a line has no radio (%2)", call.m_iId, LF_PhoneComponent.LINE_PREFAB));
 			return false;
 		}

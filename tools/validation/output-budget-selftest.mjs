@@ -9,12 +9,12 @@
 // inside its budget" failed; with LF_VERBOSE=1 forced into the child environment, "validate stays
 // inside 14 lines" and "help stays inside 12 lines" failed. Both restored. With the RED-OK/RED PROOF OK
 // alternatives removed from KEEP_RE in quiet-run.mjs, "a passing --red run keeps its RED-OK lines" failed; restored.
-import { mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { PASSTHROUGH, summarize } from "../lib/quiet-run.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const failures = [];
@@ -91,7 +91,7 @@ for (const [name, args, max] of budgets) {
 // budget is for a fixed pool state: a scratch checkout with only this PC, an empty hub, and a queue
 // of 30 waiting jobs (the per-lane cap of 4 must keep it short).
 {
-  const fx = mkdtempSync(join(tmpdir(), "lf-pool-budget-"));
+  const fx = scratchDir("lf-pool-budget-");
   try {
     spawnSync("git", ["init", "-q", fx], { windowsHide: true });
     writeFileSync(join(fx, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", disabled: true }, { name: "lf-cloud", disabled: true }] } }));

@@ -9,11 +9,11 @@
 // junction tree was moved into Life-Framework-ws-gamma and this printed "a warm
 // tree holding a junction is not claimed" and "the refused tree is marked broken".
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { unlinkReparsePoints } from "../link-safety.mjs";
 import * as wt from "../wt.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 process.env.LF_WT_WARM = "2";
 process.env.LF_WT_WARM_MIN_FREE_GB = "0";
@@ -21,7 +21,7 @@ process.env.LF_WT_WARM_KICK = "0";
 
 const failures = [];
 const ok = (cond, msg) => { if (!cond) failures.push(msg); };
-const base = realpathSync(mkdtempSync(join(tmpdir(), "lf-wt-warm-")));
+const base = realpathSync(scratchDir("lf-wt-warm-"));
 const g = (cwd, args) => {
   const r = spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd, windowsHide: true, encoding: "utf8" });
   if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.stderr}`);

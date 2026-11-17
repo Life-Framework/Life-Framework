@@ -9,11 +9,11 @@
 // (only the match count), the run printed `FAIL editing a matched file did not re-run the check`,
 // `FAIL renaming a matched file ...`, `FAIL editing the check itself ...` and exited 1; restored, it passes.
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, renameSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { globToRegExp, incrementalOff, parseInputs, plan, snapshotFiles, ttlOf } from "../lib/validate-incremental.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -46,7 +46,7 @@ for (const f of readdirSync(realDir)) {
 }
 
 // Fingerprints on a scratch repo.
-const root = mkdtempSync(join(tmpdir(), "lf-validate-inc-"));
+const root = scratchDir("lf-validate-inc-");
 try {
   const sh = (...a) => execFileSync("git", a, { cwd: root, stdio: "ignore" });
   sh("init", "-q");

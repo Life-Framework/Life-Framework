@@ -126,7 +126,7 @@ class LF_MoneyUtils
 
 	//------------------------------------------------------------------------------------------------
 	//! Takes `amount` from the legacy stacks first, then the slot's prefab (the same set GetCash counts).
-	//! eturn what was removed in all
+	//! \return what was removed in all
 	protected static int RemoveCounted(InventoryStorageManagerComponent target, int amount)
 	{
 		if (!target || amount <= 0)

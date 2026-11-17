@@ -11,7 +11,7 @@
 //   node tools/merge/regen-generated.mjs %O %A %B %P
 
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -31,6 +31,8 @@ const REGISTRY_NAME = "LF_TestRegistrations.generated.c";
 // line and exit 1, which leaves the file conflicted for git and lets the merge finish.
 // LF_MERGE_DRIVER_TIMEOUT_MS overrides both limits (the selftest); LF_MERGE_DRIVER_GENERATOR_STUB runs
 // `node <script>` in place of PowerShell (the selftest's child that never exits).
+// LF_MERGE_DRIVER_TRACE=<file> appends one line per child process (`<ms> <command>`); the selftest counts them.
+// A child costs about 230 ms to spawn on a loaded Windows box, so the driver's git calls are O(1), never one per file.
 const GIT_TIMEOUT_MS = 20_000;
 const GENERATOR_TIMEOUT_MS = 90_000;
 
@@ -47,12 +49,19 @@ export function runBounded(step, command, args, options, defaultMs) {
   const result = spawnSync(command, args, {
     windowsHide: true,
     encoding: "utf8",
-    maxBuffer: 64 * 1024 * 1024,
+    maxBuffer: 256 * 1024 * 1024,
     ...options,
-    stdio: ["ignore", "pipe", "pipe"],
+    stdio: [options.input === undefined ? "ignore" : "pipe", "pipe", "pipe"],
     timeout: limit,
     killSignal: "SIGKILL",
   });
+  if (process.env.LF_MERGE_DRIVER_TRACE) {
+    try {
+      appendFileSync(process.env.LF_MERGE_DRIVER_TRACE, `${Date.now() - started} ${step}\n`);
+    } catch {
+      // tracing is diagnostics only
+    }
+  }
   if (result.error) {
     const seconds = ((Date.now() - started) / 1000).toFixed(1);
     const why = result.error.code === "ETIMEDOUT" ? `timed out after ${seconds}s (limit ${Math.round(limit / 1000)}s)` : `failed after ${seconds}s: ${result.error.message}`;
@@ -63,8 +72,8 @@ export function runBounded(step, command, args, options, defaultMs) {
 
 let fixCommand = "tools\\cli regen-tests or tools\\cli regen-localization";
 
-function git(args, options = {}) {
-  return runBounded(`git ${args.slice(0, 3).join(" ")}`, "git", args, options, GIT_TIMEOUT_MS);
+function git(args, options = {}, limitMs = GIT_TIMEOUT_MS) {
+  return runBounded(`git ${args.slice(0, 3).join(" ")}`, "git", args, options, limitMs);
 }
 
 function gitPath(rel) {
@@ -148,13 +157,41 @@ function showPath(rev, path) {
   return result.stdout;
 }
 
-function listTestSources(rev) {
-  const result = git(["ls-tree", "-r", "--name-only", rev, "--", TESTS_PREFIX]);
-  if (result.status !== 0) return [];
-  return result.stdout
-    .split(/\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.endsWith(".c") && !line.endsWith(REGISTRY_NAME));
+// path -> blob id of every test source under TESTS_PREFIX at one revision: one git process for the whole tree.
+function listTestBlobs(rev) {
+  const result = git(["ls-tree", "-r", "-z", rev, "--", TESTS_PREFIX]);
+  const blobs = new Map();
+  if (result.status !== 0) return blobs;
+  for (const entry of result.stdout.split("\0")) {
+    const match = /^\d+ blob ([0-9a-f]+)\t(.+)$/.exec(entry);
+    if (match && match[2].endsWith(".c") && !match[2].endsWith(REGISTRY_NAME)) blobs.set(match[2], match[1]);
+  }
+  return blobs;
+}
+
+// Blob id -> text for every id, through ONE `git cat-file --batch`. Spawning `git show` per file and side
+// (about 2300 children) took over 4 minutes on a loaded laptop and hit the backstop every merge.
+function readBlobs(ids) {
+  const texts = new Map();
+  const wanted = [...new Set(ids)];
+  if (!wanted.length) return texts;
+  const result = git(["cat-file", "--batch"], { input: Buffer.from(`${wanted.join("\n")}\n`), encoding: "buffer" }, 60_000);
+  if (result.status !== 0) throw new BoundedRunError(`git cat-file --batch failed: ${String(result.stderr).trim()}`);
+  const out = result.stdout;
+  let pos = 0;
+  while (pos < out.length) {
+    const eol = out.indexOf(10, pos);
+    if (eol < 0) break;
+    const header = out.toString("utf8", pos, eol).split(" ");
+    if (header[1] !== "blob") {
+      pos = eol + 1;
+      continue;
+    }
+    const size = Number(header[2]);
+    texts.set(header[0], out.toString("utf8", eol + 1, eol + 1 + size));
+    pos = eol + 1 + size + 1;
+  }
+  return texts;
 }
 
 function normalize(text) {
@@ -221,17 +258,36 @@ function materializeStringTable(scratch, sides) {
 }
 
 function materializeTests(scratch, sides) {
-  const paths = new Set([
-    ...listTestSources(sides.base),
-    ...listTestSources(sides.ours),
-    ...listTestSources(sides.theirs),
-  ]);
+  const base = listTestBlobs(sides.base);
+  const ours = listTestBlobs(sides.ours);
+  const theirs = listTestBlobs(sides.theirs);
+  const paths = new Set([...base.keys(), ...ours.keys(), ...theirs.keys()]);
+  // Decide by blob id where possible (same as the text rules below, no content needed); read the rest in one batch.
+  const plan = new Map();
+  const need = [];
   for (const path of paths) {
-    const picked = pickThree(showPath(sides.base, path), showPath(sides.ours, path), showPath(sides.theirs, path));
-    if (!picked.ok) {
-      return { ok: false, error: `lf-regen-tests: ${path} conflicts; resolve that test file, then tools\\cli regen-tests` };
+    const [b, o, t] = [base.get(path), ours.get(path), theirs.get(path)];
+    if (o === t) plan.set(path, { take: o });
+    else if (o === b) plan.set(path, { take: t });
+    else if (t === b) plan.set(path, { take: o });
+    else {
+      plan.set(path, { three: [b, o, t] });
+      need.push(...[b, o, t].filter(Boolean));
     }
-    writeInto(scratch, path, picked.text);
+  }
+  const takeIds = [...plan.values()].map((entry) => entry.take).filter(Boolean);
+  const texts = readBlobs([...takeIds, ...need]);
+  for (const [path, entry] of plan) {
+    if (entry.three) {
+      const [b, o, t] = entry.three.map((id) => (id ? texts.get(id) : null));
+      const picked = pickThree(b, o, t);
+      if (!picked.ok) {
+        return { ok: false, error: `lf-regen-tests: ${path} conflicts; resolve that test file, then tools\\cli regen-tests` };
+      }
+      writeInto(scratch, path, picked.text);
+    } else {
+      writeInto(scratch, path, entry.take ? texts.get(entry.take) : null);
+    }
   }
   return { ok: true };
 }

@@ -90,3 +90,20 @@ export function localEnv(root) {
   }
   return out;
 }
+
+// The folder `wt new` and the warm pool put worktrees in: env LF_WT_ROOT, then lf.local.json "LF_WT_ROOT"
+// or { "wt": { "root": "D:/LF/worktrees" } }, else the parent of the main checkout (the old, only place).
+// Existing worktrees stay where they are; ports and locks do not depend on it.
+export function wtParent(root) {
+  const cfg = localConfig(root);
+  const v = process.env.LF_WT_ROOT || cfg.LF_WT_ROOT || (cfg.wt && typeof cfg.wt === "object" ? cfg.wt.root : "");
+  return v && String(v).trim() ? resolve(String(v).trim()) : dirname(mainRoot(root));
+}
+
+// Where the worktree for a slug is: the old place when one already sits there (a move of the root never
+// strands an existing worktree), else under wtParent.
+export function wtDirFor(root, slug) {
+  const name = `Life-Framework-ws-${slug}`;
+  const legacy = join(dirname(mainRoot(root)), name);
+  return existsSync(legacy) ? legacy : join(wtParent(root), name);
+}

@@ -14,11 +14,11 @@
 // backups on a scheduled close", "a restart backup beyond N is not pruned", "the prune plan deletes 7, expected the 10 oldest".
 
 import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const wd = await import(pathToFileURL(join(ROOT, "tools", "host", "watchdog.mjs")).href);
@@ -31,7 +31,7 @@ const fail = (m) => failures.push(m);
 const NONE = { stopFilePresent: false, stopSeen: false, logStop: false, restartMarker: false, logRestart: false };
 const T0 = new Date(2026, 10, 15, 12, 0, 0);
 
-const base = mkdtempSync(join(tmpdir(), "lf-host-restart-backup-"));
+const base = scratchDir("lf-host-restart-backup-");
 
 // A fixture host dir holding one save point and one console log.
 function fixture(name) {

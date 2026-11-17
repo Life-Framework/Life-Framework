@@ -11,11 +11,11 @@
 // red-proof: 2026-11-15, before the change tryLocal's slot had no token ("local pool slot has no
 // token") and runDrillHere ignored slotEnv ("host start did not see LF_SERVER_SLOT_HELD").
 
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const load = (rel) => import(pathToFileURL(join(ROOT, rel)).href);
@@ -31,7 +31,7 @@ const check = (cond, msg) => {
   }
 };
 
-const tmp = mkdtempSync(join(tmpdir(), "lf-drill-slot-"));
+const tmp = scratchDir("lf-drill-slot-");
 const savedEnv = process.env[pool.SLOT_ENV];
 try {
   // 1. A local slot is nameable through LF_SERVER_SLOT_HELD.
