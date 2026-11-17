@@ -8,11 +8,11 @@
 // red-proof: before the session line existed this failed at its first check:
 // "FAIL  draft 1 has no session line" (2026-11-15, #1611).
 
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "host-feedback");
@@ -64,7 +64,7 @@ const bare = lib.draftFeedback(messages).drafts;
 if (bare.some((d) => /^Session:/m.test(d.body))) fail("a draft made without a session must not claim one");
 
 // 4. findSessionReport picks the newest report of that date
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-feedback-link-"));
+const tmp = scratchDir("lf-host-feedback-link-");
 try {
   const sessions = join(tmp, "sessions");
   mkdirSync(sessions);

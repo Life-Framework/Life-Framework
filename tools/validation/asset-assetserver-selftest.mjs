@@ -5,12 +5,12 @@
 //   licenceGate editorial test disabled          -> FAIL gate: Editorial is refused
 //   scoreCandidate not returning 0 when refused  -> FAIL score: a refused licence never ranks
 //   sourceProblems skipping the risk_accepted    -> FAIL purchased: a CGTrader source needs risk_accepted
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import * as as from "../assets/pipeline/assetserver.mjs";
 import * as src from "../assets/pipeline/source.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -70,7 +70,7 @@ export async function main() {
   ok(!!src.skipsStage({ source: rf }, "generate") && !src.skipsStage({ source: rf }, "clean") && !!src.skipsStage({ source: { provider: "download", id: "a:b" } }, "concept"), "purchased: no generation, but clean and import still run");
 
   // findModel prefers glb over fbx, skips LOD copies
-  const tmp = mkdtempSync(join(tmpdir(), "lf-as-selftest-"));
+  const tmp = scratchDir("lf-as-selftest-");
   const dir = join(tmp, "purchased", "pack");
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "scanner.fbx"), "x".repeat(50));

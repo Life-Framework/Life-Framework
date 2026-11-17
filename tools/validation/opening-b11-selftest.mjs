@@ -10,10 +10,10 @@
 // "Cannot find module '.../tools/playtest/opening/b11-after.mjs'" (2026-11-15, #1494).
 
 import { dirname, join, resolve } from "node:path";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "opening-b11");
@@ -36,7 +36,7 @@ function expectStatus(results, id, want) {
 }
 
 // A `gh` that records any call: the beat must never reach it.
-const tmp = mkdtempSync(join(tmpdir(), "lf-b11-"));
+const tmp = scratchDir("lf-b11-");
 const bin = join(tmp, "bin");
 mkdirSync(bin);
 const marker = join(tmp, "gh-was-called");

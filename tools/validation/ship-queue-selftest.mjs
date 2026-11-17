@@ -14,8 +14,7 @@
 // machine's workbenchLimit" and "gateSlots sums ... (got 2, want 2 + 1)"; poolSettings() without shipQueue "pool.shipQueue in
 // lf.local.json reaches gateSlots (got {slots:3,light:4})".
 
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { rmSync } from "node:fs";
 import { join } from "node:path";
 import { writeFileSync } from "node:fs";
 import * as sq from "../lib/ship-queue.mjs";
@@ -23,6 +22,7 @@ import { gateSlots, gateLimits, ensureWorker, workerRunningText } from "../ship-
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as pool from "../remote/pool.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const check = (ok, msg) => {
@@ -93,7 +93,7 @@ check(sq.slotCount({ machines: [ssh("a", { disabled: true }), ssh("b", { caps: [
 check(sq.lightCount({}) === sq.DEFAULT_LIGHT && sq.lightCount({ cfg: { light: 7 } }) === 7, "shipQueue.light sets the validate-only gate count");
 // The real loaders: the override and the per-machine limit survive poolSettings / loadMachines.
 {
-  const sroot = mkdtempSync(join(tmpdir(), "lf-shipq-slots-"));
+  const sroot = scratchDir("lf-shipq-slots-");
   try {
     const machines = [
       { name: "lf-testbox", disabled: true },
@@ -165,7 +165,7 @@ const later = { slug: "z", id: "z-1", seq: 1, state: "queued", files: ["z.c"], n
 check(sq.pickRunnable([later], { slots: 2, now: Date.parse("2026-11-14T10:04:00Z") }).start.length === 0 && sq.pickRunnable([later], { slots: 2, now: Date.parse("2026-11-14T10:06:00Z") }).start.length === 1, "a requeued entry waits out its back-off, then starts");
 
 // 4. Queue file round trip; finished entries are capped; a running slug cannot be enqueued again.
-const dir = mkdtempSync(join(tmpdir(), "lf-shipq-"));
+const dir = scratchDir("lf-shipq-");
 try {
   q.entries.find((e) => e.slug === "a").state = "merging";
   let threw = false;

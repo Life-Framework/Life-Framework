@@ -10,12 +10,12 @@
 // red-proof: before tools/host/gate.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/gate.mjs'" (2026-11-15).
 
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const { evaluateGate, gateText, gateSummary } = await import(pathToFileURL(join(ROOT, "tools", "host", "gate.mjs")).href);
@@ -94,7 +94,7 @@ const lines = (g) => Object.fromEntries(g.lines.map((l) => [l.id, l.ok]));
 }
 
 // 6. The CLI end to end on a fixture host dir.
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-gate-"));
+const tmp = scratchDir("lf-host-gate-");
 try {
   const dir = join(tmp, "host");
   const backups = join(dir, "backups");

@@ -20,6 +20,7 @@ import { appendFileSync, existsSync, mkdirSync, openSync, closeSync, readdirSync
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
+import { wtDirFor } from "./lib/local-config.mjs";
 import * as mg from "./lib/main-guard.mjs";
 import * as pin from "./lib/guard-pin.mjs";
 import { hostname } from "node:os";
@@ -81,7 +82,7 @@ const gh = (cwd, args) => {
 };
 
 function runDir(root, slug = RUN_SLUG) {
-  return join(dirname(mainRoot(root)), `Life-Framework-ws-${slug}`);
+  return wtDirFor(root, slug);
 }
 
 // A head's verdict: <hub>/main-guard-state.json and the GitHub commit status `main-guard` (what world sync and

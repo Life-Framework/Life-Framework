@@ -1,0 +1,7 @@
+GenericEntity {
+ ID "5F027C5274485877"
+ components {
+  LF_TestRpcProbeComponent "{49D96188CE917DD2}" {
+  }
+ }
+}

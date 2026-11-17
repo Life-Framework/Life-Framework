@@ -410,8 +410,9 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The tool the robber would use on this vault: "drill", "charge", or "" for none. A drill wins
-	//! over a charge so the charge is kept. toolItem is the drill or fence charge found, if any.
+	//! The tool the robber would use on this vault: "drill", "charge", or "" for none. A drill held in
+	//! the hands wins over a charge so the charge is kept; a drill only in the pack comes last (it
+	//! is the "hold it" hint when nothing else works). toolItem is the drill or fence charge found, if any.
 	static string PickTool(LF_BankVaultState vault, IEntity robber, out IEntity toolItem)
 	{
 		toolItem = null;
@@ -424,16 +425,16 @@ class LF_Bank
 		if (!inventory)
 			return "";
 
-		if (tools.Find(TOOL_DRILL) != -1)
+		// The drill in the hands is the one that works; a spare in the pack is not it, so it does not
+		// beat a keycard or charge the robber can use. A pack drill is the answer only when nothing
+		// else is usable, so the gate can still say "hold the drill".
+		bool wantsDrill = tools.Find(TOOL_DRILL) != -1;
+		if (wantsDrill)
 		{
-			array<IEntity> drills = LF_InventoryUtils.FindItemsByPrefab(inventory, DRILL_PREFAB);
-			if (!drills.IsEmpty())
+			IEntity held = LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID);
+			if (held)
 			{
-				// The drill in the hands is the one that works; a spare in the pack is not it.
-				toolItem = LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID);
-				if (!toolItem)
-					toolItem = drills[0];
-
+				toolItem = held;
 				return TOOL_DRILL;
 			}
 		}
@@ -455,6 +456,16 @@ class LF_Bank
 				toolItem = charges[0];
 
 			return TOOL_CHARGE;
+		}
+
+		if (wantsDrill)
+		{
+			array<IEntity> spares = LF_InventoryUtils.FindItemsByPrefab(inventory, DRILL_PREFAB);
+			if (!spares.IsEmpty())
+			{
+				toolItem = spares[0];
+				return TOOL_DRILL;
+			}
 		}
 
 		return "";
@@ -873,8 +884,31 @@ class LF_Bank
 			vault.m_fAdvancedSeconds = vault.m_fAdvancedSeconds + elapsedSeconds;
 
 		RefillStock(vault, elapsedSeconds);
+		return AdvanceFuse(vault, elapsedSeconds);
+	}
 
-		bool open = LF_Breach.Advance(vaultId, elapsedSeconds);
+	//------------------------------------------------------------------------------------------------
+	//! Server: a charge's fuse timer fired on this vault (LF_BreachTargetComponent.FireFuse). Moves the
+	//! breach fuse on by the seconds it was set for and pays the pending haul once the lock opens. The
+	//! cooldown and stock clocks are not moved: they run on world time.
+	//! \return False when vaultId is not a bank vault (the caller advances the plain breach target).
+	static bool FuseFired(string vaultId, float fuseSeconds)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault)
+			return false;
+
+		bool open = AdvanceFuse(vault, fuseSeconds);
+		LF_Debug.Info("Bank", string.Format("fuse fired on %1 open=%2", vaultId, open));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The breach step shared by Advance and FuseFired: the pending bags spawn once, the first time the
+	//! lock is seen open (m_bSpawnPending is cleared before SpawnWave).
+	protected static bool AdvanceFuse(LF_BankVaultState vault, float elapsedSeconds)
+	{
+		bool open = LF_Breach.Advance(vault.m_sVaultId, elapsedSeconds);
 		if (vault.m_bSpawnPending && open)
 		{
 			vault.m_bSpawnPending = false;

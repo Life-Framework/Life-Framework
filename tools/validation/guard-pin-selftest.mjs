@@ -6,9 +6,9 @@
 // ignoring `target` it printed "FAIL world sync stops at the compiled-ok commit".
 
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const check = (c, m) => { if (!c) { console.log(`FAIL  ${m}`); failed++; } };
@@ -45,7 +45,7 @@ try {
   check(pin.parseLease({ description: "held LAPTOP 123 2026-11-16T00:00:00.000Z" })?.pid === 123, "lease description parses");
 }
 
-const tmp = mkdtempSync(join(tmpdir(), "lf-guard-pin-"));
+const tmp = scratchDir("lf-guard-pin-");
 const git = (dir, ...a) => {
   const r = spawnSync("git", ["-C", dir, "-c", "user.name=t", "-c", "user.email=t@t", ...a], { encoding: "utf8" });
   if (r.status !== 0) throw new Error(`git ${a.join(" ")}: ${r.stderr}`);

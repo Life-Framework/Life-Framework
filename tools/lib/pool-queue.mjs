@@ -2,6 +2,7 @@
 // order with aging, the RAM gate, and the session lease. No I/O, so
 // tools/validation/pool-selftest.mjs proves them without a game.
 import { ISLAND, SEED_PEAKS_MB, worldClass } from "./pool-ram.mjs";
+import { DEFAULT_CLIENT_VRAM_MB, DEFAULT_MIN_FREE_VRAM_MB, sessionVramReserveMb, vramVerdict } from "./pool-vram.mjs";
 
 export const PRIORITIES = ["low", "normal", "high"];
 export const DEFAULTS = {
@@ -23,6 +24,11 @@ export const DEFAULTS = {
   // Per session profile (session up --profile): the same two numbers, measured per profile. A profile
   // missing here uses the full numbers above. tools/pool.json "sessionReserve" overrides these.
   sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } },
+  // GPU memory (VRAM) a game client takes per session profile, and the VRAM left free after a start
+  // (#2629, tools/lib/pool-vram.mjs). A machine whose free VRAM cannot be read skips the rule.
+  // tools/pool.json / lf.local.json "sessionReserveClientVramMb" overrides.
+  sessionReserveClientVramMb: { ...DEFAULT_CLIENT_VRAM_MB },
+  minFreeVramMb: DEFAULT_MIN_FREE_VRAM_MB,
   // Memory a test server takes while it boots, before free RAM shows it (MB): counted for a test lane
   // locked less than testBootS ago and for each start still in flight ahead of a burst start (#1195).
   // Measured 2026-11-14 on lf-cloud: 12 fast-tier test servers took 9.2 GB, about 770 MB each.
@@ -146,6 +152,20 @@ export function sessionReserveMb(settings, clients, profile = "full") {
   const server = own?.serverMb ?? settings.sessionReserveServerMb ?? DEFAULTS.sessionReserveServerMb;
   const client = own?.clientMb ?? settings.sessionReserveClientMb ?? DEFAULTS.sessionReserveClientMb;
   return server + client * Math.max(0, Number(clients) || 0);
+}
+
+// GPU memory (MB) a ticket will take: its clients' share for a session, 0 for a test lane (no client).
+// settings.sessionReserveClientVramMb falls back to the code defaults.
+export function ticketVramReserveMb(t, settings = {}) {
+  if ((t?.lane ?? "session") !== "session") return 0;
+  return sessionVramReserveMb({ sessionReserveClientVramMb: DEFAULTS.sessionReserveClientVramMb, ...settings }, t?.clients ?? 1, t?.profile ?? "full");
+}
+
+// The VRAM gate for a job on one machine (settings: pool settings; vramFreeMb: its free VRAM or null when
+// unknown; pendingMb: clients still starting). Unknown skips the rule (pool-vram.mjs vramVerdict).
+export function vramGate(settings, { vramFreeMb, clients = 1, profile = "full", lane = "session", pendingMb = 0 } = {}) {
+  const reserveMb = ticketVramReserveMb({ lane, clients, profile }, settings);
+  return vramVerdict({ freeMb: vramFreeMb, minFreeMb: settings?.minFreeVramMb ?? DEFAULTS.minFreeVramMb, reserveMb, pendingMb });
 }
 
 export function laneKind(purpose) {
@@ -352,12 +372,17 @@ export function ramVerdict({ running = 0, freeMb, minFreeMb, reserveMb = 0, pend
 // most headroom first (the gate refuses them anyway; the order only decides what `pool status` names).
 // cands: [{ name, freeMb, pendingMb?, multiplier? }]. Returns rows { name, room, headroomMb, score }
 // best first, in the order given for ties.
-export function rankMachines(cands, { minFreeMb = DEFAULTS.minFreeMb, reserveMb = 0, roomyMb = DEFAULTS.roomyMb } = {}) {
+// VRAM (#2629): a candidate with vramFreeMb (known) and a job with vramReserveMb > 0 (a client session) also
+// needs vramFreeMb - vramPendingMb - vramReserveMb >= minFreeVramMb to count as having room; one that
+// cannot fit goes with the no-room machines even when its RAM is roomy. Unknown VRAM, or a job with no
+// client, leaves the rule out, so the order is the RAM order.
+export function rankMachines(cands, { minFreeMb = DEFAULTS.minFreeMb, reserveMb = 0, roomyMb = DEFAULTS.roomyMb, vramReserveMb = 0, minFreeVramMb = DEFAULTS.minFreeVramMb } = {}) {
   const rows = cands.map((c, i) => {
     const known = Number.isFinite(c.freeMb);
     const headroomMb = known ? c.freeMb - (Number(c.pendingMb) || 0) - reserveMb : null;
     const multiplier = Number(c.multiplier) > 0 ? Number(c.multiplier) : 1;
-    const room = known ? headroomMb >= minFreeMb : null;
+    const vramOk = vramVerdict({ freeMb: c.vramFreeMb, minFreeMb: minFreeVramMb, reserveMb: vramReserveMb, pendingMb: Number(c.vramPendingMb) || 0 }).ok;
+    const room = known ? headroomMb >= minFreeMb && vramOk : vramOk ? null : false;
     const score = known ? Math.min(headroomMb, roomyMb) / multiplier : 0;
     return { name: c.name, room, headroomMb, score, multiplier, i };
   });

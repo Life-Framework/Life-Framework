@@ -227,7 +227,9 @@ at the machine.
 
 **The logon helper.** A scheduled task `LF-DesktopHelper`, At log on for that user, keeps the session ready: it asks the
 display to stay awake and writes a heartbeat (`C:LFdesktopgpu-session.json`) every 5 s. Create or refresh it once per
-machine, from this PC or on the machine itself (idempotent; it starts the helper at once when the desktop is up):
+machine, from this PC or on the machine itself (idempotent: `-Force` re-registers it; it starts the helper at once when the
+desktop is up). The task runs `conhost.exe --headless powershell.exe ...`, so there is no console window to close (a bare
+`powershell.exe` action died ~15 s after logon when its window was closed, #2590):
 
 ```
 toolscli desktop-helper setup lf-testbox     # over ssh

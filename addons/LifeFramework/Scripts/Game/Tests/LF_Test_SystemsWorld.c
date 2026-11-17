@@ -98,7 +98,7 @@ class LF_Test_SystemsWorld : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Gives the user the police kit's direct items through the real loadout path. eturn Pagers after.
+	//! Gives the user the police kit's direct items through the real loadout path. \return Pagers after.
 	protected int GiveDirectPager(IEntity user)
 	{
 		LF_SpawnLogic spawnLogic = LF_SpawnLogic.GetInstance();
