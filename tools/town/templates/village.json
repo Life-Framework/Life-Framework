@@ -1,53 +1,53 @@
 {
   "schema": 1,
   "kind": "village",
-  "about": "Slots of a village place: a hall, a pub and a few services. Same shape as town.json. Tooling data: no coordinates and no place names.",
+  "about": "Slots of a village place: a hall, a pub and a few services. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
   "slots": [
     {
-      "id": "hall", "required": true, "kit": "hall", "host": "building",
+      "id": "hall", "required": true, "kit": "hall", "host": "building", "poi": "none",
       "needs": { "interior": "required", "minArea": 60, "prefer": "large", "maxDistance": 100, "types": ["municipal-office", "church", "chapel", "house-village", "house-town", "farmhouse"] },
       "places": ["Hall", "Clerk"]
     },
     {
-      "id": "pub", "required": false, "kit": "pub", "host": "building",
+      "id": "pub", "required": false, "kit": "pub", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 110, "types": ["pub", "shop-*", "house-village"] },
       "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "pub", "stem": "PubVillage_E_2L01_V1" }] },
       "places": ["PubBar"]
     },
     {
-      "id": "shop", "required": false, "kit": "general-store", "host": "building",
+      "id": "shop", "required": false, "kit": "general-store", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 40, "prefer": "near", "maxDistance": 110, "types": ["shop-*", "house-village"] },
       "places": ["StoreCounter"]
     },
     {
-      "id": "fuel", "required": false, "kit": "fuel", "host": "building",
+      "id": "fuel", "required": false, "kit": "fuel", "host": "building", "poi": "none",
       "needs": { "interior": "optional", "minArea": 40, "prefer": "far", "types": ["fuel-station"] },
       "places": ["FuelTill"]
     },
     {
-      "id": "garage", "required": false, "kit": "garage", "host": "building",
+      "id": "garage", "required": false, "kit": "garage", "host": "building", "poi": "none",
       "needs": { "interior": "optional", "minArea": 25, "prefer": "far", "types": ["garage", "shed", "industrial-shed", "farm-building", "house-addon"] },
       "plot": { "minWidth": 12, "minDepth": 10, "prefabs": [{ "type": "garage", "stem": "HouseAddon_Garage_E_01" }] },
       "places": ["Garage"]
     },
     {
-      "id": "house", "required": false, "kit": "house", "host": "building",
+      "id": "house", "required": false, "kit": "house", "host": "building", "poi": "none",
       "needs": { "interior": "required", "minArea": 50, "prefer": "near", "types": ["house-village", "house-town", "farmhouse", "cottage"] },
       "places": ["House"]
     },
     {
-      "id": "farm-plot", "required": false, "kit": "farm-plot", "host": "plot",
+      "id": "farm-plot", "required": false, "kit": "farm-plot", "host": "plot", "poi": "none",
       "needs": { "interior": "optional", "prefer": "far" },
       "plot": { "minWidth": 20, "minDepth": 16, "prefabs": [] },
       "places": ["FarmPlot"]
     },
     {
-      "id": "board", "required": true, "kit": "board", "host": "street",
+      "id": "board", "required": true, "kit": "board", "host": "street", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 80 },
       "places": ["TownBoard"]
     },
     {
-      "id": "taxi", "required": false, "kit": "taxi", "host": "street",
+      "id": "taxi", "required": false, "kit": "taxi", "host": "street", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 80 },
       "places": ["TaxiRank"]
     }
