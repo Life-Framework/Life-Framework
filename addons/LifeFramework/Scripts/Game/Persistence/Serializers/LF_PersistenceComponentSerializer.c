@@ -37,7 +37,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, houses, itemkeys. The written version is that list's length (46). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys. The written version is that list's length (47). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -102,9 +102,11 @@
 //! character starts with a clean map.
 //! A version 43 save includes the personal map marks and has no org map marks (#2240): every
 //! organization starts with an empty shared map.
-//! A version 44 save includes the org map marks and has no house rows (#2410): every house loads with
+//! A version 44 save includes the org map marks and has no armory book (#2416): every officer may draw
+//! a kit at once, with nothing outstanding.
+//! A version 45 save includes the armory book and has no house rows (#2410): every house loads with
 //! its editor lock state and no owner, which is what that build had (it never saved houses).
-//! A version 45 save includes the house rows and has no house keys (#2410): a carried house key comes
+//! A version 46 save includes the house rows and has no house keys (#2410): a carried house key comes
 //! back unbound, which is what that build did.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
@@ -239,6 +241,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("mapknown");
 		order.Insert("mapmarks");
 		order.Insert("orgmarks");
+		order.Insert("armorykits");
 		order.Insert("houses");
 		order.Insert("itemkeys");
 	}
@@ -274,7 +277,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 46);
+		context.WriteValue("version", 47);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -784,6 +787,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_OrgMapMarkRow> orgMarkRows = LF_OrgMapMarks.ExportAll();
 			context.Write(orgMarkRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 org map mark(s)", orgMarkRows.Count()));
+		}
+		else if (payload == "armorykits")
+		{
+			// Each officer's armory book (#2416): last issue time and the serials still out.
+			array<ref LF_ArmoryKitRow> armoryRows = LF_ArmoryKits.ExportAll();
+			context.Write(armoryRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 armory book row(s)", armoryRows.Count()));
 		}
 		else if (payload == "houses")
 		{
@@ -1464,9 +1474,23 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 				ReadFailed("org map marks failed to read, every organization starts with no marks");
 			}
 		}
+		else if (payload == "armorykits")
+		{
+			// A version 1-44 save never reaches this payload: no officer has kit out or a cooldown.
+			array<ref LF_ArmoryKitRow> armoryRows = new array<ref LF_ArmoryKitRow>();
+			if (context.Read(armoryRows))
+			{
+				int armoryApplied = LF_ArmoryKits.ApplyAll(armoryRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 armory book row(s)", armoryApplied, armoryRows.Count()));
+			}
+			else
+			{
+				ReadFailed("armory book failed to read, every officer starts with no kit out and no cooldown");
+			}
+		}
 		else if (payload == "houses")
 		{
-			// A version 1-44 save never reaches this payload: every house keeps its editor state.
+			// A version 1-45 save never reaches this payload: every house keeps its editor state.
 			array<ref LF_HouseLockRecord> houseRows = new array<ref LF_HouseLockRecord>();
 			if (context.Read(houseRows))
 			{
@@ -1481,7 +1505,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		}
 		else if (payload == "itemkeys")
 		{
-			// A version 1-45 save never reaches this payload: restored house keys stay unbound.
+			// A version 1-46 save never reaches this payload: restored house keys stay unbound.
 			array<ref LF_StorageItemKeyRecord> keyRows = new array<ref LF_StorageItemKeyRecord>();
 			if (context.Read(keyRows))
 			{

@@ -3,17 +3,11 @@
 ### `LF_PlayerJobComponent` — `Feature/Jobs/LF_PlayerJobComponent.c`
 - ✅ Per-player job state, per-job level/XP maps, license gates (POLICE→POLICE_ACCESS,
   MEDIC→MEDIC_ACCESS), client→server `RpcAsk_SetJob` re-validates licenses.
-- ✅ **Fruit-catcher mint closed** (verified 2026-08-30): the server clamps any
-  claimed score through `LF_GetFruitCatcherRewardCount` to
-  `LF_FRUIT_CATCHER_MAX_SCORE` (100); pin test `security/fruitcatcher-reward-clamp`.
-- ✅ **Fruit-catcher claim loop closed** (verified 2026-11-07): a claim
-  pays only a server-opened round. The minigame calls `AskStartFruitCatcherRound`
-  when a round starts; the server records the round id and start time
-  (`LF_FruitCatcherRound`) and `AskClaimFruitCatcherReward` sends that id back.
-  One claim per round, same fruit, at least `LF_FruitCatcherRound.MIN_ROUND_SECONDS`
-  (30 s) after the start, and the caller must hold FARMER. The minigame screen
-  is not in this repo; when it lands it must call the start ask. Pin tests
-  `security/fruitcatcher-rounds`, `security/job-workplace-and-seed`.
+- ✅ **Fruit-catcher reward removed** (#2408, 2026-11-17): the minigame never landed and nothing in a world
+  makes a player FARMER, so `AskStartFruitCatcherRound`, `AskClaimFruitCatcherReward`, their RPCs,
+  `LF_FruitCatcherRound` and `EHarvestJobType` are deleted. A fruit reward comes back with its own
+  location gate. The `fruit_pick` XP award stays in the jobs config. Pin test
+  `security/job-workplace-and-seed` still covers the workplace gate.
 - ✅ **Job switch and kit gates** (verified 2026-11-07): a
   client-requested switch (`RequestJobFromClient`, behind `RpcAsk_SetJob`) needs
   an `LF_JobSignUpAction` for that job within `LF_JobGuards.WORKPLACE_RADIUS`
@@ -55,7 +49,7 @@
 
 ### `LF_CivilianJob` — `Feature/Jobs/LF_CivilianJob.c`
 - ✅ Workplace signup, one active run, cash once, abandon pays nothing
-  (verified 2026-10-11). The bank balance stays 0. Parcel cargo is
+  (verified 2026-10-11). Run rules below (#2408). The bank balance stays 0. Parcel cargo is
   `{9CA41609F6C806AE}Prefabs/Items/Roleplay/LF_Parcel.et`, a cardboard box carried
   in both hands (#155: the bare `HandCarryItem_Base.et` had no mesh, so the
   hands were empty on a client). The mesh is `PostParcel.xob`, 0.26 x 0.14 x 0.38 m (a shoebox; every vanilla
@@ -233,4 +227,24 @@
   interaction stays hidden and the server's `Revoke` refuses and logs for a free player. Test `licence/revoke-cuffs`. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
   `e2e/licence-desk` (the open application, a revoke and a conviction that still blocks the permit across `wt e2e`).
 
+- ✅ **Run rules: deposit, distance, time, passenger** (#2408, merged, in-dev). All numbers are the jobs config's
+  (`Configs/Jobs/LF_Jobs.conf`, owner section `jobs`):
+  - *Deposit.* `LF_CivilianJob.BeginRun` takes a deposit from the player's cash when a run starts: the cargo's shop sell price
+    (`LF_ShopManagerComponent.GetSellPrice`) times `cargoDepositPercent` (100), or `cargoDepositFallback` (50) when the
+    shop list has no price. A player short of it gets no run and no cargo (toast `#LF-Job_NeedDeposit`). A delivery returns it
+    once; abandoning forfeits it, so start, abandon, start, abandon costs the cargo's value each loop (the cargo is not taken
+    back). A taxi fare has no cargo and no deposit. A restart ends the run and the held deposit is not returned (the cargo item
+    stays in the inventory and sells for about the deposit). Ledger reasons `job-deposit`, `job-deposit-back`.
+  - *Distance and time.* `BeginRun` records where and when the run started. `LF_CivilianJob.Dropoff` (the one call behind
+    `LF_JobDropoffAction`) pays only at a placed drop (`LF_JobSiteComponent` site DROP), at least `runMinDistance` (300 m,
+    straight line) from the start, after at least `runMinTimeFraction` (0.6) of the expected driving time, which is the
+    distance over `runRoadSpeed` (10 m/s). A refused drop pays nothing, keeps the run, the cargo and the deposit, and shows
+    `#LF-Job_TooClose`, `#LF-Job_TooFast` or `#LF-Job_NotADrop`. A run with no start on record pays nothing.
+  - *Taxi.* A fare also needs another player seated in the driver's vehicle when the fare is dropped off
+    (`LF_CivilianJob.CountPassengers`; `#LF-Job_NoPassenger`).
+  - *Map stop.* `LF_JobMapMarks.OnRunStarted` marks the nearest drop at least `runMinDistance` from the start, so the stop
+    always pays; when none is that far it marks the nearest.
+  - `CompleteRun` is the payout only and `AbandonRun` the forfeit; production code reaches a payout through `Dropoff`.
+    Tests `jobs/run-rules` (LOGIC: the checks, the deposit state, the config) and `jobs/run-cargo-deposit` (WORLD: a real
+    character, cash and cargo at the placed drop). Manual: a taxi fare with a second player is in the PR.
 - **Map marks (#2239):** a fare destination and a delivery stop become a shared mark plus the waypoint for their player, cleared when the run completes (`Feature/Jobs/LF_JobMapMarks.c`, `docs/features/map.md`; test `jobs/job-map-marks`). The marks are driven by `OnFareAccepted`/`OnStop`; nothing in the run code calls them until fares and stops exist.

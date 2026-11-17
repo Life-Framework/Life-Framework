@@ -1,0 +1,89 @@
+SCR_DestructibleBuildingEntity : "{70ADF23B04B58B05}Prefabs/Buildings/Pub/Pub.et" {
+ ID "C9E1D5E69083C4F9"
+ components {
+  LF_ShopComponent "{A3EF3B8C3870E486}" {
+   m_aShopItems {
+    LF_ShopItem "{734821A9186D88D3}" {
+     m_ItemPrefab "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{087C04925B30713D}" {
+     m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+    LF_ShopItem "{BE9CD01F058429C6}" {
+     m_ItemPrefab "{8F2C06D1F757C40F}Prefabs/Items/Food/LF_Crackers.et"
+     m_sDisplayName ""
+     m_iMaxQuantity 5
+    }
+   }
+  }
+  LF_StoreComponent "{C3EDD8E44135DF80}" {
+   m_sStoreKey "everon_pub"
+   m_aLines {
+    LF_StoreLine "{54362293209E0B80}" {
+     m_ItemPrefab "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et"
+     m_iMaxStock 20
+     m_iRestockAmount 3
+     m_sSlots "-7.978 0.676 -5.994 | -7.978 0.676 -6.162 | -7.978 0.676 -6.33 | -7.978 0.676 -6.498 | -7.978 0.676 -6.666 | -7.978 0.676 -6.834 | -7.978 0.676 -7.002 | -7.978 0.676 -7.17 | -7.978 0.676 -7.338 | -7.978 0.676 -7.506 | -7.885 0.676 -5.994 | -7.885 0.676 -6.162 | -7.885 0.676 -6.33 | -7.885 0.676 -6.498 | -7.885 0.676 -6.666 | -7.885 0.676 -6.834 | -7.885 0.676 -7.002 | -7.885 0.676 -7.17 | -7.885 0.676 -7.338 | -7.885 0.676 -7.506"
+    }
+    LF_StoreLine "{FA5A81D91F96BE2F}" {
+     m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+     m_iMaxStock 20
+     m_iRestockAmount 3
+     m_sSlots "-7.854 1.242 -5.998 | -7.854 1.242 -6.165 | -7.854 1.242 -6.332 | -7.854 1.242 -6.499 | -7.854 1.242 -6.666 | -7.854 1.242 -6.833 | -7.854 1.242 -7 | -7.854 1.242 -7.167 | -7.854 1.242 -7.334 | -7.854 1.242 -7.501 | -7.741 1.242 -5.998 | -7.741 1.242 -6.165 | -7.741 1.242 -6.332 | -7.741 1.242 -6.499 | -7.741 1.242 -6.666 | -7.741 1.242 -6.833 | -7.741 1.242 -7 | -7.741 1.242 -7.167 | -7.741 1.242 -7.334 | -7.741 1.242 -7.501"
+    }
+    LF_StoreLine "{7E95B7D05C73109A}" {
+     m_ItemPrefab "{8F2C06D1F757C40F}Prefabs/Items/Food/LF_Crackers.et"
+     m_iMaxStock 14
+     m_iRestockAmount 2
+     m_sSlots "-8.447 0.904 -5.97 | -8.447 0.904 -6.09 | -8.447 0.904 -6.21 | -8.447 0.904 -6.33 | -8.447 0.904 -6.45 | -8.447 0.904 -6.57 | -8.447 0.904 -6.69 | -8.447 0.904 -6.81 | -8.447 0.904 -6.93 | -8.447 0.904 -7.05 | -8.447 0.904 -7.17 | -8.447 0.904 -7.29 | -8.447 0.904 -7.41 | -8.447 0.904 -7.53"
+    }
+   }
+   m_vBoundaryCenter -2.3 0 -3.8
+   m_vBoundaryHalf 6.4 0 5
+   m_iRestockSeconds 300
+  }
+  ActionsManagerComponent "{6A600142E6EDAE6E}" {
+   ActionContexts {
+    UserActionContext "{FA7405EC3948AB15}" {
+     ContextName "till1"
+     Position PointInfo "{0D1274422A8E9650}" {
+      Offset -5.345 1.268 -4.734
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_StoreTillAction "{325BF89DF426019B}" {
+     ParentContextList {
+      "till1"
+     }
+     UIInfo UIInfo "{1C11C56A17E5433D}" {
+      Name "#LF-Store_Pay"
+     }
+    }
+   }
+  }
+ }
+ {
+  GenericEntity : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+   ID "BC1766D9DD6E1EBE"
+   components {
+    LF_AlarmMountComponent "{9A3C5DF4AE0F5F40}" {
+     m_vOffset 0 0.167 0.065
+     m_fReach 10
+    }
+   }
+   coords -3 2.6 -9.1
+   angleY 180
+  }
+  GenericEntity : "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et" {
+   ID "C479E8C1EF510A26"
+   coords -7.95 0 -6.75
+   angleY 90
+  }
+ }
+}

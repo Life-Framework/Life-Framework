@@ -26,7 +26,7 @@ class LF_StorageItemRecord : Managed
 	bool m_bStolen;
 
 	//! House a key opens (LF_KeyComponent, #2410), empty for anything that is not a bound house
-	//! key. Travels in the separate itemkeys payload (save version 46), like the serial.
+	//! key. Travels in the separate itemkeys payload (save version 47), like the serial.
 	[NonSerialized()]
 	string m_sHouseKey;
 
@@ -65,7 +65,7 @@ class LF_StorageItemSerialRecord : Managed
 
 //------------------------------------------------------------------------------------------------
 //! House keys of one snapshot (#2410), parallel to its item list ("" = not a bound house key). The
-//! itemkeys payload (save version 46), keyed by the snapshot's stable owner key and slot name.
+//! itemkeys payload (save version 47), keyed by the snapshot's stable owner key and slot name.
 class LF_StorageItemKeyRecord : Managed
 {
 	string m_sOwnerKey;

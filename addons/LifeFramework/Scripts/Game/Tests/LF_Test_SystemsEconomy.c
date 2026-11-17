@@ -239,7 +239,6 @@ class LF_Test_SystemsEconomy : LF_Test
 		if (jobs)
 		{
 			ctx.False(jobs.RequestJobFromClient(LF_EJobType.UNEMPLOYED), "a job request is refused");
-			ctx.Equal(0, jobs.StartFruitCatcherRound(EHarvestJobType.APPLES), "and so is a fruit round");
 		}
 
 		Owner(string.Empty);

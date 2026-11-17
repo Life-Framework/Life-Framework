@@ -87,8 +87,8 @@
   lockpick opened. No in-world lock/unlock action yet, and a door the owner opened stays open (#2435).
 - ✅ **Lock state, owner and carried keys survive a restart** (#2410, PERSISTENCE `houses/registry-persist`,
   `houses/carried-key-persist`, `wt e2e`): `LF_Houses` keeps one row per house with a stable identifier
-  (the editor identifier, or `BindIdentifier`) in the `houses` payload (save version 45); a carried house
-  key keeps the house it opens in the `itemkeys` payload (version 46). A house with no editor identifier
+  (the editor identifier, or `BindIdentifier`) in the `houses` payload (save version 46); a carried house
+  key keeps the house it opens in the `itemkeys` payload (version 47). A house with no editor identifier
   gets a per-boot id and is not saved (logged). Nothing assigns an owner in play yet (purchase flow).
 - ⚠️ House key names: `LF_KeyComponent` renames the prefab's shared `UIInfo`, so the name is wrong on
   clients and would be shared between keys; needs a per-item inventory info class (#2435).
