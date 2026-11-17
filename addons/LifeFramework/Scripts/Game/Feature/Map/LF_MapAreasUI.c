@@ -388,6 +388,33 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Why an area made no commands: its point count, its first world point and its screen box.
+	protected void LogNotDrawn(notnull LF_MapArea area, notnull array<vector> screen)
+	{
+		vector first;
+		if (!area.m_aOutline.IsEmpty())
+			first = area.m_aOutline[0];
+
+		vector lo;
+		vector hi;
+		if (!screen.IsEmpty())
+		{
+			lo = screen[0];
+			hi = screen[0];
+		}
+
+		foreach (vector point : screen)
+		{
+			lo[0] = Math.Min(lo[0], point[0]);
+			lo[1] = Math.Min(lo[1], point[1]);
+			hi[0] = Math.Max(hi[0], point[0]);
+			hi[1] = Math.Max(hi[1], point[1]);
+		}
+
+		LF_Debug.Info(LF_MapAreas.FEATURE, string.Format("area %1 not drawn: %2 point(s), first world %3, screen box %4..%5", area.m_sName, area.m_aOutline.Count(), first, lo, hi));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Re-reads the areas and rebuilds every command for the view the map has now.
 	protected void Redraw()
 	{
@@ -422,7 +449,9 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 				label = WidgetManager.Translate(label);
 
 			array<ref LF_MapAreaCmd> records = {};
-			LF_MapAreasDraw.Build(area, screen, ppu, viewW, viewH, tokens, label, records);
+			if (LF_MapAreasDraw.Build(area, screen, ppu, viewW, viewH, tokens, label, records) == 0)
+				LogNotDrawn(area, screen);
+
 			foreach (LF_MapAreaCmd record : records)
 				m_aCommands.Insert(ToCommand(record));
 		}
