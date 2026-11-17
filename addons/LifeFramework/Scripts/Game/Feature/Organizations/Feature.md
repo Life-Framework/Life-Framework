@@ -52,6 +52,14 @@ processing upgrade are kept at the desk.
   cooldown) logs `[LFDebug:OrgWars]` and returns a key. Each transition publishes `LF_OnOrgWarDeclared`,
   `LF_OnOrgWarAccepted`, `LF_OnOrgWarEnded` (reason `time`, `lapsed`, `forfeit`) from
   `LF_OrgWarsEvents.c`. No RPC, UI or money here; rights and the fee are W3.
+- `LF_OrgWarDesk` — the war desk verbs (#2668, W3). `Declare(characterId, playerUid, targetOrgId)`: the rank
+  holds `DECLARE_WAR`, both orgs have the rules' member minimum, the fund covers the fee; the fee is
+  debited, then `LF_OrgWars.Declare`, and a record refusal (pending, cooldown) credits it back in the same
+  call. A paid fee publishes `LF_OnMoneyMoved` (source `org-war-fee`, no account side, so the ledger
+  skips it) and is not refunded on a lapse. `Answer(characterId, warId)`: a `DECLARE_WAR` holder of the
+  target accepts inside the window. Refusal keys map to `#LF-OrgWar_*` toasts (`RefusalText`).
+  `LF_OrgWarCharacter.c` holds `RpcAsk_LF_OrgWarDeclare` / `RpcAsk_LF_OrgWarAnswer` on the character with
+  the lease ask's guards (systems switch, PURCHASE bucket, desk range); no host branch. No UI (W7).
 
 ## Iteration path
 
