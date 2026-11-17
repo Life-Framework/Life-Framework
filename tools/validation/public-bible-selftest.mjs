@@ -15,6 +15,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkPublicBible, INTERNAL } from "./validate-public-bible.mjs";
 import { collectLivePlaces, liveNowMarkdown, withLiveNow } from "../../website/scripts/live-now.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FIX = path.join(here, "fixtures", "public-bible");
@@ -25,7 +26,7 @@ const fail = (name, msg) => {
 };
 
 function overlay(name, mutate) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "lf-public-bible-"));
+  const dir = scratchDir("lf-public-bible-");
   fs.cpSync(path.join(FIX, "clean"), dir, { recursive: true });
   if (name) fs.cpSync(path.join(FIX, name), dir, { recursive: true });
   if (mutate) mutate(dir);

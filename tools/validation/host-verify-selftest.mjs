@@ -8,12 +8,12 @@
 // red-proof: before tools/host/verify.mjs existed this printed
 // "FAIL cannot load tools/host/verify.mjs: ERR_MODULE_NOT_FOUND" (2026-11-15).
 
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "validation", "fixtures", "host-verify", "savepoint");
@@ -56,7 +56,7 @@ function quiet(fn) {
 }
 const statuses = (r) => Object.fromEntries(r.results.map((x) => [x.name, x.status]));
 
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-verify-"));
+const tmp = scratchDir("lf-host-verify-");
 try {
   const host = join(tmp, "host");
   const backups = join(host, "backups");

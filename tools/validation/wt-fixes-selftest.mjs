@@ -2,13 +2,13 @@
 // inputs: tools/**
 // Scratch git repos with a bare origin and a stubbed gh lookup; no game, no network.
 // red-proof: see the PR body (parseIssueFlag accepting 0; branchMerged ignoring the merged-PR head; prMergedVerdict falling back to ancestry keeps no fresh branch).
-import { mkdirSync, mkdtempSync, writeFileSync, utimesSync, rmSync } from "node:fs";
+import { mkdirSync, writeFileSync, utimesSync, rmSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { tmpdir } from "node:os";
 import { join } from "node:path";
 import * as wt from "../wt.mjs";
 import * as pq from "../lib/pr-quality.mjs";
 import { refsBody } from "../lib/release-gates.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const ok = (c, m) => { if (!c) failures.push(m); };
@@ -41,7 +41,7 @@ ok(/conflicts in: docs\/a\.md, docs\/b\.md/.test(cm), `conflict message lists th
 ok(wt.mergeFailureDetail("", "  boom\n") === "boom", "no unmerged files: the raw git output is used");
 
 // --- 2. prune merge detection
-const dir = mkdtempSync(join(tmpdir(), "lf-wtfix-"));
+const dir = scratchDir("lf-wtfix-");
 const origin = join(dir, "origin.git");
 const repo = join(dir, "repo");
 try {

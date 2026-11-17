@@ -176,6 +176,38 @@ class LF_JailWork
 		if (uid.IsEmpty())
 			return false;
 
+		return BeginFor(uid, spot, worker, jobId, secondsOff, cooldown, workSeconds, kind);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the worker is alive and within LF_WorkAnim.MAX_RANGE of `spot`. Begin and Finish share it.
+	static bool IsAtSpot(IEntity worker, vector spot)
+	{
+		if (!worker)
+			return false;
+
+		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(worker);
+		if (controller && controller.GetLifeState() != ECharacterLifeState.ALIVE)
+			return false;
+
+		return vector.Distance(worker.GetOrigin(), spot) <= LF_WorkAnim.MAX_RANGE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: Begin once the player uid is known (the tests have no player behind the character).
+	//! Refuses a dead worker or one beyond LF_WorkAnim.MAX_RANGE of the spot, so a task cannot be
+	//! started from across the cell (#2417 item 26).
+	static bool BeginFor(string uid, IEntity spot, IEntity worker, string jobId, float secondsOff, float cooldown, float workSeconds, LF_EWorkAnimKind kind)
+	{
+		if (!Replication.IsServer() || !spot || !worker || uid.IsEmpty())
+			return false;
+
+		if (!IsAtSpot(worker, spot.GetOrigin()))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("jail work %1 refused for %2: out of reach of the work spot, or down", jobId, uid));
+			return false;
+		}
+
 		LF_EJailWorkCheck check = Check(uid, jobId, secondsOff, cooldown, Now());
 		if (check != LF_EJailWorkCheck.OK)
 		{
@@ -220,12 +252,7 @@ class LF_JailWork
 
 		LF_WorkAnim.End(worker, "jail work finished");
 
-		bool alive = true;
-		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(worker);
-		if (controller && controller.GetLifeState() != ECharacterLifeState.ALIVE)
-			alive = false;
-
-		if (!alive || vector.Distance(worker.GetOrigin(), spot) > LF_WorkAnim.MAX_RANGE)
+		if (!IsAtSpot(worker, spot))
 		{
 			LF_Debug.Info(FEATURE, string.Format("jail work %1 abandoned by %2", jobId, uid));
 			return;

@@ -1,12 +1,12 @@
 // Proves the example server template check (#295): the shipped folder is clean, and each way a host
 // folder goes wrong is named. red-proof: with the a2s.address fixture left "" the engine-refused file passed
 // the check; with the check in place it prints "FAIL ... a2s.address" below.
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { templateLaunch, templateProblems } from "../server-template/template.mjs";
 import { scaffoldPack } from "../pack/new.mjs";
 import { engineVerdict } from "../commands/server-template.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const fails = [];
 const expect = (ok, msg) => { if (!ok) fails.push(msg); };
@@ -17,7 +17,7 @@ expect(l.addons.join() === "LifeFramework,LF_Everon1989", `launch addons ${l.add
 expect(/LF_Everon1989\.conf$/.test(l.scenario), `launch scenario ${l.scenario}`);
 
 const copy = () => {
-  const root = mkdtempSync(join(tmpdir(), "lf-tpl-"));
+  const root = scratchDir("lf-tpl-");
   cpSync("server/example", join(root, "server", "example"), { recursive: true });
   cpSync("tools/test/config-fixtures/presets", join(root, "tools", "test", "config-fixtures", "presets"), { recursive: true });
   return root;

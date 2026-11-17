@@ -6,11 +6,11 @@
 //   within ~65 s" fails (600000 ms, timedOut); findFreezeDump matching every file -> "an old dump from a
 //   previous run is not this run's" fails.
 // inputs: tools/lib/wb-until.mjs, tools/lib/wb-launch-health.mjs, tools/validation/wb-launch-health-selftest.mjs, tools/cli.mjs
-import { mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { waitUntilDone } from "../lib/wb-until.mjs";
 import { findFreezeDump, selftest, stallReason } from "../lib/wb-launch-health.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = selftest();
 const check = (ok, msg) => {
@@ -71,7 +71,7 @@ const fake = () => {
 
 // Real folders: the profile layout Workbench writes (<profile>/logs/<run>/FREEZE_*.mdmp).
 {
-  const profile = mkdtempSync(join(tmpdir(), "lf-wbhealth-"));
+  const profile = scratchDir("lf-wbhealth-");
   try {
     check(findFreezeDump(profile) === null, "no logs folder: no dump");
     const oldRun = join(profile, "logs", "logs_2026-11-15_03-06-07");

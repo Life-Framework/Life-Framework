@@ -106,7 +106,7 @@ class LF_Stores
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The receipt the till printed last (held or lying where the user stood), or null.
+	//! \return The receipt the till printed last (held or lying where the user stood), or null.
 	static IEntity LastReceipt()
 	{
 		if (s_LastReceipt == EntityID.INVALID)

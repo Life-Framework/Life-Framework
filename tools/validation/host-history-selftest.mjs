@@ -9,12 +9,12 @@
 // red-proof: before tools/host/history.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/history.mjs'" (2026-11-15).
 
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const { hostHistory } = await import(pathToFileURL(join(ROOT, "tools", "host", "history.mjs")).href);
@@ -29,7 +29,7 @@ function local(s) {
   return new Date(y, mo - 1, d, h, mi, se);
 }
 
-const base = mkdtempSync(join(tmpdir(), "lf-host-history-"));
+const base = scratchDir("lf-host-history-");
 const dir = join(base, "host");
 const backups = join(dir, "backups");
 mkdirSync(backups, { recursive: true });
