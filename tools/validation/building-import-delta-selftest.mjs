@@ -8,12 +8,12 @@
 //   importDelta comparing only the manifest's inputs  -> FAIL delta: an .xob replaced in the addon (git checkout) is compiled again
 //   importDelta writing every model .xob.meta          -> FAIL delta: an unchanged model keeps Workbench's re-saved .xob.meta
 //   withoutBlenderNoise keeping traceback lines        -> FAIL noise: the ar_mqa traceback is dropped, the real error kept
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { contentHash, importBuilding, importDelta, planImport, readManifest, writeManifest, writePlan } from "../buildings/pipeline/import.mjs";
 import { withoutBlenderNoise } from "../buildings/pipeline/archbuilder.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = join(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "..", "..");
 const SPEC = {
@@ -56,7 +56,7 @@ export async function main() {
     failed++;
     console.log(`FAIL ${what}`);
   };
-  const tmp = mkdtempSync(join(tmpdir(), "lf-bp-delta-"));
+  const tmp = scratchDir("lf-bp-delta-");
   try {
     // ---- hash
     ok(contentHash("x.fbx", fbx("walls v1", { hour: 7, ms: 1 })) === contentHash("x.fbx", fbx("walls v1", { hour: 13, ms: 999 })), "hash: two exports of one scene (only the time differs) hash the same");

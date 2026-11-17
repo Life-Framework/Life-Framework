@@ -10,12 +10,12 @@
 // red-proof: with the ancestor check removed from promotionPlan it printed "moving stable backwards was
 // accepted"; with planMerged's reopen forced false it printed "legacy Closes: issue 101 stayed closed".
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as rg from "../lib/release-gates.mjs";
 import { describeRun, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
 import { cmdPromote } from "../promote.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -38,7 +38,7 @@ const sh = (cwd, ...args) => {
   return r.stdout.trim();
 };
 
-const dir = mkdtempSync(join(tmpdir(), "lf-promote-"));
+const dir = scratchDir("lf-promote-");
 const origin = join(dir, "origin.git");
 const work = join(dir, "work");
 const mute = async (fn) => {

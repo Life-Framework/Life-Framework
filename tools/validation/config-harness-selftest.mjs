@@ -6,10 +6,10 @@
 // run printed "FAIL shipped fixtures: validate: unexpected  error 1:54 ... below the minimum 0" and
 // exited 1; with the `missing` loop of the validate stage removed the "wrong expectation" check printed
 // "FAIL a wrong expectation must fail the harness"; restored, it prints "config-harness-selftest: OK".
-import { cpSync, mkdtempSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { FIXTURES, STAGES, isBoot, judgeBootLog, judgeRead, loadFixtures, main, runHarness, setBootDriver, setClientDriver } from "../config/harness.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const fails = [];
 const expect = (ok, msg) => { if (!ok) fails.push(msg); };
@@ -33,7 +33,7 @@ for (const fx of fixtures) {
 expect(fixtures.filter((f) => f.kind === "broken").length >= 12, "fewer than 12 reject classes covered");
 
 // Red path, on a copy: a wrong message, a wrong exit code and a missing sidecar each fail.
-const tmp = mkdtempSync(join(tmpdir(), "lf-config-harness-"));
+const tmp = scratchDir("lf-config-harness-");
 cpSync(FIXTURES, tmp, { recursive: true });
 const sc = join(tmp, "broken", "range-below-min.expect.json");
 const e = JSON.parse(readFileSync(sc, "utf8"));

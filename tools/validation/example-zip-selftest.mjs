@@ -4,13 +4,13 @@
 // red-proof: with the --final placeholder refusal switched off in buildExampleZip, the run printed
 // "FAIL final's refusal does not name the id: server.json still holds a PLACEHOLDER marker | DRAFT.txt ..."
 // and "FAIL a refused final still produced bytes" (verifyZip still caught it, but without naming the id).
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { ADDONS } from "../lib/addons.mjs";
 import { makeZip, readZip } from "../release/pack-playtest.mjs";
 import { DRAFT_NAME, IDS_FILE, ZIP_NAME, buildExampleZip, idsProblems, loadIds, main, verifyZip } from "../release/example-zip.mjs";
 import { FILES } from "../server-template/template.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const fails = [];
 const expect = (ok, msg) => { if (!ok) fails.push(msg); };
@@ -38,7 +38,7 @@ expect(!final.buf, "a refused final still produced bytes");
 
 // A checkout copy with the maintainer's ids in the config point.
 const copy = () => {
-  const root = mkdtempSync(join(tmpdir(), "lf-exzip-"));
+  const root = scratchDir("lf-exzip-");
   cpSync("server/example", join(root, "server", "example"), { recursive: true });
   for (const a of ADDONS) {
     cpSync(`addons/${a.name}/${a.name}.gproj`, join(root, "addons", a.name, `${a.name}.gproj`));
@@ -65,7 +65,7 @@ const setIds = (root, edit) => {
     expect(names(r.buf) === [...FILES].sort().join(), `final entries: ${names(r.buf)}`);
     expect(readZip(r.buf).every((e) => !e.data.toString("utf8").includes("PLACEHOLDER")), "a final zip still holds a placeholder");
     expect(verifyZip(r.buf, { final: true }).length === 0, "verifyZip rejects the final zip it was built to pass");
-    const out = mkdtempSync(join(tmpdir(), "lf-exzip-out-"));
+    const out = scratchDir("lf-exzip-out-");
     const lines = [];
     const log = console.log;
     console.log = (s) => lines.push(String(s));

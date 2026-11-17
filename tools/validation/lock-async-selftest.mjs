@@ -7,17 +7,17 @@
 //   loop ticks while waiting" fails (0 ticks) and the lock is never freed (its release timer cannot run).
 // inputs: tools/wt.mjs, tools/validation/lock-async-selftest.mjs
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as wt from "../wt.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);
 };
 
-const dir = mkdtempSync(join(tmpdir(), "lf-lockasync-"));
+const dir = scratchDir("lf-lockasync-");
 try {
   execFileSync("git", ["init", "-q", dir], { windowsHide: true });
   const lockFile = join(wt.ensureHub(dir), "locks", "build.lock");
