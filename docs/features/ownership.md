@@ -138,9 +138,10 @@
   (`stash refused: not a member`). The server also refuses a non-member moving an
   item out (`HandleAccessValidation`) or in (`CanStoreItem`). `CanStoreItem` has no
   instigator, so it only takes an item from a living member's own inventory, the stash
-  itself or a server spawn (restore, seeding); an item in a vehicle, crate or body is
-  refused even for a member, who carries it first (#2574, WORLD `hideout/stash-put-carrier`;
-  items on the ground are a follow-up). Membership and the
+  itself or a server spawn (restore, `AddAmount` seeding, a stack split, all inside
+  `LF_ServerInsertScope`); an item in a vehicle, crate or body, or lying on the ground, is
+  refused even for a member, who carries it first (#2574, #2584, WORLD `hideout/stash-put-carrier`;
+  log `stash <id> refused <prefab> from the ground`). Membership and the
   rank's stash right (`USE_STASH`) are the key: an open or breached door does not open the stash.
 - ✅ Stash contents survive a restart through `LF_PersistentStorageComponent`
   keyed `hideout:Roadmap_Hideout` (not an entity id), so the stash keeps its
@@ -163,6 +164,13 @@
   so a restart no longer leaves it open for anyone. Tests `organization/upgrade-unwired`,
   `organization/fund-overflow`, `hideout/stash-right`, `hideout/load-relock` (LOGIC). The lease that
   never ends is #2533.
+- ✅ **Ledger asks are rate-limited; the test sign only leaves its own org** (#2536, review items 30 and 31 of #2415,
+  merged, in-dev). View, Deposit, Withdraw, Leave and Lease now go through `LF_OrgLedgerGate` (`LF_OrganizationCharacter.c`)
+  on the existing `PURCHASE` bucket, the same as founding and upgrades (View walks every member, so a spammed ask cost
+  a pass over the whole roster). The first refusal in a window logs `[LFDebug:RateLimit]` and toasts; a refused ask
+  returns no page. The dev-gated test sign's Leave refuses with `OTHER_ORG` (`#LF-TestOrgSign_OtherOrg`) unless the
+  player's org is the sign's own "Test Organisation", so it can never strip a real org of its founder. Test
+  `organizations/ledger-rate` (LOGIC).
 - 🧪 **A hideout lease ends with its organisation's last member** (#2571, part of #2533, merged, in-dev):
   when the last member leaves or is kicked (`LF_OrganizationManager.Leave`, `LeaveDirect`, `Kick`) the
   organisation publishes `LF_OnOrganizationEmptied` (`Feature/Organizations/LF_OrganizationsEvents.c`)
