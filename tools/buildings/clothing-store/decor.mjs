@@ -20,6 +20,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gameVfs, readText } from "../../lib/game-prefab.mjs";
 import { gameDb } from "../pipeline/gamedb.mjs";
+import { prefabChildren, snapItems, specSupports } from "../pipeline/surface.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const FURNITURE = join(ROOT, "addons", "LF_Everon1989", "Prefabs", "Buildings", "ClothingStore", "Furniture", "ShopHouse_E_2I01t_furniture_clothesstore_lf_01.et");
@@ -290,6 +291,13 @@ export function rewrite(text, block) {
 }
 
 const text = readFileSync(FURNITURE, "utf8");
+// Every prop that stands on something is snapped onto the real top under it (tools/buildings/pipeline/surface.mjs); the y typed
+// above is a hint. A tilted row is left as written. `toolsi building check clothing-store` proves the result.
+const spec = JSON.parse(readFileSync(join(dirname(FURNITURE), "..", "..", "..", "..", "..", "..", "tools", "buildings", "clothing-store", "spec.json"), "utf8"));
+for (const it of items) if (it.angles) it.free = true;
+const snap = await snapItems(items, { fixed: [...prefabChildren(rewrite(text, "")), ...specSupports(spec)] });
+console.log("decor: " + snap.summary);
+if (process.argv.includes("--report")) for (const c of snap.changes) console.log("  " + c.path.split("/").pop().replace(".et", "") + " y " + c.from + " -> " + c.to + " (on " + c.on + ")");
 const next = rewrite(text, await build());
 if (process.argv.includes("--check")) {
   const same = next === text;

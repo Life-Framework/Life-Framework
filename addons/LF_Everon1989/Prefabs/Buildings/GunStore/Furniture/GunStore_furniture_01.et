@@ -692,7 +692,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
    ID "DC1FAB5DF7144D84"
-   coords 3.3 1.238 -0.1
+   coords 3.3 1.239 -0.1
    angleY 15
   }
   GenericEntity : "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et" {
@@ -702,7 +702,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
    ID "DC1FA1F01A3CCD6C"
-   coords 3.1 1.238 -0.9
+   coords 3.1 1.237 -0.9
    angleY 180
   }
   GenericEntity : "{00C4B4415C735DCF}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01_V2.et" {
@@ -779,34 +779,34 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{EA8D922E189837C2}Prefabs/Props/Civilian/Suitcase_04_open.et" {
    ID "DC1FE3B3DB5B4330"
-   coords 2.95 1.119 3.1
+   coords 2.95 1.098 3.1
    angleY 20
   }
   GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
    ID "DC1F55FAFF5EA463"
-   coords 3.75 1.119 2.95
+   coords 3.75 1.097 2.95
    angleY -10
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
    ID "DC1F78D2D115A0E7"
    scale 0.8
-   coords 3.3 1.119 3.35
+   coords 3.3 1.098 3.35
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
    ID "DC1FC597C26B6877"
    scale 0.8
-   coords 3.5 1.119 3.42
+   coords 3.5 1.098 3.42
    angleY 40
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
    ID "DC1F081CA7D7A370"
    scale 0.8
-   coords 3.4 1.119 3.2
+   coords 3.4 1.098 3.2
    angleY 80
   }
   GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
    ID "DC1F150233391827"
-   coords 3.95 1.119 3.4
+   coords 3.95 1.098 3.4
    angleY 80
   }
   GenericEntity : "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et" {
@@ -821,33 +821,33 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et" {
    ID "DC1F5DF47723DE33"
-   coords 1.5 1.049 -2.5
+   coords 1.5 1.016 -2.5
    angleY 90
   }
   GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
    ID "DC1F86BA9990AB3D"
-   coords 1.2 1.049 -1.5
+   coords 1.2 1.016 -1.5
    angleY 90
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
    ID "DC1FE53C91B96883"
    scale 0.8
-   coords 1.2 1.049 -2.05
+   coords 1.2 1.017 -2.05
   }
   GenericEntity : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
    ID "DC1F3CB337B3608A"
    scale 0.8
-   coords 1.32 1.049 -2.12
+   coords 1.32 1.017 -2.12
    angleY 50
   }
   GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
    ID "DC1FE02945F12B14"
-   coords 1.35 1.049 -1
+   coords 1.35 1.017 -1
    angleY 100
   }
   GenericEntity : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
    ID "DC1FE63CB0E9429C"
-   coords 1.1 1.049 -2.6
+   coords 1.1 1.016 -2.6
    angleY 70
   }
   GenericEntity : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {

@@ -1,0 +1,49 @@
+SCR_DestructibleBuildingEntity : "{65ED02B8B05842F8}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_platform.et" {
+ ID "F0DBA538AC2A0552"
+ {
+  SCR_DestructibleBuildingEntity : "{BC5F1BFFD0549218}Prefabs/Buildings/FuelStation/FuelStation_Building.et" {
+   ID "62D0C0E92E88A925"
+   coords 3.25 0.245 3.372
+   angles 0 -180 0
+  }
+  SCR_DestructibleBuildingEntity : "{6FFFE46855750DBE}Prefabs/Buildings/FuelStation/FuelStation_Kiosk.et" {
+   ID "62D0C0E92E88A9AF"
+   coords -7.477 0.331 4.156
+   angles 0 -180 0
+  }
+  $grp GenericEntity : "{B3CF0487BB36323B}Prefabs/Props/Furniture/LampFluorescent/LampFluorescent_01.et" {
+   {
+    ID "62D0C0E8EDEA6DE6"
+    coords -6.136 6.076 -0.204
+   }
+   {
+    ID "62D0C0E92E88A816"
+    coords 4.359 6.076 -0.204
+   }
+  }
+  $grp SCR_DestructibleBuildingEntity : "{E9F0814557EC3DA9}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_roof.et" {
+   {
+    ID "62D095E45B07B36F"
+    coords -6.485 0 0
+    {
+     SCR_DestructibleBuildingEntity : "{A4D0B331414901A5}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_tankpistol.et" {
+      ID "62D0C0ED31BBC05B"
+      coords -1.62 0 -0.769
+      angles 0 -180 0
+     }
+    }
+   }
+   {
+    ID "62D095E45B07B370"
+    coords 4.185 0 0
+    {
+     SCR_DestructibleBuildingEntity : "{A4D0B331414901A5}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_tankpistol.et" {
+      ID "62D0C0EB96BC281F"
+      coords -1.644 0 -0.643
+      angles 0 180 0
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,81 @@
+SCR_DestructibleBuildingEntity : "{614555E9CD7A4399}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_building_small_base.et" {
+ ID "F0DBA538AC2A0552"
+ {
+  GenericEntity : "{A2F936FA5D2D8E55}Prefabs/Buildings/FuelStation/Furniture/FuelStation_Kiosk_furniture_01.et" {
+   ID "58EA8658C574D24C"
+   coords 0 0 0
+  }
+  GameEnvironmentProbeEntity : "{565470F7BA530E0D}Prefabs/Structures/Core/ProbeHouse_Base.et" {
+   ID "5218A82FF3F2F81A"
+   coords -0.382 1.664 -0.384
+  }
+  GenericEntity : "{8391C71E9E3D1DC6}Prefabs/Structures/BuildingParts/Doors/DoorSet_Fuelstation_01_R_EXT_B.et" {
+   ID "555CCC869C6678B1"
+   components {
+    Hierarchy "{612AE78C85563E26}" {
+     Enabled 1
+     PivotID "socket_door_01"
+     AutoTransform 1
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{909DF42FAE53A015}Prefabs/Structures/BuildingParts/Windows/Glass_198x190/Glass_198x190.et" {
+   ID "555CCC869C66780E"
+   components {
+    Hierarchy "{51C4DA20F011E284}" {
+     Enabled 1
+     PivotID "socket_glass_198x190"
+     AutoTransform 1
+    }
+   }
+   coords 0 0 0
+  }
+  $grp GenericEntity : "{AA66A03696076AB1}Prefabs/Structures/BuildingParts/Windows/Glass_211x98/Glass_211x98.et" {
+   {
+    ID "555CCC869C667815"
+    components {
+     Hierarchy "{51C4DA20F011E284}" {
+      Enabled 1
+      PivotID "socket_glass_211x98_01"
+      AutoTransform 1
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "555CCC869C6678C8"
+    components {
+     Hierarchy "{51C4DA20F011E284}" {
+      Enabled 1
+      PivotID "socket_glass_211x98_04"
+      AutoTransform 1
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "555CCC869C6678D6"
+    components {
+     Hierarchy "{51C4DA20F011E284}" {
+      Enabled 1
+      PivotID "socket_glass_211x98_03"
+      AutoTransform 1
+     }
+    }
+    coords 0 0 0
+   }
+   {
+    ID "555CCC869C6678E2"
+    components {
+     Hierarchy "{51C4DA20F011E284}" {
+      Enabled 1
+      PivotID "socket_glass_211x98_02"
+      AutoTransform 1
+     }
+    }
+    coords 0 0 0
+   }
+  }
+ }
+}
