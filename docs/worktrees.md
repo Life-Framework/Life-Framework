@@ -1022,6 +1022,8 @@ the world, the script heap and the physics are the 1 GB, and no flag shrinks the
 reserve per lowspec client is 800 MB instead of 850 (`pool.json` `sessionReserve`); the server's is
 unchanged at 600.
 
+**VRAM.** A client also takes GPU memory (reserve per client: lowspec 700 MB, full 1800 MB; `sessionReserveClientVramMb`), and the 8 GB laptop card runs out before its RAM with 2 full clients. `tools/lib/pool-vram.mjs` reads the free VRAM (`nvidia-smi`, bounded by a timeout); the queue's machine choice (`rankMachines`) and `vramGate` leave a machine without room for a client session while another has it. A test-lane job ignores VRAM, and an unreadable card (no `nvidia-smi`, a failed read) skips the rule and is logged once, so RAM alone decides (`tools/validation/pool-vram-selftest.mjs`).
+
 **What does free RAM is trimming.** A session waiting for the next harness command touches a
 fraction of its resident pages. `EmptyWorkingSet` (`tools/lib/ws-trim.mjs`) moves the rest to the
 standby list: still cached, counted as available by Windows and by the gate, faulted back on use.
