@@ -373,6 +373,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JobSignUpPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_JobsOverrideModel(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobsPackOverlay(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_JobWhitelistRoster(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JoinNotice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JumpPadSeen(), LF_TestTier.LOGIC);
@@ -496,6 +497,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PhoneCallWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhoneExchange(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PhoneVoiceBand(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PhoneVoiceConnectFail(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhoneVoiceWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PhotoIdCard(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PhotoIdCardsPersist(), LF_TestTier.PERSISTENCE);
@@ -567,6 +569,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuantityVisuals(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuarryZone(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_QuestDialogueHardening(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_QuestLogHostReply(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_QuestRestoreCooldown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestSignal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestTracker(), LF_TestTier.LOGIC);

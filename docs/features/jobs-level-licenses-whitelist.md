@@ -189,7 +189,7 @@
   `LF_WhitelistManager.AddFactionWhitelist` and logs and reports to staff only when that stored
   a new entry. `MEDIC`, `CONNECT`, `NONE` (no roster; there is no medic faction type) and a uid
   already on the roster log an `LF_Debug.Warn` and report nothing.
-- ⚠️ The job whitelist is checked by character key and never written (#2412 items 4-5).
+- ✅ **The job whitelist reads the faction roster by account uid** (2026-11-17, WORLD `whitelist/job-roster`, #2577): `IsWhitelistedForJob(accountUid, job)` passes when the job's faction roster (POLICE job, POLICE faction) holds the account uid, or the old per-job list does (read only, never written). `LF_PlayerJobComponent` and `LF_LicenseManagerComponent` pass `LF_Utils.GetAccountUID`, so a second character of an approved officer passes. Manual: see the PR.
 - ✅ **The dead legacy whitelist sign action, client flags and GM context actions are gone**
   (2026-11-17, WORLD `whitelist/legacy-gone`, #2576): `LF_WhitelistAction` (it needed
   `LF_PlayerWhitelistComponent`, which no character carries, and its flags were set only on the
