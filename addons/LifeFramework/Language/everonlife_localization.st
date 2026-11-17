@@ -4493,6 +4493,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hotwire"
      Comment "Toast title for hotwiring (#412)."
     }
+    CustomStringTableItem "{7B1E4C90A2D35F68}" {
+     Id "LF-HouseLock_Lock"
+     Target_en_us "Lock house"
+     Comment "House door action: the owner or a key holder locks the house"
+    }
+    CustomStringTableItem "{9D52A7E31C084B6F}" {
+     Id "LF-HouseLock_Unlock"
+     Target_en_us "Unlock house"
+     Comment "House door action: the owner or a key holder unlocks the house"
+    }
     CustomStringTableItem "{57AECD3805F0082C}" {
      Id "LF-ID_CardAge"
      Target_en_us "Age: %1"
