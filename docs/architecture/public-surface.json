@@ -37,6 +37,7 @@
     "LF_RadioPlaylistConfig",
     "LF_ResourceChainConfig",
     "LF_RespawnConfig",
+    "LF_SafeTypeConfig",
     "LF_ServiceCallsConfig",
     "LF_ShopLimitsConfig",
     "LF_ShopPricesConfig",
