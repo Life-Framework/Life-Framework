@@ -48,6 +48,17 @@ expect(/no \.meta/.test(run(item("gone", "{1234567890ABCDEF}Prefabs/Items/Gone.e
 expect(/GUID/.test(run(item("drill", "{1234567890ABCDEF}Prefabs/Items/Fence/LF_Drill.et", 10, 5), "")), "an addon prefab with the wrong GUID fails");
 expect(/neither an addon resource nor a base game prefab/.test(run(item("x", "{1234567890ABCDEF}Prefabs/Weapons/Nope.et", 10, 5), "")), "a prefab nobody has fails");
 expect(/no catalogue file lists item ghost/.test(run(item("pistol", PISTOL, 500, 250), offer("gun_counter", "ghost"))), "an offer for a missing item fails");
+// A licence row (m_sGrantsLicence) names no catalogue item; a malformed licence name fails.
+expect(run(item("pistol", PISTOL, 500, 250), `  LF_OutletOffer "{AAAAAAAAAAAAAAA3}" {
+   m_sOutlet "gun_counter"
+   m_sItem "firearm_permit"
+   m_sGrantsLicence "FIREARM_PERMIT"
+  }`) === "", "a licence row with no catalogue item passes");
+expect(/not an LF_ELicenseType name/.test(run(item("pistol", PISTOL, 500, 250), `  LF_OutletOffer "{AAAAAAAAAAAAAAA3}" {
+   m_sOutlet "gun_counter"
+   m_sItem "firearm_permit"
+   m_sGrantsLicence "firearm permit"
+  }`)), "a licence row with a malformed licence name fails");
 // Overlays merge by id over the core file: a patch of the sell price alone is judged against the core price.
 const CORE = "addons/LifeFramework/Configs/Catalogue/LF_ItemCatalogue.conf";
 const core = conf(item("pistol", PISTOL, 500, 250), offer("gun_counter", "pistol"));

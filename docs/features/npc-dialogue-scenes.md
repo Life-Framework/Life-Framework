@@ -50,6 +50,8 @@
   with a new number, a new photo and today's date for `idCard.replacementFee` (50, carried
   cash, ledger reason `id-card`); the old card reads VOID - REPLACED. A mode with
   `m_bGrantIdAtSpawn` replaces it free at the next spawn.
+- 🧪 (2026-11-17, #2413) **Asking again no longer answers for the citizen.** An officer's second *Request ID* while the first sheet is still open replaces the sheet; `LF_IdRequestSheet.Open` now closes the old one unanswered (`Dismiss`) before it resets the answered flag. Before, the old sheet's close sent a refusal the server read as the answer to the new request. Test `id-check/reask` (WORLD).
+- 🧪 (2026-11-17, #2413) **An unreadable card registry no longer restarts numbering at 1.** When the `idcards` payload fails to read (`LF_PersistenceComponentSerializer`, counted as a read failure), `LF_PhotoIdCard.NoteRegistryUnreadable` logs `LF_Debug.Error` and numbering resumes at `UNREADABLE_FLOOR` (500000), so a card printed before keeps a number no row holds and reads as unregistered instead of as the new holder. No save format change. Test `id-card/registry-unreadable` (WORLD).
 - Tests: `identity/photo-id-card` (LOGIC), `identity/photo-id-card-world` (WORLD),
   `persist/photo-id-cards` (PERSISTENCE), `e2e/pass2-verify-load` (the card in the pocket);
   session proof `photo-id-card-proof`. Logs `[LFDebug:IdCard]`.

@@ -16,9 +16,8 @@ class LF_FineTicketComponent : ScriptComponent
 	[RplProp()]
 	protected int m_iNumber;
 
-	[RplProp()]
-	protected string m_sHolderUid;
-
+	//! The holder's display name. Their platform uid stays in the server's record: every client that
+	//! streams the paper reads its RplProps (#2416).
 	[RplProp()]
 	protected string m_sHolderName;
 
@@ -66,7 +65,6 @@ class LF_FineTicketComponent : ScriptComponent
 			return true;
 
 		m_iNumber = record.m_iNumber;
-		m_sHolderUid = record.m_sHolderUid;
 		m_sHolderName = record.m_sHolderName;
 		m_sOffence = record.m_sOffence;
 		m_iAmount = record.m_iAmount;
@@ -92,12 +90,6 @@ class LF_FineTicketComponent : ScriptComponent
 	int GetNumber()
 	{
 		return m_iNumber;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	string GetHolderUid()
-	{
-		return m_sHolderUid;
 	}
 
 	//------------------------------------------------------------------------------------------------

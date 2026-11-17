@@ -2,14 +2,15 @@
 // inputs: tools/**, agent-box/**, .githooks/**
 // Does not boot the game and does not merge this worktree.
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mergeStringTables, parseStringTable } from "../merge/union-string-table.mjs";
 import { mergeLines } from "../merge/merge-markdown.mjs";
 import { mergeJsonKeys } from "../merge/merge-json-keys.mjs";
-import { regenPlan } from "../merge/regen-generated.mjs";
+import { regenPlan, timeoutFor } from "../merge/regen-generated.mjs";
+import { driverBackstopMs } from "../merge/run-driver.mjs";
 import { mergeLintBaselines } from "../merge/union-lint-baseline.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -441,6 +442,66 @@ ${clean.stderr}`);
     if (status) fail(`the registry driver left the worktree dirty:\n${status}`);
   }
 
+  // #2549: a generator that never exits must not hang `git merge`. The stub stands in for PowerShell and
+  // sleeps forever; with a 2 s budget the driver kills it, names the step, removes its scratch dir and exits 1
+  // so git marks the file conflicted and the merge finishes. Red on main: the stub is ignored, the real
+  // generator runs and the merge succeeds.
+  const hangRepo = join(temp, "hang");
+  const hangTmp = join(temp, "hang-tmp");
+  const hangStub = join(temp, "hang-stub.mjs");
+  mkdirSync(hangTmp, { recursive: true });
+  writeFileSync(hangStub, "setInterval(() => {}, 1000);\n");
+  initRepo(hangRepo);
+  configureDriver(hangRepo, "lf-regen-tests", "regen-generated.mjs");
+  writeFileSync(join(hangRepo, ".gitattributes"), "LF_TestRegistrations.generated.c merge=lf-regen-tests\n");
+  writeTest(hangRepo, "LF_Test_Old");
+  writeFileSync(join(hangRepo, registryRel), "base-registry\n");
+  commitAll(hangRepo, "base");
+  git(hangRepo, ["checkout", "-q", "-b", "theirs"]);
+  writeFileSync(join(hangRepo, registryRel), "theirs-registry\n");
+  commitAll(hangRepo, "theirs");
+  git(hangRepo, ["checkout", "-q", "master"]);
+  writeFileSync(join(hangRepo, registryRel), "ours-registry\n");
+  commitAll(hangRepo, "ours");
+  const hangBudgetMs = 2000;
+  const hangEnv = {
+    ...process.env,
+    LF_MERGE_DRIVER_TIMEOUT_MS: String(hangBudgetMs),
+    LF_MERGE_DRIVER_GENERATOR_STUB: hangStub,
+    TEMP: hangTmp,
+    TMP: hangTmp,
+    TMPDIR: hangTmp,
+  };
+  const hangStart = Date.now();
+  const hangMerge = spawnSync("git", ["merge", "theirs", "--no-edit"], {
+    windowsHide: true,
+    cwd: hangRepo,
+    encoding: "utf8",
+    env: hangEnv,
+    timeout: 60_000,
+    killSignal: "SIGKILL",
+  });
+  const hangElapsed = Date.now() - hangStart;
+  const hangOut = `${hangMerge.stdout}\n${hangMerge.stderr}`;
+  if (hangMerge.error) fail(`the merge never finished: ${hangMerge.error.code} after ${hangElapsed} ms`);
+  else {
+    if (hangMerge.status === 0) fail(`a hung generator should leave the registry conflicted:\n${hangOut}`);
+    if (hangElapsed > hangBudgetMs + 15_000) fail(`the driver took ${hangElapsed} ms for a ${hangBudgetMs} ms budget`);
+    if (!/lf-regen: generator stub timed out after .*regen-tests/.test(hangOut)) fail(`the driver should name the step and the fix:\n${hangOut}`);
+    const unmerged = git(hangRepo, ["ls-files", "-u"]).stdout.trim();
+    if (!unmerged.includes("LF_TestRegistrations.generated.c")) fail(`git should mark the registry unmerged:
+${unmerged}`);
+  }
+  const hangLeft = readdirSync(hangTmp).filter((name) => name.startsWith("lf-regen-"));
+  if (hangLeft.length) fail(`the driver left scratch dirs behind: ${hangLeft.join(", ")}`);
+
+  // The launcher honours the same override: a backstop of three times it for the wrapped driver.
+  if (driverBackstopMs({ LF_MERGE_DRIVER_TIMEOUT_MS: "2000" }) !== 11000) fail("driverBackstopMs should be 3x the override plus 5 s");
+  if (driverBackstopMs({}) !== 240_000) fail("driverBackstopMs default should be 240 s");
+  if (timeoutFor(20_000, {}) !== 20_000 || timeoutFor(20_000, { LF_MERGE_DRIVER_TIMEOUT_MS: "abc" }) !== 20_000) {
+    fail("timeoutFor should ignore a missing or non-numeric override");
+  }
+
   // The localization driver generates the same way: real string table, scratch dir, only %A written.
   const langRel = "addons/LifeFramework/Language";
   const confRel = `${langRel}/everonlife_localization.en_us.conf`;
@@ -475,4 +536,4 @@ if (failures.length) {
   for (const failure of failures) console.log(`  - ${failure}`);
   process.exit(1);
 }
-console.log("merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, generated files call regen, lint baseline keeps both sides' fixes, keyed table rows and gallery JSON keys union with per-key conflicts)");
+console.log("merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, generated files call regen, a hung generator is killed and leaves the file conflicted, lint baseline keeps both sides' fixes, keyed table rows and gallery JSON keys union with per-key conflicts)");

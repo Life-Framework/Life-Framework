@@ -75,6 +75,25 @@ class LF_TownBoardMapKnown
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: a player left the server. Player ids are reused by the next arrival, so the gap
+	//! must not outlive the connection, and the table must not grow with every player who passed.
+	static void Forget(int playerId)
+	{
+		if (s_mLastMs)
+			s_mLastMs.Remove(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many players the gap holds a tick for.
+	static int TrackedCount()
+	{
+		if (!s_mLastMs)
+			return 0;
+
+		return s_mLastMs.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: whether a town board stands within BOARD_REACH of the character.
 	static bool BoardNear(IEntity character)
 	{

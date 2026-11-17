@@ -154,6 +154,11 @@
                 "type": "boolean",
                 "description": "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead",
                 "default": false
+              },
+              "grantsLicence": {
+                "type": "string",
+                "description": "Licence row: the counter issues this licence (LF_ELicenseType name) under the licence office's rules (fee, clean record, wait; LF_LicenceDesk) instead of selling an item. m_sItem is then only the row's key and names no catalogue item. Empty is an item row",
+                "default": ""
               }
             },
             "additionalProperties": false
@@ -410,6 +415,21 @@
       },
       "additionalProperties": false,
       "x-class": "LF_GraceConfig"
+    },
+    "houses": {
+      "type": "object",
+      "description": "The houses owner-config section: Configs/Houses/LF_Houses.conf with the owner's `houses` section layered over it.",
+      "properties": {
+        "doorCloseDelaySeconds": {
+          "type": "number",
+          "description": "Seconds a locked house's open door stays open before it closes itself. 0 turns the auto-close off",
+          "default": 20,
+          "minimum": 0,
+          "maximum": 600
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_HousesConfig"
     },
     "idCard": {
       "type": "object",
@@ -1218,6 +1238,55 @@
           "default": 120,
           "minimum": 1,
           "maximum": 1440
+        },
+        "dutyShiftMaxMinutes": {
+          "type": "integer",
+          "description": "Most minutes of one duty shift that count for duty pay and rank. Past it the clock runs on unpaid until the officer clocks out and in again, so an officer who walked away from the game stops earning. A disconnect also stops the clock",
+          "default": 120,
+          "minimum": 5,
+          "maximum": 1440
+        },
+        "trialSweepSeconds": {
+          "type": "integer",
+          "description": "Seconds between the server's checks for an on-duty officer whose trial ran out. That officer is clocked out",
+          "default": 60,
+          "minimum": 10,
+          "maximum": 3600
+        },
+        "ticketRateWindowSeconds": {
+          "type": "integer",
+          "description": "Seconds of the window in which an officer may send ticket requests (ticketRateBurst per window)",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 60
+        },
+        "ticketRateBurst": {
+          "type": "integer",
+          "description": "Ticket requests one officer may send per ticketRateWindowSeconds. More are refused",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 50
+        },
+        "spikeStripMaxPerOfficer": {
+          "type": "integer",
+          "description": "Spike strips one officer may have deployed at once. Each deployed strip checks for wheels 20 times a second",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 20
+        },
+        "callReward": {
+          "type": "integer",
+          "description": "Cash an officer is paid, once, when their fine of a taken police call suspect at the call site completes the call",
+          "default": 150,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "callRadius": {
+          "type": "number",
+          "description": "Metres from a police call site within which the fine by the officer holding the call completes it",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 2000
         }
       },
       "additionalProperties": false,

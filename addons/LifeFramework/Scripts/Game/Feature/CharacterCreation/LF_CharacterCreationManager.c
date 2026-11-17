@@ -82,6 +82,20 @@ class LF_CharacterCreationRules
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server check of anything that re-enters the arrival flow (the quiz's Continue, a form R-89
+	//! answer): only a player the server is still arriving may. Anyone else is already in the world
+	//! (alive, dead, downed, cuffed, jailed) and must not reach the pick or a fresh spawn (#2413).
+	//! \param flowOpen True while the server has this player's arrival flow open (set on connect,
+	//! cleared when they spawn).
+	static string RefuseFlowRequest(bool flowOpen)
+	{
+		if (!flowOpen)
+			return "#LF-CharSel_Refused";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server check of a form R-89 answer for an account that already has a character: it registers
 	//! only after the player chose "register a new resident" on the pick, and never from a living body.
 	//! \param registerOffered True while the server has a "new resident" form open for this player.
@@ -117,6 +131,10 @@ class LF_CharacterCreationManager : Managed
 	protected ref set<int> m_PickOffered = new set<int>();
 	//! Players who chose "register a new resident" on the pick: their form R-89 may add a character.
 	protected ref set<int> m_RegisterOffered = new set<int>();
+	//! Players whose arrival flow is open (#2413): filled on connect, cleared when they spawn. The
+	//! quiz's Continue and the registration form re-enter the flow only for these players, so a dead,
+	//! downed, cuffed or jailed player cannot restart it and pick another character.
+	protected ref set<int> m_FlowOpen = new set<int>();
 	//! Players whose flow waits for their platform identity (logged once per wait).
 	protected ref set<int> m_IdentityWaiting = new set<int>();
 	//! Players told that the server is still connecting them (once per wait).
@@ -160,6 +178,7 @@ class LF_CharacterCreationManager : Managed
 		s_Instance.m_RegisterOffered.RemoveItem(playerId);
 		s_Instance.m_IdentityWaiting.RemoveItem(playerId);
 		s_Instance.m_IdentityNoticeSent.RemoveItem(playerId);
+		s_Instance.m_FlowOpen.RemoveItem(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -171,10 +190,32 @@ class LF_CharacterCreationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: a player connected, so their arrival flow is open until they spawn (tests call it too).
+	void OpenFlow(int playerId)
+	{
+		if (!m_FlowOpen.Contains(playerId))
+			m_FlowOpen.Insert(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the player's arrival is over (they spawned), so nothing re-enters the flow.
+	void CloseFlow(int playerId)
+	{
+		m_FlowOpen.RemoveItem(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: "" when this player's arrival flow is open, else the localization key to tell them.
+	string RefuseFlowRequest(int playerId)
+	{
+		return LF_CharacterCreationRules.RefuseFlowRequest(m_FlowOpen.Contains(playerId));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return true when an offer or wait is still recorded for this player id.
 	bool HasPlayerState(int playerId)
 	{
-		return m_PickOffered.Contains(playerId) || m_RegisterOffered.Contains(playerId) || m_IdentityWaiting.Contains(playerId) || m_IdentityNoticeSent.Contains(playerId);
+		return m_PickOffered.Contains(playerId) || m_RegisterOffered.Contains(playerId) || m_IdentityWaiting.Contains(playerId) || m_IdentityNoticeSent.Contains(playerId) || m_FlowOpen.Contains(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -194,18 +235,38 @@ class LF_CharacterCreationManager : Managed
 		if (!Replication.IsServer())
 			return;
 
+		OpenFlow(playerId);
 		GetGame().GetCallqueue().CallLater(ContinueFlow, FLOW_POLL_DELAY_MS, false, playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: the player read the quiz's pass page. The flow runs again from the top, so a client
-	//! that sends this without passing is asked the questions again.
+	//! that sends this without passing is asked the questions again. Refused unless the server is
+	//! still arriving this player (#2413): the RPC is open to any client, dead or alive.
 	void ContinueAfterQuiz(int playerId)
 	{
 		if (!Replication.IsServer())
 			return;
 
+		if (!AllowFlowRequest(playerId, "quiz continue"))
+			return;
+
 		ContinueFlow(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: gate for the two client answers that re-enter the arrival flow. A refusal is logged and
+	//! the player told, never silent.
+	//! \return true when this player's arrival flow is open.
+	protected bool AllowFlowRequest(int playerId, string what)
+	{
+		string refusal = RefuseFlowRequest(playerId);
+		if (refusal.IsEmpty())
+			return true;
+
+		LF_Debug.Warn("CharacterCreation", string.Format("%1 from player %2 refused: not arriving (already playing, dead, downed, cuffed or jailed)", what, playerId));
+		LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-ID_Information", refusal, 5.0, LF_ENotificationType.WARNING);
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -224,6 +285,14 @@ class LF_CharacterCreationManager : Managed
 	//------------------------------------------------------------------------------------------------
 	protected void ContinueFlow(int playerId)
 	{
+		// Last line of defence: the poll can outlive a disconnect or a spawn, and no caller may
+		// restart the flow for a player the server is not arriving (#2413).
+		if (!RefuseFlowRequest(playerId).IsEmpty())
+		{
+			LF_Debug.Warn("CharacterCreation", string.Format("flow for player %1 dropped: arrival already over", playerId));
+			return;
+		}
+
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		if (!gameMode || gameMode.GetState() != SCR_EGameModeState.GAME)
 		{
@@ -441,6 +510,11 @@ class LF_CharacterCreationManager : Managed
 		if (!controller)
 			return;
 
+		// The form only ever opens during arrival; an answer from anyone else (a dead or arrested
+		// player replaying it) must not reach the continue-with-character fallback below (#2413).
+		if (!AllowFlowRequest(playerId, "form R-89"))
+			return;
+
 		string accountUid = LF_Utils.GetAccountUID(playerId);
 		if (GateQuiz(playerId, accountUid))
 			return;
@@ -631,6 +705,8 @@ class LF_CharacterCreationManager : Managed
 		}
 
 		LF_Debug.Info("CharacterCreation", "spawning player " + playerId);
+		// Arrival ends here: from now on nothing re-enters the flow, whatever happens to the body.
+		CloseFlow(playerId);
 		spawnLogic.SpawnPlayer_S(playerId);
 
 		// NOTE: the survival HUD is deliberately not opened here. Opened via OpenMenu it is a

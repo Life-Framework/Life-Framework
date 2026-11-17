@@ -398,6 +398,73 @@ class LF_LicenceDesk
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether the licence office issues this licence (apply, wait, collect). Only the firearm permit.
+	static bool Issues(LF_ELicenseType licence)
+	{
+		return licence == PERMIT;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The fee for licence in carried cash (licences.permitFee); 0 for a licence the office does not issue.
+	static int Fee(LF_ELicenseType licence)
+	{
+		if (!Issues(licence))
+			return 0;
+
+		return LF_LicencesConfig.PermitFee();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The localization key of an issued licence's name, for a counter row.
+	static string NameKey(LF_ELicenseType licence)
+	{
+		if (licence == PERMIT)
+			return "#LF-License_FirearmPermit_Name";
+
+		return typename.EnumToString(LF_ELicenseType, licence);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the desk still takes permit applications: not when an outlet sells the permit over its
+	//! counter (a licence row in the catalogue, e.g. the pack's gun store). With the Catalogue or Shop
+	//! system off no counter can serve the row, so the desk takes applications again. Every machine.
+	static bool DeskIssuesPermit()
+	{
+		if (!LF_Systems.IsEnabled(LF_ItemCatalogue.SYSTEM) || !LF_Systems.IsEnabled(LF_ShopRefusal.SYSTEM))
+			return true;
+
+		return !LF_ItemCatalogue.AnyCounterGrants(LF_ItemCatalogueConfig.Get(), PERMIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A shop counter's answer for an outcome: the desk's, except where the desk names itself.
+	static string CounterAnswerKey(LF_ELicenceDesk outcome)
+	{
+		switch (outcome)
+		{
+			case LF_ELicenceDesk.ISSUED: return "#LF-LicenceCounter_Issued";
+			case LF_ELicenceDesk.APPLIED: return "#LF-LicenceCounter_Applied";
+			case LF_ELicenceDesk.FAILED: return "#LF-LicenceCounter_Closed";
+			case LF_ELicenceDesk.NO_CLOCK: return "#LF-LicenceCounter_Closed";
+		}
+
+		return AnswerKey(outcome);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The %1 of an answer: the hours left (applied, waiting) or the fee (short of cash); else empty.
+	static string AnswerArg(LF_ELicenceDesk outcome, int minutesLeft)
+	{
+		if (outcome == LF_ELicenceDesk.APPLIED || outcome == LF_ELicenceDesk.WAITING)
+			return ((int)Math.Ceil(minutesLeft / 60.0)).ToString();
+
+		if (outcome == LF_ELicenceDesk.NOT_ENOUGH_CASH)
+			return LF_MoneyFormat.FormatMoney(LF_LicencesConfig.PermitFee());
+
+		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The desk's answer for an outcome.
 	static string AnswerKey(LF_ELicenceDesk outcome)
 	{

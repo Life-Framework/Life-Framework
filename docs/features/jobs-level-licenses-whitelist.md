@@ -184,8 +184,13 @@
   `whitelist/remove-before-load`): `RemoveFactionWhitelist` and `RemoveJobWhitelist` load the
   file first. They returned false on an empty cache, so a police trial that expired on the first
   duty desk use after a restart was marked expired while the officer stayed on the roster.
-- ⚠️ `!wadd` stores nothing since the Police/Medic lists left `GameMode_Roleplay.et` but still
-  reports the grant; the job whitelist is checked by character key and never written (#2412).
+- ✅ **`!wadd POLICE <uid>` writes the roster duty reads** (2026-11-17, LOGIC
+  `chat/admin-wadd-grant`, #2548): `AdminChatChannel.ApplyWhitelistAdd` calls
+  `LF_WhitelistManager.AddFactionWhitelist` and logs and reports to staff only when that stored
+  a new entry. `MEDIC`, `CONNECT`, `NONE` (no roster; there is no medic faction type) and a uid
+  already on the roster log an `LF_Debug.Warn` and report nothing.
+- ⚠️ The job whitelist is checked by character key and never written; the legacy `LF_Whitelist`
+  lists, sign action and context actions still write an array nothing fills (#2412 items 2-5).
 
 ### `AdminChatChannel` — `Feature/Chat/AdminChatChannel.c`
 - ✅ **Server re-checks the admin role** (verified 2026-11-07):
@@ -226,6 +231,18 @@
   a player interaction, but only once the holder is cuffed (`LF_Restraint`; #1916): the
   interaction stays hidden and the server's `Revoke` refuses and logs for a free player. Test `licence/revoke-cuffs`. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
   `e2e/licence-desk` (the open application, a revoke and a conviction that still blocks the permit across `wt e2e`).
+- 🧪 (2026-11-18) **The firearm permit is got at the gun store** (maintainer 2026-11-17; follows draft #2061). A catalogue
+  offer with `m_sGrantsLicence` (owner key `grantsLicence`) is a licence row: the counter's price list shows the licence
+  with the permit fee and, on Pay, runs the same `LF_LicenceDesk.VisitFor` the desk ran (fee in carried cash through
+  `LF_EntityCashWallet` with ledger reason `licence-fee`, clean record, the licence's gate, the in-game-day wait, the
+  `permit_due:` flag), so the player applies and later collects at that counter (`LF_ShopComponent.ApplyForLicence`,
+  `LF_CharacterShopComponent.RpcAsk_Licence`; the server re-checks range, rate limit, a raided shop and that the outlet has
+  the row). The slip prints the answer (`#LF-LicenceCounter_*`, else the desk's refusal keys). A row for a licence the
+  office does not issue (anything but `FIREARM_PERMIT`) is dropped at load and logged. The core ships no row, so the desk
+  still issues the permit in a core-only world; the pack's `LF_Catalogue_GunStore.conf` puts the row on `gun_counter`,
+  and while any outlet has the row the desk hides and refuses its permit action (`LF_LicenceDesk.DeskIssuesPermit`).
+  An application already open at the desk is collected at the counter. Selling a gun still needs the permit. The client
+  reads the server's fee from the catalogue stream (`fee`). Tests `licence/counter`, `everon/gun-store-permit` (pack leg).
 
 - ✅ **Run rules: deposit, distance, time, passenger** (#2408, merged, in-dev). All numbers are the jobs config's
   (`Configs/Jobs/LF_Jobs.conf`, owner section `jobs`):
@@ -233,8 +250,15 @@
     (`LF_ShopManagerComponent.GetSellPrice`) times `cargoDepositPercent` (100), or `cargoDepositFallback` (50) when the
     shop list has no price. A player short of it gets no run and no cargo (toast `#LF-Job_NeedDeposit`). A delivery returns it
     once; abandoning forfeits it, so start, abandon, start, abandon costs the cargo's value each loop (the cargo is not taken
-    back). A taxi fare has no cargo and no deposit. A restart ends the run and the held deposit is not returned (the cargo item
-    stays in the inventory and sells for about the deposit). Ledger reasons `job-deposit`, `job-deposit-back`.
+    back). A taxi fare has no cargo and no deposit. A restart ends the run, and the deposit it held is given back to the
+    player's bank account on the load (save version 49, payload `jobruns`, one `LF_JobRunRow` per run holding a deposit: uid, amount and
+    job; `LF_CivilianJob.ExportDeposits` / `ApplyDeposits`, tests `jobs/deposit-restart` and `jobs/deposit-cargo`, proof `wt e2e`), so a
+    restart never takes a player's money. The run's cargo goes with it (#2481): before the refund the load takes one parcel or fuel can
+    (the job's own) out of the player's saved carried snapshot (`LF_CivilianJob.StripSavedCargo`), so the deposit and the cargo are
+    never both kept; a cargo no longer carried (dropped, lost at death) is just refunded. The log says which
+    (`[LFDebug:Jobs] restart ended the run of ...`). The bank takes the money because the player may be offline when the
+    server loads. A run still live in the session (a re-applied load) keeps its own deposit and gets no second one. Ledger reasons
+    `job-deposit`, `job-deposit-back`.
   - *Distance and time.* `BeginRun` records where and when the run started. `LF_CivilianJob.Dropoff` (the one call behind
     `LF_JobDropoffAction`) pays only at a placed drop (`LF_JobSiteComponent` site DROP), at least `runMinDistance` (300 m,
     straight line) from the start, after at least `runMinTimeFraction` (0.6) of the expected driving time, which is the
@@ -248,3 +272,4 @@
     Tests `jobs/run-rules` (LOGIC: the checks, the deposit state, the config) and `jobs/run-cargo-deposit` (WORLD: a real
     character, cash and cargo at the placed drop). Manual: a taxi fare with a second player is in the PR.
 - **Map marks (#2239):** a fare destination and a delivery stop become a shared mark plus the waypoint for their player, cleared when the run completes (`Feature/Jobs/LF_JobMapMarks.c`, `docs/features/map.md`; test `jobs/job-map-marks`). The marks are driven by `OnFareAccepted`/`OnStop`; nothing in the run code calls them until fares and stops exist.
+- 🧪 (2026-11-17) **A body the save restored gets its saved licences (#2413).** A player who takes control of a living body no spawn made (`LF_SpawnLogic.CreateCharacter`: "already controls a character") never went through `BindAccountComponents`, so the body held only its starter licences and `LF_LicenceDesk.Holds` charged a permit holder again. `LF_SpawnLogic.AdoptLivingBody` now runs `LF_Progression.ApplyToCharacter` on that body (idempotent; a missing body or key logs `[LFDebug:Spawn]` and applies nothing). Test `licence/restored-body` (WORLD). Manual: grant a permit, restart the server, rejoin: the licence desk and the gun counter see the permit and charge nothing.

@@ -59,6 +59,88 @@ class LF_CharacterShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Apply for, ask after, or collect a licence at a shop counter's licence row for the owning player.
+	//! \param[in] shopId RplId of the shop entity.
+	//! \param[in] licence The licence the row grants (LF_ELicenseType name).
+	void RequestLicence(RplId shopId, string licence)
+	{
+		if (!shopId.IsValid() || licence.IsEmpty())
+		{
+			LF_Debug.Warn("Shop", "licence request not sent: no shop or licence");
+			return;
+		}
+
+		if (Replication.IsServer())
+			RpcAsk_Licence(shopId, licence);
+		else
+			Rpc(RpcAsk_Licence, shopId, licence);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: one licence-row visit. The fee, record and wait are the licence office's
+	//! (LF_ShopComponent.ApplyForLicence); the client only names the shop and the licence.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_Licence(RplId shopId, string licence)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		IEntity player = GetOwner();
+		if (!player)
+		{
+			LF_Debug.Error("Shop", "licence rejected: no owning character");
+			return;
+		}
+
+		if (!LF_RateLimit.AllowCharacter(player, LF_ERequestKind.PURCHASE, "shop licence", false))
+		{
+			RespondLicence(LF_EShopRefusal.TOO_FAST, LF_ELicenceDesk.FAILED, string.Empty, LF_MoneyUtils.GetCash(player));
+			return;
+		}
+
+		LF_ELicenseType type;
+		if (!LF_ItemCatalogue.ParseLicence(licence, type))
+		{
+			LF_Debug.Warn("Shop", "licence rejected: '" + licence + "' is not a licence");
+			RespondLicence(LF_EShopRefusal.NOT_SOLD_HERE, LF_ELicenceDesk.FAILED, string.Empty, LF_MoneyUtils.GetCash(player));
+			return;
+		}
+
+		LF_ShopComponent shop;
+		LF_EShopRefusal reason = CheckShop(player, shopId, shop);
+		LF_ELicenceDesk outcome = LF_ELicenceDesk.FAILED;
+		int minutesLeft;
+		if (reason == LF_EShopRefusal.NONE)
+			reason = shop.ApplyForLicence(player, type, outcome, minutesLeft);
+
+		if (reason == LF_EShopRefusal.NONE && (outcome == LF_ELicenceDesk.APPLIED || outcome == LF_ELicenceDesk.ISSUED))
+			PlayTillSound(player);
+
+		RespondLicence(reason, outcome, LF_LicenceDesk.AnswerArg(outcome, minutesLeft), LF_MoneyUtils.GetCash(player));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Delivers a licence-row answer to the owning client (directly on a listen-server host).
+	protected void RespondLicence(LF_EShopRefusal reason, LF_ELicenceDesk outcome, string arg, int cash)
+	{
+		if (IsLocalPlayer())
+		{
+			RpcDo_LicenceResult(reason, outcome, arg, cash);
+			return;
+		}
+
+		Rpc(RpcDo_LicenceResult, reason, outcome, arg, cash);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the counter's answer to a licence request, printed on the order slip.
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_LicenceResult(int reason, int outcome, string arg, int cash)
+	{
+		LF_ShopPriceList.OnLicenceResult(LF_ShopRefusal.FromWire(reason), outcome, arg, cash);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: charge the buyer and deliver the items. Price and availability are re-derived here,
 	//! never taken from the client.
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
@@ -131,7 +213,15 @@ class LF_CharacterShopComponent : ScriptComponent
 			return LF_EShopRefusal.NOT_SOLD_HERE;
 		}
 
-		LF_ShopComponent shop = ResolveShop(shopId);
+		LF_ShopComponent shop;
+		return CheckShop(player, shopId, shop);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the shop resolves and the player stands within reach of it.
+	protected LF_EShopRefusal CheckShop(IEntity player, RplId shopId, out LF_ShopComponent shop)
+	{
+		shop = ResolveShop(shopId);
 		if (!shop)
 		{
 			LF_Debug.Warn("Shop", "trade rejected (shop does not resolve)");

@@ -250,6 +250,32 @@ class LF_ChopShopRules
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Which car in the drop area the bench takes: the nearest STOLEN one, so an unstolen car parked
+	//! beside the bench cannot block the yard. With no stolen car it is the nearest car, so the
+	//! worker still reads why it is refused.
+	//! \param distances Metres from the bench, one per candidate.
+	//! \param stolen The stolen flag of each candidate, same order.
+	//! \return Index of the chosen candidate, or -1 when there is none.
+	static int PickDropIndex(notnull array<float> distances, notnull array<bool> stolen)
+	{
+		int bestStolen = -1;
+		int bestAny = -1;
+		for (int i = 0; i < distances.Count(); i++)
+		{
+			if (bestAny < 0 || distances[i] < distances[bestAny])
+				bestAny = i;
+
+			if (i < stolen.Count() && stolen[i] && (bestStolen < 0 || distances[i] < distances[bestStolen]))
+				bestStolen = i;
+		}
+
+		if (bestStolen >= 0)
+			return bestStolen;
+
+		return bestAny;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Whether a stripped car may be collected (the car is deleted after this passes).
 	//! \param occupied Someone sits in the car: a keyed owner can get back in between LOAD and COLLECT.
 	//! \param paid Cash the worker's inventory took; anything short of the payout keeps the car.
@@ -392,26 +418,30 @@ class LF_ChopShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The nearest car with a lock component in the drop area.
+	//! The car in the drop area the bench takes: the nearest stolen one, else the nearest with a lock
+	//! component (LF_ChopShopRules.PickDropIndex).
 	protected IEntity FindDropVehicle()
 	{
 		array<IEntity> nearby = LF_Utils.GetNearbyVehicles(GetOwner().GetOrigin(), m_fDropRadius);
-		IEntity best;
-		float bestDistance = 999999;
+		array<IEntity> candidates = {};
+		array<float> distances = {};
+		array<bool> stolen = {};
 		foreach (IEntity vehicle : nearby)
 		{
-			if (!LF_Component<LF_VehicleLockComponent>.Find(vehicle))
+			LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
+			if (!vehicleLock)
 				continue;
 
-			float distance = vector.Distance(vehicle.GetOrigin(), GetOwner().GetOrigin());
-			if (distance < bestDistance)
-			{
-				bestDistance = distance;
-				best = vehicle;
-			}
+			candidates.Insert(vehicle);
+			distances.Insert(vector.Distance(vehicle.GetOrigin(), GetOwner().GetOrigin()));
+			stolen.Insert(vehicleLock.IsStolen());
 		}
 
-		return best;
+		int index = LF_ChopShopRules.PickDropIndex(distances, stolen);
+		if (index < 0)
+			return null;
+
+		return candidates[index];
 	}
 
 	//------------------------------------------------------------------------------------------------
