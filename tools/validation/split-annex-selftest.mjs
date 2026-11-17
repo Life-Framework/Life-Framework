@@ -5,7 +5,7 @@
 // inputs: tools/grid/split-annex.mjs, tools/lib/worlds.mjs, tools/lib/world-zones.mjs, tools/validation/split-annex-selftest.mjs, addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers, addons/LifeFramework/Worlds/GridWorld
 //
 // red-proof: 2026-11-16, each break run through LF_SPLIT_ANNEX_MODULE=<broken copy> (15, 13, 2 failures):
-//   isInside always false                  -> FAIL "Crimes splits 2 inside, 8 outside (got ... inside 0, outside 9)";
+//   isInside always false                  -> FAIL "Crimes splits 2 inside, 8 outside (got ... inside 0, outside 10)";
 //   a block ends on an indented "}" too     -> FAIL "Annex is 130 entities, all inside", "Annex.layer is copied byte for byte";
 //   blank lines between blocks dropped     -> FAIL "Crimes inside + outside together keep every byte".
 import { existsSync, mkdtempSync, readFileSync, readdirSync, cpSync } from "node:fs";
