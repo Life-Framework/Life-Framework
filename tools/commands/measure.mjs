@@ -58,6 +58,25 @@ export async function measureOne(root, arg, { minSize = 0.05 } = {}) {
   return { arg, path: r.path, ref: r.ref, others: r.others, mesh, meshRef, scale, ...m, files };
 }
 
+// The same disk cache for callers that measure many prefabs in one run (building check, the decor generators): a hit costs a
+// file stamp, a miss reads the model once. Written when the process exits.
+export function measureCache(root) {
+  const build = buildStamp().buildid;
+  const cache = readCache(build);
+  let dirty = false;
+  process.on("exit", () => {
+    if (dirty) writeCache(build, cache);
+  });
+  return async (arg, minSize = 0.05) => {
+    const key = `${arg}|${minSize}`;
+    if (fresh(cache[key])) return { ...cache[key].m, cached: true };
+    const m = await measureOne(root, arg, { minSize });
+    cache[key] = { v: VERSION, files: m.files, m };
+    dirty = true;
+    return m;
+  };
+}
+
 function print(m, { surfaces }) {
   console.log(`measure ${m.path.split("/").pop().replace(/\.(et|xob)$/, "")}  ${m.ref ?? `${m.path} (GUID unknown)`}${m.cached ? "  (cached)" : ""}`);
   if (m.others?.length) console.log(`  also named so: ${m.others.slice(0, 4).join(", ")}${m.others.length > 4 ? ", ..." : ""}`);
