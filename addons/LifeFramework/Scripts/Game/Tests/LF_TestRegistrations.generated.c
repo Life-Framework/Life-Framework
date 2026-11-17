@@ -557,6 +557,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_QuestRestoreCooldown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestSignal(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_QuestTracker(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_QuestTrackerIdle(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_QuestTurnInGuards(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_QuestWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Quiz(), LF_TestTier.LOGIC);
