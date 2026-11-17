@@ -65,6 +65,20 @@ class LF_Places
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Removes the place kind/id, for a place that is not tied to a placed component's life (an
+	//! organization's base ends with its lease). \return true when a place was removed.
+	static bool Unregister(string kind, string id)
+	{
+		map<string, EntityID> ids = Kind(kind, false);
+		if (!ids || !ids.Contains(id))
+			return false;
+
+		ids.Remove(id);
+		LF_Debug.Log(FEATURE, string.Format("unplaced %1 '%2'", kind, id));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return The live entity placed as kind/id, or null when none is placed (logic tests, a map
 	//! without that place). A stale entry is dropped.
 	static IEntity Find(string kind, string id)
