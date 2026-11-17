@@ -72,7 +72,9 @@ export function rowsOf(dossier) {
   }
   if (corners.length < 3) throw new Error("the dossier lists no buildings to draw a town line round");
   const line = simplify(grow(hull(corners), TOWN_PAD), SIMPLIFY).map(([x, z]) => [r1(x), r1(z)]);
-  const hall = (dossier.buildings || []).find((b) => b.type === "government");
+  // The town hall: a government building that is not the school variant of the municipal office.
+  const gov = (dossier.buildings || []).filter((b) => b.type === "government");
+  const hall = gov.find((b) => !/school/i.test(b.stem || "")) || gov[0];
   if (!hall) throw new Error("the dossier lists no government building for the safe square");
   return [
     { id: "saint-philippe-town-line", style: "TOWN", shape: "POLYGON", points: line },
