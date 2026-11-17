@@ -20,6 +20,7 @@
     "floor_y": [0.3, 4.1, 7.5],
     "note": "Placed in Saint-Philippe later by town fit (the town-draft card), indestructible through the place layer (D15). Until then it stands in the pack grid, claim hostel."
   },
+  "check_layer": { "file": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_hostel.layer", "host": "Grid_hostel_Main", "prefix": "HostelKit_" },
   "grid": {
     "claim": "tools/grid/cells/hostel.json",
     "layer": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_hostel.layer",
