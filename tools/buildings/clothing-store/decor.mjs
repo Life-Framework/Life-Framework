@@ -93,14 +93,14 @@ const G = {
   knitBrown: { xob: `${H}/Hat_Knitted_01/Hat_Knitted_01.xob`, mat: ["Hat_Knitted_01", `${H}/Hat_Knitted_01/Data/Hat_Knitted_01_brown.emat`] },
   boots: { xob: "Assets/Characters/Footwear/CombatBoots_Soviet_01/CombatBoots_Soviet_01.xob" },
   // folded (the models the store shelves show; none of these is a sold line)
-  foldRaincoatGreen: { xob: `${U}/Jacket_Raincoat_01/Jacket_Raincoat_01_item.xob`, mat: ["Jacket_Raincoat_01_Item", `${U}/Jacket_Raincoat_01/Data/Jacket_Raincoat_01_Item_Green.emat`], h: 0.11 },
-  foldFishermanGreen: { xob: `${U}/Pants_Fisherman_01/Pants_Fisherman_01_item.xob`, mat: ["Pants_Fisherman_01_Item", `${U}/Pants_Fisherman_01/Data/Pants_Fisherman_01_Item_Green.emat`], h: 0.09 },
-  foldSuitJacketBrown: { xob: `${U}/Jacket_Suit_01/Jacket_Suit_01_item.xob`, mat: ["Jacket_Suit_01_Item", `${U}/Jacket_Suit_01/Data/Jacket_Suit_01_Item_Brown.emat`], h: 0.08 },
-  foldSuitPantsBrown: { xob: `${U}/Pants_Suit_01/Pants_Suit_01_item.xob`, mat: ["Pants_Suit_01_item", `${U}/Pants_Suit_01/Data/Pants_Suit_01_Item_Brown.emat`], h: 0.08 },
-  foldTrousersLight: { xob: `${U}/Pants_Trousers_01/Pants_Trousers_01_item.xob`, mat: ["Pants_Trousers_01_Item", `${U}/Pants_Trousers_01/Data/Pants_Trousers_01_item_LightBrown.emat`], h: 0.095 },
-  foldTurtleBlue: { xob: `${U}/Shirt_Turtleneck_01/Shirt_Turtleneck_01_item.xob`, mat: ["Shirt_Turtleneck_01_Item", `${U}/Shirt_Turtleneck_01/Data/Shirt_Turtleneck_01_Item_Blue.emat`], h: 0.07 },
-  foldDenim: { xob: `${U}/Jacket_Denim_01/Jacket_Denim_01_item.xob`, h: 0.067 },
-  foldCottonV5: { xob: `${U}/Shirt_CottonShirt_01/Shirt_CottonShirt_01_item.xob`, mat: ["Shirt_Retopo_01_Item", `${U}/Shirt_CottonShirt_01/Data/Shirt_CottonShirt_01_Item_V5.emat`], h: 0.11 },
+  foldRaincoatGreen: { xob: `${U}/Jacket_Raincoat_01/Jacket_Raincoat_01_item.xob`, mat: ["Jacket_Raincoat_01_Item", `${U}/Jacket_Raincoat_01/Data/Jacket_Raincoat_01_Item_Green.emat`] },
+  foldFishermanGreen: { xob: `${U}/Pants_Fisherman_01/Pants_Fisherman_01_item.xob`, mat: ["Pants_Fisherman_01_Item", `${U}/Pants_Fisherman_01/Data/Pants_Fisherman_01_Item_Green.emat`] },
+  foldSuitJacketBrown: { xob: `${U}/Jacket_Suit_01/Jacket_Suit_01_item.xob`, mat: ["Jacket_Suit_01_Item", `${U}/Jacket_Suit_01/Data/Jacket_Suit_01_Item_Brown.emat`] },
+  foldSuitPantsBrown: { xob: `${U}/Pants_Suit_01/Pants_Suit_01_item.xob`, mat: ["Pants_Suit_01_item", `${U}/Pants_Suit_01/Data/Pants_Suit_01_Item_Brown.emat`] },
+  foldTrousersLight: { xob: `${U}/Pants_Trousers_01/Pants_Trousers_01_item.xob`, mat: ["Pants_Trousers_01_Item", `${U}/Pants_Trousers_01/Data/Pants_Trousers_01_item_LightBrown.emat`] },
+  foldTurtleBlue: { xob: `${U}/Shirt_Turtleneck_01/Shirt_Turtleneck_01_item.xob`, mat: ["Shirt_Turtleneck_01_Item", `${U}/Shirt_Turtleneck_01/Data/Shirt_Turtleneck_01_Item_Blue.emat`] },
+  foldDenim: { xob: `${U}/Jacket_Denim_01/Jacket_Denim_01_item.xob` },
+  foldCottonV5: { xob: `${U}/Shirt_CottonShirt_01/Shirt_CottonShirt_01_item.xob`, mat: ["Shirt_Retopo_01_Item", `${U}/Shirt_CottonShirt_01/Data/Shirt_CottonShirt_01_Item_V5.emat`] },
 };
 
 const items = []; // { path, x, y, z, yaw, scale, angles? }
@@ -111,10 +111,8 @@ const lights = []; // { x, y, z, color, lv, radius, spot? }
 const put = (path, x, y, z, yaw = 0, scale = 1, angles = null, mats = null) => items.push({ path, x, y, z, yaw, scale, angles, mats });
 const wear = (key, x, y, z, yaw = 0, scale = 1) => garments.push({ key, x, y, z, yaw, scale });
 const glow = (x, y, z, o = {}) => lights.push({ x, y, z, color: "1 0.88 0.68 1", lv: 6.5, radius: 8, ...o });
-// a folded pile of n garments on a surface at (x, top, z); each copy turned a little
-const pile = (key, n, x, top, z, yaw = 0) => {
-  for (let k = 0; k < n; k++) wear(key, x, +(top + k * G[key].h).toFixed(3), z, yaw + (k % 2 ? 4 : -3));
-};
+// one folded garment lying on a surface at (x, top, z); never stacked (maintainer, 2026-11-17)
+const fold = (key, x, top, z, yaw = 0) => wear(key, x, top, z, yaw);
 
 // ---- Lighting: the chandeliers' own lights are mostly under them, so the ceiling above read black at night. ----
 // Four soft warm point lights under the ceiling (no cone, no shadow) lift the plaster and the wall tops; the three
@@ -146,7 +144,7 @@ put(P.box05, 0.88, F + 0.446 + 0.213, 6.93, 96, 0.5);
 put(P.noticeH1, 0.98, F + 0.12, 7.16, 0, 0.7);
 // riser at the right end: a crate with folded knitwear and a basket of caps; a hat stand beyond
 put(P.crate, 4.35, F, 6.35, -8);
-pile("foldTurtleBlue", 3, 4.35, F + 0.223, 6.35, 12);
+fold("foldTurtleBlue", 4.35, F + 0.223, 6.35, 12);
 put(P.basket, 4.72, F, 6.95, 0, 0.55);
 wear("knitRed", 4.72, F + 0.2, 6.95, 20);
 wear("knitBlue", 4.78, F + 0.18, 6.9, -30);
@@ -204,10 +202,10 @@ put(P.frame, 2.87, 1.238, 4.45, 160);
 
 // ---- The sale table: a spare counter with unsold goods folded on it ----
 put(P.counter, 4.05, F, 3.4, 90);
-pile("foldRaincoatGreen", 2, 4.05, F + 1.039, 2.75, 90);
-pile("foldFishermanGreen", 3, 4.05, F + 1.039, 3.3, 90);
-pile("foldSuitJacketBrown", 4, 4.05, F + 1.039, 3.85, 90);
-pile("foldSuitPantsBrown", 3, 3.75, F + 1.039, 4.0, 90);
+fold("foldRaincoatGreen", 4.05, F + 1.039, 2.75, 90);
+fold("foldFishermanGreen", 4.05, F + 1.039, 3.3, 90);
+fold("foldSuitJacketBrown", 4.05, F + 1.039, 3.85, 90);
+fold("foldSuitPantsBrown", 3.75, F + 1.039, 4.0, 90);
 put(P.noticeH1, 3.56, F + 1.039 + 0.12, 3.4, 90, 0.8, "0 90 0");
 
 // ---- The pavement: the coat tree (already in the furniture prefab) with a raincoat out for the street ----
