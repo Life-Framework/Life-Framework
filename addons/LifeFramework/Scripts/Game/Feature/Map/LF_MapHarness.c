@@ -9,7 +9,14 @@
 //!   map pan <x> <z> <zoom>    centre on world (x, z) at the emulator's zoom: the view is
 //!                             map width / 2^zoom metres wide, so the in-game and the offline picture
 //!                             frame the same ground (`tools\cli map render --zoom <zoom>`)
+//!   map pan <x> <z> <zoom> <s> the same over <s> seconds, so a shot catches the canvas mid-pan
+//!   map probe                 the places probe (-lfMapPlacesProbe: 400 POIs, rebuild and reposition cost)
+//!                             and the mean frame ms since the map opened
 //!   map status                open flag, pixels per unit, centre and the view width in metres
+//!   map waypoint <x> <z>      what a right-click on the map does: LF_MapWaypoint.SetFromMap (card M7)
+//!   map mark <x> <z> [n]      n personal marks (default 1) at (x, z), each through the marker manager's
+//!                             InsertStaticMarker as the marker dialog does; answers the count before and
+//!                             after, so the 21st refusal (card M8) reads back
 //!
 //! The harness `input` verb refuses the GadgetMap input, so the gadget is held the way `hold` does, and
 //! the pan is SCR_MapEntity.ZoomPanSmooth with a near-zero time. The map takes a few frames to start up
@@ -23,6 +30,8 @@ class LF_MapHarness
 
 	//! A pan or zoom this short is as good as a jump; the entity refuses a zero time.
 	static const float PAN_SECONDS = 0.05; // lf-fixed: harness jump, not an owner knob
+	//! `map mark <x> <z> <n>` lays n marks in a row this far apart, so each one shows on the map.
+	static const int MARK_SPACING_M = 25; // lf-fixed: harness layout, not an owner knob
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The map gadget component of the carried item that has one, or null.
@@ -129,7 +138,7 @@ class LF_MapHarness
 	//------------------------------------------------------------------------------------------------
 	//! Centres the open map on world (x, z) at the emulator zoom. \return true when the move was asked
 	//! for; the entity animates it for PAN_SECONDS, `Status` reads where it landed.
-	static bool Pan(float x, float z, float zoom, out string detail)
+	static bool Pan(float x, float z, float zoom, out string detail, float seconds = PAN_SECONDS)
 	{
 		SCR_MapEntity mapEntity = SCR_MapEntity.GetMapInstance();
 		if (!mapEntity || !mapEntity.IsOpen())
@@ -153,9 +162,88 @@ class LF_MapHarness
 
 		float viewMetres = sizeX / Math.Pow(2, zoom);
 		float pixelsPerUnit = width / viewMetres;
-		mapEntity.ZoomPanSmooth(pixelsPerUnit, x, z, PAN_SECONDS);
+		if (seconds < PAN_SECONDS)
+			seconds = PAN_SECONDS;
+
+		mapEntity.ZoomPanSmooth(pixelsPerUnit, x, z, seconds);
 		LF_Debug.Info(FEATURE, string.Format("harness map pan %1 %2 zoom %3 (%4 px/m)", x, z, zoom, pixelsPerUnit));
 		detail = string.Format("panning x=%1 z=%2 zoom=%3 ppu=%4", x, z, zoom, pixelsPerUnit);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets the waypoint at world (x, z) the way a right-click on the map does. \return true when set.
+	static bool Waypoint(float x, float z, out string detail)
+	{
+		vector world = Vector(x, 0, z);
+		BaseWorld baseWorld = GetGame().GetWorld();
+		if (baseWorld)
+			world[1] = baseWorld.GetSurfaceY(x, z);
+
+		bool ok = LF_MapWaypoint.SetFromMap(world);
+		LF_Debug.Info(FEATURE, string.Format("harness map waypoint %1 %2: %3", x, z, ok));
+		detail = string.Format("waypoint x=%1 z=%2 set=%3", x, z, ok);
+		return ok;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Places `count` personal marks in a row from world (x, z), MARK_SPACING_M apart, through InsertStaticMarker.
+	//! \return false with no marker manager; the detail is `before=N after=M asked=K`.
+	static bool Mark(float x, float z, int count, out string detail)
+	{
+		SCR_MapMarkerManagerComponent manager = SCR_MapMarkerManagerComponent.GetInstance();
+		if (!manager)
+		{
+			detail = "no_marker_manager";
+			return false;
+		}
+
+		if (count < 1)
+			count = 1;
+
+		int before = LF_MapMarksClient.CountLocal(manager);
+		ChimeraWorld world = GetGame().GetWorld();
+		for (int i = 0; i < count; i++)
+		{
+			SCR_MapMarkerBase marker = new SCR_MapMarkerBase();
+			marker.SetType(SCR_EMapMarkerType.PLACED_CUSTOM);
+			marker.SetIconEntry(0);
+			marker.SetColorEntry(0);
+			marker.SetWorldPos(x + i * MARK_SPACING_M, z);
+			if (world)
+				marker.SetTimestamp(world.GetServerTimestamp());
+
+			manager.InsertStaticMarker(marker, true);
+		}
+
+		int after = LF_MapMarksClient.CountLocal(manager);
+		LF_Debug.Info(FEATURE, string.Format("harness map mark %1 %2 x%3: %4 -> %5", x, z, count, before, after));
+		detail = string.Format("before=%1 after=%2 asked=%3", before, after, count);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Runs the places probe on the open map. \return false when the map or the places layer is missing.
+	static bool Probe(out string detail)
+	{
+		SCR_MapEntity mapEntity = SCR_MapEntity.GetMapInstance();
+		if (!mapEntity || !mapEntity.IsOpen())
+		{
+			detail = "map_not_open";
+			return false;
+		}
+
+		LF_MapPlacesUI places = LF_MapPlacesUI.Cast(mapEntity.GetMapUIComponent(LF_MapPlacesUI));
+		if (!places)
+		{
+			detail = "no_places_layer";
+			return false;
+		}
+
+		int frames;
+		float frameMs = places.FrameMs(frames);
+		detail = string.Format("frame_ms=%1 frames=%2 | %3", frameMs, frames, places.Probe());
+		LF_Debug.Info(FEATURE, "harness map probe: " + detail);
 		return true;
 	}
 
@@ -208,7 +296,32 @@ modded class LF_AgentHarnessVerbs
 			if (cmd.Arg2.IsEmpty() || cmd.Arg3.IsEmpty() || cmd.Arg4.IsEmpty())
 				detail = "usage: map pan <x> <z> <zoom>";
 			else
-				ok = LF_MapHarness.Pan(cmd.Arg2.ToFloat(), cmd.Arg3.ToFloat(), cmd.Arg4.ToFloat(), detail);
+			{
+				// An empty argument's ToFloat is a VME ("Wrong parameter value"): read the time only when given.
+				float seconds = LF_MapHarness.PAN_SECONDS;
+				if (!cmd.Arg5.IsEmpty())
+					seconds = cmd.Arg5.ToFloat();
+
+				ok = LF_MapHarness.Pan(cmd.Arg2.ToFloat(), cmd.Arg3.ToFloat(), cmd.Arg4.ToFloat(), detail, seconds);
+			}
+		}
+		else if (cmd.Arg1 == "probe")
+		{
+			ok = LF_MapHarness.Probe(detail);
+		}
+		else if (cmd.Arg1 == "waypoint")
+		{
+			if (cmd.Arg2.IsEmpty() || cmd.Arg3.IsEmpty())
+				detail = "usage: map waypoint <x> <z>";
+			else
+				ok = LF_MapHarness.Waypoint(cmd.Arg2.ToFloat(), cmd.Arg3.ToFloat(), detail);
+		}
+		else if (cmd.Arg1 == "mark")
+		{
+			if (cmd.Arg2.IsEmpty() || cmd.Arg3.IsEmpty())
+				detail = "usage: map mark <x> <z> [n]";
+			else
+				ok = LF_MapHarness.Mark(cmd.Arg2.ToFloat(), cmd.Arg3.ToFloat(), cmd.Arg4.ToInt(), detail);
 		}
 		else if (cmd.Arg1 == "status")
 		{
@@ -217,7 +330,7 @@ modded class LF_AgentHarnessVerbs
 		}
 		else
 		{
-			detail = "usage: map open|close|pan <x> <z> <zoom>|status";
+			detail = "usage: map open|close|pan <x> <z> <zoom> [s]|waypoint <x> <z>|mark <x> <z> [n]|probe|status";
 		}
 
 		if (ok)

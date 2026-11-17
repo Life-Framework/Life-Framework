@@ -9,8 +9,7 @@ tools\cli wt new building-<slug> --wait
 tools\cli grid list                                    # claim ONLY the cell your brief names
 tools\cli grid place <slug> --cell cXrY --span WxH     # fenced yard + claim file; one claim per building
 ```
-- Reserved cells (lead, 2026-11-16; your brief wins): town hall c11r2 3x2, bank c11r0 2x2, police c3r1 2x2. Next, in
-  dispatch order: c13r0 2x2, c11r4 2x2, c13r4 2x2.
+- Reserved cells (your brief wins): town hall c11r2 3x2, bank c11r0 2x2, police c3r1 2x2; next c13r0, c11r4, c13r4 (2x2).
 - The host goes into the layer as `SCR_DestructibleBuildingEntity <Name> : "{GUID}Prefabs/...et" { coords x 0 z  angleY a }`.
 - Template, copy and never edit: `tools/buildings/gun-store/{spec.json,decor.mjs,proof.json}`. Newer fit-outs once merged:
   `tools/buildings/{town-hall,bank,police-station}/` (`prune.mjs` cuts the vanilla furniture set, `decor-lib.mjs` writes
@@ -23,7 +22,8 @@ tools\cli grid place <slug> --cell cXrY --span WxH     # fenced yard + claim fil
 - the decor or fit-out script: rewrites its own block (IDs start with a prefix, e.g. `DC1F`) and gives the same bytes
   twice (`--check` exits 1 when the files differ).
 - `proof.json`: every shot as `look`/`from` in BUILDING space, front at +z: exterior, every room, night, the walkthrough.
-  `from` is an offset from `look`, not a position (`tools/buildings/pipeline/scenario.mjs`). Re-shootable from these files alone.
+  `from` is an offset from `look`, not a position (`tools/buildings/pipeline/scenario.mjs`).
+- Anyone must be able to re-shoot the building from these files alone.
 
 ## The passes (one look per pass: finish every edit, then look)
 1. **BUILD.** Host building as a whole-building kit in its claim. Every interactable is an existing system (read its
@@ -42,18 +42,20 @@ tools\cli evidence <issue> before|after grid-<slug>|<png> [--name n]            
 `look` writes `tmp\look\grid-<slug>` (exterior) and `grid-<slug>-interior`, which the next room overwrites: copy each
 room's folder (town-hall `looks.mjs --tag pass1 --run` does) or pass the PNG path. Pass N's after is pass N+1's before. Past about 2 h, ship BUILD and POLISH 1 and file POLISH 2.
 
-## Props stand on something; a vault is a room
-- Heights are snapped, never typed: the generator calls `snapItems(items, { fixed })` (`tools/buildings/pipeline/surface.mjs`;
-  `{ on: "<id>" }` names the support, gun-store `decor.mjs` is the model). **`tools\cli building check <slug>` is required**
-  (offline, 1 s; `wt ship` refuses while it fails; no generator: `--fix`). Detail: `docs/building-pipeline/README.md`.
-- A bank's vault is a room fitted with `{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et` (origin the
-  front's centre, hinge 1.271 m to its right; safe type `bank_room` supplies the numbers; set `m_sVaultId`, and in a prefab `m_sTargetId` too) and the bag
-  inside (`m_sId` = that id). The standalone `LF_BankVault.et` is the reserve vault. Worked example: `tools/buildings/bank/`.
+## Props stand on something (heights are snapped, never typed)
+A typed y floated props over desks (2026-11-17). A generator gives each prop a hint y and calls `snapItems(items, { fixed })` from
+`tools/buildings/pipeline/surface.mjs` (`{ on: "<id>" }` stands it on that row, else it drops onto the top under it; model: gun-store
+`decor.mjs`, detail in `docs/building-pipeline/README.md`). **`tools\cli building check <slug>` is required** (1 s, offline): every small
+prop within 2 cm of a top, floor or the ground. `wt ship` runs it for a PR touching `tools/buildings/<slug>/` or `Prefabs/Buildings/<Dir>/`. No generator: `building check <slug> --fix`. A kit whose rows are in a grid layer: `spec.json` `check_layer` (police station).
 
-## Performance (docs/architecture/performance.md covers script cost; `test --tier perf` once if you touch script)
-Report in the PR, per pass: dynamic lights, shadow casters, decorative entities. The limit is in your brief. Short-range
-lights with no shadow, emissive lamp covers, a light per room and never per prop, static props with LODs, no physics on
-clutter, no per-frame script on decoration.
+## Fitting a vault room (`bank_room` safe type)
+The bank safe is a room in the building, not the standalone `LF_BankVault.et`. Doorway: `{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et`
+(origin = the front's centre, hinges 1.271 m to its right); the layer entity name is the vault id, unique per door (inside a prefab set `m_sVaultId` and the breach `m_sTargetId`); bag inside: copy
+`Roadmap_Bank_Bag`, `m_sId` = that id. The placement's numbers come from `bank_room`, never typed. Shop safe: `{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et`.
+
+## Performance (docs/architecture/performance.md)
+Report per pass: dynamic lights, shadow casters, decorative entities (limit in your brief). Short-range shadowless lights, a light
+per room never per prop, emissive lamp covers, static props with LODs, no physics on clutter, no per-frame script on decoration.
 
 ## Ship
 `tools\cli wt ship building-<slug> --refs <N> --body-file tmp\pr-body-<slug>.md`. Body: a before/after pair and a grade per
@@ -62,17 +64,15 @@ pass, the counts table, `## Manual testing`. No town layers, no `ws/town-maintai
 
 ## Known traps
 - `scenario.mjs`'s header says "-Z the street front". Every building's proof and look files use **front +z**. Follow +z.
-- Wall items face the room: yaw 0 on a wall facing +z, 180 facing -z, 90 or -90 facing +x or -x (a trophy board sticks
-  out the other way: gun-store `decor.mjs` header).
+- Wall items face the room: yaw 0 on a wall facing +z, 180 facing -z, +-90 facing +-x (trophy board: gun-store `decor.mjs` header).
 - Vanilla ceiling lamps are dead meshes: add a `LightEntity` (ClipEV -10, NearPlane 0.3, short radius) and an emissive cover.
-- A vanilla furniture set is big (town hall: 242 children). Flatten to one child per prop, prune repeats (switches,
-  radiators, infirmary, extra WCs); every kept entity counts.
+- A vanilla furniture set is big (town hall: 242 children): flatten to one child per prop, prune repeats; every entity counts.
 - Your building is a pack prefab, so its cell is a pack cell: `grid place <slug> <pack prefab>` (or `--pack`) writes
   `LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_<slug>.layer`, claims the cell in the shared lattice with
   `"pack": true`, and the layer is committed like any other. Never keep a layer untracked, never put a pack prefab in
   `GridWorld_Layers/` (`validate-addon-boundary`). A layer already written there: `grid free <slug>`, then `grid place ... --again`.
-- A GUID is made once and kept (rule 2). A typed coordinate is only allowed in a building-space row the script writes.
-- `look` needs a Workbench: it queues on the pool (laptop or lf-testbox), never here.
+  `look grid:<slug>`, `audit placement --grid` and `session up --mission grid` load it through the pack grid world.
+- A GUID is made once and kept (rule 2); typed coordinates only in a building-space row the script writes. `look` queues on the pool, never here.
 
 ## Environment
 No Workbench on this PC and never pin a machine. Run in the foreground (timeout up to 600000 ms) or `t3_background_wait`;

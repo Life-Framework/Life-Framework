@@ -135,6 +135,19 @@ looks off. Each close-up label carries the entity's world bounds in metres and i
 when that is not 1; compare sizes between neighbours. The exit code is 1 when a shot is missing or
 Workbench timed out, never because of a flag.
 
+**What a picture shows.** A look shows the working tree: HEAD plus uncommitted and untracked
+files. Shoot "before" from a checkout without your edit (before the first edit, `git stash`, or the
+base commit), never after `dress.mjs` or any generator has already rewritten the file. Every
+`index.json` carries `inputs.addons` (the git tree of `addons/` the look was asked to show) and
+`inputs.rendered` (the tree the Workbench had on disk when it shot: the viewer checkout for the look
+server, the snapshot for a fresh Workbench); the summary prints it as `addons=<tree>`. The look fails
+when the two differ, and a routed look also fails when the box rendered another tree than this
+checkout's. `tools\cli evidence <key> after <area>` refuses a pair whose before and after show the
+same tree (`--same-inputs` for a change outside `addons/`). On 2026-11-17 PR #2364's general store
+before and after looked the same: the "before" look ran after `dress.mjs` had rewritten the prefab,
+so both pictures showed the new prefab (snapshot `f66939f0` held the 1312-line file). The look itself
+was right: the same prefab, committed in another worktree, showed its thinner shelves at once.
+
 **Flags** are printed per shot and written into the tile label and `index.json`. They are hints
 that say where to look first, not verdicts:
 
@@ -243,7 +256,7 @@ What a look from **another worktree** costs is decided by what differs from the 
 |---|---|
 | nothing | `server-same`: shot as is |
 | only files outside `addons/` | `server-reopen` |
-| a modified addon file whose extension is in `FAST_PATH_EXT` (empty; `LF_LOOK_REOPEN_EXT=.layer` to probe) | `server-reopen`; the file is written **in place** (open, truncate, write: an editor's save), HEAD moves with no worktree write, because `git checkout` unlinks and recreates a file and a reopen after that crashed Workbench 4 of 4 (2026-11-14) |
+| a modified `.layer` when `FAST_PATH_EXT` lists it (empty; `LF_LOOK_REOPEN_EXT=.layer` to probe). Only `.layer` can ever take this path (`REOPEN_SAFE_EXT`): a prefab, material, config or mesh stays loaded in Workbench across a world reopen, so it restarts whatever the variable says | `server-reopen`; the file is written **in place** (open, truncate, write: an editor's save), HEAD moves with no worktree write, because `git checkout` unlinks and recreates a file and a reopen after that crashed Workbench 4 of 4 (2026-11-14) |
 | any other addon change (added, deleted, renamed, a script, a `.meta`, the look plugin) | `server-restart`: 10 to 17 s |
 
 **Not proven (2026-11-17):** the in-place reopen. On the shared box every look between mine came from another worktree
@@ -268,6 +281,30 @@ not trigger it yet: it waits for the 5 or 10 minutes. It never runs on this PC a
 
 **Shared server.** Looks from every worktree use the one resident Workbench on the box, in turn, so two worktrees looking
 alternately restart it each time (the third and fourth rows above). That is still one Workbench instead of one per look.
+
+### `tools\cli look place:<place>/<slot>`: a town slot on the island
+
+A town draft's slot stands on the real Everon map, which DebugWorld does not hold: there the camera found no ground
+(y -253.8) and every picture was sky (#2347). `look place:saint-philippe/arrival` opens the pack's island world
+(`Worlds/MainWorld/MainWorld.ent`, `ISLAND_WORLD` in `tools/lib/worlds.mjs`) and reads its viewpoint from the place's
+files, never a typed coordinate (`tools/visual/look-place.mjs`):
+
+- **Where:** the slot's building (or plot) in `docs/everon/places/<place>/mapping.json`, its footprint in `dossier.json`.
+- **Front:** the first known entrance seen from the footprint centre, else the building's local +z (its yaw). The wide
+  tries eye level on that side first, then look's usual fan.
+- **Ground:** the plugin's `GetSurfaceY` on the island terrain (`ty -`), so cameras stand on the street, not under it.
+- **Inside:** `--interior auto` stands on the ground floor (footprint centre, the dossier's floor height), four views.
+- **Close-ups:** the entities of the island's `Place_*` layers within the radius (the fitted kit rows).
+- `--world island` does the same for a bare `x,z`. A place: target and a town or grid area cannot share one run.
+
+**RAM.** An island Workbench streams Everon like a server and a client in one process: `workbench:island` is seeded at
+5.4 GB (`tools/lib/pool-ram.mjs`) until measured samples replace it, and the island class covers MainWorld, Eden and
+CoreOnEveron. Routing reserves that peak when it picks a machine, and an island request to a live look server is gated
+too (the resident grows to the island peak when it opens MainWorld). The boot budget is 210 s fresh, 270 s through the server.
+
+**Measured (2026-11-17, lf-testbox, through the warm server).** World and play 34.8 s, 6 shots 6.2 s. The queue was the
+cost: 565 s for the box's one Workbench slot and 966 s for the RAM gate behind other looks. Plan an island look as up to
+30 minutes of waiting and about one minute of work; batch a slot's exterior and interior in one sitting.
 
 ### `tools\cli look item`
 

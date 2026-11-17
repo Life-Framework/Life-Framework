@@ -158,6 +158,21 @@ placed with `SCR_MapEntity.WorldToScreen` on `OnMapPan` and `OnMapZoom`, culled 
   come from the map's descriptor imageset and its text props are thin. Probe it in card M4 against 300
   POIs; take it only if the widget path costs more than 1 ms a frame with the map open.
 
+  **M4 probe (#2232), what is measured and what is owed.** The widget route is built (`LF_MapPlacesUI`).
+  The cluster rule (`LF_MapClusterRules`, node twin `tools/map/rules/cluster.mjs`, one case table) buckets
+  400 POIs in about 0.09 ms a pass in node (`tools/validation/map-cluster-selftest.mjs`), and in the game
+  it runs only when a zoom ends: a pan moves each icon with one `WorldToScreen` and one `FrameSlot.SetPos`
+  and hides what is off screen, no clustering and no allocation. The in-engine numbers come from the layer's
+  own probe: start a client with `-lfMapPlacesProbe` and open the map; it logs
+  `[LFDebug:MapPlaces] probe widgets: 400 POIs ... rebuild N us, reposition N us per pass`. The native
+  `MapItem` route is not built: there are no numbers for it, so the decision "take it only if widgets cost
+  more than 1 ms a frame" rests on the probe line above, which the final in-game proof records here.
+  Owed: the probe numbers (needs a session; `map-shots` is card M0b #2228) and the `MapItem` comparison, which
+  card M18's PERF test (400 POIs, 40 areas) is the place to settle.
+  The cluster bucket is one eighth of the view width in world space and a stamp appears below zoom 4 (view
+  800 m); at zoom 4 and closer every place is its own icon. A bucket is a grid, so two places a few metres
+  apart on a cell edge stay two icons; a nearest-neighbour merge would fix it at a higher cost and is not worth it yet.
+
 ### Visibility
 
 | `m_eVisibility` | Shows when | Examples |

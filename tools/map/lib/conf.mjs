@@ -65,6 +65,18 @@ export const num = (v, d = 0) => {
   return Number.isFinite(n) ? n : d;
 };
 export const str = (v, d = "") => (v === undefined ? d : Array.isArray(v) ? v.join(" ") : String(v));
+// An array<vector> value -> [[x, z], ...]. The engine reads it as one flat run of numbers, three per vector
+// (`m_aPoints { 1 0 2 3 0 4 }`); a quoted "x y z" per entry loads as zeros in game (the map proof pass), but
+// the old quoted form still parses here.
+export const vecListXZ = (v) => {
+  const items = Array.isArray(v) ? v : v === undefined ? [] : [v];
+  if (items.length && items.every((t) => !/\s/.test(String(t).trim()))) {
+    const out = [];
+    for (let i = 0; i + 2 < items.length; i += 3) out.push([Number(items[i]), Number(items[i + 2])]);
+    return out;
+  }
+  return items.map((t) => vecXZ(t));
+};
 // "x y z" -> [x, z]
 export const vecXZ = (v) => {
   const a = (Array.isArray(v) ? v.join(" ") : String(v)).trim().split(/\s+/).map(Number);

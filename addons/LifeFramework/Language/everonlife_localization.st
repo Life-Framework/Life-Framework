@@ -5038,6 +5038,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You were handed a sentence slip. Check your inventory."
      Comment "Toast when a prisoner receives the sentence slip."
     }
+    CustomStringTableItem "{3E7A91C0D5B24F68}" {
+     Id "LF-JobMap_Fare"
+     Target_en_us "Fare"
+     Comment "Map mark and waypoint label: the destination of an accepted taxi fare (driver and passenger)."
+    }
+    CustomStringTableItem "{8C41F6B2A09D3E75}" {
+     Id "LF-JobMap_Stop"
+     Target_en_us "Delivery stop"
+     Comment "Map mark and waypoint label: the current stop of a delivery run (courier, fuel)."
+    }
     CustomStringTableItem "{CDE67184D007F114}" {
      Id "LF-Job_AccessDenied"
      Target_en_us "Access denied"
@@ -5896,6 +5906,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Magazine_Taser_Name"
      Target_en_us "Taser cartridge"
      Comment "Inventory name of the taser's single-shot cartridge."
+    }
+    CustomStringTableItem "{DE2AC99F6166AB0D}" {
+     Id "LF-MapPlaces_ClusterNote"
+     Target_en_us "Zoom in for each"
+     Comment "Map POI hover card (#2232): the line under a cluster stamp's title, the click zooms in."
+    }
+    CustomStringTableItem "{FAA5EDA4BA7F60BD}" {
+     Id "LF-MapPlaces_ClusterTitle"
+     Target_en_us "%1 places"
+     Comment "Map POI hover card (#2232): a cluster stamp over several places; %1 is the count."
+    }
+    CustomStringTableItem "{EB32F79C95C8B87F}" {
+     Id "LF-MapPlaces_HeardOf"
+     Target_en_us "Heard of, not visited"
+     Comment "Map POI hover card (#2232): the line under a faded place the player has only heard of."
+    }
+    CustomStringTableItem "{898E403E63E0AFCF}" {
+     Id "LF-MapPlaces_SetWaypoint"
+     Target_en_us "Set waypoint"
+     Comment "Map POI hover card (#2232): the button that marks the place as the personal waypoint."
     }
     CustomStringTableItem "{06BAB63766610E3E}" {
      Id "LF-MapPoi_Bank"

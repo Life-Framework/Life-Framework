@@ -1,0 +1,94 @@
+// Grid cell c14r0 for hostel: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_hostel_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 191 0 23
+}
+SCR_DestructibleEntity Grid_hostel_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 195.4 0 23
+}
+SCR_DestructibleEntity Grid_hostel_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 199.8 0 23
+}
+SCR_DestructibleEntity Grid_hostel_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 204.2 0 23
+}
+SCR_DestructibleEntity Grid_hostel_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 208.6 0 23
+}
+SCR_DestructibleEntity Grid_hostel_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_hostel_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 27.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_hostel_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 31.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_hostel_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 36.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_hostel_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 40.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_hostel_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_hostel_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 208.6 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_hostel_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 204.2 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_hostel_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 199.8 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_hostel_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 195.4 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_hostel_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 191 0 45
+ angleY 90
+}
+SCR_DestructibleEntity Grid_hostel_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 191 0 40.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_hostel_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 191 0 36.2
+ angleY 90
+}
+GenericEntity Grid_hostel_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:hostel"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 190.2 0.505 23.6
+ angleY -90
+}
+GenericEntity Grid_hostel_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "hostel"
+  }
+ }
+ coords 190.3 0 27.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_hostel_Main : "{DA1BC03553301847}Prefabs/Buildings/Hostel/Hostel.et" {
+ coords 201.94 0.05 34.013
+ angleY -90
+}

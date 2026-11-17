@@ -11,6 +11,10 @@
 // A prop that is meant to look so (a hanging pan, a prop leaning on a wall) goes in the spec:
 //   "floaters_allow": [{ "match": "<entity ID or a regex on the prefab path>", "why": "<reason>" }]
 // `floors` in the spec overrides the floor heights read from the host building's colliders.
+// A kit whose rows live in a grid layer (the police station: systems, decor and lights in Grid_police_station_kit.layer) names it:
+//   "check_layer": { "file": "<repo path of the .layer>", "origin": [x, z], "prefix": "PoliceKit_", "skip": ["PoliceKit_Villa"] }
+// The layer's entities whose name starts with `prefix` are judged in building space (world minus `origin`, the host at yaw 0)
+// beside the prefabs' children, and stand as supports for each other (a phone on a desk the layer places).
 //
 // --fix moves each prop that floats over or sits in a top onto it (writes the prefab; a generator is the better home: use
 // snapItems in it). Nothing under a prop is left for a person: a prop whose support was removed, or a hanging kind this list does not know.
@@ -33,6 +37,19 @@ export function furnitureFiles(root, spec) {
   };
   walk(dir);
   return out;
+}
+
+// The kit rows of spec.check_layer in building space: [] when the spec names no layer.
+export function layerEnts(root, spec) {
+  const k = spec.check_layer;
+  if (!k?.file) return [];
+  const file = join(root, k.file);
+  if (!existsSync(file)) throw new Error(`check_layer ${k.file} does not exist`);
+  const [ox, oz] = k.origin ?? [0, 0];
+  const skip = new Set(k.skip ?? []);
+  return prefabChildren(readFileSync(file, "utf8"))
+    .filter((e) => e.name.startsWith(k.prefix ?? "") && !skip.has(e.name))
+    .map((e) => ({ ...e, id: e.id || e.name, x: e.x - ox, z: e.z - oz, file: null }));
 }
 
 const hostPath = (spec) => String(spec.vanilla?.base ?? "").replace(/^\{[0-9A-Fa-f]{16}\}/, "");
@@ -60,8 +77,9 @@ export async function checkBuilding(root, slug, { file = null, reader = gameRead
   const specFile = join(root, "tools", "buildings", slug, "spec.json");
   const spec = existsSync(specFile) ? JSON.parse(readFileSync(specFile, "utf8")) : { addon: "LF_Everon1989", prefab_dir: "" };
   const files = file ? [file] : furnitureFiles(root, spec);
-  if (!files.length) return { spec, files, ents: [], problems: [], floors: [], none: true };
-  const ents = files.flatMap((f) => prefabChildren(readFileSync(f, "utf8")).map((e) => ({ ...e, file: f })));
+  const kit = file ? [] : layerEnts(root, spec);
+  if (!files.length && !kit.length) return { spec, files, ents: [], problems: [], floors: [], none: true };
+  const ents = [...files.flatMap((f) => prefabChildren(readFileSync(f, "utf8")).map((e) => ({ ...e, file: f }))), ...kit];
   const floors = await floorsOf(spec, ents, reader);
   const problems = await floaters(ents, { reader, floors, allow: spec.floaters_allow ?? [], extra: specSupports(spec) });
   return { spec, files, ents, problems, floors };
@@ -93,7 +111,7 @@ export async function cmdCheck(root, args) {
     let moved = 0;
     for (let round = 0; round < 6; round++) {
       const byFile = new Map();
-      for (const p of r.problems.filter((q) => q.to != null && q.id)) byFile.set(p.file, [...(byFile.get(p.file) ?? []), p]);
+      for (const p of r.problems.filter((q) => q.to != null && q.id && q.file)) byFile.set(p.file, [...(byFile.get(p.file) ?? []), p]);
       let n = 0;
       for (const [file, list] of byFile) {
         const res = setHeights(readFileSync(file, "utf8"), list);

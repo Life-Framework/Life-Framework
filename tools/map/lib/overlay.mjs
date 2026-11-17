@@ -8,7 +8,7 @@
 // Places (town labels) and buildings: docs/everon/catalog-buildings.json, the dump of the real Everon world.
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { findBlocks, num, parseConf, str, vecXZ } from "./conf.mjs";
+import { findBlocks, num, parseConf, str, vecListXZ, vecXZ } from "./conf.mjs";
 import { STYLES } from "../rules/areas.mjs";
 import { DEFAULT_WORLD, loadPlaces } from "./places.mjs";
 
@@ -39,7 +39,7 @@ const confFiles = (root, dir, prefix) => {
 };
 
 // One row of LF_MapAreas.conf (class LF_MapAreaRow, members as the game reads them) as the renderer draws it. Points
-// are world "x y z" strings; the name is the row's label, else the style's own label ("Safe zone"), else empty (a
+// are world vectors, unquoted (a flat run of numbers); the name is the row's label, else the style's own label ("Safe zone"), else empty (a
 // town line carries none: the vanilla town name is already on the map).
 const rowAreaOf = (b, text) => {
   const style = str(b.props.m_eStyle, "CUSTOM").toUpperCase();
@@ -49,7 +49,7 @@ const rowAreaOf = (b, text) => {
     [a.x, a.z] = vecXZ(b.props.m_vCentre ?? "0 0 0");
     a.radius = num(b.props.m_fRadius, 30);
   } else {
-    a.points = (b.props.m_aPoints || []).map((p) => vecXZ(p));
+    a.points = vecListXZ(b.props.m_aPoints);
   }
   return a;
 };

@@ -244,7 +244,7 @@ supplies every coordinate the later steps use. No step types a coordinate.
 | Sibling-worktree claims | An uncommitted claim file in another local worktree counts as taken, read from `git worktree list --porcelain` with no network |
 | `place on/against/ground/arrange` | Unchanged; the kit rows call it |
 | `audit placement --strict` | Run with `--world MainWorld` on the new layer; island layers get the town bar |
-| `look`, `look --interior` (#2194) | Pictures per slot and per place, on MainWorld |
+| `look`, `look --interior` (#2194) | `look place:<place>/<slot> [--interior auto]`: pictures per slot on MainWorld, viewpoint from the dossier (#2347) |
 | `scout` | Step 1 |
 
 ### 3.5 Validation: `tools\cli town check <place>` and `town ready <state>`
@@ -253,19 +253,23 @@ Towns are checked by audit and pictures, never by layout tests. Tests stay on Gr
 town (`world-zones.md` "Tests do not read the town").
 
 - **Static** (node; `town check <place>` per place, and the claim and footprint half in `validate` as
-  `validate-island-zones`): every required slot of the template is mapped; every mapped slot
-  has its layer and claim; every layer registers the kinds the slot promises, which `town check` reads
+  `validate-island-zones`): every required slot of the template is mapped; per slot, a fitted slot (one with a
+  layer or a claim) has both and they agree with the mapping; every layer registers the kinds the slot promises, which `town check` reads
   from the `.layer` text (a kind no system lists in `m_aPlaces` of `LF_SystemCatalog.conf` is a warning); the kits' prefabs resolve.
   It also counts each slot's layer against the building budget of its size (the `perf building` counts) and the
   per-place limits within 60 m (24 lights, 12 shadow casters, 1,500 added entities; `performance.md`), and warns on a claim
   whose `destruction.mode` is `needs-hook` until the indestructible hook lands. The map POI-kind slot check (M17, #2245,
   `tools/town/lib/poi-check.mjs`) fails a template slot that names no front `poi` kind with a row in `LF_MapPois.conf` (or `none`).
+- **Per slot, not per place.** Slots are fitted one draft at a time, so `validate` and a plain `town check` pass a
+  place with only some slots fitted: a mapped slot with neither layer nor claim is "not fitted yet", a note. A claim
+  without its layer, or a layer without its claim, fails everywhere. Place **completeness** (every mapped slot fitted)
+  is demanded only by `town check <place> --complete` and `town ready <state>` (#2347).
 - **In-world** (one Workbench run): `audit placement --strict` over the place's layers, plus pictures.
 - **Reachable** (one session on MainWorld): a harness verb walks a character from the place spawn to each
   slot's entrance on the `GM_Eden.nmn` navmesh. It fails on a slot with no path, or with a path over
   3 times the straight-line distance.
 - **Phase readiness** (`town ready <state>`): every place of the state passes `town check`, every system
-  that the state's chapters list is present (the boot log has no "switches off" line for it), the arrival
+  that the state's chapters list is present (the boot log has no `[LFDebug:<System>] no <Kind> placed on this map: off` line, which `LF_Systems.CheckPlaces` logs for a system with no place), the arrival
   route works end to end on the flagship header, and no live slot points at a dark place.
 
 ### 3.6 Phased map states and the bake order

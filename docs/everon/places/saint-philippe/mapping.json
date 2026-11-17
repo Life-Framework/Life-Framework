@@ -2,7 +2,7 @@
   "schema": 1,
   "template": "town",
   "place": "saint-philippe",
-  "status": "proposed",
+  "status": "approved",
   "note": "A proposal for the lead to approve (D10). Approval is a reviewed PR holding only this file (label town-mapping). `toolscli town map <place> --check` passes.",
   "dossier": {
     "schema": 1,

@@ -131,6 +131,82 @@ class LF_MapKnownSync
 		if (controller)
 			controller.LF_SendMapKnownAll(retries);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Least time between two sync answers to one player. Its own gate, not the shared COMMS bucket: a
+	//! player who just made three chess moves or board reads and then respawned lost the new character's
+	//! set there, with no retry (review 2026-11-17).
+	static const int MIN_GAP_MS = 1000; // lf-fixed: anti-spam floor; a sync is once per controlled-entity change
+
+	//! Player id -> tick of the last answered sync.
+	protected static ref map<int, int> s_mLastMs;
+	//! Players with a deferred sync queued.
+	protected static ref map<int, bool> s_mPending;
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: what to do with one sync ask. SEND records it; DEFER marks one queued send (the caller
+	//! schedules Deferred after MIN_GAP_MS), since a second change in a second may be the one for the new
+	//! character; DROP while one is already queued, which answers with the newest set anyway.
+	static LF_EMapKnownSyncGate Admit(int playerId, int nowMs)
+	{
+		if (!s_mLastMs)
+			s_mLastMs = new map<int, int>();
+
+		if (!s_mPending)
+			s_mPending = new map<int, bool>();
+
+		int last;
+		if (s_mLastMs.Find(playerId, last) && nowMs >= last && nowMs - last < MIN_GAP_MS)
+		{
+			if (s_mPending.Contains(playerId))
+				return LF_EMapKnownSyncGate.DROP;
+
+			s_mPending.Set(playerId, true);
+			return LF_EMapKnownSyncGate.DEFER;
+		}
+
+		s_mLastMs.Set(playerId, nowMs);
+		return LF_EMapKnownSyncGate.SEND;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the queued sync of a deferred ask. A player who left in between is skipped.
+	static void Deferred(int playerId)
+	{
+		if (s_mPending)
+			s_mPending.Remove(playerId);
+
+		if (!s_mLastMs)
+			s_mLastMs = new map<int, int>();
+
+		s_mLastMs.Set(playerId, System.GetTickCount());
+		PlayerManager players = GetGame().GetPlayerManager();
+		if (!players)
+			return;
+
+		SCR_PlayerController controller = SCR_PlayerController.Cast(players.GetPlayerController(playerId));
+		if (controller)
+			controller.LF_SendMapKnownAll(RETRIES);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		if (s_mPending && !s_mPending.IsEmpty() && GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(Deferred);
+
+		s_mLastMs = null;
+		s_mPending = null;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! What the server does with one join-sync ask (LF_MapKnownSync.Admit).
+enum LF_EMapKnownSyncGate
+{
+	SEND,
+	DEFER,
+	DROP
 }
 
 //------------------------------------------------------------------------------------------------
@@ -165,8 +241,20 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_MapKnownSync()
 	{
-		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.COMMS, "map knowledge sync"))
+		int playerId = GetPlayerId();
+		LF_EMapKnownSyncGate gate = LF_MapKnownSync.Admit(playerId, System.GetTickCount());
+		if (gate == LF_EMapKnownSyncGate.DEFER)
+		{
+			GetGame().GetCallqueue().CallLater(LF_MapKnownSync.Deferred, LF_MapKnownSync.MIN_GAP_MS, false, playerId);
+			LF_Debug.Info(LF_MapKnown.FEATURE, string.Format("join sync for player %1 deferred %2 ms", playerId, LF_MapKnownSync.MIN_GAP_MS));
 			return;
+		}
+
+		if (gate == LF_EMapKnownSyncGate.DROP)
+		{
+			LF_Debug.Info(LF_MapKnown.FEATURE, string.Format("join sync for player %1 already queued", playerId));
+			return;
+		}
 
 		LF_SendMapKnownAll(LF_MapKnownSync.RETRIES);
 	}
@@ -297,5 +385,22 @@ class LF_MapKnownScan_StaticResetHook : LF_StaticResetHook
 	override void Apply()
 	{
 		LF_MapKnownScan.ResetStatics();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of the server's join-sync gate (registered at script load; Core/LF_StaticReset.c).
+class LF_MapKnownSync_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_MapKnownSync_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_MapKnownSync";
+	}
+
+	override void Apply()
+	{
+		LF_MapKnownSync.ResetStatics();
 	}
 }

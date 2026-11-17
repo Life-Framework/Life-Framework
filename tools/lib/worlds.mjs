@@ -24,6 +24,10 @@ export const EVERON_WORLD = "Worlds/CoreOnEveron/CoreOnEveron.ent";
 // The island's header: the pack on MainWorld (vanilla Everon, its AI world and navmesh). It inherits
 // LF_Everon1989.conf and is hidden from Scenarios; session --mission island boots it (#2204).
 export const ISLAND_MISSION = "{5E2A9C41B7D08F36}Missions/LF_EveronIsland.conf";
+// The pack's island world itself (a SubScene of vanilla Eden): MainWorld_Layers holds the Place_<place>_<slot>.layer
+// files `town fit` writes. `look place:<place>/<slot>` opens it (docs/visual-testing.md "Island slots").
+export const ISLAND_WORLD = "Worlds/MainWorld/MainWorld.ent";
+export const islandLayersDir = (root = REPO) => join(root, "addons", PACK_ADDON, ...layersOf(ISLAND_WORLD).split("/"));
 // The pack world that is a SubScene of PLAYTEST_WORLD and holds the pack town's layers.
 export const PLAYTEST_PACK_WORLD = "Worlds/Everon1989Town/Everon1989Town.ent";
 
