@@ -193,6 +193,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_E2E_ShutdownSave(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2EInventory(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventBus(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_EventMapShare(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventModuleLoader(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_EventPackOverlay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_EventPhaseJip(), LF_TestTier.WORLD);
