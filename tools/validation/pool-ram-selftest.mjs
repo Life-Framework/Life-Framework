@@ -5,6 +5,9 @@
 // red-proof 2026-11-16: with unrealisedMb returning 0 and a test reserving 0 (the gate as it was) the
 // "a full machine queues", "a Workbench is counted" and "a test is admitted only if it leaves the floor"
 // checks fail.
+// red-proof 2026-11-17: with the old scan (servers only, no profile column) and peaks keyed by the asking
+// job's profile, the classifier, "a test server records a test peak", "a client records under its own
+// world and profile", "an island client grows to the island client peak" and machinePeaks checks fail.
 
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
@@ -118,6 +121,74 @@ try {
   check(!tight.ok, "remote: a 5 GB laptop with a Workbench loading queues a test");
   const parsed = pool.parseRemoteState("lf-pool: ram 4096 15564\nlf-pool: proc workbench 11 3000 0\n");
   check(parsed.procs?.length === 1 && parsed.procs[0].kind === "workbench", "remoteState parses the scan lines");
+}
+
+// --- classification (2026-11-17): test servers, island clients, client profiles, look vs tool Workbench
+{
+  // The PowerShell classifier on Win32_Process-shaped objects with real command-line shapes.
+  const WB = "ArmaReforgerWorkbench" + "SteamDiag.exe"; // split: validate-wb-policy flags a file that names the launcher
+  const S = "C:\\Users\\u\\AppData\\Local\\LifeFramework\\session\\Life-Framework-rt-x-session";
+  const rows = [
+    { Name: "ArmaReforgerServer.exe", ProcessId: 1, cmd: `"c:\\a\\ArmaReforgerServer.exe" -server Worlds/CoreOnEveron/CoreOnEveron.ent -profile ${S}\\server -maxFPS 30` },
+    { Name: "ArmaReforgerSteam.exe", ProcessId: 2, cmd: `"C:\\a\\ArmaReforgerSteam.exe" -client 127.0.0.1 -profile ${S}\\client1 -window -screenWidth 1280 -maxFPS 30 -lfSession 79` },
+    { Name: "ArmaReforgerSteam.exe", ProcessId: 3, cmd: `"C:\\a\\ArmaReforgerSteam.exe" -client 127.0.0.1 -profile C:\\other\\session\\client1 -window -maxFPS 15 -noSound` },
+    { Name: "ArmaReforgerServerDiag.exe", ProcessId: 4, cmd: `"c:\\a\\ArmaReforgerServerDiag.exe" -server X.conf -profile C:\\LF\\agents\\Life-Framework-ws-g\\server\\profile\\test -maxFPS 30 -addr 127.0.0.1:2003` },
+    { Name: "ArmaReforgerServer.exe", ProcessId: 5, cmd: `"c:\\a\\ArmaReforgerServer.exe" -server X.conf -profile C:\\LF\\w\\server\\profile\\serve -maxFPS 30` },
+    { Name: WB, ProcessId: 6, cmd: `"C:\\a\\${WB}" -gproj C:\\LF\\v\\addons\\LF_Everon1989\\LF_Everon1989.gproj -wbModule=WorldEditor -plugin=LF_VisualShotsPlugin -profile C:\\LF\\v\\server\\profile\\visual-serve` },
+    { Name: WB, ProcessId: 7, cmd: `"C:\\a\\${WB}" -gproj C:\\LF\\r\\addons\\LF_Everon1989\\LF_Everon1989.gproj -wbModule=ResourceManager -run -exitAfterInit -profile C:\\LF\\r\\server\\profile\\rdb` },
+  ];
+  const q = (x) => `'${String(x).replace(/'/g, "''")}'`;
+  const objs = rows.map((r) => `[pscustomobject]@{ Name = ${q(r.Name)}; ProcessId = ${r.ProcessId}; CommandLine = ${q(r.cmd)}; WorkingSetSize = 1048576000; PrivatePageCount = 2097152000 }`).join(", ");
+  const ps = [pr.PS_PROC_ROWS, `Get-LfArmaRows @(${objs}) | ForEach-Object { Write-Host ("lf-pool: proc " + $_.k + " " + $_.id + " " + $_.ws + " " + $_.isl + " " + $_.priv + " " + $_.prof) }`].join("\n");
+  const r = spawnSync("powershell", ["-NoProfile", "-NonInteractive", "-Command", ps], { encoding: "utf8", windowsHide: true, timeout: 60000 });
+  if (r.error) console.log(`pool-ram-selftest: note: PowerShell unavailable (${r.error.message}); classifier check skipped`);
+  else {
+    const got = Object.fromEntries(pr.parseScan(r.stdout).map((p) => [p.pid, p]));
+    const want = (pid, kind, world, profile) => {
+      const p = got[pid];
+      check(p && p.kind === kind && p.world === world && p.profile === profile, `classifier: pid ${pid} is ${kind}/${world}/${profile} (got ${JSON.stringify(p)}; ${r.stderr.trim().slice(0, 200)})`);
+    };
+    want(1, "server", pr.ISLAND, undefined);
+    want(2, "client", pr.ISLAND, "full"); // joins by address: island only through its session folder
+    want(3, "client", pr.SMALL, "lowspec");
+    want(4, "test", pr.SMALL, undefined);
+    want(5, "server", pr.SMALL, undefined);
+    want(6, "workbench", pr.SMALL, "look");
+    want(7, "workbench", pr.SMALL, "tool");
+    check(got[1]?.wsMb === 1000 && got[1]?.privMb === 2000, "classifier: working set and private MB");
+  }
+  // The holder's gate classifies with the same function.
+  check(pool.PS_RAM_GATE.includes("function Get-LfArmaRows") && /Get-LfArmaRows\)/.test(pool.PS_RAM_GATE), "the holder gate uses Get-LfArmaRows");
+
+  const sc = pr.parseScan("lf-pool: proc test 1 700 0 900 -\nlf-pool: proc client 2 1700 1 4400 full\nlf-pool: proc client 3 900 0 1500 lowspec\nlf-pool: proc workbench 4 300 0 400 tool\n");
+  check(sc[0].kind === "test" && sc[0].profile === undefined && sc[1].profile === "full" && sc[3].profile === "tool", "parseScan reads the test kind and the profile column");
+  // Peaks are keyed by what the process is, not by the job being admitted.
+  let t = pr.trackPeaks({}, sc, {}, "lowspec");
+  t = pr.trackPeaks(t.live, [], t.peaks, "lowspec");
+  check(t.peaks["test:small"]?.[0] === 700, `a test server records a test peak (${JSON.stringify(t.peaks)})`);
+  check(t.peaks["client:island"]?.[0] === 1700 && t.peaks["client:small:lowspec"]?.[0] === 900, "a client records under its own world and profile, not the asking job's");
+  check(t.peaks["workbench:small:tool"]?.[0] === 300 && !t.peaks["workbench:small"], "a tool Workbench records apart from the look viewer");
+  // Growth: an island client grows to the island peak; a tool Workbench to the tool peak.
+  const isc = { ...sc[1], privMb: 1800 };
+  check(pr.unrealisedMb([isc], none, "lowspec") === 2900 - 1700, `an island client grows to the island client peak (got ${pr.unrealisedMb([isc], none, "lowspec")})`);
+  check(pr.unrealisedMb([sc[3]], none) === 1300 - 300, "an rdb/compile Workbench grows to the tool peak, not the look viewer's 3.7 GB");
+  check(pr.islandCount([{ kind: "test", world: pr.ISLAND }]) === 1, "an island test server counts as island-sized");
+
+  // Per-machine peaks: the box's own measured keys win; too few samples keep this PC's.
+  const merged = pr.mergePeaks({ "workbench:small": [3700, 3700, 3700], "server:small": [700, 700, 700] }, { "workbench:small": [2500, 2600, 2550], "client:small": [1, 2] });
+  check(merged["workbench:small"][1] === 2600 && merged["server:small"][0] === 700 && !merged["client:small"], "mergePeaks: a box key with 3+ samples wins, fewer is ignored");
+  check(pr.mergePeaks({ a: [1] }, null).a[0] === 1, "mergePeaks: no box peaks keeps this PC's");
+  const rs = pool.parseRemoteState('lf-pool: ram 4096 15564\nlf-pool: peaks {"workbench:small":[2500,2600,2550]}\n');
+  check(rs.peaks?.["workbench:small"]?.length === 3, "remoteState reads the box's pool-peaks.json line");
+  check(pool.parseRemoteState("lf-pool: ram 4096 15564\nlf-pool: peaks {broken\n").peaks === null, "a broken peaks line is ignored");
+  const proot = scratchRepo("lf-pool-ram-mp-");
+  try {
+    const hm = { name: "lf-testbox", via: "ssh" };
+    check(pr.peakMb(pool.machinePeaks(proot, hm, rs), "workbench", pr.SMALL) === 2600, "machinePeaks: the laptop's Workbench reserve is its own measured p90, not this PC's seed");
+    check(pr.peakMb(pool.machinePeaks(proot, { name: "local", via: "local" }), "workbench", pr.SMALL) === 3700, "machinePeaks: this PC keeps its own");
+  } finally {
+    rmSync(proot, { recursive: true, force: true });
+  }
 }
 
 // --- the holder's PowerShell gate carries the same rules
