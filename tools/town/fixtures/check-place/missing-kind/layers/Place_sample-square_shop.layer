@@ -1,0 +1,9 @@
+GenericEntity Fit_shop_Place {
+ components {
+  LF_PlaceComponent "{AAAAAAAAAAAAAAA1}" {
+   m_sKind "Wrong"
+   m_sId "sample-square.shop"
+  }
+ }
+ coords 980 12.4 2015
+}

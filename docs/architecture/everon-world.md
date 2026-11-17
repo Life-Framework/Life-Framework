@@ -176,13 +176,20 @@ supplies every coordinate the later steps use. No step types a coordinate.
 - **Template** (`tools/town/templates/<kind>.json`, kinds `town`, `village`, `harbour`, `site`): the
   slots of a place kind. Each slot has an id, `required` or optional, the kit it takes, what the
   building needs (interior, ground floor, area, street frontage, distance from the square) and the
-  `LF_Places` kinds the core system looks for once it is fitted. Templates are tooling: they hold no
-  coordinates and no place names.
+  `LF_Places` kinds the core system looks for once it is fitted. Each slot also names its `poi`, the
+  front kind that has a row in the map's POI table (`LF_MapPois.conf` plus pack overlays), or `none`;
+  `town map --check` fails a slot with neither (`tools/town/lib/poi-check.mjs`, everon-map.md). Templates
+  are tooling: they hold no coordinates and no place names.
 - **Mapping** (`docs/everon/places/<slug>/mapping.json`, next to its dossier): slot id, then a building id
   from the dossier, a free plot from the dossier with a purpose-built building prefab (`plot:<id>` plus
   `prefab`, only where no vanilla building fits, D9), or `none` with a reason. `tools\cli town map <slug>`
   proposes one by scoring the dossier's buildings against the slot needs. The lead approves it (D10): a
   reviewed PR that holds only that file. Nothing is placed before it merges.
+  Building types are one vocabulary: the catalog's and scout's (`tools/scout/types.mjs`), which the templates'
+  `needs.types` use too; `TYPE_ALIASES` there resolves the older names (`municipal-office`, `house-town`, `shop-*`,
+  `fuel-station`) and `TYPE_REFINEMENTS` picks a kind of shop by its prefab stem. The template is `--template`, else the
+  one the place's mapping names (`mapping.template`, so a village the gazetteer calls `other` still checks as a village),
+  else the dossier's (`scout --template town|village`), else `town`.
 - **Core stays map-independent.** The mapping is tooling data. What reaches the game is the fitted
   layer: entities with `LF_PlaceComponent` and the feature components that register in `LF_Places`. The
   core never reads the mapping.
@@ -200,8 +207,11 @@ supplies every coordinate the later steps use. No step types a coordinate.
   the kit. The relative geometry is kept; the absolute positions are dropped.
 - **Placed buildings (D9).** Where the mapping names a free plot, `town fit` first places the
   purpose-built building with `place ground` on the plot, then fits its kit like any other building.
-- **Indestructible (D15).** `town fit` writes each fitted vanilla building's destruction override into the
-  slot layer, so a fitted floor never falls in.
+- **Indestructible (D15).** A placed building (D9) is written into the slot layer with its destruction
+  off. A vanilla building stands in the terrain, so no layer can override it: `town fit` puts
+  `LF_FittedBuildingComponent` on the slot's place marker inside the building, and on the server the
+  core turns that building's damage handling off (`docs/features/core.md` "LF_FittedBuildings"). The
+  claim says `destruction.mode: "hooked"`; a slot with no place marker stays `needs-hook`.
 - **Apply:** `tools\cli town fit <place> <slot>` resolves the building from the mapping and its anchors
   from the dossier. It runs each kit row through `place on|against|ground` (the same bound reads, surface
   probes, checks and audit), writes `MainWorld_Layers/Place_<place>_<slot>.layer`, adds the slot's
@@ -215,10 +225,11 @@ supplies every coordinate the later steps use. No step types a coordinate.
   `arrival`. Two agents never write one file.
 - **Claims** carry over from the grid: `tools/town/claims/<place>-<slot>.json` (slug, building id, layer,
   date). `town fit` refuses a claim that `origin/main` or an open PR already holds; it reads open-PR claims
-  the same way `grid place` does since #2021. `validate-world-zones` gains an `island` zone, the
-  `MainWorld_Layers/Place_*` files. Each layer's entities must stand inside its claimed building's
-  footprint (plus a margin set per slot, such as a kerb for `taxi`), and no two claims may name one
-  building.
+  the same way `grid place` does since #2021. A separate validator, `validate-island-zones` (#2206), guards the `island` zone, the
+  `MainWorld_Layers/Place_*` files: only a `town-draft-<place>-<slot>` branch may change one, and only its own. Each layer's
+  entities must stand inside its claimed building's footprint (plus a margin set per slot: 2 m for a building,
+  12 m for a street slot, `taxi` 8 m, `board` 10 m, or the template slot's own `margin`), and no two claims may name one
+  building (a street slot marked `shared` may stand on a building another slot holds).
 - **Who writes.** Only a worktree named `town-draft-<place>-<slot>` writes an island layer. Its PR is a
   draft with before and after pictures and goes to the maintainer (bible step 4). The playtest town's
   guard and the maintainer's own worktree are unchanged.
@@ -241,9 +252,14 @@ supplies every coordinate the later steps use. No step types a coordinate.
 Towns are checked by audit and pictures, never by layout tests. Tests stay on GridWorld and the playtest
 town (`world-zones.md` "Tests do not read the town").
 
-- **Static** (node, part of `validate`): every required slot of the template is mapped; every mapped slot
+- **Static** (node; `town check <place>` per place, and the claim and footprint half in `validate` as
+  `validate-island-zones`): every required slot of the template is mapped; every mapped slot
   has its layer and claim; every layer registers the kinds the slot promises, which `town check` reads
-  from the `.layer` text against `m_aPlaces` in `LF_SystemCatalog.conf`; the kits' prefabs resolve.
+  from the `.layer` text (a kind no system lists in `m_aPlaces` of `LF_SystemCatalog.conf` is a warning); the kits' prefabs resolve.
+  It also counts each slot's layer against the building budget of its size (the `perf building` counts) and the
+  per-place limits within 60 m (24 lights, 12 shadow casters, 1,500 added entities; `performance.md`), and warns on a claim
+  whose `destruction.mode` is `needs-hook` until the indestructible hook lands. The map POI-kind slot check (M17, #2245,
+  `tools/town/lib/poi-check.mjs`) fails a template slot that names no front `poi` kind with a row in `LF_MapPois.conf` (or `none`).
 - **In-world** (one Workbench run): `audit placement --strict` over the place's layers, plus pictures.
 - **Reachable** (one session on MainWorld): a harness verb walks a character from the place spawn to each
   slot's entrance on the `GM_Eden.nmn` navmesh. It fails on a slot with no path, or with a path over

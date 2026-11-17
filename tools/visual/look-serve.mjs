@@ -19,7 +19,7 @@
 // with an access violation, so no addon file is reopened under a live Workbench. A server that is gone, hung or crashed never fails the caller: look kills
 // what is left (and its crash reporter), forgets it, and runs a fresh Workbench as before.
 
-import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { closeSync, copyFileSync, existsSync, ftruncateSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync, writeSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { dirname, extname, join } from "node:path";
@@ -28,6 +28,7 @@ import * as wt from "../wt.mjs";
 import { removeWorktree } from "../link-safety.mjs";
 import { ADDONS } from "../lib/addons.mjs";
 import { renameRetry } from "../lib/atomic-file.mjs";
+import { mirrorMode } from "../lib/look-job.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PLUGIN = join(HERE, "wb", "LF_VisualShotsPlugin.c");
@@ -35,7 +36,8 @@ export const VIEWER_NAME = "Life-Framework-look-viewer";
 // Addon files a live Workbench may be reopened on. Empty: an in-place .layer/.et edit reopened fine in the probe,
 // but a .layer rewritten by git checkout crashed the reopen 4 of 4 times (lf-testbox, lf-cloud, 2026-11-14).
 // Add an extension only after proving it live through the viewer checkout, several times in a row.
-export const FAST_PATH_EXT = [];
+// LF_LOOK_REOPEN_EXT=".layer,.et" lists the extensions to probe (the viewer then writes those files IN PLACE, see mirrorViewer).
+export const FAST_PATH_EXT = String(process.env.LF_LOOK_REOPEN_EXT ?? "").split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
 export const ALIVE_STALE_MS = 15000; // the plugin rewrites alive.txt every 3 s while idle
 const BOOT_BUDGET_S = 150;
 const STOP_WAIT_MS = 15000;
@@ -61,19 +63,13 @@ export function parseNameStatus(text) {
 // resourceDatabase.rdb is not an input: it is Workbench's own cache of the files (-forceUpdate rebuilds it),
 // its bytes differ between worktrees at the same commit and size, so comparing it would restart every request.
 // What it caches is decided by the files: an added, deleted or renamed file or a .meta restarts anyway.
-export function classifyChange({ from, to, changes = [], pluginChanged = false }) {
+export function classifyChange({ from, to, changes = [], pluginChanged = false, reopenExt = FAST_PATH_EXT }) {
   if (!from) return { reload: "restart", reason: "no server" };
-  if (pluginChanged) return { reload: "restart", reason: "the look plugin changed" };
-  if (!changes.length) return from === to ? { reload: "none", reason: "same snapshot" } : { reload: "reopen", reason: "same files, other commit" };
-  for (const c of changes) {
-    // Workbench loads only addons/ (the gproj and -addonsDir); tools, docs and the rest cannot change a picture.
-    // The plugin it runs is copied from tools/ and compared by its hash above. Still a reopen, never "none".
-    if (!c.path.startsWith("addons/")) continue;
-    if (c.status !== "M") return { reload: "restart", reason: `${c.status} ${c.path}` };
-    if (!FAST_PATH_EXT.includes(extname(c.path).toLowerCase())) return { reload: "restart", reason: `M ${c.path}` };
-  }
-  const inAddons = changes.filter((c) => c.path.startsWith("addons/")).length;
-  return { reload: "reopen", reason: inAddons ? `${inAddons} addon file(s) changed` : "only files outside addons/ changed" };
+  if (!changes.length && !pluginChanged && from !== to) return { reload: "reopen", reason: "same files, other commit" };
+  if (!changes.length && !pluginChanged) return { reload: "none", reason: "same snapshot" };
+  // The rule itself (what a live Workbench may take in place) is tools/lib/look-job.mjs mirrorMode.
+  const m = mirrorMode({ changes, reopenExt, pluginChanged });
+  return m.reload === "reopen" ? { reload: "reopen", reason: m.reason.replace(" changed in place", " changed") } : m;
 }
 
 // Why a server's answer cannot be used (null when it can): it must be this request's, complete, with the world open.
@@ -230,6 +226,46 @@ export function viewerAt(viewer, sha) {
   return { ok: true };
 }
 
+// Brings the viewer from `fromSha` to `toSha` WITHOUT replacing any addon file: each modified addon file is
+// rewritten in place (open, truncate, write: the same file Workbench has open, as an editor's save does), then
+// HEAD and the index move to toSha with no worktree write. `git checkout` unlinks and recreates a file, and a
+// reopen after that crashed Workbench 4 of 4 (2026-11-14). Files outside addons/ go through git (Workbench
+// never loads them). { ok, why }. Only modified files may be in `changes` for addons/ (mirrorMode decides).
+export function mirrorViewer(root, viewer, fromSha, toSha, changes) {
+  const at = viewerAt(viewer, fromSha);
+  if (!at.ok) return at;
+  for (const c of changes) {
+    if (!c.path.startsWith("addons/")) continue;
+    if (c.status !== "M") return { ok: false, why: `${c.status} ${c.path} cannot be mirrored in place` };
+    const blob = spawnSync("git", ["-C", root, "show", `${toSha}:${c.path}`], { windowsHide: true, timeout: 120000, maxBuffer: 1 << 29 });
+    if (blob.status !== 0) return { ok: false, why: `git show ${c.path}: ${String(blob.stderr ?? "").trim().split(/\r?\n/)[0]}` };
+    const buf = blob.stdout;
+    let fd;
+    try {
+      fd = openSync(join(viewer, c.path), "r+");
+      ftruncateSync(fd, 0);
+      writeSync(fd, buf, 0, buf.length, 0);
+    } catch (e) {
+      return { ok: false, why: `in-place write of ${c.path}: ${e.message}` };
+    } finally {
+      if (fd !== undefined) closeSync(fd);
+    }
+  }
+  const head = git(viewer, ["update-ref", "--no-deref", "HEAD", toSha]);
+  if (head.status !== 0) return { ok: false, why: `update-ref: ${(head.stderr || head.stdout).trim()}` };
+  const idx = git(viewer, ["read-tree", toSha]);
+  if (idx.status !== 0) return { ok: false, why: `read-tree: ${(idx.stderr || idx.stdout).trim()}` };
+  for (const c of changes) {
+    if (c.path.startsWith("addons/")) continue;
+    if (c.status === "D") rmSync(join(viewer, c.path), { force: true });
+    else {
+      const co = git(viewer, ["checkout", "--force", toSha, "--", c.path]);
+      if (co.status !== 0) return { ok: false, why: `checkout ${c.path}: ${(co.stderr || co.stdout).trim().split(/\r?\n/)[0]}` };
+    }
+  }
+  return viewerAt(viewer, toSha);
+}
+
 // The plugin of the caller's look.mjs (the protocol both sides speak), and a first rdb so the first boot
 // does not register every resource from nothing. After that the viewer's Workbench keeps its own rdb.
 function syncSideFiles(root, viewer) {
@@ -328,14 +364,14 @@ export async function serveLook(root, { plan, budgetS, exe, workbenchArgs, snaps
     const diff = git(root, ["diff", "--name-status", "--no-renames", st.sha, snap.sha]);
     if (diff.status !== 0) decision = { reload: "restart", reason: `cannot diff ${short(st.sha)}..${short(snap.sha)}` };
     else {
-      decision = classifyChange({ from: st.sha, to: snap.sha, changes: parseNameStatus(diff.stdout), pluginChanged: pluginHash() !== st.plugin });
+      const changes = parseNameStatus(diff.stdout);
+      decision = { ...classifyChange({ from: st.sha, to: snap.sha, changes, pluginChanged: pluginHash() !== st.plugin }), changes };
     }
   } else decision = classifyChange({ from: null });
 
   if (decision.reload === "reopen") {
     // The viewer must be exactly the last snapshot before a partial checkout; anything else restarts.
-    const before = viewerAt(viewer, st.sha);
-    const co = before.ok ? checkoutViewer(root, viewer, snap.sha) : before;
+    const co = mirrorViewer(root, viewer, st.sha, snap.sha, decision.changes ?? []);
     if (!co.ok) decision = { reload: "restart", reason: co.why };
   }
 
@@ -437,7 +473,7 @@ export async function serveCommand(root, flags, { exe, workbenchArgs, snapshot, 
       console.log(`FAIL  look serve: ${started.why}${started.profile ? ` (logs under ${join(started.profile, "logs")})` : ""}`);
       return 1;
     }
-    console.log(`look serve: up in ${Math.round(started.bootS)} s, pid ${started.state.pid}, snapshot ${short(snap.sha)}; it stops itself after 10 min with no request`);
+    console.log(`look serve: up in ${Math.round(started.bootS)} s, pid ${started.state.pid}, snapshot ${short(snap.sha)}; it stops itself after 10 min with no request (the pool closes it after 5, or at once when a job waits)`);
     return 0;
   } finally {
     release();

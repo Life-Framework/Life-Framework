@@ -1,0 +1,19 @@
+{
+ "schema": 1,
+ "summary": {
+  "buildings": 12,
+  "enterable": 9
+ },
+ "pictures": [
+  {
+   "role": "overview",
+   "file": "img/overview-wide.jpg",
+   "caption": "wide, from the south"
+  },
+  {
+   "role": "interior",
+   "file": "img/inside.jpg",
+   "caption": "the back room"
+  }
+ ]
+}
