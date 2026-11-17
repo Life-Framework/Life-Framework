@@ -226,6 +226,18 @@
   a player interaction, but only once the holder is cuffed (`LF_Restraint`; #1916): the
   interaction stays hidden and the server's `Revoke` refuses and logs for a free player. Test `licence/revoke-cuffs`. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
   `e2e/licence-desk` (the open application, a revoke and a conviction that still blocks the permit across `wt e2e`).
+- 🧪 (2026-11-18) **The firearm permit is got at the gun store** (maintainer 2026-11-17; follows draft #2061). A catalogue
+  offer with `m_sGrantsLicence` (owner key `grantsLicence`) is a licence row: the counter's price list shows the licence
+  with the permit fee and, on Pay, runs the same `LF_LicenceDesk.VisitFor` the desk ran (fee in carried cash through
+  `LF_EntityCashWallet` with ledger reason `licence-fee`, clean record, the licence's gate, the in-game-day wait, the
+  `permit_due:` flag), so the player applies and later collects at that counter (`LF_ShopComponent.ApplyForLicence`,
+  `LF_CharacterShopComponent.RpcAsk_Licence`; the server re-checks range, rate limit, a raided shop and that the outlet has
+  the row). The slip prints the answer (`#LF-LicenceCounter_*`, else the desk's refusal keys). A row for a licence the
+  office does not issue (anything but `FIREARM_PERMIT`) is dropped at load and logged. The core ships no row, so the desk
+  still issues the permit in a core-only world; the pack's `LF_Catalogue_GunStore.conf` puts the row on `gun_counter`,
+  and while any outlet has the row the desk hides and refuses its permit action (`LF_LicenceDesk.DeskIssuesPermit`).
+  An application already open at the desk is collected at the counter. Selling a gun still needs the permit. The client
+  reads the server's fee from the catalogue stream (`fee`). Tests `licence/counter`, `everon/gun-store-permit` (pack leg).
 
 - ✅ **Run rules: deposit, distance, time, passenger** (#2408, merged, in-dev). All numbers are the jobs config's
   (`Configs/Jobs/LF_Jobs.conf`, owner section `jobs`):

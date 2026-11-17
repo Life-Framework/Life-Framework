@@ -43,7 +43,7 @@ export function parseCatalogue(text) {
     if (head && !cur) {
       cur = head[1] === "LF_CatalogueItem"
         ? { kind: "item", line: i + 1, id: "", prefab: "", price: null, sell: null }
-        : { kind: "offer", line: i + 1, outlet: "", item: "" };
+        : { kind: "offer", line: i + 1, outlet: "", item: "", grants: "" };
       recDepth = depth;
     }
     if (cur) {
@@ -56,6 +56,7 @@ export function parseCatalogue(text) {
         else if (f[1] === "m_iSellPrice") cur.sell = Number(v);
         else if (f[1] === "m_sOutlet") cur.outlet = v;
         else if (f[1] === "m_sItem") cur.item = v;
+        else if (f[1] === "m_sGrantsLicence") cur.grants = v;
       }
     }
     for (const c of line) {
@@ -117,6 +118,10 @@ export function checkCatalogues(files, ctx) {
     for (const of of cat.offers) {
       const at = `${file}:${of.line} offer ${of.outlet}/${of.item}`;
       if (!of.outlet || !of.item) fails.push(`${at}: needs m_sOutlet and m_sItem`);
+      else if (of.grants) {
+        // A licence row (LF_OutletOffer.m_sGrantsLicence) names no catalogue item; the item is only its key.
+        if (!/^[A-Z][A-Z0-9_]*$/.test(of.grants)) fails.push(`${at}: m_sGrantsLicence ${of.grants} is not an LF_ELicenseType name`);
+      }
       else if (!ids.has(of.item)) fails.push(`${at}: no catalogue file lists item ${of.item}`);
     }
   }

@@ -100,6 +100,33 @@ class LF_OutletOffer : LF_ConfigRecord
 	[Attribute("0", UIWidgets.CheckBox, "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead")]
 	bool m_bRemoved;
 
+	[Attribute("", UIWidgets.EditBox, "Licence row: the counter issues this licence (LF_ELicenseType name) under the licence office's rules (fee, clean record, wait; LF_LicenceDesk) instead of selling an item. m_sItem is then only the row's key and names no catalogue item. Empty is an item row")]
+	string m_sGrantsLicence;
+
+	//! Client: a licence row's fee as the server charges it (the config stream's "fee"); -1 when not streamed.
+	int m_iStreamedFee = -1;
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the offer is a licence row (m_sGrantsLicence) rather than an item.
+	bool IsLicenceRow()
+	{
+		return !m_sGrantsLicence.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A licence row's fee: the streamed one on a client, else the licence office's.
+	int LicenceFee()
+	{
+		if (m_iStreamedFee >= 0 && !Replication.IsServer())
+			return m_iStreamedFee;
+
+		LF_ELicenseType licence;
+		if (!LF_ItemCatalogue.ParseLicence(m_sGrantsLicence, licence))
+			return 0;
+
+		return LF_LicenceDesk.Fee(licence);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	static LF_OutletOffer Make(string outlet, string item)
 	{
@@ -147,6 +174,8 @@ class LF_ItemCatalogueConfig
 
 	protected static ref LF_ItemCatalogueConfig s_Config;
 	protected static bool s_bLoadAttempted;
+	//! True while ApplyLayers reads the server's stream, the one source of a licence row's "fee".
+	protected bool m_bReadingStream;
 
 	//------------------------------------------------------------------------------------------------
 	//! The loaded and layered catalogue, or null (logged once) when the core file does not resolve.
@@ -260,7 +289,9 @@ class LF_ItemCatalogueConfig
 		{
 			m_aItems = new array<ref LF_CatalogueItem>();
 			m_aOffers = new array<ref LF_OutletOffer>();
+			m_bReadingStream = true;
 			ApplyOwner(streamed, "the server's stream");
+			m_bReadingStream = false;
 			LF_Debug.Info(LF_ConfigService.FEATURE, "catalogue: using the server's values");
 		}
 	}
@@ -327,8 +358,14 @@ class LF_ItemCatalogueConfig
 	//! Reads an offer's owner fields (LF_OutletOfferList).
 	void ReadOffer(notnull LF_OutletOffer offer, notnull LF_ConfigReader reader)
 	{
-		array<string> offerKeys = {"op", "licence", "job", "minRank", "orgRight", "stock", "restockSeconds", "issue", "issuePrefab", "removed"};
+		array<string> offerKeys = {"op", "licence", "job", "minRank", "orgRight", "stock", "restockSeconds", "issue", "issuePrefab", "grantsLicence", "removed"};
+		// A licence row's fee is the licence office's (licences.permitFee); only the server's stream carries it.
+		if (m_bReadingStream)
+			offerKeys.Insert("fee");
 		reader.WarnUnknownKeys(offerKeys);
+		reader.ReadString("grantsLicence", offer.m_sGrantsLicence);
+		if (m_bReadingStream)
+			reader.ReadInt("fee", offer.m_iStreamedFee, PRICE_MIN, PRICE_MAX);
 		reader.ReadBool("issue", offer.m_bIssue);
 		reader.ReadResource("issuePrefab", offer.m_IssuePrefab);
 		reader.ReadString("licence", offer.m_sLicence);
@@ -409,6 +446,9 @@ class LF_ItemCatalogueConfig
 				ctx.WriteValue("issue", offer.m_bIssue);
 				string issuePrefab = offer.m_IssuePrefab;
 				ctx.WriteValue("issuePrefab", issuePrefab);
+				ctx.WriteValue("grantsLicence", offer.m_sGrantsLicence);
+				if (offer.IsLicenceRow())
+					ctx.WriteValue("fee", offer.LicenceFee());
 				ctx.WriteValue("removed", offer.m_bRemoved);
 				ctx.EndObject();
 			}
@@ -421,7 +461,8 @@ class LF_ItemCatalogueConfig
 	//! - an item with no prefab, a prefab that does not resolve (when checkResources), or a DLC-owned
 	//!   prefab is removed (logged);
 	//! - a sell price above the price is lowered to the price (logged), so no outlet is a profit loop;
-	//! - an offer naming an item the catalogue lacks is removed (logged).
+	//! - an offer naming an item the catalogue lacks is removed (logged);
+	//! - a licence row naming a licence the licence office does not issue is removed (logged).
 	//! \param[in] checkResources Whether to load each prefab (false in LOGIC tests: no resources).
 	//! \return Records changed.
 	int Check(bool checkResources)
@@ -477,6 +518,19 @@ class LF_ItemCatalogueConfig
 			{
 				if (!offer || offer.m_bRemoved)
 					continue;
+
+				if (offer.IsLicenceRow())
+				{
+					LF_ELicenseType licence;
+					if (!LF_ItemCatalogue.ParseLicence(offer.m_sGrantsLicence, licence) || !LF_LicenceDesk.Issues(licence))
+					{
+						LF_Debug.Error(LF_ItemCatalogue.FEATURE, string.Format("outlet %1 row %2 grants '%3', which the licence office does not issue; removed", offer.m_sOutlet, offer.m_sItem, offer.m_sGrantsLicence));
+						offer.m_bRemoved = true;
+						changed++;
+					}
+
+					continue;
+				}
 
 				if (!FindItem(offer.m_sItem))
 				{
@@ -694,6 +748,7 @@ class LF_OutletOfferList : LF_ConfigList
 		changed += LF_CatalogueFields.CopyInt(container, "m_iStock", offer.m_iStock);
 		changed += LF_CatalogueFields.CopyInt(container, "m_iRestockSeconds", offer.m_iRestockSeconds);
 		changed += LF_CatalogueFields.CopyBool(container, "m_bIssue", offer.m_bIssue);
+		changed += LF_CatalogueFields.Copy(container, "m_sGrantsLicence", offer.m_sGrantsLicence);
 		string issuePrefab = offer.m_IssuePrefab;
 		changed += LF_CatalogueFields.Copy(container, "m_IssuePrefab", issuePrefab);
 		offer.m_IssuePrefab = issuePrefab;
