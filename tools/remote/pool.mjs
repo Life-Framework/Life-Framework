@@ -266,6 +266,9 @@ function normalize(m) {
     host: via === "ssh" ? String(m.host || m.name) : null,
     root: via === "ssh" ? String(m.root || "C:/LF/Life-Framework").replace(/\\/g, "/").replace(/\/$/, "") : null,
     slots: Math.max(1, Number(m.slots) || 1),
+    // The folder the machine's run and lane worktrees (Life-Framework-rt-*, -lane-*) go under when it is not
+    // the parent of its clone (a bigger second drive, "D:/LF"). Unset: the clone's parent.
+    runRoot: via === "ssh" && m.runRoot ? String(m.runRoot).replace(/\\/g, "/").replace(/\/$/, "") : null,
     // lanes: { test: N, session: K } gives tests their own servers beside the session servers
     // (ports in pool-queue.mjs, "Lane ports"). Without it the machine keeps one shared lane (slots).
     // Scales the seeded run budgets for a slower machine (the laptop).
@@ -773,8 +776,13 @@ export function heldSlotFromEnv(root) {
 
 // ---------------------------------------------------------------- remote slots
 
+// Where a pool machine keeps its run and lane worktrees: its runRoot, else the parent of its clone.
+export function runParent(m) {
+  return m.runRoot || dirname(m.root).replace(/\\/g, "/");
+}
+
 export function remoteRunDir(m, slug, i = 1, suffix = "") {
-  return `${dirname(m.root).replace(/\\/g, "/")}/Life-Framework-rt-${slug}${suffix}${i > 1 ? `-s${i}` : ""}`;
+  return `${runParent(m)}/Life-Framework-rt-${slug}${suffix}${i > 1 ? `-s${i}` : ""}`;
 }
 
 // The run folder of one test lane on a pool machine, shared by every worktree: whoever holds the
@@ -784,7 +792,7 @@ export function remoteRunDir(m, slug, i = 1, suffix = "") {
 // tools/link-safety.mjs cleanRunFolder). pool prune leaves these; --lanes removes the idle ones.
 export const LANE_DIR_PREFIX = "Life-Framework-lane-";
 export function laneRunDir(m, lock) {
-  return `${dirname(m.root).replace(/\\/g, "/")}/${LANE_DIR_PREFIX}${lock}`;
+  return `${runParent(m)}/${LANE_DIR_PREFIX}${lock}`;
 }
 
 // The holder: acquire (when cfg.slots is non-empty), prepare the run folder,
@@ -1030,10 +1038,10 @@ function sshPsAsync(host, script, { timeout = 90000, connectTimeout = 4 } = {}) 
 // opts.ssh / opts.now are test seams.
 export async function rtGcMachine(root, m, { keep = [], idleMin, targetGb = 0, dry = false, log = console.log, ssh = sshPsAsync, now = Date.now } = {}) {
   const idle = idleMin ?? poolSettings(root).rtIdleMin;
-  const parent = dirname(m.root).replace(/\\/g, "/");
+  const parent = runParent(m);
   const res = { machine: m.name, freeGb: null, removed: [], failed: 0 };
   try {
-    const seen = rt.parseRtScan((await ssh(m.host, rt.rtScanScript(parent, targetGb), { timeout: 90000 })).stdout);
+    const seen = rt.parseRtScan((await ssh(m.host, rt.rtScanScript(parent, targetGb, m.root), { timeout: 90000 })).stdout);
     res.freeGb = seen.freeGb;
     if (seen.freeGb === null) {
       log(`WARN  pool: ${m.name}: run-folder cleanup skipped (the box did not report its free disk)`);
@@ -1052,7 +1060,7 @@ export async function rtGcMachine(root, m, { keep = [], idleMin, targetGb = 0, d
       return res;
     }
     log(`pool: ${lead}; removing idle run folders, oldest first (${plan.remove.length} idle for ${idle} min or more)`);
-    const done = rt.parseRtRemove((await ssh(m.host, rt.rtRemoveScript(parent, plan.remove.map((r) => r.dir), { targetGb, cutoffMs: now() - idle * 60000 }), { timeout: 900000 })).stdout);
+    const done = rt.parseRtRemove((await ssh(m.host, rt.rtRemoveScript(parent, plan.remove.map((r) => r.dir), { targetGb, cutoffMs: now() - idle * 60000, mainDir: m.root }), { timeout: 900000 })).stdout);
     const byDir = new Map(plan.remove.map((r) => [rt.normDir(r.dir), r]));
     let before = seen.freeGb;
     for (const d of done.removed) {
