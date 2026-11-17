@@ -231,6 +231,12 @@
   "systems": {
     "switches": {}
   },
+  "taxiFares": {
+    "floor": 80,
+    "ratePerMetre": 0.04,
+    "cap": 300,
+    "shortHopMetres": 100
+  },
   "vehicles": {
     "buyPercent": 100,
     "sellBackPercent": 50,
