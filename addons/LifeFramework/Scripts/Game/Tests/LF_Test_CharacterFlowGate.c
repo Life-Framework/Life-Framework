@@ -4,6 +4,7 @@
 //! flow, which offers the character pick or a fresh spawn. Only a player the server is arriving
 //! (flow opened on connect, closed on spawn) may reach it, so a dead, downed, cuffed or jailed
 //! player cannot switch character or skip the respawn bookkeeping by sending the RPC.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CharacterFlowGate : LF_Test
 {
 	protected static const int PLAYER = 7781;

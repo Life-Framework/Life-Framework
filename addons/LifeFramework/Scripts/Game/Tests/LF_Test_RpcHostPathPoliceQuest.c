@@ -3,6 +3,7 @@
 //! #2534: a listen host's own client-to-server ask must reach its handler. LF_AskPoliceArrest and
 //! AskRequestLog branch on Replication.IsServer() and call the handler directly; before, the bare
 //! Rpc was dropped on the host and nothing ran.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RpcHostPathPoliceQuest : LF_Test
 {
 	override string GetName()

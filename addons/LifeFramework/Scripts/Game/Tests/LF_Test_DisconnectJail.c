@@ -4,6 +4,7 @@
 //! Disconnect rules (#691) on the server path with no body: a cuffed logout starts a paused
 //! sentence and adds the charge; the rejoin serves it; the fine rule takes the fine from the bank;
 //! jailClockOffline lets an offline prisoner serve time; a flagged logout writes an incident row.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DisconnectJail : LF_Test
 {
 	protected static const string JAILED = "disconnect-jail-uid";

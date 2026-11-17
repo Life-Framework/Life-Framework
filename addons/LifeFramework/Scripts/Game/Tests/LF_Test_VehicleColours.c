@@ -4,6 +4,7 @@
 //! a model with no colour row sells as today, the server range check refuses an index the model
 //! does not sell, a delta that crosses the cash ceiling pays from the bank, a colour child is chopped
 //! as its model, and a respawn whose saved colour no longer loads comes back in the base colour.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehicleColours : LF_Test
 {
 	static const ResourceName S105_RED = "{D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et";

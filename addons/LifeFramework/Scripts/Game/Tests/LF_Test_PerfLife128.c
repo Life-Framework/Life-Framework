@@ -10,6 +10,7 @@
 //! 2. Race tick: uid lookups to find 16 racers among 128 players (a scan per racer before, one compare after).
 //! 3. Logout bodies: snapshots written for one looted item while many bodies are kept (all before, one after).
 //! 4. Police call: inventory walks to find scanners (every player before, the scanner registry after).
+[LF_TestInfo(LF_TestTier.PERF)]
 class LF_Test_PerfLife128 : LF_Test
 {
 	static const int PLAYERS = 128;

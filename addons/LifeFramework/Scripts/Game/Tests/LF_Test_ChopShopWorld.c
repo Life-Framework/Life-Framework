@@ -4,6 +4,7 @@
 //! actions (load, work, collect), starts empty, the config and the parts prefab resolve, and a bench
 //! with no car in the drop area refuses. Spawns nothing. The steal-and-chop loop is the
 //! two-client session proof.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ChopShopWorld : LF_Test
 {
 	override string GetName()

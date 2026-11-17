@@ -19,6 +19,7 @@ class LF_TestReputationRecorder : LF_EventSubscriber
 //! Standing rules (#2696): points move by the config row, a cooldown and a daily cap hold back farming,
 //! points clamp to the first and last threshold, the tier comes from the thresholds, an unknown
 //! faction or action changes nothing, and LF_OnReputationChanged fires only when the tier changes.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ReputationRules : LF_Test
 {
 	static const string UID = "test-reputation-rules";

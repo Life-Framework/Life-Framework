@@ -5,6 +5,7 @@
 //! longer resolves is skipped (LF_Debug.Error) and not kept.
 //! Across a restart (`tools\cli wt e2e`): every non-reload run records two e2e chairs and picks one up
 //! before the save; the reload boot finds the kept one standing and the picked-up one gone.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_PlacementPersist : LF_Test
 {
 	static const ResourceName CHAIR = "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et";

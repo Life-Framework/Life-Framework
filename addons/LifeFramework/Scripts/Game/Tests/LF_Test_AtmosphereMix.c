@@ -4,6 +4,7 @@
 //! Which ambient emitters sound (LF_AtmosphereMix, Feature/Atmosphere): the start radius and the
 //! wider stop radius, conditions and hours, one voice per group, the voice cap by priority and
 //! distance, and the hour window that wraps past midnight. Pure data in, ids out.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AtmosphereMix : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

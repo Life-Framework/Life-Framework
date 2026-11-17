@@ -6,6 +6,7 @@
 //! clerk's arrival marks reach the DISCOVER places near the square and the tourist map reaches all of
 //! them, never a role, public or underworld kind or a dark place; the open map rebuilds when the known
 //! set changes. Fixture places only: no real Everon name.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapPlacesKnown : LF_Test
 {
 	protected static const string CHARACTER = "mpk-test-character";

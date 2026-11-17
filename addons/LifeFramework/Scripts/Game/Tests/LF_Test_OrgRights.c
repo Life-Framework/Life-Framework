@@ -7,6 +7,7 @@
 //! the four bools a rank saved before the mask, each server action against a rank with and without
 //! its right, the ladder rules for promote, demote and kick (never up to your own rung, never on an
 //! equal), and the offer side's entries agreeing with the server.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OrgRights : LF_Test
 {
 	protected static const string FOUNDER = "org-rights-founder";

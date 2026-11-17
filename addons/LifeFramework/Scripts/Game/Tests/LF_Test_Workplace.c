@@ -5,6 +5,7 @@
 //! on the action), the desk registers as a "Workplace" place, and a job without a duty role has no
 //! role at all, so its clock is not offered.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Workplace : LF_Test
 {
 	override string GetName()

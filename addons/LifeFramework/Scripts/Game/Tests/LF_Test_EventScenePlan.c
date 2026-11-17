@@ -3,6 +3,7 @@
 //! Event scene plan (#1953): waypoint order follows the config, the NPC cap trims the count, a
 //! second scene is refused while one runs, and a scene is skipped with a logged reason when the AI
 //! budget cannot hold it. No world.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_EventScenePlan : LF_Test
 {
 	override string GetName()

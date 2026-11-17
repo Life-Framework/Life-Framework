@@ -3,6 +3,7 @@
 //! Case board (#148) in the world: the board prefab spawns with its component, its two actions and
 //! its Read card; and a stamped bag logged at the locker becomes a card that Pin puts
 //! on the board with the note the piece carried (the locker is the record; the board adds the pin).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CaseBoardWorld : LF_Test
 {
 	static const ResourceName BOARD_PREFAB = "{C8B78C628082CA0D}Prefabs/Investigation/LF_CaseBoard.et";

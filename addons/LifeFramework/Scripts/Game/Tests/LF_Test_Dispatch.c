@@ -10,6 +10,7 @@
 //! one. The per-crime police minimum stays a framework gate. The radio line and the board line
 //! carry the place and the description, never a name.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Dispatch : LF_Test
 {
 	protected static const string ROBBER = "dispatch-once-robber";

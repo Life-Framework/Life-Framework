@@ -9,6 +9,7 @@
 //! Request rate limit (#693b): a fixed window admits a burst, the next request is refused (first
 //! refusal reported, the rest counted), a new window admits again and reports the count, buckets
 //! are per player and per kind, a clock wrap opens a new window, and every kind has a sane limit.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RateLimit : LF_Test
 {
 	override string GetName()

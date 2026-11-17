@@ -3,6 +3,7 @@
 // tier: LOGIC
 //! Price boards at the car lot read the lot's price list (#540): the title is a template filled from
 //! the offer, so a changed price in config is a changed board. No world, no entity.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignPrice : LF_Test
 {
 	override string GetName()

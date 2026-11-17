@@ -19,6 +19,7 @@ class LF_Test_EventPlayersNearby_Listener : LF_EventSubscriber
 	}
 }
 
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventPlayersNearby : LF_Test
 {
 	static const string SCENE = "grid_event_scene";

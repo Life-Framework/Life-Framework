@@ -8,6 +8,7 @@
 //! packet and an early harvest, growth walks sprouts -> half grown -> ripe, the harvest gives three
 //! cabbages and empties the plot, and a farmer across the field is refused. The plot's crop slots
 //! lie on the bed. The test puts the plot back the way it found it.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlotLoop : LF_Test
 {
 	protected static const string PLOT_KEY = "farm_plot_1";

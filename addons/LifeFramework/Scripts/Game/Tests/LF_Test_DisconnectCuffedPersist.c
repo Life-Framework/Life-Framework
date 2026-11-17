@@ -3,6 +3,7 @@
 //! Acceptance of #691 (`disconnect/cuffed`): a cuffed player who logs out has a sentence and the
 //! charge that ride the real save (the "jail" payload and the account), so after the store is
 //! wiped and loaded the rejoin is still jailed with the charge. The restart itself is wt e2e.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_DisconnectCuffedPersist : LF_Test
 {
 	protected static const string UID = "disconnect-cuffed-save-uid";

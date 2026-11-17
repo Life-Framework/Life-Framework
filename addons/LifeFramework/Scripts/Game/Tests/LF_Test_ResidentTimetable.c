@@ -12,6 +12,7 @@ class LF_Test_ResidentKinds : LF_ResidentKindCheck
 	}
 }
 
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ResidentTimetable : LF_Test
 {
 	override string GetName()

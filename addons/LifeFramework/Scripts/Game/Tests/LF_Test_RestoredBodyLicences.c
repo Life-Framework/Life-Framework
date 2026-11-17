@@ -5,6 +5,7 @@
 //! never spawned a new one (LF_SpawnLogic "already controls a character"), so the progression apply
 //! every spawned body gets never ran: the body held only its starter licences and the licence desk
 //! charged a permit holder again. LF_SpawnLogic.AdoptLivingBody gives that body the saved licences.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RestoredBodyLicences : LF_Test
 {
 	protected static const string UID = "lf-test-restored-body";

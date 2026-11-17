@@ -8,6 +8,7 @@
 //! Backspace is one of MenuBack's sources; LF_UIBack.IsTyping keeps it for a focused text field
 //! (validate-ui-back-path also fails a kit sheet with no Close part).
 //! LF_DialogueScene is not a kit sheet: it shares LF_UIBack, so a closed scene refuses Back.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_UIBackPath : LF_Test
 {
 	override string GetName()

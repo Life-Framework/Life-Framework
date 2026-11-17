@@ -7,6 +7,7 @@
 // cargo props; both tests now delete what they spawn. Items a body carries are skipped
 // (the save-write test keeps three bodies alive on purpose). Green with this test last and in
 // full name order.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DebugWorldCollision : LF_Test
 {
 	protected static int s_iEntities;

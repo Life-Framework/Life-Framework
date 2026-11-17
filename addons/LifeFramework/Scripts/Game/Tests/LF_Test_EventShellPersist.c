@@ -4,6 +4,7 @@
 //! the int bag onto a fresh shell clock; an event saved mid-phase loads into its full cooldown, not
 //! back into the phase; a phase name the event no longer has loads idle with a warning; an event id
 //! this boot does not run is skipped with a warning. Applying the same rows twice gives the same state.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventShellPersist : LF_Test
 {
 	override string GetName()

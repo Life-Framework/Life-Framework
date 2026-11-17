@@ -4,6 +4,7 @@
 // the init-quantity application in EOnInit, or the top-tier model swap in
 // UpdateStackModel, then run `tools\cli test --tier all`; each breakage below fails.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_QuantityOperations : LF_Test
 {
 	protected static const ResourceName MONEY_STACK_PREFAB = "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et";

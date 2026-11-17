@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! #2419: a hideout door a member opened relocks once no member is near it, a load that omits a
 //! live lease unleases it (the load is idempotent), and the world-end reset forgets every lease.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HideoutRelock : LF_Test
 {
 	protected static const string SITE_A = "hideout-relock-site-a";

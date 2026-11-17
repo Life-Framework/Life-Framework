@@ -3,6 +3,7 @@
 //! The chop shop loop at the real bench (#601): a car nobody stole is refused with the line that says
 //! what counts as hot, and is left untouched (not locked, not started on a job, still there). The same
 //! car marked stolen (what a hotwire does) loads, takes its work, pays the worker and is deleted.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ChopShopSteal : LF_Test
 {
 	override string GetName()

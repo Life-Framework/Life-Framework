@@ -11,6 +11,7 @@
 //! hideout lease, door and stash are refused (and what was leased is kept), a locked house door opens
 //! like a plain door, hunger and thirst stop costing health and food restores nothing, a seat and an
 //! emote offer nothing. Turned on again, each works as before.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SystemsWorldPlaces : LF_Test
 {
 	protected static const ResourceName DOOR = "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et";

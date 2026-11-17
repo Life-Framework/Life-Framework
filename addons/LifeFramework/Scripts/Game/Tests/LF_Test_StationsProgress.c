@@ -4,6 +4,7 @@
 //! Hands-on station progress (#417): progress belongs to the station and adds across workers, so
 //! one worker takes N times as long as N workers; a saved batch restores clamped; a work tick that
 //! comes faster than a hold can finish is refused; site heat rises with work and fades.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StationsProgress : LF_Test
 {
 	override string GetName()

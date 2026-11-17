@@ -5,6 +5,7 @@
 // tier: WORLD
 //! Outstanding tickets ride the real save path (the "tickets" payload, version 13): amount, clock,
 //! stage and paid flag come back after the store is wiped.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FineTicketSerializer : LF_Test
 {
 	protected static const string HOLDER = "ticket-save-holder";

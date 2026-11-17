@@ -8,6 +8,7 @@
 //! instance spawned in a process be stored (later ones read a mesh-derived volume of 1073 and the
 //! jacket refused them), so a test passed or failed on which earlier test had spawned the item
 //! (#699, #708). Hand-carry items (logs, planks, crate, parcel) are never stored and are not here.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ItemVolume : LF_Test
 {
 	protected static const ResourceName RECEIPT = "{3E8A5C1D7B2F4096}Prefabs/Items/Roleplay/LF_Receipt.et";

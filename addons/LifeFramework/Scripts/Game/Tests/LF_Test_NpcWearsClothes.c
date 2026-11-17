@@ -9,6 +9,7 @@
 //! inventory state a client receives, so it wears the item instead of dropping it at the NPC's
 //! feet, #328), and no loose cloth item lies near it. Checks a fresh spawn of each NPC prefab and
 //! every dressed NPC the DebugWorld town places.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NpcWearsClothes : LF_Test
 {
 	protected ref array<IEntity> m_aFound = {};

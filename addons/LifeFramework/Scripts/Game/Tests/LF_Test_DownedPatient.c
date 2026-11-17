@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! The practice patient's service rule, with no world: what each tick does with a patient, and
 //! that the playtest gate keeps it inert anywhere else.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DownedPatient : LF_Test
 {
 	override string GetName()

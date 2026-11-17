@@ -12,6 +12,7 @@
 //! only the shutdown save written on the host-stop close holds it. The reload boot finds it, with
 //! its ledger line, or the reload did not load the shutdown save (or the save held reset statics).
 // tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_ShutdownSave : LF_Test
 {
 	static const string MARKER_UID = "e2e-shutdown-uid";

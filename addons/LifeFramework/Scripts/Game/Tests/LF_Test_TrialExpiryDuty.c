@@ -4,6 +4,7 @@
 //! order. A promotion earned in seconds the clock had not settled yet ends the trial before the
 //! roster row goes. A promoted officer, an officer still on trial and one an admin put back on the
 //! roster stay on duty; with no body the sweep changes nothing (the clock-out needs the body).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_TrialExpiryDuty : LF_Test
 {
 	protected static const string EXPIRED = "trial-duty-expired";

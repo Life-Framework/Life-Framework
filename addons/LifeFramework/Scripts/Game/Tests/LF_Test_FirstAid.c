@@ -5,6 +5,7 @@
 //! twice), a second item is trimmed by the cap and a third adds nothing, morphine adds nothing,
 //! medic-only config refuses a civilian helper, and a character that is not downed gains nothing.
 //! Spawned test characters stand in for the helper and for the items (only their ids are used).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FirstAid : LF_Test
 {
 	override string GetName()

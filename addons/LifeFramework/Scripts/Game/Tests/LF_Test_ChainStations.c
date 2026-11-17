@@ -40,6 +40,7 @@ class LF_TestChainRecorder : LF_EventSubscriber
 //! one barrel, a worker who asks faster than a hold can finish is refused, someone out of reach is
 //! refused, the site heats, the bus hears the load, ready and collect, and collecting hands over
 //! the product. The test empties the barrels, cools the site, and deletes its characters.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ChainStations : LF_Test
 {
 	protected static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

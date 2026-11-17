@@ -4,6 +4,7 @@
 //! Placing a charge on a running fuse files the report and sounds the alarm but leaves nothing to
 //! bag; the fuse running out leaves exactly one card, filed against that report; a charge that is
 //! repaired (defused) before it goes off never leaves one.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_BreachEvidence : LF_Test
 {
 	override string GetName()

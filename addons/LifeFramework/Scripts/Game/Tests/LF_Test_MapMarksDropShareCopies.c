@@ -6,6 +6,7 @@
 //! (LF_MapMarks.ExportCharacter) drops each saved mark that matches a live share the character sees
 //! (same text, within 1 m) and keeps the cleaned list in the store; with no live share every mark stays.
 //! A fixture org member and a recording sink stand in for the real players.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MapMarksDropShareCopies : LF_Test
 {
 	protected static const string CHARACTER = "mapmarks-share-copies-character";

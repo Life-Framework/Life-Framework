@@ -4,6 +4,7 @@
 //! key holder. A stranger neither sees nor performs it, and a forged server-side perform by them leaves
 //! the lock unchanged. The lock flips only through LF_HouseManagerComponent.SetHouseLocked, so the
 //! manager, its doors and the saved row agree.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HouseLockAction : LF_Test
 {
 	protected static const ResourceName BUILDING = "{74676598DF38F201}Prefabs/Structures/Core/EL_Building_Base.et";

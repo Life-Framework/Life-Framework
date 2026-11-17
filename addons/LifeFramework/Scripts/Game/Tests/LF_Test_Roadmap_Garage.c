@@ -4,6 +4,7 @@
 
 // tier: LOGIC
 //! Park rules at the garage: the owner, on foot, at a garage.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Garage : LF_Test
 {
 	override string GetName()

@@ -3,6 +3,7 @@
 //! vehicle/state-reset (#2415): vehicle records, sessions, the plate registry and the garage config
 //! are process statics. A second world loaded in the same process kept the last world's cars and
 //! plates, so a fresh save listed vehicles nobody had bought and refused plates as taken.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehicleStateReset : LF_Test
 {
 	protected static const string VEHICLE = "vehicle-state-reset-car";

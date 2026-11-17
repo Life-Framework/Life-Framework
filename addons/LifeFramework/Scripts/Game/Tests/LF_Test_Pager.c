@@ -4,6 +4,7 @@
 //! paged to stays empty; a pager keeps only the last N messages, newest first; only calls with the
 //! pager channel page; the pager card shows the messages.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Pager : LF_Test
 {
 	static const ResourceName PAGER_PREFAB = "{747E7E1669676AA1}Prefabs/Items/Roleplay/LF_Pager.et";

@@ -29,6 +29,7 @@ class LF_Test_MapPoiCase
 //! The engine cannot open an addon's loose .json (it is not a resource), so the table comes from
 //! LF_MapPoiCasesData, generated from the json by `node tools/map/rules/visibility.mjs --gen`; the
 //! node selftest fails when the copy is stale.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapPois : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

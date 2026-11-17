@@ -6,6 +6,7 @@
 //! round trips and re-puts the shares; a re-applied load is idempotent; leaving the org takes the
 //! marks off that player's map. Across a restart (`tools\cli wt e2e`): the save boot records
 //! an organization and its mark 1 (every non-reload run does), the reload boot finds it in the store and in the share table.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_OrgMapMarks : LF_Test
 {
 	protected static const string FOUNDER = "orgmarks-founder";

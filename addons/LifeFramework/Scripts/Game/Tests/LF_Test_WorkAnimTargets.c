@@ -5,6 +5,7 @@
 //! holding it starts the timed drill and no pose. Drives the
 //! real Begin/Rob paths with a fixture character; broadcasts are silenced, the test counts the
 //! starts the server decided.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WorkAnimTargets : LF_Test
 {
 	override string GetName()

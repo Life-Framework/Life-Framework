@@ -7,6 +7,7 @@
 //! water window kills the plant, watering inside the window resets it, a ripe crop rots after its
 //! lifetime, and a seed is refused too close to another plant, out of reach, from a vehicle, in a safe
 //! zone and past the per-character or server cap.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PlantRules : LF_Test
 {
 	override string GetName()

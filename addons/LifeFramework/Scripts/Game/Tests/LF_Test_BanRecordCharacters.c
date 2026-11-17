@@ -4,6 +4,7 @@
 //! moderation/ban-record-characters (#2414): incidents are stored under the key of the character that
 //! was active, which is not the account uid for any character after the first. A ban names the
 //! account, so the incidents it lists are those of every character of that account.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_BanRecordCharacters : LF_Test
 {
 	protected static const string UID = "ban-chars-account";

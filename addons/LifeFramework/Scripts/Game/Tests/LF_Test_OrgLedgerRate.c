@@ -5,6 +5,7 @@
 //! Deposit, Withdraw, Leave and Lease asks go through LF_RateLimit (View walks every member), and
 //! the dev-gated test sign's Leave refuses a player whose organisation is not the sign's own, so it
 //! can never strip a real organisation of its founder.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OrgLedgerRate : LF_Test
 {
 	protected static const int PLAYER = 992236;

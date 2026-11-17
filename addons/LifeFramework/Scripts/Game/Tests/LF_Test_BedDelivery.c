@@ -24,6 +24,7 @@ class LF_TestBedDeliveryRecorder : LF_EventSubscriber
 //! reach the bus once. A civilian, a standing patient and a medic far from the bed change nothing.
 //! The reduced bill itself needs a real player (test bodies have none): `session.mjs bed-proof`.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_BedDelivery : LF_Test
 {
 	override string GetName()

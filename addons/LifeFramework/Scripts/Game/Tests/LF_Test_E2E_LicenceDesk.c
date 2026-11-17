@@ -13,6 +13,7 @@
 //! applying, one after applying and paying). The reload boot finds both convictions back from the
 //! "convictions" payload and the desk still refuses the first at application and holds back the
 //! second's permit at collection.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_LicenceDesk : LF_Test
 {
 	protected static const string APPLICANT = "e2e-licence-applicant";

@@ -8,6 +8,7 @@
 //! with its serial. The prefab used to be the vanilla bench drill at 0.4, and an item that leaves an inventory is
 //! back at scale 1, so the left drill stood there as a 1.2 m green pillar drill (#571 review). Since #340 the
 //! drill is its own 0.62 m model at scale 1; SetDown still has to keep any scaled tool's size.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DrillLeftSize : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

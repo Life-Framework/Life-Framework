@@ -3,6 +3,7 @@
 //! The catalogue's `starting_kit` outlet (#1767): a civilian's spawn loadout is built from its offers
 //! (clothing into loadout slots, the rest carried), and with no such outlet the loadout the game mode
 //! names is returned unchanged. Other roles never read the kit.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StartingKit : LF_Test
 {
 	static const ResourceName COAT = "{7F1451790F3D75BD}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_green.et";

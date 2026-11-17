@@ -4,6 +4,7 @@
 //! desk once inherited the police desk prefab and showed "Apply to the police" and "Review
 //! applications"; a job's own actions never appear at another job's desk.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DutyDeskActions : LF_Test
 {
 	override string GetName()

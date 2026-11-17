@@ -7,6 +7,7 @@
 //! server entry points, whatever its own machine sent. A hit it instigates does no damage; a driver's
 //! seat is refused (a cargo seat is not); till, held-till, vehicle, weapon and vault robbery,
 //! lockpicking and giving cash or an item are refused as cuffed. Talking (introduce) stays allowed.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CuffsServerRefusals : LF_Test
 {
 	protected static const string UID = "lf-test-cuffs-server";

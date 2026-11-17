@@ -2,6 +2,7 @@
 // LF_JailEscort.NearestFreePassengerSlot failed it with `[LFTEST] FAIL roadmap/escort`,
 // `- a driver seat is not a passenger seat (expected -1, got 0)`. Restored; green.
 // tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_Escort : LF_Test
 {
 	override string GetName()

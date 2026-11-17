@@ -9,6 +9,7 @@
 // (`Wrong GUID ... SentenceSlip.et`, `the prisoner carries one sentence slip (expected 1, got 0)`).
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JailSlip : LF_Test
 {
 	override string GetName()

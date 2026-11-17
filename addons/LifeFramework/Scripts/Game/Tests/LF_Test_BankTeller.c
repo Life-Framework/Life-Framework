@@ -5,6 +5,7 @@
 //! action, so deposit and withdraw run the same server seams and ledger reasons. Spawns the real
 //! teller prefab, checks the server's range check resolves it as the counter, and drives a
 //! withdraw of 100 then a deposit of 40 for a character standing in front of it.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_BankTeller : LF_Test
 {
 	protected static const ResourceName TELLER = "{8F3DB2237B844542}Prefabs/Characters/Npcs/LF_BankTeller.et";

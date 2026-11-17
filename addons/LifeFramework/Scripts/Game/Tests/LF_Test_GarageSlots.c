@@ -5,6 +5,7 @@
 // tier: LOGIC
 //! Garage slots (#2655, spec #774): base slots, price of the next slot, the max, and the cap that
 //! refuses a park with a reason naming the cap.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_GarageSlots : LF_Test
 {
 	override string GetName()

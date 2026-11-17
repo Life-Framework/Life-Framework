@@ -7,6 +7,7 @@
 // tier: LOGIC
 //! Garaging a car: the owner and a keyholder seated in it block the store, a stranger does not (the
 //! store ejects them), and an empty car with no keyholder has no refusal.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StoreStrangerEject : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

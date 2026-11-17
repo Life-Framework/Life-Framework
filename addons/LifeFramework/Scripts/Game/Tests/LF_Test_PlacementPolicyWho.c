@@ -4,6 +4,7 @@
 //! its own reason and toast and lets the right one place. The spike strip and the roadblock still need an
 //! on-duty officer, now from Configs/Placement/LF_PlacementPolicy.conf. Pure: the rules judge
 //! LF_PlacementWhoFacts, so no world, account or entity is needed.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PlacementPolicyWho : LF_Test
 {
 	protected static const string ORG = "policy-org";

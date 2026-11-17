@@ -4,6 +4,7 @@
 //! player, or a held-up one who holds no weapon while the hold-up is recent; never someone already
 //! cuffed. Any on-duty officer may uncuff a cuffed player. A hold-up records when its target was
 //! held up, which is what makes them compliant.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestraintRules : LF_Test
 {
 	override string GetName()

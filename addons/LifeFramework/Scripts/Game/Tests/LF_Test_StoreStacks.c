@@ -5,6 +5,7 @@
 //! A shopper who already carries apples takes a shelf apple (#202): the quantity merge must not fold it
 //! into their stack, because that would delete the item carrying the unpaid tag and make it free. The
 //! shelf apple stays its own item, tagged unpaid, and the till charges it. Deletes what it spawns.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_StoreStacks : LF_Test
 {
 	override string GetName()

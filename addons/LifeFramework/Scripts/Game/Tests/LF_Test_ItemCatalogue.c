@@ -7,6 +7,7 @@
 //! and the name its refusal carries, legality to a crime catalog offence, what clothing hides, an owner
 //! patch of a price merged by id, the load checks (DLC-owned prefab, sell above price, offer for a
 //! missing item), and the stream carrying the server's catalogue to a client.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ItemCatalogue : LF_Test
 {
 	static const ResourceName PISTOL = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";

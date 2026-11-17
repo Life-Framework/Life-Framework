@@ -7,6 +7,7 @@
 //! entity name (#1045). An unnamed entity placed under an id is where the call comes from; an id
 //! that is not placed, or none, falls back to the console. Under the old FindEntityByName lookup an
 //! unnamed place was never found.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacesDispatch : LF_Test
 {
 	protected static const string PLACE_ID = "places-dispatch-source";

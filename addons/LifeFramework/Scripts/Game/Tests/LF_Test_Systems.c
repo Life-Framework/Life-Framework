@@ -7,6 +7,7 @@
 //! turning off a system an enabled one needs is refused and it goes back to its shipped value; an
 //! opt-in system stays off and what needs it goes off; a run-time switch-off logs once and holds;
 //! a loadout item of a system that is off is left out.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Systems : LF_Test
 {
 	static const ResourceName ITEM = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

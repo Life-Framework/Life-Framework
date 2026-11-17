@@ -3,6 +3,7 @@
 //! #282/#283: with a config.json that names none of the new sections (or no config.json), zones,
 //! police, organizations, persistence and licences hold the values the code carried before they
 //! became owner sections. The sections are known top-level keys, so none warns as unknown.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigSectionsBackcompat : LF_Test
 {
 	override string GetName()

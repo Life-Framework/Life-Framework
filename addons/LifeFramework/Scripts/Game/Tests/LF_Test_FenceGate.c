@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! The fence gate (#271): below the threshold the purchase is refused, at it the fence sells, no
 //! threshold is open, an account-less buyer is refused. The record is the real LF_CrimeRecord.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FenceGate : LF_Test
 {
 	protected static const string UID = "fence-gate-a";

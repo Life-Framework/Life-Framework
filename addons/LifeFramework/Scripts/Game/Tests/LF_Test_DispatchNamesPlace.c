@@ -7,6 +7,7 @@
 //! the test organisation sign, placed north of the annex: its grid cell label signs ("free" and the cell ids,
 //! x 22..322, z 22..106) are place signs too and win inside the place radius (80 m), so the spot must stay
 //! 200 m clear of the lattice (the grid grew east to x 328 in #2249 and put a label 45 m from the old spot).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DispatchNamesPlace : LF_Test
 {
 	protected static const ResourceName LOCATION = "{A99A1ADAF98F2D48}Prefabs/World/Locations/Arland/Arleville.et";

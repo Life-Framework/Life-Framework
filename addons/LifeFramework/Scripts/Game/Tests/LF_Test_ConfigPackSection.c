@@ -3,6 +3,7 @@
 //! A pack adds namespaced owner-config sections (#553). The pack declares them in its manifest as
 //! data; the owner's config.json sets them; a bad field keeps its default; a name that clashes
 //! with a core section or breaks the namespace rule is ignored; the core never reads the values.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigPackSection : LF_Test
 {
 	override string GetName()

@@ -4,6 +4,7 @@
 // tier: WORLD
 //! Storing a car never deletes its cargo (#2411): the vehicle record keeps no inventory, so a car
 //! that still holds items stays on the street with them. Emptied, the same car stores.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VehicleStoreCargo : LF_Test
 {
 	protected static const string OWNER = "store-cargo-owner";

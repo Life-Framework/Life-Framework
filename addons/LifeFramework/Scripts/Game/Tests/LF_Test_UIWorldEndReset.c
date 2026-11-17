@@ -5,6 +5,7 @@
 //! count or the death screen's instance, so the next session in the same game process hid every
 //! interaction prompt (LF_ActionPromptGate) and returned the stale death screen. Each owner's
 //! LF_StaticResetHook now drops them; this applies only those two owners' resets.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_UIWorldEndReset : LF_Test
 {
 	override string GetName()

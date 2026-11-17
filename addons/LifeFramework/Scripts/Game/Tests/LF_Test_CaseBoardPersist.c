@@ -3,6 +3,7 @@
 //! The case board rides the real save path (the "caseboard" payload, save version 31, payload 31):
 //! the time of the crime, the pinned cards and their notes are back after the store is wiped and read
 //! back, the pin order goes on after the highest loaded pin, and loading twice adds nothing.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_CaseBoardPersist : LF_Test
 {
 	protected static const string ROBBER = "caseboard-save-robber";

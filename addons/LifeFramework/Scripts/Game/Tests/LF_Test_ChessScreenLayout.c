@@ -6,6 +6,7 @@
 //! #2099: the chess board's 64 keys each carry their own label, centred. A row is eight keys of
 //! equal width (one eighth each), every key's label widget sits inside that key's own button, and the
 //! kit button's left padding and arrow glyph, which pushed a label one key to the right, are gone.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ChessScreenLayout : LF_Test
 {
 	override string GetName()

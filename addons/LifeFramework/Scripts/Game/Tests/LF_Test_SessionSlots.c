@@ -3,6 +3,7 @@
 // tier: LOGIC
 //! An agent-box session keys a client by a slot, not by its player id, so a client that quits and
 //! rejoins (a new player id) is the same account again.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SessionSlots : LF_Test
 {
 	override string GetName()

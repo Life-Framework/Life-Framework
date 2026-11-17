@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! Pack manifest (#963): a pack whose core range holds the running core loads its overlays; one
 //! whose range excludes it is refused and its overlays are not handed out.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PackManifest : LF_Test
 {
 	override string GetName()

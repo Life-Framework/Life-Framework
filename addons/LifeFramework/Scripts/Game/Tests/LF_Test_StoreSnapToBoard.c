@@ -6,6 +6,7 @@
 //! spawn trace takes any static surface under the point: a gondola board, the board under the point
 //! and not the one above it, a counter top. A loose item already lying there is looked past, so
 //! copies never stack. A point over nothing stays where it was written.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_StoreSnapToBoard : LF_Test
 {
 	static const ResourceName GONDOLA = "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et";

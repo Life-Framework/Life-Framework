@@ -4,6 +4,7 @@
 //! id organizations list members under. An account's first character has the account uid as its record
 //! key, so resolving by LF_Utils.GetPlayerUID found no organization and refused every mark that
 //! character asked for. The organization manager's singleton is also dropped at world end.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OrgMarkCharacterId : LF_Test
 {
 	protected static const string ACCOUNT_UID = "orgmark-charid-account";

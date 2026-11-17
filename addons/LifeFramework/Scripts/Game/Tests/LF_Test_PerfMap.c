@@ -86,6 +86,7 @@ class LF_PerfMapFacts : LF_MapShareFacts
 //! the real sink. The widget route was measured in the engine by the `-lfMapPlacesProbe` pass (everon-map.md,
 //! #2232) at 0.23 to 0.30 ms per pan frame and 8.2 to 12.2 ms per rebuild, which is where the headroom in the frame
 //! budget goes. Prints one `[LFDebug:Perf] BENCH <name> value=<n> budget=<n>` line per measure.
+[LF_TestInfo(LF_TestTier.PERF)]
 class LF_Test_PerfMap : LF_Test
 {
 	//! Sizes from the card: 400 POIs, 40 areas, 128 recipients.

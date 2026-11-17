@@ -6,6 +6,7 @@
 //! a dashed outline is cut into dashes; an area off the canvas or too small draws nothing; the theme's
 //! `map-*` tokens recolour it. Pure script: the builder takes the screen outline, no map, no widgets.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapAreasDraw : LF_Test
 {
 	protected static const float VIEW_W = 1280;

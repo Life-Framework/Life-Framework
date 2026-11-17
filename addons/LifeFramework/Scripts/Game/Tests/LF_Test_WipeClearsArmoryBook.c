@@ -4,6 +4,7 @@
 //! the armory book hands back every officer's outstanding serials; the 2 h issue cooldown stays as
 //! saved. A kit kept in the police duty locker is still a gun, so its serial stays out. With
 //! keepCarriedGear on the serials stay. Applying twice is idempotent.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WipeClearsArmoryBook : LF_Test
 {
 	protected static const string UID = "test-wipe-armory-book";

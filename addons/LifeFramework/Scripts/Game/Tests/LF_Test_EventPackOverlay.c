@@ -4,6 +4,7 @@
 //! overlay adds an event, patches a phase timing of another (the fields it does not set keep the
 //! core value), disables a third and replaces a fourth; an add of an id that exists and a patch of
 //! one that does not are refused and change nothing. The core file itself loads and is valid.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_EventPackOverlay : LF_Test
 {
 	static const ResourceName OVERLAY = "{5A795328C2E8A902}Configs/Tests/LF_Test_EventOverlay.conf";

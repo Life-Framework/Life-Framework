@@ -3,6 +3,7 @@
 //! ops/server-perf-log (#1452): the once-a-minute `[LFDebug:Perf] players=N fps=F frameMs=M entities=E`
 //! line. The formatter turns a fixed sample into the exact line, and the interval gate fires once
 //! per 60 s of fed time, never per frame and never as a burst after a long stall.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ServerPerfLog : LF_Test
 {
 	override string GetName()

@@ -6,6 +6,7 @@
 //! #752a: a save from before the "vehiclestate" payload (version 32, and version 23, the e2e legacy
 //! save) has no state rows. Each loads, twice, with every vehicle untowed, uninspected and with no
 //! compartment, and the "vehicles" records unchanged. The test puts back the stores it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_VehicleStateLegacy : LF_Test
 {
 	protected static const string OWNER = "vehicle-state-legacy-owner";

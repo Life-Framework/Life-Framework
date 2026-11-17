@@ -25,6 +25,7 @@ class LF_TestTakenCounter : LF_EventSubscriber
 //! board shows the call taken; police allow two takers; each take publishes one event carrying
 //! the caller's uid.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ServiceTake : LF_Test
 {
 	override string GetName()

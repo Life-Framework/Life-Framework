@@ -3,6 +3,7 @@
 //! The vault door turns over LF_BreachTargetComponent.SWING_SECONDS instead of snapping (robbery video,
 //! #740): the ease starts and ends at rest and the turn always takes the short way round, so a yaw the
 //! engine wrapped into another turn never spins the door a full circle.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VaultDoorSwing : LF_Test
 {
 	override string GetName()

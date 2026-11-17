@@ -2,6 +2,7 @@
 // tier: WORLD (needs a cell origin, like jail/work)
 //! An arrest ends the escort hold (crime review 2026-11-17). The hold used to stay active after an
 //! action or menu arrest, so the freed prisoner's next logout counted as escaping custody.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JailEscortDrop : LF_Test
 {
 	override string GetName()

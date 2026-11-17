@@ -12,6 +12,7 @@
 //! 2 * 128 * 128 = 32768 identities; the owner index must stay within N + D = 256 and still
 //! resolve each account to the right player, miss offline accounts, follow a player that left,
 //! and keep two players on one account.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AccountPublishCost : LF_Test
 {
 	override string GetName()
