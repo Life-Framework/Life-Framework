@@ -1,0 +1,29 @@
+GenericEntity Fit_saint_philippe_board_Place {
+ components {
+  LF_PlaceComponent "{B7C36D8A52E72AA4}" {
+   m_sKind "TownBoard"
+   m_sId "saint-philippe.board"
+  }
+  LF_FittedBuildingComponent "{C8056766A0CBE3BE}" {
+  }
+ }
+ coords 4441.27 11.5 10789.1
+}
+GenericEntity Fit_saint_philippe_board_Place_MapBoard {
+ components {
+  LF_PlaceComponent "{36DE7C062AE882DE}" {
+   m_sKind "MapBoard"
+   m_sId "saint-philippe.board"
+  }
+ }
+ coords 4441.27 11.5 10789.1
+}
+GenericEntity Fit_saint_philippe_board_sign_town_map : "{EE587A113AF85FC5}Prefabs/Props/Signs/LF_TownBoard.et" {
+ components {
+  LF_SignComponent "{CB0DD0E500C1A1EE}" {
+   m_sSignId "town_map"
+  }
+ }
+ coords 4442.782 11.1 10778.423
+ angleY 153
+}

@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "kit": "board",
+  "system": "board",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Signs.layer",
+    "group": "Sign_TownMap",
+    "origin": "Sign_TownMap",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        3.5,
+        10.2
+      ],
+      "max": [
+        3.5,
+        10.2
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "Street kit: the board stands on the kerb in front of the building. Offsets are building-local: +z is the street side of the facade (8.4 m from the building centre for b38), the board faces +z. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "sign-town-map",
+      "name": "Sign_TownMap",
+      "prefab": "{EE587A113AF85FC5}Prefabs/Props/Signs/LF_TownBoard.et",
+      "role": "board",
+      "verb": "on floor",
+      "offset": [
+        3.5,
+        -0.4,
+        10.2
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"town_map\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

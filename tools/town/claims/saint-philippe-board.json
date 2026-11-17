@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "board",
+  "building": "b38",
+  "shared": true,
+  "kit": "board",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_board.layer",
+  "kinds": [
+    "TownBoard",
+    "MapBoard"
+  ],
+  "rows": 1,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_board_Place"
+  },
+  "date": "2026-11-17"
+}
