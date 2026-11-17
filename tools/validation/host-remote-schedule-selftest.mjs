@@ -10,11 +10,11 @@
 // red-proof: before tools/host/remote-schedule.mjs existed the import failed:
 // "FAIL remote-schedule.mjs missing (Cannot find module ...)" (2026-11-16).
 
-import { existsSync, mkdirSync, mkdtempSync, readdirSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = 0;
@@ -182,7 +182,7 @@ eq("timeout exit", r.code, 1);
 if (!/timed out/i.test(r.out)) fail(`timeout not reported: ${r.out}`);
 
 // --- prune: the newest N plain -remote pulls stay; tagged and local backups are never touched
-const work = mkdtempSync(join(tmpdir(), "lf-remote-sched-"));
+const work = scratchDir("lf-remote-sched-");
 try {
   const backups = join(work, "backups");
   const stampOf = (d) => `2026-11-${String(d).padStart(2, "0")}_06-00-00`;

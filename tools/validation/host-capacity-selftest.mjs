@@ -8,10 +8,10 @@
 // red-proof: before tools/host/capacity.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/capacity.mjs'" (2026-11-15).
 
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FX = join(ROOT, "tools", "validation", "fixtures", "host-capacity");
@@ -60,7 +60,7 @@ const withCol = cap.estimate(cap.parseCsv(csvText.replace(/,\s*$/gm, ",20")), []
 if (withCol.error || withCol.players !== 20 || withCol.estimate !== 100) fail(`a players column of 20 should estimate 100, got ${JSON.stringify(withCol)}`);
 
 // The command, end to end in a temp host dir: exit 0 and the line; with no perf lines exit 2.
-const dir = mkdtempSync(join(tmpdir(), "lf-host-capacity-"));
+const dir = scratchDir("lf-host-capacity-");
 try {
   const perfDir = join(dir, "perf");
   cpSync(join(FX, "perf-10p.csv"), join(perfDir, "perf-2026-11-15T20-00-30-000Z.csv"));

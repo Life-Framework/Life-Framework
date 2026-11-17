@@ -383,7 +383,17 @@ class LF_QuantityComponent : ScriptComponent
 
 		BaseInventoryStorageComponent storage = sourceInventoryItem.GetParentSlot().GetStorage();
 		InventoryStorageManagerComponent storageManager = LF_InventoryUtils.GetResponsibleStorageManager(owner);
-		if (!storageManager || !storageManager.TryInsertItemInStorage(destinationEntity, storage))
+		// The server's own insert of the fresh stack, after the split request passed its access
+		// checks: a restricted storage (hideout stash) takes this carrier-less item (#2584).
+		bool inserted;
+		if (storageManager)
+		{
+			LF_ServerInsertScope.Begin();
+			inserted = storageManager.TryInsertItemInStorage(destinationEntity, storage);
+			LF_ServerInsertScope.End();
+		}
+
+		if (!inserted)
 		{
 			// Storage could not take the split item: the source was never touched, drop the spawned entity
 			LF_Debug.Warn("Quantity", string.Format("split refused: storage did not take a %1 stack", splitSize));

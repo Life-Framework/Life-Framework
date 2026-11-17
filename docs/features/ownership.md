@@ -136,7 +136,12 @@
   gets the inventory, anyone else hears a refusal sound and gets the
   `#LF-HideoutStash_NotMember` toast, and the refusal is logged
   (`stash refused: not a member`). The server also refuses a non-member moving an
-  item out (`HandleAccessValidation`) or in (`CanStoreItem`). Membership and the
+  item out (`HandleAccessValidation`) or in (`CanStoreItem`). `CanStoreItem` has no
+  instigator, so it only takes an item from a living member's own inventory, the stash
+  itself or a server spawn (restore, `AddAmount` seeding, a stack split, all inside
+  `LF_ServerInsertScope`); an item in a vehicle, crate or body, or lying on the ground, is
+  refused even for a member, who carries it first (#2574, #2584, WORLD `hideout/stash-put-carrier`;
+  log `stash <id> refused <prefab> from the ground`). Membership and the
   rank's stash right (`USE_STASH`) are the key: an open or breached door does not open the stash.
 - ✅ Stash contents survive a restart through `LF_PersistentStorageComponent`
   keyed `hideout:Roadmap_Hideout` (not an entity id), so the stash keeps its
@@ -159,3 +164,30 @@
   so a restart no longer leaves it open for anyone. Tests `organization/upgrade-unwired`,
   `organization/fund-overflow`, `hideout/stash-right`, `hideout/load-relock` (LOGIC). The lease that
   never ends is #2533.
+- ✅ **Ledger asks are rate-limited; the test sign only leaves its own org** (#2536, review items 30 and 31 of #2415,
+  merged, in-dev). View, Deposit, Withdraw, Leave and Lease now go through `LF_OrgLedgerGate` (`LF_OrganizationCharacter.c`)
+  on the existing `PURCHASE` bucket, the same as founding and upgrades (View walks every member, so a spammed ask cost
+  a pass over the whole roster). The first refusal in a window logs `[LFDebug:RateLimit]` and toasts; a refused ask
+  returns no page. The dev-gated test sign's Leave refuses with `OTHER_ORG` (`#LF-TestOrgSign_OtherOrg`) unless the
+  player's org is the sign's own "Test Organisation", so it can never strip a real org of its founder. Test
+  `organizations/ledger-rate` (LOGIC).
+- 🧪 **A hideout lease ends with its organisation's last member** (#2571, part of #2533, merged, in-dev):
+  when the last member leaves or is kicked (`LF_OrganizationManager.Leave`, `LeaveDirect`, `Kick`) the
+  organisation publishes `LF_OnOrganizationEmptied` (`Feature/Organizations/LF_OrganizationsEvents.c`)
+  and `LF_Hideout` releases every site it leases (`ReleaseAllOf`, logged
+  `[LFDebug:Hideout] released hideout=… reason=organization emptied: …`). There is no disband verb
+  (#2415), so this is the disband; the organisation record stays on the register. `PushLock` now writes
+  the lock's house identifier on every push, empty included: a released door reads *Unowned* to everyone
+  (`LF_HideoutDoorRules.View`), former members no longer see *Open*, and an empty id matches no house in
+  `LF_HouseLockAction`. The `org_base` place goes with the lease and another organisation can lease the
+  site. Test `hideout/lease-empty-org` (WORLD).
+- 🧪 **A hideout lease lapses after 14 real days with no member online** (#2573, part of #2533, merged, in-dev):
+  each lease keeps the last time (unix seconds) a member of its organisation was connected, saved in the
+  `leaseidle` payload (save version 50). A server sweep every 5 minutes (`LF_Hideout.SweepIdle`) restarts
+  the clock of a lease whose organisation has a member connected (the site does not have to be visited) and
+  releases a lease idle longer than `LF_OrgConfig.HideoutLeaseIdleDays()` (owner key
+  `organizations.hideoutLeaseIdleDays`, default 14, 0 = never), logged
+  `[LFDebug:Hideout] released hideout=… org=… reason=idle N days`; the release frees the site like the
+  emptied-organisation release. An old save seeds the clock at the first load, and a saved clock already past
+  the limit at load (the server was down) gets one more day. Test `persist/hideout-lease-idle` (PERSISTENCE).
+- 🧪 **The ledger lets a holder give the lease up** (#2572, part of #2533, merged, in-dev): a member whose rank holds `BUY_UPGRADE` sees **Give up the lease** on the hideout row while the yard is theirs (`LF_OrgLedger.HideoutAction`; the same button is **Take the lease** when it is free). The ask is `LF_AskOrganizationLeaseRelease` / `RpcAsk_LF_OrganizationLeaseRelease` (`LF_OrganizationCharacter.c`, desk-only, PURCHASE rate bucket); the server calls `LF_OrgHideoutLease.Release`, which checks the right and that the organisation holds the lease and then `LF_Hideout.Release(..., "given up")` (gate shut, held ground lost). A refusal (no right, not our lease, away from the desk) toasts the player and logs `[LFDebug:Organizations] lease release refused: ...` as a warning. Test `organization/lease-release` (WORLD).

@@ -317,7 +317,7 @@ class LF_SignComponent : ScriptComponent
 	//! The title box and font on a game client, in layout units (a game client
 	//! scales the widgets inside the target like any widget).
 	//! \param text The printed title, capitals.
-	//! eturn Font size: 96, or less so the longest word fits the shown width.
+	//! \return Font size: 96, or less so the longest word fits the shown width.
 	static int ClientTitleRect(string text, out vector pos, out vector size)
 	{
 		pos = Vector(CLIENT_TITLE_LEFT, FACE_MARGIN, 0);

@@ -3,13 +3,13 @@
 // is under 3 s with the base layer cached; with the raster cache removed the fallback layer still draws.
 // The POI legs use the stand-in rows (fixture: true); the real overlay is tools/validation/map-places-selftest.mjs.
 // Also runs the rule loader and the case-table format. Run: node tools/map/map-render.selftest.mjs
-import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { decodePng } from "./lib/png.mjs";
 import { renderMap, ensureBase } from "./render/render.mjs";
 import { loadRules, loadCases, runCases } from "./rules/index.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = 0;
@@ -24,7 +24,7 @@ const FIXTURES = [
 
 // 1. Fallback layer: an empty cache dir, no extraction. Roads, buildings and places still draw.
 {
-  const empty = mkdtempSync(join(tmpdir(), "lf-map-empty-"));
+  const empty = scratchDir("lf-map-empty-");
   for (const f of FIXTURES) {
     const t0 = Date.now();
     const r = await renderMap({ root: ROOT, cacheRoot: empty, extract: false, size: [512, 512], ...f.opts });
@@ -70,7 +70,7 @@ else {
 {
   const rules = await loadRules();
   ok(rules && typeof rules === "object", "rules: loader returns an object (loaded: " + Object.keys(rules).join(",") + ")");
-  const dir = mkdtempSync(join(tmpdir(), "lf-map-cases-"));
+  const dir = scratchDir("lf-map-cases-");
   writeFileSync(join(dir, "demo.cases.json"), JSON.stringify({ rule: "demo", version: 1, cases: [
     { name: "adds", input: { a: 1, b: 2 }, expect: 3 },
     { name: "wrong", input: { a: 1, b: 1 }, expect: 5 },

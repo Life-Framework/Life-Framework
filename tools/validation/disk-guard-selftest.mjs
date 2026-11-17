@@ -11,14 +11,14 @@
 // red-proof: 2026-11-17, with newestActivityMs counting every file (the bookkeeping filter removed) the "wt.json touch is
 // idle" checks failed; with writeMarker writing unconditionally the "unchanged marker keeps its mtime" check failed;
 // with the refusal threshold set to 5 the "9.9 GB refuses" checks failed; restored.
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, utimesSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync, utimesSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
 import { classifyWorktree, isBookkeeping, newestActivityMs, IDLE_MS } from "../lib/lead.mjs";
 import { diskLines, diskVerdict, oldestFirst, parseOldest, refuseMessage } from "../lib/disk-guard.mjs";
 import { parseRemoteState } from "../remote/pool.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const ok = (c, m) => { if (!c) failures.push(m); };
@@ -50,7 +50,7 @@ eq(cls(newestActivityMs(NaN, [])), "prunable", "no reflog and no files: idle");
 eq(cls(newestActivityMs(old, [{ path: "/w/tmp/wt.json", mtimeMs: NOW - IDLE_MS + MIN }])), "prunable", "bookkeeping inside the idle window still never counts");
 
 // --- 2. writeMarker only writes when the content changes
-const scratch = mkdtempSync(join(tmpdir(), "lf-disk-guard-"));
+const scratch = scratchDir("lf-disk-guard-");
 try {
   const wtDir = join(scratch, "w");
   mkdirSync(wtDir, { recursive: true });

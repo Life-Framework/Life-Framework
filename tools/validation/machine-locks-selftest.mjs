@@ -10,16 +10,16 @@
 // throws, exit 1. Restored.
 
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const lib = await import(pathToFileURL(join(import.meta.dirname, "..", "lib", "machine-locks.mjs")).href);
 const wt = await import(pathToFileURL(join(import.meta.dirname, "..", "wt.mjs")).href);
 
-const scratch = mkdtempSync(join(tmpdir(), "lf-machine-locks-"));
+const scratch = scratchDir("lf-machine-locks-");
 const failures = [];
 const check = (ok, msg) => {
   if (!ok) failures.push(msg);

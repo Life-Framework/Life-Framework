@@ -292,7 +292,7 @@ class LF_IdRequestSheet
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn How many answers this client has sent since the world began.
+	//! \return How many answers this client has sent since the world began.
 	static int AnswersSent()
 	{
 		return s_iAnswersSent;

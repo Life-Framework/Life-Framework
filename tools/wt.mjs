@@ -22,7 +22,8 @@ import { closeSync, copyFileSync, existsSync, mkdirSync, openSync, readdirSync, 
 import { dirname, join, normalize, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { findReparsePoints, recycleWorktree, removeWorktree, safeRemoveTree } from "./link-safety.mjs";
-import { localSetting } from "./lib/local-config.mjs";
+import { localSetting, wtParent } from "./lib/local-config.mjs";
+export { wtParent };
 import { ADDONS } from "./lib/addons.mjs";
 import { sessionDirOf } from "./lib/session-lease.mjs";
 import * as pinLib from "./lib/guard-pin.mjs";
@@ -538,9 +539,9 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
   const mark = (name, since) => { phases[name] = Date.now() - since; return Date.now(); };
   const main = mainRootOf(root);
   const branch = `ws/${slug}`;
-  const dir = join(dirname(main), `Life-Framework-ws-${slug}`);
+  const dir = join(wtParent(root), `Life-Framework-ws-${slug}`);
   // A checkout that runs the drive dry fails half way and leaves a broken tree: refuse before touching anything.
-  const tooFull = refuseMessage(freeGb(dirname(main)), "the drive holding the worktrees");
+  const tooFull = refuseMessage(freeGb(wtParent(root)), "the drive holding the worktrees");
   if (tooFull) throw new Error(tooFull);
   // Fetch outside the lock: it is network time, and concurrent fetches are safe
   // (a ref-lock clash leaves the refs a moment older, as before).
@@ -826,14 +827,14 @@ export function wtWarmFill(root, { log = () => {} } = {}) {
       if (discard.length) discardWarm(root, discard);
       const live = Object.values(readState(root).warm).filter((w) => w.status === "ready" || w.status === "preparing").length;
       if (live >= k) break;
-      const free = freeDiskGbAt(dirname(main));
+      const free = freeDiskGbAt(wtParent(root));
       if (free !== null && free < minFreeGb) {
         warmLog(root, `fill stopped: ${free.toFixed(1)} GB free is under the ${minFreeGb} GB warm floor`);
         log(`warm: ${free.toFixed(1)} GB free is under the ${minFreeGb} GB floor (LF_WT_WARM_MIN_FREE_GB); not filling`);
         break;
       }
       const id = Date.now().toString(36);
-      const path = join(dirname(main), `Life-Framework-warm-${id}`);
+      const path = join(wtParent(root), `Life-Framework-warm-${id}`);
       withWtLock(root, (state) => {
         const add = git(root, ["worktree", "add", "--detach", "--no-checkout", path, "origin/main"]);
         if (add.status !== 0) throw new Error(`git worktree add failed: ${add.stderr || add.stdout}`);
@@ -882,7 +883,7 @@ export function wtWarmDrain(root) {
 
 export function warmStatus(root) {
   const s = warmSettings(root);
-  return { ...s, freeGb: freeDiskGbAt(dirname(mainRootOf(root))), trees: Object.values(readState(root).warm ?? {}) };
+  return { ...s, freeGb: freeDiskGbAt(wtParent(root)), trees: Object.values(readState(root).warm ?? {}) };
 }
 
 export function wtSync(root, slug) {

@@ -8,16 +8,16 @@
 // red-proof: before the fallthrough existed `host hello` printed the usage line
 // and exited 1: "FAIL host hello did not run the fixture (exit 1)" (2026-11-14).
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const CLI = join(ROOT, "tools", "cli.mjs");
 
-const dir = mkdtempSync(join(tmpdir(), "lf-host-commands-"));
+const dir = scratchDir("lf-host-commands-");
 let failed = 0;
 
 function fail(msg) {
