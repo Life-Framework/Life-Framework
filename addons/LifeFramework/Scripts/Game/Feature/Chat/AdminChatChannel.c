@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------
-//! Admin-only chat channel. Processes the !wadd command to whitelist a player UUID.
+//! Admin-only chat channel. Processes the !wadd command: POLICE puts the UUID on the police roster.
 //! The fork also carried !shutdown and !hint here; both depended on the fork's
 //! LF_RpcSenderComponent (global hints) which this repo does not have, so they are not ported.
 class AdminChatChannel : BaseChatChannel
@@ -25,18 +25,17 @@ class AdminChatChannel : BaseChatChannel
 			LF_WhitelistType type;
 			string uuid;
 			if (!TryParseWhitelistCommand(message, type, uuid))
+			{
+				LF_Debug.Warn("Chat", string.Format("admin !wadd refused: '%1' is not '!wadd TYPE UID' with a known type", message));
 				return false;
+			}
 
-			LF_WhitelistRespawnHandlerComponent whitelistComponent = LF_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(LF_WhitelistRespawnHandlerComponent));
-			if (!whitelistComponent)
-				return false;
-
-			whitelistComponent.EnableWhitelistOnPlayer(uuid, type);
+			string wlAdminUid = "";
 			SCR_PlayerController wlAdmin = SCR_PlayerController.Cast(sender.GetOwner());
 			if (wlAdmin)
-				LF_AdminAction.ReportWhitelistAdd(LF_AdminAction.UidOfPlayer(wlAdmin.GetPlayerId()), type, uuid);
+				wlAdminUid = LF_AdminAction.UidOfPlayer(wlAdmin.GetPlayerId());
 
-			LF_Debug.Log("Chat", string.Format("admin !wadd type=%1 uuid=%2", SCR_Enum.GetEnumName(LF_WhitelistType, type), uuid));
+			ApplyWhitelistAdd(type, uuid, wlAdminUid);
 		}
 
 		//!preject UID (#803): rejects the open police application of that account and starts the reapply cooldown
@@ -66,6 +65,46 @@ class AdminChatChannel : BaseChatChannel
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the grant behind "!wadd TYPE UID". Writes the roster police duty reads
+	//! (LF_WhitelistManager.AddFactionWhitelist) and logs and reports to staff only when that stored a
+	//! new entry. A type with no roster, or a uid already on it, logs and reports nothing.
+	//! \return True when a new roster entry was stored.
+	static bool ApplyWhitelistAdd(LF_WhitelistType type, string uuid, string adminUid)
+	{
+		string typeName = SCR_Enum.GetEnumName(LF_WhitelistType, type);
+
+		LF_EFactionType faction;
+		if (!TryRosterFaction(type, faction))
+		{
+			LF_Debug.Warn("Chat", string.Format("admin !wadd %1 %2 refused: %1 has no roster to grant", typeName, uuid));
+			return false;
+		}
+
+		if (!LF_WhitelistManager.AddFactionWhitelist(uuid, faction))
+		{
+			LF_Debug.Warn("Chat", string.Format("admin !wadd %1 %2 stored nothing: already on the roster", typeName, uuid));
+			return false;
+		}
+
+		LF_AdminAction.ReportWhitelistAdd(adminUid, type, uuid);
+		LF_Debug.Log("Chat", string.Format("admin !wadd type=%1 uuid=%2", typeName, uuid));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The roster a !wadd type writes. Only POLICE has one: there is no medic faction type.
+	static bool TryRosterFaction(LF_WhitelistType type, out LF_EFactionType faction)
+	{
+		if (type == LF_WhitelistType.POLICE)
+		{
+			faction = LF_EFactionType.POLICE;
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -184,8 +184,13 @@
   `whitelist/remove-before-load`): `RemoveFactionWhitelist` and `RemoveJobWhitelist` load the
   file first. They returned false on an empty cache, so a police trial that expired on the first
   duty desk use after a restart was marked expired while the officer stayed on the roster.
-- ⚠️ `!wadd` stores nothing since the Police/Medic lists left `GameMode_Roleplay.et` but still
-  reports the grant; the job whitelist is checked by character key and never written (#2412).
+- ✅ **`!wadd POLICE <uid>` writes the roster duty reads** (2026-11-17, LOGIC
+  `chat/admin-wadd-grant`, #2548): `AdminChatChannel.ApplyWhitelistAdd` calls
+  `LF_WhitelistManager.AddFactionWhitelist` and logs and reports to staff only when that stored
+  a new entry. `MEDIC`, `CONNECT`, `NONE` (no roster; there is no medic faction type) and a uid
+  already on the roster log an `LF_Debug.Warn` and report nothing.
+- ⚠️ The job whitelist is checked by character key and never written; the legacy `LF_Whitelist`
+  lists, sign action and context actions still write an array nothing fills (#2412 items 2-5).
 
 ### `AdminChatChannel` — `Feature/Chat/AdminChatChannel.c`
 - ✅ **Server re-checks the admin role** (verified 2026-11-07):
