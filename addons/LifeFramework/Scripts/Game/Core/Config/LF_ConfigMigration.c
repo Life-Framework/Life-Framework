@@ -87,7 +87,7 @@ class LF_ConfigMigrator
 			int count = to - at;
 			if (count > SLICE_PIECE)
 				count = SLICE_PIECE;
-			result += text.Substring(at, count);
+			result += text.Substring(at, count); // lf-bounded: count is at most SLICE_PIECE (4000)
 			at += count;
 		}
 		return result;
