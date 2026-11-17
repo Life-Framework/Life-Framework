@@ -1,4 +1,4 @@
-// red-proof: 2026-11-17, `toolsi test --no-build --red LF_Test_MapConfig`: RED-OK (RedProof() hides the two map components, 5 assertions fail); green without it. Before that, a first run with vanilla's marker set crashed EOnInit (squad-leader InitServerLogic, no groups manager), which the no-dynamic-entry check now guards.
+// red-proof: 2026-11-17, `tools\cli test --no-build --red LF_Test_MapConfig`: RED-OK (RedProof() hides the two map components, 5 assertions fail); green without it. Before that, a first run with vanilla's marker set crashed EOnInit (squad-leader InitServerLogic, no groups manager), which the no-dynamic-entry check now guards.
 // tier: WORLD
 //! The map plumbing (#2229, everon-map.md section 0): the Roleplay game mode carries the two map
 //! components vanilla's `GameMode_Base.et` has and ours lacked, and the gadget map opens our config.
