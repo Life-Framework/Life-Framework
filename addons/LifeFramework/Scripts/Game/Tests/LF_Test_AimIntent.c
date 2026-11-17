@@ -67,3 +67,20 @@ class LF_Test_AimIntent : LF_Test
 		LF_IncidentLog.ApplyAll(before);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! Self-registration (LF_TestRegistration.c): this file is the whole of adding this test.
+class LF_TestRegistration_AimIntent : LF_TestRegistration
+{
+	protected static bool s_bRegistered = LF_TestManager.Enqueue(new LF_TestRegistration_AimIntent());
+
+	override LF_TestTier Tier()
+	{
+		return LF_TestTier.LOGIC;
+	}
+
+	override LF_Test Create()
+	{
+		return new LF_Test_AimIntent();
+	}
+}

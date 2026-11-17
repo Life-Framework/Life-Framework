@@ -227,6 +227,11 @@ bug for each one; they transfer here because the engine is the same.
 - **No ternary operator.** `cond ? a : b` is a compile error. Write `if/else`.
 - **No null-coalescing operator.** Initialize in the declaration or guard with
   `if (!x)`.
+- **`Substring` and `string.Format` cut at 8191 chars, silently.** Rebuilding a
+  long string (a save, a config, a payload) with `a.Substring(..) + b` loses its
+  tail with no error; join pieces under 8 KB with `+` or write through a JSON
+  context. `validate-string-splice` fails a new site; a bounded one is marked
+  `// lf-bounded: <why>` (the baseline only shrinks).
 - **Strong refs (`ref`) for Managed classes.** A Managed field not marked `ref`
   is garbage-collected at end of frame. Put `ref` on BOTH the collection and
   its elements: `ref array<ref LF_Foo>`, `ref map<string, ref LF_Foo>`.
@@ -241,8 +246,12 @@ bug for each one; they transfer here because the engine is the same.
   `Replication.BumpMe()` after changing it. Throttle to significant changes or
   batch; per-frame `BumpMe` floods the network.
 - **RPC direction.** `RplRcver.Server` = client→server (name `RpcAsk_*`);
-  `RplRcver.Broadcast`/`Owner` = server→client (name `RpcDo_*`). Host check:
-  `if (Replication.IsServer())` call the handler directly, else `Rpc(...)`.
+  `RplRcver.Broadcast`/`Owner` = server→client (name `RpcDo_*`). On the server
+  (a listen host too), `Rpc()` runs a `Server` handler, or an `Owner` handler
+  on an entity the server owns, at once inside the call: no host branch, and a
+  direct call beside it runs the handler twice. A `Broadcast` never runs on the
+  server; call its effect locally when the host's player must see it. An entity
+  with no `RplComponent` drops every Rpc (`docs/architecture/rpc-routing.md`).
 - **A client can only RPC on entities it owns.** Inter-player communication
   goes through the server. Validate client requests on the server (money,
   inventory, RPC payloads); never trust the client.

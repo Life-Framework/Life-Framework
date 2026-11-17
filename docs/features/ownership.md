@@ -164,6 +164,17 @@
   so a restart no longer leaves it open for anyone. Tests `organization/upgrade-unwired`,
   `organization/fund-overflow`, `hideout/stash-right`, `hideout/load-relock` (LOGIC). The lease that
   never ends is #2533.
+
+### `LF_PropertyConfig` — `Feature/Property/` (config only, #2647, slice P2 of #747)
+- ✅ One config, `Configs/Property/LF_Property.conf`, describes the plot catalogue (id, tier id, price), the house
+  tiers and what each build stage needs. A tier has four stages in order (excavation: work only; foundation:
+  gravel and cement bags; walls and roof: planks and bricks; doors and windows: planks and a door), each with
+  work units and a list of prefab and count requirements, plus `m_aShellPrefabs` (the vanilla prefab shown after
+  each stage). `m_iRentIntervalHours` and `m_iGraceHours` are 0 = owned outright (no rent in M8 wave 1). The core
+  ships generic example plots; 1989 plots and prices are the pack's (#808). Nothing reads it in play yet.
+  Getters (`PlotPrice`, `StageCount`, `StageWork`, `RequirementCount`, `Requirement`, `ShellPrefab`, ...) return
+  0, empty or null for an unknown id; a missing config logs `LF_Debug.Error("Property", ...)` and degrades to the
+  same defaults. Test `property/config` (LOGIC).
 - ✅ **Ledger asks are rate-limited; the test sign only leaves its own org** (#2536, review items 30 and 31 of #2415,
   merged, in-dev). View, Deposit, Withdraw, Leave and Lease now go through `LF_OrgLedgerGate` (`LF_OrganizationCharacter.c`)
   on the existing `PURCHASE` bucket, the same as founding and upgrades (View walks every member, so a spammed ask cost
@@ -180,7 +191,7 @@
   the lock's house identifier on every push, empty included: a released door reads *Unowned* to everyone
   (`LF_HideoutDoorRules.View`), former members no longer see *Open*, and an empty id matches no house in
   `LF_HouseLockAction`. The `org_base` place goes with the lease and another organisation can lease the
-  site. Test `hideout/lease-empty-org` (WORLD). A voluntary release verb is H2 (#2533).
+  site. Test `hideout/lease-empty-org` (WORLD).
 - 🧪 **A hideout lease lapses after 14 real days with no member online** (#2573, part of #2533, merged, in-dev):
   each lease keeps the last time (unix seconds) a member of its organisation was connected, saved in the
   `leaseidle` payload (save version 50). A server sweep every 5 minutes (`LF_Hideout.SweepIdle`) restarts
@@ -190,3 +201,4 @@
   `[LFDebug:Hideout] released hideout=… org=… reason=idle N days`; the release frees the site like the
   emptied-organisation release. An old save seeds the clock at the first load, and a saved clock already past
   the limit at load (the server was down) gets one more day. Test `persist/hideout-lease-idle` (PERSISTENCE).
+- 🧪 **The ledger lets a holder give the lease up** (#2572, part of #2533, merged, in-dev): a member whose rank holds `BUY_UPGRADE` sees **Give up the lease** on the hideout row while the yard is theirs (`LF_OrgLedger.HideoutAction`; the same button is **Take the lease** when it is free). The ask is `LF_AskOrganizationLeaseRelease` / `RpcAsk_LF_OrganizationLeaseRelease` (`LF_OrganizationCharacter.c`, desk-only, PURCHASE rate bucket); the server calls `LF_OrgHideoutLease.Release`, which checks the right and that the organisation holds the lease and then `LF_Hideout.Release(..., "given up")` (gate shut, held ground lost). A refusal (no right, not our lease, away from the desk) toasts the player and logs `[LFDebug:Organizations] lease release refused: ...` as a warning. Test `organization/lease-release` (WORLD).
