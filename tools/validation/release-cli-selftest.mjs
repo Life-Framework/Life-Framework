@@ -8,12 +8,12 @@
 // red-proof: see the PR body for the observed failures (dirty-tree check removed,
 // and the push guard removed).
 
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { cpSync, mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { runRelease, gateSteps } from "../release/release.mjs";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const ok = (cond, msg) => { if (!cond) failures.push(msg); };
@@ -36,7 +36,7 @@ const readme = "| Field | Value |\n|---|---|\n| Version | `0.1.0` |\n| Licence |
 const tmpBases = [];
 let template = null;
 function buildTemplate() {
-  const base = mkdtempSync(join(tmpdir(), "lf-relcli-tpl-"));
+  const base = scratchDir("lf-relcli-tpl-");
   tmpBases.push(base);
   const origin = join(base, "origin.git");
   const root = join(base, "repo");
@@ -65,7 +65,7 @@ function buildTemplate() {
 
 function scratch() {
   template ??= buildTemplate();
-  const base = mkdtempSync(join(tmpdir(), "lf-relcli-"));
+  const base = scratchDir("lf-relcli-");
   tmpBases.push(base);
   const origin = join(base, "origin.git");
   const root = join(base, "repo");

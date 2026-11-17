@@ -46,7 +46,7 @@ class LF_ServiceBoard
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: takes every call off the board (the world reset); the subscription stays.
-	//! eturn How many calls were on it.
+	//! \return How many calls were on it.
 	static int ClearCalls()
 	{
 		if (!s_aCalls)

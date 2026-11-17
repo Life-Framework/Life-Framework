@@ -65,6 +65,23 @@ class LF_OnServiceCallTaken : LF_Event
 	}
 }
 
+//! A service call is over without a taker finishing it (#2579): for police, the suspect is no longer
+//! wanted. Published on the server by the service's own feature (LF_Dispatch); the call's map mark
+//! (LF_ServiceCallMapMarks) leaves on it. The call is found by service and caller, as on the take event.
+class LF_OnServiceCallClosed : LF_Event
+{
+	string m_sService;
+	string m_sCallerUid;
+
+	static LF_OnServiceCallClosed Create(string service, string callerUid)
+	{
+		LF_OnServiceCallClosed e = new LF_OnServiceCallClosed();
+		e.m_sService = service;
+		e.m_sCallerUid = callerUid;
+		return e;
+	}
+}
+
 //! A police scanner picked up a service call (#253). Published by LF_Scanner for each scanner
 //! carrier who is not a receiver of the call, so a criminal listening in leaves a trace on the bus.
 class LF_OnScannerHeard : LF_Event

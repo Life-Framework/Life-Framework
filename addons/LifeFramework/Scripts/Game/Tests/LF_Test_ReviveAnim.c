@@ -22,6 +22,7 @@ class LF_Test_ReviveAnim : LF_Test
 		LF_Downed.SetTestAllEligible(true);
 		LF_ReviveAnim.ResetStatics();
 		LF_ReviveAnim.SetSilent(true);
+		LF_ReviveAnim.SetCooldown(0);
 
 		// The pure step: a refusal or an overrun stops it, a healthy hold goes on.
 		ctx.Equal(LF_EReviveAnimStep.KEEP, LF_ReviveAnim.Step(LF_EReviveRefusal.NONE, 1), "a healthy hold keeps animating");

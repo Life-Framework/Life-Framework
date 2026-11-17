@@ -8,13 +8,13 @@
 // red-proof: before tools/host/offsite.mjs existed the import failed:
 // "FAIL offsite.mjs missing (Cannot find module ...)" (2026-11-15).
 
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-offsite-"));
+const tmp = scratchDir("lf-host-offsite-");
 let failed = 0;
 function fail(msg) {
   console.log(`FAIL  ${msg}`);

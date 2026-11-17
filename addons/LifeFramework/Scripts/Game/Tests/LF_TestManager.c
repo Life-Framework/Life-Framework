@@ -13,6 +13,11 @@ class LF_TestManager
 	protected ref array<string> m_aOnly = {};
 	protected bool m_bRed;
 	protected bool m_bLogicWorld;
+	//! Self-registered tests (LF_TestRegistration), filled from static initializers at script load.
+	//! No initializer on purpose: those may run before this class's own; Enqueue creates it on first use.
+	protected static ref array<ref LF_TestRegistration> s_aSelfRegistered;
+	//! Duplicate class names already logged, so each is logged once per process.
+	protected static ref array<string> s_aLoggedDuplicates;
 
 	//! The minimal world tools\cli test boots when every selected test is LOGIC (tools/lib/test-world.mjs).
 	static const string LOGIC_WORLD = "Worlds/TestLogic/TestLogic.ent";
@@ -24,6 +29,30 @@ class LF_TestManager
 			s_Instance = new LF_TestManager();
 
 		return s_Instance;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Called from a test file's LF_TestRegistration static initializer (LF_TestRegistration.c).
+	//! Returns true so a static bool initializer can call it.
+	static bool Enqueue(LF_TestRegistration registration)
+	{
+		if (!registration)
+			return false;
+
+		if (!s_aSelfRegistered)
+			s_aSelfRegistered = new array<ref LF_TestRegistration>();
+
+		s_aSelfRegistered.Insert(registration);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Collects now (generated registry, self-registered merged in by class name, pack) and returns the list a run
+	//! walks. Call it on a fresh manager: on the running singleton it would rebuild the list mid-run.
+	array<ref LF_Test> Collected()
+	{
+		CollectTests();
+		return m_aTests;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -347,15 +376,118 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Registrations live in the machine-generated LF_TestRegistrations.generated.c,
-	//! derived from each test file's `// tier:` comment. Regenerate with
-	//! `tools\cli regen-tests` after adding or re-tiering a test; never edit the
-	//! generated file by hand.
+	//! Two sources while tests move to self-registration (#2610): the machine-generated
+	//! LF_TestRegistrations.generated.c (from each unconverted file's `// tier:` comment; `tools\cli
+	//! regen-tests`, never by hand) and the LF_TestRegistration subclasses that enqueued themselves at
+	//! script load. A class already registered is dropped (logged once).
+	//! Order: the self-registered tests are sorted by class name and merged into the generated list,
+	//! each before the first generated test whose class name sorts after it. The generated tests keep
+	//! their order (some still depend on it), the result does not depend on script load order, and
+	//! once every test self-registers the whole list is in class-name order.
 	protected void CollectTests()
 	{
 		m_aTests.Clear();
 		LF_TestRegistrations.RegisterAll(this);
+		MergeSelfRegistered();
 		RegisterPackTests();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void MergeSelfRegistered()
+	{
+		if (!s_aSelfRegistered || s_aSelfRegistered.IsEmpty())
+			return;
+
+		map<string, ref LF_Test> byName = new map<string, ref LF_Test>();
+		map<string, LF_TestTier> tiers = new map<string, LF_TestTier>();
+		array<string> names = {};
+		foreach (LF_TestRegistration registration : s_aSelfRegistered)
+		{
+			if (!registration)
+				continue;
+
+			LF_Test test = registration.Create();
+			if (!test)
+			{
+				LF_Debug.Error("Tests", string.Format("%1.Create() returned no test; skipped", registration.ClassName()));
+				continue;
+			}
+
+			string className = test.ClassName();
+			if (byName.Contains(className) || HasClass(className))
+			{
+				LogDuplicate(className);
+				continue;
+			}
+
+			byName.Insert(className, test);
+			tiers.Insert(className, registration.Tier());
+			names.Insert(className);
+		}
+
+		names.Sort();
+
+		array<ref LF_Test> generated = {};
+		foreach (LF_Test t : m_aTests)
+		{
+			generated.Insert(t);
+		}
+
+		m_aTests.Clear();
+		int next = 0;
+		foreach (LF_Test g : generated)
+		{
+			while (next < names.Count() && SortsBefore(names[next], g.ClassName()))
+			{
+				Register(byName.Get(names[next]), tiers.Get(names[next]));
+				next++;
+			}
+
+			m_aTests.Insert(g);
+		}
+
+		while (next < names.Count())
+		{
+			Register(byName.Get(names[next]), tiers.Get(names[next]));
+			next++;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a comes before b in the order array<string>.Sort() gives.
+	static bool SortsBefore(string a, string b)
+	{
+		if (a == b)
+			return false;
+
+		array<string> pair = {a, b};
+		pair.Sort();
+		return pair[0] == a;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool HasClass(string className)
+	{
+		foreach (LF_Test test : m_aTests)
+		{
+			if (test && test.ClassName() == className)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void LogDuplicate(string className)
+	{
+		if (!s_aLoggedDuplicates)
+			s_aLoggedDuplicates = new array<string>();
+
+		if (s_aLoggedDuplicates.Find(className) != -1)
+			return;
+
+		s_aLoggedDuplicates.Insert(className);
+		LF_Debug.Warn("Tests", string.Format("%1 is registered twice; kept the first registration", className));
 	}
 
 	//------------------------------------------------------------------------------------------------

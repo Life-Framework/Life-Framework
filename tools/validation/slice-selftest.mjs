@@ -16,12 +16,12 @@
 // term removed, "the longest chain (X, 90m) goes before a short blocker" failed; with isShared forced false, "features.md is not a
 // conflict" failed. All restored. record-merged (2026-11-15): the new cases were written first and failed (mergeVerdict
 // did not exist; record took --outcome merged with an open PR); then mergeVerdict and the check in slice record went in.
-import { mkdtempSync, readFileSync, writeFileSync, existsSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { main } from "../commands/slice.mjs";
 import { brief, cardBody, checkPlan, conflicts, criticalPaths, ledgerRow, mergeVerdict, parseCard, parsePlan, readyOrder, renderStats, stats, statusOf, suggestModel } from "../lib/slice.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIX = join(HERE, "fixtures", "slice");
@@ -98,7 +98,7 @@ check(son.n === 3 && Math.abs(son.firstPass - 2 / 3) < 1e-9 && Math.abs(son.rewo
 check(st.type.find((g) => g.key === "capability").minutes === 40, "median minutes per type");
 
 // 6. the command, quiet
-const tmp = mkdtempSync(join(tmpdir(), "lf-slice-"));
+const tmp = scratchDir("lf-slice-");
 const fixture = join(tmp, "issues.json");
 writeFileSync(fixture, JSON.stringify({ issues: live.map((s) => ({ number: s.number, title: s.title, state: "OPEN", labels: s.labels.map((name) => ({ name })), body: s.body })) }));
 const capture = async (args, root = tmp) => {

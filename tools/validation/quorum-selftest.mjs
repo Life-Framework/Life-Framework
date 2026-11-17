@@ -8,14 +8,13 @@
 //   6. an issue whose PR lists no manual steps needs no confirmation.
 // red-proof: with the `pass >= size` check in evaluateQuorum changed to `pass >= 1` it printed
 // "two confirmations promoted".
-import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as rg from "../lib/release-gates.mjs";
-import { describeRun, removeScratch, useHermeticGit } from "../lib/selftest-git.mjs";
+import { describeRun, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
 import { evaluateQuorum } from "../lib/quorum.mjs";
 import { cmdPromote } from "../promote.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -31,7 +30,7 @@ const sh = (cwd, ...args) => {
   const tries = ["push", "fetch", "clone"].includes(args[0]) ? 3 : 1;
   let r;
   for (let i = 0; i < tries; i++) {
-    r = spawnSync("git", args, { cwd, encoding: "utf8", windowsHide: true });
+    r = runGit(cwd, args);
     if (r.status === 0) break;
   }
   if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${describeRun(r)}`);
@@ -64,7 +63,7 @@ v = evaluateQuorum({ issues: [], results: [], roster, size: 3 });
 check(v.ok, "no issues needed confirmation but the rule refused");
 
 // ---- the command
-const dir = mkdtempSync(join(tmpdir(), "lf-quorum-"));
+const dir = scratchDir("lf-quorum-");
 const origin = join(dir, "origin.git");
 const work = join(dir, "work");
 try {

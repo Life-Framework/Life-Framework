@@ -14,15 +14,15 @@
 // red-proof: before configCheck existed the import found no export:
 // "FAIL ready.mjs does not export configCheck" (2026-11-15).
 
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const NAME = "Life Framework | Everon 1989 (Alpha)";
 const SECRET = "hunter2-S3CRET-pw";
-const tmp = mkdtempSync(join(tmpdir(), "lf-host-ready-config-"));
+const tmp = scratchDir("lf-host-ready-config-");
 let failed = 0;
 function fail(msg) {
   console.log(`FAIL  ${msg}`);
