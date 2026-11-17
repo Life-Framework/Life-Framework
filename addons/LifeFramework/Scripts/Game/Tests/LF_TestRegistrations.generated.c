@@ -691,6 +691,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SpikeStripCap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SpikeStripPreview(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SpikeStripRefund(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelayInstall(), LF_TestTier.LOGIC);
