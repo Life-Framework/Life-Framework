@@ -48,6 +48,8 @@ enum LF_EConfigMigrationResult
 class LF_ConfigMigrator
 {
 	static const string FEATURE = "Config";
+	//! Longest piece one Substring may take; well under the 8191-char cap.
+	protected static const int SLICE_PIECE = 4000;
 
 	//------------------------------------------------------------------------------------------------
 	//! The migrations this build ships, filled in version order. Empty while the schema is 1.
@@ -73,6 +75,25 @@ class LF_ConfigMigrator
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return text[from, to) joined from pieces. One Substring call returns at most 8191 chars and
+	//! cuts a longer result silently, so a config past 8 KB must never go through a single one
+	//! (#2671, docs/architecture/enforce-string-limits.md). Joining with + keeps the whole string.
+	protected static string Slice(string text, int from, int to)
+	{
+		string result;
+		int at = from;
+		while (at < to)
+		{
+			int count = to - at;
+			if (count > SLICE_PIECE)
+				count = SLICE_PIECE;
+			result += text.Substring(at, count);
+			at += count;
+		}
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Sets the document's schemaVersion in the text, adding it as the first key when missing.
 	//! \return The new text, or an empty string when the value is not a plain number.
 	static string StampVersion(string json, int version)
@@ -85,11 +106,16 @@ class LF_ConfigMigrator
 			int open = json.IndexOf("{");
 			if (open < 0)
 				return string.Empty;
-			string rest = json.Substring(open + 1, json.Length() - open - 1);
+			// The first non-space char after the brace: a "}" means an empty object, so no comma.
+			int next = open + 1;
+			while (next < json.Length() && ws.Contains(json.Get(next)))
+			{
+				next++;
+			}
 			string sep = ",";
-			if (rest.Trim().StartsWith("}"))
+			if (next < json.Length() && json.Get(next) == "}")
 				sep = string.Empty;
-			return json.Substring(0, open + 1) + string.Format("\"schemaVersion\":%1%2", version, sep) + rest;
+			return Slice(json, 0, open + 1) + "\"schemaVersion\":" + version.ToString() + sep + Slice(json, open + 1, json.Length());
 		}
 
 		int i = key + 15;
@@ -112,7 +138,7 @@ class LF_ConfigMigrator
 		}
 		if (j == i)
 			return string.Empty;
-		return json.Substring(0, i) + version.ToString() + json.Substring(j, len - j);
+		return Slice(json, 0, i) + version.ToString() + Slice(json, j, len);
 	}
 
 	//------------------------------------------------------------------------------------------------
