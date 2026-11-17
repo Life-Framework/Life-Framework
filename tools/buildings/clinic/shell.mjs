@@ -77,7 +77,18 @@ async function main() {
 
   const root = /^(GenericEntity : "[^"]+" \{\n ID "[0-9A-F]+")/.exec(vFurniture)?.[1];
   if (!root) throw new Error("cannot read the vanilla furniture root");
-  const kept = entities(vFurniture).filter(keepFor(PASS));
+  // A flat turn the base game writes as `angles 0 Y 0` is written `angleY Y` (the same turn; the surface check reads angleY)
+  const flat = (e) => {
+    const i = e.node.lines.findIndex((l) => /^angles -?[\d.]+ -?[\d.]+ -?[\d.]+$/.test(l));
+    if (i < 0) return e;
+    const [ax, ay, az] = e.node.lines[i].split(" ").slice(1).map(Number);
+    if (ax !== 0 || az !== 0) return e;
+    const lines = e.node.lines.slice();
+    if (ay === 0) lines.splice(i, 1);
+    else lines[i] = `angleY ${ay}`;
+    return { ...e, node: { ...e.node, lines } };
+  };
+  const kept = entities(vFurniture).filter(keepFor(PASS)).map(flat);
   const decor = decorOf(PASS);
   const bare = `${root}\n {\n${kept.map(emitEntity).join("\n")}\n }\n}\n`;
   const furniture = swapBlock(bare, PREFIX, await renderBlock(ROOT, PREFIX, decor));

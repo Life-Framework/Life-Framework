@@ -42,7 +42,7 @@ SCR_DestructibleBuildingEntity : "{31B60F0942664774}Prefabs/Buildings/Clinic/Cli
   }
   LightEntity {
    ID "A4CB5B3FBC79465E"
-   coords -3.6 3 7.6
+   coords -3.6 2.85 6.95
    Color 1 0.82 0.58 1
    LV 3.5
    ClipEV -10

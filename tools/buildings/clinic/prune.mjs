@@ -13,7 +13,9 @@ export const TREATMENT = { x: [-0.65, 3.5], z: [0.3, 5.7] };
 export const CORRIDOR = { x: [-4.25, -0.65], z: [-1.5, 5.7] };
 
 const inside = (r, e) => e.x >= r.x[0] && e.x <= r.x[1] && e.z >= r.z[0] && e.z <= r.z[1];
-const DROP_EVERYWHERE = /LightSwitch_02|TvAntenna|Typewriter_01_orange/;
+// (the khaki phone stood on the living room's dresser, which goes; the suitcases and the kindling stood a little off
+// the first floor's slab)
+const DROP_EVERYWHERE = /LightSwitch_02|TvAntenna|Typewriter_01_orange|PhoneTable_01_khaki|Suitcase_01|WoodKindling_01\.et/;
 // the ward is cleared down to its racks, wall lamps and the electrics
 const WARD_STAYS = /Rack_01|LightWall|UtilityBox|RadiatorCastIron/;
 // reception and the waiting room lose the living room's desk corner and sofa

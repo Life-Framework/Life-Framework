@@ -55,6 +55,12 @@ export const P = {
   deskLamp: "Prefabs/Props/Furniture/LightTable_01.et",
   carpet: "Prefabs/Props/Furniture/Carpet_03_red.et",
   cashier: "Prefabs/Props/Commercial/CashierShop_01.et",
+  infusion: "Prefabs/Props/Medical/InfusionStand_01/InfusionStand_01.et",
+  tableMed: "Prefabs/Props/Medical/TableMedical_01/TableMedical_01_small.et",
+  ashtray: "Prefabs/Props/Civilian/Ashtray_01_Full_clear.et",
+  magazines: "Prefabs/Props/Civilian/Notebook_01_Stack.et",
+  coatRack: "Prefabs/Props/Furniture/CoatRack_02.et",
+  binStreet: "Prefabs/Props/Garbage/Bins/BinStreet_01.et",
 };
 
 // Top faces, in metres above each prop's origin (tools\cli measure <prefab> --surfaces, 2026-11-17).
@@ -66,6 +72,8 @@ export const TOP = {
   tableCoffee: 0.6, // TableCoffee_01
   cabMed: 1.77, // CabinetMedical_01 top
   bench: 0.505, // BenchOffice_01 seat
+  deskLong: 0.906, // Desk_01_long (the doctor's desk, vanilla at x -0.24..0.51, z 2.37..4.35)
+  tableMed: 1.001, // TableMedical_01_small: the instrument table's top
 };
 
 // A row's `pass` says which pass adds it (0 BUILD, 1 POLISH 1, 2 POLISH 2); `until` stops it after a pass.
@@ -114,13 +122,30 @@ glow(1, -6.6, F + 3.1, 0.8, { lv: 6, radius: 9 }); // ward (the long room: a wid
 glow(1, -2.4, F + 3.1, 3.0, { lv: 5, radius: 6 }); // the entrance corridor
 glow(1, 5.8, F + 3.1, -3.4, { lv: 5, radius: 6 }); // the staff kitchen
 
-// ---- POLISH 2 (pass 2): lived-in detail ----
-put(2, P.carpet, 6.6, F, 3.4, 0, 0.8);
-put(2, P.frame, 6.3, F + TOP.dutyDesk, 1.6, 160); // on the desk's left end
-put(2, P.paintingSmall, 3.0, F + 1.9, 0.45, 0, 0.9);
-put(2, P.pot, 2.6, 0, 7.6, 0);
-put(2, P.pot, -2.4, 0, 7.6, 0);
-put(2, P.benchOut, 0.1, 0, 8.0, 0);
+// ---- POLISH 2 (pass 2): lived-in detail. Every small prop stands at F + TOP[support]. ----
+// treatment room: the doctor's desk is used (lamp, notes, a file), an instrument table by the east wall, a drip stand by the couch
+put(2, P.deskLamp, 0.1, F + TOP.deskLong, 2.75, 270);
+put(2, P.notebook, 0.15, F + TOP.deskLong, 3.45, 90);
+put(2, P.pen, 0.3, F + TOP.deskLong, 3.7, 20);
+put(2, P.fileStack, 0.05, F + TOP.deskLong, 3.95, 95);
+put(2, P.tableMed, 3.3, F, 3.4, -90);
+put(2, P.notebook, 3.3, F + TOP.tableMed, 3.4, 0, 0.8);
+put(2, P.infusion, 0.45, F, 4.5, 0);
+// waiting room: magazines and an ashtray on the coffee table, a carpet
+put(2, P.magazines, 6.9, F + TOP.tableCoffee, 3.2, 20);
+put(2, P.ashtray, 7.6, F + TOP.tableCoffee, 3.25, 0);
+put(2, P.carpet, 6.6, F, 4.6, 0, 0.8);
+put(2, P.paintingSmall, 4.3, F + 1.9, 0.45, 0, 0.9);
+// the entrance corridor: a coat rack on the west wall (the vanilla one upstairs hangs at the same place)
+put(2, P.coatRack, -4.18, F + 0.27, 4.2, 90);
+// ward: a drip stand at the foot of the beds
+put(2, P.infusion, -6.85, F, 3.55, 0);
+// the facade: the lamp the glow comes from, planters either side of the door, a bench and a bin by the wall
+put(2, P.porchLamp, -3.6, 2.9, 6.66, 0);
+put(2, P.pot, -4.0, 0, 7.9, 0);
+put(2, P.pot, -0.8, 0, 7.9, 0);
+put(2, P.benchOut, 1.6, 0, 7.5, 0);
+put(2, P.binStreet, 4.6, 0, 7.6, 0);
 
 export const decorOf = (pass) => ({
   items: items.filter((i) => i.pass <= pass && i.until >= pass),
@@ -136,7 +161,7 @@ export const dutyDesk = { x: 7.9, y: F, z: 1.0, yaw: 0 };
 export const board = { x: 8.74, y: F + 1.15, z: 3.9, yaw: -90 };
 export const alarmBox = { x: 3.5, y: 3.05, z: 6.66, yaw: 0 }; // between the two front windows (x 1.5 and 5.6), above the ground floor's lintels
 export const sign = { x: -2.4, y: 3.1, z: 6.74, yaw: 0 }; // the fascia over the entrance door (door at x -2.4)
-export const facade = { x: -3.6, y: 3.0, z: 7.6 }; // beside the sign, off the door // pass 1: one warm point light over the entrance
+export const facade = { x: -3.6, y: 2.85, z: 6.95 }; // in front of the porch lamp mesh (pass 2), beside the sign and off the door // pass 1: one warm point light over the entrance
 
 // ---- layer rows (grid layer entities, building space x, z, yaw) ----
 export const placed = {

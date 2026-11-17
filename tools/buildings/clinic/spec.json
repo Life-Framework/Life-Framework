@@ -16,13 +16,30 @@
     "town": "saint-philippe",
     "slot": "clinic",
     "building": "b39",
-    "world_xz": [4427.8, 10781.8],
+    "world_xz": [
+      4427.8,
+      10781.8
+    ],
     "front": "+z",
-    "footprint": { "min": [-9.27, -6.76], "max": [9.24, 6.64] },
+    "footprint": {
+      "min": [
+        -9.27,
+        -6.76
+      ],
+      "max": [
+        9.24,
+        6.64
+      ]
+    },
     "floor_y": 0.26,
     "upper_floor_y": 4.06
   },
-  "budget": { "size": "medium", "decor_entities": 300, "lights": 6, "shadow_casters": 1 },
+  "budget": {
+    "size": "medium",
+    "decor_entities": 300,
+    "lights": 6,
+    "shadow_casters": 1
+  },
   "grid": {
     "claim": "tools/grid/cells/clinic.json",
     "layer": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_clinic.layer",
@@ -30,33 +47,201 @@
     "note": "Cell c13r0, 2x2. `grid place` stands the pack kit in the pack grid world (Everon1989Grid). The frame's gravel path props cross the block at z 34 and sit inside the building volume: the audit flags them (sunk 0.28 m) and `grid place --keep` leaves the building; they are decoration under the floor."
   },
   "rooms": [
-    { "id": "waiting", "floor": 0, "x": [4.0, 8.85], "z": [1.9, 5.6], "role": "waiting room: two benches on the east wall, the TV, the medic dispatch board (LF_DispatchBoard_Medic)" },
-    { "id": "reception", "floor": 0, "x": [4.7, 8.0], "z": [0.1, 1.75], "role": "reception: the medic duty desk (LF_MedicDutyDesk), the hospital till (LF_HospitalTillComponent), the doctor (LF_Npc_Medic_1)" },
-    { "id": "treatment", "floor": 0, "x": [-0.6, 3.4], "z": [0.6, 5.6], "role": "treatment room: exam couch, medicine cabinet (LF_HospitalCabinetComponent, breach flow), scales" },
-    { "id": "ward", "floor": 0, "x": [-8.9, -4.3], "z": [-3.0, 5.2], "role": "ward: two hospital beds (LF_HospitalBed: respawn and put-patient-in-bed)" },
-    { "id": "staff", "floor": 0, "x": [2.5, 8.9], "z": [-5.6, -1.5], "role": "the kitchen at the back, kept as the staff kitchen" },
-    { "id": "flat", "floor": 1, "x": [-9.0, 9.0], "z": [-6.0, 6.0], "role": "the doctor's flat upstairs, kept as the game has it" }
+    {
+      "id": "waiting",
+      "floor": 0,
+      "x": [
+        4.0,
+        8.85
+      ],
+      "z": [
+        1.9,
+        5.6
+      ],
+      "role": "waiting room: two benches on the east wall, the TV, the medic dispatch board (LF_DispatchBoard_Medic)"
+    },
+    {
+      "id": "reception",
+      "floor": 0,
+      "x": [
+        4.7,
+        8.0
+      ],
+      "z": [
+        0.1,
+        1.75
+      ],
+      "role": "reception: the medic duty desk (LF_MedicDutyDesk), the hospital till (LF_HospitalTillComponent), the doctor (LF_Npc_Medic_1)"
+    },
+    {
+      "id": "treatment",
+      "floor": 0,
+      "x": [
+        -0.6,
+        3.4
+      ],
+      "z": [
+        0.6,
+        5.6
+      ],
+      "role": "treatment room: exam couch, medicine cabinet (LF_HospitalCabinetComponent, breach flow), scales"
+    },
+    {
+      "id": "ward",
+      "floor": 0,
+      "x": [
+        -8.9,
+        -4.3
+      ],
+      "z": [
+        -3.0,
+        5.2
+      ],
+      "role": "ward: two hospital beds (LF_HospitalBed: respawn and put-patient-in-bed)"
+    },
+    {
+      "id": "staff",
+      "floor": 0,
+      "x": [
+        2.5,
+        8.9
+      ],
+      "z": [
+        -5.6,
+        -1.5
+      ],
+      "role": "the kitchen at the back, kept as the staff kitchen"
+    },
+    {
+      "id": "flat",
+      "floor": 1,
+      "x": [
+        -9.0,
+        9.0
+      ],
+      "z": [
+        -6.0,
+        6.0
+      ],
+      "role": "the doctor's flat upstairs, kept as the game has it"
+    }
   ],
   "interactables": [
-    { "system": "medic duty desk (#258)", "entity": "Clinic_Kit child LF_MedicDutyDesk", "docs": "Feature/Medic/Feature.md V1.3, #260 treatment bill pay" },
-    { "system": "hospital beds (#121, #262)", "entity": "Clinic_Kit children LF_HospitalBed x2", "docs": "docs/features/character-survival.md" },
-    { "system": "medic dispatch board", "entity": "Clinic_Kit child LF_DispatchBoard_Medic" },
-    { "system": "hospital till robbery", "entity": "Clinic_Till (grid layer)", "docs": "docs/features/crime-police.md LF_Hospital" },
-    { "system": "hospital cabinet breach", "entity": "Clinic_Cabinet (grid layer)", "docs": "docs/features/crime-police.md LF_Hospital" },
-    { "system": "site alarm mount", "entity": "Clinic_Kit child ElectricityBox_small_01 + LF_AlarmMountComponent", "docs": "docs/features/crime-police.md LF_Dispatch" },
-    { "system": "doctor NPC", "entity": "Clinic_Doctor (grid layer)", "prefab": "LF_Npc_Medic_1" }
+    {
+      "system": "medic duty desk (#258)",
+      "entity": "Clinic_Kit child LF_MedicDutyDesk",
+      "docs": "Feature/Medic/Feature.md V1.3, #260 treatment bill pay"
+    },
+    {
+      "system": "hospital beds (#121, #262)",
+      "entity": "Clinic_Kit children LF_HospitalBed x2",
+      "docs": "docs/features/character-survival.md"
+    },
+    {
+      "system": "medic dispatch board",
+      "entity": "Clinic_Kit child LF_DispatchBoard_Medic"
+    },
+    {
+      "system": "hospital till robbery",
+      "entity": "Clinic_Till (grid layer)",
+      "docs": "docs/features/crime-police.md LF_Hospital"
+    },
+    {
+      "system": "hospital cabinet breach",
+      "entity": "Clinic_Cabinet (grid layer)",
+      "docs": "docs/features/crime-police.md LF_Hospital"
+    },
+    {
+      "system": "site alarm mount",
+      "entity": "Clinic_Kit child ElectricityBox_small_01 + LF_AlarmMountComponent",
+      "docs": "docs/features/crime-police.md LF_Dispatch"
+    },
+    {
+      "system": "doctor NPC",
+      "entity": "Clinic_Doctor (grid layer)",
+      "prefab": "LF_Npc_Medic_1"
+    }
   ],
   "looks": {
     "about": "node tools/buildings/clinic/looks.mjs [--set exterior|rooms|all] [--hour 14|22] [--tag pass1] [--run]",
     "exterior": true,
     "rooms": [
-      { "name": "waiting", "at": [6.6, 0.36, 3.2], "radius": 3.5 },
-      { "name": "reception", "at": [6.4, 0.36, 0.6], "radius": 2.6 },
-      { "name": "treatment", "at": [1.4, 0.36, 3.2], "radius": 3.5 },
-      { "name": "ward", "at": [-6.8, 0.36, 1.0], "radius": 3.5 },
-      { "name": "staff", "at": [6.0, 0.36, -3.5], "radius": 3.5 },
-      { "name": "flat", "at": [0, 4.2, 1.0], "radius": 5 }
+      {
+        "name": "waiting",
+        "at": [
+          6.6,
+          0.36,
+          3.2
+        ],
+        "radius": 3.5
+      },
+      {
+        "name": "reception",
+        "at": [
+          6.4,
+          0.36,
+          0.6
+        ],
+        "radius": 2.6
+      },
+      {
+        "name": "treatment",
+        "at": [
+          1.4,
+          0.36,
+          3.2
+        ],
+        "radius": 3.5
+      },
+      {
+        "name": "ward",
+        "at": [
+          -6.8,
+          0.36,
+          1.0
+        ],
+        "radius": 3.5
+      },
+      {
+        "name": "staff",
+        "at": [
+          6.0,
+          0.36,
+          -3.5
+        ],
+        "radius": 3.5
+      },
+      {
+        "name": "flat",
+        "at": [
+          0,
+          4.2,
+          1.0
+        ],
+        "radius": 5
+      }
     ],
-    "hours": [14, 22]
-  }
+    "hours": [
+      14,
+      22
+    ]
+  },
+  "check_supports": [
+    {
+      "prefab": "Prefabs/Props/Commercial/CounterShop_01.et",
+      "at": [
+        5.45,
+        0.26,
+        1.35
+      ],
+      "yaw": 0,
+      "why": "the Clinic_Till entity (grid layer, layer.mjs) is a CounterShop_01 mesh; the cashier stands on its top"
+    }
+  ],
+  "floaters_allow": [
+    {
+      "match": "Shelf_01\\.et$",
+      "why": "the base game's wall shelves hang on the wall (as in the vanilla house); nothing is meant to be under them"
+    }
+  ]
 }
