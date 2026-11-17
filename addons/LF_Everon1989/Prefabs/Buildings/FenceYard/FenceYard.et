@@ -137,5 +137,9 @@ SCR_DestructibleBuildingEntity : "{4259618E0B0BCB40}Prefabs/Structures/Industria
    coords -3.26 0 -6.45
    angleY -90
   }
+  GenericEntity Kit : "{6C6855E3C560B551}Prefabs/Buildings/FenceYard/FenceYard_Kit.et" {
+   ID "FE4CE0A2D5B1E002"
+   coords 0 0 0
+  }
  }
 }

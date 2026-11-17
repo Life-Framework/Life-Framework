@@ -94,8 +94,8 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 0.799 0.19 2.971
   }
   GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
-   ID "58568DE51601FC10"
-   coords -5.201 0.407 2.996
+   ID "58568DE51601FCE6"
+   coords -5.201 0.19 2.996
   }
   GenericEntity : "{B69B4902BAF5B1B9}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_02.et" {
    ID "58568DE51601F215"

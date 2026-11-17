@@ -56,23 +56,47 @@ class LF_MoneyUtils
 	//! \param amount Cash to add
 	//! \param reason The reason key the ledger records for this change
 	//! \param counterpartyUid The other character of a hand-over, empty for a system source
-	//! \return the amount of cash actually added, or 0 on faulty operations
-	static int AddCash(InventoryStorageManagerComponent target, int amount, string reason = REASON_CASH, string counterpartyUid = "")
+	//! \param dropOverflow Opt-in (#2503): cash that does not fit in the inventory is left on the ground
+	//! at the target's feet instead of being lost, and counts as added (the ledger records the full
+	//! amount). Off by default: a caller that does not ask gets only what fit, as before.
+	//! \return the amount of cash actually added (with dropOverflow: pocketed or at the feet), or 0 on faulty operations
+	static int AddCash(InventoryStorageManagerComponent target, int amount, string reason = REASON_CASH, string counterpartyUid = "", bool dropOverflow = false)
 	{
-		int added = LF_InventoryUtils.AddAmount(target, CashPrefab(), amount);
-		if (target)
-			PublishMoved(target.GetOwner(), added, true, reason, counterpartyUid);
+		if (!target)
+			return 0;
 
+		int before;
+		if (dropOverflow)
+			before = Math.Max(GetCash(target), 0);
+
+		int added = LF_InventoryUtils.AddAmount(target, CashPrefab(), amount, dropOverflow);
+		if (dropOverflow)
+			LogDropped(target.GetOwner(), added, Math.Max(GetCash(target), 0) - before, reason);
+
+		PublishMoved(target.GetOwner(), added, true, reason, counterpartyUid);
 		return added;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \ref AddCash(InventoryStorageManagerComponent, int, string, string)
-	static int AddCash(IEntity target, int amount, string reason = REASON_CASH, string counterpartyUid = "")
+	//! \ref AddCash(InventoryStorageManagerComponent, int, string, string, bool)
+	static int AddCash(IEntity target, int amount, string reason = REASON_CASH, string counterpartyUid = "", bool dropOverflow = false)
 	{
-		int added = LF_InventoryUtils.AddAmount(target, CashPrefab(), amount);
-		PublishMoved(target, added, true, reason, counterpartyUid);
-		return added;
+		return AddCash(LF_InventoryUtils.GetResponsibleStorageManager(target), amount, reason, counterpartyUid, dropOverflow);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Logs the part of an overflow add that went to the ground (`pocketed` is the inventory's gain).
+	protected static void LogDropped(IEntity owner, int added, int pocketed, string reason)
+	{
+		int dropped = added - pocketed;
+		if (dropped <= 0 || !owner)
+			return;
+
+		string who = UidOf(owner);
+		if (who.IsEmpty())
+			who = owner.GetID().ToString();
+
+		LF_Debug.Info("Money", string.Format("$%1 of $%2 (%3) did not fit in the inventory of %4; dropped at their feet", dropped, added, reason, who));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -132,7 +156,7 @@ class LF_MoneyUtils
 		if (moved <= 0 || !owner || !Replication.IsServer())
 			return;
 
-		string uid = LF_Utils.GetPlayerUID(owner);
+		string uid = UidOf(owner);
 		if (uid.IsEmpty())
 			return;
 
@@ -140,6 +164,42 @@ class LF_MoneyUtils
 		LF_EventBus.Publish(LF_OnMoneyMoved.CreateFull(uid, LF_Ledger.ACCOUNT_CASH, moved, credit, reason, balance, counterpartyUid));
 	}
 	
+	//------------------------------------------------------------------------------------------------
+	//! Tests only: the stand-in ledger uid of one body with no player (empty in play).
+	protected static EntityID s_TestBodyId = EntityID.INVALID;
+	protected static string s_sTestBodyUid;
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests only: gives `body` (a test character no player controls) a ledger uid, as
+	//! LF_QuestTrackerComponent.SetUidForTests does; a null body or an empty uid clears it.
+	static void SetUidForTests(IEntity body, string uid)
+	{
+		s_TestBodyId = EntityID.INVALID;
+		s_sTestBodyUid = "";
+		if (!body || uid.IsEmpty())
+			return;
+
+		s_TestBodyId = body.GetID();
+		s_sTestBodyUid = uid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		SetUidForTests(null, "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ledger uid of a cash holder: its player's, else the test stand-in, else empty.
+	protected static string UidOf(notnull IEntity owner)
+	{
+		string uid = LF_Utils.GetPlayerUID(owner);
+		if (uid.IsEmpty() && s_TestBodyId != EntityID.INVALID && owner.GetID() == s_TestBodyId)
+			return s_sTestBodyUid;
+
+		return uid;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Alias for AddCash - Give cash to the target
 	//! \param amount Cash to give
@@ -209,5 +269,22 @@ class LF_MoneyUtils
 	static int GetAmount(IEntity target)
 	{
 		return GetCash(target);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_MoneyUtils' statics (registered at script load; Core/LF_StaticReset.c).
+class LF_MoneyUtils_StaticResetHook : LF_StaticResetHook
+{
+	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_MoneyUtils_StaticResetHook());
+
+	override string Owner()
+	{
+		return "LF_MoneyUtils";
+	}
+
+	override void Apply()
+	{
+		LF_MoneyUtils.ResetStatics();
 	}
 }

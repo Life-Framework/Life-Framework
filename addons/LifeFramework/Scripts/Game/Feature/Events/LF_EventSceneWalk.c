@@ -14,6 +14,8 @@ class LF_EventSceneWalker
 	bool m_bTimedOut;
 	//! Timed out, waiting for nobody to see it before it is removed.
 	bool m_bDespawnPending;
+	//! Seconds it has waited in that state; past the plan's m_fForceDespawnSeconds it goes in sight (#2406).
+	float m_fPendingS;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -56,6 +58,10 @@ class LF_EventSceneWalk
 	//! then the walkers wait at the spawn marker and their stuck and walk clocks do not run.
 	bool m_bRouteOut;
 	float m_fElapsed;
+	//! The players' eyes collected once for the current Step (#2406), not once per walker.
+	protected ref array<vector> m_aStepEyes = {};
+	protected ref array<IEntity> m_aStepBodies = {};
+	protected bool m_bStepEyes;
 	//! The log line of the last time out, for the caller and the tests.
 	string m_sLastTimeout;
 	protected bool m_bDoneLogged;
@@ -379,6 +385,18 @@ class LF_EventSceneWalk
 	void Step(float seconds, array<vector> eyes = null, array<IEntity> bodies = null)
 	{
 		m_fElapsed += seconds;
+		m_aStepEyes.Clear();
+		m_aStepBodies.Clear();
+		m_bStepEyes = false;
+		if (eyes)
+		{
+			m_aStepEyes.Copy(eyes);
+			if (bodies)
+				m_aStepBodies.Copy(bodies);
+
+			m_bStepEyes = true;
+		}
+
 		JoinNewWalkers();
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
@@ -403,7 +421,8 @@ class LF_EventSceneWalk
 
 			if (walker.m_bDespawnPending)
 			{
-				TryRemove(walker, person, eyes, bodies);
+				walker.m_fPendingS += seconds;
+				TryRemove(walker, person);
 				continue;
 			}
 
@@ -448,7 +467,7 @@ class LF_EventSceneWalk
 			walker.m_bDespawnPending = true;
 			m_sLastTimeout = string.Format("scene %1 walker %2 timed out: %3; removed once out of sight", m_Crew.m_sSceneId, index, why);
 			LF_Debug.Warn(FEATURE, m_sLastTimeout);
-			TryRemove(walker, person, eyes, bodies);
+			TryRemove(walker, person);
 		}
 
 		if (IsDone() && !m_bDoneLogged)
@@ -461,30 +480,33 @@ class LF_EventSceneWalk
 
 	//------------------------------------------------------------------------------------------------
 	//! Removes a timed-out walker when no player sees it; otherwise leaves it pending for the next step.
-	protected void TryRemove(LF_EventSceneWalker walker, IEntity person, array<vector> eyes, array<IEntity> bodies)
+	//! A walker watched for the plan's m_fForceDespawnSeconds is removed anyway (#2406). The players'
+	//! eyes are read once per Step, however many walkers wait.
+	protected void TryRemove(LF_EventSceneWalker walker, IEntity person)
 	{
-		array<vector> lookers = {};
-		array<IEntity> lookerBodies = {};
-		if (eyes)
+		bool force = walker.m_fPendingS >= m_Crew.m_Plan.m_fForceDespawnSeconds;
+		if (!force)
 		{
-			lookers.Copy(eyes);
-			if (bodies)
-				lookerBodies.Copy(bodies);
+			if (!m_bStepEyes)
+			{
+				LF_EventSceneSpawn.CollectPlayerEyes(m_aStepEyes, m_aStepBodies);
+				m_bStepEyes = true;
+			}
+
+			array<IEntity> self = {person};
+			foreach (int i, vector eye : m_aStepEyes)
+			{
+				IEntity body;
+				if (i < m_aStepBodies.Count())
+					body = m_aStepBodies[i];
+
+				if (LF_EventSceneSpawn.Sees(eye, body, person, self))
+					return;
+			}
 		}
 		else
 		{
-			LF_EventSceneSpawn.CollectPlayerEyes(lookers, lookerBodies);
-		}
-
-		array<IEntity> self = {person};
-		foreach (int i, vector eye : lookers)
-		{
-			IEntity body;
-			if (i < lookerBodies.Count())
-				body = lookerBodies[i];
-
-			if (LF_EventSceneSpawn.Sees(eye, body, person, self))
-				return;
+			LF_Debug.Warn(FEATURE, string.Format("scene %1: a timed-out walker is removed in sight after %2 s", m_Crew.m_sSceneId, walker.m_fPendingS));
 		}
 
 		m_Crew.m_aPeople.RemoveItem(walker.m_Id);

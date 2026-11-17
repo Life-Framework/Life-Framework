@@ -235,8 +235,7 @@ modded class LF_MapPlacesUI
 		if (!m_wLayer)
 			return;
 
-		LF_MapPoiAudience audience = new LF_MapPoiAudience();
-		LF_MapKnown.FillAudience(audience);
+		LF_MapPoiAudience audience = LF_MapPoiAudience.Local();
 		array<ref LF_MapPoi> fresh = {};
 		LF_MapPois.CollectLive(audience, fresh);
 		string signature = LF_MapPlacesKnown.Signature(fresh);

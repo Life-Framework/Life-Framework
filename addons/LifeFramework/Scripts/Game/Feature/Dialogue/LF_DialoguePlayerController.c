@@ -21,6 +21,9 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_DialogueStart(RplId npcId)
 	{
+		if (!LF_Dialogue.Admit(this, "dialogue start"))
+			return;
+
 		LF_Dialogue.Start(this, LF_NetworkUtils.FindEntityByRplId(npcId));
 	}
 
@@ -41,6 +44,9 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_DialogueChoose(int index)
 	{
+		if (!LF_Dialogue.Admit(this, "dialogue reply"))
+			return;
+
 		LF_Dialogue.Choose(this, index);
 	}
 

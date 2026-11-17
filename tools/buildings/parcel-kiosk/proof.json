@@ -1,0 +1,106 @@
+{
+  "about": "Parcel kiosk shell (before pass 1): the booth from the square by day and at night, from the side, and its interior. Points are building space (tools/buildings/pipeline/scenario.mjs): the front faces +z, x runs across the booth, the floor is at y 0.05, the room is x -0.98..1.45, z -2.31..2.03.",
+  "session": {
+    "profile": "full",
+    "mission": "grid"
+  },
+  "steps": [
+    {
+      "shot": "warmup",
+      "look": [
+        0.24,
+        1.4,
+        -0.14
+      ],
+      "from": [
+        0,
+        0.8,
+        10
+      ],
+      "wait": 6000,
+      "why": "the first frames after a teleport draw the kiosk before it streams in"
+    },
+    {
+      "do": {
+        "verb": "time",
+        "hour": 14
+      },
+      "wait": 1500
+    },
+    {
+      "shot": "front",
+      "look": [
+        0.24,
+        1.4,
+        -0.14
+      ],
+      "from": [
+        0,
+        0.8,
+        9
+      ],
+      "why": "the booth from the front (+z)"
+    },
+    {
+      "shot": "side",
+      "look": [
+        0.24,
+        1.4,
+        -0.14
+      ],
+      "from": [
+        -9,
+        0.8,
+        0
+      ],
+      "why": "the long side with the hatch, if it is on -x"
+    },
+    {
+      "shot": "kiosk",
+      "look": [
+        0.24,
+        1.2,
+        -0.14
+      ],
+      "from": [
+        0,
+        0.2,
+        2.4
+      ],
+      "why": "the booth interior from the door"
+    },
+    {
+      "do": {
+        "verb": "time",
+        "hour": 22
+      },
+      "wait": 2000
+    },
+    {
+      "shot": "night_front",
+      "look": [
+        0.24,
+        1.4,
+        -0.14
+      ],
+      "from": [
+        0,
+        0.8,
+        9
+      ]
+    },
+    {
+      "shot": "night_kiosk",
+      "look": [
+        0.24,
+        1.2,
+        -0.14
+      ],
+      "from": [
+        0,
+        0.2,
+        2.4
+      ]
+    }
+  ]
+}
