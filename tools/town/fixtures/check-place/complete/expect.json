@@ -1,0 +1,7 @@
+{
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "slot arrival: destruction is \"needs-hook\""
+ ]
+}

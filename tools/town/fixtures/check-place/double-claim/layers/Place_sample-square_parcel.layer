@@ -1,0 +1,9 @@
+GenericEntity Fit_parcel_Place {
+ components {
+  LF_PlaceComponent "{AAAAAAAAAAAAAAA1}" {
+   m_sKind "ParcelDepot"
+   m_sId "sample-square.parcel"
+  }
+ }
+ coords 980 12.4 2015
+}
