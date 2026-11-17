@@ -47,7 +47,7 @@ const different = [
     n: "02",
     title: "AI-first tooling",
     body: "One rulebook for people and agents, issues written as ready-to-take scopes, a test suite that boots the game in about ten seconds, and one command that checks, builds, and opens your pull request. Bring your own AI agent; the repo is set up for it.",
-    more: { label: "How a change ships", to: "/contribute" },
+    more: { label: "How we build with AI", to: "/ai-approach" },
   },
   {
     n: "03",

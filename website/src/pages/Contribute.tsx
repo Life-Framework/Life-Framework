@@ -132,6 +132,11 @@ const Contribute = () => {
             <p>
               <GoLink to={blob("docs/setup.md")}>Setup guide</GoLink>
             </p>
+            <p>
+              <Link to="/ai-approach" className="link">
+                Read how agents build features, how the checks work, and what people decide.
+              </Link>
+            </p>
           </div>
           <div className="terminal p-5 md:p-6 overflow-x-auto">
             <p className="font-mono text-[0.75rem] uppercase tracking-[0.08em] opacity-70 mb-3">First ten minutes</p>

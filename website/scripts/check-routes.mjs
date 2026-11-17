@@ -30,6 +30,7 @@ const pages = {
   "/alpha": "Join the Everon 1989 alpha",
   "/contribute": "Join the Discord",
   "/decisions": "The calls that set the taste",
+  "/ai-approach": "People decide what belongs",
   "/support": "Where the money goes",
   "/config": "Build your server config",
   "/config/reference": "Every field of your config",

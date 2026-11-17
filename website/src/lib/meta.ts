@@ -71,6 +71,12 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
     description: "The design calls that set the taste of Life Framework, each one dated, with why and what it means for code.",
     og: "decisions",
   },
+  "/ai-approach": {
+    title: "Our AI approach",
+    description:
+      "How AI coding agents build Life Framework: a lead and small worker agents, small issues, isolated worktrees, layered checks, a guard after each merge, and a person who plays the build.",
+    og: "contribute",
+  },
   "/support": {
     title: "Support the project",
     description: "What running Life Framework costs, where donations go, and how to give. A donation buys nothing in the game.",

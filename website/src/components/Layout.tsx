@@ -15,6 +15,9 @@ const NAV = [
   { to: "/docs", label: "Docs" },
 ];
 
+// The desktop header has no room for a tenth link at 1280px; these appear in the mobile menu and the footer.
+const NAV_MORE = [{ to: "/ai-approach", label: "AI approach" }];
+
 export const Wordmark = ({ className = "" }: { className?: string }) => (
   <span className={`inline-flex items-center gap-2.5 ${className}`}>
     <Mark className="w-9 h-9 shrink-0" />
@@ -148,7 +151,7 @@ function Header() {
       </div>
       <nav id="mobile-nav" aria-label="Main" hidden={!open} className="lg:hidden border-t border-rule bg-card">
         <ul className="wrap py-2">
-          {NAV.map((n) => (
+          {[...NAV, ...NAV_MORE].map((n) => (
             <li key={n.to}>
               <NavLink
                 to={n.to}
@@ -186,6 +189,7 @@ function Footer() {
         { label: "News", href: "/news" },
         { label: "Devlog", href: "/devlog" },
         { label: "Decisions", href: "/decisions" },
+        { label: "AI approach", href: "/ai-approach" },
         { label: "Credits", href: "/credits" },
         { label: "Direction", href: "/docs/direction" },
       ],

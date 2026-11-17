@@ -9,6 +9,7 @@ import Servers from "@/pages/Servers";
 import Alpha from "@/pages/Alpha";
 import Contribute from "@/pages/Contribute";
 import Decisions from "@/pages/Decisions";
+import AiApproach from "@/pages/AiApproach";
 import Support from "@/pages/Support";
 import Credits from "@/pages/Credits";
 import Rules from "@/pages/Rules";
@@ -60,6 +61,7 @@ const App = () => (
       <Route path="/alpha" element={<Alpha />} />
       <Route path="/contribute" element={<Contribute />} />
       <Route path="/decisions" element={<Decisions />} />
+      <Route path="/ai-approach" element={<AiApproach />} />
       <Route path="/support" element={<Support />} />
       <Route path="/credits" element={<Credits />} />
       <Route path="/rules" element={<Rules />} />
