@@ -208,6 +208,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 			ReleaseDisconnectedPlayer(playerId);
 			// After the release, which still reads the account key: the identity wait ends with the connection.
 			LF_PlayerIdentity.Forget(playerId);
+			// Player ids are reused by the next arrival: no pick or register offer may outlive the connection (#2415).
+			LF_CharacterCreationManager.ForgetPlayer(playerId);
 		}
 
 		super.OnPlayerDisconnected(playerId, cause, timeout);
