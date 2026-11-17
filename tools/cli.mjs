@@ -1477,7 +1477,7 @@ function refreshUntilFresh(exe, args, gameDir, addon, tag, profile) {
 }
 
 function rdbLockName(root) {
-  return `rdb-${String(root).replace(/\/g, "/").split("/").pop().replace(/[^A-Za-z0-9._-]/g, "_")}`;
+  return `rdb-${String(root).replace(/\\/g, "/").split("/").pop().replace(/[^A-Za-z0-9._-]/g, "_")}`;
 }
 
 function ensureAddonResourceDatabase(root, name) {
