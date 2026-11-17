@@ -47,6 +47,7 @@ class LF_Dispatch
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		LF_DispatchClosingSubscriber.ResetStatics();
 		s_aLog = null;
 		s_iSequence = 0;
 		s_mAlarms = null;
@@ -83,6 +84,7 @@ class LF_Dispatch
 		// radios it, the service board pins it. Both must be listening.
 		LF_ServiceCallDispatch.Install();
 		LF_ServiceBoard.Install();
+		InstallClosing();
 		LF_ServiceRoute route = LF_ServiceCalls.Check("police");
 		string channels = route.m_sChannels;
 		if (channels.IsEmpty())
@@ -102,6 +104,27 @@ class LF_Dispatch
 		}
 
 		return Last();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: listen for a suspect's wanted level returning to 0 (idempotent). \return True when listening.
+	static bool InstallClosing()
+	{
+		if (!Replication.IsServer())
+			return false;
+
+		return LF_DispatchClosingSubscriber.Install();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a suspect is no longer wanted, so their police call is over: publish it closed (#2579)
+	//! and the map mark leaves. The call's caller is the suspect (Report publishes it with the uid).
+	static void OnWantedChanged(notnull LF_OnWantedChanged changed)
+	{
+		if (changed.m_iNewLevel > 0)
+			return;
+
+		LF_EventBus.Publish(LF_OnServiceCallClosed.Create("police", changed.m_sPlayerUid));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -503,6 +526,55 @@ class LF_Dispatch
 			System.GetHourMinuteSecond(hours, minutes, seconds);
 
 		return string.Format("%1:%2", hours.ToString(2), minutes.ToString(2));
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Bus subscriber for a wanted level that returns to 0.
+class LF_DispatchClosingSubscriber : LF_EventSubscriber
+{
+	protected static ref LF_DispatchClosingSubscriber s_Subscriber;
+
+	//------------------------------------------------------------------------------------------------
+	override bool Handle(notnull LF_Event busEvent)
+	{
+		LF_OnWantedChanged changed = LF_OnWantedChanged.Cast(busEvent);
+		if (!changed)
+			return false;
+
+		LF_Dispatch.OnWantedChanged(changed);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool Install()
+	{
+		if (s_Subscriber && LF_EventBus.IsSubscribed(LF_OnWantedChanged, s_Subscriber))
+			return true;
+
+		s_Subscriber = new LF_DispatchClosingSubscriber();
+		return LF_EventBus.Subscribe(LF_OnWantedChanged, s_Subscriber);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		if (s_Subscriber)
+			LF_EventBus.Unsubscribe(LF_OnWantedChanged, s_Subscriber);
+
+		s_Subscriber = null;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Self-start: the server listens from the world's start.
+modded class LF_GameModeRoleplay
+{
+	//------------------------------------------------------------------------------------------------
+	protected override void OnGameStart()
+	{
+		super.OnGameStart();
+		LF_Dispatch.InstallClosing();
 	}
 }
 

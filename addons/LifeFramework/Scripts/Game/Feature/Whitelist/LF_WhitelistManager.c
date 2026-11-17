@@ -141,16 +141,36 @@ class LF_WhitelistManager
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Check if player is whitelisted for job
-	static bool IsWhitelistedForJob(string playerUID, LF_EJobType jobType)
+	//! The faction roster a job reads (#2577): POLICE job to POLICE faction. A job with no roster
+	//! (MEDIC has no faction) returns false.
+	static bool FactionOfJob(LF_EJobType jobType, out LF_EFactionType factionType)
+	{
+		if (jobType == LF_EJobType.POLICE)
+		{
+			factionType = LF_EFactionType.POLICE;
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Check if an account is whitelisted for a job. There is one whitelist: the faction roster keyed by
+	//! the account uid (LF_Utils.GetAccountUID, not the character key, so a second character of an
+	//! approved officer passes). The old per-job list is still read for back-compat and never written.
+	static bool IsWhitelistedForJob(string accountUid, LF_EJobType jobType)
 	{
 		if (!IsJobRestricted(jobType))
 			return true; // Not restricted, always allowed
-		
+
+		LF_EFactionType factionType;
+		if (FactionOfJob(jobType, factionType) && IsWhitelistedForFaction(accountUid, factionType))
+			return true;
+
 		if (!s_mJobWhitelist)
 			Initialize();
-		
-		array<LF_EJobType> playerJobs = s_mJobWhitelist.Get(playerUID);
+
+		array<LF_EJobType> playerJobs = s_mJobWhitelist.Get(accountUid);
 		if (!playerJobs)
 			return false;
 		

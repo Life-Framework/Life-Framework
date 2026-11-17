@@ -11,8 +11,7 @@
 // "FAIL pack check: a pack section named like a core section must be an error" and "FAIL schema: a refused pack
 // section must stay out"; a ShopsBad default or a wrong explain path printed one FAIL each (observed 2026-11-14).
 
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkPack, summary } from "../pack/check.mjs";
@@ -21,6 +20,7 @@ import { SECTIONS, walk } from "../pack/layers.mjs";
 import { checkText } from "../config/check.mjs";
 import { build, coreKeysOf, generate, readScripts } from "../config/schema.mjs";
 import { loadPackSections } from "../config/pack-sections.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const REAL = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = 0;
@@ -49,7 +49,7 @@ function pack(root, id, g, manifestText, overlays, extra = () => {}) {
 }
 
 function tree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-packcheck-"));
+  const root = scratchDir("lf-packcheck-");
   put(root, "addons/LifeFramework/LifeFramework.gproj", 'GameProject {\n ID "LifeFramework"\n GUID "9000000000000000"\n}\n');
   put(root, "addons/LifeFramework/Scripts/Game/LF_PackManifest.c", 'class LF_PackManifest\n{\n\tstatic const string CORE_VERSION = "0.1.0";\n}\n' + SURFACE.slice(1).map((c) => `class ${c}\n{\n}\n`).join(""));
   put(root, "docs/architecture/public-surface.json", JSON.stringify({ version: 1, configClasses: SURFACE, deprecated: [] }));

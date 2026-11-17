@@ -37,7 +37,7 @@ processing upgrade are kept at the desk.
   demote and kick only go down it. `LF_OrgRankRole` fills `org_promote` / `org_demote`.
   The mask and order are saved in `orgranks` (save version 27); a version 1 record migrates on load.
 - `LF_OrgInvites` — session offers (not saved, 2 minute lapse);
-  `LF_OrgHideoutLease` — the yard lease.
+  `LF_OrgHideoutLease` — the yard lease (`Lease`; `Release` when a holder of the buy right gives it up, #2572).
 - `LF_OrgReplication` — the organization copy on each character for the offer side.
 - `LF_OrgInviteRole` — the `org_invite` handler. `LF_OrgLedger` — the page.
 - `LF_OrgMapMarks` — org map marks (#2240): members with `MANAGE_TERRITORY` place up to 20

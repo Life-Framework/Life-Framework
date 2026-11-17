@@ -2,15 +2,15 @@
 // and a failing content step is reported with the missing path. red-proof: with build-content.mjs pointing
 // its core scenario at the moved LF_PlaytestTown.conf.meta the real run printed
 // "FAIL website-content: ... ENOENT ... LF_PlaytestTown.conf.meta"; with EL_DebugTest.conf it is OK.
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { websiteContent } from "./validate-website-content.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const fails = [];
 const expect = (ok, msg) => { if (!ok) fails.push(msg); };
 
-const root = mkdtempSync(join(tmpdir(), "lf-web-"));
+const root = scratchDir("lf-web-");
 expect(websiteContent(root).skipped, "a root with no website skips");
 mkdirSync(join(root, "website", "scripts"), { recursive: true });
 writeFileSync(join(root, "website", "scripts", "build-content.mjs"), "");

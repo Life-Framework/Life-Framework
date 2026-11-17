@@ -14,13 +14,11 @@
 
 $ErrorActionPreference = "Stop"
 
+# A payload is its exact registered name (the string appended in
+# RegisterPersistencePayloads), lowercased. No prefix folding: `hideoutfoo` is
+# a new payload, not the old `hideout` (#2636).
 function Get-PayloadToken([string]$word) {
-  $lower = $word.ToLowerInvariant()
-  if ($lower.StartsWith("organiz")) { return "organizations" }
-  if ($lower.StartsWith("hideout")) { return "hideout" }
-  # "vehiclestate" (#752a) is its own payload, not a spelling of "vehicles".
-  if ($lower.StartsWith("vehicle") -and -not $lower.StartsWith("vehiclestate")) { return "vehicles" }
-  return $lower
+  return $word.ToLowerInvariant()
 }
 
 function Get-WriteToken([string]$argument) {
@@ -275,6 +273,63 @@ void ReadPersistencePayload(notnull LF_PersistenceComponent persistence, notnull
 }
 '@
 
+# New payloads whose names start like old ones (#2636): each is its own entry.
+$goodPrefixNames = @'
+void RegisterPersistencePayloads(notnull array<string> order)
+{
+	order.Insert("organizations");
+	order.Insert("organizationsfoo");
+	order.Insert("hideout");
+	order.Insert("hideoutfoo");
+	order.Insert("vehicles");
+	order.Insert("vehiclesfoo");
+	order.Insert("vehiclestate");
+}
+ESerializeResult SerializeStore()
+{
+	array<string> order = new array<string>();
+	RegisterPersistencePayloads(order);
+	context.WriteValue("version", 7);
+	foreach (string payload : order)
+	{
+		WritePersistencePayload(persistence, context, payload);
+	}
+}
+bool DeserializeStore()
+{
+	array<string> order = new array<string>();
+	RegisterPersistencePayloads(order);
+	int version;
+	context.ReadValue("version", version);
+	for (int index = 0; index < order.Count(); index++)
+	{
+		if (index >= version)
+			break;
+		ReadPersistencePayload(persistence, context, order.Get(index));
+	}
+}
+void WritePersistencePayload(notnull LF_PersistenceComponent persistence, notnull SaveContext context, string payload)
+{
+	if (payload == "organizations") return;
+	if (payload == "organizationsfoo") return;
+	if (payload == "hideout") return;
+	if (payload == "hideoutfoo") return;
+	if (payload == "vehicles") return;
+	if (payload == "vehiclesfoo") return;
+	if (payload == "vehiclestate") return;
+}
+void ReadPersistencePayload(notnull LF_PersistenceComponent persistence, notnull LoadContext context, string payload)
+{
+	if (payload == "organizations") return;
+	if (payload == "organizationsfoo") return;
+	if (payload == "hideout") return;
+	if (payload == "hideoutfoo") return;
+	if (payload == "vehicles") return;
+	if (payload == "vehiclesfoo") return;
+	if (payload == "vehiclestate") return;
+}
+'@
+
 # Written version 4 claims a payload the list never registered.
 $badSkip = @'
 void RegisterPersistencePayloads(notnull array<string> order)
@@ -480,6 +535,9 @@ bool DeserializeStore()
 $fixtureErrors = @()
 $goodError = Test-PersistenceContract $good
 if ($goodError) { $fixtureErrors += "good fixture was rejected: $goodError" }
+
+$prefixError = Test-PersistenceContract $goodPrefixNames
+if ($prefixError) { $fixtureErrors += "payload names that share a prefix were folded together: $prefixError" }
 
 $skipError = Test-PersistenceContract $badSkip
 if (-not $skipError) {

@@ -207,9 +207,11 @@ class LF_VehicleStoreAction : ScriptedUserAction
 			inVehicle = true;
 
 		LF_VehicleGarageComponent garage = LF_VehicleGarageComponent.FindAt(pUserEntity.GetOrigin());
-		if (!LF_Garage.CanPark(true, inVehicle, garage != null))
+		int slotCap = LF_GarageSlots.CapOf(uid);
+		string refusalReason;
+		if (!LF_Garage.CanPark(true, inVehicle, garage != null, LF_GarageSlots.UsedBy(uid), slotCap, refusalReason))
 		{
-			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#LF-Garage_StepOut");
+			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", refusalReason, 4.0, LF_ENotificationType.WARNING, slotCap.ToString());
 			return;
 		}
 
@@ -288,7 +290,7 @@ class LF_VehicleStoreAction : ScriptedUserAction
 class LF_VehicleStoreHereAction : LF_VehicleStoreAction
 {
 	//------------------------------------------------------------------------------------------------
-	//! eturn True when offered: the owner on foot, car and user sharing one garage.
+	//! \return True when offered: the owner on foot, car and user sharing one garage.
 	static bool IsOffered(bool isOwner, bool inVehicle, bool garageFound, vector garageOrigin, vector playerOrigin, vector vehicleOrigin)
 	{
 		if (!LF_Garage.ParkAllowed(isOwner, inVehicle, garageFound))

@@ -161,6 +161,6 @@ GenericEntity Roadmap_Job_Depot : "{28F9F4DC40089B51}Prefabs/Props/Services/Post
    }
   }
  }
- coords 155.2 0 256.3
- angles 0 180 0
+ coords 160.005 0.2 260.646
+ angles 0 -90 0
 }

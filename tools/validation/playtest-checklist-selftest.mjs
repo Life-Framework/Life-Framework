@@ -13,12 +13,12 @@
 // steps); with the budget test changed to `<= budget + 1000`, "the top hour stays inside its budget" failed (got 136 min).
 // Ranking: with the chapter test forced false, "an issue under an open chapter is tier 0" failed (and 8 more); with the polish test forced false, "polish and
 // visual-only items are tier 3" failed; with folding disabled, "two issues one walk proves share one line" failed. All restored.
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { main } from "../commands/playtest-checklist.mjs";
 import { buildItems, parseSmokeList, parseVerdicts, rankItems, renderChecklist, selectItems, splitSteps, tagsOf, totalMinutes, verdictCommands } from "../lib/playtest-checklist.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const failures = [];
@@ -171,7 +171,7 @@ check(!cmds.some((c) => / 12( |$)/.test(c)), "an open box prints nothing");
 check(notes.length === 1 && /S5 FAILED/.test(notes[0]) && /do not promote/.test(notes[0]), "a failed smoke check blocks promotion in the output");
 
 // ---- the command on fixtures: writes the file, prints a summary, runs nothing
-const dir = mkdtempSync(join(tmpdir(), "lf-playtest-"));
+const dir = scratchDir("lf-playtest-");
 mkdirSync(join(dir, "fx"));
 writeFileSync(join(dir, "fx", "issues.json"), JSON.stringify(issues));
 writeFileSync(join(dir, "fx", "prs.json"), JSON.stringify(prs));
