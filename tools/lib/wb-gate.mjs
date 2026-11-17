@@ -128,10 +128,13 @@ export function chooseRefresh({ local, remotes = [], mode = "auto", needCap = "r
 // One ssh round trip: the box's live Workbench locks and free RAM. null when it does not answer.
 export function remoteWbState(m) {
   const ps = [
-    `$ld = Join-Path ${tb.psQuote(m.root)} 'tmp\wt\locks'`,
+    `$ld = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\locks'`,
     "$n = 0; foreach ($f in @(Get-ChildItem -LiteralPath $ld -Filter 'workbench-*.lock' -File -ErrorAction SilentlyContinue)) { try { $i = [IO.File]::ReadAllText($f.FullName) | ConvertFrom-Json; if (Get-Process -Id $i.pid -ErrorAction SilentlyContinue) { $n++ } } catch {} }",
     "$os = Get-CimInstance Win32_OperatingSystem",
     "Write-Host \"lf-wb: $n $([int]($os.FreePhysicalMemory / 1024))\"",
+    // The resident look Workbench (tools/visual/look-serve.mjs): its pid and the seconds since its last request.
+    `$ls = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\look-serve.json'`,
+    "if (Test-Path -LiteralPath $ls) { try { $j = [IO.File]::ReadAllText($ls) | ConvertFrom-Json; if (Get-Process -Id $j.pid -ErrorAction SilentlyContinue) { $idle = [int]((Get-Date).ToUniversalTime() - ([datetime]$j.lastUsed).ToUniversalTime()).TotalSeconds; Write-Host \"lf-look: $($j.pid) $idle\" } } catch {} }",
   ].join("\n");
   const r = tb.sshPs(m.host, ps, { timeout: 15000, connectTimeout: 4 });
   if (r.status !== 0) return null;
@@ -141,7 +144,8 @@ export function remoteWbState(m) {
 export function parseWbState(text, limit) {
   const mm = /lf-wb: (\d+) (\d+)/.exec(String(text));
   if (!mm) return null;
-  return { wbAlive: Number(mm[1]), freeMb: Number(mm[2]), wbLimit: Number(limit) > 0 ? Number(limit) : 1 };
+  const lk = /lf-look: (\d+) (-?\d+)/.exec(String(text));
+  return { wbAlive: Number(mm[1]), freeMb: Number(mm[2]), wbLimit: Number(limit) > 0 ? Number(limit) : 1, ...(lk ? { lookServer: { pid: Number(lk[1]), idleS: Math.max(0, Number(lk[2])) } } : {}) };
 }
 
 // The live view of every machine with the workbench cap, for chooseGate: this PC's Workbench slots and
