@@ -427,8 +427,6 @@ class LF_TownReachHarness
 //! World-end reset of LF_TownReachHarness's statics (Core/LF_StaticReset.c).
 class LF_TownReachHarness_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_TownReachHarness_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_TownReachHarness";

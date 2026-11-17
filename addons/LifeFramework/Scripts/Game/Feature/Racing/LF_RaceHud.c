@@ -619,11 +619,9 @@ modded class SCR_PlayerController
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_RaceHud's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_RaceHud's statics (LF_StaticReset finds it by reflection).
 class LF_RaceHud_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_RaceHud_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_RaceHud";

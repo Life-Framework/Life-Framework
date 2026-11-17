@@ -1175,11 +1175,9 @@ class LF_PoliceIssueFacts : LF_BuyerFacts
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PoliceRanks's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PoliceRanks's statics (LF_StaticReset finds it by reflection).
 class LF_PoliceRanks_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PoliceRanks_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PoliceRanks";

@@ -472,11 +472,9 @@ modded class SCR_PlayerController
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_ReviveAnim's statics (registered at script load; Core/LF_StaticReset.c). Sessions hold the last world's entities.
+//! World-end reset of LF_ReviveAnim's statics (LF_StaticReset finds it by reflection). Sessions hold the last world's entities.
 class LF_ReviveAnim_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ReviveAnim_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_ReviveAnim";

@@ -133,11 +133,9 @@ class LF_WantedPostersConfig
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_WantedPostersConfig's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_WantedPostersConfig's statics (LF_StaticReset finds it by reflection).
 class LF_WantedPostersConfig_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_WantedPostersConfig_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_WantedPostersConfig";

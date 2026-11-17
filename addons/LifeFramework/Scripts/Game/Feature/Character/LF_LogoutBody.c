@@ -640,12 +640,10 @@ modded class SCR_BaseGameMode
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_LogoutBody's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_LogoutBody's statics (LF_StaticReset finds it by reflection).
 //! A body never outlives its session, so nothing of it is saved.
 class LF_LogoutBody_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_LogoutBody_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_LogoutBody";

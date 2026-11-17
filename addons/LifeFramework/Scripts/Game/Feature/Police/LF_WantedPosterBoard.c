@@ -767,11 +767,9 @@ class LF_WantedPosterBoardComponent : ScriptComponent
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_WantedPosterFaces's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_WantedPosterFaces's statics (LF_StaticReset finds it by reflection).
 class LF_WantedPosterFaces_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_WantedPosterFaces_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_WantedPosterFaces";
@@ -784,11 +782,9 @@ class LF_WantedPosterFaces_StaticResetHook : LF_StaticResetHook
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_WantedPosterBoardComponent's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_WantedPosterBoardComponent's statics (LF_StaticReset finds it by reflection).
 class LF_WantedPosterBoardComponent_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_WantedPosterBoardComponent_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_WantedPosterBoardComponent";

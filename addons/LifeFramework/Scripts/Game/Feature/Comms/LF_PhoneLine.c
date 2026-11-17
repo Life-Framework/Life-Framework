@@ -418,11 +418,9 @@ class LF_PhoneLineComponent : ScriptComponent
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PhoneComponent's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PhoneComponent's statics (LF_StaticReset finds it by reflection).
 class LF_PhoneComponent_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PhoneComponent_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PhoneComponent";
@@ -435,11 +433,9 @@ class LF_PhoneComponent_StaticResetHook : LF_StaticResetHook
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PhoneLineComponent's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PhoneLineComponent's statics (LF_StaticReset finds it by reflection).
 class LF_PhoneLineComponent_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PhoneLineComponent_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PhoneLineComponent";

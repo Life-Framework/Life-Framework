@@ -172,11 +172,9 @@ class LF_TaxiFare
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_TaxiFareConfig's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_TaxiFareConfig's statics (LF_StaticReset finds it by reflection).
 class LF_TaxiFareConfig_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_TaxiFareConfig_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_TaxiFareConfig";

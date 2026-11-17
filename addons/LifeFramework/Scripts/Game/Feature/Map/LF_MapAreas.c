@@ -498,8 +498,6 @@ class LF_MapAreas
 //! World-end reset of LF_MapAreas' statics.
 class LF_MapAreas_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_MapAreas_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_MapAreas";

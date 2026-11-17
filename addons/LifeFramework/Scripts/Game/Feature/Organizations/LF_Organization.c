@@ -1575,8 +1575,6 @@ class LF_OrganizationManager : Managed
 //! into the next world in the same process and were written into its first save.
 class LF_OrganizationManager_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_OrganizationManager_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_OrganizationManager";

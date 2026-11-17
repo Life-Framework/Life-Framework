@@ -555,8 +555,6 @@ class LF_EventPhaseBoard
 //! World-end reset of LF_EventShell's and LF_EventPhaseBoard's statics (Core/LF_StaticReset.c).
 class LF_EventShell_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_EventShell_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_EventShell";

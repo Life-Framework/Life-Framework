@@ -424,11 +424,9 @@ class LF_Cleanup
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Cleanup's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Cleanup's statics (LF_StaticReset finds it by reflection).
 class LF_Cleanup_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Cleanup_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Cleanup";

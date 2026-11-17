@@ -223,11 +223,9 @@ class LF_OrgHideoutLease
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_OrgInvites's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_OrgInvites's statics (LF_StaticReset finds it by reflection).
 class LF_OrgInvites_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_OrgInvites_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_OrgInvites";

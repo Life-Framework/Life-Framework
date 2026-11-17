@@ -197,11 +197,9 @@ class LF_Houses
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Houses' statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Houses' statics (LF_StaticReset finds it by reflection).
 class LF_Houses_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Houses_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Houses";

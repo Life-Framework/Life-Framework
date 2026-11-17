@@ -723,11 +723,9 @@ class LF_TreatmentBillPayAction : ScriptedUserAction
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_TreatmentBills's statics (registered at script load; Core/LF_StaticReset.c). Without it a Workbench play restart kept the last world's bills and a stuck debt-sweep flag.
+//! World-end reset of LF_TreatmentBills's statics (LF_StaticReset finds it by reflection). Without it a Workbench play restart kept the last world's bills and a stuck debt-sweep flag.
 class LF_TreatmentBills_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_TreatmentBills_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_TreatmentBills";

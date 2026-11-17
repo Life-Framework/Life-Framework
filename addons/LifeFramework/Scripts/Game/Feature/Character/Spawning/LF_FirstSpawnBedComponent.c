@@ -291,11 +291,9 @@ class LF_FirstSpawnBeds
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_FirstSpawnBeds' statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_FirstSpawnBeds' statics (LF_StaticReset finds it by reflection).
 class LF_FirstSpawnBeds_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_FirstSpawnBeds_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_FirstSpawnBeds";

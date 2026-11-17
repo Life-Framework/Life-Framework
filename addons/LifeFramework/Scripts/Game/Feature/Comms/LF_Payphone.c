@@ -292,11 +292,9 @@ class LF_PayphoneAction : ScriptedUserAction
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Payphone's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Payphone's statics (LF_StaticReset finds it by reflection).
 class LF_Payphone_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Payphone_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Payphone";
@@ -309,11 +307,9 @@ class LF_Payphone_StaticResetHook : LF_StaticResetHook
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_ServiceCallDispatch's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_ServiceCallDispatch's statics (LF_StaticReset finds it by reflection).
 class LF_ServiceCallDispatch_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ServiceCallDispatch_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_ServiceCallDispatch";
