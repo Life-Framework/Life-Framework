@@ -237,34 +237,14 @@ ${RULE}
 `;
 }
 
-// The self-registration class a new test file carries (#2610; Tests/LF_TestRegistration.c): adding a
-// test touches only its own file. Tier() matches the file's `// tier:` line (gen-test-registry.ps1 checks it).
-function testRegistration(testCls, tier) {
-  const reg = testCls.replace(/^LF_Test_/, "LF_TestRegistration_");
-  return `
-//------------------------------------------------------------------------------------------------
-//! Self-registration (LF_TestRegistration.c): this file is the whole of adding this test.
-class ${reg} : LF_TestRegistration
-{
-	protected static bool s_bRegistered = LF_TestManager.Enqueue(new ${reg}());
-
-	override LF_TestTier Tier()
-	{
-		return LF_TestTier.${tier};
-	}
-
-	override LF_Test Create()
-	{
-		return new ${testCls}();
-	}
-}
-`;
-}
+// A new test file registers itself with a class attribute (#2757; Tests/LF_TestInfo.c): adding a test
+// touches only its own file. The tier matches the file's `// tier:` line (gen-test-registry.ps1 checks it).
 
 function logicTest(id) {
   return `// red-proof: PENDING ${MARK}: run \`tools\\cli test --no-build --red LF_Test_${id.name}\` (batch every new test of the change into one --red run), paste the observed [LFTEST] RED-OK line here. The RedProof() hook below skips the act; no hand edit, no restore.
 // tier: LOGIC
 //! ${id.title}${id.ref}: the rule, with no world.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_${id.name} : LF_Test
 {
 	override string GetName()
@@ -291,13 +271,14 @@ class LF_Test_${id.name} : LF_Test
 		ctx.True(${id.cls}.GetUses() == 0, "the static reset clears the count");
 	}
 }
-${testRegistration(`LF_Test_${id.name}`, "LOGIC")}`;
+`;
 }
 
 function worldTest(id) {
   return `// red-proof: PENDING ${MARK}: this test fails as generated. Once the real assertion is written, add the RedProof() hook (skip the act: if (!RedProof()) ...), list this test in the change's one --red run and record the observed [LFTEST] RED-OK line here.
 // tier: WORLD
 //! ${id.title}${id.ref}: the placed thing exists and offers what a player expects.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_${id.name}World : LF_Test
 {
 	override string GetName()
@@ -312,7 +293,7 @@ class LF_Test_${id.name}World : LF_Test
 		ctx.True(false, "${id.testName}-world is not written yet");
 	}
 }
-${testRegistration(`LF_Test_${id.name}World`, "WORLD")}`;
+`;
 }
 
 function proofFile(id) {
