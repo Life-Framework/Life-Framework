@@ -3416,6 +3416,8 @@ class LF_AgentHarness
 
 		if (!action.CanBePerformedScript(user))
 		{
+			// The reply stays the bare token (proofs compare it); the reason a player would read goes to the log.
+			LF_Debug.Info("AgentHarness", string.Format("use %1 on %2: cannot_perform reason=%3", className, target.GetName(), action.GetCannotPerformReason()));
 			UseReply(user, commandId, "error", "cannot_perform");
 			return;
 		}

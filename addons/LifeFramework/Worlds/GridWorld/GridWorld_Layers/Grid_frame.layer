@@ -201,7 +201,7 @@ GenericEntity GridMarker_c8r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 23.5
+ coords 129.5 0.505 23.5
  angleY 180
 }
 GenericEntity GridPlate_c8r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -213,7 +213,7 @@ GenericEntity GridPlate_c8r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 25.5
+ coords 129.5 0.505 25.5
  angleY 180
 }
 GenericEntity GridMarker_c9r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -297,7 +297,7 @@ GenericEntity GridMarker_c12r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 166.5 0.505 23.5
+ coords 177.5 0.505 23.5
  angleY 180
 }
 GenericEntity GridPlate_c12r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -309,7 +309,7 @@ GenericEntity GridPlate_c12r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 166.5 0.505 25.5
+ coords 177.5 0.505 25.5
  angleY 180
 }
 GenericEntity GridMarker_c13r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -369,7 +369,7 @@ GenericEntity GridMarker_c15r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 202.5 0.505 23.5
+ coords 213.5 0.505 23.5
  angleY 180
 }
 GenericEntity GridPlate_c15r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -381,7 +381,7 @@ GenericEntity GridPlate_c15r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 202.5 0.505 25.5
+ coords 213.5 0.505 25.5
  angleY 180
 }
 GenericEntity GridMarker_c16r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -441,7 +441,7 @@ GenericEntity GridMarker_c18r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 238.5 0.505 23.5
+ coords 249.5 0.505 23.5
  angleY 180
 }
 GenericEntity GridPlate_c18r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -453,7 +453,7 @@ GenericEntity GridPlate_c18r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 238.5 0.505 25.5
+ coords 249.5 0.505 25.5
  angleY 180
 }
 GenericEntity GridMarker_c19r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -513,7 +513,7 @@ GenericEntity GridMarker_c21r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 274.5 0.505 23.5
+ coords 285.5 0.505 23.5
  angleY 180
 }
 GenericEntity GridPlate_c21r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -525,7 +525,7 @@ GenericEntity GridPlate_c21r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 274.5 0.505 25.5
+ coords 285.5 0.505 25.5
  angleY 180
 }
 GenericEntity GridMarker_c22r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -537,7 +537,7 @@ GenericEntity GridMarker_c22r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 286.5 0.505 23.5
+ coords 297.5 0.505 23.5
  angleY 180
 }
 GenericEntity GridPlate_c22r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -549,7 +549,7 @@ GenericEntity GridPlate_c22r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 286.5 0.505 25.5
+ coords 297.5 0.505 25.5
  angleY 180
 }
 GenericEntity GridMarker_c23r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -585,7 +585,7 @@ GenericEntity GridMarker_c24r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 310.5 0.505 23.5
+ coords 321.5 0.505 23.5
  angleY 180
 }
 GenericEntity GridPlate_c24r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -597,7 +597,7 @@ GenericEntity GridPlate_c24r0 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 310.5 0.505 25.5
+ coords 321.5 0.505 25.5
  angleY 180
 }
 GenericEntity GridMarker_c0r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -705,7 +705,7 @@ GenericEntity GridMarker_c4r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 70.5 0.505 35.5
+ coords 81.5 0.505 35.5
  angleY 180
 }
 GenericEntity GridPlate_c4r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -717,7 +717,7 @@ GenericEntity GridPlate_c4r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 70.5 0.505 37.5
+ coords 81.5 0.505 37.5
  angleY 180
 }
 GenericEntity GridMarker_c5r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -849,7 +849,7 @@ GenericEntity GridMarker_c10r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 142.5 0.505 35.5
+ coords 153.5 0.505 35.5
  angleY 180
 }
 GenericEntity GridPlate_c10r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -861,7 +861,7 @@ GenericEntity GridPlate_c10r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 142.5 0.505 37.5
+ coords 153.5 0.505 37.5
  angleY 180
 }
 GenericEntity GridMarker_c11r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -897,7 +897,7 @@ GenericEntity GridMarker_c12r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 166.5 0.505 35.5
+ coords 177.5 0.505 35.5
  angleY 180
 }
 GenericEntity GridPlate_c12r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -909,7 +909,7 @@ GenericEntity GridPlate_c12r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 166.5 0.505 37.5
+ coords 177.5 0.505 37.5
  angleY 180
 }
 GenericEntity GridMarker_c13r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -969,7 +969,7 @@ GenericEntity GridMarker_c15r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 202.5 0.505 35.5
+ coords 213.5 0.505 35.5
  angleY 180
 }
 GenericEntity GridPlate_c15r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -981,7 +981,7 @@ GenericEntity GridPlate_c15r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 202.5 0.505 37.5
+ coords 213.5 0.505 37.5
  angleY 180
 }
 GenericEntity GridMarker_c16r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1041,7 +1041,7 @@ GenericEntity GridMarker_c18r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 238.5 0.505 35.5
+ coords 249.5 0.505 35.5
  angleY 180
 }
 GenericEntity GridPlate_c18r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1053,7 +1053,7 @@ GenericEntity GridPlate_c18r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 238.5 0.505 37.5
+ coords 249.5 0.505 37.5
  angleY 180
 }
 GenericEntity GridMarker_c19r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1185,7 +1185,7 @@ GenericEntity GridMarker_c24r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 310.5 0.505 35.5
+ coords 321.5 0.505 35.5
  angleY 180
 }
 GenericEntity GridPlate_c24r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1197,7 +1197,7 @@ GenericEntity GridPlate_c24r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 310.5 0.505 37.5
+ coords 321.5 0.505 37.5
  angleY 180
 }
 GenericEntity GridMarker_c0r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1305,7 +1305,7 @@ GenericEntity GridMarker_c4r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 70.5 0.505 47.5
+ coords 81.5 0.505 47.5
  angleY 180
 }
 GenericEntity GridPlate_c4r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1317,7 +1317,7 @@ GenericEntity GridPlate_c4r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 70.5 0.505 49.5
+ coords 81.5 0.505 49.5
  angleY 180
 }
 GenericEntity GridMarker_c5r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1401,7 +1401,7 @@ GenericEntity GridMarker_c8r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 47.5
+ coords 129.5 0.505 47.5
  angleY 180
 }
 GenericEntity GridPlate_c8r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1413,7 +1413,7 @@ GenericEntity GridPlate_c8r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 49.5
+ coords 129.5 0.505 49.5
  angleY 180
 }
 GenericEntity GridMarker_c9r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1497,7 +1497,7 @@ GenericEntity GridMarker_c12r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 166.5 0.505 47.5
+ coords 177.5 0.505 47.5
  angleY 180
 }
 GenericEntity GridPlate_c12r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1509,7 +1509,7 @@ GenericEntity GridPlate_c12r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 166.5 0.505 49.5
+ coords 177.5 0.505 49.5
  angleY 180
 }
 GenericEntity GridMarker_c13r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1521,7 +1521,7 @@ GenericEntity GridMarker_c13r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 178.5 0.505 47.5
+ coords 189.5 0.505 47.5
  angleY 180
 }
 GenericEntity GridPlate_c13r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -1533,7 +1533,7 @@ GenericEntity GridPlate_c13r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 178.5 0.505 49.5
+ coords 189.5 0.505 49.5
  angleY 180
 }
 GenericEntity GridMarker_c14r2 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -2001,7 +2001,7 @@ GenericEntity GridMarker_c8r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 59.5
+ coords 129.5 0.505 59.5
  angleY 180
 }
 GenericEntity GridPlate_c8r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -2013,7 +2013,7 @@ GenericEntity GridPlate_c8r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 61.5
+ coords 129.5 0.505 61.5
  angleY 180
 }
 GenericEntity GridMarker_c9r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -2049,7 +2049,7 @@ GenericEntity GridMarker_c10r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 142.5 0.505 59.5
+ coords 153.5 0.505 59.5
  angleY 180
 }
 GenericEntity GridPlate_c10r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -2061,7 +2061,7 @@ GenericEntity GridPlate_c10r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 142.5 0.505 61.5
+ coords 153.5 0.505 61.5
  angleY 180
 }
 GenericEntity GridMarker_c11r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -2097,7 +2097,7 @@ GenericEntity GridMarker_c12r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 166.5 0.505 59.5
+ coords 177.5 0.505 59.5
  angleY 180
 }
 GenericEntity GridPlate_c12r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -2109,7 +2109,7 @@ GenericEntity GridPlate_c12r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 166.5 0.505 61.5
+ coords 177.5 0.505 61.5
  angleY 180
 }
 GenericEntity GridMarker_c13r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -2121,7 +2121,7 @@ GenericEntity GridMarker_c13r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 178.5 0.505 59.5
+ coords 189.5 0.505 59.5
  angleY 180
 }
 GenericEntity GridPlate_c13r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -2133,7 +2133,7 @@ GenericEntity GridPlate_c13r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 178.5 0.505 61.5
+ coords 189.5 0.505 61.5
  angleY 180
 }
 GenericEntity GridMarker_c14r3 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -2601,7 +2601,7 @@ GenericEntity GridMarker_c8r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 71.5
+ coords 129.5 0.505 71.5
  angleY 180
 }
 GenericEntity GridPlate_c8r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -2613,7 +2613,7 @@ GenericEntity GridPlate_c8r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 73.5
+ coords 129.5 0.505 73.5
  angleY 180
 }
 GenericEntity GridMarker_c9r4 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -3201,7 +3201,7 @@ GenericEntity GridMarker_c8r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 83.5
+ coords 129.5 0.505 83.5
  angleY 180
 }
 GenericEntity GridPlate_c8r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -3213,7 +3213,7 @@ GenericEntity GridPlate_c8r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 85.5
+ coords 129.5 0.505 85.5
  angleY 180
 }
 GenericEntity GridMarker_c9r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -3225,7 +3225,7 @@ GenericEntity GridMarker_c9r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 130.5 0.505 83.5
+ coords 141.5 0.505 83.5
  angleY 180
 }
 GenericEntity GridPlate_c9r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -3237,7 +3237,7 @@ GenericEntity GridPlate_c9r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 130.5 0.505 85.5
+ coords 141.5 0.505 85.5
  angleY 180
 }
 GenericEntity GridMarker_c10r5 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -3801,7 +3801,7 @@ GenericEntity GridMarker_c8r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 118.5 0.505 95.5
+ coords 129.5 0.505 95.5
  angleY 180
 }
 GenericEntity GridPlate_c8r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -3813,7 +3813,7 @@ GenericEntity GridPlate_c8r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 118.5 0.505 97.5
+ coords 129.5 0.505 97.5
  angleY 180
 }
 GenericEntity GridMarker_c9r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -3825,7 +3825,7 @@ GenericEntity GridMarker_c9r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_P
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 130.5 0.505 95.5
+ coords 141.5 0.505 95.5
  angleY 180
 }
 GenericEntity GridPlate_c9r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -3837,7 +3837,7 @@ GenericEntity GridPlate_c9r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Po
    m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 130.5 0.505 97.5
+ coords 141.5 0.505 97.5
  angleY 180
 }
 GenericEntity GridMarker_c10r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
