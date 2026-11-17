@@ -37,7 +37,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys. The written version is that list's length (47). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock. The written version is that list's length (48). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -108,6 +108,8 @@
 //! its editor lock state and no owner, which is what that build had (it never saved houses).
 //! A version 46 save includes the house rows and has no house keys (#2410): a carried house key comes
 //! back unbound, which is what that build did.
+//! A version 47 save includes the house keys and has no grace clocks (#2443): every character it holds
+//! is seeded with its account's playtime (LF_GraceCharacterClock.SeedFromAccounts), what the grace read then.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -244,6 +246,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("armorykits");
 		order.Insert("houses");
 		order.Insert("itemkeys");
+		order.Insert("graceclock");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -277,7 +280,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 47);
+		context.WriteValue("version", 48);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -412,6 +415,11 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		// level and delivery career.
 		if (version > order.Find("progression") && version <= order.Find("joblevels"))
 			LF_Debug.Info("Persistence", string.Format("save version %1 has no job xp rows: job levels migrated from the single level (CIVILIAN) and the delivery career (DELIVERY), %2 job xp row(s)", version, LF_JobLevels.ExportAll().Count()));
+
+		// A save from before #2443 has no grace clocks: every character it holds gets its account's
+		// playtime, which is what the grace read then. After every payload, so playtime and slots are in.
+		if (version <= order.Find("graceclock"))
+			LF_GraceCharacterClock.SeedFromAccounts();
 
 		if (version <= order.Find("characters"))
 			LF_Debug.Info("Persistence", string.Format("save version %1 has no character slots: %2 account(s) load their character into slot 1, keyed by the account uid", version, LF_PlayerAccountManager.CountAccountsWithCharacters()));
@@ -808,6 +816,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_StorageItemKeyRecord> keyRows = LF_StorageSnapshot.ExportItemKeys();
 			context.Write(keyRows);
 			LF_Debug.Log("Persistence", string.Format("saved house keys of %1 snapshot(s)", keyRows.Count()));
+		}
+		else if (payload == "graceclock")
+		{
+			// Written after playtime, whose export credits the online clocks: each character's own played time (#2443).
+			array<ref LF_GraceClockRow> graceRows = LF_GraceCharacterClock.ExportAll();
+			context.Write(graceRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 grace clock(s)", graceRows.Count()));
 		}
 		else
 		{
@@ -1516,6 +1531,22 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("house keys failed to read, restored house keys stay unbound");
+			}
+		}
+		else if (payload == "graceclock")
+		{
+			// A version 1-47 save never reaches this payload: DeserializeStore seeds the clocks instead.
+			array<ref LF_GraceClockRow> graceRows = new array<ref LF_GraceClockRow>();
+			if (context.Read(graceRows))
+			{
+				int graceApplied = LF_GraceCharacterClock.ApplyAll(graceRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 grace clock(s)", graceApplied, graceRows.Count()));
+			}
+			else
+			{
+				// Seed as an old save would, so a cut-off save never gives every veteran a fresh grace.
+				ReadFailed("grace clocks failed to read, seeding each character from its account playtime");
+				LF_GraceCharacterClock.SeedFromAccounts();
 			}
 		}
 		else
