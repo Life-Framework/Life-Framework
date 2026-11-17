@@ -44,7 +44,7 @@
     "claim": "tools/grid/cells/clinic.json",
     "layer": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_clinic.layer",
     "entity": "Grid_clinic_Main",
-    "note": "Cell c13r0, 2x2. `grid place` stands the pack kit in the pack grid world (Everon1989Grid). The frame's gravel path props cross the block at z 34 and sit inside the building volume: the audit flags them (sunk 0.28 m) and `grid place --keep` leaves the building; they are decoration under the floor."
+    "note": "Cell c23r0, 2x2 (first claimed at c13r0; the hostel took that cell first, so the clinic moved). `grid place` stands the pack kit in the pack grid world (Everon1989Grid). The frame's gravel path props cross the block at z 34 and sit inside the building volume: the audit flags them (sunk 0.28 m) when placed with `--keep`; `lattice.mjs write` leaves them out of a claimed block."
   },
   "rooms": [
     {
