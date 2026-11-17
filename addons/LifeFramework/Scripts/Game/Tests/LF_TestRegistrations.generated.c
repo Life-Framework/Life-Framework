@@ -351,6 +351,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MapKnownSyncGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapMarksOffscreen(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapMarksPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_MapPlacesKnown(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPlacesLayout(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapPois(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MapShares(), LF_TestTier.LOGIC);

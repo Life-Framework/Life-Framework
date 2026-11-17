@@ -1,0 +1,22 @@
+GenericEntity : "{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et" {
+ ID "6FFAF951BA8F096F"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_TouristMap_Name"
+     Description "#LF-Item_TouristMap_Description"
+    }
+   }
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    LF_TouristMapAction "{29E950AD83FB47BE}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+ }
+}
