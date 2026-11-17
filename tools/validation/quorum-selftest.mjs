@@ -9,10 +9,11 @@
 // red-proof: with the `pass >= size` check in evaluateQuorum changed to `pass >= 1` it printed
 // "two confirmations promoted".
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import * as rg from "../lib/release-gates.mjs";
+import { describeRun, removeScratch, useHermeticGit } from "../lib/selftest-git.mjs";
 import { evaluateQuorum } from "../lib/quorum.mjs";
 import { cmdPromote } from "../promote.mjs";
 
@@ -21,20 +22,19 @@ const check = (ok, msg) => {
   if (!ok) failures.push(msg);
 };
 
-Object.assign(process.env, { GIT_AUTHOR_NAME: "t", GIT_AUTHOR_EMAIL: "t@t", GIT_COMMITTER_NAME: "t", GIT_COMMITTER_EMAIL: "t@t" });
-// Hermetic git: no auto-gc spawned by a push, and a network-shaped git command (push, fetch, clone) is
+useHermeticGit(); // identity, no machine git config, no auto-gc (tools/lib/selftest-git.mjs)
+// A network-shaped git command (push, fetch, clone) is
 // retried, because on the Windows CI runner a push into the scratch bare repo dropped now and then
 // ("unexpected disconnect while reading sideband packet"; quorum 2026-11-16, promote 2026-11-16)
 // while the selftests of the whole suite ran in parallel. Each of those commands is idempotent.
-const gitEnv = { ...process.env, GIT_CONFIG_COUNT: "2", GIT_CONFIG_KEY_0: "gc.auto", GIT_CONFIG_VALUE_0: "0", GIT_CONFIG_KEY_1: "receive.autogc", GIT_CONFIG_VALUE_1: "false" };
 const sh = (cwd, ...args) => {
   const tries = ["push", "fetch", "clone"].includes(args[0]) ? 3 : 1;
   let r;
   for (let i = 0; i < tries; i++) {
-    r = spawnSync("git", args, { cwd, encoding: "utf8", windowsHide: true, env: gitEnv });
+    r = spawnSync("git", args, { cwd, encoding: "utf8", windowsHide: true });
     if (r.status === 0) break;
   }
-  if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.stderr}`);
+  if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${describeRun(r)}`);
   return r.stdout.trim();
 };
 const mute = async (fn) => {
@@ -144,7 +144,7 @@ try {
 } catch (err) {
   failures.push(`selftest crashed: ${err.stack || err.message}`);
 } finally {
-  try { rmSync(dir, { recursive: true, force: true }); } catch { /* temp scratch only */ }
+  removeScratch(dir);
 }
 
 if (failures.length) {

@@ -10,8 +10,8 @@
 //! never combine: CanCombine is prefab-based and would merge keys bound to different houses
 //! into one stack.
 //!
-//! PERSISTENCE GAP. The bound identifier is in-session state on the item; the house save/load
-//! contract in LF_HouseSaveData.c covers lock state, not key bindings.
+//! PERSISTENCE. A carried key's identifier is saved with the carried snapshot (LF_StorageSnapshot,
+//! the "itemkeys" payload) and bound again when the key is restored (#2410).
 //------------------------------------------------------------------------------------------------
 [ComponentEditorProps(category: "EveronLife/Feature/Houses", description: "Binds an item to the house it opens.")]
 class LF_KeyComponentClass : ScriptComponentClass

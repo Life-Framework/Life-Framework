@@ -81,6 +81,9 @@ import { safeRemoveTree } from "../link-safety.mjs";
 import { isolatePool } from "../lib/pool-isolation.mjs";
 import { sessionBase } from "../lib/session-lease.mjs";
 import * as wtLib from "../wt.mjs";
+import { useHermeticGit } from "../lib/selftest-git.mjs";
+
+useHermeticGit(); // no machine git config or identity, no auto-gc beside the scratch repos (tools/lib/selftest-git.mjs)
 
 // ---- Isolation: this selftest never touches the real pool (2026-11-15: an agent reported it "closed live
 // sessions mid-run"). Every acquire runs hygieneGate, which ran the session GC on the REAL
@@ -554,6 +557,12 @@ try {
     delete process.env.LF_POOL_SESSION_IDLE_MIN;
     // (the reap above taskkilled `live`; this holder is a fresh process)
     const live2 = spawn(process.execPath, ["-e", "setTimeout(()=>{},60000)"], { stdio: "ignore", windowsHide: true });
+    // Wait until the holder really runs: a loaded runner can take seconds to start it, and a lock whose pid is
+    // not yet (or no longer) a live process is, by the pool's own rule, a stale lock the next acquirer takes.
+    await new Promise((resolveSpawn, rejectSpawn) => {
+      live2.once("spawn", resolveSpawn);
+      live2.once("error", rejectSpawn);
+    });
     writeFileSync(join(rLockDir, "server-2001.lock"), JSON.stringify({ pid: live2.pid, at: new Date().toISOString(), name: "server-2001", root: join(rdir, "nosuch"), slug: "other", purpose: "session" }));
     const qfile = join(rdir, "tmp", "wt", "pool", "queued.json");
     const tryUp = () => {
@@ -564,8 +573,18 @@ try {
         return "timeout";
       }
     };
-    check(tryUp() === "timeout", "a session request got a held lane");
-    const first = JSON.parse(readFileSync(qfile, "utf8")).retry.at;
+    const heldLock = () => {
+      try {
+        return readFileSync(join(rLockDir, "server-2001.lock"), "utf8");
+      } catch (e) {
+        return `unreadable (${e.code})`;
+      }
+    };
+    // The message names the holder and its lock so a failure on a loaded runner says why the lane was free.
+    const lockBefore = heldLock();
+    const firstTry = tryUp();
+    check(firstTry === "timeout", `a session request got a held lane (holder pid ${live2.pid}, alive ${wtLib.pidAlive(live2.pid)}; lock before: ${lockBefore}; after: ${heldLock()})`);
+    const first = JSON.parse(readFileSync(qfile, "utf8")).retry?.at;
     await new Promise((r) => setTimeout(r, 1100));
     check(tryUp() === "timeout" && JSON.parse(readFileSync(qfile, "utf8")).retry.at === first, "a retried session request did not keep its first age");
     const stale = JSON.parse(readFileSync(qfile, "utf8"));
