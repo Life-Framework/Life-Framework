@@ -1,0 +1,69 @@
+SCR_DestructibleBuildingEntity : "{F550115D39FD56BA}Prefabs/Buildings/Bank/Bank.et" {
+ ID "6C6389257705BA37"
+ {
+  GenericEntity : "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et" {
+   ID "999C3939CF4F3FE1"
+   components {
+    LF_BankVaultComponent "{3B1F6C0A7D2E4858}" {
+     m_sVaultId "bank_vault"
+    }
+   }
+   coords 9.95 0.007 4.4
+  }
+  GenericEntity : "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay/BankVault/LF_BankVault_SmallRoof.et" {
+   ID "562E2D74B52EBF31"
+   scale 1.2
+   coords 9.85 2.907 4.056
+  }
+  GenericEntity : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
+   ID "DE3FF9CB9A04A0D8"
+   components {
+    LF_PlaceComponent "{24218E86E931E2E7}" {
+     m_sKind "BankBag"
+     m_sId "bank_vault"
+    }
+   }
+   Flags 0x403 0
+   coords 9.95 0.497 2.41
+   {
+    GenericEntity : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
+     ID "557D9771ADA29FF5"
+     coords 0 0.15 0
+    }
+   }
+  }
+  GenericEntity : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+   ID "99103917762F211B"
+   components {
+    LF_AlarmMountComponent "{9ACA0BDAD2FE2665}" {
+     m_vOffset 0 0.167 0.065
+     m_fReach 12
+    }
+   }
+   coords -0.4 3 7.42
+  }
+  GenericEntity : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+   ID "13F9E08CEB38D5EC"
+   components {
+    LF_SignComponent "{6E3FF3980D87CACE}" {
+     m_sSignId "bank"
+     m_vRimColor 0.85 0.68 0.3
+     m_vPaintColor 0.42 0.07 0.07
+     m_vTextColor 0.92 0.78 0.42
+    }
+   }
+   coords -3 4.1 7.5
+  }
+  LightEntity {
+   ID "DC7CB9CB1138FC42"
+   coords -1.75 2.9 8.45
+   Color 1 0.78 0.5 1
+   LV 9
+   ClipEV -10
+   CastShadow 0
+   Radius 9
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+ }
+}
