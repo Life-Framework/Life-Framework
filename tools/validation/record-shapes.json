@@ -1,5 +1,5 @@
 {
-  "saveVersion": 51,
+  "saveVersion": 52,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -53,6 +53,7 @@
     "graceclock": "LF_GraceClockRow",
     "jobruns": "LF_JobRunRow",
     "leaseidle": "LF_HideoutIdleRow",
+    "properties": "LF_PropertyRecord",
     "placements": "LF_PlacementRow"
   },
   "records": {
@@ -620,8 +621,23 @@
         "int m_iLastActive"
       ]
     },
-    "LF_PlacementRow": {
+    "LF_PropertyRecord": {
       "since": 51,
+      "fields": [
+        "string m_sPropertyId",
+        "string m_sOwnerKey",
+        "string m_sOrgId",
+        "string m_sLayoutId",
+        "int m_iBuildStage",
+        "int m_iWorkDone",
+        "string m_sDeposited",
+        "int m_iPurchasedAt",
+        "int m_iRentPaidUntil",
+        "bool m_bOwnerSpawnsHere"
+      ]
+    },
+    "LF_PlacementRow": {
+      "since": 52,
       "fields": [
         "int m_iVersion",
         "string m_sPlacementId",

@@ -161,7 +161,7 @@ selected; aimed placement with rotate, place and cancel is #1028.
   prefab, position and angles, owner character key, kind, property = nearest bound house within 30 m, item prefab)
   and a session-only EntityID map. `LF_PlacementPickup.PickUp` checks owner and reach, then forgets the row, deletes
   the entity, calls `LF_PlacementCost.OnPickedUp` and gives the item back (at the feet when it does not fit).
-- **Data:** payload `placements` (save version 51, last in `RegisterPersistencePayloads`); `m_iOwnerCap` (40) and
+- **Data:** payload `placements` (save version 52, last in `RegisterPersistencePayloads`); `m_iOwnerCap` (40) and
   `m_iPropertyCap` (25) on `LF_PlacementPolicyConfig`. Temporary kinds never get a row. Strings
   `#LF-Placement_CapOwner`, `_CapProperty`. No shipped placeable is PERMANENT yet and no player action calls the
   pick-up: the chair item and its "Pick up" action are follow-up cards.
