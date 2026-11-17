@@ -8,7 +8,7 @@ the guard is `tools/validation/validate-world-zones.mjs`.
 | | Debug grid | Town |
 |---|---|---|
 | Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..328, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
-| Layers | `GridWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), and `Annex`, which now holds only the perimeter fence (the stations moved one system to a cell, #2133) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
+| Layers | `GridWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), or `LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_<slug>.layer` for a cell that places pack content ("Pack cells" below), and `Annex`, which now holds only the perimeter fence (the stations moved one system to a cell, #2133) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
 | For | Testing a system: one feature per cell, easy to find, easy to film for a proof | Players and videos: a real 1989 village |
 | Look bar | Low. Debug-looking props, stand-ins and a test sign are fine. Things still stand on the ground and are reachable | Full polish bar (`.claude/skills/polish/SKILL.md`, `docs/style-guide.md`): NPCs dressed for their job and standing inside their building, furniture under a roof, boards on walls, nothing debug-looking |
 | Who writes | Any slice, through `tools\cli grid place` only, inside its own cell | Only a town-placement pass: a worktree whose slug starts with `town-` |
@@ -134,6 +134,43 @@ stand inside its own cell.
 - a `Grid_*.layer` is in `DebugWorld_Layers/` (the grid lives in GridWorld).
 
 `validate-grid-world` adds one rule: every entity in a GridWorld legacy layer stands in a claimed cell. Police, Crimes, Jobs and NPCs (#1811) each moved into their own cell (`police`, `crimes`, `jobs`, `npcs`) with their entity names unchanged, and their free-standing layers are deleted. `PENDING` in that file is empty since #2133 moved the last stations out of `Annex.layer` (the annex fence runs are the grid wall and stay): 20 systems took cells `bank-heist` (with the breach and lockpick doors), `hideout`, `jail`, `chopshop`, `lockpick-cars`, `cash-van`, `police-desk`, `dispatch` (with the two test tills), `convoy`, `job-depot`, `zone-signs`, `apple-chain`, `org-desk`, `atm`, `furnace`, `gun-counter`, `hospital`, `chain-barrels`, `vehicle-lot` and `impound`, each shifted as one rigid group so its relative geometry is unchanged. The frame's gravel path stops at a claim spanning two rows, so a station may stand on the line between them.
+
+## Pack cells: a grid cell that places pack content
+
+A core layer must not name a pack prefab (golden rule 9, `validate-addon-boundary`), and the Everon building fit-outs
+(town hall, bank, police station, clinic, hostel, cafe) are pack prefabs under `LF_Everon1989/Prefabs/Buildings/`. Their
+cell lives in the pack, in a pack world of its own:
+
+- **The world.** `LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid.ent` is a SubScene whose `Parent` is `GridWorld.ent`
+  (the way `Everon1989Town` is a SubScene of DebugWorld). It loads every GridWorld layer and, from
+  `Everon1989Grid_Layers/`, the pack's own `Grid_<slug>.layer` files. GridWorld itself is untouched, so a core-only
+  checkout, `test --core-only` and the core legs never see a pack cell.
+- **The header.** The pack test header `Missions/LF_Everon1989_Test.conf` (the pack test leg, hidden from Scenarios)
+  names `Everon1989Grid.ent` as its `World`, so the pack leg and `session up --mission grid` (when the pack is loaded and a pack
+  cell exists, `gridMissionFor` in `agent-box/session.mjs`) boot the grid with the pack cells in it, under the flagship's
+  config overlays. With no pack cell `--mission grid` stays on `LF_GridWorld.conf`.
+- **The claim.** A pack cell takes its cell from the same lattice and the same `tools/grid/cells/<slug>.json`, with one
+  more field, `"pack": true`. Clash checks (origin/main, open PRs, sibling worktrees), `grid list`, the frame plates and
+  `validate-world-zones` treat it like any claim; the layer file is just in the other folder.
+- **Routing.** `grid place <slug> ... --pack` writes the pack layer; no flag is needed when any prefab argument is pack
+  content (its file is under `addons/LF_Everon1989/` and not in the core): `grid place bank Prefabs/Buildings/Bank/Bank_Hall.et`
+  goes to the pack on its own and `--dry` says `[pack cell: ...]`. A slug's world is fixed by its first placement; a pack
+  prefab on a core cell is refused with the fix (`grid free <slug>`, place again). A pack cell may hold core props.
+  `place` reads a pack prefab's `.meta` GUID and bounds like a core one.
+- **Who finds it.** `look grid:<slug>` opens `Everon1989Grid` when the target is a pack cell (the pack world holds every
+  core cell too); `audit placement --grid` and the `place` ground probe read both folders and boot the pack world once a
+  pack cell exists (`gridWorldFor` in `tools/lib/worlds.mjs`); `place --layer Grid_<slug>.layer` finds the file in either folder;
+  `/grid <slug>` and `teleport grid:<slug>` work as before (the spawn is in the layer). `wt gate` treats a changed pack grid layer
+  as a grid change.
+- **Validation.** `validate-world-zones` requires: a claim's layer in the folder its `pack` flag names, never in both;
+  a pack folder layer to have a `"pack": true` claim; entities inside the claim's cell, as for any cell. A pack grid layer is
+  grid zone (low look bar), not town: `zoneOfPath` and the town guard do not count it. `validate-addon-boundary` passes because
+  the pack may name core and pack resources.
+- **A pack cell is a test spot, not the playtest town.** The town building stays where the maintainer puts it (the pack
+  town world); the cell is where the fit-out is built, pictured and tested.
+
+Proof: `tools/validation/pack-grid-selftest.mjs` (routing, place, free, validate, paths); the fixture cell
+`pack-fixture` (a pack mannequin in a pack cell) is looked at with `tools\cli look grid:pack-fixture`.
 
 ## The frame
 

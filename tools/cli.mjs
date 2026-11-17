@@ -3242,6 +3242,14 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
     }
     console.log("test: " + onlyFlag + " " + only.join(","));
   }
+  if (!exact && only.length) {
+    // An unknown name must stop the run: it would otherwise run the whole suite or nothing (#2276).
+    const sel = testWorld.splitSelection({ only, names: testWorld.testNames(root), tiers: testWorld.testTiers(root), registry: shards.readRegistry(root), pack: testWorld.readPackTests(root) });
+    if (sel.unknown.length) {
+      console.log(`FAIL  test: ${onlyFlag} names no test: ${sel.unknown.join(", ")} (a LF_Test_ class, its GetName() or its file; pack tests are LF_Test_Everon*)`);
+      return 2;
+    }
+  }
   guardHeavy(root, "test", opts.force);
   // A LOGIC-only selection boots the minimal world (tools/lib/test-world.mjs). It is decided here,
   // before the pass cache key, so a TestLogic pass is never reused for a DebugWorld request.

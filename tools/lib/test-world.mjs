@@ -215,7 +215,26 @@ export function planLegs(args) {
   const clsOf = (n) => (names ?? {})[n] ?? n;
   const rest = only.length ? [...new Set(only.map(clsOf))].filter((c) => !inPack.has(c)) : null;
   if (rest && !rest.length) return [p];
-  return [...planCoreLegs({ ...args, only: rest ?? only }), p];
+  // A split --only run: every core leg names exactly the core tests asked for. A leg left at classes null
+  // would run the whole tier (#2276: the core leg ran the whole suite beside the pack test).
+  const core = planCoreLegs({ ...args, only: rest ?? only }).map((l) => (rest && !l.classes ? { ...l, classes: rest } : l));
+  return [...core, p];
+}
+
+// The names of an --only / --red selection, sorted by where they run: { core, pack, unknown } as class names.
+// A name is known when it is a registered class, a GetName() alias, a pack class (readPackTests) or a test
+// file's class (tiers). Anything else is unknown: the runner must refuse it, not run the whole suite.
+export function splitSelection({ only = [], names, tiers, registry = [], pack = [] }) {
+  const clsOf = (n) => (names ?? {})[n] ?? n;
+  const inPack = new Set(pack.map((p) => p.cls));
+  const known = new Set([...Object.keys(tiers ?? {}), ...Object.values(names ?? {}), ...registry.map((t) => t.cls), ...inPack]);
+  const out = { core: [], pack: [], unknown: [] };
+  for (const c of new Set(only.map(clsOf))) {
+    if (inPack.has(c)) out.pack.push(c);
+    else if (known.has(c)) out.core.push(c);
+    else out.unknown.push(c);
+  }
+  return out;
 }
 
 function planCoreLegs({ tier, only = [], world, env = process.env, tiers, names, registry, pins, town, townRun = false }) {

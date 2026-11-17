@@ -1,0 +1,116 @@
+{
+  "slug": "bank",
+  "name": "Bank",
+  "concept": "The savings bank of Saint-Philippe, 1989: the two-storey vanilla Office_E_01 beside the town hall, fitted whole. A public banking hall with glazed teller counters and the bank-account teller, a deposit-slip desk, a queue rope and a wall clock; a manager's office; and the strongroom with its round door, drill and cash-bag robbery flow, the bell box on the front wall. The vanilla desks and bunk beds are cleared out of the rooms the bank uses; everything added is a static base-game prop.",
+  "red_line": "pack",
+  "addon": "LF_Everon1989",
+  "prefab_dir": "Prefabs/Buildings/Bank",
+  "vanilla": {
+    "base": "{51F233A0BA73532A}Prefabs/Structures/Industrial/Houses/Office_E_01/Office_E_01.et",
+    "building": "Bank",
+    "kit": "Bank_Kit",
+    "furniture": "Furniture/Bank_furniture_01"
+  },
+  "host": {
+    "prefab": "Office_E_01",
+    "world_xz": [
+      4369,
+      10656
+    ],
+    "town": "saint-philippe",
+    "slot": "bank",
+    "front": "+z",
+    "footprint": {
+      "min": [
+        -8.8,
+        -7.65
+      ],
+      "max": [
+        8.2,
+        7.4
+      ]
+    },
+    "floor_y": 1.05,
+    "upper_floor_y": 4.25
+  },
+  "rooms": [
+    {
+      "id": "hall",
+      "floor": 0,
+      "x": [
+        -1.4,
+        3.4
+      ],
+      "z": [
+        1.3,
+        6.6
+      ],
+      "role": "public banking hall: three glazed teller counters across the room, two tellers (LF_Npc_Teller_2, the account teller with the ATM action), deposit-slip desk, queue rope, bench, wall clock, rates board"
+    },
+    {
+      "id": "manager",
+      "floor": 0,
+      "x": [
+        3.55,
+        7.7
+      ],
+      "z": [
+        1.3,
+        6.6
+      ],
+      "role": "manager's office: desk, chairs, safe, shelves, carpet"
+    },
+    {
+      "id": "vault",
+      "floor": "annex",
+      "x": [
+        8.25,
+        11.65
+      ],
+      "z": [
+        1.2,
+        4.4
+      ],
+      "role": "strongroom on the east wall (LF_BankVault: round door, drill and charge, cash bag, hood roof); built onto the wall as the playtest town's bank vault is, since no back room of Office_E_01 is 3.4 m clear"
+    },
+    {
+      "id": "upstairs",
+      "floor": 1,
+      "role": "staff floor: vanilla offices kept, beds and bath removed"
+    }
+  ],
+  "interactables": [
+    "teller counters (LF_ATMAction on the teller NPC)",
+    "vault LF_BankVault (LF_BankVaultComponent, drill and charge)",
+    "bell box (LF_AlarmMountComponent, kind bank)",
+    "cash bag (LF_PlaceComponent BankBag)"
+  ],
+  "budget": {
+    "size": "medium",
+    "lights": 6,
+    "shadow_casters": 0,
+    "decor_entities": 300,
+    "physics_props": 0,
+    "per_frame_scripts": 0,
+    "check": "tools\\cli perf building bank --size medium"
+  },
+  "scripts": {
+    "shell": "node tools/buildings/bank/shell.mjs",
+    "decor": "node tools/buildings/bank/decor.mjs",
+    "stage": "node tools/buildings/bank/stage.mjs",
+    "proof": "tools/buildings/bank/proof.json"
+  },
+  "counts": {
+    "build": {
+      "entities": 197,
+      "lights": 5,
+      "shadow_casters": 0
+    },
+    "pass1": {
+      "entities": 205,
+      "lights": 6,
+      "shadow_casters": 0
+    }
+  },
+  "stage": "The kit is pack content, so the core GridWorld layer cannot name it (validate-addon-boundary): node tools/buildings/bank/stage.mjs writes an uncommitted Grid_zz_bankstage.layer (the kit, two tellers and the rob kit chest) at 300,300; look it with `tools\\cli look 300,300 --world Worlds/GridWorld/GridWorld.ent`. Remove it (stage.mjs --remove) before a commit."
+}
