@@ -192,6 +192,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DispatchNamesPlace(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DoorLock(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Downed(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_DownedLogRate(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DownedPatient(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_DownedPatientWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DownedRules(), LF_TestTier.LOGIC);
@@ -353,6 +354,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JailVehicleArrest(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JailWork(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JailWorkAbandon(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_JailWorkBeginRange(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_JobClientOffers(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobDepositCargo(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JobDepositRestart(), LF_TestTier.LOGIC);

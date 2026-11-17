@@ -14,7 +14,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import * as rg from "../lib/release-gates.mjs";
-import { describeRun, removeScratch, useHermeticGit } from "../lib/selftest-git.mjs";
+import { describeRun, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
 import { cmdPromote } from "../promote.mjs";
 
 const failures = [];
@@ -31,7 +31,7 @@ const sh = (cwd, ...args) => {
   const tries = ["push", "fetch", "clone"].includes(args[0]) ? 3 : 1;
   let r;
   for (let i = 0; i < tries; i++) {
-    r = spawnSync("git", args, { cwd, encoding: "utf8", windowsHide: true });
+    r = runGit(cwd, args);
     if (r.status === 0) break;
   }
   if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${describeRun(r)}`);
