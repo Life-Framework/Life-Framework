@@ -8346,6 +8346,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Checkpoint. Next: %1"
      Comment "Toast: a checkpoint counted; %1 is the next checkpoint id (#1923)."
     }
+    CustomStringTableItem "{CAF45E694BF8CC75}" {
+     Id "LF-Race_Closing"
+     Target_en_us "A racer has finished. The race ends in %1 s: get to the line."
+     Comment "Toast to each racer still out when the first racer finishes. %1 = seconds until the race pays out (#2406)."
+    }
+    CustomStringTableItem "{6EB30AAE936633A0}" {
+     Id "LF-Race_Dropped"
+     Target_en_us "You were out of the race too long. You are dropped and your fee stays in the pot."
+     Comment "Toast: a racer with no living body past the AFK grace is dropped from a running race (#2406)."
+    }
     CustomStringTableItem "{A52B7FA55F67B76F}" {
      Id "LF-Race_Full"
      Target_en_us "This race is full."
@@ -8380,6 +8390,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Race_Started"
      Target_en_us "The race has started. Go!"
      Comment "Toast to each racer when the lobby closes (#1923)."
+    }
+    CustomStringTableItem "{4F32DA25EF3F27B5}" {
+     Id "LF-Race_TimeUp"
+     Target_en_us "Time is up. The race paid those who finished; your fee stays in the pot."
+     Comment "Toast: the settle delay after the first finisher ran out while this racer was still out (#2406)."
     }
     CustomStringTableItem "{26AFE384C6B0253E}" {
      Id "LF-Race_Title"
