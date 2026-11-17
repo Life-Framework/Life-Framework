@@ -274,6 +274,26 @@ class LF_PoliceApplications
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when uid's trial ran out unpromoted and no approval has replaced it (#2416).
+	static bool TrialExpiredFor(string uid)
+	{
+		bool expired = false;
+		foreach (LF_PoliceApplication app : All())
+		{
+			if (app.m_sUid != uid)
+				continue;
+
+			if (app.m_sStatus == STATUS_APPROVED)
+				return false;
+
+			if (app.m_sStatus == STATUS_EXPIRED)
+				expired = true;
+		}
+
+		return expired;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: removes from the police roster every officer whose trial ran out at now unpromoted.
 	//! \return How many left the roster.
 	static int ExpireTrials(int now)

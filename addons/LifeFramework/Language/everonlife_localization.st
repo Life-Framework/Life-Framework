@@ -3790,6 +3790,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "on duty"
      Comment "Inserted into the duty status sentence (EL-Duty_Status_Change, You are now %1)"
     }
+    CustomStringTableItem "{BDF3D838FB6219D0}" {
+     Id "LF-Duty_TrialExpired"
+     Target_en_us "Your trial as an officer has ended. You have been clocked out."
+     Comment "Toast to an on-duty officer whose trial ran out: the server clocked them out and removed them from the police roster (#2416)."
+    }
     CustomStringTableItem "{10850C37306E78EB}" {
      Id "LF-Duty_WrongDesk"
      Target_en_us "You are on duty for another service. Clock out at your own desk first."
@@ -9319,6 +9324,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-SpawnHub_TooFar"
      Target_en_us "Stand at the travel globe to travel."
      Comment "Spawn hub refusal: the server found no travel globe next to the player (#693b)."
+    }
+    CustomStringTableItem "{19BD6378F5F924A0}" {
+     Id "LF-SpikeStrip_Cap"
+     Target_en_us "You already have your limit of spike strips down. Pick one up first."
+     Comment "Toast: the officer tried to lay another spike strip while the configured number of their own is still deployed (#2416)."
     }
     CustomStringTableItem "{C9A02C030858FF1F}" {
      Id "LF-SpikeStrip_Deploy"

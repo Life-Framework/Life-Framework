@@ -1,6 +1,6 @@
 {
- "handlers": 77,
- "checked": 77,
+ "handlers": 76,
+ "checked": 76,
  "unchecked": 0,
  "entries": [
   {
@@ -496,6 +496,7 @@
    "handler": "RpcAsk_LF_WriteTicket",
    "verdict": "checked",
    "checks": [
+    "cooldown",
     "money",
     "range",
     "role"
@@ -529,14 +530,6 @@
     "cooldown",
     "range",
     "role"
-   ]
-  },
-  {
-   "file": "Feature/Police/LF_PoliceMenu.c",
-   "handler": "RpcAsk_LF_PoliceSelfPromote",
-   "verdict": "checked",
-   "checks": [
-    "noinput"
    ]
   },
   {

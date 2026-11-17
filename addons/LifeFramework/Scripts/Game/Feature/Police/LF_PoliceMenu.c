@@ -14,16 +14,6 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Ask the server to promote this officer. The server always refuses: rank is not a client field.
-	void LF_AskPoliceSelfPromote()
-	{
-		if (Replication.IsServer())
-			LF_PoliceRanks.RequestSelfPromotion(LF_Utils.GetPlayerUid(this));
-		else
-			Rpc(RpcAsk_LF_PoliceSelfPromote);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_PoliceArrest(string targetPlayerUid)
 	{
@@ -86,13 +76,6 @@ modded class SCR_ChimeraCharacter
 		LF_NotificationManagerComponent.NotifyPlayer(officerPlayerId, "#EL-Police_Title", "#EL-Player_Arrested", 3.0, LF_ENotificationType.POLICE_ALERT);
 		if (targetPlayerId > 0)
 			LF_NotificationManagerComponent.NotifyPlayer(targetPlayerId, "#EL-Police_Title", "#EL-Player_Arrested", 3.0, LF_ENotificationType.WARNING);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_PoliceSelfPromote()
-	{
-		LF_PoliceRanks.RequestSelfPromotion(LF_Utils.GetPlayerUid(this));
 	}
 };
 

@@ -176,7 +176,12 @@
     "applyMinPlaytimeHours": 50,
     "applyRejectCooldownHours": 72,
     "trialHours": 168,
-    "armoryCooldownMinutes": 120
+    "armoryCooldownMinutes": 120,
+    "dutyShiftMaxMinutes": 120,
+    "trialSweepSeconds": 60,
+    "ticketRateWindowSeconds": 10,
+    "ticketRateBurst": 3,
+    "spikeStripMaxPerOfficer": 2
   },
   "respawn": {
     "wakeInHospital": true,

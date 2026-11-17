@@ -203,6 +203,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		{
 			// First: the rules read the cuffs, escort and downed state that the cleanup below ends (#691).
 			LF_DisconnectRules.OnPlayerDisconnected(playerId);
+			// The duty clock stops with the connection: time away is not paid or counted (#2416).
+			LF_PoliceRanks.OnPlayerLeft(playerId);
 			LF_BleedOut.OnPlayerDisconnected(playerId);
 			LF_PhoneCalls.OnPlayerDisconnected(playerId);
 			ReleaseDisconnectedPlayer(playerId);
@@ -277,6 +279,13 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		super.OnPlayerSpawned(playerId, controlledEntity);
 
 		LF_AccountReplication.PublishForPlayer(playerId, controlledEntity);
+
+		if (Replication.IsServer())
+		{
+			// An officer still on duty from before the disconnect or restart gets the clock back
+			// (#2416). A trial that ran out meanwhile is ended by the next LF_PoliceTrialSweep.
+			LF_PoliceRanks.OnPlayerReturned(playerId);
+		}
 
 		LF_WhitelistRespawnHandlerComponent whitelist = LF_WhitelistRespawnHandlerComponent.Cast(FindComponent(LF_WhitelistRespawnHandlerComponent));
 		if (whitelist)
@@ -361,6 +370,9 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		{
 			GetGame().GetCallqueue().CallLater(LF_RefreshAccountReplication, LF_AccountReplication.REFRESH_INTERVAL_MS, true);
 			m_bLF_AccountRefreshRunning = true;
+
+			// An on-duty officer whose trial ran out loses the duty (#2416).
+			LF_PoliceTrialSweep.Start();
 
 			// -lfPerf: print the server cost counters once a minute (LF_Perf).
 			if (LF_Perf.IsEnabled())

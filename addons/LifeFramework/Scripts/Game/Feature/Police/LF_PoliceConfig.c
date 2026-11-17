@@ -89,6 +89,21 @@ class LF_PoliceConfig
 	static const int DEFAULT_ARMORY_COOLDOWN_MINUTES = 120;
 	static const int ARMORY_COOLDOWN_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int ARMORY_COOLDOWN_MAX = 1440;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DEFAULT_DUTY_SHIFT_MAX_MINUTES = 120;
+	static const int DUTY_SHIFT_MIN = 5;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DUTY_SHIFT_MAX = 1440;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DEFAULT_TRIAL_SWEEP_SECONDS = 60;
+	static const int TRIAL_SWEEP_MIN = 10;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int TRIAL_SWEEP_MAX = 3600;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DEFAULT_TICKET_RATE_WINDOW_SECONDS = 10;
+	static const int TICKET_RATE_WINDOW_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int TICKET_RATE_WINDOW_MAX = 60;	// lf-fixed: the schema limit; below LF_RateLimiter.PRUNE_IDLE_MS so a prune never ends a window early
+	static const int DEFAULT_TICKET_RATE_BURST = 3;
+	static const int TICKET_RATE_BURST_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int TICKET_RATE_BURST_MAX = 50;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DEFAULT_SPIKE_STRIP_MAX_PER_OFFICER = 2;
+	static const int SPIKE_STRIP_MAX_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int SPIKE_STRIP_MAX_MAX = 20;	// lf-fixed: the schema limit, mirrors the attribute params
 
 	[Attribute("0", UIWidgets.Auto, "Lowest police rank that may arrest (0 patrol, 1 senior)", params: "0 20")]
 	int m_iArrestMinRank;
@@ -181,6 +196,21 @@ class LF_PoliceConfig
 
 	[Attribute("120", UIWidgets.Auto, "Minutes of real time between two armory kits for one officer. Saved, so clocking out and a restart do not reset it. At least 1: the spike strip and roadblock kit carry no serial, so only the cooldown limits them", params: "1 1440")]
 	int m_iArmoryCooldownMinutes;
+
+	[Attribute("120", UIWidgets.Auto, "Most minutes of one duty shift that count for duty pay and rank. Past it the clock runs on unpaid until the officer clocks out and in again, so an officer who walked away from the game stops earning. A disconnect also stops the clock", params: "5 1440")]
+	int m_iDutyShiftMaxMinutes;
+
+	[Attribute("60", UIWidgets.Auto, "Seconds between the server's checks for an on-duty officer whose trial ran out. That officer is clocked out", params: "10 3600")]
+	int m_iTrialSweepSeconds;
+
+	[Attribute("10", UIWidgets.Auto, "Seconds of the window in which an officer may send ticket requests (ticketRateBurst per window)", params: "1 60")]
+	int m_iTicketRateWindowSeconds;
+
+	[Attribute("3", UIWidgets.Auto, "Ticket requests one officer may send per ticketRateWindowSeconds. More are refused", params: "1 50")]
+	int m_iTicketRateBurst;
+
+	[Attribute("2", UIWidgets.Auto, "Spike strips one officer may have deployed at once. Each deployed strip checks for wheels 20 times a second", params: "1 20")]
+	int m_iSpikeStripMaxPerOfficer;
 
 	//! How many rungs the core file ships; a remove of one of them is refused (a saved rank is its
 	//! index). Not an attribute. -1 until the first layer pass counts them.
@@ -299,7 +329,7 @@ class LF_PoliceConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds", "applyMinPlaytimeHours", "applyRejectCooldownHours", "trialHours", "armoryCooldownMinutes"};
+		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds", "applyMinPlaytimeHours", "applyRejectCooldownHours", "trialHours", "armoryCooldownMinutes", "dutyShiftMaxMinutes", "trialSweepSeconds", "ticketRateWindowSeconds", "ticketRateBurst", "spikeStripMaxPerOfficer"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("arrestMinRank", m_iArrestMinRank, RANK_MIN, RANK_MAX);
 		reader.ReadInt("escortMinRank", m_iEscortMinRank, RANK_MIN, RANK_MAX);
@@ -330,6 +360,11 @@ class LF_PoliceConfig
 		reader.ReadInt("applyRejectCooldownHours", m_iApplyRejectCooldownHours, APPLY_HOURS_MIN, APPLY_HOURS_MAX);
 		reader.ReadInt("trialHours", m_iTrialHours, APPLY_HOURS_MIN, APPLY_HOURS_MAX);
 		reader.ReadInt("armoryCooldownMinutes", m_iArmoryCooldownMinutes, ARMORY_COOLDOWN_MIN, ARMORY_COOLDOWN_MAX);
+		reader.ReadInt("dutyShiftMaxMinutes", m_iDutyShiftMaxMinutes, DUTY_SHIFT_MIN, DUTY_SHIFT_MAX);
+		reader.ReadInt("trialSweepSeconds", m_iTrialSweepSeconds, TRIAL_SWEEP_MIN, TRIAL_SWEEP_MAX);
+		reader.ReadInt("ticketRateWindowSeconds", m_iTicketRateWindowSeconds, TICKET_RATE_WINDOW_MIN, TICKET_RATE_WINDOW_MAX);
+		reader.ReadInt("ticketRateBurst", m_iTicketRateBurst, TICKET_RATE_BURST_MIN, TICKET_RATE_BURST_MAX);
+		reader.ReadInt("spikeStripMaxPerOfficer", m_iSpikeStripMaxPerOfficer, SPIKE_STRIP_MAX_MIN, SPIKE_STRIP_MAX_MAX);
 
 		if (!m_aRanks)
 			m_aRanks = new array<ref LF_PoliceRank>();
@@ -455,6 +490,11 @@ class LF_PoliceConfig
 		ctx.WriteValue("applyRejectCooldownHours", m_iApplyRejectCooldownHours);
 		ctx.WriteValue("trialHours", m_iTrialHours);
 		ctx.WriteValue("armoryCooldownMinutes", m_iArmoryCooldownMinutes);
+		ctx.WriteValue("dutyShiftMaxMinutes", m_iDutyShiftMaxMinutes);
+		ctx.WriteValue("trialSweepSeconds", m_iTrialSweepSeconds);
+		ctx.WriteValue("ticketRateWindowSeconds", m_iTicketRateWindowSeconds);
+		ctx.WriteValue("ticketRateBurst", m_iTicketRateBurst);
+		ctx.WriteValue("spikeStripMaxPerOfficer", m_iSpikeStripMaxPerOfficer);
 
 		ctx.StartObject("ranks");
 		if (m_aRanks)
@@ -554,6 +594,61 @@ class LF_PoliceConfig
 			return DEFAULT_ARMORY_COOLDOWN_MINUTES;
 
 		return Math.ClampInt(config.m_iArmoryCooldownMinutes, ARMORY_COOLDOWN_MIN, ARMORY_COOLDOWN_MAX);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Most seconds of one duty shift that count for pay and rank (LF_PoliceRanks.SettleDutyAt, #2416).
+	static int DutyShiftMaxSeconds()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_DUTY_SHIFT_MAX_MINUTES * 60;
+
+		return Math.ClampInt(config.m_iDutyShiftMaxMinutes, DUTY_SHIFT_MIN, DUTY_SHIFT_MAX) * 60;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Milliseconds between the sweeps that clock out an officer whose trial ran out (#2416).
+	static int TrialSweepMs()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_TRIAL_SWEEP_SECONDS * 1000;
+
+		return Math.ClampInt(config.m_iTrialSweepSeconds, TRIAL_SWEEP_MIN, TRIAL_SWEEP_MAX) * 1000;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Window of the ticket request limit, in milliseconds (#2416).
+	static int TicketRateWindowMs()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_TICKET_RATE_WINDOW_SECONDS * 1000;
+
+		return Math.ClampInt(config.m_iTicketRateWindowSeconds, TICKET_RATE_WINDOW_MIN, TICKET_RATE_WINDOW_MAX) * 1000;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ticket requests one officer may send per window (#2416).
+	static int TicketRateBurst()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_TICKET_RATE_BURST;
+
+		return Math.ClampInt(config.m_iTicketRateBurst, TICKET_RATE_BURST_MIN, TICKET_RATE_BURST_MAX);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spike strips one officer may have deployed at once (#2416).
+	static int SpikeStripMaxPerOfficer()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return DEFAULT_SPIKE_STRIP_MAX_PER_OFFICER;
+
+		return Math.ClampInt(config.m_iSpikeStripMaxPerOfficer, SPIKE_STRIP_MAX_MIN, SPIKE_STRIP_MAX_MAX);
 	}
 
 	//------------------------------------------------------------------------------------------------

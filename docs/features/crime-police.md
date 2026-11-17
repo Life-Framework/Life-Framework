@@ -275,7 +275,7 @@
   arrest rank (patrol on the flagship, #165). `LF_PoliceUtils` (pure) holds the
   sentence-length math and the reach check for tests; `MAX_FINE` is the
   senior ticket cap.
-  `LF_AskPoliceSelfPromote` always refuses.
+  The client-side self-promote RPC is gone (#2416): it only ever refused and logged every call; `LF_PoliceRanks.RequestSelfPromotion` stays as the server rule for a promote that names the caller.
 - ✅ **Arrest starts a sentence** (verified 2026-10-11): the arrest RPC calls
   `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
   to `"127 1 137"`.
@@ -315,6 +315,12 @@
   paid receipts per holder are kept for reprinting. Tests:
   `police/fine-ticket-rules`, `police/fine-ticket`,
   `police/fine-ticket-serializer`.
+- 🔨 **Ticket request limit and a private paper** (#2416, in-dev). `RpcAsk_LF_WriteTicket` counts each request against
+  `LF_FineTicketRole.AllowWriteRequest`: `ticketRateBurst` (3) per `ticketRateWindowSeconds` (10, at most 60) per officer (police
+  config; `LF_RateLimit.AllowWithAt`, kind `TICKET`). The first refusal in a window logs `[LFDebug:RateLimit]` and toasts
+  `#LF-RateLimit_Slow`; the rest are counted into one line when the window rolls over. The paper's replicated fields
+  (`LF_FineTicketComponent`) no longer include the holder's platform uid, which every client streaming the item could read;
+  the display name stays and the uid lives in the server's `LF_FineTicketRecord`. Test `police/ticket-request-limit`.
 
 ### `LF_DutyAction` — `Feature/Police/LF_DutyAction.c`
 - ✅ **The police kit carries the station car key** (2026-11-08, WORLD `police/car-key`):
@@ -350,6 +356,23 @@
   for the clock-out. A second clock-out, a clock-out with no clock-in, and a
   non-police account pay nothing. Unpaid seconds are session state: a restart
   during a shift drops that shift's pay, it never pays twice.
+- 🔨 **Duty pay and rank count only a capped, connected shift** (#2416, in-dev). `LF_PoliceRanks.SettleDutyAt` counts at
+  most `dutyShiftMaxMinutes` (police config, 120) of one clock-in for pay and rank (`ShiftCredit`); the clock runs on
+  uncounted until the officer clocks out and in again, so an AFK officer earns at most one capped shift per visit to
+  the desk. A disconnect settles and stops the clock (`LF_PoliceRanks.OnPlayerLeft`, from `OnPlayerDisconnected`): the
+  officer stays on duty with the body and kit, but the time away is never counted. `OnPlayerReturned` (on spawn) starts
+  the clock again inside the same shift cap, which also restarts the clock of an officer whose on-duty flag survived a
+  server restart. The cap applies to every duty role (police and medic). Log `[LFDebug:Ranks] shift cap reached`,
+  `duty clock stopped`, `duty clock resumed`. Not tracked: whether a connected officer is moving (no activity signal
+  exists), so an officer who stays connected but idle earns up to the cap. The shift's counted seconds are session
+  state: a server restart gives a fresh cap. Test `police/duty-shift-cap`.
+- 🔨 **An expired trial ends the shift** (#2416, in-dev). `LF_PoliceTrialSweep` runs on the server every
+  `trialSweepSeconds` (60): it expires trials (`ExpireTrials`), then clocks out each connected on-duty officer whose
+  trial ended unpromoted and who may no longer clock in (`LF_PoliceApplications.TrialExpiredFor`, roster check), through
+  the desk's own `LF_DutyLocker.ClockOut` (shift pay, gear swap) and toasts `#LF-Duty_TrialExpired`. The sweep settles
+  each connected officer's clock before expiring, so seconds that earn the promotion end the trial first. An officer
+  who was offline, or on the spawn screen with no body, is left alone until a sweep finds them with a body; an admin
+  who puts them back on the roster keeps them on duty. Log `[LFDebug:Police] trial of <uid> ended on duty`. Tests `police/trial-expiry-duty`, `police/trial-expiry-clock-out`.
 - ✅ Toggling keeps the account resident: `SaveAndReleaseAccount` re-caches
   the account instead of evicting it, so the officer can reopen the police
   menu and re-toggle at once.
@@ -636,6 +659,12 @@
   wheel slot entity) takes COLLISION damage to DESTROYED; vanilla `UpdateWheelState` then cuts the radius to
   80 %, the grip to 20 % and adds drag on every machine, so the car slows and pulls. A flat wheel is not hit
   twice. Logs `[LFDebug:SpikeStrip] punctured wheel N of <vehicle>`.
+- 🔨 **Spike strip cap** (#2416, in-dev): an officer may have `spikeStripMaxPerOfficer` (police config, 2) of their own
+  strips deployed at once, counted by deployer (`LF_SpikeStripComponent.CountDeployedBy`; the strip placed in a world
+  layer is never counted). `LF_PlacementService.Confirm` asks `LF_SpikeStrips.CapProblem` before anything is spawned or
+  used up: the next strip is refused (`[LFDebug:Placement] refused: <uid> already has N spike strip(s) deployed (cap M)`,
+  toast `#LF-SpikeStrip_Cap`) and the item stays. Picking one up or its lifetime running out frees a place. Test
+  `police/spike-strip-cap`. The cap keys on the strip prefab (`LF_SpikeStrips.STRIP_PREFAB`).
 - ✅ Pick up spike strip (on-duty police) puts the folded item back in the inventory, or at the feet when full.
   The strip goes by itself after `LF_PoliceConfig.m_iSpikeStripLifetimeSeconds` (600). DebugWorld shows one
   on the police station verge (`Roadmap_Police_SpikeStrip`: `m_bArmed 0`, `m_bExpires 0`; an officer can still pick it up).

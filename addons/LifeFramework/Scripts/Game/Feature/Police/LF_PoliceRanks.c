@@ -439,6 +439,7 @@ class LF_PoliceRanks
 
 		if (nowOnDuty)
 		{
+			account.ResetShiftSeconds();
 			account.StartDutyClock(nowMs);
 			LF_Debug.Log("Ranks", string.Format("duty clock started for %1", account.GetPersistentId()));
 			return;
@@ -947,12 +948,23 @@ class LF_PoliceRanks
 			int deltaSeconds = (nowMs - started) / 1000;
 			if (deltaSeconds > 0)
 			{
-				// Rank seconds are police only; a medic's seconds are only the shift's pay.
-				if (account.GetFaction() == LF_Faction.POLICE)
-					AccrueDuty(account.GetPersistentId(), deltaSeconds);
+				// A shift counts for at most dutyShiftMaxMinutes (#2416): an officer who left the
+				// game running earns up to that and no more until they clock in again.
+				int credited = ShiftCredit(deltaSeconds, account.GetShiftSeconds(), LF_PoliceConfig.DutyShiftMaxSeconds());
+				if (credited < deltaSeconds)
+					LF_Debug.Info("Ranks", string.Format("%1: shift cap reached, %2 of %3 s counted (%4 s already this shift)", account.GetPersistentId(), credited, deltaSeconds, account.GetShiftSeconds()));
 
-				if (account.GetFaction() != LF_Faction.CIVILIAN)
-					account.AddUnpaidDutySeconds(deltaSeconds);
+				if (credited > 0)
+				{
+					account.AddShiftSeconds(credited);
+
+					// Rank seconds are police only; a medic's seconds are only the shift's pay.
+					if (account.GetFaction() == LF_Faction.POLICE)
+						AccrueDuty(account.GetPersistentId(), credited);
+
+					if (account.GetFaction() != LF_Faction.CIVILIAN)
+						account.AddUnpaidDutySeconds(credited);
+				}
 			}
 		}
 
@@ -960,6 +972,67 @@ class LF_PoliceRanks
 			account.StartDutyClock(nowMs);
 		else
 			account.StopDutyClock();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: how many of deltaSeconds still count when shiftSoFar of capSeconds is already used.
+	static int ShiftCredit(int deltaSeconds, int shiftSoFar, int capSeconds)
+	{
+		return Math.Max(0, Math.Min(deltaSeconds, capSeconds - shiftSoFar));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, from the game mode when a player leaves: closes the officer's duty clock at once, so
+	//! the time they are gone is never paid or counted toward rank (#2416). The officer stays on duty
+	//! (the body and the kit wait, LF_DutyLocker); the clock restarts when they spawn again.
+	static void OnPlayerLeft(int playerId)
+	{
+		string uid = LF_Utils.GetPlayerUID(playerId);
+		StopDutyClockOf(Account(uid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Settles a running police duty clock at the world time now and keeps it running, so seconds
+	//! already earned count before a decision that reads them (LF_PoliceTrialSweep.ExpireAt).
+	static void SettleNow(LF_PlayerAccount account)
+	{
+		if (account && account.GetFaction() == LF_Faction.POLICE)
+			SettleDutyAt(account, true, NowMs());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Settles and stops the duty clock of account at the world time now.
+	//! \return True when a running clock was stopped.
+	static bool StopDutyClockOf(LF_PlayerAccount account)
+	{
+		if (!account || !account.IsDutyClockRunning())
+			return false;
+
+		SettleDutyAt(account, false, NowMs());
+		LF_Debug.Info("Ranks", string.Format("duty clock stopped for %1: the player left", account.GetPersistentId()));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, when a player spawns: an officer still on duty (a rejoin, or a restart that kept the
+	//! duty flag, which does not keep the clock) gets the clock started again. The shift's counted
+	//! seconds are kept, so leaving and returning does not open a fresh shift cap.
+	//! \return True when a clock was started.
+	static bool ResumeDutyClock(LF_PlayerAccount account, int nowMs)
+	{
+		if (!account || !account.IsOnDuty() || account.GetFaction() == LF_Faction.CIVILIAN || account.IsDutyClockRunning())
+			return false;
+
+		account.StartDutyClock(nowMs);
+		LF_Debug.Info("Ranks", string.Format("duty clock resumed for %1", account.GetPersistentId()));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, from the game mode when a player spawns: ResumeDutyClock for that player's account.
+	static void OnPlayerReturned(int playerId)
+	{
+		ResumeDutyClock(Account(LF_Utils.GetPlayerUID(playerId)), NowMs());
 	}
 
 	//------------------------------------------------------------------------------------------------

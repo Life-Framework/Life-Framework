@@ -198,6 +198,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_DrinkQuenches(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyDeskActions(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_DutyPay(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_DutyShiftCap(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_E2E_CashSlotSwap(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_ContentIds(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_E2E_LicenceDesk(), LF_TestTier.PERSISTENCE);
@@ -654,6 +655,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SpawnHub(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpawnScale(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStrip(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SpikeStripCap(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SpikeStripGeometry(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SpikeStripPreview(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
@@ -697,12 +699,15 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_TestLogicWorld(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TestOrgSign(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TestOrgSignWorld(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_TicketRequestLimit(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TownBoard(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TownBoardWorld(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TraderSellRules(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TraderServerSale(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_TreatmentBill(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_TreatmentBillPersist(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_TrialExpiryClockOut(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_TrialExpiryDuty(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIBackPath(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_UIKitInitialFocus(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_UIKitButtonInvoker(), LF_TestTier.LOGIC);
