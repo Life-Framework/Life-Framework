@@ -382,6 +382,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LogoutBodyDirty(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutBodyRejoin(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutBodyTag(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_LogoutBodyUnpaidTakeBack(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutBodyWake(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LogoutRule(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_M4ConfigSections(), LF_TestTier.LOGIC);
@@ -450,6 +451,8 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PerfMap(), LF_TestTier.PERF);
 		manager.Register(new LF_Test_PeriodCars(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PersistLastPosition(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_PersistOwnersStaticReset(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PersistStoreStaticReset(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PersistSwitches(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PersistSwitchesRestart(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_PhoneCallBackBook(), LF_TestTier.LOGIC);
@@ -618,6 +621,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_SamePrefab(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_SaveAliases(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_SaveHeldContent(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_SaveNewerVersion(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_SaveStampPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_AutosaveSelection(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_AutosaveSelectionBitmask(), LF_TestTier.LOGIC);
