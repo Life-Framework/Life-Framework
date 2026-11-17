@@ -2,6 +2,7 @@
 // red-proof: 2026-11-13, HandsetUp as `state != IDLE`: `--only LF_Test_AmbientTown` failed "a ringing phone has its receiver down". Restored, green.
 //! The conditions behind the second batch of town sounds (#897): the payphone hum only while the
 //! receiver is up, and the pub's outdoor radio taking the music from the building while it is on.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AmbientTown : LF_Test
 {
 	//------------------------------------------------------------------------------------------------
@@ -47,22 +48,5 @@ class LF_Test_AmbientTown : LF_Test
 		c.m_sGroup = group;
 		c.m_bAllowed = allowed;
 		return c;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! Self-registration (LF_TestRegistration.c): this file is the whole of adding this test.
-class LF_TestRegistration_AmbientTown : LF_TestRegistration
-{
-	protected static bool s_bRegistered = LF_TestManager.Enqueue(new LF_TestRegistration_AmbientTown());
-
-	override LF_TestTier Tier()
-	{
-		return LF_TestTier.LOGIC;
-	}
-
-	override LF_Test Create()
-	{
-		return new LF_Test_AmbientTown();
 	}
 }

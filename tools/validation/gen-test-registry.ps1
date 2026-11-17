@@ -12,10 +12,11 @@
 #      Scripts/Game/Tests/ must declare a `// tier: LOGIC|WORLD|PERSISTENCE|PERF`
 #      comment above its declaration. The tier drives which suites run it.
 #   2. The generated file LF_TestRegistrations.generated.c registers every such
-#      class that does not register itself (an LF_TestRegistration subclass in its file,
-#      LF_TestRegistration.c; its Tier() must match the `// tier:` comment); a
-#      self-registered class gets a comment line only. Registration is
-#      through LF_TestManager.Register, in deterministic file order.
+#      class that does not register itself (a `[LF_TestInfo(LF_TestTier.X)]` attribute on
+#      the line above the class, Tests/LF_TestInfo.c; its tier must match the
+#      `// tier:` comment); a self-registered class gets a comment line only and
+#      LF_TestManager finds it by reflection. Registration is through
+#      LF_TestManager.Register, in deterministic file order.
 #   3. The generated file is never edited by hand; regenerate it instead.
 #
 # Modes:
@@ -41,23 +42,17 @@ $generatedName = "LF_TestRegistrations.generated.c"
 $entries = @()
 $violations = @()
 
+# The `[LF_TestInfo(LF_TestTier.X[, pack: true])]` attribute on the line just above a class
+# declaration (#2757). $before is the file text up to the `class` keyword. $null when absent.
+function Get-TestInfo([string]$before) {
+  $m = [regex]::Match($before, '\[LF_TestInfo\(\s*LF_TestTier\.(LOGIC|WORLD|PERSISTENCE|PERF)\s*(?:,\s*pack:\s*(true|false)\s*)?\)\]\s*$')
+  if (-not $m.Success) { return $null }
+  return [PSCustomObject]@{ Tier = $m.Groups[1].Value; Pack = ($m.Groups[2].Value -eq 'true') }
+}
+
 Get-ChildItem $testsDir -Filter "*.c" | Where-Object { $_.Name -ne $generatedName } | Sort-Object Name | ForEach-Object {
   $file = $_
   $text = Get-Content $file.FullName -Raw
-
-  # Self-registration (#2610): an LF_TestRegistration subclass whose Create() returns `new LF_Test_X()`
-  # and whose Tier() returns the tier. Such a class is left out of the Enforce registry.
-  $selfRegistered = @{}
-  foreach ($r in [regex]::Matches($text, '(?s)class\s+\w+\s*:\s*LF_TestRegistration\b.*?\n\}')) {
-    $body = $r.Value
-    $created = [regex]::Match($body, 'return\s+new\s+(LF_Test_\w+)\s*\(')
-    $regTier = [regex]::Match($body, 'return\s+LF_TestTier\.(LOGIC|WORLD|PERSISTENCE|PERF)\b')
-    if (-not $created.Success -or -not $regTier.Success) {
-      $violations += "$($file.Name): an LF_TestRegistration class needs 'return LF_TestTier.<TIER>;' in Tier() and 'return new LF_Test_X();' in Create()"
-      continue
-    }
-    $selfRegistered[$created.Groups[1].Value] = $regTier.Groups[1].Value
-  }
 
   $matches = [regex]::Matches($text, 'class\s+(LF_Test_\w+)\s*:\s*LF_Test')
   foreach ($m in $matches) {
@@ -71,9 +66,11 @@ Get-ChildItem $testsDir -Filter "*.c" | Where-Object { $_.Name -ne $generatedNam
     }
 
     $tier = $tierMatch[$tierMatch.Count - 1].Groups[1].Value
-    $self = $selfRegistered[$cls]
+    $info = Get-TestInfo $segment
+    $self = $null
+    if ($info) { $self = $info.Tier }
     if ($self -and $self -ne $tier) {
-      $violations += "$($file.Name): $cls self-registers with tier $self but its '// tier:' comment says $tier"
+      $violations += "$($file.Name): $cls has [LF_TestInfo(LF_TestTier.$self)] but its '// tier:' comment says $tier"
       continue
     }
     $entries += [PSCustomObject]@{ File = $file.Name; Class = $cls; Tier = $tier; Self = [bool]$self }
@@ -134,7 +131,15 @@ Get-ChildItem (Join-Path $root "addons") -Directory | Where-Object { $_.Name -li
           $violations += "$($file.Name): pack test $cls has the name of a core test"
           continue
         }
-        $packEntries += [PSCustomObject]@{ Class = $cls; Tier = $tierMatch[$tierMatch.Count - 1].Groups[1].Value }
+        $packTier = $tierMatch[$tierMatch.Count - 1].Groups[1].Value
+        $packInfo = Get-TestInfo $text.Substring(0, $m.Index)
+        if ($packInfo) {
+          # Self-registered (#2757): LF_TestManager finds it by its attribute, which must say pack: true.
+          if (-not $packInfo.Pack) { $violations += "$($file.Name): pack test $cls needs [LF_TestInfo(LF_TestTier.$packTier, pack: true)]" }
+          elseif ($packInfo.Tier -ne $packTier) { $violations += "$($file.Name): $cls has [LF_TestInfo(LF_TestTier.$($packInfo.Tier), ...)] but its '// tier:' comment says $packTier" }
+          continue
+        }
+        $packEntries += [PSCustomObject]@{ Class = $cls; Tier = $packTier }
       }
     }
   }
