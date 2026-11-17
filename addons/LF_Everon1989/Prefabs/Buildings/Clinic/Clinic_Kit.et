@@ -1,0 +1,55 @@
+SCR_DestructibleBuildingEntity : "{31B60F0942664774}Prefabs/Buildings/Clinic/Clinic.et" {
+ ID "2DEF8FA15F83D6D6"
+ {
+  GenericEntity : "{A0B78CD65C661B15}Prefabs/Medic/LF_MedicDutyDesk.et" {
+   ID "702A1B4D6C4EBF58"
+   coords 7.9 0.26 1
+  }
+  GenericEntity : "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et" {
+   ID "38752FFDE65E01F7"
+   coords 8.74 1.41 3.9
+   angleY -90
+  }
+  GenericEntity : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
+   ID "DD0D4B7D6665278B"
+   coords -7.7 0.26 2
+  }
+  GenericEntity : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
+   ID "0FD91A551229701A"
+   coords -6 0.26 2
+  }
+  GenericEntity : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+   ID "31EFF13542622869"
+   components {
+    LF_AlarmMountComponent "{9ACA0BDAD2FE2665}" {
+     m_vOffset 0 0.167 0.065
+     m_fReach 12
+    }
+   }
+   coords 3.5 3.05 6.66
+  }
+  GenericEntity : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+   ID "118B109042DB61CB"
+   components {
+    LF_SignComponent "{6E3FF3980D87CACE}" {
+     m_sSignId "hospital"
+     m_vRimColor 0.1 0.3 0.18
+     m_vPaintColor 0.94 0.94 0.9
+     m_vTextColor 0.08 0.4 0.2
+    }
+   }
+   coords -2.4 3.1 6.74
+  }
+  LightEntity {
+   ID "A4CB5B3FBC79465E"
+   coords -3.6 2.85 6.95
+   Color 1 0.82 0.58 1
+   LV 3.5
+   ClipEV -10
+   CastShadow 0
+   Radius 6
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+ }
+}
