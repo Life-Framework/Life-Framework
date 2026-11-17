@@ -31,8 +31,14 @@ class LF_ImageImportPlugin : WorkbenchPlugin
 				Print("LF_IMAGE_IMPORT conf " + p + " " + r.GetResource().GetResourceName());
 		}
 
-		Print("LF_IMAGE_IMPORT rebuilding " + path);
-		rm.RebuildResourceFile(path, "PC", false);
-		Print("LF_IMAGE_IMPORT done " + path);
+		// One path, or several joined with "|" (ui-image --batch: one boot for a whole icon set).
+		array<string> paths = {};
+		path.Split("|", paths, true);
+		foreach (string one : paths)
+		{
+			Print("LF_IMAGE_IMPORT rebuilding " + one);
+			rm.RebuildResourceFile(one, "PC", false);
+			Print("LF_IMAGE_IMPORT done " + one);
+		}
 	}
 }
