@@ -241,6 +241,46 @@ class LF_PlayerAccountManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Every key character-scoped records of this account can sit under: the account uid and the
+	//! record key of each character (slot 1 shares the uid, later slots have their own id). Records
+	//! written under an earlier active character stay under that key, so a lookup by account
+	//! (a ban record's incidents) asks them all. Creates no account.
+	//! \param uid The account uid, or the record key of one of its characters.
+	//! \return The keys, no repeats; just uid when no account is cached for it; empty for "".
+	static array<string> RecordKeysOf(string uid)
+	{
+		array<string> keys = {};
+		if (uid.IsEmpty())
+			return keys;
+
+		LF_PlayerAccount account;
+		if (s_pInstance)
+			account = s_pInstance.GetFromCache(uid);
+
+		if (!account)
+		{
+			keys.Insert(uid);
+			return keys;
+		}
+
+		keys.Insert(account.GetPersistentId());
+		if (keys.Find(uid) < 0)
+			keys.Insert(uid);
+
+		foreach (LF_PlayerCharacter character : account.m_aCharacters)
+		{
+			if (!character)
+				continue;
+
+			string key = character.GetRecordKey();
+			if (!key.IsEmpty() && keys.Find(key) < 0)
+				keys.Insert(key);
+		}
+
+		return keys;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Returns the cached account for a player, creating and caching a new one when absent.
 	//! \param playerUid The player's account uid, or the record key of one of its characters.
 	//! \return The account for the player (never null).

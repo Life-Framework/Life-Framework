@@ -52,6 +52,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_BankRobKit(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BankTeller(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BanRecord(), LF_TestTier.PERSISTENCE);
+		manager.Register(new LF_Test_BanRecordCharacters(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_BedDelivery(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BeerChainRuns(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_BenefitCountsCash(), LF_TestTier.WORLD);
@@ -313,12 +314,14 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_Impairment(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ImpairmentView(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_ImpairmentViewFrame(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_IncidentDamageFlush(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagged(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentFlagsPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_IncidentGmQuery(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentLog(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_IncidentLogPersist(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_IncidentReport(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_IncidentReportSpam(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionGiveCash(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionIntroductions(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_InteractionOffers(), LF_TestTier.LOGIC);
@@ -659,6 +662,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_StackTrade(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelay(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffRelayInstall(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_StaffWebhookEscape(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookPayload(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StaffWebhookSeam(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_StartingKit(), LF_TestTier.LOGIC);
