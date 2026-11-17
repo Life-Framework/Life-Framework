@@ -365,6 +365,10 @@ async function accountsSection(root) {
   return ["ACCOUNTS", ...lines.slice(0, 4).map((l) => `  ${l}`)];
 }
 
+async function usageSection(root) {
+  return (await import("../agents/usage-plan.mjs")).leadUsageLines(root);
+}
+
 async function slicesSection(root) {
   if (!existsSync(join(root, "tools", "commands", "slice.mjs"))) return ["SLICES skipped: `tools\\cli slice list --ready` is not on this branch yet"];
   const r = await sh(process.execPath, [join(root, "tools", "cli.mjs"), "slice", "list", "--ready"], { cwd: root, timeout: 12000 });
@@ -433,6 +437,7 @@ export async function main(args, { root }) {
     section("PRS", 13000, () => needGh("PRS", () => prsSection(gh, root, maxPrs))),
     section("WORKTREES", 14000, () => needGh("WORKTREES", async () => worktreeLines(await gatherWorktrees(root, gh)))),
     section("POOL", 13500, () => poolSection(root)),
+    section("USAGE", 13000, () => usageSection(root)),
     section("SHIP QUEUE", 5000, () => shipSection(root)),
     section("MAIN GUARD", 3000, () => guardSection(root)),
     section("ACCOUNTS", 13000, () => accountsSection(root)),
@@ -440,7 +445,7 @@ export async function main(args, { root }) {
   ]);
   // Disk: its own process (the walk is synchronous), cached sizes refreshed inside a deadline; appended to the worktree block.
   const diskP = sh(process.execPath, [join(root, "tools", "cli.mjs"), "lead", "--disk-worker"], { cwd: root, timeout: 12500 });
-  const [ms, prs, wts, pool, ship, guard, acc, sl] = await sections;
+  const [ms, prs, wts, pool, usage, ship, guard, acc, sl] = await sections;
   let diskLine;
   try {
     const dr = await diskP;
@@ -454,7 +459,7 @@ export async function main(args, { root }) {
     diskLine = "  disk: unavailable (size walk failed)";
   }
   wts.push(diskLine);
-  const out = [...ms, ...prs, ...wts, ...pool, ...ship, ...guard, ...acc, ...sl];
+  const out = [...ms, ...prs, ...wts, ...pool, ...usage, ...ship, ...guard, ...acc, ...sl];
   out.push(`lead ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   console.log(out.join("\n"));
   return 0;

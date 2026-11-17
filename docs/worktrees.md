@@ -1497,6 +1497,7 @@ parallel, each with its own timeout; one that fails prints one line and the rest
   When the budget itself cuts a machine the section ends with `pool budget N s exceeded ... partial rows for ...`. A machine whose
   free RAM is under the pool floor (`minFreeMb`, 1.5 GB) adds `WARN RAM: <machine> has 0.5 GB free, under its 1.5 GB floor`: it takes no new job.
 - SHIP QUEUE: `SHIP QUEUE 1 gating, 2 queued, oldest wait 14 min (<slug> #<pr>)`, from the same file `ship-queue status` prints.
+- USAGE: one line, the Gaming plan's real 5h and weekly utilization, pace and advice from `usage --plan` (docs/agent-budget.md "Plan utilization"); `USAGE Gaming: plan usage unavailable (why)` when the endpoint or token fails.
 - ACCOUNTS and SLICES appear when `usage --accounts` and `slice list --ready` exist; until then each prints one skip line.
 
 `tools\cli lead prune-safe [--dry-run]` prunes the merged-prunable worktrees through `wt prune` (never `--force`) and prints one line each:
