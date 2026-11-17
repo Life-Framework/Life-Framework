@@ -1,11 +1,15 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --only LF_Test_HideoutStashPutCarrier` on the unfixed
 // CanStoreItem failed `- a non-member cannot move a car's apple into the stash` and `- a non-member
 // cannot move a body's item into the stash`; green with the fix (with LF_Test_HideoutStash and -Persistence).
+// red-proof: #2584, 2026-11-17 `tools/cli test --no-build --only LF_Test_HideoutStashPutCarrier` on the
+// unfixed CanStoreItem failed `- a non-member cannot move a ground item into the stash` and `- no apple
+// from the ground is in the stash (expected 0, got 1)`; green with LF_ServerInsertScope.
 // tier: WORLD
 //! hideout/stash-put-carrier (#2574): the stash took any item whose carrier was not a character, so
 //! anyone with the stash in an inventory view filled it from a vehicle's storage. Now an item from
 //! a vehicle or from a body is refused; a living member's own inventory and the save restore still
-//! fill it. Items on the ground (no carrier, like a server spawn) are a follow-up card.
+//! fill it. An item on the ground has no carrier, like a server spawn, so the stash takes a
+//! carrier-less item only inside LF_ServerInsertScope (restore, AddAmount seeding) (#2584).
 class LF_Test_HideoutStashPutCarrier : LF_Test
 {
 	protected static const ResourceName CAR = "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et";
@@ -82,6 +86,34 @@ class LF_Test_HideoutStashPutCarrier : LF_Test
 			ctx.False(LF_Utils.IsAliveState(body), "the body is not alive");
 			ctx.False(MoveFrom(outsiderCharacter, body, stash, LF_TestHideoutStashKit.WATER_PREFAB), "a non-member cannot move a body's item into the stash");
 			ctx.Equal(0, LF_TestHideoutStashKit.Count(stash, LF_TestHideoutStashKit.WATER_PREFAB), "no water bottle from the body is in the stash");
+
+			// An item on the ground has no carrier, like a server spawn, but a client asked to move it (#2584).
+			IEntity groundApple = LF_Utils.SpawnEntityPrefab(LF_TestHideoutStashKit.APPLE_PREFAB, outsiderCharacter.GetOrigin() + "1 0 0");
+			ctx.NotNull(groundApple, "an apple lies on the ground");
+			if (groundApple)
+				ctx.True(LF_InventoryUtils.GetResponsibleStorageManager(groundApple) == null, "the ground apple has no carrier");
+			InventoryStorageManagerComponent outsiderManager = LF_InventoryUtils.GetResponsibleStorageManager(outsiderCharacter);
+			// The inventory screen inserts a ground item into an open storage (SCR_InventoryStorageManagerComponent.InsertItem).
+			if (groundApple && outsiderManager)
+				ctx.False(outsiderManager.TryInsertItemInStorage(groundApple, LF_TestHideoutStashKit.StorageOf(stash)), "a non-member cannot move a ground item into the stash");
+			ctx.Equal(0, LF_TestHideoutStashKit.Count(stash, LF_TestHideoutStashKit.APPLE_PREFAB), "no apple from the ground is in the stash");
+			if (groundApple)
+				SCR_EntityHelper.DeleteEntityAndChildren(groundApple);
+
+			// Server seeding (AddAmount spawns with no carrier) still fills the stash.
+			ctx.Equal(1, LF_InventoryUtils.AddAmount(stash, LF_TestHideoutStashKit.WATER_PREFAB, 1), "seeding puts a water bottle in the stash");
+			ctx.Equal(1, LF_TestHideoutStashKit.Count(stash, LF_TestHideoutStashKit.WATER_PREFAB), "the seeded water bottle is in the stash");
+			LF_TestHideoutStashKit.Empty(stash);
+
+			// A split a member asked for (the RPC checked access) spawns the second stack in the stash.
+			ctx.Equal(20, LF_InventoryUtils.AddAmount(stash, LF_TestHideoutStashKit.MONEY_PREFAB, 20), "20 cash goes into the stash");
+			LF_QuantityComponent stashCash = LF_Component<LF_QuantityComponent>.Find(LF_TestHideoutStashKit.FindInStash(stash, LF_TestHideoutStashKit.MONEY_PREFAB));
+			ctx.NotNull(stashCash, "the stash holds a cash stack");
+			if (stashCash)
+				stashCash.Split(5);
+			ctx.Equal(2, LF_TestHideoutStashKit.ItemCount(stash), "a split stash stack is two stacks in the stash");
+			ctx.Equal(20, LF_TestHideoutStashKit.Count(stash, LF_TestHideoutStashKit.MONEY_PREFAB), "the split keeps 20 cash in the stash");
+			LF_TestHideoutStashKit.Empty(stash);
 
 			// A living member's own inventory still fills the stash.
 			ctx.Equal(1, LF_InventoryUtils.AddAmount(memberCharacter, LF_TestHideoutStashKit.APPLE_PREFAB, 1), "the member carries an apple");

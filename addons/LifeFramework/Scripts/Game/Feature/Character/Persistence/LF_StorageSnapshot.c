@@ -1222,6 +1222,8 @@ class LF_StorageSnapshot
 		if (isStack)
 			LF_QuantityComponent.SetTransferIntent(entity, true);
 
+		// The server's own insert: a restricted storage (hideout stash) takes this carrier-less item (#2584).
+		LF_ServerInsertScope.Begin();
 		bool inserted;
 		if (item.m_iStorage >= 0 && item.m_iStorage < storages.Count())
 		{
@@ -1233,6 +1235,8 @@ class LF_StorageSnapshot
 
 		if (!inserted)
 			inserted = manager.TryInsertItem(entity);
+
+		LF_ServerInsertScope.End();
 
 		if (!inserted)
 		{
