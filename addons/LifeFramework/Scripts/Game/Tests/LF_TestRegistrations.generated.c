@@ -359,6 +359,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_JoinNotice(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JumpPad(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_JumpPadSeen(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_KeyItemName(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Knockout(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LateIdentity(), LF_TestTier.PERSISTENCE);
 		manager.Register(new LF_Test_LawlessHud(), LF_TestTier.LOGIC);
@@ -367,6 +368,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_LicenceDesk(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicenceRevokeCuffs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicensePlateFormat(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_LicensePlateNoLeak(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicensePlateParenting(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_LicenseWhitelist(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_LocalIdentity(), LF_TestTier.LOGIC);
@@ -471,6 +473,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PlacementComposition(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementConfirm(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementDoorProbe(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_PlacementPolicyCost(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementPolicyWhere(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PlacementPolicyWho(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PlacementProbe(), LF_TestTier.WORLD);
@@ -497,6 +500,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_PoliceApplicationStaff(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplyCooldownGate(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceApplyPlaytimeGate(), LF_TestTier.LOGIC);
+		manager.Register(new LF_Test_PoliceCallAccept(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PoliceCarKey(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_PoliceContactStamp(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_PolicePromoteRung(), LF_TestTier.LOGIC);
