@@ -99,16 +99,21 @@ class LF_ChainSearch
 			if (!chain.m_bContraband || !chain.m_aSteps || chain.m_aSteps.IsEmpty())
 				continue;
 
-			LF_ChainStepDef last = chain.m_aSteps[chain.m_aSteps.Count() - 1];
-			if (!last || !last.m_aOutputs)
-				continue;
-
-			foreach (LF_ProcessingOutput output : last.m_aOutputs)
+			foreach (int i, LF_ChainStepDef step : chain.m_aSteps)
 			{
-				if (output && LF_Utils.SamePrefab(output.m_OutputPrefab, prefab))
+				if (!step || !step.m_aOutputs)
+					continue;
+
+				if (i != chain.m_aSteps.Count() - 1 && !step.m_bGoods)
+					continue;
+
+				foreach (LF_ProcessingOutput output : step.m_aOutputs)
 				{
-					bulk = Math.Max(chain.m_iBulk, 1);
-					return true;
+					if (output && LF_Utils.SamePrefab(output.m_OutputPrefab, prefab))
+					{
+						bulk = Math.Max(chain.m_iBulk, 1);
+						return true;
+					}
 				}
 			}
 		}

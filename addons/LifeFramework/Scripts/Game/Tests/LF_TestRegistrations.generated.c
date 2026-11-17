@@ -393,6 +393,7 @@ class LF_TestRegistrations
 		manager.Register(new LF_Test_MiningPrefabs(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MoneyCash(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MoneyRework(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_MoonshineCratePack(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_MovedPrefab(), LF_TestTier.WORLD);
 		manager.Register(new LF_Test_Murder(), LF_TestTier.LOGIC);
 		manager.Register(new LF_Test_MurderLogoutBody(), LF_TestTier.WORLD);
