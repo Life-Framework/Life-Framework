@@ -7,6 +7,7 @@
 // the first free block is claimed and its centre goes to `place ground`; no free block names the largest free one and
 // writes nothing; --span and --cell still override; open-PR claims carry their span. The bounds are fixtures
 // (the grid command's `readPrefab` seam), the place tool and the audit are stubs: no server boots here.
+// red-proof: with boundsWithChildren returning the root's bounds unchanged this printed "FAIL the root with its annex is a 2x2 block (got 2x1@0,1x2@90)" (2026-11-17).
 // red-proof: with spanFor made `Math.floor((extent + margin) / CELL.size)` (no margin rounding up) this printed 22 FAILs, from
 // "a 15.3 x 12.7 m villa takes a 2x2 block" to "a 2x2 in an open PR is avoided" (2026-11-16); restored, it passes.
 
@@ -15,7 +16,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
 import { main as gridMain } from "../commands/grid.mjs";
-import { MARGIN, chooseYaw, largestFree, noFitMessage, spanFor, spanOptions } from "../grid/autosize.mjs";
+import { MARGIN, boundsWithChildren, chooseYaw, largestFree, noFitMessage, spanFor, spanOptions } from "../grid/autosize.mjs";
 import { CELLS_DIR, GRID_LAYERS, allCells, blockers, claimCellIds, claimRect, gapSide, layerOfSlug, openPrClaims } from "../lib/world-zones.mjs";
 
 let failed = 0;
@@ -193,6 +194,25 @@ try {
 } finally {
   console.log = real;
   rmSync(tmp, { recursive: true, force: true });
+}
+
+// ---- a prefab with an annex child is sized by the root and the child together (FenceYard: Workshop_01_Main + Workshop_01_Side)
+{
+  const MAIN = { min: [-6.19, -2.36, -3.66], max: [5.96, 4.14, 3.91] }; // 12.15 x 7.57 m: a 2x1 block on its own
+  const SIDE = box(6, 3, 5); // the annex's own mesh box
+  ok(spans(MAIN) === "2x1@0,1x2@90", `the root alone is 2x1 or 1x2 (got ${spans(MAIN)})`);
+  const annex = { name: "Annex", x: -3.26, y: 0, z: -6.45, yaw: -90, scale: 1, bounds: SIDE, coordsText: "-3.26 0 -6.45" };
+  const root = { name: "root", isPrefabRoot: true, x: 0, y: 0, z: 0, yaw: 0, scale: 1, bounds: MAIN };
+  const socketed = { name: "Door", x: 0, y: 0, z: 0, yaw: 0, scale: 1, bounds: box(40, 3, 40), coordsText: "0 0 0" };
+  const noMesh = { name: "Light", x: 50, y: 0, z: 50, yaw: 0, scale: 1, bounds: null, coordsText: "50 0 50" };
+  const grown = boundsWithChildren(P, MAIN, 1, [root, socketed, noMesh, annex]);
+  // The annex turns -90: its 6 x 5 box is 5 along x and 6 along z, centred 3.26 west and 6.45 south of the pivot.
+  ok(Math.abs(grown.min[2] - (-6.45 - 3)) < 0.01 || Math.abs(grown.min[2] - (-6.45 - 2.5)) < 0.01, `the annex's south edge is in the bounds (got z min ${grown.min[2]})`);
+  ok(grown.max[0] === MAIN.max[0] && grown.max[2] === MAIN.max[2] && grown.min[0] === MAIN.min[0], "a child inside the root's box moved the other edges");
+  ok(spans(grown) === "2x2@0", `the root with its annex is a 2x2 block (got ${spans(grown)})`);
+  ok(boundsWithChildren(P, MAIN, 1, [root, socketed, noMesh]).min[2] === MAIN.min[2], "a socket child at 0 0 0 or a child with no mesh grew the box");
+  const scaled = boundsWithChildren(P, { min: [-1, 0, -1], max: [1, 2, 1] }, 2, [{ x: 10, y: 0, z: 0, yaw: 0, scale: 1, bounds: box(2, 2, 2), coordsText: "10 0 0" }]);
+  ok(Math.abs(scaled.max[0] * 2 - 11) < 1e-9, `bounds stay in the root's units under a root scale (got ${scaled.max[0]})`);
 }
 
 if (failed) {
