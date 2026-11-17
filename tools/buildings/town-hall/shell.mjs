@@ -17,6 +17,8 @@ import { gameDb } from "../pipeline/gamedb.mjs";
 import { emitEntity, entities, floorOf } from "./furniture-lib.mjs";
 import { budget, decorBlock } from "./decor.mjs";
 import { makeKeep, transform } from "./prune.mjs";
+import { floaters, gameReader, prefabChildren, specSupports } from "../pipeline/surface.mjs";
+import { floorsOf } from "../pipeline/floaters.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const DIR = join(ROOT, "addons", "LF_Everon1989", "Prefabs", "Buildings", "TownHall");
@@ -76,9 +78,25 @@ async function main() {
   // The furniture: vanilla props that stay, then the decor block.
   const root = /^(GenericEntity : "[^"]+" \{\n ID "[0-9A-F]+")/.exec(vFurniture)?.[1];
   if (!root) throw new Error("cannot read the vanilla furniture root");
-  const kept = entities(vFurniture).filter(makeKeep()).map(transform);
-  const decor = PASS > 0 ? await decorBlock(PASS) : "";
-  const furniture = `${root}\n {\n${kept.map(emitEntity).join("\n")}${decor ? `\n${decor}` : ""}\n }\n}\n`;
+  let kept = entities(vFurniture).filter(makeKeep()).map(transform);
+  // The cut removes desks, counters and shelves; a vanilla prop that stood on one (a typewriter, a phone, a plant) would hang in
+  // the air, so it goes with its support. Judged with the same offline tops as `tools\cli building check town-hall`.
+  const spec = JSON.parse(readFileSync(join(ROOT, "tools", "buildings", "town-hall", "spec.json"), "utf8"));
+  const reader = gameReader(ROOT);
+  const shell = (list, decor = "") => `${root}\n {\n${list.map(emitEntity).join("\n")}${decor ? `\n${decor}` : ""}\n }\n}\n`;
+  const idOf = (e) => /ID "([0-9A-F]+)"/.exec(e.node.lines.find((l) => l.startsWith("ID ")) ?? "")?.[1];
+  let orphaned = 0;
+  for (let round = 0; round < 3; round++) {
+    const ents = prefabChildren(shell(kept));
+    const floors = await floorsOf(spec, ents, reader);
+    const gone = new Set((await floaters(ents, { reader, floors, extra: specSupports(spec) })).filter((p) => p.kind === "unsupported").map((p) => p.id));
+    if (!gone.size) break;
+    orphaned += gone.size;
+    kept = kept.filter((e) => !gone.has(idOf(e)));
+  }
+  const fixed = [...prefabChildren(shell(kept)), ...specSupports(spec)];
+  const decor = PASS > 0 ? await decorBlock(PASS, fixed) : "";
+  const furniture = shell(kept, decor);
 
   const outs = [
     [join(DIR, BUILDING), `${building.trimEnd()}\n`],
@@ -97,7 +115,7 @@ async function main() {
   const floors = [0, 0, 0];
   for (const e of kept) floors[floorOf(e.y)]++;
   const b = PASS > 0 ? budget(PASS) : { props: 0, lightRows: 0, lights: 0, shadows: 0 };
-  console.log(`town-hall pass ${PASS}: ${kept.length + b.props + b.lightRows} furniture entities (${kept.length} vanilla, ${b.props} decor props, ${b.lightRows} light rows), ${b.lights} dynamic light(s), ${b.shadows} shadow caster(s); vanilla prop(s) kept of ${entities(vFurniture).length} (floors ${floors.join("/")})${CHECK ? (drift ? " DRIFT" : " current") : " written"}`);
+  console.log(`town-hall pass ${PASS}: ${kept.length + b.props + b.lightRows} furniture entities (${kept.length} vanilla, ${b.props} decor props, ${b.lightRows} light rows), ${b.lights} dynamic light(s), ${b.shadows} shadow caster(s); vanilla prop(s) kept of ${entities(vFurniture).length}, ${orphaned} dropped with the support the cut removed (floors ${floors.join("/")})${CHECK ? (drift ? " DRIFT" : " current") : " written"}`);
   if (CHECK && drift) process.exit(1);
   void db;
 }
