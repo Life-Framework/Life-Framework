@@ -1,5 +1,7 @@
 # Feature
 
+A slice card, building fit-out, map card, town fit or grid proof has a one-page starter pack with the exact commands: `tools\cli brief <kind>` (`docs/starter-packs/`). This playbook is the order for any other feature.
+
 New or changed gameplay behavior. The order is fixed: **design, scaffold, look, place, build, test, look, review, ship.** Each step has a cheap check; do not start the next one on a red check. `tools\cli feature new` writes `tmp/feature-<name>.md`, the same list as tick boxes for the kind you picked.
 
 1. **Design: one paragraph before any code.** Name the consumer, the data shape, and the boundaries. Who calls this, from which side (server or client), on which entity? What owns the behavior (a prefab, a component on an existing prefab, a manager singleton)? What config drives it? Then mark each boundary: replication (what the server owns, what the client sees), config (what is data), persistence (what survives a restart, and which payload carries it), UI (client-only, calls the server). Say how it is in-world first: the object the player walks up to, and why a sheet is needed if one is (`docs/decisions.md`). That paragraph goes in `Feature.md` and is the spec. If you cannot name a concrete caller, the design is a library without a user.

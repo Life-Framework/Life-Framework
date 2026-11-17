@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{FA38849EE56C68EB}Missions/EveronLifeGameMode.conf"
+ Name "{5E2A9C41B7D08F36}Missions/LF_EveronIsland.conf"
  Configurations {
   CONFResourceClass PC {
   }
@@ -12,4 +12,4 @@ MetaFileClass {
   CONFResourceClass HEADLESS : PC {
   }
  }
-}
+}

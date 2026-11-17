@@ -1,11 +1,10 @@
 # The Everon world: places, pipeline, setup
 
-Planning doc for the maintainer to review, 2026-11-16. It turns the world bible
+Planning doc, 2026-11-16. It turns the world bible
 ([`docs/everon/world-bible.md`](../everon/world-bible.md), the public vision) into an execution plan:
 the places the flagship uses on vanilla Everon, which systems live where, the **town pipeline** that
-fits places out in parallel, the world setup and its measured cost, and the decisions still open.
-No build cards exist yet. They are cut once the open questions in the last section are answered. The
-draft list at the end shows their shape.
+fits places out in parallel, and the world setup and its measured cost. Every question is answered
+(D1 to D20 below), and the cards are on GitHub under the epic named in section 8.
 
 Spoilers stay in `docs/everon/world-bible-internal.md`. This page is safe to publish.
 
@@ -21,6 +20,18 @@ Spoilers stay in `docs/everon/world-bible-internal.md`. This page is safe to pub
 | D6 | **Reputation:** a small system in M6, per faction (town, police, underworld), that feeds the per-player gates |
 | D7 | **Fishing:** a fishing chapter in M6 |
 | D8 | **Travel:** taxis and cars for now. Revisit when a second town opens |
+| D9 | **Buildings: mix** (was Q2, Q3). Convert a vanilla town house where one fits (hostel, town hall, police). Only where nothing fits, place a purpose-built building on a free plot near the square. The in-engine dump later found a vanilla municipal office and police villa in town, so only the hostel and the clinic need a converted house |
+| D10 | **Mappings: the lead approves** each place's building mapping (was Q6). The maintainer reviews only the fitted `town-draft` PRs with pictures |
+| D11 | **No lawless zones yet** (was Q9). The whole island stays policed until the gang chapter in M7. The quarry and the military sites are ordinary policed ground until then |
+| D12 | **Reputation is jobs-first** (was Q10). In M6 each faction's standing mainly unlocks better jobs and better pay |
+| D13 | **Pack world: reuse `MainWorld`** (lead, was Q1). Delete the apple-farm layer and retire `EveronLifeGameMode.conf` |
+| D14 | **Live states on the header** (lead, was Q4): `m_aLF_LiveStates` on the flagship header, with dark place layers for places whose state has not shipped |
+| D15 | **Fitted buildings are indestructible** through the place layer (lead, was Q5) |
+| D16 | **The map** (lead, was Q7): superseded by a fully modded in-game map with waypoints, areas, POI icons and system markers, specified in [`everon-map.md`](everon-map.md) (its own spike). The cheap physical board on the square stays as well |
+| D17 | **Flagship box RAM** (lead, was Q8): before the cutover, check the 0grind plan's RAM with the host tools. The playtest-town header stays the flagship until state 0 is ready |
+| D18 | **Dirt track** (lead, was Q11): scout a closer site in state 1. Black Lake stays a later course |
+| D19 | **The bus** (lead, was Q12): reviewed when the state-2 cards are cut |
+| D20 | **Milestone** (planner): the epic and its cards go in M5 Settling in, because state 0 ships with M5's chapters |
 
 ## 1. The island's places
 
@@ -32,7 +43,7 @@ page only adds where each place sits in the build order (section 3, "Phased map 
 
 | Place | x, z | Role (bible) | Map state |
 |---|---|---|---|
-| **Saint-Philippe** | 4503, 10772 | The hub and capital; first location (D5). North-west coast, harbour quay at 4390, 11100 | 0 (square), 1 (outskirts), 2 (dock, districts) |
+| **Saint-Philippe** | 4503, 10772 | The hub and capital; first location (D5). North-west coast, harbour quay at 4390, 11100. Within 400 m: 62 houses with interiors, 6 shop-houses, 2 pubs, a municipal office, a police villa, a fire station, a church | 0 (square), 1 (outskirts), 2 (dock, districts) |
 | Meaux | 4520, 9468 | Nearest town south, 1.3 km. Has a vanilla police villa, a church, a post office and two pubs | 1 (road out), 2 |
 | Tyrone | 4928, 9093 | Village on the road south | 2 |
 | Gravette | 4121, 7796 | West-coast village | 4 |
@@ -58,52 +69,59 @@ harbours 2 to 6 (above); Montfort Castle (9315, 1145); Black Lake (9482, 3048), 
 The full list of 171 named places, with types, is what `tools\cli scout list` prints.
 
 **What this means for the order.** Saint-Philippe's neighbours are an airport and two military sites
-within 1.5 km. That is lawless ground at state 3, so it opens late: a new player at the hub must not drive
-into it by mistake (bible "risk gradient"). Meaux, 1.3 km south, is the obvious first "second place". It
-already has the island's police villa.
+within 1.5 km. With no lawless zones before M7 (D11) they are plain policed ground until then; when the gang
+chapter makes some of them lawless, the airport goes last, because it is the closest to new players at the
+hub. Meaux, 1.3 km south, is the obvious first "second place".
 
 ## 2. Systems and story beats by place
 
 ### State 0: the Saint-Philippe square
 
-The square is about 120 m across, at 4450, 10780. These are the vanilla buildings that a decode of
-`Eden.ent` names within 500 m. About 950 entities in that radius, among them most of the town
-houses, use leaf prefabs the decode cannot name; the scout dossier (card P1) replaces this table with a
-complete one.
+The square is about 120 m across, at 4450, 10780. The building list comes from the catalog agent's
+in-engine dump of vanilla Everon (CoreOnEveron, 1.44 M entities; `ws/everon-catalog`,
+`docs/everon/catalog-buildings.md` when it lands). Within 400 m of the town centre there are 62 houses
+with interiors, 15 without, 6 shop-houses, 2 pubs, 2 municipal buildings, a police villa, a fire station,
+2 churches and 4 chapels, 2 fuel stations, 25 industrial buildings and 50 quay pieces. "Interior" is the
+dump's provisional heuristic (door children and a raised floor); the scout dossier (card P1) confirms
+each one.
 
 | Building (vanilla prefab) | x, z | Notes |
 |---|---|---|
-| `ShopHouse_E_2I01t_clothesstore` | 4441, 10789 | On the square, ground-floor shop with interior |
-| `House_Town_E_2I01_orange` | 4475, 10781 | Town house on the square, two storeys, interior |
-| `House_Town_E_2I02_yellow` | 4412, 10773 | Town house on the square, interior |
-| `House_Village_E_1L01_Furniture` | 4392, 10733 | Furnished village house, west of the square |
-| `NewspaperBooth_E_01_redwhite` | 4437, 10691 | Kiosk on the south approach |
+| `MunicipalOffice_E_01` | 4419, 10648 | **Municipal office** with counter glass, office benches and files, south of the square |
+| `Villa_E_2I01_Police` | 4553, 10748 | **Police villa**, east of the square |
+| `Office_E_01` | 4369, 10656 | Office building beside the municipal office |
+| `MunicipalOffice_E_01_school` | 4592, 10818 | School, north-east |
+| `FireStation_E_01` | 4572, 10674 | Fire station, south-east |
+| `Church_01_red` | 4448, 10734 | Church, just south of the square |
+| `PubVillage_E_2L01_V8_ProgresBar` | 4455, 10700 | Pub with a wall sign, near the municipal office |
 | `PubVillage_E_2L01_V1` | 4469, 10902 | "Hostinec" pub with a beer garden, 120 m north, on the way to the quay |
+| `ShopHouse_E_2I01t_clothesstore` | 4441, 10789 | Clothes shop on the square |
+| `ShopHouse_E_2I01t_householdwares` | 4515, 10746 | Household-wares shop, east of the square |
+| `ShopHouse_E_2I01t_drugstore` | 4431, 10842 / 4553, 10774 | Two drugstores, north and east |
+| `House_Town_E_2I01/_2I02/_2I03` | around the square (4398, 10768; 4428, 10782; 4475, 10780; 4476, 10765; 4480, 10751; 4503, 10745; 4444, 10671 ...) | Town houses with interiors, the conversion stock (D9) |
+| `NewspaperBooth_E_01` | 4437, 10691 / 4425, 10754 | Kiosks |
 | `FuelStation_E_01_building` | 4617, 10659 | Fuel station on the south-east road in |
+| `Workshop_01_Garage`, `Workshop_01_Main` | 4401, 10970; 4391, 10630; 4546, 10670 ... | Workshops and garages (car lot, chop shop and fence candidates) |
 | `FactoryHall_E_01`, `GuardHouse_01` | 4566, 10503 / 4572, 10534 | Factory hall south of town. The legacy `MainWorld` spawn (4472, 10535) is beside it |
-| `Workshop_01_Main`, `Workshop_02_grey` | 4257, 10693 | Workshop yard, west, by the water |
-| `Warehouse_01_Workshop` | 4654, 11151 | Dock warehouse |
-| `HarborCrane_01`, `PierConcrete_01_*` | 4399, 11122 | The quay: about 40 concrete pier segments from 4000, 10990 to 4390, 11220 |
-| `Chapel_01_yellow` | 4308, 10447 | Chapel, south-west edge |
-| `House_Prefab_2I01_v1/_v2` | 4268, 10587 / 4297, 10587 | Prefab houses, south-west |
-| `HouseAddon_Garage_E_01`, `HouseAddon_Workshop_E_01` | 4866, 11029 | A garage and workshop at the east edge (fence barn candidate) |
+| `HarborCrane_01`, `PierConcrete_01_*` | 4399, 11122 | The quay, from 4000, 10990 to 4390, 11220 |
+| `HouseAddon_Garage_E_01`, `HouseAddon_Workshop_E_01` | 4866, 11029 | A garage and workshop yard at the east edge |
 
 **Proposed homes, state 0** (each one confirmed against the dossier at mapping time):
 
 | Slot | System | Proposed building | Status |
 |---|---|---|---|
-| `arrival` | Spawn, clerk, Form R-89, licence desk | The largest town house on the square (town hall role) | Scout picks; no vanilla municipal office in Saint-Philippe |
-| `hostel` | First night (#1758) | A town house on the square, not `MountainHotel_01_green` | **The green mountain hotel is in Vernon (9933, 2602), 8 km away. There is none in Saint-Philippe (question Q2)** |
-| `cafe` | Café owner, radio, chess (state 1) | A ground-floor shop-house on the square | Scout picks |
-| `bank` | Bank, vault, ATM | A solid town house on the square | Scout picks |
-| `police` | Police station, desk, cells, armoury | A town house on the square | No vanilla police villa in town (nearest: Meaux) |
-| `clinic` | Hospital and medic | A town house near the square | Scout picks |
-| `general-store` | General store | `ShopHouse` or a ground-floor shop | Scout picks |
+| `arrival` | Spawn, clerk, Form R-89, licence desk | `MunicipalOffice_E_01` (4419, 10648) | Strong fit: the vanilla town hall, with a counter |
+| `hostel` | First night (#1758) | A town house on the square (D9), not `MountainHotel_01_green` | The green mountain hotel is in Vernon (9933, 2602), 8 km away. It keeps the coast's hotel role later |
+| `cafe` | Café owner, radio, chess (state 1) | `PubVillage_E_2L01_V8_ProgresBar` (4455, 10700), or a shop-house on the square | Good fit: a pub near the town hall |
+| `bank` | Bank, vault, ATM | `Office_E_01` (4369, 10656), beside the town hall | Good fit; the scout checks the interior for a vault room |
+| `police` | Police station, desk, cells, armoury | `Villa_E_2I01_Police` (4553, 10748) | Strong fit: the vanilla police villa |
+| `clinic` | Hospital and medic | A town house near the square (D9) | Converted town house |
+| `general-store` | General store | `ShopHouse_E_2I01t_householdwares` (4515, 10746) | Strong fit |
 | `clothing` | Clothing counter | `ShopHouse_E_2I01t_clothesstore` (4441, 10789) | Strong fit: the vanilla building is a clothes store |
-| `gun-counter` | Gun counter (permit-gated) | A shop-house near the police | Scout picks |
+| `gun-counter` | Gun counter (permit-gated) | `ShopHouse_E_2I01t_drugstore` (4553, 10774), beside the police villa | Good fit; the second drugstore (4431, 10842) stays the drug store |
 | `fuel` | Fuel job, robbery till | `FuelStation_E_01_building` (4617, 10659) | Strong fit |
-| `fence` | Vince's barn | A barn or the garage yard on the edge (4866, 11029) | Scout picks |
-| `board` | Town board, map board (Q7) | A wall on the square | Kit only |
+| `fence` | Vince's barn | The garage and workshop yard on the east edge (4866, 11029) | Scout picks |
+| `board` | Town board and the physical map board (D16) | A wall on the square | Kit only |
 | `taxi` | Taxi rank and depot (D8) | Kerb on the square | Kit only |
 | `parcel` | Parcel job depot | Kiosk or a shop near the square | Scout picks |
 
@@ -129,9 +147,9 @@ not repeat it. In build terms:
 | State | Ships with | Places (bake units) | New system slots |
 |---|---|---|---|
 | 0 | M5: Arrival, The relocated, Armed and dressed | `saint-philippe-square` | The table above |
-| 1 | M5: Evenings in the village, On patrol | `saint-philippe-outskirts` (pub or hall, range), the road to Meaux with lay-bys (`road-sp-meaux`), the dirt track (Black Lake, or a closer site found by scouting), the quarry or an orchard | `pub`, `hall`, `range`, `track`, `layby` (route, not a building), `quarry` |
+| 1 | M5: Evenings in the village, On patrol | `saint-philippe-outskirts` (pub or hall, range), the road to Meaux with lay-bys (`road-sp-meaux`), the dirt track (a closer site found by scouting, D18), the quarry or an orchard as an ordinary policed work site (D11) | `pub`, `hall`, `range`, `track`, `layby` (route, not a building), `quarry` |
 | 2 | M6 Making a living | `saint-philippe-dock`, `saint-philippe-districts`, `meaux`, `montignac`, an orchard village, a scrapyard | `dock`, `fish-counter` (D7), `factory`, `market`, `supermarket`, `scrapyard`, `taxi` stands per town (D8) |
-| 3 | M7 Power and turf | Lawless military sites (the airport last), coves, the prison, turf villages, Saint-Pierre, Morton | `lawless`, `cove`, `prison`, `turf-point` |
+| 3 | M7 Power and turf | The first lawless ground, chosen with the gang chapter (D11; military sites, the airport last), coves, the prison, turf villages, Saint-Pierre, Morton | `lawless`, `cove`, `prison`, `turf-point` |
 | 4 | M8 Roots | Every remaining village | `house`, `farm-plot`, `garage` |
 
 ## 3. The town pipeline
@@ -161,9 +179,10 @@ supplies every coordinate the later steps use. No step types a coordinate.
   `LF_Places` kinds the core system looks for once it is fitted. Templates are tooling: they hold no
   coordinates and no place names.
 - **Mapping** (`docs/everon/places/<slug>/mapping.json`, next to its dossier): slot id, then a building id
-  from the dossier, or `none` with a reason. `tools\cli town map <slug>` proposes one by scoring the
-  dossier's buildings against the slot needs. A human or the lead edits it, and approval is a reviewed
-  PR that holds only that file (label `town-mapping`). Nothing is placed before it merges.
+  from the dossier, a free plot from the dossier with a purpose-built building prefab (`plot:<id>` plus
+  `prefab`, only where no vanilla building fits, D9), or `none` with a reason. `tools\cli town map <slug>`
+  proposes one by scoring the dossier's buildings against the slot needs. The lead approves it (D10): a
+  reviewed PR that holds only that file. Nothing is placed before it merges.
 - **Core stays map-independent.** The mapping is tooling data. What reaches the game is the fitted
   layer: entities with `LF_PlaceComponent` and the feature components that register in `LF_Places`. The
   core never reads the mapping.
@@ -179,6 +198,10 @@ supplies every coordinate the later steps use. No step types a coordinate.
   reads a playtest-town building (the general store, police front desk, bank counter and vault, clinic,
   clothing counter, gun counter, café) or a grid cell (fence, ATM, fuel till, parcel depot) and writes
   the kit. The relative geometry is kept; the absolute positions are dropped.
+- **Placed buildings (D9).** Where the mapping names a free plot, `town fit` first places the
+  purpose-built building with `place ground` on the plot, then fits its kit like any other building.
+- **Indestructible (D15).** `town fit` writes each fitted vanilla building's destruction override into the
+  slot layer, so a fitted floor never falls in.
 - **Apply:** `tools\cli town fit <place> <slot>` resolves the building from the mapping and its anchors
   from the dossier. It runs each kit row through `place on|against|ground` (the same bound reads, surface
   probes, checks and audit), writes `MainWorld_Layers/Place_<place>_<slot>.layer`, adds the slot's
@@ -207,6 +230,7 @@ supplies every coordinate the later steps use. No step types a coordinate.
 |---|---|
 | `grid place` (cells, claims, yards) | `town fit` (buildings, claims, kits). Same claim file shape, same `origin/main` and open-PR checks |
 | Open-PR claims (#2021) | Read for town claims too, with the same 60 s `gh` cache |
+| Sibling-worktree claims | An uncommitted claim file in another local worktree counts as taken, read from `git worktree list --porcelain` with no network |
 | `place on/against/ground/arrange` | Unchanged; the kit rows call it |
 | `audit placement --strict` | Run with `--world MainWorld` on the new layer; island layers get the town bar |
 | `look`, `look --interior` (#2194) | Pictures per slot and per place, on MainWorld |
@@ -238,7 +262,7 @@ on its own**:
   `dark` until their state ships.
 - **Dark places.** A place being fitted, or waiting for its state, has no spawn, no interactable, no NPC
   and no signage. It is plain vanilla Everon, so the island looks lived-in but closed, never half-built.
-  One switch per state, `m_aLF_LiveStates` on the flagship header (Q4), turns on its places' layers; until
+  One switch per state, `m_aLF_LiveStates` on the flagship header (D14), turns on its places' layers; until
   then the layers carry the place component in a disabled state.
 - **Bake order** follows the states: 0 (the square), 1 (outskirts, the road to Meaux, the track), 2 (the
   dock, the districts, Meaux, Montignac, orchards, the scrapyard), 3, then 4. Within a state the order is
@@ -252,7 +276,11 @@ on its own**:
 `LF_Everon1989/Worlds/MainWorld` already exists. It is a SubScene of vanilla `worlds/Eden/Eden.ent` (batch 1,
 #1185). It has a game mode, a spawn at 4472, 10535 and one legacy layer, `Area_StPhillipe_AppleFarm` (an
 EveronLife-era apple trader). Its old header, `Missions/EveronLifeGameMode.conf` ("Life Framework
-Pre-Alpha", 256 slots), is hidden from Scenarios. Proposal (Q1):
+Pre-Alpha", 256 slots), is hidden from Scenarios. Decided (D13):
+
+Steps 1 to 3 landed in #2204 (W1): the apple-farm layer and `EveronLifeGameMode.conf` are deleted, `Gamemode.layer`
+holds the `SCR_AIWorld_Eden` with `GM_Eden.nmn`, `LF_EveronIsland.conf` exists and `session up --mission island`
+boots it. The old spawn (4472, 10535) stays until the `arrival` slot owns one.
 
 1. Keep `MainWorld` (no new GUID), delete the legacy apple-farm layer and retire `EveronLifeGameMode.conf`.
 2. Copy CoreOnEveron's game layer into it: the `SCR_AIWorld_Eden` with the soldier `NavmeshWorldComponent`
@@ -278,7 +306,7 @@ Pre-Alpha", 256 slots), is hidden from Scenarios. Proposal (Q1):
 
 **The alpha box (0grind, 16 slots).** Vanilla Conflict and Game Master run on Everon on rented hosts of this
 class every day, so the island itself is not the risk. The 2.5 GB is for an empty server; budget 4 to 6 GB
-with 16 players and AI walkers, and check the 0grind plan's RAM (Q8). Boot time is not a player-facing
+with 16 players and AI walkers, and check the 0grind plan's RAM with the host tools before the cutover (D17). Boot time is not a player-facing
 problem.
 
 **Risks:**
@@ -291,11 +319,11 @@ problem.
   117,000 entities against the town's few thousand.
 - **Vanilla destruction.** Eden runs `SCR_MPDestructionManager`, so buildings and fences can break, and the
   break replicates. A fitted building that is destroyed loses its kit's floor. Mark fitted buildings
-  indestructible through the place layer, or accept it and restore at the 24 h wipe (Q5).
+  indestructible through the place layer (D15).
 - **Vanilla doors and interiors.** Fitted interiors depend on vanilla door slots. The dossier records the
   doors; `look --interior` shows what a player sees.
-- **Lawless ground next to the hub** (the airport and two military sites). Lawless rules stay off until
-  state 3, and the safe zone and police cover the square.
+- **Military ground next to the hub** (the airport and two military sites). Policed like the rest of the
+  island until M7 (D11); the gang chapter decides which become lawless, the airport last.
 
 ## 5. What moves and what is reused
 
@@ -315,7 +343,7 @@ The "World of Everon" page already renders from `docs/everon/world-bible.md` (#2
 grow per chapter:
 
 - A `## Live now` section generated from the pack's live-state list (the header's `m_aLF_LiveStates`,
-  Q4): each live state's places with their public dossier picture and one line each, so the page shows
+  D14): each live state's places with their public dossier picture and one line each, so the page shows
   what a player can visit today.
 - Each chapter's release note adds its places to that list; the bible's text stays the vision.
 - A check (`validate-public-bible`) fails the build when the website content names
@@ -324,56 +352,32 @@ grow per chapter:
 
 ## 7. Open questions
 
-Numbered for the maintainer; each has a recommendation. Q1 to Q8 come from this plan, Q9 to Q12 from the
-bible's open list.
+None. The questions this plan raised are answered as D9 to D20 above. New questions go in the epic, not
+here.
 
-1. **Which pack world?** Recommend reusing `MainWorld` (already an Eden SubScene, no new GUID), deleting
-   the legacy apple-farm layer and retiring `EveronLifeGameMode.conf`.
-2. **The hostel.** Saint-Philippe has no mountain hotel; the only green one is in Vernon, 8 km away.
-   Recommend a town house on the square fitted as a hostel (dormitory kit), and keeping the Vernon hotel
-   for the coast's hotel role in state 3.
-3. **The town hall.** Saint-Philippe has no municipal office building (Lamentin has the island's one).
-   Recommend the largest town house on the square as the town hall (clerk and licence desk), with a sign.
-4. **How places go live.** Recommend a list of live states on the flagship header (`m_aLF_LiveStates`) that
-   turns on each state's place layers. A place of a future state can then be fitted and reviewed on
-   `main` while players still see plain vanilla Everon there.
-5. **Destruction of fitted buildings.** Recommend making fitted buildings indestructible through the place
-   layer. The alternative is to restore them at the 24 h wipe.
-6. **Who approves a mapping?** Recommend the lead approves each mapping PR and the maintainer reviews only
-   the fitted draft PRs with pictures. The other way round costs the maintainer one more review per place.
-7. **The map board.** Recommend a physical board on the square that marks live places from pack data (the
-   bible's Q7), and no map UI.
-8. **Flagship box RAM.** The island takes 2.5 GB with nobody on it. Recommend checking the 0grind plan has at
-   least 8 GB before the cutover, and keeping the playtest-town header as the flagship until state 0 is ready.
-9. **Lawless ground.** Which sites, and when? Recommend the quarry in state 1 and the military sites in
-   state 3, the airport last because it is closest to the hub (bible Q6).
-10. **Reputation's first users (D6).** Recommend shop terms (town), the police desk's checks (police) and
-    the fence's stock (underworld) as the first three gates, so each faction has one visible use.
-11. **The dirt track.** Black Lake is 8 km from the hub. Recommend scouting a closer site in state 1 and
-    keeping Black Lake for a later course.
-12. **The second-town review for travel (D8).** Recommend reviewing the bus (#1793) when the state 2 cards
-    are cut, measured with the scout's drive times.
+## 8. The epic and its cards
 
-## 8. Draft card order (not created)
+Epic **#2201**, "Everon island: town pipeline and Saint-Philippe state 0", in M5 Settling in (D20). The
+cards were created with `tools\cli slice new 2201`. Each card is file-disjoint and at most 45 minutes, and
+`tools\cli slice list 2201 --ready` is the dispatch queue.
 
-Cut and created with `tools\cli slice new` once Q1 to Q8 are answered. Pipeline tooling comes first, then
-Saint-Philippe's square as its first user, then a second place to prove parallel runs.
-
-| Key | Card | Type | Depends |
+| Key | Card | Type | Depends on |
 |---|---|---|---|
-| T1 | Place templates (`town`, `village`) and the `town map` proposer that scores dossier buildings | tooling | scout |
-| T2 | `town kit extract`: the first 8 kits from the playtest town and the grid | tooling | none |
-| T3 | `town fit`: mapping, kit and place tool in, a slot layer, claim, audit and pictures out | tooling | T1, T2 |
-| T4 | Island claims in `validate-world-zones` (one building per claim, open-PR claims) and `town check` static | tooling | T3 |
-| T5 | The reachability harness verb and `town ready` | tooling | T3 |
-| W1 | MainWorld cleanup, AI world and navmesh, `LF_EveronIsland.conf`, `session --mission island` | world | Q1 |
-| W2 | Live states on the header, dark place layers | system | Q4 |
-| P1 | Scout Saint-Philippe and the square mapping (approval PR) | town | scout, T1 |
-| P2 to P14 | One `town-draft-saint-philippe-square-<slot>` card per state-0 slot, `arrival` first | town | P1, T3, W1 |
-| P15 | State-0 readiness: `town ready 0`, the arrival route, a playtest | town | P2 to P14, T5 |
-| M1 | Second place in parallel: Meaux (state 1), scouted and mapped by a second agent while P2 to P14 run | town | T3 |
-| X1 | Website "Live now" section and `validate-public-bible` | docs | W2 |
-| X2 | Flagship cutover: `LF_Everon1989.conf` World to MainWorld | world | P15, Q8 |
+| T1 | #2202 Place templates and the `town map` proposer | tooling | none |
+| T2 | #2203 Kit extract and the first 8 kits | tooling | none |
+| W1 | #2204 MainWorld cleanup, AI world and navmesh, hidden `LF_EveronIsland.conf` | data | none |
+| W2 | #2208 Live map states on the header, dark place layers | system | none |
+| T3 | #2205 `town fit` | tooling | #2202, #2203, #2204 |
+| T4 | #2206 Island claims guard and `town check` | tooling | #2205 |
+| T5 | #2207 Reachability proof and `town ready` | tooling | #2205, #2204 |
+| P1 | #2209 Saint-Philippe square: dossier and mapping (the lead approves) | data | #2202 |
+| M1 | #2210 Meaux: dossier and mapping, the parallel proof | data | #2202 |
+| X1 | #2211 World of Everon "Live now" and the spoiler check | docs | #2208 |
+| X2 | #2212 Flagship cutover (`hold` until state 0 is ready and the box RAM is checked) | data | #2204, #2208, #2207 |
 
-Meaux is the parallel-proof pick: it is the next place in the bake order, it has a vanilla police villa
-and a church that test a different template fit, and its road to the hub is state 1's patrol route.
+**Town-draft cards.** When P1's mapping merges, the lead cuts one `town-draft` card per slot (label
+`town-draft`, worktree `town-draft-saint-philippe-square-<slot>`, `arrival` first), then a state-0 readiness
+card, under #2201. Meaux's slot cards follow M1 the same way.
+
+**Why Meaux is the second place.** It is next in the bake order, its police villa, church and pubs test the
+`village` template, and its road to the hub is state 1's patrol route.

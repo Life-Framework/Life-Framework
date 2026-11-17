@@ -44,10 +44,10 @@ import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
-import { EVERON_WORLD, GRID_MISSION } from "../tools/lib/worlds.mjs";
+import { EVERON_WORLD, GRID_MISSION, ISLAND_MISSION } from "../tools/lib/worlds.mjs";
 import { addonsArgs, CORE_PLAYTEST_MISSION, launchAddons, launchAddonsFor, playtestMission, townWorld } from "../tools/lib/addons.mjs";
 import { applyClientSettings, parseLevers, parseProfile, resolveProfile } from "./session-profile.mjs";
-import { sessionA2sPort } from "../tools/lib/pool-queue.mjs";
+import { laneRefusalBackoffMs, sessionA2sPort } from "../tools/lib/pool-queue.mjs";
 export { applyClientSettings, resolveProfile };
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -88,12 +88,15 @@ export const SESSION_DEFINE = "LF_SESSION_IDENTITY";
 // Opens the harness gate on the playtest mission (LF_DevGate.HarnessBuild).
 // Only a session passes it; tools\cli host start never does.
 export const HARNESS_DEFINE = "LF_HARNESS";
-export const MISSIONS = ["debug", "playtest", "grid", "everon", "template"];
+export const MISSIONS = ["debug", "playtest", "grid", "everon", "island", "template"];
 // `--mission grid` boots GridWorld (the flat annex world for WORLD tests and grid cells) through its header
 // Missions/LF_GridWorld.conf, a bare world like debug: no harness define. `debug` still boots the town.
 // `--mission everon` boots Worlds/CoreOnEveron (vanilla Everon, its navmesh and an SCR_AIWorld): the world where
 // vanilla AI walks (#2174). Its game mode keeps dev tools shut, so the session opens the harness gate with the
 // harness define, as playtest does. Its test layers hold only proof routes, never town content.
+// `--mission island` boots the pack's island header Missions/LF_EveronIsland.conf (#2204): MainWorld, vanilla Everon
+// with the AI world and navmesh, under the flagship's systems. The harness gate opens as for everon. About 2.5 GB
+// server and 2.9 GB client (docs/architecture/everon-world.md "Measured cost"); the pool queues it until it fits.
 // `--mission template` boots the example server folder (server/example, #295): the scenario and mods
 // server.json names, the owner config.json it ships; clients join like the playtest mission (harness gate open).
 // `--mission template-<variant>` boots tools/server-template/variants/<variant>/server.json instead (#297):
@@ -112,7 +115,7 @@ export function parseMission(args) {
 // ("remote script source code checksum does not match").
 export function defineArgs(mission = "debug") {
   const args = ["-scrDefine", SESSION_DEFINE];
-  if (mission === "playtest" || mission === "everon" || isTemplateMission(mission)) args.push("-scrDefine", HARNESS_DEFINE);
+  if (mission === "playtest" || mission === "everon" || mission === "island" || isTemplateMission(mission)) args.push("-scrDefine", HARNESS_DEFINE);
   return args;
 }
 
@@ -224,7 +227,7 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
   // engine refuses -config together with -addons, so the file's two lists become -server and -addons.
   const tpl = isTemplateMission(mission) ? templateLaunch(ROOT, templateVariant(mission)) : null;
   const args = [
-    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : mission === "grid" ? GRID_MISSION : mission === "everon" ? EVERON_WORLD : SERVER_WORLD,
+    "-server", tpl ? tpl.scenario : mission === "playtest" ? header || playtestMission(addons) : mission === "grid" ? GRID_MISSION : mission === "everon" ? EVERON_WORLD : mission === "island" ? ISLAND_MISSION : SERVER_WORLD,
     "-addonsDir", addonsDir,
     ...addonsArgs(tpl ? tpl.addons : addons),
     "-profile", profile,
@@ -568,6 +571,16 @@ export function selftestSession() {
   const es = serverArgs({ addonsDir: "A", profile: "SP", mission: "everon" });
   if (es[1] !== EVERON_WORLD || !/CoreOnEveron\.ent$/.test(es[1])) failures.push("--mission everon does not boot CoreOnEveron");
   if (!es.includes(HARNESS_DEFINE) || !clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "everon" }).includes(HARNESS_DEFINE)) failures.push("--mission everon does not open the harness gate (its game mode keeps dev tools shut)");
+  // #2204: --mission island boots the pack's island header (MainWorld on Everon), harness gate open, and no other mission does.
+  // red-proof: 2026-11-17 on origin/main parseMission(["--mission","island"]) threw "--mission must be debug or playtest or ..."; these cases then passed.
+  try {
+    if (parseMission(["--mission", "island"]) !== "island") failures.push("parseMission island");
+  } catch {
+    failures.push("--mission island was refused");
+  }
+  const is = serverArgs({ addonsDir: "A", profile: "SP", mission: "island" });
+  if (is[0] !== "-server" || is[1] !== ISLAND_MISSION || !/LF_EveronIsland\.conf$/.test(is[1])) failures.push("--mission island does not run LF_EveronIsland.conf");
+  if (!is.includes(HARNESS_DEFINE) || !clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "island" }).includes(HARNESS_DEFINE)) failures.push("--mission island does not open the harness gate");
   const gs = serverArgs({ addonsDir: "A", profile: "SP", mission: "grid" });
   const gc = clientArgs({ n: 1, addonsDir: "A", profile: "P1", mission: "grid" });
   if (gs[0] !== "-server" || gs[1] !== GRID_MISSION || !/LF_GridWorld.conf$/.test(gs[1])) failures.push("--mission grid does not run LF_GridWorld.conf");
@@ -1164,7 +1177,7 @@ async function routeMachine(cmd, rest) {
     try {
       const nowMs = Date.now();
       const avoid = new Set([...refused].filter(([, until]) => until > nowMs).map(([name]) => name));
-      target = await pool.chooseSessionMachine(ROOT, { clients, profile, waitMs: Math.max(0, deadline - Date.now()), priority: prio, meta: { clients, profile }, avoid });
+      target = await pool.chooseSessionMachine(ROOT, { clients, profile, waitMs: Math.max(0, deadline - Date.now()), priority: prio, meta: { clients, profile, world: args.includes("--mission") ? args[args.indexOf("--mission") + 1] : undefined }, avoid });
     } catch (e) {
       if (!e.refusal) throw e;
       console.log(`session: ${e.message}`);
@@ -1184,7 +1197,7 @@ async function routeMachine(cmd, rest) {
     // A lane that looked free and was not: back off (3 s, doubling to 60 s) and ask another machine first,
     // so a machine that keeps refusing cannot spin the request (and the log) in a tight loop.
     const busy = code === pool.LANE_BUSY_CODE;
-    const backoffMs = busy ? pool.laneRefusalBackoffMs(++refusals) : 3000;
+    const backoffMs = busy ? laneRefusalBackoffMs(++refusals) : 3000;
     if (busy) refused.set(target.name, Date.now() + backoffMs * 2);
     console.log(`session: ${code === UP_MACHINE_GONE ? `${target.name} went away` : `lost the race for a lane on ${target.name}`}; queuing again${busy ? ` (another machine first, ${Math.round(backoffMs / 1000)} s backoff)` : " for any machine"}`);
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, backoffMs);
@@ -1353,7 +1366,7 @@ export async function usageText() {
   const proofs = [...(await loadProofs()).values()];
   const verbs = proofs.map((p) => p.usage + (p.film ? " [--film]" : ""));
   return [
-    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest|grid|everon|template|template-core-only] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
+    "usage: node agent-box/session.mjs up [--clients N (default 1)] [--hold min] [--mission debug|playtest|grid|everon|island|template|template-core-only] | wait [--timeout s] | join <n> | restart | down | status | reset [--strict] | state <client> | film <seconds> [--client N] | lease [minutes] | roster <id>... (reloads a live server) | identity [n] | rejoin <n> | run <script> [args] | pull [dest] | selftest",
     `proof verbs (agent-box/proofs/<verb>.mjs): ${verbs.join(" | ")}`,
   ].join("\n");
 }
@@ -1443,7 +1456,7 @@ async function relayToSession(cmd, rest, ptr) {
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
-    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|grid|everon|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
+    console.log("usage: node agent-box/session.mjs up [--profile lowspec|full (default lowspec; shots, filming and --res/--visible/--sound mean full)] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|grid|everon|island|template|template-core-only] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait | restart | down | status | state <n> | run <script> [args] | pull [dest] | <proof>  (--help never starts a session)");
     return 0;
   }
   {

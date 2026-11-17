@@ -1,0 +1,1783 @@
+{
+ "group": "office-police",
+ "generated": "2026-11-16",
+ "note": "sizeM is [width x, depth z, height y] in metres from collider bounds. surfaces are usable horizontal-top heights (m) from colliders; for cabinets/racks they are shelf levels. everonWorldCount is vanilla Everon instances of that exact prefab (non-structure plus building dump). usedInTowns uses the 450 m dumps for Saint Philippe, Saint Pierre, Morton, Montignac. hasStorage false = no inventory storage component found in the resolved prefab chain. variants list colour or size siblings.",
+ "items": [
+  {
+   "guid": "FA2806411E2B8AE7",
+   "path": "Prefabs/Props/Furniture/Desk_01_Base.et",
+   "res": "{FA2806411E2B8AE7}Prefabs/Props/Furniture/Desk_01_Base.et",
+   "name": "Office desk (standard)",
+   "category": "desk",
+   "sizeM": [
+    1.7,
+    0.75,
+    0.91
+   ],
+   "surfaces": [
+    0.91,
+    0.23
+   ],
+   "everonWorldCount": 484,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Core office desk; top 0.91 m, low shelf at 0.23 m. Most common desk in every town. Origin is a corner, not centre (bounds x -1.70..0).",
+   "variants": [
+    {
+     "name": "Desk_01_long",
+     "guid": "5E7626D8E78566B4",
+     "everonWorldCount": 332
+    },
+    {
+     "name": "Desk_01_short",
+     "guid": "6B7B7CCC74AACA67",
+     "everonWorldCount": 224
+    }
+   ]
+  },
+  {
+   "guid": "5E7626D8E78566B4",
+   "path": "Prefabs/Props/Furniture/Desk_01_long.et",
+   "res": "{5E7626D8E78566B4}Prefabs/Props/Furniture/Desk_01_long.et",
+   "name": "Office desk (long)",
+   "category": "desk",
+   "sizeM": [
+    1.98,
+    0.75,
+    0.91
+   ],
+   "surfaces": [
+    0.91,
+    0.23
+   ],
+   "everonWorldCount": 332,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Long variant for a chief or sergeant desk; same 0.91 m top."
+  },
+  {
+   "guid": "6B7B7CCC74AACA67",
+   "path": "Prefabs/Props/Furniture/Desk_01_short.et",
+   "res": "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et",
+   "name": "Office desk (short)",
+   "category": "desk",
+   "sizeM": [
+    1.7,
+    0.75,
+    0.91
+   ],
+   "surfaces": [
+    0.91,
+    0.23
+   ],
+   "everonWorldCount": 224,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Short variant for clerk or teller back-office; same 0.91 m top."
+  },
+  {
+   "guid": "AD31622B73944B43",
+   "path": "Prefabs/Props/Furniture/DeskSchool_01.et",
+   "res": "{AD31622B73944B43}Prefabs/Props/Furniture/DeskSchool_01.et",
+   "name": "School desk (two-surface)",
+   "category": "desk",
+   "sizeM": [
+    1.54,
+    0.59,
+    0.9
+   ],
+   "surfaces": [
+    0.9,
+    0.89,
+    0.75,
+    0.74
+   ],
+   "everonWorldCount": 68,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Small desk with lid (0.9) and shelf (0.74); fits an interview or clerk position."
+  },
+  {
+   "guid": "757FCCE8E756175C",
+   "path": "Prefabs/Props/Furniture/MeetingTable_01.et",
+   "res": "{757FCCE8E756175C}Prefabs/Props/Furniture/MeetingTable_01.et",
+   "name": "Meeting table",
+   "category": "desk",
+   "sizeM": [
+    2.3,
+    1,
+    0.91
+   ],
+   "surfaces": [
+    0.91
+   ],
+   "everonWorldCount": 13,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Largest table, 2.3 x 1.0 m, single 0.91 m top: briefing room or interrogation table. Only 13 on the map."
+  },
+  {
+   "guid": "53506DCB398C7EBE",
+   "path": "Prefabs/Props/Furniture/Table_01.et",
+   "res": "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et",
+   "name": "Plain table",
+   "category": "desk",
+   "sizeM": [
+    1.44,
+    1.06,
+    0.9
+   ],
+   "surfaces": [
+    0.9
+   ],
+   "everonWorldCount": 544,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Generic table 1.44 x 1.06 m, top 0.9 m; interview/interrogation table."
+  },
+  {
+   "guid": "8FB2845D48F4E02A",
+   "path": "Prefabs/Props/Furniture/TableOld_01/TableOld_01_white.et",
+   "res": "{8FB2845D48F4E02A}Prefabs/Props/Furniture/TableOld_01/TableOld_01_white.et",
+   "name": "Old table (white)",
+   "category": "desk",
+   "sizeM": [
+    1.71,
+    0.91,
+    0.9
+   ],
+   "surfaces": [
+    0.9,
+    0.88
+   ],
+   "everonWorldCount": 114,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Worn painted table; brown variant TableOld_01_brown is nearly unused (1)."
+  },
+  {
+   "guid": "00C9C0860D1D8A84",
+   "path": "Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_DarkWood.et",
+   "res": "{00C9C0860D1D8A84}Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_DarkWood.et",
+   "name": "Small side table",
+   "category": "desk",
+   "sizeM": [
+    0.69,
+    0.7,
+    0.72
+   ],
+   "surfaces": [
+    0.7,
+    0.49
+   ],
+   "everonWorldCount": 165,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Small 0.69 m table, top 0.7 m, for a phone or coffee."
+  },
+  {
+   "guid": "5182D2E81189AC44",
+   "path": "Prefabs/Props/Furniture/TableRecreation_01/TableRecreation_01.et",
+   "res": "{5182D2E81189AC44}Prefabs/Props/Furniture/TableRecreation_01/TableRecreation_01.et",
+   "name": "Recreation table (square)",
+   "category": "desk",
+   "sizeM": [
+    1.21,
+    1.21,
+    0.9
+   ],
+   "surfaces": [
+    0.9,
+    0.86,
+    0.19
+   ],
+   "everonWorldCount": 42,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Square 1.21 m table; the red variant is more common (62)."
+  },
+  {
+   "guid": "3CF7EAA0F05546FF",
+   "path": "Prefabs/Props/Furniture/PhoneTable_01_Base.et",
+   "res": "{3CF7EAA0F05546FF}Prefabs/Props/Furniture/PhoneTable_01_Base.et",
+   "name": "Rotary desk phone",
+   "category": "phone",
+   "sizeM": [
+    0.28,
+    0.24,
+    0.12
+   ],
+   "surfaces": [],
+   "everonWorldCount": 49,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Desk telephone prop, no pickup or ring action. Colours: grey/khaki/red.",
+   "variants": [
+    {
+     "name": "PhoneTable_01_red",
+     "guid": "67C2A2742A183D89",
+     "everonWorldCount": 205
+    },
+    {
+     "name": "PhoneTable_01_khaki",
+     "guid": "172585DCA4F947FE",
+     "everonWorldCount": 97
+    },
+    {
+     "name": "PhoneTable_01_grey",
+     "guid": "641D6F151390FD47",
+     "everonWorldCount": 61
+    }
+   ]
+  },
+  {
+   "guid": "6645BAF208F04426",
+   "path": "Prefabs/Props/Furniture/PhoneTable_02.et",
+   "res": "{6645BAF208F04426}Prefabs/Props/Furniture/PhoneTable_02.et",
+   "name": "Desk phone (type 2)",
+   "category": "phone",
+   "sizeM": [
+    0.26,
+    0.19,
+    0.11
+   ],
+   "surfaces": [],
+   "everonWorldCount": 9,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Second phone model; rare (9)."
+  },
+  {
+   "guid": "D62A80FF7E61B2FA",
+   "path": "Prefabs/Props/Furniture/LightTable_01.et",
+   "res": "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et",
+   "name": "Table light (LightTable_01)",
+   "category": "other",
+   "sizeM": [
+    0.23,
+    0.32,
+    0.48
+   ],
+   "surfaces": [],
+   "everonWorldCount": 363,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Small 0.23 x 0.32 x 0.48 m object, 363 on map. Name suggests a table lamp; the model was not viewed, so unverified."
+  },
+  {
+   "guid": "D19D5E8950BC4DD1",
+   "path": "Prefabs/Props/Furniture/ChairOffice_01.et",
+   "res": "{D19D5E8950BC4DD1}Prefabs/Props/Furniture/ChairOffice_01.et",
+   "name": "Office swivel chair",
+   "category": "chair",
+   "sizeM": [
+    0.7,
+    0.7,
+    0.96
+   ],
+   "surfaces": [],
+   "everonWorldCount": 259,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Seat 0.51 m. 61 in Saint Philippe alone. No sit action exists on any chair prefab."
+  },
+  {
+   "guid": "C0CCCB68B7147DEC",
+   "path": "Prefabs/Props/Furniture/Chair_02/Chair_02_Base.et",
+   "res": "{C0CCCB68B7147DEC}Prefabs/Props/Furniture/Chair_02/Chair_02_Base.et",
+   "name": "Chair 02 (wood, green/red)",
+   "category": "chair",
+   "sizeM": [
+    0.47,
+    0.58,
+    1
+   ],
+   "surfaces": [],
+   "everonWorldCount": 304,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Common wooden chair; green and red variants are far more used than the base.",
+   "variants": [
+    {
+     "name": "Chair_02_green",
+     "guid": "0DC4F830876C6671",
+     "everonWorldCount": 575
+    },
+    {
+     "name": "Chair_02_red",
+     "guid": "4107C4893DF2D0D7",
+     "everonWorldCount": 455
+    }
+   ]
+  },
+  {
+   "guid": "D0FF7E066D18C383",
+   "path": "Prefabs/Props/Furniture/Chair_01/Chair_01_white.et",
+   "res": "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et",
+   "name": "Chair 01 (white)",
+   "category": "chair",
+   "sizeM": [
+    0.47,
+    0.56,
+    1.02
+   ],
+   "surfaces": [],
+   "everonWorldCount": 174,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Light chair; red/blue variants exist.",
+   "variants": [
+    {
+     "name": "Chair_01_blue",
+     "guid": "BD02400CAB005CE8",
+     "everonWorldCount": 135
+    },
+    {
+     "name": "Chair_01_red",
+     "guid": "7AB0AFBE367A9FB7",
+     "everonWorldCount": 30
+    }
+   ]
+  },
+  {
+   "guid": "3359E8A4DF1C2981",
+   "path": "Prefabs/Props/Furniture/Chair_03/Chair_03_tan.et",
+   "res": "{3359E8A4DF1C2981}Prefabs/Props/Furniture/Chair_03/Chair_03_tan.et",
+   "name": "Chair 03 (tan)",
+   "category": "chair",
+   "sizeM": [
+    0.5,
+    0.61,
+    0.99
+   ],
+   "surfaces": [],
+   "everonWorldCount": 10,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Rare (10) tan chair."
+  },
+  {
+   "guid": "261F10BDC068BB35",
+   "path": "Prefabs/Props/Furniture/ChairOld_01.et",
+   "res": "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et",
+   "name": "Old wooden chair",
+   "category": "chair",
+   "sizeM": [
+    0.48,
+    0.56,
+    1
+   ],
+   "surfaces": [],
+   "everonWorldCount": 477,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Worn chair, 477 on map; fits a cell or old office."
+  },
+  {
+   "guid": "4F581C1DDB0D3796",
+   "path": "Prefabs/Props/Furniture/BenchOffice_01/BenchOffice_01_Base.et",
+   "res": "{4F581C1DDB0D3796}Prefabs/Props/Furniture/BenchOffice_01/BenchOffice_01_Base.et",
+   "name": "Office waiting bench",
+   "category": "chair",
+   "sizeM": [
+    1.36,
+    0.61,
+    0.97
+   ],
+   "surfaces": [],
+   "everonWorldCount": 55,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.36 m bench with back, seat 0.5 m; waiting-room bench. Brown (59) and green variants exist.",
+   "variants": [
+    {
+     "name": "BenchOffice_01_Brown",
+     "guid": "E4A70CC501E12507",
+     "everonWorldCount": 59
+    }
+   ]
+  },
+  {
+   "guid": "8BB5855208F77724",
+   "path": "Prefabs/Props/Furniture/BenchWooden_01.et",
+   "res": "{8BB5855208F77724}Prefabs/Props/Furniture/BenchWooden_01.et",
+   "name": "Wooden bench",
+   "category": "chair",
+   "sizeM": [
+    1.45,
+    0.39,
+    0.51
+   ],
+   "surfaces": [],
+   "everonWorldCount": 250,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Backless 1.45 m bench, seat 0.51 m; cell bench."
+  },
+  {
+   "guid": "027DFD4BB8D66F61",
+   "path": "Prefabs/Props/Furniture/BenchWooden_03.et",
+   "res": "{027DFD4BB8D66F61}Prefabs/Props/Furniture/BenchWooden_03.et",
+   "name": "Wooden bench (type 3)",
+   "category": "chair",
+   "sizeM": [
+    1.51,
+    0.43,
+    0.5
+   ],
+   "surfaces": [],
+   "everonWorldCount": 165,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Bench 1.51 m, seat 0.5 m; a base variant BenchWooden_03_base (147) exists."
+  },
+  {
+   "guid": "9FE49438E0414334",
+   "path": "Prefabs/Props/Furniture/Sofa_01.et",
+   "res": "{9FE49438E0414334}Prefabs/Props/Furniture/Sofa_01.et",
+   "name": "Sofa",
+   "category": "chair",
+   "sizeM": [
+    2.9,
+    1.03,
+    0.85
+   ],
+   "surfaces": [],
+   "everonWorldCount": 209,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "2.9 m sofa for a waiting area."
+  },
+  {
+   "guid": "BBBC235B9B053092",
+   "path": "Prefabs/Props/Furniture/Armchair_02.et",
+   "res": "{BBBC235B9B053092}Prefabs/Props/Furniture/Armchair_02.et",
+   "name": "Armchair",
+   "category": "chair",
+   "sizeM": [
+    1.19,
+    1.06,
+    0.9
+   ],
+   "surfaces": [],
+   "everonWorldCount": 78,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Waiting-room armchair."
+  },
+  {
+   "guid": "A9DC69EC1CE466A0",
+   "path": "Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_on.et",
+   "res": "{A9DC69EC1CE466A0}Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_on.et",
+   "name": "Computer (screen on)",
+   "category": "computer",
+   "sizeM": [
+    0.44,
+    0.42,
+    0.12
+   ],
+   "surfaces": [],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Composite: case plus a monitor child; the \"on\" variant has a StaticSoundComponent (prop sound). Not placed anywhere on vanilla Everon. Size is the case only; the monitor adds height.",
+   "variants": [
+    {
+     "name": "Computer_E_01_off",
+     "guid": "BB7BC5E4B18C594E",
+     "everonWorldCount": 0
+    }
+   ]
+  },
+  {
+   "guid": "BB7BC5E4B18C594E",
+   "path": "Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_off.et",
+   "res": "{BB7BC5E4B18C594E}Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_off.et",
+   "name": "Computer (screen off)",
+   "category": "computer",
+   "sizeM": [
+    0.44,
+    0.42,
+    0.12
+   ],
+   "surfaces": [],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Same as _on without the sound component. Child pieces Computer_E_01_Monitor_on/off and Computer_E_01_case exist as separate prefabs."
+  },
+  {
+   "guid": "666D9AE790BA141C",
+   "path": "Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_Base.et",
+   "res": "{666D9AE790BA141C}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_Base.et",
+   "name": "Typewriter",
+   "category": "computer",
+   "sizeM": [
+    0.34,
+    0.33,
+    0.14
+   ],
+   "surfaces": [],
+   "everonWorldCount": 102,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Period-correct 1989 clerk tool; no action. Orange and grey variants.",
+   "variants": [
+    {
+     "name": "Typewriter_01_orange",
+     "guid": "A052E25F93E52CDB",
+     "everonWorldCount": 56
+    },
+    {
+     "name": "Typewriter_01_grey",
+     "guid": "4DBA189750F6F017",
+     "everonWorldCount": 46
+    }
+   ]
+  },
+  {
+   "guid": "85B2A7E85CA6C656",
+   "path": "Prefabs/Props/Services/PhoneWall_01/PhoneWall_01_grey.et",
+   "res": "{85B2A7E85CA6C656}Prefabs/Props/Services/PhoneWall_01/PhoneWall_01_grey.et",
+   "name": "Wall phone (grey)",
+   "category": "phone",
+   "sizeM": [
+    0.32,
+    0.19,
+    0.4
+   ],
+   "surfaces": [],
+   "everonWorldCount": 24,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Wall-mounted telephone; Base and blue variants exist."
+  },
+  {
+   "guid": "B68D3829D4442F80",
+   "path": "Prefabs/Props/Civilian/RadioSmall_01_Base.et",
+   "res": "{B68D3829D4442F80}Prefabs/Props/Civilian/RadioSmall_01_Base.et",
+   "name": "Small radio",
+   "category": "phone",
+   "sizeM": [
+    0.35,
+    0.08,
+    0.22
+   ],
+   "surfaces": [],
+   "everonWorldCount": 77,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": true,
+   "actions": [
+    "SCR_TurnOnAction (radio on/off, plays broadcast sound)"
+   ],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Only vanilla office prop here with a user action: turn on. Plays the RadioBroadcast sound. Black (180) and red (45) variants.",
+   "variants": [
+    {
+     "name": "RadioSmall_01_black",
+     "guid": "2F2BBFDA3A2C73D4",
+     "everonWorldCount": 180
+    },
+    {
+     "name": "RadioSmall_01_red",
+     "guid": "F76340CCD79DCC5A",
+     "everonWorldCount": 45
+    }
+   ]
+  },
+  {
+   "guid": "530C3C02C09C6B68",
+   "path": "Prefabs/Props/Furniture/CabinetMetal_01_Base.et",
+   "res": "{530C3C02C09C6B68}Prefabs/Props/Furniture/CabinetMetal_01_Base.et",
+   "name": "Metal cabinet",
+   "category": "cabinet",
+   "sizeM": [
+    0.75,
+    0.51,
+    1.98
+   ],
+   "surfaces": [
+    1.98
+   ],
+   "everonWorldCount": 256,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "0.75 x 0.51 x 1.98 m locker-style cabinet, closed doors, no open action. Grey V1/V2/V3 variants are the common ones.",
+   "variants": [
+    {
+     "name": "CabinetMetal_01_grey_V3",
+     "guid": "0C7319383777A107",
+     "everonWorldCount": 531
+    },
+    {
+     "name": "CabinetMetal_01_grey_V1",
+     "guid": "17F3181D0DAC27FC",
+     "everonWorldCount": 379
+    },
+    {
+     "name": "CabinetMetal_01_grey_V2",
+     "guid": "7BA72CFDB168A8D2",
+     "everonWorldCount": 51
+    }
+   ]
+  },
+  {
+   "guid": "7E08142AFFDE045E",
+   "path": "Prefabs/Props/Furniture/CabinetMetal_02.et",
+   "res": "{7E08142AFFDE045E}Prefabs/Props/Furniture/CabinetMetal_02.et",
+   "name": "Wide metal cabinet",
+   "category": "cabinet",
+   "sizeM": [
+    1.5,
+    0.61,
+    2.07
+   ],
+   "surfaces": [
+    2.07,
+    2.06
+   ],
+   "everonWorldCount": 96,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.5 m wide tall metal cabinet; use as lockers or evidence storage look. No action."
+  },
+  {
+   "guid": "F737777FF0A566D5",
+   "path": "Prefabs/Props/Commercial/CabinetCardFile_01/CabinetCardFile_01_Base.et",
+   "res": "{F737777FF0A566D5}Prefabs/Props/Commercial/CabinetCardFile_01/CabinetCardFile_01_Base.et",
+   "name": "Card-file cabinet",
+   "category": "cabinet",
+   "sizeM": [
+    0.47,
+    0.72,
+    1.44
+   ],
+   "surfaces": [
+    1.44,
+    1.39,
+    1.09,
+    1.06,
+    0.76
+   ],
+   "everonWorldCount": 184,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Index-card filing cabinet 0.47 x 0.72 x 1.44 m; a records office staple. Grey (56) and green (8) variants."
+  },
+  {
+   "guid": "23EDC2B8CDEE124F",
+   "path": "Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_F.et",
+   "res": "{23EDC2B8CDEE124F}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_F.et",
+   "name": "Cupboard F (narrow)",
+   "category": "cabinet",
+   "sizeM": [
+    0.76,
+    0.75,
+    2
+   ],
+   "surfaces": [
+    2,
+    1.53,
+    0.76,
+    0.46,
+    0.13
+   ],
+   "everonWorldCount": 560,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Office/home cupboard. Variants A-F sizes differ; F is the most common in the world.",
+   "variants": [
+    {
+     "name": "Cupboard_01_B",
+     "guid": "728DD36004461456",
+     "everonWorldCount": 356
+    },
+    {
+     "name": "Cupboard_01_A",
+     "guid": "1ED9E780B8829B78",
+     "everonWorldCount": 269
+    }
+   ]
+  },
+  {
+   "guid": "AA25BAA17DCF0A0A",
+   "path": "Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_D.et",
+   "res": "{AA25BAA17DCF0A0A}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_D.et",
+   "name": "Cupboard D (wide, glass)",
+   "category": "cabinet",
+   "sizeM": [
+    1.5,
+    0.75,
+    2
+   ],
+   "surfaces": [
+    2,
+    1.53,
+    1.27,
+    1.01,
+    0.76
+   ],
+   "everonWorldCount": 415,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.5 m wide, 2.0 m tall with glass door parts (glass_01/02 are separate child prefabs)."
+  },
+  {
+   "guid": "F77F7F847CC6455F",
+   "path": "Prefabs/Props/Furniture/Bookshelf_01/Bookshelf_01.et",
+   "res": "{F77F7F847CC6455F}Prefabs/Props/Furniture/Bookshelf_01/Bookshelf_01.et",
+   "name": "Bookshelf",
+   "category": "cabinet",
+   "sizeM": [
+    1.5,
+    0.5,
+    1.85
+   ],
+   "surfaces": [
+    1.85,
+    1.5,
+    1.17,
+    0.85,
+    0.53
+   ],
+   "everonWorldCount": 521,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.5 x 0.5 x 1.85 m with glass doors; archive or library shelf."
+  },
+  {
+   "guid": "C3C7A8E9B6324130",
+   "path": "Prefabs/Props/Furniture/Safe_01.et",
+   "res": "{C3C7A8E9B6324130}Prefabs/Props/Furniture/Safe_01.et",
+   "name": "Safe",
+   "category": "safe",
+   "sizeM": [
+    1.01,
+    0.65,
+    1.8
+   ],
+   "surfaces": [
+    1.8
+   ],
+   "everonWorldCount": 21,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Only safe in the game (1.01 x 0.65 x 1.8 m, big floor model). No open or lock action and no storage; purely visual, destructible (6000 health, metal). 21 on map."
+  },
+  {
+   "guid": "9ABAFFCBC76D824B",
+   "path": "Prefabs/Props/Civilian/NoticeBoardCork_01.et",
+   "res": "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et",
+   "name": "Cork noticeboard",
+   "category": "board",
+   "sizeM": [
+    1.8,
+    0.02,
+    1.1
+   ],
+   "surfaces": [],
+   "everonWorldCount": 227,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.8 x 1.1 m wall board, 227 on map; the base for a wanted/bulletin board. Static mesh, no interaction."
+  },
+  {
+   "guid": "4A5F4809440FAEE5",
+   "path": "Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et",
+   "res": "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V1.et",
+   "name": "A4 notice sheet",
+   "category": "document",
+   "sizeM": [
+    0.21,
+    0,
+    0.3
+   ],
+   "surfaces": [],
+   "everonWorldCount": 14,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Flat A4 notice (about 0.21 x 0.3 m). Many V1-V9 horizontal and vertical variants under Props/Commercial/Posters/; pins onto a noticeboard."
+  },
+  {
+   "guid": "DCBC472CDA3EA9B2",
+   "path": "Prefabs/Props/Civilian/WallMap_01.et",
+   "res": "{DCBC472CDA3EA9B2}Prefabs/Props/Civilian/WallMap_01.et",
+   "name": "Wall map",
+   "category": "board",
+   "sizeM": [
+    1.44,
+    0.03,
+    1.12
+   ],
+   "surfaces": [],
+   "everonWorldCount": 73,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "1.44 x 1.12 m wall map (police/town map). Military variants UK59L, SVD, VZ58, VZ61 (10 each) and a vertical one (36) exist. No destruction.",
+   "variants": [
+    {
+     "name": "WallMap_01_vertical",
+     "guid": "899258ADB1D070E6",
+     "everonWorldCount": 36
+    }
+   ]
+  },
+  {
+   "guid": "CFF75361ACCB4F36",
+   "path": "Prefabs/Props/Civilian/BoardDrafting_01.et",
+   "res": "{CFF75361ACCB4F36}Prefabs/Props/Civilian/BoardDrafting_01.et",
+   "name": "Drafting board",
+   "category": "board",
+   "sizeM": [
+    1.96,
+    0.74,
+    2.43
+   ],
+   "surfaces": [],
+   "everonWorldCount": 3,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Tilt-top drafting table 1.96 x 0.74 x 2.43 m; only 3 on map, all Saint Philippe."
+  },
+  {
+   "guid": "E7EA9EA108001D70",
+   "path": "Prefabs/Props/Civilian/ClockPunch_01.et",
+   "res": "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et",
+   "name": "Punch clock",
+   "category": "other",
+   "sizeM": [
+    0.64,
+    0.36,
+    0.45
+   ],
+   "surfaces": [],
+   "everonWorldCount": 3,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Time-clock with proc-anim; has signals manager but no user action. 3 on map (Saint Philippe)."
+  },
+  {
+   "guid": "78AAA6575E980AE4",
+   "path": "Prefabs/Structures/BuildingParts/Doors/DoorSet_PrisonCell_L_EXT_B.et",
+   "res": "{78AAA6575E980AE4}Prefabs/Structures/BuildingParts/Doors/DoorSet_PrisonCell_L_EXT_B.et",
+   "name": "Prison cell door set",
+   "category": "cell",
+   "sizeM": [
+    1.45,
+    0.08,
+    2.48
+   ],
+   "surfaces": [],
+   "everonWorldCount": 4,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": true,
+   "actions": [
+    "SCR_DoorUserAction (open/close, via the child Door_PrisonCell_E_A_Left_INT_ST_B door)"
+   ],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Only cell prefab: a barred door and frame (1.45 x 2.48 m). One per police station in Saint Philippe, Saint Pierre and Montignac. Child door GUID {B597177F09247CE9}. No lock action in vanilla; Life Framework must add one."
+  },
+  {
+   "guid": "208A9B6682B63E4F",
+   "path": "Prefabs/Structures/BuildingParts/Windows/Win_Bars_A/Win_Bars_A_130x182_B.et",
+   "res": "{208A9B6682B63E4F}Prefabs/Structures/BuildingParts/Windows/Win_Bars_A/Win_Bars_A_130x182_B.et",
+   "name": "Window bars",
+   "category": "cell",
+   "sizeM": [
+    1.52,
+    0.15,
+    2.06
+   ],
+   "surfaces": [],
+   "everonWorldCount": 20,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Barred window (1.52 x 2.06 m); sizes 130x72, 195x182 and Soviet 170x182 variants exist. The nearest thing to a cell wall of bars. No destruction."
+  },
+  {
+   "guid": "990827BD66BE9397",
+   "path": "Prefabs/Props/Furniture/Bed_02.et",
+   "res": "{990827BD66BE9397}Prefabs/Props/Furniture/Bed_02.et",
+   "name": "Single bed",
+   "category": "cell",
+   "sizeM": [
+    1.1,
+    2.38,
+    0.85
+   ],
+   "surfaces": [],
+   "everonWorldCount": 82,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.1 x 2.38 m bed, top about 0.5 m; cell or dorm bed. Bed_01 (443) and BunkBed_01_Double (387) also exist. No sleep action.",
+   "variants": [
+    {
+     "name": "Bed_01",
+     "guid": "0164749D6EAA4518",
+     "everonWorldCount": 443
+    },
+    {
+     "name": "BunkBed_01_Double",
+     "guid": "AC49D9D23A2BD1D8",
+     "everonWorldCount": 387
+    }
+   ]
+  },
+  {
+   "guid": "8BE469B1C9144671",
+   "path": "Prefabs/Props/Furniture/BunkBed_02/BunkBed_02.et",
+   "res": "{8BE469B1C9144671}Prefabs/Props/Furniture/BunkBed_02/BunkBed_02.et",
+   "name": "Bunk bed",
+   "category": "cell",
+   "sizeM": [
+    0.86,
+    2.4,
+    1.71
+   ],
+   "surfaces": [],
+   "everonWorldCount": 19,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Bunk bed 0.86 x 2.4 x 1.71 m with upper bunk about 1.4-1.6 m; two-bed cell. None in the four town dumps."
+  },
+  {
+   "guid": "F6CF869062E6EDB0",
+   "path": "Prefabs/Props/Furniture/Rack_01_Long.et",
+   "res": "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et",
+   "name": "Shelf rack (long)",
+   "category": "rack",
+   "sizeM": [
+    2.45,
+    0.75,
+    2.19
+   ],
+   "surfaces": [
+    1.88,
+    1.4,
+    0.9,
+    0.43
+   ],
+   "everonWorldCount": 370,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "2.45 m shelving unit with shelf levels at 0.43/0.9/1.4/1.88 m; evidence room or store."
+  },
+  {
+   "guid": "1AB7A2C69A30391D",
+   "path": "Prefabs/Props/Furniture/CoatRack_01.et",
+   "res": "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et",
+   "name": "Coat rack",
+   "category": "rack",
+   "sizeM": [
+    0.56,
+    0.57,
+    1.97
+   ],
+   "surfaces": [
+    1.91
+   ],
+   "everonWorldCount": 524,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Standing coat rack 1.97 m; office or police entrance."
+  },
+  {
+   "guid": "A7DA7AC6FEF7B643",
+   "path": "Prefabs/Props/Military/Camps/WeaponRackCabinet_01.et",
+   "res": "{A7DA7AC6FEF7B643}Prefabs/Props/Military/Camps/WeaponRackCabinet_01.et",
+   "name": "Weapon rack cabinet (camp)",
+   "category": "rack",
+   "sizeM": [
+    2.23,
+    0.43,
+    1.16
+   ],
+   "surfaces": [
+    1.16,
+    1.15,
+    0.93,
+    0.81,
+    0.45
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "2.23 x 0.43 x 1.16 m weapon rack, decorative only (Props_Base). No action, no destruction. Not placed on vanilla Everon. Closest vanilla gun rack.",
+   "variants": [
+    {
+     "name": "WeaponRackStand_01",
+     "guid": "8C82BBBDEE9CBA3A",
+     "everonWorldCount": 0
+    }
+   ]
+  },
+  {
+   "guid": "E3118FD7CB7FCF7E",
+   "path": "Prefabs/Props/Military/Arsenal/WeaponRacks/FIA/WeaponRackCabinetArsenal_FIA.et",
+   "res": "{E3118FD7CB7FCF7E}Prefabs/Props/Military/Arsenal/WeaponRacks/FIA/WeaponRackCabinetArsenal_FIA.et",
+   "name": "Arsenal weapon cabinet (FIA)",
+   "category": "rack",
+   "sizeM": [
+    2.23,
+    0.43,
+    1.16
+   ],
+   "surfaces": [
+    1.16,
+    1.15,
+    0.93,
+    0.81,
+    0.45
+   ],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "Arsenal display (SCR_ArsenalDisplayComponent plus ServicePointDelegate_Armory; faction-affiliated, driven by the arsenal system)"
+   ],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Same model as the camp rack but with arsenal display: weapon slot entities appear and the faction arsenal supplies items. Needs checking against Life Framework items before use. US and USSR versions exist."
+  },
+  {
+   "guid": "A1C9DEEA040208BF",
+   "path": "Prefabs/Props/Services/Post/CounterPostOffice_01_window.et",
+   "res": "{A1C9DEEA040208BF}Prefabs/Props/Services/Post/CounterPostOffice_01_window.et",
+   "name": "Teller window counter",
+   "category": "other",
+   "sizeM": [
+    1.51,
+    0.48,
+    1.86
+   ],
+   "surfaces": [
+    0.91,
+    0.74,
+    0.06
+   ],
+   "everonWorldCount": 12,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Post-office counter with a window, 1.51 x 0.48 x 1.86 m, top 0.91 m: best bank teller window. Corner (6) and doors (6) pieces plus Glass_CounterPostOffice panes exist. 2 per town.",
+   "variants": [
+    {
+     "name": "CounterPostOffice_01_corner",
+     "guid": "3FBD5D218E2877D4",
+     "everonWorldCount": 6
+    },
+    {
+     "name": "CounterPostOffice_01_doors",
+     "guid": "647C72DB565AF54F",
+     "everonWorldCount": 6
+    }
+   ]
+  },
+  {
+   "guid": "E214337C6E1931C5",
+   "path": "Prefabs/Props/Commercial/CounterShop_01.et",
+   "res": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+   "name": "Shop counter",
+   "category": "other",
+   "sizeM": [
+    1.5,
+    1.12,
+    1.04
+   ],
+   "surfaces": [
+    1.04,
+    0.78,
+    0.7,
+    0.2
+   ],
+   "everonWorldCount": 28,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "1.5 x 1.12 x 1.04 m counter, top 1.04 m; a bank or reception counter. 28 on map."
+  },
+  {
+   "guid": "51D31AB07AE3C1C7",
+   "path": "Prefabs/Props/Commercial/CashierShop_01.et",
+   "res": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et",
+   "name": "Cash register",
+   "category": "other",
+   "sizeM": [
+    0.46,
+    0.51,
+    0.5
+   ],
+   "surfaces": [],
+   "everonWorldCount": 30,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Till prop 0.46 x 0.51 m, sits on a counter; no cash action in vanilla."
+  },
+  {
+   "guid": "07F043DD6AACCD0B",
+   "path": "Prefabs/Structures/Infrastructure/Barriers/BarGate_01/BarGate_01.et",
+   "res": "{07F043DD6AACCD0B}Prefabs/Structures/Infrastructure/Barriers/BarGate_01/BarGate_01.et",
+   "name": "Barrier arm gate",
+   "category": "other",
+   "sizeM": [
+    8.74,
+    0.47,
+    4.59
+   ],
+   "surfaces": [],
+   "everonWorldCount": 29,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "8.74 m long, 4.6 m wide barrier gate (base plus bar child). Its ActionsManagerComponent is Enabled 0: it does not open by itself. 29 on map. A police checkpoint look."
+  },
+  {
+   "guid": "1A8791C2BC2B8B75",
+   "path": "Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et",
+   "res": "{1A8791C2BC2B8B75}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et",
+   "name": "Flagpole (empty)",
+   "category": "flag",
+   "sizeM": [
+    0.16,
+    0.29,
+    6.8
+   ],
+   "surfaces": [],
+   "everonWorldCount": 13,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "6.8 m pole with SCR_FlagComponent, no cloth. 13 on the map (one in Saint Philippe)."
+  },
+  {
+   "guid": "E55FC02F8C1518A2",
+   "path": "Prefabs/Structures/Military/Flags/FlagPole_02/FlagPole_02_V1_US.et",
+   "res": "{E55FC02F8C1518A2}Prefabs/Structures/Military/Flags/FlagPole_02/FlagPole_02_V1_US.et",
+   "name": "Flagpole with flag (US)",
+   "category": "flag",
+   "sizeM": [
+    0.08,
+    0.08,
+    5.58
+   ],
+   "surfaces": [],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Complete pole 5.58 m with SCR_FlagComponent and a slot manager. V1/V2 times FIA/US/USSR exist; no Everon or civilian flag found. Zero on vanilla Everon."
+  },
+  {
+   "guid": "6B8645CB96D29795",
+   "path": "Prefabs/Props/Military/DeskFlags_01/DeskFlags_01_base.et",
+   "res": "{6B8645CB96D29795}Prefabs/Props/Military/DeskFlags_01/DeskFlags_01_base.et",
+   "name": "Desk flag set",
+   "category": "flag",
+   "sizeM": [
+    0.09,
+    0.07,
+    0.31
+   ],
+   "surfaces": [],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "0.09 x 0.07 x 0.31 m desk flag; USSR SovietArmy/AirForce/Navy variants only. Zero on vanilla Everon."
+  },
+  {
+   "guid": "876B096F32584485",
+   "path": "Prefabs/Props/Civilian/FileOffice_01_Stack.et",
+   "res": "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et",
+   "name": "Paper stack",
+   "category": "document",
+   "sizeM": [
+    0.26,
+    0.29,
+    0.31
+   ],
+   "surfaces": [],
+   "everonWorldCount": 422,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Stack of office files; 422 on map, the standard desk dressing. Single (64), Double (80) and Open (43) variants.",
+   "variants": [
+    {
+     "name": "FileOffice_01_Single",
+     "guid": "B5F4EDE258B8D946",
+     "everonWorldCount": 64
+    },
+    {
+     "name": "FileOffice_01_Double",
+     "guid": "68885712AD843B29",
+     "everonWorldCount": 80
+    }
+   ]
+  },
+  {
+   "guid": "B3C782D689A52412",
+   "path": "Prefabs/Props/Civilian/FileOffice_01_Open.et",
+   "res": "{B3C782D689A52412}Prefabs/Props/Civilian/FileOffice_01_Open.et",
+   "name": "Open file folder",
+   "category": "document",
+   "sizeM": [
+    0.62,
+    0.3,
+    0.05
+   ],
+   "surfaces": [],
+   "everonWorldCount": 43,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Flat open folder on a desk."
+  },
+  {
+   "guid": "C2C1CEA73A4D8779",
+   "path": "Prefabs/Props/Civilian/Notebook_01_Stack.et",
+   "res": "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et",
+   "name": "Notebook stack",
+   "category": "document",
+   "sizeM": [
+    0.2,
+    0.3,
+    0.07
+   ],
+   "surfaces": [],
+   "everonWorldCount": 296,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Stack of notebooks; Single (blue/orange/black), Double and Open variants exist."
+  },
+  {
+   "guid": "33882C61BA9F0F90",
+   "path": "Prefabs/Props/Civilian/Globe_01.et",
+   "res": "{33882C61BA9F0F90}Prefabs/Props/Civilian/Globe_01.et",
+   "name": "Globe",
+   "category": "other",
+   "sizeM": [
+    0.27,
+    0.27,
+    0.35
+   ],
+   "surfaces": [],
+   "everonWorldCount": 143,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Desk globe; no destruction component."
+  },
+  {
+   "guid": "BAF3003435BE551E",
+   "path": "Prefabs/Props/Furniture/ClockTable_01.et",
+   "res": "{BAF3003435BE551E}Prefabs/Props/Furniture/ClockTable_01.et",
+   "name": "Table clock",
+   "category": "other",
+   "sizeM": [
+    0.59,
+    0.23,
+    0.31
+   ],
+   "surfaces": [],
+   "everonWorldCount": 88,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Desk clock with proc-anim hands; 88 on map. ClockUniversal_01 (wall clock, 33) also exists."
+  },
+  {
+   "guid": "FA81E4DDBA1189AF",
+   "path": "Prefabs/Props/Furniture/LampInterior_01.et",
+   "res": "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et",
+   "name": "Interior floor lamp",
+   "category": "other",
+   "sizeM": [
+    0.51,
+    0.51,
+    1.53
+   ],
+   "surfaces": [],
+   "everonWorldCount": 327,
+   "usedInTowns": [
+    "Saint Philippe",
+    "Saint Pierre",
+    "Morton",
+    "Montignac"
+   ],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Tall 1.53 m lamp, 327 on map. LampInterior_02 (red/orange/yellow) shades exist. No ActionsManagerComponent, so it cannot be switched."
+  },
+  {
+   "guid": "1CE762D0A53A395A",
+   "path": "Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_base.et",
+   "res": "{1CE762D0A53A395A}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_base.et",
+   "name": "Kerosene lamp",
+   "category": "other",
+   "sizeM": [
+    0.22,
+    0.22,
+    0.35
+   ],
+   "surfaces": [],
+   "everonWorldCount": 8,
+   "usedInTowns": [
+    "Saint Philippe"
+   ],
+   "hasAction": true,
+   "actions": [
+    "SCR_SwitchLightUserAction (light on/off)"
+   ],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Small 0.22 x 0.35 m lamp with a user action: switch light. Rare (8 base; green 34, blue 16)."
+  },
+  {
+   "guid": "6D56FED1E55A8F84",
+   "path": "Prefabs/Items/Misc/IntelligenceFolder_E_01/IntelligenceFolder_E_01.et",
+   "res": "{6D56FED1E55A8F84}Prefabs/Items/Misc/IntelligenceFolder_E_01/IntelligenceFolder_E_01.et",
+   "name": "Intelligence folder (item)",
+   "category": "document",
+   "sizeM": [
+    0.26,
+    0.35,
+    0.02
+   ],
+   "surfaces": [],
+   "everonWorldCount": 0,
+   "usedInTowns": [],
+   "hasAction": true,
+   "actions": [
+    "SCR_PickUpItemAction (pick up)"
+   ],
+   "hasStorage": false,
+   "destructible": false,
+   "notes": "Pickable inventory item (InventoryItemComponent): usable as evidence/case file. Not placed on vanilla Everon."
+  },
+  {
+   "guid": "CD31DC9E2D700D33",
+   "path": "Prefabs/Props/Services/Post/PostOfficeBox_01.et",
+   "res": "{CD31DC9E2D700D33}Prefabs/Props/Services/Post/PostOfficeBox_01.et",
+   "name": "Post-office box",
+   "category": "other",
+   "sizeM": [
+    0.78,
+    0.34,
+    0.5
+   ],
+   "surfaces": [],
+   "everonWorldCount": 1,
+   "usedInTowns": [],
+   "hasAction": false,
+   "actions": [],
+   "hasStorage": false,
+   "destructible": true,
+   "notes": "Wall mail box, 1 on map."
+  }
+ ]
+}

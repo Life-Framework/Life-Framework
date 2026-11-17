@@ -7,7 +7,7 @@ the guard is `tools/validation/validate-world-zones.mjs`.
 
 | | Debug grid | Town |
 |---|---|---|
-| Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..160, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
+| Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..328, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
 | Layers | `GridWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), and `Annex`, which now holds only the perimeter fence (the stations moved one system to a cell, #2133) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
 | For | Testing a system: one feature per cell, easy to find, easy to film for a proof | Players and videos: a real 1989 village |
 | Look bar | Low. Debug-looking props, stand-ins and a test sign are fine. Things still stand on the ground and are reachable | Full polish bar (`.claude/skills/polish/SKILL.md`, `docs/style-guide.md`): NPCs dressed for their job and standing inside their building, furniture under a roof, boards on walls, nothing debug-looking |
@@ -15,11 +15,11 @@ the guard is `tools/validation/validate-world-zones.mjs`.
 
 ## The grid
 
-The grid is an 11 x 7 lattice of 12 m cells from x 22, z 22 (2 m inside the annex fence), ids `c0r0`
-(south-west) to `c10r6` (north-east). It started 7 x 7 and grew east by four columns when the old square ran out of
+The grid is a 25 x 7 lattice of 12 m cells from x 22, z 22 (2 m inside the annex fence), ids `c0r0`
+(south-west) to `c24r6` (north-east). It started 7 x 7 and grew east by four columns when the old square ran out of
 free cells (2026-11-16): `c0r0` to `c6r6` keep their ids and coordinates, so every claim stands, and
 `GRID_CENTRE` stays at 66,66 so no old cell's gap flips. The east wall of `Annex.layer` moved from x 112 to
-x 160 and the north and south walls were extended; the margin is 2 m west and south of the lattice and 6 m east
+x 160 and the north and south walls were extended. It grew east by four columns again (11 to 15, east wall x 208) when the first 24 m buildings (a town hall, a bank) found no free 2 x 2 or 3 x 2 block (2026-11-16); the new cells are `c11r0` to `c14r6`, and once more (15 to 25, east wall x 328, 2026-11-16) so that buildings of any size and the whole town pipeline find room for months: `c15r0` to `c24r6` are free, x 202..322, and the north gate and its track did not move. The margin is 2 m west and south of the lattice and 6 m east
 and north (the gate and its track live in that margin). Terrain bounds: `GridTerrain` is 257 x 257 points at 2 m,
 512 m square, so the grid is far inside it; `world-zones-selftest` asserts the fence stays
 inside 0..512 (`TERRAIN_SIZE` in `tools/grid/lattice.mjs`). To grow again: raise `CELL.cols` or `CELL.rows`,
@@ -42,15 +42,48 @@ anywhere inside the block, and every cell of it counts as claimed for `grid list
 open-PR and `origin/main` clash checks and `validate-world-zones`. A 3 x 2 block is 36 x 24 m: a 33 x 19 m hotel fits.
 
 ```
-tools\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--dry] [--no-verify]
+toolscli grid place <slug> <prefab>  [--dry] [--margin M] [--front +z] [--cell cXrY] [--span WxH] [--centre]   one building, sized
+toolscli grid place <slug> [<prefab>...] [--name N] [--rows] [--dry] [--no-verify]                          rows of props
 tools\cli grid list                    claims, free cells, and a map (north up)
 tools\cli grid free <slug>             delete the feature's grid layer and its claim
 tools\cli look grid:<slug>             the look pictures of that cell, from its gap
 ```
 
-`grid place` for a new slug:
+**One command for a building: `grid place <slug> <prefab>`.** Name a vanilla or addon prefab (`MunicipalOffice_E_01`,
+`Villa_E_2I01`, a path or a `{GUID}path`) and the command does the sizing, the claim and the placement
+(`tools/grid/autosize.mjs`; no coordinates, no `sed`):
 
-1. Picks the cell: the first usable, unclaimed cell in lattice order, starting from a hash of the slug
+1. **Bounds.** The same reader `toolscli place` uses (`prefabInfo`: the measured list, else the mesh's `.xob` header from
+   the paks, offline, no Workbench): footprint, height, the footprint centre's offset from the pivot (a MunicipalOffice's
+   is 0.36, 0.56 m; a Villa's pivot is 1.4 m off its centre), and the entity class read from the prefab's root
+   (`SCR_DestructibleBuildingEntity` for the vanilla buildings), never hard-coded.
+2. **Span.** `ceil((footprint + margin) / 12)` per axis, margin 4 m by default (2 m each side from the block's edge, 1 m
+   inside the yard fence; `--margin M`). It tries yaw 0/180 and yaw 90/270 and takes the smaller block; of two blocks of the same
+   size it takes the one whose front can face the yard's gap. A 15.3 x 12.7 m villa is 2x2, a 1 m crate 1x1, a 24 x 17.8 m
+   municipal office 3x2 or 2x3, a 30 x 6 m long house 3x1 or 1x3. Height does not change the span.
+3. **Claim.** The first free block of that size, from the slug's hash, against this worktree, `origin/main`, open PRs and
+   sibling worktrees (spans included). No fit prints what it tried and the largest free block (`no free 3x3 block ... the
+   largest free block is 2x2 cells (24 x 24 m) at c10r0`) and writes nothing. It does **not** grow the lattice
+   (`tools/grid/lattice.mjs` `CELL.cols` is a separate change).
+4. **Place.** A block of two cells or more (or `--centre`) gets the building: the footprint centred in the block, the yaw (0, 90,
+   180 or 270) whose front (`+z`, `--front -z|+x|-x` for a mesh with another front) faces the gap, the ground height from
+   `place ground`'s probe rays, then the placement audit of the whole cell (`audit placement --grid --strict --layer Grid_<slug>.layer`).
+   If the place tool refuses the building (not level, overlap), the claim this call made and its yard are removed so no half-claimed
+   block is left; `--force`, `--margin`, `--span` or `--cell` and run it again. A block of one cell keeps the row of props below
+   (a crate is not a building); `--rows` forces the rows for any prefab.
+5. **`--dry`** prints the bounds, the sizes the two orientations need, the block, the yaw, the pivot and the entity class, and writes nothing.
+   `--span` and `--cell` still override the sizing (a span too small for the prefab is refused with what it needs).
+
+```
+grid: MunicipalOffice_E_01 {363A616E6C64BB7F}Prefabs/.../MunicipalOffice_E_01.et (SCR_DestructibleBuildingEntity): footprint 24.06 x 17.76 m, height 20.61 m (base -5.8 m from the pivot), footprint centre 0.36, 0.56 m (x, z) from the pivot
+  sizing with a 4 m walk-around margin: 3x2 at yaw 0/180, 2x3 at yaw 90/270
+grid: town-hall -> cell c11r4 +2x3 (x 154..178, z 70..106, gap west) (new)
+  would place SCR_DestructibleBuildingEntity Grid_town_hall_Main (MunicipalOffice_E_01): footprint centre 166 88, pivot x 166.558 z 87.642, angleY 270; front (+z) faces the west gap; y from the ground probe
+```
+
+`grid place` for a new slug (the rows of props; a building takes the path above):
+
+1. Picks the cell (with one prefab it first sizes the block as above): the first usable, unclaimed cell in lattice order, starting from a hash of the slug
    (FNV-1a modulo the 77 cells), so the same slug gets the same cell on every machine. `--cell` asks for a
    particular free cell. "Unclaimed" is read from this worktree **and from `origin/main`**: `place`
    fetches `origin/main` and treats its `tools/grid/cells/` claims as taken, so a slice cut before
@@ -61,8 +94,15 @@ tools\cli look grid:<slug>             the look pictures of that cell, from its 
    (`gh pr list`, cached 60 s in the OS temp dir; #2014 and #2016 both took c0r6 because a PR's claim is
    not on `origin/main` until it merges). `list` shows them with their PR numbers and flags two open
    PRs on one cell. No `gh` or token prints a warning and goes on; `--no-fetch` skips it (offline).
-   A claim made before the other slice's PR is open (a worktree not yet shipped) can still clash; `validate-world-zones`
-   catches that (below).
+   Claims not yet committed count too: a claim file still untracked in a sibling local worktree is on no
+   remote and in no PR (`ws/police-station-kit` and `ws/building-bank` both took c3r1 for a 2x2, 2026-11-16).
+   `place` and `list` read `tools/grid/cells/*.json` of every other worktree of the clone
+   (`git worktree list --porcelain`: no network, so `--no-fetch` keeps it), treat those cells as taken and name
+   the worktree in the clash (`claimed by <slug> in worktree <folder> (<branch>), not pushed yet`). A missing,
+   pruned or locked folder and an unreadable file are skipped; no `git` prints a warning. A stale claim file
+   left in an old worktree still blocks its cell until that worktree is pruned or runs `grid free`.
+   A claim made in a worktree that is gone, or before the other slice's PR is open on another machine, can still clash;
+   `validate-world-zones` catches that (below).
 2. Writes `Grid_<slug>.layer` with the cell's yard: a 10 m net-fence square, 1 m in from the cell's
    edges, built from seven 5 m runs. Half the side facing the annex centre is left open as the way
    in, and a pole-plate sign stands just outside that gap. The sign id is `grid:<slug>`, and

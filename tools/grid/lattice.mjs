@@ -27,7 +27,7 @@ import { frameSpawnLines } from "./cell-spawn.mjs";
 // (GRID.x1 below follows), `node tools/grid/lattice.mjs write`. The terrain (GridTerrain, 257 x 257 points
 // at 2 m = 512 m) is far larger than the grid; keep GRID inside 0..512 (tools/validation/grid-world-selftest.mjs).
 // GRID_CENTRE stays where it was so no old cell's gap flips to another side.
-export const CELL = { size: 12, origin: 22, cols: 11, rows: 7, inset: 1, fence: 5 };
+export const CELL = { size: 12, origin: 22, cols: 25, rows: 7, inset: 1, fence: 5 };
 export const GRID_CENTRE = [66, 66];
 // The outer fence (Annex.layer): 2 m outside the lattice on the west and south, 6 m on the east and north
 // (the north gate and the track in through it live in that margin). x 20..160, z 20..112.
