@@ -140,6 +140,19 @@ check(/off/.test(g.statusLine({}, { alive: 1, off: true })), "status off");
   check(pin.guardToGh("red", "suite")[0].description === "red: suite failed", "no note: the old description");
 }
 
+// #2812: a pre-move e2e red whose plain e2e passes is a missing LF_E2E guard, not a broken save: fix card, no revert.
+{
+  const culprit = { sha: "n1111111", subject: "Merge pull request #2798 from Life-Framework/ws/slice-2798" };
+  check(g.needsSkip("pre-move e2e", 0) === true, "needs-skip: pre-move red, plain e2e green");
+  check(g.needsSkip("pre-move e2e", 1) === false, "needs-skip: plain e2e red too is a real failure");
+  check(g.needsSkip("suite", 0) === false, "needs-skip: only the pre-move step");
+  check(g.revertRefusal(culprit, {}, { step: "pre-move e2e" }) === null, "pre-move red alone: the blamed PR may still be reverted");
+  check(/never reverted/.test(g.revertRefusal(culprit, {}, { step: "pre-move e2e", needsSkip: true }) ?? ""), "needs-skip: no revert, a fix card instead");
+  check(g.fixCardInstead(culprit, "pre-move e2e", { needsSkip: true }) !== null && g.fixCardInstead(culprit, "suite", { needsSkip: true }) === null, "needs-skip changes only the pre-move step");
+  const w = readFileSync(new URL("../main-guard.mjs", import.meta.url), "utf8");
+  check(w.includes("mg.PLAIN_E2E") && w.includes("{ step: step.name, needsSkip }"), "worker: runs the plain e2e after a reproduced pre-move red and passes needsSkip to the revert rule");
+}
+
 if (fails.length) {
   for (const f of fails) console.log(`FAIL  ${f}`);
   process.exit(1);

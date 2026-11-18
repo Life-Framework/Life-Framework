@@ -32,7 +32,7 @@ class LF_Test_PlantPersist : LF_Test
 		int since = LF_PersistenceComponentSerializer.PayloadSinceVersion("plants");
 #ifdef LF_E2E_LOAD_BOOT
 		LF_PlantRow back = LF_Plants.Find(E2E_ID);
-		if (LF_SaveStamp.BootSaveVersion() < since)
+		if (!LF_E2E.SaveHas("plants"))
 		{
 			// The guard's pre-move e2e writes pass 1 with the build before this payload (#2812).
 			LF_Debug.Info(LF_Plants.FEATURE, string.Format("e2e restart: boot save version %1 predates plants (%2), skipping the plant check", LF_SaveStamp.BootSaveVersion(), since));

@@ -32,7 +32,7 @@ class LF_Test_OrgWarPersist : LF_Test
 #ifdef LF_E2E_LOAD_BOOT
 		LF_Organization e2eA = LF_OrganizationManager.GetByCharacter(E2E_FOUNDER_A);
 		LF_Organization e2eB = LF_OrganizationManager.GetByCharacter(E2E_FOUNDER_B);
-		if (LF_SaveStamp.BootSaveVersion() < since)
+		if (!LF_E2E.SaveHas("orgwars"))
 		{
 			bool none = !e2eA || !e2eB || !LF_OrgWars.IsAtWar(e2eA.GetId(), e2eB.GetId());
 			ctx.True(none, "a save older than the orgwars payload loads no war");
