@@ -20,6 +20,11 @@
       "places": ["FishCounter"]
     },
     {
+      "id": "wholesale", "required": false, "kit": "wholesale", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 300, "prefer": "near", "maxDistance": 160, "types": ["garage", "industrial"] },
+      "places": ["WholesaleCounter"]
+    },
+    {
       "id": "chandler", "required": false, "kit": "chandler", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 30, "prefer": "near", "maxDistance": 140, "types": ["shed", "industrial", "garage", "house", "shop"] },
       "plot": { "minWidth": 10, "minDepth": 8, "prefabs": [{ "type": "garage", "stem": "HouseAddon_Garage_E_01" }] },
