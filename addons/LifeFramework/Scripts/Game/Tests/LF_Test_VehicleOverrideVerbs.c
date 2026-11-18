@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_VehicleOverrideVerbs`: making LF_VehiclePriceList.RemoveAt a no-op failed `- remove: one vehicle left (expected 1, got 2)` and `- remove: a removed vehicle is unpriced, not free (expected -1, got 1000)`; dropping the base-price check in Incomplete failed `- add: only the priced new vehicle is added (expected 3, got 4)`. Restored; green.
-// tier: LOGIC
 //! #1109: the vehicle price list on the override model (#962). `op: remove` takes a vehicle out of
 //! the list, `op: patch` of an id no lower layer has is refused (nothing added), `replace` rebuilds
 //! the entry in its place from the class defaults, `add` of a listed vehicle (by its lot prefab or

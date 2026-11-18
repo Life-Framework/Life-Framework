@@ -3,7 +3,6 @@
 // Restored; green.
 
 //------------------------------------------------------------------------------------------------
-// tier: PERSISTENCE
 //! medic/bill-persist (#260): bills ride the real save path (the "bills" payload, save version 19):
 //! the amount, the paid flag and the unpaid medic share come back after the store is wiped.
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]

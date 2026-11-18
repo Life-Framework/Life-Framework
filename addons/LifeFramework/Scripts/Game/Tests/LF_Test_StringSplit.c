@@ -2,7 +2,6 @@
 // LF-Reg_Title back to the Everon form failed strings/split with "the core's own form title names no
 // place (got 'Civil Registry of Everon, Form R-89')" (2026-11-14).
 
-// tier: LOGIC
 //! The core/pack string split (#325): flavour keys the core still shows keep neutral core text; the
 //! pack's table overrides them when it is loaded. Passes on the core alone and with the pack.
 [LF_TestInfo(LF_TestTier.LOGIC)]

@@ -95,6 +95,7 @@ class LF_Houses
 		}
 
 		Live().Set(id, house);
+		LF_PropertyConfig.RefuseHouseId(id); // a plot with this key would sell the house at the plot price (#2783)
 
 		LF_HouseLockRecord saved = Records().Get(id);
 		if (saved)

@@ -1,5 +1,4 @@
 // red-proof: `test --no-build --red LF_Test_EventPlayersNearby` -> RED PROOF OK (2026-11-17): with the hook on the place is never bound, so `a player inside keeps the NEARBY_BELOW abort quiet (expected 'hot', got '')` and `one LF_OnEventPhase per change (expected 3, got 0)` fail; without it `passed=2 failed=0`.
-// tier: WORLD
 //! Events count the players near their place (#2105): the test event is bound to the target of the
 //! scene in grid cell `event-scene` (scene `grid_event_scene`, found through LF_Places by component)
 //! with a 10 m radius, and a stubbed player position stands inside, then outside. The shell measures

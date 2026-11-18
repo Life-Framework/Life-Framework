@@ -9,7 +9,7 @@
 //!
 //! The ladder is LF_MedicConfig.m_aRanks; an empty list falls back to the built-in three rungs below.
 //! Rank and medic duty seconds live on the character standing (LF_PlayerAccount) and are saved by the
-//! "medicranks" payload under each character's record key. A save from before that payload loads
+//! "medicranks" save section (LF_MedicRanksSavePayload) under each character's record key. A save without that section loads
 //! every medic at rank 0.
 //------------------------------------------------------------------------------------------------
 class LF_MedicRanks
@@ -273,7 +273,7 @@ class LF_MedicRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Persistence seam ("medicranks" payload): one row per character with a medic rank or medic
+	//! Persistence seam ("medicranks" save section): one row per character with a medic rank or medic
 	//! duty seconds, keyed by the character's record key. Rank 0 with no seconds is not written.
 	static array<ref LF_MedicRankRow> ExportAll()
 	{
@@ -407,7 +407,7 @@ class LF_MedicRank
 }
 
 //------------------------------------------------------------------------------------------------
-//! One saved medic rank ("medicranks" payload, #2708): the character's record key, the rank index and
+//! One saved medic rank ("medicranks" save section, #2708): the character's record key, the rank index and
 //! the medic on-duty seconds. Field order is the binary save order; append only.
 class LF_MedicRankRow : Managed
 {

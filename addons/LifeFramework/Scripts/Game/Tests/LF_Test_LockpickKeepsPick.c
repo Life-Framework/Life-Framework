@@ -1,5 +1,4 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_LockpickKeepsPick` without the pick check in LF_Lockpick.Complete failed `- without the pick at the end the door stays locked`. Restored; green.
-// tier: WORLD
 //! A lockpick attempt needs the pick to the end (#411 review): a picker who drops or hands over the
 //! pick while the timer runs does not open the lock. Drives the real attempt on the placed lock-up
 //! door through the BeginAs and CompleteNow seams with a fixture character.

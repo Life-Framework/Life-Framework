@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 with `tools\cli test --no-build --red LF_Test_PropertyRecord,LF_Test_PropertyPersist`: `RED-OK property/record` with SetStage/SetOwner skipped, `- the plot is at stage 2 (expected 2, got 0)`, `- the plot has its owner (expected 'property-record-owner', got '')`. Green with them.
-// tier: LOGIC
 //! property/record (#2646): a property row is created by its stable id, takes a build stage and an
 //! owner, exports and applies back to the same rows; a row whose property is not in the world waits
 //! in the book and is exported again. The test puts back the book it found.

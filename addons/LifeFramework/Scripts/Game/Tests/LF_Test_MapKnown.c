@@ -19,7 +19,6 @@ class LF_Test_MapKnownCase
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! map/known: discovery (#2241, everon-map.md section 4). The case table
 //! Configs/Map/Rules/discovery.cases.json runs through LF_MapKnownRules.Decide here and through the
 //! node twin tools/map/rules/discovery.mjs in validate, so the two cannot drift (the engine reads the

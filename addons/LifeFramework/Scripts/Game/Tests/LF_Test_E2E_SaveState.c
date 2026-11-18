@@ -38,7 +38,6 @@
 // save of the live store, which has no "wantedlooks", and pass 2 failed with
 // `- e2e the robber's look survives the restart (expected '9B5BB216CC7FF18E|1=9F546CCA2582D16F', got '')`.
 // LF_TestLegacySnapshot now puts the crime reports back; both passes green, and green with --legacy-save.
-// tier: PERSISTENCE
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
@@ -86,6 +85,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	static const string HELD_SITE = "e2e-held-ground-site";
 	static const int HELD_SECONDS = 3600;
 	static const int HELD_POINTS = 12;
+	//! A second site the same organization holds as captured ground (#2816, "tenancy" payload, save version 58).
+	static const string CAPTURED_SITE = "e2e-captured-site";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -150,6 +151,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// alive in the world through the shutdown save, so the reload boot also sees whether the
 		// engine brings its items back on its own (a dupe next to the restored snapshot).
 		IEntity carrier = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(carrier);
 		// A stamped drill rides in the backpack (#470): its serial must survive the restart on the item.
 		if (carrier)
 		{
@@ -241,6 +243,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// leave 9 rounds, clock out. A wanted report with its identified flag rides "wanted" (10).
 		LF_PlayerAccount dutyAccount = LF_TestPoliceKit.Account(DUTY_UID, true);
 		IEntity dutyBody = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(dutyBody);
 		if (dutyBody)
 		{
 			ctx.EqualStr("", LF_DutyLocker.ClockIn(dutyAccount, dutyBody), "e2e officer clocks in before the save");
@@ -255,6 +258,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// The medic duty inventory rides the same carried payload in its own slot (medic_duty, #258).
 		LF_PlayerAccount medicAccount = LF_TestPoliceKit.Account(MEDIC_UID, false);
 		IEntity medicBody = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(medicBody);
 		if (medicBody)
 		{
 			ctx.EqualStr("", LF_DutyLocker.ClockIn(medicAccount, medicBody, LF_Faction.MEDIC), "e2e medic clocks in before the save");
@@ -292,6 +296,11 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		array<ref LF_EvidenceLockerRow> lockerRows = {};
 		lockerRows.Insert(lockerRow);
 		LF_EvidenceLocker.ApplyAll(lockerRows);
+
+		// A locker rental (#2659, "lockers" payload, save version 57) must come back with its paid-until.
+		array<ref LF_LockerRentalRow> lockerRentalRows = {};
+		lockerRentalRows.Insert(LF_LockerRentalRow.Create("e2e-locker-site", OFFICER_UID, 1900000000));
+		LF_LockerBank.ApplyAll(lockerRentalRows);
 
 		// A half-finished chain batch (#417) must come back: barrel 3 of the Annex_Chains_Site, 3 of 8 units in.
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
@@ -384,7 +393,6 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 			LF_Test_VehicleCargoPersist.SeedE2E(ctx, cargoPayer);
 			LF_TestCharacterFixture.Delete(cargoPayer);
 		}
-		LF_Test_MedicRanksPersist.SeedE2E(ctx);
 
 #ifndef LF_E2E_LEGACY_SAVE
 		// A cargo run in progress holds a deposit ("jobruns" payload, save version 49, #2408, #2481): the
@@ -441,6 +449,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		ctx.True(LF_Hideout.Assign(HELD_SITE, orgId), "e2e the organization leases the held site before the save");
 		ctx.True(LF_Hideout.TryUnlock(ORG_FOUNDER, HELD_SITE), "e2e the founder unlocks the held site before the save");
 		ctx.True(LF_Hideout.SetHeldGround(HELD_SITE, orgId, HELD_SECONDS, HELD_POINTS), "e2e the organization holds its site before the save");
+		ctx.True(LF_Hideout.HandOver(CAPTURED_SITE, orgId, "e2e"), "e2e the organization captures a second site beside its base before the save");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -469,7 +478,6 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: PERSISTENCE
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateVerify : LF_Test
 {
@@ -689,6 +697,22 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! #2816 after the restart: the base lease stays a base, the captured site stays captured, and both are
+	//! still the organization's. Callers gate this on the loaded save's version.
+	protected void VerifyTenancy(LF_TestContext ctx)
+	{
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(LF_Test_E2E_SaveStateWrite.ORG_FOUNDER);
+		ctx.NotNull(org, "e2e the capturing organization is back after the restart");
+		if (!org)
+			return;
+
+		ctx.EqualStr(org.GetId(), LF_Hideout.GetOwner(LF_Test_E2E_SaveStateWrite.CAPTURED_SITE), "e2e the captured site keeps its lease after the restart");
+		ctx.True(LF_Hideout.IsCaptured(LF_Test_E2E_SaveStateWrite.CAPTURED_SITE), "e2e the captured site is still captured after the restart");
+		ctx.False(LF_Hideout.IsCaptured(LF_Test_E2E_SaveStateWrite.HELD_SITE), "e2e the base lease is still a base lease after the restart");
+		ctx.Equal(1, LF_Hideout.SitesOf(org.GetId(), true).Count(), "e2e the organization holds one captured site after the restart");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! #2410: the carried house key comes back bound to its house. A legacy save (--legacy-save, no
 	//! build stamp) restores it unbound, as that build did; a ref build from before the house payloads
 	//! (--pre-move) carried no key.
@@ -898,6 +922,17 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.False(LF_PersistenceComponentSerializer.IsLoadDamaged(), "e2e the restart load is not damaged, autosave runs");
 		LF_Debug.Info("Persistence", string.Format("e2e restart: loaded a save from game build %1 (save version %2), running %3", LF_SaveStamp.BootLoadedBuild(), LF_SaveStamp.BootSaveVersion(), GetGame().GetBuildVersion()));
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
+		// A save older than "lockers" (a --legacy-save, or the --pre-move ref build, whose pass 1 never wrote
+		// a rental) holds no rental: the check skips, as VerifyJobDeposit does for "jobruns".
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("lockers"))
+		{
+			ctx.True(LF_LockerBank.IsRenting("e2e-locker-site", OFFICER_UID), "e2e locker rental survives the restart");
+			ctx.Equal(1900000000, LF_LockerBank.PaidUntil("e2e-locker-site", OFFICER_UID), "e2e locker rental keeps its paid-until");
+		}
+		else
+		{
+			LF_Debug.Info("Lockers", string.Format("e2e restart: boot save version %1 predates lockers, no rental to check", LF_SaveStamp.BootSaveVersion()));
+		}
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed after the restart");
 		if (chainBarrel)
@@ -1042,10 +1077,12 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			LF_Test_ReputationPersist.VerifyE2E(ctx);
 		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("garageslots"))
 			LF_Test_GarageSlotsPersist.VerifyE2E(ctx);
-		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("medicranks"))
-			LF_Test_MedicRanksPersist.VerifyE2E(ctx);
 		VerifyOrgLadder(ctx);
 		VerifyHeldGround(ctx);
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("tenancy"))
+			VerifyTenancy(ctx);
+		else
+			LF_Debug.Info("Hideout", "e2e tenancy check skipped: the loaded save is older than the tenancy payload");
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");

@@ -3,7 +3,6 @@
 // `- the officer rung is added once (version 26 load 1) (expected 3, got 2)`,
 // `- the founder rank reads by its key (version 26 load 1) (expected '#LF-Org_RankFounder', got 'Founder')`,
 // `- a migrated founder promotes onto the officer rung`. Restored; green. The restart path is `wt e2e`.
-// tier: PERSISTENCE
 //! #750a through the real save path. A version 26 save (the format before the rights mask: record
 //! version 1, a founder and a member rank as four bools, no "orgranks" payload) loads with every
 //! member on their rank, the founder holding every right, the member only the stash, and the officer
@@ -209,6 +208,8 @@ class LF_TestLegacySnapshot : Managed
 	//! Hideout leases and locks (#751): roadmap/hideout-save resets them after the e2e write, and the
 	//! e2e organization's lease must still be there at the shutdown save for its held ground to load.
 	protected ref array<ref LF_HideoutRecord> m_aHideouts;
+	//! Which of those leases are captured ground (#2816): a restore applies every lease as a base first.
+	protected ref array<ref LF_HideoutTenancyRow> m_aTenancy;
 	//! Stolen flags of the inventory snapshots (#1855): an older save has no "itemstolen", so loading
 	//! one restores the e2e drill unflagged before the shutdown save.
 	protected ref array<ref LF_StorageItemStolenRecord> m_aStolen;
@@ -226,6 +227,7 @@ class LF_TestLegacySnapshot : Managed
 		snapshot.m_aVehicleState = LF_VehicleOwnership.ExportState();
 		snapshot.m_aHideouts = LF_Hideout.ExportAll();
 		snapshot.m_aHeldGround = LF_Hideout.ExportHeldGround();
+		snapshot.m_aTenancy = LF_Hideout.ExportTenancy();
 		snapshot.m_aStolen = LF_StorageSnapshot.ExportItemStolen();
 		return snapshot;
 	}
@@ -261,6 +263,7 @@ class LF_TestLegacySnapshot : Managed
 				LF_Hideout.Release(now.m_sHideoutId);
 		}
 		LF_Hideout.ApplyAll(m_aHideouts);
+		LF_Hideout.ApplyTenancy(m_aTenancy);
 		LF_Hideout.ApplyHeldGround(m_aHeldGround);
 		LF_StorageSnapshot.ApplyItemStolen(m_aStolen);
 	}

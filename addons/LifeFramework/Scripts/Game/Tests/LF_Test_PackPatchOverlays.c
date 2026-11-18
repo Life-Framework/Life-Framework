@@ -38,7 +38,6 @@ class LF_Test_PackPatchSourceStub : LF_ConfigPackSource
 	}
 };
 
-// tier: WORLD
 //! #1109, #957: a pack `.conf` patches the clerk's dialogue by node and line id (replaced line text,
 //! a replaced, an added and a removed node, a new start node, a patch of a missing node refused) and
 //! the vehicle prices by prefab GUID (patch, remove, add, a patch of a missing vehicle refused). A

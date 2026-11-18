@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-17, `--red LF_Test_TaxiStandPlaces` skips spawning the stands: RED-OK jobs/taxi-stand-places (fails with the hook on, 12 assertions: "two stands registered as kind taxi (expected 2, got 0)", "Nearest finds a stand beside A"); `--only` green. `--tier all` then failed "expected 2, got 3" once the grid cell's own stand existed; the count is now relative to the stands already placed.
 //! jobs/taxi-stand-places: a taxi stand registers in LF_Places as kind `taxi`; Nearest picks the closer
 //! of two stands and names it. Stand A stands beside a vanilla map location and takes its name; stand B

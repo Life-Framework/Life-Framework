@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools\cli test --no-build --red LF_Test_LongStringLimits`: RED PROOF OK, with the build step skipped (a 100-char string) the splice and Format assertions fail (`a splice through a long Substring tail comes back cut (expected 8203, got 100)`). Green with --only.
-// tier: LOGIC
 //! Pins where an Enforce string is cut (measured 2026-11-17, Reforger 26266485; the table and the
 //! production sites are in docs/architecture/enforce-string-limits.md). `+`, `+=`, `Replace`, `Split`,
 //! `IndexOf`, a JSON context and a file round trip keep a 140000-char string whole. `Substring` caps its

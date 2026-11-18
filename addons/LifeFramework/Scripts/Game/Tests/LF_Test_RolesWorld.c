@@ -1,7 +1,6 @@
 // red-proof: Observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_RolesWorld`: the police outfit first used the full
 // Jacket_M88, which attaches a belt dummy the NPC storage lacks; `- ...LF_Npc_Police_1.et holds every worn item in its loadout storage
 // (expected 5, got 4)`. Fixed with Jacket_M88_base; green.
-// tier: WORLD
 //! NPC roles in the world: every outfit prefab spawns dressed (jacket, pants and boots worn, held in the
 //! NPC's loadout storage), carries its role, and offers its role conversation with its strings in the
 //! table; the variants of a role wear different clothes; every placed town NPC has a role.

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_MurderLogoutBody`: RED-OK crime/murder-logout-body (10 assertions fail with the hook on), `a logout body's kill is the murder of its player (their uid) (expected 'murder-logout-body-uid', got '')`. Green after (`--only`). On main the resolver did not exist: the body's kill carried victimPlayerId 0 and was an NPC kill (label npc, no LF_OnPlayerKilled).
-// tier: WORLD
 //! Acceptance of #2103: a logged-out body has no controlling player (victimPlayerId 0), yet killing
 //! it is the murder of that player: the murder path resolves the account uid through LF_LogoutBody.
 //! A plain NPC (or any entity that is not a logout body) is still an NPC; a connected player keeps

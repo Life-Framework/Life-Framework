@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_OrgWarKillTag` (RedProof() skips the war acceptance): RED PROOF OK, "the murder war kill is a second war_kill incident (expected 2, got 0)".
-// tier: LOGIC
 //! org/war-kill-tag (#2670, M7 gang war W5): a kill between members of two organizations at war is a
 //! war kill. LF_Murder's war rule skips it (no murder, no wanted) and the subscriber files one `war_kill`
 //! incident; members of two organizations not at war are murder and file nothing; with

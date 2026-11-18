@@ -5,7 +5,6 @@
 //   [LFTEST]   - burst of one: the second request is refused (expected 1, got 0)
 // Restored `m_iCount < burst`; green.
 
-// tier: LOGIC
 //! Request rate limit (#693b): a fixed window admits a burst, the next request is refused (first
 //! refusal reported, the rest counted), a new window admits again and reports the count, buckets
 //! are per player and per kind, a clock wrap opens a new window, and every kind has a sane limit.

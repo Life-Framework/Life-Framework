@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_CarriedStolenPersist,LF_Test_DebugMoneyTopUpHold`: RED-OK persist/carried-stolen, `- the restored drill is still stolen` failed with the Mark skipped. Green with `--only`.
-// tier: PERSISTENCE
 //! #1855: a carried item flagged stolen (LF_StolenGoods) stays stolen through the real save path (the
 //! "itemstolen" payload, save version 35): captured from the live item, written, wiped, read back,
 //! applied onto a fresh character. Before, the flag was an EntityID in a session set and a restart

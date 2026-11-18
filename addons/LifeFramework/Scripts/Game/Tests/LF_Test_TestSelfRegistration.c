@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-17 with `tools\cli test --no-build --red LF_Test_TestSelfRegistration`: [LFTEST] RED-OK tests/self-registration (fails with the hook on, 12 assertions), "LF_Test_TestSelfRegistration is collected exactly once (expected 1, got 0)" with the test dropped from the collected list as if its [LF_TestInfo] attribute were gone.
 
-// tier: LOGIC
 //! tests/self-registration: a test class that carries its own [LF_TestInfo] attribute is collected exactly
 //! once, with its tier, at its class-name position beside the generated registry; a subclass without an
 //! attribute of its own is not collected (#2757, #2610).

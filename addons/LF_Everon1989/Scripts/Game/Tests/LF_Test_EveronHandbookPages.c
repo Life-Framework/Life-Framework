@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 (#1776): before the overlay rows and strings, `tools\cli test --no-build --only LF_Test_EveronHandbookPages` failed `- the handbook lists the seven flagship pages (expected 7, got 2)` (passed=0 failed=1); with them it passes (passed=1 failed=0, pack leg worlds=LF_Everon1989_Test).
-// tier: WORLD
 //! #1776 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the handbook lists
 //! the seven flagship pages in reading order, and every title and body key is in a string table, so
 //! no `#LF-` key shows raw on the page. The core file ships two neutral pages; the pack overlay adds

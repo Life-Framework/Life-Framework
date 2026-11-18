@@ -3,7 +3,6 @@
 // `[LFTEST] - AddExperience adds job XP (expected 25, got 0)`.
 // AddExperience was a no-op. The grant now adds XP and levels the job.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Jobs : LF_Test
 {
@@ -68,7 +67,6 @@ class LF_Test_Roadmap_Jobs : LF_Test
 	}
 }
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_JobsWorld : LF_Test
 {

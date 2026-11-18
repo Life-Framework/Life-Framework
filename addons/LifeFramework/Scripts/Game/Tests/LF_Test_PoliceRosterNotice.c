@@ -3,7 +3,6 @@
 //! police/roster-notice (#1447): an approved recruit and an expired trial are told once at the first
 //! spawn of a session; a second spawn, a civilian, a rejected or open application and an empty uid
 //! hear nothing; the spawn event on the bus reaches the notice.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceRosterNotice : LF_Test
 {

@@ -1,5 +1,4 @@
 // red-proof: RED-OK moderation/staff-relay (fails with the hook on, 9 assertions): one admin action and one flag give two messages (expected 2, got 0)
-// tier: LOGIC
 //! moderation/staff-relay (#1284): one admin action and one report flag, each published on the bus,
 //! reach the staff webhook as two lines once their windows end; ten flags inside one window give
 //! one batched line; nothing is sent before the window ends. A captured sender stands in for the POST.

@@ -1,7 +1,6 @@
 // red-proof: ran `tools\cli test --no-build --only LF_Test_PoliceCallAccept` before LF_PoliceCalls existed
 // (2026-11-18); the run failed to compile. The RedProof() hook skips the officer's take for `--red`.
 
-// tier: LOGIC
 //! Police calls (#2477, parent #234): a first wanted report posts a FINE call; an officer takes it only
 //! on duty and at or above its rank; one officer per call; Complete closes it once.
 [LF_TestInfo(LF_TestTier.LOGIC)]

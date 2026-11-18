@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_Systems`: dropping the parent
 // check in LF_Systems.IsOn failed `- a part of a system that is off is off` and `- and says why: `. Restored; green.
-// tier: LOGIC
 //! Systems (#960): each system's on or off read through the config service. A catalog built in
 //! script and an owner `systems` section: an off switch turns the system and its parts off; a
 //! framework (LOCKED) system, a system with no switch yet (NOT_YET) and an unknown id are refused;

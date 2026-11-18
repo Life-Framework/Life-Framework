@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_ReputationGate`: RED-OK, all 1 listed test(s) fail with the hook on, first `the underworld refuses in its own words (expected '#LF-Reputation_Refuse_Underworld', got '')`. Green with `--only`: passed=1 failed=0.
-// tier: LOGIC
 //! Standing gates (#2701, docs/architecture/reputation.md section 4): `LF_Reputation.Passes(key, gateId)`
 //! is false below a gate row's m_iMinTier and true at it, a gate id with no row passes, the refusal key
 //! names the faction and the tier word key and carries no digit, an unshown faction gives no tier word,

@@ -2,7 +2,6 @@
 // LF_Test_CuffsServerRules,LF_Test_CuffsServerRefusals`: with the suspect left free, the hit did damage (expected 100,
 // got 90) and every refusal line failed (driver seat, till, held till, vehicle, weapon, vault, lockpick, give cash,
 // give item).
-// tier: WORLD
 //! police/cuffs-server-refusals (#2417): the server refuses a cuffed character's requests at their
 //! server entry points, whatever its own machine sent. A hit it instigates does no damage; a driver's
 //! seat is refused (a cargo seat is not); till, held-till, vehicle, weapon and vault robbery,

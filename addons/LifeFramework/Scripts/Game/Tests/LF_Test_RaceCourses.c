@@ -1,5 +1,4 @@
 // red-proof: `test --no-build --red LF_Test_RaceCourses` -> RED PROOF OK (2026-11-16): skipping the overlay (the hook swaps in the unlayered book) leaves one course; fails "an overlay adds a second course (expected 2, got 1)" and "the added course is found by id". Before the loader existed the test failed to compile.
-// tier: LOGIC
 //! Race courses load from config (#2006): a course list is found by id, an overlay adds a second
 //! course by id, patches and removes through the shared override model, and a course that breaks
 //! the rules (a checkpoint twice) is dropped and logged, never kept. Courses here are built in

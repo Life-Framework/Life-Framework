@@ -87,7 +87,9 @@ Each of these must survive a server restart:
 39. Standing (save version 53, payload `reputation`, #2698, design `docs/architecture/reputation.md` section 6): one `LF_ReputationRow` per character and faction with points other than 0 (row version 1, character record key, faction id, points). `LF_Reputation.ApplyAll` (`Feature/Reputation/Persistence/`) replaces the store: a faction the config no longer lists is skipped with a warning, points clamp to the current thresholds, and with no config loaded every row is kept unclamped. Cooldowns and daily caps stay session state. A version 1-52 save never reaches the payload: every character starts with no standing. Proof: `reputation/persist` and `wt e2e` (a real restart).
 40. Organization wars (save version 54, payload `orgwars`, #2672): one `LF_OrgWarRecord` per declared or accepted war, per closed war still inside its pair cooldown, and always the newest war (so a `war-N` id is never reused). Row version 1, war id, both organization ids, state, unix-second times. `LF_OrgWars.ApplyAll` replaces the table and drops a row whose organization is gone (warning); it never ticks, so a deadline passed during downtime closes on the first sweep at the deadline. A version 1-53 save never reaches the payload: no war is restored. Proof: `org/war-persist` and `wt e2e` (a real restart).
 41. Bought garage slots (save version 55, payload `garageslots`, #2656): one `LF_GarageSlotRow` per character with at least one bought slot (row version 1, character record key, slots bought). `LF_GarageSlotStore.ApplyAll` replaces the store, skips a row with no key or no slot, and clamps a count past `m_iMaxSlots - m_iBaseSlots` with a warning. The key is the character's, so each character of an account buys its own slots. A version 1-54 save never reaches the payload: every character has only the base slots. Proof: `vehicles/garage-slots-persist` and `wt e2e` (a real restart).
-42. Medic ranks (save version 56, payload `medicranks`, #2708): one `LF_MedicRankRow` per character with a medic rank or medic duty seconds (row version 1, character record key, rank, medic duty seconds). `LF_MedicRanks.ApplyAll` writes them onto the character standing, skips a row with no key or no character, and clamps a rank off the ladder with a warning; loading twice gives the same state. A version 1-55 save never reaches the payload: every medic is rank 0. Proof: `medic/ranks-persist` and `wt e2e` (a real restart).
+42. Planted crops (save version 56, payload `plants`, #2664): one `LF_PlantRow` per planted crop (plant id, crop id, position, planted-at and watered-at, owner key = the planter's player UID). The two clocks are seconds on the farming clock, which runs only while a server runs with Farming on; the save writes them relative to the save moment (zero or less) and `LF_Plants.ApplyAll` rebases them on the live clock, so downtime neither ages nor rejuvenates a plant. Load replaces the table, skips a row with no id or a repeated id, drops a row whose crop the catalogue no longer has (warning), and with no crop catalogue loaded keeps every row unchecked; the position is set on the terrain under it. A version 1-55 save never reaches the payload: nothing is planted. Proof: `farming/plant-persist` and `wt e2e` (a real restart).
+43. Locker rentals (save version 57, payload `lockers`, #2659): one `LF_LockerRentalRow` per rental (row version 1, the bank's site id, the character record key, paid-until in UTC seconds, 0 = never lapses). Character-scoped: a second character on the same account rents its own locker. The serializer variable is `lockerRentalRows`, because `JsonSaveContext` keys a payload by its variable name and `lockerRows` is the evidence locker's. `LF_LockerBank.ApplyAll` replaces the table and drops a row with no site, no character or an unknown row version (warning). Lapsed rentals are kept as saved; the lapse sweep is a later slice of #1038. A wipe (a new playthrough) starts with no rentals. A version 1-54 save never reaches the payload: nobody rents a locker. Proof: `lockers/persist` and `wt e2e` (a real restart).
+44. Hideout tenancy (save version 58, payload `tenancy`, #2816): one `LF_HideoutTenancyRow` per CAPTURED hideout (row version 1, hideout place id resolved through `LF_SaveIds.Resolve`, kind `LF_EHideoutTenancy.CAPTURED`). A site with no row is a base lease. `LF_Hideout.ApplyTenancy` runs after `hideout` and `heldground`: it marks every lease a base, then each row captured (a row whose site has no lease is dropped with a warning), then redoes every lease's `org_base` registration so a captured site never keeps the organisation's base place. A captured site does not count against the one-base-lease limit. A version 1-55 save never reaches the payload: every lease loads as a base lease. Proof: `persist/site-capture` and `wt e2e` (a real restart; its pass-2 check runs only when the loaded save is version 56 or newer).
 23. Case board (save version 31, payload `caseboard`, #148): `LF_CaseBoardRow` per open report (the world clock at the crime) and per evidence card (the locker row number, the kind, the note the piece carried, the pin order). Rows of a closed report (its suspect no longer wanted) are not saved. Loaded after `wanted` and `evidencelocker`; `LF_CaseBoard.ApplyAll` replaces the store and resumes the pin order after the highest loaded pin. A version 30 or older save loads its cases with no time and nothing pinned; the evidence stays logged in the locker. Proof: `investigation/case-board-persist` (round trip, second load) and `e2e/pass2-verify-load` (a real restart).
 
 On connect the player spawns at a spawn point with the active character's
@@ -195,8 +197,9 @@ Apart from the police rank, no payload stores pack content by index or by a bare
   version), then the payloads listed in `RegisterPersistencePayloads`:
   survival, organizations, hideout, vehicles, jail, carried, progression, introductions,
   itemstate, wanted, jobsignups, tickets, ... joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown. The written version is that list's length (currently 42). Deserialize stops at the stored version, so an
-  older save leaves later payloads untouched. A new system appends one entry at
-  the end and raises the version by one. Never insert earlier or reorder.
+  older save leaves later payloads untouched. The list is frozen at 58 (#2841):
+  a new system is a section ("Sections" above), never an entry here. Never insert,
+  append or reorder.
   The override bodies live in public static `SerializeStore` /
   `DeserializeStore` so a test drives the real path;
   `tools/validation/validate-persistence-version.ps1` checks those bodies.
@@ -265,6 +268,66 @@ Apart from the police rank, no payload stores pack content by index or by a bare
 - Spawning: `LF_SpawnLogic : SCR_SpawnLogic`; `Prefabs/MP/Spawn/SpawnPoint_LIFE.et`
   is a vanilla `SCR_SpawnPoint`.
 
+## Sections: one payload, one file, its own version (#2841)
+
+Until #2841 the save version was the length of `RegisterPersistencePayloads`, so every new
+payload changed the same lines (the last `Insert`, the last `else if` of the write and the
+read, `WriteValue("version", N)`, `LF_TestSaveVersion.CURRENT`, the lock's `saveVersion`) and
+claimed the same number: on 2026-11-18 six PRs wanted one version. The list is now frozen
+and every new payload is a **section**.
+
+**Format.** `version` 1 to `LEGACY_COUNT` (58) is the positional format, unchanged.
+`SECTIONED_FORMAT` (1000) is: the prefix, all 58 legacy payloads positionally (exactly as a
+version 58 save holds them), then a manifest (`sections`, the names in written order) and one
+named object per section (`sec_<name>`, holding `v`, the section's own version, and its rows).
+The engine's binary save context has object seeking and skippable objects on
+(`SCR_PersistenceBinarySaveContext`), so a section the reader cannot read is skipped whole and
+the next one still reads (`persist/save-sections`, JSON and binary).
+
+**Adding a payload.**
+1. `class LF_<Area>SavePayload : LF_SavePayload` in the feature's folder: `Name()` (a literal
+   or a `static const string`, lowercase, digits and `_`; saved in every save, never renamed),
+   `Version()` (from 1), `WriteSection` (`context.WriteValue("rows", rows)`), `ReadSection`
+   (replacement, so a second load ends in the same state; false on a failed read),
+   `OnAbsent()` (the save predates the section: seed what an older save implies) and, only when
+   it must apply after another section, `Order()`. Nothing registers it: `LF_SaveSections` finds
+   every subclass by reflection, sorted by `(Order(), Name())`, after every legacy payload.
+2. `node tools/validation/validate-record-shapes.mjs --update` writes its lock,
+   `tools/validation/record-shapes/<name>.json`.
+3. Its own PERSISTENCE test: a round trip, a save without it
+   (`SerializeStoreOmitting(persistence, ctx, {"<name>"})`), and the restart check under
+   `#ifdef LF_E2E_LOAD_BOOT`, gated on `LF_SaveSections.BootHadSection("<name>")` (`wt e2e` runs
+   every PERSISTENCE test in both boots). Do not append to `LF_Test_E2E_SaveState`.
+4. The observable contract goes in `docs/features/<area>.md`, not in this file's list.
+
+Two such PRs share no line (`tools/validation/save-sections-merge-selftest.mjs` merges two in
+a scratch repo; two legacy appends conflict there).
+
+**Changing a section's shape.** Raise its `Version()`, read every older version in
+`ReadSection`, run `--update`. The record-shapes check fails a locked section whose record
+changed without the raise. A save whose section is newer than the build is not read.
+
+**Loads.**
+
+| Save | This build |
+|---|---|
+| positional, version 1 to 58 (v32, v55, the pre-move ref) | today's path; every section gets `OnAbsent()` |
+| sectioned | the legacy payloads, then each section in the manifest |
+| sectioned, with a section this build does not know (a newer build, a reverted PR) or at a newer section version | that section is skipped, the rest load, the load counts as damaged so autosave keeps the save on disk |
+| sectioned, read by a build from before #2841 (a rollback) | `1000 > 58`: every legacy payload loads (same positions), "newer than this build", damaged, autosave pauses |
+| a section fails to read | counted as a failed read (damaged); the sections after it still load |
+
+A skipped section keeps every boot read-only until a build that reads it runs again (backups from
+the newer build hold it too): the operator steps are in `docs/ops/game-updates.md` "When a load
+goes wrong". Never delete a shipped section's class; keep it, or the lead decides to drop its data.
+`tools\cli upgrade-page` lists sections added, removed and raised between two refs.
+
+`LF_SaveStamp` records 1000 for a sectioned save, so a test gate
+`BootSaveVersion() >= PayloadSinceVersion(<legacy payload>)` holds for it.
+`validate-persistence-version.ps1` fails an `Insert` past the frozen 58 ("add an LF_SavePayload
+section"); `validate-record-shapes.mjs` checks each section against its lock and fails a
+duplicate name, a legacy name, or a lock whose section is gone.
+
 ## Record shapes: append only (#761)
 
 A payload is an array of record objects written by reflection, so a record's
@@ -276,9 +339,9 @@ save still loads.
 - A shipped field is never removed, renamed, reordered or retyped. A retired
   field stays as padding (`LF_SurvivalStatsRecord.m_fHealth`).
 - New data is a **sidecar payload**: a `[NonSerialized()]` field on the live
-  record and a row class (`int m_iVersion` first) in a payload appended to
-  `RegisterPersistencePayloads` with a version bump, which an older save simply
-  lacks (`orgranks` #750a, `joblevels` #749). One PR per reshape (D6).
+  record and a row class (`int m_iVersion` first) in a new section (#2841; before
+  it, a payload appended to `RegisterPersistencePayloads` with a version bump), which
+  an older save simply lacks (`orgranks` #750a, `joblevels` #749). One PR per reshape (D6).
 - Before the persistent launch (#556) a serialized field may be appended to a
   record only with a save version bump and a read path for the older shape.
   After it, a shipped record takes no new serialized field at all.
@@ -381,7 +444,7 @@ posters go too), which resets each switched-off field in the live stores:
 | Switch off | Reset |
 |---|---|
 | `keepCarriedGear` | `LF_StorageSnapshot.ClearSlot` on `carried` and `civilian_stash`: every carried snapshot and every duty-desk civilian stash; the body gets the starting loadout, and an officer saved on duty gets the civilian kit at clock-out. The `police_duty` / `medic_duty` kits stay, consistent with the armory book (#2547). `LF_ArmoryKits.ClearAllOutstanding` then clears every officer's outstanding serials, since the issued kits went with the carried gear, except a serial still in a kept snapshot (a kit stored in `police_duty`); the 2 h issue cooldown stays as saved (#2621) |
-| `keepCash` | `LF_StorageSnapshot.StripPrefab(<slot>, cash slot)` on `carried`, `civilian_stash`, `police_duty` and `medic_duty` (only the duty slots when gear is off): cash stacks that hold nothing; later items' parent indexes are remapped (#2547) |
+| `keepCash` | `LF_StorageSnapshot.StripPrefab(<slot>, cash slot)` on `carried`, `civilian_stash`, `police_duty` and `medic_duty` (only the duty slots when gear is off): cash stacks that hold nothing, and marked notes (#2850) from the same slots; later items' parent indexes are remapped (#2547) |
 | `keepSurvival` | `LF_PersistenceComponent.ClearSurvivalStats()`: hunger and thirst start full |
 | `keepWanted` | `LF_PlayerAccountManager.ClearAllCharactersWanted()`: every character of every account, republished |
 | `keepJail` | `LF_Jail.ApplyAll([])`: every sentence, the #691 logout sentences included |

@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-17 with `tools/cli test --no-build --red LF_Test_CarriedPropCull`: `RED PROOF OK` (the hook restores the old behaviour, a counter that never resets and a hang every frame at any range)
 
-// tier: LOGIC
 //! A carried prop's per-frame work (#2339): the give-up counter counts frames missing in a row (a good
 //! frame resets it), and a walker that is not rendered or is past the view distance is not hung.
 [LF_TestInfo(LF_TestTier.LOGIC)]

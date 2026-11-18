@@ -6,7 +6,6 @@
 // m_aExtraItemPrefabs merge in LF_ShopManagerComponent.BuildExtraItems and catalog/extra-items goes
 // red; drop the currency hidden rule from Configs/Shop/ShopPrices.conf and catalog/hidden goes red.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ShopPriceRuleMatch : LF_Test
 {
@@ -44,7 +43,6 @@ class LF_Test_ShopPriceRuleMatch : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ShopPriceResolve : LF_Test
 {
@@ -93,7 +91,6 @@ class LF_Test_ShopPriceResolve : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ShopPriceHidden : LF_Test
 {
@@ -129,7 +126,6 @@ class LF_Test_ShopPriceHidden : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ShopCatalog : LF_Test
 {

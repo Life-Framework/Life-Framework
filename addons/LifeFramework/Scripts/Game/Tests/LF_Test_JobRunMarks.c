@@ -2,7 +2,6 @@
 //   resend and the abandon, so the row, the waypoint, the resend and the clearing fail). Green without it.
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! jobs/job-run-marks (#2239): a delivery run's stop goes on the runner's map and waypoint (the nearest
 //! drop-off, none for a taxi run or when no drop is placed), a next stop replaces it, a respawn sends
 //! the waypoint again, and abandoning or completing the run clears the row and the waypoint. Real

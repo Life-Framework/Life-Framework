@@ -26,7 +26,6 @@
 //   [LFTEST]   - a released stray manager does not drop the loaded balances
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestartBankSurvivesConnect : LF_Test
 {
@@ -83,7 +82,6 @@ class LF_Test_RestartBankSurvivesConnect : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RestartJailSerializerRoundtrip : LF_Test
 {
@@ -147,7 +145,6 @@ class LF_Test_RestartJailSerializerRoundtrip : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RestartVehicleNoGroundKey : LF_Test
 {
@@ -188,7 +185,6 @@ class LF_Test_RestartVehicleNoGroundKey : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestartVehiclePlatesReserved : LF_Test
 {
@@ -226,7 +222,6 @@ class LF_Test_RestartVehiclePlatesReserved : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestartWhitelistUnreadableFileKept : LF_Test
 {

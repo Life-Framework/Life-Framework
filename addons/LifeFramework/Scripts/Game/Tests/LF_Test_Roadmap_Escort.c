@@ -1,7 +1,7 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: removing the driver-seat skip from
 // LF_JailEscort.NearestFreePassengerSlot failed it with `[LFTEST] FAIL roadmap/escort`,
 // `- a driver seat is not a passenger seat (expected -1, got 0)`. Restored; green.
-// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
+//! Needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_Escort : LF_Test
 {

@@ -1,0 +1,16 @@
+{
+  "section": "medicranks",
+  "class": "LF_MedicRanksSavePayload",
+  "version": 1,
+  "roots": "LF_MedicRankRow",
+  "records": {
+    "LF_MedicRankRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sKey",
+        "int m_iRank",
+        "int m_iDutySeconds"
+      ]
+    }
+  }
+}

@@ -1,7 +1,6 @@
 // red-proof: 2026-11-17 (#2405): with `character.LF_AdvanceDownedFor(dt)` off in LF_BleedOut.Advance, `--only LF_Test_BleedOut` failed `- the downed clock still runs on the stretcher (expected 31, got 0)` and `- a patient on a stretcher can give up after the delay`. With it, green.
 // red-proof: observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_BleedOut`: LF_BleedOut.IsExpired using `left < 0` failed `running out of time kills for real` and `one expiry (expected 1, got 0)`; restored, green.
 
-// tier: WORLD
 //! A downed character bleeds out through LF_BleedOut: giving up is refused before the delay and
 //! accepted after it, running out of time kills for real and exactly once, a revive stops the
 //! clock, and the replicated copy of the time left moves in steps. Test characters have no

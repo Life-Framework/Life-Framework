@@ -45,9 +45,8 @@ export const PACK_TEST_MISSION = "{3626CFA069A75D46}Missions/LF_Everon1989_Test.
 // The header `session --mission grid` boots when the pack's grid layers exist: the same header as the pack test
 // leg, whose World is PACK_GRID_WORLD (the grid plus the pack's cells, under the flagship's overlays).
 export const PACK_GRID_MISSION = PACK_TEST_MISSION;
-// Where a pack keeps its tests, and the registry `regen-tests` writes there for them.
+// Where a pack keeps its tests.
 export const PACK_TESTS_DIR = "Scripts/Game/Tests";
-export const PACK_TEST_REGISTRY = "LF_PackTestRegistrations.generated.c";
 
 // "Worlds/X/X.ent" -> "Worlds/X/X_Layers"
 export const layersOf = (world) => world.replace(/\/([^/]+)\.ent$/, "/$1_Layers");

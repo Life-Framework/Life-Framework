@@ -4,7 +4,6 @@
 // and `SUMMARY tier=fast passed=58 failed=1 total=59`.
 // Restored the expected value to 0.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Resources : LF_Test
 {
@@ -77,7 +76,6 @@ class LF_Test_Roadmap_Resources : LF_Test
 	}
 }
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_ResourcesWorld : LF_Test
 {

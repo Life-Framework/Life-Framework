@@ -7,14 +7,13 @@
 export function isSuiteSafePath(file) {
   const path = String(file).replace(/\\/g, "/").replace(/^\.\//, "");
   if (path === "docs/features.md" || (path.startsWith("docs/features/") && path.endsWith(".md"))) return true;
-  if (path.endsWith("/LF_TestRegistrations.generated.c") || path === "LF_TestRegistrations.generated.c") return true;
   const parts = path.split("/");
   if (parts.includes("Language")) return true;
   if (/everonlife_localization\.[A-Za-z0-9_]+\.conf$/.test(path)) return true;
   return false;
 }
 
-// 0 when every path is localization, the generated test registry, or docs/features.md.
+// 0 when every path is localization or docs/features.md.
 // 1 when any other path changed, including a gameplay script, a persistence
 // serializer, a prefab, or a world layer.
 export function suiteValidCode(paths) {
@@ -46,7 +45,6 @@ export function selftestSuiteStamp() {
   const safe = [
     "addons/LifeFramework/Language/everonlife_localization.st",
     "addons/LifeFramework/Language/everonlife_localization.en_us.conf",
-    "addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c",
     "docs/features.md",
     "docs/features/money-economy.md",
   ];

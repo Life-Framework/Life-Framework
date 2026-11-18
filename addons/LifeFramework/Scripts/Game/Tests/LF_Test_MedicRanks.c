@@ -68,16 +68,15 @@ class LF_Test_MedicRanks : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: PERSISTENCE
-//! Medic rank and duty seconds ride the real save path (#2708, the "medicranks" payload): time on
+//! Medic rank and duty seconds ride the real save path (#2708, the "medicranks" save section): time on
 //! duty promotes, the rank survives a save and load, loading twice gives the same rank, a rank off
-//! the ladder clamps, and a save from before the payload loads the medic at rank 0. The restart
-//! itself is `tools\cli wt e2e` (SeedE2E / VerifyE2E).
+//! the ladder clamps, and a save without the section loads the medic at rank 0. Across a restart
+//! (`tools\cli wt e2e`): every non-reload run leaves the e2e medic at rank 2; the reload boot finds it.
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_MedicRanksPersist : LF_Test
 {
 	static const string MEDIC = "test-medic-ranks";
-	//! The e2e character (LF_Test_E2E_SaveState pass 1 seeds it, pass 2 reads it after the restart).
+	//! The e2e character: every non-reload run seeds it, the reload boot reads it after the restart.
 	static const string E2E_KEY = "e2e-medic-ranks";
 
 	override string GetName()
@@ -96,6 +95,17 @@ class LF_Test_MedicRanksPersist : LF_Test
 		ctx.NotNull(persistence, "the game mode carries LF_PersistenceComponent");
 		if (!persistence)
 			return;
+
+#ifdef LF_E2E_LOAD_BOOT
+		// The reload boot: the e2e medic's rank came back from the real save, when it carried the section.
+		if (LF_SaveSections.BootHadSection(LF_MedicRanksSavePayload.NAME))
+			VerifyE2E(ctx);
+		else
+			LF_Debug.Info(LF_MedicRanks.FEATURE, "e2e restart: the boot save has no medicranks section (an older save); restart check skipped");
+		return;
+#endif
+
+		ctx.NotNull(LF_SaveSections.Get(LF_MedicRanksSavePayload.NAME), "medicranks is a registered save section");
 
 		LF_PlayerAccount medic = LF_PlayerAccountManager.GetOrCreate(MEDIC);
 		ctx.NotNull(medic, "the medic account exists");
@@ -120,6 +130,7 @@ class LF_Test_MedicRanksPersist : LF_Test
 		ctx.True(LF_PersistenceComponentSerializer.SerializeStore(persistence, saveContext) == ESerializeResult.OK, "the store serializes");
 		string saved = saveContext.SaveToString();
 		ctx.True(saved.Contains(MEDIC), "the save carries the medic's key");
+		ctx.True(saved.Contains(LF_SaveSections.OBJECT_PREFIX + LF_MedicRanksSavePayload.NAME), "the save carries the medicranks section");
 
 		// Restart: the session holds no rank.
 		medic.SetMedicRank(0);
@@ -129,18 +140,18 @@ class LF_Test_MedicRanksPersist : LF_Test
 		ctx.True(loadContext.LoadFromString(saved), "the save parses");
 		int version;
 		loadContext.ReadValue("version", version);
-		ctx.Equal(LF_TestSaveVersion.CURRENT, version, "the save is written at the current version");
-		ctx.Equal(LF_TestSaveVersion.CURRENT, LF_PersistenceComponentSerializer.PayloadSinceVersion("medicranks"), "medicranks is the newest payload");
+		ctx.Equal(LF_TestSaveVersion.CURRENT, version, "the save is written in the sectioned format");
+		ctx.Equal(0, LF_PersistenceComponentSerializer.PayloadSinceVersion(LF_MedicRanksSavePayload.NAME), "medicranks is not a legacy positional payload");
 		// RedProof(): the load is skipped, so every read-back assertion fails (`--red`).
 		if (!RedProof())
-			LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "medicranks");
+			ReadSection(loadContext, ctx);
 
 		ctx.Equal(1, medic.GetMedicRank(), "the medic rank is back after the load");
 		ctx.Equal(toParamedic, medic.GetMedicDutySeconds(), "the medic duty seconds are back after the load");
 
 		JsonLoadContext again = new JsonLoadContext(false);
 		again.LoadFromString(saved);
-		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, again, "medicranks");
+		ReadSection(again, ctx);
 		ctx.Equal(1, medic.GetMedicRank(), "loading twice keeps the same rank");
 
 		// A rank off the ladder clamps to the top; a row with no key is skipped.
@@ -150,14 +161,14 @@ class LF_Test_MedicRanksPersist : LF_Test
 		ctx.Equal(1, LF_MedicRanks.ApplyAll(rows), "a row with no key is skipped");
 		ctx.Equal(LF_MedicRanks.TopRank(), medic.GetMedicRank(), "a rank past the top clamps to the top");
 
-		// A save from before this payload: the medic loads at rank 0.
-		int previous = LF_TestSaveVersion.CURRENT - 1;
+		// A save without this section (an older save): the medic loads at rank 0.
 		medic.SetMedicRank(0);
 		medic.SetMedicDutySeconds(0);
 		JsonSaveContext oldContext = new JsonSaveContext(false);
-		LF_PersistenceComponentSerializer.SerializeStoreAsVersion(persistence, oldContext, previous);
+		array<string> omit = {LF_MedicRanksSavePayload.NAME};
+		LF_PersistenceComponentSerializer.SerializeStoreOmitting(persistence, oldContext, omit);
 		string oldSave = oldContext.SaveToString();
-		ctx.False(oldSave.Contains("medicRankRows"), "the pre-payload save has no medic rank rows");
+		ctx.False(oldSave.Contains(LF_SaveSections.OBJECT_PREFIX + LF_MedicRanksSavePayload.NAME), "the older save has no medicranks section");
 		JsonLoadContext oldLoad = new JsonLoadContext(false);
 		ctx.True(oldLoad.LoadFromString(oldSave), "the old save parses");
 		LF_PersistenceComponentSerializer.DeserializeStore(persistence, oldLoad);
@@ -171,6 +182,25 @@ class LF_Test_MedicRanksPersist : LF_Test
 			medic.SetMedicDutySeconds(0);
 			medic.SetFaction(LF_Faction.CIVILIAN);
 		}
+
+		// Every non-reload run (the e2e save boot among them) leaves the e2e medic at rank 2.
+		SeedE2E(ctx);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reads the medicranks section of a whole-store JSON save, as LF_SaveSections.ReadAll does.
+	protected static void ReadSection(notnull JsonLoadContext context, LF_TestContext ctx)
+	{
+		LF_SavePayload section = LF_SaveSections.Get(LF_MedicRanksSavePayload.NAME);
+		if (!section)
+			return;
+
+		ctx.True(context.StartObject(LF_SaveSections.OBJECT_PREFIX + LF_MedicRanksSavePayload.NAME), "the medicranks section opens");
+		int savedVersion;
+		context.ReadValue(LF_SaveSections.VERSION_KEY, savedVersion);
+		ctx.Equal(section.Version(), savedVersion, "the section carries its own version");
+		ctx.True(section.ReadSection(context, savedVersion), "the medicranks section reads");
+		context.EndObject();
 	}
 
 	//------------------------------------------------------------------------------------------------

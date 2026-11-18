@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-10 with `tools/cli test --no-build --only LF_Test_Witness`: letting every distance see clothing in LF_Witness.PresetsFor failed `investigation/witness` with `- a far witness gets no clothing preset`. Restored; green.
-// tier: LOGIC
 //! The payphone witness (#266): a witness out of range gets no clothing and no plate, a near one
 //! gets the clothing and a longer plate fragment than a mid-range one, someone who never stood in
 //! sight can say nothing, a thing is said once, and the statement reaches the board entries.

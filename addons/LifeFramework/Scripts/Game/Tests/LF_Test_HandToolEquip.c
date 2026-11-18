@@ -1,5 +1,4 @@
 // red-proof: 2026-11-15 `tools/cli test --no-build --red LF_Test_HandToolEquip,LF_Test_VaultDrillAction,LF_Test_VaultDrillCancel,LF_Test_VaultDrillPayOnce` RED-OK, hook on failed `- in the hands it is held`, `- the held tool is that drill`.
-// tier: WORLD
 //! The drill is a hand tool (core LF_HandTool): it carries the gadget component with tool id drill,
 //! can be held, goes into a 1-0 quick slot, and once in the hands it reads as held; in the pack it
 //! does not.

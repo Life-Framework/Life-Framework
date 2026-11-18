@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --only LF_Test_OrgUpgradeUnwired,LF_Test_OrgFundOverflow,LF_Test_HideoutStashRight,LF_Test_HideoutLoadRelock` on the unfixed code (only the IsRelockScheduled accessor added) failed all four, here "the fund did not wrap (expected 2147483637, got -2147483559)". Green with the fix.
-// tier: LOGIC
 //! organization/fund-overflow (review 2026-11-17): the fund is an int and a deposit added to it with no
 //! ceiling, so a fund near int.MAX wrapped negative on the next deposit. A deposit that would pass the
 //! ceiling is refused and the fund is unchanged (LF_OrganizationPlayer.DepositCash then gives the cash back).

@@ -1,5 +1,5 @@
 {
-  "saveVersion": 56,
+  "saveVersion": 58,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -58,7 +58,9 @@
     "reputation": "LF_ReputationRow",
     "orgwars": "LF_OrgWarRecord",
     "garageslots": "LF_GarageSlotRow",
-    "medicranks": "LF_MedicRankRow"
+    "plants": "LF_PlantRow",
+    "lockers": "LF_LockerRentalRow",
+    "tenancy": "LF_HideoutTenancyRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -687,13 +689,32 @@
         "int m_iBought"
       ]
     },
-    "LF_MedicRankRow": {
+    "LF_PlantRow": {
       "since": 56,
       "fields": [
+        "string m_sPlantId",
+        "string m_sCropId",
+        "vector m_vPosition",
+        "int m_iPlantedAt",
+        "int m_iWateredAt",
+        "string m_sOwnerKey"
+      ]
+    },
+    "LF_LockerRentalRow": {
+      "since": 57,
+      "fields": [
         "int m_iVersion",
-        "string m_sKey",
-        "int m_iRank",
-        "int m_iDutySeconds"
+        "string m_sSiteId",
+        "string m_sCharacterKey",
+        "int m_iPaidUntil"
+      ]
+    },
+    "LF_HideoutTenancyRow": {
+      "since": 58,
+      "fields": [
+        "int m_iVersion",
+        "string m_sHideoutId",
+        "LF_EHideoutTenancy m_eKind"
       ]
     }
   }

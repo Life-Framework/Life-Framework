@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-16, with LF_NamedPlaces.Nearest returning empty, `--only LF_Test_NamedPlaces` failed "a position beside the label is named after it" and "a wider radius reaches the label". Restored, green.
 //! world/named-place: LF_NamedPlaces.Nearest (#1943) names a position after the nearest map
 //! location. A position next to a test-placed location returns that location's name; a position

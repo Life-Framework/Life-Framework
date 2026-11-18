@@ -1,11 +1,12 @@
 // tools\cli upgrade-page <fromRef> [<toRef>] [--version x.y.z] [--out <file>]: print the per-release upgrade
 // page (docs/upgrades/TEMPLATE.md) filled in from the diff of two git refs (#294). Offline: git show only.
 // Reads docs/config/config.schema.json, docs/config/config.migrations.json, the save version in
-// tools/validation/record-shapes.json, and each pack's LF_PackManifest core range. toRef defaults to HEAD.
+// tools/validation/record-shapes.json (with the sectioned format and tools/validation/record-shapes/*.json since #2841), and each pack's LF_PackManifest core range. toRef defaults to HEAD.
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { diffAll, parseManifest, renderPage } from "../upgrade/page.mjs";
+import { SECTION_LOCKS, SERIALIZER } from "../validation/validate-record-shapes.mjs";
 
 export const help = "upgrade-page <fromRef> [<toRef>] [--version x.y.z] [--out F]   print the upgrade page filled from the config schema, migrations, save version and pack range diff between two refs";
 
@@ -24,9 +25,30 @@ export function factsAt(root, ref) {
   return {
     schema: json(show(root, ref, "docs/config/config.schema.json")),
     migrations: json(show(root, ref, "docs/config/config.migrations.json")),
-    shapes: json(show(root, ref, "tools/validation/record-shapes.json")),
+    shapes: shapesAt(root, ref),
     manifests,
   };
+}
+
+// The legacy lock plus, since #2841, the written format and each section's version (its own lock file).
+function shapesAt(root, ref) {
+  const shapes = json(show(root, ref, "tools/validation/record-shapes.json"));
+  if (!shapes) return null;
+  const serializer = show(root, ref, SERIALIZER) ?? "";
+  const format = serializer.match(/static\s+const\s+int\s+SECTIONED_FORMAT\s*=\s*(\d+)\s*;/);
+  if (!format || !/WriteValue\(\s*"version"\s*,\s*SECTIONED_FORMAT\s*\)/.test(serializer)) return shapes;
+  const sections = {};
+  let locks = [];
+  try {
+    locks = git(root, ["ls-tree", "--name-only", `${ref}:${SECTION_LOCKS}`]).split("\n").filter((f) => f.endsWith(".json"));
+  } catch {
+    // No section lock at this ref yet: the format is sectioned with no sections.
+  }
+  for (const f of locks) {
+    const lock = json(show(root, ref, `${SECTION_LOCKS}/${f}`));
+    if (lock?.section) sections[lock.section] = lock.version;
+  }
+  return { ...shapes, format: Number(format[1]), sections };
 }
 
 export async function main(args, { root } = {}) {

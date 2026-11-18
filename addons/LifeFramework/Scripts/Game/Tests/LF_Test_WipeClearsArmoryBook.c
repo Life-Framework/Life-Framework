@@ -1,5 +1,4 @@
 // red-proof: RED-OK 2026-11-17 `tools/cli test --no-build --red LF_Test_WipeClearsArmoryBook` (log test-20261117-220549): with the apply skipped, "a gear wipe clears the officer's outstanding serials (expected 0, got 2)" and "every officer's serials (expected 0, got 1)". Green: `--only` (log test-20261117-220614), log line "keepCarriedGear off: 3 outstanding armory serial(s) cleared" then 0 on the re-apply.
-// tier: LOGIC
 //! persistence/wipe-armory-book (#2621): a gear wipe (keepCarriedGear off) takes the issued kits, so
 //! the armory book hands back every officer's outstanding serials; the 2 h issue cooldown stays as
 //! saved. A kit kept in the police duty locker is still a gun, so its serial stays out. With

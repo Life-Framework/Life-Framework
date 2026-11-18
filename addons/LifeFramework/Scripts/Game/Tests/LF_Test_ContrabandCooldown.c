@@ -1,5 +1,5 @@
 // red-proof: Observed 2026-11-17 `tools/cli test --no-build --only LF_Test_ContrabandCooldown` with the driven check and the cooldown check disabled failed `crime/contraband-cooldown` with `- a crate walked to the drop pays nothing (expected 0, got 200)` and `- a paid character cannot restart inside the cooldown`. Restored: green.
-// tier: WORLD (needs DebugWorld's placed organization hideout door, like roadmap/contraband)
+//! Needs DebugWorld's placed organization hideout door, like roadmap/contraband
 //! #2419: a contraband run is paid only for a crate that was driven (a run begun on foot arms a
 //! vehicle watch, so a walk to the drop never fails), and a character that was paid waits out a
 //! cooldown before the next run.

@@ -8,7 +8,6 @@
 // on-duty officer arrests them through the window. The prisoner appears in Roadmap_Jail_Cell;
 // the car stays where it was.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JailVehicleArrest : LF_Test
 {

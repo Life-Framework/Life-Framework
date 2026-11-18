@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-11 with `tools/cli test --no-build --only LF_Test_WitnessDialogue`: inverting the `!sawScene` check in LF_WitnessDialogue.AnswerKey failed investigation/witness-dialogue; restored; green.
-// tier: LOGIC
 //! What a questioned witness says (#615): NPC names are stable per spot and varied across spots,
 //! and an NPC that saw nothing answers with one of the noncommittal lines, never "you didn't see
 //! anything".

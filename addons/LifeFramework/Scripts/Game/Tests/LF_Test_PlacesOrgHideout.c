@@ -1,6 +1,5 @@
 // red-proof: 2026-11-14, with the Roadmap hideout door's m_bOrganizationHideout set to 0, cli test --no-build --only LF_Test_PlacesOrgHideout: [LFTEST]   - the organization hideout keeps its saved key (expected 'Roadmap_Hideout', got ''). Restored; green.
 // red-proof (#1892, 2026-11-16): `tools\cli test --no-build --only <the 7 slice-1892 tests> --world Worlds/GridWorld/GridWorld.ent` before Grid_orgs_vehicles.layer failed all 7 (no org hideout door, no flagged lot, no store, no impound pad); green with it.
-// tier: WORLD
 //! places/org-hideout: the organization hideout and the film till are found by component, not by a
 //! baked id or coordinate (#1055). The hideout the desk leases is the door marked as the
 //! organization hideout, and its id is the key the state is saved under (the door's own hideout id; the

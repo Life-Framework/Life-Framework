@@ -7,7 +7,6 @@
 //! letters, space, then 3-4 digits. The known off-by-one (RandomInt(0,25)
 //! excludes Z; RandomInt(100,9999) excludes 9999) is a code-review finding in
 //! features.md, not a test here, because it cannot be observed deterministically.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_LicensePlateFormat : LF_Test
 {

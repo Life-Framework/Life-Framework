@@ -3,7 +3,6 @@
 // "[LFTEST] FAIL security/service-range" / "- an ATM 200 m away does not serve the player"
 // and "- the organization desk is not an ATM". Restored, it passes.
 
-// tier: WORLD
 //! The ATM and organization desk RPCs only move cash at the placed site. Reads the DebugWorld
 //! placements Annex_ATM and Roadmap_Org_Desk.
 [LF_TestInfo(LF_TestTier.WORLD)]

@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-17, `tools/cli test --no-build --red LF_Test_PlacementPolicyWhere` printed RED PROOF OK (the RedProof hook skips the zone gather, so house B reads as no house, the neighbour is not named and a key to it finds nothing); with the hook off it passes, and PlacementPolicyWho, PlacementConfirm and PlacementComposition stay green.
 //! placement/policy-where (#2447): a kind's zone in the placement policy limits where it goes. A roads-only
 //! kind is refused off the road and allowed on it; a kind for an owned property is refused in the neighbour's

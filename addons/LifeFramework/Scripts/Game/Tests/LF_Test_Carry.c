@@ -25,7 +25,6 @@ class LF_TestCarryRecorder : LF_EventSubscriber
 //! spawned characters beside the annex escort car: a standing body, a body out of reach and a body
 //! with no vehicle near are refused and nothing is published; a downed body in reach is accepted,
 //! counted and published once as "load".
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Carry : LF_Test
 {

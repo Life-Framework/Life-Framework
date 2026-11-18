@@ -1,7 +1,6 @@
 // red-proof: 2026-11-18, `tools\cli test --no-build --only LF_Test_QuestTrackerIdle` on unfixed main: the tracker
 // of a fresh body with no quest still carried the FRAME event (expected 0, got 8) and a turned-in quest left it on.
 
-// tier: WORLD
 //! Quest tracker idle cost (#2537): the tracker's timed check (expiry, area entry) is an EOnFrame on every body on
 //! the server. It runs only while the body holds a quest that can expire or fire an area, starts with the accept and
 //! stops with the last quest's turn-in.

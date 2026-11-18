@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 (bug fix: the test run with the fix reverted failed) on the unfixed LF_HouseManagerComponent (no INIT mask): "the house has an identifier after init". Green with the fix.
-// tier: WORLD
 //! houses/identifier-init (review 2026-11-17): a spawned building with LF_HouseManagerComponent gets a
 //! house identifier at init. The component never asked for EOnInit (no SetEventMask), so the identifier
 //! stayed empty, SyncDoors never ran, and no key could ever match the building's doors.

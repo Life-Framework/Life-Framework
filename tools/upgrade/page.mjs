@@ -64,13 +64,20 @@ export function diffMigrations(was, now) {
 }
 
 // Save version and payload classes from tools/validation/record-shapes.json.
+// Since #2841 the store writes `format` (1000) after the frozen legacy payloads, and new payloads are
+// `sections` ({ name: version }, from tools/validation/record-shapes/<name>.json). `from`/`to` are the
+// version a save of that ref logs (`save loaded: version N`): the format when there is one.
 export function diffShapes(was, now) {
   const w = was?.payloads ?? {}, n = now?.payloads ?? {};
+  const ws = was?.sections ?? {}, ns = now?.sections ?? {};
   return {
-    from: was?.saveVersion ?? null, to: now?.saveVersion ?? null,
+    from: was?.format ?? was?.saveVersion ?? null, to: now?.format ?? now?.saveVersion ?? null,
     payloadsAdded: Object.keys(n).filter((k) => !(k in w)),
     payloadsRemoved: Object.keys(w).filter((k) => !(k in n)),
     payloadsChanged: Object.keys(n).filter((k) => k in w && !same(w[k], n[k])).map((k) => ({ key: k, was: w[k], now: n[k] })),
+    sectionsAdded: Object.keys(ns).filter((k) => !(k in ws)).sort(),
+    sectionsRemoved: Object.keys(ws).filter((k) => !(k in ns)).sort(),
+    sectionsRaised: Object.keys(ns).filter((k) => k in ws && ws[k] !== ns[k]).sort().map((k) => ({ name: k, was: ws[k], now: ns[k] })),
   };
 }
 
@@ -119,15 +126,19 @@ export function renderConfig(s) {
 
 export function renderSave(sh) {
   if (sh.from == null) return `Save version ${sh.to}. The older ref has no record-shapes lock, so the payload diff is not available: TODO (what changed, and whether old saves load).`;
-  if (sh.from === sh.to && !sh.payloadsAdded.length && !sh.payloadsRemoved.length && !sh.payloadsChanged.length) {
+  const sAdded = sh.sectionsAdded ?? [], sRemoved = sh.sectionsRemoved ?? [], sRaised = sh.sectionsRaised ?? [];
+  if (sh.from === sh.to && !sh.payloadsAdded.length && !sh.payloadsRemoved.length && !sh.payloadsChanged.length && !sAdded.length && !sRemoved.length && !sRaised.length) {
     return `No save version changes (save version ${sh.to}).`;
   }
   const what = [
     ...sh.payloadsAdded.map((k) => `new payload \`${k}\``),
     ...sh.payloadsRemoved.map((k) => `payload \`${k}\` removed`),
     ...sh.payloadsChanged.map((c) => `payload \`${c.key}\` record \`${c.was}\` -> \`${c.now}\``),
+    ...sAdded.map((k) => `new section \`${k}\``),
+    ...sRemoved.map((k) => `section \`${k}\` removed (a save that holds it pauses autosave on this build)`),
+    ...sRaised.map((c) => `section \`${c.name}\` version ${c.was} -> ${c.now}`),
   ];
-  const keys = [...sh.payloadsAdded, ...sh.payloadsRemoved, ...sh.payloadsChanged.map((c) => c.key)].map((k) => `\`${k}\``).join(", ") || "(none)";
+  const keys = [...sh.payloadsAdded, ...sh.payloadsRemoved, ...sh.payloadsChanged.map((c) => c.key), ...sAdded, ...sRemoved, ...sRaised.map((c) => c.name)].map((k) => `\`${k}\``).join(", ") || "(none)";
   return [
     "| Save version | Payload | What changed | Old saves |", "|---|---|---|---|",
     `| \`${sh.from}\` -> \`${sh.to}\` | ${keys} | ${what.join("; ") || "version bump only"} | TODO: load whole / load with a default / reset |`,

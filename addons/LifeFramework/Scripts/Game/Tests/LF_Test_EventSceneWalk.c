@@ -1,5 +1,4 @@
 // red-proof: `test --no-build --red LF_Test_EventSceneWalk` -> RED PROOF OK (2026-11-17): with the hook on nobody moves, so `walker 1 reached the target` and `passed every waypoint first` fail; without it `SUMMARY tier=only passed=1 failed=0`.
-// tier: WORLD
 //! Event scene walk (#1956): the walkers of the grid cell `event-scene` (Grid_event_scene.layer) follow
 //! the plan's waypoints in order to the target. GridWorld has no AIWorld, so the test moves the
 //! walkers toward the point the walk names for each (what the AI group does on a real map) and checks

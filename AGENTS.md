@@ -210,7 +210,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   (`--tier all`, or `--only`/`--red` by name). Never a node selftest that reads `.conf` text
   (`docs/architecture/three-worlds.md` "Pack test leg").
 - Loop: `tools\cli test --no-build --only <LF_Test_Class>` (~10 s) until green, one `--red` run for the new tests, then `--tier all` once at the end.
-- **A test deletes what it spawns** (`LF_TestCharacterFixture.Delete`; `LF_TestLooseSweep.DeleteBuilding` for a payphone booth, whose loose part outlives the booth; `LF_TestVaultDrillFixture.Release` for a robber). Every fixture character spawns at the gate, so leftovers pile up under later tests (#2792). A run ends with `suite/no-leftover-fixtures`, which fails and names the test that left a character or prefab-less prop within 9 m of the gate. Never delete characters in a sweep after each test: it crashed the engine, and deleting a character that carries a path-loaded pack crashes it too (use the GUID reference, `LF_TestVaultDrillFixture.PACK_PREFAB`).
+- **A test deletes what it spawns** (`LF_TestCharacterFixture.Delete`; `LF_TestLooseSweep.DeleteBuilding` for a payphone booth, whose loose part outlives the booth; `LF_TestVaultDrillFixture.Release` for a robber). Every fixture character spawns at the gate, so leftovers pile up under later tests (#2792). A run ends with `suite/no-leftover-fixtures`, which fails and names the test that left a character or prefab-less prop within 9 m of the gate. A test that must keep a body alive past the run (`e2e/pass1-write-save` holds its characters through the shutdown save) declares each with `LF_TestDebrisProbe.Keep(entity)`, and the check skips it. Never delete characters in a sweep after each test: it crashed the engine, and deleting a character that carries a path-loaded pack crashes it too (use the GUID reference, `LF_TestVaultDrillFixture.PACK_PREFAB`).
 - **A test never calls `LF_StaticReset.ResetAll()`**: it wipes every feature's statics and fails every later test in the suite (2026-11-16, 38 tests, #2092). Apply only your own feature's `LF_StaticResetHook` (`<Owner>.ResetStatics()`); `validate-no-test-resetall` fails core and pack tests that call it.
 - **A node selftest that builds a scratch git repo** calls `useHermeticGit()` and cleans up with `removeScratch()`
   (`tools/lib/selftest-git.mjs`): no machine git config, a fixed identity and branch, no auto-gc holding the folder
@@ -287,6 +287,9 @@ bug for each one; they transfer here because the engine is the same.
   `LF_PersistenceComponentSerializer.c`: a new payload takes a fresh name, one
   write and one read (a reused `slotRows` once loaded every garage slot as 0);
   `validate-record-var-names` fails a repeat.
+  A payload is a section (`LF_SavePayload`, #2841): its own name, its own small
+  version, its own file; it reads every older version of itself and `OnAbsent()`
+  covers a save from before it. Legacy payloads stay positional and frozen.
   **In-session round trips prove nothing about restarts**; the restart path is
   ground truth.
 
@@ -305,7 +308,7 @@ Detail lives in `.claude/skills/enfusion-resource-authoring` and `enfusion-blast
 - Moving or renaming a resource breaks every `{GUID}path` reference, saved worlds included.
 - Layouts: unique widget GUIDs per file, inherited-component GUIDs equal the base, a sibling `.layout.meta`.
 - Input: bind keyboard plus `gamepad0:`; never `W/A/S/D`, `a`, the d-pad, `T`, or `shoulder_left`.
-- A persisted payload is appended to `RegisterPersistencePayloads` with a version bump (`validate-persistence-version`).
+- A new persisted payload is a section: `class LF_<Area>SavePayload : LF_SavePayload` in its feature folder with its own `Version()`, locked by `validate-record-shapes --update` (`docs/persistence.md` "Sections"). `RegisterPersistencePayloads` is frozen (`validate-persistence-version`); no global save version moves.
 
 ## Research before code
 

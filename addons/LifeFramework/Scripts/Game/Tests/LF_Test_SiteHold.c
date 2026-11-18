@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `test --no-build --red LF_Test_SiteHold` printed `RED-OK sites/site-hold (fails with the hook on, 33 assertions)`; with the hook on only one organisation is present, so the contested freeze assertions fail (expected 20 points, got 40).
-// tier: LOGIC
 //! Site hold (#2678): the scoring maths with no world. Who gains, who is frozen, how progress decays.
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SiteHold : LF_Test

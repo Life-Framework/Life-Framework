@@ -2,7 +2,6 @@
 // or insert a UUID that is not in the list, then run `tools\cli test --tier fast`
 // and watch [LFTEST] FAIL whitelist/logic.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WhitelistLogic : LF_Test
 {
@@ -38,7 +37,6 @@ class LF_Test_WhitelistLogic : LF_Test
 // red-proof: expect a wrong type or token count (e.g. claim "!wadd POLICE" parses)
 // and the fast tier fails on the command parse assertions.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WhitelistCommandParse : LF_Test
 {

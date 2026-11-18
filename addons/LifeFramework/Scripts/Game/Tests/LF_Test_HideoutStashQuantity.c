@@ -5,7 +5,6 @@
 // transfer cash into a stash stack`. Green with LF_HideoutStashQuantityGate.c.
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
 //! A quantity transfer (split/merge RPC) changes stacks in place, so the stash's own storage checks
 //! never run. The quantity gate must apply the stash's member rule to both sides.
 [LF_TestInfo(LF_TestTier.WORLD)]

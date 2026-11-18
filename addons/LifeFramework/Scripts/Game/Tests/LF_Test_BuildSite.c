@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_BuildSite,LF_Test_BuildSitePersist` printed `RED-OK property/build-site (fails with the hook on, 53 assertions)` (the hook skips the first cement deposit); `--only` then passed.
-// tier: WORLD
 //! property/build-site (#2650): the owner of plot-a stands at its sign with cement bags and gravel.
 //! A stranger is refused; two cement bags deposit (they leave the inventory, the record counts 2);
 //! work before the items are in is refused; the rest deposits, the work units go in (a second unit

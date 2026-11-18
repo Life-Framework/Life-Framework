@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, a bug fix (crime review item 21, #2542): one boot against main's LF_JailEscort.c (only stub seams so it compiles) failed `- a grab from beyond reach is refused`, `- a second officer cannot take a held suspect`, `- the first hold stays (expected 'grab-rules-officer-a', got '')`; green with LF_JailEscort.Grab, GrabRefusal and the hold check.
-// tier: LOGIC
 //! An escort grab needs reach and never takes another officer's prisoner (#2542). The server side of
 //! both escort actions runs LF_JailEscort.Grab: reach first (LF_PlayerInteraction.CheckPair, the rule
 //! the cuff and arrest paths use), then the hold check inside LF_JailEscort.Escort.

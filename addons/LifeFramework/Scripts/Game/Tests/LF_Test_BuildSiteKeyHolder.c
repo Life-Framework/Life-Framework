@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 `tools/cli test --no-build --red LF_Test_BuildSiteKeyHolder` printed RED PROOF OK: with the hook on the key stays unbound, so `- the record counts the key holder's two cement bags (expected 2, got 0)`. On the owner-only #2650 code a key holder is refused the same way.
-// tier: WORLD
 //! property/build-site-keyholder (#2815): building is cooperative. At plot-a's sign a stranger (no key)
 //! is refused with a reason and nothing leaves their inventory; a character carrying a key bound to the
 //! plot deposits and works like the owner and the stage advances; once the key is bound elsewhere the

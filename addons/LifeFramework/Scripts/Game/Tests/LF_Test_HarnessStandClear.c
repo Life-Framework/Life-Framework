@@ -4,7 +4,6 @@
 //   [LFTEST] SUMMARY tier=only passed=0 failed=1 total=1
 // Restored it and the test passed.
 
-// tier: WORLD
 //! #522: stand puts a character on a clear, ground-snapped spot. Two characters sent to the same
 //! target must not share a spot (overlapping capsules down one of them).
 [LF_TestInfo(LF_TestTier.WORLD)]

@@ -2670,6 +2670,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Contraband"
      Comment "Toast title for contraband convoy messages"
     }
+    CustomStringTableItem "{3565B0AEE39851EE}" {
+     Id "LF-Contract_Busy"
+     Target_en_us "You already have a contract. Finish that one first."
+     Comment "Contract refusal (#2702): one contract at a time per character."
+    }
+    CustomStringTableItem "{00EEFD92187745AF}" {
+     Id "LF-Contract_Cooldown"
+     Target_en_us "Nothing for you right now. Come back later."
+     Comment "Contract refusal (#2702): the cooldown after the last contract is still running."
+    }
+    CustomStringTableItem "{874C1FFFA39D4B3B}" {
+     Id "LF-Contract_NoRun"
+     Target_en_us "The contract could not be tied to your run; it pays as an ordinary run."
+     Comment "Contract start (#2702): the run started but the contract did not bind. Should not happen."
+    }
+    CustomStringTableItem "{FED9A73448625D00}" {
+     Id "LF-Contract_NotAble"
+     Target_en_us "You are in no state to take on work."
+     Comment "Contract refusal (#2702): the player is dead or downed."
+    }
+    CustomStringTableItem "{49069B1064628566}" {
+     Id "LF-Contract_Unknown"
+     Target_en_us "That contract isn't on offer."
+     Comment "Contract refusal (#2702): the contract id has no row or no delivery job."
+    }
     CustomStringTableItem "{E83AB3CDE17F447B}" {
      Id "LF-Credits_1"
      Target_en_us "PROJECTS WE BUILD ON AND BORROW FROM"
@@ -5083,6 +5108,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Lockpick"
      Comment "Item name (#411)."
     }
+    CustomStringTableItem "{B7CF3EC52549209E}" {
+     Id "LF-Item_MarkedCash"
+     Target_en_us "Marked notes"
+     Comment "Item name: stolen banknotes still in a bank band; they look like cash but no shop or ATM takes them"
+    }
+    CustomStringTableItem "{4D5896C4AF350BBF}" {
+     Id "LF-Item_MarkedCash_Desc"
+     Target_en_us "Banknotes still in the bank's band. No shop or teller will take them as they are."
+     Comment "Item description of the marked notes"
+    }
     CustomStringTableItem "{315A7D38264FAED4}" {
      Id "LF-Item_MoneyBag"
      Target_en_us "Cash sack"
@@ -6046,6 +6081,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Unemployed"
      Target_es_es "Desempleado"
      Comment "Licence name: no employment"
+    }
+    CustomStringTableItem "{E767EB7F650628AD}" {
+     Id "LF-LockerBank_AlreadyRented"
+     Target_en_us "You already rent a locker here."
+     Comment "Toast: a second rent at the same locker bank is refused."
+    }
+    CustomStringTableItem "{0D4C2B7A9E61F358}" {
+     Id "LF-LockerBank_CannotAfford"
+     Target_en_us "You do not have the rent in cash."
+     Comment "Toast or greyed prompt: the player carries less cash than the locker rent."
+    }
+    CustomStringTableItem "{93E1A6C04B7D2F85}" {
+     Id "LF-LockerBank_OutOfReach"
+     Target_en_us "Stand at the lockers to rent one."
+     Comment "Toast: the server found no locker bank within reach of the player."
+    }
+    CustomStringTableItem "{4F27D8B1C0A3E96D}" {
+     Id "LF-LockerBank_Refused"
+     Target_en_us "The locker could not be rented."
+     Comment "Toast: the rent was refused for a reason the player cannot fix (logged)."
+    }
+    CustomStringTableItem "{5B4F91955B355624}" {
+     Id "LF-LockerBank_Rent"
+     Target_en_us "Rent a locker"
+     Comment "Action on a locker bank: pay the rent for one locker here."
+    }
+    CustomStringTableItem "{5166BCD3DA9EC12C}" {
+     Id "LF-LockerBank_Rented"
+     Target_en_us "You rented a locker here."
+     Comment "Toast: the rent was paid and the locker at this bank is the player's."
+    }
+    CustomStringTableItem "{6A90D3BA614FE639}" {
+     Id "LF-LockerBank_Title"
+     Target_en_us "Lockers"
+     Comment "Title of the locker bank prompt and toast."
     }
     CustomStringTableItem "{606F8E5D11807BC8}" {
      Id "LF-Locker_Cases"
@@ -8092,20 +8162,90 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You are not allowed to place this."
      Comment "Toast when the placement service refuses because the player may not place that item: a spike strip off duty (#1026)."
     }
+    CustomStringTableItem "{3E6A1F5C92D80B47}" {
+     Id "LF-Placement_PickUp"
+     Target_en_us "Pick up"
+     Comment "Action name on a permanent prop its owner placed (a chair, a table): takes it back into the inventory (#2751)."
+    }
     CustomStringTableItem "{42E27FF2B0C5A49F}" {
      Id "LF-Placement_Title"
      Target_en_us "Placing"
      Comment "Toast title for every placement refusal (#1026)."
+    }
+    CustomStringTableItem "{35DC52C82B0BDC1E}" {
+     Id "LF-Plant_Action_Harvest"
+     Target_en_us "Harvest plant"
+     Comment "Action: harvest the nearest ripe plant, anyone may (#2664)."
+    }
+    CustomStringTableItem "{2C28995D979CC096}" {
+     Id "LF-Plant_Action_Inspect"
+     Target_en_us "Inspect plant"
+     Comment "Action: look at the nearest plant (#2664)."
+    }
+    CustomStringTableItem "{5E937DD36134DE70}" {
+     Id "LF-Plant_Action_Plant"
+     Target_en_us "Plant seed"
+     Comment "Action on a seed item: plant it on the ground in front of you (#2664)."
+    }
+    CustomStringTableItem "{438D69BE8666C5A2}" {
+     Id "LF-Plant_Action_Water"
+     Target_en_us "Water plant"
+     Comment "Action on a water container: water the nearest plant (#2664)."
     }
     CustomStringTableItem "{91F3B6D2C0E8A474}" {
      Id "LF-Plant_CharacterCap"
      Target_en_us "You are already tending as many plants as you can."
      Comment "Toast: the character has reached the per-character plant cap (12)."
     }
+    CustomStringTableItem "{F4CF5DF8731FD112}" {
+     Id "LF-Plant_Cleared"
+     Target_en_us "You pull up the dead plant."
+     Comment "Toast: a dead or rotten plant was cleared with nothing to pick (#2664)."
+    }
+    CustomStringTableItem "{D1CC92B9AB0144A9}" {
+     Id "LF-Plant_GrantFailed"
+     Target_en_us "The harvest could not be picked."
+     Comment "Toast: harvest grant failed, the plant stays (#2664)."
+    }
     CustomStringTableItem "{2B96D1F4A8C03E57}" {
      Id "LF-Plant_InVehicle"
      Target_en_us "You can't plant from a vehicle."
      Comment "Toast: planting is refused while the player is in a vehicle."
+    }
+    CustomStringTableItem "{A45CF761290D0E7F}" {
+     Id "LF-Plant_NoCrop"
+     Target_en_us "That does not grow here."
+     Comment "Toast: the item is not a seed of any crop, or the crop was removed (#2664)."
+    }
+    CustomStringTableItem "{441EE7136209D33C}" {
+     Id "LF-Plant_NoPlant"
+     Target_en_us "There is no plant close enough."
+     Comment "Toast: no plant within reach (#2664)."
+    }
+    CustomStringTableItem "{EBB828FC04116312}" {
+     Id "LF-Plant_NoSeed"
+     Target_en_us "You have no seed of that crop."
+     Comment "Toast: planting refused, the seed is not in the inventory (#2664)."
+    }
+    CustomStringTableItem "{60E32823B695604A}" {
+     Id "LF-Plant_NoWater"
+     Target_en_us "You need something with water in it."
+     Comment "Toast: watering refused, no water container carried (#2664)."
+    }
+    CustomStringTableItem "{1249E5766896037C}" {
+     Id "LF-Plant_NotGrowing"
+     Target_en_us "It is past watering now."
+     Comment "Toast: watering refused, the plant is ripe, dead or rotten (#2664)."
+    }
+    CustomStringTableItem "{AFB196EB146950F9}" {
+     Id "LF-Plant_NotRipe"
+     Target_en_us "It is not ripe yet."
+     Comment "Toast: harvest refused, still growing (#2664)."
+    }
+    CustomStringTableItem "{97A6F835BC560561}" {
+     Id "LF-Plant_NotThirsty"
+     Target_en_us "The soil is still damp."
+     Comment "Toast: watering refused, too early since the last watering (#2664)."
     }
     CustomStringTableItem "{E4A07C5B1D3F9268}" {
      Id "LF-Plant_SafeZone"
@@ -8117,6 +8257,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The land is full; no more plants fit right now."
      Comment "Toast: the server-wide plant cap (300) is reached."
     }
+    CustomStringTableItem "{189E1B35DD800939}" {
+     Id "LF-Plant_Stage_Dead"
+     Target_en_us "Dried out and dead."
+     Comment "Inspect toast: the plant missed its watering and died (#2664)."
+    }
+    CustomStringTableItem "{822A530AEEA855B0}" {
+     Id "LF-Plant_Stage_Growing"
+     Target_en_us "Growing well."
+     Comment "Inspect toast: the plant is past halfway to ripe (#2664)."
+    }
+    CustomStringTableItem "{A903ED7A9B6712D2}" {
+     Id "LF-Plant_Stage_Ripe"
+     Target_en_us "Ripe and ready to pick."
+     Comment "Inspect toast: the plant can be harvested (#2664)."
+    }
+    CustomStringTableItem "{357CED2AB6738715}" {
+     Id "LF-Plant_Stage_Rotten"
+     Target_en_us "Left too long, it has rotted."
+     Comment "Inspect toast: the ripe plant was not picked in time (#2664)."
+    }
+    CustomStringTableItem "{4EF802B73F17EF25}" {
+     Id "LF-Plant_Stage_Sprout"
+     Target_en_us "A small sprout."
+     Comment "Inspect toast: the plant has just come up (#2664)."
+    }
+    CustomStringTableItem "{33116CD2BFBA424C}" {
+     Id "LF-Plant_Title"
+     Target_en_us "Garden"
+     Comment "Toast title for planting, watering, harvesting and inspecting a free crop (#2664)."
+    }
     CustomStringTableItem "{5C1E8A3D70B94F21}" {
      Id "LF-Plant_TooClose"
      Target_en_us "Too close to another plant."
@@ -8126,6 +8296,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Plant_TooFar"
      Target_en_us "Too far away to plant there."
      Comment "Toast: the spot is beyond the 4 m planting reach."
+    }
+    CustomStringTableItem "{8FD7B9CC66956694}" {
+     Id "LF-Plant_Water_Fine"
+     Target_en_us "The soil is still damp."
+     Comment "Inspect toast: the plant does not need water yet (#2664)."
+    }
+    CustomStringTableItem "{36802946AA27D91E}" {
+     Id "LF-Plant_Water_Thirsty"
+     Target_en_us "The soil is dry. It needs water."
+     Comment "Inspect toast: the plant can be watered now (#2664)."
     }
     CustomStringTableItem "{F875CB040C3C2526}" {
      Id "LF-PoliceAppGm_Approve"
@@ -9880,6 +10060,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Next"
      Comment "Sign card section heading: where to go after this place."
     }
+    CustomStringTableItem "{DFB2C6F5B97FC132}" {
+     Id "LF-Sign_PlotForSale_Next"
+     Target_en_us "Stand at the sign with the price in carried cash and choose Buy plot."
+     Comment "Read card of the plot sign: what to do next (#2780)."
+    }
+    CustomStringTableItem "{BEBD6A10FB2E9747}" {
+     Id "LF-Sign_PlotForSale_Title"
+     Target_en_us "For sale"
+     Comment "Core plot sign face and Read title (#2780): a plot nobody owns yet."
+    }
+    CustomStringTableItem "{3FF5200250B9B700}" {
+     Id "LF-Sign_PlotForSale_What"
+     Target_en_us "A plot of land nobody owns yet. Use the sign to buy it with cash."
+     Comment "Read card of the plot sign (#2780)."
+    }
     CustomStringTableItem "{C71FE54AE5989467}" {
      Id "LF-Sign_Read"
      Target_en_us "Read: %1"
@@ -9934,6 +10129,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sit_StandUp"
      Target_en_us "Stand up"
      Comment "F-key action on the seat you are sitting on: stand up (#982)."
+    }
+    CustomStringTableItem "{E90742664100610A}" {
+     Id "LF-SiteFlag_Unclaimed"
+     Target_en_us "Unclaimed"
+     Comment "Painted board on a contested site's flag pole when no organisation holds the site."
     }
     CustomStringTableItem "{134044FE4B970260}" {
      Id "LF-SpawnHub_Close"

@@ -1,6 +1,5 @@
 // red-proof: 2026-11-17, bug fix. On the unfixed code (chess asks counted against COMMS) `--only LF_Test_ChessRateBucket` fails "chess is not refused by a full phone bucket". With LF_ERequestKind.CHESS, green.
 
-// tier: LOGIC
 //! #2405 (review 2026-11-17): chess asks have their own rate bucket. Three phone or board reads
 //! (the COMMS burst) must not refuse a chess move, and a chess flood must not refuse the phone.
 [LF_TestInfo(LF_TestTier.LOGIC)]

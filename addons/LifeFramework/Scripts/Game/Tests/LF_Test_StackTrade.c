@@ -2,7 +2,6 @@
 // [LFTEST]   - a stack of 5 sells for 5 times one unit (expected 7, got 35)
 // while the assertion still expected one unit instead of five. Restored to 35.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StackTrade : LF_Test
 {

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --only LF_Test_CharacterFlowGate` on the unfixed code: FAIL "a player the server is not arriving is refused the arrival flow" (got "", expected "#LF-CharSel_Refused"); green with the gate.
-// tier: LOGIC
 //! character/flow-gate (#2413): the quiz's Continue and the registration form re-enter the arrival
 //! flow, which offers the character pick or a fresh spawn. Only a player the server is arriving
 //! (flow opened on connect, closed on spawn) may reach it, so a dead, downed, cuffed or jailed

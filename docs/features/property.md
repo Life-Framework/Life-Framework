@@ -30,6 +30,13 @@
   cuffed buyer. Bought: exactly the price leaves the buyer's carried cash (ledger reason `property_buy`),
   the buyer's character key becomes the owner in `LF_Properties` with the purchase time, and a toast says
   so. The row rides the existing `properties` payload. Proof: `property/plot-buy`.
+- 🟡 (#2780) The plot sign reads "For sale" (core sign `plot_for_sale` in `LF_Signs.conf`, neutral strings; a pack words it
+  by overriding the same keys). A client has no property book, so each sign replicates one bool, `m_bOwned`
+  (`RplProp` + `BumpMe` on change; a late joiner gets it with the entity). `LF_Properties.SetOwner` and `ApplyAll` refresh the
+  live signs, and a sign that enters the world after a sale starts owned. `LF_PlotBuyAction` shows only when
+  `LF_PlotComponent.IsForSale()` (a price and not owned), so an owned plot no longer offers Buy; the server still refuses a
+  forged buy. The owner's key is never replicated. Proof: `property/plot-owned-state` (the flag drives the action with the
+  book emptied, as on a client); the late-joiner view is a manual step.
 
 ### Build site — `Feature/Property/LF_BuildSiteComponent.c` (2026-11-18, #2650, spec #756)
 - 🟡 The plot sign also carries an `LF_BuildSiteComponent` and two actions. "Need N more <item>" deposits

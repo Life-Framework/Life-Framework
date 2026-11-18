@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with `tools\cli test --no-build --only LF_Test_GracePerCharacter` on the unfixed `LF_Grace.Protects` (it read `LF_Playtime.Total(accountUid)`): failed `- a fresh second character on a 10 hour account is protected` and `- one second before its own 5 minutes it is protected`. Fixed (it reads `LF_GraceCharacterClock.Seconds`); green.
-// tier: LOGIC
 //! #2443: the grace clock is the character's own played time, not its account's. A fresh second
 //! character on an account with 10 hours played is protected; the same character after N minutes of
 //! its own play (credited through LF_Playtime.Settle) is not; a character with a crime never is. A save

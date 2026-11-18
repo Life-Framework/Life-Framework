@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 batched `--red` RED PROOF OK: with the hook on the leaver is never taken out, so the fee stays in the pot, the lobby does not close and the tick stays on. Green with the fix.
-// tier: WORLD
 //! #2406: a racer who leaves while the race is still in its LOBBY gets the fee back at once (to the bank,
 //! never to the leaving body) and an emptied lobby closes. And the 250 ms checkpoint tick runs only
 //! while a race is RACING: a lobby open beside a finished race does not keep it on.

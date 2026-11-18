@@ -2,7 +2,6 @@
 // LF_JailCellComponent.OnPostInit disabled, `tools\cli test --no-build --tier all` failed
 // robustness/single-jail-tick with "a second cell does not start its own jail tick". Restored, it passes.
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RobustnessWorld : LF_Test
 {
