@@ -1,11 +1,10 @@
 # Quorum sign-off and the tester roster
 
-Status: **proposed, not in force.** The maintainer decided on 2026-11-10 that a
-quorum of trusted testers replaces the single maintainer at the release gate
-(`docs/decisions.md`). The numbers and rules below are our proposal for them to
-approve or change. The tooling is built and switched off: `quorum.json` says
-`"enabled": false`, so `tools\cli promote` behaves as before until the
-maintainer flips it.
+Status: **off.** The maintainer switched it on on 2026-11-11 and off again on
+2026-11-18: "skip the quorum rule until we actually have playtesters". With
+`"enabled": false` in `quorum.json`, `toolscli promote --confirm` needs the
+main guard's green and no confirmations file. Turn it back on (`"enabled":
+true`) once the roster has active playtesters.
 
 Issue: #575. Gate it feeds: `docs/worktrees.md`, "Release gates". Who runs the
 sessions: [session playbook](session-playbook.md).
