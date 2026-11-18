@@ -79,6 +79,11 @@
       "places": ["FenceYard"]
     },
     {
+      "id": "harbour", "required": false, "kit": "harbour-master", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 15, "prefer": "near", "maxDistance": 130, "types": ["industrial", "shed", "garage", "house"] },
+      "places": ["HarbourMaster"]
+    },
+    {
       "id": "carlot", "required": false, "kit": "carlot", "host": "building", "poi": "none", "margin": 18,
       "needs": { "interior": "optional", "minArea": 60, "prefer": "near", "maxDistance": 140, "types": ["garage"] },
       "places": ["VehicleLot"]
