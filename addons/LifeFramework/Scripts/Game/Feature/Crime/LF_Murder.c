@@ -7,7 +7,8 @@
 //! A logged-out body (LF_LogoutBody) is its player: killing it is murder with the player's uid.
 //! What does not count: a death with no player behind it (an NPC, a fall, a fire), a self-kill,
 //! and, by default (LF_Police.conf m_bOfficerKillOfWantedExempt), an on-duty officer killing a
-//! wanted suspect. Repeat offenders are an admin matter: no ban, no kick, no karma.
+//! wanted suspect, and a kill between members of organizations at war (SKIP_ORG_WAR, #2670; config
+//! `warKillsAreMurder` makes it murder again). Repeat offenders are an admin matter: no ban, no kick, no karma.
 //!
 //! Entry: LF_GameModeRoleplay.OnControllableDestroyedEx on the server, which fires once per
 //! character death, players and NPCs alike.
@@ -21,6 +22,7 @@ class LF_Murder
 	static const string SKIP_NOT_CHARACTER = "victim is not a character";
 	static const string SKIP_OFFICER_ON_WANTED = "on-duty officer killed a wanted suspect";
 	static const string SKIP_LAWLESS_ZONE = "lawless zone (config: no wanted)";
+	static const string SKIP_ORG_WAR = "org war (a war kill, LF_OrgWarKills)";
 
 	protected static int s_iRecorded;
 
@@ -118,6 +120,12 @@ class LF_Murder
 		string skip = SkipReason(killerPlayerId, victimPlayerId, isCharacter, killerIsVictim, killerOnDuty, victimWanted, OfficerExempt());
 		if (skip.IsEmpty() && victim && LF_Zones.WantedSuppressedAt(victim.GetOrigin()))
 			skip = SKIP_LAWLESS_ZONE;
+
+		// A kill between members of organizations at war is a war kill, not murder (#2670), unless
+		// the war rules say otherwise. A safe zone is not touched here: it refuses the damage first.
+		LF_OrgWarKills.Watch();
+		if (skip.IsEmpty() && victimIsPlayer)
+			skip = LF_OrgWarKills.SkipReasonFor(killerUid, victimUid, LF_OrgWarConfig.Rules());
 
 		if (victimIsPlayer)
 		{
