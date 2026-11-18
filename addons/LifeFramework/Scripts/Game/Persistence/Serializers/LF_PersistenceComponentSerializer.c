@@ -689,6 +689,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			// Every save point (autosave, manual, shutdown) refreshes living players first.
 			int captured = LF_StorageSnapshot.CaptureAllPlayers();
 			int placed = LF_PersistentStorageComponent.CaptureAllPlaced();
+			LF_LockerStorageManagerComponent.CaptureAllOpen();
 			LF_VehicleOwnership.CaptureAllCargo();
 			array<ref LF_StorageSnapshotRecord> carriedRecords = LF_StorageSnapshot.ExportAll();
 			if (!carriedRecords)

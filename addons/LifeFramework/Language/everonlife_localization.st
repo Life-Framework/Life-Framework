@@ -6442,6 +6442,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You do not have the rent in cash."
      Comment "Toast or greyed prompt: the player carries less cash than the locker rent."
     }
+    CustomStringTableItem "{B15C8F3A62D7E049}" {
+     Id "LF-LockerBank_NotRenter"
+     Target_en_us "You do not rent a locker here."
+     Comment "Toast: the character tried to open a locker at a bank where they hold no rental."
+    }
+    CustomStringTableItem "{7D2E41B8C09A53F6}" {
+     Id "LF-LockerBank_Open"
+     Target_en_us "Open your locker"
+     Comment "Action on a locker bank: open the renter's own locker contents."
+    }
     CustomStringTableItem "{93E1A6C04B7D2F85}" {
      Id "LF-LockerBank_OutOfReach"
      Target_en_us "Stand at the lockers to rent one."
