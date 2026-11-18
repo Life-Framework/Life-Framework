@@ -625,6 +625,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_ReputationGate(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ReputationPersist(), LF_TestTier.PERSISTENCE;
 		// self-registered: new LF_Test_ReputationRules(), LF_TestTier.LOGIC;
+		// self-registered: new LF_Test_ReputationSync(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ReputationWipe(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ResidentTimetable(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_RestartClose(), LF_TestTier.LOGIC;
