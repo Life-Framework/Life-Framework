@@ -359,9 +359,11 @@ export function guardIslandLayers({ branch, files }) {
       continue;
     }
     // The branch joins place and slot with '-'; the layer joins them with '_' (slugs hold no '_'), so the layer is this branch's own
-    // when its two parts joined with '-' give the branch's suffix.
+    // when its two parts joined with '-' give the branch's suffix. A follow-up on a slot's open draft adds a '-<word>' tail
+    // (ws/town-draft-saint-philippe-cafe-shop builds on ws/town-draft-saint-philippe-cafe) and may change that one slot's layer.
     const parts = base.replace(/^Place_/, "").split("_");
-    if (parts.length !== 2 || parts.join("-") !== draft[1]) errors.push(`${f}: branch ${name} may change only its own Place_<place>_<slot>.layer, not ${base}.layer`);
+    const own = parts.length === 2 && (parts.join("-") === draft[1] || draft[1].startsWith(`${parts.join("-")}-`));
+    if (!own) errors.push(`${f}: branch ${name} may change only its own Place_<place>_<slot>.layer, not ${base}.layer`);
   }
   return { errors, touched };
 }

@@ -240,7 +240,10 @@ supplies every coordinate the later steps use. No step types a coordinate.
   12 m for a street slot, `taxi` 8 m, `board` 10 m, or the template slot's own `margin`), and no two claims may name one
   building (a street slot marked `shared` may stand on a building another slot holds).
 - **Who writes.** Only a worktree named `town-draft-<place>-<slot>` writes an island layer. Its PR is a
-  draft with before and after pictures and goes to the maintainer (bible step 4). The playtest town's
+  draft with before and after pictures and goes to the maintainer (bible step 4). A follow-up on a slot whose
+  draft is still open is `town-draft-<place>-<slot>-<word>`: `town fit` ignores the base draft's claim and the
+  guard lets it change that one slot's layer. Claims copied into a `ws/island-integration` worktree are never
+  rivals (#3101). The playtest town's
   guard and the maintainer's own worktree are unchanged.
 - **Scale.** One agent per slot inside a place, and places run side by side. The pool is the limit: each
   `look` needs a Workbench on lf-testbox or lf-cloud, about 1.5 to 2 minutes for an Everon look (below),

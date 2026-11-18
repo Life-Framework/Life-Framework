@@ -34,7 +34,7 @@ tools\cli look place:<place>/<slot> --interior auto   # its ground floor from in
 - **A run past 600 s moves to the background.** Wait for its notification (or `t3_background_wait`). Never
   `Wait-Process`, `tail -F` or a second copy of the same look: that morning agents wrote 23 such waits.
 - The mapping is a PR that holds only `mapping.json`; nothing is placed before the lead merges it.
-- A fit runs in a worktree named `town-draft-<place>-<slot>`. Only that name writes an island layer.
+- A fit runs in a worktree named `town-draft-<place>-<slot>`. Only that name writes an island layer. A follow-up on a slot whose draft is still open is `town-draft-<place>-<slot>-<word>`: `town fit` ignores the base draft's own claim and the guard lets it change that one slot's layer (#3101).
 - Its PR is a **draft** with before and after pictures. The maintainer reviews it before any merge.
 - Claims live in `tools/town/claims/<place>-<slot>.json`; a claim `origin/main` or an open PR holds is refused.
   `--refit` ignores this slot's own claim on `origin/main` (re-fitting a slot already merged) and still refuses an open PR, a sibling worktree or another slot holding it.
