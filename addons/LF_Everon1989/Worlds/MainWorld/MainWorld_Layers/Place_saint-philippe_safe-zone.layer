@@ -1,0 +1,13 @@
+GenericEntity Fit_saint_philippe_safe_zone_Place {
+ components {
+  LF_PlaceComponent "{5D2E8A47B13C9F60}" {
+   m_sKind "SafeZone"
+   m_sId "saint-philippe.safe-zone"
+  }
+  LF_ZoneComponent "{5D2E8A47B13C9F61}" {
+   m_eRule SAFE
+   m_fRadius 52
+  }
+ }
+ coords 4437 12.7 10670
+}
