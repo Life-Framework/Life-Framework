@@ -3,6 +3,7 @@
 // clean twin, catches a loop an owner's config.json `shops` section creates, and honours the
 // baseline ratchet. Fixtures: tools/validation/fixtures/profit-loop/{good,bad}.
 //
+// market-floor red-proof (#2848): before the market reader the new fixture printed "FAIL market: expected one market:Ore +2, got []" and exited 1.
 // red-proof: with the shop-loop test in findShopLoops flipped to `pr.sell < pr.buy` the bad
 // fixture printed "bad: missing loop shop:Ore" and exited 1; restored, it prints
 // "profit-loop-selftest: OK".
@@ -48,8 +49,20 @@ expect(judge(bad, base.slice(1)).fresh.length === 1, "ratchet: a loop missing fr
 expect(judge(bad, base.map((b) => ({ ...b, margin: b.margin - 1 }))).grown.length === bad.length, "ratchet: a grown margin must fail");
 expect(judge([], base).stale.length === base.length, "ratchet: a fixed loop must show as stale");
 
+// Market floor (#2848): the cheapest shop buy price must be at least the market ceiling, the most a
+// seller is ever paid. Buy 8 vs ceiling 10 is a loop naming both files and the good; ceiling 7 is not;
+// a pack overlay with a higher ceiling for the same good counts (core and pack are both read).
+const mfx = (f) => fx("market-floor-loop", f);
+const marketSources = (...market) => ({ ...sources("good"), shop: mfx("shop.conf"), layers: [], market: market.map(mfx) });
+const mBad = checkProfitLoops(marketSources("market-bad.conf")).filter((l) => l.kind === "market");
+expect(mBad.length === 1 && mBad[0].id === "market:Ore" && mBad[0].margin === 2, `market: expected one market:Ore +2, got ${JSON.stringify(mBad)}`);
+expect(mBad[0] && ["shop.conf", "market-bad.conf", "Ore"].every((s) => mBad[0].path.includes(s)), `market: the line must name both files and the good, got ${mBad[0]?.path}`);
+expect(checkProfitLoops(marketSources("market-ok.conf")).length === 0, "market: a ceiling of 7 under a buy price of 8 must pass");
+const mPack = checkProfitLoops(marketSources("market-ok.conf", "market-pack-bad.conf")).filter((l) => l.kind === "market");
+expect(mPack.length === 1 && mPack[0].path.includes("market-pack-bad.conf"), `market: a pack overlay ceiling of 10 must fail and name the pack file, got ${JSON.stringify(mPack)}`);
+
 if (fails.length) {
   for (const f of fails) console.log(`FAIL ${f}`);
   process.exit(1);
 }
-console.log("profit-loop-selftest: OK (planted shop, recipe, sell-back and chop loops red, clean twin green, owner overlay and ratchet hold)");
+console.log("profit-loop-selftest: OK (planted shop, recipe, sell-back and chop loops red, clean twin green, owner overlay and ratchet hold, market ceiling over a shop buy price red in core and pack overlays)");
