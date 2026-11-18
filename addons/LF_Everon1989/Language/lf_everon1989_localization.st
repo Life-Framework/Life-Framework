@@ -829,6 +829,21 @@ StringTable {
      Target_en_us "The gun store counter"
      Comment "Overrides the core row: the firearm permit is bought at the gun store counter (#3150)."
     }
+    CustomStringTableItem "{EFE3196881518A64}" {
+     Id "LF-MapPoi_Bakery"
+     Target_en_us "Bakery"
+     Comment "Map POI name (#3515): the bakery counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{AB58CDFCAE3CEAD2}" {
+     Id "LF-MapPoi_Barber"
+     Target_en_us "Barber"
+     Comment "Map POI name (#3515): the barber's chair; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{684C52D74CAE72C4}" {
+     Id "LF-MapPoi_Butcher"
+     Target_en_us "Butcher"
+     Comment "Map POI name (#3515): the butcher's counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F0E}" {
      Id "LF-MapPoi_Cafe"
      Target_en_us "Cafe"
@@ -849,6 +864,11 @@ StringTable {
      Target_en_us "Filling station"
      Comment "Map POI kind name (#2247): the fuel till."
     }
+    CustomStringTableItem "{3EF58CE81E5B58BA}" {
+     Id "LF-MapPoi_Furniture"
+     Target_en_us "Furniture store"
+     Comment "Map POI name (#3515): the furniture store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F0B}" {
      Id "LF-MapPoi_GeneralStore"
      Target_en_us "General store"
@@ -859,10 +879,20 @@ StringTable {
      Target_en_us "Gun store"
      Comment "Map POI kind name (#2247): the gun store counter."
     }
+    CustomStringTableItem "{521427D84861A261}" {
+     Id "LF-MapPoi_Hardware"
+     Target_en_us "Hardware store"
+     Comment "Map POI name (#3515): the hardware store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F13}" {
      Id "LF-MapPoi_Hostel"
      Target_en_us "Hostel"
      Comment "Map POI kind name (#2247): the hostel."
+    }
+    CustomStringTableItem "{046B777F2F3B3DC1}" {
+     Id "LF-MapPoi_Newsagent"
+     Target_en_us "Newsagent"
+     Comment "Map POI name (#3515): the newsagent's counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
     }
     CustomStringTableItem "{5A7C1E04B93D6F11}" {
      Id "LF-MapPoi_NoticeBoard"
@@ -873,6 +903,21 @@ StringTable {
      Id "LF-MapPoi_ParcelDepot"
      Target_en_us "Parcel depot"
      Comment "Map POI kind name (#2247): the parcel depot."
+    }
+    CustomStringTableItem "{E880E2EC6AF04CEE}" {
+     Id "LF-MapPoi_Pharmacy"
+     Target_en_us "Pharmacy"
+     Comment "Map POI name (#3515): the pharmacy counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{1FA54D4B3E7D5BC1}" {
+     Id "LF-MapPoi_SeedFeed"
+     Target_en_us "Seed and feed store"
+     Comment "Map POI name (#3515): the seed and feed store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{47A0ACEF429D7700}" {
+     Id "LF-MapPoi_Supermarket"
+     Target_en_us "Supermarket"
+     Comment "Map POI name (#3515): the supermarket till; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
     }
     CustomStringTableItem "{5A7C1E04B93D6F10}" {
      Id "LF-MapPoi_TaxiRank"

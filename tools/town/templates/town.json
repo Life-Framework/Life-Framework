@@ -35,13 +35,13 @@
       "places": ["HospitalSite", "MedicDesk"]
     },
     {
-      "id": "general-store", "required": true, "kit": "general-store", "host": "building", "poi": "none",
+      "id": "general-store", "required": true, "kit": "general-store", "host": "building", "poi": "StoreCounter",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 100, "types": ["shop-general", "shop", "townhouse"] },
       "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "shop", "stem": "ShopHouse_E_2I01t_clothesstore" }] },
       "places": ["StoreCounter"]
     },
     {
-      "id": "clothing", "required": true, "kit": "clothing", "host": "building", "poi": "none",
+      "id": "clothing", "required": true, "kit": "clothing", "host": "building", "poi": "ClothingCounter",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 100, "types": ["shop-clothes", "shop", "townhouse"] },
       "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "shop", "stem": "ShopHouse_E_2I01t_clothesstore" }] },
       "places": ["ClothingCounter"]
@@ -62,47 +62,47 @@
       "places": ["RangeLane"]
     },
     {
-      "id": "supermarket", "required": false, "kit": "supermarket", "host": "building", "poi": "none",
+      "id": "supermarket", "required": false, "kit": "supermarket", "host": "building", "poi": "StoreCounter",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 150, "prefer": "near", "maxDistance": 160, "types": ["shop", "townhouse"] },
       "places": ["StoreCounter"]
     },
     {
-      "id": "hardware", "required": false, "kit": "hardware", "host": "building", "poi": "none",
+      "id": "hardware", "required": false, "kit": "hardware", "host": "building", "poi": "StoreCounter",
       "needs": { "interior": "required", "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["garage", "industrial", "shop"] },
       "places": ["StoreCounter"]
     },
     {
-      "id": "pharmacy", "required": false, "kit": "pharmacy", "host": "building", "poi": "none",
+      "id": "pharmacy", "required": false, "kit": "pharmacy", "host": "building", "poi": "StoreCounter",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 100, "prefer": "near", "maxDistance": 160, "types": ["shop", "townhouse"] },
       "places": ["StoreCounter"]
     },
     {
-      "id": "newsagent", "required": false, "kit": "newsagent", "host": "building", "poi": "none",
+      "id": "newsagent", "required": false, "kit": "newsagent", "host": "building", "poi": "StoreCounter",
       "needs": { "interior": "required", "minArea": 8, "prefer": "near", "maxDistance": 160, "types": ["kiosk", "shop"] },
       "places": ["StoreCounter"]
     },
     {
-      "id": "seed-feed", "required": false, "kit": "seed-feed", "host": "building", "poi": "none",
+      "id": "seed-feed", "required": false, "kit": "seed-feed", "host": "building", "poi": "StoreCounter",
       "needs": { "interior": "required", "minArea": 40, "prefer": "near", "maxDistance": 160, "types": ["farm", "garage", "shop"] },
       "places": ["StoreCounter"]
     },
     {
-      "id": "bakery", "required": false, "kit": "bakery", "host": "building", "poi": "none",
+      "id": "bakery", "required": false, "kit": "bakery", "host": "building", "poi": "StoreCounter",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
       "places": ["StoreCounter"]
     },
     {
-      "id": "butcher", "required": false, "kit": "butcher", "host": "building", "poi": "none",
+      "id": "butcher", "required": false, "kit": "butcher", "host": "building", "poi": "StoreCounter",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
       "places": ["StoreCounter"]
     },
     {
-      "id": "barber", "required": false, "kit": "barber", "host": "building", "poi": "none",
+      "id": "barber", "required": false, "kit": "barber", "host": "building", "poi": "BarberChair",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
       "places": ["BarberChair"]
     },
     {
-      "id": "furniture", "required": false, "kit": "furniture", "host": "building", "poi": "none",
+      "id": "furniture", "required": false, "kit": "furniture", "host": "building", "poi": "StoreCounter",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 100, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
       "places": ["StoreCounter"]
     },
@@ -122,7 +122,7 @@
       "places": ["TimberCounter"]
     },
     {
-      "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building", "poi": "none",
+      "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building", "poi": "GunCounter",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 110, "types": ["shop", "townhouse", "house"] },
       "places": ["GunCounter"]
     },
