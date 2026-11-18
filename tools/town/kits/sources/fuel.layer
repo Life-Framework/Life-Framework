@@ -1,0 +1,22 @@
+// Source of the `fuel` kit (tools/town/kits/fuel.json): the one component the kit's anchor rows carry. A resident anchor
+// is a bare entity with LF_ResidentAnchorComponent (no mesh, no body: Prefabs/Systems/Residents/LF_ResidentAnchor.et inherits a
+// physical traffic cone, which a player would see and push). `town fit` reads the component GUID from here.
+GenericEntity Source_ResidentAnchor {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 0 0 0
+}
+// The alarm box row: the vanilla small electricity box with a bell mount (LF_AlarmMountComponent; the fuel till's `fuel` alarm
+// stands on it, #3072). Same box and offset as the clothing and fuel-station kits.
+GenericEntity Source_AlarmBox : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ components {
+  LF_AlarmMountComponent "{F5F179D75F4DFC41}" {
+   m_vOffset 0 0.167 0.065
+   m_fReach 10
+  }
+ }
+ coords 0 0 0
+}

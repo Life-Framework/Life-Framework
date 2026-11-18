@@ -1,0 +1,20 @@
+GameEntity : "{BCCB7D5AB38BB3A7}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_base.et" {
+ ID "5112706CD4157AC7"
+ components {
+  MeshObject "{5112706CD4157AE0}" {
+   Object "{DFD772CB5C4D9A33}Assets/Characters/HeadGear/LF/DollMask/DollMask_item.xob"
+  }
+  SCR_HeadgearInventoryItemComponent "{5244E4431E28A759}" {
+   Attributes SCR_ItemAttributeCollection "{5244E4431DA56D64}" {
+    ItemDisplayName UIInfo "{5244E443130B31B9}" {
+     Name "#LF-DollMask_Name"
+     Description "#LF-DollMask_Description"
+    }
+   }
+  }
+  BaseLoadoutClothComponent "{5112706CD4157AF8}" {
+   WornModel "{273997636EFD3392}Assets/Characters/HeadGear/LF/DollMask/DollMask.xob"
+   ItemModel "{DFD772CB5C4D9A33}Assets/Characters/HeadGear/LF/DollMask/DollMask_item.xob"
+  }
+ }
+}

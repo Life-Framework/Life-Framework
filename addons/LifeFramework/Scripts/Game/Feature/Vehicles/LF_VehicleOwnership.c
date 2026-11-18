@@ -977,6 +977,7 @@ class LF_VehicleOwnership
 
 		GiveKey(buyer, key);
 		vehicleLock.SetLocked(true);
+		vehicleLock.SetOwnerUid(buyerUid); // replicated for the client's "Store in garage" row (#3366)
 
 		string plate = LF_LicensePlateRegistry.Issue(new LF_LicensePlateGeneratorGeneric(), id);
 		LF_LicensePlateManagerComponent plates = LF_Component<LF_LicensePlateManagerComponent>.Find(vehicle);
@@ -1704,6 +1705,7 @@ class LF_VehicleOwnership
 		vehicleLock.SetVehicleIdentifier(record.m_sVehicleId);
 		vehicleLock.SetKeyId(record.m_sKeyId);
 		vehicleLock.SetLocked(record.m_bLocked);
+		vehicleLock.SetOwnerUid(record.m_sOwnerUid); // #3366
 
 		LF_VehicleSession session = Sessions().Get(record.m_sVehicleId);
 		if (!session)
@@ -1790,6 +1792,7 @@ class LF_VehicleOwnership
 				vehicleLock.SetVehicleIdentifier(record.m_sVehicleId);
 				vehicleLock.SetKeyId(record.m_sKeyId);
 				vehicleLock.SetLocked(record.m_bLocked);
+				vehicleLock.SetOwnerUid(record.m_sOwnerUid); // #3366
 			}
 		}
 

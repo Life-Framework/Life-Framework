@@ -1,0 +1,50 @@
+MetaFileClass {
+ Name "{DFD772CB5C4D9A33}Assets/Characters/HeadGear/LF/DollMask/DollMask_item.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{6AE53A941FA134A8}" {
+     SourceMaterial "DollMask_item"
+     AssignedMaterial "{ACF2F4601FD2EAD1}Assets/Characters/HeadGear/LF/DollMask/Data/DollMask.emat"
+    }
+   }
+   MeshParams {
+    MeshParam DollMask_item {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_DollMask_item {
+     LayerPreset "ItemFireView"
+     SurfaceProperties {
+      "{ABA11261AC43D0E6}Common/Materials/Game/Fabric/fabric_2mm_min.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{B8ECB45CA39497D5}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{5AA792D36E4C0178}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{ECC7FD9B8E973DDE}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{696BEEA846AF289C}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{CEE6BCE3B1111428}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

@@ -66,6 +66,9 @@ class LF_PlaceableComponent : ScriptComponent
 	[Attribute("0", UIWidgets.ComboBox, desc: "How the spot is found", enums: ParamEnumArray.FromEnum(LF_EPlacementSnap))]
 	protected LF_EPlacementSnap m_eSnap;
 
+	[Attribute("0", UIWidgets.Auto, "WALL snap only: metres the origin hangs above the floor (a mirror or a picture), 0 stands it on the floor like a shelf")]
+	protected float m_fHangHeight;
+
 	[Attribute("0", UIWidgets.ComboBox, desc: "Who may place it when the placement policy conf has no entry for this kind (#2446)", enums: ParamEnumArray.FromEnum(LF_EPlacementWho))]
 	protected LF_EPlacementWho m_eWho;
 
@@ -117,6 +120,13 @@ class LF_PlaceableComponent : ScriptComponent
 	LF_EPlacementSnap GetSnap()
 	{
 		return m_eSnap;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Metres a WALL placement's origin lies above the floor at the foot of the wall (0 for none).
+	float GetHangHeight()
+	{
+		return Math.Max(0, m_fHangHeight);
 	}
 
 	//------------------------------------------------------------------------------------------------

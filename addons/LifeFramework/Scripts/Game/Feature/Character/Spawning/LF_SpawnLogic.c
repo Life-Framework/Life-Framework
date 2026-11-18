@@ -413,6 +413,14 @@ class LF_SpawnLogic : SCR_SpawnLogic
 
 		bool applied = LF_Progression.ApplyToCharacter(uid, body);
 		LF_Debug.Info("Spawn", string.Format("restored body of %1 given its progression (record found: %2)", uid, applied));
+
+		// The saved delivery sign-up loads while nobody is connected, so it found no body then (#3353).
+		// Put the job and the career level on this one, as a fresh spawn does; both are idempotent.
+		LF_CivilianJob.ApplySignUpToCharacter(uid, body);
+		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(body);
+		if (jobs)
+			jobs.PullCareerFor(uid);
+
 		return applied;
 	}
 

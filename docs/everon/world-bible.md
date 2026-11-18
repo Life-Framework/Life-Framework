@@ -196,8 +196,8 @@ How a place comes online:
 1. A **scout dossier** surveys its vanilla buildings.
 2. **Pack data** maps each system slot to a building (approved before placing).
 3. A **kit** fits out each slot.
-4. One agent per place does the work, and the place goes up as a **draft PR with pictures** for the
-   maintainer.
+4. One agent per place does the work, and the place ships as a PR with pictures and a contact sheet,
+   via `wt ship`, auto-merged (no maintainer approval since 2026-11-18).
 5. The audit and the pictures validate it.
 
 The chapter's release note names the places that opened, and the in-game map and the board on the square mark them.
