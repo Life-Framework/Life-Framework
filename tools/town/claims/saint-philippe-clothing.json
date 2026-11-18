@@ -8,7 +8,7 @@
   "kinds": [
     "ClothingCounter"
   ],
-  "rows": 13,
+  "rows": 15,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

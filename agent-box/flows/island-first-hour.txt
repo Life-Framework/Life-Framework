@@ -111,10 +111,10 @@ wait 500
 expect cash +180
 expect bank -180
 
-step 6 Buy a shirt at the clothing shop pending #2315
-stand Fit_saint_philippe_clothing_Shop_Clothing
+step 6 Buy a shirt at the clothing shop
+stand Fit_saint_philippe_clothing_counter_shop_01
 wait 1500
-use LF_ShopAction Fit_saint_philippe_clothing_Shop_Clothing
+use LF_ShopAction Fit_saint_philippe_clothing_counter_shop_01
 wait 1200
 type Search Shirt
 wait 800
@@ -155,9 +155,9 @@ wait 500
 expect money down
 
 step 7 Buy water at the general store pending #2314
-stand Fit_saint_philippe_general_store_Shop_GeneralStore
+stand Fit_saint_philippe_general_store_general_store_till
 wait 1500
-use LF_ShopAction Fit_saint_philippe_general_store_Shop_GeneralStore
+use LF_ShopAction Fit_saint_philippe_general_store_general_store_till
 wait 1200
 type Search Water
 wait 800
