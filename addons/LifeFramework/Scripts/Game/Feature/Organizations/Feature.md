@@ -63,6 +63,7 @@ processing upgrade are kept at the desk.
   target accepts inside the window. Refusal keys map to `#LF-OrgWar_*` toasts (`RefusalText`).
   `LF_OrgWarCharacter.c` holds `RpcAsk_LF_OrgWarDeclare` / `RpcAsk_LF_OrgWarAnswer` on the character with
   the lease ask's guards (systems switch, PURCHASE bucket, desk range); no host branch. No UI (W7).
+- `LF_OrgWarBoard` — the war notice board (#2677, W9): a board kind `orgwars` (`LF_BoardProviders`, as the wanted board) on `Prefabs/Organizations/LF_OrgWarBoard.et`. A read lists declared, accepted and ended wars as notices in that order; ended and lapsed ones stay for 1 h (events `LF_OnOrgWarEnded`, memory only), open ones come from the war table. No new replication: one ask, one answer, per read.
 
 ## Iteration path
 

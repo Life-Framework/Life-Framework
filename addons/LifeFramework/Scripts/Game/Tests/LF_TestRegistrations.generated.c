@@ -480,6 +480,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_OrgRightsPersist(), LF_TestTier.PERSISTENCE;
 		// self-registered: new LF_Test_OrgStaticReset(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_OrgUpgradeUnwired(), LF_TestTier.LOGIC;
+		// self-registered: new LF_Test_OrgWarBoardText(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_OrgWarConfig(), LF_TestTier.LOGIC;
 		manager.Register(new LF_Test_OrgWarDeclare(), LF_TestTier.WORLD);
 		// self-registered: new LF_Test_OrgWarPersist(), LF_TestTier.PERSISTENCE;

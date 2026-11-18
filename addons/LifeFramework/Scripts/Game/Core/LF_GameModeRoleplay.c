@@ -93,6 +93,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_ConvictionRecord.EnsureSubscribed();
 		// The record board keeps each character's best race time per course (server only, #1925).
 		LF_RaceRecords.EnsureSubscribed();
+		// The war notice board keeps each ended war for an hour (server only, #2677).
+		LF_OrgWarBoard.Install();
 		// The serial book stamps every tool the fence sells (server only).
 		LF_FenceSerials.EnsureSubscribed();
 		// The wanted board's posters rebuild on a crime, a wanted level, an identification (server only).
