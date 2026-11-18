@@ -173,6 +173,8 @@ supplies every coordinate the later steps use. No step types a coordinate.
 
 ### 3.2 Mapping: templates, then a per-place mapping file
 
+> A slot may stand in ANOTHER place's survey: its entry says `"dossier": "<that place slug>"` beside `building`, and `town fit`, `town check`, `town map --check` and `look place:` read that dossier. The claim names the building as `<slug>/<id>`, so the dock survey's b14 never meets the square's b14 (the harbour master's cabin, `saint-philippe.harbour`).
+
 - **Template** (`tools/town/templates/<kind>.json`, kinds `town`, `village`, `harbour`, `districts`, `site`; `districts` is the residential ring round a square, with no required slot): the
   slots of a place kind. Each slot has an id, `required` or optional, the kit it takes, what the
   building needs (interior, ground floor, area, street frontage, distance from the square) and the

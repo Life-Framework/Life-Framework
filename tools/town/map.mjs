@@ -312,7 +312,9 @@ function summarise(reasons) {
 // ------------------------------------------------------------------ check
 
 // Pure: the problems that keep a mapping from being approved, [] when it can be.
-export function checkMapping(mapping, dossierJson, template) {
+// `others` ({ <place slug>: dossier json }) is optional: an entry with `dossier` names a building of that other place's survey,
+// looked up there when given.
+export function checkMapping(mapping, dossierJson, template, others = null) {
   const out = [];
   if (!mapping || typeof mapping !== "object" || typeof mapping.slots !== "object" || !mapping.slots) return ["the mapping has no slots object"];
   if (mapping.schema !== MAPPING_SCHEMA) out.push(`mapping schema is ${mapping.schema}, expected ${MAPPING_SCHEMA}`);
@@ -341,6 +343,28 @@ export function checkMapping(mapping, dossierJson, template) {
       continue;
     }
     if (e.shared && slot.host !== "street") out.push(`slot ${slot.id}: only a street slot may share a building`);
+    if (e.building && e.dossier) {
+      // A building of ANOTHER place's dossier (a harbour master's cabin at the dock, standing outside this place's survey).
+      if (typeof e.dossier !== "string" || !SLUG_RX.test(e.dossier) || e.dossier === mapping.place) {
+        out.push(`slot ${slot.id}: "dossier" must name another place's slug (a building of that place's survey)`);
+        continue;
+      }
+      if (e.shared) out.push(`slot ${slot.id}: only a street slot may share a building`);
+      if (others && !others[e.dossier]) {
+        out.push(`slot ${slot.id}: no dossier for place ${e.dossier}`);
+        continue;
+      }
+      const ob = others ? readDossier(others[e.dossier]).buildings.find((x) => x.id === e.building) : null;
+      if (others && !ob) out.push(`slot ${slot.id}: building ${e.building} is not in the dossier of ${e.dossier}`);
+      else if (ob && ob.ruin) out.push(`slot ${slot.id}: ${e.dossier}/${ob.id} is a ruin`);
+      else if (ob && slot.needs.interior === "required" && ob.interior.value === "no") out.push(`slot ${slot.id}: ${e.dossier}/${ob.id} has no interior and the slot needs one`);
+      if (!e.shared) {
+        const k = `${e.dossier}/${e.building}`;
+        if (claimed.has(k)) out.push(`slot ${slot.id}: building ${k} is already claimed by slot ${claimed.get(k)}`);
+        else claimed.set(k, slot.id);
+      }
+      continue;
+    }
     if (e.building) {
       const b = byBuilding.get(e.building);
       if (!b) {
@@ -370,9 +394,20 @@ export function checkMapping(mapping, dossierJson, template) {
   return out;
 }
 
+// The dossiers of the other places a mapping's `dossier` entries name, by slug (a missing file is left out; checkMapping reports it).
+export function loadOtherDossiers(root, mapping) {
+  const out = {};
+  for (const e of Object.values(mapping?.slots ?? {})) {
+    if (typeof e?.dossier !== "string" || !SLUG_RX.test(e.dossier) || out[e.dossier]) continue;
+    const f = join(root, "docs", "everon", "places", e.dossier, "dossier.json");
+    if (existsSync(f)) out[e.dossier] = JSON.parse(readFileSync(f, "utf8"));
+  }
+  return out;
+}
+
 // ------------------------------------------------------------------ CLI
 
-const USAGE = "usage: tools\\cli town map <slug> [--template town|village] [--dossier file] [--out file] [--force] [--dry]\n       tools\\cli town map <slug> --check [--template kind] [--dossier file] [--out file]";
+const USAGE ="usage: tools\\cli town map <slug> [--template town|village] [--dossier file] [--out file] [--force] [--dry]\n       tools\\cli town map <slug> --check [--template kind] [--dossier file] [--out file]";
 
 function parseArgs(args) {
   const flags = {};
@@ -441,7 +476,7 @@ export async function main(args, { root }) {
     if (flags.check) {
       const mapping = readJson(out, "mapping");
       // The template's POI naming (card M17): every slot names a front kind with a POI row, or "none". `town check` (T4) calls the same.
-      const probs = [...checkMapping(mapping, dossier, template), ...checkSlotPois(template, loadPoiKinds(root).kinds)];
+      const probs = [...checkMapping(mapping, dossier, template, loadOtherDossiers(root, mapping)), ...checkSlotPois(template, loadPoiKinds(root).kinds)];
       for (const p of probs) console.log(`FAIL  ${p}`);
       if (probs.length) {
         console.log(`SUMMARY town-map check fail ${slug}: ${probs.length} problem(s); ${relative(root, out)}`);

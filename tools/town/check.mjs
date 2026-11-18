@@ -27,7 +27,7 @@ import { fileURLToPath } from "node:url";
 import { BUDGET, countTree, makeResolver, parseEntities, verdict } from "../perf/building-count.mjs";
 import { topLevelCoords } from "../validation/validate-world-zones.mjs";
 import { checkSlotPois, loadPoiKinds } from "./lib/poi-check.mjs";
-import { loadTemplate } from "./map.mjs";
+import { loadOtherDossiers, loadTemplate } from "./map.mjs";
 
 export const help = "check <place> [--complete] [--json] [--no-perf]   one place: required slots mapped, per-slot layers and claims (--complete: every mapped slot fitted), kinds against m_aPlaces, footprints, perf budget; exit 1 on an error";
 
@@ -116,8 +116,11 @@ export function distToPolygon(px, pz, poly) {
 }
 
 // The ground a slot may use: the mapped building's footprint corners, or the mapped free plot's rectangle. null when unknown.
-export function slotGround(entry, dossier) {
+// An entry with `dossier` names a building of that other place's survey: `others` ({ <slug>: dossier json }) holds it.
+export const buildingKeyOf = (entry) => (entry?.dossier ? `${entry.dossier}/${entry.building}` : entry?.building);
+export function slotGround(entry, dossier, others = null) {
   if (entry?.building) {
+    if (entry.dossier) dossier = others?.[entry.dossier] ?? { buildings: [] };
     const b = (dossier.buildings ?? []).find((x) => x.id === entry.building);
     const f = b?.footprint;
     if (!b) return null;
@@ -180,29 +183,29 @@ export function checkClaimsAndFootprints(data, { complete = false } = {}) {
       unfitted.push(id);
       continue;
     }
-    const ground = slotGround(entry, dossier);
-    const row = { slot: id, entry, ground, claim, layer: text ?? null, layerName };
+    const ground = slotGround(entry, dossier, data.others);
+    const row ={ slot: id, entry, ground, claim, layer: text ?? null, layerName };
     slots.push(row);
     const why = complete ? " (--complete: every mapped slot is fitted)" : ` (a fitted slot has both; ${text === undefined ? "the claim has no layer" : "the layer has no claim"})`;
     if (!claim) errors.push(`slot ${id}: no claim ${CLAIMS_DIR}/${claimName}${why}`);
     if (text === undefined) errors.push(`slot ${id}: no layer ${LAYER_DIR}/${layerName}${why}`);
     if (claim) {
       if (claim.place !== place || claim.slot !== id) errors.push(`slot ${id}: ${claimName} names ${claim.place}.${claim.slot}`);
-      if ((entry.building && claim.building !== entry.building) || (entry.plot && claim.plot !== entry.plot)) {
-        errors.push(`slot ${id}: the claim names ${claim.building ?? claim.plot ?? "nothing"}, the mapping says ${entry.building ?? entry.plot}`);
+      if ((entry.building && claim.building !== buildingKeyOf(entry)) || (entry.plot && claim.plot !== entry.plot)) {
+        errors.push(`slot ${id}: the claim names ${claim.building ?? claim.plot ?? "nothing"}, the mapping says ${buildingKeyOf(entry) ?? entry.plot}`);
       }
       if (claim.layer && !String(claim.layer).endsWith(`/${layerName}`)) errors.push(`slot ${id}: the claim's layer is ${claim.layer}, expected ${layerName}`);
       if (claim.destruction?.mode === "needs-hook") {
         warnings.push(`slot ${id}: destruction is "needs-hook" (${claim.destruction.reason ?? "a vanilla building cannot be switched off by a layer"}); fine until the indestructible hook lands, then fit it again`);
       }
     }
-    const key = entry.building ? `building ${entry.building}` : `plot ${entry.plot}`;
+    const key = entry.building ? `building ${buildingKeyOf(entry)}` : `plot ${entry.plot}`;
     if (!entry.shared) {
       if (!holders.has(key)) holders.set(key, []);
       holders.get(key).push(id);
     }
     if (!ground) {
-      errors.push(`slot ${id}: ${key} is not in the dossier of ${place}`);
+      errors.push(`slot ${id}: ${key} is not in the dossier of ${entry.dossier ?? place}`);
       continue;
     }
     if (text !== undefined) {
@@ -381,7 +384,7 @@ export function loadPlace(root, place, { poiKinds = undefined, templateFile = nu
       poi = null; // no POI conf under this root: the check notes it and skips
     }
   }
-  return { place, dossier, mapping, template, claims, layers, catalogKinds, poiKinds: poi };
+  return { place, dossier, mapping, template, claims, layers, catalogKinds, poiKinds: poi, others: loadOtherDossiers(root, mapping) };
 }
 
 // ------------------------------------------------------------------ CLI

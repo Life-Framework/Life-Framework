@@ -113,6 +113,14 @@
         "the workshop yard on the south-east road, with Workshop_01_Side b36 beside it; the east-edge yard in the old note is outside the dossier"
       ]
     },
+    "harbour": {
+      "building": "b14",
+      "dossier": "saint-philippe-dock",
+      "why": [
+        "PortableCabin_E_01_yellow (industrial), 24.3 m2, 92 m from the dock survey's centre, interior yes (one door, a walkable floor)",
+        "the site cabin by the quay road is the harbour master's office (Marcel Roux, the harbour crates contract, #3050); b14 is the DOCK survey's building (docs/everon/places/saint-philippe-dock), not the townhouse b14 of this square's survey"
+      ]
+    },
     "board": {
       "building": "b38",
       "shared": true,

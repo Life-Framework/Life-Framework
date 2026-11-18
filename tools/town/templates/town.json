@@ -64,6 +64,11 @@
       "places": ["FenceYard"]
     },
     {
+      "id": "harbour", "required": false, "kit": "harbour-master", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 15, "prefer": "near", "maxDistance": 130, "types": ["industrial", "shed", "garage", "house"] },
+      "places": ["HarbourMaster"]
+    },
+    {
       "id": "board", "required": true, "kit": "board", "host": "street", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 60 },
       "places": ["TownBoard", "MapBoard"]
