@@ -44,6 +44,9 @@ class LF_ResidentDef : LF_ConfigRecord
 	[Attribute("", UIWidgets.EditBox, "LF_Places kind of this resident's workplace. Empty for a resident who never works")]
 	string m_sWorkKind;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Character prefab this resident spawns as (#2858). Empty: the neutral civilian", "et")]
+	ResourceName m_sPrefab;
+
 	[Attribute("", UIWidgets.Object, "The day, per game day (no weekdays yet): lines by start time, none sharing a start")]
 	ref array<ref LF_ResidentEntryDef> m_aTimetable;
 
@@ -80,6 +83,20 @@ class LF_ResidentsConfig
 
 	[Attribute("", UIWidgets.Object, "Every resident: id, home and work place kinds, and the day")]
 	ref array<ref LF_ResidentDef> m_aResidents;
+
+	// The spawner (#2858). Hysteresis: a resident appears inside the spawn radius and leaves outside the
+	// despawn radius, so one standing on the edge does not flicker. Radii are horizontal metres.
+	[Attribute("150", UIWidgets.EditBox, "A due resident appears when a player is within this many metres of their anchor")]
+	int m_iSpawnRadiusM = 150;
+
+	[Attribute("200", UIWidgets.EditBox, "A live resident leaves when no player is within this many metres of them")]
+	int m_iDespawnRadiusM = 200;
+
+	[Attribute("24", UIWidgets.EditBox, "Most residents live in the world at once; the rest wait, first by id")]
+	int m_iMaxLive = 24;
+
+	[Attribute("5", UIWidgets.EditBox, "Seconds between spawner sweeps")]
+	int m_iSweepSeconds = 5;
 
 	protected static ref LF_ResidentsConfig s_Config;
 	protected static bool s_bLoadAttempted;
