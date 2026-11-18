@@ -237,6 +237,10 @@ bug for each one; they transfer here because the engine is the same.
   tail with no error; join pieces under 8 KB with `+` or write through a JSON
   context. `validate-string-splice` fails a new site; a bounded one is marked
   `// lf-bounded: <why>` (the baseline only shrinks).
+- **`Math.Max`, `Math.Min` and `Math.Clamp` work in floats.** An int above 2^24 (unix seconds, money, XP,
+  a running counter) comes back rounded: 1800000480 became 1800000512 (#2787). Use `LF_Utils.MaxInt`,
+  `MinInt`, `ClampInt` (or `Math.ClampInt`) for any int that can be large; `validate-int-time-math` fails a
+  time-named int argument (real float time math is marked `// lf-float: <why>`).
 - **Strong refs (`ref`) for Managed classes.** A Managed field not marked `ref`
   is garbage-collected at end of frame. Put `ref` on BOTH the collection and
   its elements: `ref array<ref LF_Foo>`, `ref map<string, ref LF_Foo>`.

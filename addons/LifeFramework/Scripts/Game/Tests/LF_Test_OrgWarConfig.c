@@ -28,6 +28,7 @@ class LF_Test_OrgWarConfig : LF_Test
 		ctx.Equal(600, shipped.m_iAnswerSeconds, "the shipped answer window is 600 s");
 		ctx.Equal(7200, shipped.m_iLengthSeconds, "the shipped war length is 7200 s");
 		ctx.Equal(86400, shipped.m_iCooldownSeconds, "the shipped pair cooldown is 86400 s");
+		ctx.Equal(3600, shipped.m_iLapseCooldownSeconds, "the shipped lapse cooldown is 3600 s");
 		ctx.Equal(3, shipped.m_iMinMembers, "the shipped minimum is 3 members a side");
 		ctx.False(shipped.m_bWarKillsAreMurder, "war kills are not murder by default");
 		ctx.True(shipped.m_bTagWarKills, "war kills are tagged by default");
@@ -44,13 +45,15 @@ class LF_Test_OrgWarConfig : LF_Test
 		ctx.Equal(1200, owner.m_iFee, "the owner's fee wins");
 		ctx.Equal(90, owner.m_iAnswerSeconds, "the owner's answer window wins");
 		ctx.Equal(7200, owner.m_iLengthSeconds, "a key left out keeps the shipped war length");
+		ctx.Equal(3600, owner.m_iLapseCooldownSeconds, "a key left out keeps the shipped lapse cooldown");
 		ctx.Equal(3, owner.m_iMinMembers, "a key left out keeps the shipped minimum");
 
-		LF_OrgWarRules flags = RulesFor("{\"schemaVersion\":1,\"organizations\":{\"wars\":{\"warKillsAreMurder\":true,\"tagWarKills\":false,\"minMembers\":2,\"cooldownSeconds\":0}}}", "test:wars-flags");
+		LF_OrgWarRules flags = RulesFor("{\"schemaVersion\":1,\"organizations\":{\"wars\":{\"warKillsAreMurder\":true,\"tagWarKills\":false,\"minMembers\":2,\"cooldownSeconds\":0,\"lapseCooldownSeconds\":0}}}", "test:wars-flags");
 		ctx.True(flags.m_bWarKillsAreMurder, "the owner can make war kills murder");
 		ctx.False(flags.m_bTagWarKills, "the owner can switch the war tag off");
 		ctx.Equal(2, flags.m_iMinMembers, "the owner's minimum wins");
 		ctx.Equal(0, flags.m_iCooldownSeconds, "a zero cooldown is allowed");
+		ctx.Equal(0, flags.m_iLapseCooldownSeconds, "a zero lapse cooldown is allowed");
 
 		// A negative length is refused (the reader logs the error) and the shipped length stays.
 		LF_OrgWarRules negative = RulesFor("{\"schemaVersion\":1,\"organizations\":{\"wars\":{\"lengthSeconds\":-5,\"fee\":700}}}", "test:wars-negative");

@@ -150,6 +150,9 @@ class LF_ReputationConfig
 	[Attribute("", UIWidgets.Object, "Points each in-world action awards, the faction it feeds and its cooldown")]
 	ref array<ref LF_ReputationAwardDef> m_aAwards;
 
+	[Attribute("", UIWidgets.Object, "Standing gates: the lowest tier a job or run needs (LF_ReputationGate.c). A gate id with no row is open")]
+	ref array<ref LF_ReputationGateDef> m_aGates;
+
 	protected static ref LF_ReputationConfig s_Config;
 	protected static bool s_bLoadAttempted;
 

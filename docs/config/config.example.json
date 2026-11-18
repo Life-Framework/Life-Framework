@@ -146,6 +146,7 @@
       "answerSeconds": 600,
       "lengthSeconds": 7200,
       "cooldownSeconds": 86400,
+      "lapseCooldownSeconds": 3600,
       "minMembers": 3,
       "warKillsAreMurder": false,
       "tagWarKills": true

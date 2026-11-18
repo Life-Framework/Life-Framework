@@ -105,6 +105,8 @@ class LF_Test_OrgWarPersist : LF_Test
 		rules.m_iAnswerSeconds = answer;
 		rules.m_iLengthSeconds = length;
 		rules.m_iCooldownSeconds = 7200;
+		// No lapse cooldown here: a lapsed declaration with none running is not saved (#2769 saves one that has).
+		rules.m_iLapseCooldownSeconds = 0;
 		rules.m_iMinMembers = 1;
 		return rules;
 	}

@@ -73,7 +73,7 @@ class LF_DebugMoneyTopUp
 	static int StartingBank(bool enabled, int normal, int target)
 	{
 		if (enabled)
-			return Math.Max(normal, target);
+			return LF_Utils.MaxInt(normal, target);
 		return normal;
 	}
 

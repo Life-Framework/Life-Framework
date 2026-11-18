@@ -143,7 +143,7 @@ class LF_PoliceRanks
 		if (!row)
 			return 0;
 
-		return Math.Max(row.m_iDutySecondsForNext, 0);
+		return LF_Utils.MaxInt(row.m_iDutySecondsForNext, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -982,9 +982,9 @@ class LF_PoliceRanks
 	static int ShiftCredit(int deltaSeconds, int shiftSoFar, int capSeconds)
 	{
 		if (capSeconds <= 0)
-			return Math.Max(0, deltaSeconds);
+			return LF_Utils.MaxInt(0, deltaSeconds);
 
-		return Math.Max(0, Math.Min(deltaSeconds, capSeconds - shiftSoFar));
+		return LF_Utils.MaxInt(0, LF_Utils.MinInt(deltaSeconds, capSeconds - shiftSoFar));
 	}
 
 	//------------------------------------------------------------------------------------------------

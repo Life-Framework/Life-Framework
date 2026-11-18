@@ -178,7 +178,7 @@ class LF_UnemploymentBenefit
 
 		// The means test counts the cash the player carries as well as the bank: a player who keeps
 		// their money in their pockets is not broke (economy review 2026-11-17).
-		balance += Math.Max(LF_MoneyUtils.GetCash(user), 0);
+		balance += LF_Utils.MaxInt(LF_MoneyUtils.GetCash(user), 0);
 
 		string reason;
 		int owed = Claim(uid, balance, IsWorking(uid), LF_JobGuards.Now(), config.m_iBenefitBalanceThreshold, config.m_iBenefitAmount, config.m_fBenefitCooldownSeconds, reason);

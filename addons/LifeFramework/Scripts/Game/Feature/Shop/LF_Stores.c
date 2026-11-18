@@ -988,7 +988,7 @@ class LF_Stores
 			record.m_bConsumed = row.m_bConsumed;
 			record.m_bRestored = true;
 			record.m_fRestoredUntilMs = nowMs + store.GetRestoredGraceSeconds() * 1000;
-			graceSeconds = Math.Max(graceSeconds, store.GetRestoredGraceSeconds());
+			graceSeconds = LF_Utils.MaxInt(graceSeconds, store.GetRestoredGraceSeconds());
 			all.Insert(record);
 			bound++;
 		}

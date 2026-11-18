@@ -350,6 +350,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_InteractionIntroductions(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_InteractionOffers(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_IntroductionsSerializer(), LF_TestTier.WORLD;
+		// self-registered: new LF_Test_IntTimeMath(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ItemCatalogue(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ItemVolume(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_JailEscortDrop(), LF_TestTier.WORLD;
@@ -482,6 +483,8 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_OrgUpgradeUnwired(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_OrgWarConfig(), LF_TestTier.LOGIC;
 		manager.Register(new LF_Test_OrgWarDeclare(), LF_TestTier.WORLD);
+		manager.Register(new LF_Test_OrgWarKillTag(), LF_TestTier.LOGIC);
+		// self-registered: new LF_Test_OrgWarLapseCooldown(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_OrgWarPersist(), LF_TestTier.PERSISTENCE;
 		// self-registered: new LF_Test_OrgWarState(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_OrgWarSweep(), LF_TestTier.LOGIC;
@@ -545,6 +548,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_PlaytestMission(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_PlaytestOffers(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_PlaytimePersist(), LF_TestTier.PERSISTENCE;
+		// self-registered: new LF_Test_PlotBuy(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_PlotLoop(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_PoliceOnDutyOfficer(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_PoliceAbuse(), LF_TestTier.LOGIC;
@@ -618,8 +622,11 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_RegistrationRules(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_RejoinSafeSpot(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_RemovedTomatoSkip(), LF_TestTier.WORLD;
+		// self-registered: new LF_Test_ReputationEvents(), LF_TestTier.LOGIC;
+		// self-registered: new LF_Test_ReputationGate(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ReputationPersist(), LF_TestTier.PERSISTENCE;
 		// self-registered: new LF_Test_ReputationRules(), LF_TestTier.LOGIC;
+		// self-registered: new LF_Test_ReputationSync(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ReputationWipe(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ResidentTimetable(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_RestartClose(), LF_TestTier.LOGIC;

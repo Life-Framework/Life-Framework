@@ -378,7 +378,7 @@ class LF_OrgRankDefault : LF_ConfigRecord
 	[Attribute("0", UIWidgets.CheckBox, "May promote and demote members below this rank")]
 	bool m_bManageRanks;
 
-	[Attribute("0", UIWidgets.CheckBox, "Reserved for the war record: no effect yet")]
+	[Attribute("0", UIWidgets.CheckBox, "May declare a war on another organization and answer a declaration made on it")]
 	bool m_bDeclareWar;
 
 	[Attribute("0", UIWidgets.CheckBox, "Reserved: the hideout stash opens for every member today")]
