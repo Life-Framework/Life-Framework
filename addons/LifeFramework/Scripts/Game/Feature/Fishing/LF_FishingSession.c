@@ -461,6 +461,7 @@ class LF_FishingSession
 			spot.TakeFish(now);
 
 		LF_JobLevels.Award(key, XP_ACTION);
+		LF_EventBus.Publish(LF_OnFishCaught.Create(key, pick.m_Species.m_sId, pick.m_iSize, pick.m_Prefab, cast.m_sWater, spotTable));
 		LF_Debug.Info(LF_FishingConfig.FEATURE, string.Format("%1 caught %2 (%3, size %4, table %5)", key, pick.m_Prefab, pick.m_Species.m_sId, pick.m_iSize, pick.m_sTable));
 		Toast(RecipientOf(cast, character), "#LF-Fishing_Caught");
 		Event(RecipientOf(cast, character), LF_EFishingEvent.CAUGHT, cast.m_iCastId);

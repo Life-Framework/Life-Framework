@@ -12,7 +12,7 @@ waypoint button.
 
 ## Shape
 
-- **Player sees:** a header (the board's title) and up to eight index cards, four across and two down,
+- **Player sees:** a header (the board's title) and up to twelve index cards, four across and three down (a thirteenth is dropped with a `[LFDebug:TownBoard]` warning),
   each with a red category, a title, one line and "Post office, 30 m north-east". `Read: <title>` over
   a card opens a UI kit notice sheet: title, category, WHERE, the detail list, Set waypoint, Close.
   Set waypoint closes the sheet and shows a small marker on the screen over the place (its name and

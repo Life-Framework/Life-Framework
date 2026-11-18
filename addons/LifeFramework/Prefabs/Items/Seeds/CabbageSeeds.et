@@ -36,6 +36,19 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{1BF8C5BE3DEEC82C}Assets/Items/Identity/Belongings_Personal/Papers_Personal.xob"
   }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions + {
+    LF_PlantAction "{2818A1C0D3E54F01}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{2818A1C0D3E54F02}" {
+      Name "#LF-Plant_Action_Plant"
+     }
+     m_eMode PLANT
+    }
+   }
+  }
   SCR_GadgetComponent "{9A7553FE5FE4D3D0}" {
    m_eAnimVariable LF_ITEM
   }

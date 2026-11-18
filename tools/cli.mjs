@@ -44,7 +44,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
-import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
+import { baseChanges, incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import * as wt from "./wt.mjs";
 import { registerDrivers } from "./merge/register-drivers.mjs";
@@ -719,6 +719,11 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   let scripts = readdirSync(dir).filter(
     (f) => /\.(ps1|cmd|bat|sh|mjs|js|cjs)$/.test(f) && !f.endsWith("README.md"),
   );
+  // LF_VALIDATE_ONLY=a.mjs,b.ps1: run just those checks (the main guard's bisect probes rerun only the failing ones, #2889).
+  if (area === "validate" && process.env.LF_VALIDATE_ONLY) {
+    const only = new Set(process.env.LF_VALIDATE_ONLY.split(",").map((x) => x.trim()).filter(Boolean));
+    scripts = scripts.filter((x) => only.has(x));
+  }
   // `validate --world`: only the checks that read .layer files (tools/lib/world-checks.mjs). On a maintainer
   // world branch (any validate, CI included) a failing LAYOUT check is a warning, not a blocker.
   if (area === "validate" && opts.world) scripts = worldChecks.worldScripts(scripts);
@@ -738,7 +743,7 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   const state = isValidate ? loadState(root) : null;
   let inc = null;
   if (isValidate && opts.incremental && !opts.full && !incrementalOff()) {
-    inc = plan(root, dir, scripts, state, snapshotFiles(root));
+    inc = plan(root, dir, scripts, state, snapshotFiles(root), process.env.LF_VALIDATE_NO_BASE ? null : baseChanges(root));
   }
   const jobs = scripts.map((s) => {
     if (skip.has(s)) return { s, skipped: "LF_VALIDATE_SKIP" };
@@ -820,7 +825,8 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
       const slow = [...ran].sort((a, b) => b.secs - a.secs).slice(0, 3).map((j) => `${j.s} ${j.secs.toFixed(1)} s`).join(", ");
       console.log(`slowest: ${slow}`);
     }
-    if (inc) console.log(`incremental: ran ${ran.length}, skipped ${skippedIncr} (inputs unchanged since their last green run; 'validate --all' runs every check)`);
+    const skippedBase = inc ? [...inc.values()].filter((v) => v.unchanged && v.base).length : 0;
+    if (inc) console.log(`incremental: ran ${ran.length}, skipped ${skippedIncr} (${skippedBase} as on origin/main, the rest unchanged since their last green run; 'validate --all' runs every check)`);
   }
   if (dog.frozenMs() >= 5000) {
     console.log(`WARN  ${area}: this process was frozen ${(dog.frozenMs() / 1000).toFixed(0)} s (longest ${(dog.longestFreezeMs() / 1000).toFixed(0)} s) by a synchronous call beside the checks (a lock wait or spawnSync in the same process); check times above leave it out`);
@@ -3345,16 +3351,9 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   if (opts.shards !== undefined && !only.length && !opts.world && tier === "all") {
     // A pass the cache already holds (identical inputs) is not run again (runShardedTests checks each pass).
     const specs = [{ coreOnly: !!opts.coreOnly }, ...(opts.both && !opts.coreOnly && launchAddons(root).length > 1 ? [{ coreOnly: true }] : [])];
+    // The pack tests run as one more job beside the slices (runShardedTests), never as a second boot after them.
     const r = await runShardedTests(root, specs, opts);
-    if (r !== null) {
-      // The shards run the core registry; the pack tests follow in their own leg on the pack header.
-      const pl = testWorld.packLeg({ tier, pack: packTests, coreOnly: !!opts.coreOnly });
-      if (!pl) return r;
-      console.log(`test: pack leg world ${pl.world} (${pl.reason}), ${pl.classes.length} test(s)`);
-      const pc = await cmdTest(true, tier, root, { ...opts, shards: undefined, both: undefined, onlyClasses: pl.classes.join(","), world: pl.world, inLeg: true });
-      console.log(`SUMMARY test ${r === 0 && pc === 0 ? "ok" : "fail"} tier=${tier} shards+pack shards=${r === 0 ? "ok" : "fail"} pack=${pc === 0 ? "ok" : "fail"}`);
-      return r !== 0 ? r : pc;
-    }
+    if (r !== null) return r;
   }
   const purpose = pool.testPurpose({ tier, only, coreOnly: opts.coreOnly });
   // The pass cache (tools/lib/test-cache.mjs): checked after the rdb refresh (the rdb is in the
@@ -3552,6 +3551,7 @@ function shardPassThrough(opts) {
   if (opts.budget) out.push("--budget", String(opts.budget));
   if (opts.bootBudget) out.push("--boot-budget", String(opts.bootBudget));
   if (opts.force) out.push("--force");
+  if (opts.noCache) out.push("--no-cache");
   return out;
 }
 
@@ -3562,7 +3562,7 @@ function runShardChild(root, job) {
   mkdirSync(logDir, { recursive: true });
   const name = `${new Date().toISOString().replace(/[:.]/g, "-")}-${job.pass.name}-${job.index}of${job.count}.log`;
   const logPath = join(logDir, name);
-  const args = [process.argv[1], "test", "--no-build", "--tier", "all", ...(job.full ? [] : ["--only-classes", job.classes.join(",")]), ...(job.pass.coreOnly ? ["--core-only"] : []), ...shardPassThrough(job.pass.opts)];
+  const args = [process.argv[1], "test", "--no-build", "--tier", "all", ...(job.full && !job.pack ? [] : ["--only-classes", job.classes.join(",")]), ...(job.world ? ["--world", job.world] : []), ...(job.pass.coreOnly ? ["--core-only"] : []), ...shardPassThrough(job.pass.opts)];
   const t0 = Date.now();
   const label = `${job.pass.name} ${job.index}/${job.count}`;
   // The parent's ensureResourceDatabase already refreshed the rdb or tried to: a child never waits on the
@@ -3615,6 +3615,12 @@ async function runShardedTests(root, specs, opts) {
   if (!specs.length) return 0;
   const tests = shards.readRegistry(root);
   if (!tests.length) return null;
+  // The slices never refresh the rdb (LF_RDB_CHECKED, LF_RDB_REFRESH=0), and prepareResourceDatabase leaves a stale one alone
+  // for a run headed to the pool: refresh it once here, or every slice boots on a stale rdb and fails (#2789).
+  if (!rdbHandled.has(root) && !wt.isMainCheckout(root) && testbox.staleRdbAddons(root).length) {
+    rdbHandled.add(root);
+    ensureResourceDatabase(root);
+  }
   let lanes = [];
   try {
     lanes = pool.freeTestLanes(root);
@@ -3633,12 +3639,15 @@ async function runShardedTests(root, specs, opts) {
     return null;
   }
   const history = shards.loadHistory(shards.historyFile(pool.poolDir(root)));
+  // The pack tests (a pack header boot, `pack: true` in their [LF_TestInfo]) ride the normal pass as one more job; a core-only pass has no pack.
+  const packTests = testWorld.readPackTests(root);
   const passes = specs.map((sp) => {
     const plan = n <= 1 ? [tests.map((t) => t.cls)] : shards.planShards(tests, n, history);
-    return { name: sp.coreOnly ? "core" : "normal", coreOnly: sp.coreOnly, opts, classes: plan, full: plan.length === 1 };
+    const pack = testWorld.packLeg({ tier: "all", pack: packTests, coreOnly: !!sp.coreOnly });
+    return { name: sp.coreOnly ? "core" : "normal", coreOnly: sp.coreOnly, opts, classes: plan, full: plan.length === 1, pack };
   });
   const lanesText = lanes.map((l) => `${l.machine} ${l.free}`).join(", ") || "none read";
-  console.log(`shards: ${passes.map((p) => `${p.name} ${p.classes.length}`).join(" + ")} slice(s) over ${tests.length} tests; free test lanes: ${lanesText}${Object.keys(history).length ? "; balanced by timing history" : "; balanced by tier (no timing history yet)"}`);
+  console.log(`shards: ${passes.map((p) => `${p.name} ${p.classes.length}${p.pack ? ` + pack leg (${p.pack.classes.length})` : ""}`).join(" + ")} slice(s) over ${tests.length} tests; free test lanes: ${lanesText}${Object.keys(history).length ? "; balanced by timing history" : "; balanced by tier (no timing history yet)"}`);
   const t0 = Date.now();
   const results = await shards.runPasses(passes, (job) => runShardChild(root, { ...job, full: job.pass.full }));
   let code = 0;

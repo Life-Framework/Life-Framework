@@ -66,6 +66,11 @@ class LF_UIScreen
 	//! The first list's height before any squeeze, and how much of it the sheet cap has taken (#2462).
 	protected float m_fListBase;
 	protected float m_fListSqueezed;
+	//! The scrolling body of parts flagged LF_UIPart.InBody, when the screen has any (#3036). It takes the
+	//! overflow in place of the first list; m_wBodyContent is its column, as tall as the parts need.
+	protected Widget m_wBody;
+	protected Widget m_wBodyContent;
+	protected bool m_bBodyCapped;
 	protected int m_iCurrentOrder;
 	protected ref LF_UIButtonInvoker m_OnButton;
 	protected ref LF_UIClosedInvoker m_OnClosed;
@@ -168,7 +173,11 @@ class LF_UIScreen
 				continue;
 			}
 
-			AddPart(workspace, content, part);
+			Widget parent = content;
+			if (part.IsInBody())
+				parent = BodyColumn(workspace, content);
+
+			AddPart(workspace, parent, part);
 		}
 
 		if (GetGame().GetCallqueue())
@@ -667,6 +676,9 @@ class LF_UIScreen
 				lowest = childY + childH;
 		}
 
+		if (m_wBody)
+			m_fListSqueezed = BodySqueezed(workspace);
+
 		float needed = workspace.DPIUnscale(lowest - sheetTop) + SHEET_CONTENT_TAIL + m_fListSqueezed;
 		float current = FrameSlot.GetSizeY(sheet);
 		// A tall sheet may slide up from its resting top toward the screen edge, so the cap is the
@@ -684,7 +696,78 @@ class LF_UIScreen
 		if (Math.AbsFloat(top - FrameSlot.GetPosY(sheet)) > 0.5)
 			FrameSlot.SetPosY(sheet, top);
 
-		SqueezeList(needed - height);
+		if (m_wBody)
+			SqueezeBody(workspace, needed - height);
+		else
+			SqueezeList(needed - height);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The column the scrolling body's parts go in; the body is made when the first one asks (#3036).
+	protected Widget BodyColumn(WorkspaceWidget workspace, Widget content)
+	{
+		if (m_wBodyContent)
+			return m_wBodyContent;
+
+		m_wBody = workspace.CreateWidgets(LF_UITheme.BODY_LAYOUT, content);
+		if (m_wBody)
+			m_wBodyContent = m_wBody.FindAnyWidget("BodyContent");
+
+		if (!m_wBodyContent)
+		{
+			LF_Debug.Error("UIKit", "body layout is missing BodyContent; its parts stay in the sheet");
+			m_wBody = null;
+			return content;
+		}
+
+		return m_wBodyContent;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How much of the body's natural height the sheet cap has taken, units.
+	protected float BodySqueezed(WorkspaceWidget workspace)
+	{
+		if (!m_bBodyCapped || !m_wBody || !m_wBodyContent)
+			return 0;
+
+		float contentW, contentH, bodyW, bodyH;
+		m_wBodyContent.GetScreenSize(contentW, contentH);
+		m_wBody.GetScreenSize(bodyW, bodyH);
+		float squeezed = workspace.DPIUnscale(contentH - bodyH);
+		if (squeezed < 0)
+			return 0;
+
+		return squeezed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes `overflow` units off the body's height so it scrolls with the title and action rows pinned;
+	//! 0 gives its natural height back (#3036). Same rule as a list: LF_UISheetFit.ListHeight.
+	protected void SqueezeBody(WorkspaceWidget workspace, float overflow)
+	{
+		SizeLayoutWidget bodySize = SizeLayoutWidget.Cast(m_wBody);
+		if (!bodySize || !m_wBodyContent)
+			return;
+
+		float contentW, contentH;
+		m_wBodyContent.GetScreenSize(contentW, contentH);
+		float natural = workspace.DPIUnscale(contentH);
+		if (overflow <= 0 || natural <= 0)
+		{
+			if (m_bBodyCapped)
+				bodySize.EnableHeightOverride(false);
+
+			m_bBodyCapped = false;
+			m_fListSqueezed = 0;
+			return;
+		}
+
+		float target = LF_UISheetFit.ListHeight(natural, overflow);
+		m_fListSqueezed = natural - target;
+		m_bBodyCapped = true;
+		bodySize.EnableHeightOverride(true);
+		bodySize.SetHeightOverride(target);
+		LF_Debug.Info("UIKit", "sheet at the screen cap: the body scrolls in " + target + " units");
 	}
 
 	//------------------------------------------------------------------------------------------------

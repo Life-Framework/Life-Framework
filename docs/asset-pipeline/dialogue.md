@@ -98,6 +98,7 @@ dialogue or patch can only name these; `validate` and the runtime refuse any oth
 | `QuestConverse`, `QuestTurnedIn`, `QuestNotTurnedIn` | `Feature/Quests/LF_QuestDialogue.c` |
 | `IdCardMissing`, `IdCardReplace` | `Feature/Identity/LF_IdCardClerk.c` |
 | `RobArmed`, `RobReady`, `RobBlocked`, `RobStart`, `RobRefused` | `Feature/Crime/LF_RobDialogue.c` |
+| `Contract` (condition: standing gate passes; action: start the contract), `ContractLocked` (condition: gate does not pass yet) | `Feature/Reputation/LF_DialogueHook_Contract.c`, `LF_DialogueHook_ContractLocked.c` |
 
 ## Naming a dialogue by id
 

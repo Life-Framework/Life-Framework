@@ -1,4 +1,5 @@
 // red-proof: observed 2026-11-18 `tools/cli test --no-build --red LF_Test_MarketPersist`: RED PROOF OK, first `CopperBar.et has a stored price after the load`. Restart: `tools/cli wt e2e slice-2846` green; with VerifyE2E expecting E2E_PRICE + 1 the reload boot failed market/persist (applied 1 of 1 row), so the check is live.
+// #3028 (hundredths, version 1 rows read x100): RedProof() skips the load, RED PROOF OK in the batched `--red` run with LF_Test_PriceCurve (2026-11-18); `toolscli wt e2e slice-3028` green with the 22.50 e2e price.
 //! Market prices ride the real save path (#2846, the "market" save section): two goods moved by sales come
 //! back with their price and stamp after a save and load, loading twice gives the same book, a good the
 //! config dropped is dropped, a price under a raised floor loads clamped, and a save without the section
@@ -11,8 +12,9 @@ class LF_Test_MarketPersist : LF_Test
 	protected static const ResourceName IRON = "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et";
 	//! A fixed clock, so the stamps are exact.
 	protected static const int NOW = 1800000000;
-	//! The iron bar's price the e2e save boot leaves (inside the core config's 15..45).
-	static const int E2E_PRICE = 22;
+	//! The iron bar's price the e2e save boot leaves, in hundredths of a cash unit: 22.50, inside the core
+	//! config's 15..45 and not a whole number, so the restart proves the hundredths survive (#3028).
+	static const int E2E_PRICE = 2250;
 
 	override string GetName()
 	{
@@ -26,7 +28,7 @@ class LF_Test_MarketPersist : LF_Test
 		config.m_bEnabled = true;
 		config.m_iMaxRecoveryHours = 168;
 		config.m_aGoods = {};
-		config.m_aGoods.Insert(LF_MarketGoodDef.Make(COPPER, 40, copperFloor, 60, 5, 10));
+		config.m_aGoods.Insert(LF_MarketGoodDef.Make(COPPER, 40, copperFloor, 60, 3, 10));
 		if (withIron)
 			config.m_aGoods.Insert(LF_MarketGoodDef.Make(IRON, 30, 15, 45, 10, 10));
 
@@ -66,6 +68,11 @@ class LF_Test_MarketPersist : LF_Test
 		ctx.True(copperAfter > 0 && copperAfter < oldPrice, "a copper sale moves its price down");
 		int ironAfter = LF_MarketBook.ApplySaleAt(IRON, 2, NOW + 60, oldPrice);
 		ctx.True(ironAfter > 0 && ironAfter < oldPrice, "an iron sale moves its price down");
+		// 3 percent of 40 is 1.20 a unit: copper stands at 36.40, a price with hundredths.
+		int copperFine = 3640;
+		int ironFine = 2400;
+		CheckPrice(ctx, COPPER, copperFine, NOW, "after the sales");
+		CheckPrice(ctx, IRON, ironFine, NOW + 60, "after the sales");
 
 		JsonSaveContext saveContext = new JsonSaveContext(false);
 		ctx.True(LF_PersistenceComponentSerializer.SerializeStore(persistence, saveContext) == ESerializeResult.OK, "the store serializes");
@@ -79,24 +86,43 @@ class LF_Test_MarketPersist : LF_Test
 		if (!RedProof())
 			ReadSection(saved, ctx);
 
-		CheckPrice(ctx, COPPER, copperAfter, NOW, "after the load");
-		CheckPrice(ctx, IRON, ironAfter, NOW + 60, "after the load");
+		CheckPrice(ctx, COPPER, copperFine, NOW, "after the load");
+		CheckPrice(ctx, IRON, ironFine, NOW + 60, "after the load");
 
 		// Loading twice replaces, never accumulates; a live good the save lacks is gone.
-		LF_MarketBook.Restore(IRON, LF_MarketPrice.Make(44, NOW + 120));
+		LF_MarketBook.Restore(IRON, LF_MarketPrice.Make(4400, NOW + 120));
 		ReadSection(saved, ctx);
 		ReadSection(saved, ctx);
-		CheckPrice(ctx, COPPER, copperAfter, NOW, "after a second load");
-		CheckPrice(ctx, IRON, ironAfter, NOW + 60, "after a second load");
+		CheckPrice(ctx, COPPER, copperFine, NOW, "after a second load");
+		CheckPrice(ctx, IRON, ironFine, NOW + 60, "after a second load");
 		ctx.Equal(2, LF_MarketBook.Entries().Count(), "the book holds the two saved goods only");
 
 		// The config drops iron and raises the copper floor above the saved price.
-		int raisedFloor = copperAfter + 3;
+		int raisedFloor = 39;
 		LF_MarketConfig.UseForTest(MakeConfig(false, raisedFloor));
 		LF_MarketBook.ResetStatics();
 		ReadSection(saved, ctx);
 		ctx.True(!LF_MarketBook.Snapshot(IRON), "a good the config no longer lists is dropped");
-		CheckPrice(ctx, COPPER, raisedFloor, NOW, "clamped to the raised floor");
+		CheckPrice(ctx, COPPER, LF_PriceCurve.ToFine(raisedFloor), NOW, "clamped to the raised floor");
+
+		// A section saved before #3028 holds whole cash: it loads x100, a damaged value cannot overflow.
+		LF_MarketConfig.UseForTest(MakeConfig(true, 20));
+		array<ref LF_MarketPriceRow> oldRows = {};
+		LF_MarketPriceRow oldCopper = LF_MarketPriceRow.Create(COPPER, 35, NOW);
+		oldCopper.m_iVersion = 1;
+		oldRows.Insert(oldCopper);
+		LF_MarketPriceRow oldIron = LF_MarketPriceRow.Create(IRON, 2000000000, NOW + 60);
+		oldIron.m_iVersion = 1;
+		oldRows.Insert(oldIron);
+		ctx.Equal(2, LF_MarketSavePayload.ApplyAll(oldRows), "both version 1 rows load");
+		CheckPrice(ctx, COPPER, 3500, NOW, "from a version 1 save of 35 cash");
+		CheckPrice(ctx, IRON, LF_PriceCurve.ToFine(45), NOW + 60, "from a damaged version 1 value, clamped to the ceiling");
+		array<ref LF_MarketPriceRow> exported = LF_MarketSavePayload.ExportAll();
+		ctx.Equal(2, exported.Count(), "the book writes both rows again");
+		foreach (LF_MarketPriceRow written : exported)
+		{
+			ctx.Equal(LF_MarketPriceRow.ROW_VERSION, written.m_iVersion, "a row is written in the current version");
+		}
 
 		// A save without this section (an older save) on a boot: every good stands at its base.
 		LF_MarketConfig.UseForTest(MakeConfig(true, 20));
@@ -129,7 +155,7 @@ class LF_Test_MarketPersist : LF_Test
 		if (!p)
 			return;
 
-		ctx.Equal(price, p.m_iPrice, string.Format("%1 price %2", good, when));
+		ctx.Equal(price, p.m_iFine, string.Format("%1 price (hundredths) %2", good, when));
 		ctx.Equal(stamp, p.m_iLastSaleUnix, string.Format("%1 last sale stamp %2", good, when));
 	}
 
@@ -157,7 +183,7 @@ class LF_Test_MarketPersist : LF_Test
 	{
 		LF_MarketBook.Restore(IRON, LF_MarketPrice.Make(E2E_PRICE, System.GetUnixTime()));
 		LF_MarketPrice p = LF_MarketBook.Snapshot(IRON);
-		ctx.True(p && p.m_iPrice == E2E_PRICE, "e2e iron price is set before the save");
+		ctx.True(p && p.m_iFine == E2E_PRICE, "e2e iron price is set before the save");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -169,8 +195,8 @@ class LF_Test_MarketPersist : LF_Test
 		if (!p)
 			return;
 
-		ctx.Equal(E2E_PRICE, p.m_iPrice, "e2e iron price survives the restart");
+		ctx.Equal(E2E_PRICE, p.m_iFine, "e2e iron price (hundredths) survives the restart");
 		ctx.True(p.m_iLastSaleUnix > 0, "e2e iron sale stamp survives the restart");
-		LF_Debug.Info(LF_MarketBook.FEATURE, string.Format("e2e restart: %1 stored at %2, stamped %3", IRON, p.m_iPrice, p.m_iLastSaleUnix));
+		LF_Debug.Info(LF_MarketBook.FEATURE, string.Format("e2e restart: %1 stored at %2, stamped %3", IRON, p.m_iFine, p.m_iLastSaleUnix));
 	}
 }

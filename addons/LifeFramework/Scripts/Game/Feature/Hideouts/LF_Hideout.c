@@ -393,6 +393,7 @@ class LF_Hideout
 		state.m_sOrganizationId = organizationId;
 		PushLock(state);
 		LF_Debug.Log("Hideout", string.Format("assigned hideout=%1 org=%2 tenancy=%3", hideoutId, organizationId, typename.EnumToString(LF_EHideoutTenancy, state.m_eTenancy)));
+		LF_EventBus.Publish(LF_OnHideoutLeaseChanged.Create(hideoutId, organizationId, true));	// #2834: an open ledger refreshes
 		return true;
 	}
 
@@ -420,6 +421,7 @@ class LF_Hideout
 		state.ResetHeldGround();
 		PushLock(state);
 		LF_Debug.Info("Hideout", string.Format("released hideout=%1 org=%2 reason=%3", hideoutId, organizationId, reason));
+		LF_EventBus.Publish(LF_OnHideoutLeaseChanged.Create(hideoutId, organizationId, false));	// #2834: an open ledger refreshes
 		return true;
 	}
 

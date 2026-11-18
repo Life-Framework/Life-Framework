@@ -10,9 +10,12 @@
 //      the model and, for risky work, the independent reviewer;
 //   5. the ledger: record refuses an incomplete row, appends good ones; stats shows first-pass, rework and median minutes
 //      per model and type;
+//   5b. minutes: record computes them from the worktree start (hub state `created`) to now; an agent-given --minutes is
+//      kept as agentMinutes and never becomes the ledger value when a start exists (#3004);
 //   6. the command: list --fixture prints the queue and the ready:running ratio, new --dry-run writes the cards file and
 //      exits 0, a bad plan exits 1, all on quiet SUMMARY lines.
-// red-proof: with the merged test in statusOf forced false, "S3 is ready once S2 is in-dev" failed; with the sort's path
+// red-proof: #3004 minutes (2026-11-18): with ledgerMinutes returning the agent value first, "minutes come from the worktree
+// clock" failed (got 40, want 12); restored. with the merged test in statusOf forced false, "S3 is ready once S2 is in-dev" failed; with the sort's path
 // term removed, "the longest chain (X, 90m) goes before a short blocker" failed; with isShared forced false, "features.md is not a
 // conflict" failed. All restored. record-merged (2026-11-15): the new cases were written first and failed (mergeVerdict
 // did not exist; record took --outcome merged with an open PR); then mergeVerdict and the check in slice record went in.
@@ -20,7 +23,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { main } from "../commands/slice.mjs";
-import { brief, cardBody, checkPlan, conflicts, criticalPaths, ledgerRow, mergeVerdict, parseCard, parsePlan, readyOrder, renderStats, stats, statusOf, suggestModel } from "../lib/slice.mjs";
+import { brief, cardBody, checkPlan, conflicts, criticalPaths, ledgerMinutes, ledgerRow, mergeVerdict, parseCard, parsePlan, readyOrder, renderStats, stats, statusOf, suggestModel } from "../lib/slice.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -172,6 +175,21 @@ check(mergeVerdict([pr(2, "MERGED", "ws/other", "Closes #105", "2026-11-15T10:00
 check(!mergeVerdict([pr(3, "MERGED", "ws/other", "Refs #1050", "2026-11-15T10:00:00Z")], 105).ok, "mergeVerdict: #1050 is not #105");
 check(!mergeVerdict([pr(4, "CLOSED", "ws/slice-105", "Refs #105")], 105).ok, "mergeVerdict: a closed, unmerged PR does not pass");
 check(mergeVerdict([pr(5, "CLOSED", "ws/slice-105", "Refs #105"), pr(6, "MERGED", "ws/slice-105-b", "Refs #105", "2026-11-15T10:00:00Z")], 105).ok, "mergeVerdict: one merged PR among several passes");
+// minutes come from the worktree clock (#3004); the agent's number is only kept apart.
+const T0 = "2026-11-18T10:00:00.000Z";
+const T12 = "2026-11-18T10:12:00.000Z";
+const lm = ledgerMinutes({ started: T0, now: T12, agent: 40 });
+check(lm.minutes === 12 && lm.minutesSource === "worktree" && lm.agentMinutes === 40 && lm.startedAt === T0, `minutes come from the worktree clock, the agent value stays apart (got ${JSON.stringify(lm)})`);
+check(ledgerMinutes({ started: T0, now: "2026-11-18T10:00:10.000Z", agent: null }).minutes === 1, "a run under a minute rounds up to 1");
+const la = ledgerMinutes({ started: null, now: T12, agent: 25 });
+check(la.minutes === 25 && la.minutesSource === "agent", "no start time: the agent value is the fallback and is marked agent");
+check(ledgerMinutes({ started: null, now: T12, agent: null }).minutes === null && ledgerRow({ model: "sonnet", outcome: "merged", gate: "pass", minutes: null }).some((m) => m.includes("--minutes")), "no start and no agent value: record is refused");
+check(ledgerMinutes({ started: "2026-11-18T11:00:00Z", now: T12, agent: 9 }).minutesSource === "agent", "a start after now (clock skew) falls back to the agent value");
+const rClock = await capture(["record", "110", "--model", "sonnet", "--outcome", "handoff", "--gate", "pass", "--minutes", "40", "--started", T0, "--now", T12, "--ledger", ledger]);
+const clockRow = JSON.parse(readFileSync(ledger, "utf8").trim().split("\n").pop());
+check(rClock.code === 0 && clockRow.minutes === 12 && clockRow.agentMinutes === 40 && clockRow.minutesSource === "worktree" && rClock.text.includes("12m (agent said 40m)"), `record writes the computed minutes and keeps agentMinutes (got ${rClock.text} ${JSON.stringify(clockRow)})`);
+const rNoMin = await capture(["record", "111", "--model", "sonnet", "--outcome", "handoff", "--gate", "pass", "--ledger", ledger]);
+check(rNoMin.code === 1 && rNoMin.text.includes("--minutes"), `record with no start time and no --minutes is refused (got ${rNoMin.text})`);
 check(renderStats([]).startsWith("no slices recorded"), "empty ledger says so");
 
 if (failures.length) {

@@ -15,7 +15,10 @@ enum LF_EOrgWarNotice
 {
 	DECLARED,
 	ACCEPTED,
-	ENDED
+	ENDED,
+	//! A contested site and who holds it (#2834): the declarer field carries the holder's name ("" when
+	//! nobody leases the site) and the target field the site's hideout id. Always last on the board.
+	SITE
 }
 
 //------------------------------------------------------------------------------------------------
@@ -162,7 +165,45 @@ class LF_OrgWarBoard
 			outNotices.Insert(ended);
 		}
 
+		array<string> siteIds = {};
+		ContestedSiteIds(siteIds);
+		AddSiteNotices(siteIds, outNotices);
+
 		Arrange(outNotices, now);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the hideout id of every contested site placed in the world (LF_Places, no names or
+	//! coordinates in script), in id order so the board does not shuffle between reads.
+	static void ContestedSiteIds(notnull array<string> outIds)
+	{
+		outIds.Clear();
+		array<IEntity> centres = {};
+		LF_Places.FindAll(LF_ContestedSites.PLACE_KIND, centres);
+		foreach (IEntity centre : centres)
+		{
+			LF_ContestedSiteComponent site = LF_ContestedSiteComponent.Cast(centre.FindComponent(LF_ContestedSiteComponent));
+			if (site && !site.GetHideoutId().IsEmpty() && outIds.Find(site.GetHideoutId()) < 0)
+				outIds.Insert(site.GetHideoutId());
+		}
+
+		outIds.Sort();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One SITE notice per hideout id: who leases it right now (the lease table is the truth, so a
+	//! capture, a release or a lapse shows on the next read).
+	static void AddSiteNotices(notnull array<string> hideoutIds, notnull array<ref LF_OrgWarNotice> outNotices)
+	{
+		foreach (string hideoutId : hideoutIds)
+		{
+			string holder;
+			string holderId = LF_Hideout.GetOwner(hideoutId);
+			if (!holderId.IsEmpty())
+				holder = NameOf(holderId);
+
+			outNotices.Insert(LF_OrgWarNotice.Create(LF_EOrgWarNotice.SITE, hideoutId, holder, hideoutId, string.Empty, 0, 0));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -253,6 +294,9 @@ class LF_OrgWarBoard
 		if (number == LF_EOrgWarNotice.ENDED)
 			return LF_EOrgWarNotice.ENDED;
 
+		if (number == LF_EOrgWarNotice.SITE)
+			return LF_EOrgWarNotice.SITE;
+
 		return LF_EOrgWarNotice.DECLARED;
 	}
 
@@ -297,6 +341,17 @@ class LF_OrgWarBoard
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A contested site as a card line: "<site>: held by <org>", or "<site>: unclaimed".
+	static string SiteLineText(string hideoutId, string holder)
+	{
+		string site = LF_OrgHeldSites.Label(hideoutId, true);
+		if (holder.IsEmpty())
+			return WidgetManager.Translate("#LF-OrgWarBoard_SiteFree", site);
+
+		return WidgetManager.Translate("#LF-OrgWarBoard_SiteHeld", site, holder);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One notice as a card line.
 	static string LineText(LF_EOrgWarNotice kind, string declarer, string target, string reason, int seconds)
 	{
@@ -319,12 +374,32 @@ class LF_OrgWarBoard
 			rows = Math.Min(rows, textRows);
 		}
 
-		if (rows < 1)
+		int warRows;
+		for (int w = 0; w < rows; w++)
+		{
+			if (KindOf(answer.m_aNumbers[w * NUMBER_STRIDE]) != LF_EOrgWarNotice.SITE)
+				warRows++;
+		}
+
+		if (warRows < 1)
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "None", WidgetManager.Translate("#LF-OrgWarBoard_None")));
 
+		bool siteHeader;
 		for (int i = 0; i < rows; i++)
 		{
 			LF_EOrgWarNotice kind = KindOf(answer.m_aNumbers[i * NUMBER_STRIDE]);
+			if (kind == LF_EOrgWarNotice.SITE)
+			{
+				if (!siteHeader)
+				{
+					parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "SitesHeader", WidgetManager.Translate("#LF-OrgWarBoard_SitesHeader")));
+					siteHeader = true;
+				}
+
+				parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Site" + i, SiteLineText(answer.m_aTexts[i * TEXT_STRIDE + 1], answer.m_aTexts[i * TEXT_STRIDE])));
+				continue;
+			}
+
 			string line = LineText(kind, answer.m_aTexts[i * TEXT_STRIDE], answer.m_aTexts[i * TEXT_STRIDE + 1], answer.m_aTexts[i * TEXT_STRIDE + 2], answer.m_aNumbers[i * NUMBER_STRIDE + 1]);
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Notice" + i, line));
 		}

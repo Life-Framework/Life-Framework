@@ -2,6 +2,7 @@
 // not a load boot, boot 2 has the rename alias only and ends by the host stop (so its capture is
 // in the shutdown save), boot 3 adds the restore; the log filter keeps the stable-id lines only.
 // red-proof: with boot 2's hostStop false this printed "boot 2 must end by the host stop" and exited 1.
+// inputs: imports
 import { selftestContentIds } from "../test/e2e-content-ids.mjs";
 
 const failures = selftestContentIds();

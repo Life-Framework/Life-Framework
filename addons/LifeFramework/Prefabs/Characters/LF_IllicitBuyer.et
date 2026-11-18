@@ -1,0 +1,43 @@
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "0895C00A763F3628"
+ components {
+  LF_NpcRoleComponent "{7A31C05E94D2B861}" {
+   m_sRole "townsfolk"
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{58620BFC833AF841}" {
+     ContextName "Buyer"
+     Position PointInfo "{FEFBAB9B1AB28480}" {
+      PivotID "Spine5"
+     }
+     Radius 2.5
+    }
+   }
+   additionalActions + {
+    LF_BuyerSaleAction "{C4952EE3B68315E3}" {
+     ParentContextList {
+      "Buyer"
+     }
+     UIInfo UIInfo "{D3C1DECCA3941995}" {
+      Name "#LF-BuyerSale_Action"
+      Description "#LF-BuyerSale_ActionDesc"
+     }
+    }
+   }
+  }
+  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{23A15812C40D34C2}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_strippedShirt_dirty.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
+    }
+   }
+  }
+ }
+}
