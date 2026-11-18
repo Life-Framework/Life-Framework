@@ -1,0 +1,48 @@
+{
+  "slug": "hockey-mask",
+  "name": "HockeyMask",
+  "kind": "clothing",
+  "route": "c",
+  "roadmap": "#1997",
+  "concept": "A 1989 yellowed, cracked fibreglass hockey mask with eye slits, drilled vent holes and a faded blue stripe: a rink-bag mask that hides the wearer. Cut from the base body head by model.py and worn through the vanilla knitted hat prefab (Hat slot, pickup and equip actions, sounds).",
+  "base": "{BCCB7D5AB38BB3A7}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_base.et",
+  "slot": "Hat",
+  "hide": null,
+  "mesh": {
+    "build": "model.py",
+    "source": "build:hockeymask.blend",
+    "object": "HockeyMask",
+    "item_object": "HockeyMask_item",
+    "material": "HockeyMask",
+    "item_material": "HockeyMask_item",
+    "maps": {
+      "BCRMap": "build:HockeyMask_BCR.tif",
+      "NMOMap": "build:HockeyMask_NMO.tif"
+    },
+    "weights_from": "body",
+    "smooth": 2,
+    "clearance_m": 0.003,
+    "exporter": "stock",
+    "prune_skeleton": true
+  },
+  "materials": [],
+  "budget": {
+    "texture_px": 1024,
+    "lod0_tris": 4500,
+    "lod_ratios": [
+      0.5,
+      0.25,
+      0.12
+    ]
+  },
+  "asset_dir": "Assets/Characters/HeadGear/LF/HockeyMask",
+  "prefab_dir": "Prefabs/Characters/HeadGear/LF",
+  "prefab": {
+    "name_key": "#LF-HockeyMask_Name",
+    "description_key": "#LF-HockeyMask_Description"
+  },
+  "verify": {
+    "expect": "changed",
+    "min_diff": 0.15
+  }
+}
