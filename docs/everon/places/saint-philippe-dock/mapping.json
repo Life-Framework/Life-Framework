@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "template": "harbour",
+  "place": "saint-philippe-dock",
+  "status": "proposed",
+  "note": "Proposal for lead approval (D10): the tool proposal, hand-edited. The dock and the taxi stand share b01, the light tower on the quay road at the junction 40 m inland of the pier head (the dossier lists the concrete pier pieces as props, not buildings, so the kit sets the dock against the quay edge near b01 and the taxi against the kerb). fish-counter and chandler wait for state 2b (docs/roadmap/m6-outline.md) and stay none here. Approval is a reviewed PR holding only this file (label town-mapping); `toolscli town map saint-philippe-dock --check` passes.",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-17",
+    "buildings": 47,
+    "freePlots": 8
+  },
+  "slots": {
+    "dock": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "street furniture on the frontage of b01 (industrial-tower), 40.6 m from the centre, at the quay road junction; the kit sets the dock against the quay edge (pier pieces at 4390, 11101 are props in the dossier)"
+      ]
+    },
+    "taxi": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "street furniture on the frontage of b01 (industrial-tower), 40.6 m from the centre; the kit sets the stand against the kerb, away from the quay edge where the dock stands"
+      ]
+    },
+    "fish-counter": {
+      "none": true,
+      "reason": "state 2b: the fish counter opens with the fishing chapter (Chapter 4); it is mapped when 2b is cut"
+    },
+    "chandler": {
+      "none": true,
+      "reason": "state 2b: the chandler opens with the fishing chapter (Chapter 4); it is mapped when 2b is cut"
+    }
+  }
+}
