@@ -1363,11 +1363,20 @@ class LF_Hideout
 			state.m_sBaseOrgId = "";
 		}
 
-		if (state.m_sOrganizationId.IsEmpty() || state.m_eTenancy == LF_EHideoutTenancy.CAPTURED || state.m_sBaseOrgId == state.m_sOrganizationId)
+		if (state.m_sOrganizationId.IsEmpty() || state.m_eTenancy == LF_EHideoutTenancy.CAPTURED)
 			return;
 
+		// Checked against the registry, not m_sBaseOrgId alone: a load registers every lease as a base, so
+		// a captured door can take the place from the real base before the "tenancy" payload says which is
+		// which, leaving the base's m_sBaseOrgId stale (#2816 review). The resync then re-registers it.
 		IEntity held = LF_Places.Find(baseKind, state.m_sOrganizationId);
-		if (held && held != door)
+		if (held == door)
+		{
+			state.m_sBaseOrgId = state.m_sOrganizationId;
+			return;
+		}
+
+		if (held)
 		{
 			LF_Debug.Info("Hideout", string.Format("base of org=%1 moves to hideout=%2: the last lease wins", state.m_sOrganizationId, state.m_sHideoutId));
 			LF_Places.Unregister(baseKind, state.m_sOrganizationId);
