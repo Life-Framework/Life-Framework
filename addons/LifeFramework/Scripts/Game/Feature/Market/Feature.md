@@ -33,8 +33,8 @@ Rung 4 background: pure rules and a config, no screen, no world, no replication 
 
 ## Not built yet (later cards of the chapter)
 
-The pack overlay and owner (the per-good price state is saved as section `market` since #2846, `LF_MarketSave.c`)
-`config.json` section, and any screen.
+The owner (the per-good price state is saved as section `market` since #2846, `LF_MarketSave.c`)
+`config.json` section, and any screen. The pack overlay is built (#3018): `LF_MarketConfig.ApplyLayers` merges goods by prefab GUID and reads `m_bEnabled` from the overlay root.
 
 ## Dependencies
 
