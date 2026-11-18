@@ -49,7 +49,7 @@ class LF_Test_MarketPersist : LF_Test
 #ifdef LF_E2E_LOAD_BOOT
 		// The reload boot: the e2e price came back from the real save, when it carried the section
 		// (a --pre-move or --legacy-save ref build wrote none; LF_E2E logs the skip).
-		if (LF_E2E.RequiresSeed("market save section", LF_SaveSections.BootHadSection(LF_MarketSavePayload.NAME)))
+		if (LF_E2E.RequiresSection(LF_MarketSavePayload.NAME))
 			VerifyE2E(ctx);
 
 		return;
