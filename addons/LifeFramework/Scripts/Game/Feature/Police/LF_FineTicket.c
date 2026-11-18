@@ -586,7 +586,7 @@ class LF_FineTickets
 			}
 
 			s_aTickets.Insert(record.Copy());
-			s_iLastNumber = Math.Max(s_iLastNumber, record.m_iNumber);
+			s_iLastNumber = LF_Utils.MaxInt(s_iLastNumber, record.m_iNumber);
 		}
 
 		for (int i = 1; i < s_aTickets.Count(); i++)

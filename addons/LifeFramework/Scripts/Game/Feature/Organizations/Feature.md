@@ -51,10 +51,14 @@ processing upgrade are kept at the desk.
   ticks, so a deadline passed during downtime closes on the first sweep at the deadline. Keyed by org id,
   all times unix seconds. `Declare`, `Accept`, `Tick`,
   `End`, `IsAtWar`, `ActiveFor` take an `LF_OrgWarRules` value (declared in `LF_OrgWarConfig.c`, #2667: fee, window, length, cooldown, min
-  members). A refusal (self, unknown org, pending or at war with that org, pair
+  members, lapse cooldown). A refusal (self, unknown org, pending or at war with that org, pair
   cooldown) logs `[LFDebug:OrgWars]` and returns a key. Each transition publishes `LF_OnOrgWarDeclared`,
   `LF_OnOrgWarAccepted`, `LF_OnOrgWarEnded` (reason `time`, `lapsed`, `forfeit`) from
-  `LF_OrgWarsEvents.c`. No RPC, UI or money here; rights and the fee are W3.
+  `LF_OrgWarsEvents.c`. A closed war starts the pair cooldown: ENDED the war cooldown, a LAPSED
+  declaration the shorter lapse cooldown (`lapseCooldownSeconds`, 1 h, #2769) so a fund cannot be drained by
+  re-declaring on a loop; both sides of the pair are held, and the record's `m_iCooldownSec` carries the
+  lapse value until `Accept` swaps in the war one. The shipped officer rung holds `DECLARE_WAR` (#2769), so
+  a lapse is not forced by an offline founder; an org's saved rank mask keeps what it saved. No RPC, UI or money here; rights and the fee are W3.
 - `LF_OrgWarDesk` — the war desk verbs (#2668, W3). `Declare(characterId, playerUid, targetOrgId)`: the rank
   holds `DECLARE_WAR`, both orgs have the rules' member minimum, the fund covers the fee; the fee is
   debited, then `LF_OrgWars.Declare`, and a record refusal (pending, cooldown) credits it back in the same

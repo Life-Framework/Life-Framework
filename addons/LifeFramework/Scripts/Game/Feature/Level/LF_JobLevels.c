@@ -280,7 +280,7 @@ class LF_JobLevels
 			Store().Set(playerUid, jobs);
 		}
 
-		jobs.Set(job, Math.Max(0, xp));
+		jobs.Set(job, LF_Utils.MaxInt(0, xp));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -408,7 +408,7 @@ class LF_JobLevels
 			if (!Track(row.m_sJob))
 				unknownJobs++;
 
-			int xp = Math.Max(row.m_iXp, XpOf(row.m_sPlayerUid, row.m_sJob));
+			int xp = LF_Utils.MaxInt(row.m_iXp, XpOf(row.m_sPlayerUid, row.m_sJob));
 			SetXp(row.m_sPlayerUid, row.m_sJob, xp);
 			applied++;
 		}
@@ -480,7 +480,7 @@ class LF_JobLevels
 	static void XpToLegacyLevel(int total, out int level, out float xp)
 	{
 		level = 1;
-		int left = Math.Max(0, total);
+		int left = LF_Utils.MaxInt(0, total);
 		while (level < LEGACY_MAX_SINGLE_LEVEL && left >= level * LEGACY_LEVEL_STEP)
 		{
 			left = left - level * LEGACY_LEVEL_STEP;

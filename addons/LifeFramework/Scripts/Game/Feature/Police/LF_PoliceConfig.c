@@ -681,7 +681,7 @@ class LF_PoliceConfig
 		if (!config)
 			return DEFAULT_SEARCH_COOLDOWN_SECONDS;
 
-		return Math.Max(config.m_iSearchCooldownSeconds, 0);
+		return LF_Utils.MaxInt(config.m_iSearchCooldownSeconds, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------

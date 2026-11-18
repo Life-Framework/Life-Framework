@@ -136,7 +136,7 @@ class LF_CivilianJob
 		}
 
 		LF_JobWorker worker = Worker(playerUid);
-		worker.m_iPaidTotal = Math.Max(0, paidTotal);
+		worker.m_iPaidTotal = LF_Utils.MaxInt(0, paidTotal);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -584,7 +584,7 @@ class LF_CivilianJob
 		if (playerUid.IsEmpty())
 			return;
 
-		Worker(playerUid).m_iDeposit = Math.Max(0, amount);
+		Worker(playerUid).m_iDeposit = LF_Utils.MaxInt(0, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
