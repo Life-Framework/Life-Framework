@@ -57,7 +57,7 @@
       "places": ["ChessTable"]
     },
     {
-      "id": "range", "required": false, "kit": "range", "host": "building", "poi": "none",
+      "id": "range", "required": false, "kit": "range", "host": "building", "poi": "none", "margin": 18,
       "needs": { "interior": "optional", "minArea": 15, "prefer": "far", "types": ["shed", "garage", "farm", "farm-small", "industrial"] },
       "places": ["RangeLane"]
     },
@@ -110,6 +110,11 @@
       "id": "woodlot", "required": false, "kit": "woodlot", "host": "building", "poi": "none", "margin": 14,
       "needs": { "interior": "optional", "minArea": 80, "prefer": "far", "types": ["industrial", "shed", "farm", "garage"] },
       "places": ["LogPile", "Processor"]
+    },
+    {
+      "id": "farm", "required": false, "kit": "farm", "host": "building", "poi": "none", "margin": 20,
+      "needs": { "interior": "optional", "minArea": 60, "prefer": "far", "types": ["farm"] },
+      "places": ["FarmPlot", "SeedCrate"]
     },
     {
       "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building", "poi": "none",
