@@ -1,7 +1,7 @@
 // LF_QuestHooksProgress.c - SIGNAL keys for what a player does after the arrival chain (#3123):
 // buying a car or a plot, collecting the firearm permit, selling a fish, reaching a job level.
 // Each is a modded-class override on the feature's own success path, so the vehicle, property,
-// licence, shop and level files stay untouched. A refused purchase or sale reports nothing.
+// licence, shop, level and build-site files stay untouched (a finished build stage is #3195). A refused purchase or sale reports nothing.
 
 //------------------------------------------------------------------------------------------------
 //! SIGNAL keys for the hour-2 milestones and the server helpers behind them.
@@ -12,6 +12,7 @@ class LF_QuestProgressSignals
 	static const string PERMIT_COLLECTED = "permit_collected";
 	static const string FISH_SOLD = "fish_sold";
 	static const string JOB_LEVEL = "job_level:";
+	static const string STAGE_DONE = "property.stage_done:";
 
 	//! Test seam: a body no player controls, by the uid the level event carries.
 	protected static ref map<string, EntityID> s_mTestBodies;
@@ -21,6 +22,13 @@ class LF_QuestProgressSignals
 	static string JobLevel(string job, int level)
 	{
 		return JOB_LEVEL + job + ":" + level.ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "property.stage_done:<stageId>", the stage id as the property config spells it ("foundation").
+	static string StageDone(string stageId)
+	{
+		return STAGE_DONE + stageId;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -190,6 +198,79 @@ modded class LF_ShopComponent
 			LF_QuestProgressSignals.Report(seller, LF_QuestProgressSignals.FISH_SOLD);
 
 		return result;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! "property.stage_done:<stageId>" when a build stage finishes (#3195): to the plot's owner and to every
+//! key holder who deposited or worked on it since the stage began. A refused call (a stranger) adds nobody.
+//! The contributors are the site's own memory and are not saved: after a restart mid-stage the owner and
+//! whoever finishes the stage still hear it. No build-site rule changes: the overrides only watch the
+//! stage number move.
+modded class LF_BuildSiteComponent
+{
+	protected ref array<string> m_aStageContributors = {};
+
+	//------------------------------------------------------------------------------------------------
+	override LF_EBuildSite ServerDeposit(IEntity user, string actorKey)
+	{
+		int stageBefore = FinishedStages();
+		LF_EBuildSite result = super.ServerDeposit(user, actorKey);
+		AfterContribution(result, user, actorKey, stageBefore);
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override LF_EBuildSite ServerWork(IEntity user, string actorKey, float now)
+	{
+		int stageBefore = FinishedStages();
+		LF_EBuildSite result = super.ServerWork(user, actorKey, now);
+		AfterContribution(result, user, actorKey, stageBefore);
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int FinishedStages()
+	{
+		LF_PropertyRecord record = LF_Properties.Get(GetSiteKey());
+		if (!record)
+			return 0;
+
+		return record.m_iBuildStage;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Notes an accepted contributor; when the call finished the stage, tells everyone who took part.
+	protected void AfterContribution(LF_EBuildSite result, IEntity user, string actorKey, int stageBefore)
+	{
+		if (result != LF_EBuildSite.OK || actorKey.IsEmpty())
+			return;
+
+		if (m_aStageContributors.Find(actorKey) == -1)
+			m_aStageContributors.Insert(actorKey);
+
+		if (FinishedStages() <= stageBefore)
+			return;
+
+		LF_PropertyStageDef finished = LF_BuildStageRules.Stage(GetTierId(), stageBefore + 1);
+		if (finished && !finished.m_sStageId.IsEmpty())
+		{
+			string signal = LF_QuestProgressSignals.StageDone(finished.m_sStageId);
+			string ownerKey = LF_Properties.GetOwnerKey(GetSiteKey());
+			if (!ownerKey.IsEmpty() && m_aStageContributors.Find(ownerKey) == -1)
+				m_aStageContributors.Insert(ownerKey);
+
+			foreach (string uid : m_aStageContributors)
+			{
+				IEntity body = user;
+				if (uid != actorKey)
+					body = LF_QuestProgressSignals.BodyOfUid(uid);
+
+				LF_QuestProgressSignals.Report(body, signal);
+			}
+		}
+
+		m_aStageContributors.Clear();
 	}
 }
 

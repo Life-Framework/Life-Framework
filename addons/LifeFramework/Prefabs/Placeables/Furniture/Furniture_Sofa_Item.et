@@ -1,0 +1,75 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "4ABB54C1AA84E5BC"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{76C1B2BA574582F0}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 60 0
+      CameraDistanceToItem 3.266
+      FOV 20
+     }
+    }
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Furniture_Sofa_Name"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 30
+     SizeSetupStrategy Volume
+     ItemVolume 2500
+     RestingAdditiveRotationLS 0 0 0
+     RestingAdditiveOffsetLS 0 0 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{15917BCD888DE3B7}Assets/Props/Furniture/Sofa_02/Sofa_02.xob"
+   Materials {
+    MaterialAssignClass "{A39388B8C361AF66}" {
+     SourceMaterial "Sofa_02_Cushion"
+     AssignedMaterial "{1D30AEA2562EE8E4}Assets/Props/Furniture/Sofa_02/Data/Sofa_02_CushionOrange.emat"
+    }
+    MaterialAssignClass "{CCAD1A0FA210C941}" {
+     SourceMaterial "ColorPalete"
+     AssignedMaterial "{D0A57C4774D4D3F9}Assets/Props/Furniture/Sofa_02/Data/Sofa_02_LOD_Orange.emat"
+    }
+   }
+  }
+  LF_PlaceableComponent "{E0F22A8F616A57E9}" {
+   m_sPlacedPrefab "{E4521D3149560EA2}Prefabs/Placeables/Furniture/Furniture_Sofa_Placed.et"
+   m_vFootprintMins -1.051 0.1 -0.481
+   m_vFootprintMaxs 1.051 0.815 0.487
+   m_fReach 1
+   m_fAimReach 4
+   m_eSnap FLOOR
+   m_eWho HOUSE_OWNER_OR_KEY
+   m_sKind "Furniture_Sofa"
+   m_eLifetime PERMANENT
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     ContextName "default"
+     Position PointInfo "{508AC2ABEAC4A0F5}" {
+      Offset 0 0.2119 0
+     }
+     Radius 1.07
+    }
+   }
+   additionalActions {
+    LF_PlacementAimAction "{41DB0F539B475B6F}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  SCR_GadgetComponent "{2098B1EEF3469A6F}" {
+   m_eAnimVariable LF_ITEM
+  }
+ }
+}

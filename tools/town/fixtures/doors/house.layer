@@ -1,0 +1,8 @@
+GenericEntity House_fixture_hut {
+ components {
+  LF_HouseManagerComponent "{19835BCD6A3E4F05}" {
+   m_sDebugIdentifier "fixture.home.di-b10"
+  }
+ }
+ coords 400 10 100
+}
