@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "kit": "market",
+  "system": "market",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/TraderChain.layer",
+    "group": "TraderChainCounter",
+    "origin": "TraderChainCounter",
+    "frame": "origin-entity",
+    "also": [
+      "addons/LF_Everon1989/Prefabs/Trader/LF_UniversalTrader_Everon1989.et",
+      "addons/LifeFramework/Prefabs/Props/Stalls/LF_MarketStall.et",
+      "addons/LifeFramework/Prefabs/Props/Market/LF_PriceBoard.et"
+    ]
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -15.6,
+        -3.2
+      ],
+      "max": [
+        -14.2,
+        3.2
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "Street kit: the stall stands on the pavement along the street side of the building (b01 is the house the square's north side runs past, its street at building-local -x). The stall faces the street (yaw -90), the trader's prefab on its counter, the chalk price board 3 m along the pavement at the stall's end. Offsets are building-local, no world coordinates. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "market-stall",
+      "name": "Market_Stall",
+      "prefab": "{5E2A7D9C4B1F8306}Prefabs/Props/Stalls/LF_MarketStall.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        -14.9,
+        0,
+        0
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "market-trader",
+      "name": "Market_Trader",
+      "prefab": "{3A9F6E21C47D8B71}Prefabs/Trader/LF_UniversalTrader_Everon1989.et",
+      "role": "interactable",
+      "verb": "on market-stall",
+      "offset": [
+        -14.9,
+        1.027,
+        0
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "market-price-board",
+      "name": "Market_PriceBoard",
+      "prefab": "{B47D2C9E5A1F8036}Prefabs/Props/Market/LF_PriceBoard.et",
+      "role": "board",
+      "verb": "on floor",
+      "offset": [
+        -14.9,
+        0,
+        3
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

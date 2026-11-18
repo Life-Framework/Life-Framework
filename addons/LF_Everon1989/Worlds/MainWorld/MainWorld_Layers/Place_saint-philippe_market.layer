@@ -1,0 +1,23 @@
+GenericEntity Fit_saint_philippe_market_Place {
+ components {
+  LF_PlaceComponent "{3C0FE5BA30574AAD}" {
+   m_sKind "MarketTrader"
+   m_sId "saint-philippe.market"
+  }
+  LF_FittedBuildingComponent "{98643659729EC8CE}" {
+  }
+ }
+ coords 4488.3 13.9 10702.3
+}
+GenericEntity Fit_saint_philippe_market_market_stall : "{5E2A7D9C4B1F8306}Prefabs/Props/Stalls/LF_MarketStall.et" {
+ coords 4486.226 13.9 10717.055
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_market_market_trader : "{3A9F6E21C47D8B71}Prefabs/Trader/LF_UniversalTrader_Everon1989.et" {
+ coords 4486.226 14.927 10717.055
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_market_market_price_board : "{B47D2C9E5A1F8036}Prefabs/Props/Market/LF_PriceBoard.et" {
+ coords 4489.197 13.9 10717.473
+ angleY -8
+}
