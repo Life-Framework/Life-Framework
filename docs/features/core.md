@@ -191,6 +191,20 @@
   `#LF-CharSel_Refused` and logs `[LFDebug:CharacterCreation] ... refused: not arriving`. Test
   `character/flow-gate` (LOGIC).
 
+- 🧪 **Barber's chair (#3234, merged, in-dev).** `Prefabs/Props/Roleplay/LF_BarberChair.et` is a seat
+  (`LF_SitAction`) with `LF_BarberAction` ("Ask for a haircut", shown only to the player sitting on that
+  chair; `m_iFee`, 40 shipped). It opens `LF_BarberSheet` (UI kit): previous and next look try each look on
+  the seated body as a local preview, pay sends `RpcAsk_LF_BarberCut` on the player's controller, and leaving
+  unpaid puts the old head back. The server re-checks the seat (`IsLoiteringOnEntity` on a chair with the
+  barber action), the look and the cash, takes the fee (`LF_MoneyUtils.RemoveCash`, reason `barber`, nothing
+  charged on a refusal), and sets the head with `VisualIdentity.SetHead` + `CommitChanges`, the base game's
+  camo-head path, which replicates to every client and late joiner. The engine bakes hair and beard into each
+  head mesh (no hair, beard or hair-colour part exists), so a look is one of ten vanilla civilian heads
+  (`LF_Barber.Looks`) and changes the face with the hair. The chosen head is kept per character record key in
+  the `barber` save section (`LF_BarberSavePayload`) and put back on every spawn (`LF_BarberSpawnSubscriber`),
+  so it survives death, respawn and restart. Tests `barber/changes-hair`, `barber/persist`. Placing the chair
+  in the Saint-Philippe barber (b43) is the shop card.
+
 ### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
 - ✅ One list on another player's body (`Character_Roleplay.et`, context
   `LF_ID`): Introduce yourself, Show ID, Give cash, Give what you hold; on-duty
