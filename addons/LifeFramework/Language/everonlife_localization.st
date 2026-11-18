@@ -2190,6 +2190,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Treatment bill"
      Comment "Notification title for treatment bills."
     }
+    CustomStringTableItem "{F2A63B8D5C07E914}" {
+     Id "LF-BuildingLock_Closed"
+     Target_en_us "Closed"
+     Comment "Door prompt on a building a lock marker shuts: closed"
+    }
+    CustomStringTableItem "{B94F2C60E8A31D75}" {
+     Id "LF-BuildingLock_ForSaleSoon"
+     Target_en_us "Closed: for sale soon"
+     Comment "Door prompt on a building a lock marker shuts: for sale soon"
+    }
+    CustomStringTableItem "{0D58E7A3C1B6924F}" {
+     Id "LF-BuildingLock_OpeningSoon"
+     Target_en_us "Closed: opening soon"
+     Comment "Door prompt on a building a lock marker shuts: opening soon"
+    }
+    CustomStringTableItem "{3A7C91E05B2D4F18}" {
+     Id "LF-BuildingLock_Private"
+     Target_en_us "Private property"
+     Comment "Door prompt on a building a lock marker shuts: private"
+    }
+    CustomStringTableItem "{6E1B84D2A0C95F37}" {
+     Id "LF-BuildingLock_StaffOnly"
+     Target_en_us "Staff only"
+     Comment "Door prompt on a building a lock marker shuts: staff only"
+    }
     CustomStringTableItem "{7E1C40B2A93D5F06}" {
      Id "LF-BuyerSale_Action"
      Target_en_us "Sell the goods"
@@ -4732,6 +4757,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Handset_Title"
      Target_en_us "Radio set"
      Comment "Toast title for calls placed on a carried radio set."
+    }
+    CustomStringTableItem "{1C50A1F8B0E1940A}" {
+     Id "LF-Harvest_HopperFull"
+     Target_en_us "Hopper full, unload at the granary"
+     Comment "Hint when the reaper's hopper is at its cap and cutting stops (#3285)."
+    }
+    CustomStringTableItem "{3E7A1E93CB13CBFC}" {
+     Id "LF-Harvest_TooFast"
+     Target_en_us "Too fast to cut, slow down"
+     Comment "Hint when the hitched reaper is driven above its cutting speed (#3285)."
     }
     CustomStringTableItem "{9306F928F7A81EBC}" {
      Id "LF-Heist_Armory_Open"
