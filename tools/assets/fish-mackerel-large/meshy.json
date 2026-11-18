@@ -1,0 +1,14 @@
+{
+  "slug": "fish-mackerel-large",
+  "generations": [
+    {
+      "date": "2026-11-18",
+      "tool": "Meshy text-to-3D",
+      "model": "meshy-6-lite",
+      "previewId": "01a1effe-75b6-725a-b32b-36f43aa32efd",
+      "refineId": "01a1effe-e2c4-7099-b191-40610fb136b8",
+      "prompt": "A single Atlantic mackerel fish, whole, swimming pose seen from the side, body straight and torpedo shaped, slender, tail fin spread, two dorsal fins and small finlets, dark blue-green back with wavy black tiger stripes, silver white belly, round dark eye. Realistic game prop, no base, no stand, no water, no text, no logos.",
+      "texturePrompt": "Atlantic mackerel: iridescent blue-green back with dark wavy bars, silvery white belly, glossy wet skin."
+    }
+  ]
+}

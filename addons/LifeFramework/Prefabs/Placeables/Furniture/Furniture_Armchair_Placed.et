@@ -1,0 +1,28 @@
+GenericEntity : "{EE22BB8259C1A594}Prefabs/Props/Furniture/Armchair_03.et" {
+ ID "6CFF94B9C4851725"
+ components {
+  ActionsManagerComponent "{126B09B4492B62A6}" {
+   ActionContexts {
+    UserActionContext "{83805F62A35DEB5E}" {
+     ContextName "default"
+     Position PointInfo "{9A5BEAF962FC7540}" {
+      Offset -0.001 0.488 -0.033
+     }
+     Radius 1.474
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{4A8ADCC6E19C28A1}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{97BB03D9DF60DAB7}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}
