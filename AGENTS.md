@@ -207,6 +207,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   (`--tier all`, or `--only`/`--red` by name). Never a node selftest that reads `.conf` text
   (`docs/architecture/three-worlds.md` "Pack test leg").
 - Loop: `tools\cli test --no-build --only <LF_Test_Class>` (~10 s) until green, one `--red` run for the new tests, then `--tier all` once at the end.
+- **A test deletes what it spawns** (`LF_TestCharacterFixture.Delete`; `LF_TestLooseSweep.DeleteBuilding` for a payphone booth, whose loose part outlives the booth; `LF_TestVaultDrillFixture.Release` for a robber). Every fixture character spawns at the gate, so leftovers pile up under later tests (#2792). A run ends with `suite/no-leftover-fixtures`, which fails and names the test that left a character or prefab-less prop within 9 m of the gate. Never delete characters in a sweep after each test: it crashed the engine, and deleting a character that carries a path-loaded pack crashes it too (use the GUID reference, `LF_TestVaultDrillFixture.PACK_PREFAB`).
 - **A test never calls `LF_StaticReset.ResetAll()`**: it wipes every feature's statics and fails every later test in the suite (2026-11-16, 38 tests, #2092). Apply only your own feature's `LF_StaticResetHook` (`<Owner>.ResetStatics()`); `validate-no-test-resetall` fails core and pack tests that call it.
 - **A node selftest that builds a scratch git repo** calls `useHermeticGit()` and cleans up with `removeScratch()`
   (`tools/lib/selftest-git.mjs`): no machine git config, a fixed identity and branch, no auto-gc holding the folder
@@ -279,6 +280,10 @@ bug for each one; they transfer here because the engine is the same.
   `version` first; binary save contexts are positional (write order = read
   order). Load must be idempotent (runs on fresh load AND when re-applying to a
   live session). No console guards; consoles are handled internally.
+  A save record is keyed by the variable name given to `context.Write`/`Read` in
+  `LF_PersistenceComponentSerializer.c`: a new payload takes a fresh name, one
+  write and one read (a reused `slotRows` once loaded every garage slot as 0);
+  `validate-record-var-names` fails a repeat.
   **In-session round trips prove nothing about restarts**; the restart path is
   ground truth.
 

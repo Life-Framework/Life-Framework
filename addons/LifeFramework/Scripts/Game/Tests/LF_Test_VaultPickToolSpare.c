@@ -39,5 +39,7 @@ class LF_Test_VaultPickToolSpare : LF_Test
 
 		LF_TestVaultDrillFixture.Hold(robber, drill, false);
 		ctx.True(LF_Bank.PickTool(state, robber, item) == LF_Bank.TOOL_CHARGE, "drill back in the pack: the charge again");
+
+		LF_TestVaultDrillFixture.Release(robber);
 	}
 }

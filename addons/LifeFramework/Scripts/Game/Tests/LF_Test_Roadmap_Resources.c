@@ -244,5 +244,7 @@ class LF_Test_Roadmap_ResourcesWorld : LF_Test
 		ctx.Equal(1, barsInInventory + barsDropped, "two nuggets become one iron bar");
 		ctx.Equal(cashBefore, LF_MoneyUtils.GetCash(character), "smelting does not mint cash");
 		ctx.Equal(0, jobs.GetProcessReward(BAR), "the furnace line has no process reward");
+
+		LF_TestCharacterFixture.Delete(character);
 	}
 }

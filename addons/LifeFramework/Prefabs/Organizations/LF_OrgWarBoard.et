@@ -1,0 +1,22 @@
+GenericEntity : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ ID "3D9FEB5BD0F7E34D"
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "grid:org-war-board"
+  }
+  ActionsManagerComponent "{6E065C9694DC3BE5}" {
+   ActionContexts {
+    UserActionContext "{360C30155120CB67}" {
+     Radius 1.5
+    }
+   }
+   additionalActions + {
+    LF_OrgWarBoardReadAction "{A986EC2AD68C20A8}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+}

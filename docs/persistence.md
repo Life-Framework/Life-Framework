@@ -289,6 +289,17 @@ save still loads.
   the lock. At #556 set `"launched": true` in the lock.
 - The audit of every record, its version and whether it is final for launch:
   [`docs/architecture/record-shape-audit.md`](architecture/record-shape-audit.md).
+- **Record keys (#2799).** A record is keyed by the variable name passed to
+  `context.Write`/`context.Read` in `LF_PersistenceComponentSerializer.c`, not by
+  its payload name. A reused name makes two payloads share one key: #2656 first
+  named its garage rows `slotRows`, already the characters payload's key, and
+  every bought garage slot loaded as 0 (found in the #2795 review).
+  `tools/validation/validate-record-var-names.mjs` fails a name used by two
+  payloads (the account and bank prefix counts as one), or written or read other
+  than once. Give each new payload its own variable name.
+- **Character delete (future card).** Deleting a character must call
+  `LF_GarageSlotStore.Forget(key)` (to be added with that card) and the `Forget`
+  of every other per-character store, or the freed key keeps the old bought slots.
 
 ## Layer 2: orchestration (when a save happens)
 

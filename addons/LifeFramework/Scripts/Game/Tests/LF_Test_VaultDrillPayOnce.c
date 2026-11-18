@@ -44,5 +44,6 @@ class LF_Test_VaultDrillPayOnce : LF_Test
 		ctx.False(LF_Bank.FinishDrill(vaultId, uid, robber, null), "a repeated finish pays nothing");
 		ctx.Equal(1, LF_Bank.GetSpawnedBagCount(vaultId), "paid once");
 		LF_VaultDrill.s_fNowOverride = -1;
+		LF_TestVaultDrillFixture.Release(robber, vaultId);
 	}
 }

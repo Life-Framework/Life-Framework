@@ -218,6 +218,9 @@ class LF_Test_Roadmap_RanksWorld : LF_Test
 		// The armory outlet issues the serialled twin of the M16A2 (#1763).
 		ctx.Equal(1, HeldCount(senior, "{1E06C1BB38AFB556}Prefabs/Items/Police/LF_ArmoryM16.et"), "higher rank receives the armory's serialled Rifle_M16A2");
 		ctx.Equal(0, HeldCount(senior, LF_PoliceRanks.SIDEARM), "the higher rank does not receive the sidearm");
+
+		LF_TestCharacterFixture.Delete(patrol);
+		LF_TestCharacterFixture.Delete(senior);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -7097,6 +7097,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Gang war"
      Comment "Toast title for organization war announcements (#2669)."
     }
+    CustomStringTableItem "{1CC3B7AA55E0C10E}" {
+     Id "LF-OrgWarBoard_Accepted"
+     Target_en_us "%1 and %2 are at war. The war ends in %3."
+     Comment "War notice: a war in progress. %1 and %2 the sides, %3 time left (#2677)."
+    }
+    CustomStringTableItem "{62AF3CB71CC1FDA0}" {
+     Id "LF-OrgWarBoard_Declared"
+     Target_en_us "%1 has declared war on %2. An answer is due in %3."
+     Comment "War notice: a declaration waiting for the answer. %1 declarer, %2 target, %3 time left (#2677)."
+    }
+    CustomStringTableItem "{C0F0A8AD758D2916}" {
+     Id "LF-OrgWarBoard_Ended"
+     Target_en_us "The war between %1 and %2 is over. It ended %3 ago."
+     Comment "War notice: a war that ran out. %3 = time since the end (#2677)."
+    }
+    CustomStringTableItem "{E119F9C79945E8A5}" {
+     Id "LF-OrgWarBoard_Forfeit"
+     Target_en_us "%1 and %2: the war ended when a side gave up, %3 ago."
+     Comment "War notice: a war ended by forfeit. %3 = time since the end (#2677)."
+    }
+    CustomStringTableItem "{718F296CDB0C307A}" {
+     Id "LF-OrgWarBoard_HoursMinutes"
+     Target_en_us "%1 h %2 min"
+     Comment "War notice time span from an hour up. %1 = hours, %2 = minutes (#2677)."
+    }
+    CustomStringTableItem "{B6581C263E795E36}" {
+     Id "LF-OrgWarBoard_Lapsed"
+     Target_en_us "%1 declared war on %2, but nobody answered. It lapsed %3 ago."
+     Comment "War notice: a declaration nobody answered. %3 = time since it lapsed (#2677)."
+    }
+    CustomStringTableItem "{7714D5DEF74ACFA3}" {
+     Id "LF-OrgWarBoard_Minutes"
+     Target_en_us "%1 min"
+     Comment "War notice time span under an hour. %1 = minutes (#2677)."
+    }
+    CustomStringTableItem "{367833D38BB24DC8}" {
+     Id "LF-OrgWarBoard_None"
+     Target_en_us "No war has been declared. It is quiet."
+     Comment "War notice board line when no notice is up (#2677)."
+    }
+    CustomStringTableItem "{15794F43B5EA9503}" {
+     Id "LF-OrgWarBoard_Read"
+     Target_en_us "Read the war notices"
+     Comment "Action on the war notice board (#2677)."
+    }
+    CustomStringTableItem "{4FA0A019D97109D5}" {
+     Id "LF-OrgWarBoard_Title"
+     Target_en_us "War notices"
+     Comment "Title of the war notice board card (#2677)."
+    }
     CustomStringTableItem "{7E0E46C2E4A95435}" {
      Id "LF-OrgWar_Accepted"
      Target_en_us "Declaration answered. Your organizations are at war."
@@ -8337,6 +8387,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Property_Owned"
      Target_en_us "This plot is already owned."
      Comment "Toast: plot purchase refused, somebody owns it (#2649)."
+    }
+    CustomStringTableItem "{A3C2CA7CE0677234}" {
+     Id "LF-Property_SetHome"
+     Target_en_us "Make this my spawn"
+     Comment "House door action: the owner makes this house where they wake up when they log in"
     }
     CustomStringTableItem "{92136B0C3106B107}" {
      Id "LF-Property_Title"
