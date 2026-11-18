@@ -311,3 +311,4 @@ sentence that names a place makes it a prompt.
 
 - **Chalk price board (#2847).** In the debug grid, cell slice-2847, a chalkboard reads *Read today's prices* (F). With the market off (the core default) it says *No prices today.*; turn `m_bEnabled` on in `Configs/Market/LF_Market.conf`, sell some copper bars to a trader, and read again: the price is lower and carries a `v`.
 - Resident witness (#2860): in the playtest town stand near a spawned resident and steal or shoplift in view (within 30 m); the log shows `[LFDebug:Residents] resident ... saw report #N` and `[LFDebug:Residents] memory: ... (crime_seen)`. Proof: `LF_Test_ResidentWitness`.
+- Marked notes (salmon-tinted cash): drop laundered marked notes next to a cash stack; `tools\cli look item Prefabs/Items/Money/LF_MarkedCash.et`.

@@ -7,7 +7,9 @@ Stolen money is a separate item that never counts as cash.
 - ✅ Marked notes are a stack of the `markedcash` prefab slot (`LF_PrefabSlots.conf`; core prefab
   `Prefabs/Items/Money/LF_MarkedCash.et`, inherits the cash `MoneyStack`, name `#LF-Item_MarkedCash`;
   a pack swaps the look). Same quantity component, so stacks split and merge like cash, but only with
-  other marked notes (merging and counting match the exact prefab).
+  other marked notes (merging and counting match the exact prefab). The notes are salmon-tinted (#2871): own
+  `Assets/Items/Currencies/MarkedStack.xob` baking `MarkedCashMaterial.emat` (the cash texture with a red `Color` multiplier),
+  used for the prefab mesh and the quantity stack model, so ground, hand and inventory preview read apart from cash.
 - ✅ `Add(target, amount, reason[, dropOverflow])`, `Count(target)`, `Take(target, amount[, reason])`,
   the `LF_MoneyUtils` shape. `LF_MoneyUtils.GetCash`, shops, the ATM and hand-overs never count or
   spend them. Nothing is published as `LF_OnMoneyMoved`; each change logs `[LFDebug:Laundering]`
