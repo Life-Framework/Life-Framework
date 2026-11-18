@@ -186,6 +186,9 @@ class LF_TownBoard
 	//! A place this close to the board is "right here" rather than a distance and a direction.
 	static const float NEAR_METERS = 15;	// lf-fixed: reads better than "10 m north" across a square
 
+	//! A card's place id that means "the nearest place of the card's kind" (FindPlace).
+	static const string PLACE_NEAREST = "*";
+
 	static const string KEY_TITLE = "#LF-TownBoard_Title";
 	static const string KEY_WHERE = "#LF-TownBoard_Where";
 	static const string KEY_WHERE_NEAR = "#LF-TownBoard_WhereNear";
@@ -310,8 +313,10 @@ class LF_TownBoard
 
 	//------------------------------------------------------------------------------------------------
 	//! Where the card's place stands. False (origin untouched) when the card has no place or the
-	//! place is not on this map.
-	static bool FindPlace(LF_TownBoardCard card, out vector origin)
+	//! place is not on this map. A card whose place id is PLACE_NEAREST points at the place of its
+	//! kind nearest `from` (the board), so a card can name a kind whose members come and go, such as
+	//! the plots for sale; with no `from` it takes the first.
+	static bool FindPlace(LF_TownBoardCard card, out vector origin, vector from = vector.Zero)
 	{
 		if (!card || card.m_sPlaceId.IsEmpty())
 			return false;
@@ -320,7 +325,37 @@ class LF_TownBoard
 		if (kind.IsEmpty())
 			kind = LF_SignComponent.PLACE_KIND;
 
+		if (card.m_sPlaceId == PLACE_NEAREST)
+			return NearestOfKind(kind, from, origin);
+
 		return LF_Places.FindOrigin(kind, card.m_sPlaceId, origin);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The live place of `kind` nearest `from` (ground distance); the first one when `from` is zero.
+	//! False (origin untouched) when none is placed.
+	static bool NearestOfKind(string kind, vector from, out vector origin)
+	{
+		array<IEntity> places = {};
+		LF_Places.FindAll(kind, places);
+		bool found;
+		float best;
+		foreach (IEntity place : places)
+		{
+			vector here = place.GetOrigin();
+			float distance;
+			if (from != vector.Zero)
+				distance = vector.DistanceXZ(from, here);
+
+			if (!found || distance < best)
+			{
+				found = true;
+				best = distance;
+				origin = here;
+			}
+		}
+
+		return found;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -378,7 +413,7 @@ class LF_TownBoard
 	static string WhereText(LF_TownBoardCard card, vector from)
 	{
 		vector place;
-		if (!FindPlace(card, place))
+		if (!FindPlace(card, place, from))
 			return Text(KEY_NO_PLACE);
 
 		string name = PlaceName(card);
