@@ -164,6 +164,9 @@ junctions into the Steam installs; on 2026-11-07 `git worktree remove --force`
 worktree with `tools\cli wt prune <slug>`; delete any other tree with
 `node tools/safe-rm.mjs <dir>` (`link-safety-selftest` proves both).
 
+- **Never write into the main checkout.** Use absolute paths under your worktree. A PreToolUse hook
+  (`.claude/settings.json`) denies Write/Edit there once `wt new` ran in your session, and `lead` moves stray
+  untracked files to `C:\LF\lead\stray` (`docs/worktrees.md` "Writes into the main checkout").
 - **Scratch goes in `<worktree>/tmp/`** (gitignored, created by `wt new`) with
   names unique to your task, such as `tmp/pr-body-<slug>.md`. Never use a
   shared session scratch dir for files you publish (one agent shipped another's
