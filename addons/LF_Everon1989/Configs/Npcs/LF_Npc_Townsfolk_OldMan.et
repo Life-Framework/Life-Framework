@@ -1,8 +1,8 @@
-LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "AB8D3A910ED3DA65"
  components {
-  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
-   Identity Identity "{5A4B0B84AF44A913}" {
+  SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
+   Identity Identity "{5584CBC6363C648B}" {
     Name "Gaspard"
     Surname "Lenoir"
    }
@@ -17,7 +17,7 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
    m_sKind "Townsfolk"
    m_sId "old_man"
   }
-  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
     LoadoutSlotInfo Jacket {
      Prefab "{27162F1F6EE6581A}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et"
@@ -34,7 +34,7 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
     }
    }
   }
-  ActionsManagerComponent "{5A4B13A9811FB113}" {
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
    ActionContexts + {
     UserActionContext "{13A3376659FE82C8}" {
      ContextName "Talk"
