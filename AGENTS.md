@@ -287,6 +287,9 @@ bug for each one; they transfer here because the engine is the same.
   `LF_PersistenceComponentSerializer.c`: a new payload takes a fresh name, one
   write and one read (a reused `slotRows` once loaded every garage slot as 0);
   `validate-record-var-names` fails a repeat.
+  A payload is a section (`LF_SavePayload`, #2841): its own name, its own small
+  version, its own file; it reads every older version of itself and `OnAbsent()`
+  covers a save from before it. Legacy payloads stay positional and frozen.
   **In-session round trips prove nothing about restarts**; the restart path is
   ground truth.
 
@@ -305,7 +308,7 @@ Detail lives in `.claude/skills/enfusion-resource-authoring` and `enfusion-blast
 - Moving or renaming a resource breaks every `{GUID}path` reference, saved worlds included.
 - Layouts: unique widget GUIDs per file, inherited-component GUIDs equal the base, a sibling `.layout.meta`.
 - Input: bind keyboard plus `gamepad0:`; never `W/A/S/D`, `a`, the d-pad, `T`, or `shoulder_left`.
-- A persisted payload is appended to `RegisterPersistencePayloads` with a version bump (`validate-persistence-version`).
+- A new persisted payload is a section: `class LF_<Area>SavePayload : LF_SavePayload` in its feature folder with its own `Version()`, locked by `validate-record-shapes --update` (`docs/persistence.md` "Sections"). `RegisterPersistencePayloads` is frozen (`validate-persistence-version`); no global save version moves.
 
 ## Research before code
 

@@ -10,7 +10,7 @@
 // "FAIL retyped field: expected a hard error matching /retyped/, got none"
 // and exited 1 (2026-11-14).
 
-import { buildLock, compare, readCurrent } from "./validate-record-shapes.mjs";
+import { buildLock, buildSectionLock, checkSectionNames, collectShapes, compare, compareSection, parseSections, readCurrent } from "./validate-record-shapes.mjs";
 
 const SERIALIZER = (payloads, version) => `
 class LF_PersistenceComponentSerializer
@@ -177,6 +177,68 @@ expect("sidecar payload without a version bump", current({ payloads: ["garage", 
 expect("sidecar payload with a version bump", current({ payloads: ["garage", "tow"], version: 2 }), { soft: /new record class LF_TowRow at save version 2/ });
 expect("version bumped, lock not refreshed", current({ version: 2 }), { soft: /save version moved 1 -> 2/ });
 expect("version lowered", current({ version: 0 }), { hard: /save version went down/, theLock: { ...lock, saveVersion: 1 } });
+
+// ---------------------------------------------------------------- sections (#2841)
+const SECTION = (name, version, row = "LF_TowRow") => `
+class LF_TowSavePayload : LF_SavePayload
+{
+	static const string NAME = "${name}";
+	override string Name()
+	{
+		return NAME;
+	}
+	override int Version()
+	{
+		return ${version};
+	}
+	override void WriteSection(notnull SaveContext context)
+	{
+		array<ref ${row}> rows = LF_Tow.ExportAll();
+		context.WriteValue("rows", rows);
+	}
+}
+`;
+function sectionsOf(extra) {
+  const files = new Map([["addons/X/Scripts/Game/LF_Tow.c", TOW], ["addons/X/Scripts/Game/LF_Garage.c", GARAGE], ...extra.map((text, i) => [`addons/X/Scripts/Game/Feature/S${i}.c`, text])]);
+  const cur = readCurrent(files, SERIALIZER(["garage"], 1));
+  return { cur, sections: parseSections(files) };
+}
+function sectionShapes(cur, sec) {
+  return collectShapes(sec.roots.map((r) => ({ payload: sec.name, root: r })), cur.classes).shapes;
+}
+function expectSection(label, ok, detail) {
+  if (!ok) {
+    failed++;
+    console.log(`FAIL ${label}: ${detail}`);
+  }
+}
+{
+  const base = sectionsOf([SECTION("towing", 1)]);
+  const sec = base.sections[0];
+  expectSection("section parsed", sec && sec.name === "towing" && sec.version === 1 && sec.roots.join() === "LF_TowRow", JSON.stringify(sec));
+  const shapes = sectionShapes(base.cur, sec);
+  const sLock = buildSectionLock(sec, shapes);
+  expectSection("section clean against its lock", compareSection(sLock, sec, shapes).length === 0, JSON.stringify(compareSection(sLock, sec, shapes)));
+  const noLock = compareSection(null, sec, shapes);
+  expectSection("section without a lock asks for --update", noLock.length === 1 && !noLock[0].hard && /--update/.test(noLock[0].msg), JSON.stringify(noLock));
+  const swapped = sectionsOf([SECTION("towing", 1, "LF_GarageRecord")]);
+  const swappedErr = compareSection(sLock, swapped.sections[0], sectionShapes(swapped.cur, swapped.sections[0]));
+  expectSection("section record swapped without a Version() raise", swappedErr.some((e) => e.hard && /raise its Version/.test(e.msg)), JSON.stringify(swappedErr));
+  const raised = sectionsOf([SECTION("towing", 2, "LF_GarageRecord")]);
+  const raisedErr = compareSection(sLock, raised.sections[0], sectionShapes(raised.cur, raised.sections[0]));
+  expectSection("section reshaped with a Version() raise asks for --update", raisedErr.length > 0 && raisedErr.every((e) => !e.hard), JSON.stringify(raisedErr));
+  const lowered = compareSection({ ...sLock, version: 3 }, sec, shapes);
+  expectSection("section Version() lowered", lowered.some((e) => e.hard && /went down/.test(e.msg)), JSON.stringify(lowered));
+  const dup = sectionsOf([SECTION("towing", 1), SECTION("towing", 1).replace("LF_TowSavePayload", "LF_TowSavePayload2")]);
+  const dupErr = checkSectionNames(dup.sections, ["garage"], ["towing"]);
+  expectSection("two sections with one name", dupErr.some((e) => /declared by/.test(e)), JSON.stringify(dupErr));
+  const legacyErr = checkSectionNames(sectionsOf([SECTION("garage", 1)]).sections, ["garage"], []);
+  expectSection("section named like a legacy payload", legacyErr.some((e) => /legacy payload/.test(e)), JSON.stringify(legacyErr));
+  const orphanErr = checkSectionNames(base.sections, ["garage"], ["towing", "gone"]);
+  expectSection("lock with no section", orphanErr.some((e) => /gone\.json/.test(e)), JSON.stringify(orphanErr));
+  const badNameErr = checkSectionNames(sectionsOf([SECTION("Tow-ing", 1)]).sections, [], []);
+  expectSection("illegal section name", badNameErr.some((e) => /lowercase/.test(e)), JSON.stringify(badNameErr));
+}
 
 if (failed) {
   console.log(`record-shapes selftest: ${failed} case(s) failed`);

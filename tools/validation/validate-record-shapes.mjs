@@ -19,6 +19,14 @@
 //     record, its own row class appended to RegisterPersistencePayloads).
 // [NonSerialized()], static and const members are not part of the shape.
 //
+// Sections (#2841). The legacy payload list is frozen; a new payload is an
+// LF_SavePayload subclass in its feature folder with its own Version(). Each
+// section's record shapes are locked in tools/validation/record-shapes/<name>.json
+// (one file per section, so two PRs adding sections share no file). A section's
+// locked shape may change only with a raise of its own Version() and --update;
+// a section with no lock, two sections with one name, a section named like a
+// legacy payload, or a lock whose section is gone fails.
+//
 //   node tools/validation/validate-record-shapes.mjs           check
 //   node tools/validation/validate-record-shapes.mjs --update  refresh the lock
 //     after a legal change (refuses while a hard error stands)
@@ -27,12 +35,13 @@
 // red-proof: tools/validation/record-shapes-selftest.mjs plants each violation
 // in fixture sources and asserts this check reports it.
 
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const SERIALIZER = "addons/LifeFramework/Scripts/Game/Persistence/Serializers/LF_PersistenceComponentSerializer.c";
 export const LOCK = "tools/validation/record-shapes.json";
+export const SECTION_LOCKS = "tools/validation/record-shapes";
 const PREFIX_PAYLOAD = "prefix";
 
 // ---------------------------------------------------------------- parsing
@@ -197,7 +206,10 @@ function addStatement(stmt, fields) {
 export function parseSerializer(raw) {
   const text = stripComments(raw);
   const versionMatch = text.match(/WriteValue\(\s*""\s*,\s*(\d+)\s*\)/) ?? raw.match(/WriteValue\("version",\s*(\d+)\)/);
-  const version = versionMatch ? Number(versionMatch[1]) : null;
+  let version = versionMatch ? Number(versionMatch[1]) : null;
+  // Sectioned (#2841): the legacy lock's version is the frozen positional length.
+  const legacyCount = raw.match(/static\s+const\s+int\s+LEGACY_COUNT\s*=\s*(\d+)\s*;/);
+  if (version === null && /WriteValue\("version",\s*SECTIONED_FORMAT\)/.test(raw) && legacyCount) version = Number(legacyCount[1]);
   const payloads = [];
   const order = [];
   const regStart = raw.indexOf("void RegisterPersistencePayloads(");
@@ -313,7 +325,7 @@ export function compare(lock, current) {
     if (now.length > locked.fields.length && now.slice(0, locked.fields.length).join("|") === locked.fields.join("|")) {
       const added = now.slice(locked.fields.length).join(", ");
       if (lock.launched) {
-        hard(`${name}: serialized field(s) ${added} added to a launched record; after the persistent launch new data is a sidecar payload: mark the field [NonSerialized()] and save it in a row payload appended to RegisterPersistencePayloads (docs/persistence.md "Record shapes")`);
+        hard(`${name}: serialized field(s) ${added} added to a launched record; after the persistent launch new data is a sidecar payload: mark the field [NonSerialized()] and save it in a new LF_SavePayload section (docs/persistence.md "Sections")`);
       } else if (!bumped) {
         hard(`${name}: serialized field(s) ${added} appended without a save version bump (still ${current.version}); raise the version and read the older shape, or mark it [NonSerialized()] and add a sidecar payload`);
       } else {
@@ -380,6 +392,128 @@ export function readCurrent(files, serializerText) {
   return { version, payloads, order, shapes, missing, unserialized, modded, classes };
 }
 
+// ---------------------------------------------------------------- sections (#2841)
+
+function rawBody(raw, open) {
+  const close = matchBrace(raw, open);
+  return close < 0 ? "" : raw.slice(open + 1, close);
+}
+
+// Every LF_SavePayload subclass outside Tests/: [{ cls, name, version, roots, file, error }].
+// name and version come from the literal Name() / Version() bodies (a static const the method
+// returns counts as a literal); roots are the LF_ record classes WriteSection writes.
+export function parseSections(files) {
+  const sections = [];
+  const bases = new Map();
+  const bodies = new Map();
+  for (const [file, raw] of files) {
+    const re = /(^|[\s;}])class\s+(LF_\w+)\s*:\s*(\w+)\s*\{/g;
+    let m;
+    while ((m = re.exec(raw))) {
+      const open = raw.indexOf("{", m.index + m[0].length - 1);
+      bases.set(m[2], m[3]);
+      bodies.set(m[2], { body: rawBody(raw, open), file });
+    }
+  }
+  const isSection = (cls) => {
+    let guard = 0;
+    for (let base = bases.get(cls); base && guard < 20; base = bases.get(base), guard++) {
+      if (base === "LF_SavePayload") return true;
+    }
+    return false;
+  };
+  const constOf = (body, type, ident) => {
+    const m = body.match(new RegExp("const\\s+" + type + "\\s+" + ident + "\\s*=\\s*(\"([^\"]*)\"|(\\d+))"));
+    if (!m) return null;
+    return m[2] !== undefined ? m[2] : Number(m[3]);
+  };
+  for (const [cls, { body, file }] of bodies) {
+    if (!isSection(cls)) continue;
+    const entry = { cls, file, name: null, version: 1, roots: [], error: null };
+    const nameRet = body.match(/string\s+Name\s*\(\s*\)\s*\{\s*return\s+(?:"([^"]*)"|(\w+))\s*;/);
+    if (nameRet) entry.name = nameRet[1] !== undefined ? nameRet[1] : constOf(body, "string", nameRet[2]);
+    if (entry.name === null || entry.name === undefined) {
+      if (!/string\s+Name\s*\(/.test(body)) continue; // an abstract helper base with no name
+      entry.name = null;
+      entry.error = `${cls} (${file}): Name() must return a string literal or a static const string, so the section name can be checked`;
+    }
+    const versionRet = body.match(/int\s+Version\s*\(\s*\)\s*\{\s*return\s+(\w+)\s*;/);
+    if (versionRet) {
+      const v = /^\d+$/.test(versionRet[1]) ? Number(versionRet[1]) : constOf(body, "int", versionRet[1]);
+      if (typeof v === "number") entry.version = v;
+      else entry.error = `${cls} (${file}): Version() must return an int literal or a static const int`;
+    }
+    const write = body.search(/void\s+WriteSection\s*\(/);
+    if (write >= 0) {
+      const writeBody = stripComments(rawBody(body, body.indexOf("{", write)));
+      const vars = new Map();
+      for (const v of writeBody.matchAll(/array<\s*ref\s+(LF_\w+)\s*>\s+(\w+)\s*=/g)) vars.set(v[2], v[1]);
+      for (const w of writeBody.matchAll(/context\.(?:Write\(\s*(\w+)|WriteValue\(\s*""\s*,\s*(\w+))\s*\)/g)) {
+        const name = w[1] ?? w[2];
+        if (vars.has(name)) entry.roots.push(vars.get(name));
+      }
+    }
+    sections.push(entry);
+  }
+  return sections.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+}
+
+// Errors for one section against its lock (null lock: never locked). [{ hard, msg }]
+export function compareSection(lock, section, shapes) {
+  const errors = [];
+  const hard = (msg) => errors.push({ hard: true, msg });
+  const soft = (msg) => errors.push({ hard: false, msg });
+  const where = `section "${section.name}" (${section.cls})`;
+  if (!lock) {
+    soft(`${where} has no lock; run node tools/validation/validate-record-shapes.mjs --update to write ${SECTION_LOCKS}/${section.name}.json`);
+    return errors;
+  }
+  const bumped = section.version > lock.version;
+  if (section.version < lock.version) hard(`${where}: Version() went down from ${lock.version} to ${section.version}`);
+  const roots = section.roots.join(",");
+  if (roots !== (lock.roots ?? "") && !bumped) {
+    hard(`${where} writes ${roots || "no record class"}, locked as ${lock.roots || "no record class"}; raise its Version() and read the older shape`);
+  }
+  for (const [name, locked] of Object.entries(lock.records ?? {})) {
+    const now = shapes.get(name);
+    if (now && now.join("|") === locked.fields.join("|")) continue;
+    if (!bumped) hard(`${where}: record ${name} changed shape (${now ? now.join(", ") : "no longer written"}; locked ${locked.fields.join(", ")}) without raising the section's Version() from ${lock.version}`);
+  }
+  for (const [name] of shapes) {
+    if (lock.records?.[name]) continue;
+    if (!bumped) hard(`${where}: new record class ${name} without raising the section's Version() from ${lock.version}`);
+  }
+  if (bumped && !errors.some((e) => e.hard)) soft(`${where}: Version() moved ${lock.version} -> ${section.version}; run node tools/validation/validate-record-shapes.mjs --update`);
+  return errors;
+}
+
+export function buildSectionLock(section, shapes) {
+  const records = {};
+  for (const [name, fields] of shapes) records[name] = { fields };
+  return { section: section.name, class: section.cls, version: section.version, roots: section.roots.join(","), records };
+}
+
+// Registry-wide errors: an unreadable name, an illegal or legacy name, a duplicate, an orphan lock.
+export function checkSectionNames(sections, legacyOrder, lockNames) {
+  const errors = [];
+  const seen = new Map();
+  for (const sec of sections) {
+    if (sec.error) {
+      errors.push(sec.error);
+      continue;
+    }
+    if (!/^[a-z0-9_]+$/.test(sec.name)) errors.push(`${sec.cls}: section name "${sec.name}" is not lowercase letters, digits and '_'`);
+    if (legacyOrder.includes(sec.name)) errors.push(`${sec.cls}: section name "${sec.name}" is a legacy payload name`);
+    if (seen.has(sec.name)) errors.push(`section name "${sec.name}" is declared by ${seen.get(sec.name)} and ${sec.cls}; each section needs its own name`);
+    else seen.set(sec.name, sec.cls);
+    if (sec.version < 1) errors.push(`${sec.cls}: Version() must be 1 or more`);
+  }
+  for (const name of lockNames) {
+    if (!seen.has(name)) errors.push(`${SECTION_LOCKS}/${name}.json locks section "${name}", which no LF_SavePayload declares any more: a shipped section stays in saves (delete the lock only in the PR that retires it on purpose)`);
+  }
+  return errors;
+}
+
 // ---------------------------------------------------------------- CLI
 
 function walk(dir, out) {
@@ -402,7 +536,34 @@ export function loadRepo(root) {
       files.set(relative(root, file).replaceAll("\\", "/"), readFileSync(file, "utf8"));
     }
   }
-  return readCurrent(files, readFileSync(join(root, SERIALIZER), "utf8"));
+  const current = readCurrent(files, readFileSync(join(root, SERIALIZER), "utf8"));
+  current.sections = parseSections(files);
+  return current;
+}
+
+function sectionLocks(root) {
+  const dir = join(root, SECTION_LOCKS);
+  const locks = new Map();
+  if (!existsSync(dir)) return locks;
+  for (const entry of readdirSync(dir)) {
+    if (entry.endsWith(".json")) locks.set(entry.slice(0, -5), JSON.parse(readFileSync(join(dir, entry), "utf8")));
+  }
+  return locks;
+}
+
+// { nameErrors, results: [{ section, shapes, errors }] } for every section.
+function checkSections(root, current) {
+  const locks = sectionLocks(root);
+  const nameErrors = checkSectionNames(current.sections, current.order ?? [], [...locks.keys()]);
+  const results = [];
+  for (const sec of current.sections) {
+    if (sec.error) continue;
+    const { shapes, missing } = collectShapes(sec.roots.map((r) => ({ payload: sec.name, root: r })), current.classes);
+    const errors = missing.map((m) => ({ hard: true, msg: `section "${sec.name}": record class ${m} not found` }));
+    errors.push(...compareSection(locks.get(sec.name) ?? null, sec, shapes));
+    results.push({ section: sec, shapes, errors });
+  }
+  return { nameErrors, results };
 }
 
 function report(current, lock) {
@@ -451,7 +612,16 @@ function main() {
       console.log("record shapes: lock not updated; fix the hard errors first");
       process.exit(1);
     }
+    const sectionCheck = checkSections(root, current);
+    const sectionHard = [...sectionCheck.nameErrors, ...sectionCheck.results.flatMap((r) => r.errors.filter((e) => e.hard).map((e) => e.msg))];
+    if (sectionHard.length) {
+      for (const e of sectionHard) console.log(`FAIL ${e}`);
+      console.log("record shapes: lock not updated; fix the hard errors first");
+      process.exit(1);
+    }
     writeFileSync(lockPath, JSON.stringify(buildLock(current, lock), null, 2) + "\n");
+    mkdirSync(join(root, SECTION_LOCKS), { recursive: true });
+    for (const r of sectionCheck.results) writeFileSync(join(root, SECTION_LOCKS, `${r.section.name}.json`), JSON.stringify(buildSectionLock(r.section, r.shapes), null, 2) + "\n");
     console.log(`record shapes: locked ${current.shapes.size} record class(es) at save version ${current.version}`);
     return;
   }
@@ -461,7 +631,11 @@ function main() {
   }
   const errors = compare(lock, current);
   for (const e of errors) console.log(`FAIL ${e.msg}`);
-  if (errors.length) process.exit(1);
+  const sectionCheck = checkSections(root, current);
+  for (const e of sectionCheck.nameErrors) console.log(`FAIL ${e}`);
+  const sectionErrors = sectionCheck.results.flatMap((r) => r.errors);
+  for (const e of sectionErrors) console.log(`FAIL ${e.msg}`);
+  if (errors.length || sectionCheck.nameErrors.length || sectionErrors.length) process.exit(1);
   console.log(`record shapes: ${current.shapes.size} record class(es) match the lock at save version ${current.version}`);
 }
 
