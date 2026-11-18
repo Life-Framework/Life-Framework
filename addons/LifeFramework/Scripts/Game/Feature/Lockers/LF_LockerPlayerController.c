@@ -6,6 +6,9 @@
 //! so a client that never reports is not a leak.
 modded class SCR_PlayerController
 {
+	protected static const int LOCKER_OPEN_RETRIES = 10; // lf-fixed: a bound on a streaming race, not a game tunable
+	protected static const int LOCKER_OPEN_RETRY_MS = 100; // lf-fixed: the same bound, 1 s in all
+	protected RplId m_LF_LockerPendingId = RplId.Invalid();
 	protected RplId m_LF_LockerContainerId = RplId.Invalid();
 	protected SCR_InventoryStorageManagerComponent m_LF_LockerInventory;
 
@@ -23,14 +26,44 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_LF_OpenLocker(RplId containerId)
 	{
+		// A new open replaces any retry still waiting on an older container.
+		GetGame().GetCallqueue().Remove(LF_RetryOpenLocker);
+		m_LF_LockerPendingId = containerId;
+		LF_TryOpenLocker(0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the server spawned the container in the same call as the RPC, so on a dedicated client it can
+	//! arrive before the container streams in (#3369). Retry a bounded number of times before giving up.
+	protected void LF_RetryOpenLocker(int attempt)
+	{
+		LF_TryOpenLocker(attempt);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_TryOpenLocker(int attempt)
+	{
+		RplId containerId = m_LF_LockerPendingId;
+		if (!containerId.IsValid())
+			return;
+
 		RplComponent containerRpl = RplComponent.Cast(Replication.FindItem(containerId));
 		IEntity user = GetControlledEntity();
 		if (!containerRpl || !containerRpl.GetEntity() || !user)
 		{
-			LF_Debug.Warn("Lockers", "locker open dropped on the client: the container or the character is gone");
+			if (attempt < LOCKER_OPEN_RETRIES)
+			{
+				GetGame().GetCallqueue().CallLater(LF_RetryOpenLocker, LOCKER_OPEN_RETRY_MS, false, attempt + 1);
+				return;
+			}
+
+			m_LF_LockerPendingId = RplId.Invalid();
+			LF_Debug.Warn("Lockers", string.Format("locker open dropped on the client: the container or the character is gone (after %1 retries)", attempt));
 			LF_ReportLockerClosed(containerId);
 			return;
 		}
+
+		m_LF_LockerPendingId = RplId.Invalid();
 
 		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(user);
 		if (!inventory)
