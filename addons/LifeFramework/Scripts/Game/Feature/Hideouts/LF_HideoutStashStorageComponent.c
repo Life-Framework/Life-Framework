@@ -43,7 +43,7 @@ class LF_HideoutStashStorageComponent : SCR_UniversalInventoryStorageComponent
 
 		if (!carrierManager)
 		{
-			if (LF_ServerInsertScope.IsOpen())
+			if (LF_ServerInsertScope.IsOpenFor(item))
 				return true;
 
 			LF_Debug.Warn("Hideout", string.Format("stash %1 refused %2 from the ground: a member carries it first", stash.GetHideoutId(), LF_Utils.GetPrefabName(item)));

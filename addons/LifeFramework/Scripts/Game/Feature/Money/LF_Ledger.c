@@ -64,6 +64,8 @@ class LF_Ledger
 	static const string FEATURE = "Ledger";
 	static const string ACCOUNT_CASH = "cash";
 	static const string ACCOUNT_BANK = "bank";
+	//! Marked notes into a laundering station (#2853): a trail line, never a cash or bank balance.
+	static const string ACCOUNT_MARKED = "marked";
 
 	protected static ref array<ref LF_LedgerEntry> s_aEntries;
 	protected static int s_iLastId;
@@ -107,7 +109,7 @@ class LF_Ledger
 	static bool Record(notnull LF_OnMoneyMoved moved)
 	{
 		// An event built with Create (no account side) is not a ledger line.
-		if (moved.m_sAccount != ACCOUNT_CASH && moved.m_sAccount != ACCOUNT_BANK)
+		if (moved.m_sAccount != ACCOUNT_CASH && moved.m_sAccount != ACCOUNT_BANK && moved.m_sAccount != ACCOUNT_MARKED)
 			return true;
 
 		if (moved.m_sPlayerUid.IsEmpty() || moved.m_iAmount <= 0)

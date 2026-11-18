@@ -17,9 +17,9 @@ class LF_InventoryUtils
 			return false;
 
 		// The server's own insert: a restricted storage (hideout stash) takes this carrier-less item (#2584).
-		LF_ServerInsertScope.Begin();
+		EntityID scope = LF_ServerInsertScope.Begin(item);
 		bool inserted = storageManager.TryInsertItem(item);
-		LF_ServerInsertScope.End();
+		LF_ServerInsertScope.End(scope);
 		if (inserted)
 			return true;
 

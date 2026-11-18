@@ -1,0 +1,42 @@
+GenericEntity : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
+ ID "78BDE0A18BE0B96F"
+ components {
+  LF_LaunderStationComponent "{F2121BD019E65A01}" {
+   m_sSiteId "launder-station"
+   m_sChainId "cider"
+  }
+  ActionsManagerComponent "{F2121BD019E65A03}" {
+   ActionContexts {
+    UserActionContext "{F2121BD019E65A04}" {
+     ContextName "LF_LaunderStation"
+     Position PointInfo "{F2121BD019E65A05}" {
+      Offset 0 0.9 0
+     }
+     Radius 1
+    }
+   }
+   additionalActions {
+    LF_LaunderStationAction "{F2121BD019E65A06}" {
+     ParentContextList {
+      "LF_LaunderStation"
+     }
+     UIInfo UIInfo "{F2121BD019E65A07}" {
+      Name "#LF-Launder_Load"
+     }
+     Duration 2
+     m_eMode LOAD
+    }
+    LF_LaunderStationAction "{F2121BD019E65A08}" {
+     ParentContextList {
+      "LF_LaunderStation"
+     }
+     UIInfo UIInfo "{F2121BD019E65A09}" {
+      Name "#LF-Launder_Collect"
+     }
+     Duration 1
+     m_eMode COLLECT
+    }
+   }
+  }
+ }
+}

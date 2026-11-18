@@ -388,9 +388,9 @@ class LF_QuantityComponent : ScriptComponent
 		bool inserted;
 		if (storageManager)
 		{
-			LF_ServerInsertScope.Begin();
+			EntityID scope = LF_ServerInsertScope.Begin(destinationEntity);
 			inserted = storageManager.TryInsertItemInStorage(destinationEntity, storage);
-			LF_ServerInsertScope.End();
+			LF_ServerInsertScope.End(scope);
 		}
 
 		if (!inserted)

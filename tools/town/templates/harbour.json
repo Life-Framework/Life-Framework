@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "kind": "harbour",
+  "about": "Slots of a harbour place: a quay, the taxi stand, and the two quay services that wait for state 2b (docs/architecture/everon-world.md 3.2, docs/roadmap/m6-outline.md). Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names. The dock and the taxi stand stand on the quay frontage (host street); the fish counter and the chandler are shop-sized and take a building or a plot. No LF_MapPois row exists for a harbour kind yet, so every slot says `poi: none`.",
+  "slots": [
+    {
+      "id": "dock", "required": true, "kit": "dock", "host": "street", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 120 },
+      "places": ["Dock"]
+    },
+    {
+      "id": "taxi", "required": false, "kit": "taxi", "host": "street", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 90 },
+      "places": ["TaxiRank"]
+    },
+    {
+      "id": "fish-counter", "required": false, "kit": "fish-counter", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 30, "prefer": "near", "maxDistance": 120, "types": ["shed", "industrial", "garage", "house", "shop"] },
+      "plot": { "minWidth": 10, "minDepth": 8, "prefabs": [{ "type": "garage", "stem": "HouseAddon_Garage_E_01" }] },
+      "places": ["FishCounter"]
+    },
+    {
+      "id": "chandler", "required": false, "kit": "chandler", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 30, "prefer": "near", "maxDistance": 140, "types": ["shed", "industrial", "garage", "house", "shop"] },
+      "plot": { "minWidth": 10, "minDepth": 8, "prefabs": [{ "type": "garage", "stem": "HouseAddon_Garage_E_01" }] },
+      "places": ["Chandler"]
+    }
+  ]
+}
