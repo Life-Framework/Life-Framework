@@ -134,15 +134,16 @@ class LF_ReputationAwardDef : LF_ConfigRecord
 
 //------------------------------------------------------------------------------------------------
 //! Standing tables. Loaded from Configs/Reputation/LF_Reputation.conf. Core rows are neutral
-//! (# keys, conservative awards); the pack's words and awards come as an overlay in a later slice,
-//! as does the owner's config.json section `reputation` (#2696 ships the core file only).
+//! (# keys, conservative awards); the pack's words, awards, gates and pay are layered over them from
+//! each pack overlay the mission header lists (LF_ReputationOverlay.c, #3044). The owner's config.json
+//! section `reputation` is not built (#2696 ships the core file only).
 [BaseContainerProps(configRoot: true)]
 class LF_ReputationConfig
 {
 	static const ResourceName CONFIG_PATH = "{FDB8BA82F909CB1B}Configs/Reputation/LF_Reputation.conf";
 
-	//! No owner config.json section yet: the owner key will be "reputation" with the overlay card. A
-	//! `SECTION` constant is left out until the owner reader exists (the schema check reads it).
+	//! No owner config.json section yet; a `SECTION` constant is left out until the owner reader
+	//! exists (the schema check reads it). Pack overlays only (LF_ReputationOverlay).
 
 	[Attribute("", UIWidgets.Object, "Factions: the tier ladder, labels, whether shown and the daily cap of each")]
 	ref array<ref LF_ReputationFactionDef> m_aFactions;
@@ -152,6 +153,9 @@ class LF_ReputationConfig
 
 	[Attribute("", UIWidgets.Object, "Standing gates: the lowest tier a job or run needs (LF_ReputationGate.c). A gate id with no row is open")]
 	ref array<ref LF_ReputationGateDef> m_aGates;
+
+	[Attribute("", UIWidgets.Object, "Standing pay: the bonus percent per tier on a faction's jobs (LF_ReputationPay.c, #2703). A faction with no row pays none")]
+	ref array<ref LF_ReputationPayDef> m_aPays;
 
 	protected static ref LF_ReputationConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -174,6 +178,8 @@ class LF_ReputationConfig
 		s_Config = LF_ReputationConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
 			LF_Debug.Error(LF_Reputation.FEATURE, string.Format("reputation config has an unexpected root class: %1", CONFIG_PATH));
+		else
+			LF_ReputationOverlay.Apply(s_Config);
 
 		return s_Config;
 	}

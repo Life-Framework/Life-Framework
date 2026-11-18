@@ -1,0 +1,63 @@
+{
+  "id": "harbour_master",
+  "name": "HarbourMaster",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Townsfolk_HarbourMaster_Name",
+  "voice": {
+    "id": "LifjXiNLcYfyYJD8PCDT",
+    "name": "LaRauque - Hoarse, Deep, and Dramatic",
+    "public_owner_id": "2a19c73048bc69fa256328b635f8f02808d46e770d97e50a2c6e8a91636081d6",
+    "why": "Marcel Roux is a weathered dock worker with a French name who has shouted over cranes for thirty years. LaRauque is a hoarse, deep, natural French-accented man: it reads as salt and diesel, not a narrator. Stability 0.5 and style 0.15 keep it from going dramatic, speed 1.0 for a brisk quay.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.15,
+      "speed": 1.0
+    }
+  },
+  "budget_chars": 1400,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    { "id": "greet", "line": "greet", "options": [
+      { "text": "ask_work", "next": "first_job" },
+      { "text": "ask_crates", "next": "crates_offer", "condition": "Contract", "param": "harbour_crates" },
+      { "text": "ask_crates", "next": "crates_early", "condition": "ContractLocked", "param": "harbour_crates" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "first_job", "line": "first_job", "options": [
+      { "text": "take_job", "next": "go", "action": "JobSignUp", "param": "PARCEL" },
+      { "text": "not_now", "next": "bye" } ] },
+    { "id": "go", "line": "go", "options": [
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "crates_offer", "line": "crates_offer", "options": [
+      { "text": "take_crates", "next": "crates_done", "action": "Contract", "param": "harbour_crates" },
+      { "text": "not_now", "next": "bye" } ] },
+    { "id": "crates_done", "options": [
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "crates_early", "line": "crates_early", "options": [
+      { "text": "ask_work", "next": "first_job" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Harbour office. Mind the crane and mind the ropes. What can I do for you?" },
+    "first_job": { "text": "Crates, mostly. The coaster unloads onto the quay and somebody has to carry them across to the sheds. It pays by the crate, on the spot." },
+    "go": { "text": "Good. Take a crate from the pile by the crane and carry it where the tag says. Then come back for the next one." },
+    "crates_offer": { "text": "You, I know. I have a load that must be across before the tide turns. Fast work, better money, and I will want it done on time. Do you want it?" },
+    "crates_early": { "text": "I keep the big loads for people I know. Come back when the town knows you. Carry a few crates first." },
+    "contract_started": { "for_key": "#LF-Contract_Started", "text": "Good. Crates are on the quay by the crane. Mind the clock, I am watching it." },
+    "contract_busy": { "for_key": "#LF-Contract_Busy", "text": "You already have a load on your back. Finish that one first." },
+    "contract_cooldown": { "for_key": "#LF-Contract_Cooldown", "text": "Not now. Let your arms rest. Come back in a little while." },
+    "contract_run_open": { "for_key": "#LF-Contract_RunOpen", "text": "You are carrying something already. Deliver it, then we talk." },
+    "bye": { "text": "Mind the edge of the quay." }
+  },
+  "replies": {
+    "ask_work": "Is there any work on the quay?",
+    "ask_crates": "Have you got a bigger load?",
+    "take_job": "I'll carry the crates.",
+    "take_crates": "I'll take the load.",
+    "not_now": "Not just now.",
+    "bye": "Goodbye."
+  }
+}

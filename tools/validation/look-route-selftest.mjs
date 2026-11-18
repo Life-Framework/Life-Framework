@@ -2,12 +2,15 @@
 // stays here, the argv a pool machine runs, the pictures' index rewritten to this PC, a starved Workbench
 // counted as the machine's fault, the look's RAM need fed to the shared Workbench ranking (a PC with
 // 2 GB free goes to a roomy pool machine, everyone short queues), and a test run on a PC under its disk
-// floor going to the pool machines instead of being refused.
+// floor going to the pool machines instead of being refused. Fresh looks of different worktrees take
+// different locks (lookLockName), so they run side by side up to the Workbench slots.
 // inputs: tools/visual/look.mjs, tools/lib/wb-gate.mjs, tools/lib/pool-queue.mjs, tools/remote/pool.mjs, tools/validation/look-route-selftest.mjs
+// red-proof: 2026-11-18, lookLockName returning "build" for a fresh look (the old hub-wide lock) failed
+// "fresh looks of two worktrees take different locks".
 // red-proof: 2026-11-14, routeMode returning "local" for every look (the old behaviour) failed "a plain
 // look routes"; diskRoute rethrowing every refusal failed "disk-short PC drops out of an any-machine run".
 
-import { BUSY_CODE, ENV_SHORT_CODE, LOOK_RESERVE_MB, parseArgs, rehomeIndex, remoteLookArgs, routeMode, skipOutcome, starvedRun } from "../visual/look.mjs";
+import { BUSY_CODE, ENV_SHORT_CODE, LOOK_RESERVE_MB, lookLockName, parseArgs, rehomeIndex, remoteLookArgs, routeMode, skipOutcome, starvedRun } from "../visual/look.mjs";
 import { chooseGate } from "../lib/wb-gate.mjs";
 import { diskRoute } from "../remote/pool.mjs";
 
@@ -46,6 +49,11 @@ check("not starved without a timeout", starvedRun({ timedOut: false, written: 0,
 
 // A held build lock waits, it does not strike the machine (2026-11-18, #2808: one PC, another Workbench held the
 // lock, the look said "no machine left to try (tried local)" and the PR shipped without its picture)
+// The lock a look holds: per worktree for a fresh look, the hub build lock for a look-server request.
+check("fresh looks of two worktrees take different locks", lookLockName("D:/LF/worktrees/Life-Framework-ws-a") !== lookLockName("D:\\LF\\worktrees\\Life-Framework-ws-b"));
+check("a fresh look never takes the hub build lock", lookLockName("D:/LF/worktrees/Life-Framework-ws-a") !== "build");
+check("the same worktree takes the same look lock", lookLockName("D:/LF/worktrees/Life-Framework-ws-a") === lookLockName("D:\\LF\\worktrees\\Life-Framework-ws-a"));
+check("a look-server request keeps the build lock", lookLockName("D:/x", { server: true }) === "build");
 check("held lock: busy, retried", skipOutcome(BUSY_CODE, { elapsedMs: 20000, waitS: 1200 }) === "busy");
 check("held lock past the budget: give up", skipOutcome(BUSY_CODE, { elapsedMs: 1201000, waitS: 1200 }) === "giveup");
 check("short RAM still skips the machine", skipOutcome(ENV_SHORT_CODE, { elapsedMs: 5000 }) === "skip");

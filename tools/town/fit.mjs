@@ -1,7 +1,7 @@
 // tools/town/fit.mjs - `tools\cli town fit <place> <slot>`: apply a slot's kit to the building the approved mapping names
 // (docs/architecture/everon-world.md 3.3 and 3.4, card #2205).
 //
-//   town fit <place> <slot> [--dry] [--check] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path]
+//   town fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path]
 //            [--destruction-guid {GUID}] [--dossier f] [--mapping f] [--template-file f] [--kits-dir d] [--out-dir d]
 //
 // Reads  docs/everon/places/<place>/dossier.json and mapping.json, tools/town/templates/<kind>.json, tools/town/kits/<kit>.json
@@ -32,14 +32,14 @@ import { applyKit, checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
 import { sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
 
-export const help = "fit <place> <slot> [--dry] [--check] [--allow-clip] [--no-audit] [--no-look]   apply the slot's kit into its mapped building, rows seated on the host's floors and walls: Place_<place>_<slot>.layer (marker + kit rows) and a claim";
+export const help = "fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-audit] [--no-look]   apply the slot's kit into its mapped building, rows seated on the host's floors and walls: Place_<place>_<slot>.layer (marker + kit rows) and a claim";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const LAYER_DIR = "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers";
 export const CLAIMS_DIR = "tools/town/claims";
 const SLUG_RX = /^[a-z0-9][a-z0-9-]*$/;
 const REF_RE = /^\{([0-9A-Fa-f]{16})\}(.+)$/;
-const FLAGS = new Set(["dry", "check", "allow-clip", "no-fetch", "no-audit", "no-look", "building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir", "help"]);
+const FLAGS = new Set(["dry", "check", "refit", "allow-clip", "no-fetch", "no-audit", "no-look", "building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir", "help"]);
 const WITH_VALUE = new Set(["building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir"]);
 const r3 = (n) => Math.round(n * 1000) / 1000;
 const norm = (d) => {
@@ -235,6 +235,20 @@ export function openPrTownClaims(exec, { branch = null } = {}) {
   return { claims, note: "" };
 }
 
+// Pure: an integration worktree (ws/island-integration, #3076) merges other drafts' claim files to try them together and is never
+// pushed, so its copies are not claims of its own and must not block the drafts they came from.
+export const isIntegrationBranch = (branch) => /^ws\/island-integration(-[a-z0-9-]+)?$/.test(String(branch ?? ""));
+
+// Pure: whether a claim belongs to the draft this branch is stacked on. A follow-up branch ws/town-draft-<place>-<slot>-<word> builds on
+// the open draft ws/town-draft-<place>-<slot> and changes that slot's layer on top of it, so the draft's own claim (its open PR, its
+// worktree) is not a rival. Another slot's claim, or a PR of any other branch, still blocks.
+export function claimOfBase(c, { branch, place, slot }) {
+  const base = `ws/town-draft-${place}-${slot}`;
+  if (!branch || !String(branch).startsWith(`${base}-`)) return false;
+  if (c.place !== place || c.slot !== slot) return false;
+  return new RegExp(`^open PR #[0-9]+ \\(${base}\\)$`).test(c.where) || c.where === `worktree Life-Framework-ws-town-draft-${place}-${slot}`;
+}
+
 // Uncommitted claim files in sibling local worktrees: no network, read from `git worktree list --porcelain`.
 export function worktreeTownClaims(exec, root) {
   const ls = exec("git", ["worktree", "list", "--porcelain"]);
@@ -243,6 +257,7 @@ export function worktreeTownClaims(exec, root) {
   for (const block of String(ls.stdout).split(/\r?\n\r?\n/)) {
     const path = /^worktree (.+)$/m.exec(block)?.[1];
     if (!path || resolve(path) === resolve(root)) continue;
+    if (isIntegrationBranch(/^branch refs\/heads\/(.+)$/m.exec(block)?.[1])) continue;
     const dir = join(path, CLAIMS_DIR);
     if (!existsSync(dir)) continue;
     for (const f of readdirSync(dir).filter((n) => n.endsWith(".json"))) {
@@ -336,7 +351,11 @@ export function planFit(opts, ctx = {}) {
     taken.push(...r.claims);
     if (r.note) notes.push(r.note);
   }
-  errors.push(...conflicts(taken, { place, slot: slotId, building: entry.building, plot: entry.plot, shared: entry.shared }));
+  // `--refit`: this slot's own claim, already committed on origin/main (every worktree carries it), does not block its re-fit.
+  // The same slot held by an open PR or a sibling worktree, and any other slot's claim on the building, still refuse.
+  for (let i = taken.length - 1; i >= 0; i--) if (claimOfBase(taken[i], { branch: opts.branch, place, slot: slotId })) taken.splice(i, 1);
+  const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && c.where === "origin/main")) : taken;
+  errors.push(...conflicts(blocking, { place, slot: slotId, building: entry.building, plot: entry.plot, shared: entry.shared }));
   if (errors.length) return { ...fail(), notes };
 
   // The building: a mapped one stands where the dossier says; a plot gets the purpose-built building first (D9).
@@ -503,7 +522,7 @@ function parseArgs(args) {
   return { flags, pos, bad };
 }
 
-const USAGE = "usage: tools\\cli town fit <place> <slot> [--dry] [--check] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path] [--destruction-guid {GUID}]";
+const USAGE = "usage: tools\\cli town fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path] [--destruction-guid {GUID}]";
 const readJson = (f, what) => {
   if (!existsSync(f)) throw new Error(`no ${what}: ${f} does not exist`);
   return JSON.parse(readFileSync(f, "utf8"));
@@ -581,7 +600,7 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
   })();
 
   // Only a town-draft-<place>-<slot> worktree writes an island layer (T4 enforces it too); --dry and --out-dir are for trying and tests.
-  if (!flags.dry && !flags.check && !flags["out-dir"] && !new RegExp(`^ws/town-draft-${place}-${slotId}$`).test(branch ?? "")) {
+  if (!flags.dry && !flags.check && !flags["out-dir"] && !new RegExp(`^ws/town-draft-${place}-${slotId}(-[a-z0-9-]+)?$`).test(branch ?? "")) {
     console.log(`REFUSE  town fit writes an island layer only from the worktree ws/town-draft-${place}-${slotId} (this is ${branch ?? "unknown"}); create it with tools\\cli wt new town-draft-${place}-${slotId}, or pass --dry`);
     return 1;
   }
@@ -600,7 +619,7 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
       if (existsSync(kf)) kits[entry.kit] = readJson(kf, "kit");
     }
     const shell = ctxShell ?? shellReader(root);
-    const fitOpts = { place, slot: slotId, dossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
+    const fitOpts = { place, slot: slotId, dossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, refit: Boolean(flags.refit), allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
     plan = await planFitSeated(fitOpts, { root, run, readGame: await gameReader(), shell });
   } catch (e) {
     console.log(`REFUSE  ${e.message}`);

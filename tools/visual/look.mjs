@@ -72,7 +72,7 @@ export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 export function parseArgs(argv) {
   const flags = {};
   const pos = [];
-  const valued = new Set(["world", "interior", "dump", "dumpstep", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget", "machine"]);
+  const valued = new Set(["stock", "items", "from", "max", "entities", "world", "interior", "dump", "dumpstep", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget", "machine"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith("--")) pos.push(a);
@@ -277,7 +277,7 @@ export function parseStatus(text) {
       const parts = rest.split(" ");
       const kv = Object.fromEntries(parts.slice(3).map((p) => p.split("=")).filter((p) => p.length === 2));
       const vec = (s) => (s ? s.split(",").map(Number) : null);
-      out.shots[parts[1]] = { file: parts[2], ms, clear: kv.clear === undefined ? null : Number(kv.clear), pick: kv.pick === undefined ? null : Number(kv.pick), found: kv.found === undefined ? null : kv.found === "1", size: vec(kv.size), cam: vec(kv.cam) };
+      out.shots[parts[1]] = { file: parts[2], ms, clear: kv.clear === undefined ? null : Number(kv.clear), pick: kv.pick === undefined ? null : Number(kv.pick), found: kv.found === undefined ? null : kv.found === "1", size: vec(kv.size), cam: vec(kv.cam), contact: kv.gap === undefined ? null : { gap: Number(kv.gap), spread: Number(kv.spread), hits: kv.hits, on: kv.on, view: kv.view } };
     }
   }
   return out;
@@ -600,16 +600,28 @@ export function skipOutcome(code, { elapsedMs = 0, waitS = 1200 } = {}) {
   return null;
 }
 
-// null when this process holds the machine-wide build lock, else why not.
-function takeBuildLock(wt, waitMs) {
+// The lock a look holds while its Workbench runs. A fresh look writes only this worktree's own profile
+// (server/profile/visual), so it takes a per-worktree `look-<slug>` lock, not the hub-wide `build` lock; the
+// Workbench slot it already holds (localLook, tools/lib/wb-lock.mjs, sized by RAM) caps how many run at once,
+// as for the rdb refresh. On 2026-11-18 the hub-wide lock ran every look on the PC one at a time: 51 of 90 looks
+// queued on it, 44 of them beside a free slot, 7 gave up after 20 min (agent-efficiency pass 2). A request to
+// the shared look server keeps the `build` lock, which still serializes the requests that server takes.
+export function lookLockName(root, { server = false } = {}) {
+  if (server) return "build";
+  return `look-${String(root).replace(/\\/g, "/").split("/").pop().replace(/[^A-Za-z0-9._-]/g, "_")}`;
+}
+
+// null when this process holds `name` (lookLockName), else why not.
+function takeBuildLock(wt, waitMs, name = "build") {
   try {
-    wt.acquireLock(ROOT, "build", { waitMs: 0 });
+    wt.acquireLock(ROOT, name, { waitMs: 0 });
     return null;
   } catch {}
-  if (waitMs <= 0) return "a headless Workbench (build, rdb refresh, another look or a look-server request) holds the build lock; pass --wait to queue (up to 10 min)";
-  console.log(`look: waiting for the build lock (another headless Workbench is running; up to ${Math.round(waitMs / 1000)} s)`);
+  const what = name === "build" ? "a headless Workbench (build or a look-server request) holds the build lock" : "another look in this worktree holds its look lock";
+  if (waitMs <= 0) return `${what}; pass --wait to queue (up to 10 min)`;
+  console.log(`look: waiting for the ${name} lock (${what}; up to ${Math.round(waitMs / 1000)} s)`);
   try {
-    wt.acquireLock(ROOT, "build", { waitMs });
+    wt.acquireLock(ROOT, name, { waitMs });
     return null;
   } catch (e) {
     return e.message;
@@ -735,7 +747,17 @@ async function run(args) {
   const layerDirs = [GRID_WORLD, PACK_GRID_WORLD].includes(areaWorld) ? gridLayerDirs(ROOT) : areaWorld === ISLAND_WORLD ? (existsSync(islandLayersDir(ROOT)) ? [islandLayersDir(ROOT)] : []) : undefined;
   const world = itemPerArea ? null : loadWorld(ROOT, layerDirs);
   const opts = { dump: args.flags.dump === undefined ? null : { radius: num(args.flags.dump, undefined), step: num(args.flags.dumpstep, 5) }, world: worldFlag(args.flags.world) ?? undefined, edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
-  const perArea = itemPerArea ?? areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
+  let perArea = itemPerArea ?? areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
+  if (args.contact) {
+    // look contact: one batch per area, five views of each item at its measured contact (tools/visual/look-contact.mjs).
+    const lc = await import("./look-contact.mjs");
+    try {
+      perArea = areas.map((a) => lc.contactPlan({ area: a, world, flags: args.flags, root: ROOT, closeSet }));
+    } catch (e) {
+      console.log(`FAIL  look contact: ${e.message}`);
+      return 2;
+    }
+  }
   for (const n of itemNotes) console.log(`look: ${n}`);
   const shots = perArea.flatMap((p) => p.shots);
 
@@ -762,11 +784,12 @@ async function run(args) {
     }
   }
 
-  // One Workbench at a time beside the headless build and the rdb refresh (shared shader cache). A server request
-  // takes the lock too; it lasts seconds, so look queues behind a server for up to 2 minutes without --wait.
-  // Routed here: a held lock hands the look to another machine. Pinned here: queue for it (10 min).
+  // A fresh look holds its worktree's look lock (lookLockName); the Workbench slot caps the machine. A server request
+  // takes the build lock, which serializes the shared server; it lasts seconds, so look queues behind it for up to
+  // 2 minutes without --wait. Routed here: a held lock re-queues the look. Pinned here: queue for it (10 min).
+  const lockName = lookLockName(ROOT, { server: useServer });
   const lockT0 = Date.now();
-  const lockErr = takeBuildLock(wt, args.flags.wait || !args.routed ? 600000 : useServer ? 120000 : 0);
+  const lockErr = takeBuildLock(wt, args.flags.wait || !args.routed ? 600000 : useServer ? 120000 : 0, lockName);
   TL.add("lock-wait", (Date.now() - lockT0) / 1000);
   if (lockErr) {
     console.log(`${args.routed ? "look: not here:" : "FAIL "} look: ${lockErr}`);
@@ -823,7 +846,7 @@ async function run(args) {
         console.log(`look: the look server did not take it (${r.why}); a fresh Workbench instead`);
         if (ramMsg) {
           console.log(`${args.routed ? "look: not here:" : "FAIL "} ${ramMsg}`);
-          wt.releaseLock(ROOT, "build");
+          wt.releaseLock(ROOT, lockName);
           return envFail;
         }
       }
@@ -832,7 +855,7 @@ async function run(args) {
       const ram = useServer ? await ramGate() : null;
       if (ram) {
         console.log(`${args.routed ? "look: not here:" : "FAIL "} ${ram}`);
-        wt.releaseLock(ROOT, "build");
+        wt.releaseLock(ROOT, lockName);
         return envFail;
       }
       sha = snapshotSha();
@@ -843,7 +866,7 @@ async function run(args) {
       status = parseStatus(existsSync(statusFile) ? readFileSync(statusFile, "utf8") : "");
     }
   } finally {
-    wt.releaseLock(ROOT, "build");
+    wt.releaseLock(ROOT, lockName);
   }
 
   if (res.timedOut) console.log(`TIMEOUT after ${Math.round(res.seconds)}s: Workbench was killed; ${Object.keys(status.shots).length}/${shots.length} shot(s) written`);
@@ -903,10 +926,10 @@ async function run(args) {
       const flags = flagsFor(shot, st && st.file ? st : null, px);
       if (flags.includes("missing")) missing++;
       else if (flags.length) flagged++;
-      rows.push({ kind: shot.kind, label: shot.label, file: st && st.file ? file : null, flags, clear: st?.clear ?? null, size: st?.size ?? null, cam: st?.cam ?? null, px, entity: shot.entity ?? null, tile: tileLabel(shot, st, flags) });
+      rows.push({ kind: shot.kind, label: shot.label, file: st && st.file ? file : null, flags, clear: st?.clear ?? null, size: st?.size ?? null, cam: st?.cam ?? null, px, entity: shot.entity ?? null, contact: st?.contact ?? null, tile: shot.contact ? (await import("./look-contact.mjs")).contactLabel(shot, st) : tileLabel(shot, st, flags) });
     }
     const tiles = rows.map((r) => ({ file: r.file, label: r.tile, marks: [] }));
-    const { cols } = sheetLayout(tiles.length);
+    const { cols } = area.sheetCols ? { cols: area.sheetCols } : sheetLayout(tiles.length);
     const contact = join(dir, "contact.jpg");
     image({ op: "sheet", tiles, out: contact, cols, maxWidth: cols * 480, quality: 74 });
     writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, inputs: { addons: askedTree, rendered: renderedTree }, timing: { ...TL.get(), collect: Math.round((Date.now() - collectT0) / 100) / 10 }, contact, shots: rows }, null, 2) + "\n");
@@ -1253,6 +1276,10 @@ export async function selftest() {
   ok(identicalFrames(["a", "a", "a"]) && !identicalFrames(["a", "b", "a"]) && !identicalFrames(["a", "a"]) && !identicalFrames([null, "a", "a"]), "identical-frame backup");
   ok(planText([], [{ x: 0, z: 0, radius: 1 }], { world: "Worlds/Bad/Bad.ent" }).startsWith("world Worlds/Bad/Bad.ent"), "--world did not reach the plan");
 
+  // look contact (#2955): stock named by the store's slot, on the island, from tools/visual/fixtures/contact-plan.json.
+  // red-proof: 2026-11-18 against the spike's matcher by audit positions this printed "look selftest FAIL: look contact: stock refs: -,-" (the matcher by audit positions).
+  for (const f of (await import("./look-contact.mjs")).selftest({ planText, worldOfAreas })) failures.push(`look contact: ${f}`);
+
   if (failures.length) {
     for (const f of failures) console.log(`look selftest FAIL: ${f}`);
     return 1;
@@ -1269,6 +1296,10 @@ export async function main(argv) {
   const args = parseArgs(argv);
   if (args.flags.cold) args.flags.fresh = true; // --cold: today's path, a Workbench of its own, no resident server
   if (args.flags.local) process.env.LF_WB_LOCAL = "1"; // a human's explicit ask for this PC's Workbench
+  if (args.pos[0] === "contact") {
+    args.contact = true; // tools\cli look contact <area|place:...>: the sheet of contact pictures (look-contact.mjs)
+    args.pos.shift();
+  }
   if (args.pos[0] === "selftest") return selftest();
   const route = await import("../lib/wb-route.mjs");
   if (args.pos[0] === "serve") {
@@ -1396,11 +1427,11 @@ async function routeLook(args, argv) {
       const code = await localLook({ ...args, routed: true });
       const out = skipOutcome(code, { elapsedMs: Date.now() - t0, waitS });
       if (out === "giveup") {
-        console.log(`FAIL  look: the build lock stayed held by another headless Workbench for ${Math.round((Date.now() - t0) / 1000)} s; retry, or see what holds it with tools\\cli pool status`);
+        console.log(`FAIL  look: the look lock stayed held for ${Math.round((Date.now() - t0) / 1000)} s; retry, or see what holds it with tools\\cli pool status`);
         return 3;
       }
       if (out === "busy") {
-        if (!saidWait) console.log(`look: queued: another headless Workbench holds the build lock on this PC; re-checking every 20 s for up to ${Math.round(waitS / 60)} min`);
+        if (!saidWait) console.log(`look: queued: another look in this worktree (or a look-server request) holds its lock on this PC; re-checking every 20 s for up to ${Math.round(waitS / 60)} min`);
         saidWait = true;
         tried.pop();
         attempt--;

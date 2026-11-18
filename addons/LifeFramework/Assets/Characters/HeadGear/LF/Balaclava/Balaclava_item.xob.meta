@@ -1,0 +1,50 @@
+MetaFileClass {
+ Name "{E0DC112EEBF75938}Assets/Characters/HeadGear/LF/Balaclava/Balaclava_item.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{D36FA2D6933AE317}" {
+     SourceMaterial "Balaclava_item"
+     AssignedMaterial "{332DC26DD04673C4}Assets/Characters/HeadGear/LF/Balaclava/Data/Balaclava.emat"
+    }
+   }
+   MeshParams {
+    MeshParam Balaclava_item {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_Balaclava_item {
+     LayerPreset "ItemFireView"
+     SurfaceProperties {
+      "{ABA11261AC43D0E6}Common/Materials/Game/Fabric/fabric_2mm_min.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{83ED024F8DB3E34D}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{D7F6BAD96F3B1C6D}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{0AF740480785D3F4}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{99974A8EE9FE3F23}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{8DCB711863C26309}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

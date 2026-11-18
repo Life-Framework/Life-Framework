@@ -1,0 +1,45 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "F665464C29F40071"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_FishTrout_Name"
+     Description "#LF-Item_FishTrout_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.5
+     SizeSetupStrategy Volume
+     ItemVolume 500
+     RestingUP Up
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{1EE41954E896256F}" {
+     AnimationAttachments {
+      AnimationAttachmentInfo "{3BC86F14BD3851A3}" {
+       AnimGraph "{883777E45A6C4DA1}Assets/Items/Medicine/Workspaces/Gauze_01.agr"
+       AnimInstance "{79BD98038DD60F88}Assets/Items/Medicine/Workspaces/Gauze_01_player.asi"
+       BindingName "Gadget"
+      }
+     }
+     HandAdditiveRotation -65 -60 -60
+     HandAdditiveTranslation 0 0 0
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{AB413D9CB8783DEB}" {
+      CameraOrbitAngles -25 -25 0
+      CameraDistanceToItem 0.9
+      FOV 20
+     }
+    }
+    CommonItemType "LF_ITEM"
+   }
+  }
+  MeshObject "{CF3097B91F6EE919}" {
+   Object "{C21C28B41B464093}Assets/Items/Fishing/FishTrout/FishTrout.xob"
+  }
+  RigidBody "{BB53079728E016B8}" {
+   LayerPreset "ItemFireView"
+   ModelGeometry 1
+  }
+ }
+}

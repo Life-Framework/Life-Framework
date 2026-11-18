@@ -1,0 +1,144 @@
+FrameWidgetClass "{45412BDACA65A08D}" {
+ Name "SiteCaptureRoot"
+ Slot FrameWidgetSlot "{6706901D063A5B6E}" {
+  Anchor 0 0 1 1
+ }
+ {
+  FrameWidgetClass "{DD8832188B1AB5C3}" {
+   Name "Panel"
+   Slot FrameWidgetSlot "{F770A82FF30E8F49}" {
+    Anchor 0.5 0 0.5 0
+    PositionX 0
+    OffsetLeft 0
+    PositionY 58
+    OffsetTop 58
+    SizeX 360
+    OffsetRight -360
+    SizeY 84
+    OffsetBottom -142
+    Alignment 0.5 0
+   }
+   "Is Visible" 0
+   {
+    ImageWidgetClass "{78CB8263AF8EB0B8}" {
+     Name "Back"
+     Slot FrameWidgetSlot "{215FDBDFB897F4EA}" {
+      Anchor 0 0 1 1
+     }
+     Color 0.24 0.25 0.23 0.88
+    }
+    ImageWidgetClass "{4793C5125A8179CF}" {
+     Name "Edge"
+     Slot FrameWidgetSlot "{D9B59FC034F6A997}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 360
+      OffsetRight -360
+      SizeY 3
+      OffsetBottom -3
+     }
+     Color 0.48 0.4 0.25 1
+    }
+    TextWidgetClass "{43073F7F7CA840A4}" {
+     Name "Title"
+     Slot FrameWidgetSlot "{CD8793DA828EC20A}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 8
+      OffsetTop 8
+      SizeX 328
+      OffsetRight -344
+      SizeY 22
+      OffsetBottom -30
+     }
+     Color 0.93 0.9 0.83 1
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 14
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{9B0A2C0F8B8D8E83}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{7D029A99F9905528}" {
+     Name "Holder"
+     Slot FrameWidgetSlot "{2CE652793305078D}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 31
+      OffsetTop 31
+      SizeX 328
+      OffsetRight -344
+      SizeY 18
+      OffsetBottom -49
+     }
+     Color 0.93 0.9 0.83 0.9
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 12
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{A1F3C5E7092B4D68}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    TextWidgetClass "{B3D5F7091B2C4E60}" {
+     Name "Progress"
+     Slot FrameWidgetSlot "{C4E6081A2C3D5F71}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 49
+      OffsetTop 49
+      SizeX 328
+      OffsetRight -344
+      SizeY 18
+      OffsetBottom -67
+     }
+     Color 0.93 0.9 0.83 0.9
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 12
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{D5F7192B3D4E6082}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    ImageWidgetClass "{E6082A3C4E5F7193}" {
+     Name "Track"
+     Slot FrameWidgetSlot "{F7193B4D5F608A24}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 70
+      OffsetTop 70
+      SizeX 328
+      OffsetRight -344
+      SizeY 8
+      OffsetBottom -78
+     }
+     Color 0.1 0.1 0.09 0.9
+    }
+    ImageWidgetClass "{08A2C4D6E8F0B1A3}" {
+     Name "Fill"
+     Slot FrameWidgetSlot "{19B3D5E7F901C2B4}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 70
+      OffsetTop 70
+      SizeX 0
+      OffsetRight -16
+      SizeY 8
+      OffsetBottom -78
+     }
+     Color 0.48 0.4 0.25 1
+    }
+   }
+  }
+ }
+}

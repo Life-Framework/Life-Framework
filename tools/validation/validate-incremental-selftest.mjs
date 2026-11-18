@@ -5,6 +5,11 @@
 // repo: a check is skipped only when its declared inputs are untouched since its last green run,
 // and every kind of change (edit, add, delete, rename, its own script, a baseline) re-runs it.
 //
+// red-proof: 2026-11-18 (#3115, import closure), with plan() building an empty closure the run printed `FAIL editing a module the check
+// imports did not re-run it`, `FAIL editing a module the check imports only through another module ...` and `FAIL a branch edit to a
+// transitively imported module must run an imports check`; restored, it passes.
+// red-proof: 2026-11-18 (base skip), with touches() returning false the run printed `FAIL a modified input since the base
+// must run the check` and three more FAIL lines; restored, it passes.
 // red-proof: 2026-11-14, with fingerprint() no longer hashing each matched file path and stat signature
 // (only the match count), the run printed `FAIL editing a matched file did not re-run the check`,
 // `FAIL renaming a matched file ...`, `FAIL editing the check itself ...` and exited 1; restored, it passes.
@@ -12,7 +17,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, renameSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { globToRegExp, incrementalOff, parseInputs, plan, snapshotFiles, ttlOf } from "../lib/validate-incremental.mjs";
+import { baseChanges, globToRegExp, incrementalOff, loadState, parseInputs, plan, publishShared, snapshotFiles, touches, ttlOf } from "../lib/validate-incremental.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
@@ -26,12 +31,25 @@ check(JSON.stringify(parseInputs("# t\n# inputs: a.layer\n")) === '["a.layer"]',
 check(parseInputs("// inputs: always\n") === null, "'always' must mean no skipping");
 check(parseInputs("// nothing declared\nconst x = 1;\n") === null, "no header must mean no skipping");
 check(ttlOf(parseInputs("// inputs: ttl=300\n")) === 300, "ttl token not read");
+check(JSON.stringify(parseInputs("// c\n// inputs: imports\n")) === '["imports"]', "the imports token is an input list, not 'always'");
 const g = (glob, path) => globToRegExp(glob).test(path);
 check(g("addons/**/*.layer", "addons/A/B/c.layer"), "** across folders");
 check(g("addons/**/*.layer", "addons/c.layer"), "** matches zero folders");
 check(!g("addons/*.layer", "addons/A/c.layer"), "* must stay in one folder");
 check(!g("addons/**/*.layer", "addons/A/c.layers"), "glob must anchor at the end");
 check(g("docs/features.md", "docs/features.md") && !g("docs/features.md", "docsXfeatures.md"), "dots are literal");
+// touches(): what counts as a changed input for the base skip.
+const self = "tools/validation/check-x.mjs";
+check(!touches(["tools/town/claims/a.json"], ["tools/**"], self, "// a pool selftest"), "a town claim must not count for a broad tools/** check that never names it");
+check(touches(["tools/town/claims/a.json"], ["tools/**"], self, "read tools/town/claims here"), "a town claim must count for a check that names town/claims");
+check(touches(["tools/town/claims/a.json"], ["tools/town/**"], self, ""), "a narrower glob matching a data folder must always count");
+check(!touches(["docs/features/bank.md"], ["tools/**", "docs/**"], self, ""), "a feature doc must not count for a broad docs/** check that never names docs/features");
+check(touches(["tools/lib/pool.mjs"], ["tools/**"], self, ""), "a tools code change must count for a tools/** check");
+check(!touches(["tools/validation/record-shapes.json"], ["addons/**"], self, "// lint"), "a baseline must count only for checks that name it");
+check(touches(["tools/validation/record-shapes.json"], ["addons/**"], self, "record-shapes.json"), "a baseline must count for the check that names it");
+check(touches(["tools/validation/fixtures/x/y.txt"], ["addons/**"], self, ""), "a fixture change must count for every check");
+check(touches([self], ["addons/**"], self, ""), "the check's own file must count");
+check(!touches(["addons/a.c"], ["docs/*.md"], self, ""), "a path outside every glob must not count");
 check(incrementalOff({ CI: "true" }) && incrementalOff({ LF_VALIDATE_ALL: "1" }) && !incrementalOff({}), "CI and LF_VALIDATE_ALL must disable it");
 
 // Every real check should state its inputs (or "always"). One that does not simply runs every time.
@@ -58,11 +76,15 @@ try {
   put("tools/validation/check-b.mjs", "// check-b\n// inputs: docs/*.md\n");
   put("tools/validation/check-c.mjs", "// check-c\n// inputs: always\n");
   put("tools/validation/check-t.mjs", "// check-t\n// inputs: ttl=300\n");
+  // check-d reads no data, only the modules it imports (dep.mjs, which imports dep2.mjs): `inputs: imports`.
+  put("tools/validation/check-d.mjs", '// check-d\n// inputs: imports\nimport "../lib/dep.mjs";\n');
+  put("tools/lib/dep.mjs", 'import "./dep2.mjs";\nexport const x = 1;\n');
+  put("tools/lib/dep2.mjs", "export const y = 2;\n");
   put("world/a/one.layer", "1");
   put("world/a/two.layer", "2");
   put("docs/x.md", "d");
   const dir = join(root, "tools", "validation");
-  const scripts = ["check-a.mjs", "check-b.mjs", "check-c.mjs", "check-t.mjs"];
+  const scripts = ["check-a.mjs", "check-b.mjs", "check-c.mjs", "check-t.mjs", "check-d.mjs"];
   const plans = (state) => plan(root, dir, scripts, state, snapshotFiles(root));
   const green = (p, now = Date.now()) => ({ checks: Object.fromEntries([...p].filter(([, v]) => v.fp).map(([k, v]) => [k, { fp: v.fp, at: now }])) });
 
@@ -110,6 +132,18 @@ try {
   bump("docs/x.md");
   check(plans(s7).get("check-b.mjs").unchanged, "touching a matched file's mtime (same bytes) must skip: fingerprints are content-addressed");
 
+  // A check's static import closure is an input whatever its header lists (#3115): `imports` checks have no data.
+  const s8 = green(plans({ checks: {} }));
+  check(plans(s8).get("check-d.mjs").unchanged, "an imports check with nothing changed must skip");
+  put("tools/lib/unrelated.mjs", "export const z = 3;\n");
+  put("world/a/one.layer", "1 changed again");
+  check(plans(s8).get("check-d.mjs").unchanged, "a module the check does not import (or a data file) re-ran an imports check");
+  put("tools/lib/dep.mjs", 'import "./dep2.mjs";\nexport const x = 5;\n');
+  check(!plans(s8).get("check-d.mjs").unchanged, "editing a module the check imports did not re-run it");
+  const s9 = green(plans({ checks: {} }));
+  put("tools/lib/dep2.mjs", "export const y = 9;\n");
+  check(!plans(s9).get("check-d.mjs").unchanged, "editing a module the check imports only through another module did not re-run it");
+
   // A fresh worktree has no local state; a fingerprint another worktree published as green skips the check.
   const fresh = plans({ checks: {} });
   const shared = { checks: {}, shared: { "check-a.mjs": [fresh.get("check-a.mjs").fp] } };
@@ -123,6 +157,40 @@ try {
   sh("add", "-A");
   sh("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "x");
   check(plans({ checks: {} }).get("check-a.mjs").fp === before, "committing unchanged bytes changed the fingerprint (blob id mismatch)");
+
+  // Base-clean skip: with no local or shared green, a check whose inputs this branch did not change
+  // since its merge-base with origin/main is skipped; one whose inputs it changed runs.
+  sh("update-ref", "refs/remotes/origin/main", "HEAD");
+  check(baseChanges(root, "origin/nope") === null, "a missing base ref must turn the base skip off (null)");
+  const basePlan = () => plan(root, dir, scripts, { checks: {} }, snapshotFiles(root), baseChanges(root));
+  let pb = basePlan();
+  check(pb.get("check-a.mjs").unchanged && pb.get("check-a.mjs").base && pb.get("check-b.mjs").unchanged, "a branch equal to its base must skip declared checks");
+  check(!pb.get("check-c.mjs").unchanged, "the base skip must never skip an 'always' check");
+  check(!plan(root, dir, scripts, { checks: {} }, snapshotFiles(root), null).get("check-a.mjs").unchanged, "without a base (null) nothing is skipped that way");
+  put("world/a/uno.layer", "branch edit");
+  pb = basePlan();
+  check(!pb.get("check-a.mjs").unchanged, "a modified input since the base must run the check");
+  check(pb.get("check-b.mjs").unchanged, "an edit outside a check's inputs must not run it");
+  check(pb.get("check-d.mjs").unchanged && pb.get("check-d.mjs").base, "an imports check whose modules the branch did not touch must skip against the base");
+  put("tools/lib/dep2.mjs", "export const y = 10;\n");
+  check(!basePlan().get("check-d.mjs").unchanged, "a branch edit to a transitively imported module must run an imports check");
+  sh("add", "-A");
+  sh("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "branch");
+  check(!basePlan().get("check-a.mjs").unchanged, "an input changed in a branch commit (not only the working tree) must run the check");
+  put("docs/new.md", "untracked");
+  check(!basePlan().get("check-b.mjs").unchanged, "an untracked new input must run the check");
+  rmSync(join(root, "docs/x.md"));
+  check(baseChanges(root).includes("docs/x.md"), "a deleted input must be listed as changed");
+  put("tools/validation/check-b.mjs", "// check-b\n// inputs: docs/*.md\n// edited\n");
+  check(baseChanges(root).includes("tools/validation/check-b.mjs") && !basePlan().get("check-b.mjs").unchanged, "editing the check itself must run it");
+
+  // A ttl check green in another worktree within its window skips here too (machine state is shared).
+  const ttlState = { checks: {} };
+  Object.defineProperty(ttlState, "sharedTtl", { value: { "check-t.mjs": Date.now() - 1000 }, enumerable: false });
+  check(plan(root, dir, scripts, ttlState, snapshotFiles(root)).get("check-t.mjs").unchanged, "a shared ttl green inside the window must skip");
+  const sharedPath = join(root, "shared-green.json");
+  publishShared(sharedPath, { checks: { "check-t.mjs": { fp: "ttl", at: Date.now() } } });
+  check(plan(root, dir, scripts, loadState(root, sharedPath), snapshotFiles(root)).get("check-t.mjs").unchanged, "publishShared must carry a ttl green time to other worktrees");
 } finally {
   rmSync(root, { recursive: true, force: true });
 }

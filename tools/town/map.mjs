@@ -271,6 +271,12 @@ export function proposeMapping(dossierJson, template, opts = {}) {
   // Street slots: a shared frontage, the nearest building to the centre inside the slot's reach, else the nearest plot.
   for (const slot of template.slots) {
     if (slot.host !== "street") continue;
+    // `with`: the slot rides in another slot's building (a jail cell in the police villa), not on the nearest frontage.
+    const partner = slot.with ? slots[slot.with] : null;
+    if (partner?.building) {
+      slots[slot.id] = { building: partner.building, shared: true, why: [`rides in the ${slot.with} slot's building (${partner.building})`] };
+      continue;
+    }
     const reach = slot.needs.maxDistance ?? Infinity;
     const b = live
       .filter((x) => x.distance <= reach)

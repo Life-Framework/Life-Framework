@@ -1,0 +1,8 @@
+LF_NpcBaseEntity : "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et" {
+ ID "8B4D2E6F1A3C5079"
+ components {
+  LF_QuestGiverComponent "{9C5E3F70B2D4618A}" {
+   m_sGiverId "resident"
+  }
+ }
+}

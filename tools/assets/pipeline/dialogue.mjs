@@ -164,8 +164,10 @@ export function specProblems(spec, strings = new Map()) {
     if (options.length && !options.some((o) => !o.condition)) out.push(`node ${node.id}: every option has a condition; add one that is always offered`);
   }
   // Every node must be reachable from the start, or it is dead text that still costs characters.
-  const seen = new Set([spec.start]);
-  for (const queue = [spec.start]; queue.length;) {
+  // A resident's `greet_<word>` node is another way in (#2908, #2998): LF_ResidentTalk opens on it by memory word.
+  const entries = [spec.start, ...nodes.map((n) => n.id).filter((id) => /^(?:[a-z0-9_]+_)?greet_(?:refuses|wary|neutral|friendly|regular)$/.test(id))];
+  const seen = new Set(entries);
+  for (const queue = [...entries]; queue.length;) {
     const at = queue.pop();
     const node = nodes.find((n) => n.id === at);
     for (const o of node?.options || []) if (o.next && !seen.has(o.next)) { seen.add(o.next); queue.push(o.next); }

@@ -310,7 +310,7 @@
         },
         "nightSpeed": {
           "type": "number",
-          "description": "Not supported (#1650): the vanilla time manager has one day duration and no night rate, so a value other than 1 logs a Warn and the night runs at the day's rate. Kept so old configs still load",
+          "description": "How many times faster the night runs than the day under accelerated mode (#3149): the server switches the manager's day duration at sunset and sunrise to the day's divided by this. 1 changes nothing",
           "default": 1,
           "minimum": 0.1,
           "maximum": 10
@@ -470,6 +470,13 @@
           "default": 0.4,
           "minimum": 0,
           "maximum": 100
+        },
+        "dutyIdleSeconds": {
+          "type": "integer",
+          "description": "Duty idle pause: an officer or medic on duty who for this many seconds neither moves 2 m, turns their view, nor rides a moving vehicle has the duty clock paused (no pay, no rank time) until they do. 0 turns the pause off",
+          "default": 300,
+          "minimum": 0,
+          "maximum": 86400
         },
         "benefitBalanceThreshold": {
           "type": "integer",

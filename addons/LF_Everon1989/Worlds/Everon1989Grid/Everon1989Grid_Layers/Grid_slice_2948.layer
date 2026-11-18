@@ -1,0 +1,136 @@
+// Grid cell c21r5 for slice-2948: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_slice_2948_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 275 0 83
+}
+SCR_DestructibleEntity Grid_slice_2948_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 280 0 83
+}
+SCR_DestructibleEntity Grid_slice_2948_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 285 0 83
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_2948_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 285 0 88
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_2948_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 285 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_2948_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 280 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_2948_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 275 0 93
+ angleY 90
+}
+GenericEntity Grid_slice_2948_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:slice-2948"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 274.2 0.505 83.6
+ angleY -90
+}
+GenericEntity Grid_slice_2948_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "slice-2948"
+  }
+ }
+ coords 274.3 0 85.5
+ angleY 90
+}
+GenericEntity Grid_slice_2948_Bench_1 : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords 282.457 0.002 84.999
+ angleY -90
+}
+GenericEntity Grid_slice_2948_Bench_2 : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords 282.457 0.002 87.999
+ angleY -90
+}
+GenericEntity Grid_slice_2948_Bench_3 : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords 282.457 0.002 90.999
+ angleY -90
+}
+GenericEntity Grid_slice_2948_Counter_1 : "{776BF07068813A47}Prefabs/Placeables/Furniture/Furniture_Table_Placed.et" {
+ coords 277.499 0.001 85.002
+ angleY 90
+}
+GenericEntity Grid_slice_2948_Counter_2 : "{776BF07068813A47}Prefabs/Placeables/Furniture/Furniture_Table_Placed.et" {
+ coords 277.499 0.001 88.002
+ angleY 90
+}
+GenericEntity Grid_slice_2948_Counter_3 : "{776BF07068813A47}Prefabs/Placeables/Furniture/Furniture_Table_Placed.et" {
+ coords 277.499 0.001 91.002
+ angleY 90
+}
+SCR_ChimeraCharacter Grid_slice_2948_OldMan : "{ED4DD018891346D0}Configs/Npcs/LF_Npc_Townsfolk_OldMan.et" {
+ components {
+  LF_ResidentActivityComponent "{2948A1C07B3E5D01}" {
+   m_sActivity "sit"
+  }
+ }
+ coords 281.6 0 85
+ angleY -90
+}
+SCR_ChimeraCharacter Grid_slice_2948_NightShift : "{FB61502DB411C69E}Configs/Npcs/LF_Npc_Townsfolk_NightShift.et" {
+ components {
+  LF_ResidentActivityComponent "{2948A1C07B3E5D02}" {
+   m_sActivity "sit"
+  }
+ }
+ coords 281.6 0 88
+ angleY -90
+}
+SCR_ChimeraCharacter Grid_slice_2948_NeighbourCoat : "{3AF4A6EF424C916C}Configs/Residents/Npcs/LF_Resident_NeighbourCoat.et" {
+ components {
+  LF_ResidentActivityComponent "{2948A1C07B3E5D03}" {
+   m_sActivity "sit"
+  }
+ }
+ coords 281.6 0 91
+ angleY -90
+}
+SCR_ChimeraCharacter Grid_slice_2948_CafeOwner : "{83D04234954B8914}Configs/Npcs/LF_Npc_Townsfolk_CafeOwner.et" {
+ components {
+  LF_ResidentActivityComponent "{2948A1C07B3E5D04}" {
+   m_sActivity "serve"
+  }
+ }
+ coords 278.3 0 85
+ angleY -90
+}
+SCR_ChimeraCharacter Grid_slice_2948_Teller : "{7C27C5AD4C1C5D2D}Configs/Residents/Npcs/LF_Resident_Teller.et" {
+ components {
+  LF_ResidentActivityComponent "{2948A1C07B3E5D05}" {
+   m_sActivity "serve"
+  }
+ }
+ coords 278.3 0 88
+ angleY -90
+}
+SCR_ChimeraCharacter Grid_slice_2948_StoreClerk : "{559ECE12ABB3673F}Configs/Residents/Npcs/LF_Resident_StoreClerk.et" {
+ components {
+  LF_ResidentActivityComponent "{2948A1C07B3E5D06}" {
+   m_sActivity "serve"
+  }
+ }
+ coords 278.3 0 91
+ angleY -90
+}
+SCR_ChimeraCharacter Grid_slice_2948_NeighbourCardigan : "{312B29D7CD3C51BF}Configs/Residents/Npcs/LF_Resident_NeighbourCardigan.et" {
+ components {
+  LF_ResidentActivityComponent "{2948A1C07B3E5D07}" {
+   m_sActivity "loiter"
+  }
+ }
+ coords 284.2 0 86.5
+ angleY 90
+}

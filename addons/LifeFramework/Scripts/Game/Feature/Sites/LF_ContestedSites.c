@@ -72,6 +72,7 @@ class LF_ContestedSites
 	//! Starts the sweep on the server (idempotent); the site component calls it.
 	static void Start()
 	{
+		LF_SiteAlerts.Start();	// #2686: alert the holders (server only, idempotent)
 		if (s_bScheduled || !Replication.IsServer() || !GetGame() || !GetGame().GetCallqueue())
 			return;
 
@@ -113,7 +114,18 @@ class LF_ContestedSites
 			array<ref LF_SiteSighting> sightings = {};
 			Gather(centre.GetOrigin(), settings.m_iRadius, sightings);
 			SweepSite(hideoutId, sightings, nowUnix, elapsedSeconds);
+			LF_SiteCaptureFeed.Push(hideoutId, centre.GetOrigin(), settings.m_iRadius, StateOf(hideoutId), settings.m_iCaptureSeconds);	// #2686: the capture bar
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The site's scoring state, null before its first sweep (the capture bar reads it).
+	static LF_SiteHoldState StateOf(string hideoutId)
+	{
+		if (!s_mStates)
+			return null;
+
+		return s_mStates.Get(hideoutId);
 	}
 
 	//------------------------------------------------------------------------------------------------
