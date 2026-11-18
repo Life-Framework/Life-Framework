@@ -39,6 +39,32 @@ class LF_DeathScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What respawning costs, from the respawn config the client already has (the pack's bill when it
+	//! sets one). No config: no bill sentence, the other lines stay.
+	static string CostText()
+	{
+		int bill = 0;
+		LF_RespawnConfig config = LF_RespawnConfig.Get();
+		if (config)
+			bill = config.m_iBillAmount;
+
+		return BuildCostText(bill);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "You wake at the hospital. The bill is $150. What you carried stays with your body." A bill
+	//! of 0 or less drops the bill sentence.
+	static string BuildCostText(int bill)
+	{
+		string text = WidgetManager.Translate("#LF-Death_CostWake");
+		if (bill > 0)
+			text = text + " " + WidgetManager.Translate("#LF-Death_CostBill", bill.ToString());
+
+		// The currency symbol is a term ({currency:sym}) a pack can rename.
+		return LF_Terms.Expand(text + " " + WidgetManager.Translate("#LF-Death_CostKeeps"));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool OpenInternal(PlayerController playerController)
 	{
 		if (!GetGame().GetWorkspace())
@@ -58,6 +84,13 @@ class LF_DeathScreen
 			respawnButton.m_OnClicked.Insert(OnRespawnClicked);
 		else
 			LF_Debug.Error("Death", "death screen loaded but the RespawnButton is missing");
+
+		// The price before the press: the bill and what the body keeps.
+		RichTextWidget cost = RichTextWidget.Cast(m_wRoot.FindAnyWidget("CostText"));
+		if (cost)
+			cost.SetText(CostText());
+		else
+			LF_Debug.Error("Death", "death screen loaded but the CostText is missing");
 
 		// Pad: Respawn has focus at once, so MenuSelect respawns.
 		array<Widget> focus = {};

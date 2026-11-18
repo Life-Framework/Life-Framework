@@ -168,6 +168,11 @@
   `LF_DeathScreen` (workspace widget), and its Respawn button runs
   `SCR_RespawnComponent.RpcAsk_LF_Respawn` → `LF_SpawnLogic.RespawnPlayer_S`
   (account-aware, re-applies the faction loadout).
+- ✅ **The death screen names the price** (#3152; test `ui/death-screen-cost`): above the Respawn button a
+  kit body line reads "You wake at the hospital. The bill is $150. What you carried stays with your body."
+  `LF_DeathScreen.CostText` builds it from `LF_RespawnConfig.m_iBillAmount` (the client already has the
+  config; a pack's bill shows), a bill of 0 drops the bill sentence, and the currency symbol is the
+  `{currency:sym}` term.
 - ⚠️ Body persistence until restart is default-engine behavior (no explicit
   corpse-cleanup control in this mod yet) — verify on a dedicated server.
 - ✅ **You wake up in hospital** (M1-26, #121; tests `respawn/bill-once`,
