@@ -4,6 +4,28 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
   LF_NpcRoleComponent "{7A31C05E94D2B861}" {
    m_sRole "townsfolk"
   }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{58620BFC833AF841}" {
+     ContextName "Buyer"
+     Position PointInfo "{FEFBAB9B1AB28480}" {
+      PivotID "Spine5"
+     }
+     Radius 2.5
+    }
+   }
+   additionalActions + {
+    LF_BuyerSaleAction "{C4952EE3B68315E3}" {
+     ParentContextList {
+      "Buyer"
+     }
+     UIInfo UIInfo "{D3C1DECCA3941995}" {
+      Name "#LF-BuyerSale_Action"
+      Description "#LF-BuyerSale_ActionDesc"
+     }
+    }
+   }
+  }
   BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
    Slots {
     LoadoutSlotInfo Jacket {
