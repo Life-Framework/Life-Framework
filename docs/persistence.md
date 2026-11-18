@@ -317,6 +317,11 @@ changed without the raise. A save whose section is newer than the build is not r
 | sectioned, read by a build from before #2841 (a rollback) | `1000 > 58`: every legacy payload loads (same positions), "newer than this build", damaged, autosave pauses |
 | a section fails to read | counted as a failed read (damaged); the sections after it still load |
 
+A skipped section keeps every boot read-only until a build that reads it runs again (backups from
+the newer build hold it too): the operator steps are in `docs/ops/game-updates.md` "When a load
+goes wrong". Never delete a shipped section's class; keep it, or the lead decides to drop its data.
+`tools\cli upgrade-page` lists sections added, removed and raised between two refs.
+
 `LF_SaveStamp` records 1000 for a sectioned save, so a test gate
 `BootSaveVersion() >= PayloadSinceVersion(<legacy payload>)` holds for it.
 `validate-persistence-version.ps1` fails an `Insert` past the frozen 58 ("add an LF_SavePayload

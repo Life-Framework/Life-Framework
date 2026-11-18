@@ -238,6 +238,14 @@ function expectSection(label, ok, detail) {
   expectSection("lock with no section", orphanErr.some((e) => /gone\.json/.test(e)), JSON.stringify(orphanErr));
   const badNameErr = checkSectionNames(sectionsOf([SECTION("Tow-ing", 1)]).sections, [], []);
   expectSection("illegal section name", badNameErr.some((e) => /lowercase/.test(e)), JSON.stringify(badNameErr));
+  // A section whose rows the parser cannot see (written through a helper, or straight from a call)
+  // locks no record class, so a later reshape would pass unseen.
+  const hidden = sectionsOf([SECTION("towing", 1).replace(/array<ref LF_TowRow> rows = LF_Tow.ExportAll\(\);\s*context.WriteValue\("rows", rows\);/, 'context.WriteValue("rows", LF_Tow.ExportAll());')]);
+  const hiddenSec = hidden.sections[0];
+  const hiddenErr = compareSection(null, hiddenSec, sectionShapes(hidden.cur, hiddenSec));
+  expectSection("section with no visible row class", hiddenErr.some((e) => e.hard && /no record class/.test(e.msg)), JSON.stringify(hiddenErr));
+  const hiddenLocked = compareSection(buildSectionLock(hiddenSec, new Map()), hiddenSec, new Map());
+  expectSection("locked section with no visible row class", hiddenLocked.some((e) => e.hard && /no record class/.test(e.msg)), JSON.stringify(hiddenLocked));
 }
 
 if (failed) {

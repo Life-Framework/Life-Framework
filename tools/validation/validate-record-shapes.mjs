@@ -464,6 +464,10 @@ export function compareSection(lock, section, shapes) {
   const hard = (msg) => errors.push({ hard: true, msg });
   const soft = (msg) => errors.push({ hard: false, msg });
   const where = `section "${section.name}" (${section.cls})`;
+  // A section whose rows this parser cannot see would lock nothing, and every later reshape would pass.
+  if (!section.roots.length) {
+    hard(`${where}: WriteSection writes no record class this check can see; declare \`array<ref LF_<Row>> rows = ...;\` in WriteSection and write it with context.WriteValue("rows", rows), so its shape is locked`);
+  }
   if (!lock) {
     soft(`${where} has no lock; run node tools/validation/validate-record-shapes.mjs --update to write ${SECTION_LOCKS}/${section.name}.json`);
     return errors;
