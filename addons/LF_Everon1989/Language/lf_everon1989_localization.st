@@ -649,6 +649,86 @@ StringTable {
      Target_en_us "Republic of Everon, Identity Card"
      Comment "Title of the ID card view another player holds up."
     }
+    CustomStringTableItem "{772ECF227821D478}" {
+     Id "LF-Item_Bread"
+     Target_en_us "Bread loaf"
+     Comment "Item name: bread loaf, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{4D8A35A3EEC37912}" {
+     Id "LF-Item_BreadDesc"
+     Target_en_us "A round loaf from the morning bake. Best eaten today."
+     Comment "Item description: bread loaf."
+    }
+    CustomStringTableItem "{77C624C0C6085686}" {
+     Id "LF-Item_CannedFish"
+     Target_en_us "Tinned sardines"
+     Comment "Item name: tinned sardines, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{043E558B24CB142C}" {
+     Id "LF-Item_CannedFishDesc"
+     Target_en_us "A flat tin of sardines in oil. Open it with the pull ring."
+     Comment "Item description: tinned sardines."
+    }
+    CustomStringTableItem "{1A7407C7026B2019}" {
+     Id "LF-Item_CannedMeat"
+     Target_en_us "Canned meat"
+     Comment "Item name: canned meat, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{66474EA9E1485746}" {
+     Id "LF-Item_CannedMeatDesc"
+     Target_en_us "A tin of corned beef. Heavy, salty, keeps for years."
+     Comment "Item description: canned meat."
+    }
+    CustomStringTableItem "{228B558274FE0193}" {
+     Id "LF-Item_ChocolateBar"
+     Target_en_us "Chocolate bar"
+     Comment "Item name: chocolate bar, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{37FB74AF4E706174}" {
+     Id "LF-Item_ChocolateBarDesc"
+     Target_en_us "A wrapped bar of milk chocolate. A little sugar, a little cheer."
+     Comment "Item description: chocolate bar."
+    }
+    CustomStringTableItem "{D744A9EB6693B307}" {
+     Id "LF-Item_CoffeeTin"
+     Target_en_us "Instant coffee"
+     Comment "Item name: instant coffee, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{20A0BA389D7B7779}" {
+     Id "LF-Item_CoffeeTinDesc"
+     Target_en_us "A tin of instant coffee. Stir a spoonful into hot water."
+     Comment "Item description: instant coffee."
+    }
+    CustomStringTableItem "{8A052A0C4B10AE83}" {
+     Id "LF-Item_MilkBottle"
+     Target_en_us "Bottle of milk"
+     Comment "Item name: bottle of milk, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{6C987134D4879842}" {
+     Id "LF-Item_MilkBottleDesc"
+     Target_en_us "Fresh milk in a glass bottle with a foil cap. Drink it soon."
+     Comment "Item description: bottle of milk."
+    }
+    CustomStringTableItem "{60D2B9C1E45A6CC4}" {
+     Id "LF-Item_PickleJar"
+     Target_en_us "Jar of pickles"
+     Comment "Item name: jar of pickles, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{C3E7721CCADD1D45}" {
+     Id "LF-Item_PickleJarDesc"
+     Target_en_us "A jar of pickled gherkins in brine. Sharp, and still filling."
+     Comment "Item description: jar of pickles."
+    }
+    CustomStringTableItem "{96286076F1D0C747}" {
+     Id "LF-Item_SodaBottle"
+     Target_en_us "Soda water"
+     Comment "Item name: soda water, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{B3C0B5E361200D87}" {
+     Id "LF-Item_SodaBottleDesc"
+     Target_en_us "A glass siphon of soda water. A squirt from the head and it fizzes."
+     Comment "Item description: soda water."
+    }
     CustomStringTableItem "{9F32BE4E1F1F7320}" {
      Id "LF-Item_TouristMap_Description"
      Target_en_us "A printed tourist and road map of the island. Studying it pencils every place a visitor might look for onto your own map."

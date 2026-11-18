@@ -21,7 +21,7 @@ Spoilers stay in `docs/everon/world-bible-internal.md`. This page is safe to pub
 | D7 | **Fishing:** a fishing chapter in M6 |
 | D8 | **Travel:** taxis and cars for now. Revisit when a second town opens |
 | D9 | **Buildings: mix** (was Q2, Q3). Convert a vanilla town house where one fits (hostel, town hall, police). Only where nothing fits, place a purpose-built building on a free plot near the square. The in-engine dump later found a vanilla municipal office and police villa in town, so only the hostel and the clinic need a converted house |
-| D10 | **Mappings: the lead approves** each place's building mapping (was Q6). The maintainer reviews only the fitted `town-draft` PRs with pictures |
+| D10 | **Mappings: the lead approves** each place's building mapping (was Q6). Fitted town cards ship with `wt ship` and auto-merge, with before and after pictures and a contact sheet (no maintainer review since 2026-11-18) |
 | D11 | **No lawless zones yet** (was Q9). The whole island stays policed until the gang chapter in M7. The quarry and the military sites are ordinary policed ground until then |
 | D12 | **Reputation is jobs-first** (was Q10). In M6 each faction's standing mainly unlocks better jobs and better pay |
 | D13 | **Pack world: reuse `MainWorld`** (lead, was Q1). Delete the apple-farm layer and retire `EveronLifeGameMode.conf` |
@@ -158,7 +158,7 @@ One place goes through five steps. Each step has one command, one output file an
 places run at once without touching each other's files.
 
 ```
-scout ──> map (approve) ──> fit (one agent per slot) ──> check ──> draft PR (maintainer)
+scout ──> map (approve) ──> fit (one agent per slot) ──> check ──> PR (auto-merge)
 dossier    mapping.json      Place_<place>_<slot>.layer   town check   pictures
 ```
 
@@ -247,9 +247,9 @@ supplies every coordinate the later steps use. No step types a coordinate.
   entities must stand inside its claimed building's footprint (plus a margin set per slot: 2 m for a building,
   12 m for a street slot, `taxi` 8 m, `board` 10 m, or the template slot's own `margin`), and no two claims may name one
   building (a street slot marked `shared` may stand on a building another slot holds).
-- **Who writes.** Only a worktree named `town-draft-<place>-<slot>` writes an island layer. Its PR is a
-  draft with before and after pictures and goes to the maintainer (bible step 4). A follow-up on a slot whose
-  draft is still open is `town-draft-<place>-<slot>-<word>`: `town fit` ignores the base draft's claim and the
+- **Who writes.** Only a worktree named `town-draft-<place>-<slot>` writes an island layer. It ships with `wt ship`
+  and auto-merges, with before and after `look place:` pictures and a contact sheet; no maintainer approval (bible step 4). A follow-up on a slot whose
+  PR is still open is `town-draft-<place>-<slot>-<word>`: `town fit` ignores the base card's claim and the
   guard lets it change that one slot's layer. Claims copied into a `ws/island-integration` worktree are never
   rivals (#3101). The playtest town's
   guard and the maintainer's own worktree are unchanged.
@@ -282,7 +282,7 @@ town (`world-zones.md` "Tests do not read the town").
   per-place limits within 60 m (24 lights, 12 shadow casters, 1,500 added entities; `performance.md`), and warns on a claim
   whose `destruction.mode` is `needs-hook` until the indestructible hook lands. The map POI-kind slot check (M17, #2245,
   `tools/town/lib/poi-check.mjs`) fails a template slot that names no front `poi` kind with a row in `LF_MapPois.conf` (or `none`).
-- **Per slot, not per place.** Slots are fitted one draft at a time, so `validate` and a plain `town check` pass a
+- **Per slot, not per place.** Slots are fitted one card at a time, so `validate` and a plain `town check` pass a
   place with only some slots fitted: a mapped slot with neither layer nor claim is "not fitted yet", a note. A claim
   without its layer, or a layer without its claim, fails everywhere. Place **completeness** (every mapped slot fitted)
   is demanded only by `town check <place> --complete` and `town ready <state>` (#2347).
