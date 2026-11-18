@@ -7926,6 +7926,11 @@
   },
   {
    "role": "overview",
+   "file": "img/overview-top-labelled.jpg",
+   "caption": "from above, north up, the mapped buildings labelled"
+  },
+  {
+   "role": "overview",
    "file": "img/overview-wide.jpg",
    "caption": "wide, from the south"
   },
