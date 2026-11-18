@@ -21,6 +21,13 @@
 - 🟡 Deposited items are counts, never entities; `Parse`, `Format` and `CountOf` read and write the string.
   Nothing calls the rules yet (later M8 slices). Proof: `property/build-stage-rules`.
 
+### Property config reads pack overlays — `Feature/Property/LF_PropertyConfig.c` (2026-11-18, #2976)
+- 🟡 `LF_PropertyConfig.Get()` merges every pack overlay the mission header lists (`m_aLF_ConfigOverlays`, load order)
+  over `LF_Property.conf`: the plot catalogue is an `LF_ConfigList` keyed by `m_sPlotId`, so a pack plot with the
+  same id patches the core price or tier, a new id adds a plot (needs a tier id), and `remove` takes one out
+  (`docs/config/override-model.md`). Tiers stay core-only. A pack plot whose key is a house id is refused like a
+  core one (#2783). A path override (tests) reads that file alone. Proof: `property/pack-overlay`.
+
 ### Plot purchase — `Feature/Property/LF_PlotComponent.c` (2026-11-18, #2649, spec #756)
 - 🟡 A for-sale plot sign (`Prefabs/Props/Property/LF_PlotSign.et`, an `LF_PlotComponent` naming a
   `LF_Property.conf` plot key) shows "Buy plot ($price)". The request carries the used sign's plot key: the server sells
@@ -37,6 +44,17 @@
   `LF_PlotComponent.IsForSale()` (a price and not owned), so an owned plot no longer offers Buy; the server still refuses a
   forged buy. The owner's key is never replicated. Proof: `property/plot-owned-state` (the flag drives the action with the
   book emptied, as on a client); the late-joiner view is a manual step.
+
+### Plots for sale on the map and the town board — `Feature/Property/LF_PlotComponent.c` (2026-11-18, #2984)
+- 🟡 A plot sign that is for sale (a price, nobody owns it) registers in `LF_Places` as kind `PlotForSale`, id = its plot
+  key, and leaves it once the plot is owned (server: `RefreshOwned`; client: the replicated flag's callback, so a late
+  joiner sees only the plots still for sale). The core POI table has a PUBLIC `PlotForSale` row ("Plot for sale", civic icon),
+  so every player's map draws a mark per unowned plot and drops it when the plot is bought or comes back when the owner is cleared.
+  No coordinate or map name in core: the placed signs are the plots, so a pack's plots show as soon as they are placed.
+- 🟡 A town board card whose place id is `*` (`LF_TownBoard.PLACE_NEAREST`) points at the nearest place of its kind, so the
+  Everon 1989 board's "Plots for sale" card (it replaces the rules card; a rules board stands beside it) names the nearest
+  plot still for sale and "Set waypoint" marks it. Reading it records no single plot as heard of. Proof:
+  `property/plot-for-sale-marks` (owned vs unowned map marks, the card's nearest plot, a cleared owner).
 
 ### Build site — `Feature/Property/LF_BuildSiteComponent.c` (2026-11-18, #2650, spec #756)
 - 🟡 The plot sign also carries an `LF_BuildSiteComponent` and two actions. "Need N more <item>" deposits

@@ -7,6 +7,8 @@ class LF_PlacementMeasure
 	float m_fGap;
 	//! Pivot height above that surface.
 	float m_fPivotGap;
+	//! LF_PlaceSnap's contact measure (footprint grid, proxy boxes ignored): "cgap=.. cspread=.. chits=..", or "cgap=none".
+	string m_sContact = "cgap=none";
 	float m_fTilt;
 	float m_fScale = 1;
 	//! What the centre rests on: an entity label, or "terrain".
@@ -531,6 +533,10 @@ class LF_PlacementAudit
 			return m;
 		}
 
+		LF_PlaceSnapResult contact = LF_PlaceSnap.Measure(entity);
+		if (contact.m_iHits > 0)
+			m.m_sContact = string.Format("cgap=%1 cspread=%2 chits=%3/%4", F(contact.m_fGap), F(contact.m_fSpread), contact.m_iHits, contact.m_iRays);
+
 		m.m_bPoint = m.m_vHalf[0] < 0.01 && m.m_vHalf[1] < 0.01 && m.m_vHalf[2] < 0.01;
 		if (!m.m_bPoint)
 		{
@@ -608,7 +614,7 @@ class LF_PlacementAudit
 		string flags = Flags(m);
 		if (flags.IsEmpty())
 			flags = "none";
-		return text + " flags=" + flags;
+		return text + " " + m.m_sContact + " flags=" + flags;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -805,11 +811,34 @@ class LF_PlacementAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One `settle` line for the placement tool (`place settle`, #2954): rest the entity named by `token` (the name,
+	//! or `@<prefab base>:x,y,z` for an unnamed one, as `ray ... <exclude>`) by its measured mesh bottom (LF_PlaceSnap)
+	//! and say where it went. "settle <id> y0=<origin y before> y1=<origin y after> gap=<contact gap after> before=<gap
+	//! before> spread=<support spread> on=<support> found=<label>"; "settle <id> missing=1" when nothing is found;
+	//! "... nothing=1" when nothing is under its footprint (it stays). y is the entity's own origin height, the value
+	//! of its `coords` line (its parent's frame for a child).
+	static string SettleLine(string id, string token)
+	{
+		IEntity entity = FindExcluded(token);
+		if (!entity)
+			return string.Format("settle %1 missing=1", id);
+
+		float y0 = entity.GetOrigin()[1];
+		LF_PlaceSnapResult r = LF_PlaceSnap.Settle(entity);
+		if (!r)
+			return string.Format("settle %1 y0=%2 nothing=1 found=%3", id, F(y0), Label(entity));
+
+		return string.Format("settle %1 y0=%2 y1=%3 gap=%4 before=%5 spread=%6 on=%7 found=%8", id, F(y0), F(entity.GetOrigin()[1]), F(r.m_fGap), F(r.m_fGapBefore), F(r.m_fSpread), r.m_sOn, Label(entity));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Measure every entity listed in `inPath` and write one line each to `outPath` (agent-box/place-audit.mjs).
 	//! Input lines:
 	//!   town <x> <z> <radius>                               also list the door leaves in that circle
 	//!   <index> <name|-> <prefab base|-> <x> <y> <z> <walk 0|1>
 	//!   ray <id> <x> <y> <z> <x2> <y2> <z2> [exclude name]  a probe ray (RayLine), not an entity row
+	//!   settle <id> <name|@prefab:x,y,z>                    rest that entity by its mesh bottom (SettleLine); the entity rows
+	//!                                                       follow the extra lines, so they measure it already settled
 	//! Output lines: "<index> missing=1", "<index> <Format> found=<label>", "door ...", "ray ...". Returns the
 	//! entity rows written, or -1 when a file cannot be opened. `missing` counts entities not found.
 	static int RunBatch(string inPath, string outPath, out int missing)
@@ -847,6 +876,14 @@ class LF_PlacementAudit
 
 				if (parts.Count() >= 8)
 					rows.Insert(RayLine(parts[1], Vector(parts[2].ToFloat(), parts[3].ToFloat(), parts[4].ToFloat()), Vector(parts[5].ToFloat(), parts[6].ToFloat(), parts[7].ToFloat()), rayExclude));
+
+				continue;
+			}
+
+			if (parts[0] == "settle")
+			{
+				if (parts.Count() >= 3)
+					rows.Insert(SettleLine(parts[1], parts[2]));
 
 				continue;
 			}

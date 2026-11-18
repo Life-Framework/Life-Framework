@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------------
-//! Farming part of the world reset (Core/LF_WorldReset.c): every planted plot is empty again.
+//! Farming part of the world reset (Core/LF_WorldReset.c): every planted plot is empty again and
+//! every crop planted on open ground is gone.
 
 modded class LF_WorldResetRegistry
 {
@@ -32,6 +33,8 @@ class LF_WorldReset_Farm : LF_WorldResetStep
 			cleared++;
 		}
 
+		// Planted crops on open ground go with the plots, rows and meshes alike (#2820).
+		cleared += LF_Plants.ClearAll();
 		return cleared;
 	}
 }

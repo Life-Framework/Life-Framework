@@ -32,6 +32,26 @@ class LF_E2E
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return True when the restart's first store read applied this save SECTION (`LF_<Area>SavePayload.NAME`,
+	//! #2841). The section form of SaveHas: an older save (--pre-move, --legacy-save) holds no sections at all.
+	static bool SaveHasSection(string name)
+	{
+		return LF_SaveSections.BootHadSection(name);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Guard for a pass-2 check of a save section: `if (LF_E2E.RequiresSection(LF_XSavePayload.NAME)) { ...asserts... }`.
+	//! \return True when the loaded save held the section; otherwise logs the skip and returns false.
+	static bool RequiresSection(string name)
+	{
+		if (SaveHasSection(name))
+			return true;
+
+		LF_Debug.Info(FEATURE, string.Format("e2e check skipped: the loaded save (version %1) holds no '%2' save section, an older build wrote it", LF_SaveStamp.BootSaveVersion(), name));
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Guard for a pass-2 check of a payload: `if (LF_E2E.RequiresPayload("x")) { ...asserts... }`.
 	//! \return True when the loaded save can hold the payload; otherwise logs the skip and returns false.
 	static bool RequiresPayload(string payload)

@@ -374,12 +374,38 @@ modded class SCR_ChimeraCharacter
 		// A listen host owns its own character and an Owner RPC to itself has no wire hop, so the
 		// page is applied directly there (as LF_CharacterATMComponent.ReplyResult does).
 		if (LF_OwnsOrganizationLedger())
-		{
 			RpcDo_LF_OrganizationLedger(name, fund, rights, processing, lease, members, rank, notice);
+		else
+			Rpc(RpcDo_LF_OrganizationLedger, name, fund, rights, processing, lease, members, rank, notice);
+
+		// The held sites (#2834) go in their own answer: the page call is at its eight-argument limit.
+		LF_PushOrganizationHeldSites();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the sites this player's organisation holds (base and captured), for an open ledger.
+	//! Sent after every page, and to every online member when a lease changes (LF_OrgHeldSites).
+	void LF_PushOrganizationHeldSites()
+	{
+		if (!Replication.IsServer())
+			return;
+
+		string rows;
+		string characterId = LF_OrganizationPlayer.CharacterId(this);
+		LF_Organization org;
+		if (!characterId.IsEmpty())
+			org = LF_OrganizationManager.GetByCharacter(characterId);
+
+		if (org)
+			rows = LF_OrgHeldSites.RowsFor(org.GetId());
+
+		if (LF_OwnsOrganizationLedger())
+		{
+			RpcDo_LF_OrganizationSites(rows);
 			return;
 		}
 
-		Rpc(RpcDo_LF_OrganizationLedger, name, fund, rights, processing, lease, members, rank, notice);
+		Rpc(RpcDo_LF_OrganizationSites, rows);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -403,5 +429,16 @@ modded class SCR_ChimeraCharacter
 			return;
 
 		ledger.ApplyView(LF_OrgLedgerPage.Create(!name.IsEmpty(), name, fund, rights, processing, lease, members, rank), notice);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_LF_OrganizationSites(string rows)
+	{
+		LF_OrgLedger ledger = LF_OrgLedger.Current();
+		if (!ledger)
+			return;
+
+		ledger.ApplySites(rows);
 	}
 }
