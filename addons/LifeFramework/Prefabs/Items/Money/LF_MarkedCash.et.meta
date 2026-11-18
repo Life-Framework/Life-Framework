@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D2C9E5AD15E8C2C9}Prefabs/Items/Money/LF_MarkedCash.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
