@@ -5533,6 +5533,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Vehicle Key [%1]"
      Comment "Inventory name of a vehicle key bound to a vehicle. %1 is the vehicle identifier it opens (#2470)."
     }
+    CustomStringTableItem "{2DC6A819C67F6815}" {
+     Id "LF-Item_AcidCarboy_Description"
+     Target_en_us "A carboy of acid for the copper refinery. Heavy and not for drinking."
+     Comment "Item description of the acid carboy (mining chains, #3230)."
+    }
+    CustomStringTableItem "{CEA9A2F55DD1E2F5}" {
+     Id "LF-Item_AcidCarboy_Name"
+     Target_en_us "Acid carboy"
+     Comment "Item name of the acid carboy."
+    }
     CustomStringTableItem "{AC88D3331A83BBB1}" {
      Id "LF-Item_BaitTin_Description"
      Target_en_us "A green enamelled tin with a snap lid. Worms and dough balls, mostly."
@@ -5562,6 +5572,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_Charge_Name"
      Target_en_us "Breaching charge"
      Comment "Item name of the fence charge."
+    }
+    CustomStringTableItem "{7AD691E65BE531F0}" {
+     Id "LF-Item_CoalLump_Description"
+     Target_en_us "A lump of coal. Smelters burn it to turn iron ore into bars."
+     Comment "Item description of the coal lump (#3230)."
+    }
+    CustomStringTableItem "{E90681E4967BF028}" {
+     Id "LF-Item_CoalLump_Name"
+     Target_en_us "Coal"
+     Comment "Item name of the coal lump."
     }
     CustomStringTableItem "{DAB831471E8878CE}" {
      Id "LF-Item_Crackers"
@@ -5813,6 +5833,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Keycard"
      Comment "Item name of the fence keycard."
     }
+    CustomStringTableItem "{65C716E04B111614}" {
+     Id "LF-Item_Limestone_Description"
+     Target_en_us "A heavy block of limestone. A works turns it into cement."
+     Comment "Item description of the limestone block (#3230)."
+    }
+    CustomStringTableItem "{9FF73E1CEF233CFB}" {
+     Id "LF-Item_Limestone_Name"
+     Target_en_us "Limestone"
+     Comment "Item name of the limestone block."
+    }
     CustomStringTableItem "{80906A73087767D7}" {
      Id "LF-Item_Lockpick_Description"
      Target_en_us "A set of picks. Each opened lock or snapped pick wears one use."
@@ -5974,6 +6004,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Acceso denegado"
      Comment "Hint title when a job cannot be taken"
     }
+    CustomStringTableItem "{A3F1B7C2D94E6A01}" {
+     Id "LF-Job_AlreadyRun"
+     Target_en_us "You already have a delivery run. Abandon it at the counter first."
+     Comment "Toast: Pick up refused because the player still has an open run (#3356); the title is the job name."
+    }
     CustomStringTableItem "{0DAF48DFDAAF2069}" {
      Id "LF-Job_Desc_Medic"
      Target_en_us "Emergency ambulance crew. Treats the injured on the public payroll."
@@ -6088,10 +6123,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
      Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
     }
+    CustomStringTableItem "{D604EAF50C719D34}" {
+     Id "LF-Job_NoCargo"
+     Target_en_us "You are not carrying the cargo. Pick it up again, or abandon the run at the counter."
+     Comment "Toast: a drop-off refused because the cargo is not in the player's inventory (#3356); the title is the job name."
+    }
     CustomStringTableItem "{12050BC151134136}" {
      Id "LF-Job_NoPassenger"
      Target_en_us "A fare needs a passenger seated in your car."
      Comment "Toast: a taxi fare is refused at the drop-off because no other player is seated in the driver vehicle; the title is the job name."
+    }
+    CustomStringTableItem "{C5F3D9E4FB608C23}" {
+     Id "LF-Job_NoRoom"
+     Target_en_us "You have no room to carry the cargo. Make space and ask again."
+     Comment "Toast: a run start refused because the cargo did not fit in the inventory (#3356); the title is the job name."
     }
     CustomStringTableItem "{3B4E65464D2780EE}" {
      Id "LF-Job_NotADrop"
@@ -6187,6 +6232,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Job_SignedUp_Taxi"
      Target_en_us "You drive a taxi now. Start a fare at this counter."
      Comment "Toast after signing up for taxi work: the next step."
+    }
+    CustomStringTableItem "{B4E2C8D3EA5F7B12}" {
+     Id "LF-Job_StartRefused"
+     Target_en_us "The counter cannot start that run right now."
+     Comment "Toast: a run start refused for a reason with no better words (#3356); the title is the job name."
     }
     CustomStringTableItem "{4BBC06DC40BA877A}" {
      Id "LF-Job_TooClose"
@@ -12477,6 +12527,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Vehicle_BankShort"
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
+    }
+    CustomStringTableItem "{3304D1C0A7E25B91}" {
+     Id "LF-Vehicle_NeedsRallyDlc"
+     Target_en_us "This tractor needs the Rally DLC."
+     Comment "Vehicle purchase refused: the lot does not sell the Rally tractor to a player without the DLC (#3304)"
     }
     CustomStringTableItem "{5E0B7D31C9A24F86}" {
      Id "LF-Wanted_BuildHidden"

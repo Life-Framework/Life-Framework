@@ -15,7 +15,8 @@ import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 // The route is the scene markers in Worlds/CoreOnEveron/CoreOnEveron_Layers/RelocatedWalk.layer.
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const LAYER = join(ROOT, "addons", "LifeFramework", "Worlds", "CoreOnEveron", "CoreOnEveron_Layers", "RelocatedWalk.layer");
-const FIXTURE = "{6C3B1E8A4F2D9705}Configs/Tests/LF_Test_RelocatedWalkFixture.conf";
+const ISLAND_LAYER = join(ROOT, "addons", "LF_Everon1989", "Worlds", "MainWorld", "MainWorld_Layers", "Place_saint-philippe_arrival.layer");
+const FIXTURE ="{6C3B1E8A4F2D9705}Configs/Tests/LF_Test_RelocatedWalkFixture.conf";
 const SPAWN = [4471.854, 10535.136];
 const WALK_BUDGET_S = 330;
 // The control walker: vanilla, CIV faction, no LF prefab in between.
@@ -81,13 +82,16 @@ async function survey(args) {
 async function walk(args) {
   args = [...args];
   const control = args.includes("--control");
-  args = args.filter((a) => a !== "--control");
+  // --island: the route is the markers of the island's arrival layer (a `session up --mission island` session), not the CoreOnEveron proof layer (#3088).
+  const island = args.includes("--island");
+  args = args.filter((a) => a !== "--control" && a !== "--island");
   const out = args[0] ? resolve(String(args[0])) : "";
-  if (!existsSync(LAYER)) {
-    console.log(`relocated-walk: no route layer at ${LAYER}`);
+  const layerFile = island ? ISLAND_LAYER : LAYER;
+  if (!existsSync(layerFile)) {
+    console.log(`relocated-walk: no route layer at ${layerFile}`);
     return 2;
   }
-  const markers = readMarkers(readFileSync(LAYER, "utf8"));
+  const markers = readMarkers(readFileSync(layerFile, "utf8"));
   const route = markers.filter((m) => m.role === "Waypoint").sort((a, b) => a.order - b.order);
   const spawn = markers.find((m) => m.role === "Spawn");
   const target = markers.find((m) => m.role === "Target");
@@ -230,7 +234,7 @@ async function grip(args) {
 
 export default {
   name: "relocated-walk-proof",
-  usage: "relocated-walk-proof [out] [--control] | survey [x,z] [radius] [out] | grip [out] [x,y,z]   (run in a --mission everon --profile full session)",
+  usage: "relocated-walk-proof [out] [--control] [--island] | survey [x,z] [radius] [out] | grip [out] [x,y,z]   (run in a --mission everon --profile full session)",
   run: (ctx) => {
     const args = ctx?.args ?? [];
     if (args[0] === "survey") return survey(args.slice(1));

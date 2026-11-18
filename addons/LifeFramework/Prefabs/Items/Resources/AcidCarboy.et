@@ -1,0 +1,34 @@
+GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" {
+ ID "C936DF42F661FC75"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_AcidCarboy_Name"
+     Description "#LF-Item_AcidCarboy_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 8
+     SizeSetupStrategy Volume
+     ItemVolume 7000
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{C4CF913B23D64825}" {
+     HandAdditiveRotation 0 0 0
+     HandAdditiveTranslation 0 0.005 -0.065
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{057B0757A778ED2A}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 3.0
+      FOV 10
+     }
+    }
+    m_Size SLOT_2x2
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{FEC338E88366A268}Assets/Items/Fuel/Jerrycan_01/Jerrycan_01.xob"
+  }
+ }
+}

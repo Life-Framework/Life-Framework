@@ -45,6 +45,16 @@ class LF_Test_EveronFurnitureStorageStock : LF_Test
 				ctx.True(entry.m_iSellPrice > 0 && entry.m_iBuyPrice > entry.m_iSellPrice, string.Format("buy %1 beats sell-back %2, no profit loop: %3", entry.m_iBuyPrice, entry.m_iSellPrice, prefab));
 			}
 
+			// Sold from the furniture store's `furniture` stock, not the general store's.
+			LF_ShopStock furnitureStock = LF_ShopStockConfig.Get().Find("furniture");
+			LF_ShopStock generalStock = LF_ShopStockConfig.Get().Find("general_store");
+			LF_ShopStockItem onFurniture = null;
+			if (furnitureStock && !RedProof())
+				onFurniture = furnitureStock.FindItem(prefab);
+
+			ctx.True(onFurniture != null && onFurniture.m_iPrice > 0, "the furniture stock lists " + prefab);
+			ctx.True(generalStock != null && generalStock.FindItem(prefab) == null, "the general store does not list " + prefab);
+
 			vector at = SPOT + Vector(n * 3, 0, 0);
 			at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]);
 			IEntity item = LF_Utils.SpawnEntityPrefab(prefab, at);

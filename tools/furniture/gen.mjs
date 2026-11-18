@@ -4,7 +4,7 @@
 // per item: addons/LifeFramework/Prefabs/Placeables/Furniture/Furniture_<id>_{Item,Placed}.et + .meta,
 //           the Furniture_<id> row of Configs/Placement/LF_PlacementPolicy.conf,
 //           the LF-Furniture_<id>_Name row of Language/everonlife_localization.st (then `tools\cli regen-localization`),
-//           the price rule, extra-prefab line and stock row in addons/LF_Everon1989/Configs/Shop/.
+//           the price rule, extra-prefab line and the `furniture` stock rows in addons/LF_Everon1989/Configs/Shop/.
 // Every GUID is the first 16 hex digits of sha1("lf-furniture:<id>:<slot>"): the same each run, never reused,
 // so a rerun rewrites the same bytes. The footprint comes from the vanilla model's measured bounds
 // (tools/lib/xob.mjs through `measure`), not from typed numbers.
@@ -238,7 +238,13 @@ let policy = readFileSync(POLICY, "utf8");
 let strings = readFileSync(STRINGS, "utf8");
 let prices = readFileSync(PRICES, "utf8");
 let stock = readFileSync(STOCK, "utf8");
-const lamp = '    LF_ShopStockItem "{7556E7877FE5A902}" {\n     m_Prefab "{03AB5928B9B6C230}Prefabs/Placeables/Furniture/Furniture_Lamp_Item.et"\n     m_iPrice 35\n    }\n';
+const furnitureRows = [];
+const OLD_ITEMS = [
+  { id: "Chair", ref: "{D77E0D49C10C35BB}Prefabs/Placeables/Furniture/Furniture_Chair_Item.et", price: 60 },
+  { id: "Table", ref: "{FEF81109318DEF2C}Prefabs/Placeables/Furniture/Furniture_Table_Item.et", price: 120 },
+  { id: "Shelf", ref: "{6FAE5088FA3B3519}Prefabs/Placeables/Furniture/Furniture_Shelf_Item.et", price: 90 },
+  { id: "Lamp", ref: "{03AB5928B9B6C230}Prefabs/Placeables/Furniture/Furniture_Lamp_Item.et", price: 35 },
+];
 
 for (const item of spec.items) {
   const id = item.id;
@@ -269,7 +275,26 @@ for (const item of spec.items) {
   strings = insert(strings, `"LF-Furniture_${id}_Name"`, "\n }\n}", `\n    CustomStringTableItem "{${guid(id, "string")}}" {\n     Id "LF-Furniture_${id}_Name"\n     Target_en_us "${item.label}"\n     Comment "Inventory name of the carried ${item.label.toLowerCase()} a player places in their own house."\n    }`, { last: true });
   prices = insert(prices, `Furniture_${id}_Item.et"\n   m_iBuyPrice`, "\n }\n m_aExtraItemPrefabs {", `\n  LF_ShopPriceRule "{${guid(id, "price")}}" {\n   m_Prefab "${itemRef}"\n   m_iBuyPrice ${item.buy}\n   m_iSellPrice ${item.sell}\n  }`);
   prices = insert(prices, `  "${itemRef}"`, "\n }\n}", `\n  "${itemRef}"`, { last: true });
-  stock = insert(stock, `Furniture_${id}_Item.et"\n     m_iPrice`, lamp, `    LF_ShopStockItem "{${guid(id, "stock")}}" {\n     m_Prefab "${itemRef}"\n     m_iPrice ${item.buy}\n    }\n`, { after: true });
+  // Furniture is sold from the `furniture` stock (Saint-Philippe's furniture store). The rows an earlier
+  // version of this script put on general_store are dropped; only the four original items stay there.
+  stock = stock.replace(`    LF_ShopStockItem "{${guid(id, "stock")}}" {\n     m_Prefab "${itemRef}"\n     m_iPrice ${item.buy}\n    }\n`, "");
+  furnitureRows.push({ key: guid(id, "furniture-stock"), ref: itemRef, price: item.buy });
+}
+
+// The four original items keep their general_store rows until the furniture store's counter lands, so
+// nothing disappears in between; the furniture stock lists them too.
+for (const old of [...OLD_ITEMS].reverse())
+  furnitureRows.unshift({ key: guid(old.id, "furniture-stock"), ref: old.ref, price: old.price });
+const rowsText = furnitureRows.map((r) => `    LF_ShopStockItem "{${r.key}}" {\n     m_Prefab "${r.ref}"\n     m_iPrice ${r.price}\n    }\n`).join("");
+const blockHead = `  LF_ShopStock "{${guid("furniture", "stock-block")}}" {\n`;
+const block = `${blockHead}   m_sId "furniture"\n   m_aItems {\n${rowsText}   }\n  }`;
+const at = stock.indexOf(blockHead);
+if (at >= 0) {
+  const end = stock.indexOf("\n   }\n  }", at) + "\n   }\n  }".length;
+  stock = stock.slice(0, at) + block + stock.slice(end);
+} else {
+  const close = stock.lastIndexOf("\n }\n}");
+  stock = stock.slice(0, close) + "\n" + block + stock.slice(close);
 }
 
 if (spec.items.some((i) => i.storage)) {

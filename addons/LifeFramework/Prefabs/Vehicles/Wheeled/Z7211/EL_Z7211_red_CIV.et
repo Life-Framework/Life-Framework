@@ -1,0 +1,40 @@
+Vehicle : "{939AC713213C2BA1}Prefabs/Vehicles/Wheeled/Z7211/Z7211_red_CIV.et" {
+ ID "E1A7211BE1A00002"
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+  }
+  LF_VehicleStorageAccessControl "{E1A7211BE1A00004}" {
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_VehicleLockAction "{E1A7211BE1A00006}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{E1A7211BE1A00007}" {
+      Name "#EL-VehicleLock_Action"
+     }
+     "Sort Priority" 5
+    }
+    LF_VehicleStoreHereAction "{E1A7211BE1A00008}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A7211BE1A00009}" {
+      Name "#LF-Garage_StoreHere"
+     }
+     "Sort Priority" 6
+    }
+    LF_VehicleSearchAction "{E1A7211BE1A0000A}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A7211BE1A0000B}" {
+      Name "#LF-Search_Vehicle_Action"
+     }
+    }
+   }
+  }
+ }
+}
