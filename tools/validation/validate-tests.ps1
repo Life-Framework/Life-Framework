@@ -2,11 +2,9 @@
 # inputs: addons/**, tools/validation/gen-test-registry.ps1
 #
 # Contract (mirrors gen-test-registry.ps1):
-#   1. The registry is machine-generated: gen-test-registry.ps1 derives
-#      LF_TestRegistrations.generated.c from the test files. An unregistered
-#      test never runs; a registered test that was deleted fails the compile.
-#   2. Every test class carries a `// tier:` comment and the generated registry
-#      must be in sync (regenerate with `tools\cli regen-tests`).
+#   1-2. Every test class carries its own [LF_TestInfo(LF_TestTier.X)] attribute, the only
+#      tier source: LF_TestManager collects by reflection, there is no registry (#2610).
+#      gen-test-registry.ps1 -Check runs that rule (validate-registries).
 #   3. Every test file carries a `// red-proof:` comment recording how its
 #      assertions were observed failing at least once.
 #   4. The red-proof is not a placeholder. Two shapes are reported:
@@ -30,7 +28,6 @@ if (-not $root) { Write-Host "ERROR not a git work tree"; exit 1 }
 
 $testsDir = Join-Path $root "addons\LifeFramework\Scripts\Game\Tests"
 $generator = Join-Path $root "tools\validation\gen-test-registry.ps1"
-$generatedName = "LF_TestRegistrations.generated.c"
 
 $failed = $false
 
@@ -44,7 +41,7 @@ $placeholderPattern = '(?i)\b(pending|todo|tbd|fixme|not\s+(yet\s+)?(run|observe
 $files = @()
 $owner = @{}
 $hooked = 0
-Get-ChildItem $testsDir -Filter "*.c" | Where-Object { $_.Name -ne $generatedName } | ForEach-Object {
+Get-ChildItem $testsDir -Filter "*.c" | ForEach-Object {
   $text = Get-Content $_.FullName -Raw
   $classes = @([regex]::Matches($text, 'class\s+(LF_Test_\w+)\s*:\s*LF_Test') | ForEach-Object { $_.Groups[1].Value })
   if ($classes.Count -eq 0) { return }
