@@ -1,8 +1,10 @@
 //------------------------------------------------------------------------------------------------
 //! Stall market tables (#2924, framework #786, #759). Loaded from Configs/Market/LF_Stalls.conf. The core
 //! ships it off (`m_bEnabled` 0), so no server changes behaviour until it opts in. All money is whole cash
-//! units. Market day is a window of the in-game week: day index `m_iMarketDay` (0..6) between `m_iOpenHour`
-//! and `m_iCloseHour` (0..24, open before close).
+//! units. Market day is a window of the in-game week: day index `m_iMarketDay` between `m_iOpenHour` and
+//! `m_iCloseHour` (0..24, open before close). `m_iMarketDay` 0 means every day; 1..6 is that day of the week
+//! (`dayNumber % 7`). A pack overlay (the mission header's `m_aLF_ConfigOverlays`) patches the root fields it
+//! sets (#3182), the way `LF_MarketConfig` does.
 [BaseContainerProps(configRoot: true)]
 class LF_StallConfig
 {
@@ -15,7 +17,7 @@ class LF_StallConfig
 	[Attribute("0", UIWidgets.CheckBox, "Whether stalls can be rented. Off refuses every rent")]
 	bool m_bEnabled;
 
-	[Attribute("5", UIWidgets.Auto, "Day of the in-game week the market runs, 0 to 6", params: "0 6")]
+	[Attribute("5", UIWidgets.Auto, "Day of the in-game week the market runs, 1 to 6; 0 runs it every day", params: "0 6")]
 	int m_iMarketDay;
 
 	[Attribute("8", UIWidgets.Auto, "In-game hour the market opens, 0 to 23", params: "0 23")]
@@ -81,8 +83,92 @@ class LF_StallConfig
 			return null;
 		}
 
+		s_Config.ApplyLayers();
 		s_Config.Sanitize();
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges each pack overlay (the mission header's m_aLF_ConfigOverlays, in load order) over this
+	//! instance, which holds the core `.conf`: every root field an overlay sets directly replaces the
+	//! core value, a field it leaves alone stays. Sanitize runs after, so a bad merged table is refused
+	//! like a core one.
+	void ApplyLayers()
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_StallConfig, "stalls", resources, names);
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyPackContainer(resource.GetResource().ToBaseContainer(), names[i]);
+			LF_Debug.Info(FEATURE, string.Format("stalls: pack overlay %1 changed %2 fields", names[i], changed));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one pack overlay's root fields. \return Fields changed.
+	//! \param[in] root The overlay's root container.
+	//! \param[in] source The overlay file, for log lines.
+	int ApplyPackContainer(notnull BaseContainer root, string source)
+	{
+		int changed;
+		bool enabled;
+		if (root.IsVariableSetDirectly("m_bEnabled") && root.Get("m_bEnabled", enabled))
+		{
+			m_bEnabled = enabled;
+			changed++;
+		}
+
+		int value;
+		if (root.IsVariableSetDirectly("m_iMarketDay") && root.Get("m_iMarketDay", value))
+		{
+			m_iMarketDay = value;
+			changed++;
+		}
+
+		if (root.IsVariableSetDirectly("m_iOpenHour") && root.Get("m_iOpenHour", value))
+		{
+			m_iOpenHour = value;
+			changed++;
+		}
+
+		if (root.IsVariableSetDirectly("m_iCloseHour") && root.Get("m_iCloseHour", value))
+		{
+			m_iCloseHour = value;
+			changed++;
+		}
+
+		if (root.IsVariableSetDirectly("m_iPitchFee") && root.Get("m_iPitchFee", value))
+		{
+			m_iPitchFee = value;
+			changed++;
+		}
+
+		if (root.IsVariableSetDirectly("m_iMaxListings") && root.Get("m_iMaxListings", value))
+		{
+			m_iMaxListings = value;
+			changed++;
+		}
+
+		if (root.IsVariableSetDirectly("m_iMinPrice") && root.Get("m_iMinPrice", value))
+		{
+			m_iMinPrice = value;
+			changed++;
+		}
+
+		if (root.IsVariableSetDirectly("m_iMaxPrice") && root.Get("m_iMaxPrice", value))
+		{
+			m_iMaxPrice = value;
+			changed++;
+		}
+
+		if (root.IsVariableSetDirectly("m_iCutPct") && root.Get("m_iCutPct", value))
+		{
+			m_iCutPct = value;
+			changed++;
+		}
+
+		return changed;
 	}
 
 	//------------------------------------------------------------------------------------------------

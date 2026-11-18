@@ -64,6 +64,8 @@ Object.assign(SECTIONS, {
   "residents.residents": row("residents", "residents", "LF_ResidentsConfig", "Configs/Residents/LF_Residents.conf", "m_aResidents", "m_sId", byField("m_sId")),
   "handbook.pages": row("handbook", "pages", "LF_HandbookConfig", "Configs/Rules/LF_Handbook.conf", "m_aPages", "m_sId", byField("m_sId")),
   "signs.signs": row("signs", "signs", "LF_SignConfig", "Configs/Signs/LF_Signs.conf", "m_aSigns", "m_sId", byField("m_sId")),
+  "signstyles.styles": row("signstyles", "styles", "LF_SignStyleConfig", "Configs/Signs/LF_SignStyles.conf", "m_aStyles", "m_sId", byField("m_sId")),
+  "signstyles.sizes": row("signstyles", "sizes", "LF_SignStyleConfig", "Configs/Signs/LF_SignStyles.conf", "m_aSizes", "m_sId", byField("m_sId")),
   "drinkImpairment.drinks": row("drinkImpairment", "drinks", "LF_DrinkImpairmentConfig", "Configs/Survival/LF_DrinkImpairment.conf", "m_aDrinks", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),
   "systems.catalog": row("systems", "catalog", "LF_SystemCatalog", "Configs/Systems/LF_SystemCatalog.conf", "m_aSystems", "m_sId", byField("m_sId")),
   "terms.terms": row("terms", "terms", "LF_TermsConfig", "Configs/Terms/LF_Terms.conf", "m_aTerms", "m_sId", byField("m_sId")),
@@ -72,6 +74,7 @@ Object.assign(SECTIONS, {
   // Keyed by buyer plus good (#3267); no owner section. The core ships no rows, so the core layer is empty: a pack adds.
   "buyerDemand.rows": { ...row("buyerDemand", "rows", "LF_BuyerDemandConfig", "Configs/Market/LF_BuyerDemand.conf", "m_aRows", "m_sBuyer", (p) => `${p.m_sBuyer ?? ""}|${guidOf(p.m_sGood)}`, noOwner), idFields: ["m_sBuyer", "m_sGood"] },
   // The core file lists no rung (LF_MedicRanks falls back to the built-in three in script), so the core layer is empty: a pack adds.
+  "farming.crops": row("farming", "crops", "LF_CropCatalogue", "Configs/Farming/LF_Crops.conf", "m_aCrops", "m_sCropId", byField("m_sCropId"), noOwner),
   "medic.ranks": row("medic", "ranks", "LF_MedicConfig", null, "m_aRanks", "m_sId", byField("m_sId"), noOwner),
   "reputation.factions": row("reputation", "factions", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aFactions", "m_sId", byField("m_sId")),
   "reputation.awards": row("reputation", "awards", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aAwards", "m_sAction", byField("m_sAction")),

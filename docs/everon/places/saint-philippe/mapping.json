@@ -169,6 +169,14 @@
         "the workshop yard on the south-east road, with Workshop_01_Side b36 beside it; the east-edge yard in the old note is outside the dossier"
       ]
     },
+    "harbour": {
+      "building": "b14",
+      "dossier": "saint-philippe-dock",
+      "why": [
+        "PortableCabin_E_01_yellow (industrial), 24.3 m2, 92 m from the dock survey's centre, interior yes (one door, a walkable floor)",
+        "the site cabin by the quay road is the harbour master's office (Marcel Roux, the harbour crates contract, #3050); b14 is the DOCK survey's building (docs/everon/places/saint-philippe-dock), not the townhouse b14 of this square's survey"
+      ]
+    },
     "board": {
       "building": "b38",
       "shared": true,
@@ -221,6 +229,99 @@
       "why": [
         "Workshop_01_Main (garage), 92.7 m2, 123 m from the scout centre, interior yes",
         "lead-approved (D10): the workshop garage beside the town hall (4391, 10630); Workshop_01_Side b70 is its small neighbour"
+      ]
+    },
+    "supermarket": {
+      "building": "b66",
+      "why": [
+        "ShopModern_E_01 (shop), 483 m2, 2 floors, 9 doors, the modern shop by the bank in the west of the village",
+        "D10 pick (#3217), allocation S1 #3219: the village supermarket (food and drink); the supermarket kit exists"
+      ]
+    },
+    "hardware": {
+      "building": "b59",
+      "why": [
+        "Workshop_02 (garage), 138 m2, 1 floor, 4 doors, the workshop yard on the south-east road beside the fence workshop b33",
+        "D10 pick (#3217), allocation S2 #3220 (lead 2026-11-18): the hardware store, tools, build materials, flashlight, radio and the miner's supply counter, in place of the planned builders' merchant; b59 is also an alternative of the fence slot, which keeps b33"
+      ]
+    },
+    "pharmacy": {
+      "building": "b88",
+      "why": [
+        "ShopHouse_E_2I01t_drugstore (shop), 208 m2, 3 floors, 14 doors, the north drugstore shop-house",
+        "D10 pick (#3217), allocation S3 #3221 (lead): the north drugstore stays the drug store; the east one b48 is the gun counter"
+      ]
+    },
+    "newsagent": {
+      "building": "b13",
+      "why": [
+        "NewspaperBooth_E_01_redwhite (kiosk), 21 m2, 2 floors, 1 door, the booth beside the pub",
+        "D10 pick (#3217), allocation S4 #3222: newsagent and tabac kiosk (tourist map, papers); b13 is also an alternative of the parcel slot, which keeps b21"
+      ]
+    },
+    "seed-feed": {
+      "building": "b25",
+      "why": [
+        "Barn_E_03_closed (farm), 130 m2, 2 floors, 4 doors, the closed barn",
+        "D10 pick (#3217), allocation S5 #3223: seed and feed, the farm supply counter"
+      ]
+    },
+    "bakery": {
+      "building": "b06",
+      "why": [
+        "House_Town_E_2I01 (townhouse), 208 m2, 3 floors, 13 doors, a town house on the square",
+        "D10 pick (#3217), allocation S7 #3227: the boulangerie, shop on the ground floor (D9 mix rule: town houses on the square take the ground-floor shops)"
+      ]
+    },
+    "butcher": {
+      "building": "b20",
+      "why": [
+        "House_Town_E_2I01_orange (townhouse), 208 m2, 3 floors, 13 doors, the town house by the clothes shop",
+        "D10 pick (#3217), allocation S8 #3228: boucherie-charcuterie; b20 is also an alternative of the clinic slot, which keeps b39"
+      ]
+    },
+    "barber": {
+      "building": "b43",
+      "why": [
+        "House_Town_E_2I02_yellow (townhouse), 248 m2, 3 floors, 15 doors, on the square row beside the clinic",
+        "D10 pick (#3217), allocation B1 #3236: coiffeur, the barber chair; if the barber card finds no live hair change in the engine, b43 stays locked 'Coiffeur : ferme'; b43 is also an alternative of the clinic slot, which keeps b39"
+      ]
+    },
+    "furniture": {
+      "building": "b55",
+      "why": [
+        "House_Town_E_2I01 (townhouse), 208 m2, 3 floors, 13 doors, the town house on the square row beside the barber b43 and the clinic b39",
+        "D10 pick (#3217), allocation S9 #3256 (lead 2026-11-18): the furniture store, all house furniture on its own stock; furniture then leaves the general store"
+      ]
+    },
+    "woodlot": {
+      "building": "b124",
+      "alternatives": [
+        {
+          "building": "b125"
+        },
+        {
+          "building": "b126"
+        }
+      ],
+      "why": [
+        "ShedMetal_02_short_nowalls (industrial), 182.6 m2, open-sided, no door, 166.5 m south-west of the scout centre at the village edge, off the roads",
+        "D10 pick (#3174), lumber epic #3169: the sawmill shed and the log yard (kinds LogPile, Processor) go under and around this open-sided metal shed; a doorless prop, so the allocation gives it no other purpose, and none of the four free plots, which are all for sale (Plots_saint-philippe.layer). b125 and b126 are the same kind of open shed. Whether trees stand within reach of the yard is the fit card's check (the survey counts vegetation for the whole radius, not per spot)"
+      ]
+    },
+    "farm": {
+      "building": "b73",
+      "alternatives": [
+        {
+          "building": "b100"
+        },
+        {
+          "building": "b23"
+        }
+      ],
+      "why": [
+        "Barn_E_02 (farm), 80.8 m2, 118.6 m south-west of the scout centre at the village edge, the farm barn with open ground round it",
+        "D10 pick (#3190), lumber epic #3169 sibling (Z2): the cabbage plots, the seed crate and the farm_plots sign (kinds FarmPlot, SeedCrate) go on the open ground round this barn, which stays locked 'Propriete privee' (L0 #3204) since the slot uses its yard, not its door. None of the four free plots was used: all four carry sale signs (Plots_saint-philippe.layer). Every henhouse stands in a house yard, and b96 is the barn behind the range, so b73 is the one farm barn clear of both. b100 (north-east edge) and b23 are the same kind of barn"
       ]
     }
   }

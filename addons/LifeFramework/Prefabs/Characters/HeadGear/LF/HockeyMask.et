@@ -1,0 +1,20 @@
+GameEntity : "{BCCB7D5AB38BB3A7}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_base.et" {
+ ID "5112706CD4157AC7"
+ components {
+  MeshObject "{5112706CD4157AE0}" {
+   Object "{3A7B76E73873EEDB}Assets/Characters/HeadGear/LF/HockeyMask/HockeyMask_item.xob"
+  }
+  SCR_HeadgearInventoryItemComponent "{5244E4431E28A759}" {
+   Attributes SCR_ItemAttributeCollection "{5244E4431DA56D64}" {
+    ItemDisplayName UIInfo "{5244E443130B31B9}" {
+     Name "#LF-HockeyMask_Name"
+     Description "#LF-HockeyMask_Description"
+    }
+   }
+  }
+  BaseLoadoutClothComponent "{5112706CD4157AF8}" {
+   WornModel "{666272B5555940CF}Assets/Characters/HeadGear/LF/HockeyMask/HockeyMask.xob"
+   ItemModel "{3A7B76E73873EEDB}Assets/Characters/HeadGear/LF/HockeyMask/HockeyMask_item.xob"
+  }
+ }
+}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D2A8639FA0CA09EF}Prefabs/Resources/WoodCutting/HardwoodBoard.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

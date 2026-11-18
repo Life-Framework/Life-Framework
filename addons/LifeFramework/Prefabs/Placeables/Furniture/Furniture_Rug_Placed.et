@@ -1,0 +1,28 @@
+GenericEntity : "{2DD4D94957E1DC2B}Prefabs/Props/Furniture/Carpet_03_red.et" {
+ ID "E6BDC81D34F584F5"
+ components {
+  ActionsManagerComponent "{DA9A0E55ADAF496E}" {
+   ActionContexts {
+    UserActionContext "{BA447CD76152DE88}" {
+     ContextName "default"
+     Position PointInfo "{E6C21DA985B83974}" {
+      Offset 0.058 0.015 0
+     }
+     Radius 2.901
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{2A1EAE0BA57A866C}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{A889B083839B5434}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

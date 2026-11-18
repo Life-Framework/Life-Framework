@@ -1,0 +1,21 @@
+GenericEntity : "{6697C9B8CEB5234C}Prefabs/Resources/WoodCutting/WoodKindling.et" {
+ ID "7A3C1D52B6E4F803"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Fence post"
+     Description "A stout post split from a softwood log, for fencing a yard or a field"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 2
+     SizeSetupStrategy Volume
+     ItemVolume 300
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{3C034DC23F76D43F}Assets/Props/Forest/WoodPile_01/WoodLog_01_D.xob"
+  }
+ }
+}

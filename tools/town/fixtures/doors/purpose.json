@@ -1,0 +1,31 @@
+{
+ "schema": 1,
+ "place": "fixture-town",
+ "buildings": [
+  {
+   "id": "sp:b01",
+   "purpose": "b",
+   "use": "shop",
+   "status": "planned"
+  },
+  {
+   "id": "sp:b02",
+   "purpose": "e",
+   "use": "barn: locked",
+   "status": "planned"
+  },
+  {
+   "id": "sp:b04",
+   "purpose": "e",
+   "use": "shed, part of the shop",
+   "status": "planned",
+   "partOf": "sp:b01"
+  },
+  {
+   "id": "di:b10",
+   "purpose": "a",
+   "use": "hut",
+   "status": "planned"
+  }
+ ]
+}

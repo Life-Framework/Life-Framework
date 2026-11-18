@@ -92,16 +92,18 @@ class LF_Stall : Managed
 class LF_StallRules
 {
 	static const int DAYS_PER_WEEK = 7;	// lf-fixed: the in-game week
+	//! `LF_StallConfig.m_iMarketDay` value that opens the market on every day of the week (#3182).
+	static const int EVERY_DAY = 0;	// lf-fixed: the config's every-day marker
 	//! A running total stops here, so adding two totals never overflows an int.
 	static const int MAX_TOTAL = 1000000000;	// lf-fixed: int overflow guard for money sums
 
 	//------------------------------------------------------------------------------------------------
-	//! \return true on market day (`m_iMarketDay` of the week) between the opening hour and the closing hour.
+	//! \return true on market day (`m_iMarketDay` of the week; 0 is every day) between the opening hour and the closing hour.
 	static bool IsMarketOpen(LF_StallConfig config, int dayNumber, int hour)
 	{
 		if (!config || dayNumber < 0)
 			return false;
-		if ((dayNumber % DAYS_PER_WEEK) != config.m_iMarketDay)
+		if (config.m_iMarketDay != EVERY_DAY && (dayNumber % DAYS_PER_WEEK) != config.m_iMarketDay)
 			return false;
 
 		return hour >= config.m_iOpenHour && hour < config.m_iCloseHour;
