@@ -16,6 +16,7 @@ tools\cli scout label <slug>                 # img/overview-top-labelled.jpg: ma
 tools\cli town map <slug> [--template town|village|districts] [--force]   # proposes slot -> building; `--check` refuses an incomplete one
 tools\cli town kit extract <layer> <group>   # a kit from a building that already works; no absolute positions
 tools\cli town fit <place> <slot>            # writes MainWorld_Layers/Place_<place>_<slot>.layer + a claim
+tools\cli town fit <place> <slot> --refit   # re-fit a slot already claimed on main (its own claim); another PR's or slot's claim still refuses
 tools\cli town fit <place> <slot> --check    # per-row seat corrections (floor, wall, clip) against the layer on disk; writes nothing
 tools\cli town check <place>                 # static kinds and claims; then audit placement --world MainWorld
 tools\cli town ready <state>                 # every place of the state passes, systems present, arrival route walks
@@ -30,6 +31,7 @@ tools\cli look place:<place>/<slot> --interior auto   # its ground floor from in
 - A fit runs in a worktree named `town-draft-<place>-<slot>`. Only that name writes an island layer.
 - Its PR is a **draft** with before and after pictures. The maintainer reviews it before any merge.
 - Claims live in `tools/town/claims/<place>-<slot>.json`; a claim `origin/main` or an open PR holds is refused.
+  `--refit` ignores this slot's own claim on `origin/main` (re-fitting a slot already merged) and still refuses an open PR, a sibling worktree or another slot holding it.
 
 ## Known traps
 - **Never touch the maintainer's worktree** (`ws/town-maintainer-edits`) or the playtest town's layers. The lead
