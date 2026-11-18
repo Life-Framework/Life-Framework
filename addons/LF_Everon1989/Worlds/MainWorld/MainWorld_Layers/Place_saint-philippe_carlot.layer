@@ -246,10 +246,6 @@ Vehicle Fit_saint_philippe_carlot_lot_display_uaz469 : "{C8B16ABCA57679A2}Prefab
  coords 4382.246 13.75 10639.144
  angleY 11
 }
-Vehicle Fit_saint_philippe_carlot_lot_display_dana2101 : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
- coords 4396.6 15.2 10633.5
- angleY 151
-}
 GenericEntity Fit_saint_philippe_carlot_vehicle_lot_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {

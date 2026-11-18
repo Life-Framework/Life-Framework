@@ -266,22 +266,6 @@
       "floor": "f0"
     },
     {
-      "id": "lot-display-dana2101",
-      "name": "Lot_Display_dana2101",
-      "prefab": "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.2,
-        -1.07,
-        2.7
-      ],
-      "yaw": 160,
-      "class": "Vehicle",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
       "id": "vehicle-lot-sign",
       "name": "Sign_VehicleLot",
       "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
