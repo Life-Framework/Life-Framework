@@ -72,6 +72,14 @@
   house porch at the east end, the taxi pad at the bus stop by the square, the
   fuel can at the fuel station.
 
+- ✅ **Parcel drops on the island** (2026-11-18, #2959; draft PR): no building of Saint-Philippe's own survey stands
+  300 m from the depot kiosk (b21), so the run had no stop that pays. `Place_saint-philippe_parcel-drops.layer` holds five
+  `LF_ParcelDrop` mailboxes (a pack prefab over the vanilla `Mailbox_02`: `LF_JobSiteComponent` DROP plus `LF_JobDropoffAction`, so
+  `LF_JobMapMarks` finds them by place, not by name) on the entrance walls of the east districts' wooden house and the
+  dock's metal shed, cabin, garage and barracks (318 to 480 m out; `runMinDistance` stays 300). `town drops saint-philippe
+  parcel-drops` writes them from the dossiers and seats each on its host's real wall. The island depot counter offers
+  parcel sign-up only: the fuel and taxi sign-ups are removed because the island has no fuel or taxi sites yet.
+
 - ✅ **Sign-up offers on a dedicated client** (2026-11-08, #157): the greyed reason reads
   `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
   A client reads the level replicated on `LF_PlayerJobComponent` (the career map is
