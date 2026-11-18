@@ -69,6 +69,8 @@ Object.assign(SECTIONS, {
   "terms.terms": row("terms", "terms", "LF_TermsConfig", "Configs/Terms/LF_Terms.conf", "m_aTerms", "m_sId", byField("m_sId")),
   "property.plots": row("property", "plots", "LF_PropertyConfig", "Configs/Property/LF_Property.conf", "m_aPlots", "m_sPlotId", byField("m_sPlotId")),
   "market.goods": row("market", "goods", "LF_MarketConfig", "Configs/Market/LF_Market.conf", "m_aGoods", "m_sGood", (p) => guidOf(p.m_sGood), noOwner),
+  // Keyed by buyer plus good (#3267); no owner section. The core ships no rows, so the core layer is empty: a pack adds.
+  "buyerDemand.rows": { ...row("buyerDemand", "rows", "LF_BuyerDemandConfig", "Configs/Market/LF_BuyerDemand.conf", "m_aRows", "m_sBuyer", (p) => `${p.m_sBuyer ?? ""}|${guidOf(p.m_sGood)}`, noOwner), idFields: ["m_sBuyer", "m_sGood"] },
   // The core file lists no rung (LF_MedicRanks falls back to the built-in three in script), so the core layer is empty: a pack adds.
   "medic.ranks": row("medic", "ranks", "LF_MedicConfig", null, "m_aRanks", "m_sId", byField("m_sId"), noOwner),
   "reputation.factions": row("reputation", "factions", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aFactions", "m_sId", byField("m_sId")),
