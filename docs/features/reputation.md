@@ -43,10 +43,15 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   no contract money (a late finish still pays the plain run). Stakes move no money. A contract whose run vanished (a wipe) is dropped with
   no stake. Session state: a restart refunds the run's deposit and drops the contract. A drop-off by a dead or downed body pays nothing.
   Core ships one neutral parcel row (`test_parcel`); the offer that calls `Begin` and the pack's contracts are later cards. Test `reputation/contract`.
+- ✅ **Contract offer in dialogue** (#2913, merged, in-dev): `LF_DialogueHook_Contract.c`. A dialogue reply with `m_sAction "Contract"`,
+  `m_sCondition "Contract"` and the contract id as `m_sParam` starts the contract: the reply is offered only when the contract's standing
+  gate passes (checked on the server, where `Offers` runs), the pick signs the player up for the contract's job if needed (the JobSignUp
+  hook), then `LF_ReputationContracts.Begin` (dead or downed, purchase rate limit, gate, busy, cooldown, deposit). The NPC answers
+  `#LF-Contract_Started` or the refusal key; a toast repeats it. Test `dialogue/contract`. The harbour master's reply is pack data (#2709).
 - ✅ **A job you cannot take yet is greyed in words on a dedicated client** (#2915, merged, in-dev): `LF_ReputationOfferGrey.c`
   reads the gate row and the client's own tier from `LF_ReputationSync.ClientTier`; a modded `LF_JobSignUpAction` and
   `LF_JobStartRunAction` (`CanBePerformedScript`, client branch only) grey the offer with the faction's refusal and the
   tier word, before the press. No tiers received yet shows the offer (the server still refuses on use); a gate with no
   row is open. The host path is unchanged. Test `reputation/offer-grey`.
-- 🔲 The contract offer, screens, the pack's words,
+- 🔲 Screens, the pack's words,
   pack overlay and the owner `config.json` section `reputation` (later cards of #1018).

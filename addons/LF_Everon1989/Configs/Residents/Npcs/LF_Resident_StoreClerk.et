@@ -1,13 +1,7 @@
-LF_NpcBaseEntity : "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et" {
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "9F9CF8D5BE9AB11F"
  components {
-  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
-   Identity Identity "{5A4B0B84AF44A913}" {
-    Name "Pierre"
-    Surname "Vasseur"
-   }
-  }
-  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
     LoadoutSlotInfo Jacket {
      Prefab "{637C5D826FE183DE}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V3.et"
