@@ -36,6 +36,12 @@ class LF_SignStyleDef : LF_ConfigRecord
 	[Attribute("0 0 0", UIWidgets.EditBox, "Ghost shift, layout units (x y)")]
 	vector m_vGhostShift;
 
+	[Attribute("0 0 0", UIWidgets.ColorPicker, "Ghost colour (RGB 0..1) at the ghost alpha: a drop shadow is dark (use 0.01 for near black). All zero: the ink")]
+	vector m_vGhostColor;
+
+	[Attribute("0", UIWidgets.CheckBox, "The ground and ink are the placed prop's paint and lettering colours (LF_SignComponent.m_vPaintColor, m_vTextColor) when it has a painted face: shop fascias, enamel plates")]
+	bool m_bPlacementColors;
+
 	[Attribute("0", UIWidgets.EditBox, "Hand tilt of the title in degrees (0 for printed styles)")]
 	float m_fTilt;
 

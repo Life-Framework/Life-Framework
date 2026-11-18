@@ -2,7 +2,7 @@
 // FAIL - the parcel carries LF_HandToolComponent; - it is no longer a hand-carry gadget on the hands storage; - the carried parcel is a hand tool with id parcel. Fixed prefab; green.
 
 //! The courier parcel is a core hand tool (#1846): it takes the whole hand like the vault drill
-//! (weapon quick slot, held by the wrench graph), not a hand-carry gadget on the hands storage.
+//! (weapon quick slot, held through the gadget path; its box-carry pose is `jobs/parcel-hold`), not a hand-carry gadget on the hands storage.
 //! The job gives it to a character, it goes into a 1-0 quick slot and the hands, and it still
 //! reads as in a slot (not on the ground) wherever it is carried.
 [LF_TestInfo(LF_TestTier.WORLD)]

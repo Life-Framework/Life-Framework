@@ -387,6 +387,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		LF_Test_ReputationPersist.SeedE2E(ctx);
 		LF_Test_GarageSlotsPersist.SeedE2E(ctx);
 		LF_Test_LockerContentsPersist.SeedE2E(ctx);
+		LF_Test_FurnitureStoragePersist.SeedE2E(ctx);
 		// A car on the street holds an apple (#2809): the shutdown save captures its cargo into "carried".
 		IEntity cargoPayer = LF_TestCharacterFixture.Spawn(ctx);
 		if (cargoPayer)
@@ -1077,6 +1078,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			LF_Test_GarageSlotsPersist.VerifyE2E(ctx);
 		if (LF_E2E.RequiresPayload("lockers"))
 			LF_Test_LockerContentsPersist.VerifyE2E(ctx);
+		LF_Test_FurnitureStoragePersist.VerifyE2E(ctx);
 		VerifyOrgLadder(ctx);
 		VerifyHeldGround(ctx);
 		if (LF_E2E.RequiresPayload("tenancy"))

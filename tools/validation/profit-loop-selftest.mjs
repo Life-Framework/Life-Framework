@@ -4,6 +4,7 @@
 // baseline ratchet. Fixtures: tools/validation/fixtures/profit-loop/{good,bad}.
 //
 // market-floor red-proof (#2848): before the market reader the new fixture printed "FAIL market: expected one market:Ore +2, got []" and exited 1.
+// stock-row red-proof: before profit-stock.mjs the stock fixture printed "FAIL stock: expected one stock:cafe:Ore +8, got []" and exited 1.
 // red-proof: with the shop-loop test in findShopLoops flipped to `pr.sell < pr.buy` the bad
 // fixture printed "bad: missing loop shop:Ore" and exited 1; restored, it prints
 // "profit-loop-selftest: OK".
@@ -61,8 +62,19 @@ expect(checkProfitLoops(marketSources("market-ok.conf")).length === 0, "market: 
 const mPack = checkProfitLoops(marketSources("market-ok.conf", "market-pack-bad.conf")).filter((l) => l.kind === "market");
 expect(mPack.length === 1 && mPack[0].path.includes("market-pack-bad.conf"), `market: a pack overlay ceiling of 10 must fail and name the pack file, got ${JSON.stringify(mPack)}`);
 
+// Stock rows: a stocked shop charges the row price, not the price table. A cafe row at 2 under a market ceiling
+// of 10 is a loop naming the stock, both files and the good; the grocer row at 10 is not; a pack overlay that
+// replaces both stocks with rows at or above the ceiling clears it (a later file replaces a stock of the same id).
+const sfx = (f) => fx("stock-loop", f);
+const stockSources = (...stocks) => ({ ...sources("good"), shop: sfx("shop.conf"), layers: [], market: [sfx("market.conf")], stocks: stocks.map(sfx) });
+const sBad = checkProfitLoops(stockSources("stock-bad.conf")).filter((l) => l.kind === "stock");
+expect(sBad.length === 1 && sBad[0].id === "stock:cafe:Ore" && sBad[0].margin === 8, `stock: expected one stock:cafe:Ore +8, got ${JSON.stringify(sBad)}`);
+expect(sBad[0] && ["stock-bad.conf", "market.conf", "Ore", "cafe"].every((x) => sBad[0].path.includes(x)), `stock: the line must name the stock, both files and the good, got ${sBad[0]?.path}`);
+expect(checkProfitLoops(stockSources("stock-ok.conf")).filter((l) => l.kind === "stock").length === 0, "stock: rows at or above the ceiling must pass");
+expect(checkProfitLoops(stockSources("stock-bad.conf", "stock-ok.conf")).filter((l) => l.kind === "stock").length === 0, "stock: a pack overlay stock must replace the core stock of the same id");
+
 if (fails.length) {
   for (const f of fails) console.log(`FAIL ${f}`);
   process.exit(1);
 }
-console.log("profit-loop-selftest: OK (planted shop, recipe, sell-back and chop loops red, clean twin green, owner overlay and ratchet hold, market ceiling over a shop buy price red in core and pack overlays)");
+console.log("profit-loop-selftest: OK (planted shop, recipe, sell-back and chop loops red, clean twin green, owner overlay and ratchet hold, market ceiling over a shop buy price red in core and pack overlays, stock row under a market ceiling red)");

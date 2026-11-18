@@ -254,7 +254,7 @@ class LF_SignComponent : ScriptComponent
 
 		m_StyledFace = new LF_SignStyledFace();
 		LF_SignDef printed = LiveSign(sign);
-		if (m_StyledFace.Build(owner, printed, style, size, m_vFaceOffset, m_vFaceAngles, m_fFaceScale))
+		if (m_StyledFace.Build(owner, printed, style, size, m_vFaceOffset, m_vFaceAngles, m_fFaceScale, HasPaintedFace(), m_vPaintColor, m_vTextColor))
 		{
 			StartRowPoll();
 			return true;

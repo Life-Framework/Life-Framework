@@ -1,0 +1,98 @@
+// Grid cell c21r1 for furniture-storage: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_furniture_storage_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 275 0 35
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 279.4 0 35
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 283.8 0 35
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 288.2 0 35
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 292.6 0 35
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 297 0 35
+ angleY 270
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 297 0 40
+ angleY 270
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 297 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 292.6 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 288.2 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 283.8 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 279.4 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furniture_storage_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 275 0 45
+ angleY 90
+}
+GenericEntity Grid_furniture_storage_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:furniture-storage"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 274.2 0.505 35.6
+ angleY -90
+}
+GenericEntity Grid_furniture_storage_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "furniture-storage"
+  }
+ }
+ coords 274.3 0 37.5
+ angleY 90
+}
+GenericEntity Grid_furniture_storage_R0_1 : "{7416F34B901F7B83}Prefabs/Placeables/Furniture/Furniture_Wardrobe_Placed.et" {
+ coords 278.25 0.001 37.382
+ angleY 180
+}
+GenericEntity Grid_furniture_storage_R0_2 : "{1736B87AAEB64AB7}Prefabs/Placeables/Furniture/Furniture_Dresser_Placed.et" {
+ coords 283.583 0.001 37.379
+ angleY 180
+}
+GenericEntity Grid_furniture_storage_R0_3 : "{957A81F8C290847D}Prefabs/Placeables/Furniture/Furniture_Cupboard_Placed.et" {
+ coords 289.291 0.002 37.403
+ angleY 180
+}
+GenericEntity Grid_furniture_storage_R0_4 : "{BAFB1BD4358EDEFD}Prefabs/Placeables/Furniture/Furniture_Chest_Placed.et" {
+ coords 295 0.001 37.001
+ angleY 180
+}
+GenericEntity Grid_furniture_storage_R1_1 : "{9A2E2D12C3323874}Prefabs/Placeables/Furniture/Furniture_Crate_Placed.et" {
+ coords 278.999 0 43.001
+ angleY 180
+}
+GenericEntity Grid_furniture_storage_R1_2 : "{04DEB6AE18777340}Prefabs/Placeables/Furniture/Furniture_Fridge_Placed.et" {
+ coords 287.386 0.008 43.344
+ angleY 180
+}
+GenericEntity Grid_furniture_storage_R1_3 : "{8842171499D661BC}Prefabs/Placeables/Furniture/Furniture_KitchenUnit_Placed.et" {
+ coords 293.891 0.002 43.372
+ angleY 180
+}

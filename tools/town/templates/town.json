@@ -57,7 +57,7 @@
       "places": ["ChessTable"]
     },
     {
-      "id": "range", "required": false, "kit": "range", "host": "building", "poi": "none",
+      "id": "range", "required": false, "kit": "range", "host": "building", "poi": "none", "margin": 18,
       "needs": { "interior": "optional", "minArea": 15, "prefer": "far", "types": ["shed", "garage", "farm", "farm-small", "industrial"] },
       "places": ["RangeLane"]
     },
@@ -105,6 +105,21 @@
       "id": "furniture", "required": false, "kit": "furniture", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 100, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
       "places": ["StoreCounter"]
+    },
+    {
+      "id": "woodlot", "required": false, "kit": "woodlot", "host": "building", "poi": "none", "margin": 14,
+      "needs": { "interior": "optional", "minArea": 80, "prefer": "far", "types": ["industrial", "shed", "farm", "garage"] },
+      "places": ["LogPile", "Processor"]
+    },
+    {
+      "id": "farm", "required": false, "kit": "farm", "host": "building", "poi": "none", "margin": 20,
+      "needs": { "interior": "optional", "minArea": 60, "prefer": "far", "types": ["farm"] },
+      "places": ["FarmPlot", "SeedCrate"]
+    },
+    {
+      "id": "merchant-timber", "required": false, "kit": "merchant-timber", "host": "street", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 160 },
+      "places": ["TimberCounter"]
     },
     {
       "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building", "poi": "none",

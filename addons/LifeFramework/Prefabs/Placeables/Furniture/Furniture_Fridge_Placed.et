@@ -1,0 +1,52 @@
+GenericEntity : "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et" {
+ ID "77C66A7770605A69"
+ components {
+  ActionsManagerComponent "{8EE0B8144BA721B3}" {
+   ActionContexts {
+    UserActionContext "{6202E55C164BD64B}" {
+     ContextName "default"
+     Position PointInfo "{5702531B7833D780}" {
+      Offset 0.386 0.926 0.344
+     }
+     Radius 1.436
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{FB5256EC92184049}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_FurnitureStorageOpenAction "{CB649401D5C6D847}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo SCR_ActionUIInfo "{A437A990C688011B}" {
+      Name "#LF-FurnitureStorage_Open"
+     }
+    }
+   }
+  }
+  LF_FurnitureStorageManagerComponent "{0DF5CAFB386C03AB}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{DF00EA81ECA707D4}" {
+   Attributes SCR_ItemAttributeCollection "{0DB27714022CE16B}" {
+    ItemDisplayName SCR_InventoryUIInfo "{D2B25DE8F26B1EAF}" {
+     Name "#LF-Furniture_Fridge_Name"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 70000
+   MaxItemSize 60 60 60
+   m_fMaxWeight 30
+  }
+  LF_PersistentStorageComponent "{F069F022BB74CA2E}" {
+   m_bKeyAssignedLater 1
+  }
+  LF_PlacedOwnerComponent "{87346550F14FFA9E}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}
