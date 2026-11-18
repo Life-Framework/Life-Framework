@@ -730,6 +730,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_ServiceTake(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_SessionSlots(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_SessionSpawnEvent(), LF_TestTier.LOGIC;
+		// self-registered: new LF_Test_SetHome(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_ShopQuantityGate(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ShopTotalPrice(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ATMAmountGuard(), LF_TestTier.LOGIC;

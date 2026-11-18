@@ -8308,6 +8308,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This plot is already owned."
      Comment "Toast: plot purchase refused, somebody owns it (#2649)."
     }
+    CustomStringTableItem "{A3C2CA7CE0677234}" {
+     Id "LF-Property_SetHome"
+     Target_en_us "Make this my spawn"
+     Comment "House door action: the owner makes this house where they wake up when they log in"
+    }
     CustomStringTableItem "{92136B0C3106B107}" {
      Id "LF-Property_Title"
      Target_en_us "Property"
