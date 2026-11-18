@@ -1,4 +1,4 @@
-// red-proof: 2026-11-18 `toolscli test --no-build --red LF_Test_StallTrade` printed `RED PROOF OK (all 1 listed test(s) fail with the hook on)`: the hook skips every List, Buy and Delist call (`- a buy after closing refuses (expected 1, got -1)`). `--only` passes.
+// red-proof: 2026-11-18 `toolscli test --no-build --red LF_Test_StallTrade` printed `RED PROOF OK (all 1 listed test(s) fail with the hook on)`: the hook skips every List, Buy and Delist call (`- a buy after closing refuses (expected 1, got -1)`). `--only` passes. Review of #3014: the magazine case failed on the delete-and-respawn hand-over (`- the holder's own magazine is now in the buyer's inventory`, `- the bought magazine holds the 3 rounds it was sold with`) and passes on the entity move.
 //! market/stall-trade (#2926): the holder lists items from their inventory on a rented stall at a price; a
 //! buyer in reach buys one: the cash leaves the buyer, exactly one item moves from the holder to the buyer
 //! and the seller is paid the price minus the market's cut. A buyer with too little cash moves nothing; a
@@ -10,6 +10,7 @@ class LF_Test_StallTrade : LF_Test
 {
 	protected static const ResourceName STALL = "{5E2A7D9C4B1F8306}Prefabs/Props/Stalls/LF_MarketStall.et";
 	protected static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
+	protected static const ResourceName MAGAZINE = "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et";
 	protected static const string UID_HOLDER = "lf-test-trade-holder";
 	protected static const string UID_BUYER = "lf-test-trade-buyer";
 	protected static const string UID_FAR = "lf-test-trade-far";
@@ -191,6 +192,30 @@ class LF_Test_StallTrade : LF_Test
 		ctx.False(IsHeld(stall, listingId), "and is open to buyers again");
 		LF_StallTrade.SetNoRoomForTest(false);
 
+		// A magazine moves as itself: the buyer gets the holder's 3 rounds, not a fresh full magazine
+		// (review of #3014: a delete and respawn by prefab turned an empty magazine into a full one).
+		ctx.Equal(1, LF_InventoryUtils.AddAmount(holder, MAGAZINE, 1, false), "the holder carries a magazine");
+		IEntity magazine = LF_StallTrade.FindHeldItem(holder, MAGAZINE);
+		BaseMagazineComponent rounds;
+		if (magazine)
+			rounds = BaseMagazineComponent.Cast(magazine.FindComponent(BaseMagazineComponent));
+		ctx.NotNull(rounds, "the magazine has a magazine component");
+		if (rounds)
+			rounds.SetAmmoCount(3);
+		int magazineId;
+		ctx.Equal(LF_EStallTrade.OK, List(stall, holder, UID_HOLDER, MAGAZINE, PRICE, magazineId, rule), "the holder lists the magazine");
+		SetCash(ctx, buyer, PRICE);
+		ctx.Equal(LF_EStallTrade.OK, Buy(stall, buyer, UID_BUYER, magazineId, paid, sellerPay, rule), "the buyer buys the magazine");
+		ctx.True(magazine && LF_InventoryUtils.GetStorageHierachyRoot(magazine) == buyer, "the holder's own magazine is now in the buyer's inventory");
+		IEntity bought = LF_StallTrade.FindHeldItem(buyer, MAGAZINE);
+		BaseMagazineComponent boughtRounds;
+		if (bought)
+			boughtRounds = BaseMagazineComponent.Cast(bought.FindComponent(BaseMagazineComponent));
+		ctx.True(boughtRounds && boughtRounds.GetAmmoCount() == 3, "the bought magazine holds the 3 rounds it was sold with");
+		ctx.Equal(0, LF_InventoryUtils.GetAmount(holder, MAGAZINE), "the holder no longer has it");
+		LF_InventoryUtils.RemoveAmount(buyer, MAGAZINE, LF_InventoryUtils.GetAmount(buyer, MAGAZINE));
+		SetCash(ctx, buyer, PRICE);
+
 		// After the closing hour the stall refuses and nothing moves.
 		LF_StallClock.SetForTest(MARKET_DAY, 18);
 		ctx.Equal(LF_EStallTrade.RULE, Buy(stall, buyer, UID_BUYER, listingId, paid, sellerPay, rule), "a buy after closing refuses");
@@ -203,7 +228,7 @@ class LF_Test_StallTrade : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn true when a buyer's cash is reserved for the listing.
+	//! \return true when a buyer's cash is reserved for the listing.
 	protected bool IsHeld(LF_StallComponent stall, int listingId)
 	{
 		LF_StallListing listing = stall.GetStall().Find(listingId);

@@ -28,9 +28,9 @@ enum LF_EStallTrade
 //!   1 rules.Reserve  - the listing is held, no cash moved yet
 //!   2 holder stock   - the holder carries the item, else refund and drop the listing (NO_STOCK)
 //!   3 take the cash  - the buyer's purse (a short purse refunds, CASH_SHORT)
-//!   4 take the item  - from the holder (a miss gives the cash back, NO_STOCK)
-//!   5 give the item  - to the buyer (it did not fit: the item goes back to the holder, the cash to the
-//!                      buyer, BUYER_FULL)
+//!   4 find the item  - the holder's own entity (a miss gives the cash back, NO_STOCK)
+//!   5 move the item  - that entity itself into the buyer's inventory, never a fresh spawn by prefab
+//!                      (no room: nothing moved, the cash goes back, BUYER_FULL)
 //!   6 rules.Settle   - the seller is paid the price minus the cut; the market keeps the cut
 //! A listing cannot be taken down (`LF_StallRules.Delist`) while its cash is reserved, and one item is
 //! never listed twice over the holder's stock (`List` counts the stock against listings of the same prefab).
@@ -268,23 +268,12 @@ class LF_StallTrade
 			return Unwind(state, escrow, LF_EStallTrade.CASH_SHORT, false, string.Format("%1 had %2 of %3 when the cash was taken, refunded", buyerUid, taken, escrow.m_iAmount));
 		}
 
-		// 4: the item leaves the holder.
-		if (LF_InventoryUtils.RemoveAmount(holder, item, 1) != 1)
+		// 4 and 5: the holder's own item moves to the buyer, or nothing moves.
+		LF_EStallTrade moved = HandOver(holder, buyer, item);
+		if (moved != LF_EStallTrade.OK)
 		{
 			LF_MoneyUtils.AddCash(buyer, taken, REASON_BUY, holderUid, true);
-			return Unwind(state, escrow, LF_EStallTrade.NO_STOCK, true, string.Format("holder %1 lost %2 mid-sale, buyer refunded", holderUid, item));
-		}
-
-		// 5: the item reaches the buyer, or goes back.
-		int handed;
-		if (!s_bNoRoomForTest)
-			handed = LF_InventoryUtils.AddAmount(buyer, item, 1, false);
-
-		if (handed != 1)
-		{
-			LF_InventoryUtils.AddAmount(holder, item, 1, true);
-			LF_MoneyUtils.AddCash(buyer, taken, REASON_BUY, holderUid, true);
-			return Unwind(state, escrow, LF_EStallTrade.BUYER_FULL, false, string.Format("%1 had no room for %2, item and cash returned", buyerUid, item));
+			return Unwind(state, escrow, moved, moved == LF_EStallTrade.NO_STOCK, string.Format("%1 did not pass from %2 to %3 (%4), buyer refunded", item, holderUid, buyerUid, moved));
 		}
 
 		// 6: settle. The item is the buyer's; the seller is paid.
@@ -292,8 +281,7 @@ class LF_StallTrade
 		if (settled != LF_EStallResult.OK)
 		{
 			// Cannot happen on a held escrow; undo the whole sale rather than leave a free item.
-			LF_InventoryUtils.RemoveAmount(buyer, item, 1);
-			LF_InventoryUtils.AddAmount(holder, item, 1, true);
+			HandOver(buyer, holder, item);
 			LF_MoneyUtils.AddCash(buyer, taken, REASON_BUY, holderUid, true);
 			sellerPay = 0;
 			rule = settled;
@@ -307,6 +295,75 @@ class LF_StallTrade
 		paid = taken;
 		LF_Debug.Info(LF_StallConfig.FEATURE, string.Format("%1 bought %2 from %3 for %4; seller paid %5", buyerUid, item, holderUid, paid, sellerPay));
 		return LF_EStallTrade.OK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Moves one `item` from `from` to `to`. A counted stack (LF_QuantityComponent) moves one unit, which is
+	//! all a unit is. Any other item moves AS ITSELF, with its rounds, damage, attachments and contents:
+	//! deleting it and spawning a fresh one by prefab turned an empty magazine into a full one and deleted a
+	//! weapon's attachments (review of #3014).
+	//! \return OK; NO_STOCK when `from` carries none; BUYER_FULL when it does not fit `to` (nothing moved).
+	protected static LF_EStallTrade HandOver(IEntity from, IEntity to, ResourceName item)
+	{
+		if (SCR_BaseContainerTools.FindComponentSource(Resource.Load(item), LF_QuantityComponent))
+		{
+			if (s_bNoRoomForTest)
+				return LF_EStallTrade.BUYER_FULL;
+			if (LF_InventoryUtils.RemoveAmount(from, item, 1) != 1)
+				return LF_EStallTrade.NO_STOCK;
+			if (LF_InventoryUtils.AddAmount(to, item, 1, false) == 1)
+				return LF_EStallTrade.OK;
+
+			LF_InventoryUtils.AddAmount(from, item, 1, true);
+			return LF_EStallTrade.BUYER_FULL;
+		}
+
+		IEntity entity = FindHeldItem(from, item);
+		if (!entity)
+			return LF_EStallTrade.NO_STOCK;
+		if (s_bNoRoomForTest)
+			return LF_EStallTrade.BUYER_FULL;
+
+		InventoryStorageManagerComponent giver = LF_Component<InventoryStorageManagerComponent>.Find(from);
+		InventoryStorageManagerComponent taker = LF_Component<InventoryStorageManagerComponent>.Find(to);
+		if (!giver || !taker)
+		{
+			LF_Debug.Error(LF_StallConfig.FEATURE, "stall hand-over: a character has no inventory manager");
+			return LF_EStallTrade.BUYER_FULL;
+		}
+
+		BaseInventoryStorageComponent storage = taker.FindStorageForItem(entity, EStoragePurpose.PURPOSE_DEPOSIT);
+		if (!storage)
+			storage = taker.FindStorageForItem(entity, EStoragePurpose.PURPOSE_ANY);
+		if (!storage || !giver.TryMoveItemToStorage(entity, storage))
+			return LF_EStallTrade.BUYER_FULL;
+
+		return LF_EStallTrade.OK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return One entity of `item` the character carries (inventory first, then hands), or null.
+	static IEntity FindHeldItem(IEntity character, ResourceName item)
+	{
+		InventoryStorageManagerComponent manager = LF_Component<InventoryStorageManagerComponent>.Find(character);
+		if (!manager)
+			return null;
+
+		array<IEntity> found = LF_InventoryUtils.FindItemsByPrefab(manager, item);
+		foreach (IEntity entity : found)
+		{
+			if (entity && entity != character)
+				return entity;
+		}
+
+		array<IEntity> carried = LF_InventoryUtils.CollectCarried(character);
+		foreach (IEntity entity : carried)
+		{
+			if (entity && LF_Utils.SamePrefab(LF_Utils.GetPrefabName(entity), item))
+				return entity;
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
