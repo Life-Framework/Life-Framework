@@ -130,7 +130,7 @@ class LF_PlacementFurniture
 		probe.m_fLowest = Math.Min(middleY, frontY);
 		probe.m_fHighest = Math.Max(middleY, frontY);
 		vector spot = origin;
-		spot[1] = probe.m_fHighest;
+		spot[1] = probe.m_fHighest + placeable.GetHangHeight(); // a hung mirror or picture lifts off the floor; 0 stands on it
 		LF_PlacementGeometry.Transform(spot - forward * 0.5, spot + forward * 0.5, transform);
 		transform[3] = spot;
 		// The back WALL_SKIN_M lies against the wall by design, so the clearance box starts in front of it.

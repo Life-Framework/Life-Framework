@@ -4263,25 +4263,95 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the attendant"
      Comment "Action on the fuel station attendant: opens the conversation."
     }
+    CustomStringTableItem "{C7FECEA5DD6D8719}" {
+     Id "LF-Furniture_Armchair_Name"
+     Target_en_us "Armchair"
+     Comment "Inventory name of the carried armchair a player places in their own house."
+    }
+    CustomStringTableItem "{FE312113D8FACB13}" {
+     Id "LF-Furniture_BedDouble_Name"
+     Target_en_us "Double bed"
+     Comment "Inventory name of the carried double bed a player places in their own house."
+    }
+    CustomStringTableItem "{B878C319D0B97054}" {
+     Id "LF-Furniture_Bed_Name"
+     Target_en_us "Bed"
+     Comment "Inventory name of the carried bed a player places in their own house."
+    }
+    CustomStringTableItem "{DC940571B98F90C6}" {
+     Id "LF-Furniture_Bookcase_Name"
+     Target_en_us "Bookcase"
+     Comment "Inventory name of the carried bookcase a player places in their own house."
+    }
     CustomStringTableItem "{E5E20ACD90437F84}" {
      Id "LF-Furniture_Chair_Name"
      Target_en_us "Chair"
      Comment "Inventory name of the carried chair a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{1F2E04D27FF3273B}" {
+     Id "LF-Furniture_CoffeeTable_Name"
+     Target_en_us "Coffee table"
+     Comment "Inventory name of the carried coffee table a player places in their own house."
     }
     CustomStringTableItem "{100E11EBB38DD2B9}" {
      Id "LF-Furniture_Lamp_Name"
      Target_en_us "Lamp"
      Comment "Inventory name of the carried lamp a player places in their own house (#2654)."
     }
+    CustomStringTableItem "{7221176D14502441}" {
+     Id "LF-Furniture_Mirror_Name"
+     Target_en_us "Mirror"
+     Comment "Inventory name of the carried mirror a player places in their own house."
+    }
+    CustomStringTableItem "{4A7D81902F5C51F8}" {
+     Id "LF-Furniture_Picture_Name"
+     Target_en_us "Picture"
+     Comment "Inventory name of the carried picture a player places in their own house."
+    }
+    CustomStringTableItem "{B6724122FB6A0AE3}" {
+     Id "LF-Furniture_Plant_Name"
+     Target_en_us "Potted plant"
+     Comment "Inventory name of the carried potted plant a player places in their own house."
+    }
+    CustomStringTableItem "{BE28916EA5BD4827}" {
+     Id "LF-Furniture_Radio_Name"
+     Target_en_us "Radio"
+     Comment "Inventory name of the carried radio a player places in their own house."
+    }
+    CustomStringTableItem "{9B0558B964B0A890}" {
+     Id "LF-Furniture_Rug_Name"
+     Target_en_us "Rug"
+     Comment "Inventory name of the carried rug a player places in their own house."
+    }
     CustomStringTableItem "{272F0629B6A6B098}" {
      Id "LF-Furniture_Shelf_Name"
      Target_en_us "Shelf"
      Comment "Inventory name of the carried shelf a player places in their own house (#2654)."
     }
+    CustomStringTableItem "{25B6D83F8F0B1FEA}" {
+     Id "LF-Furniture_Sofa_Name"
+     Target_en_us "Sofa"
+     Comment "Inventory name of the carried sofa a player places in their own house."
+    }
+    CustomStringTableItem "{82829910DC892680}" {
+     Id "LF-Furniture_Stove_Name"
+     Target_en_us "Stove"
+     Comment "Inventory name of the carried stove a player places in their own house."
+    }
     CustomStringTableItem "{CD0C9FCE1E77121B}" {
      Id "LF-Furniture_Table_Name"
      Target_en_us "Table"
      Comment "Inventory name of the carried table a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{319DEB246B36444C}" {
+     Id "LF-Furniture_Tv_Name"
+     Target_en_us "Television"
+     Comment "Inventory name of the carried television a player places in their own house."
+    }
+    CustomStringTableItem "{2D489E9F3516FB40}" {
+     Id "LF-Furniture_Workbench_Name"
+     Target_en_us "Workbench"
+     Comment "Inventory name of the carried workbench a player places in their own house."
     }
     CustomStringTableItem "{3CEA2232FA244C93}" {
      Id "LF-Garage_Blue"
@@ -12433,6 +12503,5 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They can't recall anything useful."
      Comment "Toast to the officer: the witness remembered nothing they could describe."
     }
-  }
  }
 }

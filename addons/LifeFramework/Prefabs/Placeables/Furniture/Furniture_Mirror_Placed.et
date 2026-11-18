@@ -1,0 +1,28 @@
+GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
+ ID "9666C452292A7F9F"
+ components {
+  ActionsManagerComponent "{A22418D127613768}" {
+   ActionContexts {
+    UserActionContext "{79FA47D0B4C67829}" {
+     ContextName "default"
+     Position PointInfo "{3075366117BB98DA}" {
+      Offset 0 0.221 0.08
+     }
+     Radius 1.4
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{ADA0AD7040C0C31B}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{601D9338B1597F0F}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

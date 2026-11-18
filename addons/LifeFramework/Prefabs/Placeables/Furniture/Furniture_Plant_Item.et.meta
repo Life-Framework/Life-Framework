@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{1E56C8013F719C43}Prefabs/Placeables/Furniture/Furniture_Plant_Item.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
