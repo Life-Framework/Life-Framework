@@ -1404,6 +1404,11 @@ StringTable {
      Target_en_us "Rifles, pistols and ammunition for permit holders; scopes, holsters and pouches for anyone."
      Comment "Pack override of the core gun counter description (price list subtitle) for the Everon 1989 gun store."
     }
+    CustomStringTableItem "{047B1301F9EC2FEA}" {
+     Id "LF-Shop_Desc_Hardware"
+     Target_en_us "Tools, building materials, lamps and radios for the plot owner and the working man."
+     Comment "Hardware store counter (#3220): the shop description."
+    }
     CustomStringTableItem "{CE06D40741D4A653}" {
      Id "LF-Shop_Desc_MedicStores"
      Target_en_us "Coats and a medical kit for the hospital staff."
@@ -1449,6 +1454,11 @@ StringTable {
      Target_en_us "Clothes shop"
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
     }
+    CustomStringTableItem "{6D1028DE2DB79D51}" {
+     Id "LF-Shop_Name_Hardware"
+     Target_en_us "Hardware store"
+     Comment "Hardware store counter (#3220): the shop name."
+    }
     CustomStringTableItem "{D815E73D4340CE7D}" {
      Id "LF-Shop_Name_MedicStores"
      Target_en_us "Medic stores"
@@ -1484,6 +1494,11 @@ StringTable {
      Target_en_us "Workwear counter"
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
     }
+    CustomStringTableItem "{BC9B8CB431998AA0}" {
+     Id "LF-Shop_OpenDesc_Hardware"
+     Target_en_us "Browse the tools and building supplies."
+     Comment "Hardware store counter (#3220): the shop action description."
+    }
     CustomStringTableItem "{3E7A91C04B52D684}" {
      Id "LF-Shop_OpenDesc_Newsagent"
      Target_en_us "Buy the tourist map or a paper"
@@ -1503,6 +1518,11 @@ StringTable {
      Id "LF-Shop_Open_GunCounter"
      Target_en_us "Buy guns and ammunition"
      Comment "Pack override of the core gun counter action: in the Everon 1989 gun store the counter sells rifles, pistols, magazines, scopes, holsters and pouches, not only a handgun."
+    }
+    CustomStringTableItem "{2FC4CCC38833503C}" {
+     Id "LF-Shop_Open_Hardware"
+     Target_en_us "Hardware store"
+     Comment "Hardware store counter (#3220): the shop action label."
     }
     CustomStringTableItem "{8D1EB732FECFCC26}" {
      Id "LF-Shop_Open_MedicStores"
@@ -2018,6 +2038,31 @@ StringTable {
      Id "LF-Sign_HarbourOffice_What"
      Target_en_us "The harbour master's cabin on the quay road. Marcel Roux takes on crate runs for anyone the town knows."
      Comment "Sign card for the harbour office plate, What section."
+    }
+    CustomStringTableItem "{2F58730647E93F81}" {
+     Id "LF-Sign_Hardware_How"
+     Target_en_us "*Hardware store* at the shop counter, one price per item|Miners: the miner's supply counter beside it"
+     Comment "Sign card for the hardware store, How section. Capitalized phrases are the action names the player sees."
+    }
+    CustomStringTableItem "{CD2EFFC7DA13FF3C}" {
+     Id "LF-Sign_Hardware_Needs"
+     Target_en_us "Money for the shop counter|Mining rank 2 for the pickaxe"
+     Comment "Sign card for the hardware store, Needs section."
+    }
+    CustomStringTableItem "{736186C3C3CF88AC}" {
+     Id "LF-Sign_Hardware_Next"
+     Target_en_us "Cement, bricks and planks go to a plot's build site."
+     Comment "Sign card for the hardware store, Next section."
+    }
+    CustomStringTableItem "{B434FABAE242A442}" {
+     Id "LF-Sign_Hardware_Title"
+     Target_en_us "Quincaillerie"
+     Comment "Title of the painted fascia over the hardware store door in the workshop yard (Everon 1989 pack, #3220). Printed on the sign and shown in the prompt as Read: Quincaillerie."
+    }
+    CustomStringTableItem "{30BA391BD9DECCAD}" {
+     Id "LF-Sign_Hardware_What"
+     Target_en_us "The village hardware store: shovels and axes, cement, bricks, planks and sandbags, flashlights and radios. Miners buy their pickaxe at the second counter."
+     Comment "Sign card for the hardware store, What section."
     }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
