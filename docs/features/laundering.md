@@ -85,3 +85,14 @@ Stolen money is a separate item that never counts as cash.
   never forfeits) is forfeited: `LF_Debug.Info("Laundering", ...)` names owner, marked and clean amounts, nobody is paid, and the
   station frees for anyone. A timer frees it without anyone touching it; the clock is part of the save.
 - Test: `LF_Test_LaunderStation` (WORLD), `LF_Test_LaunderStationPersist` (PERSISTENCE, restart check under `wt e2e`).
+
+### Selling chain goods to the buyer — `Feature/Laundering/LF_BuyerSaleAction.c`, `LF_BuyerPrices.c` (#2920)
+- ✅ `LF_BuyerSaleAction` ("Sell the goods", `#LF-BuyerSale_Action`) sits on `LF_IllicitBuyer.et`. `LF_BuyerSale.ServerSell` takes
+  every chain good (`LF_ChainSearch.IsGood`, the `m_bGoods` outputs) the character carries that the price list
+  (`Configs/Crime/LF_BuyerPrices.conf`, `LF_BuyerPrices`) names, and pays the sum: marked notes when the dirty-money switch
+  (`LF_LaunderConfig.m_bCrimePaysMarked`) is on, cash when it is off. The core list prices moonshine; the 1989 pack overrides the file (B4).
+- ✅ Server only, and checked again there: a living standing seller, not cuffed (`LF_CuffEnforcement`), the buyer is the live one
+  and stands at the spot the rotation has open now, within `m_fReach` (4 m), not repeating inside `m_iMinActionMs` (1 s), something to sell.
+- ✅ All or nothing on the inventory side: goods are taken first; a short take, or a payout that does not land, puts every unit
+  back (and takes back any part paid). Cash is booked on the ledger with reason `buyer-sale`; marked notes get a `marked` trail line.
+- Test: `LF_Test_BuyerSale` (WORLD).
