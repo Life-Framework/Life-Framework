@@ -30,3 +30,17 @@
   cuffed buyer. Bought: exactly the price leaves the buyer's carried cash (ledger reason `property_buy`),
   the buyer's character key becomes the owner in `LF_Properties` with the purchase time, and a toast says
   so. The row rides the existing `properties` payload. Proof: `property/plot-buy`.
+
+### Build site — `Feature/Property/LF_BuildSiteComponent.c` (2026-11-18, #2650, spec #756)
+- 🟡 The plot sign also carries an `LF_BuildSiteComponent` and two actions. "Need N more <item>" deposits
+  everything the owner carries of what the stage being built still lacks, up to what it lacks: the items leave
+  the inventory and are counted in the property row's `m_sDeposited`. A stranger, someone out of reach (6 m) or
+  someone carrying none of it is refused with a toast.
+- 🟡 "Build (x/y)" is a 2 s held action, offered once the items are in: one work unit per hold (a second unit
+  from the same character within 0.5 s is refused). Items and work met: the stage advances, the next stage
+  starts empty, and the shell swaps to the finished stage's prefab from `LF_Property.conf` (spawned at the sign's
+  local `m_vShellOffset`, default 8 m in front).
+- 🟡 Progress is the row (`m_iBuildStage` = finished stages, `m_iWorkDone`, `m_sDeposited`), saved by the
+  existing `properties` payload; no save version change. The shell is not saved: the site re-reads the row
+  every 2 s and spawns the shell after a load. Clients see a replicated mirror for the labels only.
+  Proof: `property/build-site`, `property/build-site-persist`, `wt e2e`.

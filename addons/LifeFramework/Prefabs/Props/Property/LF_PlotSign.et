@@ -3,8 +3,22 @@ GenericEntity : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_PlotComponent "{19835BCD6A3E4F05}" {
   }
+  LF_BuildSiteComponent "{4E8B2C1D7A3F5061}" {
+  }
   ActionsManagerComponent "{C2AEC892676B4809}" {
    additionalActions {
+    LF_BuildSiteAction "{4E8B2C1D7A3F5062}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+    LF_BuildSiteAction "{4E8B2C1D7A3F5063}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     Duration 2
+     m_eMode WORK
+    }
     LF_PlotBuyAction "{7A5F95530F1F1CCB}" {
      ParentContextList {
       "LF_Sign"
