@@ -3545,6 +3545,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Goodbye."
      Comment "Dialogue reply the player can pick when talking to the clerk NPC."
     }
+    CustomStringTableItem "{A17C3E5D92B84F60}" {
+     Id "LF-Dialogue_Clerk_SayFile"
+     Target_en_us "What does my file say?"
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC: the clerk says where the player stands with the town and the police, in words."
+    }
     CustomStringTableItem "{6A2F03A535260E7C}" {
      Id "LF-Dialogue_Clerk_SayLost"
      Target_en_us "I have lost my identity card."
@@ -9730,6 +9735,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Reputation_Faction_Underworld"
      Target_en_us "Underworld"
      Comment "Standing: neutral core label of the underworld faction. Never shown to the player."
+    }
+    CustomStringTableItem "{5D82F0B6C3A19E47}" {
+     Id "LF-Reputation_File_Line"
+     Target_en_us "%1: %2."
+     Comment "Standing in words (#2705), on the ID card and from the clerk. %1 = the faction label, %2 = the tier word. Never a number. The pack overlays the words."
     }
     CustomStringTableItem "{F38A5D16B04E927C}" {
      Id "LF-Reputation_Refuse_Any"
