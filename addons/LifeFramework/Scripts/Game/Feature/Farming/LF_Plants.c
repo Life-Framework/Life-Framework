@@ -58,8 +58,6 @@ class LF_Plants
 	static const string FEATURE = "Farming";
 	//! How far above the spot the open-ground trace starts, metres: above any roof of a house (#2821).
 	static const float OPEN_TRACE_UP_M = 12.0;	// lf-fixed: open-ground trace height
-	//! A trace hit this far above the terrain at the spot counts as something standing over it, metres (#2821).
-	static const float OPEN_COVER_MIN_M = 0.3;	// lf-fixed: open-ground cover height
 	static const int TICK_MS = 1000;	// lf-fixed: the farming clock tick, as LF_FarmPlots
 	//! Metres a gardener may stand from a plant to water, harvest or inspect it.
 	static const float REACH = LF_PlantRules.MAX_REACH;	// lf-fixed: the planting reach of spec #809
@@ -559,8 +557,11 @@ class LF_Plants
 					continue;
 				}
 
-				// The ground itself can be an entity (a road mesh, DebugWorld's slab): only a hit above the terrain is cover.
-				if (trace.ContactPoint[1] > spot[1] + OPEN_COVER_MIN_M)
+				// The terrain is an entity too. Anything else the trace meets first is built: a roof or a prop above
+				// the spot, or a sidewalk, slab, deck or rock lying on it. On real Everon a sidewalk hit sits 0.13 m up
+				// and names no material (#3023 review), so a height floor alone let it through.
+				typename hitType = trace.TraceEnt.Type();
+				if (!hitType.IsInherited(GenericTerrainEntity) && !hitType.IsInherited(GenericWorldEntity))
 					covered = true;
 			}
 

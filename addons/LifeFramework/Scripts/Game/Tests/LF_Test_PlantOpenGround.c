@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_PlantOpenGround`: `RED PROOF OK (all 1 listed test(s) fail with the hook on)`; the pure open case and the planting are skipped, so `open ground takes the seed (expected 0, got 1)` fails. The first green attempt was also red for real: the DebugWorld ground is an entity, so a plain "trace hit an entity" check refused every spot (fixed: only a hit above the terrain counts as cover).
+// red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_PlantOpenGround`: `RED PROOF OK (all 1 listed test(s) fail with the hook on)`; the pure open case and the planting are skipped, so `open ground takes the seed (expected 0, got 1)` fails. The first green attempt was also red for real: the DebugWorld ground is an entity, so a plain "trace hit an entity" check refused every spot (fixed: only a hit above the terrain counts as cover). #3023 review, 2026-11-18: the new sidewalk case failed on the unfixed code (`a spot on a sidewalk is refused (expected 6, got 0)`) and passes with the terrain-only ground rule.
 
 //! farming/plant-open-ground (#2821, spec #809): a seed goes on open ground only. Refused when the planter
 //! stands well above the terrain (a floor or a roof), when a trace from above the spot hits a building or
@@ -12,6 +12,7 @@ class LF_Test_PlantOpenGround : LF_Test
 	protected static const ResourceName CABBAGE = "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et";
 	protected static const ResourceName VISUAL = "{B8FD99C47D856E7F}Prefabs/Vegetation/Crops/FarmPlot_CabbageVisual.et";
 	protected static const ResourceName VANILLA_BOX = "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et";
+	protected static const ResourceName VANILLA_PAVEMENT = "{199181163F247657}Prefabs/Structures/Infrastructure/Pavements/AsphaltPavement_01/AsphaltPavement_01_Narrow_4m_A.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -117,6 +118,26 @@ class LF_Test_PlantOpenGround : LF_Test
 				ctx.Equal(LF_EPlantResult.PLACE_REFUSED, result, "a spot under a prop is refused");
 				ctx.True(place == LF_EPlantPlace.NOT_OPEN_GROUND, "refused as not open ground (covered)");
 				SCR_EntityHelper.DeleteEntityAndChildren(box);
+			}
+		}
+
+		// A sidewalk on the terrain (#3023 review): on real Everon its trace hit sits 0.13 m up and names no
+		// material, so neither the cover height nor the road words saw it. Only terrain is soil.
+		Resource pavementResource = Resource.Load(VANILLA_PAVEMENT);
+		ctx.True(pavementResource.IsValid(), "the vanilla pavement prefab loads");
+		if (pavementResource.IsValid())
+		{
+			EntitySpawnParams pavementParams = new EntitySpawnParams();
+			pavementParams.TransformMode = ETransformMode.WORLD;
+			pavementParams.Transform[3] = spot;
+			IEntity pavement = GetGame().SpawnEntityPrefab(pavementResource, world, pavementParams);
+			ctx.True(pavement != null, "the pavement spawns on the spot");
+			if (pavement)
+			{
+				result = LF_Plants.PlantAs(gardener, OWNER, SEED, spot, plantId, place);
+				ctx.Equal(LF_EPlantResult.PLACE_REFUSED, result, "a spot on a sidewalk is refused");
+				ctx.True(place == LF_EPlantPlace.NOT_OPEN_GROUND, "refused as not open ground (pavement)");
+				SCR_EntityHelper.DeleteEntityAndChildren(pavement);
 			}
 		}
 
