@@ -67,9 +67,9 @@
       "places": ["StoreCounter"]
     },
     {
-      "id": "hardware", "required": false, "kit": "hardware", "host": "building", "poi": "none",
+      "id": "hardware", "required": false, "kit": "hardware", "host": "building", "poi": "HardwareCounter",
       "needs": { "interior": "required", "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["garage", "industrial", "shop"] },
-      "places": ["StoreCounter"]
+      "places": ["HardwareCounter"]
     },
     {
       "id": "pharmacy", "required": false, "kit": "pharmacy", "host": "building", "poi": "none",

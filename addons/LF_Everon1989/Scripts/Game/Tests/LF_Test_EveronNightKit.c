@@ -1,7 +1,7 @@
-// red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronNightKit` (RedProof() looks up a prefab the general store does not stock): RED-OK, `the flashlight is in the general store stock` failed. Green with the stock row: `--only LF_Test_EveronNightKit` passed 10 assertions.
-//! #3153 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the 1989 general store
+// red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronNightKit` (RedProof() looks up a prefab the hardware store does not stock): RED-OK, `the flashlight is in the general store stock` failed. Green with the stock row: `--only LF_Test_EveronNightKit` passed 10 assertions.
+//! #3153 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the 1989 hardware store
 //! sells the vanilla Soviet flashlight (`Flashlight_Soviet_01`), so a player can buy a light for the night.
-//! The till's buy list (the pack stock overlay, `LF_ShopStock_Everon1989.conf`, store id `general_store`)
+//! The till's buy list (the pack stock overlay, `LF_ShopStock_Everon1989.conf`, store id `hardware`, #3220)
 //! carries the flashlight with a price; the merged price config prices it (buy above sell-back, so no profit
 //! loop) and lists it as an extra item prefab; the prefab resource loads.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
@@ -9,7 +9,7 @@ class LF_Test_EveronNightKit : LF_Test
 {
 	static const ResourceName FLASHLIGHT = "{575EA58E67448C2A}Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et";
 	static const ResourceName NOT_STOCKED = "{70BC751317551D9B}Prefabs/Items/Equipment/Canteens/Canteen_Soviet_01.et";
-	protected static const string STOCK = "general_store";
+	protected static const string STOCK = "hardware";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -36,7 +36,7 @@ class LF_Test_EveronNightKit : LF_Test
 	protected void CheckStock(LF_TestContext ctx)
 	{
 		LF_ShopStock stock = LF_ShopStockConfig.Get().Find(STOCK);
-		ctx.NotNull(stock, "the general store has a stock under the pack header");
+		ctx.NotNull(stock, "the hardware store has a stock under the pack header");
 		if (!stock)
 			return;
 
@@ -45,7 +45,7 @@ class LF_Test_EveronNightKit : LF_Test
 			probe = NOT_STOCKED;
 
 		LF_ShopStockItem row = stock.FindItem(probe);
-		ctx.NotNull(row, "the flashlight is in the general store stock");
+		ctx.NotNull(row, "the flashlight is in the hardware store stock");
 		if (row)
 			ctx.True(row.m_iPrice > 0, string.Format("the flashlight has a stock price (got %1)", row.m_iPrice));
 	}
