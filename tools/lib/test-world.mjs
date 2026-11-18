@@ -127,9 +127,22 @@ export const testNames = (root) => eachTestFile(root, parseNames);
 export function parsePackRegistry(text) {
   return [...String(text).matchAll(/RegisterPack\(\s*new (LF_Test_\w+)\(\),\s*LF_TestTier\.(\w+)\)/g)].map((m) => ({ cls: m[1], tier: m[2] }));
 }
+// [{ cls, tier }] of the pack classes that declare `[LF_TestInfo(LF_TestTier.T, pack: true)]` right above them (#2617).
+export function parsePackAttributes(text) {
+  return [...String(text).matchAll(/\[LF_TestInfo\(\s*LF_TestTier\.(\w+)\s*,\s*pack:\s*true\s*\)\]\s*(?:\/\/[^\n]*\s*)*class\s+(LF_Test_\w+)/g)].map((m) => ({ cls: m[2], tier: m[1] }));
+}
+// The pack's tests: attributes in its test files, plus rows of the generated registry while one exists.
 export function readPackTests(root) {
-  const f = join(packTestsDir(root), PACK_TEST_REGISTRY);
-  return existsSync(f) ? parsePackRegistry(readFileSync(f, "utf8")) : [];
+  const dir = packTestsDir(root);
+  if (!existsSync(dir)) return [];
+  const rows = [];
+  const f = join(dir, PACK_TEST_REGISTRY);
+  if (existsSync(f)) rows.push(...parsePackRegistry(readFileSync(f, "utf8")));
+  for (const name of readdirSync(dir)) {
+    if (name.endsWith(".c")) rows.push(...parsePackAttributes(readFileSync(join(dir, name), "utf8")));
+  }
+  const seen = new Set();
+  return rows.filter((r) => !seen.has(r.cls) && seen.add(r.cls));
 }
 
 // The pack leg of a run: { world: PACK_TEST_MISSION, classes, reason } or null. A tier run takes the

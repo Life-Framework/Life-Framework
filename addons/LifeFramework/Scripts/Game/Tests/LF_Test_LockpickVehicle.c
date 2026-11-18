@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! Hotwire and vehicle picking rules (#412): an unkeyed start sets the stolen flag, a keyed start does
 //! not, a free ignition is never stolen, the start gate lets in a key holder or the hotwirer only.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_LockpickVehicle : LF_Test
 {
 	override string GetName()
@@ -50,6 +51,7 @@ class LF_Test_LockpickVehicle : LF_Test
 //! The playtest lock-up car is wired (#412): locked, ignition locked, pickable, both actions on it,
 //! no stolen flag yet; the free-ignition car beside the lot starts for anyone. Spawns nothing. The
 //! held pick and hotwire are the two-client session proof.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LockpickVehicleWorld : LF_Test
 {
 	override string GetName()

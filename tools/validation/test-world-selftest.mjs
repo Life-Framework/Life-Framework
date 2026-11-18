@@ -210,7 +210,8 @@ for (const m of reg.matchAll(/Register\(new (\w+)\(\), LF_TestTier\.(LOGIC|WORLD
   regCount++;
   check(real[m[1]] === m[2], `the parser gives ${m[1]} tier ${m[2]} like the registry (got ${real[m[1]]})`);
 }
-check(regCount > 100, `the registry lists the suite (${regCount} registrations)`);
+// Tests register themselves by attribute (#2610): the registry keeps only a few rows, the parser reads the suite.
+check(Object.keys(real).length > 800, `the parser reads the suite (${Object.keys(real).length} tests, ${regCount} still in the registry)`);
 check(real["tests/logic-world"] === "LOGIC", "a real GetName() string resolves (tests/logic-world)");
 
 // 4. The world: the files exist, the runner is flagged, nothing but the allowed entities stands in it.

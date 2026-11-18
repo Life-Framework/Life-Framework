@@ -4,6 +4,7 @@
 //! night-shift worker's dialogue resolves by id through the pack's index overlay, is playable, and every
 //! line he says has a caption key that resolves, a sound event, a length and a mouth envelope. He remembers
 //! the Zone and the move, and points a newcomer at the town board and the clerk's hostel.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronNightShift : LF_Test
 {
 	static const string NIGHT_SHIFT_ID = "night_shift";

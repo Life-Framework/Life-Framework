@@ -5,6 +5,7 @@
 //! `LF_Police_Everon1989.conf` and `LF_PoliceKit_Everon1989.conf`. The patrol rank draws a spike strip
 //! and no roadblock kit; the senior rank draws the roadblock kit; a civilian cannot draw and carries
 //! nothing out.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronPoliceKit : LF_Test
 {
 	static const ResourceName KIT_OVERLAY = "{6ED5DDC9D2DAF591}Configs/Police/LF_PoliceKit_Everon1989.conf";

@@ -39,6 +39,7 @@
 // `- e2e the robber's look survives the restart (expected '9B5BB216CC7FF18E|1=9F546CCA2582D16F', got '')`.
 // LF_TestLegacySnapshot now puts the crime reports back; both passes green, and green with --legacy-save.
 // tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
 	protected static const string ACCOUNT_UID = "e2e-uid";
@@ -460,6 +461,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 
 //------------------------------------------------------------------------------------------------
 // tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateVerify : LF_Test
 {
 	//! #2410: the carried house key and the house it opens.

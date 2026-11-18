@@ -3,6 +3,7 @@
 //! #2166 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), every weapon the
 //! licensed `gun_counter` sells resolves to a prefab with an `LF_SerialComponent`, so
 //! `LF_FenceSerials.OnWeaponSale` stamps the sale instead of logging "a weapon prefab needs LF_SerialComponent".
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronGunCounterSerials : LF_Test
 {
 	protected static const string COUNTER = "gun_counter";

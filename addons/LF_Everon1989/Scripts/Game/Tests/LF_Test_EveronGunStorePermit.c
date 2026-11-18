@@ -5,6 +5,7 @@
 //! pack leg of `tools\cli test`), the gun store's `gun_counter` outlet carries the firearm permit licence
 //! row (LF_Catalogue_GunStore.conf), its fee is the licence office's, and the licence desk therefore no
 //! longer takes permit applications.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronGunStorePermit : LF_Test
 {
 	protected static const string COUNTER = "gun_counter";

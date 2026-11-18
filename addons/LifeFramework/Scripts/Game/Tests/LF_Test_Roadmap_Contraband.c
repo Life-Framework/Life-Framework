@@ -2,6 +2,7 @@
 // red-proof: 2026-10-11 fast boot logs_2026-10-11_05-19-01 printed [LFTEST] FAIL roadmap/contraband / [LFTEST]   - delivery pays the configured cash once (expected 0, got 200)
 
 // tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_Contraband : LF_Test
 {
 	override string GetName()
@@ -74,6 +75,7 @@ class LF_Test_Roadmap_Contraband : LF_Test
 }
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_ContrabandWorld : LF_Test
 {
 	override string GetName()

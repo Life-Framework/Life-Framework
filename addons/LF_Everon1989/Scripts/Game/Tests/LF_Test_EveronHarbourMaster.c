@@ -6,6 +6,7 @@
 //! takes the crate run on. The sign-up itself needs a core dialogue hook (`LF_DialogueHook_<name>` that calls
 //! `LF_PlayerJobComponent.SetJob`); none exists, so the take-the-job reply leads to the `harbour.go` line and the
 //! hook is the follow-up card named in the PR. Found by prefab, never by a town coordinate.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronHarbourMaster : LF_Test
 {
 	static const ResourceName HARBOUR_MASTER = "{B45B7C6C168822D4}Configs/Npcs/LF_Npc_Townsfolk_HarbourMaster.et";

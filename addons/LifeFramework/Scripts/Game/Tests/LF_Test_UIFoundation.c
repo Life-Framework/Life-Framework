@@ -30,6 +30,7 @@ class LF_TestButtonListener : Managed
 }
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UIKitInitialFocus : LF_Test
 {
 	override string GetName()
@@ -64,6 +65,7 @@ class LF_Test_UIKitInitialFocus : LF_Test
 }
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UIKitButtonInvoker : LF_Test
 {
 	override string GetName()
@@ -89,6 +91,7 @@ class LF_Test_UIKitButtonInvoker : LF_Test
 }
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_NotificationToastTiming : LF_Test
 {
 	override string GetName()
@@ -108,6 +111,7 @@ class LF_Test_NotificationToastTiming : LF_Test
 }
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NotificationToastLayout : LF_Test
 {
 	static const string TOAST_LAYOUT = "{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout";

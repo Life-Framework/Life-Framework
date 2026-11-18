@@ -3,6 +3,7 @@
 //! everon/map-areas (#2233 split M5b): under the Everon 1989 header (the pack leg), the header lists
 //! the pack's area overlay, the layered table holds Saint-Philippe's town line and safe square over
 //! the empty core file, and the map's merged list draws both. No lawless area until M7 (D4).
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronMapAreas : LF_Test
 {
 	static const ResourceName AREAS_OVERLAY = "{304F85569D5FEC87}Configs/Map/LF_MapAreas_Everon1989.conf";

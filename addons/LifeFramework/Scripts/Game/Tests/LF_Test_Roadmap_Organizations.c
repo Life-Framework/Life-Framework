@@ -4,6 +4,7 @@
 // Restored the expected value to 100.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Organizations : LF_Test
 {
 	override string GetName()
@@ -112,6 +113,7 @@ class LF_Test_Roadmap_Organizations : LF_Test
 }
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_OrganizationsWorld : LF_Test
 {
 	override string GetName()
@@ -171,6 +173,7 @@ class LF_Test_Roadmap_OrganizationsWorld : LF_Test
 }
 
 // tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_Roadmap_OrganizationsPersistence : LF_Test
 {
 	override string GetName()
