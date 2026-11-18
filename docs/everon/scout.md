@@ -48,6 +48,22 @@ pictures and the dump come from one hidden Workbench run, routed through the poo
 position, so an entrance is the side of the building it stands on and the way it faces. The inside pictures are
 `look --interior x,y,z` from the middle of the footprint at the catalog's first floor level; read them before relying on a room's size.
 
+## The labelled overview
+
+A reviewer checks a town mapping (`docs/everon/places/<slug>/mapping.json`) against the overhead picture, so the picture
+has to say which roof is which. `tools\cli scout label <slug>` (no Workbench, about a second) draws the mapped
+buildings on `img/overview-top.jpg` and saves `img/overview-top-labelled.jpg` beside it: each mapped building's footprint
+outline and id, the slot names it takes (`b01 dock, taxi`: a shared building is one label), its alternatives in blue
+(`b26 alt: hall`), a scale bar and a north arrow. A `none` slot draws nothing; a mapped building outside the picture is
+named in the command's summary. `dossier.json` and `dossier.md` list the labelled picture right after the plain one.
+
+The overlay comes from `dossier.json`, not from the picture: the top shot's camera stands `max(30, 2.2 x view)` m above the
+place looking straight down (60 degrees of vertical field, north up), so a ground point lands at a fixed number of pixels
+per metre (`tools/scout/label.mjs`, `topProjector`). A tall roof shifts a few metres outward from the centre and the
+outline, drawn at ground level, sits a little inside it. The view comes from `generated.view` in the dossier (60 when the
+dossier predates it). A full `scout` run makes the labelled picture itself when a `mapping.json` is already in the folder;
+after a mapping changes, run `scout label <slug>` again, and attach that picture to the mapping's PR.
+
 ## Several at once
 
 Each run writes only `docs/everon/places/<slug>/` and `tmp/scout/<slug>/`, and the Workbench runs queue on the pool,
