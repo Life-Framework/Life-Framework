@@ -145,13 +145,37 @@ class LF_HospitalCabinetAction : ScriptedUserAction
 			return false;
 		}
 
-		if (!LF_Hospital.CanBreach(cabinet.GetTargetId()))
+		if (!OfferOpen(cabinet, !Replication.IsServer()))
 		{
 			SetCannotPerformReason("#EL-Breach_AlreadyOpen");
 			return false;
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Offer check. The cabinet table (LF_Hospital.Cabinets) and LF_Breach are server-only, so a
+	//! dedicated client reads the replicated breach mirror instead (LF_BreachTargetComponent.CanArmForOffer,
+	//! the way LF_BreachArmAction does, #3364). The server keeps the full check and PerformAction
+	//! re-checks it through LF_Hospital.BreachCabinet.
+	//! \param asClient True on a client: skip the server-only table.
+	static bool OfferOpen(LF_HospitalCabinetComponent cabinet, bool asClient)
+	{
+		if (!cabinet)
+			return false;
+
+		if (!asClient)
+			return LF_Hospital.CanBreach(cabinet.GetTargetId());
+
+		if (!cabinet.GetOwner())
+			return false;
+
+		LF_BreachTargetComponent target = LF_Component<LF_BreachTargetComponent>.Find(cabinet.GetOwner());
+		if (!target)
+			return false;
+
+		return target.CanArmForOffer();
 	}
 
 	//------------------------------------------------------------------------------------------------

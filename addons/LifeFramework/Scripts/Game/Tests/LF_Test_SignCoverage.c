@@ -71,7 +71,8 @@ class LF_Test_SignCoverage : LF_Test
 	protected static bool IsPackPlaced(string id)
 	{
 		// plot_for_sale: the face of the LF_PlotSign prefab (#2780), placed one per plot by a pack or the grid; the core world has no plot.
-		return id == "mining" || id == "plot_for_sale";
+		// chalk_sample: the chalk style's sample board (docs/architecture/sign-system.md), placed in its GridWorld cell only.
+		return id == "mining" || id == "plot_for_sale" || id == "chalk_sample";
 	}
 
 	//------------------------------------------------------------------------------------------------
