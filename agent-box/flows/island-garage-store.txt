@@ -1,0 +1,23 @@
+# Island garage part 2 (#3363): run `node agent-box/harness.mjs --client 1 park` first (it stands in for driving the car to the garage pad), then this flow.
+
+step 3 Store the car at the garage pad
+stand Fit_saint_philippe_carlot_garage
+wait 1500
+use LF_VehicleStoreAction Fit_saint_philippe_carlot_garage
+wait 2500
+state
+
+step 4 Retrieve the car
+use LF_VehicleRetrieveAction Fit_saint_philippe_carlot_garage
+wait 2500
+state
+
+step 5 Read the ledger at the garage and the impound desk
+use LF_GarageLedgerAction Fit_saint_philippe_carlot_garage
+wait 1500
+stand Fit_saint_philippe_carlot_impound_desk
+wait 1500
+use LF_GarageLedgerAction Fit_saint_philippe_carlot_impound_desk
+wait 1500
+use LF_ImpoundCollectAction Fit_saint_philippe_carlot_impound_desk
+wait 1500

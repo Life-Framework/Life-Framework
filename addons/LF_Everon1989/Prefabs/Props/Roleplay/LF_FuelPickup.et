@@ -1,0 +1,48 @@
+GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ ID "025A51725E3F1F59"
+ components {
+  SCR_DestructionMultiPhaseComponent "{5624A88D86EFE8BA}" {
+   Enabled 0
+  }
+  ActionsManagerComponent "{2DA461F763AAC10E}" {
+   ActionContexts {
+    UserActionContext "{6ADE2E269B8BD34C}" {
+     ContextName "default"
+     Position PointInfo "{0AB33B5DBDCD0C74}" {
+      Offset 0 0.4 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_JobStartRunAction "{143B44046FA0D907}" {
+     ParentContextList {
+      "default"
+     }
+     m_eJob FUEL_DELIVERY
+    }
+   }
+  }
+  LF_JobSiteComponent "{3285589312DB0C2B}" {
+   m_eSite FUEL
+  }
+ }
+ {
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "533E9CCD78F060B3"
+   coords -0.3 0.15 -0.25
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "202CC1DBA17642AF"
+   coords 0.3 0.15 -0.25
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "D3CF8995444533C7"
+   coords -0.3 0.15 0.25
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "B44DF34DC8069DFA"
+   coords 0.3 0.15 0.25
+  }
+ }
+}

@@ -96,111 +96,24 @@ LF_NpcBaseEntity Clinic_Doctor : "{C001B9088678C653}Prefabs/Characters/Npcs/Outf
  coords 309.59 0.31 41.063
  angleY -90
 }
-GenericEntity Clinic_Till {
+GenericEntity Clinic_Till : "{2D106F570E87D5D9}Prefabs/Props/Commercial/LF_HospitalTill.et" {
  components {
-  MeshObject "{8F3A1C2D4B5E6071}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
-  }
-  RigidBody "{8F3A1C2D4B5E6072}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
-  ActionsManagerComponent "{8F3A1C2D4B5E6073}" {
-   ActionContexts {
-    UserActionContext "{8F3A1C2D4B5E6074}" {
-     ContextName "default"
-     Position PointInfo "{8F3A1C2D4B5E6075}" {
-      Offset 0 1 0
-     }
-     Radius 3
-    }
-   }
-   additionalActions {
-    LF_RobAction "{8F3A1C2D4B5E6076}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{8F3A1C2D4B5E6077}" {
-      Name "#EL-Hospital_RobTill"
-     }
-     m_iMoneyAmount 200
-     m_fCooldown 60
-     m_iMinPoliceOnDuty 0
-    }
-   }
-  }
-  RplComponent "{8F3A1C2D4B5E6078}" {
-   Enabled 1
-  }
-  LF_HospitalTillComponent "{8F3A1C2D4B5E6079}" {
+  LF_HospitalTillComponent "{E11FD1BB36043573}" {
    m_sTargetId "Clinic_Till"
-   m_iPayout 200
-   m_fCooldown 60
-   m_iMinPolice 0
   }
  }
- Flags 0x403 0
  coords 308.59 0.31 39.463
  angleY -90
 }
-GenericEntity Clinic_Cabinet {
+GenericEntity Clinic_Cabinet : "{E9A69A99981C062C}Prefabs/Props/Commercial/LF_HospitalCabinet.et" {
  components {
-  MeshObject "{91C4E0A7B2D34819}" {
-   Object "{3169A0CB357D3854}Assets/Props/Furniture/CupboardOld_01/CupboardOld_01_medium.xob"
-  }
-  RigidBody "{91C4E0A7B2D3481A}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
-  LF_LockComponent "{91C4E0A7B2D34810}" {
-   m_bDebugLocked 1
-  }
-  ActionsManagerComponent "{91C4E0A7B2D34811}" {
-   ActionContexts {
-    UserActionContext "{91C4E0A7B2D34812}" {
-     ContextName "default"
-     Position PointInfo "{91C4E0A7B2D34813}" {
-      Offset 0 1 0
-     }
-     Radius 3
-    }
-   }
-   additionalActions {
-    LF_HospitalCabinetAction "{91C4E0A7B2D34814}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{91C4E0A7B2D34815}" {
-      Name "#EL-Hospital_BreachCabinet"
-     }
-    }
-    LF_BreachRepairAction "{91C4E0A7B2D34816}" {
-     ParentContextList {
-      "default"
-     }
-    }
-   }
-  }
-  RplComponent "{91C4E0A7B2D3481B}" {
-   Enabled 1
-  }
-  LF_BreachTargetComponent "{91C4E0A7B2D34817}" {
+  LF_BreachTargetComponent "{1CED7C398B3479F9}" {
    m_sTargetId "Clinic_Cabinet"
-   m_fFuseSeconds 0
   }
-  LF_HospitalCabinetComponent "{91C4E0A7B2D34818}" {
+  LF_HospitalCabinetComponent "{721529CA2232801E}" {
    m_sTargetId "Clinic_Cabinet"
-   m_aLootPrefabs {
-    "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
-    "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
-    "{00E36F41CA310E2A}Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et"
-    "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
-   }
   }
  }
- Flags 0x403 0
  coords 308.89 0.31 37.213
  angleY -90
 }

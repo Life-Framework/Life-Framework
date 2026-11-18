@@ -34,6 +34,11 @@
   the renter's own inventory touch an open locker. Weight capacity is 60 kg on the container prefab (the config's
   `weightCapacity` is not read by the prefab yet). Logs `[LFDebug:Lockers]`.
   Proof: `LF_Test_LockerRoundtrip`, `LF_Test_LockerIsolation` (WORLD), `tools\cli wt e2e` (a stored handgun survives the restart).
+- 🧪 Opens on a dedicated client (2026-11-18, #3369): the server spawns the container and sends its `RplId` in the same call,
+  so the client could resolve it before it streamed in and drop the open (9 of 9 opens on a dedicated server with one remote
+  client, a listen host never saw it). `LF_LockerPlayerController` now retries the lookup 10 times, 100 ms apart, then gives up
+  with the same warning; a newer open cancels a pending retry. Proof: `node agent-box/session.mjs locker-open-proof` (up
+  `--mission grid --clients 1`, ten rent-and-open cycles at the bank in grid cell `slice-3369`): 0 dropped lines.
 - ⚠️ A snapshot is current at every capture, not marked "open" in the save: a crash between a change and the next capture
   loses that change, it never duplicates an item (the opener's carried inventory is captured with it). The lost-and-found
   sweep and reclaim are wave 2.

@@ -28,6 +28,81 @@ GenericEntity Fit_saint_philippe_arrival_Place_LicenceDesk {
  coords 4418.9 12.7 10647.5
 }
 GenericEntity Fit_saint_philippe_arrival_town_hall_furniture_01 : "{73F7E5F730727D8C}Prefabs/Buildings/TownHall/Furniture/TownHall_furniture_01.et" {
- coords 4418.9 12.7 10647.5
+ coords 4418.9 12.5 10647.5
+ angleY -8
+}
+LF_NpcBaseEntity Fit_saint_philippe_arrival_town_hall_clerk : "{446165FE77D592AC}Prefabs/Characters/Npcs/Outfits/LF_Npc_Clerk_1.et" {
+ coords 4426.737 12.7 10651.732
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_arrival_lf_sign_rules : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
+ components {
+  LF_SignComponent "{0F52A6E4DA40DB6F}" {
+   m_sSignId "rules"
+   m_vRimColor 0.7 0.12 0.1
+   m_vPaintColor 0.95 0.9 0.78
+   m_vTextColor 0.7 0.12 0.1
+  }
+ }
+ coords 4415.846 14.1 10654.856
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_arrival_relocated_spawn : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "relocated_arrival"
+   m_iOrder 0
+  }
+ }
+ coords 4505.998 18.26 10527.504
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_arrival_relocated_wp0 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "relocated_arrival"
+   m_iOrder 0
+  }
+ }
+ coords 4490.395 16.56 10632.201
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_arrival_relocated_wp1 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "relocated_arrival"
+   m_iOrder 1
+  }
+ }
+ coords 4470.298 13.13 10720.302
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_arrival_relocated_wp2 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "relocated_arrival"
+   m_iOrder 2
+  }
+ }
+ coords 4405.399 10.4 10710.797
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_arrival_relocated_wp3 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "relocated_arrival"
+   m_iOrder 3
+  }
+ }
+ coords 4409.399 12.39 10661.504
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_arrival_relocated_target : "{F716FD32069F2BE8}Prefabs/Systems/Events/LF_EventMarker_Target.et" {
+ components {
+  LF_EventWaypointComponent "{E01299EF5C4B8221}" {
+   m_sSceneId "relocated_arrival"
+  }
+ }
+ coords 4421.002 12.44 10662.004
  angleY -8
 }

@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "kit": "harbour-master",
+  "system": "reputation",
+  "source": {
+    "file": "addons/LF_Everon1989/Configs/Npcs/LF_Npc_Townsfolk_HarbourMaster.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        0,
+        0
+      ],
+      "max": [
+        0,
+        0
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "One person, standing on the ground floor of a small office (a site cabin or shed with a door). The row sits at the footprint centre; `town fit --check` shows the seat corrections. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "harbour-master",
+      "prefab": "{B45B7C6C168822D4}Configs/Npcs/LF_Npc_Townsfolk_HarbourMaster.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        -0.9,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "harbour-office-sign",
+      "prefab": "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        1.88,
+        1.8,
+        1.9
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"harbour_office\"",
+            "m_vRimColor": "0.05 0.2 0.35",
+            "m_vPaintColor": "0.93 0.93 0.9",
+            "m_vTextColor": "0.05 0.2 0.35"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    }
+  ]
+}

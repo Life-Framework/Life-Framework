@@ -9,10 +9,11 @@
 // with Test-StillRegistered always true "a worktree pruned mid-scan is not an error" failed; both restored.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, utimesSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
+import { hermeticGitEnv, useHermeticGit } from "../lib/selftest-git.mjs";
 
 const failures = [];
 const check = (ok, name) => {
@@ -23,6 +24,7 @@ if (process.platform !== "win32") {
   console.log("validate-worktrees-selftest: OK (skipped: the check is PowerShell and runs on Windows)");
   process.exit(0);
 }
+useHermeticGit();
 
 const ps1 = resolve(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "validate-worktrees.ps1");
 const realGit = spawnSync("where", ["git"], { encoding: "utf8", windowsHide: true }).stdout.split(/\r?\n/).find((l) => /git\.exe$/i.test(l.trim()))?.trim();
@@ -96,6 +98,89 @@ process.exit(r.status ?? 1);
   check(!/packed-refs/.test(s.out), "the transient error is not printed");
 } finally {
   safeRemoveTree(base);
+}
+
+// #3126: only the current worktree and the ones with a change in the last 24 h get git reads. A stale worktree is
+// counted in one INFO line; a clean merged status is cached per worktree, so a second run runs no status for it.
+const live = scratchDir("lf-vwt-live-");
+try {
+  const fx = join(live, "main");
+  const wtPath = (slug) => join(live, `wt-${slug}`);
+  const git = (cwd, args) => {
+    const r = spawnSync("git", args, { cwd, env: hermeticGitEnv(), encoding: "utf8", windowsHide: true });
+    if (r.status !== 0) throw new Error(`git ${args.join(" ")} failed (${r.status}): ${r.stderr}`);
+    return r.stdout;
+  };
+  mkdirSync(fx);
+  git(fx, ["init", "-q", "."]);
+  writeFileSync(join(fx, "README.md"), "x\n");
+  writeFileSync(join(fx, ".gitignore"), "tmp/\n"); // a real worktree ignores its tmp/ (the wt marker lives there)
+  git(fx, ["add", "-A"]);
+  git(fx, ["commit", "-qm", "init"]);
+  git(fx, ["update-ref", "refs/remotes/origin/main", "HEAD"]);
+  mkdirSync(join(fx, "tmp", "wt"), { recursive: true });
+
+  const slugs = ["curx", "stalex", "freshx", "cleanx"];
+  const worktrees = {};
+  slugs.forEach((slug, i) => {
+    git(fx, ["worktree", "add", "-q", "-b", `ws/${slug}`, wtPath(slug), "main"]);
+    mkdirSync(join(wtPath(slug), "tmp"), { recursive: true });
+    writeFileSync(join(wtPath(slug), "tmp", "wt.json"), "{}");
+    worktrees[slug] = { path: wtPath(slug), branch: `ws/${slug}`, ports: { gamePort: 9101 + 2 * i, a2sPort: 9102 + 2 * i }, status: "active" };
+  });
+  // curx is the current worktree and has a commit of its own, so it is not merged
+  writeFileSync(join(wtPath("curx"), "curx.txt"), "c\n");
+  git(wtPath("curx"), ["add", "-A"]);
+  git(wtPath("curx"), ["commit", "-qm", "work"]);
+  // freshx and stalex are merged into origin/main and dirty (an untracked file)
+  for (const slug of ["freshx", "stalex"]) writeFileSync(join(wtPath(slug), "dirty.txt"), "d\n");
+  // stalex: its index and HEAD were last written 48 h ago
+  const old = new Date(Date.now() - 48 * 3600 * 1000);
+  const adminDir = join(fx, ".git", "worktrees", "wt-stalex");
+  for (const f of ["index", "HEAD"]) utimesSync(join(adminDir, f), old, old);
+  writeFileSync(join(fx, "tmp", "wt", "state.json"), JSON.stringify({ worktrees }));
+
+  const shimLive = join(live, "shim");
+  mkdirSync(shimLive);
+  writeFileSync(join(shimLive, "git.cmd"), '@node "%~dp0git-shim.mjs" %*\r\n');
+  writeFileSync(
+    join(shimLive, "git-shim.mjs"),
+    `import { spawnSync } from "node:child_process";
+import { appendFileSync } from "node:fs";
+const args = process.argv.slice(2);
+appendFileSync(process.env.LF_SHIM_LOG, args.join(" ") + "\\n");
+const r = spawnSync(process.env.LF_REAL_GIT, args, { stdio: "inherit", windowsHide: true });
+process.exit(r.status ?? 1);
+`,
+  );
+
+  const runLive = (tag) => {
+    const log = join(live, `git-${tag}.log`);
+    const env = hermeticGitEnv();
+    const pathValue = `${shimLive};${process.env.PATH ?? process.env.Path}`;
+    env.PATH = pathValue;
+    env.Path = pathValue;
+    env.LF_SHIM_LOG = log;
+    env.LF_REAL_GIT = realGit;
+    const r = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", ps1], { cwd: wtPath("curx"), env, encoding: "utf8", windowsHide: true, timeout: 120000 });
+    const calls = existsSync(log) ? readFileSync(log, "utf8").split(/\r?\n/).filter(Boolean) : [];
+    return { code: r.status, out: `${r.stdout}${r.stderr}`, calls };
+  };
+  const statusCalls = (r) => r.calls.filter((l) => l.includes(" status --porcelain"));
+
+  const r1 = runLive("one");
+  const r2 = runLive("two");
+  check(r1.code === 0 && r2.code === 0, `the live check passes on both runs (exit ${r1.code}, ${r2.code}: ${r1.out.slice(0, 300)})`);
+  check(!/stalex/.test(r1.out), "a worktree with no change in 24 h gets no warning (it is not checked)");
+  check(statusCalls(r1).every((l) => !l.includes("wt-stalex")), "a stale worktree gets no git status");
+  check(/INFO\s+1 worktree\(s\) with no change in 24 h not checked/.test(r1.out), "the stale worktree is counted in one INFO line");
+  check(/WARN\s+worktree 'freshx' is merged into origin\/main but has 1 uncommitted change/.test(r1.out), "a fresh dirty merged worktree is reported");
+  check(/WARN\s+worktree 'cleanx' is merged into origin\/main and clean/.test(r1.out), "a fresh clean merged worktree is reported");
+  check(statusCalls(r1).length === 2, `the first run reads status for the two fresh merged worktrees (calls: ${statusCalls(r1).join(" | ")})`);
+  check(statusCalls(r2).length === 1 && statusCalls(r2)[0].includes("wt-freshx"), `a second run serves the clean worktree from the cache (calls: ${statusCalls(r2).join(" | ")})`);
+  check(/WARN\s+worktree 'cleanx' is merged into origin\/main and clean/.test(r2.out), "a cached clean worktree still gets its warning");
+} finally {
+  safeRemoveTree(live);
 }
 
 if (failures.length) {

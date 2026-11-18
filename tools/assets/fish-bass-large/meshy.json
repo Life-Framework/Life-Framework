@@ -1,0 +1,14 @@
+{
+  "slug": "fish-bass-large",
+  "generations": [
+    {
+      "date": "2026-11-18",
+      "tool": "Meshy text-to-3D",
+      "model": "meshy-6-lite",
+      "previewId": "01a1effe-75de-712e-819e-77760248fa75",
+      "refineId": "01a1effe-e6f6-762b-9e60-ef077317a2a4",
+      "prompt": "A single European sea bass fish, whole, swimming pose seen from the side, long stout body, spiny first dorsal fin and soft second dorsal fin, large mouth, spread tail fin, silvery grey back, bright silver flanks, white belly, dark spot on the gill cover. Realistic game prop, no base, no stand, no water, no text, no logos.",
+      "texturePrompt": "European sea bass: grey-blue back, bright silver scales on the flanks, white belly, dark gill-cover spot."
+    }
+  ]
+}

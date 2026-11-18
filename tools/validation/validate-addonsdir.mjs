@@ -1,9 +1,9 @@
 // One `-addonsDir` per launch: Workbench keeps only the last repeated flag, so
-// inputs: always
 // the pack addon cannot find the core (docs/architecture/pack-move-spike.md).
 // Pass the folders through tools/lib/addons.mjs addonsDirArgs() (comma-joined).
 // red-proof: restoring the two separate "-addonsDir" entries in cmdPack printed
 // `tools/cli.mjs:<line>: repeated -addonsDir` and exited 1.
+// inputs: tools/**/*.mjs, tools/**/*.js, agent-box/**/*.mjs, agent-box/**/*.js, addons/*/*.gproj, addons/*/Missions/*
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { repeatedAddonsDirLines, selftestAddons } from "../lib/addons.mjs";

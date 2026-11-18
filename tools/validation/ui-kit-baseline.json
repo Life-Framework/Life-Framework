@@ -32,6 +32,10 @@
     "addons/LifeFramework/UI/Layouts/WidgetLibrary/ThinSliderWidget.layout"
   ],
   "exceptions": {
+    "addons/LifeFramework/UI/Layouts/Signs/Styles/LF_SignStyle_Chalk.layout": "A face on a world prop, not a screen: the chalk sign style drawn into the carrier render target (LF_SignStyledFace, docs/architecture/sign-system.md). Takes no input.",
+    "addons/LifeFramework/UI/Layouts/Signs/Styles/LF_SignStyle_ChalkRow.layout": "A face part, not a screen: one price row of the chalk sign style, made inside the face render target (LF_SignStyledFace).",
+    "addons/LifeFramework/UI/Layouts/Signs/Styles/LF_SignStyle_Fascia.layout": "A face on a world prop, not a screen: the shop fascia sign style drawn into the fascia's own render target (LF_SignStyledFace, docs/architecture/sign-system.md). Takes no input.",
+    "addons/LifeFramework/UI/Layouts/Signs/Styles/LF_SignStyle_FasciaRow.layout": "A face part, not a screen: one row of the fascia sign style, made inside the face render target (LF_SignStyledFace).",
     "addons/LifeFramework/UI/Layouts/HUD/LF_RobHold.layout": "A HUD strip, not a screen: the held-robbery timer, bar and distance shown over the game while the player keeps moving (#936). Takes no input.",
     "addons/LifeFramework/UI/Layouts/Investigation/LF_CaseBoardString.layout": "A face part, not a screen: the red string and its two pins drawn into the case board render target (LF_CaseBoardFace, #148).",
     "addons/LifeFramework/UI/Layouts/Character/LogoutBodyTag.layout": "A world-space label, not a screen: the Logged out tag over a logged-out body (LF_LogoutBodyTagHud).",
