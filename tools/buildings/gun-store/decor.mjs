@@ -5,7 +5,7 @@
 //   node tools/buildings/gun-store/decor.mjs --check  exit 1 when the prefab is not what this script writes
 //   node tools/buildings/gun-store/decor.mjs --report print every prop whose height the snap changed
 // Heights: a prop's y is a hint; surface.mjs snaps it onto the top under it (`on:` names the support), so a counter-top
-// prop never hovers over its counter. `toolsi building check gun-store` proves it.
+// prop never hovers over its counter. `tools\cli building check gun-store` proves it.
 //
 // Lights meet the medium building budget (docs/architecture/performance.md, `toolscli perf building GunStore --size medium`):
 // 6 lights in all (4 inside, 1 per facade lamp), CastShadow written on every one, one shadow caster (the spot over

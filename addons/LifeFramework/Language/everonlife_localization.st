@@ -3983,6 +3983,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the attendant"
      Comment "Action on the fuel station attendant: opens the conversation."
     }
+    CustomStringTableItem "{E5E20ACD90437F84}" {
+     Id "LF-Furniture_Chair_Name"
+     Target_en_us "Chair"
+     Comment "Inventory name of the carried chair a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{100E11EBB38DD2B9}" {
+     Id "LF-Furniture_Lamp_Name"
+     Target_en_us "Lamp"
+     Comment "Inventory name of the carried lamp a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{272F0629B6A6B098}" {
+     Id "LF-Furniture_Shelf_Name"
+     Target_en_us "Shelf"
+     Comment "Inventory name of the carried shelf a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{CD0C9FCE1E77121B}" {
+     Id "LF-Furniture_Table_Name"
+     Target_en_us "Table"
+     Comment "Inventory name of the carried table a player places in their own house (#2654)."
+    }
     CustomStringTableItem "{3CEA2232FA244C93}" {
      Id "LF-Garage_Blue"
      Target_en_us "Blue"
@@ -8052,6 +8072,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You are not allowed to place this."
      Comment "Toast when the placement service refuses because the player may not place that item: a spike strip off duty (#1026)."
     }
+    CustomStringTableItem "{3E6A1F5C92D80B47}" {
+     Id "LF-Placement_PickUp"
+     Target_en_us "Pick up"
+     Comment "Action name on a permanent prop its owner placed (a chair, a table): takes it back into the inventory (#2751)."
+    }
     CustomStringTableItem "{42E27FF2B0C5A49F}" {
      Id "LF-Placement_Title"
      Target_en_us "Placing"
@@ -8367,6 +8392,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Property_Bought"
      Target_en_us "Plot %1 is yours."
      Comment "Toast: the plot purchase went through (#2649). %1 = the plot."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7355}" {
+     Id "LF-Property_BuildItemsFirst"
+     Target_en_us "Bring the materials first."
+     Comment "Build site refusal (#2650): work asked before the stage's items are in."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7351}" {
+     Id "LF-Property_BuildNeed"
+     Target_en_us "Need %1 more %2"
+     Comment "Deposit action at a build site (#2650). %1 = how many the stage still lacks, %2 = the item's name."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7353}" {
+     Id "LF-Property_BuildNoItems"
+     Target_en_us "You carry none of what this stage still needs."
+     Comment "Build site refusal (#2650): nothing to deposit."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7354}" {
+     Id "LF-Property_BuildNotYours"
+     Target_en_us "Only the owner and key holders can build here."
+     Comment "Build site refusal (#2650, #2815): the caller neither owns the plot nor carries its key."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7352}" {
+     Id "LF-Property_BuildWork"
+     Target_en_us "Build (%1/%2)"
+     Comment "Held work action at a build site (#2650). %1 = work done, %2 = work the stage needs."
     }
     CustomStringTableItem "{55D1BC2D7557DA0C}" {
      Id "LF-Property_Buy"
@@ -9815,6 +9865,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Next"
      Comment "Sign card section heading: where to go after this place."
     }
+    CustomStringTableItem "{DFB2C6F5B97FC132}" {
+     Id "LF-Sign_PlotForSale_Next"
+     Target_en_us "Stand at the sign with the price in carried cash and choose Buy plot."
+     Comment "Read card of the plot sign: what to do next (#2780)."
+    }
+    CustomStringTableItem "{BEBD6A10FB2E9747}" {
+     Id "LF-Sign_PlotForSale_Title"
+     Target_en_us "For sale"
+     Comment "Core plot sign face and Read title (#2780): a plot nobody owns yet."
+    }
+    CustomStringTableItem "{3FF5200250B9B700}" {
+     Id "LF-Sign_PlotForSale_What"
+     Target_en_us "A plot of land nobody owns yet. Use the sign to buy it with cash."
+     Comment "Read card of the plot sign (#2780)."
+    }
     CustomStringTableItem "{C71FE54AE5989467}" {
      Id "LF-Sign_Read"
      Target_en_us "Read: %1"
@@ -10667,6 +10732,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-TouristMap_Use"
      Target_en_us "Study the tourist map"
      Comment "Tourist map item (#2242): the action that pencils every discoverable place onto the player's map."
+    }
+    CustomStringTableItem "{788218FBE4001F0E}" {
+     Id "LF-Tow_Towed"
+     Target_en_us "Your vehicle %1 was towed. Collect it at the impound desk."
+     Comment "Toast to the owner: their abandoned car was towed (#2657). %1 is the plate"
     }
     CustomStringTableItem "{65D7E4795D634FBD}" {
      Id "LF-TownBoard_Dir_E"

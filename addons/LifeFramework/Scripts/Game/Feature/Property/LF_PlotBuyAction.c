@@ -17,7 +17,8 @@ class LF_PlotBuyAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return m_Plot && m_Plot.GetPrice() > 0;
+		// IsForSale reads the replicated owned flag: a client has no property book (#2780).
+		return m_Plot && m_Plot.IsForSale();
 	}
 
 	//------------------------------------------------------------------------------------------------

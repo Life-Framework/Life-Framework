@@ -52,6 +52,8 @@ that activity is what pays (gathering/processing already feed this funnel).
 - `LF_JobManager` — singleton reward funnel; `GetGatherReward`/
   `GetProcessReward` return 0 today (dead-but-safe); `GiveReward` pays cash.
 - `LF_JobConfig` — job definitions.
+- `LF_JobDialogue.c` — `LF_DialogueHook_JobSignUp` (#2740): a dialogue reply signs the player up for the
+  delivery job its param names (career level and standing gates, then `SetJob`), as the counter does.
 
 - `LF_WorkplaceComponent` + `Prefabs/Jobs/LF_Workplace.et` (#1111) — the generic
   workplace: job id, `LF_Places` registration (kind `Workplace`), punch-clock clock-in action and
