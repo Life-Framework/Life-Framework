@@ -61,6 +61,11 @@ try {
   check(r.status === 1 && /LF_Test_E2E_PayloadSince\.c:5 PayloadSinceVersion in an e2e/.test(r.stdout), `PayloadSinceVersion in an e2e file fails (${out(r)})`);
   rmSync(join(tests, "LF_Test_E2E_PayloadSince.c"));
 
+  put("LF_Test_E2E_HandRolledSection.c");
+  r = run();
+  check(r.status === 1 && /LF_Test_E2E_HandRolledSection\.c:5 hand-rolled BootHadSection/.test(r.stdout), `a hand-rolled BootHadSection fails (${out(r)})`);
+  rmSync(join(tests, "LF_Test_E2E_HandRolledSection.c"));
+
   put("LF_Test_E2E_UnknownPayload.c");
   r = run();
   check(r.status === 1 && /LF_Test_E2E_UnknownPayload\.c:5 .*"reputashun"/.test(r.stdout), `a guard naming an unregistered payload fails (${out(r)})`);
@@ -72,7 +77,7 @@ try {
 
   const helper = join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests", "LF_E2E.c");
   const text = existsSync(helper) ? readFileSync(helper, "utf8") : "";
-  for (const fn of ["SaveHas", "RequiresPayload", "RequiresSeed"]) check(new RegExp(String.raw`static\s+bool\s+${fn}\s*\(`).test(text), `LF_E2E.${fn} exists`);
+  for (const fn of ["SaveHas", "RequiresPayload", "RequiresSeed", "SaveHasSection", "RequiresSection"]) check(new RegExp(String.raw`static\s+bool\s+${fn}\s*\(`).test(text), `LF_E2E.${fn} exists`);
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }

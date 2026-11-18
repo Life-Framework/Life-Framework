@@ -48,7 +48,8 @@ harmless to your editor because the worktree is a separate directory.
   only warned about, never rewritten. `LF_RDB_REFRESH=0` turns the refresh off. Do not commit it.
 - **Build** — the headless Workbench build is the one truly shared resource
   (shader cache, resource DB). It is serialized by a machine-wide lock file:
-  one build at a time, everyone else `--wait`s. `cli dev` skips the build
+  one build at a time, everyone else `--wait`s. A `look` and the rdb refresh take a per-worktree lock
+  (`look-<slug>`, `rdb-<slug>`) and a Workbench slot instead, so they run side by side up to the slot count. `cli dev` skips the build
   entirely, so the everyday loop never contends.
 - **Hub** — coordination state lives in `<main>/tmp/wt/` (git-ignored):
   `state.json` (registry + ports + the warm pool) and `locks/`. Derived from `git worktree
@@ -158,7 +159,9 @@ gate before a merge; the main guard (next section) checks `main` after it.
 `--draft` runs the same body checks, preflight and push, then opens the PR with `gh pr create --draft` and never runs
 `gh pr merge --auto`; the summary reads `auto-merge off (draft)`. Town-draft and maintainer-review PRs use it; a human
 marks the PR ready and merges it (`ship-direct.mjs` `draft`, `wt-ship-draft-selftest.mjs`). Re-running on an open PR
-reuses it. `--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
+reuses it and, because an earlier ship may have left it ready with auto-merge queued, runs `gh pr merge --disable-auto` and
+`gh pr ready --undo` on it; ship prints `draft: auto-merge off (REVIEW-NEEDED)` (#2940). `prs heal` re-queues auto-merge only on a PR
+that already had it. `--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
 <slug>` stays as an optional manual check (tiers in `tools/lib/gate-tier.mjs`, `gate-risk.mjs`). The ship queue
 (`tools/ship-queue.mjs`), `wt ship-status`, `wait ship` and the tier selection in ship are retired; their code stays
 on disk until someone deletes it.
@@ -173,6 +176,23 @@ through the pool at `--priority high`.
 toolscli main-guard start | stop | status | watch   # status is also a line in `toolscli lead`
 ```
 
+0. **Stage 0, validate (#2889).** On a new head (batched to one run per 3 min, retried at ~10 min after a no-verdict) the guard
+   runs `validate --all` (about 3 min, no Workbench) in the compile worktree before the compile; it never holds the
+   compile or stage 2 and never marks the head red on GitHub. A failure reruns just the failing checks at the same
+   head (`LF_VALIDATE_ONLY=<script,...>`, read by `validate`); green on the rerun is a flake
+   (`main-guard-flakes.log`). Red twice bisects the merges since the last green validate by the failing check set
+   (`validateGate`, same rules as the suite bisect: a merge that fails other checks, or no single merge, blames
+   nobody). The blamed PR gets a comment with the check and its output, the staff webhook a line, and a fix card is
+   opened. **Only a hard data-safety check reverts** (`HARD_CHECKS`: `validate-repo.ps1` (duplicate GUIDs, orphan metas,
+   generated files), `validate-persistence-version.ps1`, `validate-record-shapes.mjs`, `validate-record-var-names.mjs`)
+   and then through the usual revert PR. A head still red with the set already flagged is logged, not flagged again
+   (`validateRed` in the state file, shown in `main-guard status` and `lead`); a green head clears it.
+   **A red explained by an earlier guard revert is not reverted.** On 2026-11-18 the guard reverted #3008, then #3017,
+   the test fix that matched it, which failed once #3008 was gone (closed by hand as #3031). A culprit merged after a
+   PR the guard reverted, whose revert merge is on main, and that changes a file of that PR (append-only docs and
+   language files do not count) gets a comment and no revert, in stage 2 and stage 0 alike
+   (`explainedByEarlierRevert`; the test fix ships together with the re-land). Proven on a fixture repo by
+   `main-guard-validate-selftest.mjs`. A running worker needs a restart (`main-guard stop`, `start`) to load it.
 1. **Stage 1, compile first.** On a new `origin/main` head (batched to one run per 3 min) it runs the Workbench compile
    (`ci --wb-only --compile-only`, on a pool machine with the `workbench` cap) in `Life-Framework-ws-main-guard-compile`.
    Pass: the head is `compiled-ok`. Fail: no recheck (a compile error is deterministic); it bisects the first-parent
@@ -258,7 +278,7 @@ is. `promote --confirm` needs `green` on the exact commit; `release --confirm` r
 `main` is the integration branch; agents branch from it and merge to it all day, as before. `stable` is the branch a human moves, and the only one the Workshop release, the flagship's 24/7 server and `tools\cli release` use. Playtests run on `main`.
 
 - `tools\cli promote [--to <sha>]` fetches, lists the PRs merged to `main` since `stable` (first-parent merge commits) and writes `tmp/promote/checklist-<sha>.md`: one item per PR with its issues and the manual steps from its body. It changes nothing.
-- `tools\cli promote --to <sha> --confirm` fast-forwards `origin/stable` to the commit you verified (default: `origin/main`), tags it `stable-<yyyymmdd>-<sha8>`, then marks the issues those PRs ref `verified` and closes them. An issue that a later, unverified PR on `main` also refs stays open. It refuses a target that is not a descendant of `stable` and never forces.
+- `tools\cli promote --to <sha> --confirm` fast-forwards `origin/stable` to the commit you verified (default: `origin/main`), tags it `stable-<yyyymmdd>-<sha8>`, then marks the issues those PRs ref `verified` and closes them. An issue that a later, unverified PR on `main` also refs stays open. So does an issue labelled `regression` and one whose PR a later PR in the range reverted (a re-land puts it back); each prints a skip line. Reads are primed in a few GraphQL calls and label edits are grouped (`gh issue edit n1 n2 ...`), so a range of ~1300 PRs no longer runs for hours (#2980). It refuses a target that is not a descendant of `stable` and never forces.
 - `tools\cli promote --fail N[,N]` marks issues `regression` and reopens them without moving `stable`. With `--confirm`, a failed issue whose PR is inside the range blocks the promotion: fix it on `main`, revert it, or pass an earlier `--to`.
 - `tools\cli promote --revert <PR>` opens a PR that reverts that merge on `main` (from a `ws/revert-pr<N>` worktree; auto-merge queued). `stable` is never edited directly.
 - `tools\cli promote --init [--to <sha>]` creates `origin/stable` once. It was created from `main` because no M1 sign-off commit is recorded; the first real promotion is #404.
@@ -411,7 +431,7 @@ tools\cli pool prune [--dry-run] [--unmarked] [--lanes]    # remote run folders 
 tools\cli pool prune --idle <min> [--dry-run]              # every remote run folder idle that long (no lock, process or write)
 ```
 
-- **Sharding.** `--shards N|auto` splits the core suite (the `[LF_TestInfo]` lines) into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
+- **Sharding.** `--shards N|auto` splits the core suite (the `[LF_TestInfo]` lines) into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other. The pack tests (`pack: true`) are one more job of the normal pass, on the pack header, beside its slices. Each boot's own `suite/no-leftover-fixtures` check is one more test than the slice was given: the merge allows one per boot, counts them in the SUMMARY (`N suite check(s) counted`) and still fails a slice that ran a name twice or not at all (#2789). `--no-cache` reaches the slices. The parent refreshes a stale rdb once before the slices start, which never refresh it themselves. On a one-machine pool the slices of a worktree take turns on this PC, so `--shards 2` is slower than a plain `--tier all` (measured 88 s against 60 s); sharding pays only with a free remote lane.
 - **Nothing in a gate waits silently.** The rdb refresh before the suite waits for the hub `build` lock through `tools/lib/lock-wait.mjs`: it prints the holder (`waiting on the build lock ...: held by pid N (rdb refresh in <worktree>), held N s; budget ...`), repeats every 30 s, and gives up at `LF_RDB_WAIT_S` (900 s) for the whole process, every addon together; a later addon fails at once instead of waiting again. Shard children run with `LF_RDB_CHECKED=1`, so the slices never refresh or wait a second time (before, the gate and each slice each waited 15 min per addon, silently: 25+ min with no output). While slices run, the parent prints `shards: <pass> i/n still running after N s: <last line>` every `LF_SHARD_HEARTBEAT_S` (120 s) and stops a slice after `LF_SHARD_TIMEOUT_S` (2700 s). `lock-wait-selftest` proves it.
 - **Who uses it.** `test`, `dev`, `ci`, `wt test`, `wt gate`, `wt ship` (its
   gate), `wt e2e`, and `e2e`. Every run prints where it ran and how long it
@@ -1555,6 +1575,14 @@ fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/r
   (`# inputs:` in a .ps1). `*` stays in one folder, `**` crosses folders; the check's own file, `tools/validation/*.json`
   and `tools/validation/fixtures/**` are always inputs. `inputs: always` runs every time (a check that reads machine or
   git state: the worktree registry, `origin/main`); `inputs: ttl=300` trusts a green run for 300 s. No header means always.
+  Only five checks are `always` now (2026-11-18, #3115): `validate-repo.ps1` (hygiene over every .meta and text resource),
+  `validate-addon-source-isolation.ps1`, `validate-drivers-include.mjs` and `validate-rdb-fresh.mjs` (machine state) and
+  `validate-scripts.ps1` (the compile, full runs only); each says why on the line under its header.
+- A .mjs check's static import closure (`tools/lib/import-closure.mjs`: `import`, `export ... from`, `import("./x")`,
+  `require("./x")` with a literal relative path) is always an input too, so a header names only the data the check
+  reads, and `inputs: imports` means "nothing but my own code". Before this 159 of 337 declared checks missed a module
+  they import (editing `tools/lib/scratch.mjs` re-ran none of its users). A computed `import(pathToFileURL(...))` or a
+  child `node tools/x.mjs` is invisible to it: list that folder in the header.
 - State is `tmp/validate-state.json`: a fingerprint (path and git blob id of every matching file: `git ls-files -s`
   for clean tracked files, a blob hash of the bytes for modified and untracked ones) written only when the check
   passed, so a failing check is never skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.

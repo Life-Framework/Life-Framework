@@ -120,6 +120,27 @@ class LF_CashVanRouteComponent : ScriptComponent
 	protected float m_fBoxYaw;
 
 	protected int m_iStop;
+	//! Errors this route has logged for a route it cannot drive (no van, or fewer than two stops).
+	protected int m_iNoVanErrors;
+	protected bool m_bDegraded;
+
+	//------------------------------------------------------------------------------------------------
+	//! Errors logged by this route for a missing van or stops. A degraded route logs once, then none.
+	int NoVanErrors()
+	{
+		return m_iNoVanErrors;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Logs once and stops the timer: a route that cannot drive its van does not retry each dwell.
+	protected void Degrade(string message)
+	{
+		m_bDegraded = true;
+		m_iNoVanErrors++;
+		LF_Debug.Error("Bank", message);
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().RemoveByName(this, "Step");
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -133,7 +154,7 @@ class LF_CashVanRouteComponent : ScriptComponent
 			m_fDwellSeconds = 5;
 
 		int delayMs = m_fDwellSeconds * 1000;
-		GetGame().GetCallqueue().CallLater(Step, delayMs, true);
+		GetGame().GetCallqueue().CallLaterByName(this, "Step", delayMs, true);
 		LF_Debug.Log("Bank", string.Format("cash van route %1 dwell=%2", GetRouteId(), m_fDwellSeconds));
 	}
 
@@ -141,15 +162,18 @@ class LF_CashVanRouteComponent : ScriptComponent
 	override void OnDelete(IEntity owner)
 	{
 		if (GetGame() && GetGame().GetCallqueue())
-			GetGame().GetCallqueue().Remove(Step);
+			GetGame().GetCallqueue().RemoveByName(this, "Step");
 
 		super.OnDelete(owner);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server timer: move to the next stop and restock, unless a player is near.
-	protected void Step()
+	void Step()
 	{
+		if (m_bDegraded)
+			return;
+
 		IEntity door = GetOwner();
 		if (!door)
 			return;
@@ -158,14 +182,17 @@ class LF_CashVanRouteComponent : ScriptComponent
 		IEntity van = LF_CashVanRoute.FindVan(routeId);
 		if (!van)
 		{
-			LF_Debug.Error("Bank", string.Format("cash van route: van %1 is not placed", routeId));
+			Degrade(string.Format("cash van route: van %1 is not placed", routeId));
 			return;
 		}
 
 		array<IEntity> stops = {};
 		LF_CashVanRoute.FindStops(routeId, stops);
 		if (stops.Count() < 2)
+		{
+			Degrade(string.Format("cash van route %1 has %2 stop(s), needs two", routeId, stops.Count()));
 			return;
+		}
 
 		int near = LF_CashVanRoute.PlayersNear(van.GetOrigin(), m_fClearMetres);
 		if (!LF_CashVanRoute.CanMove(near))

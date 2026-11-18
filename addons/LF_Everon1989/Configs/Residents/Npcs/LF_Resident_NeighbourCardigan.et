@@ -1,13 +1,31 @@
-LF_NpcBaseEntity : "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et" {
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "F6C3D1F3C087683F"
  components {
-  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
-   Identity Identity "{5A4B0B84AF44A913}" {
-    Name "Anselme"
-    Surname "Caron"
+  LF_DialogueComponent "{11E51CEF721641B1}" {
+   m_sDialogueId "resident"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{210461B818711050}" {
+     ContextName "Talk"
+     Position PointInfo "{09EDE19DCE7648EC}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{B014F92988CE426A}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{CB76CB88F8F68720}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
    }
   }
-  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
     LoadoutSlotInfo Hat {
      Enabled 1

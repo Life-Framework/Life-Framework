@@ -149,7 +149,7 @@ export function pickShardCount(spec, freeLanes, passes = 1, estSeconds = Infinit
 
 // What one shard run printed: the SUMMARY of the suite and every FAIL with its detail lines.
 export function parseShardOutput(text) {
-  const out = { passed: 0, failed: 0, total: 0, skipped: 0, summary: false, seconds: null, fails: [], where: "" };
+  const out = { passed: 0, failed: 0, total: 0, skipped: 0, legs: 0, summary: false, seconds: null, fails: [], where: "" };
   let cur = null;
   for (const raw of String(text).split(/\r?\n/)) {
     const line = raw.replace(/^\d+:\d+:\d+(?:\.\d+)?\s+\w+\s*:\s*/, "");
@@ -161,6 +161,7 @@ export function parseShardOutput(text) {
       out.failed += +s[2];
       out.total += +s[3];
       out.skipped += s[4] ? +s[4] : 0;
+      out.legs++;
       out.summary = true;
       cur = null;
       continue;
@@ -171,6 +172,7 @@ export function parseShardOutput(text) {
       out.passed += +c[1];
       out.total += +c[2];
       out.failed += +c[2] - +c[1];
+      out.legs++; // the cached total is a past run's, suite check included
       out.summary = true;
       continue;
     }
@@ -191,8 +193,11 @@ export function parseShardOutput(text) {
   return out;
 }
 
-// One verdict from the slices of a pass. `shards` is [{ index, expected, code, parsed, seconds }]:
-// `expected` how many tests the slice was given, `code` its exit code, `parsed` parseShardOutput.
+// One verdict from the slices of a pass. `shards` is [{ index, expected, code, parsed, seconds, pack }]:
+// `expected` how many tests the slice was given, `code` its exit code, `parsed` parseShardOutput, `pack`
+// true for the pack leg's job. Every boot (`parsed.legs`) may count one more test than the slice was given:
+// the runner's own `suite/no-leftover-fixtures` check (#2792), absent when the world has no gate. That is not a
+// name matched twice (#2789: every sharded run read "ran 530 of 529" once the check existed).
 // Exit code: 0 all passed; 1 a test failed or a slice ran the wrong tests; 2 a slice gave no verdict;
 // 3 a slice never ran (pool failure). The first non-zero severity in that order wins.
 export function mergeShards(shards) {
@@ -200,6 +205,7 @@ export function mergeShards(shards) {
   let failed = 0;
   let total = 0;
   let skipped = 0;
+  let suiteChecks = 0;
   const fails = [];
   const notes = [];
   let worst = 0;
@@ -210,9 +216,10 @@ export function mergeShards(shards) {
   let wall = 0;
   for (const s of shards) {
     const p = s.parsed;
+    const who = `shard ${s.index}${s.pack ? " (pack leg)" : ""}`;
     wall = Math.max(wall, s.seconds ?? p.seconds ?? 0);
     if (!p.summary) {
-      notes.push(`shard ${s.index}: no SUMMARY (exit ${s.code}); its ${s.expected} test(s) have no verdict`);
+      notes.push(`${who}: no SUMMARY (exit ${s.code}); its ${s.expected} test(s) have no verdict`);
       failed += s.expected;
       total += s.expected;
       bump(s.code === 3 ? 3 : s.code === 0 ? 2 : s.code);
@@ -223,15 +230,16 @@ export function mergeShards(shards) {
     total += p.total;
     skipped += p.skipped;
     for (const f of p.fails) fails.push({ ...f, shard: s.index });
-    if (p.total + p.skipped !== s.expected) {
-      notes.push(`shard ${s.index}: ran ${p.total + p.skipped} of ${s.expected} test(s) (a name matched twice or not at all)`);
+    const extra = p.total + p.skipped - s.expected;
+    if (extra < 0 || extra > p.legs) {
+      notes.push(`${who}: ran ${p.total + p.skipped} of ${s.expected} test(s) (a name matched twice or not at all)`);
       bump(1);
-    }
+    } else suiteChecks += extra;
     if (s.code !== 0 || p.failed > 0) bump(s.code !== 0 ? s.code : 1);
   }
   // A non-zero shard exit with no failing test and no note is still a failure.
   if (worst === 0 && shards.some((s) => s.code !== 0)) worst = 1;
-  return { code: worst, passed, failed, total, skipped, fails, notes, wall, shards: shards.length };
+  return { code: worst, passed, failed, total, skipped, suiteChecks, fails, notes, wall, shards: shards.length };
 }
 
 // The lines the merged run prints: the same SUMMARY line a single run does (what `suite-stamp`, the
@@ -243,7 +251,7 @@ export function mergedLines(m, { tier = "all", label = "" } = {}) {
     for (const l of f.lines) out.push(`[LFTEST]   - ${l}`);
   }
   for (const n of m.notes) out.push(`FAIL  ${label ? `${label}: ` : ""}${n}`);
-  out.push(`test-e2e: SUMMARY tier=${tier} passed=${m.passed} failed=${m.failed} total=${m.total} (${Math.round(m.wall)} s, ${m.shards} shard(s))`);
+  out.push(`test-e2e: SUMMARY tier=${tier} passed=${m.passed} failed=${m.failed} total=${m.total} (${Math.round(m.wall)} s, ${m.shards} shard(s)${m.suiteChecks ? `, ${m.suiteChecks} suite check(s) counted` : ""})`);
   out.push(m.code === 0 ? "test-e2e: OK" : `test-e2e: FAILED (exit ${m.code})`);
   return out;
 }
@@ -295,11 +303,15 @@ function pidAlive(pid) {
 
 // Runs every pass's slices at the same time. `run(job)` starts one slice and resolves
 // { code, text, seconds } (injected: cli.mjs spawns a child CLI; the selftest passes a fake).
-// passes: [{ name, coreOnly, classes: [[...slice]] }]. Returns [{ pass, merged }].
+// passes: [{ name, coreOnly, classes: [[...slice]], pack?: { world, classes } }]. A pass with `pack` also runs the
+// pack tests as one more job beside its slices, so the pack leg costs no wall-clock of its own (#2789) and a gate
+// that shards (`ci`) runs them at all. Returns [{ pass, merged }].
 export async function runPasses(passes, run) {
   const jobs = [];
   for (const pass of passes) {
-    pass.classes.forEach((classes, i) => jobs.push({ pass, index: i + 1, count: pass.classes.length, classes }));
+    const count = pass.classes.length + (pass.pack ? 1 : 0);
+    pass.classes.forEach((classes, i) => jobs.push({ pass, index: i + 1, count, classes }));
+    if (pass.pack) jobs.push({ pass, index: count, count, classes: pass.pack.classes, world: pass.pack.world, pack: true });
   }
   const done = await Promise.all(
     jobs.map(async (job) => {
@@ -316,7 +328,7 @@ export async function runPasses(passes, run) {
   return passes.map((pass) => {
     const mine = done.filter((d) => d.job.pass === pass).sort((a, b) => a.job.index - b.job.index);
     const merged = mergeShards(
-      mine.map((d) => ({ index: d.job.index, expected: d.job.classes.length, code: d.code, parsed: parseShardOutput(d.text), seconds: d.seconds })),
+      mine.map((d) => ({ index: d.job.index, expected: d.job.classes.length, code: d.code, parsed: parseShardOutput(d.text), seconds: d.seconds, pack: !!d.job.pack })),
     );
     return { pass, merged, shards: mine };
   });

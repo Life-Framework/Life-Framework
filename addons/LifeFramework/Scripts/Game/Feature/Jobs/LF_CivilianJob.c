@@ -149,6 +149,7 @@ class LF_CivilianJob
 		// The run goes with the career, so its contract goes too (no stake): else the next plain run
 		// would settle as the wiped contract (#2817 review).
 		LF_ReputationContracts.Forget(playerUid);
+		LF_ReputationPay.Forget(playerUid);
 		LF_JobLevels.ForgetJob(playerUid, LF_JobLevels.JOB_DELIVERY);
 	}
 
@@ -987,7 +988,8 @@ class LF_CivilianJob
 			return 0;
 
 		GiveDepositBack(user, uid);
-		int bonus = LF_Utils.ClampInt(LF_ReputationContracts.TakeLastBonus(uid), 0, paid);
+		int bonus = LF_ReputationContracts.TakeLastBonus(uid) + LF_ReputationPay.TakeLastBonus(uid);
+		bonus = LF_Utils.ClampInt(bonus, 0, paid);
 		HandCash(user, paid - bonus);
 		HandCash(user, bonus, LF_ReputationContracts.REASON_BONUS);
 		return paid;
@@ -1045,7 +1047,10 @@ class LF_CivilianJob
 		if (worker.m_eActiveJob == LF_EJobType.TAXI && taxiFare > 0)
 			amount = taxiFare;
 
-		amount = LF_ReputationContracts.Settle(playerUid, amount, LF_JobGuards.Now());
+		int basePay = amount;
+		amount = LF_ReputationContracts.Settle(playerUid, basePay, LF_JobGuards.Now());
+		// The standing bonus is a percent of the base only, never of a contract's multiplier (#2703).
+		amount = amount + LF_ReputationPay.Bonus(playerUid, basePay);
 
 		LF_EJobType finished = worker.m_eActiveJob;
 		worker.m_bActive = false;

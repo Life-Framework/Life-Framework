@@ -36,6 +36,8 @@ class LF_UIPart
 	protected string m_sAction;
 	protected int m_iTotal;
 	protected int m_iTake;
+	//! Sits in the sheet's scrolling body, not the pinned header or footer (#3036).
+	protected bool m_bInBody;
 	//! LIST: owning list of a row part, or the row names of a list part, in display order.
 	protected string m_sList;
 	protected ref array<string> m_aRows = {};
@@ -164,6 +166,22 @@ class LF_UIPart
 	array<string> GetRows()
 	{
 		return m_aRows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts the part in the sheet's scrolling body (#3036). Parts before the first scrolling part (the
+	//! title) and after the last (the action rows) stay pinned; a sheet at the screen cap scrolls the
+	//! body instead of cutting the pinned rows off. Flag one contiguous run of parts.
+	LF_UIPart InBody()
+	{
+		m_bInBody = true;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsInBody()
+	{
+		return m_bInBody;
 	}
 
 	//------------------------------------------------------------------------------------------------

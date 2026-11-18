@@ -1,0 +1,45 @@
+GenericEntity {
+ ID "4F352E8FAF20D24B"
+ components {
+  MeshObject "{A67EF01CF892F323}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{44F89E03AC824B3A}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{E7A5E4A47B199A6C}" {
+   ActionContexts {
+    UserActionContext "{DA84252F030504D1}" {
+     ContextName "default"
+     Position PointInfo "{8CB9734EB9CDDA24}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_RobAction "{95D6229739ADB3E6}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6D63155EBCF2A3A4}" {
+      Name "#EL-Hospital_RobTill"
+     }
+     m_iMoneyAmount 200
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+  RplComponent "{20F1CC68A52BE678}" {
+   Enabled 1
+  }
+  LF_HospitalTillComponent "{E11FD1BB36043573}" {
+   m_iPayout 200
+   m_fCooldown 60
+   m_iMinPolice 0
+  }
+ }
+}

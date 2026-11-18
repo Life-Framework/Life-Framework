@@ -97,6 +97,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_RaceRecords.EnsureSubscribed();
 		// The war notice board keeps each ended war for an hour (server only, #2677).
 		LF_OrgWarBoard.Install();
+		// An open org ledger refreshes its held sites when a lease changes hands (server only, #2834).
+		LF_OrgHeldSites.Install();
 		// The serial book stamps every tool the fence sells (server only).
 		LF_FenceSerials.EnsureSubscribed();
 		// Standing moves on jobs, arrests, statements, fence and chop shop events (server only, #2697).
@@ -119,6 +121,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_VehicleTow.Start();
 		// Residents appear on their anchors near players and leave when nobody is (server only, #2858).
 		LF_ResidentSpawner.Start();
+		// The illicit buyer stands at the open chain_buyer spot when a player is near (server only, #2919).
+		LF_BuyerNpc.Start();
 	}
 
 	//------------------------------------------------------------------------------------------------

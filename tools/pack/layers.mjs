@@ -58,6 +58,7 @@ Object.assign(SECTIONS, {
   "organizations.rankDefaults": row("organizations", "rankDefaults", "LF_OrgConfig", "Configs/Organizations/LF_Org.conf", "m_aRankDefaults", "m_sRank", byField("m_sRank"), (k) => (["founder", "officer", "member"].includes(k) ? k : "")),
   "police.ranks": row("police", "ranks", "LF_PoliceConfig", "Configs/Police/LF_Police.conf", "m_aRanks", "m_sId", byField("m_sId"), same),
   "welcomeGift.gifts": row("welcomeGift", "gifts", "LF_WelcomeGiftConfig", "Configs/Quests/LF_WelcomeGift.conf", "m_aGifts", "m_sQuestId", byField("m_sQuestId")),
+  "questGivers.givers": row("questGivers", "givers", "LF_QuestGiverConfig", "Configs/Quests/LF_QuestGiverTable.conf", "m_aGivers", "m_sGiverId", byField("m_sGiverId")),
   // The core ships no course (LF_RaceCourseBook starts empty), so the core layer is empty: a pack adds.
   "racing.courses": row("racing", "courses", "LF_RaceCoursesConfig", null, "m_aCourses", "m_sId", byField("m_sId"), same),
   "residents.residents": row("residents", "residents", "LF_ResidentsConfig", "Configs/Residents/LF_Residents.conf", "m_aResidents", "m_sId", byField("m_sId")),
@@ -66,6 +67,15 @@ Object.assign(SECTIONS, {
   "drinkImpairment.drinks": row("drinkImpairment", "drinks", "LF_DrinkImpairmentConfig", "Configs/Survival/LF_DrinkImpairment.conf", "m_aDrinks", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),
   "systems.catalog": row("systems", "catalog", "LF_SystemCatalog", "Configs/Systems/LF_SystemCatalog.conf", "m_aSystems", "m_sId", byField("m_sId")),
   "terms.terms": row("terms", "terms", "LF_TermsConfig", "Configs/Terms/LF_Terms.conf", "m_aTerms", "m_sId", byField("m_sId")),
+  "property.plots": row("property", "plots", "LF_PropertyConfig", "Configs/Property/LF_Property.conf", "m_aPlots", "m_sPlotId", byField("m_sPlotId")),
+  "market.goods": row("market", "goods", "LF_MarketConfig", "Configs/Market/LF_Market.conf", "m_aGoods", "m_sGood", (p) => guidOf(p.m_sGood), noOwner),
+  // The core file lists no rung (LF_MedicRanks falls back to the built-in three in script), so the core layer is empty: a pack adds.
+  "medic.ranks": row("medic", "ranks", "LF_MedicConfig", null, "m_aRanks", "m_sId", byField("m_sId"), noOwner),
+  "reputation.factions": row("reputation", "factions", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aFactions", "m_sId", byField("m_sId")),
+  "reputation.awards": row("reputation", "awards", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aAwards", "m_sAction", byField("m_sAction")),
+  "reputation.gates": row("reputation", "gates", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aGates", "m_sGate", byField("m_sGate")),
+  "reputation.pays": row("reputation", "pays", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aPays", "m_sFaction", byField("m_sFaction")),
+  "reputationContracts.contracts": row("reputationContracts", "contracts", "LF_ReputationContractsConfig", "Configs/Reputation/LF_ReputationContracts.conf", "m_aContracts", "m_sId", byField("m_sId")),
   "townBoard.cards": row("townBoard", "cards", "LF_TownBoardConfig", "Configs/TownBoard/LF_TownBoard.conf", "m_aCards", "m_sId", byField("m_sId")),
   "ui-theme.themes": row("ui-theme", "themes", "LF_UIThemeConfig", "Configs/UI/LF_UITheme.conf", "m_aThemes", "m_sThemeId", byField("m_sThemeId")),
   "vehicle-colours.models": row("vehicle-colours", "models", "LF_VehicleColoursConfig", "Configs/Vehicles/LF_VehicleColours.conf", "m_aModels", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),
