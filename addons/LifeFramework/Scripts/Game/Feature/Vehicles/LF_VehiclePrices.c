@@ -437,7 +437,7 @@ class LF_VehiclePricesConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader, string source = "config.json")
 	{
-		array<string> ownerKeys = {"buyPercent", "sellBackPercent", "chopPercent", "chopValueCap", "impoundPercent", "garagePercent", "vehicles"};
+		array<string> ownerKeys = {"buyPercent", "sellBackPercent", "chopPercent", "chopValueCap", "impoundPercent", "garagePercent", "lotNeedsDrivingLicence", "vehicles"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("buyPercent", m_iBuyPercent, PERCENT_MIN, PERCENT_MAX);
 		reader.ReadInt("sellBackPercent", m_iSellBackPercent, PERCENT_MIN, PERCENT_MAX);
@@ -445,6 +445,7 @@ class LF_VehiclePricesConfig
 		reader.ReadInt("chopValueCap", m_iChopValueCap, PRICE_MIN, PRICE_MAX);
 		reader.ReadInt("impoundPercent", m_iImpoundPercent, PERCENT_MIN, PERCENT_MAX);
 		reader.ReadInt("garagePercent", m_iGaragePercent, PERCENT_MIN, PERCENT_MAX);
+		reader.ReadBool("lotNeedsDrivingLicence", m_bLotNeedsDrivingLicence);
 
 		if (!m_aVehicles)
 			m_aVehicles = new array<ref LF_VehiclePriceEntry>();

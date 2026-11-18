@@ -1839,6 +1839,11 @@
           "minimum": 0,
           "maximum": 1000
         },
+        "lotNeedsDrivingLicence": {
+          "type": "boolean",
+          "description": "The car lot sells only to a buyer who holds the driving licence",
+          "default": false
+        },
         "vehicles": {
           "type": "object",
           "description": "Per-vehicle base prices and overrides. Records are an object keyed by a stable key. The key is the vehicle's prefab GUID (16 hex digits, the lot's vanilla car or its locked child). A GUID no shipped vehicle has adds one, which must set basePrice. An existing key changes only the fields given; an override of -1 derives the price.",
