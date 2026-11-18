@@ -5289,6 +5289,8 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
     findPr: () => wt.findOpenPrGh(wtRoot, e.branch),
     createPr: (o) => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base, draft: o?.draft === true }),
     autoMerge: (n) => gh(["pr", "merge", String(n), "--auto", "--merge"]),
+    disableAutoMerge: (n) => gh(["pr", "merge", String(n), "--disable-auto"]),
+    convertToDraft: (n) => gh(["pr", "ready", String(n), "--undo"]),
     mergeState: (n) => String(gh(["pr", "view", String(n), "--json", "mergeStateStatus", "-q", ".mergeStateStatus"]).stdout ?? "").trim(),
   }, { base, slug, preflight: !flags.includes("--no-preflight"), draft });
   const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
