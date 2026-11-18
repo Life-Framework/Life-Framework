@@ -102,3 +102,4 @@ processing upgrade are kept at the desk.
 - **Proof:** `organizations/test-org-sign` (LOGIC), `organizations/test-org-sign-world` (WORLD),
   `node agent-box/session.mjs test-org-sign-proof`.
 - `LF_OrgWarKills` - war kills (#2670, W5). `LF_Murder` skips a kill between members of two organizations at war with `SKIP_ORG_WAR` (no murder, no wanted) unless `warKillsAreMurder` is on; the subscriber on `LF_OnPlayerKilled` files a `war_kill` incident when `tagWarKills` is on. Membership is by the account's active character. A war never lifts a safe zone.
+- `LF_OrgHeldSites` — the held-site rows (#2834): the ledger page lists the base lease and each captured site (`RowsFor`, sent in `RpcDo_LF_OrganizationSites` after each page); a lease change (`LF_OnHideoutLeaseChanged`) refreshes the open ledger of every online member; the war board adds one "held by / unclaimed" line per contested site (`LF_EOrgWarNotice.SITE`).

@@ -7612,6 +7612,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Read the war notices"
      Comment "Action on the war notice board (#2677)."
     }
+    CustomStringTableItem "{57A988E869A2BC64}" {
+     Id "LF-OrgWarBoard_SiteFree"
+     Target_en_us "%1: unclaimed"
+     Comment "War board line for a contested site nobody holds. %1 = the site (#2834)."
+    }
+    CustomStringTableItem "{FE1828BDD0D5E92B}" {
+     Id "LF-OrgWarBoard_SiteHeld"
+     Target_en_us "%1: held by %2"
+     Comment "War board line for a contested site. %1 = the site, %2 = the holding organisation (#2834)."
+    }
+    CustomStringTableItem "{37F262A15C951C6C}" {
+     Id "LF-OrgWarBoard_SitesHeader"
+     Target_en_us "Contested ground"
+     Comment "War board line above the contested sites and their holders (#2834)."
+    }
     CustomStringTableItem "{4FA0A019D97109D5}" {
      Id "LF-OrgWarBoard_Title"
      Target_en_us "War notices"
@@ -8001,6 +8016,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Org_Removed"
      Target_en_us "Member removed."
      Comment "Toast to the leader after a removal."
+    }
+    CustomStringTableItem "{EAD4C827F703D348}" {
+     Id "LF-Org_SiteBase"
+     Target_en_us "Base lease"
+     Comment "Ledger held-ground list: mark beside the organisation base lease (#2834)."
+    }
+    CustomStringTableItem "{0E9BCB2663C907E5}" {
+     Id "LF-Org_SiteCaptured"
+     Target_en_us "Captured"
+     Comment "Ledger held-ground list: mark beside a site the organisation took from a rival (#2834)."
+    }
+    CustomStringTableItem "{D7FA7CEB2B437576}" {
+     Id "LF-Org_SitesLine"
+     Target_en_us "Held ground (%1)"
+     Comment "Ledger line above the held-site list. %1 is how many sites the organisation leases (#2834)."
     }
     CustomStringTableItem "{CC1FC9A0CFEB04C1}" {
      Id "LF-Org_TakeLease"
