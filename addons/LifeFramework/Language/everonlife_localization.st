@@ -10715,6 +10715,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Unclaimed"
      Comment "Painted board on a contested site's flag pole when no organisation holds the site."
     }
+    CustomStringTableItem "{970E45E130DA2448}" {
+     Id "LF-SiteStrongbox_Empty"
+     Target_en_us "The strongbox is empty."
+     Comment "Toast: the holder opens the site strongbox and no rent is banked (#2684)."
+    }
+    CustomStringTableItem "{E97E258CA4D33FE7}" {
+     Id "LF-SiteStrongbox_NoRight"
+     Target_en_us "Your rank cannot take the rent."
+     Comment "Toast: a member of the holding organisation whose rank lacks the withdraw right (#2684)."
+    }
+    CustomStringTableItem "{CEEAC310316FCF52}" {
+     Id "LF-SiteStrongbox_NoRoom"
+     Target_en_us "No room to carry the cash. The rent stays in the strongbox."
+     Comment "Toast: the cash did not fit in the player inventory; the bank is unchanged (#2684)."
+    }
+    CustomStringTableItem "{B6BB27B3E34F8BD4}" {
+     Id "LF-SiteStrongbox_NotHolder"
+     Target_en_us "Only the organisation that holds this site can open the strongbox."
+     Comment "Toast: a non-member or another organisation tries the site strongbox (#2684)."
+    }
+    CustomStringTableItem "{15D45ACB87B1F80A}" {
+     Id "LF-SiteStrongbox_Take"
+     Target_en_us "Take the rent"
+     Comment "Action name on a site strongbox (#2684)."
+    }
+    CustomStringTableItem "{FB8C42542BB9F188}" {
+     Id "LF-SiteStrongbox_Taken"
+     Target_en_us "You take %1 in rent from the strongbox."
+     Comment "Toast: the holder took the banked rent as cash. %1 = the amount (#2684)."
+    }
+    CustomStringTableItem "{41D611C1A02BCA46}" {
+     Id "LF-SiteStrongbox_Title"
+     Target_en_us "Strongbox"
+     Comment "Toast title for the site strongbox (#2684)."
+    }
     CustomStringTableItem "{134044FE4B970260}" {
      Id "LF-SpawnHub_Close"
      Target_en_us "Close"
