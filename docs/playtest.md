@@ -310,3 +310,4 @@ sentence that names a place makes it a prompt.
 - Vehicle lot override remove (#1741): boot with config-fixtures/presets/m3-override-model-boot.json as config.json; the car lot (desk 211, 262) no longer lists the UAZ 469.
 
 - **Chalk price board (#2847).** In the debug grid, cell slice-2847, a chalkboard reads *Read today's prices* (F). With the market off (the core default) it says *No prices today.*; turn `m_bEnabled` on in `Configs/Market/LF_Market.conf`, sell some copper bars to a trader, and read again: the price is lower and carries a `v`.
+- Resident witness (#2860): in the playtest town stand near a spawned resident and steal or shoplift in view (within 30 m); the log shows `[LFDebug:Residents] resident ... saw report #N` and `[LFDebug:Residents] memory: ... (crime_seen)`. Proof: `LF_Test_ResidentWitness`.
