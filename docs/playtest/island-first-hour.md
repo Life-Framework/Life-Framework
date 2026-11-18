@@ -14,11 +14,15 @@ node agent-box/harness.mjs --client 1 flow island-first-hour
 node agent-box/session.mjs down
 ```
 
-Use a fresh client profile (the quiz and form R-89 must be the first screens). The flow does not stop at a
-failed line. Each step starts with a `shot ui island_<n>_<step>` line, so the transcript reads step by step.
-A step passes when its `stand`/`use` lines say `ok` and the next `state` line moved (cash, bank, job, duty).
-A step whose slot is not fitted yet prints `entity_not_found`; when its card lands, check the entity name
-against `Place_saint-philippe_<slot>.layer` and fix the flow line if the kit row is named differently.
+Use a fresh client profile (the quiz and form R-89 must be the first screens; step 1 checks the starting
+$100 and $1000). The flow judges itself: each `step` reads the player's state when it opens, and its
+`expect` lines (`cash -250`, `job PARCEL`, `duty police`, `item WaterBottle`, the list is in
+`agent-box/flow-asserts.mjs`) check what moved. A failed line or assert fails the step, and a failed step
+does not stop the run. It ends with one `step PASS|FAIL` row per step and a tally line such as
+`flow island-first-hour: 2 pass (1, 10), 10 fail of 12 steps`, and exits 1 when any step failed.
+A `use` whose named entity is missing fails as `entity_not_found` or `wrong_target:<what it would have hit>`.
+When a slot card lands, check its entity names against `Place_saint-philippe_<slot>.layer`, fix the flow
+line if a kit row is named differently, and drop the `pending #N` from that step.
 
 ## The route
 
@@ -41,7 +45,7 @@ Note anything that blocks a new player in the Discord `#dev` channel with the st
 
 ## Flow status
 
-Run on main `7f0f35e9` (2026-11-18, one client, `--mission island`):
+Self-judged run on `ws/first-hour-asserts` over main `14ffae11` (2026-11-18, one client, `--mission island`): `2 pass (1, 10), 10 fail of 12 steps`. Step 7 now fails as `wrong_target:Fit_saint_philippe_gun_counter_lf_gun_counter` instead of opening the gun counter. Per step:
 
 | # | Step | Result |
 |---|---|---|

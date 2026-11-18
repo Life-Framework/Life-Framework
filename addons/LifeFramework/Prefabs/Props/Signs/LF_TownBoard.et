@@ -11,58 +11,86 @@ GenericEntity {
     UserActionContext "{343B824E218E793F}" {
      ContextName "LF_TownCard0"
      Position PointInfo "{F38C5941AB72675D}" {
-      Offset -0.590 1.705 -0.04
+      Offset -0.590 1.793 -0.04
      }
-     Radius 0.19
+     Radius 0.12
     }
     UserActionContext "{CC68485AD8B16EDA}" {
      ContextName "LF_TownCard1"
      Position PointInfo "{55AC65F0997C4DAA}" {
-      Offset -0.197 1.705 -0.04
+      Offset -0.197 1.793 -0.04
      }
-     Radius 0.19
+     Radius 0.12
     }
     UserActionContext "{12FAEAED925CCB2E}" {
      ContextName "LF_TownCard2"
      Position PointInfo "{E15BF4D938C73BE0}" {
-      Offset 0.197 1.705 -0.04
+      Offset 0.197 1.793 -0.04
      }
-     Radius 0.19
+     Radius 0.12
     }
     UserActionContext "{989D7B573DBF8214}" {
      ContextName "LF_TownCard3"
      Position PointInfo "{DE96F6672592C173}" {
-      Offset 0.590 1.705 -0.04
+      Offset 0.590 1.793 -0.04
      }
-     Radius 0.19
+     Radius 0.12
     }
     UserActionContext "{6B10B0D72397725B}" {
      ContextName "LF_TownCard4"
      Position PointInfo "{602B932A61965F09}" {
-      Offset -0.590 1.316 -0.04
+      Offset -0.590 1.523 -0.04
      }
-     Radius 0.19
+     Radius 0.12
     }
     UserActionContext "{BD250B85AA0B14E1}" {
      ContextName "LF_TownCard5"
      Position PointInfo "{1087172FA0FF8F51}" {
-      Offset -0.197 1.316 -0.04
+      Offset -0.197 1.523 -0.04
      }
-     Radius 0.19
+     Radius 0.12
     }
     UserActionContext "{D71468D18D7F3B53}" {
      ContextName "LF_TownCard6"
      Position PointInfo "{AA790D81617C4ADC}" {
-      Offset 0.197 1.316 -0.04
+      Offset 0.197 1.523 -0.04
      }
-     Radius 0.19
+     Radius 0.12
     }
     UserActionContext "{2D8627B0ADB492D0}" {
      ContextName "LF_TownCard7"
      Position PointInfo "{BC40FF8B91F7915A}" {
-      Offset 0.590 1.316 -0.04
+      Offset 0.590 1.523 -0.04
      }
-     Radius 0.19
+     Radius 0.12
+    }
+    UserActionContext "{E8CDAD697D7C0241}" {
+     ContextName "LF_TownCard8"
+     Position PointInfo "{6CB5855551E6DC27}" {
+      Offset -0.590 1.253 -0.04
+     }
+     Radius 0.12
+    }
+    UserActionContext "{A6E9F92F070F4412}" {
+     ContextName "LF_TownCard9"
+     Position PointInfo "{C5CE1FBD93E36BB5}" {
+      Offset -0.197 1.253 -0.04
+     }
+     Radius 0.12
+    }
+    UserActionContext "{9B484A89A16CA2D2}" {
+     ContextName "LF_TownCard10"
+     Position PointInfo "{A11D22B1E52F4418}" {
+      Offset 0.197 1.253 -0.04
+     }
+     Radius 0.12
+    }
+    UserActionContext "{4389FAEA6592EC5B}" {
+     ContextName "LF_TownCard11"
+     Position PointInfo "{C588EF32EECBFB85}" {
+      Offset 0.590 1.253 -0.04
+     }
+     Radius 0.12
     }
    }
    additionalActions {
@@ -113,6 +141,30 @@ GenericEntity {
       "LF_TownCard7"
      }
      m_iSlot 7
+    }
+    LF_TownBoardCardAction "{D79E4B91A0BB3CC1}" {
+     ParentContextList {
+      "LF_TownCard8"
+     }
+     m_iSlot 8
+    }
+    LF_TownBoardCardAction "{620D466749B15010}" {
+     ParentContextList {
+      "LF_TownCard9"
+     }
+     m_iSlot 9
+    }
+    LF_TownBoardCardAction "{8876C9D3B8A12D09}" {
+     ParentContextList {
+      "LF_TownCard10"
+     }
+     m_iSlot 10
+    }
+    LF_TownBoardCardAction "{2F493C639967B873}" {
+     ParentContextList {
+      "LF_TownCard11"
+     }
+     m_iSlot 11
     }
    }
   }

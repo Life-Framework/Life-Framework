@@ -81,7 +81,7 @@ export async function cmdPromote(root, args, opts = {}) {
       }
     }
     // --confirm: refuse a failed item whose PR is inside the range, then move stable, then the issues.
-    const { issues, manualIssues } = await rg.buildChecklist(gh, plan);
+    const { issues, manualIssues, revertedIssues } = await rg.buildChecklist(gh, plan);
     const inRange = new Set(issues);
     const blocked = fail.filter((n) => inRange.has(n));
     if (blocked.length) {
@@ -114,11 +114,20 @@ export async function cmdPromote(root, args, opts = {}) {
     // An issue another, later PR on main also refs stays in-dev: that PR is not verified yet.
     const later = new Set();
     for (const n of plan.afterPrs) for (const i of rg.parseRefs((await gh.getPr(n))?.body)) later.add(i);
+    const toVerify = [];
     for (const n of issues) {
       if (later.has(n)) log(`#${n}: also refs a PR merged after ${plan.target.slice(0, 8)}; left open`);
-      else await rg.markVerified(gh, n, tag, log);
+      else toVerify.push(n);
     }
+    // One read pass for every issue, grouped label edits: the 0.1.3 run over ~1300 PRs took over 2 h (#2980).
+    await gh.prime?.({ issues: toVerify });
+    const skip = new Map(revertedIssues.map((n) => [n, "its PR was reverted in this range"]));
+    const res = await rg.verifyIssues(gh, toVerify, tag, log, skip);
     for (const n of fail) await rg.markRegression(gh, n, log);
+    if (res.failed.length) {
+      console.log(`FAIL  ${res.failed.length} issue update(s) failed: ${res.failed.map((n) => "#" + n).join(", ")}. stable did move; verify those by hand.`);
+      return 1;
+    }
     return 0;
   } catch (err) {
     console.log(`FAIL  ${err.message}`);

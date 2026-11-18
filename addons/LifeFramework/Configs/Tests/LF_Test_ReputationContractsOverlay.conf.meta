@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6B83D3E82929413B}Configs/Tests/LF_Test_ReputationContractsOverlay.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

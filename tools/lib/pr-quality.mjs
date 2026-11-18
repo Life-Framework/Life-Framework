@@ -26,6 +26,28 @@ export function visibleFiles(files) {
   return (files ?? []).filter((f) => VISIBLE.some((re) => re.test(f.replace(/\\/g, "/"))));
 }
 
+// A placement PR (#2955): it moves what stands in the world, so the claim "it rests on its surface" is looked at
+// in the same Workbench session (`tools\cli look contact`), not only measured. A layer under Worlds/ other than the
+// DebugWorld test annex counts: store slots, props and grid cells live in layers. Nothing else does, so a PR that
+// touches only scripts, docs or prefabs is never asked for one.
+const PLACEMENT = /^addons\/[^/]+\/Worlds\/(?!DebugWorld\/).+\.layer$/;
+
+export function placementFiles(files) {
+  return (files ?? []).filter((f) => PLACEMENT.test(f.replace(/\\/g, "/")));
+}
+
+// An embedded picture that is a contact sheet: `evidence <issue> after <contact.jpg> --name contact-<area>` keeps it
+// as <name>-after.png, so "contact" is in its path or its alt text.
+export function contactSheets(body) {
+  return embeddedImages(body).filter((i) => /contact/i.test(i.alt) || /contact/i.test(i.url));
+}
+
+// "No contact sheet: <reason>" waives it in the open (a layer edit that moves nothing: a rename, a removal).
+export function contactWaiver(body) {
+  const m = /^\s*(?:\*\*)?no contact sheets?(?:\*\*)?\s*:\s*(.+)$/im.exec(strip(body));
+  return m && m[1].replace(/[*_`]/g, "").trim().length >= 15 ? m[1].trim() : null;
+}
+
 function strip(body) {
   return String(body ?? "").replace(/\r\n/g, "\n").replace(/<!--[\s\S]*?-->/g, "");
 }
@@ -137,6 +159,14 @@ export function bodyProblems({ body, files, exists = () => true, reviewText = nu
         problems.push(`the PR body embeds ${p}, which is under tmp/ (gitignored, never pushed). Keep the picture with \`tools\\cli evidence <issue> before|after <area|png>\` and paste the table it prints`);
       } else if (p && !exists(p)) problems.push(`the PR body embeds ${p}, which is not in this branch. Commit the picture (tools\\cli evidence writes it to website/public/docs-images/)`);
     }
+  }
+  const placed = placementFiles(files);
+  if (placed.length && !contactSheets(body).length && !contactWaiver(body)) {
+    problems.push(
+      `this PR changes a layer (${placed.slice(0, 3).join(", ")}${placed.length > 3 ? `, +${placed.length - 3} more` : ""}) but the PR body embeds no contact sheet. ` +
+        "Run `tools\\cli look contact <area|place:...> [--stock <store>]` on the changed props or store slots, keep the sheet with `tools\\cli evidence <issue> after <tmp/look/contact-...>/contact.jpg --name contact-<area>` and paste the table it prints. " +
+        'If nothing moved (a rename, a removal), write a line "No contact sheet: <reason>"',
+    );
   }
   const review = reviewState(reviewText);
   if (review.open.length) {

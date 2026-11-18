@@ -491,10 +491,12 @@ function healOne(root, pr, { dryRun, log, validateOnly = false }) {
       const push = pushBranch(dir, pr.headRefName);
       if (push.status !== 0) return { kind: "attention", msg: `push failed (not forced): ${wt.describeRun(push)}` };
     }
+    const head = wt.git(dir, ["rev-parse", "HEAD"]).stdout.trim();
+    // Re-queue only what was queued: a PR left for review (auto-merge off, REVIEW-NEEDED) stays off (#2940).
+    if (!pr.autoMergeRequest) return { kind: "healed", msg: `healed: ${m.status}, gate ${g.tier} green, pushed ${head.slice(0, 7)}, auto-merge stays off (left for review)` };
     const am = gh(root, ["pr", "merge", String(pr.number), "--auto", "--merge"]);
     const amOut = (am.stdout + am.stderr).trim();
     if (am.status !== 0 && !/already/i.test(amOut)) return { kind: "attention", msg: `pushed, but auto-merge failed: ${amOut}` };
-    const head = wt.git(dir, ["rev-parse", "HEAD"]).stdout.trim();
     return { kind: "healed", msg: `healed: ${m.status}, gate ${g.tier} green, pushed ${head.slice(0, 7)}, auto-merge queued` };
   } catch (e) {
     return { kind: "attention", msg: `heal failed: ${e.message}` };

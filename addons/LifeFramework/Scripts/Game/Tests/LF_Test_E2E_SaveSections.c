@@ -67,17 +67,17 @@ class LF_Test_E2E_SaveSections : LF_Test
 	protected void CheckRestart(LF_TestContext ctx)
 	{
 #ifdef LF_E2E_PRE_MOVE
-		ctx.False(LF_SaveSections.BootHadSection(LF_TestSaveSectionFixtureA.NAME), "e2e the pre-move save has no sections");
+		ctx.False(LF_E2E.SaveHasSection(LF_TestSaveSectionFixtureA.NAME), "e2e the pre-move save has no sections");
 		ctx.True(LF_TestSaveSectionFixtureA.s_bAbsent, "e2e the pre-move save marks every section absent");
 		return;
 #endif
 #ifdef LF_E2E_LEGACY_SAVE
-		ctx.False(LF_SaveSections.BootHadSection(LF_TestSaveSectionFixtureA.NAME), "e2e the version 23 save has no sections");
+		ctx.False(LF_E2E.SaveHasSection(LF_TestSaveSectionFixtureA.NAME), "e2e the version 23 save has no sections");
 		ctx.True(LF_TestSaveSectionFixtureA.s_bAbsent, "e2e the version 23 save marks every section absent");
 		return;
 #endif
-		ctx.True(LF_SaveSections.BootHadSection(LF_TestSaveSectionFixtureA.NAME), "e2e the restart read section A");
-		ctx.True(LF_SaveSections.BootHadSection(LF_TestSaveSectionFixtureB.NAME), "e2e the restart read section B");
+		ctx.True(LF_E2E.SaveHasSection(LF_TestSaveSectionFixtureA.NAME), "e2e the restart read section A");
+		ctx.True(LF_E2E.SaveHasSection(LF_TestSaveSectionFixtureB.NAME), "e2e the restart read section B");
 		ctx.Equal(E2E_A, LF_TestSaveSectionFixtureA.s_iRead, "e2e section A keeps its value across the restart");
 		ctx.True(LF_TestSaveSectionFixtureB.s_fRead == E2E_B, "e2e section B keeps its value across the restart");
 		ctx.False(LF_PersistenceComponentSerializer.IsLoadDamaged(), "e2e the sectioned restart load is not damaged");

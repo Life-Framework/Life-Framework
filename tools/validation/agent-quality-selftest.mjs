@@ -120,6 +120,16 @@ check(problems({ body: GOOD, files: layer, exists: () => false }).some((p) => p.
 check(problems({ body: GOOD.replace(IMG, "![bank](tmp/look/bank/contact.jpg)"), files: layer }).some((p) => p.includes("under tmp/")), "a tmp/look picture, which is never pushed, was accepted");
 check(problems({ body: GOOD.replace(IMG, "![bank](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/tmp/look/bank/wide.png)"), files: layer }).some((p) => p.includes("under tmp/")), "a raw URL into tmp/ was accepted");
 check(problems({ body: GOOD.replace(IMG, "![bank](website/public/docs-images/481/bank-after.png)"), files: layer }).length === 0, "an evidence picture embedded by repo path was refused");
+// A layer under Worlds/ (not the DebugWorld test annex) is a placement change: it carries a contact sheet (#2955).
+const placed = ["addons/LF_Everon1989/Worlds/MainWorld/Place_SaintPhilippe.layer"];
+const SHEET = "![contact sheet](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/2955/contact-general-store-after.png)";
+// red-proof: 2026-11-18 with the placement rule left out of bodyProblems this printed "a layer change with a picture but no contact sheet was accepted".
+check(problems({ body: GOOD, files: placed }).some((p) => p.includes("contact sheet")), "a layer change with a picture but no contact sheet was accepted");
+check(problems({ body: GOOD.replace(IMG, `${IMG}\n\n${SHEET}`), files: placed }).length === 0, `a layer change with a contact sheet was refused: ${problems({ body: GOOD.replace(IMG, `${IMG}\n\n${SHEET}`), files: placed }).join(" | ")}`);
+check(problems({ body: `${GOOD}\nNo contact sheet: only renames a layer entity, nothing moves.`, files: placed }).length === 0, "a written contact-sheet waiver was refused");
+check(problems({ body: `${GOOD}\nNo contact sheet: n/a`, files: placed }).some((p) => p.includes("contact sheet")), "a contact-sheet waiver with no reason was accepted");
+check(!problems({ body: GOOD, files: [...script, "docs/placement-tool.md", "addons/LifeFramework/Prefabs/Props/LF_Till.et"] }).some((p) => p.includes("contact sheet")), "a PR with no layer was asked for a contact sheet");
+check(!problems({ body: GOOD, files: layer }).some((p) => p.includes("contact sheet")), "a DebugWorld test layer was asked for a contact sheet");
 check(problems({ body: GOOD.replace("## Manual testing", "## Notes"), files: script }).some((p) => p.includes("Manual testing")), "an addons change with no Manual testing section was accepted");
 check(problems({ body: `${GOOD}\n${pq.MARK}: fill in`, files: script }).some((p) => p.includes("placeholder")), "a body with a scaffold placeholder was accepted");
 check(problems({ body: "", files: script, hasBodyFile: false }).some((p) => p.includes("--body-file")), "an addons change with the automatic body was accepted");

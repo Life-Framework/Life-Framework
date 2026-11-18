@@ -109,7 +109,7 @@ The plan check routes any card with a `risk` to Opus. Every finished slice
 appends one ledger row:
 
 ```
-tools\cli slice record <issue> --model sonnet --type capability --outcome merged|handoff|split|failed --gate pass|fail --minutes 38 [--wait 4]
+tools\cli slice record <issue> --model sonnet --type capability --outcome merged|handoff|split|failed --gate pass|fail [--wait 4]   (minutes = now minus the worktree's creation time; an agent-given --minutes is kept as agentMinutes only)
 ```
 
 `--outcome merged` is refused unless `gh` shows a merged PR for the slice (branch
