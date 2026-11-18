@@ -525,7 +525,7 @@ class LF_Garage
 		int ledgerFee = LF_GarageConfig.ImpoundFee();
 		string nextOut = LF_VehicleOwnership.LatestImpounded(uid);
 		if (!nextOut.IsEmpty())
-			ledgerFee = LF_VehicleOwnership.ImpoundFeeOf(nextOut);
+			ledgerFee = LF_VehicleTow.FeeOf(nextOut);
 		controller.LF_ShowGarageLedger(nameKeys, plates, places, ledgerFee, LF_NetworkUtils.GetRplId(desk));
 		LF_Debug.Info("Garage", string.Format("ledger shown to %1: %2 vehicle(s)", uid, nameKeys.Count()));
 		return true;
@@ -755,10 +755,10 @@ class LF_ImpoundCollectAction : ScriptedUserAction
 		string vehicleId = LF_VehicleOwnership.LatestImpounded(uid);
 		int fee = LF_GarageConfig.ImpoundFee();
 		if (!vehicleId.IsEmpty())
-			fee = LF_VehicleOwnership.ImpoundFeeOf(vehicleId);
+			fee = LF_VehicleTow.FeeOf(vehicleId);
 		bool collected = false;
 		if (!vehicleId.IsEmpty())
-			collected = LF_VehicleOwnership.CollectFromImpound(vehicleId, uid, pUserEntity, fee, desk.GetPadId(), reasonKey);
+			collected = LF_VehicleTow.Collect(vehicleId, uid, pUserEntity, desk.GetPadId(), reasonKey);
 		else
 			LF_Debug.Info("Vehicle", string.Format("impound collect refused: nothing impounded for %1", uid));
 

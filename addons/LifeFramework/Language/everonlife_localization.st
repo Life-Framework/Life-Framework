@@ -10613,6 +10613,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Study the tourist map"
      Comment "Tourist map item (#2242): the action that pencils every discoverable place onto the player's map."
     }
+    CustomStringTableItem "{788218FBE4001F0E}" {
+     Id "LF-Tow_Towed"
+     Target_en_us "Your vehicle %1 was towed. Collect it at the impound desk."
+     Comment "Toast to the owner: their abandoned car was towed (#2657). %1 is the plate"
+    }
     CustomStringTableItem "{65D7E4795D634FBD}" {
      Id "LF-TownBoard_Dir_E"
      Target_en_us "east"
