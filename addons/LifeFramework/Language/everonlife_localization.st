@@ -4130,7 +4130,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AC1FD7B3F3DBE446}" {
      Id "LF-Garage_SlotShortCash"
-     Target_en_us "The next slot costs $%1 in cash. You do not carry enough."
+     Target_en_us "The next slot costs {currency:sym}%1 in cash. You do not carry enough."
      Comment "Garage slot refused (#2656): carried cash is short. %1 is the price."
     }
     CustomStringTableItem "{4F4F48DC707A84B4}" {
