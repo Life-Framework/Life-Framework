@@ -341,7 +341,9 @@ class LF_PlacementService
 		LF_EPlacementSnap snap = placeable.GetSnap();
 		if (snap == LF_EPlacementSnap.ACROSS_ROAD)
 			hasRoad = NearestRoad(ahead, roadDir);
-		else if (snap != LF_EPlacementSnap.GROUND)
+		else if (snap == LF_EPlacementSnap.WALL)
+			return LF_PlacementFurniture.PlanWall(player, placeable, ignore, transform, probe); // furniture (#2654)
+		else if (snap != LF_EPlacementSnap.GROUND && snap != LF_EPlacementSnap.FLOOR)
 		{
 			LF_Debug.Error(FEATURE, string.Format("snap mode %1 is not built yet (#1028); refusing", typename.EnumToString(LF_EPlacementSnap, snap)));
 			LevelAt(ahead, LF_PlacementGeometry.Flat(playerTransform[2]), transform);
@@ -367,7 +369,10 @@ class LF_PlacementService
 		vector playerTransform[4];
 		player.GetWorldTransform(playerTransform);
 		LF_EPlacementSnap snap = placeable.GetSnap();
-		if (snap != LF_EPlacementSnap.GROUND && snap != LF_EPlacementSnap.ACROSS_ROAD)
+		if (snap == LF_EPlacementSnap.WALL)
+			return LF_PlacementFurniture.PlanWallAimed(player, placeable, ignore, eye, aimDir, transform, probe, clamped); // furniture (#2654)
+
+		if (snap != LF_EPlacementSnap.GROUND && snap != LF_EPlacementSnap.ACROSS_ROAD && snap != LF_EPlacementSnap.FLOOR)
 		{
 			LF_Debug.Error(FEATURE, string.Format("snap mode %1 is not built yet (the buildings, #1033); refusing", typename.EnumToString(LF_EPlacementSnap, snap)));
 			LevelAt(playerTransform[3], LF_PlacementGeometry.HeadingOf(yaw), transform);
@@ -559,9 +564,17 @@ class LF_PlacementService
 				return Refuse(player, "refused: " + roadProblem, "#LF-Placement_Moved");
 		}
 
+		string wallWhy = LF_PlacementFurniture.WallProblem(placeable, proposal, player, item); // furniture (#2654)
+		if (!wallWhy.IsEmpty())
+			return Refuse(player, "refused: " + wallWhy, "#LF-Placement_NoGround");
+
 		vector transform[4];
 		LF_PlacementProbe probe = new LF_PlacementProbe();
-		LF_EPlacementVerdict verdict = ProbeAt(player, placeable, item, proposal, transform, probe);
+		LF_EPlacementVerdict verdict;
+		if (placeable.GetSnap() == LF_EPlacementSnap.WALL)
+			verdict = LF_PlacementFurniture.ProbeProposal(player, placeable, item, proposal, transform, probe); // furniture (#2654)
+		else
+			verdict = ProbeAt(player, placeable, item, proposal, transform, probe);
 		if (verdict == LF_EPlacementVerdict.BLOCKED)
 			return Refuse(player, "refused: " + LF_PlacementRules.Reason(verdict, probe, MAX_STEP), "#LF-Placement_Blocked");
 
