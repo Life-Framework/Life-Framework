@@ -109,9 +109,11 @@ way `ci`'s Workbench steps choose (`tools/lib/wb-gate.mjs` chooseGate: live free
 machine gets this worktree's snapshot (uncommitted files too) through the pool's run folders, and the
 pictures are copied back to `tmp/look/<area>/` with `index.json` pointing at them (`machine` says
 where they were taken). With no room anywhere it queues (re-read every 20 s, up to 20 min,
-`LF_LOOK_WAIT_S`) instead of failing. A machine that cannot run it after all (the RAM went, its
-build lock is held, or the Workbench timed out with no shot while short of RAM) hands it back and
-the next machine is tried. `--local` keeps it on this PC, queuing here for RAM and the build lock;
+`LF_LOOK_WAIT_S`) instead of failing. A machine that cannot run it after all (the RAM went, or the Workbench timed out with no
+shot while short of RAM) hands it back and the next machine is tried. A held build lock (another
+headless Workbench: a build, an rdb refresh, another look) is a wait, not a refusal: the look prints
+`look: queued: another headless Workbench holds the build lock` and re-checks every 20 s for up to
+`LF_LOOK_WAIT_S`, so a one-PC pool no longer ends in `no machine left to try` (#2808). `--local` keeps it on this PC, queuing here for RAM and the build lock;
 `--machine <name>` sends it to one pool machine; `--force` runs here with no RAM check. A live
 `look serve` here is always used first. On 2026-11-14, with 0.1 GB free on this PC, `look bank`
 ran on lf-testbox in 297 s the first time (a new run folder: 67 s to sync) and on lf-cloud in 93 s.
