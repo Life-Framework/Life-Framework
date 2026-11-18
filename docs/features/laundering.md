@@ -39,5 +39,22 @@ Stolen money is a separate item that never counts as cash.
 - ✅ A cut outside 0..90 %, or a zero batch or cap, is refused at load (`LF_Debug.Error("Laundering", ...)`): the
   wash rules read as missing (`LF_LaunderConfig.GetRules` null) while the dirty-money switch still applies.
 - ⚠️ The per-character day total is session-only in this wave: a restart forgives the day.
-- ⚠️ Nothing calls the rules yet; the washing interaction is a later slice.
+- ✅ Called by the laundering station (#2853, below).
 - Test: `LF_Test_LaunderRules` (LOGIC).
+
+### Laundering station — `Feature/Laundering/LF_LaunderStationComponent.c` (#2853)
+- ✅ `LF_LaunderStationComponent` on `Prefabs/Props/Laundering/LF_LaunderStation.et` (a vanilla workbench), actions
+  `LF_LaunderStationAction` LOAD (`#LF-Launder_Load`) and COLLECT (`#LF-Launder_Collect`, `#LF-Launder_Washing` while it washes).
+- ✅ Server only. Load takes the character's marked notes first (`LF_MarkedCash.Take`, reason `launder-in`), up to the batch
+  and daily limits of `LF_LaunderRules`; a short take is put back once and refused. The ledger books `launder-in` on the
+  new `marked` account (`LF_Ledger.ACCOUNT_MARKED`, a trail line, never a balance).
+- ✅ The batch washes for `m_iBatchSeconds`, then only the character who loaded it collects: `LF_MoneyUtils.AddCash(...,
+  "launder-out", "", true)` (overflow at the feet). A short pay keeps the unpaid rest in the station for the same character.
+  Walking away mid-wash leaves the batch waiting; anyone else gets `#LF-Launder_NotYours`.
+- ✅ Refusals in words: dead or downed, out of reach (3.5 m), faster than one action per second, busy, no notes,
+  `#LF-Launder_DailyCap`, not yet washed.
+- ✅ Heat: each batch adds `m_iHeatPerBatch` (10) work units to the station's chain site (`m_sSiteId`, heat settings of
+  `m_sChainId`, default `cider`) through `LF_ChainSites.AddWork` and publishes `LF_OnChainWork`, so the smell trace and
+  the police lead work as at a still.
+- ⚠️ Not saved: a restart empties the station and a batch in it is lost. Follow-up: a station save section.
+- Test: `LF_Test_LaunderStation` (WORLD).

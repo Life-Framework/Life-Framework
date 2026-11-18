@@ -5509,6 +5509,71 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Lock or unlock vehicle"
      Comment "Key binding menu label for the U key."
     }
+    CustomStringTableItem "{A81D7E3C7F1A56FE}" {
+     Id "LF-Launder_Busy"
+     Target_en_us "Someone else has a batch in."
+     Comment "Toast: the laundering station already holds a batch (#2853)."
+    }
+    CustomStringTableItem "{CD8D5A8DDA7422F4}" {
+     Id "LF-Launder_Closed"
+     Target_en_us "Nobody is washing money today."
+     Comment "Toast: the laundering rules config is missing or refused (#2853)."
+    }
+    CustomStringTableItem "{9D01404950D59291}" {
+     Id "LF-Launder_Collect"
+     Target_en_us "Take the clean cash"
+     Comment "Laundering station action: take the washed batch out as cash (#2853)."
+    }
+    CustomStringTableItem "{AFB662F9E2F3676A}" {
+     Id "LF-Launder_Collected"
+     Target_en_us "You take the clean cash."
+     Comment "Toast: clean cash taken from the laundering station (#2853)."
+    }
+    CustomStringTableItem "{DC272F956DFB6D44}" {
+     Id "LF-Launder_DailyCap"
+     Target_en_us "You have washed all you can today. Come back tomorrow."
+     Comment "Toast: the character reached the 24 h laundering cap (#2853)."
+    }
+    CustomStringTableItem "{424DC80066E431A2}" {
+     Id "LF-Launder_Empty"
+     Target_en_us "There is nothing in the station."
+     Comment "Toast: collect at an empty laundering station (#2853)."
+    }
+    CustomStringTableItem "{B9557E043B1D76EF}" {
+     Id "LF-Launder_Load"
+     Target_en_us "Hand over marked notes"
+     Comment "Laundering station action: put marked notes in to wash (#2853)."
+    }
+    CustomStringTableItem "{0F28F6C90EE350AF}" {
+     Id "LF-Launder_Loaded"
+     Target_en_us "The notes are in. Come back when they are clean."
+     Comment "Toast: marked notes loaded into the laundering station (#2853)."
+    }
+    CustomStringTableItem "{0319442FDC722D7C}" {
+     Id "LF-Launder_NoNotes"
+     Target_en_us "You have no marked notes to wash."
+     Comment "Toast and cannot-perform reason: no marked notes on the character (#2853)."
+    }
+    CustomStringTableItem "{CD22B4916812EB71}" {
+     Id "LF-Launder_NotReady"
+     Target_en_us "The notes are not clean yet."
+     Comment "Toast: collect before the batch time has passed (#2853)."
+    }
+    CustomStringTableItem "{9230020C15FC4430}" {
+     Id "LF-Launder_NotYours"
+     Target_en_us "That batch is not yours."
+     Comment "Toast: another character tried to take someone else's batch (#2853)."
+    }
+    CustomStringTableItem "{CE4833F0D2918E75}" {
+     Id "LF-Launder_Title"
+     Target_en_us "Laundering"
+     Comment "Toast title at the laundering station (#2853)."
+    }
+    CustomStringTableItem "{CA24071CBF88363F}" {
+     Id "LF-Launder_Washing"
+     Target_en_us "Check the wash"
+     Comment "Laundering station action while the batch is still washing (#2853)."
+    }
     CustomStringTableItem "{59EE09E1B7435797}" {
      Id "LF-LawlessHud_Enter"
      Target_en_us "You entered a lawless area. Server rules are relaxed here. Watch your back."
