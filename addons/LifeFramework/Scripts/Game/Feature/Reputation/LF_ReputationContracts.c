@@ -69,7 +69,7 @@ class LF_ReputationContractDef : LF_ConfigRecord
 
 //------------------------------------------------------------------------------------------------
 //! The contract table: Configs/Reputation/LF_ReputationContracts.conf. Core ships one neutral test
-//! row; the pack's contracts (the harbour master's, Vince's) come with the pack overlay card.
+//! row; the pack's contracts are layered over it from each pack overlay (LF_ReputationOverlay.c, #3044).
 [BaseContainerProps(configRoot: true)]
 class LF_ReputationContractsConfig
 {
@@ -101,6 +101,8 @@ class LF_ReputationContractsConfig
 		s_Config = LF_ReputationContractsConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
 			LF_Debug.Error(LF_Reputation.FEATURE, string.Format("contract config has an unexpected root class: %1", CONFIG_PATH));
+		else
+			LF_ReputationOverlay.ApplyContracts(s_Config);
 
 		return s_Config;
 	}

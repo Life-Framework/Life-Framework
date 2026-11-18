@@ -65,5 +65,9 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   what walking away costs in words (`#LF-ContractTracker_Cost`, never points) when the contract has a stake. The title
   is the pack's row `Title_<contractId>`, else `Title_Default`. There was no on-screen quest tracker, so the line is a
   paper tag built from UI kit parts (`LF_ContractTrackerHud`, no layout). Test `reputation/contract-tracker`.
-- 🔲 Screens, the pack's words,
-  pack overlay and the owner `config.json` section `reputation` (later cards of #1018).
+- 🟡 **The standing tables read pack overlays** (#3044): `LF_ReputationConfig.Get()` and `LF_ReputationContractsConfig.Get()`
+  layer each overlay the mission header lists (`LF_ReputationOverlay.c`, load order) over the core file: factions (key `m_sId`),
+  awards (`m_sAction`), gates (`m_sGate`), pays (`m_sFaction`) and contracts (`m_sId`) take add, replace, patch and remove
+  (`docs/config/override-model.md`). A patch sets only the fields it gives; an array (tier words, pay percents) is replaced whole.
+  The contracts file's cooldown stays core. Test `reputation/pack-overlay`.
+- 🔲 Screens, the pack's words and values (#2709), and the owner `config.json` section `reputation` (later cards of #1018).
