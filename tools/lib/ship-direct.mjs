@@ -44,14 +44,27 @@ export async function shipDirect(deps, { base = "main", slug = "?", preflight = 
   const push = deps.push();
   if (push.status !== 0) return fail(`push: ${String(push.stderr || push.stdout).trim()}`);
   let pr;
+  let reused = false;
   try {
-    pr = deps.findPr() ?? deps.createPr({ draft });
+    pr = deps.findPr();
+    reused = !!pr;
+    if (!pr) pr = deps.createPr({ draft });
   } catch (e) {
     return fail(`PR creation: ${e.message}`);
   }
   log(`PR: ${pr.url}`);
   if (draft) {
-    log(`ship: draft PR, auto-merge not requested; mark it ready and merge it when it is approved.`);
+    // A PR opened by an earlier ship (or by hand) may already be ready with auto-merge queued; --draft must undo
+    // both, or the review gate (money, persistence, replication PRs) merges itself (#2940, PR #2938).
+    if (reused) {
+      const off = deps.disableAutoMerge?.(pr.number);
+      if (off && off.status !== 0 && !/not enabled|isn't enabled|no auto/i.test(`${off.stdout ?? ""}\n${off.stderr ?? ""}`)) {
+        return { ...fail(`draft: could not turn auto-merge off on PR ${pr.url}: ${`${off.stdout ?? ""}\n${off.stderr ?? ""}`.trim()}; run: gh pr merge ${pr.number} --disable-auto`), pr };
+      }
+      const dr = deps.convertToDraft?.(pr.number);
+      if (dr && dr.status !== 0 && !/already/i.test(`${dr.stdout ?? ""}\n${dr.stderr ?? ""}`)) log(`ship: could not convert PR ${pr.number} to draft (${`${dr.stdout ?? ""}\n${dr.stderr ?? ""}`.trim()}); auto-merge is off`);
+    }
+    log(`draft: auto-merge off (REVIEW-NEEDED)`);
     return { code: 0, pr, draft: true };
   }
   for (let attempt = 0; ; attempt++) {
