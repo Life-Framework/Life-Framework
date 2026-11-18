@@ -46,6 +46,7 @@ class LF_MapPoiKind : LF_ConfigRecord
 class LF_MapPoiConfig
 {
 	static const string FEATURE = "MapPois";
+	static const string SLOT_SEP = "/";
 	static const ResourceName CONFIG_PATH = "{46407C3917B5AD42}Configs/Map/LF_MapPois.conf";
 
 	[Attribute("", UIWidgets.Object, "One row per place kind the map draws")]
@@ -119,6 +120,41 @@ class LF_MapPoiConfig
 		}
 
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True for a slot row: its m_sKind is "<kind>/<slot>" (#3515). Shops share one front kind
+	//! (StoreCounter) yet read differently on the map, so a pack adds a row per slot that restyles the
+	//! places of that kind whose id ends in ".<slot>". Only the look comes from a slot row (label, icon,
+	//! category, min zoom); whether and to whom the place shows stays the base kind's row, so every
+	//! gather loop walks the base rows and skips slot rows.
+	static bool IsSlotRow(LF_MapPoiKind row)
+	{
+		return row && row.m_sKind.IndexOf(SLOT_SEP) > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The slot of a place id: what follows the last dot ("saint-philippe.bakery" is "bakery"), or
+	//! empty when the id has no dot.
+	static string SlotOf(string placeId)
+	{
+		int dot = placeId.LastIndexOf(".");
+		if (dot < 0 || dot >= placeId.Length() - 1)
+			return "";
+
+		return placeId.Substring(dot + 1, placeId.Length() - dot - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The slot row of one place (its kind plus the slot its id ends in), or null when the pack gave
+	//! that slot no row of its own.
+	LF_MapPoiKind FindSlotRow(string kind, string placeId)
+	{
+		string slot = SlotOf(placeId);
+		if (slot.IsEmpty())
+			return null;
+
+		return Find(kind + SLOT_SEP + slot);
 	}
 }
 

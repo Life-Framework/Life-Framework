@@ -1,0 +1,41 @@
+// Source of the `newsagent` kit (tools/town/kits/newsagent.json): the kiosk's till, which sells the pack's `newsagent`
+// stock (the tourist map, water; LF_ShopStock_Everon1989.conf). `town fit` reads the component GUIDs and nested blocks
+// (the action context and the shop action) from here.
+GenericEntity Source_NewsagentCounter : "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_NewsagentPapers : "{EA34FD3A068E550A}Prefabs/Props/Commercial/NewspaperStand_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_NewsagentTill : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{7C4D2E1A5B6F8093}" {
+   m_sShopName "#LF-Shop_Name_Newsagent"
+   m_sShopDescription "#LF-Shop_Desc_Newsagent"
+   m_sStockId "newsagent"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{7C4D2E1A5B6F8094}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{7C4D2E1A5B6F8095}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{7C4D2E1A5B6F8096}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7C4D2E1A5B6F8097}" {
+      Name "#LF-Shop_Open_Newsagent"
+      Description "#LF-Shop_OpenDesc_Newsagent"
+     }
+    }
+   }
+  }
+ }
+ coords 0 1.238 0
+}

@@ -839,6 +839,21 @@ StringTable {
      Target_en_us "Not without a driving licence. The town hall desk issues it for %1."
      Comment "Overrides the core row: the flagship's car lot refusal names the town hall licence desk (#3151). %1 is the fee."
     }
+    CustomStringTableItem "{EFE3196881518A64}" {
+     Id "LF-MapPoi_Bakery"
+     Target_en_us "Bakery"
+     Comment "Map POI name (#3515): the bakery counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{AB58CDFCAE3CEAD2}" {
+     Id "LF-MapPoi_Barber"
+     Target_en_us "Barber"
+     Comment "Map POI name (#3515): the barber's chair; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{684C52D74CAE72C4}" {
+     Id "LF-MapPoi_Butcher"
+     Target_en_us "Butcher"
+     Comment "Map POI name (#3515): the butcher's counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F0E}" {
      Id "LF-MapPoi_Cafe"
      Target_en_us "Cafe"
@@ -859,6 +874,11 @@ StringTable {
      Target_en_us "Filling station"
      Comment "Map POI kind name (#2247): the fuel till."
     }
+    CustomStringTableItem "{3EF58CE81E5B58BA}" {
+     Id "LF-MapPoi_Furniture"
+     Target_en_us "Furniture store"
+     Comment "Map POI name (#3515): the furniture store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F0B}" {
      Id "LF-MapPoi_GeneralStore"
      Target_en_us "General store"
@@ -869,10 +889,20 @@ StringTable {
      Target_en_us "Gun store"
      Comment "Map POI kind name (#2247): the gun store counter."
     }
+    CustomStringTableItem "{521427D84861A261}" {
+     Id "LF-MapPoi_Hardware"
+     Target_en_us "Hardware store"
+     Comment "Map POI name (#3515): the hardware store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F13}" {
      Id "LF-MapPoi_Hostel"
      Target_en_us "Hostel"
      Comment "Map POI kind name (#2247): the hostel."
+    }
+    CustomStringTableItem "{046B777F2F3B3DC1}" {
+     Id "LF-MapPoi_Newsagent"
+     Target_en_us "Newsagent"
+     Comment "Map POI name (#3515): the newsagent's counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
     }
     CustomStringTableItem "{5A7C1E04B93D6F11}" {
      Id "LF-MapPoi_NoticeBoard"
@@ -883,6 +913,21 @@ StringTable {
      Id "LF-MapPoi_ParcelDepot"
      Target_en_us "Parcel depot"
      Comment "Map POI kind name (#2247): the parcel depot."
+    }
+    CustomStringTableItem "{E880E2EC6AF04CEE}" {
+     Id "LF-MapPoi_Pharmacy"
+     Target_en_us "Pharmacy"
+     Comment "Map POI name (#3515): the pharmacy counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{1FA54D4B3E7D5BC1}" {
+     Id "LF-MapPoi_SeedFeed"
+     Target_en_us "Seed and feed store"
+     Comment "Map POI name (#3515): the seed and feed store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{47A0ACEF429D7700}" {
+     Id "LF-MapPoi_Supermarket"
+     Target_en_us "Supermarket"
+     Comment "Map POI name (#3515): the supermarket till; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
     }
     CustomStringTableItem "{5A7C1E04B93D6F10}" {
      Id "LF-MapPoi_TaxiRank"
@@ -1384,6 +1429,11 @@ StringTable {
      Target_en_us "Picks and shovels for working miners. A miner of rank 2 can buy the pickaxe."
      Comment "General store counter (#3085): the miner's supply description."
     }
+    CustomStringTableItem "{3E7A91C04B52D682}" {
+     Id "LF-Shop_Desc_Newsagent"
+     Target_en_us "Newspapers, magazines, bottled water and the tourist map of Everon."
+     Comment "Shop description of the Saint-Philippe newsagent kiosk till (#3222)."
+    }
     CustomStringTableItem "{88A40BFFEF7CB897}" {
      Id "LF-Shop_Desc_PharmacyCounter"
      Target_en_us "Morphine and saline, for licensed medics only."
@@ -1424,6 +1474,11 @@ StringTable {
      Target_en_us "Miner's supply"
      Comment "General store counter (#3085): the miner's supply name."
     }
+    CustomStringTableItem "{3E7A91C04B52D681}" {
+     Id "LF-Shop_Name_Newsagent"
+     Target_en_us "Tabac-presse"
+     Comment "Shop name of the Saint-Philippe newsagent kiosk till (#3222): stock newsagent."
+    }
     CustomStringTableItem "{B1BC977506FDDA48}" {
      Id "LF-Shop_Name_PharmacyCounter"
      Target_en_us "Dispensary"
@@ -1443,6 +1498,11 @@ StringTable {
      Id "LF-Shop_Name_Workwear"
      Target_en_us "Workwear counter"
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
+    }
+    CustomStringTableItem "{3E7A91C04B52D684}" {
+     Id "LF-Shop_OpenDesc_Newsagent"
+     Target_en_us "Buy the tourist map or a paper"
+     Comment "Action description on the newsagent kiosk till (#3222)."
     }
     CustomStringTableItem "{0EC694A26B780C12}" {
      Id "LF-Shop_Open_Cafe"
@@ -1468,6 +1528,11 @@ StringTable {
      Id "LF-Shop_Open_MinersSupply"
      Target_en_us "Miner's supply"
      Comment "General store counter (#3085): the miner's supply action label."
+    }
+    CustomStringTableItem "{3E7A91C04B52D683}" {
+     Id "LF-Shop_Open_Newsagent"
+     Target_en_us "Browse the kiosk"
+     Comment "Action label on the newsagent kiosk till (#3222)."
     }
     CustomStringTableItem "{7729AC333C1E6567}" {
      Id "LF-Shop_Open_PharmacyCounter"
