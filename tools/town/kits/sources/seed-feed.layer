@@ -1,0 +1,53 @@
+// Source of the `seed-feed` kit (tools/town/kits/seed-feed.json): the farm supply counter's till, which sells the pack's `seed_feed`
+// stock (cabbage seeds, bait tin, fishing rod, water; LF_ShopStock_Everon1989.conf). `town fit` reads the component GUIDs and nested
+// blocks (the action context and the shop action) from here.
+GenericEntity Source_SeedFeedCounter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_SeedFeedSacks : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 0 0 0
+}
+GenericEntity Source_SeedFeedCrateBrown : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 0 0 0
+}
+GenericEntity Source_SeedFeedCrateGreen : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 0 0 0
+}
+GenericEntity Source_SeedFeedCrateRed : "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_01_red.et" {
+ coords 0 0 0
+}
+GenericEntity Source_SeedFeedBox : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_SeedFeedTill : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{7C4D2E1A5B6F80B3}" {
+   m_sShopName "#LF-Shop_Name_SeedFeed"
+   m_sShopDescription "#LF-Shop_Desc_SeedFeed"
+   m_sStockId "seed_feed"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{7C4D2E1A5B6F80B4}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{7C4D2E1A5B6F80B5}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{7C4D2E1A5B6F80B6}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7C4D2E1A5B6F80B7}" {
+      Name "#LF-Shop_Open_SeedFeed"
+      Description "#LF-Shop_OpenDesc_SeedFeed"
+     }
+    }
+   }
+  }
+ }
+ coords 0 1.139 0
+}
