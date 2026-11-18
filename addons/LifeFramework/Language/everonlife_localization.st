@@ -7044,7 +7044,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{367833D38BB24DC8}" {
      Id "LF-OrgWarBoard_None"
-     Target_en_us "No war has been declared. The town is quiet."
+     Target_en_us "No war has been declared. It is quiet."
      Comment "War notice board line when no notice is up (#2677)."
     }
     CustomStringTableItem "{15794F43B5EA9503}" {
