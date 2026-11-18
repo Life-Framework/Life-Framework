@@ -82,6 +82,7 @@ class LF_Witness
 {
 	static const string FEATURE = "Witness";
 	static const string NPC_PREFIX = "npc:";
+	static const string RESIDENT_PREFIX = "resident:";
 	static const string LABEL_NPC = "#LF-Witness_Npc";
 	static const string LABEL_ANONYMOUS = "#LF-Witness_Anonymous";
 	static const string ENTRY_PREFIX = "S;";
@@ -149,6 +150,11 @@ class LF_Witness
 		if (!npc)
 			return string.Empty;
 
+		// A live resident is a named witness: the report keeps the resident id, so their memory can move.
+		string residentId = LF_ResidentSpawner.ResidentIdOf(npc);
+		if (!residentId.IsEmpty())
+			return RESIDENT_PREFIX + residentId;
+
 		return NPC_PREFIX + string.Format("%1", npc.GetID());
 	}
 
@@ -183,6 +189,7 @@ class LF_Witness
 		LF_WitnessScene scene = OpenScene(report, suspectUid, offence, clothing, vehicle, PlateOf(suspect), place, System.GetTickCount());
 		CollectPlayers(scene, suspect);
 		CollectNpcs(scene, suspect);
+		LF_ResidentCrimeReaction.OnScene(scene);
 		LF_Debug.Info(FEATURE, string.Format("report #%1: %2 witness(es) in sight (plate '%3')", report, scene.m_aWitnesses.Count(), scene.m_sPlate));
 		return scene;
 	}
