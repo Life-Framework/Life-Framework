@@ -293,6 +293,47 @@
         "House_Town_E_2I01 (townhouse), 208 m2, 3 floors, 13 doors, the town house on the square row beside the barber b43 and the clinic b39",
         "D10 pick (#3217), allocation S9 #3256 (lead 2026-11-18): the furniture store, all house furniture on its own stock; furniture then leaves the general store"
       ]
+    },
+    "woodlot": {
+      "building": "b121",
+      "alternatives": [
+        {
+          "building": "b124"
+        },
+        {
+          "building": "b125"
+        },
+        {
+          "building": "b126"
+        }
+      ],
+      "why": [
+        "Warehouse_01 (industrial), 793 m2, 1 floor, 4 doors, interior yes, 162 m south-west of the scout centre at the village edge, off the roads; the open-sided metal sheds b124 and b125 stand about 30 m beside it",
+        "D10 pick (#3272, after #3174), lumber epic #3169, yard card #3175: the timber yard. The sawmill stands inside the warehouse; the log piles, stacked planks and loading bay go on the yard round it and under the open sheds (the slot's 14 m margin covers them); kinds LogPile and Processor. The allocation marks b121 a locked co-op warehouse (L0 #3204); a fitted place marker beats that lock (#3201 precedence) and its purpose row becomes `timber yard` with the yard card. di:b76 (Workshop_01_Garage in the districts survey, 158 m south) is the other candidate #3175 names and stays unmapped: b121 has the sheds to build the yard from. Whether trees stand within reach of the yard is the fit card's check (the survey counts vegetation for the whole radius, not per spot)"
+      ]
+    },
+    "farm": {
+      "building": "b73",
+      "alternatives": [
+        {
+          "building": "b100"
+        },
+        {
+          "building": "b23"
+        }
+      ],
+      "why": [
+        "Barn_E_02 (farm), 80.8 m2, 118.6 m south-west of the scout centre at the village edge, the farm barn with open ground round it",
+        "D10 pick (#3190), lumber epic #3169 sibling (Z2): the cabbage plots, the seed crate and the farm_plots sign (kinds FarmPlot, SeedCrate) go on the open ground round this barn, which stays locked 'Propriete privee' (L0 #3204) since the slot uses its yard, not its door. None of the four free plots was used: all four carry sale signs (Plots_saint-philippe.layer). Every henhouse stands in a house yard, and b96 is the barn behind the range, so b73 is the one farm barn clear of both. b100 (north-east edge) and b23 are the same kind of barn"
+      ]
+    },
+    "merchant-timber": {
+      "building": "b59",
+      "shared": true,
+      "why": [
+        "Workshop_02 (garage), 138 m2, 1 floor, 4 doors, the workshop yard on the south-east road beside the fence workshop b33; the building the hardware slot (#3217) already holds",
+        "D10 pick (#3272), lumber epic #3169, card #3274: the hardware store's timber counter, a 'we buy timber' board and stacked timber on the b59 frontage; street furniture that shares the building with the hardware slot (the chess-on-the-pub pattern, #3078), so the hardware kit keeps the interior and the timber kit keeps the kerb"
+      ]
     }
   }
 }

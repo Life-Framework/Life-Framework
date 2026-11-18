@@ -194,3 +194,10 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Owner and side:** server, as for the first four. `LF_PlaceableComponent.m_fHangHeight` (WALL snap only, default 0) lifts the origin in `LF_PlacementFurniture.ProbeWall`, so the ghost and the server's recomputed spot agree.
 - **Data:** `tools/furniture/items.json` through `tools/furniture/gen.mjs` (`--check` compares); `Furniture_<Id>_{Item,Placed}.et`, the `Furniture_<Id>` policy rows, strings `#LF-Furniture_<Id>_Name`; pack prices and stock in `LF_Everon1989/Configs/Shop/`.
 - **Proof:** `everon/furniture-home` (WORLD, pack leg). The placed prop in a real room and the hung mirror and picture are manual.
+
+## Storage furniture (wardrobe, dresser, cupboard, chest, crate, fridge, kitchen unit)
+
+- **Player sees:** a piece with an inventory: Open (the placer only) shows its storage; what is put in stays after a restart. A piece with items in it is not picked up ("Empty it first").
+- **Owner and side:** server. `LF_PlacementSave` attaches `LF_PersistentStorageComponent` through `LF_PlacedStorage.Attach` (key `furniture:<placement id>`), no new save section: the contents ride the carried payload (`LF_StorageSnapshot`, slot placed). `LF_PlacementPickup` refuses a non-empty piece. `LF_FurnitureStorageManagerComponent.HandleAccessValidation` is the server check behind the placer-only Open.
+- **Data:** `storage` rows of `tools/furniture/items.json` (volume, weight, item size); strings `#LF-FurnitureStorage_Open`, `#LF-Placement_EmptyFirst`.
+- **Proof:** `housing/furniture-storage`, `housing/furniture-storage-save` (PERSISTENCE), `everon/furniture-storage-stock`. A real restart and a second player are manual.

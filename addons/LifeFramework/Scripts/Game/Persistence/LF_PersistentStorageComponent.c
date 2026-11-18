@@ -29,6 +29,9 @@ class LF_PersistentStorageComponent : ScriptComponent
 	static const string SLOT_PLACED = "placed";
 	static const string FEATURE = "PlacedStorage";
 
+	[Attribute("0", UIWidgets.CheckBox, desc: "The key is given after the entity spawns (AssignKey: placed furniture, LF_PlacementSave), so an empty key at init is not an error")]
+	protected bool m_bKeyAssignedLater;
+
 	[Attribute("", UIWidgets.EditBox, desc: "Stable key the contents are saved under, e.g. hideout:<hideout id>. Keep it when the entity moves. Empty uses the entity name.")]
 	protected string m_sStorageKey;
 
@@ -75,10 +78,33 @@ class LF_PersistentStorageComponent : ScriptComponent
 		string key = GetStorageKey();
 		if (key.IsEmpty())
 		{
-			LF_Debug.Error(FEATURE, string.Format("placed storage %1 at %2 has no storage key and no entity name; its contents will not persist", LF_Utils.GetPrefabName(owner), owner.GetOrigin()));
+			// Placed furniture gets its key from LF_PlacementSave once it has a placement id (AssignKey).
+			if (!m_bKeyAssignedLater)
+				LF_Debug.Error(FEATURE, string.Format("placed storage %1 at %2 has no storage key and no entity name; its contents will not persist", LF_Utils.GetPrefabName(owner), owner.GetOrigin()));
+
 			return;
 		}
 
+		Register(owner, key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: gives a storage whose key is assigned after it spawns (placed furniture) its key and
+	//! registers it, which also restores the saved contents a frame later.
+	//! \return true when it is registered under the key.
+	bool AssignKey(string key)
+	{
+		IEntity owner = GetOwner();
+		if (!owner || key.IsEmpty() || !Replication.IsServer() || !GetGame() || !GetGame().InPlayMode())
+			return false;
+
+		m_sStorageKey = key;
+		return Register(owner, key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool Register(notnull IEntity owner, string key)
+	{
 		if (!s_mPlaced)
 			s_mPlaced = new map<string, EntityID>();
 
@@ -86,23 +112,26 @@ class LF_PersistentStorageComponent : ScriptComponent
 		if (registered && registered != owner)
 		{
 			LF_Debug.Error(FEATURE, string.Format("second placed storage with key %1 at %2 ignored; the first one owns the key", key, owner.GetOrigin()));
-			return;
+			return false;
 		}
 
 		ScriptedInventoryStorageManagerComponent manager = ScriptedInventoryStorageManagerComponent.Cast(owner.FindComponent(ScriptedInventoryStorageManagerComponent));
 		if (!manager)
 		{
 			LF_Debug.Error(FEATURE, string.Format("placed storage %1 has no ScriptedInventoryStorageManagerComponent; its contents will not persist", key));
-			return;
+			return false;
 		}
 
 		s_mPlaced.Set(key, owner.GetID());
+		manager.m_OnItemAddedInvoker.Remove(OnContentsChanged);
+		manager.m_OnItemRemovedInvoker.Remove(OnContentsChanged);
 		manager.m_OnItemAddedInvoker.Insert(OnContentsChanged);
 		manager.m_OnItemRemovedInvoker.Insert(OnContentsChanged);
 		LF_Debug.Info(FEATURE, string.Format("placed storage %1 registered at %2", key, owner.GetOrigin()));
 
 		// The storages register with the manager during init; restore once they are there.
 		GetGame().GetCallqueue().CallLater(RestoreFromInit, 0);
+		return true;
 	}
 
 	override void OnDelete(IEntity owner)

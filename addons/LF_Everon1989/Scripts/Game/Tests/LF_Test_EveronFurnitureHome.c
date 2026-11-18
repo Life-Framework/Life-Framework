@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_EveronFurnitureHome`: RED PROOF OK (RedProof() skips the catalogue lookup, so every item fails "the general store catalogue lists ..."). Green in the pack leg with the prices.
+// red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_EveronFurnitureHome` (RED PROOF OK: RedProof() skips the catalogue and furniture stock lookups, so every item fails). Green in the pack leg with the prices and the `furniture` stock.
 //! shop/furniture-home: the fourteen vanilla-prop furniture items a 1989 villager furnishes a home with
 //! (beds, sofa, armchair, coffee table, rug, television, radio, plant, mirror, picture, stove, bookcase,
 //! workbench) are stocked by the general store at a price above their sell-back, place a permanent prop
@@ -69,9 +69,38 @@ class LF_Test_EveronFurnitureHome : LF_Test
 		foreach (ResourceName prefab : items)
 		{
 			CheckStocked(ctx, manager, prefab);
+			CheckFurnitureStock(ctx, prefab);
 			CheckPlaceable(ctx, prefab, n);
 			n++;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Saint-Philippe's furniture store sells it from the `furniture` stock at the catalogue's buy price; the
+	//! general store does not list it (only the four original items stay there until the counter lands).
+	protected void CheckFurnitureStock(LF_TestContext ctx, ResourceName prefab)
+	{
+		int price = 0;
+		if (!RedProof())
+			price = StockPrice("furniture", prefab);
+
+		ctx.True(price > 0, "the furniture stock lists " + prefab);
+		ctx.Equal(0, StockPrice("general_store", prefab), "the general store does not list " + prefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The price of a prefab on a stock, 0 when the stock or the row is missing.
+	protected static int StockPrice(string stockId, ResourceName prefab)
+	{
+		LF_ShopStock stock = LF_ShopStockConfig.Get().Find(stockId);
+		if (!stock)
+			return 0;
+
+		LF_ShopStockItem row = stock.FindItem(prefab);
+		if (!row)
+			return 0;
+
+		return row.m_iPrice;
 	}
 
 	//------------------------------------------------------------------------------------------------

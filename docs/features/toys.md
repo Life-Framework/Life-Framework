@@ -20,5 +20,6 @@
   scoring and no firing-line indicator. `LF_Test_RangeTargets` covers the prefab, its
   signal wiring and the fold and reset timing. Needs a playtest (shoot the targets,
   watch them fall and rise, a second player sees the same).
+- 🟡 The same lane stands at the Saint-Philippe edge (#3081, draft): slot `range` on shed b95, three targets and a net-fenced pen on open farmland, the firing line at the shed facing south-west (bearing about 225). Kit `tools/town/kits/range.json`, layer `Place_saint-philippe_range.layer`. Needs a playtest (permit from the gun counter, shoot a target, it drops and comes back).
 
 - ✅ The pad remembers a visitor only while it stands on it (#2406): `LF_JumpPadSeen` hands out a token per entity key and forgets it on exit, so the list no longer grows for the life of the server. A corpse or a downed body is not thrown (`LF_JumpPad.CanLaunch`: only `ECharacterLifeState.ALIVE`; logged `[LFDebug:JumpPad]`). Test `toys/jump-pad-seen` (LOGIC).

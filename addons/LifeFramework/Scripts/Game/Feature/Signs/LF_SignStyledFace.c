@@ -34,7 +34,7 @@ class LF_SignStyledFace
 	//------------------------------------------------------------------------------------------------
 	//! Spawn the carrier and print the sign. False, logged, when a resource is missing; the caller
 	//! then draws nothing (never a half-built face).
-	bool Build(notnull IEntity owner, notnull LF_SignDef sign, notnull LF_SignStyleDef style, notnull LF_SignSizeDef size, vector offset, vector angles, float scale)
+	bool Build(notnull IEntity owner, notnull LF_SignDef sign, notnull LF_SignStyleDef style, notnull LF_SignSizeDef size, vector offset, vector angles, float scale, bool painted = false, vector paint = vector.Zero, vector text = vector.Zero)
 	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!workspace)
@@ -69,14 +69,18 @@ class LF_SignStyledFace
 		if (plan.m_iDropped > 0)
 			LF_Debug.Warn("Signs", string.Format("sign %1: %2 rows over the %3 a face holds are left off", sign.m_sId, plan.m_iDropped, LF_SignFacePlan.MAX_ROWS));
 
-		PaintGround(ground, style, size);
-		Color ink = new Color(style.m_vInk[0], style.m_vInk[1], style.m_vInk[2], style.m_fInkAlpha);
+		vector groundColor;
+		vector inkColor;
+		FaceColors(style, painted, paint, text, groundColor, inkColor);
+		PaintGround(ground, style, size, groundColor);
+		Color ink = new Color(inkColor[0], inkColor[1], inkColor[2], style.m_fInkAlpha);
 		PlaceText(title, plan.m_sTitle, plan.m_vTitlePos, plan.m_vTitleSize, plan.m_iTitleFont, plan.m_fTitleTilt, ink);
 
 		TextWidget ghost = TextWidget.Cast(m_wRoot.FindAnyWidget("Ghost"));
 		if (ghost && plan.m_bGhost)
 		{
-			Color faint = new Color(style.m_vInk[0], style.m_vInk[1], style.m_vInk[2], style.m_fGhostAlpha);
+			vector shadow = ShadowColor(style, inkColor);
+			Color faint = new Color(shadow[0], shadow[1], shadow[2], style.m_fGhostAlpha);
 			PlaceText(ghost, plan.m_sTitle, plan.m_vGhostPos, plan.m_vTitleSize, plan.m_iTitleFont, plan.m_fTitleTilt * -1.5, faint);
 		}
 		else if (ghost)
@@ -97,6 +101,30 @@ class LF_SignStyledFace
 		m_wTexture.SetRenderTarget(m_Carrier);
 		LF_Debug.Info("Signs", string.Format("styled face printed: %1 style=%2 size=%3 rows=%4", sign.m_sId, style.m_sId, size.m_sId, plan.m_aRows.Count()));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ground and ink: the style's, or the placed prop's paint and lettering colours when the style
+	//! takes placement colours and the prop has a painted face (a shop fascia in the shop's colours).
+	static void FaceColors(notnull LF_SignStyleDef style, bool painted, vector paint, vector text, out vector ground, out vector ink)
+	{
+		ground = style.m_vGround;
+		ink = style.m_vInk;
+		if (!style.m_bPlacementColors || !painted)
+			return;
+
+		ground = paint;
+		ink = text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ghost or shadow colour: the style's own, or the ink when it sets none (all zero).
+	static vector ShadowColor(notnull LF_SignStyleDef style, vector ink)
+	{
+		if (style.m_vGhostColor == vector.Zero)
+			return ink;
+
+		return style.m_vGhostColor;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -135,13 +163,13 @@ class LF_SignStyledFace
 
 	//------------------------------------------------------------------------------------------------
 	//! The ground fills the shown area in the style colour, under the style texture when it has one.
-	protected void PaintGround(ImageWidget ground, LF_SignStyleDef style, LF_SignSizeDef size)
+	protected void PaintGround(ImageWidget ground, LF_SignStyleDef style, LF_SignSizeDef size, vector color)
 	{
 		FrameSlot.SetAnchorMin(ground, 0, 0);
 		FrameSlot.SetAnchorMax(ground, 0, 0);
 		FrameSlot.SetPos(ground, 0, 0);
 		FrameSlot.SetSize(ground, size.m_vShown[0], size.m_vShown[1]);
-		ground.SetColor(Color.FromVector(style.m_vGround));
+		ground.SetColor(Color.FromVector(color));
 		if (!style.m_sGroundTexture.IsEmpty() && !ground.LoadImageTexture(0, style.m_sGroundTexture, true))
 			LF_Debug.Warn("Signs", "style " + style.m_sId + ": ground texture does not load, the ground is plain: " + style.m_sGroundTexture);
 	}

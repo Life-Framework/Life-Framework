@@ -1,0 +1,46 @@
+GenericEntity Fit_saint_philippe_taxi_Place {
+ components {
+  LF_PlaceComponent "{FE8AE30749FE16B6}" {
+   m_sKind "TaxiRank"
+   m_sId "saint-philippe.taxi"
+  }
+  LF_FittedBuildingComponent "{0D6195BA6447F056}" {
+  }
+ }
+ coords 4427.8 11 10781.8
+}
+GenericEntity Fit_saint_philippe_taxi_job_taxi_pad {
+ components {
+  LF_JobSiteComponent "{B0B5A00300000007}" {
+   m_eSite TAXI
+  }
+  ActionsManagerComponent "{B0B5A00300000001}" {
+   ActionContexts {
+    UserActionContext "{B0B5A00300000002}" {
+     ContextName "default"
+     Radius 4
+     Position PointInfo "{B0B5A00300000003}" {
+      Offset 0 1 0
+     }
+    }
+   }
+   additionalActions {
+    LF_JobStartRunAction "{B0B5A00300000004}" {
+     m_eJob TAXI
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{B0B5A00300000006}" {
+   Enabled 1
+  }
+ }
+ coords 4432.025 11 10773.853
+ angleY 152
+}
+GenericEntity Fit_saint_philippe_taxi_taxi_cab : "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et" {
+ coords 4430.371 10.364 10768.444
+ angleY -118
+}
