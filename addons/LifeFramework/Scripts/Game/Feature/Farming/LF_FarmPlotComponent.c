@@ -519,7 +519,7 @@ class LF_FarmPlotComponent : ScriptComponent
 		}
 
 		m_bPlanted = true;
-		m_fGrownSeconds = Math.Max(0, row.m_iGrownSeconds);
+		m_fGrownSeconds = LF_Utils.MaxInt(0, row.m_iGrownSeconds);
 		Sync();
 		LF_Debug.Info(LF_FarmPlots.FEATURE, string.Format("plot %1 restored: %2 grown %3 s, stage %4", m_sPlotKey, m_sCropId, row.m_iGrownSeconds, m_iStage));
 	}

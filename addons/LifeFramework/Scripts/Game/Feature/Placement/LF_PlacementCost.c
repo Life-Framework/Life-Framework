@@ -170,11 +170,11 @@ class LF_PlacementCost
 		if (terms.m_eCost == LF_EPlacementCost.CASH)
 		{
 			toastKey = TOAST_CASH;
-			return string.Format("cannot pay $%1 for %2 (carries $%3)", terms.m_iAmount, terms.m_sKind, Math.Max(have, 0));
+			return string.Format("cannot pay $%1 for %2 (carries $%3)", terms.m_iAmount, terms.m_sKind, LF_Utils.MaxInt(have, 0));
 		}
 
 		toastKey = TOAST_ITEM;
-		return string.Format("needs %1 x %2 for %3 (carries %4)", terms.m_iAmount, LF_PlacementPolicy.KindOfPrefab(terms.m_sItem), terms.m_sKind, Math.Max(have, 0));
+		return string.Format("needs %1 x %2 for %3 (carries %4)", terms.m_iAmount, LF_PlacementPolicy.KindOfPrefab(terms.m_sItem), terms.m_sKind, LF_Utils.MaxInt(have, 0));
 	}
 
 	//------------------------------------------------------------------------------------------------

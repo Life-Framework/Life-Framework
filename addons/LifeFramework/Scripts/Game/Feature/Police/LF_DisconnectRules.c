@@ -360,7 +360,7 @@ class LF_DisconnectRules
 	//! Pure: the sentence for leaving custody under the jail rule.
 	static int JailSeconds(int sentenceForWanted, int minSeconds)
 	{
-		return Math.Max(sentenceForWanted, minSeconds);
+		return LF_Utils.MaxInt(sentenceForWanted, minSeconds);
 	}
 
 	//------------------------------------------------------------------------------------------------

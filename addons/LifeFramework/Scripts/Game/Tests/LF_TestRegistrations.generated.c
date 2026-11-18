@@ -350,6 +350,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_InteractionIntroductions(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_InteractionOffers(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_IntroductionsSerializer(), LF_TestTier.WORLD;
+		// self-registered: new LF_Test_IntTimeMath(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ItemCatalogue(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_ItemVolume(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_JailEscortDrop(), LF_TestTier.WORLD;

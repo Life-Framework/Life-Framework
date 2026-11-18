@@ -329,8 +329,8 @@ class LF_Progression
 			if (standing)
 			{
 				standing.m_iPoliceRank = UsableRank(uid, record.m_iPoliceRank);
-				standing.m_iOnDutySeconds = Math.Max(0, record.m_iOnDutySeconds);
-				standing.m_iUnpaidDutySeconds = Math.Max(0, record.m_iUnpaidDutySeconds);
+				standing.m_iOnDutySeconds = LF_Utils.MaxInt(0, record.m_iOnDutySeconds);
+				standing.m_iUnpaidDutySeconds = LF_Utils.MaxInt(0, record.m_iUnpaidDutySeconds);
 				LF_AccountReplication.Publish(accounts.GetFromCache(uid));
 			}
 			else if (record.m_iPoliceRank != 0 || record.m_iOnDutySeconds != 0)
@@ -362,8 +362,8 @@ class LF_Progression
 				continue;
 
 			standing.m_iPoliceRank = UsableRank(uid, record.m_iPoliceRank);
-			standing.m_iOnDutySeconds = Math.Max(0, record.m_iOnDutySeconds);
-			standing.m_iUnpaidDutySeconds = Math.Max(0, record.m_iUnpaidDutySeconds);
+			standing.m_iOnDutySeconds = LF_Utils.MaxInt(0, record.m_iOnDutySeconds);
+			standing.m_iUnpaidDutySeconds = LF_Utils.MaxInt(0, record.m_iUnpaidDutySeconds);
 		}
 	}
 

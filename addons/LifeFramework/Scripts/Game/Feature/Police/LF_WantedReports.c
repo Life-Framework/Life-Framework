@@ -435,7 +435,7 @@ class LF_WantedReports
 			}
 
 			list.Insert(record.Copy());
-			s_iSequence = Math.Max(s_iSequence, record.m_iSequence);
+			s_iSequence = LF_Utils.MaxInt(s_iSequence, record.m_iSequence);
 		}
 
 		// Oldest first inside each list, the order Add keeps.
