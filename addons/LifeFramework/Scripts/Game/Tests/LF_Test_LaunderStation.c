@@ -1,4 +1,4 @@
-// red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_LaunderStation`: RED PROOF OK, 17 red with the load skipped: `the load took all 1000 marked notes (expected 0, got 1000)`, `site heat rose by one batch: 0`. Green: 31 assertions. Review (#2893): a cuffed load took all 1000 notes (expected 12 RESTRAINED, got 0 OK) before the LF_CuffEnforcement check; green after.
+// red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_LaunderStation`: RED PROOF OK, 17 red with the load skipped: `the load took all 1000 marked notes (expected 0, got 1000)`, `site heat rose by one batch: 0`. Green: 31 assertions. Review (#2893): a cuffed load took all 1000 notes (expected 12 RESTRAINED, got 0 OK) before the LF_CuffEnforcement check; green after. Forfeit (#2894): the same `--red` run with the late collect skipped failed `the forfeited batch left the station (expected 0, got 1200)`; green after.
 //! The laundering station (#2853): a character with 1000 marked notes loads a batch, the wash runs
 //! its batch time, and the same character takes out 700 cash with 0 marked left. The ledger books
 //! launder-in and launder-out; a batch left mid-wash waits for its owner only; a character at the
@@ -42,6 +42,8 @@ class LF_Test_LaunderStation : LF_Test
 		LF_TestCharacterFixture.Delete(b);
 		if (stationEntity)
 			SCR_EntityHelper.DeleteEntityAndChildren(stationEntity);
+
+		LF_LaunderStations.ForgetPending(SITE);
 	}
 
 	protected void RunStation(LF_TestContext ctx, IEntity a, IEntity b, LF_LaunderStationComponent station)
@@ -146,5 +148,26 @@ class LF_Test_LaunderStation : LF_Test
 
 		ctx.True(sawIn, "the ledger books launder-in: 1000 marked notes in");
 		ctx.True(sawOut, "the ledger books launder-out: 700 cash out");
+
+		// A washed batch left uncollected for 2 h is forfeited (#2894): nobody paid, the station frees.
+		station.SetForfeitSeconds(7200);
+		ctx.Equal(200, LF_MarkedCash.Add(a, 200, "test-robbery"), "A carries 200 marked notes again");
+		ctx.Equal(LF_ELaunderStation.OK, station.ServerLoad(a, 2000), "A loads a second batch");
+		LF_LaunderStationRow row = station.Export(2000);
+		int readyAt = 2000;
+		if (row)
+			readyAt = 2000 + row.m_iWashLeft;
+
+		ctx.Equal(LF_LaunderStationComponent.STATE_READY, station.GetState(readyAt + 7199), "the washed batch still waits 1 s before the window ends");
+		int cashBefore = LF_MoneyUtils.GetCash(a);
+		if (!RedProof())
+			ctx.Equal(LF_ELaunderStation.EMPTY, station.ServerCollect(a, readyAt + 7201), "the owner's collect after the window finds the station empty");
+
+		ctx.Equal(cashBefore, LF_MoneyUtils.GetCash(a), "nobody is paid for a forfeited batch");
+		ctx.Equal(0, station.GetHeldMarked(), "the forfeited batch left the station");
+		LF_LaunderRules.ResetStatics();
+		ctx.Equal(LF_ELaunderStation.OK, station.ServerLoad(b, readyAt + 7210), "another character can load the freed station");
+		ctx.Equal(0, LF_MarkedCash.Count(b), "B's 500 marked notes went in");
+		station.Import(null, readyAt + 7211);
 	}
 }

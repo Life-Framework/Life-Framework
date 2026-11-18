@@ -18,6 +18,10 @@
   `[LFDebug:Places] dark: ...` info line. An empty list, or no `LF_MissionHeader`, makes every
   state live, so the playtest town and the test worlds are unchanged. Logic in
   `Core/LF_PlaceLiveState.c`. Test `places/live-state`.
+- 🧪 **Everon 1989 declares its live states; 2a is dark** (2026-11-18, #2694, W5 of #2644): the pack header
+  `LF_Everon1989.conf` now lists `m_aLF_LiveStates { 0 }` (the square). State 2a (Saint-Philippe dock and districts, the
+  road to Meaux, Meaux) is its own id, 21 (2b to 2d are 22 to 24), and is not listed, so a place tagged 21 does not
+  register in `LF_Places` until the cutover adds 21 to the list. Test `everon/live-state-2a` (pack leg).
 
 ### `LF_GameModeRoleplay` — `Scripts/Game/Core/LF_GameModeRoleplay.c`
 - ✅ Lazy-creates `LF_CharacterCreationManager`, `LF_ATMManager`,

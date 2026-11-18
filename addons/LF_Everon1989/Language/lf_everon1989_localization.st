@@ -809,6 +809,41 @@ StringTable {
      Target_en_us "Civil Registry of Everon, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
     }
+    CustomStringTableItem "{1357AE90EB122FE9}" {
+     Id "LF-Resident_cafe_owner_Name"
+     Target_en_us "Odile Marchand"
+     Comment "Saint-Philippe resident cafe_owner: display name (#2906)."
+    }
+    CustomStringTableItem "{C506DE77282216DB}" {
+     Id "LF-Resident_neighbour_anselme_Name"
+     Target_en_us "Anselme Caron"
+     Comment "Saint-Philippe resident neighbour_anselme: display name (#2906)."
+    }
+    CustomStringTableItem "{68A4AB0318F5F0EE}" {
+     Id "LF-Resident_neighbour_mireille_Name"
+     Target_en_us "Mireille Caron"
+     Comment "Saint-Philippe resident neighbour_mireille: display name (#2906)."
+    }
+    CustomStringTableItem "{42D3BDA28CC4BC6C}" {
+     Id "LF-Resident_night_shift_Name"
+     Target_en_us "Remi Duval"
+     Comment "Saint-Philippe resident night_shift: display name (#2906)."
+    }
+    CustomStringTableItem "{91E08CDB4657EBEE}" {
+     Id "LF-Resident_old_man_Name"
+     Target_en_us "Gaspard Lenoir"
+     Comment "Saint-Philippe resident old_man: display name (#2906)."
+    }
+    CustomStringTableItem "{9FE5B987FD8FD9D2}" {
+     Id "LF-Resident_store_clerk_Name"
+     Target_en_us "Pierre Vasseur"
+     Comment "Saint-Philippe resident store_clerk: display name (#2906)."
+    }
+    CustomStringTableItem "{A5E43AF509340C8C}" {
+     Id "LF-Resident_teller_Name"
+     Target_en_us "Helene Roux"
+     Comment "Saint-Philippe resident teller: display name (#2906)."
+    }
     CustomStringTableItem "{CA4D10F34DED233D}" {
      Id "LF-Shop_Desc_ClothesShop"
      Target_en_us "Jackets, shirts, trousers and hats in this year's colours."
