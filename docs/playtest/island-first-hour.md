@@ -1,0 +1,59 @@
+# Island first hour: the 15-minute smoke
+
+The weekend promise on real Everon (Saint Philippe, `LF_EveronIsland.conf`), walked as a new player.
+Two forms of the same route:
+
+- **Scripted**: `agent-box/flows/island-first-hour.txt` (#2935), the Friday go/no-go gate on main.
+- **Manual**: this page, the post-publish smoke on the 0grind alpha (a fresh character, about 15 minutes).
+
+## Run the scripted flow
+
+```powershell
+node agent-box/session.mjs up --mission island --clients 1 --roster 1 --profile full --wait
+node agent-box/harness.mjs --client 1 flow island-first-hour
+node agent-box/session.mjs down
+```
+
+Use a fresh client profile (the quiz and form R-89 must be the first screens). The flow does not stop at a
+failed line. Each step starts with a `shot ui island_<n>_<step>` line, so the transcript reads step by step.
+A step passes when its `stand`/`use` lines say `ok` and the next `state` line moved (cash, bank, job, duty).
+A step whose slot is not fitted yet prints `entity_not_found`; when its card lands, check the entity name
+against `Place_saint-philippe_<slot>.layer` and fix the flow line if the kit row is named differently.
+
+## The route
+
+| # | Do | Observe | Slot card |
+|---|---|---|---|
+| 1 | Join, pass the rules quiz (5 questions), sign form R-89 | You spawn on the south road with $100 cash and $1000 in the bank; walk north into the square | on main |
+| 2 | Talk to the clerk at the town hall; read the rules sign | The clerk greets you and points to work; the rules sign opens | pending #2932 |
+| 3 | At the parcel kiosk: Take courier work, Pick up parcel; carry it to the drop, Complete the run | A toast pays the run (about $40); the job shows Courier | pending #2325 |
+| 4 | Open your status | Cash went up by the pay; job XP or level moved | follows step 3 |
+| 5 | Bank teller: deposit the pay, then withdraw $200 | Bank and cash move by the amounts you typed | pending #2932 |
+| 6 | Clothing shop: buy a shirt | Cash down by the price; the shirt is in your inventory | pending #2315 |
+| 6b | Gun counter: order the Firearm permit ($250), pay cash | The permit is yours; the PM pistol is no longer "Not without a Firearm permit" | on main (needs $250 cash, so step 5 first) |
+| 6c | Car lot: buy the cheapest car | Bank or cash down; the car is yours and parked at the lot | pending #2933 |
+| 7 | General store: buy water | Cash down; water in the inventory. The till is there to rob (police get an alert) | pending #2314 |
+| 8 | Police station desk: clock in, clock out (whitelisted police only) | Duty on, police kit and radio; duty off | pending #2319 |
+| 9 | Clinic desk: clock in, clock out (medic roster) | Duty on as medic; duty off | pending #2320 |
+| 10 | Town board on the square: take a card | The card reads; its "Where" names a real place in town, not "Ask around" | board on main; targets come with the cards above |
+
+Note anything that blocks a new player in the Discord `#dev` channel with the step number.
+
+## Flow status
+
+Run on main `7f0f35e9` (2026-11-18, one client, `--mission island`):
+
+| # | Step | Result |
+|---|---|---|
+| 1 | Quiz, form R-89, spawn, walk to the square | **pass**: spawned at the south road with cash 100, bank 1000; stood at the arrival place |
+| 2 | Clerk and rules sign | pending #2932 (no clerk or rules sign in the arrival layer) |
+| 3 | Parcel job | pending #2325 (no parcel layer) |
+| 4 | Paid and progression | blocked by step 3 |
+| 5 | Bank teller | pending #2932 (bank layer has the vault and counter marker, no teller) |
+| 6 | Shirt | pending #2315 (clothing layer has props, no shop) |
+| 6b | Firearm permit | **works, unaffordable**: the counter opens and lists the permit at $250; a newcomer's $100 is refused. Passes once step 5 can withdraw |
+| 6c | Car | pending #2933 (no car-lot slot) |
+| 7 | Groceries | pending #2314 |
+| 8 | Police duty | pending #2319 |
+| 9 | Medic duty | pending #2320 |
+| 10 | Town board | **pass**: the card opens ("Couriers wanted"); its "Where" says "Ask around" until the slots carry their signs |
