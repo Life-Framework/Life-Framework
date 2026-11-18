@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_ImpairmentViewFrame,...`: RED-OK survival/impairment-view-frame, the old rule (every body on a rendering client) failed "a sober local player and 127 proxies (64 of them drunk) run no sway frame (expected 0, got 128)". Green with the fix (--only, 8 passed).
-// tier: LOGIC
 //! #2404: the drunk sway frame runs on the local player's own body only, and only while it sways or
 //! still has sway to unwind. Before, every character's survival component armed EOnFrame on every
 //! client, proxies included: about 127 script calls a frame per client at 128 players.

@@ -2,7 +2,6 @@
 // and reuses the body id; "after a tick with no living body the path starts again" and "a new body (respawn) starts a new
 // path" failed, RED-OK racing/path-start. Green with the fix (--only, 20 passed).
 
-// tier: LOGIC
 //! A racer's checkpoint path never joins two bodies (docs/reviews/2026-11-17-life.md #2). The tick
 //! kept the last spot while the racer had no living body, so the first tick after a respawn tested
 //! the line from where they died to the hospital and passed any checkpoint on it.

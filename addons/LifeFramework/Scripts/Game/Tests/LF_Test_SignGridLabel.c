@@ -1,7 +1,6 @@
 // red-proof: expected the title "police-gates"; `tools\cli test --no-build --only LF_Test_SignGridLabel`
 // (2026-11-15) failed signs/grid-label with "the title is the slug with spaces (expected 'police-gates', got 'police gates')".
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignGridLabel : LF_Test
 {

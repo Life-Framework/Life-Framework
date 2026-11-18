@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_EventScenePlan`: with the hook on the cap is lifted and `the cap trims the NPC count` failed; `RED PROOF OK (all 1 listed test(s) fail with the hook on)`; without the hook green, `SUMMARY tier=only passed=1 failed=0`.
-// tier: LOGIC
 //! Event scene plan (#1953): waypoint order follows the config, the NPC cap trims the count, a
 //! second scene is refused while one runs, and a scene is skipped with a logged reason when the AI
 //! budget cannot hold it. No world.

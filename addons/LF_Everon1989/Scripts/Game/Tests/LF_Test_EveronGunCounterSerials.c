@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 (#2166): `tools\cli test --no-build --red LF_Test_EveronGunCounterSerials` (RedProof() checks the plain vanilla PM instead of each offer prefab): RED-OK, fails the PM and M21 serial checks. Without the twins the same assertions fail on the vanilla catalogue prefabs.
-// tier: WORLD
 //! #2166 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), every weapon the
 //! licensed `gun_counter` sells resolves to a prefab with an `LF_SerialComponent`, so
 //! `LF_FenceSerials.OnWeaponSale` stamps the sale instead of logging "a weapon prefab needs LF_SerialComponent".

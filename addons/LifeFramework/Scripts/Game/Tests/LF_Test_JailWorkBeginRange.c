@@ -1,5 +1,5 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_JailWorkBeginRange`: RED PROOF OK; the hook puts the spot beside the worker (the unguarded Begin of main): `- a refused start runs no work animation (expected 0, got 1)`, `- a refused start leaves the prisoner free (not busy) (expected 0, got 2)`. Green on the fixed code.
-// tier: WORLD (spawns two characters)
+//! Spawns two characters
 //! #2580 (#2417 item 26): LF_JailWork.Begin refused nobody for distance, only Finish checked
 //! LF_WorkAnim.MAX_RANGE, so a prisoner across the cell could start a task. A worker beyond range
 //! starts no task; one inside range starts one.

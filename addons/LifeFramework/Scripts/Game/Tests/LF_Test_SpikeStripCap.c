@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 with `--only` and the LF_SpikeStrips.CapProblem gate in LF_PlacementService.Confirm removed (log tmp/logs/test-20261118-003827.log): FAIL 'a strip past the cap is refused', 'a refused strip places nothing (expected 2, got 3)', 'a refused strip keeps the item'. Restored: green.
-// tier: WORLD
 //! police/spike-strip-cap (#2416): an officer may have spikeStripMaxPerOfficer strips deployed at
 //! once. The next one is refused before anything is spawned, with the reason logged and the item
 //! kept; picking one up (or one expiring) frees a place. The strips stand at the officer's feet,

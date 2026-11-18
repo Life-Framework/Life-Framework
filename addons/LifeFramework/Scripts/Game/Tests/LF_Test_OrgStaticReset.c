@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_DevGameMasterReset,LF_Test_CharacterCreationReset,LF_Test_VehicleStateReset,LF_Test_WhitelistStaticReset,LF_Test_OrgStaticReset,LF_Test_UiSheetStaticReset`: RED PROOF OK (all 6 fail with the hook on, e.g. "a world end clears the missing-file counter (expected 0, got 1)"); green with the hooks (--only, 6 passed).
-// tier: LOGIC
 //! organization/static-reset (#2415): the organization config cache and the open ledger page are
 //! process statics. A config loaded for one world's pack outlived it; the ledger page pointed at a
 //! screen the old world had torn down.

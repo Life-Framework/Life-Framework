@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --only LF_Test_OrgUpgradeUnwired,LF_Test_OrgFundOverflow,LF_Test_HideoutStashRight,LF_Test_HideoutLoadRelock` on the unfixed code (only the IsRelockScheduled accessor added) failed all four, here "extra storage, which nothing reads, is not sold". Green with the fix (--only, 20 org and hideout tests).
-// tier: LOGIC
 //! organization/upgrade-unwired (review 2026-11-17): extra storage and the parked vehicle are flags no
 //! system reads, yet the ledger RPC sold them and took the fund. They are refused and charge nothing;
 //! the processing slot, which LF_Hideout reads, still sells.

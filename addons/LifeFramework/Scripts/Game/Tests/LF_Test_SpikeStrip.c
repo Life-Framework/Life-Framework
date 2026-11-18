@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-13 with `tools\cli test --no-build --only LF_Test_SpikeStrip`: the Puncture call in LF_SpikeStripComponent.CheckVehicle disabled failed `wheel 1 (1.04016 m along the strip) crossed the strip and is flat`, `... runs on a smaller radius` and `the strip counts its punctures (expected 2, got 0)`; restored, green.
-// tier: WORLD
 //! #646 acceptance: only on-duty police can place a strip, and a vehicle crossing it loses tyre
 //! health. An officer stands at the verge of the main street facing across it and deploys the
 //! folded strip; it lies on the ground in front of them and the item is used up. A civilian is

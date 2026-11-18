@@ -6,7 +6,6 @@
 // `- DebugWorld has a POLICE spawn point` and `- a POLICE spawn point resolves`. The RedProof() hook
 // skips the fixture spawn and the same assertions go red.
 
-// tier: WORLD
 //! Faction spawn points resolve by faction key. The test spawns one CIVILIAN and one POLICE spawn
 //! point from the core spawn prefab and deletes them, so it needs no town spawns.
 [LF_TestInfo(LF_TestTier.WORLD)]

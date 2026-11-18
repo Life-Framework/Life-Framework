@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools\cli test --no-build --only LF_Test_GraceProtection`: with `LF_Grace.IsProtected` stubbed to `return false;` it failed `a protected character cannot be held up (expected 4, got 0)`; restored, green.
-// tier: LOGIC
 //! onboarding/grace (#1780): for its first N minutes of playtime a character cannot be held up or
 //! arrested and may not rob; after N minutes, or after its first crime, all three work. Off at 0.
 [LF_TestInfo(LF_TestTier.LOGIC)]

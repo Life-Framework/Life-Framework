@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_EventMapShare: RED-OK events/map-share (RedProof() skips LF_EventMapShare.Install, so no row or area is ever put: the start, row, area and expiry checks fail). Green without it.
-// tier: WORLD
 //! Event places on the map (#2243, card M15). The test event is bound to the target of the scene in
 //! grid cell `event-scene` (scene `grid_event_scene`, found through LF_Places by component) with a 10 m
 //! radius and driven through the real shell. Starting it puts an `EVERYONE` row `event:test_ems` in

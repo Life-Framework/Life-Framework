@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-09 with `tools/cli test --no-build --only LF_Test_FenceGate`: changing `total >= threshold` to `total > threshold` in LF_FenceRules.Allows failed `crime/fence-gate` with `- at the threshold the fence sells (expected 0, got 9)`. Restored; green.
-// tier: LOGIC
 //! The fence gate (#271): below the threshold the purchase is refused, at it the fence sells, no
 //! threshold is open, an account-less buyer is refused. The record is the real LF_CrimeRecord.
 [LF_TestInfo(LF_TestTier.LOGIC)]

@@ -1,7 +1,6 @@
 // red-proof: Observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_FuelClerkDialogue`: made
 // LF_DialogueHook_RobArmed.Allows return true; got `[LFTEST]   - an unarmed character is not offered
 // the robbery`. Restored the weapon and faction check; green.
-// tier: WORLD
 //! The fuel attendant (#936): its generated conversation loads with every hook it names, the
 //! robbery reply is offered only under the armed condition, every line the robbery says outside
 //! the conversation is voiced, the attendant finds the fuel till behind its counter, that till is

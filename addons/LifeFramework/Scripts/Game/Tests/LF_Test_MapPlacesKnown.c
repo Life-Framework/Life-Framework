@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_MapPlacesKnown: RED PROOF OK (RedProof() leaves the player knowing nothing and skips the board and tourist marks, so the faded and board cases and the tourist-map marks fail). Green without it.
-// tier: LOGIC
 //! map/places-known: discovery on the map (#2242, everon-map.md section 4). A DISCOVER place is hidden for
 //! a player who knows nothing, a faded pencil "?" once heard of, the full icon once visited, through the
 //! real POI list and cluster rule; a town board card whose place is a map POI marks it heard of; the

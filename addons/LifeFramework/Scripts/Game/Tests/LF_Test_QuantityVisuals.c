@@ -2,7 +2,6 @@
 // clears (drop the bestThreshold comparison) or drop the empty-model skip, then run
 // `tools\cli test --tier fast`; each breakage below fails.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_QuantityVisuals : LF_Test
 {

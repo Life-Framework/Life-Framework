@@ -5,7 +5,6 @@
 // remove LF_PersistenceManagerComponent from GameMode_Roleplay.et and
 // save/manager-wiring goes red.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AutosaveSelection : LF_Test
 {
@@ -35,7 +34,6 @@ class LF_Test_AutosaveSelection : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AutosaveSelectionBitmask : LF_Test
 {
@@ -54,7 +52,6 @@ class LF_Test_AutosaveSelectionBitmask : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AutosaveSelectionNewest : LF_Test
 {
@@ -78,7 +75,6 @@ class LF_Test_AutosaveSelectionNewest : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PersistenceManagerWiring : LF_Test
 {

@@ -3,7 +3,6 @@
 // "the axe maps to positive damage on the tree" and "axe damage lowers the tree hit
 // zone health (100 -> 100)". Restored, green.
 
-// tier: WORLD
 //! Logging chain wiring (logging/chain-wiring) proves the axe is listed on the
 //! tree. This test proves the damage path: a melee context built the way
 //! SCR_MeleeComponent builds it (damageSource = the swung tool) lowers the tree

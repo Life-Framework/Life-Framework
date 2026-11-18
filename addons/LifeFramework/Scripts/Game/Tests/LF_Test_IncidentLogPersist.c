@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-09 with `tools/cli test --no-build --only`: the serializer read with LF_IncidentLog.ApplyAll commented out failed `both incidents are back (expected 2, got 0)`; restored; green.
 
-// tier: PERSISTENCE
 //! persist/incident-log-roundtrip: incidents ride the real save path (the "incidents" payload,
 //! save version 13) and are queryable after the store is wiped; a second load converges.
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]

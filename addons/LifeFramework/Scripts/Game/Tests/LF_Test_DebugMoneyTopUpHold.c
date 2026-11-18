@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_CarriedStolenPersist,LF_Test_DebugMoneyTopUpHold`: RED-OK money/debug-topup-hold, `- held: $750 after a buy stays $750 (expected 0, got 19250)` with HoldCash skipped (the #1855 jump). Green with `--only`.
-// tier: LOGIC
 //! #1855: a cash amount `resetplayer <cash>` set holds. The 60 s playtest top-up tick refilled $750 to
 //! 20,000 between a fence buy and sell, so the sale read as $20,100.
 [LF_TestInfo(LF_TestTier.LOGIC)]

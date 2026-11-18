@@ -1,5 +1,4 @@
 // red-proof: [LFTEST] RED-OK townboard/cards (fails with the hook on, 49 assertions) (tools/cli test --no-build --red, 2026-11-16)
-// tier: LOGIC
 //! The town board's cards and the waypoint, with no world: which cards show and in which slot, what a
 //! card says about a place it cannot find, the compass and distance words, the slot geometry the
 //! prefab's contexts follow, and the waypoint's set, replace, toggle, arrive and refuse rules.

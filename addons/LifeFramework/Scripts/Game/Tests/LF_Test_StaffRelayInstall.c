@@ -1,5 +1,4 @@
 // red-proof: RED-OK moderation/staff-relay-install (fails with the hook on, 3 assertions: the relay is not installed after server start, admin-action subscribers expected 2 got 1, report-flag subscribers expected 1 got 0)
-// tier: LOGIC
 //! moderation/staff-relay-install (#1284): the game mode's OnGameStart calls LF_StaffRelay.Install.
 //! On a server it takes effect once however often it is called (one subscriber per event, one
 //! tick); on a client it does nothing; the world-end reset (LF_StaticReset -> Uninstall) removes

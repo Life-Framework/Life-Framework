@@ -9,7 +9,6 @@
 //! backup keeps the original bytes, a backup that already exists is never overwritten, a failed
 //! migration leaves the original and boots on shipped values, and a migrated file is not migrated
 //! again. Uses a scratch folder under $profile, never the server's own config.json.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigMigrationFile : LF_Test
 {

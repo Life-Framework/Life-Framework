@@ -1,5 +1,4 @@
 // red-proof: RED-OK 2026-11-18 `tools\cli test --no-build --red LF_Test_KeypadBackspace,LF_Test_UIWorldEndReset`: with the hook on "a sheet with the keypad Backspace hotkey keeps Backspace" and "Backspace on the ATM deletes a digit" fail (9 assertions).
-// tier: WORLD
 //! Backspace is one of vanilla MenuBack's sources (keyboard:KC_BACK) and also the ATM keypad's
 //! delete-a-digit key (LF_KeypadBack). Before the fix a Backspace on the ATM closed the terminal
 //! instead of deleting a digit: LF_UIScreen.Back() kept Backspace only for a focused text field.

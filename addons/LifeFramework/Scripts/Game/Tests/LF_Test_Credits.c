@@ -4,7 +4,6 @@
 //------------------------------------------------------------------------------------------------
 //! The credits screen (#481) opens as a kit sheet and lists every generated row of docs/credits.md;
 //! every row's keys are in the string table.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Credits : LF_Test
 {

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_CuffingOpenState`: LF_Cuffing.End without Close failed `letting go shuts the cuffs`, `a refused end shuts the cuffs`, `a watch pass that finds the pair out of reach shuts the cuffs` and `letting go shuts the cuffs on the wrists`; restored, green.
-// tier: WORLD
 //! police/cuffing-open-state: the cuffs open while the hold runs and shut when it stops. A Cuff hold
 //! swings the strands of the cuffs in the officer's hand open (LF_AssetAnimComponent, replicated, so a
 //! late joiner sees them open); letting go, or a pair that moves out of reach, shuts them again and

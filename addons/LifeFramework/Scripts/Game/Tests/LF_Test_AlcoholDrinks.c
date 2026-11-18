@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-16 with `toolscli test --no-build --only LF_Test_AlcoholDrinks` before the prefabs existed: failed `beer prefab does not load`, `moonshine prefab does not load`, `the beer processor makes the beer bottle` (still the dangling {C3B9A61B460BE287} GUID) and `the still turns out the moonshine bottle` (still the crate), `SUMMARY tier=only passed=0 failed=1`; with the prefabs and repoints, green.
 
-// tier: WORLD
 //! Beer and moonshine are real drink items (#2001): both prefabs load with a mesh and carry the
 //! impairment effect, the beer processor's output is the beer bottle, and the moonshine still
 //! turns out the moonshine bottle.

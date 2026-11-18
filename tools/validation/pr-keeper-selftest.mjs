@@ -23,7 +23,8 @@ useHermeticGit(); // no machine git config, no auto-gc beside the scratch repos 
 const failures = [];
 const fail = (m) => failures.push(m);
 const TESTS = "addons/LifeFramework/Scripts/Game/Tests";
-const REGISTRY = `${TESTS}/LF_TestRegistrations.generated.c`;
+// A generated file both sides regenerate: the core language conf stands in for it (conflictKind "regen-localization").
+const REGISTRY = "addons/LifeFramework/Language/everonlife_localization.en_us.conf";
 const SCRIPT = "addons/LifeFramework/Scripts/Game/Core/LF_Foo.c";
 
 function git(dir, args) {
@@ -38,13 +39,13 @@ function write(dir, rel, text) {
   mkdirSync(join(dir, rel, ".."), { recursive: true });
   writeFileSync(join(dir, rel), text);
 }
-// Stand-in for gen-test-registry.ps1: one line per test file, sorted.
+// Stand-in for regen-localization: one line per test file, sorted.
 function regenRegistry(dir) {
   const names = readdirSync(join(dir, TESTS)).filter((n) => n.endsWith(".c") && !n.endsWith(".generated.c")).sort();
   write(dir, REGISTRY, `// GENERATED\n${names.map((n) => `register ${n.replace(/\.c$/, "")}`).join("\n")}\n`);
 }
 function addTest(dir, name) {
-  write(dir, `${TESTS}/${name}.c`, `// tier: LOGIC\nclass ${name} : LF_Test {}\n`);
+  write(dir, `${TESTS}/${name}.c`, `[LF_TestInfo(LF_TestTier.LOGIC)]\nclass ${name} : LF_Test {}\n`);
   regenRegistry(dir);
 }
 function commit(dir, msg) {
@@ -52,15 +53,14 @@ function commit(dir, msg) {
   must(dir, ["commit", "-q", "-m", msg]);
 }
 const regenerate = (dir, kind) => {
-  if (kind !== "regen-tests") return { ok: false, error: `unexpected ${kind}` };
+  if (kind !== "regen-localization") return { ok: false, error: `unexpected ${kind}` };
   regenRegistry(dir);
   return { ok: true };
 };
 
 // Classification.
 for (const [p, k] of [
-  [REGISTRY, "regen-tests"],
-  ["addons/LifeFramework/Language/everonlife_localization.en_us.conf", "regen-localization"],
+  [REGISTRY, "regen-localization"],
   ["addons/LifeFramework/Language/everonlife_localization.st", "string-table"],
   ["docs/features.md", "markdown"],
   ["docs/features/money-economy.md", "markdown"],

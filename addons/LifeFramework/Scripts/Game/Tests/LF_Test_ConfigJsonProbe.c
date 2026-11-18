@@ -17,7 +17,6 @@ class LF_Test_ConfigProbeRule
 //! that the engine parses and LF_ConfigReader reads key by key (ReadValue, DoesKeyExist, KindOf)
 //! instead of handing a section to the engine's class reader, and that records are an object
 //! keyed by their stable key. If an engine update changes any of them, this goes red first.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigJsonProbe : LF_Test
 {

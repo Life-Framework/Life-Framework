@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_MapPrivateEntitled,LF_Test_MapPrivateRegistry: RED-OK (RedProof() registers the armoury as the old ungated code did, so "a client does not register a private place" and the three "holds no" checks fail). Green with the RegisterOn gate.
-// tier: WORLD
 //! map/private-registry (#2492, map review 2026-11-17 finding 5): a client's LF_Places never holds a private
 //! POI kind, so a modified client has neither its id nor its position. The server holds it and sends a player
 //! only what that player may see: a stranger gets neither the role place nor an unheard discover place; once the

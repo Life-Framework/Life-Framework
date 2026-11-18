@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --only LF_Test_OrgUpgradeUnwired,LF_Test_OrgFundOverflow,LF_Test_HideoutStashRight,LF_Test_HideoutLoadRelock` on the unfixed code (only the IsRelockScheduled accessor added) failed all four, here "a rank without the stash right is refused". Green with the fix.
-// tier: LOGIC
 //! hideout/stash-right (review 2026-11-17): the rank's stash right (USE_STASH) was saved, shown and
 //! editable in the rank config, yet the stash opened for every member. A rank without it is shut out;
 //! a rank with it still gets in, and a non-member never does.

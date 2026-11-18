@@ -1,5 +1,4 @@
 // red-proof: 2026-11-14 `tools/cli test --no-build --only LF_Test_StolenVehicleLookPlacedCar` with PrefabGuidOf reading `vehicle.GetPrefabData().GetPrefabName()` (the old code) failed `- a placed S105 is filed under the S105 GUID (expected 'E1A105BE1A000001', got '')`. Restored to LF_Utils.GetPrefabName; green.
-// tier: WORLD
 //! A lock-up car placed in the world (a layer entity that overrides the lock component) is filed
 //! on the wanted board with its prefab's GUID, the same as a spawned car. The report read the
 //! prefab name raw, which a layer override does not carry, so the poster had no car to draw

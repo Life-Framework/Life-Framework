@@ -4,7 +4,6 @@
 // red-proof: #2584, 2026-11-17 `tools/cli test --no-build --only LF_Test_HideoutStashPutCarrier` on the
 // unfixed CanStoreItem failed `- a non-member cannot move a ground item into the stash` and `- no apple
 // from the ground is in the stash (expected 0, got 1)`; green with LF_ServerInsertScope.
-// tier: WORLD
 //! hideout/stash-put-carrier (#2574): the stash took any item whose carrier was not a character, so
 //! anyone with the stash in an inventory view filled it from a vehicle's storage. Now an item from
 //! a vehicle or from a body is refused; a living member's own inventory and the save restore still

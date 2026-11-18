@@ -53,9 +53,9 @@ export function parseScopeName(raw) {
 
 function testStub(identity) {
   return [
-    "// tier: LOGIC",
     "// red-proof: scaffold stub. Break the assertion, run the fast suite, and record the observed [LFTEST] line before trusting this test.",
     "",
+    "[LF_TestInfo(LF_TestTier.LOGIC)]",
     `class ${identity.className} : LF_Test`,
     "{",
     "\toverride string GetName()",
@@ -75,7 +75,7 @@ function testStub(identity) {
 function featuresRow(identity) {
   return [
     `### \`LF_${identity.Setup}\` — scaffold`,
-    `- ⚠️ Not implemented. Logic test \`${identity.logicName}\` in \`${identity.testFile}\` (\`// tier: LOGIC\`, \`// red-proof:\`). Street site \`${identity.entityName}\` is a placeholder slot.`,
+    `- ⚠️ Not implemented. Logic test \`${identity.logicName}\` in \`${identity.testFile}\` (\`[LF_TestInfo(LF_TestTier.LOGIC)]\`, \`// red-proof:\`). Street site \`${identity.entityName}\` is a placeholder slot.`,
     "",
   ].join("\n");
 }
@@ -146,7 +146,7 @@ export function selftestScope(cliPath = CLI_PATH) {
     }
     if (existsSync(testPath)) {
       const text = readFileSync(testPath, "utf8");
-      if (!hasLinePrefix(text, "// tier:")) failures.push("test stub is missing a // tier: line");
+      if (!hasLinePrefix(text, "[LF_TestInfo(LF_TestTier.LOGIC)]")) failures.push("test stub is missing its [LF_TestInfo(LF_TestTier.LOGIC)] line");
       if (!hasLinePrefix(text, "// red-proof:")) failures.push("test stub is missing a // red-proof: line");
       if (!text.includes(`"${identity.logicName}"`)) failures.push(`test stub is missing logic name ${identity.logicName}`);
     }

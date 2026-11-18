@@ -74,7 +74,7 @@ shop's prices) was checked by node selftests reading `.conf` text, which shows n
 game loads. The pack test leg closes that gap:
 
 - **Where the tests live.** `addons/LF_Everon1989/Scripts/Game/Tests/LF_Test_*.c`, one class per file
-  extending `LF_Test`, with `// tier:` and `// red-proof:` lines as in the core. They may name pack files.
+  extending `LF_Test`, with `[LF_TestInfo(LF_TestTier.X, pack: true)]` and a `// red-proof:` line. They may name pack files.
   `validate-addon-boundary` allows these files and nothing else in the pack: a pack test file declares
   only `LF_Test_*` classes, and the core still never names a pack class.
 - **Registration.** `tools\cli regen-tests` writes `LF_PackTestRegistrations.generated.c` beside them: a

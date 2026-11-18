@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_BleedOutRules`: LF_BleedOut.IsExpired using `left < 0` failed `zero is expiry`; restored, green.
 
-// tier: LOGIC
 //! The pure rules of the bleed-out timer (LF_BleedOut): the clock never goes below zero, zero is
 //! expiry, giving up waits for the configured delay, and the replicated copy only moves in
 //! steps (no per-tick bump).

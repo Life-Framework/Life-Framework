@@ -2,7 +2,6 @@
 // with the target not cuffed, `a cuffed target gets the revoke interaction`, `the server revokes from a cuffed target` and
 // `the cuffed target's permit is gone` fail. Against the unfixed LF_LicenceDesk.c (`--only`): `a free target gets no revoke interaction`
 // and the three cuffed-path lines fail; restored, green.
-// tier: WORLD
 //! licence/revoke-cuffs (#1916): an on-duty officer can revoke the firearm permit only from a
 //! restrained target. A free target gets no "Revoke firearm permit" interaction and the server's
 //! LF_LicenceDesk.Revoke refuses (the permit stays); once the target is cuffed the offer shows and

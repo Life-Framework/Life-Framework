@@ -3,7 +3,6 @@
 // or expect a dead character with the death rule armed to stay (ui-kit/close).
 // This change did not boot a server.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UIKitParts : LF_Test
 {
@@ -70,7 +69,6 @@ class LF_Test_UIKitParts : LF_Test
 	}
 }
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UIKitQuantity : LF_Test
 {
@@ -110,7 +108,6 @@ class LF_Test_UIKitQuantity : LF_Test
 	}
 }
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UIKitClose : LF_Test
 {
@@ -134,7 +131,6 @@ class LF_Test_UIKitClose : LF_Test
 	}
 }
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UIKitFocus : LF_Test
 {

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_BuildSitePersist` printed `RED PROOF OK` with `the site shows stage 1's shell from the loaded row (load 2) (expected 1, got 0)` (the hook skips the store read); `--only` then passed=4 with LF_Test_BuildSite, LF_Test_PropertyPersist, LF_Test_PlotBuy.
-// tier: PERSISTENCE
 //! property/build-site-persist (#2650): a site part way through stage 2 (every item in, some work
 //! done) goes through the real store write and read; the deposits, the work and the stage come back,
 //! a second load is the same, and the site's mirror and shell follow the loaded record. Across a

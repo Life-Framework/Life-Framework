@@ -1,7 +1,6 @@
 // red-proof: expected 0 for the first enter and the fast suite reported
 // [LFTEST]   - enter applies upward velocity (expected 0, got 12)
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JumpPad : LF_Test
 {

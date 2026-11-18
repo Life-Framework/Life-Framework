@@ -140,7 +140,6 @@ class LF_TestHideoutStashKit
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HideoutStash : LF_Test
 {
@@ -234,7 +233,6 @@ class LF_Test_HideoutStash : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: PERSISTENCE
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_HideoutStashPersistence : LF_Test
 {

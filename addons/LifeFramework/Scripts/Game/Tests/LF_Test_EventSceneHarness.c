@@ -1,5 +1,4 @@
 // red-proof: `test --no-build --red LF_Test_EventSceneHarness` -> RED PROOF OK (2026-11-16): with the hook on the fixture is never applied, so `the fixture is recorded for status` and `at the forced dawn hour the shell starts the event` fail; without it `SUMMARY tier=only passed=1 failed=0`.
-// tier: WORLD
 //! The `eventscene` harness verb (#2173): a fixture conf laid over the event list turns on an event
 //! the files keep off and registers its modules; with the hour forced to dawn the shell starts it.
 //! A missing conf, no conf and a conf of another root class are refused and change nothing. `Stop`

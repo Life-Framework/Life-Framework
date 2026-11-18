@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18, cli test --no-build --only LF_Test_MapShareCapWarnOnce on the unfixed warning (counter seam only): FAIL "three sweeps with the player over the cap warn once (expected 1, got 3)", "going over again after dropping under warns a second time, once (expected 2, got 5)". Green with the once-per-excursion warning.
-// tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! map/share-cap-warn-once (review 2026-11-17, #2514): a player in more than SEND_CAP shares got the "the rest
 //! wait" warning on every sweep, every 5 s for the rest of the session. It is logged once, when the player first

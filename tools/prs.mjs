@@ -39,14 +39,12 @@ export function liveShipEntry(queue, branch) {
 export const LIVE_MS = 15 * 60 * 1000;
 export const STUCK_MS = 10 * 60 * 1000;
 
-const REGISTRY = "addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c";
 const STRING_TABLE = "addons/LifeFramework/Language/everonlife_localization.st";
 const SCRIPTS_PREFIX = "addons/LifeFramework/Scripts/";
 
 // How a conflicted path is resolved, or null when it needs a human.
 export function conflictKind(path) {
   const p = String(path).replace(/\\/g, "/");
-  if (p === REGISTRY) return "regen-tests";
   if (/^addons\/LifeFramework\/Language\/everonlife_localization\.[A-Za-z0-9_]+\.conf$/.test(p)) return "regen-localization";
   if (p === STRING_TABLE) return "string-table";
   if (p === "docs/features.md" || (p.startsWith("docs/features/") && p.endsWith(".md")) || p === "docs/debug-log-triage.md") return "markdown";
@@ -57,7 +55,7 @@ export function conflictKind(path) {
 }
 
 // Resolution order: sources before what is generated from them.
-const KIND_ORDER = ["string-table", "markdown", "lint-baseline", "regen-tests", "regen-localization"];
+const KIND_ORDER = ["string-table", "markdown", "lint-baseline", "regen-localization"];
 
 // ---------------------------------------------------------------- liveness
 
@@ -141,7 +139,7 @@ function resolveByStages(wtPath, path, kind) {
 // Production regeneration: the worktree's own CLI, so its generator version is used.
 export function regenerateWithCli(wtPath, kind) {
   const cli = join(wtPath, "tools", "cli.mjs");
-  const cmds = kind === "regen-tests" ? ["regen-tests"] : kind === "credits" ? ["credits", "regen-localization"] : ["regen-localization"];
+  const cmds = kind === "credits" ? ["credits", "regen-localization"] : ["regen-localization"];
   for (const cmd of cmds) {
     const res = wt.run(process.execPath, [cli, cmd], { cwd: wtPath });
     if (res.status !== 0) return { ok: false, error: (res.stdout + res.stderr).trim() };

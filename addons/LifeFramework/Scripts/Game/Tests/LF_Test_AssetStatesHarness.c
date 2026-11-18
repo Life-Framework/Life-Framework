@@ -1,6 +1,5 @@
 // red-proof: Parse without the itemgive branch fails "itemgive with a prefab parses"; Run with the
 // usage check removed fails "a bare verb is refused for its usage".
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AssetStatesHarness : LF_Test
 {

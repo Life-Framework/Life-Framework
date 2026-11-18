@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, cli test --no-build --red: RED PROOF OK on main's path (SetCharacter under the current key): "B's first mark is still B's (expected 500, got 900)", "A's saved list is still unchanged (expected 1, got 4)". Green with the generation check.
-// tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! map/marks-upload-generation (#2546, map review finding 8): the client uploads its mark list 2 s
 //! after an edit. A character switch inside that window used to save the old character's list under

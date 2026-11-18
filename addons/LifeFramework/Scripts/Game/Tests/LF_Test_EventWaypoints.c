@@ -1,6 +1,5 @@
 // red-proof: `test --no-build --red LF_Test_EventWaypoints` -> RED PROOF OK (2026-11-16): with the hook on, FindWaypoints is skipped, so
 // `the cell holds four waypoints (expected 4, got 0)` and `all four come back (expected 4, got 0)` fail; 24 assertions go red.
-// tier: WORLD
 //! Event scene markers (#1954): the test route in grid cell `event-scene` (Grid_event_scene.layer) is
 //! found by component through LF_Places, never by entity name. The four waypoints come back in their
 //! order though the layer lists them out of order, the two spawn markers likewise, the target resolves

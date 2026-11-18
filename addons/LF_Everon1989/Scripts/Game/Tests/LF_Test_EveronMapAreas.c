@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_EveronMapAreas: RED-OK (RedProof() skips LF_MapAreas.Collect, so "the map draws the town line" and "the map draws the safe square" fail). Green without it under the pack header. Origin checks (map proof pass): failed on the quoted conf ("a town line point is not the world origin: <0,0,0>", 12 times), green on the unquoted one.
-// tier: WORLD
 //! everon/map-areas (#2233 split M5b): under the Everon 1989 header (the pack leg), the header lists
 //! the pack's area overlay, the layered table holds Saint-Philippe's town line and safe square over
 //! the empty core file, and the map's merged list draws both. No lawless area until M7 (D4).

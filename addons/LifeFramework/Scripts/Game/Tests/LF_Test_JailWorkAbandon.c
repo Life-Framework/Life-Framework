@@ -1,5 +1,5 @@
 // red-proof: 2026-11-17 `tools\cli test --no-build --red LF_Test_ChopShopCollect,LF_Test_RobNoRoom,LF_Test_JailEscortDrop,LF_Test_JailSelfArrest,LF_Test_JailWorkAbandon`: RED PROOF OK, all 5 failed. The hook skips the timer on a gone worker: `- after rejoining the prisoner may work again (expected 0, got 2)`. Green on the fixed code.
-// tier: WORLD (needs a cell origin, like jail/work)
+//! Needs a cell origin, like jail/work
 //! A prisoner who logs out mid-task is not left busy (crime review 2026-11-17). The work timer
 //! returned on a missing worker before clearing the busy mark, so after rejoining every task
 //! was refused as BUSY until the world reset.

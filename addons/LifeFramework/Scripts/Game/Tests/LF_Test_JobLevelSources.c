@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18, `--red LF_Test_JobLevelSources` unsubscribes LF_JobLevelSources: RED PROOF OK, the delivery, self-revive and daily-cap checks fail (expected 50, got 0 and expected 13, got 0). Green with the subscriber on.
-// tier: LOGIC
 //! jobs/level-sources (#2707): LF_OnGathered, LF_OnPlayerRevived and LF_OnPatientDelivered award the
 //! shipped `jobs.xpAwards` rows to MINER, LUMBERJACK and MEDIC; a repeat inside the cooldown, a
 //! gather family that pays nothing, a medic with no player id and a self-revive award nothing; the

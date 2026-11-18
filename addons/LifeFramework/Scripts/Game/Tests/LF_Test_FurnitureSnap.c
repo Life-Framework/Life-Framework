@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: observed 2026-11-18 with `--red` (log test-20261118-025311): RED-OK housing/furniture (fails with the hook on, 15 assertions): the outside refusal and the hung-shelf check are skipped. Hook off: green.
 //! housing/furniture (#2654, epic #747): a chair is placed on the floor of the house the player owns and
 //! refused when they stand away from any house of theirs; a shelf lies flush on a wall face (gap under

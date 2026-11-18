@@ -1,7 +1,6 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_HeldGroundRoundTrip,...`:
 // LF_Hideout.ExportHeldGround writing 0 for m_iHoldPoints failed `[LFTEST] FAIL persist/held-ground`,
 // `- the banked points are kept (load 1) (expected 12, got 0)`. Restored; green.
-// tier: PERSISTENCE
 //! #751 through the real save path ("heldground" payload). A held site comes back with its holder,
 //! hold seconds and points after the store is written and read, twice; a leased but unheld site
 //! writes no row and loads unheld. The "hideout" leases and locks are unchanged.

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 with `tools\cli test --no-build --only LF_Test_HouseLockAction` against a stub LF_HouseLockAction (never shown, never performed): `[LFTEST] FAIL houses/lock-action`, `- a key holder sees the lock action`, `- the key holder locks the house`, `- the owner locks the house without a key`. Green with the action.
-// tier: WORLD
 //! houses/lock-action (#2471): the house door offers "Lock house" / "Unlock house" to its owner and to a
 //! key holder. A stranger neither sees nor performs it, and a forged server-side perform by them leaves
 //! the lock unchanged. The lock flips only through LF_HouseManagerComponent.SetHouseLocked, so the

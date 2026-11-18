@@ -7,7 +7,6 @@
 //! MoneyStack, then a pack points the slot at another prefab: the stacks still count, are spent
 //! first, and new cash is the slot's prefab. A prefab the save alias table (#965) leads to the slot
 //! prefab counts as the same cash. Save format untouched: the stacks are plain prefab items.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CashSlotSwap : LF_Test
 {

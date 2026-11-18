@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 `tools/cli test --no-build --only LF_Test_PoliceStaticsReset` with the application reset and the roster trim disabled failed `police/statics-reset` with `- the world-end reset drops the cached rows and the file override` and `- the sent list is capped (expected 64, got 74)`. Restored: green.
-// tier: LOGIC
 //! #2419: the police application list has a world-end reset hook, and the roster notice's sent list
 //! is trimmed instead of growing for ever.
 [LF_TestInfo(LF_TestTier.LOGIC)]

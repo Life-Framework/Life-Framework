@@ -1,5 +1,4 @@
 // red-proof: RED-OK 2026-11-17 `tools/cli test --no-build --red LF_Test_CharacterSheetsReset`: with the reset skipped the form and pick stay current and open (3 assertions fail); green with the hooks (--only, 3 passed with LF_Test_UiSheetStaticReset and LF_Test_UIWorldEndReset).
-// tier: WORLD
 //! #2512: the registration form and the character pick keep their open screen in a static. A world
 //! that ends with one up (a disconnect before signing, a pick still open at the kick) left the
 //! sheet drawn and holding the interaction prompt, because the reset only dropped the pointer.

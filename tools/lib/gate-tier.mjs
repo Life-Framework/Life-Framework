@@ -160,10 +160,14 @@ export function selectTests(tests, tokens) {
     let tier = null;
     const classes = [];
     for (const line of t.text.split(/\r?\n/)) {
-      const tm = /^\s*\/\/\s*tier:\s*(\w+)/.exec(line);
+      // The tier is the class's own `[LF_TestInfo(LF_TestTier.X)]` (#2610); one attribute covers the next class only.
+      const tm = /^\s*\[LF_TestInfo\(\s*LF_TestTier\.(\w+)/.exec(line);
       if (tm) tier = tm[1].toUpperCase();
       const cm = /^\s*class\s+(LF_Test_\w+)\s*:\s*LF_Test\b/.exec(line);
-      if (cm) classes.push({ name: cm[1], tier });
+      if (cm) {
+        classes.push({ name: cm[1], tier });
+        tier = null;
+      }
     }
     const hit = tokens.some((k) => t.text.includes(k));
     for (const c of classes) {

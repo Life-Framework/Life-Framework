@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --only LF_Test_RobberyAlarmKinds` on the unchanged LF_Police.conf: failed with `the hospital till resolves to the hospital kind by its offence (expected 'hospital', got '')`; with the hospital row it is green.
-// tier: LOGIC
 //! Robbery alarm kinds (#1937, chapter #1014), the shipped map in LF_Police.conf: each robbery kind maps to its
 //! own alarm id and loud twin, the hospital till has the `hospital` kind, the chop shop maps to none (it files its
 //! crime report with no site, so no alarm ever sounds), and an unknown kind falls back to the plain siren.

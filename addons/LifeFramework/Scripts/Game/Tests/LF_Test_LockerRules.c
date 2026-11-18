@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 on main without the rules: `tools\cli test --no-build --only LF_Test_LockerRules` failed (scripts do not compile: LF_LockerRules, LF_LockerConfig and their enums do not exist). The same run passes with them.
-// tier: LOGIC
 //! #2658 (slice L1 of #1038, specs #753, #776): the locker rules. One locker per character per site;
 //! rent paid until a moment, then a grace period, then the contents move to the site's lost-and-found,
 //! where reclaiming costs the configured fee. `rentPeriodDays 0` never lapses. Times are UTC seconds.

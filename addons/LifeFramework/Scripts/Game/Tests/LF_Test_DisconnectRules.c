@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_DisconnectRules`: dropping the escorted term from `inCustody` in LF_DisconnectRules.Decide failed `- escorted counts as cuffed (expected 'jail', got '')`. Restored; green.
-// tier: LOGIC
 //! Disconnect rules (#691), the pure decision per state and the owner "disconnect" section:
 //! cuffed jails (or fines, or releases), escorted counts as cuffed, jail falls back to the fine
 //! with no cell, downed dies (not when stunned), the warrant and the sentence stay.

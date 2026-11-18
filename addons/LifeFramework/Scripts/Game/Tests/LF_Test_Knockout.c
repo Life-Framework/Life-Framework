@@ -1,5 +1,4 @@
 // red-proof: RED-OK 2026-11-15 `toolsi test --no-build --red LF_Test_Knockout` (hook skips Begin): "the character is knocked out", "the owning machine holds the body in ragdoll", "one ragdoll was released" failed; green without the hook.
-// tier: WORLD
 //! A knockout (#1857, the taser's down state): the body is ragdolled on the machine that owns it
 //! and held down for the knockout's time, the wake releases the ragdoll and keeps the character
 //! unconscious while it settles, then vanilla wakes it. A dead, a medically downed and a vanilla

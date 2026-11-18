@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 with `--red` (RED-OK): the hook skips the limiter, so 'an officer's ticket requests are capped at the burst inside one window' fails. The uid assertion, run on the unfixed code (m_sHolderUid an RplProp again, log tmp/logs/test-20261118-003827.log): FAIL 'the ticket component replicates no uid field (expected 0, got 1)'. Restored: green.
-// tier: LOGIC
 //! police/ticket-request-limit (#2416): one officer may send ticketRateBurst ticket requests per
 //! ticketRateWindowSeconds; the rest are refused, another officer is unaffected, and the window
 //! reopens. The ticket paper no longer carries the holder's platform uid as a replicated property.
