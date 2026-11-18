@@ -14,3 +14,5 @@ Docs: `docs/features/laundering.md`. Tests: `LF_Test_MarkedCash`, `LF_Test_Dirty
   are `LF_Places` kind `chain_buyer`; the open one is a pure function of unix time and a secret seed kept
   in `$profile:LifeFramework/buyer-rotation-seed.txt` (never in the repo), rotating every
   `m_iBuyerPeriodHours`. Nothing is saved. `LF_Places.FindIds` (modded here) lists a kind's ids.
+- `LF_BuyerNpc.c`: the buyer character (`Prefabs/Characters/LF_IllicitBuyer.et`) stands at the open spot while
+  a player is within 150 m, moves when the rotation does, loiters (#2919). `Start()` is called from the game mode.
