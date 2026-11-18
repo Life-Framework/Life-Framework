@@ -1,0 +1,28 @@
+GenericEntity : "{8A6DD31A4FF94E48}Prefabs/Props/Furniture/BedDouble_01.et" {
+ ID "7A04B580F18694D0"
+ components {
+  ActionsManagerComponent "{E474D91CC0DEA041}" {
+   ActionContexts {
+    UserActionContext "{3A156B200E4E0C80}" {
+     ContextName "default"
+     Position PointInfo "{4CAE6D0CA9FB312E}" {
+      Offset -0.001 0.448 -0.007
+     }
+     Radius 2.55
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{D6506FB95509B053}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{3E64BC423B621DF3}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

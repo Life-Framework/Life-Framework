@@ -7,7 +7,15 @@ GenericEntity : "{FAEF245300848A2C}Prefabs/Items/Fishing/LF_FishTroutSmall.et" {
      Name "#LF-Item_FishMackerel_Small_Name"
      Description "#LF-Item_FishMackerel_Small_Description"
     }
+    CustomAttributes {
+     PreviewRenderAttributes "{AB413D9CB8783DEB}" {
+      CameraDistanceToItem 0.55
+     }
+    }
    }
+  }
+  MeshObject "{CF3097B91F6EE919}" {
+   Object "{FD8F0EC0C2D6BA99}Assets/Items/Fishing/FishMackerelSmall/FishMackerelSmall.xob"
   }
  }
 }

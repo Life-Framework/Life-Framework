@@ -1,0 +1,50 @@
+{
+  "slug": "fish-mackerel-small",
+  "name": "FishMackerelSmall",
+  "kind": "gadget",
+  "roadmap": "#3134",
+  "concept": "The small size of the mackerel: the same Meshy generation as fish-mackerel, scaled by the clean stage.",
+  "prompt": "A single Atlantic mackerel fish, whole, swimming pose seen from the side, body straight and torpedo shaped, slender, tail fin spread, two dorsal fins and small finlets, dark blue-green back with wavy black tiger stripes, silver white belly, round dark eye. Realistic game prop, no base, no stand, no water, no text, no logos.",
+  "texture_prompt": "Atlantic mackerel: iridescent blue-green back with dark wavy bars, silvery white belly, glossy wet skin.",
+  "meshy": {
+    "ai_model": "meshy-6-lite",
+    "target_polycount": 8000
+  },
+  "size_m": {
+    "length": 0.185,
+    "height": 0.061,
+    "width": 0.043
+  },
+  "budget": {
+    "lod0_tris": 4000,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 512,
+    "credits": 40
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Fishing/FishMackerelSmall",
+  "prefab_dir": "Prefabs/Items/Fishing",
+  "prefab": false,
+  "gadget": {
+    "name_key": "#LF-Item_FishMackerel_Small_Name",
+    "description_key": "#LF-Item_FishMackerel_Small_Description",
+    "weight": 0.1,
+    "volume": 120,
+    "components": []
+  },
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  }
+}

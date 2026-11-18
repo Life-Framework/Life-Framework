@@ -7,7 +7,15 @@ GenericEntity : "{ACCC8B6FEB32034C}Prefabs/Items/Fishing/LF_FishTrout.et" {
      Name "#LF-Item_FishPerch_Name"
      Description "#LF-Item_FishPerch_Description"
     }
+    CustomAttributes {
+     PreviewRenderAttributes "{AB413D9CB8783DEB}" {
+      CameraDistanceToItem 0.72
+     }
+    }
    }
+  }
+  MeshObject "{CF3097B91F6EE919}" {
+   Object "{886A87FB02374A92}Assets/Items/Fishing/FishPerch/FishPerch.xob"
   }
  }
 }

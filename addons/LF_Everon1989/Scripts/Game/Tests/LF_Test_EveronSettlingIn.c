@@ -1,7 +1,7 @@
 // red-proof: 2026-11-18, `tools\cli test --no-build --red LF_Test_EveronSettlingIn` (RedProof skips the overlay apply): RED-OK, failed "the pack adds a row for the clerk"; green without the hook (pack leg worlds=LF_Everon1989_Test).
 //! #3125 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the clerk offers a second chain
 //! after `arrival_done` that says what hours two to four are for: five parcel runs, a fuel run, a car, then three
-//! errands (a firearm permit, a fish sold, a plot sign read). The neutral core table ships no clerk row; the pack's
+//! errands (a firearm permit, a fish sold, a plot sign read), then a foundation laid on a plot (#3195). The neutral core table ships no clerk row; the pack's
 //! overlay (LF_QuestGiverTable_Everon1989.conf) adds it. The test reads the rows, not the world: each step needs
 //! the one before, every objective key is a signal the game reports, rewards are one-off and small, and every
 //! string is a pack key that translates.
@@ -11,9 +11,9 @@ class LF_Test_EveronSettlingIn : LF_Test
 	static const ResourceName OVERLAY = "{FBE2DEDC5C6ACC67}Configs/Quests/LF_QuestGiverTable_Everon1989.conf";
 	static const string GIVER = "clerk";
 	static const string CHAIN_START = "arrival_done";
-	static const int STEPS = 6;
-	static const int MAX_STEP_CASH = 50; // lf-fixed: the planner's cap per step (#3125)
-	static const int MAX_CHAIN_CASH = 150; // lf-fixed: the planner's cap for the chain (#3125)
+	static const int STEPS = 7;
+	static const int MAX_STEP_CASH = 100; // lf-fixed: the planner's cap per step (#3125; the foundation step pays 100, #3195)
+	static const int MAX_CHAIN_CASH = 250; // lf-fixed: the planner's cap for the chain (#3125, #3195)
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -74,7 +74,7 @@ class LF_Test_EveronSettlingIn : LF_Test
 			return;
 
 		ctx.EqualStr(string.Empty, LF_QuestGiverConfig.Problem(row), "the clerk's row is complete");
-		ctx.Equal(STEPS, row.m_aQuests.Count(), "the row holds the six settling-in quests");
+		ctx.Equal(STEPS, row.m_aQuests.Count(), "the row holds the seven settling-in quests");
 
 		CheckChain(ctx, row);
 		CheckObjectives(ctx, row);
@@ -85,7 +85,7 @@ class LF_Test_EveronSettlingIn : LF_Test
 		LF_QuestGiverTable.ResetStatics();
 		array<ref LF_QuestDefinition> prefabOwn = {};
 		array<ref LF_QuestDefinition> live = LF_QuestGiverTable.QuestsFor(GIVER, prefabOwn);
-		ctx.Equal(STEPS, live.Count(), "LF_QuestGiverTable hands the clerk the six quests");
+		ctx.Equal(STEPS, live.Count(), "LF_QuestGiverTable hands the clerk the seven quests");
 		ctx.Equal(0, LF_QuestGiverTable.RefusedCount(), "no settling-in quest id clashes with the clerk's prefab quests");
 		LF_QuestGiverTable.ResetStatics();
 	}
@@ -95,8 +95,8 @@ class LF_Test_EveronSettlingIn : LF_Test
 	//! `arrival_done`, the next ones each a quest of this chain, so none stands loose.
 	protected void CheckChain(LF_TestContext ctx, LF_QuestGiverRow row)
 	{
-		array<string> ids = {"settle_parcels", "settle_fuel", "settle_wheels", "settle_permit", "settle_fish", "settle_plot"};
-		array<string> previous = {CHAIN_START, "settle_parcels", "settle_fuel", "settle_wheels", "settle_wheels", "settle_wheels"};
+		array<string> ids = {"settle_parcels", "settle_fuel", "settle_wheels", "settle_permit", "settle_fish", "settle_plot", "settle_foundation"};
+		array<string> previous = {CHAIN_START, "settle_parcels", "settle_fuel", "settle_wheels", "settle_wheels", "settle_wheels", "settle_plot"};
 		foreach (int i, string id : ids)
 		{
 			LF_QuestDefinition quest = Quest(row, id);
@@ -129,6 +129,7 @@ class LF_Test_EveronSettlingIn : LF_Test
 		keys.Set("settle_permit", LF_QuestProgressSignals.PERMIT_COLLECTED);
 		keys.Set("settle_fish", LF_QuestProgressSignals.FISH_SOLD);
 		keys.Set("settle_plot", LF_QuestSignals.SignRead("plot_for_sale"));
+		keys.Set("settle_foundation", LF_QuestProgressSignals.StageDone("foundation"));
 
 		foreach (string id, string key : keys)
 		{
@@ -151,20 +152,20 @@ class LF_Test_EveronSettlingIn : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Rewards are small: at most 50 cash a step and 150 for the chain, plus job XP; no items, no ID card.
+	//! Rewards are small: at most 100 cash a step and 250 for the chain, plus job XP; no items, no ID card.
 	protected void CheckRewards(LF_TestContext ctx, LF_QuestGiverRow row)
 	{
 		int total;
 		foreach (LF_QuestDefinition quest : row.m_aQuests)
 		{
-			ctx.True(quest.m_iRewardMoney <= MAX_STEP_CASH, quest.m_sQuestId + " pays at most 50 cash");
+			ctx.True(quest.m_iRewardMoney <= MAX_STEP_CASH, quest.m_sQuestId + " pays at most 100 cash");
 			ctx.True(quest.m_iRewardMoney >= 0, quest.m_sQuestId + " pays no negative cash");
 			ctx.False(quest.m_bRewardIdCard, quest.m_sQuestId + " hands no ID card");
 			ctx.True(!quest.m_aRewardItems || quest.m_aRewardItems.IsEmpty(), quest.m_sQuestId + " hands no items");
 			total += quest.m_iRewardMoney;
 		}
 
-		ctx.True(total <= MAX_CHAIN_CASH, string.Format("the whole chain pays at most 150 cash (paid %1)", total));
+		ctx.True(total <= MAX_CHAIN_CASH, string.Format("the whole chain pays at most 250 cash (paid %1)", total));
 	}
 
 	//------------------------------------------------------------------------------------------------
