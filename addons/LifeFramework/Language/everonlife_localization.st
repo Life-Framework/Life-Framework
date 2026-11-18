@@ -3998,6 +3998,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
      Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
     }
+    CustomStringTableItem "{C97AAED75F4A4D52}" {
+     Id "LF-Garage_BuySlot"
+     Target_en_us "Buy a garage slot"
+     Comment "Garage desk action and toast title (#2656): buy one more garage slot with carried cash."
+    }
     CustomStringTableItem "{58906F560E794544}" {
      Id "LF-Garage_EmptyCargo"
      Target_en_us "Empty the vehicle's storage first"
@@ -4108,10 +4113,35 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 is waiting on the pad in front of the garage."
      Comment "Retrieve succeeded. %1 is the plate"
     }
+    CustomStringTableItem "{51F194E2FE80AEC0}" {
+     Id "LF-Garage_SlotBought"
+     Target_en_us "Slot bought. Your garage now holds %1 vehicles."
+     Comment "Garage slot bought (#2656). %1 is the new slot cap."
+    }
+    CustomStringTableItem "{C1E5F8750E4D23B8}" {
+     Id "LF-Garage_SlotFailed"
+     Target_en_us "The slot could not be bought. Nothing was taken."
+     Comment "Garage slot refused (#2656): the cash could not be taken in full and was handed back."
+    }
+    CustomStringTableItem "{015CF51C90ECA5D4}" {
+     Id "LF-Garage_SlotNotAlive"
+     Target_en_us "You cannot buy a slot right now."
+     Comment "Garage slot refused (#2656): the buyer is dead or downed."
+    }
+    CustomStringTableItem "{AC1FD7B3F3DBE446}" {
+     Id "LF-Garage_SlotShortCash"
+     Target_en_us "The next slot costs $%1 in cash. You do not carry enough."
+     Comment "Garage slot refused (#2656): carried cash is short. %1 is the price."
+    }
     CustomStringTableItem "{4F4F48DC707A84B4}" {
      Id "LF-Garage_SlotsFull"
      Target_en_us "Your garage is full: %1 vehicles at most. Retrieve one before storing another."
      Comment "Garage store refused (#2655): the owner's stored vehicles fill every garage slot. %1 is the cap."
+    }
+    CustomStringTableItem "{E61274B7B23F4466}" {
+     Id "LF-Garage_SlotsMax"
+     Target_en_us "Your garage is at the most it can hold: %1 slots."
+     Comment "Garage slot refused (#2656): the character holds the max. %1 is the max."
     }
     CustomStringTableItem "{A1C4E87B62D94F05}" {
      Id "LF-Garage_StepOut"

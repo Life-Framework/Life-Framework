@@ -272,7 +272,9 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_FormatAbbreviate(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_FuelClerkDialogue(), LF_TestTier.WORLD;
+		// self-registered: new LF_Test_GarageBuySlot(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_GarageSlots(), LF_TestTier.LOGIC;
+		// self-registered: new LF_Test_GarageSlotsPersist(), LF_TestTier.PERSISTENCE;
 		// self-registered: new LF_Test_GarageStoreRange(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_GatherStock(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_GatherStockAction(), LF_TestTier.WORLD;

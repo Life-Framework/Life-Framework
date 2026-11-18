@@ -2,7 +2,7 @@
 //
 // Every character gets LF_GarageConfig.m_iBaseSlots free slots and may buy more up to
 // m_iMaxSlots. Slots in use are counted from the stored vehicle records. Bought slots arrive with
-// the buy action (G2): until then BoughtSlots reads 0. The price of slot index n (0-based, so
+// the buy action (G2, LF_GarageSlotStore). The price of slot index n (0-based, so
 // index m_iBaseSlots is the first slot for sale) is start + step * (n - base).
 
 class LF_GarageSlots
@@ -45,10 +45,10 @@ class LF_GarageSlots
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Slots bought by ownerUid. 0 until the buy action lands (G2).
+	//! Slots bought by ownerUid (LF_GarageSlotStore, #2656).
 	static int BoughtSlots(string ownerUid)
 	{
-		return 0;
+		return LF_GarageSlotStore.Bought(ownerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
