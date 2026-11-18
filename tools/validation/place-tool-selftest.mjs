@@ -27,13 +27,13 @@
 //   judge resting a tree on its bounds base (2026-11-14, #924) -> FAIL judge: a tree whose roots go 0.51 m below the ground
 //   onGround raising a building by its foundation (2026-11-16, town-arrival-desk; the code before the fix)
 //     -> FAIL ground: a building's pivot (its floor) stands on the ground, its foundation below
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { checkEntities } from "../actions/prop-on-surface.mjs";
 import { isKind, obbPenetration } from "../../agent-box/place-audit.mjs";
 import { GRID_LAYERS, PACK_GRID_LAYERS } from "../lib/world-zones.mjs";
 import { auditTestArgs } from "../../agent-box/place-audit.mjs";
-import { PlaceError, ROOT, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, gridWorldOf, judge, modelOf, offlineProblems, onGround, restOn, rot, rowCentres, excludeOf, serverRun, setTransform, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
+import { PlaceError, ROOT, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, gridWorldOf, judge, modelOf, offlineProblems, onGround, parseSettles, restOn, rot, rowCentres, excludeOf, serverRun, setCoordsY, setTransform, settleExempt, settleLine, settleResult, settleToken, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
 
 let failed = 0;
 const ok = (cond, what) => {
@@ -327,6 +327,72 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
     ok(judge([t], aired.records, aired.outText, { grid: true })[0].problems.some((p) => /0.08 m above/.test(p)), "grid audit: 8 cm of air under a grid prop still fails the tool");
   }
 }
+
+// ---- settle (#2954): `place settle` and the settle step of on|ground|arrange|against ---------------------------
+// tools/place/fixtures/settle.json holds the spike's measured cases as the test server answered them. red-proof: 2026-11-18,
+// each line broken, the FAIL seen, restored:
+//   setCoordsY writing the height into x            -> FAIL settle: IronNugget_01 changes only its coords height
+//   settleResult taking y1 as the height            -> FAIL settle: a group child's height is the old one plus the move
+//   settleResult without the 1 cm verify            -> FAIL settle: a 2 cm gap after the move is not written
+//   serverRun not sending the settle lines          -> FAIL settle: the boot is sent the settle lines after the rays
+{
+  const fx = JSON.parse(readFileSync(join(ROOT, "tools", "place", "fixtures", "settle.json"), "utf8"));
+  const settles = parseSettles(fx.server.join("\n"));
+  ok(settles.size === fx.cases.length, `settle: parseSettles reads every server line (got ${settles.size})`);
+  for (const c of fx.cases) {
+    const s = settles.get(c.id);
+    const res = settleResult(s, c.coordsY);
+    ok(res.ok && near(res.y, c.wantY, 0.0006), `settle: ${c.target.prefab ?? c.target} is moved to y ${c.wantY} (got ${res.ok ? res.y : res.why})`);
+    ok(s && Math.abs(s.gap) < 0.01, `settle: ${c.id} verifies under 1 cm (gap ${s?.gap})`);
+    if (!res.ok) continue;
+    const after = setCoordsY(c.layer, c.target, res.y);
+    const was = c.layer.split("\n");
+    const now = after.split("\n");
+    const changed = was.map((l, i) => (l === now[i] ? -1 : i)).filter((i) => i >= 0);
+    ok(was.length === now.length && changed.length === 1, `settle: ${c.id} changes one line of the layer (changed ${changed.length})`);
+    if (changed.length === 1) {
+      const [bx, by, bz] = was[changed[0]].trim().replace(/^coords\s+/, "").split(/\s+/);
+      const [ax, ay, az] = now[changed[0]].trim().replace(/^coords\s+/, "").split(/\s+/);
+      ok(/^\s*coords\s/.test(was[changed[0]]) && bx === ax && bz === az && Number(ay) !== Number(by), `settle: ${c.id} changes only the height on its coords line (${was[changed[0]].trim()} -> ${now[changed[0]].trim()})`);
+    }
+  }
+  // The group child: the server's y is the world height of the nugget (0.9 on its stand); the layer's own height is the old one plus the move.
+  const nugget = fx.cases.find((c) => c.target === "IronNugget_01");
+  ok(near(settleResult(settles.get(nugget.id), nugget.coordsY).y, 0.0319, 0.0006), "settle: a group child's height is the old one plus the move, not the server's world y");
+  // Neighbours keep their lines: IronNugget_02 and a scaled, turned Farm_PressApple_2 are byte for byte the same.
+  ok(setCoordsY(nugget.layer, nugget.target, 0.032).includes("IronNugget_02 {\n    coords 0.2 0 0.1\n   }"), "settle: the neighbouring nugget is untouched");
+  const apple = fx.cases.find((c) => c.target === "Farm_PressApple_1");
+  ok(setCoordsY(apple.layer, apple.target, 0.014).includes("coords 143.5 0.1 309.65\n angleY 30\n scale 1.2\n}"), "settle: the neighbouring apple (turned, scaled) is untouched");
+  const barrel = fx.cases.find((c) => typeof c.target === "object");
+  ok(setCoordsY(barrel.layer, barrel.target, 0.018).includes("coords 191.8 0 311.9"), "settle: the second barrel, same prefab, other spot, is untouched");
+  refuses(() => setCoordsY(barrel.layer, { ...barrel.target, coordsText: "1 2 3" }, 0.1), /0 entity blocks match/, "settle: an unnamed target that matches no block is refused");
+  // A failed verify, a prop with nothing under it and one not in the world are not written.
+  ok(!settleResult({ y0: 1, y1: 1.02, gap: 0.02, before: 0.04, spread: 0.03, on: "Shelf", missing: false, nothing: false }, 1).ok, "settle: a 2 cm gap after the move is not written");
+  // A 38 cm move is a hung board dropped to the floor (the Wanted board of the police kit), not a hover: refused without --force.
+  const dropped = parseSettles("settle b y0=1.15 y1=0.771 gap=0.001 before=0.38 spread=0 on=GenericEntity found=Board").get("b");
+  ok(!settleResult(dropped, 1.15).ok && settleResult(dropped, 1.15, { force: true }).ok, "settle: a move over 25 cm is refused without --force");
+  ok(!settleResult(parseSettles("settle x y0=1 nothing=1 found=A").get("x"), 1).ok, "settle: nothing under the footprint is not written");
+  ok(!settleResult(parseSettles("settle x missing=1").get("x"), 1).ok && !settleResult(undefined, 1).ok, "settle: an entity not in the world is not written");
+  // Which props a command settles: the ones the audit judges by contact. A tree, a vehicle, a building, a hung sign and a tilted prop stay.
+  const prefab = (name) => `Prefabs/Props/${name}.et`;
+  ok(settleExempt({ name: "T", prefab: "Prefabs/Vegetation/Tree/t_sorbus.et" }) === "vegetation" && settleExempt({ name: "", prefab: "Prefabs/Vehicles/Wheeled/UAZ469/UAZ469.et" }) === "vehicle" && settleExempt({ name: "H", prefab: prefab("House_Small") }) === "building", "settle: trees, vehicles and buildings keep their pivot height");
+  ok(settleExempt({ name: "N", prefab: prefab("Crate_01"), hung: true }) === "hung" && settleExempt({ name: "N", prefab: prefab("Crate_01"), tilted: true }) === "tilted", "settle: a hung or tilted prop is left alone");
+  ok(settleExempt({ name: "IronNugget_01", prefab: "Prefabs/Resources/Mining/IronNugget.et" }) === "" && settleExempt({ name: "", prefab: "Prefabs/Props/Industrial/BarrelMetal_01_blue.et" }) === "", "settle: a nugget and a barrel are settled");
+  // The lines the server is sent: a name, or `@<prefab file>:x,y,z` for an unnamed entity (LF_PlacementAudit.FindExcluded).
+  ok(settleToken({ name: "Farm_PressApple_1", prefab: "Prefabs/Items/Food/Apple.et", x: 1, y: 2, z: 3 }) === "Farm_PressApple_1", "settle: a named entity is sent by name");
+  ok(settleLine("e2", { name: "", prefab: "Prefabs/Props/Industrial/BarrelMetal_01_blue.et", x: 191.8, y: 0, z: 310.4 }) === "settle e2 @BarrelMetal_01_blue:191.8,0,310.4", "settle: an unnamed entity is sent by prefab file and spot");
+  // serverRun sends the settle lines after the probe rays and hands back what the server said; it is not a missing ray.
+  const sent = {};
+  const boot = (records, opts) => {
+    sent.extra = opts.extra;
+    return { outText: `ray r1 d=1 len=2 hit=none root=none p=0,0,0 sy=0\n${fx.server.join("\n")}\n${records.map((_, i) => `${i} missing=1`).join("\n")}\n`, failed: false };
+  };
+  const run = serverRun(["ray r1 0 1 0 0 0 0"], { grid: true, measure: boot, settle: ["settle e0 IronNugget_01", "settle e1 Farm_PressApple_1", "settle e2 @BarrelMetal_01_blue:191.8,0,310.4"] });
+  ok(sent.extra.length === 4 && sent.extra[0].startsWith("ray ") && sent.extra[1] === "settle e0 IronNugget_01", `settle: the boot is sent the settle lines after the rays (${JSON.stringify(sent.extra)})`);
+  ok(run.settles.size === 3 && run.rays.size === 1, "settle: serverRun returns the settles and keeps the rays");
+  refuses(() => serverRun([], { grid: true, measure: boot, settle: ["settle e0 A", "settle e1 B", "settle e2 C", "settle e3 D"] }), /answered 3 of 4 settle lines/, "settle: a server that answers fewer settle lines than were sent is an old build");
+}
+
 
 if (failed) {
   console.log(`place-tool-selftest: FAILED (${failed})`);
