@@ -35,6 +35,7 @@ named but does not load as an `LF_PackManifest` also refuses.
 | Sound slots | `LF_SoundSlotsConfig` (`Configs/SoundSlots/LF_SoundSlots.conf`): a pack patches `m_Project` by slot id | class listed; slot ids to be listed (#323) |
 | Residents | `LF_ResidentsConfig` (`Configs/Residents/LF_Residents.conf`): a pack adds, replaces or removes a resident by `m_sId` (home and work place kinds, prefab, timetable); a `replace` swaps the whole record | class listed (#2906) |
 | Gang war rules and sites | `LF_OrgWarConfig` (`Configs/Organizations/LF_OrgWars.conf`): a pack sets the fee, answer window, length, cooldown and member minimum field by field; `LF_SitesConfig` (`Configs/Sites/LF_Sites.conf`): a pack adds, patches or removes a contested site by hideout id (#2687) | class listed |
+| Property plots | `LF_PropertyConfig` (`Configs/Property/LF_Property.conf`): a pack adds, patches or removes a plot by `m_sPlotId` (tier and price; #2976); the house tiers stay core | class listed |
 | Terms list | `LF_TermsConfig` (`Configs/Terms/LF_Terms.conf`): a pack patches a term's forms by id, each form a key in its own table; the term ids are the core file's `m_sId` rows | class listed; term ids to be listed (#958) |
 | Events | `LF_EventsConfig` (`Configs/Events/LF_Events.conf`): a pack adds, patches or removes an event by id (#1952); a pack may also ship `LF_EventScene` and `LF_EventPrecondition` confs for its events (#1957) | classes listed |
 | Systems list | the system ids the owner switches on and off | to be listed (#960) |
