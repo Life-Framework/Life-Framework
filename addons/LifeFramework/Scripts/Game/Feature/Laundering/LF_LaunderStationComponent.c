@@ -79,6 +79,10 @@ class LF_LaunderStationComponent : ScriptComponent
 
 	protected ref map<string, float> m_mLastAction = new map<string, float>();
 
+	//! Server: live stations by save key (LF_LaunderStations). Lives here so the component's own
+	//! OnDelete removes it.
+	protected static ref map<string, LF_LaunderStationComponent> s_mLive;
+
 	//! Tests only: worker keys for bodies no player controls (entity id -> key).
 	protected static ref map<string, string> s_mTestKeys;
 
@@ -456,7 +460,25 @@ class LF_LaunderStationComponent : ScriptComponent
 		if (Replication.IsServer())
 			LF_LaunderStations.Unregister(this);
 
+		if (s_mLive && s_mLive.Get(m_sSiteId) == this)
+			s_mLive.Remove(m_sSiteId);
+
 		super.OnDelete(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static map<string, LF_LaunderStationComponent> Live()
+	{
+		if (!s_mLive)
+			s_mLive = new map<string, LF_LaunderStationComponent>();
+
+		return s_mLive;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetLive()
+	{
+		s_mLive = null;
 	}
 
 	//------------------------------------------------------------------------------------------------

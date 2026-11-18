@@ -46,18 +46,14 @@ class LF_LaunderStationRow : Managed
 class LF_LaunderStations
 {
 	//! How long after a load a saved batch waits for its station before it is dropped.
-	static const int DROP_AFTER_MS = 600000;
+	static const int DROP_AFTER_MS = 600000; // lf-fixed: a grace for stations that register after the load, not a gameplay tunable
 
-	protected static ref map<string, LF_LaunderStationComponent> s_mLive;
 	protected static ref map<string, ref LF_LaunderStationRow> s_mPending;
 
 	//------------------------------------------------------------------------------------------------
 	protected static map<string, LF_LaunderStationComponent> Live()
 	{
-		if (!s_mLive)
-			s_mLive = new map<string, LF_LaunderStationComponent>();
-
-		return s_mLive;
+		return LF_LaunderStationComponent.Live();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -89,7 +85,7 @@ class LF_LaunderStations
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(DropUnclaimed);
 
-		s_mLive = null;
+		LF_LaunderStationComponent.ResetLive();
 		s_mPending = null;
 	}
 
@@ -126,14 +122,14 @@ class LF_LaunderStations
 	//! The station leaves (deleted, or re-keyed by Configure). A loaded batch stays as a pending row.
 	static void Unregister(LF_LaunderStationComponent station)
 	{
-		if (!station || !s_mLive)
+		if (!station)
 			return;
 
 		string key = station.GetStationKey();
-		if (s_mLive.Get(key) != station)
+		if (Live().Get(key) != station)
 			return;
 
-		s_mLive.Remove(key);
+		Live().Remove(key);
 		LF_LaunderStationRow row = station.Export(WorldNow());
 		if (row)
 			Pending().Set(key, row);
