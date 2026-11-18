@@ -57,7 +57,7 @@
       "places": ["ChessTable"]
     },
     {
-      "id": "range", "required": false, "kit": "range", "host": "building", "poi": "none",
+      "id": "range", "required": false, "kit": "range", "host": "building", "poi": "none", "margin": 18,
       "needs": { "interior": "optional", "minArea": 15, "prefer": "far", "types": ["shed", "garage", "farm", "farm-small", "industrial"] },
       "places": ["RangeLane"]
     },
