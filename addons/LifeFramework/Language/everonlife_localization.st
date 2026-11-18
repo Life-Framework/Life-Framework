@@ -9481,6 +9481,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "People in {town} have started to trust you"
      Comment "Standing toast: the town tier went up. Words only, never a number."
     }
+    CustomStringTableItem "{51C3BFFF112B62A7}" {
+     Id "LF-ResidentNeed_Chain_Desc"
+     Target_en_us "Stock is low. Bring me three apples from the orchards."
+     Comment "Quest description: resident need, a resource-chain good"
+    }
+    CustomStringTableItem "{60C16CF46A591B02}" {
+     Id "LF-ResidentNeed_Chain_Title"
+     Target_en_us "Fruit for the counter"
+     Comment "Quest title: a resident asks for apples"
+    }
+    CustomStringTableItem "{0071867DE38C89B3}" {
+     Id "LF-ResidentNeed_Chain_TurnIn"
+     Target_en_us "Fresh ones, thank you. I will not forget it."
+     Comment "Resident line on turn-in of the apples need"
+    }
+    CustomStringTableItem "{5FC167C3738D168E}" {
+     Id "LF-ResidentNeed_Deliver_Desc"
+     Target_en_us "I have been on my feet all morning. Could you bring me a bottle of water?"
+     Comment "Quest description: resident need, deliver an item to the counter"
+    }
+    CustomStringTableItem "{08028F6352412F75}" {
+     Id "LF-ResidentNeed_Deliver_Title"
+     Target_en_us "Bring me some water"
+     Comment "Quest title: a resident asks for a bottle of water"
+    }
+    CustomStringTableItem "{3511F3475812F95D}" {
+     Id "LF-ResidentNeed_Deliver_TurnIn"
+     Target_en_us "That hits the spot. I will remember this."
+     Comment "Resident line on turn-in of the water need"
+    }
+    CustomStringTableItem "{028A523E8AB37314}" {
+     Id "LF-ResidentNeed_Refused"
+     Target_en_us "I have nothing for you. Not after what I have heard."
+     Comment "Toast: a resident who refuses the player offers no errand"
+    }
     CustomStringTableItem "{C96808FBA0407AFE}" {
      Id "LF-Restrain_Action"
      Target_en_us "Cuff"
