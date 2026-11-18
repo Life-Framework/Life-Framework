@@ -5493,6 +5493,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Vehicle Key [%1]"
      Comment "Inventory name of a vehicle key bound to a vehicle. %1 is the vehicle identifier it opens (#2470)."
     }
+    CustomStringTableItem "{2DC6A819C67F6815}" {
+     Id "LF-Item_AcidCarboy_Description"
+     Target_en_us "A carboy of acid for the copper refinery. Heavy and not for drinking."
+     Comment "Item description of the acid carboy (mining chains, #3230)."
+    }
+    CustomStringTableItem "{CEA9A2F55DD1E2F5}" {
+     Id "LF-Item_AcidCarboy_Name"
+     Target_en_us "Acid carboy"
+     Comment "Item name of the acid carboy."
+    }
     CustomStringTableItem "{AC88D3331A83BBB1}" {
      Id "LF-Item_BaitTin_Description"
      Target_en_us "A green enamelled tin with a snap lid. Worms and dough balls, mostly."
@@ -5522,6 +5532,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_Charge_Name"
      Target_en_us "Breaching charge"
      Comment "Item name of the fence charge."
+    }
+    CustomStringTableItem "{7AD691E65BE531F0}" {
+     Id "LF-Item_CoalLump_Description"
+     Target_en_us "A lump of coal. Smelters burn it to turn iron ore into bars."
+     Comment "Item description of the coal lump (#3230)."
+    }
+    CustomStringTableItem "{E90681E4967BF028}" {
+     Id "LF-Item_CoalLump_Name"
+     Target_en_us "Coal"
+     Comment "Item name of the coal lump."
     }
     CustomStringTableItem "{DAB831471E8878CE}" {
      Id "LF-Item_Crackers"
@@ -5772,6 +5792,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_Keycard_Name"
      Target_en_us "Keycard"
      Comment "Item name of the fence keycard."
+    }
+    CustomStringTableItem "{65C716E04B111614}" {
+     Id "LF-Item_Limestone_Description"
+     Target_en_us "A heavy block of limestone. A works turns it into cement."
+     Comment "Item description of the limestone block (#3230)."
+    }
+    CustomStringTableItem "{9FF73E1CEF233CFB}" {
+     Id "LF-Item_Limestone_Name"
+     Target_en_us "Limestone"
+     Comment "Item name of the limestone block."
     }
     CustomStringTableItem "{80906A73087767D7}" {
      Id "LF-Item_Lockpick_Description"

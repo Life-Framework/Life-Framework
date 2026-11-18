@@ -144,6 +144,14 @@
 - ✅ A finished process shows what came out (`Iron bar x1. The trader pays $50 for Iron bar.`), one toast per action.
 - ⚠️ The server builds the sentence, so item names are translated on the server; a dedicated server is a manual check.
 
+### Mining chain reagent items (#3230, epic #3206)
+- 🧪 Three carriable items for the mining chains, named with `LF-Item_*` keys in the core table: coal
+  (`Prefabs/Resources/Mining/CoalLump.et`, 0.8 kg, the vanilla `Clutter/Coal` lump mesh; the repo's `Coal.xob`
+  has no baked textures and renders as a checkerboard), limestone (`Prefabs/Resources/Mining/Limestone.et`,
+  4 kg, a vanilla concrete-fragment mesh, about 10 fill a backpack so stone needs a truck) and the acid carboy
+  (`Prefabs/Items/Resources/AcidCarboy.et`, 8 kg, a two-handed load on the vanilla jerrycan mesh). They are items
+  only: no node, recipe, shop or buyer row yet (the chain cards D2, D3, D4 add those). Test `mining/reagent-items`.
+
 ### `LF_TreeFelling` — `Feature/Lumber/LF_TreeFelling.c`
 - 🧪 **Felling rules for real map trees (#3259, design `docs/roadmap/lumber.md`).** Pure rules, not yet used in the world (the axe action is #3260). A base-game tree prefab path (`Prefabs/Vegetation/Tree/<species>/<name>.et`) is read as a wood class from `Configs/Lumber/LF_TreeSpecies.conf`: pine, spruce and larch are softwood; hornbeam, linden, alder, birch and poplar are hardwood; orchards, willow and rowan are not felled. The size is the first digit after the species stem, skipping the `02_` of the v2 models. Stumps, branches, `base` prefabs, fallen trunks and size 0 saplings are never felled. The yield table gives 15/25/35 s and 1/2/3 logs for softwood, 30/45/60 s and 1/2/3 logs for hardwood, the XP action (`gather_logging`, or `fell_hardwood` for hardwood) and the stamina cost. `Check` returns the first refusal in this order: NO_AXE, NOT_A_TREE, TOO_SMALL, ALREADY_FELLED, TOO_FAR (3 m), SAFE_ZONE, NEAR_ROAD (4 m), NEAR_BUILDING (12 m), TIRED. `KeyOf` is the stable tree key (decimetre x and z plus the lower-case prefab). `LF_TreeFellingLedger` records felled keys with their regrow time (softwood 45 min, hardwood 90 min) in whole seconds. Test `lumber/felling-rules`.
 
