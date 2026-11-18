@@ -22,9 +22,11 @@ class LF_OrgLedgerPage : Managed
 	string m_sMembers;
 	//! This player's rank name (a localization key for the default ranks); empty on the first paint.
 	string m_sRank;
+	//! "Hideout id|0 base or 1 captured" rows joined by ";" (LF_OrgHeldSites); filled by a second server answer.
+	string m_sSites;
 
 	//------------------------------------------------------------------------------------------------
-	static LF_OrgLedgerPage Create(bool hasOrg, string name, int fund, int rights, bool processing, int lease, string members, string rank = "")
+	static LF_OrgLedgerPage Create(bool hasOrg, string name, int fund, int rights, bool processing, int lease, string members, string rank = "", string sites = "")
 	{
 		LF_OrgLedgerPage page = new LF_OrgLedgerPage();
 		page.m_bHasOrg = hasOrg;
@@ -35,6 +37,7 @@ class LF_OrgLedgerPage : Managed
 		page.m_iLease = lease;
 		page.m_sMembers = members;
 		page.m_sRank = rank;
+		page.m_sSites = sites;
 		return page;
 	}
 
@@ -105,12 +108,16 @@ class LF_OrgLedger
 	static const string PART_HIDEOUT = "OrgHideoutRow";
 	static const string PART_MEMBERS_LINE = "OrgMembersLine";
 	static const string PART_MEMBERS = "OrgMembers";
+	static const string PART_SITES_LINE = "OrgSitesLine";
+	static const string PART_SITES = "OrgSites";
 	static const string PART_INVITE_HINT = "OrgInviteHint";
 	static const string PART_MEMBERSHIP = "OrgMembershipRow";
 	static const string PART_NOTICE = "OrgNotice";
 	static const string PART_CLOSE = "CloseButton";
 	//! Walk this far from the desk and the page closes.
 	static const float CLOSE_RANGE = 4.0;
+	//! The held-ground list shows one row and scrolls past that.
+	static const float SITES_LIST_HEIGHT = 52;	// lf-fixed: layout size, one list row
 
 	protected static ref LF_OrgLedger s_Ledger;
 
@@ -169,6 +176,8 @@ class LF_OrgLedger
 		parts.Insert(LF_UIPart.CreateStatus(PART_HIDEOUT, "#LF-Org_Hideout", "", ""));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_MEMBERS_LINE, ""));
 		parts.Insert(LF_UIPart.CreateList(PART_MEMBERS));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_SITES_LINE, ""));
+		parts.Insert(LF_UIPart.CreateList(PART_SITES));
 		if (page.Can(LF_OrgRules.RIGHT_INVITE))
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_INVITE_HINT, "#LF-Org_InviteHint"));
 
@@ -275,6 +284,11 @@ class LF_OrgLedger
 			return false;
 		}
 
+		// The kit squeezes only the first list (the members) when the sheet is at the screen cap, so the
+		// held-ground list stays short or it pushes Leave and Close off the sheet (#2834).
+		if (m_Page && m_Page.m_bHasOrg)
+			m_Screen.SetListHeight(PART_SITES, SITES_LIST_HEIGHT);
+
 		m_Screen.GetOnButton().Insert(OnButton);
 		m_Screen.GetOnClosed().Insert(OnClosed);
 		m_Screen.CloseOnDeath();
@@ -295,6 +309,10 @@ class LF_OrgLedger
 
 		bool rebuild = !m_Page || m_Page.ShapeKey() != page.ShapeKey();
 		bool founded = m_Page && !m_Page.m_bHasOrg && page.m_bHasOrg;
+		// The held-site rows come in their own answer right after the page: keep the last ones meanwhile.
+		if (m_Page && page.m_sSites.IsEmpty())
+			page.m_sSites = m_Page.m_sSites;
+
 		m_Page = page;
 		if (rebuild)
 			Build(notice);
@@ -343,7 +361,38 @@ class LF_OrgLedger
 			m_Screen.AddListRow(PART_MEMBERS, "OrgMember" + i.ToString(), names[i], ranks[i], "");
 		}
 
+		PaintSites();
 		m_Screen.SetStatusRow(PART_MEMBERSHIP, "#LF-Org_Membership", m_Page.RankLabel(), MembershipAction(m_Page));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The held-ground list: the base lease and each captured site, marked as such (#2834).
+	protected void PaintSites()
+	{
+		if (!m_Screen || !m_Page || !m_Page.m_bHasOrg)
+			return;
+
+		array<string> ids = {};
+		array<bool> captured = {};
+		LF_OrgHeldSites.Split(m_Page.m_sSites, ids, captured);
+		m_Screen.SetLine(PART_SITES_LINE, WidgetManager.Translate("#LF-Org_SitesLine", ids.Count()));
+		m_Screen.ClearList(PART_SITES);
+		for (int i = 0; i < ids.Count(); i++)
+		{
+			m_Screen.AddListRow(PART_SITES, "OrgSite" + i.ToString(), LF_OrgHeldSites.Label(ids[i], captured[i]), WidgetManager.Translate(LF_OrgHeldSites.MarkKey(captured[i])), "");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server answer: the held-site rows changed (a second RPC after the page, or a lease changing
+	//! while the page is open). Repaints the list only; the notice line stays.
+	void ApplySites(string rows)
+	{
+		if (!m_Page || !m_Page.m_bHasOrg)
+			return;
+
+		m_Page.m_sSites = rows;
+		PaintSites();
 	}
 
 	//------------------------------------------------------------------------------------------------
