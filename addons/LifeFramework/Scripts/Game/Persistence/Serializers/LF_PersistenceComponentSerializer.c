@@ -36,7 +36,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, properties, placements, reputation, orgwars, garageslots. The written version is that list's length (55). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, properties, placements, reputation, orgwars, garageslots, medicranks. The written version is that list's length (56). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -126,6 +126,8 @@
 //! declaration or pair cooldown is restored.
 //! A version 54 save includes the organization wars and has no bought garage slots (#2656): every
 //! character has only the base slots.
+//! A version 55 save includes the bought garage slots and has no medic ranks (#2708): every medic
+//! loads at rank 0 with no medic duty seconds.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
 //!
@@ -302,6 +304,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("reputation");
 		order.Insert("orgwars");
 		order.Insert("garageslots");
+		order.Insert("medicranks");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -335,7 +338,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 55);
+		context.WriteValue("version", 56);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -955,6 +958,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_GarageSlotRow> garageSlotRows = LF_GarageSlotStore.ExportAll();
 			context.Write(garageSlotRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 garage slot row(s)", garageSlotRows.Count()));
+		}
+		else if (payload == "medicranks")
+		{
+			// Medic rank per character (#2708): record key, rank, medic duty seconds; rank 0 with no seconds is not written.
+			array<ref LF_MedicRankRow> medicRankRows = LF_MedicRanks.ExportAll();
+			context.Write(medicRankRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 medic rank row(s)", medicRankRows.Count()));
 		}
 		else
 		{
@@ -1776,6 +1786,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("garage slots failed to read, bought slots stay as they were");
+			}
+		}
+		else if (payload == "medicranks")
+		{
+			// A version 1-55 save never reaches this payload: every medic stays at rank 0.
+			array<ref LF_MedicRankRow> medicRankRows = new array<ref LF_MedicRankRow>();
+			if (context.Read(medicRankRows))
+			{
+				int medicRanksKept = LF_MedicRanks.ApplyAll(medicRankRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 medic rank row(s)", medicRanksKept, medicRankRows.Count()));
+			}
+			else
+			{
+				ReadFailed("medic ranks failed to read, medic ranks stay as they were");
 			}
 		}
 		else

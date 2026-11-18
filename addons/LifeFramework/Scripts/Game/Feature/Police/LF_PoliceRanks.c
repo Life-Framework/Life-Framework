@@ -960,9 +960,11 @@ class LF_PoliceRanks
 				{
 					account.AddShiftSeconds(credited);
 
-					// Rank seconds are police only; a medic's seconds are only the shift's pay.
+					// Rank seconds go to the ladder of the role on duty (medic ranks: #2708).
 					if (account.GetFaction() == LF_Faction.POLICE)
 						AccrueDuty(account.GetPersistentId(), credited);
+					else if (account.GetFaction() == LF_Faction.MEDIC)
+						LF_MedicRanks.AccrueDuty(account, credited);
 
 					if (account.GetFaction() != LF_Faction.CIVILIAN)
 						account.AddUnpaidDutySeconds(credited);

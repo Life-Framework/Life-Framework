@@ -377,6 +377,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		SeedOrgLadder(ctx);
 		LF_Test_ReputationPersist.SeedE2E(ctx);
 		LF_Test_GarageSlotsPersist.SeedE2E(ctx);
+		LF_Test_MedicRanksPersist.SeedE2E(ctx);
 
 #ifndef LF_E2E_LEGACY_SAVE
 		// A cargo run in progress holds a deposit ("jobruns" payload, save version 49, #2408, #2481): the
@@ -1033,6 +1034,8 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			LF_Test_ReputationPersist.VerifyE2E(ctx);
 		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("garageslots"))
 			LF_Test_GarageSlotsPersist.VerifyE2E(ctx);
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("medicranks"))
+			LF_Test_MedicRanksPersist.VerifyE2E(ctx);
 		VerifyOrgLadder(ctx);
 		VerifyHeldGround(ctx);
 

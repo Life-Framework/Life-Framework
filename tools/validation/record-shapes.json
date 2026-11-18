@@ -1,5 +1,5 @@
 {
-  "saveVersion": 55,
+  "saveVersion": 56,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -57,7 +57,8 @@
     "placements": "LF_PlacementRow",
     "reputation": "LF_ReputationRow",
     "orgwars": "LF_OrgWarRecord",
-    "garageslots": "LF_GarageSlotRow"
+    "garageslots": "LF_GarageSlotRow",
+    "medicranks": "LF_MedicRankRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -684,6 +685,15 @@
         "int m_iVersion",
         "string m_sCharacterKey",
         "int m_iBought"
+      ]
+    },
+    "LF_MedicRankRow": {
+      "since": 56,
+      "fields": [
+        "int m_iVersion",
+        "string m_sKey",
+        "int m_iRank",
+        "int m_iDutySeconds"
       ]
     }
   }
