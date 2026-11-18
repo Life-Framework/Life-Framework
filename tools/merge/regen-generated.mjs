@@ -86,7 +86,6 @@ function gitPath(rel) {
 
 export function regenKind(pathname) {
   const path = String(pathname ?? "").replace(/\\/g, "/");
-  if (path.endsWith(`/${REGISTRY_NAME}`) || path === REGISTRY_NAME) return "tests";
   if (path.includes("/Language/") && path.endsWith(".conf")) return "localization";
   if (/everonlife_localization\.[A-Za-z0-9_]+\.conf$/.test(path)) return "localization";
   return null;

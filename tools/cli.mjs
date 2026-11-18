@@ -3307,7 +3307,8 @@ async function cmdTest(noBuild, tier = "all", root = ROOT, opts = {}) {
   const tiers = testWorld.testTiers(root);
   // Pack tests (addons/LF_Everon1989/Scripts/Game/Tests) run in a leg of their own on the pack test header
   // (testWorld.packLeg); a leg's own run (opts.inLeg) never plans them again.
-  const packTests = opts.inLeg ? [] : testWorld.readPackTests(root);
+  // A shard child (LF_SHARD_GROUP) never does: its parent runs them once after the shards (#2789).
+  const packTests = opts.inLeg || process.env.LF_SHARD_GROUP ? [] : testWorld.readPackTests(root);
   const legs = sharded ? null : testWorld.planLegs({ tier, only, world: opts.world, tiers, names: testWorld.testNames(root), registry: shards.readRegistry(root), pins: testWorld.readPins(root), town: testWorld.readTown(root), pack: packTests, coreOnly: !!opts.coreOnly });
   // A plan with one leg that names its classes is honoured too: --only <town test> is one playtest leg,
   // and --tier all with the town tests left out is one GridWorld leg of the rest (#1895).

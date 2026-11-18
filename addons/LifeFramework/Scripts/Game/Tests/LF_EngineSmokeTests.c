@@ -5,6 +5,7 @@
 // ContextSelfTest fail on any perturbed expectation (e.g. AbsInt(-5) -> 4).
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WorldLoaded : LF_Test
 {
 	//------------------------------------------------------------------------------------------------
@@ -24,6 +25,7 @@ class LF_Test_WorldLoaded : LF_Test
 
 //------------------------------------------------------------------------------------------------
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MoneyStackPrefab : LF_Test
 {
 	//------------------------------------------------------------------------------------------------
@@ -42,6 +44,7 @@ class LF_Test_MoneyStackPrefab : LF_Test
 
 //------------------------------------------------------------------------------------------------
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MathStringSanity : LF_Test
 {
 	//------------------------------------------------------------------------------------------------
@@ -62,6 +65,7 @@ class LF_Test_MathStringSanity : LF_Test
 
 //------------------------------------------------------------------------------------------------
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ContextSelfTest : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

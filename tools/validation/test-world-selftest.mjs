@@ -39,7 +39,7 @@ const check = (ok, what) => {
 
 // 1. The parser: tier lines bind to the class below them, GetName() strings carry the class tier.
 const sample = [
-  "// tier: LOGIC",
+  "[LF_TestInfo(LF_TestTier.LOGIC)]",
   "class LF_Test_A : LF_Test",
   "{",
   "\toverride string GetName()",
@@ -47,7 +47,7 @@ const sample = [
   '\t\treturn "unit/a";',
   "\t}",
   "}",
-  "// tier: WORLD",
+  "[LF_TestInfo(LF_TestTier.WORLD)]",
   "class LF_Test_B : LF_Test",
   "{",
   "\toverride string GetName()",
@@ -202,16 +202,11 @@ for (const rel of ["tools/cli.mjs"]) {
   for (const c of calls) check(/\btown:\s*testWorld\.readTown\(/.test(c), `${rel}: planLegs is given the town list (got ${c.slice(0, 80)}...)`);
 }
 
-// 3. The parser agrees with the generated registry on the real tests.
+// 3. The parser agrees with the [LF_TestInfo] reader (the one tier source, #2610) on the real tests.
 const real = tw.testTiers(root);
-const reg = readFileSync(join(root, "addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c"), "utf8");
-let regCount = 0;
-for (const m of reg.matchAll(/Register\(new (\w+)\(\), LF_TestTier\.(LOGIC|WORLD|PERSISTENCE)\)/g)) {
-  regCount++;
-  check(real[m[1]] === m[2], `the parser gives ${m[1]} tier ${m[2]} like the registry (got ${real[m[1]]})`);
-}
-// Tests register themselves by attribute (#2610): the registry keeps only a few rows, the parser reads the suite.
-check(Object.keys(real).length > 800, `the parser reads the suite (${Object.keys(real).length} tests, ${regCount} still in the registry)`);
+const infos = tw.readTestInfo(root);
+for (const t of infos) check(real[t.cls] === t.tier, `the parser gives ${t.cls} tier ${t.tier} like its attribute (got ${real[t.cls]})`);
+check(Object.keys(real).length > 800, `the parser reads the suite (${Object.keys(real).length} names)`);
 check(real["tests/logic-world"] === "LOGIC", "a real GetName() string resolves (tests/logic-world)");
 
 // 4. The world: the files exist, the runner is flagged, nothing but the allowed entities stands in it.
