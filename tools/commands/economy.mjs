@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildReport, renderReport } from "../lib/economy.mjs";
 
-export const help = "economy [--mission LF_Everon1989] [--run-minutes parcel=6,fuel=8,taxi=10] [--root <dir>] [--json]   what a newcomer earns and can buy by hour 1, 2 and 4 (core + pack overlays + server/flagship/config.json), with flags for loops, empty fish and zero pay";
+export const help = "economy [--mission LF_Everon1989] [--run-minutes parcel=6,fuel=8,taxi=10] [--taxi-metres 2000] [--hours 1,2,4,6] [--root <dir>] [--json]   what a newcomer earns and can buy by hour 1, 2, 4 and 6 (core + pack overlays + server/flagship/config.json): rank duty pay, taxi fares, contracts, licence fees, and flags for loops, empty fish and zero pay";
 
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -14,7 +14,19 @@ export async function main(args = []) {
     if (a === "--json") opt.json = true;
     else if (a === "--mission") opt.mission = args[++i];
     else if (a === "--root") opt.root = args[++i];
-    else if (a === "--run-minutes") {
+    else if (a === "--taxi-metres") {
+      opt.taxiMetres = Number(args[++i]);
+      if (!(opt.taxiMetres > 0)) {
+        console.error(`economy: --taxi-metres needs a positive number\n${help}`);
+        return 2;
+      }
+    } else if (a === "--hours") {
+      opt.hours = String(args[++i] ?? "").split(",").map(Number);
+      if (opt.hours.some((h) => !(h > 0))) {
+        console.error(`economy: --hours needs positive numbers like 1,2,4,6\n${help}`);
+        return 2;
+      }
+    } else if (a === "--run-minutes") {
       for (const pair of String(args[++i] ?? "").split(",")) {
         const [k, v] = pair.split("=");
         if (k && Number(v) > 0) opt.runMinutes[k.trim()] = Number(v);

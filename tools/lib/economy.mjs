@@ -4,9 +4,12 @@
 // rule for this report), the owner file fills what no pack sets. List sections go through the same offline
 // merge `pack check` and `pack explain` use (tools/pack/layers.mjs); nothing here parses a .conf itself.
 //
-// Three numbers live in script, not in a config, and are read from the script text: the opening bank
-// (LF_SpawnLogic.m_iStartingBank) and the run pay (LF_CivilianJob.PAY_PARCEL / PAY_FUEL / PAY_TAXI). A run's
-// length is not in any file either, so the hourly figure uses RUN_MINUTES, an assumption the report prints.
+// A few numbers live in script, not in a config, and are read from the script text: the opening bank
+// (LF_SpawnLogic.m_iStartingBank), the parcel and fuel run pay (LF_CivilianJob.PAY_PARCEL / PAY_FUEL), the driving
+// licence fee (LF_LicencesConfig.DEFAULT_DRIVER_LICENCE_FEE) and the built-in medic rungs. The taxi is paid its fare
+// (LF_TaxiFares.conf and the owner's taxiFares, through the LF_TaxiFare.PriceFor rule) for an assumed trip length.
+// A run's length is not in any file either, so the hourly figure uses RUN_MINUTES, an assumption the report prints.
+// Duty pay follows LF_DutyPay.RateForAccount: the rank row's own rate first, the core field when the row defers.
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { parseConf, guidOf } from "../economy/profit-loops.mjs";
@@ -14,10 +17,12 @@ import { SECTIONS, loadOwner, loadPackOverlays, mergeList, metaIndex, sectionLay
 
 /** Minutes a courier, fuel or taxi run takes on the real map (an assumption; `--run-minutes` overrides). */
 export const RUN_MINUTES = { parcel: 6, fuel: 8, taxi: 10 };
+/** Metres of a taxi trip the report assumes (an assumption; `--taxi-metres` overrides). */
+export const TAXI_METRES = 2000;
 /** The job level each run type needs (LF_CivilianJob.LevelFor): parcel 1, fuel 2, taxi 3. */
 const RUN_LEVEL = { parcel: 1, fuel: 2, taxi: 3 };
-const PAY_CONST = { parcel: "PAY_PARCEL", fuel: "PAY_FUEL", taxi: "PAY_TAXI" };
-const HOURS = [1, 2, 4];
+const PAY_CONST = { parcel: "PAY_PARCEL", fuel: "PAY_FUEL" };
+export const HOURS = [1, 2, 4, 6];
 
 const read = (p) => (existsSync(p) ? readFileSync(p, "utf8") : "");
 const num = (v, d = 0) => (typeof v === "number" ? v : d);
@@ -72,6 +77,17 @@ function runsToLevel(level, thresholds, xpPerRun) {
   return Math.ceil(need / xpPerRun);
 }
 
+/** LF_TaxiFare.PriceFor: the floor up to the short hop, then floor + rate x metres, never above the cap. */
+export function taxiFare(fares, metres) {
+  if (metres <= fares.shortHop) return fares.floor;
+  return Math.min(fares.cap, fares.floor + Math.round(fares.rate * metres));
+}
+
+/** The built-in medic rungs a pack with no medic rows falls back to: [{ id, rate }] from LF_MedicRanks.BuiltIn. */
+function builtInMedicRanks(text) {
+  return [...text.matchAll(/LF_MedicRank\.Create\("(\w+)"\s*,\s*"[^"]*"\s*,\s*(-?[\d.]+)/g)].map((m) => ({ id: m[1], rate: Number(m[2]) }));
+}
+
 /** The whole report as data. `root` holds addons/ and server/flagship/config.json. */
 export function buildReport(root, opts = {}) {
   const addonsDir = join(root, "addons");
@@ -92,6 +108,7 @@ export function buildReport(root, opts = {}) {
 
   // ---- Faucets ------------------------------------------------------------------------------
   const spawnText = read(join(addonsDir, "LifeFramework", "Scripts", "Game", "Feature", "Character", "Spawning", "LF_SpawnLogic.c"));
+  const medicText = read(join(addonsDir, "LifeFramework", "Scripts", "Game", "Feature", "Medic", "LF_MedicRanks.c"));
   const jobText = read(join(addonsDir, "LifeFramework", "Scripts", "Game", "Feature", "Jobs", "LF_CivilianJob.c"));
   const startBank = attributeDefault(spawnText, "m_iStartingBank");
   const jobs = scalars(core("Jobs", "LF_Jobs.conf"), owner?.json?.jobs, loaded.overlays, "LF_JobsConfig", {
@@ -105,22 +122,46 @@ export function buildReport(root, opts = {}) {
   const thresholds = (courierTrack?.f("levelThresholds")?.list ?? []).flatMap((x) => String(x).split(/\s+/)).filter(Boolean).map(Number);
   const xpPerRun = num(awards.find((a) => a.id === "delivery_run")?.f("xp"), 0);
 
+  const fareProps = scalars(core("Jobs", "LF_TaxiFares.conf"), owner?.json?.taxiFares, loaded.overlays, "LF_TaxiFareConfig", {
+    m_iFloor: "floor", m_fRatePerMetre: "ratePerMetre", m_iCap: "cap", m_fShortHopMetres: "shortHopMetres",
+  });
+  const fares = { floor: num(fareProps.m_iFloor?.value), rate: num(fareProps.m_fRatePerMetre?.value), cap: num(fareProps.m_iCap?.value), shortHop: num(fareProps.m_fShortHopMetres?.value, 100) };
+  const taxiMetres = opts.taxiMetres ?? TAXI_METRES;
+  const taxiPay = fares.floor > 0 && fares.rate > 0 && fares.cap > 0 ? taxiFare(fares, taxiMetres) : null;
   const runs = Object.keys(RUN_MINUTES).map((type) => {
-    const pay = constIn(jobText, PAY_CONST[type]);
+    const pay = type === "taxi" ? taxiPay : constIn(jobText, PAY_CONST[type]);
     const unlock = runsToLevel(RUN_LEVEL[type], thresholds, xpPerRun);
     const minutes = runMinutes[type];
     return { job: type, pay: pay ?? 0, payKnown: pay !== null, unlockRuns: unlock, minutes, perHour: Math.round((pay ?? 0) * 60 / minutes) };
   });
-  for (const r of runs) if (r.pay <= 0) flags.push({ kind: "zero-pay", id: r.job.toUpperCase(), text: `the ${r.job.toUpperCase()} run pays ${r.pay}${r.payKnown ? "" : " (no PAY_ constant found)"}` });
+  for (const r of runs) if (r.pay <= 0) flags.push({ kind: "zero-pay", id: r.job.toUpperCase(), text: `the ${r.job.toUpperCase()} run pays ${r.pay}${r.payKnown ? "" : " (no pay constant or fare table found)"}` });
+
+  // Standing-gated contracts (LF_ReputationContracts): a run at a multiple of the plain run's pay. They need
+  // reputation the ladder does not model, so they are listed beside the runs and kept out of the ladder.
+  const contracts = listOf(addonsDir, "reputationContracts.contracts", packLayers, owner).map((c) => {
+    const job = String(c.f("job") ?? "").toUpperCase();
+    const base = runs.find((r) => r.job.toUpperCase() === job);
+    const mult = num(c.f("payMultiplier"), 1);
+    const pay = base ? Math.round(base.pay * mult) : 0;
+    return { id: c.id, job, multiplier: mult, pay, minutes: base?.minutes ?? 0, perHour: base && base.minutes > 0 ? Math.round(pay * 60 / base.minutes) : 0 };
+  });
 
   const benefit = { amount: jv("m_iBenefitAmount"), cooldownSeconds: jv("m_fBenefitCooldownSeconds"), threshold: jv("m_iBenefitBalanceThreshold") };
   benefit.perHour = benefit.cooldownSeconds > 0 ? Math.round(benefit.amount * 3600 / benefit.cooldownSeconds) : 0;
+  // Each rank's rate: the row's own m_fPayPerSecond, or the core field when the row is negative or silent.
+  const perHour = (rate) => Math.round(rate * 3600);
+  const dutyFor = (coreRate, rows) => {
+    const ranks = rows.map((r) => ({ id: r.id, perHour: perHour(typeof r.rate === "number" && r.rate >= 0 ? r.rate : coreRate) }));
+    return { core: perHour(coreRate), ranks, rank0: ranks.length ? ranks[0].perHour : perHour(coreRate) };
+  };
+  const policeRows = listOf(addonsDir, "police.ranks", packLayers, owner).map((r) => ({ id: r.id, rate: r.f("payPerSecond") }));
+  const medicListed = listOf(addonsDir, "medic.ranks", packLayers, owner).map((r) => ({ id: r.id, rate: r.f("payPerSecond") }));
   const duty = {
-    police: Math.round(jv("m_fPoliceDutyPayPerSecond") * 3600),
-    medic: Math.round(jv("m_fMedicDutyPayPerSecond") * 3600),
+    police: dutyFor(jv("m_fPoliceDutyPayPerSecond"), policeRows),
+    medic: dutyFor(jv("m_fMedicDutyPayPerSecond"), medicListed.length ? medicListed : builtInMedicRanks(medicText)),
   };
   if (benefit.amount <= 0) flags.push({ kind: "zero-pay", id: "benefit", text: "the unemployment benefit pays 0" });
-  for (const [k, v] of Object.entries(duty)) if (v <= 0) flags.push({ kind: "zero-pay", id: `${k}-duty`, text: `${k} duty pays 0 per hour` });
+  for (const [k, v] of Object.entries(duty)) if (v.rank0 <= 0) flags.push({ kind: "zero-pay", id: `${k}-duty`, text: `${k} duty pays 0 per hour at rank 0` });
 
   // ---- Sinks --------------------------------------------------------------------------------
   const veh = scalars(core("Vehicles", "LF_VehiclePrices.conf"), owner?.json?.vehicles, loaded.overlays, "LF_VehiclePricesConfig", { m_iBuyPercent: "buyPercent" });
@@ -140,11 +181,17 @@ export function buildReport(root, opts = {}) {
       : permitItem ? { id: permitItem.id, price: num(permitItem.f("price")) } : null;
   const clothes = items.filter((i) => i.f("category") === "clothing" && num(i.f("price")) > 0).map((i) => ({ id: i.id, price: num(i.f("price")) }));
   const cheapest = (list) => (list.length ? list.reduce((a, b) => (b.price < a.price ? b : a)) : null);
-  const sinks = { car: cheapest(cars), plot: cheapest(plots), permit, clothing: cheapest(clothes) };
+  // The driving licence fee: the owner's licences.driverLicenceFee over LF_LicencesConfig.DEFAULT_DRIVER_LICENCE_FEE.
+  // No constant in script means the licence does not exist (yet), so there is no row.
+  const driverDefault = constIn(licenceText, "DEFAULT_DRIVER_LICENCE_FEE");
+  const driverFee = driverDefault === null ? 0 : typeof owner?.json?.licences?.driverLicenceFee === "number" ? owner.json.licences.driverLicenceFee : driverDefault;
+  const driving = driverFee > 0 ? { id: "driving licence fee", price: driverFee } : null;
+  const sinks = { car: cheapest(cars), plot: cheapest(plots), permit, clothing: cheapest(clothes), driving };
 
   // ---- The ladder: a courier who always takes the best-paying unlocked run -------------------
   const startCash = 0;
-  const ladder = HOURS.map((h) => {
+  const hours = opts.hours?.length ? opts.hours : HOURS;
+  const ladder = hours.map((h) => {
     let minutes = 0, done = 0, earned = 0;
     const count = {};
     for (;;) {
@@ -192,7 +239,7 @@ export function buildReport(root, opts = {}) {
   }
 
   // A sink with no faucet: something priced to buy, and no income that could ever reach it.
-  const income = runs.some((r) => r.pay > 0) || benefit.amount > 0 || duty.police > 0 || duty.medic > 0;
+  const income = runs.some((r) => r.pay > 0) || benefit.amount > 0 || duty.police.rank0 > 0 || duty.medic.rank0 > 0;
   for (const [k, s] of Object.entries(sinks)) {
     if (s && !income) flags.push({ kind: "sink", id: `sink:${k}`, text: `sink with no faucet: the cheapest ${k} costs ${s.price} and nothing pays` });
   }
@@ -203,7 +250,7 @@ export function buildReport(root, opts = {}) {
 
   return {
     mission, pack, overlays: loaded.overlays.map((o) => o.file), problems: loaded.problems.map((p) => p.msg), ownerFile: owner ? ownerFile : null,
-    start: { bank: startBank, cash: startCash }, runs, benefit, duty, sinks, ladder, flags, assumptions: { runMinutes },
+    start: { bank: startBank, cash: startCash }, runs, contracts, benefit, duty, sinks, ladder, flags, assumptions: { runMinutes, taxiMetres },
   };
 }
 
@@ -215,16 +262,22 @@ export function renderReport(r) {
   L.push(`economy: mission ${r.mission} (core + ${r.pack}${r.overlays.length ? `, ${r.overlays.length} overlays` : ""}${r.ownerFile ? " + server config.json" : ""})`);
   for (const p of r.problems) L.push(`  problem: ${p}`);
   L.push(`start: bank ${r.start.bank === null ? "?" : money(r.start.bank)}, cash ${money(r.start.cash)}`);
-  L.push("runs (pay per run, unlock after N courier runs, ~min per run is an assumption):");
+  L.push(`runs (pay per run, unlock after N courier runs, ~min per run is an assumption; the taxi pays its fare for a ${r.assumptions.taxiMetres} m trip):`);
   for (const x of r.runs) L.push(`  ${x.job.toUpperCase().padEnd(7)} pay ${money(x.pay)}  unlock ${x.unlockRuns === null ? "never" : x.unlockRuns + " runs"}  ~${x.minutes} min  ${money(x.perHour)}/h`);
+  for (const c of r.contracts) L.push(`  CONTRACT ${c.id}  ${c.job} x${c.multiplier}  pay ${money(c.pay)}  needs standing, not in the ladder  ~${c.minutes} min  ${money(c.perHour)}/h`);
   L.push(`benefit: ${money(r.benefit.amount)} per ${r.benefit.cooldownSeconds} s below ${money(r.benefit.threshold)} = ${money(r.benefit.perHour)}/h`);
-  L.push(`duty pay: police ${money(r.duty.police)}/h, medic ${money(r.duty.medic)}/h`);
+  for (const k of ["police", "medic"]) {
+    const d = r.duty[k];
+    const first = d.ranks.length ? `rank 0 ${d.ranks[0].id} ${money(d.rank0)}/h` : `${money(d.rank0)}/h (no rank rows)`;
+    L.push(`duty pay: ${k} ${first} (the core field says ${money(d.core)}/h)`);
+    if (d.ranks.length) L.push(`  ${k} ranks: ${d.ranks.map((x) => `${x.id} ${money(x.perHour)}/h`).join(", ")}`);
+  }
   const sink = (k, label) => {
     const s = r.sinks[k];
     L.push(`  ${label.padEnd(8)} ${s ? `${money(s.price)}  (${s.id})` : "none priced"}`);
   };
   L.push("cheapest purchase:");
-  sink("car", "car"); sink("plot", "plot"); sink("permit", "permit"); sink("clothing", "clothing");
+  sink("car", "car"); sink("plot", "plot"); sink("permit", "permit"); sink("clothing", "clothing"); sink("driving", "driving");
   L.push("ladder (a courier taking the best unlocked run, banking everything):");
   for (const h of r.ladder) {
     const jobsDone = Object.entries(h.byJob).map(([j, n]) => `${n} ${j}`).join(", ") || "none";
