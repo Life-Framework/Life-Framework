@@ -24,20 +24,16 @@ class LF_ChainStrikes
 class LF_ChainMistakes
 {
 	//------------------------------------------------------------------------------------------------
-	//! \return A repeatable roll 0..99 for this seed and tick. Four rounds of squaring modulo the
-	//! prime 46337 mix seed and tick so the ticks of one batch are independent (#2881: the old
-	//! affine mix repeated every few ticks and ruined a 6 % / 3-mistake batch 22 % of the time
-	//! instead of about 7 %). 46336 squared plus the round constant stays under 2^31.
+	//! \return A repeatable roll 0..99 for this seed and tick. Every product stays under 2^31.
 	static int Roll(int seed, int tick)
 	{
 		int s = Math.AbsInt(seed) % 10007;
 		int t = Math.AbsInt(tick) % 10007;
-		int x = (s * 4099 + t * 31 + 7) % 46337;
-		for (int i = 0; i < 4; i++)
-		{
-			x = (x * x + s + t * 3 + 17 + i) % 46337;
-		}
-		return x % 100;
+		int x = (s * 7919 + t * 104729 + 13) % 1000003;
+		x = (x * 997 + 31) % 1000003;
+		x = (x * 991 + t) % 1000003;
+		x = (x * 983 + s) % 1000003;
+		return (x / 7) % 100;
 	}
 
 	//------------------------------------------------------------------------------------------------

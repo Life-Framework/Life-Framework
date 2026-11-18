@@ -23,8 +23,6 @@ several stations. No menus and no progress bars.
 - **Trace (#418).** `LF_ChainTrace` sweeps on a 5 s timer while a site is warm: smoke level per station, smell cue and `LF_OnChainSmell` per listener, a police lead per site. **Searches (#419)** read the site heat and the chain's goods.
 - **Searches (#419).** A chain flagged `m_bContraband` makes its last step's outputs chain goods; `m_iBulk` is how bulky one unit is. An on-duty officer's search (`LF_ConfiscateAction` on a player, `LF_VehicleSearchAction` on a vehicle) rolls on the server: the chance grows with load (units x bulk), so bulky goods of harder tiers are harder to hide. A find seizes the goods and files `#LF-Offence_ChainGoods` through `LF_WantedReports.Report` (bus: `LF_OnCrimeCommitted`). A vehicle charges its occupants; #414 adds the plate's registered owner at `LF_ChainSearch.SuspectsOf`.
 
-- **Mistakes (#2854, #2855).** A step with `m_iMistakeChancePct` and `m_iMaxMistakes` can fail: strikes show off-colour smoke, the last one blows the station after `m_iRuinDelayMs` (batch lost, nearby characters hurt, site heat to the cap, `LF_OnChainBatchRuined`). Strikes are session-only.
-
 ## Rules
 
 - The server decides gates, progress, and payouts; the client only asks.

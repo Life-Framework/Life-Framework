@@ -19,7 +19,6 @@
   the worker carries (priced for a shop), so owning it persists with the inventory.
 - ✅ **Heat settings** per chain: `m_fPerWork`, `m_fDecayPerSecond`, `m_fMax`, `m_fRangeM`.
 - ✅ **Cook mistakes** (#2854, pure rules): `LF_ChainMistakes` rolls a seeded chance per work tick, keeps a hidden strike count (`LF_ChainStrikes`, session-only: a restart forgives it), ruins the batch at `maxMistakes` (0 = never fails) and gives a cue level 0/1/2. Approved chains only (moonshine, tobacco, counterfeit papers); the station wiring is #2855.
-- 🧪 **A worked batch can fail** (#2855): a step's `m_iMistakeChancePct` and `m_iMaxMistakes` (both 0 by default, so a step without them runs as before; in the core config only the moonshine still has them, 6 % and 3) make each work tick at a station roll `LF_ChainMistakes`. A strike shows off-colour smoke on the station (replicated cue, thicker one strike from ruin). The ruining strike stops the station; after `m_iRuinDelayMs` (default 4 s) it blows: the batch is lost with no product, characters within `m_fBlastRadiusM` take `m_fBlastDamage` explosive damage through the base game's damage manager, a vanilla explosion effect plays on every machine, the site heat goes to its cap and the bus hears `LF_OnChainBatchRuined`. Test: `LF_Test_ChainCookFail`.
   `LF_ChainHeat` does the arithmetic (`AfterWork`, `AfterDecay`, `RangeAt`); the per-site number
   and the trace that reads it come with the stations (#417) and the smell (#418).
 - ✅ The core ships one neutral example, `cider` (tier 1, one `barrel` step, apples to juice).

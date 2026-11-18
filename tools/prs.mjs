@@ -40,22 +40,46 @@ export const LIVE_MS = 15 * 60 * 1000;
 export const STUCK_MS = 10 * 60 * 1000;
 
 const STRING_TABLE = "addons/LifeFramework/Language/everonlife_localization.st";
+const PACK_STRING_TABLE = "addons/LF_Everon1989/Language/lf_everon1989_localization.st";
 const SCRIPTS_PREFIX = "addons/LifeFramework/Scripts/";
 
+// Append-only docs that .gitattributes merges with lf-markdown (both sides' new lines kept).
+const MARKDOWN_DOCS = new Set([
+  "docs/features.md",
+  "docs/debug-log-triage.md",
+  "docs/architecture/events.md",
+  "docs/architecture/core-pack-inventory.md",
+  "docs/decisions.md",
+  "docs/playtest.md",
+]);
+
 // How a conflicted path is resolved, or null when it needs a human.
+// Every kind here is a file a GitHub merge cannot resolve (no custom drivers there), so a PR
+// touching one goes DIRTY whenever main changes it too; the scheduled `prs heal` fixes those
+// without an agent (efficiency pass 2026-11-18: 8 DIRTY PRs needed a dispatched heal agent).
 export function conflictKind(path) {
   const p = String(path).replace(/\\/g, "/");
   if (/^addons\/LifeFramework\/Language\/everonlife_localization\.[A-Za-z0-9_]+\.conf$/.test(p)) return "regen-localization";
-  if (p === STRING_TABLE) return "string-table";
-  if (p === "docs/features.md" || (p.startsWith("docs/features/") && p.endsWith(".md")) || p === "docs/debug-log-triage.md") return "markdown";
+  if (/^addons\/LF_Everon1989\/Language\/lf_everon1989_localization\.[A-Za-z0-9_]+\.conf$/.test(p)) return "regen-localization";
+  if (p === STRING_TABLE || p === PACK_STRING_TABLE) return "string-table";
+  if (MARKDOWN_DOCS.has(p) || (p.startsWith("docs/features/") && p.endsWith(".md"))) return "markdown";
   // Per-area Feature.md (#1371 failed on Ops/Feature.md): appended sections merge like the docs above.
   if (/^addons\/[^/]+\/Scripts\/Game\/Feature\/[^/]+\/Feature\.md$/.test(p)) return "markdown";
   if (p === "tools/validation/enforce-lint-baseline.json") return "lint-baseline";
+  // Generated from the Feature/ scan: rewritten from the merged sources.
+  if (p === "docs/config-inventory.md") return "regen-config-inventory";
   return null;
 }
 
 // Resolution order: sources before what is generated from them.
-const KIND_ORDER = ["string-table", "markdown", "lint-baseline", "regen-localization"];
+const KIND_ORDER = ["string-table", "markdown", "lint-baseline", "regen-localization", "regen-config-inventory"];
+
+// The CLI command that rewrites each regen- kind (credits also rewrites the string tables).
+const REGEN_COMMANDS = {
+  "regen-localization": ["regen-localization"],
+  "regen-config-inventory": ["regen-config-inventory"],
+  credits: ["credits", "regen-localization"],
+};
 
 // ---------------------------------------------------------------- liveness
 
@@ -139,7 +163,7 @@ function resolveByStages(wtPath, path, kind) {
 // Production regeneration: the worktree's own CLI, so its generator version is used.
 export function regenerateWithCli(wtPath, kind) {
   const cli = join(wtPath, "tools", "cli.mjs");
-  const cmds = kind === "credits" ? ["credits", "regen-localization"] : ["regen-localization"];
+  const cmds = REGEN_COMMANDS[kind] ?? ["regen-localization"];
   for (const cmd of cmds) {
     const res = wt.run(process.execPath, [cli, cmd], { cwd: wtPath });
     if (res.status !== 0) return { ok: false, error: (res.stdout + res.stderr).trim() };
