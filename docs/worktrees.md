@@ -312,11 +312,14 @@ longer declares (#2797).
 - **`DIRTY` or `BEHIND`, worktree not LIVE.** In its worktree (or a temporary
   detached `Life-Framework-heal-<n>` worktree at the PR head when it is gone,
   removed afterwards with the junction-safe helper) it merges `origin/main` with
-  the `tools/merge/` drivers. Conflicts only in the language
-  confs, the string table, `features.md`, `debug-log-triage.md`, or the
-  enforce-lint baseline are resolved: the confs by
-  `regen-localization`, the others by the drivers' merge logic on the index
-  stages. Any other conflicted path aborts the merge; the PR, the worktree, and
+  the `tools/merge/` drivers. Conflicts only in the core or pack language
+  confs, the core or pack string table, `features.md`, `docs/features/*.md`, a
+  `Feature.md`, `debug-log-triage.md`, the append-only architecture docs
+  (`events.md`, `core-pack-inventory.md`, `decisions.md`, `playtest.md`),
+  `docs/config-inventory.md`, or the enforce-lint baseline are resolved: the
+  confs by `regen-localization`, the config inventory by
+  `regen-config-inventory`, the others by the drivers' merge logic on the index
+  stages (`conflictKind` in `tools/prs.mjs`). Any other conflicted path aborts the merge; the PR, the worktree, and
   the branch stay as they were, and the PR is reported "needs a human/agent"
   with the paths. A clean merge runs `validate` and
   `test --no-build --tier fast` (`--tier all` when the PR touches

@@ -2,7 +2,7 @@
 // Server side, pure rules: help raises a score, a crime seen lowers it, -100..100, no decay. The
 // game reads a word (Tier), never the number (M6 decision 7). A crime one resident saw reaches the
 // residents they know, one hop, at the config share. Keyed by resident id and character uid, never
-// an EntityID. Not saved here; the payload is #2861.
+// an EntityID. Saved by LF_ResidentMemorySave.c (#2861).
 
 //------------------------------------------------------------------------------------------------
 //! One resident's feeling about one character.
