@@ -48,6 +48,9 @@ class LF_SiteRent
 	protected static ref map<string, float> s_mCarry;
 	//! Sub-second remainders of the hour clock, per site.
 	protected static ref map<string, float> s_mSecondCarry;
+	//! The holder each site last banked for (runtime only): unlogged rent is logged under that holder
+	//! when the site changes hands, never under the next one.
+	protected static ref map<string, string> s_mHolder;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -55,6 +58,7 @@ class LF_SiteRent
 		s_mRows = null;
 		s_mCarry = null;
 		s_mSecondCarry = null;
+		s_mHolder = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -93,6 +97,13 @@ class LF_SiteRent
 			s_mCarry = new map<string, float>();
 		if (!s_mSecondCarry)
 			s_mSecondCarry = new map<string, float>();
+		if (!s_mHolder)
+			s_mHolder = new map<string, string>();
+
+		string lastHolder = s_mHolder.Get(hideoutId);
+		if (!lastHolder.IsEmpty() && lastHolder != holderOrgId)
+			LogBanked(row, lastHolder);
+		s_mHolder.Set(hideoutId, holderOrgId);
 
 		int room = settings.m_iMaxRentBanked - row.m_iBanked;
 		if (room <= 0)
@@ -202,6 +213,7 @@ class LF_SiteRent
 		Rows().Clear();
 		s_mCarry = null;
 		s_mSecondCarry = null;
+		s_mHolder = null;
 		if (!rows)
 			return 0;
 

@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_SiteRent`: `RED PROOF OK`, banking skipped failed `two hours held at 600/h banks 1200 (expected 1200, got 0)`, the store read skipped failed `the other site keeps its bank (load 2) (expected 450, got 0)`. Before the written version was raised, `--only` failed `the site keeps its bank (load 1) (expected 1200, got 0)`.
+// red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_SiteRent`: `RED PROOF OK`, banking skipped failed `two hours held at 600/h banks 1200 (expected 1200, got 0)`, the store read skipped failed `the other site keeps its bank (load 2) (expected 450, got 0)`. Before the written version was raised, `--only` failed `the site keeps its bank (load 1) (expected 1200, got 0)`. Review of #2840 (2026-11-18): `--only LF_Test_SiteRent` on the unfixed LF_SiteRent failed `the old holder's half hour is logged under the old holder (expected 300, got 0)`, then passed with the holder-change flush.
 // tier: PERSISTENCE
 //! sites/site-rent (#2683): a held site banks rentPerHour pro rata each sweep, capped at
 //! maxRentBanked (defaults 600/h, 3000); nothing banks while unheld, contested or changing hands; one
@@ -108,6 +108,16 @@ class LF_Test_SiteRent : LF_Test
 		ctx.Equal(3000, LF_SiteRent.BankedOf(SITE), "the new holder takes the capped bank");
 
 		LF_EventBus.Unsubscribe(LF_OnMoneyMoved, money);
+
+		// A holder change mid-hour logs the old holder's unlogged rent under the old holder (review of #2840).
+		LF_Test_SiteRentMoney byHolder = new LF_Test_SiteRentMoney();
+		LF_EventBus.Subscribe(LF_OnMoneyMoved, byHolder);
+		Hold(OTHER, ORG, LF_ESiteHoldOutcome.GAIN, 1800, start);
+		LF_SiteRent.Accrue(OTHER, ORG, LF_ESiteHoldOutcome.CAPTURED, 5, start + 1805);
+		Hold(OTHER, "site-rent-capturer", LF_ESiteHoldOutcome.GAIN, 3600, start + 1805);
+		LF_EventBus.Unsubscribe(LF_OnMoneyMoved, byHolder);
+		ctx.Equal(300, byHolder.AmountFor(ORG), "the old holder's half hour is logged under the old holder");
+		ctx.Equal(600, byHolder.AmountFor("site-rent-capturer"), "the new holder's hour is logged under the new holder");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -170,6 +180,7 @@ class LF_Test_SiteRentMoney : LF_EventSubscriber
 {
 	int m_iLines;
 	int m_iAmount;
+	ref map<string, int> m_mByHolder = new map<string, int>();
 
 	override bool Handle(notnull LF_Event busEvent)
 	{
@@ -179,6 +190,13 @@ class LF_Test_SiteRentMoney : LF_EventSubscriber
 
 		m_iLines++;
 		m_iAmount += moved.m_iAmount;
+		m_mByHolder.Set(moved.m_sPlayerUid, m_mByHolder.Get(moved.m_sPlayerUid) + moved.m_iAmount);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int AmountFor(string holderOrgId)
+	{
+		return m_mByHolder.Get(holderOrgId);
 	}
 }
