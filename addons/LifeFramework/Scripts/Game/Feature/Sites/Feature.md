@@ -8,6 +8,13 @@ Contested ground a gang can win and hold. This first piece is the scoring maths 
 
 None yet: no player-facing object in this slice. `LF_SiteHold.Step` is a pure function of a site's state, the counted presence per organisation and the elapsed seconds; the server's site system will call it.
 
+## Site rules from config (#2679)
+
+- **Player sees:** nothing yet; the numbers behind each contested site.
+- **Owner and side:** `LF_SitesConfig` (server), `Configs/Sites/LF_Sites.conf` (core: no sites), then each pack overlay of it in load order, then the owner's `sites.rules` keyed by the hideout id the site guards (override model: `add`, `replace`, `patch`, `remove`). `LF_SitesConfig.For(hideoutId)` hands out a copy (`LF_SiteSettings`); an id with no entry gets the default rules. `ToHoldRules()` gives `LF_SiteHold.Step` its `LF_SiteRules`.
+- **Keys and defaults:** `radius` 60 m, `innerRadius` 20 m (at most the radius), `minMembersPresent` 2, `captureSeconds` 300, `decayPerHour` 600 s of progress, `flipCooldownSeconds` 1800, `rentPerHour` 600, `maxRentBanked` 3000, `activeWindowSeconds` 300. A value out of range, of the wrong type or an inner ring wider than the radius logs an error and keeps the value below it.
+- **Data:** none persisted. **Proof:** `sites/config` (LOGIC).
+
 ## Site hold (#2678)
 
 - **Player sees:** nothing yet; the maths behind a site's holder, points and capture bar.

@@ -335,6 +335,8 @@ schema, `/config` form and reference page list them. A `config.json` that names 
   `wars` is a nested object (`LF_OrgWarConfig`, #2667): `fee`, `answerSeconds`, `lengthSeconds`,
   `cooldownSeconds`, `minMembers`, `warKillsAreMurder`, `tagWarKills`; the schema generator reads the
   dotted `SECTION` "organizations.wars" as an object inside `organizations`.
+- `sites` (`LF_SitesConfig`, #2679): `rules` keyed by the hideout id a contested site guards (override model;
+  pack overlays too), `Configs/Sites/LF_Sites.conf` ships none. Server only, not streamed.
 - `persistence` (`LF_PersistenceConfig`, no `.conf`): `enableAutosave` and `autosaveInterval`.
   The shipped values are the `LF_PersistenceManagerComponent` attributes; `Resolve` starts from them,
   so a prefab edit still works. Read once when the timer is scheduled, so it needs a restart
