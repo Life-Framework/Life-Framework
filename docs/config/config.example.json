@@ -112,7 +112,8 @@
     },
     "permitFee": 250,
     "permitWaitDays": 1,
-    "permitConvictionDays": 7
+    "permitConvictionDays": 7,
+    "driverLicenceFee": 100
   },
   "lockers": {
     "rentPrice": 100,

@@ -6279,6 +6279,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Refused: you were convicted too recently."
      Comment "Licence desk refusal: the player has a conviction within the configured look-back (#1995)."
     }
+    CustomStringTableItem "{04D482BE05C4CD10}" {
+     Id "LF-LicenceDesk_DrivingAction"
+     Target_en_us "Buy a driving licence"
+     Comment "Action on the licence desk: buy the driving licence at once for the fee in cash (#3128)."
+    }
+    CustomStringTableItem "{DB194A67205192B5}" {
+     Id "LF-LicenceDesk_DrivingAlreadyHeld"
+     Target_en_us "You already hold a driving licence."
+     Comment "Licence desk: the player already has the driving licence (#3128)."
+    }
+    CustomStringTableItem "{34BBF90BAF789D18}" {
+     Id "LF-LicenceDesk_DrivingIssued"
+     Target_en_us "Here is your driving licence."
+     Comment "Licence desk: the driving licence is handed over (#3128)."
+    }
+    CustomStringTableItem "{BD0E7DC7F5624449}" {
+     Id "LF-LicenceDesk_DrivingNotAllowed"
+     Target_en_us "Refused: you do not meet the driving licence requirements."
+     Comment "Licence desk refusal for the driving licence: the licence gate (system off, whitelist or job level) (#3128)."
+    }
     CustomStringTableItem "{A23456CB32ABE45B}" {
      Id "LF-LicenceDesk_Issued"
      Target_en_us "Here is your firearm permit. A licensed gun counter will now serve you."
@@ -6400,6 +6420,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cannabis grower"
      Target_es_es "Cultivador de marihuana"
      Comment "Underground skill name: growing cannabis"
+    }
+    CustomStringTableItem "{AFC2B3AB51D2DEA7}" {
+     Id "LF-License_Driving_Desc"
+     Target_en_us "Lets you drive on public roads."
+     Comment "Licence description: the driving licence (#3128)."
+    }
+    CustomStringTableItem "{B45A8C5B2A8A570E}" {
+     Id "LF-License_Driving_Name"
+     Target_en_us "Driving licence"
+     Comment "Licence name: the driving licence sold at the licence desk (#3128)."
     }
     CustomStringTableItem "{C8B554017BA55A32}" {
      Id "LF-License_FarmerApple_Desc"

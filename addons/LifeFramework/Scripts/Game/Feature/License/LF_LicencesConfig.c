@@ -35,6 +35,8 @@ class LF_LicencesConfig
 	static const float DEFAULT_PERMIT_WAIT_DAYS = 1;
 	//! #1995: the look-back, in in-game days, for a conviction that refuses the permit (0 turns it off).
 	static const int DEFAULT_PERMIT_CONVICTION_DAYS = 7;
+	//! #3128: the desk's driving licence, sold at once for this fee in carried cash, no record check.
+	static const int DEFAULT_DRIVER_LICENCE_FEE = 100;
 
 	[Attribute("250", UIWidgets.EditBox, "Licence desk: the firearm permit's fee in carried cash", params: "0 1000000")]
 	int m_iPermitFee;
@@ -44,7 +46,11 @@ class LF_LicencesConfig
 
 	[Attribute("7", UIWidgets.EditBox, "Licence desk: a conviction within this many in-game days refuses the permit at application and at collection (0 turns the check off)", params: "0 365")]
 	int m_iPermitConvictionDays;
+
+	[Attribute("100", UIWidgets.EditBox, "Licence desk: the driving licence's fee in carried cash, issued at once", params: "0 1000000")]
+	int m_iDriverLicenceFee;
 	protected static int s_iPermitFee = -1;
+	protected static int s_iDriverLicenceFee = DEFAULT_DRIVER_LICENCE_FEE;
 	protected static float s_fPermitWaitDays = -1;
 	protected static int s_iPermitConvictionDays = DEFAULT_PERMIT_CONVICTION_DAYS;
 
@@ -54,6 +60,7 @@ class LF_LicencesConfig
 		s_iPermitFee = -1;
 		s_fPermitWaitDays = -1;
 		s_iPermitConvictionDays = DEFAULT_PERMIT_CONVICTION_DAYS;
+		s_iDriverLicenceFee = DEFAULT_DRIVER_LICENCE_FEE;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -67,12 +74,14 @@ class LF_LicencesConfig
 		config.m_iPermitFee = DEFAULT_PERMIT_FEE;
 		config.m_fPermitWaitDays = DEFAULT_PERMIT_WAIT_DAYS;
 		config.m_iPermitConvictionDays = DEFAULT_PERMIT_CONVICTION_DAYS;
+		config.m_iDriverLicenceFee = DEFAULT_DRIVER_LICENCE_FEE;
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
 		if (reader)
 		{
 			reader.ReadInt("permitFee", config.m_iPermitFee, 0, 1000000);
 			reader.ReadFloat("permitWaitDays", config.m_fPermitWaitDays, 0, 365);
 			reader.ReadInt("permitConvictionDays", config.m_iPermitConvictionDays, 0, 365);
+			reader.ReadInt("driverLicenceFee", config.m_iDriverLicenceFee, 0, 1000000);
 		}
 
 		int fee = config.m_iPermitFee;
@@ -82,7 +91,9 @@ class LF_LicencesConfig
 		s_iPermitFee = fee;
 		s_fPermitWaitDays = wait;
 		s_iPermitConvictionDays = convictionDays;
-		LF_Debug.Info("License", string.Format("licence desk: firearm permit fee %1, wait %2 in-game days, conviction look-back %3 in-game days", fee, wait, convictionDays));
+		int driverFee = config.m_iDriverLicenceFee;
+		s_iDriverLicenceFee = driverFee;
+		LF_Debug.Info("License", string.Format("licence desk: firearm permit fee %1, wait %2 in-game days, conviction look-back %3 in-game days; driving licence fee %4", fee, wait, convictionDays, driverFee));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -105,6 +116,22 @@ class LF_LicencesConfig
 	{
 		LoadDesk();
 		return s_iPermitConvictionDays;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The desk's driving licence fee in carried cash (licences.driverLicenceFee, #3128).
+	static int DriverLicenceFee()
+	{
+		LoadDesk();
+		return s_iDriverLicenceFee;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: set the driving licence fee (after LoadDesk ran, so the config does not overwrite it).
+	static void SetDriverLicenceFeeForTest(int fee)
+	{
+		LoadDesk();
+		s_iDriverLicenceFee = fee;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -197,7 +224,7 @@ class LF_LicencesConfig
 	//! \param[in] catalog The catalog the rules were made from.
 	void ApplyOwner(notnull LF_ConfigReader reader, notnull map<LF_ELicenseType, ref LF_LicenseConfig> catalog)
 	{
-		array<string> ownerKeys = {"rules", "permitFee", "permitWaitDays", "permitConvictionDays"};
+		array<string> ownerKeys = {"rules", "permitFee", "permitWaitDays", "permitConvictionDays", "driverLicenceFee"};
 		reader.WarnUnknownKeys(ownerKeys);
 
 		if (!m_aRules)
