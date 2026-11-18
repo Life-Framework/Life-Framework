@@ -132,6 +132,36 @@ tools\cli look bank --measure            also print Workbench's peak working set
 tools\cli look selftest                  the Node checks (also in tools\cli validate)
 ```
 
+**Contact sheet: does it touch what it stands on (`look contact`, #2955).** Measuring a gap is not
+looking at it. The audit's `cgap` says 1.9 cm; the sheet shows the red outline of the item's bottom
+face floating over the green outline of the board.
+
+```
+tools\cli look contact general-store-shop --stock general_store        a store's shelf stock, one row per slot
+tools\cli look contact place:<place>/<slot> --stock <store_key>         the same on the island (MainWorld)
+tools\cli look contact general-store-shop --stock general_store --items Apple@0,Juice@3   only those slots
+tools\cli look contact general-store-shop --stock general_store --worst --max 8   the largest |cgap| first
+tools\cli look contact bank --entities Till_Bank,Desk_Bank             named layer entities
+tools\cli look contact bank                                             the closest layer props (--close N)
+```
+
+Each item is one row of five tiles: four low side views (camera 2 cm over the measured bottom) and one top-down.
+Red is the measured bottom face (`LF_PlaceSnap.Measure`, the same numbers as the audit), green the support
+the nine traces found under it (yellow), and the tile label says `gap +1.9 cm [OFF]` past 1 cm.
+Framed on the measured contact, never the pivot. Shots 3 s per item once Workbench is up.
+
+Stock is found **in the session that takes the pictures**: the plugin asks the store component for the copy
+at the slot (`LF_StoreComponent.GetShelfItem`). The slot list comes from the audit's `shelf <store>/<file>@<slot>`
+rows (`--from <out.txt>`, default `tmp/place-audit/out.txt`, or name the slots with `--items <file>@<slot>`
+and no audit file at all). Their positions are never used: Workbench play spawns its own stock, so matching by the
+test server's positions missed the first item of every sheet. It goes through the look server like any look
+(`--serve`, `--fresh`).
+
+Keep the sheet for the PR: `tools\cli evidence <issue> after tmp\look\contact-<area>-<store>\contact.jpg --name contact-<area>`.
+**A PR that changes a `.layer` under `Worlds/` (store slots live in them; not the DebugWorld test annex) must
+embed a contact sheet** (`wt ship` checks that an embedded picture has "contact" in its path or alt text). Nothing moved
+(a rename, a removal)? Write a line `No contact sheet: <reason>`. Scripts, docs and prefabs alone are never asked.
+
 Read `contact.jpg` (sized for an agent to read in one image) and then the PNG of any tile that
 looks off. Each close-up label carries the entity's world bounds in metres and its scale factor
 when that is not 1; compare sizes between neighbours. The exit code is 1 when a shot is missing or

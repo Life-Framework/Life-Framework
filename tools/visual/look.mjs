@@ -72,7 +72,7 @@ export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 export function parseArgs(argv) {
   const flags = {};
   const pos = [];
-  const valued = new Set(["world", "interior", "dump", "dumpstep", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget", "machine"]);
+  const valued = new Set(["stock", "items", "from", "max", "entities", "world", "interior", "dump", "dumpstep", "close", "radius", "hour", "settle", "first", "out", "states", "at", "budget", "machine"]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith("--")) pos.push(a);
@@ -277,7 +277,7 @@ export function parseStatus(text) {
       const parts = rest.split(" ");
       const kv = Object.fromEntries(parts.slice(3).map((p) => p.split("=")).filter((p) => p.length === 2));
       const vec = (s) => (s ? s.split(",").map(Number) : null);
-      out.shots[parts[1]] = { file: parts[2], ms, clear: kv.clear === undefined ? null : Number(kv.clear), pick: kv.pick === undefined ? null : Number(kv.pick), found: kv.found === undefined ? null : kv.found === "1", size: vec(kv.size), cam: vec(kv.cam) };
+      out.shots[parts[1]] = { file: parts[2], ms, clear: kv.clear === undefined ? null : Number(kv.clear), pick: kv.pick === undefined ? null : Number(kv.pick), found: kv.found === undefined ? null : kv.found === "1", size: vec(kv.size), cam: vec(kv.cam), contact: kv.gap === undefined ? null : { gap: Number(kv.gap), spread: Number(kv.spread), hits: kv.hits, on: kv.on, view: kv.view } };
     }
   }
   return out;
@@ -735,7 +735,17 @@ async function run(args) {
   const layerDirs = [GRID_WORLD, PACK_GRID_WORLD].includes(areaWorld) ? gridLayerDirs(ROOT) : areaWorld === ISLAND_WORLD ? (existsSync(islandLayersDir(ROOT)) ? [islandLayersDir(ROOT)] : []) : undefined;
   const world = itemPerArea ? null : loadWorld(ROOT, layerDirs);
   const opts = { dump: args.flags.dump === undefined ? null : { radius: num(args.flags.dump, undefined), step: num(args.flags.dumpstep, 5) }, world: worldFlag(args.flags.world) ?? undefined, edit: args.flags.edit === true, close: num(args.flags.close, DEFAULTS.close), hour: num(args.flags.hour, DEFAULTS.hour), settle: num(args.flags.settle, DEFAULTS.settle), first: num(args.flags.first, DEFAULTS.first) };
-  const perArea = itemPerArea ?? areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
+  let perArea = itemPerArea ?? areas.map((a) => ({ area: a, shots: shotsFor(a, world, opts) }));
+  if (args.contact) {
+    // look contact: one batch per area, five views of each item at its measured contact (tools/visual/look-contact.mjs).
+    const lc = await import("./look-contact.mjs");
+    try {
+      perArea = areas.map((a) => lc.contactPlan({ area: a, world, flags: args.flags, root: ROOT, closeSet }));
+    } catch (e) {
+      console.log(`FAIL  look contact: ${e.message}`);
+      return 2;
+    }
+  }
   for (const n of itemNotes) console.log(`look: ${n}`);
   const shots = perArea.flatMap((p) => p.shots);
 
@@ -903,10 +913,10 @@ async function run(args) {
       const flags = flagsFor(shot, st && st.file ? st : null, px);
       if (flags.includes("missing")) missing++;
       else if (flags.length) flagged++;
-      rows.push({ kind: shot.kind, label: shot.label, file: st && st.file ? file : null, flags, clear: st?.clear ?? null, size: st?.size ?? null, cam: st?.cam ?? null, px, entity: shot.entity ?? null, tile: tileLabel(shot, st, flags) });
+      rows.push({ kind: shot.kind, label: shot.label, file: st && st.file ? file : null, flags, clear: st?.clear ?? null, size: st?.size ?? null, cam: st?.cam ?? null, px, entity: shot.entity ?? null, contact: st?.contact ?? null, tile: shot.contact ? (await import("./look-contact.mjs")).contactLabel(shot, st) : tileLabel(shot, st, flags) });
     }
     const tiles = rows.map((r) => ({ file: r.file, label: r.tile, marks: [] }));
-    const { cols } = sheetLayout(tiles.length);
+    const { cols } = area.sheetCols ? { cols: area.sheetCols } : sheetLayout(tiles.length);
     const contact = join(dir, "contact.jpg");
     image({ op: "sheet", tiles, out: contact, cols, maxWidth: cols * 480, quality: 74 });
     writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, inputs: { addons: askedTree, rendered: renderedTree }, timing: { ...TL.get(), collect: Math.round((Date.now() - collectT0) / 100) / 10 }, contact, shots: rows }, null, 2) + "\n");
@@ -1253,6 +1263,10 @@ export async function selftest() {
   ok(identicalFrames(["a", "a", "a"]) && !identicalFrames(["a", "b", "a"]) && !identicalFrames(["a", "a"]) && !identicalFrames([null, "a", "a"]), "identical-frame backup");
   ok(planText([], [{ x: 0, z: 0, radius: 1 }], { world: "Worlds/Bad/Bad.ent" }).startsWith("world Worlds/Bad/Bad.ent"), "--world did not reach the plan");
 
+  // look contact (#2955): stock named by the store's slot, on the island, from tools/visual/fixtures/contact-plan.json.
+  // red-proof: 2026-11-18 against the spike's matcher by audit positions this printed "look selftest FAIL: look contact: stock refs: -,-" (the matcher by audit positions).
+  for (const f of (await import("./look-contact.mjs")).selftest({ planText, worldOfAreas })) failures.push(`look contact: ${f}`);
+
   if (failures.length) {
     for (const f of failures) console.log(`look selftest FAIL: ${f}`);
     return 1;
@@ -1269,6 +1283,10 @@ export async function main(argv) {
   const args = parseArgs(argv);
   if (args.flags.cold) args.flags.fresh = true; // --cold: today's path, a Workbench of its own, no resident server
   if (args.flags.local) process.env.LF_WB_LOCAL = "1"; // a human's explicit ask for this PC's Workbench
+  if (args.pos[0] === "contact") {
+    args.contact = true; // tools\cli look contact <area|place:...>: the sheet of contact pictures (look-contact.mjs)
+    args.pos.shift();
+  }
   if (args.pos[0] === "selftest") return selftest();
   const route = await import("../lib/wb-route.mjs");
   if (args.pos[0] === "serve") {
