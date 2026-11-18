@@ -1,0 +1,34 @@
+{
+  "_note": "The placement spike's three measured hover and sink cases, as the test server answered `settle` lines for them (LF_PlacementAudit.SettleLine, one boot of `tools\\cli place settle IronNugget_01 Farm_PressApple_1 BarrelMetal_01_blue@191.8,310.4 --dry`, 2026-11-18, ws/slice-2954). `server` is that output verbatim; each case's `layer` is the entity's block in its real layer, cut down to the lines around it. tools/validation/place-tool-selftest.mjs feeds `server` to parseSettles and settleResult and proves the layer text changes in exactly one place: the height on the coords line.",
+  "server": [
+    "settle e0 y0=0.9 y1=0.931901 gap=0.00100005 before=-0.0309007 spread=0 on=TableRecreation_01 found=IronNugget_01",
+    "settle e1 y0=0.1 y1=0.0139465 gap=0.001 before=0.0870535 spread=0 on=Farm_PressCrate_1 found=Farm_PressApple_1",
+    "settle e2 y0=0 y1=0.017739 gap=0.001 before=-0.016739 spread=0 on=DebugTerrain found=BarrelMetal_01_blue"
+  ],
+  "cases": [
+    {
+      "id": "e0",
+      "what": "IronNugget_01 sunk 3.1 cm into TableRecreation_01 (a child in a $grp inside a display stand)",
+      "target": "IronNugget_01",
+      "coordsY": 0,
+      "wantY": 0.032,
+      "layer": "GenericEntity MiningDisplayItems : \"{5CA44F8D9F7491ED}Prefabs/Props/Misc/Stand.et\" {\n coords 0 0.9 0.7\n angleY 90\n {\n  $grp GenericEntity : \"{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et\" {\n   IronNugget_01 {\n    coords 0 0 0\n   }\n   IronNugget_02 {\n    coords 0.2 0 0.1\n   }\n  }\n }\n}\n"
+    },
+    {
+      "id": "e1",
+      "what": "Farm_PressApple_1 8.7 cm over its crate (a named top-level entity; its neighbour at 0.1 must not move)",
+      "target": "Farm_PressApple_1",
+      "coordsY": 0.1,
+      "wantY": 0.014,
+      "layer": "GenericEntity Farm_PressApple_1 : \"{C9D661E5B0714711}Prefabs/Items/Food/Apple.et\" {\n coords 143.4 0.1 309.6\n}\nGenericEntity Farm_PressApple_2 : \"{C9D661E5B0714711}Prefabs/Items/Food/Apple.et\" {\n coords 143.5 0.1 309.65\n angleY 30\n scale 1.2\n}\n"
+    },
+    {
+      "id": "e2",
+      "what": "BarrelMetal_01_blue 1.7 cm into the ground (unnamed: found by its prefab and coords line)",
+      "target": { "prefab": "Prefabs/Props/Industrial/BarrelMetal_01_blue.et", "coordsText": "191.8 0 310.4" },
+      "coordsY": 0,
+      "wantY": 0.018,
+      "layer": "GenericEntity : \"{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et\" {\n coords 191.8 0 310.4\n}\nGenericEntity : \"{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et\" {\n coords 191.8 0 311.9\n}\n"
+    }
+  ]
+}

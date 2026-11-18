@@ -1,0 +1,24 @@
+{
+  "slug": "fishing-float",
+  "name": "FishingFloat",
+  "kind": "gadget",
+  "roadmap": "#2995",
+  "concept": "A classic red-and-white round angler's float on a thin quill, the kind an Everon angler clips on the line. It is the prop at the cast point; it dips when a fish bites.",
+  "prompt": "Modelled in Blender by model.py: a small red and white round bobber with a thin quill above and a short stem below. no text, no logos.",
+  "texture_prompt": "",
+  "size_m": { "length": 0.044, "height": 0.11, "width": 0.044 },
+  "budget": { "lod0_tris": 500, "lod_ratios": [0.6, 0.3], "texture_px": 256, "credits": 0 },
+  "fit": { "offset": [0, 0, 0] },
+  "parts": [],
+  "asset_dir": "Assets/Items/Fishing/FishingFloat",
+  "prefab_dir": "Prefabs/Items/Fishing",
+  "gadget": {
+    "name_key": "#LF-Item_FishingFloat_Name",
+    "description_key": "#LF-Item_FishingFloat_Description",
+    "weight": 0.02,
+    "volume": 60,
+    "components": []
+  },
+  "materials": { "default": "scanned", "regions": [], "classes": {} },
+  "source": { "blender": "model.py" }
+}

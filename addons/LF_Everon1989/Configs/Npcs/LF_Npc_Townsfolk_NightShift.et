@@ -1,8 +1,8 @@
-LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "66D814F18F73F531"
  components {
-  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
-   Identity Identity "{5A4B0B84AF44A913}" {
+  SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
+   Identity Identity "{5584CBC6363C648B}" {
     Name "Rémi"
     Surname "Duval"
    }
@@ -17,7 +17,7 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
    m_sKind "Townsfolk"
    m_sId "night_shift"
   }
-  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
     LoadoutSlotInfo Jacket {
      Prefab "{B0F4EAC29E9058EA}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_grey.et"
@@ -34,7 +34,7 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
     }
    }
   }
-  ActionsManagerComponent "{5A4B13A9811FB113}" {
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
    ActionContexts + {
     UserActionContext "{ECD11017762BA5F9}" {
      ContextName "Talk"

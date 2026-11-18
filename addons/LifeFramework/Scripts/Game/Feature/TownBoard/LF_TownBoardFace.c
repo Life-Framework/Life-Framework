@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! The town board's face on a client: the wanted board's render target over the cork
 //! (LF_WantedPosterFace: the local face quad, the cork, the live window and the freeze) with a paper
-//! header and one pinned index card per thing to do, four across and two down. A card prints its
+//! header and one pinned index card per thing to do, four across and three down. A card prints its
 //! category in red, the title, one line, and where the place is from the board. Static content from
 //! config: everyone near the board draws the same face, nothing comes over the network.
 class LF_TownBoardFace : LF_WantedPosterFace
@@ -12,14 +12,14 @@ class LF_TownBoardFace : LF_WantedPosterFace
 	//! The cards, in face layout units (1920 x 1080).
 	static const int COLUMNS = 4;	// lf-fixed: the prefab has a context over each slot
 	static const float CARD_WIDTH = 400;	// lf-fixed: the layout size
-	static const float CARD_HEIGHT = 400;	// lf-fixed: the layout size
+	static const float CARD_HEIGHT = 280;	// lf-fixed: the layout size
 	static const float CARD_GAP_X = 40;	// lf-fixed: the layout size
-	static const float CARD_GAP_Y = 36;	// lf-fixed: the layout size
-	static const float CARDS_TOP = 172;	// lf-fixed: below the header sheet
+	static const float CARD_GAP_Y = 22;	// lf-fixed: the layout size
+	static const float CARDS_TOP = 134;	// lf-fixed: below the header sheet
 	//! The header sheet across the top.
 	static const float HEADER_WIDTH = 760;	// lf-fixed: the layout size
-	static const float HEADER_HEIGHT = 120;	// lf-fixed: the layout size
-	static const float HEADER_TOP = 22;	// lf-fixed: the layout size
+	static const float HEADER_HEIGHT = 100;	// lf-fixed: the layout size
+	static const float HEADER_TOP = 16;	// lf-fixed: the layout size
 	static const float PIN = 18;	// lf-fixed: the pin head
 	static const float PIN_DOWN = 16;	// lf-fixed: the pin sits this far below a sheet's top edge
 	static const int BEADS = 64;	// lf-fixed: LF_CaseBoardString.layout has 64 beads
@@ -110,7 +110,7 @@ class LF_TownBoardFace : LF_WantedPosterFace
 		Place(sheet, left, HEADER_TOP, HEADER_WIDTH, HEADER_HEIGHT, 1);
 		Place(sheet.FindAnyWidget("Paper"), 0, 0, HEADER_WIDTH, HEADER_HEIGHT, 1);
 		CardLine(sheet, "Header", string.Empty, 0, 1, 8, CARD_WIDTH);
-		CardLine(sheet, "Name", LF_TownBoard.Title(), 30, 70, 56, HEADER_WIDTH);
+		CardLine(sheet, "Name", LF_TownBoard.Title(), 18, 70, 52, HEADER_WIDTH);
 		CardLine(sheet, "Offence", string.Empty, 0, 1, 8, CARD_WIDTH);
 		CardLine(sheet, "Detail", string.Empty, 0, 1, 8, CARD_WIDTH);
 		CardLine(sheet, "Reward", string.Empty, 0, 1, 8, CARD_WIDTH);
@@ -131,10 +131,10 @@ class LF_TownBoardFace : LF_WantedPosterFace
 		Place(sheet.FindAnyWidget("Paper"), 0, 0, CARD_WIDTH, CARD_HEIGHT, 1);
 		string category = LF_TownBoard.Text(card.m_sCategory);
 		category.ToUpper();
-		CardLine(sheet, "Header", category, 34, 40, 30, CARD_WIDTH);
-		CardLine(sheet, "Name", LF_TownBoard.Text(card.m_sTitle), 76, 100, 42, CARD_WIDTH);
-		CardLine(sheet, "Offence", LF_TownBoard.Text(card.m_sLine), 180, 128, 27, CARD_WIDTH);
-		CardLine(sheet, "Detail", LF_TownBoard.WhereText(card, origin), 318, 66, 25, CARD_WIDTH);
+		CardLine(sheet, "Header", category, 26, 34, 28, CARD_WIDTH);
+		CardLine(sheet, "Name", LF_TownBoard.Text(card.m_sTitle), 60, 84, 38, CARD_WIDTH);
+		CardLine(sheet, "Offence", LF_TownBoard.Text(card.m_sLine), 146, 80, 24, CARD_WIDTH);
+		CardLine(sheet, "Detail", LF_TownBoard.WhereText(card, origin), 224, 52, 22, CARD_WIDTH);
 		CardLine(sheet, "Reward", string.Empty, 0, 1, 8, CARD_WIDTH);
 		m_aPosters.Insert(sheet);
 		return DrawPin(workspace, at[0] + CARD_WIDTH * 0.5, at[1] + PIN_DOWN);

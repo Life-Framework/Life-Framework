@@ -52,7 +52,7 @@ GenericEntity Grid_community_hall_R2_3 : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/
  coords 55.004 0.01 54.512
 }
 GenericEntity Grid_community_hall_Radio : "{16C2DFD610CC7AFB}Prefabs/Atmosphere/LF_Radio.et" {
- coords 52.002 0.915 51.994
+ coords 52.002 0.898 51.994
 }
 GenericEntity Grid_community_hall_Spawn {
  components {

@@ -1,0 +1,45 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "4EF215187D6231D8"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_BaitTin_Name"
+     Description "#LF-Item_BaitTin_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.15
+     SizeSetupStrategy Volume
+     ItemVolume 300
+     RestingUP Up
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{3719CD8CB235FDC5}" {
+     AnimationAttachments {
+      AnimationAttachmentInfo "{62E30EF3A9EA5F18}" {
+       AnimGraph "{883777E45A6C4DA1}Assets/Items/Medicine/Workspaces/Gauze_01.agr"
+       AnimInstance "{79BD98038DD60F88}Assets/Items/Medicine/Workspaces/Gauze_01_player.asi"
+       BindingName "Gadget"
+      }
+     }
+     HandAdditiveRotation -65 -60 -60
+     HandAdditiveTranslation 0 0 0
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{967416C91D624C6F}" {
+      CameraOrbitAngles -25 -25 0
+      CameraDistanceToItem 0.291
+      FOV 20
+     }
+    }
+    CommonItemType "LF_ITEM"
+   }
+  }
+  MeshObject "{82B3FB4B82B82BAE}" {
+   Object "{419871A3649BB98F}Assets/Items/Fishing/BaitTin/BaitTin.xob"
+  }
+  RigidBody "{A888F9C06C7652BF}" {
+   LayerPreset "ItemFireView"
+   ModelGeometry 1
+  }
+ }
+}

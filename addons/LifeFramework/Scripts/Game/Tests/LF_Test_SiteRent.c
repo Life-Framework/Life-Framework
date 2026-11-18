@@ -32,7 +32,7 @@ class LF_Test_SiteRent : LF_Test
 			return;
 
 #ifdef LF_E2E_LOAD_BOOT
-		if (!LF_SaveSections.BootHadSection(LF_SiteRentSavePayload.NAME))
+		if (!LF_E2E.SaveHasSection(LF_SiteRentSavePayload.NAME))
 		{
 			// The guard's pre-move e2e writes pass 1 with a build before this section (#2812).
 			LF_Debug.Info(LF_SiteRent.FEATURE, "e2e restart: the boot save has no siterent section, skipping the bank check");

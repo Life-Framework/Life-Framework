@@ -55,7 +55,7 @@ class LF_PropertyTierDef
 //------------------------------------------------------------------------------------------------
 //! A plot of land for sale: where it is is decided elsewhere (a place component); here only what it is.
 [BaseContainerProps()]
-class LF_PropertyPlotDef
+class LF_PropertyPlotDef : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Plot id, unique across the config")]
 	string m_sPlotId;
@@ -96,7 +96,47 @@ class LF_PropertyConfig
 			path = s_PathOverride;
 
 		s_Config = LoadFrom(path);
+		// A path override (tests) replaces the shipped file whole; only the shipped file takes pack layers.
+		if (s_Config && s_PathOverride.IsEmpty())
+			s_Config.ApplyLayers();
+
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges each pack overlay (the mission header's m_aLF_ConfigOverlays, in load order) over this
+	//! instance, which holds the core `.conf`: the plot catalogue by plot id (add, replace, patch,
+	//! remove; docs/config/override-model.md). Tiers are not layered. A plot a pack adds whose key is a
+	//! house identifier is refused like a core one (#2783).
+	void ApplyLayers()
+	{
+		if (!m_aPlots)
+			m_aPlots = new array<ref LF_PropertyPlotDef>();
+
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_PropertyConfig, "property", resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyPackContainer(resource.GetResource().ToBaseContainer(), names[i], claims);
+			LF_Debug.Info("Property", string.Format("property: pack overlay %1 changed %2 plots", names[i], changed));
+		}
+
+		if (!resources.IsEmpty())
+			RefuseHouseCollisions();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one pack overlay's `m_aPlots` by plot id. \return Plots changed.
+	//! \param[in] root The overlay's root container.
+	//! \param[in] source The overlay file, for log lines.
+	int ApplyPackContainer(notnull BaseContainer root, string source, LF_ConfigClaims claims = null)
+	{
+		if (!m_aPlots)
+			m_aPlots = new array<ref LF_PropertyPlotDef>();
+
+		return LF_ConfigOverlay.ApplyContainerList(new LF_PropertyPlotList(this), root, "m_aPlots", source, claims);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -357,6 +397,118 @@ class LF_PropertyConfig
 			return 0;
 
 		return LF_Utils.MaxInt(0, tier.m_iGraceHours);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The plot catalogue for the shared merge (LF_ConfigOverlay), keyed by plot id. A new plot needs a
+//! tier id; its price starts at 0 (not for sale) until the entry gives one.
+class LF_PropertyPlotList : LF_ConfigList
+{
+	protected LF_PropertyConfig m_Config;
+
+	void LF_PropertyPlotList(LF_PropertyConfig config)
+	{
+		m_Config = config;
+		if (!m_Config.m_aPlots)
+			m_Config.m_aPlots = new array<ref LF_PropertyPlotDef>();
+	}
+
+	override string GetName()
+	{
+		return "property.plots";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aPlots.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aPlots[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_PropertyPlotDef.Cast(record).m_sPlotId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sPlotId", id);
+		return id;
+	}
+
+	override string IdHint()
+	{
+		return "a plot id";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		LF_PropertyPlotDef plot = new LF_PropertyPlotDef();
+		plot.m_sPlotId = id;
+		return plot;
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_PropertyPlotDef plot = LF_PropertyPlotDef.Cast(record);
+		if (index < m_Config.m_aPlots.Count())
+			m_Config.m_aPlots.Set(index, plot);
+		else
+			m_Config.m_aPlots.Insert(plot);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aPlots.RemoveOrdered(index);
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		LF_PropertyPlotDef plot = LF_PropertyPlotDef.Cast(record);
+		if (plot.m_sPlotId.IsEmpty())
+			return "the entry has no plot id";
+		if (plot.m_sTierId.IsEmpty())
+			return "a plot needs a tier id (the house that can be built on it)";
+		if (plot.m_iPrice < 0)
+			return string.Format("price %1 is below 0", plot.m_iPrice);
+
+		return string.Empty;
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_PropertyPlotDef plot = LF_PropertyPlotDef.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_sTierId"))
+		{
+			string tierId;
+			if (container.Get("m_sTierId", tierId) && !tierId.IsEmpty())
+			{
+				plot.m_sTierId = tierId;
+				changed++;
+			}
+		}
+
+		if (container.IsVariableSetDirectly("m_iPrice"))
+		{
+			int price;
+			if (container.Get("m_iPrice", price) && price >= 0)
+			{
+				plot.m_iPrice = price;
+				changed++;
+			}
+			else
+			{
+				LF_Debug.Error("Property", string.Format("property.plots %1: pack price is below 0; keeping %2", plot.m_sPlotId, plot.m_iPrice));
+			}
+		}
+
+		return changed;
 	}
 }
 
