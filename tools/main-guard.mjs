@@ -81,6 +81,29 @@ const gh = (cwd, args) => {
   return spawnSync(bin, args, { cwd, encoding: "utf8", windowsHide: true, timeout: 120000 });
 };
 
+// Guard code freshness (mg.GUARD_CODE): the blob ids this process loaded, read once at import, against origin/main.
+function diskCodeIds(dir) {
+  const r = git(dir, ["hash-object", "--", ...mg.GUARD_CODE]);
+  const ids = r.status === 0 ? r.stdout.trim().split(/\r?\n/) : [];
+  const out = {};
+  mg.GUARD_CODE.forEach((p, i) => { if (/^[0-9a-f]{40}$/.test(ids[i] ?? "")) out[p] = ids[i]; });
+  return out;
+}
+const LOADED_CODE = diskCodeIds(dirname(dirname(SELF)));
+const originCodeIds = (dir) => mg.parseLsTree(git(dir, ["ls-tree", "origin/main", "--", ...mg.GUARD_CODE]).stdout);
+const codeDriftNow = (dir) => mg.codeDrift(LOADED_CODE, originCodeIds(dir));
+
+// Fast-forward the main checkout to origin/main (only on branch main, never forced) and say whether its guard code on
+// disk now matches origin/main's.
+function freshenMainCheckout(root) {
+  const mr = mainRoot(root);
+  if (git(mr, ["symbolic-ref", "--short", "HEAD"]).stdout.trim() === "main") {
+    const ff = git(mr, ["merge", "--ff-only", "-q", "origin/main"]);
+    if (ff.status !== 0) log(root, `main checkout did not fast-forward: ${String(ff.stderr || ff.stdout).trim().split(/\r?\n/)[0]}`);
+  }
+  return mg.codeDrift(diskCodeIds(mr), originCodeIds(mr)).length === 0;
+}
+
 function runDir(root, slug = RUN_SLUG) {
   return wtDirFor(root, slug);
 }
@@ -248,6 +271,13 @@ async function checkHead(root, dir, head) {
       });
     }
     checkout(dir, head);
+    // Stale guard code judged this run (2026-11-18, #2884, #2899): no red mark, no revert; the restart rechecks the head.
+    const drift = codeDriftNow(dir);
+    if (drift.length) {
+      log(root, `${head.slice(0, 8)} ${step.name} red, not acted on: ${mg.staleRefusal(drift)}`);
+      writeState(root, { running: null });
+      return;
+    }
     const refusal = b.stop ?? mg.revertRefusal(b.culprit, readState(root), { step: step.name, needsSkip });
     if (refusal) {
       log(root, `${head.slice(0, 8)} ${step.name} red, no revert: ${refusal}`);
@@ -453,6 +483,9 @@ export async function runWorker(root) {
   // The lease is renewed on its own timer: the loop below awaits a compile for many minutes, and a lease renewed only
   // between ticks went 16 min stale under a live worker (#2754), which the watchdog and `lead` read as a dead guard.
   let leaseLost = null;
+  let restart = false;
+  let staleSaidAt = 0;
+  writeState(root, { code: LOADED_CODE, codeFrom: dirname(dirname(SELF)) });
   const beat = setInterval(() => {
     try {
       const cur = pin.readLease(dir);
@@ -468,6 +501,18 @@ export async function runWorker(root) {
     try {
       git(dir, ["fetch", "origin", "--prune"]);
       const head = git(dir, ["rev-parse", "origin/main"]).stdout.trim();
+      // Stale code judges nothing: wait for a running stage 2 (it cannot revert), then restart on origin/main's code.
+      const drift = codeDriftNow(dir);
+      if (drift.length) {
+        const act = mg.staleAction({ drift, busy: !!stage2, checkoutFresh: !stage2 && freshenMainCheckout(root) });
+        if (act === "restart") { log(root, `guard code changed on origin/main (${drift.join(", ")}); restarting on ${head.slice(0, 8)}`); restart = true; break; }
+        if (act === "stuck" && Date.now() - staleSaidAt > 30 * 60 * 1000) {
+          staleSaidAt = Date.now();
+          log(root, `STALE: ${mg.staleRefusal(drift)}, and the main checkout cannot fast-forward; checking nothing until it does`);
+        }
+        await new Promise((r) => setTimeout(r, TICK_MS));
+        continue;
+      }
       // A requested check (`main-guard check <sha>`, e.g. a release candidate) goes first: its compile, then stage 2
       // on exactly that commit, whatever main's head is.
       const req = readState(root).request;
@@ -501,8 +546,14 @@ export async function runWorker(root) {
     await new Promise((r) => setTimeout(r, TICK_MS));
   }
   clearInterval(beat);
-  pin.writeLease(dir, "released", HOST);
   try { unlinkSync(lockPath(root)); } catch {}
+  if (restart) {
+    // The lease stays held (same host), so the new worker takes it over as ours with no gap another machine could use.
+    const code = await main(["start"], { root });
+    log(root, `self-restart ${code === 0 ? `ok (pid ${workerAlive(root)})` : `FAILED (exit ${code}); the watchdog retries`}`);
+    return 0;
+  }
+  pin.writeLease(dir, "released", HOST);
   return 0;
 }
 
@@ -551,13 +602,22 @@ export async function main(args, { root }) {
       const ld = pin.leaseDecision(pin.readLease(mainRoot(root)), HOST);
       if (!ld.ok) { console.log(`FAIL  main-guard: ${ld.why}. Only one guard runs; stop that one first.`); return 1; }
     }
+    // The worker runs the main checkout's code, fast-forwarded to origin/main first (never a worktree's copy, never a
+    // checkout behind origin/main: 2026-11-18 a worker that started 14 s before the pull reverted two PRs falsely).
+    const mr = mainRoot(root);
+    if (!freshenMainCheckout(root)) {
+      const drift = mg.codeDrift(diskCodeIds(mr), originCodeIds(mr));
+      console.log(`FAIL  main-guard: the main checkout's guard code (${drift.join(", ")}) is not origin/main's and it cannot fast-forward; update ${mr} to origin/main, then start again`);
+      return 1;
+    }
+    const entry = join(mr, "tools", "main-guard.mjs");
     const { quietSpawnDetached } = await import("./lib/quiet-launch.mjs");
     const il = await import("./lib/interactive-launch.mjs");
     try {
       // Over ssh a detached child dies with the session (2026-11-16: three workers logged "starts" and vanished), so the
       // worker starts through a one-shot Interactive task on the console desktop, which outlives the ssh job.
-      if (il.interactiveNeeded()) il.interactiveSpawnDetached(process.execPath, [SELF, "worker", mainRoot(root)], { cwd: dirname(dirname(SELF)), marker: "main-guard.mjs" });
-      else quietSpawnDetached(process.execPath, [SELF, "worker", mainRoot(root)], { cwd: dirname(dirname(SELF)), env: process.env });
+      if (il.interactiveNeeded()) il.interactiveSpawnDetached(process.execPath, [entry, "worker", mr], { cwd: mr, marker: "main-guard.mjs" });
+      else quietSpawnDetached(process.execPath, [entry, "worker", mr], { cwd: mr, env: process.env });
     } catch (e) {
       console.log(`FAIL  main-guard: worker did not start: ${e?.message ?? e} (log ${logPath(root)})`);
       return 1;
@@ -606,7 +666,11 @@ export async function main(args, { root }) {
     const leaseAge = lease?.at ? Date.now() - Date.parse(lease.at) : 0;
     const who = lease === undefined ? "lease unknown (gh failed)" : !lease || lease.state !== "held" ? "no guard holds the lease" : leaseAge > pin.LEASE_TTL_MS ? `STALE lease of ${lease.host} (pid ${lease.pid}, renewed ${Math.round(leaseAge / 60000)} min ago; no live guard, \`main-guard start\` takes it over)` : `running on ${lease.host} (pid ${lease.pid}, lease renewed ${Math.round((Date.now() - Date.parse(lease.at)) / 60000)} min ago)`;
     if (!alive) console.log(`MAIN GUARD ${who}`);
-    else console.log(`  github: ${who}`);
+    else {
+      console.log(`  github: ${who}`);
+      const dr = mg.codeDrift(readState(root).code, originCodeIds(mr));
+      console.log(`  code: ${dr.length ? `STALE (${dr.join(", ")} differ from origin/main; the worker restarts itself when idle, or reverts nothing)` : "origin/main's"}`);
+    }
     console.log(`  main ${head.slice(0, 8)}: ${hs ?? "unchecked"}; newest compiled-ok or better: ${ck ? `${ck.sha.slice(0, 8)} (${ck.status}, ${ck.behind} behind)` : "none"}`);
     console.log(`  log ${logPath(root)}; flakes ${flakeLog(root)}`);
     return 0;
