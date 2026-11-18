@@ -7,7 +7,15 @@ GenericEntity : "{ACCC8B6FEB32034C}Prefabs/Items/Fishing/LF_FishTrout.et" {
      Name "#LF-Item_FishTuna_Name"
      Description "#LF-Item_FishTuna_Description"
     }
+    CustomAttributes {
+     PreviewRenderAttributes "{AB413D9CB8783DEB}" {
+      CameraDistanceToItem 1.65
+     }
+    }
    }
+  }
+  MeshObject "{CF3097B91F6EE919}" {
+   Object "{72D454B3F08D0530}Assets/Items/Fishing/FishTuna/FishTuna.xob"
   }
  }
 }
