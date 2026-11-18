@@ -37,6 +37,7 @@
     "LF_RaceCoursesConfig",
     "LF_RadioPlaylistConfig",
     "LF_ResourceChainConfig",
+    "LF_ResidentsConfig",
     "LF_RespawnConfig",
     "LF_SafeTypeConfig",
     "LF_ServiceCallsConfig",
