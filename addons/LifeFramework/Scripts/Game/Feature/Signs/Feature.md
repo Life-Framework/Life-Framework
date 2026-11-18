@@ -151,3 +151,10 @@ a dark drop shadow (`LF_SignStyleDef.m_vGhostColor` at the ghost alpha), ground 
 `m_vPaintColor` and `m_vTextColor` (`LF_SignStyleDef.m_bPlacementColors`, `LF_SignStyledFace.FaceColors`). The `fascia`
 size has no carrier: the vanilla body samples `$rendertarget` itself and the style shows 1024 x 213 of the target.
 The layout is `UI/Layouts/Signs/Styles/LF_SignStyle_Fascia.layout`. Test `signs/fascia`.
+
+Centring: a client seats a title about a quarter of its font below the middle of its widget, and a widget shorter than
+its line anchors the text at the top instead (bank and gendarmerie at font 129 sat 29 to 32 layout units low, the
+hospital at 67 sat 20; measured on a 1280x720 client, straight on, 2026-11-18). `LF_SignStyleDef.m_fTitleLift` (fascia
+0.25, a share of the title font; 0 keeps the plain box) puts the title in a box `LF_SignFacePlan.TITLE_BOX_EM` ems tall,
+centred on the title area and raised by that share; the drop shadow follows. After it the bank and the gendarmerie
+lettering sits within 1 px of the face centre and the hospital within 3.
