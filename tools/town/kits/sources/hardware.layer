@@ -1,0 +1,103 @@
+// Source of the `hardware` kit (tools/town/kits/hardware.json): the two counters' tills. `town fit` reads each component's GUID
+// and the nested blocks (action contexts, additional actions) from here, matched on the row's prefab and name. They are the
+// general store's tills (Place_saint-philippe_general-store.layer, #3085) pointed at the `hardware` stock and the
+// `miners_supply` catalogue outlet. The shop counter's stock is the pack's `hardware` stock (#3218); the miner's supply
+// counter sells the pickaxe behind the MINER job gate.
+GenericEntity Hardware_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{7C21A0B5D93E4F10}" {
+   m_sShopName "#LF-Shop_Name_Hardware"
+   m_sShopDescription "#LF-Shop_Desc_Hardware"
+   m_sStockId "hardware"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{7C21A0B5D93E4F11}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{7C21A0B5D93E4F12}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{7C21A0B5D93E4F13}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7C21A0B5D93E4F14}" {
+      Name "#LF-Shop_Open_Hardware"
+      Description "#LF-Shop_OpenDesc_Hardware"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}
+GenericEntity Hardware_MinersTill : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{6B3C1D2E4F5A7091}" {
+   m_sShopName "#LF-Shop_Name_MinersSupply"
+   m_sShopDescription "#LF-Shop_Desc_MinersSupply"
+   m_sOutletId "miners_supply"
+  }
+  ActionsManagerComponent "{6B3C1D2E4F5A7092}" {
+   ActionContexts {
+    UserActionContext "{6B3C1D2E4F5A7093}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{6B3C1D2E4F5A7094}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{6B3C1D2E4F5A7095}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6B3C1D2E4F5A7096}" {
+      Name "#LF-Shop_Open_MinersSupply"
+      Description "#LF-Shop_Desc_MinersSupply"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}
+// The vanilla props the kit dresses with (counters, shelving, racks, bench, the yard pallets and stock): listed here so the kit check can read their GUIDs from the source.
+GenericEntity Source_CounterShop_01 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_EL_FuelTill : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ coords 0 0 0
+}
+GenericEntity Source_LF_Npc_StoreClerk_1 : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 0 0 0
+}
+GenericEntity Source_ShelfShop_01 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_ToolRack_01 : "{20C6CD91EBCF3AD5}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_Workbench_02 : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+ coords 0 0 0
+}
+GenericEntity Source_Pallet_01 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_BrickPile_01_Medium : "{B808D460E33CDFAF}Prefabs/Props/Construction/BrickPile/BrickPile_01_Medium.et" {
+ coords 0 0 0
+}
+GenericEntity Source_BoxMortar_01 : "{3C44DBCDA1FD917A}Prefabs/Props/Construction/BoxMortar_01/BoxMortar_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_PlankPile_01_Medium : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 0 0 0
+}
+GenericEntity Source_LF_Sign_Fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ coords 0 0 0
+}
