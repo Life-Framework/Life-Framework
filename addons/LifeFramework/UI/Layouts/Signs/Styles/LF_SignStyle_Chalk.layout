@@ -1,0 +1,85 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Slot FrameWidgetSlot "{57790D5043246FE1}" {
+  SizeX 1920
+  OffsetRight -1920
+  SizeY 1080
+  OffsetBottom -1080
+ }
+ {
+  RTTextureWidgetClass "{ACDC17DD94C0B851}" {
+   Name "RTTexture0"
+   Slot FrameWidgetSlot "{0D64606D2133A202}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 1920
+    OffsetRight -1920
+    SizeY 1080
+    OffsetBottom -1080
+   }
+   {
+    ImageWidgetClass "{2B1D681FA5D651DE}" {
+     Name "Ground"
+     Slot FrameWidgetSlot "{44AA6762490B9B64}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.11 0.13 0.12 1
+    }
+    TextWidgetClass "{8FE0FB42D3C07008}" {
+     Name "Ghost"
+     Slot FrameWidgetSlot "{2D0C419C20D5F43C}" {
+      OffsetLeft 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 100
+      OffsetBottom -100
+     }
+     Color 0.93 0.93 0.89 0.1
+     Text ""
+     "Font Size" 120
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{7312404EB5204D54}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    TextWidgetClass "{9036C67953B8EC27}" {
+     Name "Title"
+     Slot FrameWidgetSlot "{DA2E6962679E683F}" {
+      OffsetLeft 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 100
+      OffsetBottom -100
+     }
+     Color 0.93 0.93 0.89 0.85
+     Text ""
+     "Font Size" 120
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{CB2C51A40457F512}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    FrameWidgetClass "{6AE0E5F00DB3726A}" {
+     Name "Rows"
+     Slot FrameWidgetSlot "{F0252EC3781FF35E}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+    }
+   }
+  }
+ }
+}

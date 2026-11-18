@@ -11175,6 +11175,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the shopkeeper"
      Comment "Action on a store's shopkeeper: opens the conversation (#1143)."
     }
+    CustomStringTableItem "{6511ED0DDAE0AF1B}" {
+     Id "LF-Sign_ChalkSample_Bait"
+     Target_en_us "Fishing bait"
+     Comment "Sample chalk board price row label."
+    }
+    CustomStringTableItem "{E4551DF35C444813}" {
+     Id "LF-Sign_ChalkSample_Bread"
+     Target_en_us "Bread"
+     Comment "Sample chalk board price row label."
+    }
+    CustomStringTableItem "{2E0E075D4360F789}" {
+     Id "LF-Sign_ChalkSample_Coffee"
+     Target_en_us "Coffee"
+     Comment "Sample chalk board price row label."
+    }
+    CustomStringTableItem "{AB08B102E0D6EDF8}" {
+     Id "LF-Sign_ChalkSample_Fuel"
+     Target_en_us "Jerry can of fuel"
+     Comment "Sample chalk board price row label."
+    }
+    CustomStringTableItem "{F1E37CC41BF9295B}" {
+     Id "LF-Sign_ChalkSample_Title"
+     Target_en_us "Today's prices"
+     Comment "Sample chalk board title (sign styles, #sign-overhaul): a generic price board."
+    }
+    CustomStringTableItem "{74C99019C7953F31}" {
+     Id "LF-Sign_ChalkSample_What"
+     Target_en_us "A chalk board with a title and a short price list."
+     Comment "Read card of the sample chalk board."
+    }
     CustomStringTableItem "{62312EEA2BF57769}" {
      Id "LF-Sign_Close"
      Target_en_us "Put it back"
