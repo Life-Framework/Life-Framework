@@ -127,3 +127,19 @@ The priced sign (#1946, `m_sPriceLotShopId`) is the second kind: `LF_PricedSignP
 `priced`, in `LF_SignComponent.c`. `AnswerFor(lot, vehicle)` is its answer (offer name key, price);
 the sign fills its title from it. It names no read action (the face is painted on each client, no
 RPC), so a client cannot ask the server for it. Test `signs/priced-provider`.
+
+## Styled faces (#3296, 2026-11-18)
+
+The overhaul's model (`docs/architecture/sign-system.md`): a face is style x size x content x finish.
+`LF_SignComponent.m_sStyle` and `m_sSize` name rows of `Configs/Signs/LF_SignStyles.conf`
+(`LF_SignStyle.c`; pack overlay `signstyles`); a sign row's own `m_sStyle` wins over the prop's. With a
+style set, `LF_SignStyledFace` spawns the size's carrier (a one-mesh `$rendertarget` quad, `LF_BoardFace.et`
+for `quad16x9`) at the prop's face offset, angles and scale, and paints the style layout from
+`LF_SignFacePlan.Compose`: the title (capitals, hand tilt, a faint shifted ghost) and up to 8 `m_aRows`
+(label, dot leader, right-aligned value, one font for every row). A style or size that does not resolve logs
+`[LFDebug:Signs]` and the legacy face is drawn; an empty style is the legacy face unchanged. The log line is
+`styled face printed: <id> style=<s> size=<z> rows=<n>`.
+
+First style: `chalk` on `LF_Sign_Chalkboard` (face `-90 0 0`, offset `0 1.53 0.3`, scale 1.15 covers the slate).
+Sample sign `chalk_sample` (Today's prices, four rows) stands in GridWorld cell `sign-overhaul`. Tests LOGIC
+`signs/face-plan`, `signs/styles`. Proof of a face is a full-profile session shot (`look` draws render targets white).

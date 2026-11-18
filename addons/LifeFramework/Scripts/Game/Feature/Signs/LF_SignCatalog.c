@@ -36,6 +36,47 @@ class LF_SignDef : LF_ConfigRecord
 
 	[Attribute("", UIWidgets.EditBox, "Where to go after this place, so a stranger can follow the loop")]
 	string m_sNext;
+
+	[Attribute("", UIWidgets.EditBox, "Face style id in Configs/Signs/LF_SignStyles.conf. Empty: the prop's style (LF_SignComponent.m_sStyle)")]
+	string m_sStyle;
+
+	[Attribute("", UIWidgets.Object, "Rows printed on a styled face under the title: a label and a value (a price board's goods). A pack replaces the whole sign to change them")]
+	ref array<ref LF_SignRow> m_aRows;
+}
+
+//------------------------------------------------------------------------------------------------
+//! One printed row of a styled face: "Coffee ....... 2". Either field may be a localization key.
+[BaseContainerProps(), LF_SignRowTitle()]
+class LF_SignRow
+{
+	[Attribute("", UIWidgets.EditBox, "Label, left")]
+	string m_sLabel;
+
+	[Attribute("", UIWidgets.EditBox, "Value, right (a price as written)")]
+	string m_sValue;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_SignRow Create(string label, string value)
+	{
+		LF_SignRow row = new LF_SignRow();
+		row.m_sLabel = label;
+		row.m_sValue = value;
+		return row;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class LF_SignRowTitle : BaseContainerCustomTitle
+{
+	override bool _WB_GetCustomTitle(BaseContainer source, out string title)
+	{
+		string label;
+		string value;
+		source.Get("m_sLabel", label);
+		source.Get("m_sValue", value);
+		title = label + "  " + value;
+		return true;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -157,6 +198,8 @@ class LF_SignList : LF_ConfigList
 		if (container.IsVariableSetDirectly("m_sRules") && container.Get("m_sRules", sign.m_sRules))
 			changed++;
 		if (container.IsVariableSetDirectly("m_sNext") && container.Get("m_sNext", sign.m_sNext))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sStyle") && container.Get("m_sStyle", sign.m_sStyle))
 			changed++;
 
 		return changed;
@@ -354,6 +397,8 @@ class LF_SignCatalog
 		copy.m_sNeeds = sign.m_sNeeds;
 		copy.m_sRules = sign.m_sRules;
 		copy.m_sNext = sign.m_sNext;
+		copy.m_sStyle = sign.m_sStyle;
+		copy.m_aRows = sign.m_aRows;
 		return copy;
 	}
 

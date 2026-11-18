@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{EB36F2BFADA21A36}Assets/Items/Store1989/PickleJar/Data/PickleJar_BCR.edds"
+ NMOMap "{FB03C11DC5ADB7B8}Assets/Items/Store1989/PickleJar/Data/PickleJar_NMO.edds"
+}
