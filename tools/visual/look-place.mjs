@@ -14,6 +14,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 export const PLACE_RX = /^place:([a-z0-9][a-z0-9-]*)\/([a-z0-9][a-z0-9-]*)$/;
+const PLACE_SLUG = /^[a-z0-9][a-z0-9-]*$/;
 const r1 = (v) => Math.round(v * 10) / 10;
 const norm = (az) => ((Math.round(az) % 360) + 360) % 360;
 
@@ -24,11 +25,17 @@ export function readPlace(root, place, { dossierFile, mappingFile } = {}) {
   const mFile = mappingFile ?? join(dir, "mapping.json");
   if (!existsSync(dFile)) throw new Error(`place ${place} has no dossier (${dFile}); run tools\\cli scout first`);
   if (!existsSync(mFile)) throw new Error(`place ${place} has no mapping (${mFile}); run tools\\cli town map ${place}`);
-  return { dossier: JSON.parse(readFileSync(dFile, "utf8")), mapping: JSON.parse(readFileSync(mFile, "utf8")) };
+  const mapping = JSON.parse(readFileSync(mFile, "utf8"));
+  const others = {};
+  for (const e of Object.values(mapping?.slots ?? {})) {
+    const f = typeof e?.dossier === "string" && PLACE_SLUG.test(e.dossier) ? join(root, "docs", "everon", "places", e.dossier, "dossier.json") : null;
+    if (f && !others[e.dossier] && existsSync(f)) others[e.dossier] = JSON.parse(readFileSync(f, "utf8"));
+  }
+  return { dossier: JSON.parse(readFileSync(dFile, "utf8")), mapping, others };
 }
 
 // Pure: { dossier, mapping } and a slot -> the look area { name, x, y, z, radius, front, world: "island", room, wideCands, slot }.
-export function placeArea({ dossier, mapping }, place, slot, radius) {
+export function placeArea({ dossier, mapping, others }, place, slot, radius) {
   const entry = mapping?.slots?.[slot];
   if (!entry || entry.none) {
     const known = Object.entries(mapping?.slots ?? {}).filter(([, e]) => e && !e.none).map(([id]) => id);
@@ -41,8 +48,10 @@ export function placeArea({ dossier, mapping }, place, slot, radius) {
     const R = radius ?? Math.max(15, r1(Math.hypot(p.width ?? 20, p.depth ?? 20) / 2 + 6));
     return { name, x: p.x, y: 0, z: p.z, radius: R, front: 180, world: "island", slot: { place, id: slot, plot: p.id } };
   }
-  const b = (dossier.buildings ?? []).find((q) => q.id === entry.building);
-  if (!b) throw new Error(`slot ${slot}: building ${entry.building} is not in the dossier of ${place}`);
+  // An entry with `dossier` stands in another place's survey (the harbour master's cabin at the dock): read that one.
+  const from = entry.dossier ? (others?.[entry.dossier] ?? { buildings: [] }) : dossier;
+  const b = (from.buildings ?? []).find((q) => q.id === entry.building);
+  if (!b) throw new Error(`slot ${slot}: building ${entry.building} is not in the dossier of ${entry.dossier ?? place}`);
   const fp = b.footprint ?? {};
   const cx = fp.cx ?? b.x;
   const cz = fp.cz ?? b.z;

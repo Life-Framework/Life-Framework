@@ -34,6 +34,7 @@
 - 🧪 **Seeds go on open ground only (#2821, spec #809).** After `CanPlace`, `LF_Plants.PlantAs` runs `OpenGroundAt`: a trace from 12 m above the spot down to the terrain (people are skipped), and `LF_PlantRules.OpenGround` refuses with `NOT_OPEN_GROUND` (toast `#LF-Plant_NotOpenGround`, no seed taken) when the planter's feet are more than 1 m above the terrain under them (a floor or a roof), the trace met anything but the terrain first (a roof, a prop, a tree, a sidewalk, slab or rock on the spot), the surface material name is a road (asphalt, road, concrete, cobble, pavement, gravel, paved, tarmac), or the terrain at the spot is below sea level. Before this a player in a house planted under its floor and roads and shallows took seeds. Test `farming/plant-open-ground` (`LF_Test_PlantOpenGround`).
 - 🧪 **Planted crops reach dedicated-server clients, late joiners included (#2819).** `LF_PlantReplication` keeps a server carrier table of `{plantId, cropId, position, stage}` (no clocks, no owner key). `LF_Plants` calls `Publish` on its 1 s tick and only a new plant or a changed stage sends one `RpcDo_LF_PlantUpsert` broadcast on `LF_GameModeRoleplay`; harvest or clear sends `RpcDo_LF_PlantRemove`, applying a save sends `RpcDo_LF_PlantClear`. A late joiner gets the whole table in the game mode's `RplSave`/`RplLoad` (versioned, after the chain below). A client keeps a mirror and draws one local stage mesh per row, redrawn on a stage change; a crop its own catalogue does not know logs `[LFDebug:Farming]` and draws nothing. A listen host or Workbench still draws through `LF_Plants`. Test `farming/plant-replication` (`LF_Test_PlantReplication`).
 - 🧪 **The world reset clears planted crops (#2820).** The `farm` step of the world reset (`LF_WorldReset_Farm`) now also calls `LF_Plants.ClearAll()`: every plant row, local mesh and replicated carrier row is dropped (`LF_PlantReplication.RetractAll`, so dedicated-server clients delete their meshes too) and the 1 s tick stops; the farming clock and a test's catalogue override are kept (that is `ResetStatics`). The step's count is plots plus plants cleared, and the next save exports no plants. Test `LF_Test_PlantWorldReset` (`farming/plant-world-reset`).
+- 🧪 **Cabbage is a real crop; the crop catalogue takes pack overlays (#3176, refs #810).** `LF_CropCatalogue.Get` now merges each pack overlay in the mission header's `m_aLF_ConfigOverlays` by crop id through the shared `LF_ConfigOverlay` (add, replace, patch, remove; `LF_CropList`, the same shape as `LF_PropertyConfig`); `LF_CropRow` is an `LF_ConfigRecord`. A new or replaced crop needs a seed and two or more stage prefabs, none empty; otherwise the row is dropped with `LF_Debug.Error("Config", ...)` naming the pack file and the reason. A patch changes only the fields it names. `Reload` and a static-reset hook drop the cached catalogue at world end. The Everon 1989 pack ships `Configs/Farming/LF_Crops_Everon1989.conf` (listed in `LF_Everon1989.conf`): `cabbage`, seed `CabbageSeeds.et`, 1200 s to ripe (about 20 real minutes), one watering anywhere from 400 s to 800 s after planting, ripe for an hour, yield 3 `Cabbage.et` (the trader buys it at 4). Its three stages are `LF_CabbageStage1..3.et` in the pack (`FarmPlot_CabbageVisual.et` at 25 %, 55 % and full size; local scenery, no `RplComponent`, no actions). **Still open:** wiring HARVEST and INSPECT onto the stage meshes through a player-controller server request (plant meshes are local, no RplId) belongs to the follow-up card (Y8, #810 lead note); PLANT on the seed and WATER on the bottle already work. Tests `LF_Test_CropCatalogueOverlay` (`farming/crop-catalogue-overlay`, overlay `Configs/Tests/LF_Test_CropOverlay.conf`) and, in the pack leg, `LF_Test_EveronCrops` (`everon/crops`).
 
 ### `LF_ProcessAction` — `Feature/Processing/LF_ProcessAction.c`
 - ✅ Recipe: consume all `m_aProcessingInputs`, produce all
@@ -42,6 +43,13 @@
   empty input/output lists, missing inputs, and non-positive amounts are
   rejected before inventory mutation. Regression coverage is in
   `LF_Test_ActionGuards`.
+- ✅ Machine rules for the mining chains (#3226). A `ResourceChains.conf` machine row can set
+  `m_sLevelJob` + `m_iMinLevel`: the server refuses a player below that level in the job's own
+  words (`LF_JobLevelWords`, no number). It can set `m_iMaxBatches`: one interaction runs as many
+  whole batches as the inventory covers, up to the cap, takes all inputs together with the existing
+  rollback, and pays job rewards once per batch. A short input is named in the refusal ("Needs
+  Coal") instead of "Missing the input materials". Defaults (no job, cap 1) keep every existing
+  machine as it was. Test: `LF_Test_MachineRecipeRules`.
 - ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
   empty recipe or a prefab that does not resolve logs `LF_Debug.Error` and
   returns before inventory changes (verified 2026-10-11).
@@ -126,3 +134,28 @@
   second start, or a nugget removed before the end logs `LF_Debug.Error` and
   yields no bar. A zero delay finishes inside the start.
 
+
+### Gather and process toasts (#3156) — `LF_GatherAction`, `LF_ProcessAction`
+- ✅ A finished gather shows one toast: `Iron ore x1 (+5 XP). The trader pays $50 for Iron bar.` The XP is what the
+  level source actually paid (a cooldown, the daily cap or a family with no XP leaves the `(+N XP)` part out).
+- ✅ The trader price comes from the merged market config: the item's own row, else the row of the first product a
+  processing machine makes from it (the bar for an ore). A live curve price wins over the base. An item no trader
+  buys omits the price sentence.
+- ✅ A finished process shows what came out (`Iron bar x1. The trader pays $50 for Iron bar.`), one toast per action.
+- ⚠️ The server builds the sentence, so item names are translated on the server; a dedicated server is a manual check.
+
+### Mining chain reagent items (#3230, epic #3206)
+- 🧪 Three carriable items for the mining chains, named with `LF-Item_*` keys in the core table: coal
+  (`Prefabs/Resources/Mining/CoalLump.et`, 0.8 kg, the vanilla `Clutter/Coal` lump mesh; the repo's `Coal.xob`
+  has no baked textures and renders as a checkerboard), limestone (`Prefabs/Resources/Mining/Limestone.et`,
+  4 kg, a vanilla concrete-fragment mesh, about 10 fill a backpack so stone needs a truck) and the acid carboy
+  (`Prefabs/Items/Resources/AcidCarboy.et`, 8 kg, a two-handed load on the vanilla jerrycan mesh). They are items
+  only: no node, recipe, shop or buyer row yet (the chain cards D2, D3, D4 add those). Test `mining/reagent-items`.
+
+### `LF_TreeFelling` — `Feature/Lumber/LF_TreeFelling.c`
+- 🧪 **Felling rules for real map trees (#3259, design `docs/roadmap/lumber.md`).** Pure rules, not yet used in the world (the axe action is #3260). A base-game tree prefab path (`Prefabs/Vegetation/Tree/<species>/<name>.et`) is read as a wood class from `Configs/Lumber/LF_TreeSpecies.conf`: pine, spruce and larch are softwood; hornbeam, linden, alder, birch and poplar are hardwood; orchards, willow and rowan are not felled. The size is the first digit after the species stem, skipping the `02_` of the v2 models. Stumps, branches, `base` prefabs, fallen trunks and size 0 saplings are never felled. The yield table gives 15/25/35 s and 1/2/3 logs for softwood, 30/45/60 s and 1/2/3 logs for hardwood, the XP action (`gather_logging`, or `fell_hardwood` for hardwood) and the stamina cost. `Check` returns the first refusal in this order: NO_AXE, NOT_A_TREE, TOO_SMALL, ALREADY_FELLED, TOO_FAR (3 m), SAFE_ZONE, NEAR_ROAD (4 m), NEAR_BUILDING (12 m), TIRED. `KeyOf` is the stable tree key (decimetre x and z plus the lower-case prefab). `LF_TreeFellingLedger` records felled keys with their regrow time (softwood 45 min, hardwood 90 min) in whole seconds. Test `lumber/felling-rules`.
+
+### Lumber goods and the sawmill's choices (#3264) — `Prefabs/Processor/Sawmill.et`, `Configs/Resources/ResourceChains.conf`
+- 🧪 **Four new goods** in `Prefabs/Resources/WoodCutting/`, each from base-game meshes: `WoodLog_Hardwood.et` (a hand-carry log, mesh `WoodLog_01_B`, a log like `WoodLog_01_Small` and with no pocket storage), `HardwoodBoard.et` (a plank), `FencePost.et` (mesh `WoodLog_01_D`) and `FirewoodBundle.et` (mesh `WoodKindling_Crate_01`). The board looks like a plank for now.
+- 🧪 **One sawmill action per choice**, each one log per batch and up to 5 batches per use: softwood log to 4 planks and 1 kindling (`sawmill`, 10 s), to 2 posts (`sawmill-posts`, 8 s) or to 4 firewood (`sawmill-firewood`, 6 s); hardwood log to 2 boards (`sawmill-boards`, 15 s) or to 5 firewood (`sawmill-hardwood-firewood`, 6 s). The recipes are chain rows in `ResourceChains.conf`; the prefab holds only the action names. A log of the wrong wood is refused (the hardwood log is its own prefab, not a softwood log). Test `lumber/processing`.
+- ⚠️ Not yet bought or sold anywhere (the buyers are LB9 and later); XP for sawing is the existing `LUMBERJACK_PROCESS` row.

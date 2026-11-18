@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6EB6BECFF22FD78A}Configs/Lumber/LF_TreeSpecies.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

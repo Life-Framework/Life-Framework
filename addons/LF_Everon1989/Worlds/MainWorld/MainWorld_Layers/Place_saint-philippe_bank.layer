@@ -76,3 +76,19 @@ GenericEntity Fit_saint_philippe_bank_lf_sign_fascia : "{4697D9464B596C24}Prefab
  coords 4372.584 16.1 10649.702
  angleY 173
 }
+LF_NpcBaseEntity Fit_saint_philippe_bank_bank_teller : "{5B2A1E072C8DD6B7}Prefabs/Characters/Npcs/Outfits/LF_Npc_Teller_2.et" {
+ coords 4367.722 13.053 10650.73
+ angleY -7
+}
+GenericEntity Fit_saint_philippe_bank_lf_sign_atm : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
+ components {
+  LF_SignComponent "{0F52A6E4DA40DB6F}" {
+   m_sSignId "atm"
+   m_vRimColor 0.1 0.3 0.15
+   m_vPaintColor 0.95 0.95 0.92
+   m_vTextColor 0.1 0.3 0.15
+  }
+ }
+ coords 4376.154 14.3 10650.165
+ angleY 173
+}

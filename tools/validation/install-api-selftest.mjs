@@ -2,6 +2,7 @@
 // docs dump drops, the build stamp reads the Steam manifest, staleness is flagged.
 // red-proof: with extractClass not walking up over attribute lines this printed
 // "attribute missing" and exited 1.
+// inputs: imports
 import { extractClass, parseManifest, staleNote } from "../lib/install-api.mjs";
 
 const fail = (m) => { console.error(`install-api-selftest: ${m}`); process.exit(1); };

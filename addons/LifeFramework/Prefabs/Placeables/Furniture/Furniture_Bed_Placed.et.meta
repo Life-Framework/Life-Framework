@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{EFF4F80C6C9E1391}Prefabs/Placeables/Furniture/Furniture_Bed_Placed.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

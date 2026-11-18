@@ -1,0 +1,21 @@
+GenericEntity : "{FAEF245300848A2C}Prefabs/Items/Fishing/LF_FishTroutSmall.et" {
+ ID "4A8E1711C69B9FDF"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_FishTuna_Small_Name"
+     Description "#LF-Item_FishTuna_Small_Description"
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{AB413D9CB8783DEB}" {
+      CameraDistanceToItem 1.09
+     }
+    }
+   }
+  }
+  MeshObject "{CF3097B91F6EE919}" {
+   Object "{8286F367851FF333}Assets/Items/Fishing/FishTunaSmall/FishTunaSmall.xob"
+  }
+ }
+}

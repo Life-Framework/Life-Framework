@@ -1,0 +1,39 @@
+GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" {
+ ID "C0666ED01E12B85D"
+ components {
+  SoundComponent "{5A4ADB24952425BA}" {
+   Filenames {
+    "{0026043E3CD828D0}Sounds/Items/_SharedData/PickUp/Items_PickUp_Generic_Metallic.acp"
+   }
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_CoalLump_Name"
+     Description "#LF-Item_CoalLump_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.8
+     SizeSetupStrategy Volume
+     ItemVolume 250
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{C936DF42F661FC74}" {
+     HandAdditiveRotation 0 0 0
+     HandAdditiveTranslation 0 0.005 -0.065
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{057B0757A778ED29}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 3.6
+      FOV 10
+     }
+    }
+    m_Size SLOT_1x1
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{D895196B83A46FEA}Assets/Clutter/Coal/c_coal_debris_01.xob"
+  }
+ }
+}

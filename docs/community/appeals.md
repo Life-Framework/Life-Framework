@@ -39,7 +39,7 @@ Incident numbers you were told, if any:
 What happened, in your words:
 What you think was wrong or too long:
 What you want staff to check:
-Clip or screenshot (with the F9 stamp on, if you have one):
+Clip or screenshot (with the F8 stamp on, if you have one):
 ```
 
 A clip and what to put in the note are in [Record a clip](../player-clips.md).
@@ -89,7 +89,7 @@ the moderator guide).
 3. Read the incidents. The numbers on the `BAN` row are the incident numbers of
    that account at the ban. In the Game Master incident panel, flagged incidents
    show as `REPORTED #<number>` and a row's time matches the ban's unix time and
-   a clip's F9 stamp (see "Reading the incident panel" in the moderator guide).
+   a clip's F8 stamp (see "Reading the incident panel" in the moderator guide).
    The incident log keeps 14 days and 2000 records, so after that the numbers
    name rows that are gone: copy the rows into the ticket when you ban, not when
    the appeal comes.

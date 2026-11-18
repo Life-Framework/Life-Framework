@@ -13,6 +13,7 @@
 // red-proof: 2026-11-14, one line broken, restored after its FAIL was seen:
 //   locate() ignoring `needs`                         -> FAIL locator: needs archbuilder picks the 5.3 install
 //   handle_line() without the hmac.compare_digest test -> FAIL (python) no token: unauthorized, and the handler never ran
+// inputs: tools/blender/**
 import net from "node:net";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, utimesSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";

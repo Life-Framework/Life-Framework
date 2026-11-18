@@ -1,0 +1,38 @@
+GenericEntity : "{61C577C0E2A178A6}Prefabs/Items/Food/Food_Base.et" {
+ ID "C3D977422CDE71CE"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{7BDC48FD4E998DE1}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 1.4
+      FOV 10
+     }
+    }
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_Bread"
+     Description "#LF-Item_BreadDesc"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.5
+     SizeSetupStrategy Volume
+     ItemVolume 1000
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{5966FD8070F889C7}" {
+     HandAdditiveRotation 90 0 -90
+     HandAdditiveTranslation 0 0.02 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{059FBDB94286EF6F}Assets/Props/S2/S2_Bread/S2_Bread.xob"
+  }
+  SCR_ConsumableItemComponent "{5AD2A3AD8402632B}" {
+   m_ConsumableEffect LF_ConsumableEffectSurvival "{084F3DD6F03DF60E}" {
+    m_fHungerRestore 30
+   }
+  }
+ }
+}

@@ -4,6 +4,7 @@
 // for, in a fixture tree (#957).
 // red-proof: with the unknown-node check disabled this printed "FAIL unknown reply target: expected
 // /unknown node/" and exited 1 (2026-11-14).
+// inputs: imports
 
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";

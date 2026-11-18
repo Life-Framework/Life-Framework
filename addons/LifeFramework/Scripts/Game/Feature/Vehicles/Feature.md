@@ -28,3 +28,10 @@ Each owned vehicle record carries a tow state (`LF_EVehicleTowState`), towed-at 
 - **Others:** the chop shop resolves a colour child to its base colour first (`LF_ChopShopRules.PayoutForPrefab`), so it pays as its model. Impound already falls back from the spawn prefab to the catalog prefab. A respawn whose saved colour prefab no longer loads (a pack dropped it) comes back in the model's base colour with a warning (`LF_VehicleOwnership.RespawnNameFor`).
 - **Data:** `LF_VehicleColours.conf` empty in core; pack rows in cc-2 and cc-4. Colour names are neutral core strings.
 - **Proof:** `vehicles/colours` (LOGIC), `vehicles/colours-overlay` (WORLD, a pack overlay add, patch and remove).
+
+## DLC vehicles (#3304, harvester spike #3282)
+
+- **Player sees:** the Rally tractor (`Z7211`) can be sold at the lot. A player without the Rally DLC who presses Buy is told *This tractor needs the Rally DLC.* and is not charged; an owner gets the locked child like any lot car. Vanilla refuses a non-owner the driver seat, so the lot never sells a tractor nobody could drive.
+- **Rule:** `LF_VehicleDlcGate`. DlcManager answers only for the machine it runs on (vanilla checks DLC on the acting client), so the buyer's client asks its own licence (`LocalOwns`, in `LF_AskBuyVehicle`) and sends the answer with the buy; the server (`LF_VehicleLot.Buy`) refuses a `/Wheeled/Z7211/` prefab before `BuyColour` charges anything when the answer is no. The answer is a hint: a lying client buys a tractor whose driver seat vanilla still refuses it. A base-game vehicle is never asked.
+- **Data:** the price row (`LF_VehiclePrices.conf`, $3,000) and the locked child `EL_Z7211_red_CIV.et`. The offer row on a lot layer is a town/pack edit and is not part of the gate.
+- **Proof:** `vehicles/dlc-gate` (LOGIC). A non-owner client on a dedicated server is a manual check.

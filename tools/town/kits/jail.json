@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "kit": "jail",
+  "system": "jail",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Street_Jail.layer",
+    "group": "Roadmap_Jail_Cell",
+    "origin": "Roadmap_Jail_Cell",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et"
+  },
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -4.5,
+        -2
+      ],
+      "max": [
+        -4.5,
+        -2
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "One logic entity, no mesh: the LF_JailCellComponent the jail system reads (cell origin, 2 m zone, release point). Offsets are in the police kit's frame (the villa's own barred cell, ground floor west, x -6.85..-2.12 and z -3.7..-0.43), so the slot shares the police slot's building and anchor; its front is +z like the police kit's. The villa's own barred door is the cell door: no door target. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "cell",
+      "name": "Roadmap_Jail_Cell",
+      "prefab": "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -4.5,
+        0,
+        -2
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_JailCellComponent",
+          "set": {
+            "m_fZoneRadius": "2",
+            "m_sDoorTargetId": "\"\"",
+            "m_vReleaseOffset": "3 0 2.5"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
