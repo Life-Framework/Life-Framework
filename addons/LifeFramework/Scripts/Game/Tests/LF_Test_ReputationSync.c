@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-18 with `tools/cli test --no-build --red LF_Test_ReputationSync`: RED PROOF OK (send unwired: "a town tier change queues exactly one owner send (expected 1, got 0)"). Green with `--only`.
+// red-proof: observed 2026-11-18 with `tools/cli test --no-build --red LF_Test_ReputationSync`: RED PROOF OK (send unwired: "a town tier change queues exactly one owner send (expected 1, got 0)"). Green with `--only`. Spawn before the account (review of #2788): red on the old handler with `--only` ("a spawn before the account sends no tiers yet (expected 0, got 1)"), green after.
 // tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! The owner learns their own tiers (#2704): the packed tiers round-trip, a town or police tier change
@@ -8,6 +8,8 @@
 class LF_Test_ReputationSync : LF_Test
 {
 	static const string UID = "test-reputation-sync";
+	//! A player id no account is cached for.
+	static const int NO_ACCOUNT_PLAYER = 987654;
 
 	override string GetName()
 	{
@@ -44,9 +46,12 @@ class LF_Test_ReputationSync : LF_Test
 			LF_ReputationSync.Install();
 
 		RunSends(ctx);
+		RunSpawnBeforeAccount(ctx);
 		RunNoRplProp(ctx);
 
 		LF_ReputationSync.Install();
+		LF_ReputationSync.CancelSpawnRetries();
+		LF_ReputationSync.ForgetClientTiers();
 		LF_ReputationSync.ClearJournal();
 		LF_Reputation.Forget(UID);
 		LF_ReputationConfig.Reload();
@@ -120,6 +125,23 @@ class LF_Test_ReputationSync : LF_Test
 			string expectedUnder = string.Format("%1|%2|", UID, LF_ReputationSync.Pack(1, -1, 1));
 			ctx.EqualStr(expectedUnder, journal[0], "the underworld send carries no toast");
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spawn whose account is not cached yet sends nothing under the account key and waits once
+	//! (review of #2788: the record key is the account uid until the account loads).
+	protected void RunSpawnBeforeAccount(LF_TestContext ctx)
+	{
+		array<string> journal = {};
+		LF_ReputationSync.ClearJournal();
+		LF_ReputationSync.CancelSpawnRetries();
+
+		LF_EventBus.Publish(LF_OnPlayerSpawnedEvent.Create(NO_ACCOUNT_PLAYER, "", true));
+
+		LF_ReputationSync.GetJournal(journal);
+		ctx.Equal(0, journal.Count(), "a spawn before the account sends no tiers yet");
+		ctx.Equal(1, LF_ReputationSync.PendingSpawnRetries(), "a spawn before the account waits once for it");
+		LF_ReputationSync.CancelSpawnRetries();
 	}
 
 	//------------------------------------------------------------------------------------------------

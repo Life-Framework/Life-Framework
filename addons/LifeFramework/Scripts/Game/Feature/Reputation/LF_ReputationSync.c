@@ -23,6 +23,9 @@ class LF_ReputationSync
 	static const int PACKED_FLAG = 32768;	// lf-fixed: wire encoding (32^3), not tuning
 	//! The journal keeps this many recent sends (tests, harness).
 	static const int JOURNAL_MAX = 32;	// lf-fixed: a debug ring size
+	//! A spawn whose account is not cached yet is sent once more after this delay (the record key the
+	//! tiers are read under is the account uid until then, so a send at once would carry the wrong tiers).
+	static const int SPAWN_RETRY_MS = 2000;	// lf-fixed: one retry, same as LF_JobMapMarks
 
 	static const string TOAST_TITLE = "#LF-Reputation_Toast_Title";
 
@@ -31,12 +34,15 @@ class LF_ReputationSync
 	protected static ref array<string> s_aJournal;
 	//! Client: the last packed tiers this client received; 0 until the first.
 	protected static int s_iClientPacked;
+	//! Server: spawn sends waiting for the account (tests, harness).
+	protected static int s_iSpawnRetries;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_aJournal = null;
 		s_iClientPacked = 0;
+		s_iSpawnRetries = 0;
 		LF_ReputationSyncSubscriber.ResetStatics();
 	}
 
@@ -222,6 +228,70 @@ class LF_ReputationSync
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: a player spawned. Sends their tiers when their character's record key is known. Until
+	//! the account is cached LF_Utils.GetPlayerUID answers the account uid (or nothing), and a send
+	//! then would carry another key's tiers and leave the client wrong until the next change.
+	//! \return False when the account is not known yet.
+	static bool SendOnSpawn(int playerId)
+	{
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (!accounts || !accounts.GetAccount(playerId))
+			return false;
+
+		string uid = LF_Utils.GetPlayerUID(playerId);
+		if (uid.IsEmpty())
+			return false;
+
+		Send(uid, string.Empty, "spawn");
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the spawn event came before the account; try once more after SPAWN_RETRY_MS.
+	static void QueueSpawnRetry(int playerId)
+	{
+		if (!GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		s_iSpawnRetries++;
+		LF_Debug.Info(LF_Reputation.FEATURE, string.Format("standing tiers for player %1 wait for the account", playerId));
+		GetGame().GetCallqueue().CallLater(RetrySpawn, SPAWN_RETRY_MS, false, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void RetrySpawn(int playerId)
+	{
+		if (s_iSpawnRetries > 0)
+			s_iSpawnRetries--;
+
+		if (!SendOnSpawn(playerId))
+			LF_Debug.Warn(LF_Reputation.FEATURE, string.Format("standing tiers not sent on spawn: player %1 still has no account; they arrive with the next tier change or spawn", playerId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: spawn sends waiting for the account.
+	static int PendingSpawnRetries()
+	{
+		return s_iSpawnRetries;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: drop the waiting spawn sends.
+	static void CancelSpawnRetries()
+	{
+		s_iSpawnRetries = 0;
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(RetrySpawn);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: forget the tiers this client received.
+	static void ForgetClientTiers()
+	{
+		s_iClientPacked = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Client: stores the tiers the server sent this player.
 	static void ReceiveOnClient(int packed)
 	{
@@ -282,17 +352,8 @@ class LF_ReputationSyncSubscriber : LF_EventSubscriber
 		}
 
 		LF_OnPlayerSpawnedEvent spawned = LF_OnPlayerSpawnedEvent.Cast(busEvent);
-		if (spawned)
-		{
-			string uid = LF_Utils.GetPlayerUID(spawned.m_iPlayerId);
-			if (uid.IsEmpty())
-			{
-				LF_Debug.Warn(LF_Reputation.FEATURE, string.Format("standing tiers not sent on spawn: player %1 has no record key yet", spawned.m_iPlayerId));
-				return true;
-			}
-
-			LF_ReputationSync.Send(uid, string.Empty, "spawn");
-		}
+		if (spawned && !LF_ReputationSync.SendOnSpawn(spawned.m_iPlayerId))
+			LF_ReputationSync.QueueSpawnRetry(spawned.m_iPlayerId);
 
 		return true;
 	}

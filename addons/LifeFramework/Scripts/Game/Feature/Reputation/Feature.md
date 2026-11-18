@@ -27,7 +27,8 @@ Rung 4 background: server-only state, no screen in this card. Target: rung 3 for
   `modded class LF_Reputation` seam (`ExportAll`/`ApplyAll`); load replaces the store, skips removed factions and clamps.
 - `LF_OnReputationChanged` (`LF_ReputationEvents.c`) fires only when a tier changes.
 - `LF_ReputationSync` (`LF_ReputationSync.c`, #2704): on spawn and on each tier change the owner gets their packed
-  tiers by an Owner RPC on their controller (`ClientTier` on the client); town and police changes toast in words.
+  tiers by an Owner RPC on their controller (`ClientTier` on the client); town and police changes toast in words. A spawn before the account is cached
+  retries once (`SendOnSpawn`, `SPAWN_RETRY_MS`).
 
 ## Not built yet (later cards of chapter #1018)
 
