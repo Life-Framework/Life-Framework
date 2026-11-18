@@ -1,4 +1,5 @@
 // red-proof: observed 2026-11-18 with `--red LF_Test_ChainMistakes`: RED PROOF OK, every strike assertion fails with the hook on.
+// red-proof (#2881 review): `--only LF_Test_ChainMistakes` on the old Roll failed the ruin-rate check (385 of 2000 batches ruined, 19 %); green on the new one.
 
 //! Cook mistakes (#2854): a seeded chance adds hidden strikes, the limit ruins the batch.
 [LF_TestInfo(LF_TestTier.LOGIC)]
@@ -95,5 +96,22 @@ class LF_Test_ChainMistakes : LF_Test
 				hits++;
 		}
 		ctx.True(hits > 200 && hits < 400, "a 30 percent chance lands near 30 percent of 1000 rolls");
+
+		// Ticks of one batch are independent (#2881): over 2000 seeds a 16-tick batch at 6 % and 3
+		// mistakes is ruined about 7 % of the time (binomial). The old mix gave 22 %.
+		int ruinedBatches = 0;
+		for (int seed = 0; seed < 2000; seed++)
+		{
+			LF_ChainStrikes batch = new LF_ChainStrikes();
+			for (int tick = 0; tick < 16; tick++)
+			{
+				if (LF_ChainMistakes.Tick(batch, 6, 3, seed) == LF_EChainMistake.RUINED)
+				{
+					ruinedBatches++;
+					break;
+				}
+			}
+		}
+		ctx.True(ruinedBatches > 80 && ruinedBatches < 220, string.Format("a 6 percent, 3-mistake, 16-tick batch is ruined near 7 percent of the time (got %1 of 2000)", ruinedBatches));
 	}
 }

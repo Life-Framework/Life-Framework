@@ -107,10 +107,10 @@ class LF_ChainStationComponent : ScriptComponent
 	protected EntityID m_CueId = EntityID.INVALID;
 	protected int m_iCueShown;
 
-	//! The batch's hidden strikes (session-only, see LF_ChainMistakes) and its seed.
+	//! The batch's hidden strikes (session-only, see LF_ChainMistakes) and its seed, drawn at random
+	//! for every new or restored batch so no player can work out which batch will blow.
 	protected ref LF_ChainStrikes m_Strikes = new LF_ChainStrikes();
 	protected int m_iBatchSeed;
-	protected int m_iBatches;
 
 	//! Server: a ruining mistake happened and the blast is queued (ServerBlow).
 	protected bool m_bRuinPending;
@@ -402,6 +402,7 @@ class LF_ChainStationComponent : ScriptComponent
 	protected void ClearMistakes()
 	{
 		LF_ChainMistakes.Reset(m_Strikes);
+		m_iBatchSeed = Math.RandomInt(0, 1000000000);
 		if (m_bRuinPending)
 			GetGame().GetCallqueue().Remove(ServerBlow);
 
@@ -611,8 +612,6 @@ class LF_ChainStationComponent : ScriptComponent
 		m_Progress.Load(step.m_iWork);
 		Sync();
 		ClearMistakes();
-		m_iBatches++;
-		m_iBatchSeed = m_sStationKey.Hash() + m_iBatches * 7919;
 
 		string uid = LF_Utils.GetPlayerUID(user);
 		LF_Debug.Info(LF_ChainSites.FEATURE, string.Format("station %1 loaded by %2: %3/%4 needs %5 work", m_sStationKey, uid, m_sChainId, m_sStepId, step.m_iWork));

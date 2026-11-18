@@ -73,6 +73,7 @@ class LF_Test_ChainCookFail : LF_Test
 		step.m_iRuinDelayMs = 3000;
 
 		Ruin(ctx, barrel, worker, recorder);
+		LoadCancelsBlast(ctx, barrel, worker, recorder);
 
 		step.m_iMistakeChancePct = chance;
 		step.m_iMaxMistakes = max;
@@ -140,6 +141,31 @@ class LF_Test_ChainCookFail : LF_Test
 
 		barrel.ServerBlow();
 		ctx.Equal(1, recorder.m_iRuined, "a second blow call does nothing");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A save applied while a blast is queued (#2881 review) cancels it: the restored batch is kept
+	//! and a late blow call does nothing.
+	protected void LoadCancelsBlast(LF_TestContext ctx, LF_ChainStationComponent barrel, IEntity worker, LF_TestChainRuinRecorder recorder)
+	{
+		InventoryStorageManagerComponent bag = LF_InventoryUtils.GetResponsibleStorageManager(worker);
+		if (!bag)
+			return;
+
+		int ruinedBefore = recorder.m_iRuined;
+		LF_InventoryUtils.AddAmount(bag, APPLE, 4);
+		ctx.Equal(LF_EChainStation.OK, barrel.ServerLoad(worker, 2500), "a second batch loads");
+		LF_ChainStationRow saved = barrel.Export();
+		barrel.ServerWork(worker, 2502);
+		barrel.ServerWork(worker, 2504);
+		ctx.True(barrel.IsRuinPending(), "the second batch is ruined and its blast queued");
+
+		barrel.Import(saved);
+		ctx.False(barrel.IsRuinPending(), "applying the save cancels the queued blast");
+		barrel.ServerBlow();
+		ctx.Equal(ruinedBefore, recorder.m_iRuined, "no blast after the save is applied");
+		ctx.True(barrel.GetProgress().IsLoaded(), "the restored batch is still in the station");
+		barrel.Import(null);
 	}
 
 	//------------------------------------------------------------------------------------------------
