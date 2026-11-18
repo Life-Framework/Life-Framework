@@ -1,0 +1,22 @@
+GenericEntity : "{10C26F96EF7A8CF5}Prefabs/Props/Core/Props_Base.et" {
+ ID "21D02CD60414EED1"
+ components {
+  LF_LockerStorageManagerComponent "{8C88EABF3369AD04}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{C192B20561132DC9}" {
+   Attributes SCR_ItemAttributeCollection "{34714C6C84BA9884}" {
+    ItemDisplayName SCR_InventoryUIInfo "{434F27CFD7E60248}" {
+     Name "#LF-LockerBank_Title"
+     Description "#LF-LockerBank_Title"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 100000
+   MaxItemSize 100 200 100
+   m_fMaxWeight 60
+  }
+  RplComponent "{DEA523CF3D762137}" {
+   Enabled 1
+  }
+ }
+}
