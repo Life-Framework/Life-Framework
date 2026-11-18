@@ -22,3 +22,11 @@ None yet: no player-facing object in this slice. `LF_SiteHold.Step` is a pure fu
 - **Rules:** one organisation present with at least `minMembersPresent` gains (the holder banks points and hold seconds, a challenger builds capture progress at counted members per second; inner ring counts double, capped by `maxCountedPerOrg`). Two or more organisations present freeze everything. An organisation under the minimum gains nothing but still contests. Nobody present: capture progress decays at `decayPerHour`; banked points stay. Progress at `captureSeconds` flips the site (new holder starts at zero) and starts `flipCooldownSeconds`, in which a full capture waits at the threshold.
 - **Data:** none persisted; `LF_SiteHoldState` is the value a later slice saves.
 - **Proof:** `sites/site-hold` (LOGIC).
+
+## Site sweep and capture (#2680)
+
+- **Player sees:** nothing on screen yet; an organisation that holds a site alone long enough gets its hideout (the door now opens for them).
+- **Owner and side:** `LF_ContestedSites` (server, every 5 s) over the sites `LF_ContestedSiteComponent` registers with `LF_Places` (kind `contested-site`, id = hideout id; no coordinates in script).
+- **Rules:** living player characters of an organisation inside `radius` count when they moved at least 1 m or acted (`NoteAction`) within `activeWindowSeconds`; inside `innerRadius` they count double. The holder is the hideout's lessee; a lease changed elsewhere resets the hold to the new lessee and its held ground. A capture: `LF_Hideout.HandOver` releases the old lease (reason `captured`, its held ground goes with it), leases the capturer and sets its held ground to zero, then `LF_OnSiteCaptured`. Contest start: `LF_OnSiteContested`, once per contest. A capturer that already leases another hideout is refused (`hand-over refused`) and the site stays its lessee's.
+- **Data:** the hideout lease and the "heldground" payload (#751); nothing new saved. Capture progress is runtime only and starts at zero after a restart.
+- **Proof:** `sites/site-sweep` (WORLD, annex hideout, sightings through the `SweepSite` seam).
