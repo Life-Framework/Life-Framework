@@ -76,10 +76,9 @@
           "action": "QuestConverse"
         },
         {
-          "text": "lost",
-          "next": "menu",
-          "condition": "IdCardMissing",
-          "action": "IdCardReplace"
+          "text": "papers",
+          "next": "papers",
+          "condition": "PapersOffered"
         },
         {
           "text": "bye",
@@ -126,6 +125,7 @@
     "lost": "I have lost my identity card.",
     "bye": "Goodbye.",
     "goon": "Go on, please.",
-    "ready": "I understand. What now?"
+    "ready": "I understand. What now?",
+    "papers": "About my papers."
   }
 }

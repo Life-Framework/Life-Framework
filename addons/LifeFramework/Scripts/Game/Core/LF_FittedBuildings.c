@@ -92,7 +92,7 @@ class LF_FittedBuildings
 	//------------------------------------------------------------------------------------------------
 	//! The building whose bounds hold `at` (the smallest footprint when several do), else the one whose
 	//! bounds come closest within BOUNDS_SLACK.
-	protected static IEntity FindBuilding(BaseWorld world, vector at, float radius)
+	static IEntity FindBuilding(BaseWorld world, vector at, float radius)
 	{
 		LF_FittedBuildingQuery query = new LF_FittedBuildingQuery();
 		world.QueryEntitiesBySphere(at, radius, query.Collect, null, EQueryEntitiesFlags.STATIC);

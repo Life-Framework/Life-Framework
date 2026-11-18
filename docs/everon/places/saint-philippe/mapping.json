@@ -91,6 +91,21 @@
         "lead-approved: the clothes shop-house on the square (4441, 10789)"
       ]
     },
+    "residents": {
+      "building": "b15",
+      "alternatives": [
+        {
+          "building": "b44"
+        },
+        {
+          "building": "b111"
+        }
+      ],
+      "why": [
+        "House_Town_E_2I03 (townhouse), 255.8 m2, 3 floors, front door known, interior yes",
+        "the residents' shared home (#3001): the unmapped town house beside the town hall (4444, 10671), 77 m from the bank, 31 m from the pub, 104 m from the general store, so every walk the timetable asks for is under the 120 m walking cap"
+      ]
+    },
     "gun-counter": {
       "building": "b48",
       "why": [
@@ -154,6 +169,14 @@
         "the workshop yard on the south-east road, with Workshop_01_Side b36 beside it; the east-edge yard in the old note is outside the dossier"
       ]
     },
+    "harbour": {
+      "building": "b14",
+      "dossier": "saint-philippe-dock",
+      "why": [
+        "PortableCabin_E_01_yellow (industrial), 24.3 m2, 92 m from the dock survey's centre, interior yes (one door, a walkable floor)",
+        "the site cabin by the quay road is the harbour master's office (Marcel Roux, the harbour crates contract, #3050); b14 is the DOCK survey's building (docs/everon/places/saint-philippe-dock), not the townhouse b14 of this square's survey"
+      ]
+    },
     "board": {
       "building": "b38",
       "shared": true,
@@ -184,6 +207,219 @@
         "`tools\\cli town drops saint-philippe parcel-drops` seats them; the entities are the drop-off site (LF_JobSiteComponent DROP) the jobs system finds by place, not markers"
       ]
     },
+    "bins": {
+      "drops": [
+        { "place": "saint-philippe-districts", "building": "b51" },
+        { "place": "saint-philippe-districts", "building": "b56" },
+        { "place": "saint-philippe-districts", "building": "b73" },
+        { "place": "saint-philippe-districts", "building": "b43" },
+        { "place": "saint-philippe-districts", "building": "b50" },
+        { "place": "saint-philippe-districts", "building": "b66" },
+        { "place": "saint-philippe-districts", "building": "b27" },
+        { "place": "saint-philippe-districts", "building": "b49" },
+        { "place": "saint-philippe-districts", "building": "b11" }
+      ],
+      "why": [
+        "D10 pick (#3314), garbage round card #3338: nine drops, each a building of the districts survey (an outposts drop cannot name this place's own survey, so the village buildings that the east-ring survey also covers go by their districts ids): the depot and tip at di:b51 (Shed_03, 26.5 m2, no interior) in the outbuilding cluster at the south-east edge, which is the dump because neither survey lists a dump or a landfill, and eight street bins at the kerbs of di:b56, b73, b43, b50, b66, b27, b49 and b11 (the square row east of the church, the east road, the police end and the eastern houses)",
+        "the round walks the east half of the village from the square (di:b56 is 38 m from the scout centre, di:b11 163 m); the west half of the centre has no districts id, so a west-side bin is a follow-up once the slot can name its own place's buildings. The slot's 6 m margin lets a bin stand at the kerb, not only on the wall; `toolscli town drops saint-philippe bins` seats them"
+      ]
+    },
+    "loot": {
+      "drops": [
+        { "place": "saint-philippe-districts", "building": "b03" },
+        { "place": "saint-philippe-districts", "building": "b18" },
+        { "place": "saint-philippe-districts", "building": "b37" },
+        { "place": "saint-philippe-districts", "building": "b63" },
+        { "place": "saint-philippe-districts", "building": "b76" },
+        { "place": "saint-philippe-dock", "building": "b11" },
+        { "place": "saint-philippe-dock", "building": "b31" }
+      ],
+      "why": [
+        "D10 pick (#3314), loot cards #3344 and #3345: sheds and back rooms with a real interior that hold the tool chest, the kitchen cupboard and the dump pile: the east ring's small sheds di:b03, di:b18 and di:b37, the back-room workshop di:b63 (HouseAddon_Workshop_E_01) and the south garage di:b76, and at the dock the garage dk:b11 and the side workshop dk:b31",
+        "the loot kit reads the interior, so only buildings with `interior: yes` are listed; the containers on the dump pile stand at di:b51 (the bins slot's depot), so it is not repeated here"
+      ]
+    },
+    "buyer-spots": {
+      "drops": [
+        { "place": "saint-philippe-dock", "building": "b22" },
+        { "place": "saint-philippe-districts", "building": "b21" },
+        { "place": "saint-philippe-districts", "building": "b64" }
+      ],
+      "why": [
+        "D10 pick (#3314), buyer card #3400 (also #3416): three spots out of sight, one per place of the rotation: behind the dock warehouses (dk:b22, Warehouse_01_V3, 793 m2), a districts back lane (di:b21, the concrete vehicle ramp, a doorless prop north of the east road) and a lay-by at the town edge (di:b64, Barn_E_02, 139 m south of the districts centre)",
+        "each is outdoors by a wall or seat he can loiter at; the 14 m margin lets the kit stand off the wall. Whether a spot lies outside the X3 safe zone is the fit card's check (the safe zone is mapped by #3346)"
+      ]
+    },
+    "tow-yard": {
+      "building": "b29",
+      "alternatives": [
+        {
+          "building": "b36"
+        },
+        {
+          "building": "b24"
+        }
+      ],
+      "why": [
+        "Garage_E_01 (garage), 48.5 m2, 2 floors, 2 doors, interior yes, 77.1 m north-east of the scout centre, 20 m from the police villa b32 on the north side of the east road",
+        "D10 pick (#3314), tow-yard card #3459: the impound lot behind the police villa, a hut at the garage and a fenced yard round it (kind ImpoundYard, margin 18 m); b36 (Workshop_01_Side, the workshop yard beside the fence workshop) and b24 (Shed_02_big_V1) are the alternatives"
+      ]
+    },
+    "memorial": {
+      "building": "b07",
+      "shared": true,
+      "why": [
+        "Church_01_red (church), 676 m2, interior yes, 36.7 m north-west of the scout centre: the church beside the square, about 38 m from the plague column (4412, 10722)",
+        "D10 pick (#3314), memorial card #3467 and #3464: a stone memorial with a plaque and wreath spots on the church frontage (the kit picks the kerb side), the gathering points and the priest's spot (kind Memorial); street furniture, so it shares b07 with the church kit (b08, the crypt and attic, stands at the same spot)"
+      ]
+    },
+    "safe-zone": {
+      "building": "b45",
+      "shared": true,
+      "why": [
+        "MunicipalOffice_E_01 (government), 429 m2, the town hall south of the square that the arrival slot holds; the safe zone is a zone entity over the forecourt and the square where newcomers land, so it shares b45 as street furniture does",
+        "D10 pick (#3346), card X3 #3350: one SAFE `LF_ZoneComponent` (kind SafeZone) covering the town hall forecourt and the square, not the bank or the gun counter (the slot's 120 m margin is the reach of the zones: the square circle, and a 25 m one over the hostel first-spawn beds, where a newcomer wakes; the fit card sets the radii). No LAWLESS zone before M7 (D11)"
+      ]
+    },
+    "atms": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b79" },
+        { "place": "saint-philippe", "building": "b97" },
+        { "place": "saint-philippe-dock", "building": "b08" }
+      ],
+      "why": [
+        "D10 pick (#3346), card X5 #3355: the three outside-wall ATMs: the bank's street front (b79, Office_E_01), the fuel station kiosk (b97, FuelStation_E_01_building_small, the kiosk the fuel slot keeps beside b107) and the dock road (dk:b08, Office_E_01_ENP, the harbour company offices on the road)",
+        "the machine stands flush to an outer wall (the slot's 3 m margin), so it never stands inside the bank or fuel claims; an outposts slot may list this place's own buildings since #3346 (`tools/town/outposts.mjs`)"
+      ]
+    },
+    "payphones": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b06" },
+        { "place": "saint-philippe", "building": "b97" },
+        { "place": "saint-philippe", "building": "b39" },
+        { "place": "saint-philippe-dock", "building": "b14" },
+        { "place": "saint-philippe-districts", "building": "b26" }
+      ],
+      "why": [
+        "D10 pick (#3346), card X6 #3358: five booths for the M6 beat 'a taxi from a payphone on the square': the square (b06, the town house row on the square, a kerb the market, chess table and board do not hold; the vanilla booth at 4406, 10653 stays alone), the fuel station (b97), the clinic (b39), the dock (dk:b14, the harbour master's cabin) and the districts junction (di:b26, the house at the five-road crossroads at 4577, 10737)",
+        "the 6 m margin lets a booth stand at the kerb beside its building"
+      ]
+    },
+    "street-life": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b10" },
+        { "place": "saint-philippe", "building": "b17" },
+        { "place": "saint-philippe", "building": "b09" },
+        { "place": "saint-philippe", "building": "b50" },
+        { "place": "saint-philippe", "building": "b47" },
+        { "place": "saint-philippe", "building": "b16" }
+      ],
+      "why": [
+        "D10 pick (#3346), card X7 #3360: benches, bins, bikes and washing lines along the village's residential streets, one drop per house: b10, b17 (the old man's home), b09, b50, b47 and b16, all within 100 m of the square and all homes or house-sized, so the props read as lived-in street life, not as shop dressing",
+        "the 10 m margin lets a washing line cross a yard and a bench stand at the kerb"
+      ]
+    },
+    "parked-cars": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b12" },
+        { "place": "saint-philippe", "building": "b38" },
+        { "place": "saint-philippe", "building": "b03" },
+        { "place": "saint-philippe", "building": "b15" },
+        { "place": "saint-philippe", "building": "b17" },
+        { "place": "saint-philippe-dock", "building": "b06" }
+      ],
+      "why": [
+        "D10 pick (#3346), card X10 #3367: the eight parked-car markers on six buildings: the kerbs of the square (b12 and b38), the pub (b03), the driveways of two resident homes (b15, the residents' shared home, and b17) and the dock road (dk:b06, the harbour warehouse)",
+        "the 14 m margin covers a driveway or a bay on the kerb; none may stand on the taxi rank (b39), the board kerb or a door, which the fit card's contact check enforces"
+      ]
+    },
+    "fuel-run": {
+      "building": "b107",
+      "shared": true,
+      "why": [
+        "FuelStation_E_01_building (fuel), 60 m2, 147.7 m east of the scout centre, the building the fuel slot holds",
+        "D10 pick (#3346), card X13 #3376: one fuel pickup (kind FuelPickup) on the forecourt kerb beside the pumps and out of the lane; street furniture, so it shares b107 with the fuel kit and the fuel slot's claim stays untouched"
+      ]
+    },
+    "fuel-drops": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b120" },
+        { "place": "saint-philippe", "building": "b128" },
+        { "place": "saint-philippe-dock", "building": "b23" },
+        { "place": "saint-philippe-dock", "building": "b27" }
+      ],
+      "why": [
+        "D10 pick (#3346), card X14 #3377: four fuel tanks at farm yards and outbuildings 300 m to 1.5 km from the fuel station b107: sp:b120 (Henhouse_01, 296 m west) and sp:b128 (Greenhouse_01, 296 m north-west) on the far edge of the village, and the open sheds dk:b23 and dk:b27 above the quay (560 m and 600 m away), the farms the survey radii allow; the districts survey centres on the fuel station, so nothing there is far enough",
+        "the 12 m margin covers a yard; a run goes to a tank in a yard, not to a letter box"
+      ]
+    },
+    "pond": {
+      "building": "b64",
+      "dossier": "saint-philippe-districts",
+      "why": [
+        "Barn_E_02 (farm), 80.8 m2, the barn at the south edge of the districts survey, 62 m from Spring Pond (4671, 10504), the nearest building to the water",
+        "D10 pick (#3346), card X18 #3385: `LF_FishingSpot` (table pond) at the pond, which lies outside every survey; the slot anchors on the nearest building and its 75 m margin reaches the water. The pond card must stop and report if `TryGetWaterSurface` does not answer POND there"
+      ]
+    },
+    "orchard": {
+      "building": "b100",
+      "alternatives": [
+        {
+          "building": "b23"
+        }
+      ],
+      "why": [
+        "Barn_E_02 (farm), 80.8 m2, 143.1 m north-east of the scout centre at the town edge, with open ground round it",
+        "D10 pick (#3346), card X20 #3388: six to eight capped apple and plum gather trees and the juicer under a lean-to by this barn (kind Orchard, 25 m margin); b23 is the other farm barn near the village; b100 stays locked 'Propriete privee' since the slot uses its yard, not its door"
+      ]
+    },
+    "night-lights": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b03" },
+        { "place": "saint-philippe", "building": "b06" },
+        { "place": "saint-philippe", "building": "b09" },
+        { "place": "saint-philippe", "building": "b12" },
+        { "place": "saint-philippe", "building": "b14" },
+        { "place": "saint-philippe", "building": "b16" },
+        { "place": "saint-philippe", "building": "b18" },
+        { "place": "saint-philippe", "building": "b38" }
+      ],
+      "why": [
+        "D10 pick (#3346), card X22 #3392: lit windows and lamps on the square's row: the pub b03, the bakery b06, the clerk's home b09, the general store b12, the hostel b14, the town houses b16 and b18 and the clothes shop b38, eight buildings within 85 m of the square so a newcomer walking in at dusk sees a lived-in village",
+        "the 6 m margin keeps a lamp at the facade; the lights count against the place's 24-light limit (docs/architecture/performance.md), which `town check` reports"
+      ]
+    },
+    "square-evening": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b03" },
+        { "place": "saint-philippe", "building": "b07" },
+        { "place": "saint-philippe", "building": "b12" },
+        { "place": "saint-philippe", "building": "b38" },
+        { "place": "saint-philippe", "building": "b45" }
+      ],
+      "why": [
+        "D10 pick (#3346), card X24 #3395: the markers of the square-evening scene (#3181): out of sight at three lane ends, four waypoints along the lanes and one target; on the pub b03, the church b07, the general store b12, the clothes shop b38 and the town hall b45, the buildings round the square",
+        "the 25 m margin lets a marker stand at the end of a lane; the fit card reads the roads of the dossier to pick which lane ends"
+      ]
+    },
+    "cashvan": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b79" },
+        { "place": "saint-philippe", "building": "b107" },
+        { "place": "saint-philippe", "building": "b12" }
+      ],
+      "why": [
+        "D10 pick (#3346), card X26 #3398: the cash van route of the bank (b79: the depot bay behind it and the first stop), the fuel station (b107) and the general store (b12)",
+        "the 20 m margin lets the bay stand behind the bank and a stop on each kerb; the route markers are found by place, as in DebugWorld's `Street_CashVan.layer`"
+      ]
+    },
+    "org": {
+      "building": "b49",
+      "why": [
+        "PortableCabin_E_01_white (industrial), 24.3 m2, 1 door, interior yes, 93.9 m south-east of the scout centre beside the workshop row, a small office",
+        "D10 pick (#3346), card X33 #3410: the organisation registry desk and the war board in a small office near the square; the cabin was planned as the locked site cabin 'Chantier' (L0 #3204), so its purpose row becomes 'org registry' and the lock layer leaves it alone"
+      ]
+    },
     "parcel": {
       "building": "b21",
       "alternatives": [
@@ -206,6 +442,110 @@
       "why": [
         "Workshop_01_Main (garage), 92.7 m2, 123 m from the scout centre, interior yes",
         "lead-approved (D10): the workshop garage beside the town hall (4391, 10630); Workshop_01_Side b70 is its small neighbour"
+      ]
+    },
+    "supermarket": {
+      "building": "b66",
+      "why": [
+        "ShopModern_E_01 (shop), 483 m2, 2 floors, 9 doors, the modern shop by the bank in the west of the village",
+        "D10 pick (#3217), allocation S1 #3219: the village supermarket (food and drink); the supermarket kit exists"
+      ]
+    },
+    "hardware": {
+      "building": "b59",
+      "why": [
+        "Workshop_02 (garage), 138 m2, 1 floor, 4 doors, the workshop yard on the south-east road beside the fence workshop b33",
+        "D10 pick (#3217), allocation S2 #3220 (lead 2026-11-18): the hardware store, tools, build materials, flashlight, radio and the miner's supply counter, in place of the planned builders' merchant; b59 is also an alternative of the fence slot, which keeps b33"
+      ]
+    },
+    "pharmacy": {
+      "building": "b88",
+      "why": [
+        "ShopHouse_E_2I01t_drugstore (shop), 208 m2, 3 floors, 14 doors, the north drugstore shop-house",
+        "D10 pick (#3217), allocation S3 #3221 (lead): the north drugstore stays the drug store; the east one b48 is the gun counter"
+      ]
+    },
+    "newsagent": {
+      "building": "b13",
+      "why": [
+        "NewspaperBooth_E_01_redwhite (kiosk), 21 m2, 2 floors, 1 door, the booth beside the pub",
+        "D10 pick (#3217), allocation S4 #3222: newsagent and tabac kiosk (tourist map, papers); b13 is also an alternative of the parcel slot, which keeps b21"
+      ]
+    },
+    "seed-feed": {
+      "building": "b25",
+      "why": [
+        "Barn_E_03_closed (farm), 130 m2, 2 floors, 4 doors, the closed barn",
+        "D10 pick (#3217), allocation S5 #3223: seed and feed, the farm supply counter"
+      ]
+    },
+    "bakery": {
+      "building": "b06",
+      "why": [
+        "House_Town_E_2I01 (townhouse), 208 m2, 3 floors, 13 doors, a town house on the square",
+        "D10 pick (#3217), allocation S7 #3227: the boulangerie, shop on the ground floor (D9 mix rule: town houses on the square take the ground-floor shops)"
+      ]
+    },
+    "butcher": {
+      "building": "b20",
+      "why": [
+        "House_Town_E_2I01_orange (townhouse), 208 m2, 3 floors, 13 doors, the town house by the clothes shop",
+        "D10 pick (#3217), allocation S8 #3228: boucherie-charcuterie; b20 is also an alternative of the clinic slot, which keeps b39"
+      ]
+    },
+    "barber": {
+      "building": "b43",
+      "why": [
+        "House_Town_E_2I02_yellow (townhouse), 248 m2, 3 floors, 15 doors, on the square row beside the clinic",
+        "D10 pick (#3217), allocation B1 #3236: coiffeur, the barber chair; if the barber card finds no live hair change in the engine, b43 stays locked 'Coiffeur : ferme'; b43 is also an alternative of the clinic slot, which keeps b39"
+      ]
+    },
+    "furniture": {
+      "building": "b55",
+      "why": [
+        "House_Town_E_2I01 (townhouse), 208 m2, 3 floors, 13 doors, the town house on the square row beside the barber b43 and the clinic b39",
+        "D10 pick (#3217), allocation S9 #3256 (lead 2026-11-18): the furniture store, all house furniture on its own stock; furniture then leaves the general store"
+      ]
+    },
+    "woodlot": {
+      "building": "b121",
+      "alternatives": [
+        {
+          "building": "b124"
+        },
+        {
+          "building": "b125"
+        },
+        {
+          "building": "b126"
+        }
+      ],
+      "why": [
+        "Warehouse_01 (industrial), 793 m2, 1 floor, 4 doors, interior yes, 162 m south-west of the scout centre at the village edge, off the roads; the open-sided metal sheds b124 and b125 stand about 30 m beside it",
+        "D10 pick (#3272, after #3174), lumber epic #3169, yard card #3175: the timber yard. The sawmill stands inside the warehouse; the log piles, stacked planks and loading bay go on the yard round it and under the open sheds (the slot's 14 m margin covers them); kinds LogPile and Processor. The allocation marks b121 a locked co-op warehouse (L0 #3204); a fitted place marker beats that lock (#3201 precedence) and its purpose row becomes `timber yard` with the yard card. di:b76 (Workshop_01_Garage in the districts survey, 158 m south) is the other candidate #3175 names and stays unmapped: b121 has the sheds to build the yard from. Whether trees stand within reach of the yard is the fit card's check (the survey counts vegetation for the whole radius, not per spot)"
+      ]
+    },
+    "farm": {
+      "building": "b73",
+      "alternatives": [
+        {
+          "building": "b100"
+        },
+        {
+          "building": "b23"
+        }
+      ],
+      "why": [
+        "Barn_E_02 (farm), 80.8 m2, 118.6 m south-west of the scout centre at the village edge, the farm barn with open ground round it",
+        "D10 pick (#3190), lumber epic #3169 sibling (Z2): the cabbage plots, the seed crate and the farm_plots sign (kinds FarmPlot, SeedCrate) go on the open ground round this barn, which stays locked 'Propriete privee' (L0 #3204) since the slot uses its yard, not its door. None of the four free plots was used: all four carry sale signs (Plots_saint-philippe.layer). Every henhouse stands in a house yard, and b96 is the barn behind the range, so b73 is the one farm barn clear of both. b100 (north-east edge) and b23 are the same kind of barn"
+      ]
+    },
+    "merchant-timber": {
+      "building": "b59",
+      "shared": true,
+      "why": [
+        "Workshop_02 (garage), 138 m2, 1 floor, 4 doors, the workshop yard on the south-east road beside the fence workshop b33; the building the hardware slot (#3217) already holds",
+        "D10 pick (#3272), lumber epic #3169, card #3274: the hardware store's timber counter, a 'we buy timber' board and stacked timber on the b59 frontage; street furniture that shares the building with the hardware slot (the chess-on-the-pub pattern, #3078), so the hardware kit keeps the interior and the timber kit keeps the kerb"
       ]
     }
   }

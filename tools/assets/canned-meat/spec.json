@@ -1,0 +1,42 @@
+{
+  "slug": "canned-meat",
+  "name": "CannedMeat",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "A closed rectangular tin of corned beef, plain dark-red wrap with a cream band and a key tab: sold at the Saint-Philippe general store.",
+  "prompt": "Modelled in Blender by model.py: A closed rectangular tin of corned beef, plain dark-red wrap with a cream band and a key tab: sold at the Saint-Philippe general store. no text, no logos.",
+  "texture_prompt": "",
+  "size_m": {
+    "length": 0.1,
+    "height": 0.05,
+    "width": 0.064
+  },
+  "budget": {
+    "lod0_tris": 900,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 512,
+    "credits": 0
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Store1989/CannedMeat",
+  "prefab_dir": "Prefabs/Items/Store1989",
+  "prefab": false,
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  },
+  "source": {
+    "blender": "model.py"
+  }
+}

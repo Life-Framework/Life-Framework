@@ -6,9 +6,11 @@ GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoa
   }
   LF_SignComponent "{82B1E805004F28DE}" {
    m_bShowFace 1
-   m_vFaceOffset 0 1.47 0.3
-   m_vFaceAngles 0 0 90
-   m_fFaceScale 6.2
+   m_sStyle "chalk"
+   m_sSize "quad16x9"
+   m_vFaceOffset 0 1.53 0.3
+   m_vFaceAngles -90 0 0
+   m_fFaceScale 1.15
    m_fTitleRotation 90
    m_vFaceArea 512 724 0
    m_fRimWidth 0

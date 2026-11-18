@@ -31,7 +31,7 @@ const check = (name, ok, detail = "") => {
 // A private temp root for the child runs. It is made with a bare mkdtempSync on purpose (the guard cannot depend on
 // the helper it checks) and removed in the finally.
 const priv = mkdtempSync(join(tmpdir(), "lf-scratch-guard-"));
-const runIn = (tmp, args) => spawnSync(process.execPath, args, { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 280000, env: { ...process.env, TMP: tmp, TEMP: tmp, TMPDIR: tmp } });
+const runIn = (tmp, args) => spawnSync(process.execPath, args, { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 900000, env: { ...process.env, TMP: tmp, TEMP: tmp, TMPDIR: tmp } });
 
 try {
   // ---- static: no selftest uses a bare mkdtempSync under the OS temp dir

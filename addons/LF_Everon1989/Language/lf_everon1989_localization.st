@@ -189,6 +189,11 @@ StringTable {
      Target_en_us "What should I do now?"
      Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
     }
+    CustomStringTableItem "{4F445F57EEA164E6}" {
+     Id "LF-Dialogue_ClerkEveron_SayPapers"
+     Target_en_us "About my papers."
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
     CustomStringTableItem "{2267C33EA00A76DD}" {
      Id "LF-Dialogue_ClerkEveron_SayReady"
      Target_en_us "I understand. What now?"
@@ -429,6 +434,46 @@ StringTable {
      Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
+    CustomStringTableItem "{F2B1DF023C756490}" {
+     Id "LF-Everon-Lock_Closed"
+     Target_en_us "Fermé"
+     Comment "Door prompt on the harbour company offices (#3204)."
+    }
+    CustomStringTableItem "{04E0632F53FEF329}" {
+     Id "LF-Everon-Lock_ForSaleSoon"
+     Target_en_us "À vendre bientôt"
+     Comment "Door prompt on a home that no sale card has opened yet (#3204); the house marker wins once it does."
+    }
+    CustomStringTableItem "{FB53912C7C2A947B}" {
+     Id "LF-Everon-Lock_Military"
+     Target_en_us "Zone militaire"
+     Comment "Door prompt on the dock barracks and the port guard house (#3204)."
+    }
+    CustomStringTableItem "{C5E2CABAD9F4D25D}" {
+     Id "LF-Everon-Lock_OpeningSoon"
+     Target_en_us "Ouverture prochaine"
+     Comment "Door prompt on a planned shop whose slot has not been fitted yet (#3204); the fitted place wins once it is."
+    }
+    CustomStringTableItem "{43FE7E120EB47887}" {
+     Id "LF-Everon-Lock_Private"
+     Target_en_us "Propriété privée"
+     Comment "Door prompt on a locked home, barn, lock-up or outbuilding of Saint-Philippe (Locks_saint-philippe.layer, #3204)."
+    }
+    CustomStringTableItem "{39FDDD7A03DF9AE7}" {
+     Id "LF-Everon-Lock_School"
+     Target_en_us "École : vacances d'été"
+     Comment "Door prompt on the Saint-Philippe school, shut for the summer holidays (#3204)."
+    }
+    CustomStringTableItem "{B3C06B7358DCA8A8}" {
+     Id "LF-Everon-Lock_StaffOnly"
+     Target_en_us "Réservé au personnel"
+     Comment "Door prompt on a locked fire station, co-op or dock warehouse, or the garage behind the gun counter (#3204)."
+    }
+    CustomStringTableItem "{318D1CFF0247C655}" {
+     Id "LF-Everon-Lock_ToLetSoon"
+     Target_en_us "À louer bientôt"
+     Comment "Door prompt on a dock workshop kept for the fishing chapter (#3204)."
+    }
     CustomStringTableItem "{10AEFC81EF1DE6FB}" {
      Id "LF-Everon_Tier_Police_0"
      Target_en_us "No record"
@@ -648,6 +693,86 @@ StringTable {
      Id "LF-ID_CardTitle"
      Target_en_us "Republic of Everon, Identity Card"
      Comment "Title of the ID card view another player holds up."
+    }
+    CustomStringTableItem "{772ECF227821D478}" {
+     Id "LF-Item_Bread"
+     Target_en_us "Bread loaf"
+     Comment "Item name: bread loaf, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{4D8A35A3EEC37912}" {
+     Id "LF-Item_BreadDesc"
+     Target_en_us "A round loaf from the morning bake. Best eaten today."
+     Comment "Item description: bread loaf."
+    }
+    CustomStringTableItem "{77C624C0C6085686}" {
+     Id "LF-Item_CannedFish"
+     Target_en_us "Tinned sardines"
+     Comment "Item name: tinned sardines, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{043E558B24CB142C}" {
+     Id "LF-Item_CannedFishDesc"
+     Target_en_us "A flat tin of sardines in oil. Open it with the pull ring."
+     Comment "Item description: tinned sardines."
+    }
+    CustomStringTableItem "{1A7407C7026B2019}" {
+     Id "LF-Item_CannedMeat"
+     Target_en_us "Canned meat"
+     Comment "Item name: canned meat, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{66474EA9E1485746}" {
+     Id "LF-Item_CannedMeatDesc"
+     Target_en_us "A tin of corned beef. Heavy, salty, keeps for years."
+     Comment "Item description: canned meat."
+    }
+    CustomStringTableItem "{228B558274FE0193}" {
+     Id "LF-Item_ChocolateBar"
+     Target_en_us "Chocolate bar"
+     Comment "Item name: chocolate bar, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{37FB74AF4E706174}" {
+     Id "LF-Item_ChocolateBarDesc"
+     Target_en_us "A wrapped bar of milk chocolate. A little sugar, a little cheer."
+     Comment "Item description: chocolate bar."
+    }
+    CustomStringTableItem "{D744A9EB6693B307}" {
+     Id "LF-Item_CoffeeTin"
+     Target_en_us "Instant coffee"
+     Comment "Item name: instant coffee, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{20A0BA389D7B7779}" {
+     Id "LF-Item_CoffeeTinDesc"
+     Target_en_us "A tin of instant coffee. Stir a spoonful into hot water."
+     Comment "Item description: instant coffee."
+    }
+    CustomStringTableItem "{8A052A0C4B10AE83}" {
+     Id "LF-Item_MilkBottle"
+     Target_en_us "Bottle of milk"
+     Comment "Item name: bottle of milk, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{6C987134D4879842}" {
+     Id "LF-Item_MilkBottleDesc"
+     Target_en_us "Fresh milk in a glass bottle with a foil cap. Drink it soon."
+     Comment "Item description: bottle of milk."
+    }
+    CustomStringTableItem "{60D2B9C1E45A6CC4}" {
+     Id "LF-Item_PickleJar"
+     Target_en_us "Jar of pickles"
+     Comment "Item name: jar of pickles, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{C3E7721CCADD1D45}" {
+     Id "LF-Item_PickleJarDesc"
+     Target_en_us "A jar of pickled gherkins in brine. Sharp, and still filling."
+     Comment "Item description: jar of pickles."
+    }
+    CustomStringTableItem "{96286076F1D0C747}" {
+     Id "LF-Item_SodaBottle"
+     Target_en_us "Soda water"
+     Comment "Item name: soda water, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{B3C0B5E361200D87}" {
+     Id "LF-Item_SodaBottleDesc"
+     Target_en_us "A glass siphon of soda water. A squirt from the head and it fizzes."
+     Comment "Item description: soda water."
     }
     CustomStringTableItem "{9F32BE4E1F1F7320}" {
      Id "LF-Item_TouristMap_Description"
@@ -964,6 +1089,16 @@ StringTable {
      Target_en_us "Sell a catch"
      Comment "Settling-in chain, one of three errands after the car. Title."
     }
+    CustomStringTableItem "{4D8E21B7A09C35F6}" {
+     Id "LF-Quest_SettleFoundation_Desc"
+     Target_en_us "Lay the foundation of your cottage. The general store sells gravel and cement."
+     Comment "Settling-in chain: finish the foundation stage on a plot (#3195)."
+    }
+    CustomStringTableItem "{91C6F3A82E5B704D}" {
+     Id "LF-Quest_SettleFoundation_Title"
+     Target_en_us "Lay your foundation"
+     Comment "Settling-in chain, after the plot. Title (#3195)."
+    }
     CustomStringTableItem "{6E07D3A5B533B63A}" {
      Id "LF-Quest_SettleFuel_Desc"
      Target_en_us "Fuel runs are open to you now. Take a jerrycan job from the dispatch board and deliver it."
@@ -1209,6 +1344,11 @@ StringTable {
      Target_en_us "Helene Roux"
      Comment "Saint-Philippe resident teller: display name (#2906)."
     }
+    CustomStringTableItem "{D48C1FE2090106F1}" {
+     Id "LF-Shop_Desc_Cafe"
+     Target_en_us "A drink, a snack, a word with the owner"
+     Comment "Shop description of the Saint-Philippe café till (#3063)."
+    }
     CustomStringTableItem "{CA4D10F34DED233D}" {
      Id "LF-Shop_Desc_ClothesShop"
      Target_en_us "Jackets, shirts, trousers and hats in this year's colours."
@@ -1249,6 +1389,11 @@ StringTable {
      Target_en_us "Hard hats, work boots, gloves and a flashlight."
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
     }
+    CustomStringTableItem "{0B134C85762A065A}" {
+     Id "LF-Shop_Name_Cafe"
+     Target_en_us "Café bar"
+     Comment "Shop name of the Saint-Philippe café till (#3063): the pub's bar counter, stock cafe."
+    }
     CustomStringTableItem "{3891D91F71F15DB1}" {
      Id "LF-Shop_Name_ClothesShop"
      Target_en_us "Clothes shop"
@@ -1283,6 +1428,11 @@ StringTable {
      Id "LF-Shop_Name_Workwear"
      Target_en_us "Workwear counter"
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
+    }
+    CustomStringTableItem "{0EC694A26B780C12}" {
+     Id "LF-Shop_Open_Cafe"
+     Target_en_us "Order food and drink"
+     Comment "Interaction name at the café till (#3063): opens the café price list."
     }
     CustomStringTableItem "{AB6C9C6741E3729B}" {
      Id "LF-Shop_Open_ClothesShop"
@@ -1788,6 +1938,21 @@ StringTable {
      Id "LF-Sign_GunStore_What"
      Target_en_us "Sporting rifles, pistols and ammunition for permit holders. Binoculars, compasses, maps and hunters' hats for anyone."
      Comment "Sign card for the gun store, What section."
+    }
+    CustomStringTableItem "{248660AA4A4823F3}" {
+     Id "LF-Sign_HarbourOffice_How"
+     Target_en_us "Step inside and *Talk* to the harbour master"
+     Comment "Sign card for the harbour office plate, How section. The capitalized word is the action name the player sees."
+    }
+    CustomStringTableItem "{416AD19C737315ED}" {
+     Id "LF-Sign_HarbourOffice_Title"
+     Target_en_us "Harbour Office"
+     Comment "Title of the plate beside the door of the dock's site cabin (Everon 1989 pack, #3072). Printed on the sign and shown in the prompt as Read: Harbour Office."
+    }
+    CustomStringTableItem "{719C66DDD07B5E1A}" {
+     Id "LF-Sign_HarbourOffice_What"
+     Target_en_us "The harbour master's cabin on the quay road. Marcel Roux takes on crate runs for anyone the town knows."
+     Comment "Sign card for the harbour office plate, What section."
     }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
@@ -2298,6 +2463,31 @@ StringTable {
      Id "LF-Sign_SafeZone_What"
      Target_en_us "The town square is a safe zone. Within 30 metres of the fountain nobody can hurt anyone: a shot fired on, into, or out of the square does no harm."
      Comment "Safe zone sign card, What section."
+    }
+    CustomStringTableItem "{327C120B0ED84A6C}" {
+     Id "LF-Sign_Supermarket_How"
+     Target_en_us "Take what you want off the shelves and *Pay* at the till|Or browse the till's list for everything we stock"
+     Comment "Sign card for the supermarket, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{409FE5719F11DCE3}" {
+     Id "LF-Sign_Supermarket_Needs"
+     Target_en_us "Cash."
+     Comment "Sign card for the supermarket, Needs section."
+    }
+    CustomStringTableItem "{D76920D84DA109D0}" {
+     Id "LF-Sign_Supermarket_Next"
+     Target_en_us "The other village shops are along the main street"
+     Comment "Sign card for the supermarket, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{6331B102EC3688DE}" {
+     Id "LF-Sign_Supermarket_Title"
+     Target_en_us "Supermarket"
+     Comment "Title of the fascia and sign at the village supermarket."
+    }
+    CustomStringTableItem "{01D9AC4455F43C50}" {
+     Id "LF-Sign_Supermarket_What"
+     Target_en_us "Groceries, drinks and the odd tin of dressings."
+     Comment "Sign card for the supermarket, What section."
     }
     CustomStringTableItem "{DFA15542C4155B52}" {
      Id "LF-Sign_TestOrg_How"

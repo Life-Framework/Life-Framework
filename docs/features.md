@@ -35,6 +35,7 @@
 - [Events](features/events.md)
 - [Fishing](features/fishing.md)
 - [Gathering / Processing / Resources](features/gathering-processing-resources.md)
+- [Harvest](features/harvest.md)
 - [Hidden crime record (#270)](features/hidden-crime-record.md)
 - [Illicit chains](features/illicit-chains.md)
 - [Inventory / Quantity](features/inventory-quantity.md)

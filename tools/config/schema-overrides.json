@@ -44,6 +44,12 @@
       ],
       "key": "The key is a licence name (LF_ELicenseType, e.g. MINER_GOLD). A licence with no row keeps its shipped gate (its family job, its catalog level); a new row must set job and minLevel."
     },
+    "LF_JobRunPayDef": {
+      "keyFields": [
+        "m_sJob"
+      ],
+      "key": "The key is the delivery job (PARCEL, FUEL_DELIVERY or TAXI). A job with no row keeps its shipped pay; an existing key changes only the fields given."
+    },
     "LF_PoliceRank": {
       "keyFields": [
         "m_sId"

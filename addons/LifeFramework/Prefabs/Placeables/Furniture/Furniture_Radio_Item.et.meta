@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{253DBC7D9ACD8DEB}Prefabs/Placeables/Furniture/Furniture_Radio_Item.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

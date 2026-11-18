@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "kit": "taxi",
+  "system": "taxi",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Street_Jobs.layer",
+    "group": "Roadmap_Job_TaxiPad",
+    "origin": "Roadmap_Job_TaxiPad",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        0,
+        9
+      ],
+      "max": [
+        4,
+        13
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "job-taxi-pad",
+      "name": "Roadmap_Job_TaxiPad",
+      "prefab": null,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        9
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_JobSiteComponent",
+          "set": {
+            "m_eSite": "TAXI"
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        },
+        {
+          "component": "RplComponent",
+          "set": {
+            "Enabled": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "taxi-cab",
+      "name": "Roadmap_Job_TaxiPad_Cab",
+      "prefab": "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4,
+        -0.636,
+        13
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "wall": "free"
+    }
+  ]
+}
