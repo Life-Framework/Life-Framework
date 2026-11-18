@@ -3,423 +3,195 @@
   "kit": "clinic",
   "system": "medic",
   "source": {
-    "file": "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Street_Hospital.layer",
-    "group": "Roadmap_Hospital_*,Hospital_*",
-    "origin": "Roadmap_Hospital_Duty_Desk",
-    "frame": "origin-entity"
+    "file": "addons/LF_Everon1989/Prefabs/Buildings/Clinic/Clinic_Kit.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local",
+    "also": [
+      "addons/LF_Everon1989/Prefabs/Buildings/Clinic/Clinic.et",
+      "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_clinic.layer"
+    ]
   },
-  "scope": "room",
+  "scope": "building",
+  "building": {
+    "mode": "override",
+    "via": "{31B60F0942664774}Prefabs/Buildings/Clinic/Clinic.et",
+    "vanilla": "{27CC3110521583D6}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_v2.et"
+  },
+  "store": {
+    "prefab": "{DA36267A788CB005}Prefabs/Buildings/Clinic/Clinic_Kit.et",
+    "config": []
+  },
   "anchoring": {
-    "floorY": 0,
+    "floorY": 0.26,
     "floors": [
       {
         "id": "f0",
-        "y": 0
+        "y": 0.26
+      },
+      {
+        "id": "f1",
+        "y": 3.26
       }
     ],
     "footprint": {
       "source": "rows",
       "min": [
-        -12.9,
-        -4.9
+        -7.7,
+        0
       ],
       "max": [
-        5.2,
-        8.8
+        8.74,
+        3.9
       ]
     },
-    "front": null,
+    "front": "+z",
     "counters": [
       {
-        "id": "hospital-duty-desk",
-        "wall": "free",
-        "edgeGap": 4.9
+        "id": "lf-medic-duty-desk",
+        "wall": "+x",
+        "edgeGap": 0.84
       }
     ],
     "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
-      "id": "hospital-till",
-      "name": "Roadmap_Hospital_Till",
-      "prefab": null,
-      "role": "interactable",
+      "id": "clinic-furniture-01",
+      "prefab": "{8115988D2822C4FC}Prefabs/Buildings/Clinic/Furniture/Clinic_furniture_01.et",
+      "role": "furniture",
       "verb": "on floor",
       "offset": [
-        -8.9,
-        0.005,
-        -0.9
+        0,
+        0,
+        0
       ],
       "yaw": 0,
-      "config": [
-        {
-          "component": "LF_HospitalTillComponent",
-          "set": {
-            "m_sTargetId": "\"Roadmap_Hospital_Till\"",
-            "m_iPayout": "200",
-            "m_fCooldown": "60",
-            "m_iMinPolice": "0"
-          },
-          "blocks": []
-        },
-        {
-          "component": "MeshObject",
-          "set": {
-            "Object": "\"{2D6DB9D5AFEAB643}Assets/Props/Services/Post/CounterPostOffice_01/CounterPostOffice_01.xob\""
-          },
-          "blocks": []
-        },
-        {
-          "component": "RigidBody",
-          "set": {
-            "Mass": "10",
-            "ModelGeometry": "1",
-            "Static": "1"
-          },
-          "blocks": []
-        },
-        {
-          "component": "ActionsManagerComponent",
-          "set": {},
-          "blocks": [
-            "ActionContexts",
-            "additionalActions"
-          ]
-        },
-        {
-          "component": "RplComponent",
-          "set": {
-            "Enabled": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "free",
-      "floor": "f0"
+      "from": "Clinic.et",
+      "wall": "-z",
+      "floor": "all"
     },
     {
-      "id": "hospital-cabinet",
-      "name": "Roadmap_Hospital_Cabinet",
-      "prefab": null,
-      "role": "interactable",
-      "verb": "on floor",
+      "id": "lf-medic-duty-desk",
+      "prefab": "{A0B78CD65C661B15}Prefabs/Medic/LF_MedicDutyDesk.et",
+      "role": "counter",
+      "verb": "against wall",
       "offset": [
-        -5.9,
-        0.005,
-        -1.8
+        7.9,
+        0.26,
+        1
       ],
       "yaw": 0,
-      "config": [
-        {
-          "component": "LF_BreachTargetComponent",
-          "set": {
-            "m_sTargetId": "\"Roadmap_Hospital_Cabinet\"",
-            "m_fFuseSeconds": "0"
-          },
-          "blocks": []
-        },
-        {
-          "component": "LF_HospitalCabinetComponent",
-          "set": {
-            "m_sTargetId": "\"Roadmap_Hospital_Cabinet\""
-          },
-          "blocks": [
-            "m_aLootPrefabs"
-          ]
-        },
-        {
-          "component": "LF_LockComponent",
-          "set": {
-            "m_bDebugLocked": "1"
-          },
-          "blocks": []
-        },
-        {
-          "component": "MeshObject",
-          "set": {
-            "Object": "\"{3169A0CB357D3854}Assets/Props/Furniture/CupboardOld_01/CupboardOld_01_medium.xob\""
-          },
-          "blocks": []
-        },
-        {
-          "component": "RigidBody",
-          "set": {
-            "Mass": "10",
-            "ModelGeometry": "1",
-            "Static": "1"
-          },
-          "blocks": []
-        },
-        {
-          "component": "ActionsManagerComponent",
-          "set": {},
-          "blocks": [
-            "ActionContexts",
-            "additionalActions"
-          ]
-        },
-        {
-          "component": "RplComponent",
-          "set": {
-            "Enabled": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-supply-crate-1",
-      "name": "Hospital_SupplyCrate_1",
-      "prefab": "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -12.2,
-        0.005,
-        0.1
-      ],
-      "yaw": -5,
-      "wall": "-x",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-supply-crate-2",
-      "name": "Hospital_SupplyCrate_2",
-      "prefab": "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -12.9,
-        0.005,
-        -0.1
-      ],
-      "yaw": 10,
-      "wall": "-x",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-dispatch-board",
-      "name": "Roadmap_Hospital_DispatchBoard",
-      "prefab": "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et",
-      "role": "board",
-      "verb": "on hospital-wait-bench",
-      "offset": [
-        -1.125,
-        1.161,
-        -2.258
-      ],
-      "yaw": 0,
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-payphone",
-      "name": "Roadmap_Hospital_Payphone",
-      "prefab": "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et",
-      "role": "interactable",
-      "verb": "against wall",
-      "offset": [
-        5.2,
-        0.005,
-        -1.25
-      ],
-      "yaw": 180,
-      "class": "SCR_DestructibleBuildingEntity",
       "wall": "+x",
       "floor": "f0"
     },
     {
-      "id": "hospital-duty-desk",
-      "name": "Roadmap_Hospital_Duty_Desk",
-      "prefab": "{A0B78CD65C661B15}Prefabs/Medic/LF_MedicDutyDesk.et",
-      "role": "counter",
+      "id": "lf-dispatch-board-medic",
+      "prefab": "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et",
+      "role": "board",
+      "verb": "against wall",
+      "offset": [
+        8.74,
+        1.41,
+        3.9
+      ],
+      "yaw": -90,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "lf-hospital-bed",
+      "prefab": "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -7.7,
+        0.26,
+        4.2
+      ],
+      "yaw": 0,
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "lf-hospital-bed-2",
+      "prefab": "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et",
+      "role": "dressing",
       "verb": "on floor",
       "offset": [
-        0,
-        0.005,
-        0
+        -6,
+        0.26,
+        4.2
       ],
       "yaw": 0,
       "wall": "free",
       "floor": "f0"
     },
     {
-      "id": "hospital-bay-cone-1",
-      "name": "Hospital_BayCone_1",
-      "prefab": "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et",
-      "role": "dressing",
+      "id": "electricity-box-small-01",
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "role": "alarm",
       "verb": "against wall",
       "offset": [
-        -2.8,
-        0.005,
-        8.8
-      ],
-      "yaw": 180,
-      "wall": "+z",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-bay-cone-2",
-      "name": "Hospital_BayCone_2",
-      "prefab": "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -2.8,
-        0.005,
-        4
-      ],
-      "yaw": 180,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-bay-cone-3",
-      "name": "Hospital_BayCone_3",
-      "prefab": "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -10.8,
-        0.005,
-        8.8
-      ],
-      "yaw": 180,
-      "wall": "+z",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-bay-cone-4",
-      "name": "Hospital_BayCone_4",
-      "prefab": "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -10.8,
-        0.005,
-        4
-      ],
-      "yaw": 180,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-bed-1",
-      "name": "Hospital_Bed_1",
-      "prefab": "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -11.1,
-        0.195,
-        -4.9
-      ],
-      "yaw": 0,
-      "wall": "-z",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-bed-2",
-      "name": "Hospital_Bed_2",
-      "prefab": "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -9.2,
-        0.195,
-        -4.9
-      ],
-      "yaw": 0,
-      "wall": "-z",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-bed-3",
-      "name": "Hospital_Bed_3",
-      "prefab": "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -7.3,
-        0.195,
-        -4.9
+        3.5,
+        3.05,
+        6.66
       ],
       "yaw": 0,
       "config": [
         {
-          "component": "LF_HospitalBedComponent",
+          "component": "LF_AlarmMountComponent",
           "set": {
-            "m_vStandOffset": "-0.85 0 0"
+            "m_vOffset": "0 0.167 0.065",
+            "m_fReach": "12"
           },
           "blocks": []
         }
       ],
-      "wall": "-z",
-      "floor": "f0"
+      "wall": "+z",
+      "floor": "f1"
     },
     {
-      "id": "hospital-doctor",
-      "name": "Hospital_Doctor",
+      "id": "lf-sign-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -2.4,
+        3.1,
+        6.74
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"hospital\"",
+            "m_vRimColor": "0.1 0.3 0.18",
+            "m_vPaintColor": "0.94 0.94 0.9",
+            "m_vTextColor": "0.08 0.4 0.2"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f1"
+    },
+    {
+      "id": "clinic-doctor",
+      "name": "Clinic_Doctor",
       "prefab": "{C001B9088678C653}Prefabs/Characters/Npcs/Outfits/LF_Npc_Medic_1.et",
       "role": "npc",
       "verb": "on floor",
       "offset": [
-        -1.328,
-        0,
-        -0.601
+        7.05,
+        0.26,
+        0.35
       ],
       "yaw": 0,
       "class": "LF_NpcBaseEntity",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-wait-bench",
-      "name": "Hospital_WaitBench",
-      "prefab": "{CECA6D57E2CAB7A8}Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -0.7,
-        0.005,
-        -1.6
-      ],
-      "yaw": 0,
-      "class": "SCR_DestructibleEntity",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-flowerpot-1",
-      "name": "Hospital_Flowerpot_1",
-      "prefab": "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        1.5,
-        0.005,
-        -1.7
-      ],
-      "yaw": 180,
-      "class": "SCR_DestructibleEntity",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "hospital-flowerpot-2",
-      "name": "Hospital_Flowerpot_2",
-      "prefab": "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -4.05,
-        0.005,
-        -1.7
-      ],
-      "yaw": 180,
-      "class": "SCR_DestructibleEntity",
-      "wall": "free",
+      "from": "Grid_clinic.layer",
+      "wall": "-z",
       "floor": "f0"
     }
   ]
