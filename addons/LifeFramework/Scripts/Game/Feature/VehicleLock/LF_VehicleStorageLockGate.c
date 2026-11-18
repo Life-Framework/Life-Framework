@@ -58,7 +58,7 @@ class LF_VehicleStorageLockGate
 	static bool Refuses(BaseInventoryStorageComponent storage, IEntity item, string verb)
 	{
 		// The server's own insert (the garage putting a locked car's saved cargo back, #2809) passes.
-		if (LF_ServerInsertScope.IsOpen())
+		if (LF_ServerInsertScope.IsOpenFor(item))
 			return false;
 
 		LF_VehicleLockComponent vehicleLock = LockedVehicleOf(storage);
