@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "3C5E9A1B7D2F4086"
+ components {
+  MeshObject "{5A4ACD10B8DA3051}" {
+   Object "{059FBDB94286EF6F}Assets/Props/S2/S2_Bread/S2_Bread.xob"
+  }
+ }
+ coords 0 0 0
+}
