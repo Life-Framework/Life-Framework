@@ -30,3 +30,11 @@ None yet: no player-facing object in this slice. `LF_SiteHold.Step` is a pure fu
 - **Rules:** living player characters of an organisation inside `radius` count when they moved at least 1 m or acted (`NoteAction`) within `activeWindowSeconds`; inside `innerRadius` they count double. The holder is the hideout's lessee; a lease changed elsewhere resets the hold to the new lessee and its held ground. A capture: `LF_Hideout.HandOver` releases the old lease (reason `captured`, its held ground goes with it), leases the capturer and sets its held ground to zero, then `LF_OnSiteCaptured`. Contest start: `LF_OnSiteContested`, once per contest. A capturer that already leases another hideout is refused (`hand-over refused`) and the site stays its lessee's.
 - **Data:** the hideout lease and the "heldground" payload (#751); nothing new saved. Capture progress is runtime only and starts at zero after a restart.
 - **Proof:** `sites/site-sweep` (WORLD, annex hideout, sightings through the `SweepSite` seam).
+
+## Site rent (#2683)
+
+- **Player sees:** nothing on screen yet; the bank a held site builds up for its holder.
+- **Owner and side:** `LF_SiteRent` (server), called by `LF_ContestedSites.SweepSite` after each step with the holder before the step and the outcome.
+- **Rules:** a held site banks `rentPerHour * elapsed / 3600` per sweep (fractions carried at runtime), capped at `maxRentBanked`. Nothing banks while unheld, contested, or on the step that captures it. A capture keeps the bank on the site. One `LF_OnMoneyMoved` (`site_rent`, the holder org id as the uid, the bank as the balance after) per hour of banking, or when the cap is reached.
+- **Data:** the `siterent` payload, rows `LF_SiteRentRow` {version, hideout id, banked, last rent time (unix s), unlogged amount and seconds}. Load replaces the banks (idempotent) and keeps a bank above the cap at the cap. A save from before the payload loads every bank empty. Under one unit of carried fraction is lost on a restart.
+- **Proof:** `sites/site-rent` (PERSISTENCE), and `tools\cli wt e2e` across a restart.
