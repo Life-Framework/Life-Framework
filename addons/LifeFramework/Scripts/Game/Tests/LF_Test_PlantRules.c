@@ -2,7 +2,6 @@
 // the watering is skipped, so the plant dies and `- a rotten plant shows the last stage (expected 2, got 0)` and the
 // ripe and rot assertions fail. With the hook off the same test passes (`--only`, 2026-11-17).
 
-// tier: LOGIC
 //! The planting and growing rules of a catalogue crop (#2663): stage from seconds grown, a missed
 //! water window kills the plant, watering inside the window resets it, a ripe crop rots after its
 //! lifetime, and a seed is refused too close to another plant, out of reach, from a vehicle, in a safe

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_LogoutRule`: RED PROOF OK, with the contact stamp skipped the wanted-within-window case fails (`the decision records the police contact`, `it carries the leaving-custody charge (expected 1, got 0)`). Before the contact window existed the test could not compile (`m_iContactAge`, `LF_PoliceContact`, `RejoinFor` undefined). Green after the change.
-// tier: LOGIC
 //! Combat-logout rule (#1972, #1794): where a logout rejoins. Cuffed goes to jail; wanted within
 //! the police contact window goes to jail like a cuffed logout and is a flagged logout; wanted
 //! after the window rejoins in place; downed goes to the hospital; anything else is in place.

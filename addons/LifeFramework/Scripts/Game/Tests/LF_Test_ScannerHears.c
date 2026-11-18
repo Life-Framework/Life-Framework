@@ -3,7 +3,6 @@
 //! comms/scanner-hears (#253): a scanner carrier who is not a receiver hears a police call and the
 //! bus carries LF_OnScannerHeard; one with no scanner hears nothing; a call to a service with no
 //! radio frequency (taxi) is not heard; the fence sells the scanner and stamps a serial.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ScannerHears : LF_Test
 {

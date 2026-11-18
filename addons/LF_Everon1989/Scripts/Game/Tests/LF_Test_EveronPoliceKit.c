@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 (#1942): before the kit overlay and the catalog line, `tools\cli test --no-build --only LF_Test_EveronPoliceKit` failed `- senior is issued the roadblock kit` and `- the senior officer carries one roadblock kit (expected 1, got 0)`; with them it passes. `--red LF_Test_EveronPoliceKit` (RedProof() drops the ladder): RED PROOF OK.
-// tier: WORLD
 //! #1942 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the police armory
 //! hands out the spike strip and the roadblock kit by rank. The ladder is the core's layered with
 //! `LF_Police_Everon1989.conf` and `LF_PoliceKit_Everon1989.conf`. The patrol rank draws a spike strip

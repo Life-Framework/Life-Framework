@@ -1,6 +1,5 @@
 // red-proof: RED-OK 2026-11-17, `tools/cli test --no-build --red LF_Test_StaffWebhookEscape,...` (hook skips the cut and escape helpers and the callback hold): `the cut stops before the character it would split (expected 1899, got 1905)`, `a request's callback is held while it waits (expected 1, got 0)` failed; restored, green.
 
-// tier: LOGIC
 //! moderation/webhook-escape (#2414): the staff webhook body stays valid JSON and valid UTF-8 for
 //! admin-sourced text. Control characters other than newline, return and tab are escaped, a line cut
 //! at MAX_TEXT never ends inside a multi-byte character, and a request's callback is held until its

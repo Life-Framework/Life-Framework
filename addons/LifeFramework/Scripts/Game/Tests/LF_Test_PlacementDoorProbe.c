@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-17, with the LF_PlacementDoors.Find call removed from LF_PlacementRules.FindBlocker: `--only LF_Test_PlacementDoorProbe` failed `[LFTEST] FAIL placement/door-probe` (`a spot inside the leaf's swing is blocked by a door (expected 'a door', got '')`, the other side, the walk-up, the verdict and the reason). Restored, green.
 //! placement/door-probe (#2445): the shared blocker search (LF_PlacementRules.FindBlocker, which the
 //! single, aimed and composition placements all run) refuses a spot in a door leaf's swing or in the

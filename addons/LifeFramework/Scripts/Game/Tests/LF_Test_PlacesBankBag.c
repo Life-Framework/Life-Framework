@@ -2,7 +2,6 @@
 //   cli test --no-build --only LF_Test_PlacesBankBag:
 //   [LFTEST]   - the vault fills the bag it found by component (expected 250, got 0)
 // Restored; green.
-// tier: WORLD
 //! places/bank-bag: the vault money bag is found by component under the vault id, never by entity
 //! name (#1045). The annex bag is found under the annex vault id; an unnamed bag placed under
 //! another id is filled with the vault cash and reads back; a vault with no bag placed fills

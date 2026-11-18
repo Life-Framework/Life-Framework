@@ -7,7 +7,6 @@
 //------------------------------------------------------------------------------------------------
 //! The benefit's means test counts carried cash as well as the bank (economy review 2026-11-17). A
 //! player who keeps their money in their pockets and the bank empty must not collect the safety net.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_BenefitCountsCash : LF_Test
 {

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, `--only LF_Test_GatherToolGate` before the change: LF_GatherTools, LF_GatherToolRow, m_aTools and LF_OnGathered did not exist, so the test could not compile. `--red LF_Test_GatherToolGate` skips the better-tool row and the publish, so the speed and event checks fail.
-// tier: LOGIC
 //! gather/tool-gate (#2706): a gather node that names a tool refuses without it, in words and with no
 //! number; the right tool passes; a better tool carries a speed factor that shortens the hold; a
 //! finished gather publishes LF_OnGathered with the job family.

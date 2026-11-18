@@ -1,6 +1,5 @@
 // red-proof: #2419 removed the dead till script (LF_Hospital.RobTill and helpers) and its assertions here; the cabinet
 // assertions are unchanged, and their original observed red run is in the git history of this file (2026-10-11).
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Hospital : LF_Test
 {
@@ -80,7 +79,6 @@ class LF_Test_Roadmap_Hospital : LF_Test
 	}
 }
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_HospitalWorld : LF_Test
 {

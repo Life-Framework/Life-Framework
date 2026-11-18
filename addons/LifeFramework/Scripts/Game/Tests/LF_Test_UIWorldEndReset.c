@@ -1,5 +1,4 @@
 // red-proof: RED-OK 2026-11-18 `tools\cli test --no-build --red LF_Test_KeypadBackspace,LF_Test_UIWorldEndReset`: with the hook on the prompt hold survives and the stale death screen stays (8 assertions).
-// tier: WORLD
 //! A world can end with a UI open: a failed quiz kicks the player with the result page up, a player
 //! dies and disconnects before pressing Respawn. Before the fix nothing reset the kit's prompt-hold
 //! count or the death screen's instance, so the next session in the same game process hid every

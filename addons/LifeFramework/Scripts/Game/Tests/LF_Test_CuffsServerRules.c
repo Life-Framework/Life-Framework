@@ -1,6 +1,5 @@
 // red-proof: RED-OK police/cuffs-server-rules, observed 2026-11-17 in the same batched `--red` run: with the
 // cuffed flag off, `a cuffed shooter's hit on someone else is refused` and `a cuffed character may not drive` fail.
-// tier: LOGIC
 //! police/cuffs-server-rules (#2417): the pure rules behind the server's cuff refusals. A cuffed
 //! instigator's hit is refused unless it is self-damage or bleeding already running; a cuffed
 //! character may sit in a cargo seat but not a driver's seat.

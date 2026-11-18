@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-11, LF_PlacementAudit.RayLine reporting `d = len` instead of the traced distance: `--only LF_Test_PlacementProbe` failed "a ray down stops on the table top (expected 0.500393, got 1.90127)" and "a ray from the side stops at the table's edge (expected 1, got 1.60437)". Restored, green.
 // red-proof: 2026-11-12, FindExcluded returning null for the "@prefab:x,y,z" token: --only LF_Test_PlacementProbe failed (1 failing). Restored, green.
 //! The probe ray behind `tools\cli place` (LF_PlacementAudit.RayLine, tools/place/place.mjs): the

@@ -1,7 +1,6 @@
 // red-proof: RED-OK licence/counter, observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_LicenceCounter` (batched with the pack's gun store permit test):
 // with no licence row put on the outlet, `- the counter shows one licence row (expected 1, got 0)`,
 // `- a clean buyer with the fee applies at the counter (expected 1, got 10)` and `- the fee is taken (expected 200, got 500)`. Hook off: green.
-// tier: WORLD
 //! The firearm permit over a shop counter (maintainer 2026-11-17: "get the firearm permit in the gun
 //! store"). A catalogue licence row (LF_OutletOffer.m_sGrantsLicence) on the annex gun counter's outlet
 //! runs the licence office's visit: a counter without the row refuses, a wanted buyer or one short of

@@ -1,6 +1,5 @@
 // red-proof: 2026-11-17 `tools\cli test --no-build --red LF_Test_SaveNewerVersion,LF_Test_PersistStoreStaticReset`: RED PROOF OK, with the version left at the current one `the save claims the newer version (expected 49, got 48)`, `the unread newer payloads count as a read failure` and `a newer save pauses autosave so it is not overwritten` fail. Green with the fix (--only).
 // The store of a full persistence-tier run is past 8 KB, and a spliced Enforce string that size came back cut (2026-11-18: 8204 of 9388 chars, so 'the newer save parses' failed in the suite and passed alone); the newer save is now written to a profile file in pieces and loaded from it. Observed red: `--tier persistence` FAIL persist/save-newer-version on the string splice, green on the file.
-// tier: PERSISTENCE
 //! A save written by a newer build (a rollback, or a merge the main guard reverted after it saved)
 //! carries a version above this build's payload list. Its known payloads still load, but the load
 //! counts as damaged so autosave pauses: saving over it would drop the payloads this build cannot read.

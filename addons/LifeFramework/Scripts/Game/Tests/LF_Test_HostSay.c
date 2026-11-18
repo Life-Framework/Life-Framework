@@ -1,6 +1,5 @@
 // red-proof: Run before LF_HostSay.c existed: `tools\cli test --no-build --only LF_Test_HostSay` failed (scripts do not compile); the batched `--red` run then failed every check (ProcessFile skipped: nothing sent, no file consumed).
 
-// tier: LOGIC
 //! `tools\cli host say` (#1453): the server reads $profile:LifeFramework/host_say.txt, toasts every
 //! player once, and deletes the file. An empty file sends nothing and warns; text past 200
 //! characters is cut. The files here live under a test folder, never the real say file.

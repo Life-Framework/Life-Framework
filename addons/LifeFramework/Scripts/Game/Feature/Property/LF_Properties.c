@@ -99,6 +99,7 @@ class LF_Properties
 			house.SetOwner(ownerKey);
 
 		LF_Debug.Info(FEATURE, string.Format("property %1 owner set to '%2'", propertyId, ownerKey));
+		LF_PlotComponent.RefreshKey(propertyId);
 		return true;
 	}
 
@@ -170,6 +171,7 @@ class LF_Properties
 			s_mRecords.Set(row.m_sPropertyId, row.Copy());
 		}
 
+		LF_PlotComponent.RefreshKey(""); // the signs already in the world learn the loaded owners (#2780)
 		return s_mRecords.Count();
 	}
 }

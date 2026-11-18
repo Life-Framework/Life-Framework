@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-09 with `tools/cli test --no-build --only`: array.Remove(0) in LF_IncidentLog.Trim swaps the last record in, so the oldest-first check failed (`the oldest went first (expected 3, got 4)`); fixed with RemoveOrdered; green.
 
-// tier: LOGIC
 //! incident/log: the log appends, is bounded by count and retention, queries by radius and time
 //! window, only records kinds the config allows, samples damage instead of logging every hit,
 //! and fills itself from the event bus.

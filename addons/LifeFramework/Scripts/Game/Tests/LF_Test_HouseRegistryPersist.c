@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 with `tools\cli test --no-build --red LF_Test_HouseRegistryPersist,LF_Test_HouseCarriedKeyPersist`: `RED-OK houses/registry-persist` with the payload read skipped, `- the house keeps its owner after the load (expected 'registry-persist-owner', got '')`, `- the row of a house that is not in the world is kept`. Green with the read.
-// tier: PERSISTENCE
 //! houses/registry-persist (#2410): the "houses" payload round trips a house's lock state and owner
 //! under its stable identifier, mirrors both onto its doors, keeps the row of a house that is not in
 //! the world, applies a row that loads before its house registers, re-syncs a door that drifted, and a

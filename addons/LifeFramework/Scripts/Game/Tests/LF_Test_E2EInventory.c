@@ -2,7 +2,6 @@
 // 200, or 4 apples instead of 3) and run `tools\cli test --tier all`; the
 // assertion goes red. Observed red: expected GetCash 201 with AddCash(200)
 // added, then reverted.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_E2EInventory : LF_Test
 {

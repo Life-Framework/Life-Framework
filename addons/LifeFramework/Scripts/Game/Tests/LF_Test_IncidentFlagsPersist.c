@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-09 with `--only`: commenting out `LF_IncidentFlags.ApplyAll(flagRows)` in the load failed `the flag is back` and `no extra rows after the load (expected 1, got 0)`; restored; green. Restart path stays with wt e2e.
-// tier: PERSISTENCE
 //! The incident flags ride the real save path (the "incidentflags" payload, save version 17): a
 //! flagged incident is still flagged after the store is wiped, and loading twice adds no rows.
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]

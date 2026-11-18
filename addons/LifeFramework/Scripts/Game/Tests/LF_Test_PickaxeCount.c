@@ -3,7 +3,6 @@
 //! tool/pickaxe-count: a pickaxe is a weapon-slot item. It lands in the equipped-weapon storage,
 //! which GetDepositItemCountByResource does not search, so GetAmount counted it as 0 and the
 //! gather tool check (LF_GatherAction.LF_HasGatherTool, inventory mode) never saw a carried pickaxe.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PickaxeCount : LF_Test
 {

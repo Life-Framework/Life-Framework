@@ -1,5 +1,4 @@
 // red-proof: the bug-fix run. On the unfixed LF_Breach (Arm filed the footprint card with the report) this test failed `- placing the charge leaves no evidence (expected 0, got 1)`; with the fix it passes.
-// tier: WORLD
 //! Forced entry evidence: the footprint card lies when the charge DETONATES, not when it is placed.
 //! Placing a charge on a running fuse files the report and sounds the alarm but leaves nothing to
 //! bag; the fuse running out leaves exactly one card, filed against that report; a charge that is

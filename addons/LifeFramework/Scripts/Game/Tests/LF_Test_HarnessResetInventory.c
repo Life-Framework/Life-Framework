@@ -3,7 +3,6 @@
 // `[LFTEST]   - the loaded character ends with exactly what a plain reset one has (expected 'cash=0 apples=2 water=1 backpacks=1', got 'cash=237 apples=5 water=2 backpacks=1')`,
 // `SUMMARY tier=only passed=0 failed=1 total=1`. Restored; green.
 
-// tier: WORLD
 //! 2026-11-14: the harness `resetplayer` clocked a player out and dropped bills but left the
 //! inventory as it was, so a proof inherited the last one's items. The server side of it is
 //! LF_DutyLocker.ResetToCivilianKit: it empties the body, clothes included (the same step a clock-in

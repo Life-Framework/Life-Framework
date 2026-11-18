@@ -1,5 +1,4 @@
 // red-proof: expected "2026-11-14 21:40:08" in the FormatTime assertion: [LFTEST] SUMMARY tier=only passed=0 failed=1 total=1; restored, passed=1
-// tier: LOGIC
 //! Clip stamp (#1173): the time formatter, the id tail, the clock offset and the toggle, with no world.
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ClipStamp : LF_Test

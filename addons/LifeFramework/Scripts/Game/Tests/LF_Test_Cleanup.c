@@ -1,5 +1,4 @@
 // red-proof: 2026-11-14, distance check in LF_CleanupRule.Verdict disabled: `--only LF_Test_Cleanup` failed `one near a player stays (expected 'player near', got '')`. Restored, green.
-// tier: LOGIC
 //! World cleanup rule (#690): the verdict from measured facts, with no world.
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Cleanup : LF_Test

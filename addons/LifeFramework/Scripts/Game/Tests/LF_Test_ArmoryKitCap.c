@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 `--only LF_Test_ArmoryKitCap,...` with the kit-out and cooldown gates in LF_PoliceRanks.DrawAt switched off (tmp unfix run, log test-20261117-224005): FAIL "the refusal names the kit still out", "a lost report clears the serials (expected 0, got 2)". Restored: green.
-// tier: LOGIC
 //! police/armory-kit-cap (#2416): an officer holds one issued kit. While its serials are out the
 //! armory issues nothing, clocking out and in changes nothing, a second use with none of it carried
 //! reports it lost, and a kit handed back clears its serials.

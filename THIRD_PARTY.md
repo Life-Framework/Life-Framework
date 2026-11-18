@@ -20,6 +20,7 @@ section 5 of `docs/ecosystem.md`. Paths below are under
   - `Feature/Money/LF_MoneyFormat.c` from `Scripts/Game/Data/OVT_MoneyFormat.c`
   - `Feature/Resources/LF_ResourceDefs.c` from `Scripts/Game/Data/OVT_ResourceDefs.c`
   - `Feature/Shop/LF_ShopRules.c` from `Scripts/Game/Data/OVT_ShopSellRules.c`
+  - `Feature/Property/LF_HouseSpawnComponent.c` from `Scripts/Game/Components/OVT_SpawnPointComponent.c`
 
 A PR that copies more from Overthrow adds its files here.
 

@@ -2,7 +2,6 @@
 // intro_talk state never reaches COMPLETED; the registration or lifecycle
 // assertions go red. Run `tools\cli test --tier all`.
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_QuestWorld : LF_Test
 {

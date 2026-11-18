@@ -4,7 +4,6 @@
 // CarriesHeldApart check failed `- an unpaid copy cannot be sold back to the shop` and `- the unpaid apple
 // stays in the pocket (expected 1, got 0)`; both restored, green.
 
-// tier: WORLD
 //! A store's staff (#1143): the shopkeeper prefab carries the text-only shopkeeper dialogue, which has
 //! a line for the walk-out key; a shopkeeper standing inside a store's boundary is that store's staff,
 //! one standing outside it is not, and a shoplifting walk-out makes the staff say the line. Goods

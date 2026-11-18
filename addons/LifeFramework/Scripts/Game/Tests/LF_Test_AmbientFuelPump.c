@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-13, LF_AmbientFuelPump.PULSE_S 0: `--only LF_Test_AmbientFuelPump` failed "the hum is on while fuelling". Restored, green.
 //! The fuel station's pump hum (#897): a fuelling step on the server pulses the hum prop standing
 //! at the pumps and turns it on; a pump with no hum prop in reach is left alone (a fuel truck, a

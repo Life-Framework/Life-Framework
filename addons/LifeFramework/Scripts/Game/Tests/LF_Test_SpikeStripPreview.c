@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 (#1939) with `--only LF_Test_SpikeStripPreview` before the change: the script failed to compile (`Undefined function LF_SpikeStripPreview.AvailableTo/Evaluate`); implemented, green; then `--red LF_Test_SpikeStripPreview` printed `RED PROOF OK` (a confirm for the red spot, its refusal reason and the kept folded strip all failed with the overlapping strip left out).
-// tier: WORLD
 //! #1939 acceptance: the spike strip preview ships. An on-duty officer on open grid ground,
 //! with the folded strip at their feet, is offered the ghost on any world (no dev-tools flag;
 //! a civilian is not). The planned spot is valid and green, the plan lies straight across a road

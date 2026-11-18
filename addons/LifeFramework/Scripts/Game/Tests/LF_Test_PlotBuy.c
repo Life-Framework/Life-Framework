@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_PlotBuy` printed `RED-OK property/plot-buy (fails with the hook on, 30 assertions)` (the hook skips every Buy call); `--only` then passed=4 failed=0. #2777 review: with the asked-key filter off, `--only` failed `the server sold the plot of the sign used, not the nearer neighbour (expected 'plot-a', got 'plot-b')` and took 7500 not 5000; with it on, passed.
-// tier: WORLD
 //! property/plot-buy (#2649): a player at a for-sale plot sign buys it with carried cash. The server
 //! picks the plot from the buyer's position (no id from the client). Enough cash makes the buyer the
 //! owner in LF_Properties and takes exactly the price; short cash is refused and nothing is taken; an

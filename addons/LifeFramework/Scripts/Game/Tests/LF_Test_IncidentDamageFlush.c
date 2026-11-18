@@ -1,6 +1,5 @@
 // red-proof: RED-OK 2026-11-17, `tools/cli test --no-build --red LF_Test_IncidentDamageFlush,...` (hook skips the flush calls, as the unfixed code had none): `once the window has ended the held damage is flushed` and `the end of the burst is in the log` failed; restored, green.
 
-// tier: LOGIC
 //! incident/damage-flush (#2414): damage held back inside a sample window reaches the log without a
 //! later hit. The end of a short burst is published once its window has ended, a death publishes the
 //! victim's held damage before the death record, and the flush tick runs while the log is installed.

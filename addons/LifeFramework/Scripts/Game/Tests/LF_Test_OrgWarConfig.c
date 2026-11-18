@@ -1,5 +1,4 @@
 // red-proof: the batched `--red` run (RedProof() drops the owner JSON) fails "the owner's fee wins (expected 1200, got 5000)"; see the PR for the RED-OK line.
-// tier: LOGIC
 //! The organization war rules (#2667, W2 of #1022): LF_OrgWarConfig loads Configs/Organizations/LF_OrgWars.conf
 //! and layers the owner's `organizations.wars` keys over it. The core defaults are a 5000 fee from the
 //! fund, a 600 s answer window, a 7200 s war, a 86400 s pair cooldown, 3 members a side, war kills not

@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --remote lf-testbox --only LF_Test_StoreSnapToBoard`: SNAP_ABOVE 0.5 (the old trace start) failed `- a point over the third board lands on it, not on the top board (y 1.17694, board 0.82)`; the item skip removed failed `- a loose item on the board is looked past (y 0.524628)`; restored, green.
 
-// tier: WORLD
 //! Shelf goods land on the board under their shelf point (#1143). A building store's gondolas and
 //! coolers come from its furniture prefab, which are not runtime child entities of the store, so the
 //! spawn trace takes any static surface under the point: a gondola board, the board under the point

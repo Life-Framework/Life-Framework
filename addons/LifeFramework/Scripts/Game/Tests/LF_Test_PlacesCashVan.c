@@ -2,7 +2,6 @@
 //   cli test --no-build --only LF_Test_PlacesCashVan:
 //   [LFTEST]   - the route finds its van by component
 // Restored; green.
-// tier: WORLD
 //! places/cash-van: the cash van route finds its van and its stops by component, never by entity
 //! name (#1045). An unnamed van and three unnamed stops, placed under a route id, are found; the
 //! stops come back in their order whatever order they were placed in; a gap ends the route; a

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 `tools/cli test --no-build --only LF_Test_EvidenceBagHeld` on the unfixed LF_Evidence.Bag failed `investigation/bag-held` with `- an item a civilian holds again is not bagged`, `- the item stays with its holder`, `- an item carried away from its marker is not bagged`, `- the moved item stays where it is`; the loose-item case passed. Fixed: green.
-// tier: WORLD
 //! #2419: an officer bags a dropped item only while it still lies beside its marker. An item a
 //! civilian picked back up (it has a parent) or carried away (far from its marker) is refused, the
 //! row is dropped, and the item stays where it is.

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_RejoinSafeSpot`: RED PROOF OK, with the safety verdict skipped the stale, terrain, water, geometry, jail, restricted-zone and locked-house cases fail, and with the connection mark skipped `a respawn on the same connection is not` fails. Green on the real code.
-// tier: LOGIC
 //! #1778 (second half of #640): a returning character rejoins at the saved spot only when it is safe.
 //! Each unsafe case falls back to the spawn point (an empty verdict means safe): no spot, a stale
 //! spot, under the terrain, in water, inside geometry, inside the jail, in a restricted zone, in a

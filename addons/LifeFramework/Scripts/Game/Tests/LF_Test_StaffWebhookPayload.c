@@ -1,5 +1,4 @@
 // red-proof: RED-OK moderation/webhook-payload (fails with the hook on, 16 assertions): payload and no-URL post skipped
-// tier: LOGIC
 //! Staff webhook payload and fail-safe (#1283): hostile text becomes valid escaped JSON, an
 //! over-long line is cut, a URL splits into host and path, and with no usable URL a send is a
 //! logged no-op that reports false and never throws. No network is touched.

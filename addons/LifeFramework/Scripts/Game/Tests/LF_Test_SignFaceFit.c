@@ -2,7 +2,6 @@
 // (2026-11-08) failed signs/face-fit with "the font shrinks with the sheet
 // (expected 64, got 63)".
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignFaceFit : LF_Test
 {

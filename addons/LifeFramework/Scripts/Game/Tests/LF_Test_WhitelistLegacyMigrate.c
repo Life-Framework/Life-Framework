@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_WhitelistLegacyMigrate`: RED-OK whitelist/legacy-migrate (fails with the hook on, 26 assertions); green with --only.
-// tier: WORLD
 //! whitelist/legacy-migrate (#2575): a legacy LF_Whitelist file moves into the roster once.
 //! Repeats and uids already on the roster are skipped, a second start adds nothing, a missing
 //! file changes nothing, CONNECT is counted and not migrated, and the legacy file is never written.

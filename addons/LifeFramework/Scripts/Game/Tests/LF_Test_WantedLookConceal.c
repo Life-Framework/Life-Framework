@@ -1,7 +1,6 @@
 // red-proof: observed 2026-11-17 with `tools\cli test --no-build --only LF_Test_WantedLookConceal` on the
 // unfixed Police scripts: "test-e2e: FAILED (scripts do not compile)" (LF_WantedReports.ApplyConcealment and
 // LF_WantedLook.Witnessed did not exist). With the fix: passed=1 failed=0.
-// tier: WORLD
 //! What a suspect's clothes hide from a witness (#2438): the green raincoat hides the build and a
 //! face-concealing catalogue item hides the face; the description says so, a hidden face leaves no
 //! wanted portrait, a hidden build keeps it, and a plain outfit is described as before. The photo ID's

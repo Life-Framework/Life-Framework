@@ -2,7 +2,6 @@
 //   SUMMARY tier=only passed=0 failed=1 total=1 skipped=0
 //   [LFTEST]   - patch: the title key is the overlay's (expected '#Test-Handbook_PatchedTitle', got '#LF-Handbook_ReadTitle')
 // Restored; green.
-// tier: LOGIC
 //! Handbook pages load from config (#1772): the core file's pages in order, a pack overlay that adds
 //! and patches a page by id, and a broken page skipped with one error line.
 [LF_TestInfo(LF_TestTier.LOGIC)]

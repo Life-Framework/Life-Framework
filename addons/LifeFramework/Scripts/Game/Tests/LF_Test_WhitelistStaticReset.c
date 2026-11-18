@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_DevGameMasterReset,LF_Test_CharacterCreationReset,LF_Test_VehicleStateReset,LF_Test_WhitelistStaticReset,LF_Test_OrgStaticReset,LF_Test_UiSheetStaticReset`: RED PROOF OK (all 6 fail with the hook on, e.g. "a world end clears the missing-file counter (expected 0, got 1)"); green with the hooks (--only, 6 passed).
-// tier: LOGIC
 //! whitelist/static-reset (#2415): the roster lists, the load-failed latch, the missing-file counter
 //! and the save path are process statics. A world loaded after one whose roster file was unreadable
 //! kept refusing saves; a test save path outlived its world.

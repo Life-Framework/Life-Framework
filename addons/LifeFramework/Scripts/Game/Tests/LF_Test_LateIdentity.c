@@ -5,7 +5,6 @@
 // `- the stand-in account is now under the real identity` and `- the save holds no second account under
 // the stand-in (expected 0, got 1)`. Restored; green.
 
-// tier: PERSISTENCE
 //! Playtest build 4 (launcher "Play on my own"): the host's platform identity was the NULL UUID
 //! when the registration form opened and the real one about 15 s later. The account opened under a
 //! name stand-in, the signed form looked it up under the real identity, found nothing, and the

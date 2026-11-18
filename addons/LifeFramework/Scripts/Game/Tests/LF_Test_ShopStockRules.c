@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-15 with `tools/cli test --no-build --red LF_Test_ShopStockRules,LF_Test_FenceStockTrade`: RED-OK shop/stock-rules, skipping the BuybackPrice call failed `200 at 0.4 pays 80, not 79 (expected 80, got 0)`. Hook off: green.
-// tier: LOGIC
 //! A stocked shop's pure decisions: the buyback pays a share of the street value, never more than
 //! the goods cost (fraction held to 1); it buys listed goods flagged or not, and anything else only
 //! when flagged and the stock takes stolen goods; a pack stock replaces the core stock of its id.

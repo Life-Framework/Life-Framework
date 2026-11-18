@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 with `tools\cli test --no-build --red LF_Test_HouseRegistryPersist,LF_Test_HouseCarriedKeyPersist`: `RED-OK houses/carried-key-persist` with the itemkeys read skipped, `- the restored key opens the same house (expected 'carried-key-house', got '')`. Green with the read.
-// tier: PERSISTENCE
 //! houses/carried-key-persist (#2410): a carried house key keeps the house it opens across a save. The
 //! snapshot capture reads the binding, the "itemkeys" payload round trips it beside the carried
 //! snapshot (whose own format holds no binding), and the restore binds the respawned key again.

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-15 `tools/cli test --no-build --red LF_Test_HandToolEquip,LF_Test_VaultDrillAction,LF_Test_VaultDrillCancel,LF_Test_VaultDrillPayOnce` RED-OK, hook on failed `- cancelled: no haul (expected 0, got 1)`, `- put away: no haul (expected 0, got 1)`.
-// tier: WORLD
 //! Nothing is paid before the drill has run its time: starting pays nothing; cancelling or putting
 //! the drill away stops the drilling and the vault stays shut with no haul, even after the full
 //! time has passed on the server clock. Walking off and going down stop it too (the pure step).

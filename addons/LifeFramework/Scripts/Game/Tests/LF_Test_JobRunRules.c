@@ -5,7 +5,6 @@
 //   start, abandon, start, abandon kept every parcel and jerrycan.
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! jobs/run-rules (#2408): a delivery run pays only when the drop is at least the configured distance from where
 //! the run started and the run took at least the configured share of the expected driving time at road speed; a
 //! taxi fare also needs a seated passenger. The cargo deposit is held for the run, returned once on delivery and

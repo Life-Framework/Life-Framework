@@ -6,7 +6,6 @@
 // `- civilian spawn point at <74,0,108> is inside a safe zone` (the grid gate spawn is outside any zone on
 // purpose). The RedProof() hook skips the fixture zone and the plaza assertions go red.
 
-// tier: WORLD
 //! Safe zone damage rule, plus a fixture plaza (a safe circle with a CIVILIAN spawn point in it) the
 //! test registers and removes itself; GridWorld places no town zones (docs/architecture/three-worlds.md).
 [LF_TestInfo(LF_TestTier.WORLD)]

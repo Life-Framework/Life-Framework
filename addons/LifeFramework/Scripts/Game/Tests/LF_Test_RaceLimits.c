@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 `test --no-build --red LF_Test_RaceLimits,LF_Test_JumpPadSeen,LF_Test_RaceAfkSettle,LF_Test_RaceLobbyLeave,LF_Test_EventForceDespawn` -> RED PROOF OK (all 5 fail with the hook on): with the hook on the minimum stays 2, so "a minimum above the lobby limit is refused" fails. Green with the fix (--only, 17 passed).
-// tier: LOGIC
 //! #2406: a course whose minimum entrants exceeds the lobby limit is refused (it would take fees and always
 //! cancel), a negative AFK grace or settle delay is refused, and the racer's AFK clock and the race's
 //! settle clock count in the course's seconds (0 turns each off). Pure script, no world.

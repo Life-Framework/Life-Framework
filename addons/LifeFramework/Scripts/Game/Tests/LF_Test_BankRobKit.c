@@ -1,5 +1,4 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_BankRobKit` with the second-grant expectation set to 1 failed `- a second grant adds nothing (expected 1, got 0)`. Restored; green.
-// tier: WORLD
 //! The bank robbery kit (#605): after one grant the character holds every item the vault tool
 //! check accepts (drill, keycard, fence charge), a vault that wants any one of them passes the
 //! offer check, a second grant adds nothing, and the placed stand sits in the playtest town.

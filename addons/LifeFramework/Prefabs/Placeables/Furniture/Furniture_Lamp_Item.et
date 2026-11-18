@@ -30,7 +30,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    Object "{89400D22902563C0}Assets/Props/Furniture/LampInterior_01/LampInterior_01.xob"
   }
   LF_PlaceableComponent "{42F215346ECE955A}" {
-   m_sPlacedPrefab "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et"
+   m_sPlacedPrefab "{5F120AB9DDA71E3B}Prefabs/Placeables/Furniture/Furniture_Lamp_Placed.et"
    m_vFootprintMins -0.2 0.1 -0.2
    m_vFootprintMaxs 0.2 1.5 0.2
    m_fReach 1

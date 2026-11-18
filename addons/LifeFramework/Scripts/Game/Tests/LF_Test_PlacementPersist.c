@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with `--red` (log test-20261117-231653): RED-OK placement/persist, the load skipped: FAIL "both placements are rows again after the load" (expected 2, got 0), "the first chair stands after the load". Hook off: green.
-// tier: PERSISTENCE
 //! placement/persist (#1032, slice #2653): two permanent placements go through the "placements" payload
 //! and come back once each at their spot; a second apply makes no duplicate; a row whose prefab no
 //! longer resolves is skipped (LF_Debug.Error) and not kept.

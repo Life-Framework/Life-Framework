@@ -3,7 +3,6 @@
 //   Unfixed code (#2408): BeginRun did not exist; the start action gave the cargo with no deposit and Dropoff paid at any distance.
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
 //! jobs/run-cargo-deposit (#2408): a real character starts, abandons and delivers runs at the placed drop. A run
 //! takes the cargo's deposit from the player's cash (a player short of it gets no run and no cargo), an abandoned
 //! run keeps it, and a delivery pays the run and returns it. A drop too close to the start, or reached too fast,

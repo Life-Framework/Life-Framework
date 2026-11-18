@@ -98,7 +98,7 @@ r = run({ pr: ["tools/lib/gate-risk.mjs"], main: ["tools/lib/gate-tier.mjs", "to
 check(r.overlap && /gate-risk/.test(r.reasons.join(" ")), "a tools module imports a module the PR changes: overlap");
 
 // 8. Generated files count only when the PR changes the same generated file.
-const REG = `${A}Scripts/Game/Tests/LF_TestRegistrations.generated.c`;
+const REG = `${A}Language/everonlife_localization.en_us.conf`;
 const reg = sq.generated(REG);
 r = run({ pr, main: [REG], prTree: prBank, mainTree: { [REG]: "// registry\n" } });
 check(reg && !r.overlap, "main changed the test registry, the PR changes no test: no overlap (pushed as is)");

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 with `tools/cli test --no-build --red LF_Test_ReputationPersist`: RED-OK reputation/persist (fails with the hook on, 23 assertions), first `TOWN points are back (expected 60, got 0)`. Green with `--only`; the restart is `tools/cli wt e2e slice-2698`.
-// tier: PERSISTENCE
 //! Standing rides the real save path (#2698, the "reputation" payload, save version 53): rows are
 //! written, an emptied store reads the same points back, a 0 row is not written, a removed faction is
 //! skipped with a warning, points clamp to the current thresholds, and loading twice gives the same

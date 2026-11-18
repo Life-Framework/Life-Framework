@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 `test --no-build --red LF_Test_SiteSweep` printed RED PROOF OK: with the hook on (no capture sweeps) the held ground stays A's (40 points), the lease stays A's and no capture is published.
-// tier: WORLD
 //! sites/site-sweep (#2680, gang war #1022): the server sweep scores the annex hideout's site with
 //! LF_SiteHold.Step under LF_SitesConfig.For(id).ToHoldRules(). Presence comes through the sweep's
 //! test seam (LF_SiteSighting rows), not spawned characters, so the activity filter and the rings

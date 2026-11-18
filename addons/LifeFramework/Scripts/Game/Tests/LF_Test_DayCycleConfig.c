@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-15 before LF_DayCycle existed: `tools\cli test --no-build --only LF_Test_DayCycleConfig` failed to compile ("Unknown type 'LF_DayCycleSettings'"), so the test could not pass. Then green on the function.
-// tier: LOGIC
 //! The day-cycle pure function (#1300): LF_DayCycle.Resolve(config, realClockHour) turns the `dayCycle`
 //! config into engine settings. Vanilla changes nothing, accelerated gives the day length, the speed
 //! against the 24 h vanilla day, the night speed and the start hour (a 120-minute day is 12x), and

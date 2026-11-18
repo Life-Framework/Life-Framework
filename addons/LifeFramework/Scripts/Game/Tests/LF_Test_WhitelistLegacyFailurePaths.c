@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_WhitelistLegacyFailurePaths,LF_Test_WhitelistLegacyIgnoredCount`: RED-OK whitelist/legacy-failure-paths (fails with the hook on, 18 assertions); green with --only.
-// tier: WORLD
 //! whitelist/legacy-failure-paths (#2607): the two refusals of the legacy migration lose nothing.
 //! A roster this build cannot read stops the migration before it adds anything, and a roster save
 //! that fails leaves the file unmarked. Each is followed by the next start (a fresh load of a

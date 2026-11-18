@@ -3,7 +3,6 @@
 // `- the officer rung is added once (version 26 load 1) (expected 3, got 2)`,
 // `- the founder rank reads by its key (version 26 load 1) (expected '#LF-Org_RankFounder', got 'Founder')`,
 // `- a migrated founder promotes onto the officer rung`. Restored; green. The restart path is `wt e2e`.
-// tier: PERSISTENCE
 //! #750a through the real save path. A version 26 save (the format before the rights mask: record
 //! version 1, a founder and a member rank as four bools, no "orgranks" payload) loads with every
 //! member on their rank, the founder holding every right, the member only the stash, and the officer

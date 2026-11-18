@@ -4,7 +4,6 @@
 // The red proof is the batched hook run: `tools\cli test --no-build --red LF_Test_TraderServerSale`
 // skips the sale in RedProof() and the sale assertions fail. Observed 2026-11-17:
 // `RED-OK trader/server-sale (fails with the hook on, 36 assertions)`. Green in the same session.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TraderServerSale : LF_Test
 {

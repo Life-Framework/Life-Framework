@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-15 with Apply() a stub returning false: `tools\cli test --no-build --only LF_Test_DayCycleApply` failed 1/1 ("the manager reads back a 60-minute day (expected 3600, got 86400)", "an accelerated day is applied"); with the manager calls in, it passes.
-// tier: WORLD
 //! #1301: LF_DayCycleApply hands the resolved day cycle to the world's vanilla TimeAndWeatherManagerEntity.
 //! An accelerated 60-minute day reads back as 3600 s from GetDayDuration() with the clock advancing on its
 //! own and the start hour set; realtime keeps a 24 h day at the server's clock; vanilla touches nothing.
