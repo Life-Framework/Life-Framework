@@ -6747,6 +6747,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Read today's prices"
      Comment "Action on the trader chalk price board."
     }
+    CustomStringTableItem "{E3A1B2C4D5F60723}" {
+     Id "LF-Market_SaleDown"
+     Target_en_us "I'm paying less for %1 today, I've plenty."
+     Comment "Toast from the trader after your sale moved a good into a lower price band. %1 = good name. Never a number (#2923)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60725}" {
+     Id "LF-Market_SaleTitle"
+     Target_en_us "Trader"
+     Comment "Title of the trader price remark toast (#2923)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60724}" {
+     Id "LF-Market_SaleUp"
+     Target_en_us "I'm paying full price for %1 again."
+     Comment "Toast from the trader to the next seller once a good recovered a price band. %1 = good name (#2923)."
+    }
     CustomStringTableItem "{DF4F6E621FD608FA}" {
      Id "LF-MedicRank_Doctor"
      Target_en_us "Doctor"
