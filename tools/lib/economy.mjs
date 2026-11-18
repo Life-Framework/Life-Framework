@@ -95,7 +95,7 @@ export function buildReport(root, opts = {}) {
   const jobText = read(join(addonsDir, "LifeFramework", "Scripts", "Game", "Feature", "Jobs", "LF_CivilianJob.c"));
   const startBank = attributeDefault(spawnText, "m_iStartingBank");
   const jobs = scalars(core("Jobs", "LF_Jobs.conf"), owner?.json?.jobs, loaded.overlays, "LF_JobsConfig", {
-    m_fPoliceDutyPayPerSecond: "policeDutyPayPerSecond", m_iBenefitAmount: "benefitAmount", m_fBenefitCooldownSeconds: "benefitCooldownSeconds",
+    m_fPoliceDutyPayPerSecond: "policeDutyPayPerSecond", m_fMedicDutyPayPerSecond: "medicDutyPayPerSecond", m_iBenefitAmount: "benefitAmount", m_fBenefitCooldownSeconds: "benefitCooldownSeconds",
   });
   const jv = (k, d = 0) => num(jobs[k]?.value, d);
   const tracks = listOf(addonsDir, "jobs.tracks", packLayers, owner);
