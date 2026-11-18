@@ -96,10 +96,16 @@ class LF_DutyIdle
 			return false;
 
 		// Someone else restarted the clock (a spawn) while this sampler held it paused: the idle
-		// window counts again from that start.
-		int since = LF_Utils.MaxInt(watch.m_iLastActiveMs, account.GetDutyStartedAtMs());
-		watch.m_bPaused = false;
-		int pauseAt = since + idleSeconds * 1000;
+		// window counts again from that start. Only then: other settles restart the clock too
+		// (LF_PoliceTrialSweep settles every officer each minute, an autosave every account), and
+		// counting from those would keep an AFK officer paid forever.
+		if (watch.m_bPaused)
+		{
+			watch.m_iLastActiveMs = LF_Utils.MaxInt(watch.m_iLastActiveMs, account.GetDutyStartedAtMs());
+			watch.m_bPaused = false;
+		}
+
+		int pauseAt = watch.m_iLastActiveMs + idleSeconds * 1000;
 		if (nowMs < pauseAt)
 			return false;
 
