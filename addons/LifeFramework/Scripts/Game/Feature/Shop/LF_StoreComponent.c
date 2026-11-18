@@ -399,7 +399,38 @@ class LF_StoreComponent : ScriptComponent
 		if (index < line.m_aYaws.Count() && line.m_aYaws[index] != LF_StoreRules.NO_YAW)
 			angles = Vector(GetOwner().GetYawPitchRoll()[0] + line.m_aYaws[index], 0, 0);
 
-		return LF_Utils.SpawnEntityPrefab(line.m_Prefab, SpawnPoint(line, index), angles);
+		IEntity copy = LF_Utils.SpawnEntityPrefab(line.m_Prefab, SpawnPoint(line, index), angles);
+		if (!copy)
+			return null;
+
+		RestOnBoard(copy, line, index);
+		return copy;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! SpawnPoint puts the pivot on the first thing a single trace hits, which is wrong twice: the pivot is
+	//! not the base (an M9 sank 6 cm, a vice hovered 8 cm), and every-layer traces stop inside the solid proxy
+	//! box some shelf units carry round their boards (goods hung 24 cm over ShelfUniversal_01_wide). The
+	//! copy's measured bottom goes on the support under its footprint (LF_PlaceSnap). A pile copy keeps its
+	//! written height above the bottom copy: it moves by what the bottom copy moved.
+	protected void RestOnBoard(IEntity copy, LF_StoreLineState line, int index)
+	{
+		int base = LF_StoreRules.StackBase(index, line.m_iStack);
+		if (base != index && base >= 0 && base < line.m_aShelf.Count())
+		{
+			IEntity bottom = GetGame().GetWorld().FindEntityByID(line.m_aShelf[base]);
+			if (bottom)
+			{
+				float moved = bottom.GetOrigin()[1] - SpawnPoint(line, base)[1];
+				copy.SetOrigin(copy.GetOrigin() + Vector(0, moved, 0));
+				copy.Update();
+				return;
+			}
+		}
+
+		LF_PlaceSnapResult r = LF_PlaceSnap.Settle(copy, LF_PlaceSnap.LIFT, SNAP_BELOW, SlotWorld(line, base)[1] + SNAP_ABOVE);
+		if (!r)
+			LF_Debug.Warn(LF_Stores.FEATURE, string.Format("store %1: nothing under %2 slot %3; left at its written point", m_sStoreKey, line.m_Prefab, index));
 	}
 
 	//------------------------------------------------------------------------------------------------
