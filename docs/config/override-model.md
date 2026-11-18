@@ -102,6 +102,7 @@ LF_ItemCatalogueConfig {
 | `organizations` | `rankDefaults` | `founder`, `officer` or `member`. A remove drops the entry, so the rank keeps its shipped rights; a new or replaced entry starts from them |
 | `zones` | `ruleSets` | rule name `NORMAL`, `SAFE` or `LAWLESS`. A remove is refused (every zone names a rule); a new or replaced entry starts from the legacy flags |
 | `sites` | `rules` | hideout id the site guards. The core ships none; a new entry starts from the default rules. Owner `remove` of a pack's site puts the hideout back on the default rules |
+| `property` | `m_aPlots` | plot id (`plot-a`, `saint-philippe.p1`). Pack overlays only (no owner section). The core ships two example plots; a pack adds its own with `add` and a price, patches a core price, or removes one. A new plot needs a `m_sTierId`. A key equal to a house id is refused (#2783) |
 | `licences` | `rules` | licence name (`POLICE_ACCESS`). The ids are the catalog's: add of an existing one, a name the catalog lacks and every remove are refused; replace turns both flags off unless the layer gives them |
 | `systems` (catalog) | `LF_SystemDef` list | system id (`Pager`). Pack overlays only. A framework (`LOCKED`) system and one another system names as parent or requirement cannot be removed |
 | `jobs` | `tracks` | job id (`MINER`). A new or replaced track needs `levelThresholds` |

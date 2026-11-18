@@ -66,6 +66,7 @@ Object.assign(SECTIONS, {
   "drinkImpairment.drinks": row("drinkImpairment", "drinks", "LF_DrinkImpairmentConfig", "Configs/Survival/LF_DrinkImpairment.conf", "m_aDrinks", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),
   "systems.catalog": row("systems", "catalog", "LF_SystemCatalog", "Configs/Systems/LF_SystemCatalog.conf", "m_aSystems", "m_sId", byField("m_sId")),
   "terms.terms": row("terms", "terms", "LF_TermsConfig", "Configs/Terms/LF_Terms.conf", "m_aTerms", "m_sId", byField("m_sId")),
+  "property.plots": row("property", "plots", "LF_PropertyConfig", "Configs/Property/LF_Property.conf", "m_aPlots", "m_sPlotId", byField("m_sPlotId")),
   "townBoard.cards": row("townBoard", "cards", "LF_TownBoardConfig", "Configs/TownBoard/LF_TownBoard.conf", "m_aCards", "m_sId", byField("m_sId")),
   "ui-theme.themes": row("ui-theme", "themes", "LF_UIThemeConfig", "Configs/UI/LF_UITheme.conf", "m_aThemes", "m_sThemeId", byField("m_sThemeId")),
   "vehicle-colours.models": row("vehicle-colours", "models", "LF_VehicleColoursConfig", "Configs/Vehicles/LF_VehicleColours.conf", "m_aModels", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),

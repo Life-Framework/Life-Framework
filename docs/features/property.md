@@ -21,6 +21,13 @@
 - 🟡 Deposited items are counts, never entities; `Parse`, `Format` and `CountOf` read and write the string.
   Nothing calls the rules yet (later M8 slices). Proof: `property/build-stage-rules`.
 
+### Property config reads pack overlays — `Feature/Property/LF_PropertyConfig.c` (2026-11-18, #2976)
+- 🟡 `LF_PropertyConfig.Get()` merges every pack overlay the mission header lists (`m_aLF_ConfigOverlays`, load order)
+  over `LF_Property.conf`: the plot catalogue is an `LF_ConfigList` keyed by `m_sPlotId`, so a pack plot with the
+  same id patches the core price or tier, a new id adds a plot (needs a tier id), and `remove` takes one out
+  (`docs/config/override-model.md`). Tiers stay core-only. A pack plot whose key is a house id is refused like a
+  core one (#2783). A path override (tests) reads that file alone. Proof: `property/pack-overlay`.
+
 ### Plot purchase — `Feature/Property/LF_PlotComponent.c` (2026-11-18, #2649, spec #756)
 - 🟡 A for-sale plot sign (`Prefabs/Props/Property/LF_PlotSign.et`, an `LF_PlotComponent` naming a
   `LF_Property.conf` plot key) shows "Buy plot ($price)". The request carries the used sign's plot key: the server sells
