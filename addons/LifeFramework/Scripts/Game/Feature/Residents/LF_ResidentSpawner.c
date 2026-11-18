@@ -319,6 +319,8 @@ class LF_ResidentSpawner
 		LF_ResidentDef def = DefOf(config, id);
 		if (def && !def.m_sPrefab.IsEmpty())
 			prefab = def.m_sPrefab;
+		else if (def && !def.m_sNeedQuest.IsEmpty())
+			prefab = LF_ResidentNeeds.GIVER_PREFAB;
 
 		IEntity entity = LF_Utils.SpawnEntityPrefab(prefab, spot.m_vOrigin, spot.m_vAngles, true);
 		if (!entity)
@@ -328,6 +330,7 @@ class LF_ResidentSpawner
 		}
 
 		Dormant(entity);
+		LF_ResidentNeeds.Attach(entity, def);
 		LF_ResidentLive live = new LF_ResidentLive();
 		live.m_sId = id;
 		live.m_Entity = entity.GetID();

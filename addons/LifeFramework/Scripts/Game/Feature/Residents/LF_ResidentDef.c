@@ -47,6 +47,9 @@ class LF_ResidentDef : LF_ConfigRecord
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Character prefab this resident spawns as (#2858). Empty: the neutral civilian", "et")]
 	ResourceName m_sPrefab;
 
+	[Attribute("", UIWidgets.EditBox, "Quest id this resident asks a passing player for (#2862), from Configs/Quests/LF_ResidentNeedQuests.conf. Empty: no need")]
+	string m_sNeedQuest;
+
 	[Attribute("", UIWidgets.Object, "The day, per game day (no weekdays yet): lines by start time, none sharing a start")]
 	ref array<ref LF_ResidentEntryDef> m_aTimetable;
 
