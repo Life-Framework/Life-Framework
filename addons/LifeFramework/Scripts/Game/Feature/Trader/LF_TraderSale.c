@@ -12,7 +12,8 @@ enum LF_ETraderSale
 	NOT_BOUGHT,
 	BLACK_MARKET,
 	UNPAYABLE,
-	NOT_REMOVED
+	NOT_REMOVED,
+	SELLER_DOWN		//!< A dead or downed seller (a forged request from a body)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -22,6 +23,8 @@ enum LF_ETraderSale
 class LF_TraderSale
 {
 	//! How far the seller may stand from the trader's storage for a client request.
+	protected static bool s_bFailRemoveForTest;
+
 	static const float REACH = 5.0; // lf-fixed: an anti-forgery bound at the inventory vicinity range, same as the hideout stash reach
 
 	//------------------------------------------------------------------------------------------------
@@ -64,6 +67,9 @@ class LF_TraderSale
 
 		if (untrusted)
 		{
+			if (!LF_Utils.IsAliveState(seller))
+				return Refuse(seller, LF_ETraderSale.SELLER_DOWN, "seller is dead or downed");
+
 			if (!InReach(seller.GetOrigin(), traderOwner.GetOrigin()))
 				return Refuse(seller, LF_ETraderSale.OUT_OF_REACH, "seller is out of reach of the trader");
 
@@ -86,6 +92,18 @@ class LF_TraderSale
 		int outputUnits = LF_ShopRules.StackTradeOutputCount(GetItemQuantity(item));
 		int totalValue = LF_ShopRules.StackTradeTotal(unitValue, outputUnits);
 
+		// Market (#2845): a curved good pays the curve's marginal sum instead of the fixed value. The
+		// trader list still decides whether the good is bought at all; market off changes nothing.
+		bool curved = LF_MarketBook.Curved(itemPrefab) != null;
+		int nowUnix = System.GetUnixTime();
+		if (curved)
+		{
+			totalValue = LF_MarketBook.QuoteAt(itemPrefab, outputUnits, nowUnix);
+			if (totalValue <= 0)
+				return Refuse(seller, LF_ETraderSale.NOT_BOUGHT, "the market pays nothing for " + itemPrefab);
+		}
+
+		// Pay first, then move the price, then take the item; any failure rolls back what was done.
 		int paid = LF_MoneyUtils.AddCash(seller, totalValue, "trader-sell");
 		if (paid != totalValue)
 		{
@@ -94,15 +112,40 @@ class LF_TraderSale
 			return Refuse(seller, LF_ETraderSale.UNPAYABLE, string.Format("cash payout failed (%1 of %2)", paid, totalValue));
 		}
 
-		if (!inventory.TryDeleteItem(item))
+		LF_MarketPrice priceBefore;
+		int oldPrice;
+		int newPrice;
+		if (curved)
+		{
+			priceBefore = LF_MarketBook.Snapshot(itemPrefab);
+			newPrice = LF_MarketBook.ApplySaleAt(itemPrefab, outputUnits, nowUnix, oldPrice);
+		}
+
+		bool removed = false;
+		if (!s_bFailRemoveForTest)
+			removed = inventory.TryDeleteItem(item);
+
+		if (!removed)
 		{
 			LF_MoneyUtils.RemoveCash(seller, paid, "trader-sell-rollback");
+			if (curved)
+				LF_MarketBook.Restore(itemPrefab, priceBefore);
 			return Refuse(seller, LF_ETraderSale.NOT_REMOVED, "the item could not be removed");
 		}
+
+		if (curved && newPrice != oldPrice)
+			LF_EventBus.Publish(LF_OnMarketPriceMoved.Create(itemPrefab, oldPrice, newPrice));
 
 		LF_Debug.Info("Trader", string.Format("sold %1 for %2 (untrusted=%3)", itemPrefab, totalValue, untrusted));
 		LF_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, totalValue.ToString());
 		return LF_ETraderSale.SOLD;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests only: while true, every sale fails at the item removal step (proves the rollback).
+	static void FailRemoveForTest(bool fail)
+	{
+		s_bFailRemoveForTest = fail;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -132,6 +175,21 @@ class LF_TraderSale
 			return null;
 
 		return accountManager.GetAccount(LF_Utils.GetPlayerUid(user));
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_TraderSale's statics (LF_StaticReset finds it by reflection).
+class LF_TraderSale_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_TraderSale";
+	}
+
+	override void Apply()
+	{
+		LF_TraderSale.FailRemoveForTest(false);
 	}
 }
 
@@ -168,6 +226,9 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_TraderSale(RplId itemId, RplId traderId)
 	{
+		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.PURCHASE, "trader sale"))
+			return;
+
 		LF_TraderSale.Sell(GetControlledEntity(), LF_NetworkUtils.FindEntityByRplId(itemId), LF_NetworkUtils.FindEntityByRplId(traderId), true);
 	}
 }
