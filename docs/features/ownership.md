@@ -175,6 +175,14 @@
   Getters (`PlotPrice`, `StageCount`, `StageWork`, `RequirementCount`, `Requirement`, `ShellPrefab`, ...) return
   0, empty or null for an unknown id; a missing config logs `LF_Debug.Error("Property", ...)` and degrades to the
   same defaults. Test `property/config` (LOGIC).
+- ✅ **A plot key equal to a house identifier is refused** (#2783, merged, in-dev). `LF_Properties` keys houses and
+  plots in one table and a house wins, so such a plot would sell the house at the plot price. At config load
+  `LF_PropertyConfig.RefuseHouseCollisions` drops every plot whose key is a known house (`LF_Houses`), and a house that
+  registers later drops the loaded plot (`RefuseHouseId`, called from `LF_Houses.Register`); each logs
+  `[LFDebug:Property]` at Error naming the key, and the house and the other plots are untouched. The validate check
+  `validate-plot-house-ids` fails a PR whose core or pack `Configs/Property` conf names a plot like a house
+  identifier set on an `LF_HouseManagerComponent` or a door `LF_LockComponent` in a layer or prefab. Test
+  `property/plot-house-collision` (LOGIC).
 - ✅ **Ledger asks are rate-limited; the test sign only leaves its own org** (#2536, review items 30 and 31 of #2415,
   merged, in-dev). View, Deposit, Withdraw, Leave and Lease now go through `LF_OrgLedgerGate` (`LF_OrganizationCharacter.c`)
   on the existing `PURCHASE` bucket, the same as founding and upgrades (View walks every member, so a spammed ask cost
