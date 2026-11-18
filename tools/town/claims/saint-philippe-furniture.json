@@ -6,7 +6,7 @@
   "kit": "furniture",
   "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_furniture.layer",
   "kinds": [
-    "FurnitureCounter"
+    "StoreCounter"
   ],
   "rows": 29,
   "destruction": {

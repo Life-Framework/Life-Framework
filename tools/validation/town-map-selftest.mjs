@@ -381,7 +381,7 @@ for (const kind of ["town", "village", "districts"]) {
 
 // ---- the village shop slots (#3217): nine optional building slots, so `town ready` is unchanged; each shop card owns only its layer, kit and claim
 {
-  const SHOPS = [["supermarket", "StoreCounter", "b66"], ["hardware", "StoreCounter", "b59"], ["pharmacy", "StoreCounter", "b88"], ["newsagent", "StoreCounter", "b13"], ["seed-feed", "StoreCounter", "b25"], ["bakery", "StoreCounter", "b06"], ["butcher", "StoreCounter", "b20"], ["barber", "BarberChair", "b43"], ["furniture", "FurnitureCounter", "b55"]];
+  const SHOPS = [["supermarket", "StoreCounter", "b66"], ["hardware", "StoreCounter", "b59"], ["pharmacy", "StoreCounter", "b88"], ["newsagent", "StoreCounter", "b13"], ["seed-feed", "StoreCounter", "b25"], ["bakery", "StoreCounter", "b06"], ["butcher", "StoreCounter", "b20"], ["barber", "BarberChair", "b43"], ["furniture", "StoreCounter", "b55"]];
   for (const [id, kind] of SHOPS) {
     const s = town.slots.find((x) => x.id === id);
     check(!!s && s.required === false && s.host === "building" && s.places[0] === kind && typeof s.poi === "string", `the town template should have an optional building slot ${id} registering ${kind} and naming a poi`);

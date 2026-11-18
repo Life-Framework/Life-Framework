@@ -80,6 +80,14 @@ async function run() {
   check(bad((t) => (bank(t).poi = "NONE")).length > 0, "'NONE' counts as a kind with no row, not as the explicit none");
   check(poi.checkSlotPois(clone(town), new Set()).length > 0, "an empty POI table passes a template that names kinds");
 
+  // ---- slots that share a front kind each need a slot row (#3515): every shop would otherwise read as the base name
+  const shops = town.slots.filter((s) => s.poi === "StoreCounter");
+  check(shops.length >= 9, `only ${shops.length} town slots share StoreCounter, expected the nine shops`);
+  for (const s of shops) check(kinds.has(`StoreCounter/${s.id}`), `the POI table has no slot row StoreCounter/${s.id}`);
+  const noSlotRow = new Set([...kinds].filter((k) => k !== "StoreCounter/bakery"));
+  const missing = poi.checkSlotPois(town, noSlotRow);
+  check(missing.length === 1 && /slot bakery/.test(missing[0]) && missing[0].includes("StoreCounter/bakery"), `a shared front kind with no slot row did not fail on exactly the bakery: ${missing.join("; ")}`);
+
   // ---- `town map <slug> --check` carries it (a temp root: the confs, the templates, the fixture dossier, a mapping)
   const tmp = scratchDir("lf-poi-check-");
   try {

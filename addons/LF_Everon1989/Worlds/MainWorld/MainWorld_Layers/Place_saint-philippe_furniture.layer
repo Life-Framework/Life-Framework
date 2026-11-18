@@ -1,7 +1,7 @@
 GenericEntity Fit_saint_philippe_furniture_Place {
  components {
-  LF_PlaceComponent "{98169FD6556FA4E1}" {
-   m_sKind "FurnitureCounter"
+  LF_PlaceComponent "{7C6E9926452722B4}" {
+   m_sKind "StoreCounter"
    m_sId "saint-philippe.furniture"
   }
   LF_FittedBuildingComponent "{D785DCDBDEA8D2A0}" {

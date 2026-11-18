@@ -110,8 +110,13 @@ export function joinPois(kinds, places, text = () => "") {
   const pois = [];
   const unjoined = {};
   for (const pl of places) {
-    const row = kinds.get(pl.kind);
-    if (!row) { unjoined[pl.kind] = (unjoined[pl.kind] || 0) + 1; continue; }
+    const base = kinds.get(pl.kind);
+    if (!base) { unjoined[pl.kind] = (unjoined[pl.kind] || 0) + 1; continue; }
+    // A slot row ("Kind/slot", #3515) restyles the places of that kind whose id ends in ".slot": label, icon, category,
+    // min zoom. Who sees the place stays the base row's (LF_MapPoiConfig.FindSlotRow, LF_MapPois.ApplySlotRow).
+    const slotAt = String(pl.id).lastIndexOf(".");
+    const slot = slotAt >= 0 ? kinds.get(`${pl.kind}/${String(pl.id).slice(slotAt + 1)}`) : undefined;
+    const row = slot ? { ...base, label: slot.label || base.label, icon: slot.icon || base.icon, category: slot.category || base.category, minZoom: slot.minZoom > 0 ? slot.minZoom : base.minZoom } : base;
     pois.push({ id: pl.id, name: (text(row.label) || row.kind) + (pl.detail ? ` (${pl.detail})` : ""), kind: row.kind, category: row.category, visibility: row.visibility, role: row.role, access: accessOf(row), x: pl.x, z: pl.z, minZoom: row.minZoom, live: pl.live, state: pl.state, heardOf: false, source: pl.source, file: pl.file });
   }
   return { pois, unjoined };
