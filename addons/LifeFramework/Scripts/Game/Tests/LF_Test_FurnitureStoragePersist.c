@@ -3,7 +3,7 @@
 //! Seeded with 151 cash, an apple and a water bottle, captured, then the wardrobe is deleted and the saved
 //! placement rows and storage snapshots are applied again (the load). The wardrobe stands again with the same
 //! three items, a second load adds nothing, an empty one is picked up and its record goes. The restart path
-//! itself (a real save and boot) is the manual step in the PR.
+//! itself is `tools\cli wt e2e` (SeedE2E / VerifyE2E): one chest, its two apples once, nothing loose.
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_FurnitureStoragePersist : LF_Test
 {
@@ -64,7 +64,14 @@ class LF_Test_FurnitureStoragePersist : LF_Test
 		if (record)
 			ctx.Equal(3, record.m_aItems.Count(), "the snapshot lists the three items");
 
-		array<ref LF_PlacementRow> rows = LF_PlacementSave.ExportAll();
+		// Only this wardrobe's row: a loaded save (the e2e load boot) can hold other placements.
+		array<ref LF_PlacementRow> rows = {};
+		foreach (LF_PlacementRow exported : LF_PlacementSave.ExportAll())
+		{
+			if (exported && exported.m_sPlacementId == id)
+				rows.Insert(exported);
+		}
+
 		array<ref LF_StorageSnapshotRecord> saved = LF_StorageSnapshot.ExportAll();
 
 		// The restart: the wardrobe is gone, the saved rows and snapshots are applied (the placement load spawns it).
@@ -107,5 +114,66 @@ class LF_Test_FurnitureStoragePersist : LF_Test
 		LF_StorageSnapshot.Clear(key, LF_PersistentStorageComponent.SLOT_PLACED);
 		LF_TestCharacterFixture.Delete(LF_PlacementSave.LiveEntity(id));
 		LF_StorageSnapshot.ApplyAll(snapshotsBefore);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The e2e chest (LF_Test_E2E_SaveState pass 1 places it with two apples, pass 2 checks it after a real restart).
+	protected static const ResourceName E2E_CHEST = "{BAFB1BD4358EDEFD}Prefabs/Placeables/Furniture/Furniture_Chest_Placed.et";
+	protected static const string E2E_OWNER = "e2e-furniture-storage-owner";
+	protected static const vector E2E_SPOT = "106 0 96"; // test annex
+
+	//------------------------------------------------------------------------------------------------
+	protected static string E2EPlacementId()
+	{
+		foreach (LF_PlacementRow row : LF_PlacementSave.ExportAll())
+		{
+			if (row && row.m_sOwnerKey == E2E_OWNER)
+				return row.m_sPlacementId;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! wt e2e save boot: a placed chest holds two apples through the shutdown save.
+	static void SeedE2E(LF_TestContext ctx)
+	{
+		vector at = E2E_SPOT;
+		at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]);
+		IEntity placed = LF_Utils.SpawnEntityPrefab(E2E_CHEST, at);
+		ctx.NotNull(placed, "e2e the furniture chest spawns");
+		if (!placed)
+			return;
+
+		string id = LF_PlacementSave.Record(E2E_OWNER, "Furniture_Chest", placed);
+		ctx.False(id.IsEmpty(), "e2e the chest is a permanent placement");
+		ctx.Equal(2, LF_InventoryUtils.AddAmount(placed, APPLE, 2), "e2e two apples go into the chest");
+		LF_TestDebrisProbe.Keep(placed);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! wt e2e reload boot: one chest stands for the placement and holds exactly the two apples; the engine's
+	//! own save brought back no second chest and no loose or second copy of the apples.
+	static void VerifyE2E(LF_TestContext ctx)
+	{
+		string id = E2EPlacementId();
+		if (!LF_E2E.RequiresSeed("furniture chest (#2916)", !id.IsEmpty()))
+			return;
+
+		vector at = E2E_SPOT;
+		at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]);
+		IEntity chest = LF_PlacementSave.LiveEntity(id);
+		ctx.NotNull(chest, "e2e the furniture chest stands again after the restart");
+		ctx.Equal(1, LF_Test_LockerContentsPersist.CountNear(at, 5, E2E_CHEST, false), "e2e exactly one chest stands: the engine did not restore a second one");
+		ctx.Equal(0, LF_Test_LockerContentsPersist.CountNear(at, 5, APPLE, true), "e2e no apple from the chest came back loose");
+		if (chest)
+		{
+			LF_PersistentStorageComponent.RestoreAllPlaced();
+			ctx.Equal(2, LF_InventoryUtils.GetAmount(chest, APPLE), "e2e the chest holds exactly its two apples after the restart, none doubled");
+		}
+
+		LF_StorageSnapshot.Clear(LF_PlacedStorage.KeyFor(id), LF_PersistentStorageComponent.SLOT_PLACED);
+		LF_PlacementSave.Forget(id);
+		LF_TestCharacterFixture.Delete(chest);
 	}
 }
