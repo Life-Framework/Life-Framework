@@ -275,6 +275,12 @@
   and while any outlet has the row the desk hides and refuses its permit action (`LF_LicenceDesk.DeskIssuesPermit`).
   An application already open at the desk is collected at the counter. Selling a gun still needs the permit. The client
   reads the server's fee from the catalogue stream (`fee`). Tests `licence/counter`, `everon/gun-store-permit` (pack leg).
+- 🧪 (2026-11-18, #3128) **The licence desk sells a driving licence** (`DRIVING_LICENCE`, enum value 301, replication bit 29).
+  The desk's second action "Buy a driving licence" (`LF_LicenceDeskDrivingAction`) issues it at once for
+  `licences.driverLicenceFee` (core default 100) in carried cash: no record check, no wait (`LF_LicenceDesk.BuyDrivingFor`).
+  Short cash is refused with nothing taken, a holder is refused as already held, and the fee is given back if the grant
+  fails. It is saved in the progression licence list like the permit. The action also shows where the gun store sells the
+  permit. No car lot asks for it yet, so a newcomer's first car needs none. Test `licence/desk-driving`.
 
 - ✅ **Run rules: deposit, distance, time, passenger** (#2408, merged, in-dev). All numbers are the jobs config's
   (`Configs/Jobs/LF_Jobs.conf`, owner section `jobs`):
