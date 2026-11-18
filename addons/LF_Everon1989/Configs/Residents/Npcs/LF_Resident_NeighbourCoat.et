@@ -1,13 +1,7 @@
-LF_NpcBaseEntity : "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et" {
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "054986B354B04CD3"
  components {
-  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
-   Identity Identity "{5A4B0B84AF44A913}" {
-    Name "Mireille"
-    Surname "Caron"
-   }
-  }
-  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
     LoadoutSlotInfo Hat {
      Enabled 1

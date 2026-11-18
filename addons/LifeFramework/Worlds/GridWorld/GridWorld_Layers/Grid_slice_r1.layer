@@ -55,7 +55,7 @@ GenericEntity Grid_slice_r1_R0_2 : "{776BF07068813A47}Prefabs/Placeables/Furnitu
  coords 234.501 0 54.998
  angleY -90
 }
-LF_NpcBaseEntity Grid_slice_r1_Sitter : "{A4E499440B4DBBEF}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_1_Civilian.et" {
+SCR_ChimeraCharacter Grid_slice_r1_Sitter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  components {
   LF_ResidentActivityComponent "{5E1D2B7A9C0F4A31}" {
    m_sActivity "sit"
@@ -64,12 +64,12 @@ LF_NpcBaseEntity Grid_slice_r1_Sitter : "{A4E499440B4DBBEF}Prefabs/Characters/Np
  coords 233.6 0 49.0
  angleY -90
 }
-LF_NpcBaseEntity Grid_slice_r1_Server : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+SCR_ChimeraCharacter Grid_slice_r1_Server : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  components {
   LF_ResidentActivityComponent "{7B30C9E41A5D2F68}" {
    m_sActivity "serve"
   }
  }
- coords 235.6 0 55.0
- angleY 90
+ coords 235.3 0 55.0
+ angleY -90
 }

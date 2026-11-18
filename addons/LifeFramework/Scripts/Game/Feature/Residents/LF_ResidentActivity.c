@@ -7,7 +7,9 @@
 //   loiter  the LF_NpcLoiter stand set (lean or smoke), picked by the resident's id.
 //   idle    (and empty) the resident faces the anchor's facing and stands.
 // An activity that is none of these falls back to idle with one LF_Debug.Warn per name. A sit with no
-// free seat near the anchor falls back to idle too, warned once per name. Server only; nothing persists
+// free seat near the anchor falls back to idle too, warned once per name. So does a sit or loiter for a
+// resident whose prefab is a static NPC body (no character controller): the resident prefab must be a
+// character (SCR_ChimeraCharacter) to sit or lean. Server only; nothing persists
 // (the resident is respawned from the timetable). Entries hold nothing long-lived.
 
 //------------------------------------------------------------------------------------------------
@@ -58,6 +60,13 @@ class LF_ResidentActivity
 
 		if (spot)
 			Face(entity, spot.m_vAngles);
+
+		// A static body (an LF_NpcBaseEntity mannequin) has no character controller: it cannot sit or lean.
+		if ((what == SIT || what == LOITER) && !SCR_ChimeraCharacter.Cast(entity))
+		{
+			WarnOnce("static", string.Format("resident is a static body, not a character; cannot %1, the resident stands", what));
+			return IDLE;
+		}
 
 		if (what == SIT)
 		{

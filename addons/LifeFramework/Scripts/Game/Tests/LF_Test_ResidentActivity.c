@@ -11,6 +11,7 @@
 class LF_Test_ResidentActivity : LF_Test
 {
 	protected static const ResourceName CHAIR = "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et";
+	protected static const ResourceName MANNEQUIN = "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et";
 	protected static const ResourceName PLACE_PREFAB = "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et";
 	protected static const ResourceName ANCHOR_PREFAB = "{CCED18E36D627B1D}Prefabs/Systems/Residents/LF_ResidentAnchor.et";
 	protected static const string SHOP_KIND = "test_residents_activity_shop";
@@ -91,6 +92,17 @@ class LF_Test_ResidentActivity : LF_Test
 		ctx.EqualStr("idle", noSeat, "sit with no seat near falls back to idle");
 		ctx.False(LF_ResidentActivity.IsSeated(other), "no seat, not seated");
 		ctx.Equal(warnsBefore + 2, LF_ResidentActivity.WarnCount(), "sit with no seat warns once");
+
+		// A static NPC body cannot sit: it stands and one warning says why.
+		IEntity mannequin = LF_Utils.SpawnEntityPrefab(MANNEQUIN, npc.GetOrigin() + "0 0 4", "0 0 0", false);
+		ctx.NotNull(mannequin, "a static NPC body spawns");
+		if (mannequin)
+		{
+			int staticBefore = LF_ResidentActivity.WarnCount();
+			ctx.EqualStr("idle", LF_ResidentActivity.Apply(mannequin, "sit", spot), "a static NPC body cannot sit and idles");
+			ctx.Equal(staticBefore + 1, LF_ResidentActivity.WarnCount(), "a static NPC body warns once");
+			SCR_EntityHelper.DeleteEntityAndChildren(mannequin);
+		}
 
 		// sit with a free seat beside the anchor: seated.
 		Resource res = Resource.Load(CHAIR);
