@@ -12,6 +12,7 @@ class LF_Test_ResidentActivity : LF_Test
 {
 	protected static const ResourceName CHAIR = "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et";
 	protected static const ResourceName MANNEQUIN = "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et";
+	protected static const ResourceName CHARACTER = "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et";
 	protected static const ResourceName PLACE_PREFAB = "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et";
 	protected static const ResourceName ANCHOR_PREFAB = "{CCED18E36D627B1D}Prefabs/Systems/Residents/LF_ResidentAnchor.et";
 	protected static const string SHOP_KIND = "test_residents_activity_shop";
@@ -160,6 +161,7 @@ class LF_Test_ResidentActivity : LF_Test
 		ctx.True(LF_Places.Register(SHOP_KIND, "activity_shop", shop), "the shop is placed");
 
 		LF_ResidentDef def = LF_ResidentDef.Make("aaa_server", SHOP_KIND, SHOP_KIND);
+		def.m_sPrefab = CHARACTER; // a real character, so the role's settle has a body it could move (#2948)
 		def.Add("06:00", "work", "counter", "serve");
 		LF_ResidentsConfig config = new LF_ResidentsConfig();
 		config.m_aResidents = {};
@@ -174,7 +176,17 @@ class LF_Test_ResidentActivity : LF_Test
 		IEntity server = LF_ResidentSpawner.GetLive("aaa_server");
 		ctx.NotNull(server, "the serving resident spawns");
 		if (server)
+		{
 			ctx.EqualFloat(0, YawGap(LF_ResidentActivity.YawOf(server), 90), 2, "the spawned counter resident faces the anchor's facing");
+
+			// A townsfolk-role resident is not settled onto a seat or a lean by the role (#2948): the timetable owns them.
+			bool settled = true;
+			if (!RedProof())
+				settled = LF_NpcLoiter.Settle(server) != LF_ENpcLoiter.NONE;
+
+			ctx.False(settled, "the role's settle leaves a live resident to their timetable line");
+			ctx.False(LF_ResidentActivity.IsSeated(server), "a serving resident stays unseated after the role's settle");
+		}
 
 		LF_ResidentSpawner.DespawnAll();
 		LF_ResidentSpawner.ResetStatics();
