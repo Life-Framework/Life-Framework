@@ -46,6 +46,11 @@ class LF_BankVaultComponent : ScriptComponent
 	//! The numbers this safe runs with: the attributes above with the safe type's row applied (LF_SafeTypes).
 	protected ref LF_SafeTuning m_Tuning;
 
+	//! Replicated: the player id drilling this vault, 0 for nobody (#2418). The drill sessions live on the
+	//! server only; a dedicated client reads this for "Stop drilling" and "someone is drilling".
+	[RplProp()]
+	protected int m_iRplDrillerId;
+
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
@@ -122,6 +127,32 @@ class LF_BankVaultComponent : ScriptComponent
 			return m_Tuning.m_sActionName;
 
 		return "#EL-Bank_Rob";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The numbers this safe runs with. Built on every machine, so a client can read the tools and
+	//! the police minimum for the offer (LF_Bank.ClientGateReason).
+	LF_SafeTuning GetTuning()
+	{
+		return m_Tuning;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: who is drilling (a player id, 0 for nobody). Bumps only on a change.
+	void SetDriller(int playerId)
+	{
+		if (!Replication.IsServer() || playerId == m_iRplDrillerId)
+			return;
+
+		m_iRplDrillerId = playerId;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The replicated driller's player id, 0 for nobody.
+	int GetDrillerId()
+	{
+		return m_iRplDrillerId;
 	}
 
 	//------------------------------------------------------------------------------------------------

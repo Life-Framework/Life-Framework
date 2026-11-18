@@ -9,7 +9,9 @@
 //                                                  <parent> (an epic), when <parent> is at GitHub's 100 sub-issue cap
 //   slice list <parent> [--ready]                  the DAG, which slices are ready, ready ones by critical path
 //   slice brief <issue>                            the agent brief for one card
-//   slice record <issue> --model M --outcome O --gate pass|fail --minutes N [--wait N] [--type T] [--force]
+//   slice record <issue> --model M --outcome O --gate pass|fail [--minutes N] [--wait N] [--type T] [--force]
+//                                                  minutes = now minus the worktree's creation time (hub state `created`); --minutes is kept
+//                                                  only as agentMinutes, or as the value when no start time is found; --started/--now <iso> override
 //                                                  --outcome merged is refused unless gh shows a merged PR for the slice (ws/slice-<N> or a body that
 //                                                  refs it); --force records it anyway; --pr-fixture <json> { prs: [...] } stands in for gh
 //   slice stats                                    first-pass rate, rework and median minutes per model and slice type
@@ -17,17 +19,17 @@
 // `--fixture <json>` (list, brief) reads { issues: [...] } instead of gh; `--ledger <file>` moves the ledger, which
 // otherwise lives in the git common dir (lf/slice-ledger.jsonl) so every worktree appends to one file. The logic is
 // tools/lib/slice.mjs; the proof is tools/validation/slice-selftest.mjs.
-import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { gitCommonDir, ghBin, run } from "../wt.mjs";
-import { TEMPLATE, brief, cardBody, checkPlan, ledgerRow, mergeVerdict, parseCard, parsePlan, renderList, renderStats, suggestModel, topo } from "../lib/slice.mjs";
+import { gitCommonDir, ghBin, readMarker, readState, run, slugOfRoot } from "../wt.mjs";
+import { TEMPLATE, brief, cardBody, checkPlan, ledgerMinutes, ledgerRow, mergeVerdict, parseCard, parsePlan, renderList, renderStats, suggestModel, topo } from "../lib/slice.mjs";
 
 export const help = "slice new|list|brief|record|stats   slice cards: scaffold a chapter's slices as sub-issues, show the DAG and the ready queue by critical path, print a slice's agent brief, log and report outcomes per model";
 
 const USAGE = `usage: tools\\cli slice new <parent> [--plan file] [--dry-run] [--attach <epic>] [--fixture f.json]
        tools\\cli slice list <parent> [--ready] [--fixture f.json]
        tools\\cli slice brief <issue> [--fixture f.json]
-       tools\\cli slice record <issue> --model haiku|sonnet|opus --outcome merged|handoff|split|failed --gate pass|fail --minutes N [--wait N] [--type T] [--force]
+       tools\\cli slice record <issue> --model haiku|sonnet|opus --outcome merged|handoff|split|failed --gate pass|fail [--minutes N] [--wait N] [--type T] [--force]
        tools\\cli slice stats [--json]`;
 
 const val = (args, name) => {
@@ -83,6 +85,22 @@ export function ledgerPath(root, args) {
   return resolve(val(args, "--ledger") || join(gitCommonDir(root), "lf", "slice-ledger.jsonl"));
 }
 
+// When this worktree was created: the hub state's `created` for its slug (wt new writes it), else the marker file's birth time.
+export function worktreeStart(root) {
+  try {
+    const slug = slugOfRoot(root);
+    const created = slug && readState(root).worktrees?.[slug]?.created;
+    if (created && Number.isFinite(new Date(created).getTime())) return created;
+  } catch { /* no hub state: fall through */ }
+  try {
+    if (readMarker(root)) {
+      const st = statSync(join(root, "tmp", "wt.json"));
+      return new Date(st.birthtimeMs || st.mtimeMs).toISOString();
+    }
+  } catch { /* no marker */ }
+  return null;
+}
+
 export function readLedger(file) {
   if (!existsSync(file)) return [];
   return readFileSync(file, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
@@ -116,14 +134,16 @@ export async function main(args, ctx) {
       return 0;
     }
     if (sub === "record") {
+      const now = val(args, "--now") || new Date().toISOString();
+      const agentMin = val(args, "--minutes") ? Number(val(args, "--minutes")) : null;
       const row = {
-        at: new Date().toISOString(),
+        at: now,
         issue: num(target),
         model: (val(args, "--model") || "").toLowerCase(),
         type: (val(args, "--type") || "").toLowerCase() || undefined,
         outcome: val(args, "--outcome"),
         gate: val(args, "--gate"),
-        minutes: Number(val(args, "--minutes")),
+        ...ledgerMinutes({ started: val(args, "--started") || worktreeStart(root), now, agent: agentMin }),
         ...(val(args, "--wait") ? { wait: Number(val(args, "--wait")) } : {}),
       };
       const p = [...(row.issue ? [] : ["<issue>"]), ...ledgerRow(row)];
@@ -143,7 +163,7 @@ export async function main(args, ctx) {
       const file = ledgerPath(root, args);
       mkdirSync(dirname(file), { recursive: true });
       appendFileSync(file, JSON.stringify(row) + "\n");
-      console.log(`SUMMARY slice record ok #${row.issue} ${row.model} ${row.outcome} gate=${row.gate} ${row.minutes}m ledger=${file}`);
+      console.log(`SUMMARY slice record ok #${row.issue} ${row.model} ${row.outcome} gate=${row.gate} ${row.minutes}m${row.minutesSource === "worktree" && row.agentMinutes ? ` (agent said ${row.agentMinutes}m)` : ""} ledger=${file}`);
       return 0;
     }
     if (sub === "stats") {

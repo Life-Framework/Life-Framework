@@ -25,6 +25,12 @@ class LF_LaunderConfig
 	[Attribute("10000", UIWidgets.EditBox, "Most marked notes one character may wash per 24 real hours (session only: a restart forgives the day).")]
 	int m_iDailyCap;
 
+	[Attribute("300", UIWidgets.EditBox, "Cash the informant takes for one tip-off (0 is free), paid once per buyer period (#2921).")]
+	int m_iInformantFee;
+
+	[Attribute("1", UIWidgets.Auto, "Lowest underworld standing tier the informant talks to (-2..3 with the shipped ladder).", params: "-10 10")]
+	int m_iInformantMinTier;
+
 	protected static ref LF_LaunderConfig s_Config;
 	protected static bool s_bLoadAttempted;
 	//! Whether the wash fields (cut, batch, cap) passed Validate; the dirty-money switch works either way.

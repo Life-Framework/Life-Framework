@@ -14,3 +14,11 @@ Docs: `docs/features/laundering.md`. Tests: `LF_Test_MarkedCash`, `LF_Test_Dirty
   are `LF_Places` kind `chain_buyer`; the open one is a pure function of unix time and a secret seed kept
   in `$profile:LifeFramework/buyer-rotation-seed.txt` (never in the repo), rotating every
   `m_iBuyerPeriodHours`. Nothing is saved. `LF_Places.FindIds` (modded here) lists a kind's ids.
+- `LF_BuyerNpc.c`: the buyer character (`Prefabs/Characters/LF_IllicitBuyer.et`) stands at the open spot while
+  a player is within 150 m, moves when the rotation does, loiters (#2919). `Start()` is called from the game mode.
+- `LF_InformantHook.c`: the informant's tip-off (#2921). Dialogue hook `Informant` takes `m_iInformantFee` cash from a
+  player at underworld tier `m_iInformantMinTier` (not police on duty) and puts a private `LF_MapShares` mark on the open
+  buyer spot until the period ends. Server re-checks all; every refusal is in words with nothing taken.
+- `LF_BuyerSaleAction.c`, `LF_BuyerPrices.c`: "Sell the goods" on the buyer (#2920). `LF_BuyerSale.ServerSell` takes the
+  chain goods the price list (`Configs/Crime/LF_BuyerPrices.conf`) names and pays marked notes (dirty-money switch on) or
+  cash; server-checked (open spot, reach, cuffs, rate), all-or-nothing on the goods. Test: `LF_Test_BuyerSale`.

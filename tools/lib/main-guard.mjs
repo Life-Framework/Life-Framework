@@ -217,7 +217,7 @@ export async function bisectBySet(list, set, probe, { head = null } = {}) {
 
 // May the guard revert this merge? Never a revert, never a merge from before the guard started, never one with
 // no PR number, never twice, never while the guard runs stale code (codeDrift).
-export function revertRefusal(c, state, { step, needsSkip: skip = false, codeDrift: drift = [] } = {}) {
+export function revertRefusal(c, state, { step, needsSkip: skip = false, codeDrift: drift = [], earlier = null } = {}) {
   if (!c) return "no culprit";
   if (drift.length) return staleRefusal(drift);
   if (step && fixCardInstead(c, step, { needsSkip: skip })) return fixCardInstead(c, step, { needsSkip: skip });
@@ -226,7 +226,34 @@ export function revertRefusal(c, state, { step, needsSkip: skip = false, codeDri
   const pr = prOfMerge(c.subject);
   if (!pr) return `merge ${c.sha.slice(0, 8)} is not a PR merge (${String(c.subject).slice(0, 60)})`;
   if ((state.reverted ?? []).some((r) => r.pr === pr)) return `PR #${pr} was already reverted`;
+  if (earlier) return earlierRefusal(pr, earlier);
   return null;
+}
+
+// ---- A red explained by an earlier guard revert (2026-11-18: the guard reverted #3008, then #3017, the test fix that
+// matched #3008, which failed once #3008 was gone; #3031). A candidate that was merged after a PR the guard reverted,
+// whose revert is on main, and that touches files of that PR, is the follow-up of the reverted PR: reverting it too
+// only repeats the damage. It gets a comment (ship it with the re-land), never a revert.
+const SHARED_FILE = /^(docs\/features(\/|\.md)|docs\/debug-log-triage|tools\/validation\/record-shapes)|\/Language\/|enforce-lint/;
+// c: the culprit merge; state.reverted: [{ pr, sha }]; landed(pr): that PR's revert is on main; isAfter(revertedSha,
+// cSha): c descends from the reverted merge; filesOf(sha): the files one merge changed. -> { pr, revertPr, files } | null
+export function explainedByEarlierRevert(c, state, { landed, isAfter, filesOf }) {
+  const pr = prOfMerge(c?.subject);
+  if (!pr || !c?.sha) return null;
+  let mine = null;
+  for (const r of state?.reverted ?? []) {
+    if (!r?.sha || !r.pr || r.pr === pr || r.sha === c.sha) continue;
+    if (!landed(r.pr) || !isAfter(r.sha, c.sha)) continue;
+    mine ??= (filesOf(c.sha) ?? []).filter((f) => !SHARED_FILE.test(f));
+    const theirs = new Set((filesOf(r.sha) ?? []).filter((f) => !SHARED_FILE.test(f)));
+    const files = mine.filter((f) => theirs.has(f));
+    if (files.length) return { pr: r.pr, revertPr: r.revertPr ?? null, files: files.slice(0, 3) };
+  }
+  return null;
+}
+
+export function earlierRefusal(pr, earlier) {
+  return `#${pr} changes the same files as #${earlier.pr}, which the guard already reverted${earlier.revertPr ? ` (${earlier.revertPr})` : ""} and whose revert is on main: this red is explained by that revert, so #${pr} is not reverted. It ships together with the re-land of #${earlier.pr}`;
 }
 
 export function revertTitle(pr, what) {
@@ -281,7 +308,8 @@ export function statusLine(state, { alive, now = Date.now(), off = false } = {})
   const what = state.running ? `running ${state.running.step ?? "check"} at ${String(state.running.head ?? "").slice(0, 8)}` : "watching";
   const last = state.lastResult ? `, last ${state.lastResult.verdict} at ${String(state.lastResult.head ?? "").slice(0, 8)} ${ago(state.lastResult.at)}` : "";
   const rev = state.reverted?.length ? `, ${state.reverted.length} revert(s)` : "";
-  return `MAIN GUARD ${what} (pid ${alive}); green ${state.lastGreen ? state.lastGreen.slice(0, 8) : "none yet"}${last}${rev}`;
+  const vr = state.validateRed ? `, validate RED (${(state.validateRed.checks ?? []).slice(0, 2).join(", ")}${state.validateRed.pr ? ` after #${state.validateRed.pr}` : ""})` : "";
+  return `MAIN GUARD ${what} (pid ${alive}); green ${state.lastGreen ? state.lastGreen.slice(0, 8) : "none yet"}${last}${rev}${vr}`;
 }
 
 // ---- Stage 1: the Workbench compile, first, on every new main head (batched to one run per ~3 min).
@@ -334,6 +362,126 @@ export async function compileGate({ head, merges, state, compile, base = null, b
     if (e === ENV) return { verdict: "env", tested: [] };
     throw e;
   }
+}
+
+// ---- Stage 0 (#2889): `validate --all` on every new main head, before the compile, the build and the suite. Main went
+// red on validate four times on 2026-11-18 (a pack-check row, conflict markers, a stray Register line, a stale
+// validator) and the lead saw each one at the next check-in. validate needs no Workbench (about 3 min), so the guard
+// runs it first, names the merge that introduced the failure and tells that PR, the staff and a fix card. It reverts
+// only for a hard data-safety check (a duplicate GUID, a broken save layout); everything else is fixed forward.
+export const VALIDATE = ["validate", "--all"];
+export const VALIDATE_BATCH_MS = 3 * 60 * 1000;
+// Checks whose failure can corrupt data on the server: a duplicate or orphan GUID / generated file committed
+// (validate-repo), a moved save version, a changed record shape, a reused save variable name.
+export const HARD_CHECKS = ["validate-repo.ps1", "validate-persistence-version.ps1", "validate-record-shapes.mjs", "validate-record-var-names.mjs"];
+// Probes rerun only the failing checks: the validate command reads this (tools/cli.mjs) and runs just those scripts.
+export const VALIDATE_ONLY_ENV = "LF_VALIDATE_ONLY";
+
+export const isHardCheck = (name) => HARD_CHECKS.includes(name);
+
+// The failing check names of a validate transcript: its `FAIL  validate/<script> (<s> s)` header lines.
+export function failingChecks(text) {
+  return [...new Set([...String(text ?? "").matchAll(/^FAIL\s+validate\/(\S+)/gm)].map((m) => m[1]))];
+}
+
+// What those checks printed (the block under each FAIL header, up to the next header), for a comment or a card.
+export function checkOutput(text, checks, maxLines = 14) {
+  const want = new Set(checks);
+  const out = [];
+  let take = 0;
+  for (const line of String(text ?? "").split(/\r?\n/)) {
+    const h = /^(PASS|FAIL|WARN|SKIP)\s+validate\/(\S+)/.exec(line);
+    if (h) {
+      take = h[1] === "FAIL" && want.has(h[2]) ? maxLines : 0;
+      if (take) out.push(line.trim().slice(0, 240));
+      continue;
+    }
+    if (take > 0 && line.trim() && !/^(SUMMARY|validate:|slowest:|incremental:)/.test(line)) { out.push(`  ${line.trim().slice(0, 240)}`); take--; }
+    else if (/^(SUMMARY|validate:)/.test(line)) take = 0;
+  }
+  return out;
+}
+
+export function shouldValidate(state, head, now) {
+  if (!head || head === state.lastValidated || head === state.lastValidateRed) return { run: false, why: "main unchanged" };
+  const last = Date.parse(state.lastValidateAt ?? "");
+  if (Number.isFinite(last) && now - last < VALIDATE_BATCH_MS) return { run: false, why: "batching validate" };
+  return { run: true, why: `validate ${head.slice(0, 8)}` };
+}
+
+// The `git log --first-parent --merges --reverse --format=%H%x09%s` output -> [{ sha, subject, beforeStart, order }].
+// beforeStart(sha) says whether that merge was on main when the guard started (never blamed).
+export function parseMerges(text, beforeStart = () => false) {
+  return String(text ?? "").split(/\r?\n/).filter(Boolean).map((l, i) => {
+    const [sha, subject] = l.split("\t");
+    return { sha, subject, beforeStart: !!beforeStart(sha), order: i };
+  });
+}
+
+// The validate gate. run(sha, only) -> { verdict: "ok" | "red" | "env" | "infra", failed: [check names], why } (only: rerun
+// just those checks). Returns { verdict, ... }:
+//   green   - validate passes at the head;
+//   env     - no verdict (the machine, a held lock): nothing is judged, the head is retried on a later tick;
+//   flake   - red once, green on the same-head rerun of the failing checks;
+//   known   - red with the set an earlier tick already flagged: no second comment, card or bisect;
+//   unnamed - red but no check was named (a crash): no verdict;
+//   red     - { set, culprit, hits, stop, refusal, action: "revert" | "flag" | "explained", earlier }
+//             the bisect names the first merge that fails one of the set (bisectBySet: a merge that fails other checks, or
+//             "mixed causes", is not blamed); a revert needs a hard check among that merge's hits and revertRefusal's yes.
+export async function validateGate({ head, merges, state = {}, run, earlier = () => null }) {
+  const first = await run(head, null);
+  if (first.verdict === "ok") return { verdict: "green" };
+  if (first.verdict === "env" || first.verdict === "infra") return { verdict: "env", why: first.why };
+  if (!first.failed.length) return { verdict: "unnamed", why: "validate failed but named no check" };
+  const key = (a) => [...a].sort().join(",");
+  if (state.validateRed && key(state.validateRed.checks ?? []) === key(first.failed)) return { verdict: "known", set: first.failed, flagged: state.validateRed };
+  const again = await run(head, first.failed);
+  if (again.verdict === "env" || again.verdict === "infra") return { verdict: "env", why: again.why };
+  if (again.verdict === "ok") return { verdict: "flake", set: first.failed };
+  const set = again.failed.length ? again.failed : first.failed;
+  const ENV = Symbol("env");
+  let b;
+  try {
+    b = await bisectBySet(candidates(merges), set, async (c) => {
+      const x = await run(c.sha, set);
+      if (x.verdict === "env" || x.verdict === "infra") throw ENV;
+      return x.failed;
+    }, { head });
+  } catch (e) {
+    if (e === ENV) return { verdict: "env", why: "a bisect probe had no verdict (machine)" };
+    throw e;
+  }
+  const got = b.culprit ? b.hits.get(b.culprit.sha) ?? [] : [];
+  const ex = b.culprit ? earlier(b.culprit) : null;
+  const refusal = b.stop ?? revertRefusal(b.culprit, state, { step: "validate", earlier: ex });
+  let action = "flag";
+  if (ex) action = "explained";
+  else if (!refusal && got.some(isHardCheck)) action = "revert";
+  return { verdict: "red", set, culprit: b.culprit, hits: got, stop: b.stop, refusal, action, earlier: ex };
+}
+
+// The PR comment, the card and the staff line for a flagged validate red.
+export function validateComment(c, checks, output, failLog, { reverted = null, earlier = null } = {}) {
+  const pr = prOfMerge(c?.subject);
+  return [
+    `**Main guard:** \`tools\\cli validate --all\` failed on main after this PR merged: ${checks.map((x) => `\`${x}\``).join(", ")}. The bisect over the merges since the last green validate points at #${pr}.`,
+    "",
+    "```",
+    ...output.slice(0, 40),
+    "```",
+    "",
+    reverted ? `This is a data-safety check, so it was reverted in ${reverted}. Fix on a branch and ship again.` : earlier ? `Not reverted: ${earlierRefusal(pr, earlier)}.` : "Not reverted (only a hard data-safety check reverts): fix forward on a branch; the guard opens a fix card.",
+    "",
+    `Log on the guard machine: \`${failLog}\``,
+  ].join("\n");
+}
+
+export function validateFixCard(c, checks, output, failLog) {
+  const pr = prOfMerge(c?.subject);
+  return {
+    title: `Main guard: validate red on main after #${pr} (${checks.join(", ").slice(0, 70)})`,
+    body: [`\`tools\\cli validate --all\` fails at main's head, and the bisect over the merges since the last green validate points at #${pr} (merge \`${c?.sha}\`).`, "", "```", ...output.slice(0, 40), "```", "", "Not reverted: only a hard data-safety check reverts. Fix forward on a branch.", "", `Log on the guard machine: \`${failLog}\``, "", "🤖 Generated with [Claude Code](https://claude.com/claude-code)"].join("\n"),
+  };
 }
 
 // "Merge pull request #1867 from Life-Framework/ws/town-maintainer-edits" -> "ws/town-maintainer-edits".

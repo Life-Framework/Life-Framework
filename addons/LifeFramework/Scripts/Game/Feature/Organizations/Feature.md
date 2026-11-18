@@ -66,7 +66,7 @@ processing upgrade are kept at the desk.
   skips it) and is not refunded on a lapse. `Answer(characterId, warId)`: a `DECLARE_WAR` holder of the
   target accepts inside the window. Refusal keys map to `#LF-OrgWar_*` toasts (`RefusalText`).
   `LF_OrgWarCharacter.c` holds `RpcAsk_LF_OrgWarDeclare` / `RpcAsk_LF_OrgWarAnswer` on the character with
-  the lease ask's guards (systems switch, PURCHASE bucket, desk range); no host branch. No UI (W7).
+  the lease ask's guards (systems switch, PURCHASE bucket, desk range); no host branch. The sheet that uses them is `LF_OrgWarSheet` (below).
 - `LF_OrgWarBoard` — the war notice board (#2677, W9): a board kind `orgwars` (`LF_BoardProviders`, as the wanted board) on `Prefabs/Organizations/LF_OrgWarBoard.et`. A read lists declared, accepted and ended wars as notices in that order; ended and lapsed ones stay for 1 h (events `LF_OnOrgWarEnded`, memory only), open ones come from the war table. No new replication: one ask, one answer, per read.
 
 - `LF_OrgWarSweep` / `LF_OrgWarAnnounce` — the war clock and the island notice (#2669, W4). `LF_OrgWarSweep.Start()` (game mode, server)
@@ -74,6 +74,8 @@ processing upgrade are kept at the desk.
   `LF_OnOrganizationEmptied` calls `ForfeitOf`: every open war of that org ends with reason `forfeit`. `LF_OrgWarAnnounce`
   turns `LF_OnOrgWarDeclared` / `Accepted` / `Ended` into one `NotifyAll` toast each plus a longer `NotifyPlayer` notice for
   online members of both sides; texts are `#LF-OrgWarAnnounce_*` keys, neutral in core, worded by the pack.
+
+- `LF_OrgWarSheet` / `LF_OrgWarDeskAction` — the war sheet (#2675, W7): the registry desk's second action, "Wars". A kit sheet (scrolling body) with the register and a Declare button per open organization (fee and member minimum in the intro line), the declarations against the viewer's organization with Accept and the time left, and the viewer's active wars with their end time. `BuildPage` (server) makes the page, `Rows` (client, pure) makes the rows from it; the buttons send the W3 asks and then ask for a fresh page. A button is hidden, never trusted: the server checks the right, the minimum, the fund and the desk range again.
 
 ## Iteration path
 
@@ -102,3 +104,4 @@ processing upgrade are kept at the desk.
 - **Proof:** `organizations/test-org-sign` (LOGIC), `organizations/test-org-sign-world` (WORLD),
   `node agent-box/session.mjs test-org-sign-proof`.
 - `LF_OrgWarKills` - war kills (#2670, W5). `LF_Murder` skips a kill between members of two organizations at war with `SKIP_ORG_WAR` (no murder, no wanted) unless `warKillsAreMurder` is on; the subscriber on `LF_OnPlayerKilled` files a `war_kill` incident when `tagWarKills` is on. Membership is by the account's active character. A war never lifts a safe zone.
+- `LF_OrgHeldSites` — the held-site rows (#2834): the ledger page lists the base lease and each captured site (`RowsFor`, sent in `RpcDo_LF_OrganizationSites` after each page); a lease change (`LF_OnHideoutLeaseChanged`) refreshes the open ledger of every online member; the war board adds one "held by / unclaimed" line per contested site (`LF_EOrgWarNotice.SITE`).

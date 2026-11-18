@@ -34,6 +34,18 @@ tools\cli place settle <entity>... [--layer L.layer] [--dry] [--force]   rest pr
 
 `--settle snap|off` on `on|against|ground|arrange`: the written height is the contact-settled one (default `snap`),
 or the probed height (`off`). See "Contact settle" below.
+`--settle physics` (#3065, simulated rigid bodies in a `Grid_*.layer` of GridWorld only): after the write, a hidden
+Workbench plays the grid world, drops each body 1 m, simulates it to rest and writes the rest pose (`coords` and the
+`angles` line) into the layer (`tools/visual/place-settle.mjs settle <entity>...`, `LF_PlaceSettlePlugin`). A new
+body with no name gets `<layer>_<Prefab>_<n>` (the plugin finds it by name). It reads back the entity it wrote
+(turn under 1 degree, position under 5 mm), saves with `WorldEditor.Save` and puts back every other layer that
+save rewrote (`default.layer` comes back with a new BSP). No audit boot follows: the audit judges a static spot,
+and a body that rests standing on its end is what the simulation decided. Check it with
+`tools\cli look contact grid:<slug> --entities <names>`. A static prop, a town layer or a pack cell is refused;
+a failed run restores every file. The runner alone: `node tools/visual/place-settle.mjs settle <entity>... [--dry]`.
+**WoodLog_01_Small rests on its end** (every drop: pitch 89 degrees, pivot 2.857 m up; the `look contact` sheet shows it
+standing): the logging stand's logs "fell upright" (placement-audit.md) for that reason, so a log meant to
+lie flat is not a physics-settled placement.
 
 - `--move <Entity>[,<Entity>...]` in place of `<prefab>` re-places entities a layer already has. Only
   their `coords` and `angleY` lines change.

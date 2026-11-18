@@ -1,17 +1,26 @@
 //------------------------------------------------------------------------------------------------
-//! One good's price state: what the next unit fetches and the unix second the price last moved.
+//! One good's price state: what the next unit fetches, in hundredths of a cash unit (#3028, so a small drop
+//! per unit adds up instead of rounding up to a whole 1), and the unix second the price last moved.
 class LF_MarketPrice
 {
-	int m_iPrice;
+	int m_iFine;
 	int m_iLastSaleUnix;
 
 	//------------------------------------------------------------------------------------------------
-	static LF_MarketPrice Make(int price, int lastSaleUnix)
+	//! \param[in] fine The price in hundredths of a cash unit (LF_PriceCurve.ToFine of a whole price).
+	static LF_MarketPrice Make(int fine, int lastSaleUnix)
 	{
 		LF_MarketPrice p = new LF_MarketPrice();
-		p.m_iPrice = price;
+		p.m_iFine = fine;
 		p.m_iLastSaleUnix = lastSaleUnix;
 		return p;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The stored price as whole cash, rounded to the nearest.
+	int Cash()
+	{
+		return LF_PriceCurve.ToCash(m_iFine);
 	}
 }
 
@@ -39,9 +48,20 @@ class LF_MarketBook
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The price the next unit of a curved good fetches at `nowUnix`, recovery applied.
-	//! 0 when the good is not curved.
+	//! \return The price the next unit of a curved good fetches at `nowUnix`, recovery applied, in whole
+	//! cash (rounded to the nearest: what the board shows). 0 when the good is not curved.
 	static int CurrentPriceAt(ResourceName good, int nowUnix)
+	{
+		LF_MarketGoodDef def = Curved(good);
+		if (!def)
+			return 0;
+
+		return LF_PriceCurve.ToCash(RecoveredPrice(def, nowUnix));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The same price in hundredths of a cash unit. 0 when the good is not curved.
+	static int CurrentFineAt(ResourceName good, int nowUnix)
 	{
 		LF_MarketGoodDef def = Curved(good);
 		if (!def)
@@ -58,7 +78,7 @@ class LF_MarketBook
 
 	//------------------------------------------------------------------------------------------------
 	//! \return What `units` of a curved good pay together at `nowUnix` (the marginal sum of the
-	//! curve). 0 when the good is not curved or no units.
+	//! curve, rounded to whole cash once). 0 when the good is not curved or no units.
 	static int QuoteAt(ResourceName good, int units, int nowUnix)
 	{
 		LF_MarketGoodDef def = Curved(good);
@@ -77,8 +97,9 @@ class LF_MarketBook
 	//------------------------------------------------------------------------------------------------
 	//! Server: books a sale of `units` at `nowUnix`: the recovered price moves down the curve and the
 	//! stamp becomes now. Publishes nothing (the caller does, once the sale completed).
-	//! \param[out] oldPrice The price before the sale (recovery applied).
-	//! \return The new price; 0 when the good is not curved (nothing booked).
+	//! \param[out] oldPrice The price before the sale (recovery applied), whole cash.
+	//! \return The new price in whole cash (the book keeps it in hundredths); 0 when the good is not curved
+	//! (nothing booked).
 	static int ApplySaleAt(ResourceName good, int units, int nowUnix, out int oldPrice)
 	{
 		oldPrice = 0;
@@ -86,10 +107,12 @@ class LF_MarketBook
 		if (!def || units <= 0)
 			return 0;
 
-		oldPrice = RecoveredPrice(def, nowUnix);
-		int newPrice = def.PriceAfterSale(oldPrice, ClampUnits(units));
-		s_mPrices.Set(good, LF_MarketPrice.Make(newPrice, StampAfterSale(good, nowUnix)));
-		LF_Debug.Info(FEATURE, string.Format("%1 sold x%2: price %3 -> %4", good, units, oldPrice, newPrice));
+		int oldFine = RecoveredPrice(def, nowUnix);
+		int newFine = def.PriceAfterSale(oldFine, ClampUnits(units));
+		s_mPrices.Set(good, LF_MarketPrice.Make(newFine, StampAfterSale(good, nowUnix)));
+		oldPrice = LF_PriceCurve.ToCash(oldFine);
+		int newPrice = LF_PriceCurve.ToCash(newFine);
+		LF_Debug.Info(FEATURE, string.Format("%1 sold x%2: price %3 -> %4 (hundredths %5 -> %6)", good, units, oldPrice, newPrice, oldFine, newFine));
 		return newPrice;
 	}
 
@@ -102,7 +125,7 @@ class LF_MarketBook
 		if (!p)
 			return null;
 
-		return LF_MarketPrice.Make(p.m_iPrice, p.m_iLastSaleUnix);
+		return LF_MarketPrice.Make(p.m_iFine, p.m_iLastSaleUnix);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -115,24 +138,24 @@ class LF_MarketBook
 			return;
 		}
 
-		s_mPrices.Set(good, LF_MarketPrice.Make(snapshot.m_iPrice, snapshot.m_iLastSaleUnix));
+		s_mPrices.Set(good, LF_MarketPrice.Make(snapshot.m_iFine, snapshot.m_iLastSaleUnix));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Stored price recovered to `nowUnix`, or the base when the good has no entry. Read-only: the stamp
-	//! only moves on a sale, so a quote never changes what the next quote says.
+	//! Stored price recovered to `nowUnix` in hundredths, or the base when the good has no entry. Read-only:
+	//! the stamp only moves on a sale, so a quote never changes what the next quote says.
 	protected static int RecoveredPrice(LF_MarketGoodDef def, int nowUnix)
 	{
 		LF_MarketPrice p = s_mPrices.Get(def.m_sGood);
 		if (!p)
-			return def.NextPrice(def.m_iBase);
+			return def.NextPrice(def.BaseFine());
 
 		LF_MarketConfig config = LF_MarketConfig.Get();
 		int maxHours = 0;
 		if (config)
 			maxHours = config.m_iMaxRecoveryHours;
 
-		int recovered = LF_PriceCurve.Recover(p.m_iPrice, def.m_iBase, def.m_iRecoverPctPerHour, nowUnix - p.m_iLastSaleUnix, maxHours, def.m_iFloor, def.m_iCeiling);
+		int recovered = LF_PriceCurve.Recover(p.m_iFine, def.BaseFine(), def.m_iRecoverPctPerHour, nowUnix - p.m_iLastSaleUnix, maxHours, def.FloorFine(), def.CeilingFine());
 		return def.NextPrice(recovered);
 	}
 

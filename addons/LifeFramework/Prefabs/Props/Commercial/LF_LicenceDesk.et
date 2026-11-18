@@ -28,6 +28,14 @@ GenericEntity {
       Name "#LF-LicenceDesk_Action"
      }
     }
+    LF_LicenceDeskDrivingAction "{5D3B8E21A7C64F90}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B2E6F4A9C1D73850}" {
+      Name "#LF-LicenceDesk_DrivingAction"
+     }
+    }
    }
   }
   RplComponent "{ED3A185824B50D3F}" {

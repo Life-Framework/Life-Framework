@@ -69,7 +69,7 @@ class LF_ReputationContractDef : LF_ConfigRecord
 
 //------------------------------------------------------------------------------------------------
 //! The contract table: Configs/Reputation/LF_ReputationContracts.conf. Core ships one neutral test
-//! row; the pack's contracts (the harbour master's, Vince's) come with the pack overlay card.
+//! row; the pack's contracts are layered over it from each pack overlay (LF_ReputationOverlay.c, #3044).
 [BaseContainerProps(configRoot: true)]
 class LF_ReputationContractsConfig
 {
@@ -101,6 +101,8 @@ class LF_ReputationContractsConfig
 		s_Config = LF_ReputationContractsConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
 			LF_Debug.Error(LF_Reputation.FEATURE, string.Format("contract config has an unexpected root class: %1", CONFIG_PATH));
+		else
+			LF_ReputationOverlay.ApplyContracts(s_Config);
 
 		return s_Config;
 	}
@@ -212,6 +214,20 @@ class LF_ReputationContracts
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \param[out] takenAt The world time (seconds) the character's contract in progress was taken.
+	//! \return The contract's id, or "" with none running.
+	static string ActiveRun(string playerUid, out float takenAt)
+	{
+		takenAt = 0;
+		string contractId = ActiveId(playerUid);
+		if (contractId.IsEmpty())
+			return string.Empty;
+
+		takenAt = s_mActive.Get(playerUid).m_fTakenAt;
+		return contractId;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A contract whose run ended outside the run paths (a wipe, a failed start) is dropped with no stake.
 	protected static void DropStale(string playerUid)
 	{
@@ -223,6 +239,7 @@ class LF_ReputationContracts
 
 		LF_Debug.Warn(LF_Reputation.FEATURE, string.Format("contract %1 of %2 dropped: its run is gone (no stake taken)", s_mActive.Get(playerUid).m_sId, playerUid));
 		s_mActive.Remove(playerUid);
+		LF_ContractTracker.Hide(playerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -281,6 +298,7 @@ class LF_ReputationContracts
 		run.m_sId = contractId;
 		run.m_fTakenAt = now;
 		Active().Set(playerUid, run);
+		LF_ContractTracker.Show(playerUid, contractId);
 		LF_Debug.Info(LF_Reputation.FEATURE, string.Format("contract %1 taken by %2 (x%3, stake %4)", contractId, playerUid, def.Multiplier(), def.m_iStakePoints));
 		return true;
 	}
@@ -334,6 +352,7 @@ class LF_ReputationContracts
 	protected static void End(string playerUid, float now)
 	{
 		Active().Remove(playerUid);
+		LF_ContractTracker.Hide(playerUid);
 		float cooldown = 0;
 		LF_ReputationContractsConfig config = LF_ReputationContractsConfig.Get();
 		if (config)
@@ -360,6 +379,7 @@ class LF_ReputationContracts
 		{
 			LF_Debug.Warn(LF_Reputation.FEATURE, string.Format("contract %1 of %2 is no longer in the config; the run pays its base", run.m_sId, playerUid));
 			s_mActive.Remove(playerUid);
+			LF_ContractTracker.Hide(playerUid);
 			return basePay;
 		}
 
@@ -428,6 +448,7 @@ class LF_ReputationContracts
 		if (s_mActive)
 			s_mActive.Remove(playerUid);
 
+		LF_ContractTracker.Hide(playerUid);
 		if (s_mCooldownUntil)
 			s_mCooldownUntil.Remove(playerUid);
 

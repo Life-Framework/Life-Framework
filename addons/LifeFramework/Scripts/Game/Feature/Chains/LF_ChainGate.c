@@ -82,6 +82,17 @@ class LF_ChainGate
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The line a licence refusal appends (#3150): where to get the step's licence and what it costs,
+	//! or which job unlocks it. Empty when the step names no licence.
+	static string LicenceWhere(notnull LF_ChainStepDef step)
+	{
+		if (step.m_eLicense == LF_ELicenseType.UNEMPLOYED)
+			return string.Empty;
+
+		return LF_LicenceWhere.Line(step.m_eLicense);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Localization key shown to the worker for a refusal. Empty for OK. \param step and
 	//! \param level (the worker's level in the step's job) pick the words of a level refusal.
 	static string ReasonKey(LF_EChainGate gate, LF_ChainStepDef step = null, int level = 0)

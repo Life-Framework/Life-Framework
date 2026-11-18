@@ -1,0 +1,22 @@
+GenericEntity Fit_saint_philippe_jail_Place {
+ components {
+  LF_PlaceComponent "{CD3757DA70ED5B73}" {
+   m_sKind "JailCell"
+   m_sId "saint-philippe.jail"
+  }
+  LF_FittedBuildingComponent "{C500B4BA563B8E1F}" {
+  }
+ }
+ coords 4552.6 18.2 10748.3
+}
+GenericEntity Fit_saint_philippe_jail_cell : "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.et" {
+ components {
+  LF_JailCellComponent "{540EBBB989D3A80A}" {
+   m_fZoneRadius 2
+   m_sDoorTargetId ""
+   m_vReleaseOffset 3 0 2.5
+  }
+ }
+ coords 4556.732 18.2 10750.979
+ angleY 171
+}

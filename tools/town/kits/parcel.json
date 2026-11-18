@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "kit": "parcel",
+  "system": "parcel",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_job_depot.layer",
+    "group": "Annex_Job_Depot",
+    "origin": "prefab",
+    "frame": "building-local",
+    "also": [
+      "addons/LF_Everon1989/Prefabs/Buildings/ParcelKiosk/ParcelKiosk.et",
+      "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_parcel_kiosk.layer"
+    ]
+  },
+  "scope": "building",
+  "building": {
+    "mode": "override",
+    "via": "{DA33ED8E94FD68DF}Prefabs/Structures/Commercial/Booth/NewspaperBooth_E_01/NewspaperBooth_E_01_redyellow.et",
+    "vanilla": "{DA33ED8E94FD68DF}Prefabs/Structures/Commercial/Booth/NewspaperBooth_E_01/NewspaperBooth_E_01_redyellow.et"
+  },
+  "store": {
+    "prefab": "{F66E180FCFB67D63}Prefabs/Buildings/ParcelKiosk/ParcelKiosk.et",
+    "config": []
+  },
+  "anchoring": {
+    "floorY": 0.05,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.05
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -2.2,
+        -2.47
+      ],
+      "max": [
+        1.92,
+        2.19
+      ]
+    },
+    "front": "+z",
+    "counters": [
+      {
+        "id": "job-depot",
+        "wall": "-z",
+        "edgeGap": 0.1
+      }
+    ],
+    "adapt": "The depot counter hugs the back wall (-z) of the booth; `front` (+z) is the door side. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "job-depot",
+      "name": "Annex_Job_Depot",
+      "prefab": "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        -0.45,
+        0.05,
+        -1.5
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        },
+        {
+          "component": "LF_JobSiteComponent",
+          "set": {
+            "m_eSite": "DEPOT"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "post-office-sign",
+      "prefab": "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        0.9,
+        2.5,
+        2.2
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"post_office\"",
+            "m_vRimColor": "0.1 0.1 0.1",
+            "m_vPaintColor": "0.95 0.78 0.1",
+            "m_vTextColor": "0.1 0.1 0.1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0"
+    }
+  ]
+}

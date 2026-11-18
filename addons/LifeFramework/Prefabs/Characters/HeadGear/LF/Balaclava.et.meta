@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F1971C6519B5DC9F}Prefabs/Characters/HeadGear/LF/Balaclava.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
