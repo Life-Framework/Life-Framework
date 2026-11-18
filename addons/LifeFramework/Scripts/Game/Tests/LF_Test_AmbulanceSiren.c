@@ -1,7 +1,7 @@
 // red-proof: LoopWanted returned hasOwnLoop alone -> [LFTEST] FAIL but not in the default mode
-// tier: LOGIC
 //! The ambulance's siren (#923): its own loop plays in every mode but default and only when the
 //! vehicle has one, and the duty rule that admits only an on-duty medic.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AmbulanceSiren : LF_Test
 {
 	override string GetName()

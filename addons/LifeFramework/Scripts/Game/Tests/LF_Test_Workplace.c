@@ -1,10 +1,10 @@
-// red-proof: observed 2026-11-14 with `tools/cli test --no-build --only LF_Test_Workplace`: expecting LF_Faction.POLICE for the MEDIC job failed it with `- MEDIC clocks in the medic role (expected 1, got 2)`; an unparented clock (workplace looked up through GetParent only) failed `- the clock finds its workplace through the desk` and the old `medic/duty-desk` with `(expected 2, got 1)`. Restored; green.
+// red-proof: observed 2026-11-14 with `tools/cli test --no-build --only LF_Test_Workplace` (jobs/workplace): expecting LF_Faction.POLICE for the MEDIC job failed it with `- MEDIC clocks in the medic role (expected 1, got 2)`; an unparented clock (workplace looked up through GetParent only) failed `- the clock finds its workplace through the desk` and the old `medic/duty-desk` with `(expected 2, got 1)`. Restored; green.
 //------------------------------------------------------------------------------------------------
 //! jobs/workplace (#1111): the generic workplace prefab. The hospital desk is the LF_Workplace
 //! prefab with the job id MEDIC set: its punch clock takes the duty role from the job id (no role
 //! on the action), the desk registers as a "Workplace" place, and a job without a duty role has no
 //! role at all, so its clock is not offered.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Workplace : LF_Test
 {
 	override string GetName()

@@ -1,7 +1,7 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_LockpickDoor` with the Wear(1, OPENED) expectation changed 0 to 1 failed `- the last use opens the lock and the pick is gone (expected 1, got 0)`. Restored; green.
-// tier: LOGIC
 //! Lockpicking rules (#411): skill shortens the attempt, a worn pick breaks, a non-pickable or open
 //! door refuses, a plain failure wears nothing, and only a heard attempt files a report.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_LockpickDoor : LF_Test
 {
 	override string GetName()
@@ -55,9 +55,9 @@ class LF_Test_LockpickDoor : LF_Test
 }
 
 // red-proof: world wiring is asserted against the placed door; dropping m_bDebugLocked from the placed door failed `- without a pick the locked door says it needs one (expected 3, got 2)` on 2026-11-10 (first run, before the fix).
-// tier: WORLD
 //! The playtest lock-up door is wired (#411): locked, pickable, the pick action on it, the jail-style
 //! breach door refuses a pick. Spawns nothing. The held attempt itself is the two-client session proof.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LockpickDoorWorld : LF_Test
 {
 	override string GetName()

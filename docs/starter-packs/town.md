@@ -12,9 +12,11 @@ dossier.json      mapping.json                          tools/town/kits   Place_
 ## Steps and commands
 ```
 tools\cli scout <place>                      # dossier: docs/everon/places/<slug>/dossier.{json,md} and img/
-tools\cli town map <slug> [--template town|village] [--force]   # proposes slot -> building; `--check` refuses an incomplete one
+tools\cli scout label <slug>                 # img/overview-top-labelled.jpg: mapped buildings (b01, b14) and slots on the overhead shot; attach it to the mapping PR
+tools\cli town map <slug> [--template town|village|districts] [--force]   # proposes slot -> building; `--check` refuses an incomplete one
 tools\cli town kit extract <layer> <group>   # a kit from a building that already works; no absolute positions
 tools\cli town fit <place> <slot>            # writes MainWorld_Layers/Place_<place>_<slot>.layer + a claim
+tools\cli town fit <place> <slot> --check    # per-row seat corrections (floor, wall, clip) against the layer on disk; writes nothing
 tools\cli town check <place>                 # static kinds and claims; then audit placement --world MainWorld
 tools\cli town ready <state>                 # every place of the state passes, systems present, arrival route walks
 tools\cli look place:<place>/<slot>          # the slot on the island (MainWorld): wide, obliques, top, kit close-ups
@@ -33,6 +35,8 @@ tools\cli look place:<place>/<slot> --interior auto   # its ground floor from in
 - **Never touch the maintainer's worktree** (`ws/town-maintainer-edits`) or the playtest town's layers. The lead
   ships those.
 - No step types a coordinate: every number comes from the dossier. A kit holds none.
+- Rows are seated on the island host's own floors and walls (`tools/town/seat.mjs`); a row that still cuts the shell
+  refuses the fit. Fix the kit row instead of reaching for `--allow-clip`. A socket-hung row (a fascia) is left out of the layer.
 - Core never reads the mapping; what reaches the game is the fitted layer with `LF_PlaceComponent` and feature
   components. Core text stays neutral (place names are pack strings).
 - A fitted vanilla building gets its destruction override (D15), or a fitted floor falls in.
@@ -45,6 +49,6 @@ tools\cli look place:<place>/<slot> --interior auto   # its ground floor from in
 - Building interiors: `brief building` is the fit-out recipe, run in the debug grid first.
 
 ## Environment
-No Workbench on this PC and never pin a machine. Run in the foreground (timeout up to 600000 ms) or
+No Workbench on the maintainer's PC (Gaming-Box); on lf-testbox (PC1) it is allowed through the pool (`toolscli status` says which you are on). Never pin a machine. Run in the foreground (timeout up to 600000 ms) or
 `t3_background_wait`; never end the turn with a run pending. Never `--force`, `rm -rf` or `Remove-Item -Recurse` a
 worktree (`wt prune`). Never admin-merge.

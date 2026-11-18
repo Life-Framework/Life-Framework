@@ -3,10 +3,10 @@
 //   RED-OK chess/moves (fails with the hook on, 106 assertions)
 //   red: the start position has 20 legal moves (expected 20, got 0)
 
-// tier: LOGIC
 //! #1931: chess rules for every piece. The start position has 20 legal moves and perft 400 / 8902;
 //! four well-known positions (chessprogramming.org "Perft Results") cover castling, en passant,
 //! promotion, pins and discovered checks; castling through, out of and into check is refused.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ChessMoves : LF_Test
 {
 	override string GetName()

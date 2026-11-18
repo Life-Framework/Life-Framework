@@ -4,7 +4,7 @@
 // RECALC_LOCAL_TRANSFORM breaks the spawn-time local offset and the
 // parent/local-offset assertions fail.
 
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LicensePlateParenting : LF_Test
 {
 	protected static const ResourceName FIXTURE_PREFAB = "{8821AF528FA28E8C}Prefabs/Vehicles/Core/Vehicle_Test_PlateFixture.et";

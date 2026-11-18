@@ -73,7 +73,7 @@ class LF_TestProgressionKit
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_ProgressionRoundtrip : LF_Test
 {
 	protected static const string COURIER = "progression-courier";
@@ -206,7 +206,7 @@ class LF_Test_ProgressionRoundtrip : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_ProgressionOldSave : LF_Test
 {
 	protected static const string OFFICER = "progression-old-officer";

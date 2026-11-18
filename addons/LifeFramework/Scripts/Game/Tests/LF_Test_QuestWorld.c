@@ -2,7 +2,7 @@
 // intro_talk state never reaches COMPLETED; the registration or lifecycle
 // assertions go red. Run `tools\cli test --tier all`.
 
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_QuestWorld : LF_Test
 {
 	override string GetName()
@@ -39,6 +39,9 @@ class LF_Test_QuestWorld : LF_Test
 		ctx.NotNull(tracker, "test character carries the quest tracker");
 		if (!tracker)
 			return;
+
+		// No player controls the fixture body; a turn-in needs a uid to be saved under.
+		tracker.SetUidForTests("quest-world-test");
 
 		// Talk quest: accept, interact with the giver, turn in, reward items land.
 		tracker.AcceptQuest("intro_talk");

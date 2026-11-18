@@ -273,9 +273,9 @@ Per place (a slot set within 60 m, the square plus its streets):
 | Shop | Entities | Lights | Shadow casters (all unset) | Point lights casting |
 |---|---:|---:|---:|---:|
 | GunStore | 293 | 14 | 14 | 9 |
-| GeneralStore | 845 | 11 | 11 | 4 |
-| ClothingStore | 258 | 11 | 11 | 11 |
-| Drugstore | 468 | 12 | 12 | 2 |
+| GeneralStore | 845 (289 since #2327) | 11 (6) | 11 (1) | 4 (0) |
+| ClothingStore (meets the medium budget since #2328: emissive lamps, explicit `CastShadow 0`) | 253 | 6 | 0 | 0 |
+| Drugstore (meets the budget since #2329: 289 / 6 / 1 / 0) | 468 | 12 | 12 | 2 |
 | Supermarket | 133 | 16 | 16 | 4 |
 
 All five are over on lights and shadow casters, and the general store and drugstore on entities. The
@@ -316,7 +316,11 @@ budget, how it is measured, the numbers so far, and what a synthetic run cannot 
 | Budget thresholds | `Configs/Perf/LF_PerfBudget.conf` (class `LF_PerfBudget`). `validate-perf-budget.mjs` keeps conf and class in step and the player count at 128 or more |
 | Benchmark and gate | test `perf/budget-128` (`LF_Test_PerfBudget`, PERF tier): builds 128 synthetic characters through the real managers, bus and serializer, fails when a cost passes its limit |
 | Report | `tools\cli perf [--local]` runs the test, prints the table, writes `tmp/perf/report.{md,json}`, exits 1 over budget. It runs the PERF tier (below) |
-| PERF tier | `// tier: PERF` tests (LF_TestTier.PERF) are timing gates. `--tier fast` and `--tier all` skip them (`[LFTEST] SKIP ... tier=perf`), so `wt gate` / `wt ship` do not run the budget and cannot flake on it. `tools\cli test --no-build --tier perf` runs them alone: the pool's RAM gate as for any run, one server, never sharded, never cached (`test-cache.mjs` skips the tier), and `test-e2e.ps1` first waits up to `LF_PERF_IDLE_WAIT_S` (60) s for the CPU to sit at or under `LF_PERF_IDLE_PCT` (20) % for three samples, warning and measuring anyway if it never does. Under `LF_TestManager.PerfRun()` the test takes 15 reference runs and 15 repeats, 6 windows per time measure, reads the cheapest cost and the cheapest reference op over all windows, and holds every limit to 70 % of the conf value. `--only LF_Test_PerfBudget` still runs it at the lenient shared-suite settings. Not done: the pool does not yet reserve a whole machine for a perf run, so a busy neighbour lane is covered only by the idle check |
+| PERF tier | `[LF_TestInfo(LF_TestTier.PERF)]` tests are timing gates. `--tier fast` and `--tier all` skip them (`[LFTEST] SKIP ... tier=perf`), so `wt gate` / `wt ship` do not run the budget and cannot flake on it. `tools\cli test --no-build --tier perf` runs them alone: the pool's RAM gate as for any run, one server, never sharded, never cached (`test-cache.mjs` skips the tier), and `test-e2e.ps1` first waits up to `LF_PERF_IDLE_WAIT_S` (60) s for the CPU to sit at or under `LF_PERF_IDLE_PCT` (20) % for three samples, warning and measuring anyway if it never does. Under `LF_TestManager.PerfRun()` the test takes 15 reference runs and 15 repeats, 6 windows per time measure, reads the cheapest cost and the cheapest reference op over all windows, and holds every limit to 70 % of the conf value. `--only LF_Test_PerfBudget` still runs it at the lenient shared-suite settings. Not done: the pool does not yet reserve a whole machine for a perf run, so a busy neighbour lane is covered only by the idle check |
+
+Test `perf/life-128` (`LF_Test_PerfLife128`, PERF tier, #2404) times the everyday-life systems
+(drunk sway, race tick, logout bodies, scanner fan-out) before and after at a synthetic 128 players;
+numbers under "Everyday-life systems" below.
 
 Instrumented today: `Account.refreshAll` (the 10 s pass over every player), `Account.publish`,
 `Account.ownerScan` (walks over the players to find an account's owner: at most one a frame, #716)
@@ -373,6 +377,31 @@ Findings from the run:
   connected player), then walks them again to count police. That is O(players) per change; at 128
   it is cheap, but a mass change (everyone's wanted level at once) is O(players squared). No fix
   is filed: it needs live players to measure.
+
+### Everyday-life systems (#2404)
+
+Test `perf/life-128` (`LF_Test_PerfLife128`, PERF tier) measures the four O(players) costs the life
+review found (`docs/reviews/2026-11-17-life.md` rows 6, 7, 8 and 20). Each measure runs the old loop
+and the shipped code in the same boot at a synthetic 128 players; the counts are the gate, the
+times are reported. Run 2026-11-17 on lf-testbox (`tools\cli test --no-build --tier perf`):
+
+| Measure | Before | After |
+|---|---:|---:|
+| Drunk sway: frame callbacks armed per client frame | 128 (every body) | 0 sober, 1 drunk (own body) |
+| Drunk sway: script side of the proxies' early returns | 20 us a frame (0.16 us a call) | none |
+| Race tick, 16 racers spread over 128 players: uid lookups | 1,088 a tick | 16 a tick |
+| Race tick: time | 610 us for the lookups alone | 83 us for the whole tick |
+| Loot one item, 16 logout bodies kept: snapshots written | 16 | 1 |
+| Loot one item: time | 1.2 ms | 0.1 ms |
+| Police call: inventory walks | 128 (one per player) | 1 registry visit per scanner |
+| Police call: time | 1.14 ms | under 20 us (50 calls took under the 1 ms timer step) |
+
+- The race "before" uses the test's synthetic uid lookup, which is cheaper than the live
+  `LF_Utils.GetPlayerUID` (identity plus account resolve), so the live saving is larger than shown.
+- The sway numbers leave out the engine's own cost of calling a script `EOnFrame`, which the test
+  cannot time; with the fix that call no longer happens on 127 bodies.
+- Logout snapshots grow with what each body carries; the fixture body carries a backpack, a bottle,
+  cash and apples.
 
 ### What extrapolates to 128, what does not
 

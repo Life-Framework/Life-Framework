@@ -39,6 +39,32 @@ class LF_OnWantedChanged : LF_Event
 	}
 }
 
+//! A crime report was stored for a character (#2516). Published by LF_WantedReports.Add, so it comes
+//! after the wanted level rose in the crime paths that raise the level first.
+class LF_OnWantedReportFiled : LF_Event
+{
+	//! The character key the reports use (#331).
+	string m_sPlayerUid;
+	int m_iSequence;
+	//! The report's place text (a sign title key or "grid X-Z"), never a coordinate.
+	string m_sPlace;
+	//! Where the crime was filed (#2578), when the report knows it: a place text that is only a map
+	//! label has no point to mark otherwise. A runtime value, never a coded coordinate.
+	vector m_vPosition;
+	bool m_bHasPosition;
+
+	static LF_OnWantedReportFiled Create(string playerUid, int sequence, string place, bool hasPosition = false, vector position = vector.Zero)
+	{
+		LF_OnWantedReportFiled e = new LF_OnWantedReportFiled();
+		e.m_sPlayerUid = playerUid;
+		e.m_iSequence = sequence;
+		e.m_sPlace = place;
+		e.m_bHasPosition = hasPosition;
+		e.m_vPosition = position;
+		return e;
+	}
+}
+
 //! A suspect's open reports were marked identified: their name goes on the posters.
 class LF_OnSuspectIdentified : LF_Event
 {
@@ -77,6 +103,29 @@ class LF_OnFlaggedLogout : LF_Event
 		e.m_sState = state;
 		e.m_sOutcome = outcome;
 		e.m_vPosition = position;
+		e.m_iAmount = amount;
+		return e;
+	}
+}
+
+//! An officer wrote a fine ticket to a player (#2478). Police calls complete on it at the site.
+class LF_OnFineIssued : LF_Event
+{
+	string m_sOfficerUid;
+	//! The fined player's character key.
+	string m_sHolderUid;
+	//! Where the officer stood when the ticket was written.
+	vector m_vOfficerPosition;
+	int m_iTicketNumber;
+	int m_iAmount;
+
+	static LF_OnFineIssued Create(string officerUid, string holderUid, vector officerPosition, int ticketNumber, int amount)
+	{
+		LF_OnFineIssued e = new LF_OnFineIssued();
+		e.m_sOfficerUid = officerUid;
+		e.m_sHolderUid = holderUid;
+		e.m_vOfficerPosition = officerPosition;
+		e.m_iTicketNumber = ticketNumber;
 		e.m_iAmount = amount;
 		return e;
 	}

@@ -74,7 +74,7 @@ class LF_Test_FolderListing
 //! before and after: nothing may appear or vanish there. Inside the scratch folder the migration
 //! may leave only config.json and its .bak. Uses a scratch folder under $profile, never the
 //! server's own config.json.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigMigrationNoPersist : LF_Test
 {
 	static const string SCRATCH = "test-config-migrate-nopersist";

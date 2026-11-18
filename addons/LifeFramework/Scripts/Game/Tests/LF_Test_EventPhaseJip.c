@@ -1,8 +1,8 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_EventPhaseJip`: with the hook on no pairs are collected and the board stays empty (`one running event makes one id and phase pair (expected 2, got 0)`), `RED PROOF OK (all 1 listed test(s) fail with the hook on)`; without the hook `SUMMARY tier=only passed=2 failed=0`.
-// tier: WORLD
 //! A late joiner gets the running event phases (#2106): a test event started by the shell is
 //! collected into the JIP pairs, a fresh board reads them, and holds the same id and phase. An idle
 //! event is not sent; odd trailing data is ignored.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventPhaseJip : LF_Test
 {
 	override string GetName()

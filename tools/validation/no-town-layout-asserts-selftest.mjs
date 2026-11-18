@@ -10,10 +10,10 @@
 // the baseline lookup in check() made always-true it printed
 // "FAIL a new test quoting a town entity fails" and exited 1; restored, it passes.
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { check, scanTree, TOWN_DIRS } from "./validate-no-town-layout-asserts.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const TESTS = "addons/LifeFramework/Scripts/Game/Tests";
 function put(root, path, text) {
@@ -21,10 +21,10 @@ function put(root, path, text) {
   mkdirSync(dirname(full), { recursive: true });
   writeFileSync(full, text);
 }
-const test = (body) => `// tier: WORLD\nclass LF_Test_X : LF_Test\n{\n\toverride void Run(LF_TestContext ctx)\n\t{\n${body}\n\t}\n}\n`;
+const test = (body) => `[LF_TestInfo(LF_TestTier.WORLD)]\nclass LF_Test_X : LF_Test\n{\n\toverride void Run(LF_TestContext ctx)\n\t{\n${body}\n\t}\n}\n`;
 
 function tree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-townlayout-"));
+  const root = scratchDir("lf-townlayout-");
   put(root, `${TOWN_DIRS[0]}/Annex.layer`, `GenericEntity Annex_Desk : "{1111111111111111}Prefabs/Desk.et" {\n coords 60 0 60\n}\n`);
   put(root, `${TOWN_DIRS[0]}/Street_Bank.layer`, `GenericEntity Roadmap_Bank_Vault : "{2222222222222222}Prefabs/Door.et" {\n coords 200 0 260\n}\n`);
   put(root, `${TOWN_DIRS[1]}/Village.layer`, `GenericEntity Quest_Clerk : "{3333333333333333}Prefabs/Npc.et" {\n coords 135 0 243\n}\n`);

@@ -30,7 +30,7 @@ class LF_Test_SystemsPackStub : LF_ConfigPackSource
 //! read action and the police loadout leaves the pager out. Turned on again, all of it comes back.
 //! A pack overlay turns the pager off and the owner turns it back on; the config stream carries
 //! the server's answer to a client.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SystemsWorld : LF_Test
 {
 	static const ResourceName PAGER = "{747E7E1669676AA1}Prefabs/Items/Roleplay/LF_Pager.et";
@@ -98,7 +98,7 @@ class LF_Test_SystemsWorld : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Gives the user the police kit's direct items through the real loadout path. eturn Pagers after.
+	//! Gives the user the police kit's direct items through the real loadout path. \return Pagers after.
 	protected int GiveDirectPager(IEntity user)
 	{
 		LF_SpawnLogic spawnLogic = LF_SpawnLogic.GetInstance();

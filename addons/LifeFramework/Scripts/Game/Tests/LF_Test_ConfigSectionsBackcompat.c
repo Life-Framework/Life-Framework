@@ -1,8 +1,8 @@
 // red-proof: observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_ConfigSectionsBackcompat`: setting m_iSpikeStripLifetimeSeconds to 601 in Configs/Police/LF_Police.conf failed `- spike strip lifetime (expected 600, got 601)`. Restored; green.
-// tier: LOGIC
 //! #282/#283: with a config.json that names none of the new sections (or no config.json), zones,
 //! police, organizations, persistence and licences hold the values the code carried before they
 //! became owner sections. The sections are known top-level keys, so none warns as unknown.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigSectionsBackcompat : LF_Test
 {
 	override string GetName()

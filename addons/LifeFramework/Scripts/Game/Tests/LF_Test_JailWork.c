@@ -2,7 +2,8 @@
 // LF_JailWorkRules.Check with `if (false)`; got `- a second task inside the cooldown is refused (expected 3, got 0)`
 // and `- the second scrub takes 30 more seconds off`. Restored; green.
 
-// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
+//! Needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JailWork : LF_Test
 {
 	override string GetName()

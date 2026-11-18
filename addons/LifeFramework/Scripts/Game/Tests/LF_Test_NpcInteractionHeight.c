@@ -4,10 +4,10 @@
 // (the same for QuestGiver_Start), and PoliceDutyNPC.et had no actions manager: its second
 // CharacterIdentityComponent failed the prefab ("cannot be combined with component
 // CharacterIdentityComponent"). Green after the fix.
-// tier: WORLD
 //! A talk-to NPC's action context sits on its chest, where the player looks, not at the hips
 //! (playtest 2026-11-08: "between their legs"). The prefabs had Offset 0 0.5 0 with Radius 2.0;
 //! they now pin the context to the Spine5 bone as vanilla Character_Base does for "Chest".
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NpcInteractionHeight : LF_Test
 {
 	override string GetName()
@@ -19,8 +19,7 @@ class LF_Test_NpcInteractionHeight : LF_Test
 	{
 		array<ResourceName> prefabs = {
 			"{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et",
-			"{E8989175335080B8}Prefabs/Characters/Quests/QuestGiver_Start.et",
-			"{05BE7F756ADCA703}Prefabs/Characters/Npcs/PoliceDutyNPC.et"
+			"{E8989175335080B8}Prefabs/Characters/Quests/QuestGiver_Start.et"
 		};
 
 		foreach (ResourceName prefab : prefabs)

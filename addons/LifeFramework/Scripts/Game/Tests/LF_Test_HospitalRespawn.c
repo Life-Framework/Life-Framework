@@ -10,7 +10,7 @@
 // beds (found 1)`. The RedProof() hook skips the fixture beds and the ward assertions go red.
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HospitalBillOnce : LF_Test
 {
 	override string GetName()
@@ -73,7 +73,7 @@ class LF_Test_HospitalBillOnce : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HospitalBedPick : LF_Test
 {
 	override string GetName()
@@ -111,7 +111,7 @@ class LF_Test_HospitalBedPick : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HospitalWard : LF_Test
 {
 	static const ResourceName WARD_BED_PREFAB = "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et";

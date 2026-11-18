@@ -4,7 +4,7 @@
 //! The drunk view (#1920): the sway amplitude for a level follows the config curve, is zero at level
 //! 0, is capped at the maximum, the offset is zero when sober and bounded when drunk, and the world-end
 //! reset drops the harness pin.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ImpairmentView : LF_Test
 {
 	override string GetName()

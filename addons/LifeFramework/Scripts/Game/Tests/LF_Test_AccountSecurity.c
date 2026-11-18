@@ -2,7 +2,7 @@
 // unconditionally) or RemoveCharacter (drop the re-clamp), then run the fast
 // tier; the affected account/active-index-security assertions go red.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AccountActiveIndex : LF_Test
 {
 	override string GetName()
@@ -35,7 +35,7 @@ class LF_Test_AccountActiveIndex : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AccountCachePolicy : LF_Test
 {
 	override string GetName()

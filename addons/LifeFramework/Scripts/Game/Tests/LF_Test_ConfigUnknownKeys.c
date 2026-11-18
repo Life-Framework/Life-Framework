@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------------------------
 //! An unknown key warns and is ignored: in a section, in a record, and at the top level. The
 //! known keys around it still apply.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigUnknownKeys : LF_Test
 {
 	override string GetName()

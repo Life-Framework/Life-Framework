@@ -56,22 +56,22 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords -8.528 2.009 -6.573
    angles 0 90 0
   }
-  GenericEntity : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+  GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
    ID "58E48927B78693E5"
    coords 1.288 3.8 -3.525
    angles 0 180 0
   }
-  GenericEntity : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+  GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
    ID "58E48927B78693E6"
    coords -7.412 3.8 -1.31
    angles 0 -85.956 0
   }
-  GenericEntity : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+  GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
    ID "58E48927B78693E7"
    coords -7.969 3.8 -1.671
    angles 0 -5.564 0
   }
-  GenericEntity : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+  GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
    ID "58E48927B78693F8"
    coords -7.908 3.8 -0.769
    angles 0 180 0
@@ -389,50 +389,50 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "58E48927B78E4D72"
    coords 6.169 0 -7.886
   }
-  GenericEntity : "{7AB0AFBE367A9FB7}Prefabs/Props/Furniture/Chair_01/Chair_01_red.et" {
+  GenericEntity : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
    ID "58E48906EA714EF9"
    coords 2.403 0 -3.695
    angles 0 -160.945 0
   }
-  GenericEntity : "{7AB0AFBE367A9FB7}Prefabs/Props/Furniture/Chair_01/Chair_01_red.et" {
+  GenericEntity : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
    ID "58E48906EA714F0B"
    coords 4.054 0 -2.637
    angles 0 -90 0
   }
-  GenericEntity : "{7AB0AFBE367A9FB7}Prefabs/Props/Furniture/Chair_01/Chair_01_red.et" {
+  GenericEntity : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
    ID "58E48906EA714F26"
    coords 3.266 0 -2.637
    angles 0 90 0
   }
-  GenericEntity : "{7AB0AFBE367A9FB7}Prefabs/Props/Furniture/Chair_01/Chair_01_red.et" {
+  GenericEntity : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
    ID "58E48906EA714F66"
    coords 3.266 0 0.234
    angles 0 90 0
   }
-  GenericEntity : "{7AB0AFBE367A9FB7}Prefabs/Props/Furniture/Chair_01/Chair_01_red.et" {
+  GenericEntity : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
    ID "58E48906EA714F7E"
    coords 4.054 0 0.234
    angles 0 -90 0
   }
-  GenericEntity : "{7AB0AFBE367A9FB7}Prefabs/Props/Furniture/Chair_01/Chair_01_red.et" {
+  GenericEntity : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
    ID "58E48906EA714FA7"
    coords -2.182 0 -1.84
    angles 0 180 0
   }
-  GenericEntity : "{7AB0AFBE367A9FB7}Prefabs/Props/Furniture/Chair_01/Chair_01_red.et" {
+  GenericEntity : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
    ID "58E48906EA714FB8"
    coords -2.182 0 -2.628
   }
-  GenericEntity : "{7AB0AFBE367A9FB7}Prefabs/Props/Furniture/Chair_01/Chair_01_red.et" {
+  GenericEntity : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
    ID "58E48906EA714FE3"
    coords -2.182 0 -4.182
    angles 0 180 0
   }
-  GenericEntity : "{7AB0AFBE367A9FB7}Prefabs/Props/Furniture/Chair_01/Chair_01_red.et" {
+  GenericEntity : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
    ID "58E48906EA714FFA"
    coords -2.182 0 -4.97
   }
-  GenericEntity : "{7AB0AFBE367A9FB7}Prefabs/Props/Furniture/Chair_01/Chair_01_red.et" {
+  GenericEntity : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
    ID "58E48906EA715005"
    coords -2.182 0 -6.635
    angles 0 180 0
@@ -476,6 +476,21 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   GenericEntity : "{A7E2685F2EC63A0D}Prefabs/Structures/BuildingParts/Heating/RadiatorCastIron_01/RadiatorCastIron_01_65.et" {
    ID "58E48927B78D9A1C"
    coords 2.078 4.322 -8.701
+  }
+  GenericEntity : "{A84A73E9D9D4B20E}Prefabs/Props/Furniture/Shelf_01.et" {
+   ID "58E48906EA715149"
+   coords -4.59 1.997 -2.895
+   angles 0.333 180 0
+  }
+  GenericEntity : "{A84A73E9D9D4B20E}Prefabs/Props/Furniture/Shelf_01.et" {
+   ID "58E48906EA7152D7"
+   coords -8.536 1.389 -5.233
+   angles 0 90 0
+  }
+  GenericEntity : "{A84A73E9D9D4B20E}Prefabs/Props/Furniture/Shelf_01.et" {
+   ID "58E48906EA7152FD"
+   coords -8.536 1.648 -5.233
+   angles 0 90 0
   }
   GenericEntity : "{A84A73E9D9D4B20E}Prefabs/Props/Furniture/Shelf_01.et" {
    ID "58E48906EA71531E"
@@ -541,32 +556,32 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "58E48927B7961E83"
    coords -2.679 4.604 -5.987
   }
-  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+  GenericEntity : "{1A8B1A9666D0C6CB}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_white.et" {
    ID "58E48906EA714ECB"
    coords 2.495 0 -5.464
    angles 0 -90 0
   }
-  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+  GenericEntity : "{1A8B1A9666D0C6CB}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_white.et" {
    ID "58E48906EA714F17"
    coords 4.095 0 -2.056
    angles 0 -90 0
   }
-  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+  GenericEntity : "{1A8B1A9666D0C6CB}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_white.et" {
    ID "58E48906EA714F32"
    coords 3.327 0 -2.056
    angles 0 90 0
   }
-  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+  GenericEntity : "{1A8B1A9666D0C6CB}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_white.et" {
    ID "58E48906EA714F4A"
    coords 4.095 0 0.815
    angles 0 -90 0
   }
-  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+  GenericEntity : "{1A8B1A9666D0C6CB}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_white.et" {
    ID "58E48906EA714F71"
    coords 3.327 0 0.815
    angles 0 90 0
   }
-  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+  GenericEntity : "{1A8B1A9666D0C6CB}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_white.et" {
    ID "58E48906EA714F8B"
    coords -1.601 0 -2.669
   }
@@ -622,6 +637,91 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "58E48927B79A3ADC"
    coords 4.456 3.8 3.713
    angles 0 90 0
+  }
+  GenericEntity : "{C6AF6D2D6EA3CBF9}Prefabs/Atmosphere/LF_Radio_Pub.et" {
+   ID "CAFE0A05CC1614C2"
+   coords 3.95 0.897 0.75
+   angleY -90
+  }
+  GenericEntity : "{33881F3E4E64549D}Prefabs/Props/Chess/LF_ChessTable.et" {
+   ID "CAFE19FB76639253"
+   coords 2.2 0 -7.4
+  }
+  GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
+   ID "CAFEA944AB9D8174"
+   coords 1.3 0 -7.4
+   angleY 90
+  }
+  GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
+   ID "CAFEDD70BA0EA2DB"
+   coords 3.1 0 -7.4
+   angleY -90
+  }
+  LightEntity {
+   ID "CAFE0735FBDAB18E"
+   coords -4.2 3 -6.4
+   Color 1 0.88 0.68 1
+   LV 6.5
+   ClipEV -10
+   CastShadow 0
+   Radius 7
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "CAFE021F11B87CE5"
+   coords 2.2 3 -4
+   Color 1 0.88 0.68 1
+   LV 6.5
+   ClipEV -10
+   CastShadow 0
+   Radius 6
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "CAFE1AD5CCB07A0B"
+   coords 6 3 -6
+   Color 1 0.88 0.68 1
+   LV 5
+   ClipEV -10
+   CastShadow 0
+   Radius 4
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "CAFEDAAFADFB49C7"
+   coords -6.2 3 -0.8
+   Color 1 0.88 0.68 1
+   LV 6.5
+   ClipEV -10
+   CastShadow 0
+   Radius 4
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "CAFE838E8FBB0757"
+   coords 6 3 3.2
+   Color 1 0.88 0.68 1
+   LV 5
+   ClipEV -10
+   CastShadow 0
+   Radius 4
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "CAFE3872547FDB6D"
+   coords -2 6.4 -3.5
+   Color 1 0.88 0.68 1
+   LV 6
+   ClipEV -10
+   CastShadow 0
+   Radius 7
+   NearPlane 0.3
+   LensFlareType Disabled
   }
  }
 }

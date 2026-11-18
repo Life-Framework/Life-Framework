@@ -9,12 +9,12 @@
 // red-proof: with snapItems computing y = level.y + f.bottom - 0.2 this printed "FAIL named snap: want 0.951, got 0.749" and 4 more
 // (snapped phone passes, auto snap, crate rim) (2026-11-17).
 
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { checkBuilding } from "../buildings/pipeline/floaters.mjs";
 import { buildingCheckProblems, buildingSlugsTouched } from "../lib/pr-quality.mjs";
 import { floaters, prefabChildren, setHeights, snapItems, specSupports } from "../buildings/pipeline/surface.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const want = (label, got, exp) => {
@@ -29,7 +29,11 @@ const DESK = "Prefabs/Fixture/Desk.et";
 const PHONE = "Prefabs/Fixture/PhoneTable_01.et";
 const CRATE = "Prefabs/Fixture/Crate_01.et";
 const POSTER = "Prefabs/Fixture/PosterSingle_01.et";
+const PLATFORM = "Prefabs/Fixture/Platform.et"; // the forecourt slab, top 0.2
+const SHOPHOST = "Prefabs/Fixture/ShopHost.et"; // the shop's own shell, floor 0.1 in the shop's frame
 const MODELS = {
+  [PLATFORM]: { bounds: { min: [-20, 0, -10], max: [20, 0.2, 10] }, surfaces: [{ y: 0.2, x: [-20, 20], z: [-10, 10] }] },
+  [SHOPHOST]: { bounds: { min: [-4, 0, -3], max: [4, 3, 3] }, surfaces: [{ y: 0.1, x: [-4, 4], z: [-3, 3] }] },
   [DESK]: { bounds: { min: [-0.6, 0, -0.3], max: [0.6, 0.75, 0.3] }, surfaces: [{ y: 0.75, x: [-0.6, 0.6], z: [-0.3, 0.3] }] },
   [PHONE]: { bounds: { min: [-0.1, -0.001, -0.1], max: [0.1, 0.12, 0.1] }, surfaces: [] },
   [CRATE]: { bounds: { min: [-0.3, 0, -0.2], max: [0.3, 0.22, 0.2] }, surfaces: [{ y: 0.012, x: [-0.28, 0.28], z: [-0.18, 0.18] }] }, // open: only the inside floor
@@ -119,7 +123,7 @@ want("setHeights rewrote the y", edited.text.includes("coords 0.2 0.951 0.1"), t
 want("setHeights left the desk", edited.text.includes(`coords 0 ${FLOOR} 0`), true);
 
 // 10. the command over a building on disk: a spec, its prefabs, the floor from the spec
-const root = mkdtempSync(join(tmpdir(), "lf-building-check-"));
+const root = scratchDir("lf-building-check-");
 mkdirSync(join(root, "tools", "buildings", "shop"), { recursive: true });
 mkdirSync(join(root, "addons", "LF_Pack", "Prefabs", "Buildings", "Shop", "Furniture"), { recursive: true });
 writeFileSync(join(root, "tools", "buildings", "shop", "spec.json"), JSON.stringify({ slug: "shop", addon: "LF_Pack", prefab_dir: "Prefabs/Buildings/Shop", floors: [FLOOR] }));
@@ -138,7 +142,91 @@ want("a passing check is quiet", buildingCheckProblems({ files: ["tools/building
 want("a check that cannot run here is skipped", buildingCheckProblems({ files: ["tools/buildings/shop/decor.mjs"], specs, run: () => ({ code: 2, out: "" }) }).length, 0);
 want("an unrelated PR runs nothing", buildingCheckProblems({ files: ["docs/x.md"], specs, run: () => { throw new Error("should not run"); } }).length, 0);
 
-console.log(failed ? `building-surface-selftest: ${failed} failure(s)` : "building-surface-selftest: OK (hover fails, snapped and floor pass, auto band, rim stack, hung kinds, allow, extra supports, setHeights, command)");
+
+// 12. a building placed at 0, 90 and -90 degrees whose fit-out rows are in a grid layer: the rows are carried into the building's
+// frame (its coords, its yaw in `angleY` or in `angles`, its raised plot), so a phone on a desk the prefab holds passes and one hovering fails
+const rotated = (name, angle, form, extra = "") => {
+  const dir = scratchDir(`lf-building-rot-${name}-`);
+  mkdirSync(join(dir, "tools", "buildings", "rot"), { recursive: true });
+  mkdirSync(join(dir, "addons", "LF_Pack", "Prefabs", "Buildings", "Rot", "Furniture"), { recursive: true });
+  mkdirSync(join(dir, "layers"), { recursive: true });
+  const spec = { slug: "rot", addon: "LF_Pack", prefab_dir: "Prefabs/Buildings/Rot", floors: [FLOOR], check_layer: { file: "layers/rot.layer", host: "Rot_Main", prefix: "RotKit_" } };
+  writeFileSync(join(dir, "tools", "buildings", "rot", "spec.json"), JSON.stringify(spec));
+  writeFileSync(join(dir, "addons", "LF_Pack", "Prefabs", "Buildings", "Rot", "Furniture", "Rot_furniture_01.et"), prefab([{ path: DESK, x: 2, y: FLOOR, z: 1 }]));
+  const HOST = { x: 100, y: 0.05, z: 50 }; // the plot is 5 cm up, like the hostel's
+  const world = (lx, ly, lz) => {
+    const c = Math.cos((angle * Math.PI) / 180);
+    const sn = Math.sin((angle * Math.PI) / 180);
+    return [HOST.x + lx * c + lz * sn, HOST.y + ly, HOST.z - lx * sn + lz * c];
+  };
+  const row = (id, path, lx, ly, lz) => `GenericEntity RotKit_${id} : "{00000000000000AA}${path}" {
+ coords ${world(lx, ly, lz).map((v) => Math.round(v * 1e4) / 1e4).join(" ")}
+ ${form === "angles" ? `angles 0 ${angle} 0` : `angleY ${angle}`}
+}
+`;
+  const text = `SCR_DestructibleBuildingEntity Rot_Main : "{00000000000000BB}Prefabs/Fixture/Host.et" {
+ coords ${HOST.x} ${HOST.y} ${HOST.z}
+ ${form === "angles" ? `angles 0 ${angle} 0` : `angleY ${angle}`}
+}
+${row("Phone", PHONE, 2.2, DESK_TOP, 1)}${extra && row("Float", PHONE, 1.7, DESK_TOP + 0.15, 1)}`;
+  writeFileSync(join(dir, "layers", "rot.layer"), text);
+  return dir;
+};
+for (const angle of [0, 90, -90]) {
+  for (const form of ["angleY", "angles"]) {
+    const ok = await checkBuilding(rotated(`ok${angle}`, angle, form), "rot", { reader });
+    want(`rotated ${angle} ${form}: phone on the desk passes`, ok.problems.length, 0);
+    want(`rotated ${angle} ${form}: the phone row is judged`, ok.ents.some((e) => e.name === "RotKit_Phone"), true);
+    const hover = await checkBuilding(rotated(`bad${angle}`, angle, form, "float"), "rot", { reader });
+    want(`rotated ${angle} ${form}: a hovering phone fails`, hover.problems.length, 1);
+    want(`rotated ${angle} ${form}: it is the hovering one`, hover.problems[0]?.id, "RotKit_Float");
+    want(`rotated ${angle} ${form}: it floats by the 15 cm`, hover.problems[0]?.gap, 0.149);
+  }
+}
+
+// 13. two buildings in one prefab: a platform places a shop at an offset and a turn; the shop's furniture is judged in the shop's
+// frame (its floor 0.1, its shell), not on the platform's slab (top 0.2), while the platform's own props are judged on the slab
+const entity = (path, id, coords, angles = "") => `  GenericEntity : "{00000000000000CC}${path}" {
+   ID "${id}"
+   coords ${coords}
+${angles ? `   angles ${angles}
+` : ""}  }
+`;
+const wrap = (rows) => `GenericEntity : "{0000000000000001}Prefabs/Base.et" {
+ ID "0000000000000001"
+ {
+${rows}
+ }
+}
+`;
+const two = (shopRows) => {
+  const dir = scratchDir("lf-building-two-");
+  const base = join(dir, "addons", "LF_Pack", "Prefabs", "Buildings", "Two");
+  mkdirSync(join(base, "Furniture"), { recursive: true });
+  mkdirSync(join(dir, "tools", "buildings", "two"), { recursive: true });
+  writeFileSync(join(dir, "tools", "buildings", "two", "spec.json"), JSON.stringify({ slug: "two", addon: "LF_Pack", prefab_dir: "Prefabs/Buildings/Two", vanilla: { base: PLATFORM, shop: SHOPHOST } }));
+  writeFileSync(join(base, "Two.et"), wrap(entity("Prefabs/Buildings/Two/Two_Shop.et", "B000000000000001", "10 0.3 4", "0 -180 0") + entity(DESK, "B000000000000002", "-6 0.2 0")));
+  writeFileSync(join(base, "Two_Shop.et"), wrap(entity("Prefabs/Buildings/Two/Furniture/Two_Shop_furniture_01.et", "B000000000000003", "0 0 0")));
+  writeFileSync(join(base, "Furniture", "Two_Shop_furniture_01.et"), prefab(shopRows));
+  return dir;
+};
+// a phone on the shop floor (0.1) and one on a shop desk: they stand in the shop's frame
+const shopOk = [{ path: PHONE, x: 1, y: 0.1, z: 1 }, { path: DESK, x: -2, y: 0.1, z: 0 }, { path: PHONE, x: -2, y: 0.1 + 0.75, z: 0 }];
+const r13 = await checkBuilding(two(shopOk), "two", { reader });
+want("two buildings: the parts", r13.parts.join(","), ",Two_Shop");
+want("two buildings: the platform's floor is the slab", r13.floors.join(","), "0.2");
+want("two buildings: the shop has its own floor", r13.partFloors.Two_Shop?.includes(0.1), true);
+want("two buildings: shop props on the shop floor pass", r13.problems.length, 0);
+want("two buildings: every entity is judged", r13.ents.length, 6);
+const r13bad = await checkBuilding(two([...shopOk, { path: PHONE, x: 1, y: 0.4, z: -1 }]), "two", { reader });
+want("two buildings: a hovering shop phone still fails", r13bad.problems.length, 1);
+want("two buildings: the shop desk's own phone is not the fault", r13bad.problems[0]?.y, 0.4);
+// the platform's own props stay on the slab: a phone at the shop floor height standing in the platform's frame floats
+const r13dir = two(shopOk);
+writeFileSync(join(r13dir, "addons", "LF_Pack", "Prefabs", "Buildings", "Two", "Two.et"), wrap(entity("Prefabs/Buildings/Two/Two_Shop.et", "B000000000000001", "10 0.3 4", "0 -180 0") + entity(DESK, "B000000000000002", "-6 0.2 0") + entity(PHONE, "B000000000000009", "3 0.1 0")));
+want("two buildings: a platform prop at 0.1 is judged on the slab", (await checkBuilding(r13dir, "two", { reader })).problems.map((p) => p.id).join(","), "B000000000000009");
+
+console.log(failed ? `building-surface-selftest: ${failed} failure(s)` : "building-surface-selftest: OK (hover fails, snapped and floor pass, auto band, rim stack, hung kinds, allow, extra supports, setHeights, command, rotated hosts, two buildings in one prefab)");
 export async function main() {
   return failed ? 1 : 0;
 }

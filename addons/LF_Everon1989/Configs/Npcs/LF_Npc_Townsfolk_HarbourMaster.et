@@ -1,0 +1,59 @@
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "A6773939F6BEE5CA"
+ components {
+  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+   Identity Identity "{5A4B0B84AF44A913}" {
+    Name "Marcel"
+    Surname "Roux"
+   }
+  }
+  LF_NpcRoleComponent "{5F27733A56847CDC}" {
+   m_sRole "townsfolk"
+  }
+  LF_DialogueComponent "{21719F6375FBAB5D}" {
+   m_sDialogueId "harbour_master"
+  }
+  LF_PlaceComponent "{64AF5A8134B6B4FF}" {
+   m_sKind "Townsfolk"
+   m_sId "harbour_master"
+  }
+  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{7F1451790F3D75BD}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_green.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{0B1F0174869E0351}Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_green.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
+    }
+    LoadoutSlotInfo Hat {
+     Enabled 1
+     Prefab "{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{9BEBC01936C414EC}" {
+     ContextName "Talk"
+     Position PointInfo "{38CE24673FD9BFCD}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{89BEE8667C396EAC}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{C1E496EBAF182103}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
+ }
+}

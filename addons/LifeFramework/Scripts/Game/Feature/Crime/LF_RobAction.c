@@ -8,6 +8,8 @@ class LF_RobAction : ScriptedUserAction
 	static const string REFUSED_PAYOUT = "robbery refused: payout is not configured";
 	static const string REFUSED_OFF = "robbery refused: the Robbery system is off";
 	static const string REFUSED_GRACE = "robbery refused: the robber is in its grace period";
+	static const string REFUSED_CUFFED = "robbery refused: the robber is in handcuffs";
+	static const string REFUSED_NO_ROOM = "robbery refused: the robber's inventory took none of the cash";
 	//! The system id (LF_Systems, #960): till, weapon and vehicle robbery and the till hold.
 	static const string SYSTEM = "Robbery";
 
@@ -174,6 +176,12 @@ class LF_RobAction : ScriptedUserAction
 			return 0;
 		}
 
+		if (LF_CuffEnforcement.Refuse(user, "till robbery"))
+		{
+			s_sLastRefusal = REFUSED_CUFFED;
+			return 0;
+		}
+
 		string refusal = Gate(playerUid, payout, policeOnDuty, minPolice, cooldownSeconds, lastRobTimeMs, nowMs);
 		if (!refusal.IsEmpty())
 		{
@@ -182,6 +190,13 @@ class LF_RobAction : ScriptedUserAction
 		}
 
 		int paid = PayCash(user, payout);
+		if (paid <= 0)
+		{
+			// Nothing was taken: no cooldown on the till, no wanted level, no dispatch.
+			NoteRefusal(REFUSED_NO_ROOM);
+			return 0;
+		}
+
 		outLastRobTimeMs = nowMs;
 		s_sLastRefusal = "";
 		Report(playerUid, user, policeOnDuty, alarmKind);
@@ -248,7 +263,11 @@ class LF_RobAction : ScriptedUserAction
 			return;
 
 		s_iCashPaid = s_iCashPaid + paid;
-		LF_Debug.Log("Crime", string.Format("robbery +%1 cash to player %2", paid, playerUid));
+		string kind = "cash";
+		if (LF_LaunderConfig.CrimePaysMarked())
+			kind = "marked notes";
+
+		LF_Debug.Log("Crime", string.Format("robbery +%1 %2 to player %3", paid, kind, playerUid));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -449,6 +468,8 @@ class LF_RobAction : ScriptedUserAction
 			LF_Utils.NotifyEntity(pUserEntity, "#EL-Stole_Money", "#EL-Robbery_Successful", 3.0, paid.ToString());
 		else if (s_sLastRefusal == REFUSED_GRACE)
 			LF_Grace.Notify(pUserEntity);
+		else if (s_sLastRefusal == REFUSED_NO_ROOM)
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-Robbery_NoRoom", "#EL-Stole_Money", 3.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -489,6 +510,10 @@ class LF_RobAction : ScriptedUserAction
 		if (!user)
 			return payout;
 
+		// Dirty money (#2851): with the server's switch on the till pays marked notes, never cash.
+		if (LF_LaunderConfig.CrimePaysMarked())
+			return PayMarked(user, payout);
+
 		int paid = LF_MoneyUtils.AddCash(user, payout, "robbery");
 		if (paid != payout)
 		{
@@ -500,5 +525,22 @@ class LF_RobAction : ScriptedUserAction
 		}
 
 		return paid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The robbery payout as marked notes: all of it or nothing (a short add is taken back).
+	protected static int PayMarked(IEntity user, int payout)
+	{
+		int added = LF_MarkedCash.Add(user, payout, "robbery");
+		if (added != payout)
+		{
+			if (added > 0)
+				LF_MarkedCash.Take(user, added, "robbery-rollback");
+
+			LF_Debug.Error("Crime", string.Format("robbery payout short: %1 of %2 marked notes", added, payout));
+			return 0;
+		}
+
+		return added;
 	}
 };

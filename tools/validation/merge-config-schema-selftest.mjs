@@ -4,11 +4,11 @@
 // inputs: tools/merge/**, tools/config/**, tools/economy/profit-loops.mjs, .gitattributes
 // Does not boot the game and does not merge this worktree.
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pickThree } from "../merge/regen-config-schema.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const failures = [];
@@ -42,13 +42,13 @@ function git(cwd, ...args) {
 }
 
 function makeRepo(withAttributes) {
-  const dir = mkdtempSync(join(tmpdir(), "lf-cfg-schema-"));
+  const dir = scratchDir("lf-cfg-schema-");
   git(dir, "init", "-q", "-b", "main");
   cpSync(join(ROOT, "tools", "merge"), join(dir, "tools", "merge"), { recursive: true });
   mkdirSync(join(dir, "tools", "config"), { recursive: true });
   for (const f of ["schema.mjs", "pack-sections.mjs"]) cpSync(join(ROOT, "tools", "config", f), join(dir, "tools", "config", f));
   mkdirSync(join(dir, "tools", "economy"), { recursive: true });
-  cpSync(join(ROOT, "tools", "economy", "profit-loops.mjs"), join(dir, "tools", "economy", "profit-loops.mjs"));
+  for (const f of ["profit-loops.mjs", "profit-market.mjs"]) cpSync(join(ROOT, "tools", "economy", f), join(dir, "tools", "economy", f));
   writeFileSync(join(dir, "tools", "config", "schema-overrides.json"), "{}\n");
   for (const [rel, text] of [[SERVICE, "class LF_ConfigService\n{\n\tstatic const int SCHEMA_VERSION = 1;\n}\n"], [DEMO, demo("Base")]]) {
     mkdirSync(dirname(join(dir, rel)), { recursive: true });

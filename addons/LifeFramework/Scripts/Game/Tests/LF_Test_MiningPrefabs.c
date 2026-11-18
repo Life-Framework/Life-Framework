@@ -3,7 +3,7 @@
 // prefab loads" assertion fails. Deferred to the serial suite here because
 // this workstream may not boot the test server (port collision gate).
 
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MiningPrefabs : LF_Test
 {
 	protected static const ResourceName MINING_AREA = "{530D05E39B25A8C8}Prefabs/Resources/Mining/MiningArea.et";

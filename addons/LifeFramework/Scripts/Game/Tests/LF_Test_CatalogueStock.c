@@ -1,10 +1,10 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_CatalogueStock`: RedProof() skips
 // the Take calls, so the stock never counts down; RED-OK, failing `the next sale refuses at zero`, `still
 // empty a second before the restock` and `no restock time, no restock`. Green without the hook.
-// tier: LOGIC
 //! Catalogue stock and restock (#1064): an offer with a stock counts down per sale, the next sale
 //! refuses at zero, the shelf is full again after the restock time, an unlimited offer never runs
 //! out, an offer is counted on its own, and the owner fields stock and restockSeconds patch by key.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CatalogueStock : LF_Test
 {
 	override string GetName()

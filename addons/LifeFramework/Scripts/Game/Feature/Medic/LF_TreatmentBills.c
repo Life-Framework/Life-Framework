@@ -372,7 +372,7 @@ class LF_TreatmentBills
 	static int Owed(notnull LF_TreatmentBillRecord record)
 	{
 		if (IsDebt(record))
-			return Math.Max(record.m_sPaidAt.Substring(DEBT_MARK.Length(), record.m_sPaidAt.Length() - DEBT_MARK.Length()).ToInt(), 0);
+			return LF_Utils.MaxInt(record.m_sPaidAt.Substring(DEBT_MARK.Length(), record.m_sPaidAt.Length() - DEBT_MARK.Length()).ToInt(), 0);
 
 		return record.m_iAmount;
 	}
@@ -458,7 +458,7 @@ class LF_TreatmentBills
 				continue;
 
 			int owed = Owed(record);
-			int take = Math.Min(owed, bank.GetBalance());
+			int take = LF_Utils.MinInt(owed, bank.GetBalance());
 			if (take <= 0)
 				continue;
 
@@ -558,7 +558,7 @@ class LF_TreatmentBills
 			}
 
 			s_aBills.Insert(record.Copy());
-			s_iLastNumber = Math.Max(s_iLastNumber, record.m_iNumber);
+			s_iLastNumber = LF_Utils.MaxInt(s_iLastNumber, record.m_iNumber);
 		}
 
 		for (int i = 1; i < s_aBills.Count(); i++)
@@ -719,5 +719,20 @@ class LF_TreatmentBillPayAction : ScriptedUserAction
 			return;
 
 		LF_TreatmentBills.PayAtDesk(pUserEntity);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_TreatmentBills's statics (LF_StaticReset finds it by reflection). Without it a Workbench play restart kept the last world's bills and a stuck debt-sweep flag.
+class LF_TreatmentBills_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_TreatmentBills";
+	}
+
+	override void Apply()
+	{
+		LF_TreatmentBills.ResetStatics();
 	}
 }

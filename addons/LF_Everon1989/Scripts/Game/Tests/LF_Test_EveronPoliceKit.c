@@ -1,10 +1,10 @@
 // red-proof: observed 2026-11-16 (#1942): before the kit overlay and the catalog line, `tools\cli test --no-build --only LF_Test_EveronPoliceKit` failed `- senior is issued the roadblock kit` and `- the senior officer carries one roadblock kit (expected 1, got 0)`; with them it passes. `--red LF_Test_EveronPoliceKit` (RedProof() drops the ladder): RED PROOF OK.
-// tier: WORLD
 //! #1942 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the police armory
 //! hands out the spike strip and the roadblock kit by rank. The ladder is the core's layered with
 //! `LF_Police_Everon1989.conf` and `LF_PoliceKit_Everon1989.conf`. The patrol rank draws a spike strip
 //! and no roadblock kit; the senior rank draws the roadblock kit; a civilian cannot draw and carries
 //! nothing out.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronPoliceKit : LF_Test
 {
 	static const ResourceName KIT_OVERLAY = "{6ED5DDC9D2DAF591}Configs/Police/LF_PoliceKit_Everon1989.conf";
@@ -73,6 +73,9 @@ class LF_Test_EveronPoliceKit : LF_Test
 		if (!patrolOfficer || !seniorOfficer || !civilian)
 		{
 			LF_PoliceConfig.Reload();
+			LF_TestCharacterFixture.Delete(patrolOfficer);
+			LF_TestCharacterFixture.Delete(seniorOfficer);
+			LF_TestCharacterFixture.Delete(civilian);
 			return;
 		}
 
@@ -112,5 +115,9 @@ class LF_Test_EveronPoliceKit : LF_Test
 		LF_TestPoliceKit.Release(SENIOR_UID);
 		LF_TestPoliceKit.Release(CIVILIAN_UID);
 		LF_PoliceConfig.Reload();
+
+		LF_TestCharacterFixture.Delete(patrolOfficer);
+		LF_TestCharacterFixture.Delete(seniorOfficer);
+		LF_TestCharacterFixture.Delete(civilian);
 	}
 }

@@ -10,7 +10,7 @@
 //! The cash robbery through the production server path, with a real character so the payout is
 //! physical MoneyStack. LOGIC-tier gate coverage of the same seam (police minimum, payout config,
 //! wanted clamp) lives in roadmap/fuel.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RobReward : LF_Test
 {
 	override string GetName()
@@ -109,7 +109,7 @@ class LF_Test_RobReward : LF_Test
 //------------------------------------------------------------------------------------------------
 //! Weapon and vehicle robberies through their production server seams. Each delivers the stolen
 //! item, raises wanted by its own amount, pays no cash, and refuses non-civilians at the offer gate.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RobWeaponVehicle : LF_Test
 {
 	protected static const ResourceName WEAPON_PREFAB = "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et";

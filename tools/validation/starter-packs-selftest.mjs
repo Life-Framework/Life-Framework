@@ -26,7 +26,7 @@ for (const k of KINDS) {
   ok(lines <= MAX_LINES, `${k}: is one page (${lines} lines, at most ${MAX_LINES})`);
   ok(/^## Known traps$/m.test(text), `${k}: has a Known traps list`);
   const env = text.split(/^## Environment$/m)[1] || "";
-  ok(/No Workbench on this PC/.test(env) && /never pin/i.test(env), `${k}: environment says no Workbench here and never pin`);
+  ok(/No Workbench on the maintainer's PC \(Gaming-Box\)/.test(env) && /lf-testbox \(PC1\)/.test(env) && /never pin/i.test(env), `${k}: environment names the maintainer's PC, the lf-testbox exception and never pin`);
   ok(/foreground/.test(env) && /t3_background_wait/.test(env), `${k}: environment says foreground or t3_background_wait`);
   ok(/--force/.test(env) && /wt prune/.test(env), `${k}: environment says never --force or rm -rf a worktree`);
   ok(!/\r/.test(text), `${k}: LF line endings`);

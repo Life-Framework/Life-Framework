@@ -1,13 +1,13 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_HeldGroundBadRow,...`:
 // LF_Hideout.SetHeldGround skipping the lease check (`if (!state)`) failed `[LFTEST] FAIL hideouts/held-ground-bad-row`,
 // `- a holder that does not lease the site, or is gone, holds nothing (apply 1) (expected '', got '<org id>')`. Restored; green.
-// tier: LOGIC
 //! #751: LF_Hideout.ApplyHeldGround corrects what a damaged "heldground" row holds. A row whose
 //! organization is gone, whose organization does not lease the site, whose site has no lease, or
 //! with no version is dropped; points over the owner cap are clamped to it, a negative hold or
 //! points read as 0; the other rows still apply. A second apply gives the same sites, an empty apply
 //! leaves every site unheld, and a released lease loses its held ground. The site ids are not in the
 //! world: a lease outlives a missing site, so its held ground does too.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HeldGroundBadRow : LF_Test
 {
 	protected static const string GOOD_SITE = "held-ground-bad-good";

@@ -3,10 +3,10 @@
 //   [LFTEST]   - a bar or a line break cannot split the result line (expected 'line:Status=Paid / thanks two lines', got 'line:Status=Paid | thanks two lines')
 // Restored it and the test passed.
 
-// tier: LOGIC
 //! #108: the harness reads a UI kit sheet the way a player reads it (`ui text`: buttons with their
 //! labels, fields with what is typed, printed lines), and `stand` turns the character to face the
 //! entity so the interaction key aims at it.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HarnessScreenText : LF_Test
 {
 	override string GetName()

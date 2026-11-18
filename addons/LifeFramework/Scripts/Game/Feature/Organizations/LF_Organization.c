@@ -31,9 +31,9 @@ enum LF_EOrganizationPermission
 	MANAGE_RANKS,
 	//! Reserved for the war record (#750b).
 	DECLARE_WAR,
-	//! Reserved: the hideout stash still opens for every member.
+	//! Opening, taking from and putting into the hideout stash (LF_Hideout.AllowsStash).
 	USE_STASH,
-	//! Reserved for territory (#751).
+	//! Territory (#751, reserved) and the organization's shared map marks (LF_OrgMapMarks, #2240).
 	MANAGE_TERRITORY,
 	//! Reserved: spending the fund on something other than an upgrade.
 	SPEND_FUND
@@ -83,13 +83,14 @@ class LF_OrganizationConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The rights a default rank has with no owner config.
+	//! The rights a default rank has with no owner config. The officer holds DECLARE_WAR (#2769), so a
+	//! declaration is not lost whenever the founder is offline; an org's saved rank mask keeps what it saved.
 	static int ShippedRights(string rankId)
 	{
 		if (rankId == RANK_FOUNDER)
 			return LF_OrgRights.ALL;
 		if (rankId == RANK_OFFICER)
-			return LF_OrgRights.Bit(LF_EOrganizationPermission.INVITE) | LF_OrgRights.Bit(LF_EOrganizationPermission.KICK) | LF_OrgRights.Bit(LF_EOrganizationPermission.USE_STASH);
+			return LF_OrgRights.Bit(LF_EOrganizationPermission.INVITE) | LF_OrgRights.Bit(LF_EOrganizationPermission.KICK) | LF_OrgRights.Bit(LF_EOrganizationPermission.DECLARE_WAR) | LF_OrgRights.Bit(LF_EOrganizationPermission.USE_STASH);
 		if (rankId == RANK_MEMBER)
 			return LF_OrgRights.Bit(LF_EOrganizationPermission.USE_STASH);
 
@@ -881,6 +882,14 @@ class LF_OrganizationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True for an upgrade some system reads. Only the processing slot is (LF_Hideout); extra storage
+	//! and the parked vehicle are saved flags nothing honours, so selling them would only burn the fund.
+	static bool IsUpgradeWired(LF_EOrganizationUpgrade upgrade)
+	{
+		return upgrade == LF_EOrganizationUpgrade.PROCESSING_SLOT;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string UpgradeFlagName(LF_EOrganizationUpgrade upgrade)
 	{
 		if (upgrade == LF_EOrganizationUpgrade.EXTRA_STORAGE)
@@ -1114,6 +1123,7 @@ class LF_OrganizationManager : Managed
 		LF_Organization org = LF_Organization.CreateNew(orgId, name.Trim(), founderCharacterId);
 		instance.m_mOrganizations.Set(orgId, org);
 		instance.m_mMembership.Set(founderCharacterId, orgId);
+		LF_OrgMapMarks.RefreshCharacter(founderCharacterId);
 		LF_Debug.Log("Organizations", string.Format("created org=%1 name=%2 founder=%3", orgId, org.GetName(), founderCharacterId));
 		return org;
 	}
@@ -1152,6 +1162,7 @@ class LF_OrganizationManager : Managed
 		}
 
 		GetInstance().m_mMembership.Set(targetCharacterId, orgId);
+		LF_OrgMapMarks.RefreshCharacter(targetCharacterId);
 		LF_Debug.Log("Organizations", string.Format("invite org=%1 member=%2", orgId, targetCharacterId));
 		return true;
 	}
@@ -1200,8 +1211,21 @@ class LF_OrganizationManager : Managed
 		}
 
 		GetInstance().m_mMembership.Remove(targetCharacterId);
+		LF_OrgMapMarks.RefreshCharacter(targetCharacterId);
 		LF_Debug.Log("Organizations", string.Format("kick org=%1 member=%2", orgId, targetCharacterId));
+		PublishIfEmptied(org, "kick");
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: publishes LF_OnOrganizationEmptied (#2571) when the organization has no member left.
+	protected static void PublishIfEmptied(LF_Organization org, string reason)
+	{
+		if (!org || org.GetMemberCount() > 0)
+			return;
+
+		LF_Debug.Info("Organizations", string.Format("emptied org=%1 reason=%2", org.GetId(), reason));
+		LF_EventBus.Publish(LF_OnOrganizationEmptied.Create(org.GetId(), reason));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1300,7 +1324,9 @@ class LF_OrganizationManager : Managed
 		}
 
 		GetInstance().m_mMembership.Remove(characterId);
+		LF_OrgMapMarks.RefreshCharacter(characterId);
 		LF_Debug.Log("Organizations", string.Format("leave org=%1 member=%2", org.GetId(), characterId));
+		PublishIfEmptied(org, "leave");
 		return true;
 	}
 
@@ -1338,6 +1364,7 @@ class LF_OrganizationManager : Managed
 			return false;
 
 		GetInstance().m_mMembership.Set(characterId, orgId);
+		LF_OrgMapMarks.RefreshCharacter(characterId);
 		LF_Debug.Log("Organizations", string.Format("direct join org=%1 member=%2 rank=%3", orgId, characterId, rankId));
 		return true;
 	}
@@ -1355,7 +1382,9 @@ class LF_OrganizationManager : Managed
 			return false;
 
 		GetInstance().m_mMembership.Remove(characterId);
+		LF_OrgMapMarks.RefreshCharacter(characterId);
 		LF_Debug.Log("Organizations", string.Format("direct leave org=%1 member=%2", org.GetId(), characterId));
+		PublishIfEmptied(org, "leave");
 		return true;
 	}
 
@@ -1379,6 +1408,11 @@ class LF_OrganizationManager : Managed
 		if (!org.IsMember(characterId))
 		{
 			LF_Debug.Error("Organizations", string.Format("deposit refused: %1 is not a member", characterId));
+			return false;
+		}
+		if (org.GetFund() > int.MAX - amount)
+		{
+			LF_Debug.Error("Organizations", string.Format("deposit refused: fund %1 of %2 cannot hold %3 more", org.GetFund(), orgId, amount));
 			return false;
 		}
 
@@ -1437,6 +1471,11 @@ class LF_OrganizationManager : Managed
 		if (flag.IsEmpty())
 		{
 			LF_Debug.Error("Organizations", "upgrade refused: unknown upgrade");
+			return false;
+		}
+		if (!IsUpgradeWired(upgrade))
+		{
+			LF_Debug.Warn("Organizations", string.Format("upgrade refused: %1 does nothing yet, so the fund is not charged", flag));
 			return false;
 		}
 		if (!org.Allows(characterId, LF_EOrganizationPermission.BUY_UPGRADE))
@@ -1528,5 +1567,22 @@ class LF_OrganizationManager : Managed
 
 		LF_Debug.Error("Organizations", "rejected: not the server");
 		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_OrganizationManager's singleton (registered at script load;
+//! Core/LF_StaticReset.c). Without it the last world's organizations, members and funds stayed live
+//! into the next world in the same process and were written into its first save.
+class LF_OrganizationManager_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_OrganizationManager";
+	}
+
+	override void Apply()
+	{
+		LF_OrganizationManager.Reset();
 	}
 }

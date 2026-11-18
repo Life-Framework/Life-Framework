@@ -5,10 +5,10 @@
 // `Virtual Machine Exception Reason: Index out of bounds.` at `a command index past the list is refused`. Restored; green.
 // Before the modded command classes repeated [BaseContainerProps()], every `- radial entry CMD_Salute is a base game
 // command` (and the other nine) failed. Fixed; green.
-// tier: WORLD
 //! emote/sit-world (#982): every LF seat prefab offers one Sit per place with the chair pose, each
 //! place in its own spot; the game mode carries the base game commanding manager, and every entry of
 //! the LF emote radial resolves to a base game command that runs with no group.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SitWorld : LF_Test
 {
 	protected static const ResourceName MENU = "{AC9E96BADCDA8796}Configs/Emote/LF_EmoteMenu.conf";

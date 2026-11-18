@@ -1,7 +1,7 @@
 // red-proof: with ParseItems no longer splitting on "|", `tools\cli test --no-build --only LF_Test_SignCardFormat`
 // (2026-11-10) failed signs/card-format with "a | separated string is a list (3 items) (expected 3, got 1)".
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignCardFormat : LF_Test
 {
 	override string GetName()

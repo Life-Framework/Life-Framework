@@ -10,12 +10,12 @@
 // red-proof: before tools/host/open.mjs existed this file died on the import:
 // "Cannot find module '.../tools/host/open.mjs'" (2026-11-16).
 
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve, basename } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { safeRemoveTree } from "../link-safety.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const imp = (p) => import(pathToFileURL(join(ROOT, ...p.split("/"))).href);
@@ -39,7 +39,7 @@ const ADMIN_PASSWORD = "adm-Beta-9942";
 const WEBHOOK = "https://discord.com/api/webhooks/123456/SECRETTOKEN-xyz";
 const ADMIN_UID = "a1b2c3d4-0000-4000-8000-000000000001";
 
-const base = mkdtempSync(join(tmpdir(), "lf-host-open-"));
+const base = scratchDir("lf-host-open-");
 const repo = join(base, "repo");
 mkdirSync(repo, { recursive: true });
 for (const f of ["config.json", "server.json"]) cpSync(join(ROOT, "server", "flagship", f), join(repo, f));

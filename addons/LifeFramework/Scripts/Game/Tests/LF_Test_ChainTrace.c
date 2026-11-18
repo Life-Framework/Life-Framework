@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_ChainTrace`: with the test chain's recipe left empty the catalog disabled it, no heat built, and the run failed `five work units at 10 heat each: half heat, half the range (expected 20, got 0)` and `the officer and the witness inside the range notice, the far officer does not (expected 2, got 0)`, `SUMMARY tier=only passed=0 failed=1`; recipe added, green.
 
-// tier: LOGIC
 //! The smell and smoke trace (#418): inside the heat-scaled range is noticed and outside is not,
 //! an officer and a witness both notice, a notice repeats only after the cooldown, a cold site is
 //! never noticed, and the smoke level follows the heat. Each notice is an LF_OnChainSmell.
@@ -24,6 +23,7 @@ class LF_Test_ChainTraceCounter : LF_EventSubscriber
 	}
 }
 
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ChainTrace : LF_Test
 {
 	override string GetName()

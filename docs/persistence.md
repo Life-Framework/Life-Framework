@@ -78,6 +78,18 @@ Each of these must survive a server restart:
 30. Last positions (save version 39, payload `lastpos`, #1777): one `LF_LastPositionRow` per character (position, yaw, `System.GetUnixTime()` when taken), keyed by the character persistence id (`LF_PlayerCharacter.GetId`), never an entity id (`LF_LastPosition`). Taken on disconnect (a `modded class LF_GameModeRoleplay` override, before the game mode's cleanup) and for every connected player as the payload is written, so each save carries where everyone stands. A dead body is not taken. A version 1-38 save never reaches the payload: no last position is kept. Rows with no id are skipped; of two rows for one character the newer wins; a re-applied load replaces the rows. Proof: `spawn/last-position` and `wt e2e` (a real restart).
 31. Hospital rejoins (save version 40, payload `hospitalrejoin`, #2101): one `LF_HospitalRejoinRow` per player who logged out downed and died at the logout (`downedDies`): the player uid (`LF_Utils.GetPlayerUID`) and the unix time of the logout (`LF_HospitalRejoin`, never an entity id). `LF_DisconnectRules.Apply` records it; the kill marks the session wake as before (`LF_HospitalRespawn.MarkDied`) and the save keeps a row only while that wake is pending; a load puts each pending wake back, so the rejoin after a restart wakes at a hospital bed and writes the treatment bill once, instead of spawning at the plaza with no bill. The save drops a row whose wake was already taken, so a woken player is not woken again. Rows with no uid or a repeated uid are skipped; a re-applied load replaces the rows and leaves one pending wake per uid. A version 1-39 save never reaches the payload: nothing is pending, which is what that build did. Not covered: a death in session that has no respawn before a restart. Proof: `persist/hospital-rejoin` and `wt e2e` (a real restart).
 32. Map knowledge (save version 42, payload `mapknown`, #2241): one `LF_MapKnownRow` per character per place it has heard of (state 1) or visited (state 2), keyed by the character record key (`LF_Utils.GetPlayerUID`) and the `LF_Places` place id, never an entity id (`LF_MapKnown`). Kept across the 24 h world reset with the characters; a row for a place that is not live or no longer exists is kept and counts again when the place comes back. A version 1-41 save never reaches the payload: every character starts with a blank map. Rows with no key or an unknown state are skipped; a re-applied load replaces the store. Proof: `map/known-persist` and `wt e2e`.
+33. Houses (save version 46, payload `houses`, #2410): one `LF_HouseLockRecord` per house with a stable identifier (the editor identifier on `LF_HouseManagerComponent`, or one bound with `BindIdentifier`): the identifier (a place key, resolved through `LF_SaveIds.ResolveHouses`), the lock state and the owner's character key (`LF_Houses.CharacterKeyOf`), never an entity id (`LF_Houses`). A house registers at init; a row that loads before its house waits and is applied when it registers, and a row whose house is not in the world is kept and saved again. A house with no editor identifier gets a per-boot id and is not saved (logged at init). A version 1-45 save never reaches the payload: every house keeps its editor state and has no owner. Proof: `houses/registry-persist` and `wt e2e` (a real restart).
+34. House keys (save version 47, payload `itemkeys`, #2410): one `LF_StorageItemKeyRecord` per inventory snapshot holding a bound house key, keyed by the snapshot's owner key and slot (resolved like `itemserials`): the house each item opens, parallel to the item list. Capture reads `LF_KeyComponent` into `LF_StorageItemRecord.m_sHouseKey` (`[NonSerialized()]`, so the `carried` format does not move) and apply binds the restored key again. A row whose snapshot is gone or has another item count is skipped with a warning. A version 1-46 save never reaches the payload: carried house keys come back unbound. Proof: `houses/carried-key-persist` and `e2e/pass2-verify-load` (`wt e2e`, a real restart).
+35. Grace clocks (save version 48, payload `graceclock`, #2443): one `LF_GraceClockRow` per character, its record key and the seconds it has been played (capped at 36000, the longest grace), never replicated (`LF_GraceCharacterClock`). `LF_Playtime.Settle` credits each stretch to the account's active character too, so the new-character grace (`LF_Grace.Protects`) runs on the character's own time and a second character on an old account gets its own grace. Written after `playtime`, whose export settles the online clocks. A version 1-47 save never reaches the payload: `DeserializeStore` seeds every character the save holds with its account's playtime (`SeedFromAccounts`), what the grace read then, so the upgrade gives no existing character a fresh grace. Proof: `onboarding/grace-per-character` and `wt e2e` (a real restart).
+36. Held job runs (save version 49, payload `jobruns`, #2408, #2481): one `LF_JobRunRow` per cargo run in progress, the player uid, the deposit it holds and the job (`LF_CivilianJob.ExportDeposits`). A run is session state and is not saved; the load (`ApplyDeposits`) first takes one cargo item of the run (the job's parcel or fuel can) out of that character's saved carried snapshot (`LF_StorageSnapshot.StripOne`; the "carried" payload loads earlier), then gives the deposit back to that player's bank account with ledger reason `job-deposit-back`: a restart never keeps the deposit and the cargo both, and a cargo no longer carried is just refunded. A run live in the session (a re-applied load) gets neither. A version 1-48 save never reaches `jobruns`. Proof: `jobs/deposit-cargo`, `jobs/deposit-restart` and `e2e/pass2-verify-load` (`wt e2e`, a real restart).
+37. Hideout idle clocks (save version 50, payload `leaseidle`, #2573): one `LF_HideoutIdleRow` per leased hideout, its id (a place id, resolved through `LF_SaveIds.Resolve`) and the unix time a member of the leasing organisation was last connected (`LF_HideoutState.m_iLastActive`, not in the `hideout` record). A server sweep every 5 minutes (`LF_Hideout.SweepIdle`) restarts the clock of a lease with a member connected and releases a lease idle longer than `LF_OrgConfig.HideoutLeaseIdleDays()` (owner key `organizations.hideoutLeaseIdleDays`, default 14, 0 = never), logged `[LFDebug:Hideout] released hideout=… reason=idle N days`. `ApplyAll` seeds every lease at the load time and `ApplyIdle` puts the saved time back (a stamp past the limit at load means the server was down, so the lease gets one more day). A version 1-49 save never reaches the payload: every lease starts its clock at the first load, so none lapses on the first boot after the update. Proof: `persist/hideout-lease-idle` and `wt e2e` (a real restart).
+38. Property rows (save version 51, payload `properties`, #2646, spec #756): one `LF_PropertyRecord` (record VERSION 1, append-only) per house or plot, keyed by its stable id (the house identifier or the plot key, never coordinates): owner key, organisation id, layout id, build stage, work done, deposited materials (`prefab=count;...`), purchase time, rent paid until (0 = owned outright) and the owner-spawns-here flag (`LF_Properties`). A sidecar, not new fields on `LF_HouseLockRecord`, because `houses` is positional (item 19). A house keeps its owner of record in `houses`; the property row mirrors it on export. A row whose property is not in the world is kept and saved again. House contents stay in `LF_PersistentStorageComponent` under `property:<id>`. A version 1-50 save never reaches the payload: the property book loads empty. Proof: `property/record`, `property/persist` and `wt e2e` (a real restart).
+39. Standing (save version 53, payload `reputation`, #2698, design `docs/architecture/reputation.md` section 6): one `LF_ReputationRow` per character and faction with points other than 0 (row version 1, character record key, faction id, points). `LF_Reputation.ApplyAll` (`Feature/Reputation/Persistence/`) replaces the store: a faction the config no longer lists is skipped with a warning, points clamp to the current thresholds, and with no config loaded every row is kept unclamped. Cooldowns and daily caps stay session state. A version 1-52 save never reaches the payload: every character starts with no standing. Proof: `reputation/persist` and `wt e2e` (a real restart).
+40. Organization wars (save version 54, payload `orgwars`, #2672): one `LF_OrgWarRecord` per declared or accepted war, per closed war still inside its pair cooldown, and always the newest war (so a `war-N` id is never reused). Row version 1, war id, both organization ids, state, unix-second times. `LF_OrgWars.ApplyAll` replaces the table and drops a row whose organization is gone (warning); it never ticks, so a deadline passed during downtime closes on the first sweep at the deadline. A version 1-53 save never reaches the payload: no war is restored. Proof: `org/war-persist` and `wt e2e` (a real restart).
+41. Bought garage slots (save version 55, payload `garageslots`, #2656): one `LF_GarageSlotRow` per character with at least one bought slot (row version 1, character record key, slots bought). `LF_GarageSlotStore.ApplyAll` replaces the store, skips a row with no key or no slot, and clamps a count past `m_iMaxSlots - m_iBaseSlots` with a warning. The key is the character's, so each character of an account buys its own slots. A version 1-54 save never reaches the payload: every character has only the base slots. Proof: `vehicles/garage-slots-persist` and `wt e2e` (a real restart).
+42. Planted crops (save version 56, payload `plants`, #2664): one `LF_PlantRow` per planted crop (plant id, crop id, position, planted-at and watered-at, owner key = the planter's player UID). The two clocks are seconds on the farming clock, which runs only while a server runs with Farming on; the save writes them relative to the save moment (zero or less) and `LF_Plants.ApplyAll` rebases them on the live clock, so downtime neither ages nor rejuvenates a plant. Load replaces the table, skips a row with no id or a repeated id, drops a row whose crop the catalogue no longer has (warning), and with no crop catalogue loaded keeps every row unchecked; the position is set on the terrain under it. A version 1-55 save never reaches the payload: nothing is planted. Proof: `farming/plant-persist` and `wt e2e` (a real restart).
+43. Locker rentals (save version 57, payload `lockers`, #2659): one `LF_LockerRentalRow` per rental (row version 1, the bank's site id, the character record key, paid-until in UTC seconds, 0 = never lapses). Character-scoped: a second character on the same account rents its own locker. The serializer variable is `lockerRentalRows`, because `JsonSaveContext` keys a payload by its variable name and `lockerRows` is the evidence locker's. `LF_LockerBank.ApplyAll` replaces the table and drops a row with no site, no character or an unknown row version (warning). Lapsed rentals are kept as saved; the lapse sweep is a later slice of #1038. A wipe (a new playthrough) starts with no rentals. A version 1-54 save never reaches the payload: nobody rents a locker. Proof: `lockers/persist` and `wt e2e` (a real restart).
+44. Hideout tenancy (save version 58, payload `tenancy`, #2816): one `LF_HideoutTenancyRow` per CAPTURED hideout (row version 1, hideout place id resolved through `LF_SaveIds.Resolve`, kind `LF_EHideoutTenancy.CAPTURED`). A site with no row is a base lease. `LF_Hideout.ApplyTenancy` runs after `hideout` and `heldground`: it marks every lease a base, then each row captured (a row whose site has no lease is dropped with a warning), then redoes every lease's `org_base` registration so a captured site never keeps the organisation's base place. A captured site does not count against the one-base-lease limit. A version 1-55 save never reaches the payload: every lease loads as a base lease. Proof: `persist/site-capture` and `wt e2e` (a real restart; its pass-2 check runs only when the loaded save is version 56 or newer).
 23. Case board (save version 31, payload `caseboard`, #148): `LF_CaseBoardRow` per open report (the world clock at the crime) and per evidence card (the locker row number, the kind, the note the piece carried, the pin order). Rows of a closed report (its suspect no longer wanted) are not saved. Loaded after `wanted` and `evidencelocker`; `LF_CaseBoard.ApplyAll` replaces the store and resumes the pin order after the highest loaded pin. A version 30 or older save loads its cases with no time and nothing pinned; the evidence stays logged in the locker. Proof: `investigation/case-board-persist` (round trip, second load) and `e2e/pass2-verify-load` (a real restart).
 
 On connect the player spawns at a spawn point with the active character's
@@ -185,8 +197,9 @@ Apart from the police rank, no payload stores pack content by index or by a bare
   version), then the payloads listed in `RegisterPersistencePayloads`:
   survival, organizations, hideout, vehicles, jail, carried, progression, introductions,
   itemstate, wanted, jobsignups, tickets, ... joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown. The written version is that list's length (currently 42). Deserialize stops at the stored version, so an
-  older save leaves later payloads untouched. A new system appends one entry at
-  the end and raises the version by one. Never insert earlier or reorder.
+  older save leaves later payloads untouched. The list is frozen at 58 (#2841):
+  a new system is a section ("Sections" above), never an entry here. Never insert,
+  append or reorder.
   The override bodies live in public static `SerializeStore` /
   `DeserializeStore` so a test drives the real path;
   `tools/validation/validate-persistence-version.ps1` checks those bodies.
@@ -255,6 +268,66 @@ Apart from the police rank, no payload stores pack content by index or by a bare
 - Spawning: `LF_SpawnLogic : SCR_SpawnLogic`; `Prefabs/MP/Spawn/SpawnPoint_LIFE.et`
   is a vanilla `SCR_SpawnPoint`.
 
+## Sections: one payload, one file, its own version (#2841)
+
+Until #2841 the save version was the length of `RegisterPersistencePayloads`, so every new
+payload changed the same lines (the last `Insert`, the last `else if` of the write and the
+read, `WriteValue("version", N)`, `LF_TestSaveVersion.CURRENT`, the lock's `saveVersion`) and
+claimed the same number: on 2026-11-18 six PRs wanted one version. The list is now frozen
+and every new payload is a **section**.
+
+**Format.** `version` 1 to `LEGACY_COUNT` (58) is the positional format, unchanged.
+`SECTIONED_FORMAT` (1000) is: the prefix, all 58 legacy payloads positionally (exactly as a
+version 58 save holds them), then a manifest (`sections`, the names in written order) and one
+named object per section (`sec_<name>`, holding `v`, the section's own version, and its rows).
+The engine's binary save context has object seeking and skippable objects on
+(`SCR_PersistenceBinarySaveContext`), so a section the reader cannot read is skipped whole and
+the next one still reads (`persist/save-sections`, JSON and binary).
+
+**Adding a payload.**
+1. `class LF_<Area>SavePayload : LF_SavePayload` in the feature's folder: `Name()` (a literal
+   or a `static const string`, lowercase, digits and `_`; saved in every save, never renamed),
+   `Version()` (from 1), `WriteSection` (`context.WriteValue("rows", rows)`), `ReadSection`
+   (replacement, so a second load ends in the same state; false on a failed read),
+   `OnAbsent()` (the save predates the section: seed what an older save implies) and, only when
+   it must apply after another section, `Order()`. Nothing registers it: `LF_SaveSections` finds
+   every subclass by reflection, sorted by `(Order(), Name())`, after every legacy payload.
+2. `node tools/validation/validate-record-shapes.mjs --update` writes its lock,
+   `tools/validation/record-shapes/<name>.json`.
+3. Its own PERSISTENCE test: a round trip, a save without it
+   (`SerializeStoreOmitting(persistence, ctx, {"<name>"})`), and the restart check under
+   `#ifdef LF_E2E_LOAD_BOOT`, gated on `LF_SaveSections.BootHadSection("<name>")` (`wt e2e` runs
+   every PERSISTENCE test in both boots). Do not append to `LF_Test_E2E_SaveState`.
+4. The observable contract goes in `docs/features/<area>.md`, not in this file's list.
+
+Two such PRs share no line (`tools/validation/save-sections-merge-selftest.mjs` merges two in
+a scratch repo; two legacy appends conflict there).
+
+**Changing a section's shape.** Raise its `Version()`, read every older version in
+`ReadSection`, run `--update`. The record-shapes check fails a locked section whose record
+changed without the raise. A save whose section is newer than the build is not read.
+
+**Loads.**
+
+| Save | This build |
+|---|---|
+| positional, version 1 to 58 (v32, v55, the pre-move ref) | today's path; every section gets `OnAbsent()` |
+| sectioned | the legacy payloads, then each section in the manifest |
+| sectioned, with a section this build does not know (a newer build, a reverted PR) or at a newer section version | that section is skipped, the rest load, the load counts as damaged so autosave keeps the save on disk |
+| sectioned, read by a build from before #2841 (a rollback) | `1000 > 58`: every legacy payload loads (same positions), "newer than this build", damaged, autosave pauses |
+| a section fails to read | counted as a failed read (damaged); the sections after it still load |
+
+A skipped section keeps every boot read-only until a build that reads it runs again (backups from
+the newer build hold it too): the operator steps are in `docs/ops/game-updates.md` "When a load
+goes wrong". Never delete a shipped section's class; keep it, or the lead decides to drop its data.
+`tools\cli upgrade-page` lists sections added, removed and raised between two refs.
+
+`LF_SaveStamp` records 1000 for a sectioned save, so a test gate
+`BootSaveVersion() >= PayloadSinceVersion(<legacy payload>)` holds for it.
+`validate-persistence-version.ps1` fails an `Insert` past the frozen 58 ("add an LF_SavePayload
+section"); `validate-record-shapes.mjs` checks each section against its lock and fails a
+duplicate name, a legacy name, or a lock whose section is gone.
+
 ## Record shapes: append only (#761)
 
 A payload is an array of record objects written by reflection, so a record's
@@ -266,9 +339,9 @@ save still loads.
 - A shipped field is never removed, renamed, reordered or retyped. A retired
   field stays as padding (`LF_SurvivalStatsRecord.m_fHealth`).
 - New data is a **sidecar payload**: a `[NonSerialized()]` field on the live
-  record and a row class (`int m_iVersion` first) in a payload appended to
-  `RegisterPersistencePayloads` with a version bump, which an older save simply
-  lacks (`orgranks` #750a, `joblevels` #749). One PR per reshape (D6).
+  record and a row class (`int m_iVersion` first) in a new section (#2841; before
+  it, a payload appended to `RegisterPersistencePayloads` with a version bump), which
+  an older save simply lacks (`orgranks` #750a, `joblevels` #749). One PR per reshape (D6).
 - Before the persistent launch (#556) a serialized field may be appended to a
   record only with a save version bump and a read path for the older shape.
   After it, a shipped record takes no new serialized field at all.
@@ -280,6 +353,17 @@ save still loads.
   the lock. At #556 set `"launched": true` in the lock.
 - The audit of every record, its version and whether it is final for launch:
   [`docs/architecture/record-shape-audit.md`](architecture/record-shape-audit.md).
+- **Record keys (#2799).** A record is keyed by the variable name passed to
+  `context.Write`/`context.Read` in `LF_PersistenceComponentSerializer.c`, not by
+  its payload name. A reused name makes two payloads share one key: #2656 first
+  named its garage rows `slotRows`, already the characters payload's key, and
+  every bought garage slot loaded as 0 (found in the #2795 review).
+  `tools/validation/validate-record-var-names.mjs` fails a name used by two
+  payloads (the account and bank prefix counts as one), or written or read other
+  than once. Give each new payload its own variable name.
+- **Character delete (future card).** Deleting a character must call
+  `LF_GarageSlotStore.Forget(key)` (to be added with that card) and the `Forget`
+  of every other per-character store, or the freed key keeps the old bought slots.
 
 ## Layer 2: orchestration (when a save happens)
 
@@ -359,8 +443,8 @@ posters go too), which resets each switched-off field in the live stores:
 
 | Switch off | Reset |
 |---|---|
-| `keepCarriedGear` | `LF_StorageSnapshot.ClearSlot(carried)`: every carried snapshot; the body gets the starting loadout |
-| `keepCash` (gear on) | `LF_StorageSnapshot.StripPrefab(carried, cash slot)`: cash stacks that hold nothing; later items' parent indexes are remapped |
+| `keepCarriedGear` | `LF_StorageSnapshot.ClearSlot` on `carried` and `civilian_stash`: every carried snapshot and every duty-desk civilian stash; the body gets the starting loadout, and an officer saved on duty gets the civilian kit at clock-out. The `police_duty` / `medic_duty` kits stay, consistent with the armory book (#2547). `LF_ArmoryKits.ClearAllOutstanding` then clears every officer's outstanding serials, since the issued kits went with the carried gear, except a serial still in a kept snapshot (a kit stored in `police_duty`); the 2 h issue cooldown stays as saved (#2621) |
+| `keepCash` | `LF_StorageSnapshot.StripPrefab(<slot>, cash slot)` on `carried`, `civilian_stash`, `police_duty` and `medic_duty` (only the duty slots when gear is off): cash stacks that hold nothing, and marked notes (#2850) from the same slots; later items' parent indexes are remapped (#2547) |
 | `keepSurvival` | `LF_PersistenceComponent.ClearSurvivalStats()`: hunger and thirst start full |
 | `keepWanted` | `LF_PlayerAccountManager.ClearAllCharactersWanted()`: every character of every account, republished |
 | `keepJail` | `LF_Jail.ApplyAll([])`: every sentence, the #691 logout sentences included |
@@ -391,10 +475,30 @@ across the `wt e2e` restart, keepLicences off from the owner file).
 - `OnGameEnd` raised twice (dedicated-server shutdown) is a no-op the second
   time.
 - A load that lost a payload, or a continued save that never reached the store,
-  pauses autosave for the rest of the session (`LF_PersistenceComponentSerializer.IsLoadDamaged()`)
-  and logs `LF_Debug.Error`. When it is the boot load, saving is turned off at `ACTIVE`
-  (`SaveGameManager.SetSavingAllowed(false)`), which also stops the engine's shutdown save:
-  the save on disk stays the newest save point for `host restore` (#980).
+  marks the load damaged (`LF_PersistenceComponentSerializer.IsLoadDamaged()`) and logs
+  `LF_Debug.Error`. The save on disk then stays the newest save point for `host restore` (#980):
+  - **The load stops at the first failed read (#2489).** The store is read positionally, so every
+    read after a failure can be misaligned, and one that happens to succeed would replace live state
+    with what it misread. The payloads before the failure are applied; the rest are not read and keep
+    their live state (`save load stopped at the first failed read: N later payload(s) not applied`).
+    The steps after the payloads (persistence switches, wanted-report prune) still run: they only
+    reset or drop state, never apply what was read (`persist/stop-after-failed-read`).
+  - **Every save path refuses (#2489).** `PassesSaveGates` checks the damage first, so `SaveGame()`
+    (manual and admin requests through the manager) and `AutoSave()`, timer or direct, log
+    `save rejected: the save load was damaged` and fire `GetOnSaveFinished()` with `false`;
+    `GetLastSaveRejection()` keeps the reason. Saves that go straight to the `SaveGameManager` (the
+    Game Master save, the engine's SHUTDOWN save) are stopped by `SetSavingAllowed(false)`, which
+    `SyncSavingWithLoadDamage` sets after the boot load (at `ACTIVE`), after an in-session re-apply
+    (`ReapplyLatestSaveData`) and at `OnGameEnd` (`shutdown save refused`). A clean re-apply turns
+    saving back on only when this component turned it off. A disconnect writes no save point here:
+    it only updates the in-memory store, which reaches disk with the next save point, and that one is
+    refused (`persist/save-refused-on-damage`).
+- A save whose version is above the payload list's length was written by a newer build (a
+  rollback, or a merge the main guard reverted after it saved). The known payloads load and the
+  load counts as damaged, so no save drops the payloads this build cannot read
+  (`persist/save-newer-version`). The serializer's own statics (`WasStoreLoaded`, the damage
+  flag) reset at world end, so an in-process scenario restart checks its own store again
+  (`persist/store-static-reset`).
 
 ## Rules (paid for by real bugs)
 
@@ -498,6 +602,7 @@ after it. That is a standing guarantee, not a one-off check of #323:
   `validate-addon-boundary.mjs`) or the e2e harness. Other diffs skip it with one line. The trigger
   is `tools/validation/pre-move-gate-selftest.mjs`, offline.
 - **Newer-than-ref assertions:** pass 2 compiles with `LF_E2E_PRE_MOVE`. An e2e assertion about state the ref build never wrote (a record, flag or owner file added after `PRE_MOVE_REF`) goes inside `#ifndef LF_E2E_PRE_MOVE`; without that the gate fails on the test, not on the save. Today: the rules quiz flag (`LF_Test_E2E_SaveState`), the switches reload boot (`LF_Test_PersistSwitchesRestart`) and the saved 03:00 clock (`LF_Test_DayCycleSave`, #1302).
+- **Newer-than-ref payloads (#2812):** an assertion about a payload the ref build's save cannot hold (added to `RegisterPersistencePayloads` after the ref, or a `--legacy-save`) asks `LF_E2E` first (`Scripts/Game/Tests/LF_E2E.c`): `if (LF_E2E.RequiresPayload("<payload>"))` runs the check and logs `[LFDebug:E2E] e2e check skipped ...` otherwise; `LF_E2E.SaveHas("<payload>")` picks between a positive and an "older save" assertion; `LF_E2E.RequiresSeed(what, seeded)` covers data with no payload of its own. That helper is the only place that turns a payload name into a save version, so a change to how payload versions are counted (per-payload sections, #2841) touches it alone. `validate-e2e-payload-guard` fails a hand-rolled `BootSaveVersion()` against `PayloadSinceVersion()` compare, a guard naming an unregistered payload and an `Owner.VerifyE2E(` call with no guard (`tools/validation/e2e-payload-guard-selftest.mjs`). The main guard backs it up: a pre-move red that reproduces while the plain `e2e` passes gets a fix card and a PR comment, never a revert.
 - **Not a save failure:** pass 2 logs `save load damaged: 34 payload(s) failed to read (save version 32 ...)` once, from `persist/save-build-stamp` loading a deliberately empty version 32 save. The real load is the `save loaded: version 32` line before `session continued from a save point`.
 - **Failure reading:** a load that resolves a prefab by path instead of GUID shows as a missing
   marker value in `pass2-verify-load` or an `Unable to find` line in the second boot. Fix the loader

@@ -257,6 +257,14 @@ class LF_DialogueScene
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether a node from the server is taken: the scene is open on that NPC and asked for it
+	//! (it is waiting after a start or a reply).
+	static bool AcceptsNode(bool open, bool waiting, bool sameNpc)
+	{
+		return open && waiting && sameNpc;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Client: the server says where the conversation is. `spoken` is what the NPC says now (line
 	//! ids, or bare caption keys), `mask` the replies offered at `nodeId` (none: it ends after).
 	static void Show(IEntity npc, string nodeId, string spoken, int mask)
@@ -267,14 +275,12 @@ class LF_DialogueScene
 			return;
 		}
 
-		if (!IsOpen() || npc.GetID() != s_NpcId)
+		// Only an answer to a start or a reply this scene is waiting for. A late node (the player left
+		// first, the server answered a reply that timed out) must not reopen a closed scene.
+		if (!AcceptsNode(IsOpen(), s_bWaiting, IsOpen() && npc.GetID() == s_NpcId))
 		{
-			if (IsOpen())
-				Close("the server moved the conversation", false);
-
-			LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
-			if (!config || !Open(npc, config))
-				return;
+			LF_Debug.Info(LF_Dialogue.FEATURE, string.Format("node '%1' ignored: the scene is closed or waits for nothing", nodeId));
+			return;
 		}
 
 		s_sNode = nodeId;
@@ -608,11 +614,9 @@ class LF_DialogueScene
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_DialogueScene's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_DialogueScene's statics (LF_StaticReset finds it by reflection).
 class LF_DialogueScene_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_DialogueScene_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_DialogueScene";

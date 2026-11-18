@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{DC782E205D749EA4}Configs/Organizations/LF_OrgWars.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -4,12 +4,12 @@
 //   [LFTEST]   - the look applied by sequence (expected '9B5BB216CC7FF18E|1=9F546CCA2582D16F', got '')
 // Restored it and the test passed (21 assertions).
 
-// tier: PERSISTENCE
 //! The look on a crime report (#758) rides the real save path: the "wantedlooks" payload, save
 //! version 29, keyed by report sequence. After the store is wiped the reports come back from
 //! "wanted" with their looks from "wantedlooks", twice the same (idempotent); a version 28 save
 //! loads the reports with no look; a row for a report the save does not hold is skipped. The test
 //! puts back what it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_WantedLooksPersist : LF_Test
 {
 	protected static const string ROBBER = "test-wantedlooks-robber";

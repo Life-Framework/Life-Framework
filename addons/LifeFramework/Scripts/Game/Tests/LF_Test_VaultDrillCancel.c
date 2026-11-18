@@ -1,8 +1,8 @@
 // red-proof: 2026-11-15 `tools/cli test --no-build --red LF_Test_HandToolEquip,LF_Test_VaultDrillAction,LF_Test_VaultDrillCancel,LF_Test_VaultDrillPayOnce` RED-OK, hook on failed `- cancelled: no haul (expected 0, got 1)`, `- put away: no haul (expected 0, got 1)`.
-// tier: WORLD
 //! Nothing is paid before the drill has run its time: starting pays nothing; cancelling or putting
 //! the drill away stops the drilling and the vault stays shut with no haul, even after the full
 //! time has passed on the server clock. Walking off and going down stop it too (the pure step).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VaultDrillCancel : LF_Test
 {
 	override string GetName()
@@ -51,5 +51,6 @@ class LF_Test_VaultDrillCancel : LF_Test
 		ctx.True(LF_VaultDrill.Step(true, false, 0, true, 99, 10) == LF_EVaultDrillStep.STOP_DOWN, "a downed robber stops it");
 		ctx.True(LF_VaultDrill.Step(true, true, 0, true, 9.5, 10) == LF_EVaultDrillStep.KEEP, "short of the time it keeps going");
 		LF_VaultDrill.s_fNowOverride = -1;
+		LF_TestVaultDrillFixture.Release(robber, vaultId);
 	}
 }

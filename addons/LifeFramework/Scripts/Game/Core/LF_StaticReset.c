@@ -7,12 +7,14 @@
 //! cells, garages, and spawn points register in their OnPostInit, which runs before the game
 //! mode starts; a start-time reset would wipe them.
 //!
-//! Nothing is listed here. Each class that owns statics adds an LF_StaticResetHook subclass in its
-//! own file that registers itself from a static initializer at script load (the feature scaffold
-//! writes it; template in tools/lib/static-reset-hooks.mjs). ResetAll walks the flat array.
-//! A central list made every feature PR touch this file; a `modded class` layer per feature nested
-//! one super call per feature and overflowed the script stack at about 123 (#2034).
-//! validate-registries.mjs rejects both.
+//! Nothing is listed here and nothing registers. Each class that owns statics adds an
+//! LF_StaticResetHook subclass in its own file (the feature scaffold writes it; template in
+//! tools/lib/static-reset-hooks.mjs); the first ResetAll or Registered finds every subclass by
+//! reflection (typename.GetInheritedTypes), spawns each once and sorts them by owner (#2755).
+//! A static initializer per hook ate the Game module's one static-init function, which the engine
+//! caps ("Too many instructions per function"); a central list made every feature PR touch this
+//! file; a `modded class` layer per feature overflowed the script stack at about 123 (#2034).
+//! validate-registries.mjs rejects all three.
 //------------------------------------------------------------------------------------------------
 class LF_StaticResetHook : Managed
 {
@@ -34,12 +36,12 @@ class LF_StaticResetHook : Managed
 class LF_StaticReset
 {
 	protected static int s_iRuns;
-	//! No initializer on purpose: hooks register from other classes' static initializers, which may
-	//! run before this class's own; Register creates the array on first use.
+	protected static bool s_bDiscovered;
 	protected static ref array<ref LF_StaticResetHook> s_aHooks;
 
 	//------------------------------------------------------------------------------------------------
-	//! Add a hook (once per owner). Returns true so a static bool initializer can call it.
+	//! Add a hook (once per owner). Discovery adds every LF_StaticResetHook subclass already; this is
+	//! for a hook object built at run time. Never call it from a static initializer (#2755).
 	static bool Register(LF_StaticResetHook hook)
 	{
 		if (!hook)
@@ -60,8 +62,56 @@ class LF_StaticReset
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Find every LF_StaticResetHook subclass once, spawn it and add it, sorted by owner.
+	protected static void EnsureDiscovered()
+	{
+		if (s_bDiscovered)
+			return;
+
+		s_bDiscovered = true;
+		array<typename> types = {};
+		typename base = LF_StaticResetHook;
+		base.GetInheritedTypes(types);
+
+		map<string, ref LF_StaticResetHook> byOwner = new map<string, ref LF_StaticResetHook>();
+		array<string> owners = {};
+		foreach (typename t : types)
+		{
+			if (t == base)
+				continue;
+
+			LF_StaticResetHook hook = LF_StaticResetHook.Cast(t.Spawn());
+			if (!hook)
+			{
+				LF_Debug.Error("StaticReset", "could not spawn reset hook " + t.ToString());
+				continue;
+			}
+
+			string owner = hook.Owner();
+			if (owner.IsEmpty())
+			{
+				LF_Debug.Error("StaticReset", "reset hook " + t.ToString() + " names no owner; skipped");
+				continue;
+			}
+
+			if (byOwner.Contains(owner))
+				continue;
+
+			byOwner.Insert(owner, hook);
+			owners.Insert(owner);
+		}
+
+		owners.Sort();
+		foreach (string o : owners)
+		{
+			Register(byOwner.Get(o));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void ResetAll()
 	{
+		EnsureDiscovered();
 		int count;
 		if (s_aHooks)
 		{
@@ -80,9 +130,10 @@ class LF_StaticReset
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The registered hooks by owner class name, without running them.
+	//! The hooks by owner class name, without running them.
 	static array<string> Registered()
 	{
+		EnsureDiscovered();
 		array<string> done = new array<string>();
 		if (!s_aHooks)
 			return done;

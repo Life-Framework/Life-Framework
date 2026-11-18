@@ -1,0 +1,14 @@
+SCR_DestructibleBuildingEntity : "{10DB3EEB6DB494AD}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_Base.et" {
+ ID "51E87D3C23FDEF1D"
+ components {
+  MeshObject "{506EDA9D46FC6C06}" {
+   Object "{E00C5E669234FB95}Assets/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_v2.xob"
+  }
+ }
+ {
+  GenericEntity : "{8115988D2822C4FC}Prefabs/Buildings/Clinic/Furniture/Clinic_furniture_01.et" {
+   ID "5B1A76525B6B4A76"
+   coords 0 0 0
+  }
+ }
+}

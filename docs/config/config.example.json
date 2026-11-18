@@ -54,6 +54,9 @@
   "grace": {
     "minutes": 0
   },
+  "houses": {
+    "doorCloseDelaySeconds": 20
+  },
   "idCard": {
     "replacementFee": 50,
     "showSeconds": 8
@@ -64,6 +67,11 @@
     "benefitBalanceThreshold": 500,
     "benefitAmount": 100,
     "benefitCooldownSeconds": 1200,
+    "runMinDistance": 300,
+    "runMinTimeFraction": 0.6,
+    "runRoadSpeed": 10,
+    "cargoDepositPercent": 100,
+    "cargoDepositFallback": 50,
     "jobXpFirstLevel": 500,
     "jobXpLevelGrowth": 2,
     "testUnlockAll": false,
@@ -105,6 +113,13 @@
     "permitWaitDays": 1,
     "permitConvictionDays": 7
   },
+  "lockers": {
+    "rentPrice": 100,
+    "rentPeriodDays": 7,
+    "gracePeriodDays": 2,
+    "reclaimFee": 50,
+    "weightCapacity": 60
+  },
   "logoutBody": {
     "windowSeconds": 300,
     "downedWindowSeconds": 600
@@ -120,10 +135,21 @@
     "priceParkedVehicle": 750,
     "deskRange": 5,
     "heldGroundMaxPoints": 1000,
+    "hideoutLeaseIdleDays": 14,
     "rankDefaults": {
       "officer": {
         "withdraw": true
       }
+    },
+    "wars": {
+      "fee": 5000,
+      "answerSeconds": 600,
+      "lengthSeconds": 7200,
+      "cooldownSeconds": 86400,
+      "lapseCooldownSeconds": 3600,
+      "minMembers": 3,
+      "warKillsAreMurder": false,
+      "tagWarKills": true
     }
   },
   "persistence": {
@@ -170,7 +196,15 @@
     "spikeStripLifetimeSeconds": 600,
     "applyMinPlaytimeHours": 50,
     "applyRejectCooldownHours": 72,
-    "trialHours": 168
+    "trialHours": 168,
+    "armoryCooldownMinutes": 120,
+    "dutyShiftMaxSeconds": 10800,
+    "trialSweepSeconds": 60,
+    "ticketRateWindowSeconds": 10,
+    "ticketRateBurst": 3,
+    "spikeStripMaxPerOfficer": 2,
+    "callReward": 150,
+    "callRadius": 50
   },
   "respawn": {
     "wakeInHospital": true,
@@ -209,11 +243,25 @@
     },
     "extraItemPrefabs": []
   },
+  "sites": {
+    "rules": {
+      "hideout_example": {
+        "captureSeconds": 180,
+        "rentPerHour": 900
+      }
+    }
+  },
   "staff": {
     "webhookUrl": ""
   },
   "systems": {
     "switches": {}
+  },
+  "taxiFares": {
+    "floor": 80,
+    "ratePerMetre": 0.04,
+    "cap": 300,
+    "shortHopMetres": 100
   },
   "vehicles": {
     "buyPercent": 100,

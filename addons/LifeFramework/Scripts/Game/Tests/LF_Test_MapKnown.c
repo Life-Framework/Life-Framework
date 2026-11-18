@@ -19,12 +19,12 @@ class LF_Test_MapKnownCase
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! map/known: discovery (#2241, everon-map.md section 4). The case table
 //! Configs/Map/Rules/discovery.cases.json runs through LF_MapKnownRules.Decide here and through the
 //! node twin tools/map/rules/discovery.mjs in validate, so the two cannot drift (the engine reads the
 //! generated copy LF_MapKnownCasesData). Then the store: a visit out of range is refused, the sixth
 //! ask in a minute is refused, hear then visit, hear never lowers visited, and the client's local set.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapKnown : LF_Test
 {
 	protected static const string CHARACTER = "mapknown-test-character";

@@ -18,6 +18,8 @@
   `#LF-Chain_NeedLicense`, `#LF-Chain_NeedLevel`, `#LF-Chain_NeedEquipment`. Equipment is an item
   the worker carries (priced for a shop), so owning it persists with the inventory.
 - ✅ **Heat settings** per chain: `m_fPerWork`, `m_fDecayPerSecond`, `m_fMax`, `m_fRangeM`.
+- ✅ **Cook mistakes** (#2854, pure rules): `LF_ChainMistakes` rolls a seeded chance per work tick, keeps a hidden strike count (`LF_ChainStrikes`, session-only: a restart forgives it), ruins the batch at `maxMistakes` (0 = never fails) and gives a cue level 0/1/2. Approved chains only (moonshine, tobacco, counterfeit papers); the station wiring is #2855.
+- 🧪 **A worked batch can fail** (#2855): a step's `m_iMistakeChancePct` and `m_iMaxMistakes` (both 0 by default, so a step without them runs as before; in the core config only the moonshine still has them, 6 % and 3) make each work tick at a station roll `LF_ChainMistakes`. A strike shows off-colour smoke on the station (replicated cue, thicker one strike from ruin). The ruining strike stops the station; after `m_iRuinDelayMs` (default 4 s) it blows: the batch is lost with no product, characters within `m_fBlastRadiusM` take `m_fBlastDamage` explosive damage through the base game's damage manager, a vanilla explosion effect plays on every machine, the site heat goes to its cap and the bus hears `LF_OnChainBatchRuined`. Test: `LF_Test_ChainCookFail`.
   `LF_ChainHeat` does the arithmetic (`AfterWork`, `AfterDecay`, `RangeAt`); the per-site number
   and the trace that reads it come with the stations (#417) and the smell (#418).
 - ✅ The core ships one neutral example, `cider` (tier 1, one `barrel` step, apples to juice).
@@ -58,11 +60,14 @@
 - ✅ **Moonshine (#420, tier 1, config only).** `moonshine` in `ResourceChains.conf`: `mash` at a
   barrel (4 plums and 2 cabbages to 2 water bottles of wash, 12 work), then `distill` at a still
   (2 bottles of wash to 1 `Moonshine` bottle, #2001, 16 work). No gate; heat 3 per work, range 60 m.
-  Nothing packs the bottles into the `LF_ContrabandCrate` the convoy (barn to pub) pays for; a pack step needs a placed station (follow-up). `Prefabs/Chains/LF_ChainStill.et`
+  A third step, `pack` (#2441, station type `bench`, 6 bottles to 1 `LF_ContrabandCrate`, 10 work), makes the crate the
+  convoy (barn to pub) carries; a bench is a `LF_ChainBarrel` placed with `m_sChainId "moonshine"` and `m_sStepId "pack"`
+  (grid cell `slice-2441`; the town bench is #1935). Steps carry `m_bGoods`: `distill` sets it so the bottle stays
+  chain goods for an officer search now that the crate is the last step. `Prefabs/Chains/LF_ChainStill.et`
   is the barrel prefab with the boiler mesh and `distill`. The hidden DebugWorld site
   (`Street_Moonshine.layer`, site `Moonshine_Site`) has three barrels at `380/384/388 0 300`
   and a still at `384 0 305`, about 150 m from the police station. Test: `chains/moonshine`
-  (WORLD). No save change.
+  (WORLD); `chains/moonshine-crate-pack` (WORLD) drives the bench. No save change.
 - ✅ **Smoke and smell (#418).** `LF_ChainTrace` (server): the first accepted work wakes one 5 s
   timer that runs only while a site is warm or a station still smokes; nothing is checked per frame.
   Each sweep sets every station's smoke level from its site heat (`LF_ChainTrace.SmokeLevel`:

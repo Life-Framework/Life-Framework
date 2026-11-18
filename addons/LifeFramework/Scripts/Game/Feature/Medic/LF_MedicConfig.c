@@ -46,7 +46,7 @@ class LF_MedicConfig
 	[Attribute("0.7", UIWidgets.Auto, "Resilience and blood (fraction of max) a revived player is lifted to so they wake at once; their health stays at the downed sliver", params: "0.1 1")]
 	float m_fReviveRecoveryScaled;
 
-	[Attribute("1", UIWidgets.CheckBox, "Anyone may drag or carry a downed player. Off: only an on-duty medic")]
+	[Attribute("0", UIWidgets.CheckBox, "Anyone may load a downed player into a vehicle. Off (default): only an on-duty medic or on-duty police. A stretcher vehicle takes medics only either way: its seat pauses the bleed-out")]
 	bool m_bCarryAnyone;
 
 	[Attribute("2.5", UIWidgets.Auto, "Metres within which a player can start dragging or carrying a downed player", params: "0.5 10")]
@@ -115,6 +115,9 @@ class LF_MedicConfig
 	[Attribute("60", UIWidgets.Auto, "Seconds between two sweeps that turn overdue bills into debt and let the bank pay debt off", params: "5 3600")]
 	int m_iDebtSweepSeconds;
 
+	[Attribute("", UIWidgets.Object, "Medic rank ladder (#2708, LF_MedicRanks): pay and kit per rung. Empty: the built-in trainee, paramedic and doctor")]
+	ref array<ref LF_MedicRank> m_aRanks;
+
 	//------------------------------------------------------------------------------------------------
 	//! A config with the attribute defaults, built in script (the fallback when the `.conf` does not resolve, tests).
 	//! The members carry no initializers: an initializer beats a `.conf` value of 0, so a pack overlay that
@@ -134,7 +137,7 @@ class LF_MedicConfig
 		config.m_fFirstAidCapSeconds = 300;
 		config.m_fReviveRange = 2.5;
 		config.m_fReviveRecoveryScaled = 0.7;
-		config.m_bCarryAnyone = true;
+		config.m_bCarryAnyone = false;
 		config.m_fCarryRange = 2.5;
 		config.m_fDragDistance = 1.4;
 		config.m_fCarryDistance = 0.4;

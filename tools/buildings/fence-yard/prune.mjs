@@ -26,7 +26,9 @@ const CHECK = process.argv.includes("--check");
 // yaw -101 against 4546.2 10670 yaw -11), pushed 0.16 m back so its wall clears the main's back wall collider.
 export const SIDE = { x: -3.26, z: -6.45, yaw: -90 };
 
-// Props that never stay, and at most N of a prop per building in file order (unlisted props stay).
+// Props that never stay, and at most N of a prop per building in file order (unlisted props stay). A capped prop
+// above the floor stood on a repeat the cap cut (a crate stacked on a crate), so only floor copies count and stay.
+const FLOOR = 0.19;
 const DROP = /LightSwitch_02|Cart_01|PlantRoom_04|Cardboard_02|Bucket_01|WoodKindling_Crate_01|CoatRack_01/;
 const LIMIT = [
   [/Crate_01_green/, 2],
@@ -41,6 +43,7 @@ export function makeKeep() {
     if (DROP.test(e.path)) return false;
     for (const [rx, max] of LIMIT) {
       if (!rx.test(e.path)) continue;
+      if (e.y > FLOOR + 0.02) return false;
       const n = (count.get(rx.source) ?? 0) + 1;
       count.set(rx.source, n);
       if (n > max) return false;
@@ -107,7 +110,13 @@ async function main() {
   const sideGuid = guidOf("FenceYard_Side.et");
   // The annex child: a fixed ID (rule 2: made once), placed in the main building's space.
   const annex = `  SCR_DestructibleBuildingEntity Annex : "{${sideGuid}}${REL}/FenceYard_Side.et" {\n   ID "FE4CE0A2D5B1E001"\n   coords ${SIDE.x} 0 ${SIDE.z}\n   angleY ${SIDE.yaw}\n  }`;
-  const main = building(vfs, "Workshop_01_Main", "Workshop_01_Main_furniture_01", "FenceYard", makeKeep(), annex);
+  // The pass 1 kit (fitout.mjs writes it: the room lights), also a fixed ID.
+  const kit = `  GenericEntity Kit : "{${guidOf("FenceYard_Kit.et")}}${REL}/FenceYard_Kit.et" {
+   ID "FE4CE0A2D5B1E002"
+   coords 0 0 0
+  }`;
+  const main = building(vfs, "Workshop_01_Main", "Workshop_01_Main_furniture_01", "FenceYard", makeKeep(), `${annex}
+${kit}`);
 
   let drift = false;
   for (const [file, text] of [...main.files, ...side.files]) {

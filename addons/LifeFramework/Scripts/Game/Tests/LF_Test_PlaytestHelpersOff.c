@@ -1,9 +1,9 @@
 // red-proof: 2026-11-15, `tools/cli test --no-build --red LF_Test_PlaytestHelpersOff`: RED-OK host/playtest-helpers-off (fails with the hook on, 7 assertions); green without it.
 
-// tier: LOGIC
 //! The flagship runs the DebugWorld game mode prefab, which switches the playtest helpers on (test cars,
 //! bank and cash top-up, jail-me board, spawn hub, test dispatch, near convoy drop). A mission header with
 //! m_bLF_PlaytestHelpersOff closes them all; any other header, and the bare world, keep the game mode's flag.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PlaytestHelpersOff : LF_Test
 {
 	override string GetName()

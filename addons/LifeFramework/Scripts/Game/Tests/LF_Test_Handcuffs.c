@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-13 with `tools\cli test --no-build --only LF_Test_Handcuffs`: the owner hook without SetDisableWeaponControls failed `a cuffed character cannot use a weapon`; restored, green.
-// tier: WORLD
 //! police/handcuffs: the handcuffs the asset pipeline made (#664) load as a held gadget that the
 //! restraint recognises, the worn model resolves, and the cuffed flag on a character disables its
 //! weapon controls on the owner and gives them back when it clears. Who may cuff is
 //! police/restraint-rules; the two-player cuff and release is the session proof `cuffs-proof`.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Handcuffs : LF_Test
 {
 	static const ResourceName CUFFS_PREFAB = "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et";

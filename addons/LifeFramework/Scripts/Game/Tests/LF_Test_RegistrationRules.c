@@ -1,7 +1,7 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: made
 // LF_RegistrationRules.IsMark return true; got `[LFTEST] FAIL creation/registration-rules`,
 // `- a bad surname is refused (expected '#LF-Reg_Error_NameChars', got '')`. Restored; green.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RegistrationRules : LF_Test
 {
 	override string GetName()

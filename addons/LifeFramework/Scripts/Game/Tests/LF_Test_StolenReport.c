@@ -1,5 +1,4 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_StolenReport` with the reported-plate expectation flipped to CLEAR failed `- the reported plate reads stolen (expected 1, got 2)`. Restored; green.
-// tier: LOGIC
 //! Stolen vehicles (#414): only the owner of a stolen car reports it; a report puts the plate on the
 //! board and makes a plate check read stolen, and nothing else does; a clear or unknown plate is not
 //! an arrest case. The report publishes on the bus.
@@ -20,6 +19,7 @@ class LF_StolenListener : LF_EventSubscriber
 	}
 }
 
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StolenReport : LF_Test
 {
 	protected static const string PLATE = "ST AA 4141";

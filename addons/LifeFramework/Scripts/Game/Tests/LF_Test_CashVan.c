@@ -1,9 +1,9 @@
 // red-proof: Observed 2026-11-10 with `tools/cli test --no-build --only LF_Test_CashVan`: spilling one bag too many in LF_BankLoot.SpillBags failed `crime/cash-van` with `- three bags lie behind the van (expected 3, got 4)`, `- the event carries the cash (expected 1200, got 1600)`. Restored; green.
-// tier: WORLD
 //! The cash van box (#274): opening it with a fence tool pays the bags once and reports once. The
 //! cash leaves as carried money bags, never a bank balance; a second try on the open box pays
 //! nothing and reports nothing; the next stop stocks it afresh. The route helpers pick the next
 //! stop and hold while a player is near.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CashVan : LF_Test
 {
 	override string GetName()

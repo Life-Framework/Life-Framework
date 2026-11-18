@@ -18,11 +18,13 @@
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
 //   7. burst starts (#1195): N queued runs start together on N free lanes, in queue order, behind the RAM of the
 //      starts in flight; a granted ticket stops blocking; atomic lane locks across racing holders; one snapshot per burst.
+// red-proof 2026-11-17 (pool VRAM end to end, #2634), on main before the change: "pool settings do not carry the VRAM reserves (undefined, floor undefined)"; "the remote state read does not carry free and total VRAM"; "a 2-client full session went to a PC whose card has 1000 MB free (local) while the laptop had 6000 MB"; "a session started on a laptop with 1000 MB of VRAM free (lf-testbox)"; after it the file passes.
 // red-proof 2026-11-17 (pool-budget-lanes, #1700 #1699), each broken alone: with the boot budget flat 30 s (the old budgetsFor) "CoreOnEveron still gets the 30 s boot budget that killed it (#1700)"; with LF_POOL_THIS_LANES ignored (the old loadMachines) "the leg on lf-cloud still sees 2 session lane(s), the router counted 9 (#1699; this PC: 2)"; with withoutAvoided returning every machine "an avoided machine was still ranked"; with a flat 3 s retry "the lane refusal backoff is 3000,3000,3000,3000,3000,3000".
 // red-proof 2026-11-16 (place-probe-pool): with `local: true` back in place.mjs serverRun "probe: the server run goes through the pool and is not hard-local" (place-tool-selftest); with preferRoomy unused "a probe does not take this PC while it has room".
 // red-proof 2026-11-14 (run-overhead rdb): with rdbPlan ignoring staleness (the old syncToSlot) "a stale rdb is sent to a machine that refreshes its own".
 // red-proof 2026-11-14 (run-overhead lane folders), each broken alone: psCheckout without the shared clean "only a shared folder is cleaned after the checkout"; holderConfig with shared = false "remote test lanes do not run in the lane's shared folder".
 // red-proof 2026-11-14 (pool-rt-gc), each broken alone: with the rt gc sort reversed (newest idle first) "rt gc removes the wrong folders or in the wrong order: Life-Framework-rt-b,Life-Framework-rt-a,Life-Framework-rt-oldest"; with the live-lock keep rule off "rt gc removes the wrong folders or in the wrong order: ...oldest,Life-Framework-rt-locked,..." (a locked folder was chosen).
+// red-proof 2026-11-17 (#2594), against the old sharedSnapshot (30 s lock wait, empty lock file, window from the end of a take), each broken alone: "a run that asked before a snapshot finished took its own after the share window passed (N takes)"; "a lock held by a live process was removed as stale".
 // red-proof 2026-11-14 (pool-parallel-start), each broken alone: burstAdmit always refusing (strict FIFO) "a burst of 14 test runs on a box with 16 free lanes and the RAM did not all start together (1 of 14)"; without the in-flight RAM term "a burst start ignored the RAM of the starts in flight ahead of it (14 admitted, 4 fit)"; the holder gate without aheadMb "the holder's gate let a burst start overshoot the floor"; blocks() without the granted check "a ticket that already holds its lane still blocks the queue"; sharedSnapshot never reusing "six runs asked together did not share one snapshot (6 takes, 6 shas)".
 // red-proof 2026-11-14 (pool-lane-caps), each broken alone: with the old Math.min(4, ...) on session lanes back in
 // laneSetting "session lanes are capped below the port range (asked 8, got 4)"; with test lanes on 2001 + k past lane 9
@@ -66,8 +68,7 @@
 // floor "3x p95 of 9 s runs is under the 30 s floor but was not floored"; with the
 // RAM verdict always ok "RAM gate: a second server started with 0.9 GB free".
 import { spawn, spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as q from "../lib/pool-queue.mjs";
@@ -81,6 +82,10 @@ import { safeRemoveTree } from "../link-safety.mjs";
 import { isolatePool } from "../lib/pool-isolation.mjs";
 import { sessionBase } from "../lib/session-lease.mjs";
 import * as wtLib from "../wt.mjs";
+import { useHermeticGit } from "../lib/selftest-git.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
+
+useHermeticGit(); // no machine git config or identity, no auto-gc beside the scratch repos (tools/lib/selftest-git.mjs)
 
 // ---- Isolation: this selftest never touches the real pool (2026-11-15: an agent reported it "closed live
 // sessions mid-run"). Every acquire runs hygieneGate, which ran the session GC on the REAL
@@ -93,7 +98,7 @@ import * as wtLib from "../wt.mjs";
 const REAL_REPO = resolve(import.meta.dirname, "..", "..");
 const REAL_HUB = wtLib.hubDirOf(REAL_REPO);
 const REAL_SESSION_BASE = sessionBase();
-const ISO = mkdtempSync(join(tmpdir(), "lf-pool-iso-"));
+const ISO = scratchDir("lf-pool-iso-");
 mkdirSync(join(ISO, "home", "AppData", "Local"), { recursive: true });
 mkdirSync(join(ISO, "cwd"), { recursive: true });
 spawnSync("git", ["init", "-q", join(ISO, "cwd")], { windowsHide: true });
@@ -154,7 +159,7 @@ try {
   failures.push(`holder script: ${e.message}`);
 }
 
-const dir = mkdtempSync(join(tmpdir(), "lf-pool-selftest-"));
+const dir = scratchDir("lf-pool-selftest-");
 try {
   spawnSync("git", ["init", "-q", dir], { windowsHide: true });
 
@@ -312,7 +317,7 @@ try {
   check(q.projectedRelease({ atMs: T0 - 1400000, now: T0, typicalMs: 300000, capMs: 1500000 }) === T0 + 100000, "projectedRelease ignores the hold cap");
   {
     // #563: a late join is RAM-gated like `up`: trim first, refuse (one line) when still under the floor.
-    const jroot = mkdtempSync(join(tmpdir(), "lf-join-"));
+    const jroot = scratchDir("lf-join-");
     const run = (freeSeq, trimGain) => {
       let free = freeSeq, trims = 0;
       return { r: pool.gateJoin(jroot, 800, { freeMb: () => free, trim: () => { trims++; free += trimGain; return 3; } }), trims };
@@ -344,7 +349,7 @@ try {
   const st = q.sessionStats([{ waitS: 60, heldS: 600, boots: 1, closedBy: "owner" }, { waitS: 180, heldS: 1800, boots: 3, closedBy: "hold-cap" }]);
   check(st.avgWaitS === 120 && st.avgHeldS === 1200 && st.avgBoots === 2 && st.closed.owner === 1 && st.closed["hold-cap"] === 1, "sessionStats averages");
 
-  const rdir = mkdtempSync(join(tmpdir(), "lf-pool-lanes-"));
+  const rdir = scratchDir("lf-pool-lanes-");
   const live = spawn(process.execPath, ["-e", "setTimeout(()=>{},120000)"], { stdio: "ignore", windowsHide: true });
   const rLockDir = join(rdir, "tmp", "wt", "locks");
   mkdirSync(rLockDir, { recursive: true });
@@ -380,8 +385,8 @@ try {
     process.env.LF_POOL_PROMOTE_MIN = "60";
     hold("server-test-1", { purpose: "test only" });
     const order = [];
-    const run = async (label, priority) => {
-      const slot = await pool.acquireSlot(rdir, { mode: "local", purpose: "test only", priority, waitMs: 60000 });
+    const run = async (label, priority, extra = {}) => {
+      const slot = await pool.acquireSlot(rdir, { mode: "local", purpose: "test only", priority, waitMs: 60000, ...extra });
       order.push(label);
       await new Promise((r) => setTimeout(r, 300));
       slot.release();
@@ -407,9 +412,8 @@ try {
     process.env.LF_POOL_PROMOTE_MIN = "0.02";
     hold("server-test-1", { purpose: "test only" });
     order.length = 0;
-    const pLow2 = run("low", "low");
+    const pLow2 = run("low", "low", { queuedAt: Date.now() - 10 * 60000 }); // a ticket 10 min old against a 1.2 s limit: no sleeping to age it
     await ticketsAtLeast(1);
-    await new Promise((r) => setTimeout(r, 1800)); // from a ticket that exists: the promote limit is 1.2 s
     const pNormal2 = run("normal", "normal");
     await ticketsAtLeast(2);
     rmSync(join(rLockDir, "server-test-1.lock"), { force: true });
@@ -554,6 +558,12 @@ try {
     delete process.env.LF_POOL_SESSION_IDLE_MIN;
     // (the reap above taskkilled `live`; this holder is a fresh process)
     const live2 = spawn(process.execPath, ["-e", "setTimeout(()=>{},60000)"], { stdio: "ignore", windowsHide: true });
+    // Wait until the holder really runs: a loaded runner can take seconds to start it, and a lock whose pid is
+    // not yet (or no longer) a live process is, by the pool's own rule, a stale lock the next acquirer takes.
+    await new Promise((resolveSpawn, rejectSpawn) => {
+      live2.once("spawn", resolveSpawn);
+      live2.once("error", rejectSpawn);
+    });
     writeFileSync(join(rLockDir, "server-2001.lock"), JSON.stringify({ pid: live2.pid, at: new Date().toISOString(), name: "server-2001", root: join(rdir, "nosuch"), slug: "other", purpose: "session" }));
     const qfile = join(rdir, "tmp", "wt", "pool", "queued.json");
     const tryUp = () => {
@@ -564,8 +574,18 @@ try {
         return "timeout";
       }
     };
-    check(tryUp() === "timeout", "a session request got a held lane");
-    const first = JSON.parse(readFileSync(qfile, "utf8")).retry.at;
+    const heldLock = () => {
+      try {
+        return readFileSync(join(rLockDir, "server-2001.lock"), "utf8");
+      } catch (e) {
+        return `unreadable (${e.code})`;
+      }
+    };
+    // The message names the holder and its lock so a failure on a loaded runner says why the lane was free.
+    const lockBefore = heldLock();
+    const firstTry = tryUp();
+    check(firstTry === "timeout", `a session request got a held lane (holder pid ${live2.pid}, alive ${wtLib.pidAlive(live2.pid)}; lock before: ${lockBefore}; after: ${heldLock()})`);
+    const first = JSON.parse(readFileSync(qfile, "utf8")).retry?.at;
     await new Promise((r) => setTimeout(r, 1100));
     check(tryUp() === "timeout" && JSON.parse(readFileSync(qfile, "utf8")).retry.at === first, "a retried session request did not keep its first age");
     const stale = JSON.parse(readFileSync(qfile, "utf8"));
@@ -614,7 +634,7 @@ try {
   }
   // #675: old session folders are removed (never in use, film, or this checkout's), and a low disk refuses.
   {
-    const base = mkdtempSync(join(tmpdir(), "lf-gc-"));
+    const base = scratchDir("lf-gc-");
     try {
       const nowMs = Date.now();
       const mk = (name, ageH, session) => {
@@ -635,7 +655,7 @@ try {
       mk("wt-film-take", 30);
       mk("wt-mine", 30);
       // a junction inside an old folder must not be followed: its target survives
-      const target = mkdtempSync(join(tmpdir(), "lf-gc-target-"));
+      const target = scratchDir("lf-gc-target-");
       writeFileSync(join(target, "keep.txt"), "keep");
       mk("wt-linked", 30);
       symlinkSync(target, join(base, "wt-linked", "link"), "junction");
@@ -682,9 +702,29 @@ try {
       rmSync(base, { recursive: true, force: true });
     }
   }
+  // 4b2. runRoot: a machine's run and lane folders go under its "runRoot" (a second drive), else its clone's parent;
+  // the GC scripts then find the clone by its own path, not as <parent>\Life-Framework.
+  // red-proof 2026-11-17: with runParent ignoring runRoot "runRoot is not honoured: C:/LF/Life-Framework-rt-x".
+  {
+    const base = scratchDir("lf-runroot-");
+    try {
+      writeFileSync(join(base, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "bx", via: "ssh", host: "bx", root: "C:/LF/Life-Framework", runRoot: "D:\\LF\\" }, { name: "by", via: "ssh", host: "by", root: "C:/LF/Life-Framework" }] } }));
+      const ms = pool.loadMachines(base);
+      const bx = ms.find((m) => m.name === "bx");
+      const by = ms.find((m) => m.name === "by");
+      check(bx && by && pool.remoteRunDir(bx, "x") === "D:/LF/Life-Framework-rt-x", `runRoot is not honoured: ${bx && pool.remoteRunDir(bx, "x")}`);
+      check(pool.laneRunDir(bx, "server-test-1") === "D:/LF/Life-Framework-lane-server-test-1", "runRoot is not honoured by lane folders");
+      check(pool.remoteRunDir(by, "x") === "C:/LF/Life-Framework-rt-x", "no runRoot: run folders left the clone's parent");
+      const scan = rt.rtScanScript("D:/LF", 0, "C:/LF/Life-Framework");
+      check(/\$parent = 'D:\\LF'/.test(scan) && /\$main = 'C:\\LF\\Life-Framework'/.test(scan), "rt scan does not use the clone path beside runRoot");
+      check(/\$main = Join-Path \$parent 'Life-Framework'/.test(rt.rtRemoveScript("C:/LF", [])), "rt remove lost its default clone path");
+    } finally {
+      rmSync(base, { recursive: true, force: true });
+    }
+  }
   // 4c. remote run-folder GC (tools/lib/rt-gc.mjs): which folders, in which order, busy ones kept.
   {
-    const base0 = mkdtempSync(join(tmpdir(), "lf-rtgc-"));
+    const base0 = scratchDir("lf-rtgc-");
     const NOW = 10_000_000_000;
     const ago = (min) => NOW - min * 60000;
     const ent = (name, idleMin, busy = null) => ({ dir: `C:\\LF\\${name}`, busy, lastMs: idleMin === null ? 0 : ago(idleMin) });
@@ -829,7 +869,7 @@ try {
   // A pool entry whose "hostname" is this machine's is the local machine there (the box's own lanes), the PC's entry is dropped.
   writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", hostname: hostname() }] } }));
   const selfView = pool.loadMachines(dir);
-  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 2 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
+  check(selfView[0]?.name === "lf-testbox" && selfView[0].via === "local" && selfView[0].lanes?.session === 4 && !selfView.some((m) => m.name === "local"), "an entry whose hostname is this machine is not the local machine with its own lanes");
   // Laptop view: on the box itself (hostname PC1, the committed pool.json entry) the machines are lf-testbox as local and nothing
   // else, with no TypeError ranking them; a PC (any other hostname) keeps local plus an ssh lf-testbox.
   writeFileSync(join(dir, "lf.local.json"), "{}");
@@ -858,7 +898,7 @@ try {
 }
 
 const dir0 = () => {
-  const d = mkdtempSync(join(tmpdir(), "lf-holdercfg2-"));
+  const d = scratchDir("lf-holdercfg2-");
   spawnSync("git", ["init", "-q", d], { windowsHide: true });
   return d;
 };
@@ -880,7 +920,7 @@ const dir0 = () => {
   check(pool.remoteSessionVerdict(laptop, allBusy, settings).lane === false, "a laptop with every session lane taken has a lane");
   check(pool.heldMbOf(settings, [{ purpose: "session", clients: 2, profile: "full" }, { purpose: "test only" }, { purpose: "session", clients: 1, profile: "lowspec", alive: false }]) === 2300 + 600, "heldMbOf");
   // Remote tests use every test lane of the laptop (54 of 54 laptop test runs used server-test-1 only), behind the RAM gate.
-  const tdir = mkdtempSync(join(tmpdir(), "lf-holdercfg-"));
+  const tdir = scratchDir("lf-holdercfg-");
   spawnSync("git", ["init", "-q", tdir], { windowsHide: true });
   const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
   const hc = pool.holderConfig(tdir, laptop, snap, { purpose: "test only", settings });
@@ -890,7 +930,7 @@ const dir0 = () => {
   rmSync(tdir, { recursive: true, force: true });
   // The holder's RAM gate itself, in PowerShell, against a fake lock dir.
   {
-    const ld = mkdtempSync(join(tmpdir(), "lf-ramgate-"));
+    const ld = scratchDir("lf-ramgate-");
     writeFileSync(join(ld, "server-test-1.lock"), JSON.stringify({ pid: process.pid, purpose: "test only", at: new Date().toISOString() }));
     const gate = (reserveMb, floorMb) => {
       const cfg = { slots: [{ lock: "server-test-2" }], ram: { locks: ["server-test-1", "server-test-2"], floorMb, reserveMb, serverMb: 600, clientMb: 850 } };
@@ -944,13 +984,13 @@ const dir0 = () => {
     // Starts in flight together spread over the free lanes: the k-th tries the k-th free lane first.
     const sl = ["server-test-1", "server-test-2", "server-test-3", "server-test-4"].map((lock) => ({ lock }));
     check(q.rotateSlots(sl, ["server-test-2", "server-test-4"], 1).map((x) => x.lock).join() === "server-test-4,server-test-1,server-test-2,server-test-3" && q.rotateSlots(sl, ["server-test-2"], 0) === sl, "rotateSlots");
-    const tdir2 = mkdtempSync(join(tmpdir(), "lf-burstcfg-"));
+    const tdir2 = scratchDir("lf-burstcfg-");
     spawnSync("git", ["init", "-q", tdir2], { windowsHide: true });
     const hb = pool.holderConfig(tdir2, cloud, { sha: "a".repeat(40), head: "b".repeat(40) }, { purpose: "test fast", settings: bst, aheadMb: 2400, freeLocks: ["server-test-3", "server-test-5"], position: 1 });
     check(hb.ram.aheadMb === 2400 && hb.ram.testMb === 800 && hb.ram.testBootS === 60 && hb.slots[0].lock === "server-test-5" && /Life-Framework-lane-server-test-5$/.test(hb.slots[0].dir) && hb.slots.length === 16, "the holder of a burst start does not carry the in-flight reserves or its own first lane");
     rmSync(tdir2, { recursive: true, force: true });
     // The holder's gate itself (PowerShell): the reserves in flight ahead and a test lock still booting.
-    const ld = mkdtempSync(join(tmpdir(), "lf-burstgate-"));
+    const ld = scratchDir("lf-burstgate-");
     const gate = (aheadMb, booting) => {
       for (const n of ["server-test-1"]) rmSync(join(ld, n + ".lock"), { force: true });
       if (booting) writeFileSync(join(ld, "server-test-1.lock"), JSON.stringify({ pid: process.pid, purpose: "test fast", at: new Date().toISOString() }));
@@ -972,12 +1012,12 @@ const dir0 = () => {
     const src = pool.holderScript({ main: "C:/x", slots: [] });
     const loop = src.slice(src.indexOf("for ($i = 0; $i -lt $slots.Count"), src.indexOf("if ($slots.Count -gt 0 -and $got -lt 0)"));
     check(loop.includes("[IO.FileMode]::CreateNew") && loop.length > 200, "the holder no longer takes its lane with an atomic create");
-    const rd = mkdtempSync(join(tmpdir(), "lf-lockrace-"));
+    const rd = scratchDir("lf-lockrace-");
     // The racers start together on a file barrier, not a wall-clock instant (a start time 4 s ahead was missed
     // when PowerShell took longer than that to start under load, and a racer that exits frees its lane for a late
     // one: 4 winners). Each racer reports ready, waits for `go`, races, writes its result, and stays alive (so its
     // lock is not reclaimable) until `done`.
-    const rb = mkdtempSync(join(tmpdir(), "lf-lockrace-b-"));
+    const rb = scratchDir("lf-lockrace-b-");
     const racer = ["$ld = '" + rd + "'", "$rb = '" + rb + "'", "$enc = New-Object System.Text.UTF8Encoding($false)", "function Test-Alive($p) { if (-not $p) { return $false }; return [bool](Get-Process -Id $p -ErrorAction SilentlyContinue) }", "function Stop-Under($d) {}", "function Test-Server($d) { return $false }", "$cfg = [pscustomobject]@{ token = 'x'; slug = 's'; purpose = 'test'; origin = 'h'; originPid = 1 }", "$got = -1", "$slots = @(@{ lock = 'server-test-1'; dir = 'a' }, @{ lock = 'server-test-2'; dir = 'b' }, @{ lock = 'server-test-3'; dir = 'c' })", "Set-Content -LiteralPath (Join-Path $rb ('ready-' + $PID)) -Value 1", "while (-not (Test-Path -LiteralPath (Join-Path $rb 'go'))) { Start-Sleep -Milliseconds 10 }", loop, "$tmpf = Join-Path $rb ('tmp-' + $PID)", "if ($got -ge 0) { Set-Content -LiteralPath $tmpf -Value ('won ' + $slots[$got].lock) } else { Set-Content -LiteralPath $tmpf -Value 'lost' }", "Move-Item -LiteralPath $tmpf -Destination (Join-Path $rb ('result-' + $PID))", "while (-not (Test-Path -LiteralPath (Join-Path $rb 'done'))) { Start-Sleep -Milliseconds 20 }"].join(String.fromCharCode(10));
     const racerFiles = (prefix) => readdirSync(rb).filter((f) => f.startsWith(prefix));
     const until = async (what, fn) => {
@@ -1013,7 +1053,7 @@ const dir0 = () => {
     rmSync(rd, { recursive: true, force: true });
     // One snapshot per burst: runs asked together from one worktree share it (14 private snapshots at
     // once took 5-19 s and one failed on a loose object another was writing).
-    const sr = mkdtempSync(join(tmpdir(), "lf-snapshare-"));
+    const sr = scratchDir("lf-snapshare-");
     spawnSync("git", ["init", "-q", sr], { windowsHide: true });
     writeFileSync(join(sr, "a.txt"), "a");
     spawnSync("git", ["-C", sr, "add", "-A"], { windowsHide: true });
@@ -1033,6 +1073,24 @@ const dir0 = () => {
     const old = new Date(Date.now() - 120000);
     utimesSync(join(sr, "tmp", "remote", "snapshot.lock"), old, old);
     check(pool.sharedSnapshot(sr, { take: fake, now: () => clock + 120000, lockWaitMs: 3000 }).n === 3, "a snapshot lock left by a dead process blocks the next snapshot");
+    // A lock whose holder is alive is a slow take, not a stale lock: it is waited for however old it is (up to
+    // ten minutes), and the waiter does not take the lock from it. The lock file carries the holder's pid.
+    const lockFile = join(sr, "tmp", "remote", "snapshot.lock");
+    writeFileSync(lockFile, String(process.pid));
+    utimesSync(lockFile, old, old);
+    const beforeLive = takes;
+    pool.sharedSnapshot(sr, { take: fake, lockWaitMs: 1500 }); // real clock: a frozen one never reaches its wait limit
+    check(existsSync(lockFile) && readFileSync(lockFile, "utf8") === String(process.pid), "a lock held by a live process was removed as stale");
+    check(takes === beforeLive + 1, "a waiter past its wait took no private snapshot (" + (takes - beforeLive) + " takes)");
+    rmSync(lockFile, { force: true });
+    // A snapshot that finished after the run asked is the run's own, however old it is by the time the run
+    // gets the lock (the end-of-take window made the 5th and 6th run of a burst take another).
+    const base = clock + 300000;
+    pool.sharedSnapshot(sr, { take: fake, now: () => base + 5 });
+    const beforeAsk = takes;
+    let asks = 0;
+    pool.sharedSnapshot(sr, { take: fake, now: () => (asks++ === 0 ? base : base + 60000) });
+    check(takes === beforeAsk, "a run that asked before a snapshot finished took its own after the share window passed (" + (takes - beforeAsk) + " takes)");
     // Six processes at once on a real worktree with a change: one take, one sha for all.
     rmSync(join(sr, "tmp", "remote", "snapshot-shared.json"), { force: true });
     writeFileSync(join(sr, "b.txt"), "b");
@@ -1057,7 +1115,7 @@ const dir0 = () => {
   check(!hot.ok && hot.lane && /93.1 °C/.test(hot.ram), "a session started on a laptop at 93 °C");
   check(pool.remoteSessionVerdict({ ...laptop, thermalHoldC: 90 }, { ...st, freeMb: 9000, thermalC: 84 }, settings, { clients: 1, profile: "lowspec" }).ok, "a cool laptop held a session for heat");
   {
-    const td = mkdtempSync(join(tmpdir(), "lf-thermal-"));
+    const td = scratchDir("lf-thermal-");
     const csv = join(td, "thermal-2026-11-14.csv");
     writeFileSync(csv, ["time,thrm_c,cpu_load", "2026-11-14T20:54:28,88.0,38", "2026-11-14T20:55:16,93.1,37"].join(String.fromCharCode(13, 10)) + String.fromCharCode(13, 10));
     const read = () => {
@@ -1076,7 +1134,7 @@ const dir0 = () => {
   // Idle sessions on the laptop are judged from this PC: 15 min while a job here waits for it, 30 with
   // nobody waiting; a lease protects one; a fresh client command counts as activity.
   {
-    const rroot = mkdtempSync(join(tmpdir(), "lf-rreap-"));
+    const rroot = scratchDir("lf-rreap-");
     spawnSync("git", ["init", "-q", rroot], { windowsHide: true });
     const now = Date.parse("2026-11-14T12:00:00Z");
     const ago2 = (min) => new Date(now - min * 60000).toISOString();
@@ -1092,7 +1150,7 @@ const dir0 = () => {
   }
   // A machine that went away mid-run: the run is queued again, the machine marked down.
   {
-    const groot = mkdtempSync(join(tmpdir(), "lf-gone-"));
+    const groot = scratchDir("lf-gone-");
     spawnSync("git", ["init", "-q", groot], { windowsHide: true });
     const slot = { local: false, machine: laptop, lost: false };
     check(pool.machineGone(groot, slot, 255, { probe: () => ({ reachable: false }) }) === true, "a run whose machine stopped answering was not queued again");
@@ -1107,7 +1165,7 @@ const dir0 = () => {
   // 2026-11-14: lf-cloud ran 3 servers, 6 clients and 2 Workbenches with 18 GB free, one ssh probe
   // timed out, and `pool status` said DOWN. A busy machine that answered lately stays in use as "slow".
   {
-    const hroot = mkdtempSync(join(tmpdir(), "lf-health-"));
+    const hroot = scratchDir("lf-health-");
     spawnSync("git", ["init", "-q", hroot], { windowsHide: true });
     const hf = join(hroot, "tmp", "wt", "pool", "health.json");
     const cloud = { name: "lf-cloud", via: "ssh", host: "lf-cloud", root: "C:/LF/Life-Framework" };
@@ -1181,7 +1239,7 @@ const dir0 = () => {
   // to this PC and queued there pinned for an hour while the laptop came back with free lanes. Now a
   // request keeps every machine and takes the laptop as soon as it answers.
   {
-    const croot = mkdtempSync(join(tmpdir(), "lf-choose-"));
+    const croot = scratchDir("lf-choose-");
     spawnSync("git", ["init", "-q", croot], { windowsHide: true });
     writeFileSync(join(croot, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "local", lanes: { test: 1, session: 1 } }] } }));
     const holder = spawn(process.execPath, ["-e", "setTimeout(()=>{},60000)"], { stdio: "ignore", windowsHide: true });
@@ -1205,6 +1263,48 @@ const dir0 = () => {
     } finally {
       holder.kill();
       rmSync(croot, { recursive: true, force: true });
+    }
+  }
+  // GPU memory end to end (#2634, tools/lib/pool-vram.mjs): the router (chooseSessionMachine) reads free VRAM
+  // per machine (this PC through opts.localVramMb, the laptop through remoteState's vramFreeMb) and sends a
+  // client session to the machine whose card holds its clients, though the other has the RAM and is faster.
+  {
+    const vroot = scratchDir("lf-vram-");
+    spawnSync("git", ["init", "-q", vroot], { windowsHide: true });
+    writeFileSync(join(vroot, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "local", lanes: { test: 1, session: 1 } }] } }));
+    mkdirSync(join(vroot, "tmp", "wt", "locks"), { recursive: true });
+    const quiet = () => {};
+    const lapState = (vramFreeMb) => ({ locks: { "server-2001": null, "server-2011": null, "server-2021": null }, freeMb: 9000, totalMb: 15606, vramFreeMb });
+    const choose = (slug, clients, profile, state, extra) =>
+      pool.chooseSessionMachine(vroot, { clients, profile, waitMs: 600, meta: { slug }, log: quiet, opts: { probe: () => ({ reachable: true, build: null }), remoteState: () => state, pollMs: 100, diskMsg: null, localFreeMb: 9000, ...extra } });
+    try {
+      const vs = pool.poolSettings(vroot);
+      check(vs.sessionReserveClientVramMb?.lowspec === 700 && vs.sessionReserveClientVramMb?.full === 1800 && vs.minFreeVramMb === 256, `pool settings do not carry the VRAM reserves (${JSON.stringify(vs.sessionReserveClientVramMb)}, floor ${vs.minFreeVramMb})`);
+      const ps = pool.parseRemoteState("lf-pool: ram 9000 15606\nlf-pool: vram 5800\nlf-pool: vramtotal 8192\n");
+      check(ps.vramFreeMb === 5800 && ps.vramTotalMb === 8192, "the remote state read does not carry free and total VRAM");
+      check(pool.parseRemoteState("lf-pool: ram 9000 15606\n").vramFreeMb === null, "a remote state without the VRAM line is not unknown VRAM (null)");
+      // This PC has the RAM and is first in the order, but its card is nearly full: two full clients (3600 MB) go to the laptop.
+      const away = await choose("vram-local-full", 2, "full", lapState(6000), { localVramMb: 1000 });
+      check(away?.name === "lf-testbox", `a 2-client full session went to a PC whose card has 1000 MB free (${away?.name ?? "null"}) while the laptop had 6000 MB`);
+      // The same request with room on both stays in the RAM order (this PC first).
+      const home = await choose("vram-both-roomy", 2, "full", lapState(6000), { localVramMb: 6000 });
+      check(home?.name === "local", `with VRAM room on both machines the RAM order changed (${home?.name ?? "null"})`);
+      // Lowspec clients (700 MB each) fit the same 1900 MB.
+      const low = await choose("vram-lowspec", 2, "lowspec", lapState(6000), { localVramMb: 1900 });
+      check(low?.name === "local", `a lowspec session did not fit 1900 MB of VRAM (${low?.name ?? "null"})`);
+      // The laptop's card is full and this PC refuses (disk): the request queues, it does not start there.
+      const nowhere = await choose("vram-laptop-full", 2, "full", lapState(1000), { diskMsg: "free disk 3.5 GB is under 5 GB" });
+      check(nowhere === null, `a session started on a laptop with 1000 MB of VRAM free (${nowhere?.name ?? "null"})`);
+      // An unreadable card skips the rule, never a refusal: the laptop answers no VRAM line and this PC refuses.
+      const unknown = await choose("vram-unknown", 2, "full", lapState(null), { diskMsg: "free disk 3.5 GB is under 5 GB" });
+      check(unknown?.name === "lf-testbox", `unknown VRAM refused the laptop (${unknown?.name ?? "null"})`);
+      // A test-lane ordering (no client) ignores VRAM.
+      const ranked = pool.rankedMachines(vroot, pool.loadMachines(vroot), vs, { reserveMb: 2300, vramReserveMb: 0, stateOf: () => lapState(0), localFreeMb: 9000, localVramMb: 0 });
+      check(ranked.every((r) => r.room === true), "a job with no client was refused for VRAM in the machine order");
+    } catch (e) {
+      failures.push(`the VRAM scenario threw: ${e.message}`);
+    } finally {
+      rmSync(vroot, { recursive: true, force: true });
     }
   }
   // Machine choice by RAM headroom (2026-11-14: this PC at 0.4 GB free kept its first lanes while the
@@ -1307,7 +1407,7 @@ const dir0 = () => {
 // box-side checkout of a shared folder drops what the last run left under addons/ (rdb kept), through
 // the box clone's link-safe delete, and never follows a junction.
 {
-  const lroot = mkdtempSync(join(tmpdir(), "lf-lanes-"));
+  const lroot = scratchDir("lf-lanes-");
   try {
     spawnSync("git", ["init", "-q", lroot], { windowsHide: true });
     const box = { name: "lf-x", via: "ssh", host: "lf-x", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 2, session: 1 } };
@@ -1361,7 +1461,7 @@ const dir0 = () => {
 // its own run, so this PC neither starts its Workbench for it nor sends it the stale copy; a fresh rdb
 // is still sent by hash, and a machine without Workbench still gets this PC's.
 {
-  const rr = mkdtempSync(join(tmpdir(), "lf-rdbplan-"));
+  const rr = scratchDir("lf-rdbplan-");
   try {
     const core = join(rr, "addons", "LifeFramework");
     mkdirSync(core, { recursive: true });

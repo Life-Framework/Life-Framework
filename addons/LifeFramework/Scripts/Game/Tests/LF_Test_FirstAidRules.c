@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_FirstAidRules`: LF_FirstAid.Grant returning `add` (no cap) failed `the cap trims the grant (expected 10, got 30)`; restored, green.
 
-// tier: LOGIC
 //! The pure rules of first aid on a downed player (LF_FirstAid): the cap trims what is added and
 //! never takes time away, only medics add time when config says medic only, and morphine (or any
 //! unknown kind) adds nothing.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FirstAidRules : LF_Test
 {
 	override string GetName()

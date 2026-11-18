@@ -36,6 +36,30 @@ class LF_MapPoiAudience
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Adds the services the packed account state (LF_AccountStateBits) is on duty in. The map's two
+	//! audience builders (LF_MapPlacesUI, LF_MapPlacesKnown) never added a role, so a ROLE kind such as
+	//! the police armoury was hidden from on-duty police too (review 2026-11-17).
+	void AddRolesFromState(int state)
+	{
+		if (LF_AccountStateBits.IsOnDutyPolice(state))
+			AddRole(LF_MapShares.ROLE_POLICE);
+
+		if (LF_MedicDuty.IsOnDutyState(state))
+			AddRole(LF_MapShares.ROLE_MEDIC);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the local player's audience, the roles from their replicated account state and the
+	//! places their character knows.
+	static LF_MapPoiAudience Local()
+	{
+		LF_MapPoiAudience audience = new LF_MapPoiAudience();
+		audience.AddRolesFromState(LF_AccountReplication.GetState(LF_Utils.GetLocalCharacter()));
+		LF_MapKnown.FillAudience(audience);
+		return audience;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	array<string> GetRoles()
 	{
 		return m_aRoles;
@@ -83,8 +107,9 @@ class LF_MapPoi
 
 //------------------------------------------------------------------------------------------------
 //! Reads LF_Places, applies the POI table and the visibility rule, and lists what a player sees
-//! (docs/architecture/everon-map.md section 1). Client side: LF_Places holds every placed entity on
-//! every machine, so no network traffic. The drawing layer is card M4 (LF_MapPlacesUI).
+//! (docs/architecture/everon-map.md section 1). Public places come from the client's own LF_Places with
+//! no traffic; private ones (DISCOVER, ROLE, HIDDEN rows) only from what the server sent this player
+//! (LF_MapPrivatePlaces, #2492). The drawing layer is card M4 (LF_MapPlacesUI).
 class LF_MapPois
 {
 	//------------------------------------------------------------------------------------------------
@@ -125,7 +150,8 @@ class LF_MapPois
 
 	//------------------------------------------------------------------------------------------------
 	//! Every live place whose kind has a POI row, read from LF_Places. A place LF_Places holds is
-	//! live: a dark map state never registers (#2208).
+	//! live: a dark map state never registers (#2208). Server use: a client's LF_Places holds no private
+	//! kind, so a client draws through GatherVisible.
 	static void GatherPlaces(notnull LF_MapPoiConfig config, notnull array<ref LF_MapPoiPlace> into)
 	{
 		if (!config.m_aKinds)
@@ -133,18 +159,44 @@ class LF_MapPois
 
 		foreach (LF_MapPoiKind row : config.m_aKinds)
 		{
-			if (!row || row.m_sKind.IsEmpty())
-				continue;
+			if (row)
+				GatherKind(row.m_sKind, into);
+		}
+	}
 
-			array<string> ids = {};
-			array<IEntity> entities = {};
-			LF_Places.FindAllWithIds(row.m_sKind, ids, entities);
-			foreach (int i, IEntity entity : entities)
+	//------------------------------------------------------------------------------------------------
+	//! What this machine's map may draw: the live PUBLIC places from LF_Places, then the private places
+	//! the server sent this player. On a listen host LF_Places holds private places too; they are skipped
+	//! here, so the host's map follows the same server decision as everyone else's.
+	static void GatherVisible(notnull LF_MapPoiConfig config, notnull array<ref LF_MapPoiPlace> into)
+	{
+		if (config.m_aKinds)
+		{
+			foreach (LF_MapPoiKind row : config.m_aKinds)
 			{
-				vector transform[4];
-				entity.GetWorldTransform(transform);
-				into.Insert(LF_MapPoiPlace.Make(row.m_sKind, ids[i], transform[3], true));
+				if (row && row.m_eVisibility == LF_EMapPoiVisibility.PUBLIC)
+					GatherKind(row.m_sKind, into);
 			}
+		}
+
+		LF_MapPrivatePlaces.AppendLocal(into);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The live places of one kind from LF_Places, with their world positions.
+	static void GatherKind(string kind, notnull array<ref LF_MapPoiPlace> into)
+	{
+		if (kind.IsEmpty())
+			return;
+
+		array<string> ids = {};
+		array<IEntity> entities = {};
+		LF_Places.FindAllWithIds(kind, ids, entities);
+		foreach (int i, IEntity entity : entities)
+		{
+			vector transform[4];
+			entity.GetWorldTransform(transform);
+			into.Insert(LF_MapPoiPlace.Make(kind, ids[i], transform[3], true));
 		}
 	}
 
@@ -159,7 +211,7 @@ class LF_MapPois
 			return 0;
 
 		array<ref LF_MapPoiPlace> places = {};
-		GatherPlaces(config, places);
+		GatherVisible(config, places);
 		int first = into.Count();
 		int added = Collect(config, audience, places, into);
 		for (int i = first; i < into.Count(); i++)

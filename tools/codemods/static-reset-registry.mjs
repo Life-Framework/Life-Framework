@@ -4,7 +4,7 @@
 //
 // Every layer called super.Run, so the chain nested one script frame per feature and overflowed the
 // stack at about 123 layers. This rewrites each layer in place into an LF_StaticResetHook subclass that
-// registers itself with LF_StaticReset.Register from a static initializer (template and helpers in
+// LF_StaticReset finds by reflection (#2755; template and helpers in
 // tools/lib/static-reset-hooks.mjs), and rewrites Core/LF_StaticReset.c to the flat registry.
 //
 //   node tools/codemods/static-reset-registry.mjs [--dry-run] [--root <dir>] [--no-central]

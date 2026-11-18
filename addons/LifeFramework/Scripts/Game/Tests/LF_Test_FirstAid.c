@@ -1,10 +1,10 @@
 // red-proof: observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_FirstAid`: LF_FirstAid.Grant returning `add` (no cap) failed `the cap trims the tourniquet (expected 10, got 45)`; restored, green.
 
-// tier: WORLD
 //! First aid on a downed character: a bandage adds its seconds once (the same item is not counted
 //! twice), a second item is trimmed by the cap and a third adds nothing, morphine adds nothing,
 //! medic-only config refuses a civilian helper, and a character that is not downed gains nothing.
 //! Spawned test characters stand in for the helper and for the items (only their ids are used).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FirstAid : LF_Test
 {
 	override string GetName()

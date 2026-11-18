@@ -1,11 +1,11 @@
 // red-proof: observed 2026-11-16 (#1941) with `tools\cli test --no-build --red LF_Test_Roadblock`: `RED-OK police/roadblock (fails with the hook on, 12 assertions)` (RedProof() skips the officer's deploy, so nothing is placed); green without the hook (`--only`, 1 passed).
-// tier: WORLD
 //! #1941 acceptance: the police roadblock kit (LF_Roadblock.c). On open ground inside the annex
 //! (the stand-in for a road: the kit lies across the way the officer faces, and GridWorld has no AI
 //! road network) a civilian is refused with the reason logged and the kit is kept. An on-duty officer
 //! deploys the kit: one barrier and four cones, each on the ground, the kit used up. A vehicle seen
 //! moving near the set and then stopped is logged once. A civilian cannot pick the set up; the officer
 //! folds all five pieces away with one pick-up and carries the kit again.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadblock : LF_Test
 {
 	protected static const string OFFICER_UID = "roadblock-officer";

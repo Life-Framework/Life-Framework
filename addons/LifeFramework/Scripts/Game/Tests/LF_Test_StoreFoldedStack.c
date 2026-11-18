@@ -1,11 +1,11 @@
 // red-proof: observed 2026-11-15 with `tools\cli test --no-build --red LF_Test_StoreStackRules,LF_Test_StoreFoldedStack`: RED-OK store/folded-stack (the hook turns the pile into lone slots, stack 0) failed `- copy 1 stands 0.0198059 m above the counter (wanted 0.06)`, `- the restored copy 1 is adopted into its own slot, not deleted and respawned` and `- copy 2 dropped into the gap`; green with the hook off.
 
-// tier: WORLD
 //! Folded clothes in a pile on a store counter (the clothing store). A line with piles of four stands
 //! its bottom copy on the counter and the others at their written height above it, turned by the
 //! slot's yaw. A restart that finds the restored copies adopts each one into its own slot and deletes
 //! none (the bottom slot must not swallow the pile). A copy taken from the middle leaves the stock
 //! once and the copies above close the gap. Deletes what it spawns.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_StoreFoldedStack : LF_Test
 {
 	//! The e2e restart proof (LF_Test_E2E_SaveState) keeps its own DarkBrown pile on this same counter

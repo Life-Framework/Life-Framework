@@ -4,9 +4,9 @@
 // [LFTEST]   - the courier parcel has a mesh
 // Restored to LF_Parcel.et; green.
 
-// tier: WORLD
 //! Cargo a player carries in their hands has a mesh. The bare HandCarryItem_Base has none,
 //! so the parcel and the bank bag were invisible in the hands (#155).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CarryMeshes : LF_Test
 {
 	override string GetName()

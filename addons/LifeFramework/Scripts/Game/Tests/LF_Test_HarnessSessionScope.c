@@ -5,11 +5,11 @@
 //   [LFTEST]   - Workbench refuses a command addressed to a session
 // Restored the comparison and the test passed.
 
-// tier: LOGIC
 //! A harness command from one worktree reached another worktree's session client (the session
 //! profiles share one dir, and a new session started between two runs). Each `session.mjs up`
 //! now names its clients with -lfSession <id>, every command carries s:<id>, and a client runs
 //! only commands addressed to its own session.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HarnessSessionScope : LF_Test
 {
 	override string GetName()

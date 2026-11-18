@@ -1,8 +1,8 @@
 // red-proof: Observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_SessionSlots`: not releasing the slot in LF_PlayerIdentity.Forget failed `- the rejoined client is the same identity as before: 00bbbddd-5e55-0000-0000-000000000003`. Restored; green.
 
-// tier: LOGIC
 //! An agent-box session keys a client by a slot, not by its player id, so a client that quits and
 //! rejoins (a new player id) is the same account again.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SessionSlots : LF_Test
 {
 	override string GetName()

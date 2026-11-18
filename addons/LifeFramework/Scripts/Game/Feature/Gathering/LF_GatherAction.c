@@ -27,10 +27,21 @@ class LF_GatherAction : ScriptedUserAction
 	[Attribute("#LF-Gather_Action", UIWidgets.EditBox, "Prompt, %1 is the item name. Gather %1 by default; a seed crate says Take %1", category: "General")]
 	protected string m_sActionFormat;
 
+	[Attribute(desc: "Stock model: milliseconds for one gather to grow back. The spot starts full at the gather maximum and refills one at a time. 0 = the cooldown model above", category: "Limits")]
+	protected float m_GatherRegrowMs;
+
 	protected int m_iRemainingGathers;
 	protected WorldTimestamp m_NextRestock;
 
+	//! Stock model state (#2409). Server only: only the peer that applies the action touches it.
+	protected ref LF_GatherStock m_Stock;
+	protected WorldTimestamp m_StockEpoch;
+
 	protected string m_sDisplayName;
+
+	//! Node row of the last catalog apply, and the speed factor of the tool the user held at the last check.
+	protected ref LF_ResourceNodeDef m_Node;
+	protected float m_fToolSpeed = 1.0;
 
 	//------------------------------------------------------------------------------------------------
 	// User has performed the action
@@ -57,12 +68,20 @@ class LF_GatherAction : ScriptedUserAction
 			return;
 		}
 
+		// Stock model: take the gather before the grant, so a rejected one costs nothing.
+		if (!TakeStock(pOwnerEntity))
+		{
+			RefuseEmpty(pOwnerEntity, pUserEntity);
+			return;
+		}
+
 		SCR_InventoryStorageManagerComponent inventoryManager = LF_Component<SCR_InventoryStorageManagerComponent>.Find(pUserEntity);
 		int added = LF_InventoryUtils.AddAmount(inventoryManager, m_GatherItemPrefab, m_GatherAmount);
 		if (added > 0)
 		{
 			inventoryManager.RpcAsk_PlaySound(LF_NetworkUtils.GetRplId(pUserEntity), "SOUND_PICK_UP");
 			LF_Debug.Log("Gathering", string.Format("gathered %1 x%2", m_GatherItemPrefab, added));
+			LF_EventBus.Publish(LF_OnGathered.Create(LF_Utils.GetPlayerUID(pUserEntity), m_sNodeId, LF_GatherTools.JobFamily(m_Node), m_GatherItemPrefab, added, ToolSpeedFor(pUserEntity)));
 
 			// Notify job manager for reward
 			LF_JobManager jobManager = LF_JobManager.GetInstance();
@@ -74,10 +93,11 @@ class LF_GatherAction : ScriptedUserAction
 		else
 		{
 			LF_Debug.Error("Gathering", string.Format("gather grant failed prefab=%1 requested=%2", m_GatherItemPrefab, m_GatherAmount));
+			GiveBackStock(pOwnerEntity);
 		}
 
-		// No limit configured: nothing to consume
-		if (m_GatherAmountMax <= 0) return;
+		// No limit configured, or the stock model took its gather above: nothing to consume
+		if (m_GatherAmountMax <= 0 || m_GatherRegrowMs > 0) return;
 
 		//Replenish gathering count
 		if(m_iRemainingGathers <= 0) m_iRemainingGathers = m_GatherAmountMax;
@@ -131,7 +151,15 @@ class LF_GatherAction : ScriptedUserAction
 		if (!IsGatherRequestConfigured(m_GatherItemPrefab, m_GatherAmount))
 			return false;
 
-		if (m_GatherAmountMax > 0 && m_iRemainingGathers <= 0 && m_NextRestock.Greater(user.GetWorld().GetTimestamp()))
+		// Stock model: this peer only knows the stock when it applies actions (a host). A client
+		// of a dedicated server gets the server's toast on the attempt instead.
+		if (m_Stock && m_Stock.Available(StockNowMs(user)) <= 0)
+		{
+			SetCannotPerformReason("#LF-Gather_Empty");
+			return false;
+		}
+
+		if (m_GatherRegrowMs <= 0 && m_GatherAmountMax > 0 && m_iRemainingGathers <= 0 && m_NextRestock.Greater(user.GetWorld().GetTimestamp()))
 		{
 			int secondsLeft = m_NextRestock.DiffMilliseconds(user.GetWorld().GetTimestamp()) / 1000;
 			SetCannotPerformReason(WidgetManager.Translate("#LF-Gather_Wait", secondsLeft + 1)); //+1 to avoid 0 seconds left.
@@ -145,22 +173,40 @@ class LF_GatherAction : ScriptedUserAction
 
 		if (!LF_HasGatherTool(user))
 		{
-			if (m_CheckInventoryForToolRequirement)
-				SetCannotPerformReason("#LF-Gather_RequiresItem");
-			else
-				SetCannotPerformReason("#LF-Gather_RequiresItemInHands");
+			SetCannotPerformReason(LF_GatherTools.RefusalKey(m_Node, m_CheckInventoryForToolRequirement));
 			return false;
 		}
 
+		m_fToolSpeed = ToolSpeedFor(user);
 		return true;
  	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A better tool shortens the hold: the engine adds the time slice to the progress, so a speed
+	//! factor above 1 makes the same hold finish sooner (#2706).
+	override float GetActionProgressScript(float fProgress, float timeSlice)
+	{
+		return fProgress + timeSlice * m_fToolSpeed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Speed factor of the tool the user holds for this node: 1 when the node needs no tool.
+	protected float ToolSpeedFor(IEntity user)
+	{
+		if (!LF_GatherTools.NeedsTool(m_Node))
+			return 1.0;
+		float speed = LF_GatherTools.Speed(m_Node, LF_GatherTools.HeldTool(user, m_Node, m_CheckInventoryForToolRequirement));
+		if (speed <= 0)
+			return 1.0;
+		return speed;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server-side gate mirroring the client checks: cooldown and remaining gathers first,
 	//! then the tool requirement. A forged perform cannot skip these.
 	protected bool LF_CanGatherServer(IEntity user)
 	{
-		if (m_GatherAmountMax > 0 && m_iRemainingGathers <= 0 && m_NextRestock.Greater(user.GetWorld().GetTimestamp()))
+		if (m_GatherRegrowMs <= 0 && m_GatherAmountMax > 0 && m_iRemainingGathers <= 0 && m_NextRestock.Greater(user.GetWorld().GetTimestamp()))
 			return false;
 
 		LF_BaseCrop baseCrop = LF_BaseCrop.Cast(GetOwner());
@@ -175,6 +221,8 @@ class LF_GatherAction : ScriptedUserAction
 	//! anywhere in inventory when m_CheckInventoryForToolRequirement is set).
 	protected bool LF_HasGatherTool(IEntity user)
 	{
+		if (LF_GatherTools.NeedsTool(m_Node))
+			return !LF_GatherTools.HeldTool(user, m_Node, m_CheckInventoryForToolRequirement).IsEmpty();
 		return HasToolIn(user, m_GatherToolRequirement, m_CheckInventoryForToolRequirement);
 	}
 
@@ -221,12 +269,64 @@ class LF_GatherAction : ScriptedUserAction
 			return false;
 		}
 
+		m_Node = node;
 		m_GatherItemPrefab = node.m_ItemPrefab;
 		m_GatherAmount = node.m_iYield;
 		m_GatherToolRequirement = node.m_ToolPrefab;
 		m_GatherAmountMax = node.m_iMaxGathers;
 		m_GatherTimeout = node.m_fCooldownMs;
+		m_GatherRegrowMs = node.m_fRegrowMs;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Milliseconds on this spot's own clock: world time since the spot was first touched.
+	protected float StockNowMs(IEntity any)
+	{
+		WorldTimestamp now = any.GetWorld().GetTimestamp();
+		if (!m_StockEpoch)
+			m_StockEpoch = now;
+		return now.DiffMilliseconds(m_StockEpoch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stock model (#2409): true when this gather may go ahead, and the stock drops by one.
+	//! Spots on the cooldown model, or with no limit, always pass.
+	protected bool TakeStock(IEntity owner)
+	{
+		if (m_GatherRegrowMs <= 0 || m_GatherAmountMax <= 0)
+			return true;
+
+		float nowMs = StockNowMs(owner);
+		if (!m_Stock)
+			m_Stock = LF_GatherStock.Create(m_GatherAmountMax, m_GatherRegrowMs, nowMs);
+
+		if (!m_Stock.Take(nowMs))
+			return false;
+
+		LF_Debug.Info("Gathering", string.Format("%1 stock %2/%3", owner.GetName(), m_Stock.Available(nowMs), m_GatherAmountMax));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A grant that failed (full pockets) puts its gather back, so a refusal never eats stock.
+	protected void GiveBackStock(IEntity owner)
+	{
+		if (m_Stock)
+			m_Stock.GiveBack();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spot is empty: the player is told, with the time to the next gather.
+	protected void RefuseEmpty(IEntity owner, IEntity user)
+	{
+		float nowMs = StockNowMs(owner);
+		int minutes = Math.Ceil(m_Stock.MsUntilNext(nowMs) / 60000);
+		if (minutes < 1)
+			minutes = 1;
+
+		LF_Debug.Warn("Gathering", string.Format("rejected gather: %1 is empty, next in %2 min", owner.GetName(), minutes));
+		LF_Utils.NotifyEntity(user, "#LF-Gather_EmptyWait", "", 4.0, minutes.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 // red-proof: 2026-11-14 `tools\cli test --no-build --only LF_Test_TestOrgSignWorld` with the expected owner name changed to Nobody failed `the door knows its owner's name (expected 'Nobody', got 'Test Organisation')`. Restored; green.
-// tier: WORLD
 //! Test org sign (#934): the sign prefab offers Join and Leave beside its Read card, the card
 //! resolves, and a hideout door learns the name of the organisation that holds it.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TestOrgSignWorld : LF_Test
 {
 	static const ResourceName SIGN_PREFAB = "{256EE1573D428340}Prefabs/Props/Signs/LF_Sign_TestOrg.et";

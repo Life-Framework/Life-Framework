@@ -100,17 +100,83 @@ class LF_MapMarks
 {
 	static const string FEATURE = "MapMarks";
 	static const int MAX_PER_CHARACTER = 20; // lf-fixed: D-M11, 20 personal marks per character
+	static const int SHARE_COPY_RANGE = 1; // lf-fixed: #2623, a saved copy of a shared mark sits within 1 m of it
 
 	//! Server: character key -> marks in placing order.
 	protected static ref map<string, ref array<ref LF_MapMarkRow>> s_mMarks;
 	//! Networked marker adds refused since the world started (both sides; tests read it).
 	protected static int s_iNetworkedRefused;
+	//! Server: the last restore generation handed out (session only, never saved). 0 is never issued.
+	protected static int s_iLastGeneration;
+	//! Server: player id -> the generation of that player's latest restore.
+	protected static ref map<int, int> s_mGeneration;
+	//! Server: player id -> the character key that restore was for.
+	protected static ref map<int, string> s_mGenerationCharacter;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_mMarks = null;
 		s_iNetworkedRefused = 0;
+		s_iLastGeneration = 0;
+		s_mGeneration = null;
+		s_mGenerationCharacter = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a new restore generation for this player's character (spawn, respawn, character
+	//! switch). The client echoes it on its next upload; an upload stamped with an older generation was
+	//! queued before the switch and holds the previous character's marks (#2546). Numbers are unique
+	//! across players for the session.
+	static int IssueGeneration(int playerId, string characterId)
+	{
+		if (!s_mGeneration)
+			s_mGeneration = new map<int, int>();
+		if (!s_mGenerationCharacter)
+			s_mGenerationCharacter = new map<int, string>();
+
+		s_iLastGeneration++;
+		s_mGeneration.Set(playerId, s_iLastGeneration);
+		s_mGenerationCharacter.Set(playerId, characterId);
+		return s_iLastGeneration;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the player's current restore generation, 0 before the first restore.
+	static int GenerationOf(int playerId)
+	{
+		if (!s_mGeneration)
+			return 0;
+
+		int generation;
+		s_mGeneration.Find(playerId, generation);
+		return generation;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a player's uploaded mark list, saved under `characterId` only when `generation` is that
+	//! player's current restore generation and that restore was for the same character. Anything else
+	//! is an upload the client queued before a character switch (or before its first restore) and is
+	//! dropped with a log line, so one character's marks never land under another's key (#2546).
+	//! \return Marks kept, or -1 when the list was dropped.
+	static int SetFromPlayer(int playerId, string characterId, int generation, array<ref LF_MapMarkRow> rows)
+	{
+		int current = GenerationOf(playerId);
+		if (current == 0 || generation != current)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("mark list dropped: player %1 sent generation %2, current is %3 (queued before a character switch)", playerId, generation, current));
+			return -1;
+		}
+
+		string issuedFor;
+		s_mGenerationCharacter.Find(playerId, issuedFor);
+		if (issuedFor != characterId)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("mark list dropped: player %1 generation %2 was for character '%3', now '%4'", playerId, generation, issuedFor, characterId));
+			return -1;
+		}
+
+		return SetCharacter(characterId, rows);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -202,9 +268,70 @@ class LF_MapMarks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: a character's marks on the wire, for the spawn restore.
+	//! Server: drops the character's marks that are saved copies of a live share the character sees now
+	//! (same text, within SHARE_COPY_RANGE metres). Before the review fix (#2495 finding 9) shared marks
+	//! were uploaded as personal marks, so old "mapmarks" rows hold org and dispatch marks that came back
+	//! as ordinary deletable marks. The store keeps the cleaned list, so the next save writes it. Copies
+	//! of shares that already expired cannot be matched and stay (lead decision #2623; wipes clear them).
+	//! \return Marks dropped.
+	static int DropShareCopies(string characterId)
+	{
+		array<ref LF_MapMarkRow> marks = Character(characterId, false);
+		if (!marks || marks.IsEmpty())
+			return 0;
+
+		array<ref LF_MapShareRow> shares = {};
+		LF_MapShares.VisibleToCharacter(characterId, shares);
+		if (shares.IsEmpty())
+			return 0;
+
+		int dropped;
+		for (int i = marks.Count() - 1; i >= 0; i--)
+		{
+			if (!IsShareCopy(marks[i], shares))
+				continue;
+
+			marks.RemoveOrdered(i);
+			dropped++;
+		}
+
+		if (dropped > 0)
+			LF_Debug.Info(FEATURE, string.Format("restore dropped %1 saved copy(ies) of shared marks for %2", dropped, characterId));
+
+		return dropped;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A mark is a copy of a share when it lies within SHARE_COPY_RANGE metres of it and its text is the
+	//! share's, or the share's localization key as the client showed it.
+	protected static bool IsShareCopy(LF_MapMarkRow row, notnull array<ref LF_MapShareRow> shares)
+	{
+		if (!row)
+			return false;
+
+		foreach (LF_MapShareRow share : shares)
+		{
+			int dx = row.m_iPosX - share.m_iX;
+			int dz = row.m_iPosY - share.m_iZ;
+			if (dx * dx + dz * dz > SHARE_COPY_RANGE * SHARE_COPY_RANGE)
+				continue;
+
+			if (row.m_sText == share.m_sText)
+				return true;
+
+			if (share.m_sText.StartsWith("#") && row.m_sText == WidgetManager.Translate(share.m_sText))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a character's marks on the wire, for the spawn restore. Saved copies of live shares are
+	//! dropped first (DropShareCopies).
 	static int ExportCharacter(string characterId, notnull array<int> ints, notnull array<string> texts)
 	{
+		DropShareCopies(characterId);
 		array<ref LF_MapMarkRow> marks = Character(characterId, false);
 		if (!marks)
 			return 0;
@@ -263,6 +390,16 @@ class LF_MapMarks
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: may this player's mark sync or save go ahead? Its own rate bucket (LF_ERequestKind.MAP), not
+	//! the shared COMMS one: three phone or board asks in five seconds used to drop the respawn's restore
+	//! or the last save, and the next upload then overwrote the stored marks with the client's (maybe
+	//! empty) map (review 2026-11-17).
+	static bool AllowAsk(int playerId, string request, bool notify = true)
+	{
+		return LF_RateLimit.Allow(playerId, LF_ERequestKind.MAP, request, notify);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Both sides: a networked marker add was refused (D-M7: vanilla shared markers are off).
 	static void RefuseNetworked(string where)
 	{
@@ -278,11 +415,43 @@ class LF_MapMarks
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of the mark store (registered at script load; Core/LF_StaticReset.c).
+//! A read-only view of the share table for the mark restore (#2623). It lives here, beside its only
+//! user, so the share table's own file stays as it is.
+modded class LF_MapShares
+{
+	//------------------------------------------------------------------------------------------------
+	//! Server: the live shares the player on this character sees now, in put order; none when the
+	//! character is not on the server. The rows are the table's own: read them, never change them.
+	static void VisibleToCharacter(string characterId, notnull array<ref LF_MapShareRow> outRows)
+	{
+		outRows.Clear();
+		if (characterId.IsEmpty() || !s_mRows || !s_aOrder)
+			return;
+
+		array<int> players = {};
+		Facts().Players(players);
+		foreach (int playerId : players)
+		{
+			LF_MapShareMember member = Facts().Of(playerId);
+			if (!member || member.m_sUid != characterId)
+				continue;
+
+			foreach (string key : s_aOrder)
+			{
+				LF_MapShareRow row = s_mRows.Get(key);
+				if (row && LF_MapShareRules.InAudience(row.m_eAudience, row.m_sAudienceId, member))
+					outRows.Insert(row);
+			}
+
+			return;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of the mark store (LF_StaticReset finds it by reflection).
 class LF_MapMarks_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_MapMarks_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_MapMarks";

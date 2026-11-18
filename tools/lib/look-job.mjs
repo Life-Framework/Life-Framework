@@ -97,6 +97,11 @@ export const requestNeedsRam = (serverLive, world) => !serverLive || worldClass(
 //   reopen   only files Workbench never loads changed, or only files of `reopenExt` (modified in place):
 //            write them, reopen the world
 //   restart  anything else under addons/ (added, deleted, renamed, a script, a .meta): new Workbench
+// Only a world's own layer files are read again when a live Workbench reopens the world. A prefab (.et),
+// material, config or mesh is a resource Workbench keeps loaded across a reopen, so a reopen after one of
+// them changed would shoot the old one: those always restart, whatever LF_LOOK_REOPEN_EXT lists.
+export const REOPEN_SAFE_EXT = [".layer"];
+
 export function mirrorMode({ changes = [], reopenExt = [], pluginChanged = false, hasServer = true }) {
   if (!hasServer) return { reload: "restart", reason: "no server" };
   if (pluginChanged) return { reload: "restart", reason: "the look plugin changed" };
@@ -106,7 +111,26 @@ export function mirrorMode({ changes = [], reopenExt = [], pluginChanged = false
     if (!c.path.startsWith("addons/")) continue;
     addons++;
     const ext = (c.path.match(/\.[^./]+$/)?.[0] ?? "").toLowerCase();
-    if (c.status !== "M" || !reopenExt.includes(ext)) return { reload: "restart", reason: `${c.status} ${c.path}` };
+    if (c.status !== "M" || !reopenExt.includes(ext) || !REOPEN_SAFE_EXT.includes(ext)) return { reload: "restart", reason: `${c.status} ${c.path}` };
   }
   return { reload: "reopen", reason: addons ? `${addons} addon file(s) changed in place` : "only files outside addons/ changed" };
+}
+
+// ---------------------------------------------------------------- what a picture shows
+
+// Every look records the git tree of addons/ it was asked to show (`inputs.addons`, from the caller's snapshot:
+// HEAD plus uncommitted and untracked files) and the tree the Workbench actually had on disk when it shot
+// (`inputs.rendered`: the viewer checkout for the look server, the snapshot for a fresh Workbench).
+// Why the pictures cannot be trusted, or null.
+export function renderProblem({ expected, rendered }) {
+  if (!expected || !rendered) return `no input hash recorded (asked ${expected || "?"}, rendered ${rendered || "?"})`;
+  if (expected !== rendered) return `the Workbench rendered addons tree ${rendered.slice(0, 10)}, not the requested ${expected.slice(0, 10)}`;
+  return null;
+}
+
+// A before and after picture of the same addon files cannot show a change (#2364: the "before" look was shot
+// after the edit, and the snapshot includes uncommitted files). Why the pair is wrong, or null.
+export function samePairProblem(before, after) {
+  if (!before || !after || before !== after) return null;
+  return `before and after show the same addon files (tree ${after.slice(0, 10)}): a look shows the working tree, uncommitted edits included, so the "before" was shot after the edit, or the edit is not under addons/. Shoot "before" from a checkout without the change (git stash, or the base commit)`;
 }

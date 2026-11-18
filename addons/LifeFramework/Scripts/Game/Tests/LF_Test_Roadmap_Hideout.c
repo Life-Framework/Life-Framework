@@ -5,7 +5,8 @@
 // `[LFTEST] FAIL roadmap/hideout-save` (`- one hideout record is exported (expected 1, got 0)`).
 // Restored; green.
 
-// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
+//! Needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_Hideout : LF_Test
 {
 	override string GetName()
@@ -60,7 +61,7 @@ class LF_Test_Roadmap_Hideout : LF_Test
 	}
 }
 
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_HideoutWorld : LF_Test
 {
 	override string GetName()
@@ -156,7 +157,7 @@ class LF_Test_Roadmap_HideoutWorld : LF_Test
 	}
 }
 
-// tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_Roadmap_HideoutPersistence : LF_Test
 {
 	override string GetName()

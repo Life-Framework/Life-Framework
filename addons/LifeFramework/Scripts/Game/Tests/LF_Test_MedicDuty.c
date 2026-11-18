@@ -4,7 +4,7 @@
 //! civilian inventory and issues the medic kit with a pager; the routing then sees them as the
 //! medic job; clock-out returns the civilian inventory, stores the medic one in its own slot and
 //! pays duty pay. The police desk keeps working (police/duty-swap).
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MedicDutySwap : LF_Test
 {
 	protected static const string UID = "medic-duty-swap";
@@ -99,7 +99,7 @@ class LF_Test_MedicDutySwap : LF_Test
 //------------------------------------------------------------------------------------------------
 //! medic/duty-desk (#258): the hospital desk is placed in the playtest town and its punch clock
 //! carries the clock-in action for the medic role.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MedicDutyDesk : LF_Test
 {
 	override string GetName()

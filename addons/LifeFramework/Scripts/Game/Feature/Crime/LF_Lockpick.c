@@ -258,7 +258,7 @@ class LF_Lockpick
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn True when the pick action should be listed on this target: a pick target that is locked.
+	//! \return True when the pick action should be listed on this target: a pick target that is locked.
 	static bool ShowsPick(IEntity target)
 	{
 		return target && LF_Component<LF_LockpickTargetComponent>.Find(target) != null && IsLockKnown(target) && IsLocked(target);
@@ -323,6 +323,9 @@ class LF_Lockpick
 			return false;
 		}
 
+		if (LF_CuffEnforcement.Refuse(user, "lockpick"))
+			return false;
+
 		if (playerUid.IsEmpty())
 		{
 			LF_Debug.Error(FEATURE, "begin refused: player has no account id");
@@ -381,6 +384,12 @@ class LF_Lockpick
 		if (controller && controller.GetLifeState() != ECharacterLifeState.ALIVE)
 		{
 			Drop(attempt, user, "user is down");
+			return;
+		}
+
+		if (LF_Restraint.IsRestrained(user))
+		{
+			Drop(attempt, user, "user is cuffed");
 			return;
 		}
 
@@ -491,11 +500,9 @@ class LF_Lockpick
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Lockpick's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Lockpick's statics (LF_StaticReset finds it by reflection).
 class LF_Lockpick_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Lockpick_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Lockpick";

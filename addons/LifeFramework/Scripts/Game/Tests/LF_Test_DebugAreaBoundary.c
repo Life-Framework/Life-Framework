@@ -3,7 +3,7 @@
 // main serial thread - the corner assertions fail because the four corners are
 // no longer the full ±size box around the origin.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DebugAreaBoundary : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

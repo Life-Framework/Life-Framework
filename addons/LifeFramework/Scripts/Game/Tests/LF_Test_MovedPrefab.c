@@ -6,7 +6,7 @@
 //! GUID with a shipped prefab under a path that does not exist, the way a pre-move config or save
 //! looks to a post-move entity (and the other way round). The lookups must still find the prefab.
 // red-proof (#1892, 2026-11-16): `tools\cli test --no-build --only <the 7 slice-1892 tests> --world Worlds/GridWorld/GridWorld.ent` before Grid_orgs_vehicles.layer failed all 7 (no org hideout door, no flagged lot, no store, no impound pad); green with it.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MovedPrefab : LF_Test
 {
 	static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

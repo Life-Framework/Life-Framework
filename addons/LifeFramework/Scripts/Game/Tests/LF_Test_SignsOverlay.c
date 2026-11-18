@@ -2,9 +2,9 @@
 // line in LF_SignList.PatchFromContainer replaced by `if (false)`, got `FAIL signs/overlay` "patch: the
 // hospital sign gets the overlay's picture (expected '{F02831E43418249A}...LF_IdStamp.imageset', got '')". Restored; green.
 
-// tier: LOGIC
 //! A pack overlay of LF_SignConfig patches and adds signs by id (#323): the 1989 pack gives the core
 //! hospital sign its picture this way, so the core LF_Signs.conf names no pack resource.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignsOverlay : LF_Test
 {
 	static const ResourceName OVERLAY = "{6BF6404AB2FD3B8D}Configs/Tests/LF_Test_SignsOverlay.conf";

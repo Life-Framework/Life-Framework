@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_ParcelCarry` and CarrierIsDown(null) returning false:
 // FAIL no carrier counts as down. Restored; green.
 
-// tier: WORLD
 //! A carried parcel is kept in the hands of a living carrier; a downed or dead one lets go.
 //! A dropped parcel (not in any slot) is told apart from a carried one.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ParcelCarry : LF_Test
 {
 	override string GetName()

@@ -2,7 +2,7 @@
 // (return a == b) and run `tools\cli test --tier fast`; the two empty-identifier
 // assertions fail because "" == "" matches, and an unbound key opens everything.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehicleLockIdMatch : LF_Test
 {
 	override string GetName()

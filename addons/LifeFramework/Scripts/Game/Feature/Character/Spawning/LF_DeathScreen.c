@@ -108,9 +108,20 @@ class LF_DeathScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Called by LF_DeathScreen_StaticResetHook when a world ends: takes down a screen nobody answered.
+	static void ResetStatics()
+	{
+		if (s_Instance)
+			s_Instance.Close();
+
+		s_Instance = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Close()
 	{
-		GetGame().GetCallqueue().Remove(ActivateMenuContext);
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(ActivateMenuContext);
 
 		if (m_wRoot)
 		{
@@ -119,5 +130,21 @@ class LF_DeathScreen
 		}
 
 		s_Instance = null;
+	}
+}
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_DeathScreen's statics (LF_StaticReset finds it by reflection).
+//! Only the Respawn button closed the screen, so a death followed by a disconnect or a server
+//! restart kept the stale instance: the next death returned it and showed no screen.
+class LF_DeathScreen_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_DeathScreen";
+	}
+
+	override void Apply()
+	{
+		LF_DeathScreen.ResetStatics();
 	}
 }

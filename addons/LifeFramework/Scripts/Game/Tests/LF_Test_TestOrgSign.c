@@ -1,8 +1,9 @@
 // red-proof: 2026-11-14 `tools\cli test --no-build --only LF_Test_TestOrgSign` with the expected entry rank changed to founder failed `later ones join at the entry rank (expected 'founder', got 'member')`. Restored; green.
 // red-proof (#1892, 2026-11-16): `tools\cli test --no-build --only <the 7 slice-1892 tests> --world Worlds/GridWorld/GridWorld.ent` before Grid_orgs_vehicles.layer failed all 7 (no org hideout door, no flagged lot, no store, no impound pad); green with it.
-// tier: WORLD (needs the organization hideout door: GridWorld's Grid_orgs_vehicles.layer; LOGIC runs on any map, #1047)
+//! Needs the organization hideout door: GridWorld's Grid_orgs_vehicles.layer; LOGIC runs on any map, #1047
 //! Test org sign (#934): the gate, the founder rule, the direct join and leave the sign uses, and
 //! the wording of the hideout door ("Members only (<org>)" for a stranger, "Open" for a member).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TestOrgSign : LF_Test
 {
 	override string GetName()

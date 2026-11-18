@@ -1,5 +1,5 @@
 // red-proof: TrialExpired returns false: '[LFTEST] FAIL police/trial-expiry', restored (2026-11-14)
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceTrialExpiry : LF_Test
 {
 	override string GetName()

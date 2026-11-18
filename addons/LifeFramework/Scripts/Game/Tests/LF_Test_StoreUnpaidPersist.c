@@ -4,7 +4,6 @@
 // red-proof: observed 2026-11-11, same loop: a restored tag that never leaves its grace (the reviewer's logout exploit) failed
 // `- after the grace, carrying the restored goods outside is shoplifting (expected 1, got 0)`; restored, green.
 
-// tier: PERSISTENCE
 //! Unpaid store tags ride the real save path (the "storeunpaid" payload, save version 25, #479): a
 //! shopper with one unpaid apple in the pocket and one eaten in the shop is saved, the session forgets
 //! the tags and the body, and the save loads. The tags wait under the shopper's character key; the
@@ -13,6 +12,7 @@
 //! once it has been inside again, or the grace ran out, walking around outside with the goods is.
 //! A second load binds the same tags, never doubled. A tag whose item or store is gone is dropped.
 //! A version 24 save leaves the waiting tags alone. The test puts back what it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_StoreUnpaidPersist : LF_Test
 {
 	protected static const string SHOPPER_KEY = "store-unpaid-shopper";

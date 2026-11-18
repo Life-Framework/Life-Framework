@@ -3,10 +3,10 @@
 // red-proof (#1893 grid globe): 2026-11-16 on GridWorld, before the Grid_zones_spawn globe, `--only LF_Test_SpawnHub
 // --world Worlds/GridWorld/GridWorld.ent` failed `- the spawn table stands at a travel globe`. The RedProof() hook looks
 // up a name no world places and the globe assertions go red.
-// tier: WORLD
 //! Spawn hub (#607): the shipped config loads with the areas the playtest notes name, every row has
 //! a unique id and a name string, a travel request is refused when the game mode is not a
 //! playtest mode, for an unknown id, for no body and away from the travel globe, and a good request puts a body at the row.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SpawnHub : LF_Test
 {
 	//! The travel globe in the grid cell GridWorld_Layers/Grid_zones_spawn.layer (the playtest town has its own).

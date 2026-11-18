@@ -22,6 +22,24 @@ class LF_StunBuzz
 	protected static int s_iStopped;
 
 	//------------------------------------------------------------------------------------------------
+	//! World end (LF_StunBuzz_StaticResetHook) and tests. Only the map is cleared: the audio sources
+	//! die with the world, so there is nothing to terminate.
+	static void ResetStatics()
+	{
+		s_mPlaying.Clear();
+		s_iStarted = 0;
+		s_iStopped = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: record a buzz as playing on a character without a sound manager.
+	static void MarkPlayingForTest(EntityID id)
+	{
+		s_mPlaying.Set(id, null);
+		s_iStarted++;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Pure rule: what to do for a character given its stun flag and whether its buzz plays here.
 	//! \return 1 start, -1 stop, 0 nothing.
 	static int Decide(bool stunned, bool playing)
@@ -131,5 +149,20 @@ class LF_StunBuzz
 	static int GetStoppedCount()
 	{
 		return s_iStopped;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_StunBuzz's statics (LF_StaticReset finds it by reflection).
+class LF_StunBuzz_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_StunBuzz";
+	}
+
+	override void Apply()
+	{
+		LF_StunBuzz.ResetStatics();
 	}
 }

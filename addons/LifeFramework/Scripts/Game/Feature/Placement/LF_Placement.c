@@ -80,7 +80,8 @@ class LF_PlacementRules
 	//! Server and client: the first entity inside the oriented box `mins`..`maxs` in `transform`'s
 	//! frame (the vanilla item placement's space check, SCR_ItemPlacementComponent.ValidatePlacement),
 	//! described for a log line; empty when the box is clear. Terrain is not an entity, so a box
-	//! lifted off the ground only meets what stands on it.
+	//! lifted off the ground only meets what stands on it. A box in a door's swing or walk-up is
+	//! blocked by "a door" (LF_PlacementDoors).
 	static string FindBlocker(vector transform[4], vector mins, vector maxs, array<IEntity> exclude)
 	{
 		BaseWorld world = GetGame().GetWorld();
@@ -101,10 +102,11 @@ class LF_PlacementRules
 			trace.ExcludeArray = exclude;
 
 		world.TracePosition(trace, null);
-		if (!trace.TraceEnt)
-			return "";
+		if (trace.TraceEnt)
+			return Describe(trace.TraceEnt);
 
-		return Describe(trace.TraceEnt);
+		// Nothing stands in the box, but a door's swing and walk-up are kept clear too (#2445).
+		return LF_PlacementDoors.Find(transform, mins, maxs, exclude);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -268,11 +270,9 @@ class LF_PlacementGhost
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PlacementGhost's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PlacementGhost's statics (LF_StaticReset finds it by reflection).
 class LF_PlacementGhost_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PlacementGhost_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PlacementGhost";

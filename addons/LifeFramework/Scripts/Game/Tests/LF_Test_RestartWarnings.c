@@ -1,8 +1,8 @@
 // red-proof: Observed 2026-11-15 before LF_RestartSchedule existed: `tools\cli test --no-build --only LF_Test_RestartWarnings` failed to compile ("Unknown type 'LF_RestartSchedule'"), so it could not pass. Batched `--red` run 2026-11-15: `RED-OK ops/restart-warnings (fails with the hook on, 32 assertions)`; green without it (`--only`, 1 of 1).
-// tier: LOGIC
 //! The restart schedule (#1264): from a clock (seconds since local midnight) the schedule answers the
 //! seconds to the next restart and every warning time still ahead, the restart itself last. Times are
 //! `restarts.times`, leads `restarts.warningMinutes`. Pure: the clock is an argument.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestartWarnings : LF_Test
 {
 	override string GetName()

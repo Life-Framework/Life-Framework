@@ -173,7 +173,7 @@ supplies every coordinate the later steps use. No step types a coordinate.
 
 ### 3.2 Mapping: templates, then a per-place mapping file
 
-- **Template** (`tools/town/templates/<kind>.json`, kinds `town`, `village`, `harbour`, `site`): the
+- **Template** (`tools/town/templates/<kind>.json`, kinds `town`, `village`, `harbour`, `districts`, `site`; `districts` is the residential ring round a square, with no required slot): the
   slots of a place kind. Each slot has an id, `required` or optional, the kit it takes, what the
   building needs (interior, ground floor, area, street frontage, distance from the square) and the
   `LF_Places` kinds the core system looks for once it is fitted. Each slot also names its `poi`, the
@@ -217,6 +217,15 @@ supplies every coordinate the later steps use. No step types a coordinate.
   probes, checks and audit), writes `MainWorld_Layers/Place_<place>_<slot>.layer`, adds the slot's
   `LF_PlaceComponent` (kind and id from the template, id `<place>.<slot>`), runs `audit placement` on the
   new layer and takes `look --interior` and exterior pictures for the PR.
+- **Seat on the host** (`tools/town/seat.mjs`). The island's vanilla host can differ from the playtest copy a kit
+  came from, so offsets alone floated, sank and clipped rows (audits on #2369, #2378, #2394). A host that shows the
+  kit's own building model takes the kit at its origin and yaw (never turned to an entrance), and a kit's offsets are not
+  lifted by the dossier floor a second time. Then each row is corrected from the host's `.xob` colliders, offline: a
+  floor row onto the host top under it, a wall-mounted row (`on: "wall"`, a `wall` tag or a hung kind) along its
+  facing onto the nearest wall plane, a row cutting a wall pushed out by up to 0.3 m. A row still cutting the shell
+  refuses the fit (`--allow-clip` writes it); a row hung on a socket of the source building is left out with a warning,
+  and a row standing in a prop the host carries itself (a vanilla furniture set a layer cannot remove) is flagged.
+  `town fit <place> <slot> --check` prints the per-row corrections against the layer on disk and writes nothing.
 
 ### 3.4 Parallelism
 
@@ -269,7 +278,7 @@ town (`world-zones.md` "Tests do not read the town").
   slot's entrance on the `GM_Eden.nmn` navmesh. It fails on a slot with no path, or with a path over
   3 times the straight-line distance.
 - **Phase readiness** (`town ready <state>`): every place of the state passes `town check`, every system
-  that the state's chapters list is present (the boot log has no "switches off" line for it), the arrival
+  that the state's chapters list is present (the boot log has no `[LFDebug:<System>] no <Kind> placed on this map: off` line, which `LF_Systems.CheckPlaces` logs for a system with no place), the arrival
   route works end to end on the flagship header, and no live slot points at a dark place.
 
 ### 3.6 Phased map states and the bake order

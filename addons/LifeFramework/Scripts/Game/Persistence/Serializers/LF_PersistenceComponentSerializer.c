@@ -14,7 +14,6 @@
 //! the lock identifier. Jail sentences live in LF_Jail, keyed by the player uid. Carried
 //! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name. Placed
 //! storage (LF_PersistentStorageComponent, the hideout stash) rides the same store under its key.
-//! inventories live in LF_StorageSnapshot, keyed by character persistence id and slot name.
 //! Progression (career, police rank and duty seconds, benefit cooldown, level, licences, quest
 //! turn-ins) lives in LF_Progression and its owners, keyed by the player uid.
 //! "Player uid" in this list means the character record key (#331, LF_Utils.GetPlayerUID): slot 1 of
@@ -31,11 +30,13 @@
 //! vehicle records in LF_VehicleOwnership as [NonSerialized()] fields, keyed by vehicle id.
 //! Held ground (holder, hold seconds, banked points per hideout; #751) rides beside the hideout
 //! leases on LF_HideoutState, keyed by hideout id.
+//! House lock state and owner (#2410) live in LF_Houses, keyed by the stable house identifier. The
+//! house each carried key opens rides beside the snapshots in LF_StorageSnapshot ("itemkeys").
 //!
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks. The written version is that list's length (43). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, properties, placements, reputation, orgwars, garageslots, plants, lockers, tenancy. That list is frozen at 58 (LEGACY_COUNT); the store writes SECTIONED_FORMAT (#2841). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -88,6 +89,9 @@
 //! with no holder, no hold time and no points, which is exact (nobody held ground before #751).
 //! A version 34 save includes the held ground and has no stolen-item rows (#1855): carried items
 //! stolen before that restart come back unflagged, which is what that build did.
+//! A version 35 save includes the stolen flags and has no conviction rows (#1914): every record loads clean.
+//! A version 36 save includes the convictions and has no first-spawn marks (#1964): no character counts as new.
+//! A version 37 save includes the first-spawn marks and has no race records (#1925): the board starts empty.
 //! A version 38 save includes the race records and has no last positions (#1777): every character loads
 //! with no last position kept, which is what that build had.
 //! A version 39 save includes the last positions and has no hospital rejoins (#2101): a downed logout
@@ -98,8 +102,50 @@
 //! starts knowing only the public places and fills its map again by visiting.
 //! A version 42 save includes the map knowledge and has no personal map marks (#2236): every
 //! character starts with a clean map.
-//! The next system adds one Insert at the end of the list and raises the written version by one.
-//! Do not insert earlier and do not reorder: existing saves are positional.
+//! A version 43 save includes the personal map marks and has no org map marks (#2240): every
+//! organization starts with an empty shared map.
+//! A version 44 save includes the org map marks and has no armory book (#2416): every officer may draw
+//! a kit at once, with nothing outstanding.
+//! A version 45 save includes the armory book and has no house rows (#2410): every house loads with
+//! its editor lock state and no owner, which is what that build had (it never saved houses).
+//! A version 46 save includes the house rows and has no house keys (#2410): a carried house key comes
+//! back unbound, which is what that build did.
+//! A version 47 save includes the house keys and has no grace clocks (#2443): every character it holds
+//! is seeded with its account's playtime (LF_GraceCharacterClock.SeedFromAccounts), what the grace read then.
+//! A version 48 save includes the grace clocks and has no held job runs (#2408, #2481): a run's deposit
+//! was not saved, which is what that build did (a restart kept it).
+//! A version 49 save includes the held job runs and has no hideout idle clocks (#2573): every lease loads with
+//! its clock at the load time, so no lease lapses on the first boot after the update.
+//! A version 50 save includes the hideout idle clocks and has no property rows (#2646): the property book
+//! loads empty.
+//! A version 51 save includes the property rows and has no permanent placements (#1032): nothing a
+//! player placed was kept, which is what that build did.
+//! A version 52 save includes the permanent placements and has no standing rows (#2698): every
+//! character loads with no standing, which is what that build did.
+//! A version 53 save includes the standing rows and has no organization wars (#2672): no war,
+//! declaration or pair cooldown is restored.
+//! A version 54 save includes the organization wars and has no bought garage slots (#2656): every
+//! character has only the base slots.
+//! A version 55 save includes the bought garage slots and has no planted crops (#2664): nothing is planted.
+//! A version 56 save includes the planted crops and has no locker rentals (#2659): every locker
+//! bank loads with nobody renting.
+//! A version 57 save includes the locker rentals and has no hideout tenancy rows (#2816): every
+//! lease loads as a base lease, none as captured ground.
+//! The list is FROZEN at LEGACY_COUNT (#2841): a new payload is an LF_SavePayload section in its own
+//! feature file, never an Insert here. Do not insert, append or reorder: existing saves are positional.
+//!
+//! SECTIONS (#2841). A save written at SECTIONED_FORMAT holds every legacy payload positionally,
+//! exactly as a LEGACY_COUNT save does, then the section manifest and one named object per
+//! LF_SavePayload, each with its own small version (LF_SaveSections, docs/persistence.md
+//! "Sections"). A positional save (1..LEGACY_COUNT) has no sections: each registered section gets
+//! OnAbsent(). A build from before the switch reads a sectioned save as a newer version: every
+//! legacy payload loads (the same positions) and autosave pauses, the rule below.
+//!
+//! NEWER SAVES. A save whose version is above LEGACY_COUNT and not SECTIONED_FORMAT (or above
+//! SECTIONED_FORMAT), or that holds a section this build cannot read, was written by a newer build (a
+//! rollback, or a merge the main guard reverted). Its known payloads load, the rest are not read,
+//! and the load counts as damaged: the next save would drop the payloads this build cannot read,
+//! so autosave pauses and the save on disk is kept (the #980 fail-safe).
 //!
 //! IDEMPOTENT ON A LIVE SESSION. Deserialize also runs when saved data is re-applied to a running
 //! session. The manager ApplyAll() implementations are plain replacement of cached state, and the
@@ -108,6 +154,11 @@
 //------------------------------------------------------------------------------------------------
 class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 {
+	//! The frozen length of RegisterPersistencePayloads (#2841). Never raised again: new payloads are sections.
+	static const int LEGACY_COUNT = 58;
+	//! The version a sectioned save writes: the legacy payloads, then the sections (#2841).
+	static const int SECTIONED_FORMAT = 1000;
+
 	//! True once DeserializeStore ran this boot. A boot that continues a save and reaches ACTIVE
 	//! with this still false has a save written before the pre-release LF_ rename (the engine matches
 	//! the component key LF_PersistenceComponent:<id> literally), see docs/persistence.md "Save reset".
@@ -115,6 +166,8 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 
 	//! Payloads (the account and bank prefix included) that failed to read in the last store read.
 	protected static int s_iReadFailures;
+	//! Payloads the last store read did not apply because an earlier one failed to read (#2489).
+	protected static int s_iSkippedAfterFailure;
 	//! True when the last store read lost data (#980): autosave is paused so the next autosave does not
 	//! overwrite the save on disk with what is left. A clean re-apply clears it.
 	protected static bool s_bLoadDamaged;
@@ -124,6 +177,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	static int GetReadFailures()
 	{
 		return s_iReadFailures;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Payloads the last store read did not apply because an earlier one failed to read.
+	static int GetSkippedAfterFailure()
+	{
+		return s_iSkippedAfterFailure;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -147,6 +207,16 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		s_bLoadDamaged = false;
 		s_iReadFailures = 0;
+		s_iSkippedAfterFailure = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! World teardown (LF_StaticReset): the next world has not read its store yet. A stale true here
+	//! hid a continued save that never reached the store in the next world, so autosave overwrote it.
+	static void ResetStatics()
+	{
+		s_bStoreLoaded = false;
+		ClearLoadDamaged();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -182,8 +252,16 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The only payload order. Index 0 is version 1. Written version equals this length.
-	//! Append the next system at the end; do not insert or reorder.
+	//! The payload names in save order, for tests that build a save by hand.
+	//! \param[out] order Empty array filled with the payload names in save order.
+	static void GetPayloadOrder(notnull array<string> order)
+	{
+		RegisterPersistencePayloads(order);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The legacy payload order. Index 0 is version 1. FROZEN at LEGACY_COUNT (#2841): a new payload
+	//! is an LF_SavePayload section in its feature folder, never an Insert here.
 	//! \param[out] order Empty array filled with the payload names in save order.
 	protected static void RegisterPersistencePayloads(notnull array<string> order)
 	{
@@ -230,6 +308,21 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("worldevents");
 		order.Insert("mapknown");
 		order.Insert("mapmarks");
+		order.Insert("orgmarks");
+		order.Insert("armorykits");
+		order.Insert("houses");
+		order.Insert("itemkeys");
+		order.Insert("graceclock");
+		order.Insert("jobruns");
+		order.Insert("leaseidle");
+		order.Insert("properties");
+		order.Insert("placements");
+		order.Insert("reputation");
+		order.Insert("orgwars");
+		order.Insert("garageslots");
+		order.Insert("plants");
+		order.Insert("lockers");
+		order.Insert("tenancy");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -263,7 +356,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 43);
+		context.WriteValue("version", SECTIONED_FORMAT);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -271,6 +364,27 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			WritePersistencePayload(persistence, context, payload);
 		}
 
+		LF_SaveSections.WriteAll(context);
+		return ESerializeResult.OK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The current format without some sections: what the build before those sections wrote. Tests
+	//! use it for "a save that predates this section".
+	//! \param[in] omit Section names to leave out.
+	static ESerializeResult SerializeStoreOmitting(notnull LF_PersistenceComponent persistence, notnull SaveContext context, notnull array<string> omit)
+	{
+		array<string> order = new array<string>();
+		RegisterPersistencePayloads(order);
+		context.WriteValue("version", SECTIONED_FORMAT);
+		WritePrefix(context);
+
+		foreach (string payload : order)
+		{
+			WritePersistencePayload(persistence, context, payload);
+		}
+
+		LF_SaveSections.WriteAll(context, omit);
 		return ESerializeResult.OK;
 	}
 
@@ -281,6 +395,10 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! \param[in] version Save version to write, 1 to the current one.
 	static ESerializeResult SerializeStoreAsVersion(notnull LF_PersistenceComponent persistence, notnull SaveContext context, int version)
 	{
+		// SECTIONED_FORMAT is the current store; any version 1..LEGACY_COUNT is positional, with no sections.
+		if (version >= SECTIONED_FORMAT)
+			return SerializeStore(persistence, context);
+
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
 		int written = Math.ClampInt(version, 1, order.Count());
@@ -337,6 +455,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		s_bStoreLoaded = true;
 		s_iReadFailures = 0;
+		s_iSkippedAfterFailure = 0;
 		LF_SaveStamp.ResetForLoad();
 		LF_SaveIds.BeginLoad();
 		array<string> order = new array<string>();
@@ -364,24 +483,79 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			ReadFailed("account records failed to read, leaving live accounts untouched");
 		}
 
-		array<ref LF_BankAccountRecord> bankRecords = new array<ref LF_BankAccountRecord>();
-		if (context.Read(bankRecords))
+		// #2489: the store is read positionally (binary), so after one failed read every later read
+		// can be misaligned, and one that happens to succeed would replace live state with what it
+		// misread. Stop at the first failure: what came before is applied, the rest keeps live state.
+		if (s_iReadFailures > 0)
 		{
-			LF_ATMManager.ApplyAll(bankRecords);
-			LF_Debug.Log("Persistence", string.Format("applied %1 bank account record(s)", bankRecords.Count()));
+			s_iSkippedAfterFailure++;
 		}
 		else
 		{
-			ReadFailed("bank records failed to read, leaving live balances untouched");
+			array<ref LF_BankAccountRecord> bankRecords = new array<ref LF_BankAccountRecord>();
+			if (context.Read(bankRecords))
+			{
+				LF_ATMManager.ApplyAll(bankRecords);
+				LF_Debug.Log("Persistence", string.Format("applied %1 bank account record(s)", bankRecords.Count()));
+			}
+			else
+			{
+				ReadFailed("bank records failed to read, leaving live balances untouched");
+			}
 		}
 
+		// A sectioned save (#2841) holds every legacy payload, positionally, before its sections. Every
+		// "version <= order.Find(x)" check below reads this, so a sectioned save counts as having them all.
+		int legacyVersion = version;
+		if (version >= SECTIONED_FORMAT)
+			legacyVersion = order.Count();
+
+		int reached = 0;
 		for (int index = 0; index < order.Count(); index++)
 		{
-			if (index >= version)
+			if (index >= legacyVersion)
+				break;
+
+			if (s_iReadFailures > 0)
 				break;
 
 			ReadPersistencePayload(persistence, context, order.Get(index));
+			reached++;
 		}
+
+		if (s_iReadFailures > 0)
+			s_iSkippedAfterFailure += Math.Min(legacyVersion, order.Count()) - reached;
+
+		// The sections sit after the legacy payloads, so a positional failure before them leaves them unread
+		// (live state kept). Each section is its own skippable object: one that fails does not stop the rest.
+		if (version == SECTIONED_FORMAT)
+		{
+			if (s_iReadFailures > 0)
+			{
+				s_iSkippedAfterFailure++;
+			}
+			else
+			{
+				int sectionsFailed;
+				int sectionsUnread;
+				LF_SaveSections.ReadAll(context, sectionsFailed, sectionsUnread);
+				s_iReadFailures += sectionsFailed + sectionsUnread;
+			}
+		}
+		else if (version < SECTIONED_FORMAT)
+		{
+			LF_SaveSections.MarkAllAbsent();
+		}
+
+		if (s_iSkippedAfterFailure > 0)
+			LF_Debug.Error("Persistence", string.Format("save load stopped at the first failed read: %1 later payload(s) not applied, they keep their live state (a positional read past a failure is misaligned)", s_iSkippedAfterFailure));
+
+		// A newer build wrote this save: what it holds past this list cannot be read, and saving
+		// over it would drop that. Damaged, so autosave pauses and the save on disk is kept.
+		if (version > SECTIONED_FORMAT)
+			ReadFailed(string.Format("save format %1 is newer than this build's %2: only the legacy payloads are read; autosave pauses so the rest is not dropped", version, SECTIONED_FORMAT));
+		else if (version < SECTIONED_FORMAT && version > order.Count())
+			ReadFailed(string.Format("save version %1 is newer than this build's %2: %3 payload(s) at the end are not read; autosave pauses so they are not dropped", version, order.Count(), version - order.Count()));
 
 		// The owner's persistence switches (#689): each switched-off field is reset to its default
 		// now that every payload is read. Before the poster prune, so a cleared warrant's posters go.
@@ -389,22 +563,28 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 
 		// After every payload: a wanted report is kept only while the character it names is wanted,
 		// and the "characters" payload restores those levels after "wanted" loads (#331).
-		if (version > order.Find("wanted"))
+		if (legacyVersion > order.Find("wanted"))
 			LF_WantedReports.PruneCleared();
 
 		// A save from before #331 has no character slots. ApplyAll already keyed each account's one
 		// character by the account uid (slot 1), which is what that save's records use.
 		// A save from before #749 has no job XP rows: "progression" seeded them from its single
 		// level and delivery career.
-		if (version > order.Find("progression") && version <= order.Find("joblevels"))
+		if (legacyVersion > order.Find("progression") && legacyVersion <= order.Find("joblevels"))
 			LF_Debug.Info("Persistence", string.Format("save version %1 has no job xp rows: job levels migrated from the single level (CIVILIAN) and the delivery career (DELIVERY), %2 job xp row(s)", version, LF_JobLevels.ExportAll().Count()));
 
-		if (version <= order.Find("characters"))
+		// A save from before #2443 has no grace clocks: every character it holds gets its account's
+		// playtime, which is what the grace read then. After every payload, so playtime and slots are in.
+		if (legacyVersion <= order.Find("graceclock"))
+			LF_GraceCharacterClock.SeedFromAccounts();
+
+		if (legacyVersion <= order.Find("characters"))
 			LF_Debug.Info("Persistence", string.Format("save version %1 has no character slots: %2 account(s) load their character into slot 1, keyed by the account uid", version, LF_PlayerAccountManager.CountAccountsWithCharacters()));
 
 		LF_SaveIds.ReportLoad();
 		ReportLoad(version);
 		LF_SaveStamp.CaptureBoot();
+		LF_SaveSections.CaptureBoot();
 		return true;
 	}
 
@@ -419,7 +599,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		if (s_iReadFailures > 0)
 		{
 			s_bLoadDamaged = true;
-			LF_Debug.Error("Persistence", string.Format("save load damaged: %1 payload(s) failed to read (save version %2, game build %3, running %4). Autosave is paused so the save on disk is not overwritten; stop the server and restore the newest backup (tools/cli host restore, docs/ops/game-updates.md)", s_iReadFailures, version, build, running));
+			LF_Debug.Error("Persistence", string.Format("save load damaged: %1 payload(s) failed to read, %2 not applied after it (save version %3, game build %4, running %5). Saving is refused so the save on disk is not overwritten; stop the server and restore the newest backup (tools/cli host restore, docs/ops/game-updates.md)", s_iReadFailures, s_iSkippedAfterFailure, version, build, running));
 			return;
 		}
 
@@ -503,6 +683,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			// Every save point (autosave, manual, shutdown) refreshes living players first.
 			int captured = LF_StorageSnapshot.CaptureAllPlayers();
 			int placed = LF_PersistentStorageComponent.CaptureAllPlaced();
+			LF_VehicleOwnership.CaptureAllCargo();
 			array<ref LF_StorageSnapshotRecord> carriedRecords = LF_StorageSnapshot.ExportAll();
 			if (!carriedRecords)
 				carriedRecords = new array<ref LF_StorageSnapshotRecord>();
@@ -679,11 +860,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			// The game build and save version that wrote this save (#980).
 			int stampVersion = saveVersion;
 			if (stampVersion <= 0)
-			{
-				array<string> stampOrder = new array<string>();
-				RegisterPersistencePayloads(stampOrder);
-				stampVersion = stampOrder.Count();
-			}
+				stampVersion = SECTIONED_FORMAT;
 			array<ref LF_SaveStampRecord> stampRows = LF_SaveStamp.Export(stampVersion);
 			context.Write(stampRows);
 			LF_Debug.Log("Persistence", string.Format("saved build stamp: game build %1, save version %2", stampRows.Get(0).m_sGameBuild, stampVersion));
@@ -766,6 +943,112 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_MapMarkRow> mapMarkRows = LF_MapMarks.ExportAll();
 			context.Write(mapMarkRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 personal map mark(s)", mapMarkRows.Count()));
+		}
+		else if (payload == "orgmarks")
+		{
+			// Each organization's shared map marks (#2240), keyed by org id and serial.
+			array<ref LF_OrgMapMarkRow> orgMarkRows = LF_OrgMapMarks.ExportAll();
+			context.Write(orgMarkRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 org map mark(s)", orgMarkRows.Count()));
+		}
+		else if (payload == "armorykits")
+		{
+			// Each officer's armory book (#2416): last issue time and the serials still out.
+			array<ref LF_ArmoryKitRow> armoryRows = LF_ArmoryKits.ExportAll();
+			context.Write(armoryRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 armory book row(s)", armoryRows.Count()));
+		}
+		else if (payload == "houses")
+		{
+			// Lock state and owner of every house with a stable identifier (#2410), keyed by identifier.
+			array<ref LF_HouseLockRecord> houseRows = LF_Houses.ExportAll();
+			context.Write(houseRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 house row(s)", houseRows.Count()));
+		}
+		else if (payload == "itemkeys")
+		{
+			// Written after carried, like itemserials: the house each carried key opens (#2410).
+			array<ref LF_StorageItemKeyRecord> keyRows = LF_StorageSnapshot.ExportItemKeys();
+			context.Write(keyRows);
+			LF_Debug.Log("Persistence", string.Format("saved house keys of %1 snapshot(s)", keyRows.Count()));
+		}
+		else if (payload == "graceclock")
+		{
+			// Written after playtime, whose export credits the online clocks: each character's own played time (#2443).
+			array<ref LF_GraceClockRow> graceRows = LF_GraceCharacterClock.ExportAll();
+			context.Write(graceRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 grace clock(s)", graceRows.Count()));
+		}
+		else if (payload == "jobruns")
+		{
+			// Cargo deposits held against runs in progress (#2408, #2481): a restart ends the run, so the load takes
+			// the cargo still carried out of the snapshot and gives the deposit back.
+			array<ref LF_JobRunRow> runRows = LF_CivilianJob.ExportDeposits();
+			context.Write(runRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 held job deposit(s)", runRows.Count()));
+		}
+		else if (payload == "leaseidle")
+		{
+			// Last connected time of each leased hideout's organization (#2573): a lease idle too long lapses.
+			array<ref LF_HideoutIdleRow> idleRows = LF_Hideout.ExportIdle();
+			context.Write(idleRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 hideout idle clock(s)", idleRows.Count()));
+		}
+		else if (payload == "properties")
+		{
+			// One row per house or plot by its stable id (#2646): build stage, deposits, rent, spawn choice.
+			array<ref LF_PropertyRecord> propertyRows = LF_Properties.ExportAll();
+			context.Write(propertyRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 property row(s)", propertyRows.Count()));
+		}
+		else if (payload == "placements")
+		{
+			// Permanent placements (#1032): prefab, spot, owner and kind; never an EntityID.
+			array<ref LF_PlacementRow> placementRows = LF_PlacementSave.ExportAll();
+			context.Write(placementRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 permanent placement(s)", placementRows.Count()));
+		}
+		else if (payload == "reputation")
+		{
+			// Standing per character and faction (#2698): character record key, faction id, points; 0 rows are not written.
+			array<ref LF_ReputationRow> reputationRows = LF_Reputation.ExportAll();
+			context.Write(reputationRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 standing row(s)", reputationRows.Count()));
+		}
+		else if (payload == "orgwars")
+		{
+			// Organization wars (#2672): open wars and closed ones inside a pair cooldown; unix-second times.
+			array<ref LF_OrgWarRecord> warRows = LF_OrgWars.ExportForSave(System.GetUnixTime());
+			context.Write(warRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 organization war row(s)", warRows.Count()));
+		}
+		else if (payload == "garageslots")
+		{
+			// Bought garage slots per character (#2656): character record key and count; 0 rows are not written.
+			array<ref LF_GarageSlotRow> garageSlotRows = LF_GarageSlotStore.ExportAll();
+			context.Write(garageSlotRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 garage slot row(s)", garageSlotRows.Count()));
+		}
+		else if (payload == "plants")
+		{
+			// Planted crops (#2664): id, crop id, position, planted-at and watered-at on the farming clock (relative to the save, zero or less), owner key.
+			array<ref LF_PlantRow> plantRows = LF_Plants.ExportAll();
+			context.Write(plantRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 planted crop(s)", plantRows.Count()));
+		}
+		else if (payload == "lockers")
+		{
+			// Locker rentals (#2659; JSON keys are variable names, so not "lockerRows", the evidence locker's): site id, character record key, paid-until (UTC seconds; 0 never lapses).
+			array<ref LF_LockerRentalRow> lockerRentalRows = LF_LockerBank.ExportAll();
+			context.Write(lockerRentalRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 locker rental(s)", lockerRentalRows.Count()));
+		}
+		else if (payload == "tenancy")
+		{
+			// Which hideout leases are captured contested ground (#2816): one row per captured site, by hideout id.
+			array<ref LF_HideoutTenancyRow> tenancyRows = LF_Hideout.ExportTenancy();
+			context.Write(tenancyRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 hideout tenancy row(s)", tenancyRows.Count()));
 		}
 		else
 		{
@@ -1232,6 +1515,8 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("identity card rows failed to read; carried cards print again at the next spawn");
+				// The rows, and with them the highest number printed, are gone: do not number from 1 (#2413).
+				LF_PhotoIdCard.NoteRegistryUnreadable();
 			}
 		}
 		else if (payload == "caseboard")
@@ -1418,9 +1703,235 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 				ReadFailed("personal map marks failed to read, every character starts with no marks");
 			}
 		}
+		else if (payload == "orgmarks")
+		{
+			// A version 1-43 save never reaches this payload: every organization starts with no marks.
+			array<ref LF_OrgMapMarkRow> orgMarkRows = new array<ref LF_OrgMapMarkRow>();
+			if (context.Read(orgMarkRows))
+			{
+				int orgMarksApplied = LF_OrgMapMarks.ApplyAll(orgMarkRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 org map mark(s)", orgMarksApplied, orgMarkRows.Count()));
+			}
+			else
+			{
+				ReadFailed("org map marks failed to read, every organization starts with no marks");
+			}
+		}
+		else if (payload == "armorykits")
+		{
+			// A version 1-44 save never reaches this payload: no officer has kit out or a cooldown.
+			array<ref LF_ArmoryKitRow> armoryRows = new array<ref LF_ArmoryKitRow>();
+			if (context.Read(armoryRows))
+			{
+				int armoryApplied = LF_ArmoryKits.ApplyAll(armoryRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 armory book row(s)", armoryApplied, armoryRows.Count()));
+			}
+			else
+			{
+				ReadFailed("armory book failed to read, every officer starts with no kit out and no cooldown");
+			}
+		}
+		else if (payload == "houses")
+		{
+			// A version 1-45 save never reaches this payload: every house keeps its editor state.
+			array<ref LF_HouseLockRecord> houseRows = new array<ref LF_HouseLockRecord>();
+			if (context.Read(houseRows))
+			{
+				LF_SaveIds.ResolveHouses(houseRows);
+				int housesApplied = LF_Houses.ApplyAll(houseRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 house row(s), %2 to a live house", houseRows.Count(), housesApplied));
+			}
+			else
+			{
+				ReadFailed("house rows failed to read, leaving live houses untouched");
+			}
+		}
+		else if (payload == "itemkeys")
+		{
+			// A version 1-46 save never reaches this payload: restored house keys stay unbound.
+			array<ref LF_StorageItemKeyRecord> keyRows = new array<ref LF_StorageItemKeyRecord>();
+			if (context.Read(keyRows))
+			{
+				LF_SaveIds.ResolveItemKeys(keyRows);
+				int keysMatched = LF_StorageSnapshot.ApplyItemKeys(keyRows);
+				LF_Debug.Log("Persistence", string.Format("applied house keys to %1 of %2 snapshot(s)", keysMatched, keyRows.Count()));
+			}
+			else
+			{
+				ReadFailed("house keys failed to read, restored house keys stay unbound");
+			}
+		}
+		else if (payload == "graceclock")
+		{
+			// A version 1-47 save never reaches this payload: DeserializeStore seeds the clocks instead.
+			array<ref LF_GraceClockRow> graceRows = new array<ref LF_GraceClockRow>();
+			if (context.Read(graceRows))
+			{
+				int graceApplied = LF_GraceCharacterClock.ApplyAll(graceRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 grace clock(s)", graceApplied, graceRows.Count()));
+			}
+			else
+			{
+				// Seed as an old save would, so a cut-off save never gives every veteran a fresh grace.
+				ReadFailed("grace clocks failed to read, seeding each character from its account playtime");
+				LF_GraceCharacterClock.SeedFromAccounts();
+			}
+		}
+		else if (payload == "jobruns")
+		{
+			// A version 1-48 save never reaches this payload: it held no deposits (runs took none).
+			array<ref LF_JobRunRow> runRows = new array<ref LF_JobRunRow>();
+			if (context.Read(runRows))
+			{
+				int runRefunded = LF_CivilianJob.ApplyDeposits(runRows);
+				LF_Debug.Info("Persistence", string.Format("gave back %1 held job deposit(s) of %2 row(s) to the bank", runRefunded, runRows.Count()));
+			}
+			else
+			{
+				ReadFailed("held job runs failed to read, the deposits are not refunded");
+			}
+		}
+		else if (payload == "leaseidle")
+		{
+			// Runs after "hideout" in the same load, which seeded every lease at now. A version 1-49 save never
+			// reaches this payload, so every lease keeps that fresh clock.
+			array<ref LF_HideoutIdleRow> idleRows = new array<ref LF_HideoutIdleRow>();
+			if (context.Read(idleRows))
+			{
+				int idleApplied = LF_Hideout.ApplyIdle(idleRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 hideout idle clock(s)", idleApplied, idleRows.Count()));
+			}
+			else
+			{
+				ReadFailed("hideout idle clocks failed to read, every lease keeps a fresh clock");
+			}
+		}
+		else if (payload == "properties")
+		{
+			// A version 1-50 save never reaches this payload: the property book stays empty.
+			array<ref LF_PropertyRecord> propertyRows = new array<ref LF_PropertyRecord>();
+			if (context.Read(propertyRows))
+			{
+				int propertiesKept = LF_Properties.ApplyAll(propertyRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 property row(s)", propertiesKept, propertyRows.Count()));
+			}
+			else
+			{
+				ReadFailed("property rows failed to read, the property book stays as it was");
+			}
+		}
+		else if (payload == "placements")
+		{
+			// A version 1-51 save never reaches this payload: nothing placed was kept.
+			array<ref LF_PlacementRow> placementRows = new array<ref LF_PlacementRow>();
+			if (context.Read(placementRows))
+				LF_PlacementSave.ApplyAll(placementRows);
+			else
+				ReadFailed("permanent placements failed to read, nothing placed is restored");
+		}
+		else if (payload == "reputation")
+		{
+			// A version 1-52 save never reaches this payload: every character starts with no standing.
+			array<ref LF_ReputationRow> reputationRows = new array<ref LF_ReputationRow>();
+			if (context.Read(reputationRows))
+			{
+				int reputationKept = LF_Reputation.ApplyAll(reputationRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 standing row(s)", reputationKept, reputationRows.Count()));
+			}
+			else
+			{
+				ReadFailed("standing rows failed to read, standing stays as it was");
+			}
+		}
+		else if (payload == "orgwars")
+		{
+			// Runs after "organizations", so a war whose organization is gone is dropped. A version 1-53 save
+			// never reaches this payload: no war is restored.
+			array<ref LF_OrgWarRecord> warRows = new array<ref LF_OrgWarRecord>();
+			if (context.Read(warRows))
+			{
+				int warsKept = LF_OrgWars.ApplyAll(warRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 organization war row(s)", warsKept, warRows.Count()));
+			}
+			else
+			{
+				ReadFailed("organization wars failed to read, the war table stays as it was");
+			}
+		}
+		else if (payload == "garageslots")
+		{
+			// A version 1-54 save never reaches this payload: every character has only the base slots.
+			array<ref LF_GarageSlotRow> garageSlotRows = new array<ref LF_GarageSlotRow>();
+			if (context.Read(garageSlotRows))
+			{
+				int slotsKept = LF_GarageSlotStore.ApplyAll(garageSlotRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 garage slot row(s)", slotsKept, garageSlotRows.Count()));
+			}
+			else
+			{
+				ReadFailed("garage slots failed to read, bought slots stay as they were");
+			}
+		}
+		else if (payload == "plants")
+		{
+			// A version 1-55 save never reaches this payload: nothing is planted.
+			array<ref LF_PlantRow> plantRows = new array<ref LF_PlantRow>();
+			if (context.Read(plantRows))
+			{
+				int plantsKept = LF_Plants.ApplyAll(plantRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 planted crop(s)", plantsKept, plantRows.Count()));
+			}
+			else
+			{
+				ReadFailed("planted crops failed to read, the plants stay as they were");
+			}
+		}
+		else if (payload == "lockers")
+		{
+			// A version 1-56 save never reaches this payload: nobody rents a locker.
+			array<ref LF_LockerRentalRow> lockerRentalRows = new array<ref LF_LockerRentalRow>();
+			if (context.Read(lockerRentalRows))
+			{
+				int lockersKept = LF_LockerBank.ApplyAll(lockerRentalRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 locker rental(s)", lockersKept, lockerRentalRows.Count()));
+			}
+			else
+			{
+				ReadFailed("locker rentals failed to read, the rentals stay as they were");
+			}
+		}
+		else if (payload == "tenancy")
+		{
+			// Runs after "hideout" in the same load. A version 1-57 save never reaches this payload: every lease is a base lease.
+			array<ref LF_HideoutTenancyRow> tenancyRows = new array<ref LF_HideoutTenancyRow>();
+			if (context.Read(tenancyRows))
+			{
+				int tenancyApplied = LF_Hideout.ApplyTenancy(tenancyRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 hideout tenancy row(s)", tenancyApplied, tenancyRows.Count()));
+			}
+			else
+			{
+				ReadFailed("hideout tenancy rows failed to read, every lease stays a base lease");
+			}
+		}
 		else
 		{
 			LF_Debug.Error("Persistence", string.Format("load skipped unknown payload '%1'", payload));
 		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_PersistenceComponentSerializer's statics (LF_StaticReset finds it by reflection).
+class LF_PersistenceComponentSerializer_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_PersistenceComponentSerializer";
+	}
+
+	override void Apply()
+	{
+		LF_PersistenceComponentSerializer.ResetStatics();
 	}
 }

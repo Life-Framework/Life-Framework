@@ -4,7 +4,7 @@
 //! map/waypoint (#2235, epic #2223): a map click marks `LF_Waypoint` with id `map`, a board waypoint
 //! is drawn on the map as the pencil circle, and a second click moves it. Pure script: the click
 //! arrives as a world position, the draw is a segment list, so no map and no game session is needed.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapWaypoint : LF_Test
 {
 	override string GetName()

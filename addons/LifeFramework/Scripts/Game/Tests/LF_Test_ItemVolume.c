@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-11 with `tools\cli test --no-build --only LF_Test_ItemVolume`: removing the SCR_GadgetComponent from FineTicket.et failed `[LFTEST] FAIL inventory/paper-items`, `- a bare fixture character has room for the ticket`. Restored; green. #708 extension: Reverted `SizeSetupStrategy Volume` from the pager, seed packet, keycard, lockpick, evidence bag and marker, vehicle and house keys, ID card: failed `the keycard volume is its ItemVolume (expected 40, got 440)`, `the seed packet volume ... (expected 60, got 1073)`, and no room for the pager and seed packet until they got an SCR_GadgetComponent too. Restored; green.
 
-// tier: WORLD
 //! inventory/paper-items: the paper items (receipt, fine ticket, hospital bill) and every other small
 //! mod item (evidence, fence tools, pager, keys, ID card, seed packet, ...) read their ItemVolume and
 //! fit a bare fixture character on a second spawn, whichever test spawned them first in the run.
@@ -8,6 +7,7 @@
 //! instance spawned in a process be stored (later ones read a mesh-derived volume of 1073 and the
 //! jacket refused them), so a test passed or failed on which earlier test had spawned the item
 //! (#699, #708). Hand-carry items (logs, planks, crate, parcel) are never stored and are not here.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ItemVolume : LF_Test
 {
 	protected static const ResourceName RECEIPT = "{3E8A5C1D7B2F4096}Prefabs/Items/Roleplay/LF_Receipt.et";

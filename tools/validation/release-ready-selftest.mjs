@@ -12,10 +12,10 @@
 // differs from the TITLE" and "pack kit Project Name differs from the TITLE" printed
 // "got: (no errors)" and exited 1 (2026-11-14).
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { checkRelease, CORE, PACK } from "./validate-release-ready.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const CORE_GUID = "4550A2B656E1B569";
 const PACK_GUID = "B1E84D5687E11724";
@@ -54,7 +54,7 @@ function kit(root, dir, o = {}) {
 }
 
 function cleanTree(withPackKit = true) {
-  const root = mkdtempSync(join(tmpdir(), "lf-release-"));
+  const root = scratchDir("lf-release-");
   put(root, `addons/${CORE}/${CORE}.gproj`, gproj(CORE, CORE_GUID, "Life Framework (Core)", [BASE]));
   put(root, `addons/${CORE}/Scripts/Game/LF_Core.c`, "class LF_Core\n{\n}\n");
   put(root, `addons/${PACK}/${PACK}.gproj`, gproj(PACK, PACK_GUID, "Life Framework: Everon 1989", [BASE, CORE_GUID]));

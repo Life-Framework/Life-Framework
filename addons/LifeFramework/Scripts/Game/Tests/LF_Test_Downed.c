@@ -16,11 +16,11 @@ class LF_TestDownedRecorder : LF_EventSubscriber
 	}
 }
 
-// tier: WORLD
 //! Lethal damage to a player character leaves it alive and unconscious (the downed state), the
 //! flag and the event say so, a downed body takes no further damage and does not wake, config off
 //! kills as in vanilla, and Finish is the real death. Test characters have no player behind them,
 //! so the test opts them in as eligible.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Downed : LF_Test
 {
 	override string GetName()

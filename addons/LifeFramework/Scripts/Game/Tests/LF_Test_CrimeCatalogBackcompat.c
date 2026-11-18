@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-12 with `toolscli test --no-build --only LF_Test_CrimeCatalogBackcompat`: setting the murder entry m_iWantedAdd to 2 in Configs/Crime/LF_CrimeCatalog.conf failed `- wanted for #LF-Offence_Murder (expected 3, got 2)` and `- a murder still adds 3 (expected 3, got 2)`. Restored; green.
-// tier: LOGIC
 //! #685a: the crime catalog (Configs/Crime/LF_CrimeCatalog.conf) gives today's offences the numbers
 //! the call sites carried before it: wanted per offence, the ticket form, and a sentence that stays
 //! the wanted level's unless a catalog entry asks for more. An id the catalog does not list falls back to
 //! one wanted level and does not VME.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CrimeCatalogBackcompat : LF_Test
 {
 	protected static const string UID = "crime-catalog-backcompat";

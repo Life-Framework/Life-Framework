@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_JobsOverrideModel`: with RemoveAt a no-op in the three job lists and LF_ConfigOverlay.Apply turning a patch of a missing id into an add, it failed `- tracks: remove takes the job out`, `- tracks: patch of a missing id is refused, not added (even when it carries a whole record)`, `- xpAwards: remove takes the action out`, `- licenceGates: patch of a licence with no gate is refused, not added` and `- licenceGates: GOLD, COAL and COPPER are left (expected 3, got 5)`. Restored; green.
-// tier: LOGIC
 //! #1106: the jobs lists on the override model (#962). Each list (tracks by job id, xpAwards by
 //! action id, licenceGates by licence name) takes add, replace, patch and remove from the owner's
 //! section; `remove` takes the entry out, `patch` of a missing id is refused, and a refusal skips
 //! only its own record. The no-verb upsert of #749 is tested in LF_Test_JobLevelsConfig.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobsOverrideModel : LF_Test
 {
 	override string GetName()

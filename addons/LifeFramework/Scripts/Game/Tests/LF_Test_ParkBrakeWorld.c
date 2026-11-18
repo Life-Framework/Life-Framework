@@ -1,11 +1,11 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --only LF_Test_ParkBrakeWorld`: expected the brake OFF on a fresh S105 instead of on,
 // `- spawns with the handbrake on: {D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et` (one such line per prefab, seven in all). Restored; green.
-// tier: WORLD
 //! Parked and spawned cars hold on slopes (#979). Measured on a 19 degree ramp (`park-brake-proof`):
 //! a car the garage, lot or street spawns comes up with the vanilla persistent handbrake on, and that
 //! is what holds an empty car. Since 1.9 an empty car also self-steers, so an engine update that
 //! flips the prefab default would let every spawned car roll. This test names that default for
 //! every vehicle prefab we spawn, so an update turns it red before a player sees a car roll.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ParkBrakeWorld : LF_Test
 {
 	override string GetName()

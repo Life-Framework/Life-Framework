@@ -17,7 +17,6 @@ class LF_Test_MapClusterCase
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! map/places-layout: the POI layer's min-zoom and cluster rules (#2232, everon-map.md section 1,
 //! Rendering). The case table Configs/Map/Rules/cluster.cases.json is the one source: this test runs
 //! it through LF_MapClusterRules and tools/validation/map-cluster-selftest.mjs runs it through the node
@@ -26,6 +25,7 @@ class LF_Test_MapClusterCase
 //! `node tools/map/rules/cluster.mjs --gen`; the node selftest fails when the copy is stale.
 //! Also the pure parts of the layer: clusters over real LF_MapPoi rows, the zoom of a view, the hover
 //! card's title and Set waypoint. No map, no widgets.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapPlacesLayout : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

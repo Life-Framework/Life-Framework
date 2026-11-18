@@ -4,12 +4,12 @@
 // Then with the RepairCarried call in LF_IdCard.Grant commented out (review finding, 2026-11-13):
 // `- the stolen card is printed for its holder, not over with the thief (expected 'identity-world-holder', got 'identity-world-thief')`,
 // `- and keeps its number (expected 'EV 000002', got 'EV 000005')`. Restored; green.
-// tier: WORLD
 //! Photo identity card (#902) on a real body: a granted card carries its number and the registry row
 //! the photo (the body's look) and the date; a card restored blank is printed again from its number;
 //! the clerk refuses a second card while the valid one is carried, refuses without the fee, and
 //! otherwise takes the fee, prints a new card with a new number and voids the old one; a spawn
 //! hands out no fresh card for a lost one; the clerk's conversation hooks exist.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PhotoIdCardWorld : LF_Test
 {
 	protected static const string HOLDER = "identity-world-holder";

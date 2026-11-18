@@ -4,7 +4,7 @@
 // re-observe failure, drop the FIA kill target (2 -> 3) or comment out the
 // COMPLETED guard in LF_QuestTracker.ApplyEvent, then run the fast tier.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_QuestTracker : LF_Test
 {
 	override string GetName()

@@ -207,9 +207,11 @@ class LF_VehicleStoreAction : ScriptedUserAction
 			inVehicle = true;
 
 		LF_VehicleGarageComponent garage = LF_VehicleGarageComponent.FindAt(pUserEntity.GetOrigin());
-		if (!LF_Garage.CanPark(true, inVehicle, garage != null))
+		int slotCap = LF_GarageSlots.CapOf(uid);
+		string refusalReason;
+		if (!LF_Garage.CanPark(true, inVehicle, garage != null, LF_GarageSlots.UsedBy(uid), slotCap, refusalReason))
 		{
-			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#LF-Garage_StepOut");
+			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", refusalReason, 4.0, LF_ENotificationType.WARNING, slotCap.ToString());
 			return;
 		}
 
@@ -230,7 +232,23 @@ class LF_VehicleStoreAction : ScriptedUserAction
 			return;
 		}
 
+		string refusalKey = LF_Garage.StoreRefusalKey(vehicle, vehicleId, uid);
+		if (!refusalKey.IsEmpty())
+		{
+			LF_Debug.Warn("Vehicle", string.Format("store refused: vehicle %1 (%2)", vehicleId, refusalKey));
+			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", refusalKey, 4.0, LF_ENotificationType.WARNING);
+			return;
+		}
+
+		// A stranger in the car is put out (no keyholder is seated, checked above); a seat that stays taken keeps the car.
 		LF_Garage.StopAndEject(vehicle);
+		if (LF_Garage.HasOccupants(vehicle))
+		{
+			LF_Debug.Warn("Vehicle", string.Format("store refused: vehicle %1 still has someone seated after the eject; try again", vehicleId));
+			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#LF-Garage_Occupied", 4.0, LF_ENotificationType.WARNING);
+			return;
+		}
+
 		if (!LF_VehicleOwnership.Store(vehicleId, uid))
 		{
 			LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Store", "#EL-Vehicle_NotOwner");
@@ -272,7 +290,7 @@ class LF_VehicleStoreAction : ScriptedUserAction
 class LF_VehicleStoreHereAction : LF_VehicleStoreAction
 {
 	//------------------------------------------------------------------------------------------------
-	//! eturn True when offered: the owner on foot, car and user sharing one garage.
+	//! \return True when offered: the owner on foot, car and user sharing one garage.
 	static bool IsOffered(bool isOwner, bool inVehicle, bool garageFound, vector garageOrigin, vector playerOrigin, vector vehicleOrigin)
 	{
 		if (!LF_Garage.ParkAllowed(isOwner, inVehicle, garageFound))

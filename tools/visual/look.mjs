@@ -35,7 +35,7 @@ import { townWorld } from "../lib/addons.mjs";
 import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
 import { GRID_WORLD, ISLAND_WORLD, PACK_GRID_WORLD, gridLayerDirs, gridWorldFor, islandLayersDir } from "../lib/worlds.mjs";
 import { PLACE_RX, resolvePlace } from "./look-place.mjs";
-import { lookStartVerdict, phaseText, requestNeedsRam, timeline } from "../lib/look-job.mjs";
+import { lookStartVerdict, phaseText, renderProblem, requestNeedsRam, timeline } from "../lib/look-job.mjs";
 import * as poolRam from "../lib/pool-ram.mjs";
 import { SEED_PEAKS_MB } from "../lib/pool-ram.mjs";
 
@@ -49,9 +49,13 @@ const ISLAND_BOOT_BUDGET_S = 210;
 // The pool's Workbench peak (tools/lib/pool-ram.mjs: 3.7 GB measured on the laptop 2026-11-16; the p90 of the
 // observed peaks once there are samples). The look no longer carries a number of its own (it was 1.9 GB + 0.3).
 export const LOOK_RESERVE_MB = SEED_PEAKS_MB["workbench:small"];
-// run() returns this when this machine could not run the look (RAM, the build lock, a starved Workbench),
+// run() returns this when this machine could not run the look (RAM, a starved Workbench),
 // so the router (routeLook) tries another machine. Never a verdict about the pictures.
 export const ENV_SHORT_CODE = 4;
+// run() returns this when the only thing in the way is the machine-wide build lock held by another headless
+// Workbench (a build, an rdb refresh, another look). That clears in seconds, so routeLook queues for it
+// instead of striking the machine off (2026-11-18, #2808: one PC, lock held, "no machine left to try").
+export const BUSY_CODE = 5;
 // How long a look queues for a machine (RAM or a Workbench slot) before it gives up: LF_LOOK_WAIT_S.
 const waitBudgetS = () => (Number(process.env.LF_LOOK_WAIT_S) > 0 ? Number(process.env.LF_LOOK_WAIT_S) : 1200);
 const SERVE_BUDGET_S = 150;
@@ -587,6 +591,15 @@ export function starvedRun({ timedOut, written, freeMb, needMb = LOOK_RESERVE_MB
   return `the Workbench wrote no shot before its budget with ${freeMb} MB free (needs about ${needMb} MB)`;
 }
 
+// Pure: what routeLook does with a machine that handed the look back. "busy" (the build lock is held) is a wait,
+// not a verdict: the machine stays in the running and the look re-queues until the budget is spent; "skip"
+// (RAM, a starved Workbench) takes the machine out for this look; null means the look ran.
+export function skipOutcome(code, { elapsedMs = 0, waitS = 1200 } = {}) {
+  if (code === BUSY_CODE) return elapsedMs > waitS * 1000 ? "giveup" : "busy";
+  if (code === ENV_SHORT_CODE) return "skip";
+  return null;
+}
+
 // null when this process holds the machine-wide build lock, else why not.
 function takeBuildLock(wt, waitMs) {
   try {
@@ -601,6 +614,13 @@ function takeBuildLock(wt, waitMs) {
   } catch (e) {
     return e.message;
   }
+}
+
+// The git tree of addons/ in commit `sha` of checkout `root` (the hash of every file a Workbench loads), or null.
+export function addonsTree(root, sha) {
+  if (!sha) return null;
+  const r = spawnSync("git", ["-C", root, "rev-parse", `${sha}:addons`], { encoding: "utf8", windowsHide: true, timeout: 60000 });
+  return r.status === 0 ? r.stdout.trim() || null : null;
 }
 
 // The snapshot commit of this checkout (HEAD plus uncommitted and untracked files): what the pictures show.
@@ -750,7 +770,7 @@ async function run(args) {
   TL.add("lock-wait", (Date.now() - lockT0) / 1000);
   if (lockErr) {
     console.log(`${args.routed ? "look: not here:" : "FAIL "} look: ${lockErr}`);
-    return envFail;
+    return args.routed ? BUSY_CODE : envFail;
   }
 
   const outRoot = resolve(ROOT, args.flags.out || join("tmp", "look"));
@@ -762,6 +782,9 @@ async function run(args) {
   let served = "fresh";
   let sha = null;
   let profile = join(ROOT, "server", "profile", "visual");
+  // What the pictures must show: the addon files of this checkout now (index.json inputs.addons).
+  const askedTree = addonsTree(ROOT, snapshotSha());
+  let renderedTree = null;
   try {
     if (useServer) {
       // A request includes leaving play, maybe a reopen, and entering play again: about 10 s on a PC, a minute on lf-cloud.
@@ -791,6 +814,7 @@ async function run(args) {
       if (r.ok) {
         served = r.served;
         sha = r.sha;
+        renderedTree = r.renderedTree ?? null;
         raw = r.raw;
         status = parseStatus(r.statusText);
         res = { code: 0, timedOut: false, seconds: r.seconds, peakMb: 0 };
@@ -812,6 +836,7 @@ async function run(args) {
         return envFail;
       }
       sha = snapshotSha();
+      renderedTree = addonsTree(ROOT, sha); // a fresh Workbench loads this checkout's own files
       raw = join(profile, "profile", "lf-visual");
       res = await freshRun(exe, profile, raw, plan, shots, opts, args, areas);
       const statusFile = join(raw, "status.txt");
@@ -884,7 +909,7 @@ async function run(args) {
     const { cols } = sheetLayout(tiles.length);
     const contact = join(dir, "contact.jpg");
     image({ op: "sheet", tiles, out: contact, cols, maxWidth: cols * 480, quality: 74 });
-    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, timing: { ...TL.get(), collect: Math.round((Date.now() - collectT0) / 100) / 10 }, contact, shots: rows }, null, 2) + "\n");
+    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, inputs: { addons: askedTree, rendered: renderedTree }, timing: { ...TL.get(), collect: Math.round((Date.now() - collectT0) / 100) / 10 }, contact, shots: rows }, null, 2) + "\n");
     const bad = rows.filter((r) => r.flags.length);
     summaries.push({ area: area.name, contact, bad, count: rows.length });
     if (rows[0].file) overview.push({ file: rows[0].file, label: `${area.name}${bad.length ? `  [${bad.length} flagged]` : ""}`, marks: [] });
@@ -896,6 +921,12 @@ async function run(args) {
   // A server's raw folder also holds serve.txt and alive.txt, which are the server's; only request files go.
   if (!args.flags.keep) for (const f of readdirSync(raw)) if (served === "fresh" || serve.REQUEST_FILES.test(f)) rmSync(join(raw, f), { force: true });
 
+  const stale = renderProblem({ expected: askedTree, rendered: renderedTree });
+  if (stale) {
+    console.log(`FAIL  look: ${stale}; do not use these pictures (tools/lib/look-job.mjs renderProblem)`);
+    return 1;
+  }
+
   if (identicalFrames(frameHashes)) {
     console.log(`FAIL  look: all ${frameHashes.length} frames are byte-identical, so the camera never saw the requested world (Workbench likely rendered a fallback scene). Retry when RAM is free; do not use these pictures.`);
     return 1;
@@ -906,7 +937,7 @@ async function run(args) {
   const startLabel = served === "fresh" ? "Workbench start" : "request to first step";
   TL.add("collect", (Date.now() - collectT0) / 1000);
   console.log(`look: phases: ${phaseText(TL.get())}`);
-  console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, world and play ${r1((status.readyMs ?? 0) / 1000)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
+  console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} addons=${renderedTree ? renderedTree.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, world and play ${r1((status.readyMs ?? 0) / 1000)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
   for (const s of summaries) {
     console.log(`  ${s.area}: ${s.contact}`);
     for (const b of s.bad) console.log(`    ${b.flags.join(",")}: ${b.kind} ${b.label}${b.size ? ` ${sizeText(b.size)}` : ""}`);
@@ -1363,13 +1394,40 @@ async function routeLook(args, argv) {
     tried.push(c.where);
     if (c.where === "local") {
       const code = await localLook({ ...args, routed: true });
-      if (code === ENV_SHORT_CODE) continue;
+      const out = skipOutcome(code, { elapsedMs: Date.now() - t0, waitS });
+      if (out === "giveup") {
+        console.log(`FAIL  look: the build lock stayed held by another headless Workbench for ${Math.round((Date.now() - t0) / 1000)} s; retry, or see what holds it with tools\\cli pool status`);
+        return 3;
+      }
+      if (out === "busy") {
+        if (!saidWait) console.log(`look: queued: another headless Workbench holds the build lock on this PC; re-checking every 20 s for up to ${Math.round(waitS / 60)} min`);
+        saidWait = true;
+        tried.pop();
+        attempt--;
+        await new Promise((r) => setTimeout(r, 20000));
+        continue;
+      }
+      if (out === "skip") continue;
       return code;
     }
     const m = view.remotes.find((r) => r.name === c.where).m;
     TL.add("route-wait", (Date.now() - t0) / 1000);
     const code = await remoteLook(m, args, argv, pool);
-    if (code === ENV_SHORT_CODE || code === null) continue;
+    if (code === null) continue;
+    const rOut = skipOutcome(code, { elapsedMs: Date.now() - t0, waitS });
+    if (rOut === "giveup") {
+      console.log(`FAIL  look: the build lock stayed held on ${c.where} for ${Math.round((Date.now() - t0) / 1000)} s`);
+      return 3;
+    }
+    if (rOut === "busy") {
+      if (!saidWait) console.log(`look: queued: another headless Workbench holds the build lock on ${c.where}; re-checking every 20 s for up to ${Math.round(waitS / 60)} min`);
+      saidWait = true;
+      tried.pop();
+      attempt--;
+      await new Promise((r) => setTimeout(r, 20000));
+      continue;
+    }
+    if (rOut === "skip") continue;
     return code;
   }
   console.log(`FAIL  look: tried ${tried.join(", ")}; none could run the Workbench`);
@@ -1383,13 +1441,14 @@ async function remoteLook(m, args, argv, pool, { warm = !args.flags.cold && !arg
   const outRel = `tmp/look-routed/${id}`;
   const t0 = Date.now();
   let syncedAt = null;
+  const askedTree = addonsTree(ROOT, snapshotSha()); // this checkout's addon files, compared with what the box rendered
   const r = await pool.syncAndRun(ROOT, m, { script: "tools\\cli.mjs", args: remoteLookArgs(argv, outRel, { warm }), suffix: "-look", purpose: "look", onSlot: () => (syncedAt = Date.now()), env: { LF_LOOK_REOPEN_EXT: process.env.LF_LOOK_REOPEN_EXT } });
   const remoteEnd = Date.now();
   if (!r.rDir || r.code === 255) {
     console.log(`look: ${m.name} did not take it (exit ${r.code})`);
     return null;
   }
-  if (r.code === ENV_SHORT_CODE) return ENV_SHORT_CODE;
+  if (r.code === ENV_SHORT_CODE || r.code === BUSY_CODE) return r.code;
   const pulled = pullPictures(m, r.rDir, outRel, resolve(ROOT, args.flags.out || join("tmp", "look")));
   const s = Math.round((Date.now() - t0) / 1000);
   // The phases of this call: sync to the box, the run there (its own phases are in index.json "timing"), the copy back.
@@ -1405,9 +1464,18 @@ async function remoteLook(m, args, argv, pool, { warm = !args.flags.cold && !arg
   }
   console.log(`look: ran on ${m.name} in ${s} s (sync, Workbench, copy back); the pictures are here:`);
   let remotePhases = null;
-  try {
-    remotePhases = JSON.parse(readFileSync(join(dirname(pulled.areas[0].contact), "index.json"), "utf8")).timing ?? null;
-  } catch {}
+  for (const a of pulled.areas) {
+    let idx = null;
+    try {
+      idx = JSON.parse(readFileSync(join(dirname(a.contact), "index.json"), "utf8"));
+    } catch {}
+    remotePhases ??= idx?.timing ?? null;
+    const stale = renderProblem({ expected: askedTree, rendered: idx?.inputs?.rendered });
+    if (stale) {
+      console.log(`FAIL  look: ${a.name} on ${m.name}: ${stale} (this checkout's addons tree); do not use these pictures`);
+      return 1;
+    }
+  }
   console.log(`look: phases here: ${phaseText(TL.get())}${remotePhases ? `; on ${m.name}: ${phaseText(remotePhases)}` : ""}`);
   for (const a of pulled.areas) console.log(`  ${a.name}: ${a.contact}`);
   if (pulled.overview) console.log(`  overview: ${pulled.overview}`);

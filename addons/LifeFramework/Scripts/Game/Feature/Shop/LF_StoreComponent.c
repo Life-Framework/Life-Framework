@@ -187,7 +187,7 @@ class LF_StoreComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	int GetRestoredGraceSeconds()
 	{
-		return Math.Max(m_iRestoredGraceSeconds, 0);
+		return LF_Utils.MaxInt(m_iRestoredGraceSeconds, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------

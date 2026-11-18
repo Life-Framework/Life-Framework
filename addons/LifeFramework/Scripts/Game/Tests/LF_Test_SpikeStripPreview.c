@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 (#1939) with `--only LF_Test_SpikeStripPreview` before the change: the script failed to compile (`Undefined function LF_SpikeStripPreview.AvailableTo/Evaluate`); implemented, green; then `--red LF_Test_SpikeStripPreview` printed `RED PROOF OK` (a confirm for the red spot, its refusal reason and the kept folded strip all failed with the overlapping strip left out).
-// tier: WORLD
 //! #1939 acceptance: the spike strip preview ships. An on-duty officer on open grid ground,
 //! with the folded strip at their feet, is offered the ghost on any world (no dev-tools flag;
 //! a civilian is not). The planned spot is valid and green, the plan lies straight across a road
@@ -7,6 +6,7 @@
 //! runs in LF_Test_PlacementRoad on CoreOnEveron). With a strip already lying in the planned spot the ghost is red
 //! with the reason ("... is in the way"), and a confirm sent for that spot is refused by the
 //! placement service: nothing is placed, the folded strip stays.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SpikeStripPreview : LF_Test
 {
 	static const ResourceName ITEM = "{4B8BDB727DEE59B8}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et";

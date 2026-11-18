@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_DownedRules`: LF_Downed.Decide returning PASS instead of ABSORB for an already-downed player failed `a downed player absorbs a lethal hit (expected 2, got 0)`; restored, green.
 
-// tier: LOGIC
 //! The pure rule for one hit on a player's Health hit zone (LF_Downed.Decide): lethal damage
 //! downs, non-lethal passes, a downed player absorbs every hit, and config off, an NPC, a
 //! disallowed unconsciousness, or a real-kill request all leave the hit to vanilla.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DownedRules : LF_Test
 {
 	override string GetName()

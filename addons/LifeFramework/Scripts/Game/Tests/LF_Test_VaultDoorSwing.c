@@ -1,8 +1,8 @@
 // red-proof: Observed 2026-11-14 with `tools/cli test --no-build --only LF_Test_VaultDoorSwing`: dropping the upper wrap in LF_BreachTargetComponent.SwingTurn (`turn > 1800`) failed `crime/vault-door-swing` with `- and back from a wrapped open yaw is 100 degrees, not 260 (expected -100, got 260)` and `- an open door asked to open again does not turn (expected 0, got 360)`. Restored; green.
-// tier: LOGIC
 //! The vault door turns over LF_BreachTargetComponent.SWING_SECONDS instead of snapping (robbery video,
 //! #740): the ease starts and ends at rest and the turn always takes the short way round, so a yaw the
 //! engine wrapped into another turn never spins the door a full circle.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VaultDoorSwing : LF_Test
 {
 	override string GetName()

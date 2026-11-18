@@ -4,10 +4,10 @@
 // red-proof: observed 2026-11-15 with `tools\cli test --no-build --only LF_Test_ParcelCollision` and the parcel body back on the
 // old `ItemFireView` layer: FAIL the parcel is on the same collision layer as a vanilla box prop (box 10535680, parcel 20480). Restored; green.
 
-// tier: WORLD
 //! A courier parcel has a solid collider: a trace straight down onto it hits it. It is a small
 //! box (longest side 0.15 to 0.5 m) on the same collision layer as a vanilla box prop, so a
 //! walking player is blocked by it.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ParcelCollision : LF_Test
 {
 	protected static const ResourceName VANILLA_BOX = "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et";

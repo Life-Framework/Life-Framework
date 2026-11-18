@@ -1,12 +1,14 @@
 //------------------------------------------------------------------------------------------------
 //! One shared map mark (everon-map.md section 3, "Shared marks"). Server side; the wire carries its
-//! plain fields only (LF_MapShareComponent), never the audience or the expiry.
+//! plain fields only (LF_MapShareComponent), never the audience or the expiry. A row may also carry an
+//! area: a circle of m_iAreaRadius metres around its position, drawn in the LF_MapAreaStyle m_iAreaStyle
+//! (radius 0 is no area). The client registers it in LF_MapAreas beside the mark (LF_MapShareAreas).
 class LF_MapShareRow : Managed
 {
 	//! The owning system's stable key: dispatch:<callId>, org:<orgId>:<n>, taxi:<fareId>, event:<eventId>.
 	string m_sKey;
 	LF_EMapShareAudience m_eAudience;
-	//! Character id (PLAYER), service (ROLE: police, medic), org id (ORG); unused for EVERYONE.
+	//! Character record key (PLAYER, LF_Utils.GetPlayerUID), service (ROLE: police, medic), org id (ORG); unused for EVERYONE.
 	string m_sAudienceId;
 	//! World x and z in metres.
 	int m_iX;
@@ -18,6 +20,9 @@ class LF_MapShareRow : Managed
 	string m_sText;
 	//! World seconds; 0 never expires.
 	float m_fExpires;
+	//! Optional area around the position: radius in metres (0 none) and an LF_MapAreaStyle id.
+	int m_iAreaRadius;
+	int m_iAreaStyle;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_MapShareRow Make(string key, LF_EMapShareAudience audience, string audienceId, int x, int z, int icon, int colour, string text, float expires)
@@ -33,6 +38,15 @@ class LF_MapShareRow : Managed
 		row.m_sText = text;
 		row.m_fExpires = expires;
 		return row;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gives the row an area (a circle around its position). \return the row, so it chains off Make.
+	LF_MapShareRow WithArea(int radius, LF_MapAreaStyle style)
+	{
+		m_iAreaRadius = radius;
+		m_iAreaStyle = style;
+		return this;
 	}
 }
 
@@ -80,14 +94,23 @@ class LF_MapShareGameFacts : LF_MapShareFacts
 		if (!accounts)
 			return null;
 
-		LF_PlayerAccount account = accounts.GetAccount(playerId);
+		return MemberOf(playerId, accounts.GetAccount(playerId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The member for one account. m_sUid is the active character's record key (LF_Utils.GetPlayerUID,
+	//! the key PLAYER rows are put under by the job marks); the organization is looked up by the
+	//! character id, which is what organizations list members under. An account's first character has
+	//! the account uid as its record key and a different character id, so using the character id as
+	//! m_sUid matched no PLAYER row: job and fare marks and their waypoints never reached a first
+	//! character (review 2026-11-17).
+	static LF_MapShareMember MemberOf(int playerId, LF_PlayerAccount account)
+	{
 		if (!account)
 			return null;
 
-		string uid = account.GetPersistentId();
-		LF_PlayerCharacter character = account.GetActiveCharacter();
-		if (character)
-			uid = character.GetId();
+		string uid = account.GetActiveCharacterKey();
+		string characterId = LF_OrgMapMarks.CharacterIdOfAccount(account);
 
 		array<string> roles = {};
 		if (account.IsOnDuty() && account.GetFaction() == LF_Faction.POLICE)
@@ -97,7 +120,7 @@ class LF_MapShareGameFacts : LF_MapShareFacts
 			roles.Insert(LF_MapShares.ROLE_MEDIC);
 
 		string orgId;
-		LF_Organization org = LF_OrganizationManager.GetByCharacter(uid);
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
 		if (org)
 			orgId = org.GetId();
 
@@ -156,7 +179,9 @@ class LF_MapShareSpawnSubscriber : LF_EventSubscriber
 //! sends it to exactly those players by owner RPC, never broadcast.
 //! - Membership changes (on or off duty, joining or leaving an org) are picked up by Refresh(playerId),
 //!   which owners may call at once, and by the sweep every SWEEP_MS for every player: the diff adds the
-//!   rows a player now belongs to and removes the ones they left.
+//!   rows a player now belongs to and removes the ones they left. The sweep is spread over frames (#2531):
+//!   a tick every SLICE_MS refreshes one batch of players, sized so the whole list is visited once per
+//!   SWEEP_MS (128 players in one frame cost 20 to 50 ms; a batch of 7 is under 8 ms).
 //! - A spawn (late join or respawn) clears the client's shared marks and resends the full set.
 //! - Rows with an expiry are removed from everyone at that time.
 //! No persistence: owners re-issue their rows (org marks are saved by M12 under their own payload).
@@ -169,6 +194,9 @@ class LF_MapShares
 	static const int SEND_CAP = 64; // lf-fixed: protocol cap from everon-map.md section 3, not a server tunable
 	static const int TEXT_CAP = 32; // lf-fixed: wire limit of a shared-mark text (everon-map.md section 3)
 	static const int SWEEP_MS = 5000; // lf-fixed: internal sweep cadence; expiry granularity, not gameplay
+	//! One sweep tick refreshes a batch of players; SWEEP_SLICES ticks make one SWEEP_MS cycle.
+	static const int SLICE_MS = 250; // lf-fixed: frame-spreading of the sweep, not gameplay
+	static const int SWEEP_SLICES = 20; // lf-fixed: SWEEP_MS / SLICE_MS
 
 	protected static ref map<string, ref LF_MapShareRow> s_mRows;
 	//! Keys in the order they were put, so sends are deterministic.
@@ -179,6 +207,18 @@ class LF_MapShares
 	protected static ref LF_MapShareFacts s_Facts;
 	protected static ref LF_MapShareSpawnSubscriber s_Subscriber;
 	protected static bool s_bSweeping;
+	//! The sliced sweep: the players snapshot of this cycle, the next index in it, the batch size, and the
+	//! tick within the cycle (0 starts a cycle: expire, forget leavers, take a new snapshot).
+	protected static ref array<int> s_aSweepQueue;
+	protected static int s_iSweepNext;
+	protected static int s_iSweepBatch;
+	protected static int s_iSweepTick;
+	//! Cycles started since the last reset (a test seam).
+	protected static int s_iSweepCycles;
+	//! Players already warned about being over SEND_CAP, until they drop under it.
+	protected static ref map<int, bool> s_mOverCap;
+	//! How many over-cap warnings were logged since the last reset (a test seam).
+	protected static int s_iCapWarnings;
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: subscribe to spawns and start the expiry and membership sweep. Safe to call again.
@@ -195,7 +235,7 @@ class LF_MapShares
 
 		if (!s_bSweeping && GetGame())
 		{
-			GetGame().GetCallqueue().CallLater(LF_MapShares.Sweep, SWEEP_MS, true);
+			GetGame().GetCallqueue().CallLater(LF_MapShares.Sweep, SLICE_MS, true);
 			s_bSweeping = true;
 		}
 
@@ -218,6 +258,13 @@ class LF_MapShares
 		s_mDelivered = null;
 		s_Sink = null;
 		s_Facts = null;
+		s_mOverCap = null;
+		s_iCapWarnings = 0;
+		s_aSweepQueue = null;
+		s_iSweepNext = 0;
+		s_iSweepBatch = 0;
+		s_iSweepTick = 0;
+		s_iSweepCycles = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -268,6 +315,13 @@ class LF_MapShares
 
 		if (row.m_sText.Length() > TEXT_CAP)
 			row.m_sText = row.m_sText.Substring(0, TEXT_CAP);
+
+		if (row.m_iAreaRadius != 0 && !LF_MapShareRules.AreaValid(row.m_iAreaRadius, row.m_iAreaStyle))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("share %1 area dropped: radius %2 style %3 is not drawable", row.m_sKey, row.m_iAreaRadius, row.m_iAreaStyle));
+			row.m_iAreaRadius = 0;
+			row.m_iAreaStyle = 0;
+		}
 
 		EnsureTables();
 		if (!s_mRows.Contains(row.m_sKey))
@@ -344,6 +398,10 @@ class LF_MapShares
 		array<string> wanted = {};
 		WantedFor(playerId, wanted);
 		array<string> delivered = DeliveredOf(playerId);
+		// The steady state: the client holds exactly what it should, in order. Skips the quadratic diff.
+		if (SameKeys(delivered, wanted))
+			return;
+
 		array<string> adds = {};
 		array<string> removes = {};
 		LF_MapShareRules.Diff(delivered, wanted, adds, removes);
@@ -401,23 +459,84 @@ class LF_MapShares
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server, every SWEEP_MS: expire rows, forget players who left, refresh everyone's membership.
+	//! Server, every SLICE_MS: one tick of the sliced sweep (SweepStep).
 	static void Sweep()
 	{
 		if (!Replication.IsServer())
 			return;
 
-		Expire(Now());
-		RefreshAll();
+		SweepStep(Now());
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One sweep tick. The first tick of a cycle expires rows at now, forgets players who left and takes
+	//! the cycle's player list; every tick then refreshes the next batch of it. The batch is the list
+	//! divided by SWEEP_SLICES, rounded up, so every player is visited once per SWEEP_MS. A player who
+	//! left during the cycle is skipped; one who joined got their full set from OnSpawned and is in the
+	//! next cycle.
+	static void SweepStep(float now)
+	{
+		EnsureTables();
+		array<int> players = {};
+		Facts().Players(players);
+		if (s_iSweepTick == 0)
+		{
+			Expire(now);
+			ForgetGone(players);
+			s_aSweepQueue.Copy(players);
+			s_iSweepNext = 0;
+			s_iSweepBatch = (players.Count() + SWEEP_SLICES - 1) / SWEEP_SLICES;
+			s_iSweepCycles++;
+		}
+
+		int end = s_iSweepNext + s_iSweepBatch;
+		if (end > s_aSweepQueue.Count())
+			end = s_aSweepQueue.Count();
+
+		while (s_iSweepNext < end)
+		{
+			int playerId = s_aSweepQueue[s_iSweepNext];
+			s_iSweepNext++;
+			if (players.Find(playerId) != -1)
+				Refresh(playerId);
+		}
+
+		s_iSweepTick = (s_iSweepTick + 1) % SWEEP_SLICES;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The whole membership pass in one call: forget players who left, refresh everyone. Tests and owners
+	//! that need it at once; the timer uses the sliced SweepStep.
 	static void RefreshAll()
 	{
 		EnsureTables();
 		array<int> players = {};
 		Facts().Players(players);
+		ForgetGone(players);
+		foreach (int playerId : players)
+		{
+			Refresh(playerId);
+		}
+	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Tests: the next SweepStep starts a new cycle.
+	static void RestartSweepCycle()
+	{
+		s_iSweepTick = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sweep cycles started since the last reset.
+	static int SweepCycles()
+	{
+		return s_iSweepCycles;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drop what is held for players no longer on the server.
+	protected static void ForgetGone(notnull array<int> players)
+	{
 		array<int> gone = {};
 		foreach (int playerId, array<string> delivered : s_mDelivered)
 		{
@@ -428,12 +547,24 @@ class LF_MapShares
 		foreach (int playerId : gone)
 		{
 			s_mDelivered.Remove(playerId);
+			s_mOverCap.Remove(playerId);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool SameKeys(notnull array<string> a, notnull array<string> b)
+	{
+		int count = a.Count();
+		if (count != b.Count())
+			return false;
+
+		for (int i = 0; i < count; i++)
+		{
+			if (a[i] != b[i])
+				return false;
 		}
 
-		foreach (int playerId : players)
-		{
-			Refresh(playerId);
-		}
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -443,6 +574,13 @@ class LF_MapShares
 			return 0;
 
 		return s_mRows.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many over-cap warnings were logged since the last reset.
+	static int CapWarnings()
+	{
+		return s_iCapWarnings;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -476,8 +614,12 @@ class LF_MapShares
 		wanted.Clear();
 		LF_MapShareMember member = Facts().Of(playerId);
 		if (!member)
+		{
+			s_mOverCap.Remove(playerId);
 			return;
+		}
 
+		bool over;
 		foreach (string key : s_aOrder)
 		{
 			LF_MapShareRow row = s_mRows.Get(key);
@@ -486,12 +628,33 @@ class LF_MapShares
 
 			if (wanted.Count() >= SEND_CAP)
 			{
-				LF_Debug.Warn(FEATURE, string.Format("player %1 is in more than %2 shares: the rest wait", playerId, SEND_CAP));
-				return;
+				over = true;
+				break;
 			}
 
 			wanted.Insert(key);
 		}
+
+		NoteOverCap(playerId, over);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The over-cap warning is logged when a player first goes over the cap, not on every sweep; dropping
+	//! under it arms it again.
+	protected static void NoteOverCap(int playerId, bool over)
+	{
+		if (!over)
+		{
+			s_mOverCap.Remove(playerId);
+			return;
+		}
+
+		if (s_mOverCap.Contains(playerId))
+			return;
+
+		s_mOverCap.Set(playerId, true);
+		s_iCapWarnings++;
+		LF_Debug.Warn(FEATURE, string.Format("player %1 is in more than %2 shares: the rest wait", playerId, SEND_CAP));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -518,6 +681,12 @@ class LF_MapShares
 
 		if (!s_mDelivered)
 			s_mDelivered = new map<int, ref array<string>>();
+
+		if (!s_mOverCap)
+			s_mOverCap = new map<int, bool>();
+
+		if (!s_aSweepQueue)
+			s_aSweepQueue = {};
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -552,11 +721,9 @@ modded class LF_GameModeRoleplay
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_MapShares' statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_MapShares' statics (LF_StaticReset finds it by reflection).
 class LF_MapShares_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_MapShares_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_MapShares";

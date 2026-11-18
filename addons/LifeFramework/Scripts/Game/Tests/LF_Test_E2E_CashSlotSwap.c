@@ -25,7 +25,7 @@ class LF_E2E_CashSwapPackSource : LF_ConfigPackSource
 //! 2. Restart with a pack that swaps the cash slot to the iron nugget: the saved cash loads,
 //!    is applied to a character, and still counts; spending and earning behave.
 //! Runs only under LF_E2E_CASH_SWAP; a normal suite run passes it untouched.
-// tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_CashSlotSwap : LF_Test
 {
 	static const string OWNER = "e2e-cash-swap-character";

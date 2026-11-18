@@ -3,7 +3,7 @@
 //   [LFTEST]   - one second at 10 fps takes 10 shots (expected 9, got 10)
 // Restored.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FilmRecorder : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

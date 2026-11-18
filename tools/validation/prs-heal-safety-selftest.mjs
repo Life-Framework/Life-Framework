@@ -12,13 +12,15 @@
 //
 // red-proof (2026-11-14): with safetyCheck stubbed to { ok: true } lost-key and lost-row printed
 //   "expected refused, got healed".
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { healMerge } from "../prs.mjs";
-import { safeRemoveTree } from "../link-safety.mjs";
+import { describeRun, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
+
+useHermeticGit(); // no machine git config, no auto-gc beside the scratch repos (tools/lib/selftest-git.mjs)
 
 const failures = [];
 const fail = (m) => failures.push(m);
@@ -31,8 +33,8 @@ function git(dir, args) {
   return spawnSync("git", args, { cwd: dir, windowsHide: true, encoding: "utf8" });
 }
 function must(dir, args) {
-  const r = git(dir, args);
-  if (r.status !== 0) throw new Error(`git ${args.join(" ")} in ${dir}: ${r.stderr || r.stdout}`);
+  const r = runGit(dir, args); // a probe through git() may fail quietly on purpose; a must() may not
+  if (r.status !== 0) throw new Error(`git ${args.join(" ")} in ${dir}: ${describeRun(r)}`);
   return r.stdout.trim();
 }
 function write(dir, rel, text) {
@@ -74,7 +76,7 @@ function regenWith(tamper) {
   };
 }
 
-const temp = mkdtempSync(join(tmpdir(), "lf-heal-safety-"));
+const temp = scratchDir("lf-heal-safety-");
 try {
   const origin = join(temp, "origin.git");
   const seed = join(temp, "seed");
@@ -186,7 +188,7 @@ try {
 } catch (e) {
   fail(`scenario threw: ${e.stack || e.message}`);
 } finally {
-  safeRemoveTree(temp);
+  removeScratch(temp);
 }
 
 if (failures.length) {

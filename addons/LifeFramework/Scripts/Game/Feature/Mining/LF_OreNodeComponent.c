@@ -148,7 +148,7 @@ class LF_OreNodeComponent : ScriptComponent
 			return 0;
 		}
 
-		if (!row.m_ToolPrefab.IsEmpty() && !LF_Utils.SamePrefab(row.m_ToolPrefab, LF_Utils.GetPrefabName(tool)))
+		if (!LF_GatherTools.Accepts(row, LF_Utils.GetPrefabName(tool)))
 		{
 			LF_Debug.Info(FEATURE, string.Format("hit on %1 rock refused: %2 is not %3", m_sNodeId, LF_Utils.GetPrefabName(tool), row.m_ToolPrefab));
 			return 0;

@@ -1,0 +1,28 @@
+GenericEntity : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
+ ID "F0E2902B308DA1E6"
+ components {
+  ActionsManagerComponent "{5C0C4816ECE0E175}" {
+   ActionContexts {
+    UserActionContext "{B8DC0B302F111AE2}" {
+     ContextName "default"
+     Position PointInfo "{F41DF2A51337C855}" {
+      Offset 0.0016 0.4576 0.0012
+     }
+     Radius 2.04
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{13DA277347B9F8A7}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{D68FFF855FAFEB9F}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

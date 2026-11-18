@@ -3,7 +3,7 @@
 // guarded the null stage list; that crash is the observed red. Point any other
 // assertion at the wrong stage count (e.g. expect 4 stages on CabbageCrop) and
 // it fails on the next `tools\cli test --tier all`.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CropPrefabs : LF_Test
 {
 	protected static const ResourceName BASE_CROP = "{64DFA805B1BF7F7D}Prefabs/Vegetation/Crops/BaseCrop.et";

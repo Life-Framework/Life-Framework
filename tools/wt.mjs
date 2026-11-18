@@ -22,10 +22,13 @@ import { closeSync, copyFileSync, existsSync, mkdirSync, openSync, readdirSync, 
 import { dirname, join, normalize, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { findReparsePoints, recycleWorktree, removeWorktree, safeRemoveTree } from "./link-safety.mjs";
-import { localSetting } from "./lib/local-config.mjs";
+import { localSetting, wtParent } from "./lib/local-config.mjs";
+export { wtParent };
 import { ADDONS } from "./lib/addons.mjs";
 import { sessionDirOf } from "./lib/session-lease.mjs";
 import * as pinLib from "./lib/guard-pin.mjs";
+import { guardAlert } from "./lib/main-guard.mjs";
+import { recordClaim } from "./lib/main-write-guard.mjs";
 import { refuseMessage } from "./lib/disk-guard.mjs";
 import { isMachineWide, machineLockDir } from "./lib/machine-locks.mjs";
 
@@ -53,7 +56,28 @@ export function run(cmd, args, opts = {}) {
   }
   res.stdout = res.stdout ?? "";
   res.stderr = res.stderr ?? "";
+  // A process ended by a signal has status null: report it as a failure that says so, never as an empty one.
+  if (res.status === null) {
+    res.status = 1;
+    res.stderr += `${res.stderr && !res.stderr.endsWith("\n") ? "\n" : ""}${cmd} was ended by ${res.signal ?? "a signal"}`;
+  }
   return res;
+}
+
+// One line saying what a finished run printed and how it ended, for an error message. The old
+// `(res.stderr || res.stdout).trim()` was empty when git failed without a word (a signal, a spawn
+// error, a hook that only set an exit code), which left a CI failure with nothing to read.
+export function describeRun(res) {
+  const parts = [];
+  if (res.error) parts.push(`spawn error ${res.error.code ?? ""} ${res.error.message}`.replace(/\s+/g, " "));
+  if (res.signal) parts.push(`ended by ${res.signal}`);
+  parts.push(`exit ${res.status ?? "none"}`);
+  const err = String(res.stderr ?? "").trim();
+  const out = String(res.stdout ?? "").trim();
+  if (err) parts.push(`stderr: ${err}`);
+  if (out) parts.push(`stdout: ${out}`);
+  if (!err && !out) parts.push("no output");
+  return parts.join("; ");
 }
 
 export function git(root, args) {
@@ -506,7 +530,7 @@ function defaultPin(root) {
   }
 }
 
-export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = true, unchecked = false, resolvePin = defaultPin, freeGb = freeDiskGbAt } = {}) {
+export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = true, unchecked = false, resolvePin = defaultPin, readLease = (r) => { try { return pinLib.readLease(r); } catch { return undefined; } }, freeGb = freeDiskGbAt } = {}) {
   checkBaseName(base);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
     throw new Error(`invalid slug '${slug}': lowercase letters, digits and single hyphens only`);
@@ -517,9 +541,9 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
   const mark = (name, since) => { phases[name] = Date.now() - since; return Date.now(); };
   const main = mainRootOf(root);
   const branch = `ws/${slug}`;
-  const dir = join(dirname(main), `Life-Framework-ws-${slug}`);
+  const dir = join(wtParent(root), `Life-Framework-ws-${slug}`);
   // A checkout that runs the drive dry fails half way and leaves a broken tree: refuse before touching anything.
-  const tooFull = refuseMessage(freeGb(dirname(main)), "the drive holding the worktrees");
+  const tooFull = refuseMessage(freeGb(wtParent(root)), "the drive holding the worktrees");
   if (tooFull) throw new Error(tooFull);
   // Fetch outside the lock: it is network time, and concurrent fetches are safe
   // (a ref-lock clash leaves the refs a moment older, as before).
@@ -534,12 +558,15 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
   let start = "origin/" + base;
   let pinned = null;
   let pinNote = null;
+  let guardWarn = null;
   if (base === "main" && !unchecked) {
     const p = resolvePin(root);
     if (p) {
       start = p.sha;
       pinned = p.sha.slice(0, 8) + " (" + p.status + ", " + p.behind + " commit(s) behind origin/main)";
     } else pinNote = "no compiled-ok commit from the main guard found; based on origin/main";
+    // A dead guard stops moving the pin: say so loudly, with how far the pin has fallen behind (#2754).
+    guardWarn = guardAlert(readLease(root), { behind: p ? p.behind : null });
   }
 
   // Phase 1, locked: reserve the slug and its ports, then either claim a warm
@@ -619,8 +646,10 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
     if (fromWarm) delete state.warm[claimed.id];
   }, { waitMs: lockWait });
   mark("finish", t2);
+  // This session now owns the worktree: the write hook refuses it any file in the main checkout (#2785).
+  recordClaim(main, { sessionId: process.env.CLAUDE_CODE_SESSION_ID, slug, path: dir });
   kickWarmFill(root);
-  return { slug, path: dir, branch, ports, base, pinned, pinNote, priority, warm: fromWarm, ms: Date.now() - t0, lockMs, phases };
+  return { slug, path: dir, branch, ports, base, pinned, pinNote, guardWarn, priority, warm: fromWarm, ms: Date.now() - t0, lockMs, phases };
 }
 
 // `git worktree add --no-checkout`: registers the worktree and its branch
@@ -805,14 +834,14 @@ export function wtWarmFill(root, { log = () => {} } = {}) {
       if (discard.length) discardWarm(root, discard);
       const live = Object.values(readState(root).warm).filter((w) => w.status === "ready" || w.status === "preparing").length;
       if (live >= k) break;
-      const free = freeDiskGbAt(dirname(main));
+      const free = freeDiskGbAt(wtParent(root));
       if (free !== null && free < minFreeGb) {
         warmLog(root, `fill stopped: ${free.toFixed(1)} GB free is under the ${minFreeGb} GB warm floor`);
         log(`warm: ${free.toFixed(1)} GB free is under the ${minFreeGb} GB floor (LF_WT_WARM_MIN_FREE_GB); not filling`);
         break;
       }
       const id = Date.now().toString(36);
-      const path = join(dirname(main), `Life-Framework-warm-${id}`);
+      const path = join(wtParent(root), `Life-Framework-warm-${id}`);
       withWtLock(root, (state) => {
         const add = git(root, ["worktree", "add", "--detach", "--no-checkout", path, "origin/main"]);
         if (add.status !== 0) throw new Error(`git worktree add failed: ${add.stderr || add.stdout}`);
@@ -861,7 +890,7 @@ export function wtWarmDrain(root) {
 
 export function warmStatus(root) {
   const s = warmSettings(root);
-  return { ...s, freeGb: freeDiskGbAt(dirname(mainRootOf(root))), trees: Object.values(readState(root).warm ?? {}) };
+  return { ...s, freeGb: freeDiskGbAt(wtParent(root)), trees: Object.values(readState(root).warm ?? {}) };
 }
 
 export function wtSync(root, slug) {

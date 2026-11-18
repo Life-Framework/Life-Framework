@@ -61,7 +61,7 @@ class LF_SaveStamp
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The game build stamped in the first save this world loaded, UNKNOWN_BUILD without one.
+	//! \return The game build stamped in the first save this world loaded, UNKNOWN_BUILD without one.
 	static string BootLoadedBuild()
 	{
 		if (!s_bBootCaptured)
@@ -71,7 +71,7 @@ class LF_SaveStamp
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The save version stamped in the first save this world loaded, 0 without one.
+	//! \return The save version stamped in the first save this world loaded, 0 without one.
 	static int BootSaveVersion()
 	{
 		return s_iBootSaveVersion;
@@ -191,11 +191,9 @@ class LF_SaveStamp
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_SaveStamp's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_SaveStamp's statics (LF_StaticReset finds it by reflection).
 class LF_SaveStamp_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_SaveStamp_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_SaveStamp";

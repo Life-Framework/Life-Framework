@@ -2,11 +2,11 @@
 //   cli test --no-build --only LF_Test_PlacesUnnamedDoor:
 //   [LFTEST]   - LF_Breach locks the unnamed door it found by component
 // Restored; green.
-// tier: WORLD
 //! places/unnamed-door: systems find their places by component, never by entity name (#961). The
 //! annex places are found under their ids by kind; a door spawned with no name, placed as a breach
 //! target, is locked and opened by LF_Breach; a second door cannot take a held id; a deleted place
 //! is not found. Under the old FindEntityByName lookup the unnamed door never locked.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacesUnnamedDoor : LF_Test
 {
 	protected static const string DOOR_ID = "places-unnamed-door";

@@ -13,7 +13,7 @@
 //   [LFTEST]   - quarter time eases in (smoothstep 0.25 = 0.15625) (expected 15, got 15.625)
 // Restored; the fast suite is green.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FilmCameraPath : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

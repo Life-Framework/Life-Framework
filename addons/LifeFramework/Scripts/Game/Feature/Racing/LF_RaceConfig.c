@@ -33,6 +33,12 @@ class LF_RaceCourseRecord : LF_ConfigRecord
 	[Attribute("60", UIWidgets.EditBox, "Seconds the lobby waits for entrants before it starts or cancels")]
 	int m_iLobbySeconds;
 
+	[Attribute("60", UIWidgets.EditBox, "Seconds a racer may have no living body (dead, loading, away) in a running race before the race drops them and keeps their fee in the pot. 0 never drops a racer for it (#2406)")]
+	int m_iAfkGraceSeconds;
+
+	[Attribute("120", UIWidgets.EditBox, "Seconds after the first finisher before the race pays out. Racers still out then forfeit their fee to the pot. 0 waits for every racer, up to the race time limit (#2406)")]
+	int m_iSettleSeconds;
+
 	[Attribute("", UIWidgets.Auto, "Percent of the pot paid to first, second, third place and so on. Adds up to 100")]
 	ref array<int> m_aPayoutPercent;
 }

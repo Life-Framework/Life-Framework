@@ -15,9 +15,12 @@ append-only files (`docs/features/<area>.md`, string table, triage) are fine; an
 tools\cli feature new <Area> <Name> --kind logic|world|ui|item --issue <N>   # scaffold, if the card adds a feature
 tools\cli test --no-build --only LF_Test_X            # the ~10 s loop
 tools\cli test --no-build --red LF_Test_A,LF_Test_B   # ONE boot, new tests with no failing state; keep the RED-OK line
-tools\cli validate                                    # as often as you like
-tools\cli test --no-build --tier all                  # once, at the end
+tools\cli validate                                    # first run reuses checks other worktrees passed
+tools\cli test --no-build --tier all                  # T2 only, once, at the end; T0/T1 skip it
 ```
+- Batch: one `--only A,B,C` run covers every test you touched (each run is a server boot plus queue, ~1-3 min).
+  Fix compile errors from the first run's `SCRIPT (E)` lines all at once before running again.
+- `regen-tests` and `regen-localization` once, right before you commit, not after every edit.
 - Bug fix: the run failing on the unfixed code is the red proof; put it in `// red-proof:`, no break-and-restore run.
 - Script-only change whose tests touch no new resource: `LF_RDB_REFRESH=0` skips the ~10 s resource-database refresh
   (PowerShell: `$env:LF_RDB_REFRESH = "0"`). Any new prefab or `.meta`: leave the refresh on. Never commit the rdb.
@@ -26,10 +29,14 @@ tools\cli test --no-build --tier all                  # once, at the end
 
 ## Ship
 ```
-tools\cli wt ship slice-<N> --refs <N> --body-file tmp\pr-body-slice-<N>.md
-tools\cli prs status
-tools\cli slice record <N> --model sonnet --outcome merged|handoff|split|failed --gate pass|fail --minutes <m>
+tools\cli wt ship slice-<N> --refs <N> --body-file tmp\pr-body-slice-<N>.md --commit "<subject>"
+tools\cli slice record <N> --model sonnet --outcome merged --gate pass|fail --minutes <m>
 ```
+- `--commit` commits anything left (git add -A) first; without it a dirty worktree is refused.
+- Ship merges `origin/main` itself and regenerates a conflicted test registry or language conf. Only a conflict in
+  your own files comes back to you.
+- `slice record --outcome merged` with the PR still open records `shipped` and exits 0. Then stop: never poll
+  `gh pr checks`, `Wait-Process` or sleep for the merge; auto-merge and the main guard finish it.
 Body: what changed, the observed red and green lines, `## Manual testing` for anything automation cannot reach, and the
 `Generated with [Claude Code]` line. A visible change carries one `look` picture (`tools\cli evidence`). Say
 "merged, in-dev", never "done". At the limit, ship what passes, write `tmp/handoff-slice-<N>.md` (15 lines), say `SPLIT`
@@ -42,7 +49,7 @@ Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, then exactly
 ## Known traps
 - A new `LF_Test_*.c` needs `tools\cli regen-tests`; the registry is generated, never hand-edited.
 - A string is appended to `Language/everonlife_localization.st`, then `tools\cli regen-localization`. No `EL_` names.
-- `// tier: LOGIC|WORLD|PERSISTENCE` and a `// red-proof:` line sit above the class. A test never asserts a town
+- `[LF_TestInfo(LF_TestTier.LOGIC|WORLD|PERSISTENCE)]` and a `// red-proof:` line sit above the class. A test never asserts a town
   coordinate or distance.
 - Change a feature: update `docs/features/<area>.md` in the same PR; never add rows to `docs/features.md`.
 - Persistence tests use public mutators only; an in-session round trip proves nothing about restart.
@@ -50,6 +57,6 @@ Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, then exactly
 - A world prop goes in your own grid cell (`brief grid`), never a town layer.
 
 ## Environment
-No Workbench on this PC and never pin a machine (`--local`, `--machine`). Run in the foreground (timeout up to
+No Workbench on the maintainer's PC (Gaming-Box); on lf-testbox (PC1) it is allowed through the pool (`toolscli status` says which you are on). Never pin a machine (`--local`, `--machine`). Run in the foreground (timeout up to
 600000 ms) or `t3_background_wait`; never end the turn with a run pending. Never `--force`, `rm -rf` or
 `Remove-Item -Recurse` a worktree (`wt prune`). Heavy commands refuse the main checkout.

@@ -46,7 +46,7 @@ class LF_ServiceBoard
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: takes every call off the board (the world reset); the subscription stays.
-	//! eturn How many calls were on it.
+	//! \return How many calls were on it.
 	static int ClearCalls()
 	{
 		if (!s_aCalls)
@@ -395,11 +395,9 @@ modded class SCR_PlayerController
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_ServiceBoard's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_ServiceBoard's statics (LF_StaticReset finds it by reflection).
 class LF_ServiceBoard_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ServiceBoard_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_ServiceBoard";

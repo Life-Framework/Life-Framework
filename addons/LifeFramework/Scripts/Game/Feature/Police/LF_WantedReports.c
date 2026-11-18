@@ -24,6 +24,12 @@ class LF_WantedReportRecord : Managed
 	//! version 29) carries it by sequence (ExportLooks, ApplyLooks).
 	[NonSerialized()]
 	string m_sAppearance;
+	//! Where the crime was filed (#2578), so a police call can mark it even when m_sPlace is only a map
+	//! label. Session only: no save payload carries it, so a loaded report has none (m_bHasPosition false).
+	[NonSerialized()]
+	vector m_vPosition;
+	[NonSerialized()]
+	bool m_bHasPosition;
 
 	//------------------------------------------------------------------------------------------------
 	LF_WantedReportRecord Copy()
@@ -37,6 +43,8 @@ class LF_WantedReportRecord : Managed
 		copy.m_bIdentified = m_bIdentified;
 		copy.m_iSequence = m_iSequence;
 		copy.m_sAppearance = m_sAppearance;
+		copy.m_vPosition = m_vPosition;
+		copy.m_bHasPosition = m_bHasPosition;
 		return copy;
 	}
 }
@@ -64,6 +72,8 @@ class LF_WantedReports
 	static const string OFFENCE_CHAIN_GOODS = "#LF-Offence_ChainGoods";
 	static const string OFFENCE_SHOPLIFTING = "#LF-Offence_Shoplifting";
 	static const string PLACE_GRID_KEY = "#LF-Wanted_PlaceGrid";
+	static const string CLOTHING_FACE_HIDDEN = "#LF-Wanted_FaceHidden";
+	static const string CLOTHING_BUILD_HIDDEN = "#LF-Wanted_BuildHidden";
 
 	protected static ref map<string, ref array<ref LF_WantedReportRecord>> s_mReports;
 	protected static int s_iSequence;
@@ -111,8 +121,17 @@ class LF_WantedReports
 		LF_EventBus.Publish(LF_OnCrimeCommitted.Create(playerUid, offence));
 
 		bool caught = suspect && IsOfficerNear(suspect, LF_PoliceConfig.CatchInActRadius());
-		LF_WantedReportRecord record = Add(playerUid, offence, clothing, vehicle, place, caught);
-		record.m_sAppearance = LF_WantedLook.Capture(suspect);
+		string appearance;
+		if (suspect)
+			ApplyConcealment(suspect, LF_ItemCatalogueConfig.Get(), clothing, appearance);
+
+		LF_WantedReportRecord record;
+		if (suspect)
+			record = AddAt(playerUid, offence, clothing, vehicle, place, caught, suspect.GetOrigin());
+		else
+			record = Add(playerUid, offence, clothing, vehicle, place, caught);
+
+		record.m_sAppearance = appearance;
 		LF_Debug.Info(FEATURE, string.Format("crime report #%1 %2 by %3: clothing='%4' vehicle='%5' place='%6' identified=%7", record.m_iSequence, offence, playerUid, clothing, vehicle, place, caught));
 		LF_CaseBoard.OnReport(record.m_iSequence);
 		if (suspect)
@@ -131,7 +150,22 @@ class LF_WantedReports
 	//! Stores a report with a ready description. The seam tests drive.
 	static LF_WantedReportRecord Add(string playerUid, string offence, string clothing, string vehicle, string place, bool identified)
 	{
+		return Store(playerUid, offence, clothing, vehicle, place, identified, false, vector.Zero);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Add, keeping the position the crime was filed at (#2578; session only, never saved).
+	static LF_WantedReportRecord AddAt(string playerUid, string offence, string clothing, string vehicle, string place, bool identified, vector position)
+	{
+		return Store(playerUid, offence, clothing, vehicle, place, identified, true, position);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static LF_WantedReportRecord Store(string playerUid, string offence, string clothing, string vehicle, string place, bool identified, bool hasPosition, vector position)
+	{
 		LF_WantedReportRecord record = new LF_WantedReportRecord();
+		record.m_bHasPosition = hasPosition;
+		record.m_vPosition = position;
 		s_iSequence++;
 		record.m_sPlayerUid = playerUid;
 		record.m_sOffence = offence;
@@ -149,6 +183,7 @@ class LF_WantedReports
 		}
 
 		list.Insert(record);
+		LF_EventBus.Publish(LF_OnWantedReportFiled.Create(playerUid, record.m_iSequence, place, hasPosition, position));
 		return record;
 	}
 
@@ -400,7 +435,7 @@ class LF_WantedReports
 			}
 
 			list.Insert(record.Copy());
-			s_iSequence = Math.Max(s_iSequence, record.m_iSequence);
+			s_iSequence = LF_Utils.MaxInt(s_iSequence, record.m_iSequence);
 		}
 
 		// Oldest first inside each list, the order Add keeps.
@@ -412,6 +447,45 @@ class LF_WantedReports
 					list.SwapItems(j, j - 1);
 			}
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a witness could see of `suspect` (#2438): the clothing text gains "face hidden" and/or
+	//! "build hidden" when a worn catalogue item conceals that part (LF_ItemCatalogue.Concealment), and
+	//! the portrait look is what LF_WantedLook.Witnessed leaves. The ID photo keeps the full face.
+	static void ApplyConcealment(IEntity suspect, LF_ItemCatalogueConfig config, inout string clothing, out string look)
+	{
+		array<ResourceName> worn = {};
+		LF_WantedLook.WornPrefabs(suspect, worn);
+		bool face;
+		bool build;
+		LF_ItemCatalogue.Concealment(config, worn, face, build);
+		clothing = DescribeConcealed(clothing, face, build);
+		look = LF_WantedLook.Witnessed(LF_WantedLook.Capture(suspect), face);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The clothing text with the hidden parts added as keys, the way every reader resolves it.
+	static string DescribeConcealed(string clothing, bool face, bool build)
+	{
+		string text = clothing;
+		if (face)
+		{
+			if (!text.IsEmpty())
+				text += "|";
+
+			text += CLOTHING_FACE_HIDDEN;
+		}
+
+		if (build)
+		{
+			if (!text.IsEmpty())
+				text += "|";
+
+			text += CLOTHING_BUILD_HIDDEN;
+		}
+
+		return text;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -558,5 +632,20 @@ class LF_WantedReports
 		}
 
 		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_WantedReports's statics (LF_StaticReset finds it by reflection).
+class LF_WantedReports_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_WantedReports";
+	}
+
+	override void Apply()
+	{
+		LF_WantedReports.ResetStatics();
 	}
 }

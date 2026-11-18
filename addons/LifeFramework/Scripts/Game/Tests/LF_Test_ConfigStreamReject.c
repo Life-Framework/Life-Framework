@@ -7,7 +7,7 @@
 //! A config stream the client cannot trust fails loudly and changes nothing (#285): another
 //! format, another schema, a payload that does not match its hash, text that is not JSON, and a
 //! shop value of the wrong type each log LF_Debug.Error and leave the shipped prices in place.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigStreamReject : LF_Test
 {
 	override string GetName()

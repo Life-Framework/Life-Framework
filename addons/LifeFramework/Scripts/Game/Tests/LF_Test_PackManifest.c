@@ -1,7 +1,7 @@
 // red-proof: expecting 1 overlay for an out-of-range pack failed `- out of range: no overlay is handed out (expected 1, got 0)` and `SUMMARY tier=only passed=0 failed=1` (observed 2026-11-14); restored, green.
-// tier: LOGIC
 //! Pack manifest (#963): a pack whose core range holds the running core loads its overlays; one
 //! whose range excludes it is refused and its overlays are not handed out.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PackManifest : LF_Test
 {
 	override string GetName()

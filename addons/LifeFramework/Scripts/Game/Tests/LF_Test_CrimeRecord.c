@@ -1,8 +1,8 @@
 // red-proof: Observed 2026-11-09 with `tools/cli test --no-build --only LF_Test_CrimeRecord`: counting `+= 2` in LF_CrimeRecord.Record failed `crime/record` with `- one robbery counts once (expected 1, got 2)`. Restored; green.
-// tier: LOGIC
 //! The hidden crime record (#270): a robbery counts once for its account and offence, accounts
 //! and offences are separate rows, an unpaid ticket is not a crime pulled off, and a bad event
 //! is refused.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CrimeRecord : LF_Test
 {
 	protected static const string UID_A = "crime-rec-a";

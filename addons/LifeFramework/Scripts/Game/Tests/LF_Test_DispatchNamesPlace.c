@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-17, main guard red at b622741c (#2249 grew the grid): `--only LF_Test_DispatchNamesPlace` failed "no sign near: the report names the location (expected '#AR-MapLocation_Arleville', got 'free')" with the fixtures at z 120; at z 320 green. Earlier, 2026-11-16, on the unfixed DescribePlace `--only LF_Test_DispatchNamesPlace` failed "no sign near: the report names the location (expected '#AR-MapLocation_Arleville', got '#LF-Wanted_PlaceGrid 003-001')". With LF_NamedPlaces wired in, green.
 //! police/dispatch-names-place: a report's place (#1944) is the nearest place sign's title, else the
 //! nearest map location's name (LF_NamedPlaces), else the 100 m grid square. A report beside a
@@ -7,6 +6,7 @@
 //! the test organisation sign, placed north of the annex: its grid cell label signs ("free" and the cell ids,
 //! x 22..322, z 22..106) are place signs too and win inside the place radius (80 m), so the spot must stay
 //! 200 m clear of the lattice (the grid grew east to x 328 in #2249 and put a label 45 m from the old spot).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DispatchNamesPlace : LF_Test
 {
 	protected static const ResourceName LOCATION = "{A99A1ADAF98F2D48}Prefabs/World/Locations/Arland/Arleville.et";

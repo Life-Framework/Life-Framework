@@ -1,11 +1,11 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_CuffingOpenState`: LF_Cuffing.End without Close failed `letting go shuts the cuffs`, `a refused end shuts the cuffs`, `a watch pass that finds the pair out of reach shuts the cuffs` and `letting go shuts the cuffs on the wrists`; restored, green.
-// tier: WORLD
 //! police/cuffing-open-state: the cuffs open while the hold runs and shut when it stops. A Cuff hold
 //! swings the strands of the cuffs in the officer's hand open (LF_AssetAnimComponent, replicated, so a
 //! late joiner sees them open); letting go, or a pair that moves out of reach, shuts them again and
 //! drops the hold. An Uncuff hold opens the cuffs on the suspect's wrists (the replicated character
 //! flag) and any end shuts them. The server accepts the end of a hold only if it saw the hold begin
 //! and only after most of the action's duration. The worn model can open too.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CuffingOpenState : LF_Test
 {
 	static const ResourceName CUFFS_PREFAB = "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et";

@@ -1,7 +1,7 @@
 // red-proof: make LF_PoliceUtils.IsOnDutyOfficer ignore the duty flag, then run the fast tier;
 // "an off-duty officer cannot run police actions" goes red.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceOnDutyOfficer : LF_Test
 {
 	override string GetName()

@@ -430,3 +430,18 @@ modded class SCR_ChimeraCharacter
 		LF_HospitalWake.Begin(this, loiterType, charged, number, date, minutes);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_HospitalRespawn's statics (LF_StaticReset finds it by reflection). Also drops LF_NewLifeRule's wristbands and its tick.
+class LF_HospitalRespawn_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_HospitalRespawn";
+	}
+
+	override void Apply()
+	{
+		LF_HospitalRespawn.Reset();
+	}
+}

@@ -1,8 +1,8 @@
 // red-proof: observed 2026-11-12 with `toolscli test --no-build --only LF_Test_CrimeCatalogOwner`: making LF_CrimeCatalog.WantedFor return before the repeat-threshold check failed `- from the threshold on a repeat adds the repeat amount (expected 3, got 1)` and `- ApplyWanted raises the account by the repeat amount (expected 3, got 1)`. Restored; green.
-// tier: LOGIC
 //! #685a: the owner's `crime` section changes the catalog field by field, keyed by crime id; a number
 //! outside the schema range is refused and the shipped value kept; the repeat rule reads the saved
 //! crime record count; and a sentence entry lengthens a sentence but never shortens it.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CrimeCatalogOwner : LF_Test
 {
 	protected static const string UID = "crime-catalog-owner";

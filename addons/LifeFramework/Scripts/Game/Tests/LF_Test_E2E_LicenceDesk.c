@@ -2,7 +2,6 @@
 // with the in-game day not advanced, `- at the due minute the permit is issued (expected 0, got 2)`. Hook off: green.
 // red-proof: RED-OK e2e/licence-desk (#1995), observed 2026-11-16 with the same batched `--red` run:
 // with the in-game day not advanced, `- a conviction since the application holds the permit back at collection (expected 6, got 2)`. Hook off: green.
-// tier: PERSISTENCE
 //! The licence desk across a restart (#1766, `tools\cli wt e2e <slug>`). The save boot leaves an
 //! open application (due one in-game day after T0) and a second application the police revoked.
 //! The reload boot (LF_E2E_LOAD_BOOT) finds the first still waiting and issues it at the due minute;
@@ -13,6 +12,7 @@
 //! applying, one after applying and paying). The reload boot finds both convictions back from the
 //! "convictions" payload and the desk still refuses the first at application and holds back the
 //! second's permit at collection.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_LicenceDesk : LF_Test
 {
 	protected static const string APPLICANT = "e2e-licence-applicant";

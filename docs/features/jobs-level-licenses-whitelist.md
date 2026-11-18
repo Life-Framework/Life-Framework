@@ -3,17 +3,11 @@
 ### `LF_PlayerJobComponent` — `Feature/Jobs/LF_PlayerJobComponent.c`
 - ✅ Per-player job state, per-job level/XP maps, license gates (POLICE→POLICE_ACCESS,
   MEDIC→MEDIC_ACCESS), client→server `RpcAsk_SetJob` re-validates licenses.
-- ✅ **Fruit-catcher mint closed** (verified 2026-08-30): the server clamps any
-  claimed score through `LF_GetFruitCatcherRewardCount` to
-  `LF_FRUIT_CATCHER_MAX_SCORE` (100); pin test `security/fruitcatcher-reward-clamp`.
-- ✅ **Fruit-catcher claim loop closed** (verified 2026-11-07): a claim
-  pays only a server-opened round. The minigame calls `AskStartFruitCatcherRound`
-  when a round starts; the server records the round id and start time
-  (`LF_FruitCatcherRound`) and `AskClaimFruitCatcherReward` sends that id back.
-  One claim per round, same fruit, at least `LF_FruitCatcherRound.MIN_ROUND_SECONDS`
-  (30 s) after the start, and the caller must hold FARMER. The minigame screen
-  is not in this repo; when it lands it must call the start ask. Pin tests
-  `security/fruitcatcher-rounds`, `security/job-workplace-and-seed`.
+- ✅ **Fruit-catcher reward removed** (#2408, 2026-11-17): the minigame never landed and nothing in a world
+  makes a player FARMER, so `AskStartFruitCatcherRound`, `AskClaimFruitCatcherReward`, their RPCs,
+  `LF_FruitCatcherRound` and `EHarvestJobType` are deleted. A fruit reward comes back with its own
+  location gate. The `fruit_pick` XP award stays in the jobs config. Pin test
+  `security/job-workplace-and-seed` still covers the workplace gate.
 - ✅ **Job switch and kit gates** (verified 2026-11-07): a
   client-requested switch (`RequestJobFromClient`, behind `RpcAsk_SetJob`) needs
   an `LF_JobSignUpAction` for that job within `LF_JobGuards.WORKPLACE_RADIUS`
@@ -55,7 +49,7 @@
 
 ### `LF_CivilianJob` — `Feature/Jobs/LF_CivilianJob.c`
 - ✅ Workplace signup, one active run, cash once, abandon pays nothing
-  (verified 2026-10-11). The bank balance stays 0. Parcel cargo is
+  (verified 2026-10-11). Run rules below (#2408). The bank balance stays 0. Parcel cargo is
   `{9CA41609F6C806AE}Prefabs/Items/Roleplay/LF_Parcel.et`, a cardboard box carried
   in both hands (#155: the bare `HandCarryItem_Base.et` had no mesh, so the
   hands were empty on a client). The mesh is `PostParcel.xob`, 0.26 x 0.14 x 0.38 m (a shoebox; every vanilla
@@ -124,6 +118,13 @@
   pacing), licence purchase (`LF_LicenseGate`: the licence family's job at the catalog level,
   or a `jobs.licenceGates` row), chain steps and quests (`m_sLevelJob` / `m_sJob`, CIVILIAN by
   default), lockpicking skill (CIVILIAN).
+- ✅ (2026-11-17, #2700) **A job-level gate refuses in words, never a number.**
+  `LF_JobLevelWords.Refusal(job, have, need)` returns a `#LF-Level_Near_<Family>` key one level
+  short and `#LF-Level_Far_<Family>` further (Farmer, Miner, Lumberjack, Medic, Police, Delivery,
+  `Any` for other jobs; "Do more runs first" for DELIVERY). `LF_ChainGate.LevelKey/ReasonKey` and
+  `LF_LicenseGate.RefusalKey` take their keys from it, and a refused paid licence unlock toasts
+  the words. Test `level/job-level-words`. Job sign-up and run-start refusals (`LF_JobAction`)
+  and the chain station's `RefusalKey` still show the old line until #R4 / a follow-up wire them.
 - ✅ **Saved as the `joblevels` payload (save version 28)**: one `LF_JobXpRow` per (character,
   job). A version 7-27 save migrates: the single level goes onto CIVILIAN and the delivery
   career onto DELIVERY at the same levels; every other job starts at 0. Load is idempotent.
@@ -186,6 +187,42 @@
   missing file is a first run and saving stays allowed. A later good `Load`
   clears the flag.
 - ⚠️ Getter returns the live internal array (callers can mutate without logging).
+- ✅ **A remove before the first load still removes** (2026-11-17 property review, LOGIC
+  `whitelist/remove-before-load`): `RemoveFactionWhitelist` and `RemoveJobWhitelist` load the
+  file first. They returned false on an empty cache, so a police trial that expired on the first
+  duty desk use after a restart was marked expired while the officer stayed on the roster.
+- ✅ **`!wadd POLICE <uid>` writes the roster duty reads** (2026-11-17, LOGIC
+  `chat/admin-wadd-grant`, #2548): `AdminChatChannel.ApplyWhitelistAdd` calls
+  `LF_WhitelistManager.AddFactionWhitelist` and logs and reports to staff only when that stored
+  a new entry. `MEDIC`, `CONNECT`, `NONE` (no roster; there is no medic faction type) and a uid
+  already on the roster log an `LF_Debug.Warn` and report nothing.
+- ✅ **The job whitelist reads the faction roster by account uid** (2026-11-17, WORLD `whitelist/job-roster`, #2577): `IsWhitelistedForJob(accountUid, job)` passes when the job's faction roster (POLICE job, POLICE faction) holds the account uid, or the old per-job list does (read only, never written). `LF_PlayerJobComponent` and `LF_LicenseManagerComponent` pass `LF_Utils.GetAccountUID`, so a second character of an approved officer passes. Manual: see the PR.
+- ✅ **The dead legacy whitelist sign action, client flags and GM context actions are gone**
+  (2026-11-17, WORLD `whitelist/legacy-gone`, #2576): `LF_WhitelistAction` (it needed
+  `LF_PlayerWhitelistComponent`, which no character carries, and its flags were set only on the
+  owning client), that component, and `LF_Enable/DisableWhitelistContextAction` (in no editor
+  config) are deleted. `EL_WhitelistSign` keeps `LF_SignReadAction`, so the sign is still readable and
+  no layer changed. `LF_WhitelistRespawnHandlerComponent` keeps the start migration and the CONNECT
+  join gate; its `OnPlayerSpawned` is an empty hook. Police duty reads `LF_WhitelistManager` and is
+  unaffected.
+- ✅ **Legacy whitelist files move into the roster once** (2026-11-17, WORLD
+  `whitelist/legacy-migrate`, #2575): on game-mode start `LF_WhitelistRespawnHandlerComponent`
+  passes each configured `LF_Whitelist` to `LF_WhitelistLegacyMigration.Migrate`. POLICE uids go to
+  `AddFactionWhitelist(uid, POLICE)`, repeats and rostered uids skipped, and log
+  `migrated <n> legacy POLICE uids from <file>`. CONNECT and MEDIC have no account roster: their
+  uids are counted and logged, not migrated. The legacy file is only read; a line in
+  `$profile:LifeFramework/whitelist-legacy-migrated.txt`, written after the roster saved, stops a
+  later start re-adding a uid an admin removed. An unreadable roster or failed save leaves the
+  file unmarked, so the next start retries. Nothing writes the legacy file (`AddNewUuidToFile` and
+  `RemoveUUIDFromFile` are deleted). To re-run it after restoring an older roster, delete the marker
+  (`docs/owner/rented-host.md` "Backups").
+- ✅ **A migrated legacy file that still changes warns once per start** (2026-11-17, WORLD
+  `whitelist/legacy-ignored-count`, `whitelist/legacy-failure-paths`, #2607): when a POLICE legacy
+  file is already marked, `Migrate` counts its uids that are not on the roster
+  (`LF_WhitelistLegacyMigration.CountIgnored`: added to the file after the move, or removed from the
+  roster since) and logs `LF_Debug.Warn` `<n> uids in the legacy POLICE file are not on the roster and
+  are ignored`. An unreadable roster (adds nothing, no marker) and a failed roster save (no marker)
+  are tested, each followed by the next start migrating in full.
 
 ### `AdminChatChannel` — `Feature/Chat/AdminChatChannel.c`
 - ✅ **Server re-checks the admin role** (verified 2026-11-07):
@@ -206,7 +243,8 @@
 ### `LF_UnemploymentBenefit` — `Feature/Jobs/LF_UnemploymentBenefit.c`
 - ✅ "Collect benefit" (`LF_CollectBenefitAction`) at `Roadmap_Job_Depot`
   (verified 2026-11-08: LOGIC test `jobs/unemployment-benefit`; in-world collection
-  is manual). The server reads the bank balance (`LF_ATMManager`) and pays
+  is manual). The server reads the bank balance (`LF_ATMManager`) plus the cash the
+  player carries (economy review 2026-11-17, test `jobs/benefit-counts-cash`) and pays
   `m_iBenefitAmount` cash when the balance is strictly below
   `m_iBenefitBalanceThreshold`, the player is not on duty as police and has no
   active delivery run, and `m_fBenefitCooldownSeconds` passed since that
@@ -225,3 +263,48 @@
   a player interaction, but only once the holder is cuffed (`LF_Restraint`; #1916): the
   interaction stays hidden and the server's `Revoke` refuses and logs for a free player. Test `licence/revoke-cuffs`. The gun counter (#1903) then serves the holder. Tests `licence/desk`,
   `e2e/licence-desk` (the open application, a revoke and a conviction that still blocks the permit across `wt e2e`).
+- 🧪 (2026-11-18) **The firearm permit is got at the gun store** (maintainer 2026-11-17; follows draft #2061). A catalogue
+  offer with `m_sGrantsLicence` (owner key `grantsLicence`) is a licence row: the counter's price list shows the licence
+  with the permit fee and, on Pay, runs the same `LF_LicenceDesk.VisitFor` the desk ran (fee in carried cash through
+  `LF_EntityCashWallet` with ledger reason `licence-fee`, clean record, the licence's gate, the in-game-day wait, the
+  `permit_due:` flag), so the player applies and later collects at that counter (`LF_ShopComponent.ApplyForLicence`,
+  `LF_CharacterShopComponent.RpcAsk_Licence`; the server re-checks range, rate limit, a raided shop and that the outlet has
+  the row). The slip prints the answer (`#LF-LicenceCounter_*`, else the desk's refusal keys). A row for a licence the
+  office does not issue (anything but `FIREARM_PERMIT`) is dropped at load and logged. The core ships no row, so the desk
+  still issues the permit in a core-only world; the pack's `LF_Catalogue_GunStore.conf` puts the row on `gun_counter`,
+  and while any outlet has the row the desk hides and refuses its permit action (`LF_LicenceDesk.DeskIssuesPermit`).
+  An application already open at the desk is collected at the counter. Selling a gun still needs the permit. The client
+  reads the server's fee from the catalogue stream (`fee`). Tests `licence/counter`, `everon/gun-store-permit` (pack leg).
+
+- ✅ **Run rules: deposit, distance, time, passenger** (#2408, merged, in-dev). All numbers are the jobs config's
+  (`Configs/Jobs/LF_Jobs.conf`, owner section `jobs`):
+  - *Deposit.* `LF_CivilianJob.BeginRun` takes a deposit from the player's cash when a run starts: the cargo's shop sell price
+    (`LF_ShopManagerComponent.GetSellPrice`) times `cargoDepositPercent` (100), or `cargoDepositFallback` (50) when the
+    shop list has no price. A player short of it gets no run and no cargo (toast `#LF-Job_NeedDeposit`). A delivery returns it
+    once; abandoning forfeits it, so start, abandon, start, abandon costs the cargo's value each loop (the cargo is not taken
+    back). A taxi fare has no cargo and no deposit. A restart ends the run, and the deposit it held is given back to the
+    player's bank account on the load (save version 49, payload `jobruns`, one `LF_JobRunRow` per run holding a deposit: uid, amount and
+    job; `LF_CivilianJob.ExportDeposits` / `ApplyDeposits`, tests `jobs/deposit-restart` and `jobs/deposit-cargo`, proof `wt e2e`), so a
+    restart never takes a player's money. The run's cargo goes with it (#2481): before the refund the load takes one parcel or fuel can
+    (the job's own) out of the player's saved carried snapshot (`LF_CivilianJob.StripSavedCargo`), so the deposit and the cargo are
+    never both kept; a cargo no longer carried (dropped, lost at death) is just refunded. The log says which
+    (`[LFDebug:Jobs] restart ended the run of ...`). The bank takes the money because the player may be offline when the
+    server loads. A run still live in the session (a re-applied load) keeps its own deposit and gets no second one. Ledger reasons
+    `job-deposit`, `job-deposit-back`.
+  - *Distance and time.* `BeginRun` records where and when the run started. `LF_CivilianJob.Dropoff` (the one call behind
+    `LF_JobDropoffAction`) pays only at a placed drop (`LF_JobSiteComponent` site DROP), at least `runMinDistance` (300 m,
+    straight line) from the start, after at least `runMinTimeFraction` (0.6) of the expected driving time, which is the
+    distance over `runRoadSpeed` (10 m/s). A refused drop pays nothing, keeps the run, the cargo and the deposit, and shows
+    `#LF-Job_TooClose`, `#LF-Job_TooFast` or `#LF-Job_NotADrop`. A run with no start on record pays nothing.
+  - *Taxi.* A fare also needs another player seated in the driver's vehicle when the fare is dropped off
+    (`LF_CivilianJob.CountPassengers`; `#LF-Job_NoPassenger`).
+  - *Map stop.* `LF_JobMapMarks.OnRunStarted` marks the nearest drop at least `runMinDistance` from the start, so the stop
+    always pays; when none is that far it marks the nearest.
+  - `CompleteRun` is the payout only and `AbandonRun` the forfeit; production code reaches a payout through `Dropoff`.
+    Tests `jobs/run-rules` (LOGIC: the checks, the deposit state, the config) and `jobs/run-cargo-deposit` (WORLD: a real
+    character, cash and cargo at the placed drop). Manual: a taxi fare with a second player is in the PR.
+- **Map marks (#2239):** a fare destination and a delivery stop become a shared mark plus the waypoint for their player, cleared when the run completes (`Feature/Jobs/LF_JobMapMarks.c`, `docs/features/map.md`; test `jobs/job-map-marks`). The marks are driven by `OnFareAccepted`/`OnStop`; nothing in the run code calls them until fares and stops exist.
+- 🧪 (2026-11-17) **A body the save restored gets its saved licences (#2413).** A player who takes control of a living body no spawn made (`LF_SpawnLogic.CreateCharacter`: "already controls a character") never went through `BindAccountComponents`, so the body held only its starter licences and `LF_LicenceDesk.Holds` charged a permit holder again. `LF_SpawnLogic.AdoptLivingBody` now runs `LF_Progression.ApplyToCharacter` on that body (idempotent; a missing body or key logs `[LFDebug:Spawn]` and applies nothing). Test `licence/restored-body` (WORLD). Manual: grant a permit, restart the server, rejoin: the licence desk and the gun counter see the permit and charge nothing.
+- 🧪 (2026-11-17) **A taxi stand is a place (#2691).** `Prefabs/Jobs/LF_TaxiStand.et` is a pole sign carrying `LF_TaxiStandComponent` (`Feature/Jobs/LF_TaxiStandComponent.c`), which registers in `LF_Places` as kind `taxi` (`LF_TaxiStand.PLACE_KIND`; place id = the component's id, else the entity name, else `taxi_<entity id>`). `LF_TaxiStandComponent.Nearest(pos)` returns the registered stand closest on the ground plane (or null), and `GetLabel()` names it for a fare and the map: the prefab's label, else the nearest map location (`LF_NamedPlaces`), else the place id. The core holds no coordinates or place names. Test `jobs/taxi-stand-places` (WORLD). Grid cell `taxi-stand` (`tools\cli look grid:taxi-stand`). No fare or map row reads the kind yet (#2690, #2239).
+- 🧪 (2026-11-17) **A taxi fare is priced by the distance driven (#2690).** A taxi drop-off pays `LF_TaxiFare.Price(pickup, dropoff)` instead of the flat 80: the pickup is the run's server-recorded start (`m_vRunStart`), the distance is the straight line to the drop site. A drop within `shortHopMetres` (100) of the pickup pays `floor` (80); beyond it the fare is `floor` plus `ratePerMetre` (0.04) per metre, never above `cap` (300), so Saint-Philippe to Montignac (3.7 km) pays about 228. The numbers are `Configs/Jobs/LF_TaxiFares.conf` with the owner's `taxiFares` section over it (`floor`, `ratePerMetre`, `cap`, `shortHopMetres`; its own section, not under `jobs`); a zero or negative number, or a cap below the floor, logs `LF_Debug.Error` and prices with the shipped numbers. `LF_CivilianJob.Dropoff` passes the fare to `CompleteRun`; the ledger reason and the XP are unchanged, and `CompleteRun` with no fare still pays the old flat `PAY_TAXI`. Test `jobs/taxi-fare` (LOGIC).
+- 🧪 (2026-11-18) **Mining, logging and medic work earn job-level XP (#2707).** `LF_JobLevelSources` (`Feature/Level/LF_JobLevelSources.c`, subscribed at game start) turns bus events into `jobs.xpAwards` rows through `LF_JobLevels.Award`: `LF_OnGathered` of family `MINING` pays `gather_mining` (10 MINER), family `LOGGING` pays `gather_logging` (10 LUMBERJACK); `LF_OnPlayerRevived` pays `medic_revive` and `LF_OnPatientDelivered` pays `medic_delivery` (25 MEDIC each, to the medic; a self-revive or a medic with no player id earns nothing). Gather cooldown 8 s, medic cooldown 60 s, and the MINER, LUMBERJACK and MEDIC tracks carry a daily cap of 2000. DIGGING and FORAGING gathers pay nothing here. Test `jobs/level-sources` (LOGIC). Manual: mine, log and revive in a session, then read the XP in `[LFDebug:JobLevels]`.

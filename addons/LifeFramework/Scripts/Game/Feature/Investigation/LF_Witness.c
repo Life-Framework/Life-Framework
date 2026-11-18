@@ -33,6 +33,8 @@ class LF_WitnessEntry : Managed
 	string m_sKey;
 	bool m_bNpc;
 	float m_fDistance;
+	//! An NPC answers an officer once: its accuracy is rolled on that one ask (LF_Witness.Ask).
+	bool m_bAsked;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -80,6 +82,7 @@ class LF_Witness
 {
 	static const string FEATURE = "Witness";
 	static const string NPC_PREFIX = "npc:";
+	static const string RESIDENT_PREFIX = "resident:";
 	static const string LABEL_NPC = "#LF-Witness_Npc";
 	static const string LABEL_ANONYMOUS = "#LF-Witness_Anonymous";
 	static const string ENTRY_PREFIX = "S;";
@@ -147,6 +150,11 @@ class LF_Witness
 		if (!npc)
 			return string.Empty;
 
+		// A live resident is a named witness: the report keeps the resident id, so their memory can move.
+		string residentId = LF_ResidentSpawner.ResidentIdOf(npc);
+		if (!residentId.IsEmpty())
+			return RESIDENT_PREFIX + residentId;
+
 		return NPC_PREFIX + string.Format("%1", npc.GetID());
 	}
 
@@ -181,6 +189,7 @@ class LF_Witness
 		LF_WitnessScene scene = OpenScene(report, suspectUid, offence, clothing, vehicle, PlateOf(suspect), place, System.GetTickCount());
 		CollectPlayers(scene, suspect);
 		CollectNpcs(scene, suspect);
+		LF_ResidentCrimeReaction.OnScene(scene);
 		LF_Debug.Info(FEATURE, string.Format("report #%1: %2 witness(es) in sight (plate '%3')", report, scene.m_aWitnesses.Count(), scene.m_sPlate));
 		return scene;
 	}
@@ -435,7 +444,8 @@ class LF_Witness
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: an officer asks. A player says everything it could see; an NPC remembers each thing
-	//! only with the configured accuracy (rolls are 0..1, one per field, so a test can fix them).
+	//! only with the configured accuracy (rolls are 0..1, one per field, so a test can fix them), and
+	//! only on the first ask: a second ask of the same NPC says nothing.
 	//! \return Number of things the witness said.
 	static int Ask(LF_WitnessScene scene, string witnessKey, array<float> rolls, string channel)
 	{
@@ -445,6 +455,19 @@ class LF_Witness
 		LF_WitnessEntry entry = FindEntry(scene, witnessKey);
 		if (!entry)
 			return 0;
+
+		// An NPC remembers each thing only with its accuracy, and that roll happens once. Asking again
+		// would re-roll the missing fields until the witness knew everything.
+		if (entry.m_bNpc)
+		{
+			if (entry.m_bAsked)
+			{
+				LF_Debug.Info(FEATURE, string.Format("report #%1: %2 was already questioned, nothing more to say", scene.m_iReport, witnessKey));
+				return 0;
+			}
+
+			entry.m_bAsked = true;
+		}
 
 		LF_WitnessStatement statement = FindStatement(scene, entry);
 		bool fresh = statement == null;
@@ -583,11 +606,9 @@ class LF_Witness
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Witness's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Witness's statics (LF_StaticReset finds it by reflection).
 class LF_Witness_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Witness_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Witness";

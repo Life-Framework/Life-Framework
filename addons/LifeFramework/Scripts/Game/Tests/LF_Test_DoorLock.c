@@ -4,7 +4,7 @@
 // door action gate reads exactly the IsLocked state asserted here, so gating is covered by
 // these transitions.
 
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DoorLock : LF_Test
 {
 	protected static const ResourceName DOOR_FIXTURE = "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et";

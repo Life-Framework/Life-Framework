@@ -3,13 +3,13 @@
 // wrote the save (load 1) (expected '1.8.0.13', got 'unknown')` and `- the save is from another build than the
 // running one (load 1)`; dropping `s_bLoadDamaged = true` in ReportLoad failed `- the damaged load pauses
 // autosave`. Restored; green. The restart path is `tools\cli wt e2e <slug> --old-build`.
-// tier: PERSISTENCE
 //! #980 through the real save path ("buildstamp" payload, save version 32). A save written by
 //! another game build (a faked older stamp) loads whole: the bank balance in the same save comes
 //! back, the stamp names the old build, the load is not damaged, and loading twice changes nothing.
 //! A save from this build reads as this build. A version 31 save has no stamp (unknown build).
 //! A save whose payloads cannot be read leaves the live state alone, logs the damage and pauses
 //! autosave (IsLoadDamaged) instead of wiping.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_SaveStampPersist : LF_Test
 {
 	protected static const string UID = "stamp-bank-uid";

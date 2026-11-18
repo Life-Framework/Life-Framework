@@ -1,12 +1,12 @@
 // red-proof: 2026-11-11, before the fix (StartAlarm spawned at the site point, beacon child 1.1 m up),
-//   cli test --no-build --only LF_Test_AlarmRests:
+//   cli test --no-build --only LF_Test_AlarmRests (dispatch/alarm-rests):
 //   [LFTEST]   - a site point 1 m up puts the alarm on the ground below it (expected 0, got 1)
 //   [LFTEST]   - the beacon stands on the ground, not above it (expected 0, got 2.1)
 // Fixed (LF_Dispatch.RestingSpot, beacon at the alarm origin); green with dispatch/site-alarm and LF_Test_Dispatch.
 //------------------------------------------------------------------------------------------------
 //! dispatch/alarm-rests: a site alarm stands on whatever is under the site, not in the air. The beacon was a
 //! child 1.1 m above the site point, so at the cash van box it hung in mid-air over the van (#571 trailer review).
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_AlarmRests : LF_Test
 {
 	override string GetName()

@@ -261,6 +261,24 @@ class LF_MapKnown
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the server's own scan saw the character at the place (LF_MapDiscoverScan). No client
+	//! ask, so no rate window and no range slack: the server measured the distance itself (#2492).
+	static LF_EMapKnownOutcome VisitServer(string characterId, string placeId)
+	{
+		if (characterId.IsEmpty() || placeId.IsEmpty())
+			return LF_EMapKnownOutcome.REFUSED_BAD;
+
+		LF_EMapKnownOutcome outcome = LF_MapKnownRules.Decide(true, KnownOf(characterId, placeId), true, 0, 0, 0);
+		if (outcome == LF_EMapKnownOutcome.VISITED)
+		{
+			Store(characterId, placeId, LF_EMapPoiKnown.VISITED);
+			LF_Debug.Info(FEATURE, string.Format("%1 visited %2", characterId, placeId));
+		}
+
+		return outcome;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the character has heard of the place (the board, the clerk, an NPC, a quest step).
 	//! Never lowers visited; works for a place that is not live yet. No network: HearPlayer sends it.
 	static LF_EMapKnownOutcome HearCharacter(string characterId, string placeId)
@@ -435,11 +453,9 @@ class LF_MapKnown
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_MapKnown's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_MapKnown's statics (LF_StaticReset finds it by reflection).
 class LF_MapKnown_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_MapKnown_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_MapKnown";

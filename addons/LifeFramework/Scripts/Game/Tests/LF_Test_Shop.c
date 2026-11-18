@@ -4,7 +4,7 @@
 // the cap check in LF_ATMManager.IsValidAmount. Each perturbed rule turns its
 // assertions red.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ShopQuantityGate : LF_Test
 {
 	override string GetName()
@@ -23,7 +23,7 @@ class LF_Test_ShopQuantityGate : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ShopTotalPrice : LF_Test
 {
 	override string GetName()
@@ -41,7 +41,7 @@ class LF_Test_ShopTotalPrice : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ATMAmountGuard : LF_Test
 {
 	override string GetName()

@@ -9,11 +9,11 @@
 // red-proof: 2026-11-16 with the pattern in resetAllLines never matching, "a core test calling ResetAll fails"
 // printed FAIL.
 import { spawnSync } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { copyFileSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { resetAllLines } from "../lib/test-resetall.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const check = (ok, msg) => {
@@ -24,7 +24,7 @@ const check = (ok, msg) => {
 const here = dirname(fileURLToPath(import.meta.url));
 const fx = (n) => join(here, "fixtures", "no-test-resetall", n);
 const validator = join(here, "validate-no-test-resetall.mjs");
-const dir = mkdtempSync(join(tmpdir(), "lf-no-test-resetall-"));
+const dir = scratchDir("lf-no-test-resetall-");
 const core = join(dir, "addons", "LifeFramework", "Scripts", "Game", "Tests");
 const pack = join(dir, "addons", "LF_Everon1989", "Scripts", "Game", "Tests");
 const coreDir = join(dir, "addons", "LifeFramework", "Scripts", "Game", "Core");
@@ -44,12 +44,12 @@ try {
 
   copyFileSync(fx("LF_Test_BadResetAll.c"), join(core, "LF_Test_BadResetAll.c"));
   r = run();
-  check(r.status === 1 && /LF_Test_BadResetAll\.c:12 /.test(r.stdout), `a core test calling ResetAll fails (${r.stdout.trim().split("\n")[0]})`);
+  check(r.status === 1 && /LF_Test_BadResetAll\.c:11 /.test(r.stdout), `a core test calling ResetAll fails (${r.stdout.trim().split("\n")[0]})`);
   rmSync(join(core, "LF_Test_BadResetAll.c"));
 
   copyFileSync(fx("LF_Test_BadResetAll.c"), join(pack, "LF_Test_EveronBad.c"));
   r = run();
-  check(r.status === 1 && /LF_Everon1989\/Scripts\/Game\/Tests\/LF_Test_EveronBad\.c:12 /.test(r.stdout), "a pack test calling ResetAll fails");
+  check(r.status === 1 && /LF_Everon1989\/Scripts\/Game\/Tests\/LF_Test_EveronBad\.c:11 /.test(r.stdout), "a pack test calling ResetAll fails");
   rmSync(join(pack, "LF_Test_EveronBad.c"));
 
   r = run();

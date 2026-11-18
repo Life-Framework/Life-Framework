@@ -1,7 +1,7 @@
 // red-proof: Observed 2026-11-16 with `tools/cli test --no-build --red LF_Test_FirstSpawn,LF_Test_FirstSpawnPersist` (RED PROOF OK): with the Consume call skipped, failed "the new character's first spawn is first"; green on the real code.
-// tier: LOGIC
 //! #1964: a character the creation flow marked spawns as new exactly once; the second spawn
 //! (after a death or a rejoin) is not; a character that was never marked (an existing one) never is.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FirstSpawn : LF_Test
 {
 	protected static const string NEW_ID = "firstspawn-new-character";

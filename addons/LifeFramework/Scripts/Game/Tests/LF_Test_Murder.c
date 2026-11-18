@@ -3,7 +3,7 @@
 // `[LFTEST]   - the murder raises wanted once by the configured amount (expected 0, got 3)`.
 // Restored the expected value to 3.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Murder : LF_Test
 {
 	override string GetName()

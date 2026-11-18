@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --local --only LF_Test_ConfigOverlayIds`: making LF_ConfigOverlay.Apply turn a verb on an unknown id into an add failed `- patch of an id no lower layer has is refused, not added`, `- four records refused: unknown patch, unknown remove, add of an existing id, bad verb (expected 4, got 2)` and `- offers: two records refused (expected 2, got 1)`. Restored; green.
-// tier: LOGIC
 //! #962: the one override model. Each verb (add, replace, patch, remove) on a list section, an id
 //! no lower layer has refused while the rest of the overlay applies, an unknown verb refused, and
 //! two packs on one id: the later wins and the claim names both. Runs on the crime catalog, the
 //! catalogue's offers and the shop rules, the three sections on the shared merge.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigOverlayIds : LF_Test
 {
 	protected static const string ROBBERY = "#LF-Offence_Robbery";

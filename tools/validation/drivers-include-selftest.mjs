@@ -15,12 +15,12 @@
 //   checkout's" for each worktree and prune left the worktree path; with `git config --local --add include.path
 //   "$DRIVERS"` put back in the hook, hook printed "pre-commit adds an include.path itself".
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
 import { driversIncludes, mainCheckout, registerDrivers } from "../merge/register-drivers.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SCRIPT = join(ROOT, "tools", "merge", "register-drivers.mjs");
@@ -36,7 +36,7 @@ function git(dir, args) {
 }
 const registerCli = (dir) => spawnSync("node", [SCRIPT], { cwd: dir, encoding: "utf8", windowsHide: true });
 
-const temp = mkdtempSync(join(tmpdir(), "lf-drivers-include-"));
+const temp = scratchDir("lf-drivers-include-");
 try {
   const main = join(temp, "main");
   mkdirSync(join(main, "tools", "merge"), { recursive: true });
@@ -93,9 +93,25 @@ try {
   registerCli(wtA);
   if (driversIncludes(main).length !== 1) fail(`after the lock cleared there are ${driversIncludes(main).length} includes`);
 
+  // stale driver: a `merge.lf-*` section the canonical file dropped (lf-regen-tests, #2618) goes; a live one and a
+  // non-lf one stay, from any worktree and through `wt fix-drivers`
+  writeFileSync(join(main, SUFFIX), '# fixture\n[merge "lf-markdown"]\n\tdriver = true\n');
+  const mergeKeys = () => {
+    try { return git(main, ["config", "--local", "--name-only", "--get-regexp", "^merge\\."]).split(/\r?\n/).sort(); } catch { return []; }
+  };
+  git(main, ["config", "--local", "merge.lf-regen-tests.name", "Regenerate the test registry"]);
+  git(main, ["config", "--local", "merge.lf-regen-tests.driver", "node tools/merge/regen-generated.mjs %O %A %B %P"]);
+  git(main, ["config", "--local", "merge.lf-markdown.driver", "true"]);
+  git(main, ["config", "--local", "merge.other-tool.driver", "true"]);
+  const pruneRun = registerCli(wtA);
+  if (pruneRun.status !== 0) fail(`stale driver prune made register-drivers exit ${pruneRun.status}`);
+  if (!/stale merge driver\(s\) lf-regen-tests/.test(pruneRun.stdout)) fail(`prune did not report lf-regen-tests: ${pruneRun.stdout}`);
+  if (mergeKeys().join() !== "merge.lf-markdown.driver,merge.other-tool.driver") fail(`prune left ${mergeKeys().join()}`);
+  if (registerDrivers(wtB).pruned.length) fail("a second prune removed something");
+
   // a correct config is not rewritten
   const r = registerDrivers(wtA);
-  if (r.removed || r.added) fail(`a correct config was rewritten: ${JSON.stringify(r)}`);
+  if (r.removed || r.added || r.pruned.length) fail(`a correct config was rewritten: ${JSON.stringify(r)}`);
 } catch (e) {
   fail(`scenario threw: ${e.stack || e.message}`);
 } finally {

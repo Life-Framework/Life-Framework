@@ -4,7 +4,7 @@
 //! second dial gets the busy signal; only an allowed player picks up; the line states follow the
 //! call; hang-up is the talker's own; a call rings out as MISSED and a long one is cut; a call
 //! nobody could take is MISSED from the start and holds no phone.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PhoneExchange : LF_Test
 {
 	override string GetName()

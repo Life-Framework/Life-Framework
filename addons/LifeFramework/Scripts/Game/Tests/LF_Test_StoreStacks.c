@@ -1,10 +1,10 @@
 // red-proof: observed 2026-11-16 (#1891), `tools\cli test --no-build --no-cache --only <the 10 classes>` on GridWorld before the grid fixtures: 10 of 15 failed on `... resolves in the DebugWorld` (Shop_GeneralStore_Debug, Shop_BlackMarket_Debug, FenceNpc are town entities); on Grid_shops_till fixtures 15 of 15 pass.
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --local --only LF_Test_StoreStacks`: LF_Stores.HoldsApart returning false failed `- the shelf apple was not merged away into the stack`, `- the shelf apple is tagged unpaid (expected 1, got 0)` and `- the till charges it (expected 0, got 1)`; restored, green.
 
-// tier: WORLD
 //! A shopper who already carries apples takes a shelf apple (#202): the quantity merge must not fold it
 //! into their stack, because that would delete the item carrying the unpaid tag and make it free. The
 //! shelf apple stays its own item, tagged unpaid, and the till charges it. Deletes what it spawns.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_StoreStacks : LF_Test
 {
 	override string GetName()

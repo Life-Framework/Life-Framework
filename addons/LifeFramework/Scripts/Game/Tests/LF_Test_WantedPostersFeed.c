@@ -5,12 +5,12 @@
 //   [LFTEST]   - the boards hold both posters (expected 2, got 3)
 // Restored the check and the test passed (26 assertions).
 
-// tier: LOGIC
 //! The wanted board's face feed (docs/architecture/visual-boards-spike.md, issue 1): one poster per
 //! wanted suspect, newest first, capped; the name only once identified; the level from the
 //! character's standing; a wanted level of 0 takes the poster down. A change is an event that
 //! queues one rebuild, and an unchanged list sends nothing. The entry carries ids and short
 //! strings, survives a separator in a typed name, and a malformed one is dropped, not drawn.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WantedPostersFeed : LF_Test
 {
 	protected static const string ROBBER = "posters-feed-robber";

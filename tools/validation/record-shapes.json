@@ -1,5 +1,5 @@
 {
-  "saveVersion": 43,
+  "saveVersion": 58,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -45,7 +45,22 @@
     "hospitalrejoin": "LF_HospitalRejoinRow",
     "worldevents": "LF_EventShellRow",
     "mapknown": "LF_MapKnownRow",
-    "mapmarks": "LF_MapMarkRow"
+    "mapmarks": "LF_MapMarkRow",
+    "orgmarks": "LF_OrgMapMarkRow",
+    "armorykits": "LF_ArmoryKitRow",
+    "houses": "LF_HouseLockRecord",
+    "itemkeys": "LF_StorageItemKeyRecord",
+    "graceclock": "LF_GraceClockRow",
+    "jobruns": "LF_JobRunRow",
+    "leaseidle": "LF_HideoutIdleRow",
+    "properties": "LF_PropertyRecord",
+    "placements": "LF_PlacementRow",
+    "reputation": "LF_ReputationRow",
+    "orgwars": "LF_OrgWarRecord",
+    "garageslots": "LF_GarageSlotRow",
+    "plants": "LF_PlantRow",
+    "lockers": "LF_LockerRentalRow",
+    "tenancy": "LF_HideoutTenancyRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -548,6 +563,158 @@
         "int m_iConfigId",
         "int m_iFlags",
         "string m_sText"
+      ]
+    },
+    "LF_OrgMapMarkRow": {
+      "since": 44,
+      "fields": [
+        "int m_iVersion",
+        "string m_sOrgId",
+        "int m_iSerial",
+        "int m_iX",
+        "int m_iZ",
+        "int m_iIcon",
+        "int m_iColour",
+        "string m_sText",
+        "string m_sAuthorId"
+      ]
+    },
+    "LF_ArmoryKitRow": {
+      "since": 45,
+      "fields": [
+        "int m_iVersion",
+        "string m_sOfficerUid",
+        "int m_iLastIssueUnix",
+        "array<string> m_aSerials"
+      ]
+    },
+    "LF_HouseLockRecord": {
+      "since": 46,
+      "fields": [
+        "string m_sHouseIdentifier",
+        "bool m_bLocked",
+        "string m_sOwnerKey"
+      ]
+    },
+    "LF_StorageItemKeyRecord": {
+      "since": 47,
+      "fields": [
+        "string m_sOwnerKey",
+        "string m_sSlot",
+        "array<string> m_aHouseKeys"
+      ]
+    },
+    "LF_GraceClockRow": {
+      "since": 48,
+      "fields": [
+        "string m_sRecordKey",
+        "int m_iSeconds"
+      ]
+    },
+    "LF_JobRunRow": {
+      "since": 49,
+      "fields": [
+        "string m_sPlayerUid",
+        "int m_iAmount",
+        "int m_iJob"
+      ]
+    },
+    "LF_HideoutIdleRow": {
+      "since": 50,
+      "fields": [
+        "int m_iVersion",
+        "string m_sHideoutId",
+        "int m_iLastActive"
+      ]
+    },
+    "LF_PropertyRecord": {
+      "since": 51,
+      "fields": [
+        "string m_sPropertyId",
+        "string m_sOwnerKey",
+        "string m_sOrgId",
+        "string m_sLayoutId",
+        "int m_iBuildStage",
+        "int m_iWorkDone",
+        "string m_sDeposited",
+        "int m_iPurchasedAt",
+        "int m_iRentPaidUntil",
+        "bool m_bOwnerSpawnsHere"
+      ]
+    },
+    "LF_PlacementRow": {
+      "since": 52,
+      "fields": [
+        "int m_iVersion",
+        "string m_sPlacementId",
+        "string m_sPrefab",
+        "vector m_vPos",
+        "vector m_vAngles",
+        "string m_sOwnerKey",
+        "string m_sKind",
+        "string m_sPropertyId",
+        "string m_sItemPrefab"
+      ]
+    },
+    "LF_ReputationRow": {
+      "since": 53,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterKey",
+        "string m_sFaction",
+        "int m_iPoints"
+      ]
+    },
+    "LF_OrgWarRecord": {
+      "since": 54,
+      "fields": [
+        "int m_iVersion",
+        "string m_sWarId",
+        "string m_sDeclarerOrgId",
+        "string m_sTargetOrgId",
+        "LF_EOrgWarState m_eState",
+        "int m_iDeclaredAt",
+        "int m_iAcceptedAt",
+        "int m_iEndsAt",
+        "int m_iAnswerWindowSec",
+        "int m_iCooldownSec",
+        "int m_iCooldownUntil"
+      ]
+    },
+    "LF_GarageSlotRow": {
+      "since": 55,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterKey",
+        "int m_iBought"
+      ]
+    },
+    "LF_PlantRow": {
+      "since": 56,
+      "fields": [
+        "string m_sPlantId",
+        "string m_sCropId",
+        "vector m_vPosition",
+        "int m_iPlantedAt",
+        "int m_iWateredAt",
+        "string m_sOwnerKey"
+      ]
+    },
+    "LF_LockerRentalRow": {
+      "since": 57,
+      "fields": [
+        "int m_iVersion",
+        "string m_sSiteId",
+        "string m_sCharacterKey",
+        "int m_iPaidUntil"
+      ]
+    },
+    "LF_HideoutTenancyRow": {
+      "since": 58,
+      "fields": [
+        "int m_iVersion",
+        "string m_sHideoutId",
+        "LF_EHideoutTenancy m_eKind"
       ]
     }
   }

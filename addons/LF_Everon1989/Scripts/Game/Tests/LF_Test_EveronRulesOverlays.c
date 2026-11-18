@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-16 (#1775): before the overlays and header lines, `tools\cli test --no-build --only LF_Test_EveronRulesOverlays` failed `- the header lists the Everon handbook overlay`, `- the header lists the Everon prefab-slot overlay`, `- the handbook loader picks up its overlay` and `- the prefab-slot loader picks up its overlay` (passed=0 failed=1); with them it passes and the boot logs `changed 0 page(s)` and `changed 0 slots`.
-// tier: WORLD
 //! #1775 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the header lists
 //! the handbook overlay and the prefab-slot overlay, both resolve, `LF_ConfigOverlay` picks each up
 //! for its own config class, and neither changes the core: the handbook keeps its core pages, every
 //! prefab slot keeps its core prefab. The stubs are empty; the flagship cards (#1007) fill them.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronRulesOverlays : LF_Test
 {
 	static const ResourceName HANDBOOK_OVERLAY = "{7829FAC0964C207C}Configs/Rules/LF_Handbook_Everon1989.conf";

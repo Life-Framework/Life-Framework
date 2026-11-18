@@ -2,7 +2,7 @@
 // TakeUnpaidDutySeconds skip `m_iUnpaidDutySeconds = 0;` printed
 // [LFTEST]   - a second clock-out pays nothing (expected 0, got 240); restored, green.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DutyPay : LF_Test
 {
 	override string GetName()

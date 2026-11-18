@@ -6,7 +6,7 @@
 // red; for atm/manager-guards drop the IsValidAmount guard in the manager and
 // the rejected-deposit assertions go red.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_BankAccountMath : LF_Test
 {
 	override string GetName()
@@ -42,7 +42,7 @@ class LF_Test_BankAccountMath : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_BankSaveRoundtrip : LF_Test
 {
 	override string GetName()
@@ -73,7 +73,7 @@ class LF_Test_BankSaveRoundtrip : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ATMManagerRegistry : LF_Test
 {
 	override string GetName()
@@ -109,7 +109,7 @@ class LF_Test_ATMManagerRegistry : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_BankSaveIdempotent : LF_Test
 {
 	override string GetName()
@@ -141,7 +141,7 @@ class LF_Test_BankSaveIdempotent : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_BankSaveEmpty : LF_Test
 {
 	override string GetName()
@@ -164,7 +164,7 @@ class LF_Test_BankSaveEmpty : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ATMManagerGuards : LF_Test
 {
 	override string GetName()
@@ -196,7 +196,7 @@ class LF_Test_ATMManagerGuards : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_BankApplySnapshot : LF_Test
 {
 	override string GetName()

@@ -1,8 +1,8 @@
 // red-proof: Observed 2026-11-10 with `tools/cli test --no-build --only LF_Test_VaultTool`: flipping `roll < chance` to `roll > chance` in LF_Bank.Jams failed `crime/vault-tool` with `- a low roll jams`, `- a jammed drill opens nothing`, `- with a drill the breach starts`. Restored; green. The robber is not deleted at the end: deleting a character carrying the path-loaded field pack crashes the diag server.
-// tier: WORLD
 //! The vault needs a fence tool (#273). No drill: refused and nothing opens. With a drill: the
 //! breach starts, the drill is left at the vault and its serial names the buyer through the evidence
 //! path. A jammed drill opens nothing. A charge also works and is consumed.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VaultTool : LF_Test
 {
 	override string GetName()
@@ -21,7 +21,7 @@ class LF_Test_VaultTool : LF_Test
 
 		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(robber);
 		// The fixture's jacket is too small for a drill; a field pack carries it.
-		IEntity pack = LF_Utils.SpawnEntityPrefab("Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et", robber.GetOrigin());
+		IEntity pack = LF_Utils.SpawnEntityPrefab(LF_TestVaultDrillFixture.PACK_PREFAB, robber.GetOrigin());
 		ctx.True(pack != null && inventory.TryInsertItem(pack, EStoragePurpose.PURPOSE_LOADOUT_PROXY), "the robber wears a pack");
 
 		LF_Bank.Configure(vaultId, 1, 100, 0, 0, 0);
@@ -69,6 +69,6 @@ class LF_Test_VaultTool : LF_Test
 		ctx.True(LF_Breach.IsOpen(vaultId), "the vault opened");
 		ctx.Equal(1, LF_Bank.GetSpawnedBagCount(vaultId), "the haul spawned");
 
-//		LF_TestCharacterFixture.Delete(robber);
+		LF_TestVaultDrillFixture.Release(robber, vaultId);
 	}
 }

@@ -44,9 +44,9 @@
   `node agent-box/session.mjs org [--shot]`.
 - ✅ (2026-11-12, #750a) Ranks are a ladder with a rights bitmask
   (`LF_OrgRights`; bit = `LF_EOrganizationPermission`: withdraw, invite, kick,
-  buy upgrade, manage ranks, and the reserved declare war, use stash, manage
+  buy upgrade, manage ranks, use stash, and the reserved declare war, manage
   territory, spend fund). A new organization gets founder (every right), officer
-  (invite, kick, stash) and member (stash); an invite joins on the bottom rung.
+  (invite, kick, declare war since #2769, stash) and member (stash); an invite joins on the bottom rung.
   Face to face, a member with manage ranks sees "Promote in <org>" on a member
   whose next rung up is still below them and "Demote in <org>" on one who has a
   rung below (`org_promote` / `org_demote` slots, `LF_OrgRankRole`); nobody
@@ -69,6 +69,44 @@
   other rank its bools plus the stash), adds the officer rung, and keeps every
   member on their rank. PERSISTENCE `org/rights-persist`; `wt e2e` carries a
   founder, a promoted officer and a member across the restart.
+
+- ✅ **World-end reset** (2026-11-17 property review): `LF_OrganizationManager_StaticResetHook` drops the
+  singleton, so a world loaded after another in one process no longer keeps the last world's
+  organizations, members and funds (checked by `map/org-marks-character-id`).
+
+### Houses — `Feature/Houses/`
+- ✅ **Init runs** (2026-11-17 property review, WORLD `houses/identifier-init`): `LF_HouseManagerComponent`
+  and an editor-bound `LF_KeyComponent` now set the INIT event mask, as `LF_LockComponent` and
+  `LF_VehicleKeyComponent` do. Before, a building never got its identifier or synced its doors, and
+  an editor-bound house key (`HouseKey_Matching_Debug`) stayed unbound.
+- ✅ **A keyed open keeps the lock** (#2410, WORLD `houses/keyed-open-keeps-lock`): the owner and a
+  key holder pass a locked house door and the door stays locked, so a stranger after them is still
+  refused. The server decides in `SCR_DoorUserAction.CanBePerformedScript` (`LF_LockComponent.UserMayEnter`);
+  the owner's character key is replicated on the door so a client's prompt matches. Only
+  `LF_HouseManagerComponent.SetHouseLocked` changes a house's lock, and it re-syncs a door a breach or a
+  lockpick opened. A door left open now closes itself (#2472).
+- ✅ **Lock and unlock at the door** (#2471, WORLD `houses/lock-action`): `LF_HouseLockAction` on
+  `EL_Door_Base.et` offers `#LF-HouseLock_Lock` / `#LF-HouseLock_Unlock` to the owner and to a carried
+  key holder (`LF_LockComponent.UserMayEnter`); a stranger does not see it. The server re-checks and
+  refuses a forged request with `[LFDebug:Houses]`, then flips the house through
+  `LF_HouseManagerComponent.SetHouseLocked` (saved, mirrored on every door). Not offered on a hideout
+  door, on a door with no house manager, or while Houses is off.
+- ✅ **A locked house door left open can be closed and closes itself** (#2472, WORLD `houses/door-auto-close`):
+  on a locked house anyone may close an open door, only the owner or a key holder opens it (the server
+  re-checks in `PerformAction`), and the server closes a door left open after `LF_HouseDoorClose` delay
+  (the owner's `houses.doorCloseDelaySeconds`, default 20 s, 0 turns it off, over 600 clamps to 600 with a warning;
+  `/configreload` applies it to the next door that opens, #2505, WORLD `houses/door-delay-config`). An unlocked house's door and a
+  hideout door are untouched; the lock never changes.
+- ✅ **Lock state, owner and carried keys survive a restart** (#2410, PERSISTENCE `houses/registry-persist`,
+  `houses/carried-key-persist`, `wt e2e`): `LF_Houses` keeps one row per house with a stable identifier
+  (the editor identifier, or `BindIdentifier`) in the `houses` payload (save version 46); a carried house
+  key keeps the house it opens in the `itemkeys` payload (version 47). A house with no editor identifier
+  gets a per-boot id and is not saved (logged). Nothing assigns an owner in play yet (purchase flow).
+- ✅ **Every house and car key shows its own name on every client** (#2470, WORLD `houses/key-item-name`):
+  `LF_KeyItemUIInfo` (an `SCR_InventoryUIInfo` on `HouseKeyItem.et` and `VehicleKey.et`, so `LF_PoliceCarKey.et` too)
+  builds "House Key [id]" / "Vehicle Key [id]" per item from the replicated identifier (`#LF-ItemName_HouseKeyOf`,
+  `#LF-ItemName_VehicleKeyOf`); nothing writes the shared prefab `UIInfo` any more. A late joiner gets the identifier with
+  the item. An unbound key shows the plain prefab name. No save change.
 
 ### `LF_Hideout` — `Feature/Hideouts/` (verified 2026-10-11)
 - ✅ One building owned by one organization. Members unlock
@@ -98,8 +136,18 @@
   gets the inventory, anyone else hears a refusal sound and gets the
   `#LF-HideoutStash_NotMember` toast, and the refusal is logged
   (`stash refused: not a member`). The server also refuses a non-member moving an
-  item out (`HandleAccessValidation`) or in (`CanStoreItem`). Membership is the
-  only key: an open or breached door does not open the stash.
+  item out (`HandleAccessValidation`) or in (`CanStoreItem`). `CanStoreItem` has no
+  instigator, so it only takes an item from a living member's own inventory, the stash
+  itself or a server spawn (restore, `AddAmount` seeding, a stack split, all inside
+  `LF_ServerInsertScope`); an item in a vehicle, crate or body, or lying on the ground, is
+  refused even for a member, who carries it first (#2574, #2584, WORLD `hideout/stash-put-carrier`;
+  log `stash <id> refused <prefab> from the ground`). Membership and the
+  rank's stash right (`USE_STASH`) are the key: an open or breached door does not open the stash.
+- 🧪 **The server-insert bypass is per item** (#2835, WORLD `inventory/server-insert-scope-aborted`):
+  `LF_ServerInsertScope.Begin(item)` opens the bypass for that one item only, and the stash and the
+  locked-car gate ask `IsOpenFor(item)`. A script error between `Begin` and `End` cannot leave a locked
+  car or a stash open to other items, and the frame-end sweep closes what it left open (log
+  `server insert scope left open for <n> item(s) by an aborted insert; closed`).
 - ✅ Stash contents survive a restart through `LF_PersistentStorageComponent`
   keyed `hideout:Roadmap_Hideout` (not an entity id), so the stash keeps its
   items wherever the layer places it. See the placed-storage row under Carried
@@ -111,3 +159,59 @@
   `#EL-Hideout_NoUpgrade`, `#EL-Hideout_Process`, `#LF-HideoutStash_Name`,
   `#LF-HideoutStash_Desc`, `#LF-HideoutStash_Title`, `#LF-HideoutStash_NotMember`.
 
+- ✅ **Organisations review fixes (2026-11-17, `docs/reviews/2026-11-17-orgs.md`).** The seven ledger
+  requests and the ledger reply now have a listen-host path (#2525): the host's own ask calls its
+  handler and the reply is applied directly when the server owns the character. The ledger no longer
+  sells extra storage or the parked vehicle (`LF_OrganizationManager.IsUpgradeWired`): nothing reads
+  those flags, so a crafted request burned the fund for nothing. A deposit that would pass the fund's
+  int ceiling is refused (the cash goes back). The stash checks the rank's `USE_STASH` right, which
+  the rank config could already take off. A hideout gate saved open queues the relock sweep on load,
+  so a restart no longer leaves it open for anyone. Tests `organization/upgrade-unwired`,
+  `organization/fund-overflow`, `hideout/stash-right`, `hideout/load-relock` (LOGIC). The lease that
+  never ends is #2533.
+
+### `LF_PropertyConfig` — `Feature/Property/` (config only, #2647, slice P2 of #747)
+- ✅ One config, `Configs/Property/LF_Property.conf`, describes the plot catalogue (id, tier id, price), the house
+  tiers and what each build stage needs. A tier has four stages in order (excavation: work only; foundation:
+  gravel and cement bags; walls and roof: planks and bricks; doors and windows: planks and a door), each with
+  work units and a list of prefab and count requirements, plus `m_aShellPrefabs` (the vanilla prefab shown after
+  each stage). `m_iRentIntervalHours` and `m_iGraceHours` are 0 = owned outright (no rent in M8 wave 1). The core
+  ships generic example plots; 1989 plots and prices are the pack's (#808). Nothing reads it in play yet.
+  Getters (`PlotPrice`, `StageCount`, `StageWork`, `RequirementCount`, `Requirement`, `ShellPrefab`, ...) return
+  0, empty or null for an unknown id; a missing config logs `LF_Debug.Error("Property", ...)` and degrades to the
+  same defaults. Test `property/config` (LOGIC).
+- ✅ **A plot key equal to a house identifier is refused** (#2783, merged, in-dev). `LF_Properties` keys houses and
+  plots in one table and a house wins, so such a plot would sell the house at the plot price. At config load
+  `LF_PropertyConfig.RefuseHouseCollisions` drops every plot whose key is a known house (`LF_Houses`), and a house that
+  registers later drops the loaded plot (`RefuseHouseId`, called from `LF_Houses.Register`); each logs
+  `[LFDebug:Property]` at Error naming the key, and the house and the other plots are untouched. The validate check
+  `validate-plot-house-ids` fails a PR whose core or pack `Configs/Property` conf names a plot like a house
+  identifier set on an `LF_HouseManagerComponent` or a door `LF_LockComponent` in a layer or prefab. Test
+  `property/plot-house-collision` (LOGIC).
+- ✅ **Ledger asks are rate-limited; the test sign only leaves its own org** (#2536, review items 30 and 31 of #2415,
+  merged, in-dev). View, Deposit, Withdraw, Leave and Lease now go through `LF_OrgLedgerGate` (`LF_OrganizationCharacter.c`)
+  on the existing `PURCHASE` bucket, the same as founding and upgrades (View walks every member, so a spammed ask cost
+  a pass over the whole roster). The first refusal in a window logs `[LFDebug:RateLimit]` and toasts; a refused ask
+  returns no page. The dev-gated test sign's Leave refuses with `OTHER_ORG` (`#LF-TestOrgSign_OtherOrg`) unless the
+  player's org is the sign's own "Test Organisation", so it can never strip a real org of its founder. Test
+  `organizations/ledger-rate` (LOGIC).
+- 🧪 **A hideout lease ends with its organisation's last member** (#2571, part of #2533, merged, in-dev):
+  when the last member leaves or is kicked (`LF_OrganizationManager.Leave`, `LeaveDirect`, `Kick`) the
+  organisation publishes `LF_OnOrganizationEmptied` (`Feature/Organizations/LF_OrganizationsEvents.c`)
+  and `LF_Hideout` releases every site it leases (`ReleaseAllOf`, logged
+  `[LFDebug:Hideout] released hideout=… reason=organization emptied: …`). There is no disband verb
+  (#2415), so this is the disband; the organisation record stays on the register. `PushLock` now writes
+  the lock's house identifier on every push, empty included: a released door reads *Unowned* to everyone
+  (`LF_HideoutDoorRules.View`), former members no longer see *Open*, and an empty id matches no house in
+  `LF_HouseLockAction`. The `org_base` place goes with the lease and another organisation can lease the
+  site. Test `hideout/lease-empty-org` (WORLD).
+- 🧪 **A hideout lease lapses after 14 real days with no member online** (#2573, part of #2533, merged, in-dev):
+  each lease keeps the last time (unix seconds) a member of its organisation was connected, saved in the
+  `leaseidle` payload (save version 50). A server sweep every 5 minutes (`LF_Hideout.SweepIdle`) restarts
+  the clock of a lease whose organisation has a member connected (the site does not have to be visited) and
+  releases a lease idle longer than `LF_OrgConfig.HideoutLeaseIdleDays()` (owner key
+  `organizations.hideoutLeaseIdleDays`, default 14, 0 = never), logged
+  `[LFDebug:Hideout] released hideout=… org=… reason=idle N days`; the release frees the site like the
+  emptied-organisation release. An old save seeds the clock at the first load, and a saved clock already past
+  the limit at load (the server was down) gets one more day. Test `persist/hideout-lease-idle` (PERSISTENCE).
+- 🧪 **The ledger lets a holder give the lease up** (#2572, part of #2533, merged, in-dev): a member whose rank holds `BUY_UPGRADE` sees **Give up the lease** on the hideout row while the yard is theirs (`LF_OrgLedger.HideoutAction`; the same button is **Take the lease** when it is free). The ask is `LF_AskOrganizationLeaseRelease` / `RpcAsk_LF_OrganizationLeaseRelease` (`LF_OrganizationCharacter.c`, desk-only, PURCHASE rate bucket); the server calls `LF_OrgHideoutLease.Release`, which checks the right and that the organisation holds the lease and then `LF_Hideout.Release(..., "given up")` (gate shut, held ground lost). A refusal (no right, not our lease, away from the desk) toasts the player and logs `[LFDebug:Organizations] lease release refused: ...` as a warning. Test `organization/lease-release` (WORLD).

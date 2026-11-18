@@ -7,7 +7,7 @@
 //! owner config, the vault, ATM, counter and desk offer nothing, every server path refuses and
 //! changes no saved value; turned on again it all works. A vault that was mid-drill when Robbery went
 //! off pays no loot. ATM and Organizations follow Banking.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SystemsEconomy : LF_Test
 {
 	static const string UID = "systems-economy-tester";
@@ -239,7 +239,6 @@ class LF_Test_SystemsEconomy : LF_Test
 		if (jobs)
 		{
 			ctx.False(jobs.RequestJobFromClient(LF_EJobType.UNEMPLOYED), "a job request is refused");
-			ctx.Equal(0, jobs.StartFruitCatcherRound(EHarvestJobType.APPLES), "and so is a fruit round");
 		}
 
 		Owner(string.Empty);

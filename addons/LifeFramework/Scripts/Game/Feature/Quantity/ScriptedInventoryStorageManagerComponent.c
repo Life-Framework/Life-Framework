@@ -156,27 +156,36 @@ modded class ScriptedInventoryStorageManagerComponent
 			return;
 
 		LF_QuantityComponent quantitySource = LF_Component<LF_QuantityComponent>.Find(LF_NetworkUtils.FindEntityByRplId(quantitySourceRplId));
+		LF_QuantityComponent quantityDestination = LF_Component<LF_QuantityComponent>.Find(LF_NetworkUtils.FindEntityByRplId(quantityDestinationRplId));
+		LF_ServerQuantityTransfer(quantitySource, quantityDestination, amount);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: moves `amount` (-1 = all) from one stack onto another for this manager's owner,
+	//! after the range, ownership and restricted-storage checks. The RPC lands here.
+	//! \return true when the stacks combined.
+	bool LF_ServerQuantityTransfer(LF_QuantityComponent quantitySource, LF_QuantityComponent quantityDestination, int amount)
+	{
 		if (!quantitySource || !LF_CanManipulate(quantitySource.GetOwner()))
 		{
 			LF_Debug.Warn("Quantity", "Quantity transfer refused: source not found or out of range");
-			return;
+			return false;
 		}
 		if (!LF_CanManipulateOwned(quantitySource.GetOwner()))
 		{
 			LF_Debug.Warn("Quantity", "Quantity transfer refused: source not owned");
-			return;
+			return false;
 		}
 
-		LF_QuantityComponent quantityDestination = LF_Component<LF_QuantityComponent>.Find(LF_NetworkUtils.FindEntityByRplId(quantityDestinationRplId));
 		if (!quantityDestination || !LF_CanManipulate(quantityDestination.GetOwner()))
 		{
 			LF_Debug.Warn("Quantity", "Quantity transfer refused: destination not found or out of range");
-			return;
+			return false;
 		}
 		if (!LF_CanManipulateOwned(quantityDestination.GetOwner()))
 		{
 			LF_Debug.Warn("Quantity", "Quantity transfer refused: destination not owned");
-			return;
+			return false;
 		}
 
 		int sourceQuantity = quantitySource.GetQuantity();
@@ -184,10 +193,12 @@ modded class ScriptedInventoryStorageManagerComponent
 		if (amount < 1 || amount > sourceQuantity)
 		{
 			LF_Debug.Warn("Quantity", string.Format("Quantity transfer refused: amount %1 out of range for quantity %2", amount, sourceQuantity));
-			return;
+			return false;
 		}
 
-		quantityDestination.Combine(quantitySource, amount);
+		int transferred;
+		quantityDestination.Combine(quantitySource, amount, transferred);
+		return transferred > 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -230,6 +241,11 @@ modded class ScriptedInventoryStorageManagerComponent
 	{
 		if (!entity) return false;
 
+		// A storage with its own access rule (a hideout stash, a trader crate) applies it here:
+		// Combine moves no entity, so the storage's CanStoreItem and HandleAccessValidation never run.
+		if (!LF_AllowsRestrictedStorage(entity))
+			return false;
+
 		IEntity storageOwner = LF_GetStorageOwner(entity);
 		if (storageOwner == GetOwner()) return true;
 		if (!storageOwner) return false;
@@ -246,7 +262,9 @@ modded class ScriptedInventoryStorageManagerComponent
 		if (!playerManager) return false;
 
 		array<int> playerIds();
-		if (playerManager.GetPlayers(playerIds) <= 0) return false;
+		// No players means nobody holds the storage (a request always comes from a player; a
+		// server-side caller with none, such as a test, gets the same rules as everyone else).
+		playerManager.GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
 		{
 			if (playerManager.GetPlayerControlledEntity(playerId) == storageOwner)
@@ -265,7 +283,7 @@ modded class ScriptedInventoryStorageManagerComponent
 			return false;
 
 		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(storageOwner);
-		if (vehicleLock && vehicleLock.IsVehicleLocked())
+		if (vehicleLock && vehicleLock.IsVehicleLocked() && LF_Systems.IsEnabled("VehicleLock"))
 			return true;
 
 		LF_LockComponent houseLock = LF_Component<LF_LockComponent>.Find(storageOwner);
@@ -292,8 +310,10 @@ modded class ScriptedInventoryStorageManagerComponent
 			}
 		}
 
+		// A seated character hangs from its vehicle: stop at a living character, so what an
+		// occupant carries stays theirs and a locked car does not freeze it (#2411).
 		IEntity parent = entity.GetParent();
-		while (parent)
+		while (parent && !LF_VehicleStorageLockGate.IsLiveCharacter(entity))
 		{
 			entity = parent;
 			parent = entity.GetParent();

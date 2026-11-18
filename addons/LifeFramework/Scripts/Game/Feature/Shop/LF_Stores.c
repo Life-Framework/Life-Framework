@@ -106,7 +106,7 @@ class LF_Stores
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The receipt the till printed last (held or lying where the user stood), or null.
+	//! \return The receipt the till printed last (held or lying where the user stood), or null.
 	static IEntity LastReceipt()
 	{
 		if (s_LastReceipt == EntityID.INVALID)
@@ -988,7 +988,7 @@ class LF_Stores
 			record.m_bConsumed = row.m_bConsumed;
 			record.m_bRestored = true;
 			record.m_fRestoredUntilMs = nowMs + store.GetRestoredGraceSeconds() * 1000;
-			graceSeconds = Math.Max(graceSeconds, store.GetRestoredGraceSeconds());
+			graceSeconds = LF_Utils.MaxInt(graceSeconds, store.GetRestoredGraceSeconds());
 			all.Insert(record);
 			bound++;
 		}
@@ -1232,11 +1232,9 @@ class LF_ReceiptReadAction : ScriptedUserAction
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Stores's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Stores's statics (LF_StaticReset finds it by reflection).
 class LF_Stores_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Stores_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Stores";

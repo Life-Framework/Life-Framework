@@ -2,12 +2,12 @@
 // red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_DialogueClerk`: switched off
 // the story-line capture in LF_QuestTrackerComponent.Notify; got `[LFTEST] FAIL dialogue/clerk`,
 // `- the clerk speaks the hand-in and the next errand (expected 'register;board', got '')`. Restored; green.
-// tier: WORLD
 //! The town clerk's conversation (Configs/Dialogue/LF_Dialogue_Clerk.conf on QuestGiver_Clerk.et):
 //! the core ships it neutral and text only (no recordings, no audio project; a pack voices it, see
 //! LF_Test_ClerkEveronVoice), the generated config loads and is playable, every hook it names exists,
 //! and its "talk" reply runs the same server talk as before (LF_QuestTrackerComponent.RequestConverse)
 //! with the clerk's story lines spoken instead of shown as slips. It needs no voice and no pack.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DialogueClerk : LF_Test
 {
 	static const ResourceName CLERK = "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et";

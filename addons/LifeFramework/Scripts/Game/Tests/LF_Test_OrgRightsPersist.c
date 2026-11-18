@@ -3,13 +3,13 @@
 // `- the officer rung is added once (version 26 load 1) (expected 3, got 2)`,
 // `- the founder rank reads by its key (version 26 load 1) (expected '#LF-Org_RankFounder', got 'Founder')`,
 // `- a migrated founder promotes onto the officer rung`. Restored; green. The restart path is `wt e2e`.
-// tier: PERSISTENCE
 //! #750a through the real save path. A version 26 save (the format before the rights mask: record
 //! version 1, a founder and a member rank as four bools, no "orgranks" payload) loads with every
 //! member on their rank, the founder holding every right, the member only the stash, and the officer
 //! rung added. A version 27 save brings back masks the four bools cannot hold, and the ladder order.
 //! Both loads run twice and give the same organization. Rank rows for a missing organization or rank
 //! are dropped. The test puts back the organizations it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_OrgRightsPersist : LF_Test
 {
 	protected static const string FOUNDER = "org-persist-founder";
@@ -192,6 +192,7 @@ class LF_TestLegacySnapshot : Managed
 {
 	protected ref array<ref LF_OrganizationRecord> m_aRecords;
 	protected ref array<ref LF_OrganizationRankRow> m_aRanks;
+	protected ref array<ref LF_OrgWarRecord> m_aWars;	// #2672: an org-less reload drops the e2e war
 	protected ref array<ref LF_JobXpRow> m_aJobXp;
 	//! The crime reports with their looks (#758): an older save has no "wantedlooks", so loading
 	//! one wipes the looks the shutdown save of `wt e2e` pass 1 must still hold.
@@ -207,6 +208,8 @@ class LF_TestLegacySnapshot : Managed
 	//! Hideout leases and locks (#751): roadmap/hideout-save resets them after the e2e write, and the
 	//! e2e organization's lease must still be there at the shutdown save for its held ground to load.
 	protected ref array<ref LF_HideoutRecord> m_aHideouts;
+	//! Which of those leases are captured ground (#2816): a restore applies every lease as a base first.
+	protected ref array<ref LF_HideoutTenancyRow> m_aTenancy;
 	//! Stolen flags of the inventory snapshots (#1855): an older save has no "itemstolen", so loading
 	//! one restores the e2e drill unflagged before the shutdown save.
 	protected ref array<ref LF_StorageItemStolenRecord> m_aStolen;
@@ -217,12 +220,14 @@ class LF_TestLegacySnapshot : Managed
 		LF_TestLegacySnapshot snapshot = new LF_TestLegacySnapshot();
 		snapshot.m_aRecords = LF_OrganizationManager.ExportAll();
 		snapshot.m_aRanks = LF_OrganizationManager.ExportRanks();
+		snapshot.m_aWars = LF_OrgWars.ExportAll();
 		snapshot.m_aJobXp = LF_JobLevels.ExportAll();
 		snapshot.m_aWanted = LF_WantedReports.ExportAll();
 		snapshot.m_aIdCards = LF_PhotoIdCard.ExportAll();
 		snapshot.m_aVehicleState = LF_VehicleOwnership.ExportState();
 		snapshot.m_aHideouts = LF_Hideout.ExportAll();
 		snapshot.m_aHeldGround = LF_Hideout.ExportHeldGround();
+		snapshot.m_aTenancy = LF_Hideout.ExportTenancy();
 		snapshot.m_aStolen = LF_StorageSnapshot.ExportItemStolen();
 		return snapshot;
 	}
@@ -244,6 +249,7 @@ class LF_TestLegacySnapshot : Managed
 	{
 		LF_OrganizationManager.ApplyAll(m_aRecords);
 		LF_OrganizationManager.ApplyRanks(m_aRanks);
+		LF_OrgWars.ApplyAll(m_aWars);
 		LF_JobLevels.ApplyAll(m_aJobXp);
 		LF_WantedReports.ApplyAll(m_aWanted);
 		LF_PhotoIdCard.ApplyAll(m_aIdCards);
@@ -257,6 +263,7 @@ class LF_TestLegacySnapshot : Managed
 				LF_Hideout.Release(now.m_sHideoutId);
 		}
 		LF_Hideout.ApplyAll(m_aHideouts);
+		LF_Hideout.ApplyTenancy(m_aTenancy);
 		LF_Hideout.ApplyHeldGround(m_aHeldGround);
 		LF_StorageSnapshot.ApplyItemStolen(m_aStolen);
 	}

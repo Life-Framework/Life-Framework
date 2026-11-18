@@ -24,7 +24,7 @@ class LF_Test_ConfigPackSourceStub : LF_ConfigPackSource
 //! Owner over pack over core, on the real core ShopPrices.conf. The pack overlay changes only the
 //! fields it sets in its file (IsVariableSetDirectly), so its food rule changes the buy price and
 //! leaves the core sell price; the owner then changes the food buy price again.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ConfigPackOverlay : LF_Test
 {
 	static const ResourceName CORE = "{A547CE324ADDD178}Configs/Shop/ShopPrices.conf";

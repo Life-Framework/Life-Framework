@@ -2,9 +2,9 @@
 // inclusive (grownSeconds <= stageEnd) failed `- half grown at one minute (expected 1, got 0)` and
 // `- ripe at two minutes (expected 2, got 1)`. Restored; green.
 
-// tier: LOGIC
 //! The growth rules of a farm plot (#614): each stage but the last lasts its minutes, the last one
 //! holds so a ripe crop waits, only a gatherable stage is ripe, and each refusal has words.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FarmPlotRules : LF_Test
 {
 	override string GetName()

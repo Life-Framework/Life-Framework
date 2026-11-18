@@ -1,5 +1,5 @@
 // red-proof: `test --no-build --red LF_Test_HarnessStaff` (the admin approve skipped by RedProof): 'RED PROOF OK (all 1 listed test(s) fail with the hook on)', 2026-11-15
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HarnessStaff : LF_Test
 {
 	override string GetName()

@@ -1,8 +1,8 @@
 // red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_DialogueMouth`: raising LF_DialogueMouth.MAX_OPEN to 1.5 failed `dialogue/mouth` with `- the opening is clamped to the maximum (never more than 0.9 of the pose)`. Restored; green.
-// tier: LOGIC
 //! The NPC's mouth maths (Feature/Dialogue/LF_DialogueMouth.c): the loudness envelope is smoothed
 //! (quick attack, slower release), the opening is capped, syllables differ a little, a pause shuts
 //! the mouth fully, and the idle face nods on stressed peaks and blinks.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DialogueMouth : LF_Test
 {
 	override string GetName()

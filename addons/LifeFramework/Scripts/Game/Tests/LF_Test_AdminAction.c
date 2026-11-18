@@ -1,9 +1,9 @@
 // red-proof: Observed 2026-11-10 with `toolscli test --no-build --only LF_Test_AdminAction`: asserting two rows instead of one failed `!wadd writes one admin row (expected 2, got 1)`; restored.
 
-// tier: LOGIC
 //! incident/admin-action: an admin action (here !wadd and !handled) publishes one event that the
 //! incident log records as kind admin (admin as subject, target as other party, action in how); a
 //! missing admin id records nothing.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AdminAction : LF_Test
 {
 	override string GetName()

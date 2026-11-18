@@ -72,7 +72,11 @@ modded class LF_InventoryUtils
 				break;
 			}
 
-			if (!storageManager.TryInsertItem(item) && !dropOverflow)
+			// The server's own insert: a restricted storage (hideout stash) takes this carrier-less item (#2584).
+			EntityID scope = LF_ServerInsertScope.Begin(item);
+			bool inserted = storageManager.TryInsertItem(item);
+			LF_ServerInsertScope.End(scope);
+			if (!inserted && !dropOverflow)
 			{
 				LF_Debug.Error("Quantity", string.Format("add failed: inventory rejected %1", prefab));
 				SCR_EntityHelper.DeleteEntityAndChildren(item);

@@ -103,11 +103,16 @@ What this means for us:
 A POI is **a live `LF_Places` entry whose kind has a row in the POI table**. Nothing else feeds it.
 
 ```
-LF_PlaceComponent (kind, id) ──> LF_Places (every machine) ──> LF_MapPois (client) ──> LF_MapPlacesUI
+LF_PlaceComponent (kind, id) ──> LF_Places (public kinds: every machine; private: server) ──> LF_MapPois (client) ──> LF_MapPlacesUI
                                                  ^                    ^
                                      #2208 live states       LF_MapPoiConfig rows (core default + pack overlay)
 ```
 
+- **Private kinds stay on the server (#2492).** A kind whose row is not `PUBLIC` never registers in a
+  client's `LF_Places`. The server sends each player, to their own controller, the private places the
+  visibility rule gives them (`LF_MapPrivatePlaces`), on the join sync and whenever what they know or
+  their duty changes; discovery is the server's own scan (`LF_MapDiscoverScan`). `LF_MapPois` on a client
+  draws its public places plus that set.
 - `Configs/Map/LF_MapPois.conf`, class `LF_MapPoiConfig`, one `LF_MapPoiKind` row per place kind:
   `m_sKind` (the `LF_Places` kind, e.g. `Bank`, `Hospital`, `PoliceStation`), `m_sCategory` (`civic`,
   `shop`, `work`, `law`, `health`, `travel`, `story`, `underworld`), `m_sIcon` (imageset quad),
@@ -265,6 +270,7 @@ controller. Every shared mark is a row:
 | `icon`, `colour` | u8 each | Indexes into the shared-mark config |
 | `text` | string, at most 32 chars | Localization key or a short player text (org marks go through the profanity filter) |
 | `expires` | world time, or 0 | Dispatch and taxi marks expire; org marks do not |
+| `areaRadius`, `areaStyle` | int16 metres (0 none, at most 5000), u8 | Optional circle around `pos` in an area style (section 2); the client draws it as a local area named after the key and removes it with the mark |
 
 - **Who receives it.** The server resolves the audience and sends `RpcDo_MapShareAdd(row)` with
   `RplRcver.Owner` on each recipient's controller. Nobody outside the audience gets a byte. Removal is

@@ -1,7 +1,7 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: expecting AddQuantity(5) to clamp to 2 failed it
 // with `[LFTEST] FAIL quantity/stack-clamp`,
 // `- AddQuantity(5) clamps to max 1 (expected 2, got 1)`. Restored; green.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_QuantityStack : LF_Test
 {
 	protected static const ResourceName WOOD_LOG_PREFAB = "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et";

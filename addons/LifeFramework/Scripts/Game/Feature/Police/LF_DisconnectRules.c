@@ -360,7 +360,7 @@ class LF_DisconnectRules
 	//! Pure: the sentence for leaving custody under the jail rule.
 	static int JailSeconds(int sentenceForWanted, int minSeconds)
 	{
-		return Math.Max(sentenceForWanted, minSeconds);
+		return LF_Utils.MaxInt(sentenceForWanted, minSeconds);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -536,11 +536,9 @@ class LF_DisconnectRules
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_DisconnectConfig's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_DisconnectConfig's statics (LF_StaticReset finds it by reflection).
 class LF_DisconnectConfig_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_DisconnectConfig_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_DisconnectConfig";

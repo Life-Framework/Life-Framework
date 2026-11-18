@@ -276,3 +276,20 @@ class LF_QuizSheet
 		Swap(m_aPage);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_QuizSheet's statics (LF_StaticReset finds it by reflection).
+//! A failed quiz kicks the player with the result page open; Hide takes it down and releases its
+//! prompt hold instead of leaving the page over the next session.
+class LF_QuizSheet_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_QuizSheet";
+	}
+
+	override void Apply()
+	{
+		LF_QuizSheet.Hide();
+	}
+}

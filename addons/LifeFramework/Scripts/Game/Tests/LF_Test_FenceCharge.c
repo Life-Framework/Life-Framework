@@ -1,7 +1,7 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_FenceCharge` with LF_Charge.et's ActionsManagerComponent GUID back at the duplicate {FAE0195B7214D19E} failed `- the fence charge lands in the inventory (expected 1, got 0)`; restored to the inherited {5AA692DC30B9C623}; green.
-// tier: WORLD
 //! The fence charge (LF_Charge.et) spawns, goes into a character's inventory and counts as a
 //! breach charge for LF_Breach. Deletes everything it spawns.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FenceCharge : LF_Test
 {
 	override string GetName()

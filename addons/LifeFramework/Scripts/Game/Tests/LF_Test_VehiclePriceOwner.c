@@ -1,8 +1,8 @@
 // red-proof: observed 2026-11-12 with `tools\cli test --no-build --only LF_Test_VehiclePriceOwner`: LF_VehicleOffer.PriceIn ignoring the config failed `- an owner base price changes the lot price (expected 1500, got 1000)`; dropping the PRICE_MIN/PRICE_MAX range from the basePrice read failed `- a base price above 1000000 is refused`. Restored; green.
-// tier: LOGIC
 //! The owner's `vehicles` section (#283): a vehicle's price in config.json changes what the car lot
 //! charges, merged field by field per vehicle (keyed by prefab GUID), and a number outside the
 //! schema's range is refused with the shipped value kept.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehiclePriceOwner : LF_Test
 {
 	override string GetName()

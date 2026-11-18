@@ -2,10 +2,10 @@
 // `tools\cli test --no-build --only LF_Test_WorldReset`; "the evidence step is registered by its own file" and
 // "the evidence locker is emptied" failed. Restored it and it passed.
 
-// tier: WORLD
 //! The world reset service: every feature's file registers its step through the modded registry
 //! (no central list), and a run clears what the feature holds. The crime-only run (the harness
 //! `resetcrime`) leaves the vehicles, farm and ore steps out.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WorldReset : LF_Test
 {
 	override string GetName()

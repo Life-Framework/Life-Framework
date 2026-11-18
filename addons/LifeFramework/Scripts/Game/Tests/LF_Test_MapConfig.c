@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, `tools\cli test --no-build --red LF_Test_MapConfig`: RED-OK (RedProof() hides the two map components, 5 assertions fail); green without it. Before that, a first run with vanilla's marker set crashed EOnInit (squad-leader InitServerLogic, no groups manager), which the no-dynamic-entry check now guards.
-// tier: WORLD
 //! The map plumbing (#2229, everon-map.md section 0): the Roleplay game mode carries the two map
 //! components vanilla's `GameMode_Base.et` has and ours lacked, and the gadget map opens our config.
 //! Without `SCR_MapConfigComponent` the map menu returns before it sets the map up; without
@@ -9,6 +8,7 @@
 //! (campaign) UI, no task list, no journal (it needs the task list and the briefing), no military
 //! debug icons. Town names and roads are looked at in the emulator and the visual cards' final
 //! `map-shots` (card M0b); this test only proves the wiring.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MapConfig : LF_Test
 {
 	static const ResourceName FULLSCREEN = "{92FEABB35503403C}Configs/Map/LF_MapFullscreen.conf";

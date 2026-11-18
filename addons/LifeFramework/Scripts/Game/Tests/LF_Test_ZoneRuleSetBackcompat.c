@@ -1,7 +1,7 @@
 // red-proof: Observed 2026-11-12 with `tools\cli test --no-build --only LF_Test_ZoneRuleSetBackcompat`: asserting the shipped SAFE rule does not block player damage failed (`shipped: safe blocks player damage`); restored.
-// tier: LOGIC
 //! zones/ruleset-backcompat (#755): a config with only the two old booleans resolves to the rule
 //! sets today's zones had, and the shipped table matches that. A table entry overrides the flags.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ZoneRuleSetBackcompat : LF_Test
 {
 	override string GetName()

@@ -3,7 +3,11 @@
 // `[LFTEST] - payout is cash and the bank balance stays 0 (expected 1, got 0)`.
 // Restored the expected value to 0.
 
-// tier: LOGIC
+// order-proof (#2699), e2e/roadmap-bank: `--only LF_Test_Roadmap_BankPersistence,LF_Test_Roadmap_BankWorld`
+// (name order) failed with "zero-fuse vault opens" on the unfixed test, because the save test had
+// already robbed the annex vault; it passes now that the test empties the vault and runs its cooldown out.
+
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Bank : LF_Test
 {
 	override string GetName()
@@ -95,6 +99,7 @@ class LF_Test_Roadmap_Bank : LF_Test
 		LF_Bank.Advance(vaultId, 60);
 		LF_PlayerAccount police = LF_PlayerAccountManager.GetOrCreate(policeUid);
 		police.SetFaction(LF_Faction.POLICE);
+		police.SetOnDuty(true);
 		ctx.True(LF_Breach.Repair(vaultId, policeUid), "police can lock the vault again");
 		ctx.True(LF_Bank.Rob(vaultId, uid), "a breach after the cooldown refills the vault");
 		ctx.Equal(4, LF_Bank.GetSpawnedBagCount(vaultId), "the refill spawns another configured wave");
@@ -127,7 +132,7 @@ class LF_Test_Roadmap_Bank : LF_Test
 	}
 }
 
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_BankWorld : LF_Test
 {
 	override string GetName()
@@ -189,8 +194,16 @@ class LF_Test_Roadmap_BankWorld : LF_Test
 		account.SetFaction(LF_Faction.CIVILIAN);
 		LF_PlayerAccount police = LF_PlayerAccountManager.GetOrCreate(policeUid);
 		police.SetFaction(LF_Faction.POLICE);
+		police.SetOnDuty(true);
 		LF_BankAccount bank = LF_ATMManager.GetOrCreate(uid);
 		bank.SetBalance(0);
+
+		// Start from a vault no earlier test has robbed: empty its bags and run the cooldown out, so
+		// the result does not depend on whether roadmap/bank-save (or any other robbery of the
+		// annex vault) ran first.
+		ctx.True(LF_Bank.Apply(LF_BankRecord.Create(LF_TestAnnex.BANK_VAULT)), "the annex vault starts with no bags");
+		LF_Bank.Advance(LF_TestAnnex.BANK_VAULT, 100000);
+		ctx.Equal(0, LF_Bank.GetSpawnedBagCount(LF_TestAnnex.BANK_VAULT), "no bag is left from an earlier robbery");
 
 		if (!doorLock.IsLocked())
 			LF_Breach.Repair(LF_TestAnnex.BANK_VAULT, policeUid);
@@ -218,7 +231,7 @@ class LF_Test_Roadmap_BankWorld : LF_Test
 	}
 }
 
-// tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_Roadmap_BankPersistence : LF_Test
 {
 	override string GetName()

@@ -237,10 +237,13 @@ ${RULE}
 `;
 }
 
+// A new test file registers itself with a class attribute (#2757; Tests/LF_TestInfo.c): adding a test
+// touches only its own file. The tier is written once, in the attribute.
+
 function logicTest(id) {
   return `// red-proof: PENDING ${MARK}: run \`tools\\cli test --no-build --red LF_Test_${id.name}\` (batch every new test of the change into one --red run), paste the observed [LFTEST] RED-OK line here. The RedProof() hook below skips the act; no hand edit, no restore.
-// tier: LOGIC
 //! ${id.title}${id.ref}: the rule, with no world.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_${id.name} : LF_Test
 {
 	override string GetName()
@@ -272,8 +275,8 @@ class LF_Test_${id.name} : LF_Test
 
 function worldTest(id) {
   return `// red-proof: PENDING ${MARK}: this test fails as generated. Once the real assertion is written, add the RedProof() hook (skip the act: if (!RedProof()) ...), list this test in the change's one --red run and record the observed [LFTEST] RED-OK line here.
-// tier: WORLD
 //! ${id.title}${id.ref}: the placed thing exists and offers what a player expects.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_${id.name}World : LF_Test
 {
 	override string GetName()
@@ -476,7 +479,7 @@ export function plan(root, id) {
   const slug = slugOf(root);
   const dir = `${GAME}/Feature/${id.area}`;
 
-  // The world-end reset registers itself in the feature's own file (tools/lib/static-reset-hooks.mjs).
+  // The world-end reset hook goes in the feature's own file; LF_StaticReset finds it by reflection (tools/lib/static-reset-hooks.mjs).
   create(`${dir}/${id.cls}.c`, addHooks(scriptFile(id), [{ cls: id.cls, method: "ResetStatics" }]));
   if (id.kind === "world" || id.kind === "item") create(`${dir}/${id.cls}Action.c`, actionFile(id));
   if (id.kind === "ui") create(`${dir}/${id.cls}Sheet.c`, sheetFile(id));

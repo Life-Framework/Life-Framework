@@ -28,12 +28,15 @@ class LF_LogoutBodyRecord : Managed
 }
 
 //------------------------------------------------------------------------------------------------
-//! The inventory callbacks need an instance; one listener serves every body.
+//! The inventory callbacks need an instance; one listener per body, so an item change re-captures
+//! only the body it happened on (#2404).
 class LF_LogoutBodyListener : Managed
 {
+	string m_sUid;
+
 	void OnInventoryChanged(IEntity item, BaseInventoryStorageComponent storage)
 	{
-		LF_LogoutBody.ScheduleRecapture();
+		LF_LogoutBody.ScheduleRecapture(m_sUid);
 	}
 }
 
@@ -111,10 +114,16 @@ class LF_LogoutBody
 	//! The account key of each spawned player: LF_GameModeRoleplay forgets the identity before the
 	//! base game's disconnect runs, so Keep reads it from here.
 	protected static ref map<int, string> s_mUidByPlayer;
-	protected static ref LF_LogoutBodyListener s_Listener;
+	//! The inventory listener of each kept body, by account uid.
+	protected static ref map<string, ref LF_LogoutBodyListener> s_mListeners;
+	//! Bodies whose items changed since the last re-capture, by account uid.
+	protected static ref array<string> s_aDirty;
+	protected static bool s_bRecaptureQueued;
 	protected static bool s_bSweeping;
 	protected static int s_iKept;
 	protected static int s_iDespawned;
+	//! Snapshot captures since the last reset (a perf and regression counter).
+	protected static int s_iCaptures;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -122,7 +131,7 @@ class LF_LogoutBody
 		if (GetGame() && GetGame().GetCallqueue())
 		{
 			GetGame().GetCallqueue().Remove(SweepQueued);
-			GetGame().GetCallqueue().Remove(RecaptureAll);
+			GetGame().GetCallqueue().Remove(RecaptureQueued);
 		}
 
 		LF_LogoutBodyConfig.Reload();
@@ -130,18 +139,21 @@ class LF_LogoutBody
 		s_iDownedWindowSeconds = -1;
 		s_mBodies = null;
 		s_mUidByPlayer = null;
-		s_Listener = null;
+		s_mListeners = null;
+		s_aDirty = null;
+		s_bRecaptureQueued = false;
 		s_bSweeping = false;
 		s_iKept = 0;
 		s_iDespawned = 0;
+		s_iCaptures = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Tests and server tuning: the window in seconds; 0 turns the body off (the base game deletes it).
 	static void SetWindows(int seconds, int downedSeconds)
 	{
-		s_iWindowSeconds = Math.Max(0, seconds);
-		s_iDownedWindowSeconds = Math.Max(0, downedSeconds);
+		s_iWindowSeconds = LF_Utils.MaxInt(0, seconds);
+		s_iDownedWindowSeconds = LF_Utils.MaxInt(0, downedSeconds);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -162,7 +174,7 @@ class LF_LogoutBody
 	static int WindowFor(bool downed, int windowSeconds, int downedWindowSeconds)
 	{
 		if (downed)
-			return Math.Max(windowSeconds, downedWindowSeconds);
+			return LF_Utils.MaxInt(windowSeconds, downedWindowSeconds);
 
 		return windowSeconds;
 	}
@@ -274,7 +286,7 @@ class LF_LogoutBody
 		record.m_BodyId = body.GetID();
 		record.m_fEndsAt = endsAt;
 		Bodies().Set(uid, record);
-		Watch(body, true);
+		Watch(body, true, uid);
 		LF_LogoutBodyTag.Mark(body, true);
 
 		// The disconnect captured the snapshot; capture again so it is the body's from here on.
@@ -326,7 +338,7 @@ class LF_LogoutBody
 			return true;
 		}
 
-		Watch(body, false);
+		Watch(body, false, uid);
 		LF_LogoutBodyTag.Mark(body, false);
 		Recapture(record);
 		if (record.m_bDead || !LF_StorageSnapshot.IsAlive(body))
@@ -404,14 +416,59 @@ class LF_LogoutBody
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Item moves fire mid-transfer; capture a frame later, once.
-	static void ScheduleRecapture()
+	//! Item moves fire mid-transfer; capture a frame later, once per changed body. Only uid's body is
+	//! captured again, not every kept body (#2404).
+	static void ScheduleRecapture(string uid)
 	{
-		if (!GetGame() || !GetGame().GetCallqueue())
+		if (uid.IsEmpty())
 			return;
 
-		GetGame().GetCallqueue().Remove(RecaptureAll);
-		GetGame().GetCallqueue().CallLater(RecaptureAll, 0);
+		if (!s_aDirty)
+			s_aDirty = new array<string>();
+
+		if (s_aDirty.Find(uid) < 0)
+			s_aDirty.Insert(uid);
+
+		if (s_bRecaptureQueued || !GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		s_bRecaptureQueued = true;
+		GetGame().GetCallqueue().CallLater(RecaptureQueued, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void RecaptureQueued()
+	{
+		RecaptureDirty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the snapshots of the bodies whose items changed follow what those bodies carry now.
+	//! \return How many bodies were captured.
+	static int RecaptureDirty()
+	{
+		s_bRecaptureQueued = false;
+		if (!s_aDirty || s_aDirty.IsEmpty())
+			return 0;
+
+		array<string> dirty = {};
+		dirty.Copy(s_aDirty);
+		s_aDirty.Clear();
+		if (!s_mBodies)
+			return 0;
+
+		int captured;
+		foreach (string uid : dirty)
+		{
+			LF_LogoutBodyRecord record = s_mBodies.Get(uid);
+			if (!record)
+				continue;
+
+			Recapture(record);
+			captured++;
+		}
+
+		return captured;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -429,19 +486,28 @@ class LF_LogoutBody
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Snapshot captures since the last reset.
+	static int GetCaptureCount()
+	{
+		return s_iCaptures;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void Recapture(notnull LF_LogoutBodyRecord record)
 	{
 		IEntity body = Resolve(record);
 		if (!body || record.m_bDead)
 			return;
 
+		s_iCaptures++;
 		// A dead body drops the snapshot inside CaptureCarried.
 		if (!LF_StorageSnapshot.CaptureCarried(record.m_sCharacterId, body))
 			record.m_bDead = !LF_StorageSnapshot.IsAlive(body);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void Watch(notnull IEntity body, bool on)
+	//! Hooks uid's own listener to the body's item added and removed events, or unhooks it.
+	protected static void Watch(notnull IEntity body, bool on, string uid)
 	{
 		SCR_InventoryStorageManagerComponent manager = SCR_InventoryStorageManagerComponent.Cast(body.FindComponent(SCR_InventoryStorageManagerComponent));
 		if (!manager)
@@ -452,16 +518,31 @@ class LF_LogoutBody
 			return;
 		}
 
-		if (!s_Listener)
-			s_Listener = new LF_LogoutBodyListener();
+		if (!s_mListeners)
+			s_mListeners = new map<string, ref LF_LogoutBodyListener>();
 
-		manager.m_OnItemAddedInvoker.Remove(s_Listener.OnInventoryChanged);
-		manager.m_OnItemRemovedInvoker.Remove(s_Listener.OnInventoryChanged);
+		LF_LogoutBodyListener listener = s_mListeners.Get(uid);
+		if (listener)
+		{
+			manager.m_OnItemAddedInvoker.Remove(listener.OnInventoryChanged);
+			manager.m_OnItemRemovedInvoker.Remove(listener.OnInventoryChanged);
+		}
+
 		if (!on)
+		{
+			s_mListeners.Remove(uid);
 			return;
+		}
 
-		manager.m_OnItemAddedInvoker.Insert(s_Listener.OnInventoryChanged);
-		manager.m_OnItemRemovedInvoker.Insert(s_Listener.OnInventoryChanged);
+		if (!listener)
+		{
+			listener = new LF_LogoutBodyListener();
+			listener.m_sUid = uid;
+			s_mListeners.Set(uid, listener);
+		}
+
+		manager.m_OnItemAddedInvoker.Insert(listener.OnInventoryChanged);
+		manager.m_OnItemRemovedInvoker.Insert(listener.OnInventoryChanged);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -559,12 +640,10 @@ modded class SCR_BaseGameMode
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_LogoutBody's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_LogoutBody's statics (LF_StaticReset finds it by reflection).
 //! A body never outlives its session, so nothing of it is saved.
 class LF_LogoutBody_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_LogoutBody_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_LogoutBody";

@@ -8,11 +8,11 @@
 // red-proof: Observed 2026-11-16 with `tools\cli test --no-build --only LF_Test_ArrivalChain --world Worlds/GridWorld/GridWorld.ent` before the
 // grid cell existed: `the clerk offers step 1 (expected 'clerk', got '')`, `step 1 hands over the ID card`.
 // With the test spawning the clerk and Grid_signs_board_quests.layer placing the town_map and post_office signs, the run is green.
-// tier: WORLD
 //! The town clerk (a spawned fixture; the town's is in Quests.layer) runs the arrival chain end to end through the public quest
 //! API: talk and register, read the town board, deliver a parcel, bank cash, return. Each
 //! SIGNAL moves only its own step, a returning player is never offered the chain again, and
 //! the ID card is handed over once.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ArrivalChain : LF_Test
 {
 	static const ResourceName CLERK_PREFAB = "{DE27E685D6FE93D7}Prefabs/Characters/Quests/QuestGiver_Clerk.et";

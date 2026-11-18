@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_ConfigSectionsA`: removing the `arrestReach` read from LF_PoliceConfig.ApplyOwner failed `- the owner's arrest reach applies (expected 7, got 5)` and `- the owner's arrest reach reaches the client (expected 7, got 5)`. Restored; green.
-// tier: LOGIC
 //! #282 (config sections A): the owner's `police` and `licences` sections change one field of a
 //! shipped record each, an out-of-range number, a prefab that does not load and a key that is no
 //! licence are refused with the shipped value kept, and `police` reaches a client through the
 //! config stream with the ranks in ladder order.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigSectionsA : LF_Test
 {
 	override string GetName()

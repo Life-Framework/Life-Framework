@@ -643,6 +643,8 @@ modded class SCR_ChimeraCharacter
 		Replication.BumpMe();
 		// The server is the owner of a hosted player's body and of test characters.
 		LF_OnRestrainedReplicated();
+		if (restrained)
+			LF_CuffEnforcement.OnCuffed(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -790,11 +792,9 @@ modded class SCR_ChimeraCharacter
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Restraint's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Restraint's statics (LF_StaticReset finds it by reflection).
 class LF_Restraint_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Restraint_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Restraint";

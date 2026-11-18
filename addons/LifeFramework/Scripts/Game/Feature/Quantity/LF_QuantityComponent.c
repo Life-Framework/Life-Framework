@@ -383,7 +383,17 @@ class LF_QuantityComponent : ScriptComponent
 
 		BaseInventoryStorageComponent storage = sourceInventoryItem.GetParentSlot().GetStorage();
 		InventoryStorageManagerComponent storageManager = LF_InventoryUtils.GetResponsibleStorageManager(owner);
-		if (!storageManager || !storageManager.TryInsertItemInStorage(destinationEntity, storage))
+		// The server's own insert of the fresh stack, after the split request passed its access
+		// checks: a restricted storage (hideout stash) takes this carrier-less item (#2584).
+		bool inserted;
+		if (storageManager)
+		{
+			EntityID scope = LF_ServerInsertScope.Begin(destinationEntity);
+			inserted = storageManager.TryInsertItemInStorage(destinationEntity, storage);
+			LF_ServerInsertScope.End(scope);
+		}
+
+		if (!inserted)
 		{
 			// Storage could not take the split item: the source was never touched, drop the spawned entity
 			LF_Debug.Warn("Quantity", string.Format("split refused: storage did not take a %1 stack", splitSize));
@@ -583,11 +593,9 @@ class LF_QuantityCombineablePredicate: InventorySearchPredicate
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_QuantityComponent's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_QuantityComponent's statics (LF_StaticReset finds it by reflection).
 class LF_QuantityComponent_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_QuantityComponent_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_QuantityComponent";

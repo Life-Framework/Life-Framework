@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_DialoguePackOverlay`: making LF_DialogueIndexConfig.PathOf match the wrong id failed `- the clerk id names the clerk file` and `- add: the pack's new dialogue resolves by id`; dropping the IsTextOnly exemption in LF_DialogueFlow.Problems failed `- a text-only line needs no recording (expected 0, got 1)`. Restored; green.
-// tier: LOGIC
 //! #957: dialogue by id and the text-only line. The registry maps an id to a dialogue file and a pack
 //! adds, replaces or removes an id with the override verbs. A line with no event and no length is text
 //! only and the dialogue stays playable; a half-made recording does not. A pack patch that leaves the
 //! dialogue broken is dropped whole and the core one plays.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DialoguePackOverlay : LF_Test
 {
 	override string GetName()

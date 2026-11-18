@@ -2,7 +2,7 @@
 // `tools\cli test --no-build --tier all` (2026-11-08) failed signs/missing-id
 // with "an unknown id finds nothing".
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignMissingId : LF_Test
 {
 	override string GetName()

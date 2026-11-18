@@ -152,7 +152,7 @@ plate and the lock state reach clients, through their existing components).
 
 ## Test plan
 
-Each test is one file, `// tier:` and `// red-proof:` as `AGENTS.md` asks.
+Each test is one file, `[LF_TestInfo]` and `// red-proof:` as `AGENTS.md` asks.
 
 | Test | Tier | Proves | Red-proof |
 |---|---|---|---|

@@ -62,6 +62,18 @@ class LF_RaceCourse
 			ok = false;
 		}
 
+		if (course.m_iMinEntrants > LF_RaceRunner.MAX_ENTRANTS)
+		{
+			LF_Debug.Error("Racing", string.Format("race-course '%1' refused: minimum entrants %2 is above the lobby limit %3, so every race would be cancelled", course.m_sId, course.m_iMinEntrants, LF_RaceRunner.MAX_ENTRANTS));
+			ok = false;
+		}
+
+		if (course.m_iAfkGraceSeconds < 0 || course.m_iSettleSeconds < 0)
+		{
+			LF_Debug.Error("Racing", string.Format("race-course '%1' refused: afk grace %2 or settle seconds %3 is negative", course.m_sId, course.m_iAfkGraceSeconds, course.m_iSettleSeconds));
+			ok = false;
+		}
+
 		if (course.m_iLobbySeconds < 0)
 		{
 			LF_Debug.Error("Racing", string.Format("race-course '%1' refused: lobby seconds %2 is negative", course.m_sId, course.m_iLobbySeconds));

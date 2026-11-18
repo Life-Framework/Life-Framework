@@ -216,7 +216,15 @@ class LF_ConfigService
 		if (key == LF_RestartConfig.SECTION || key == LF_StaffWebhookConfig.SECTION || key == LF_DayCycleConfig.SECTION)
 			return true;
 
-		if (key == LF_JoinNoticeConfig.SECTION)
+		if (key == LF_JoinNoticeConfig.SECTION || key == LF_HousesConfig.SECTION)
+			return true;
+
+		// The lockers section (#2658): rent, grace and reclaim fee.
+		if (key == LF_LockerConfig.SECTION)
+			return true;
+
+		// The contested-site rules (#2679): radius, capture, decay, rent per hideout id.
+		if (key == LF_SitesConfig.SECTION)
 			return true;
 
 		// The arrival sections (#1779): rejoin at the saved spot and the new-character grace.
@@ -415,7 +423,7 @@ class LF_ConfigPackSource
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn The running pack's manifest (it declares the pack's config sections, #553), or null
+	//! \return The running pack's manifest (it declares the pack's config sections, #553), or null
 	//! when there is no pack or the core refused it.
 	LF_PackManifest GetManifest()
 	{
@@ -740,7 +748,7 @@ class LF_ConfigReader
 	//------------------------------------------------------------------------------------------------
 	//! Reads a `{GUID}path` resource name when present. A name that does not load (a typo, a pack the
 	//! server lacks) is refused like a bad number: it logs, and the lower layer's value stays.
-	//! eturn True when the value was taken.
+	//! \return True when the value was taken.
 	bool ReadResource(string key, inout ResourceName value)
 	{
 		if (!m_Ctx.DoesKeyExist(key))

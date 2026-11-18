@@ -38,11 +38,11 @@ class LF_Test_PackPatchSourceStub : LF_ConfigPackSource
 	}
 };
 
-// tier: WORLD
 //! #1109, #957: a pack `.conf` patches the clerk's dialogue by node and line id (replaced line text,
 //! a replaced, an added and a removed node, a new start node, a patch of a missing node refused) and
 //! the vehicle prices by prefab GUID (patch, remove, add, a patch of a missing vehicle refused). A
 //! pack patch that leaves the dialogue broken is dropped and the core clerk plays.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PackPatchOverlays : LF_Test
 {
 	static const ResourceName CLERK = "{65C163E3C4868E76}Configs/Dialogue/LF_Dialogue_Clerk.conf";

@@ -3,7 +3,7 @@
 //! prefab/guid-compare (#323): a prefab string saved or configured with the right GUID and a
 //! deliberately wrong path still matches the live entity, and the same path text under another
 //! GUID does not. Guards the compares in LF_Breach, LF_BankRobKit and the asset-state harness.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_GuidCompare : LF_Test
 {
 	override string GetName()

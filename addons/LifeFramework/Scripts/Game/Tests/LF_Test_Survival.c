@@ -1,7 +1,7 @@
 // red-proof: change an expected value (e.g. fresh hunger 100 -> 50) and run
 // the fast tier; the survival assertions fail.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Survival : LF_Test
 {
 	override string GetName()
@@ -53,7 +53,7 @@ class LF_Test_Survival : LF_Test
 
 //------------------------------------------------------------------------------------------------
 //! Save-data round trip through the persisted record.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SurvivalSaveData : LF_Test
 {
 	override string GetName()

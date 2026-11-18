@@ -1,12 +1,12 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_Systems`: dropping the parent
 // check in LF_Systems.IsOn failed `- a part of a system that is off is off` and `- and says why: `. Restored; green.
-// tier: LOGIC
 //! Systems (#960): each system's on or off read through the config service. A catalog built in
 //! script and an owner `systems` section: an off switch turns the system and its parts off; a
 //! framework (LOCKED) system, a system with no switch yet (NOT_YET) and an unknown id are refused;
 //! turning off a system an enabled one needs is refused and it goes back to its shipped value; an
 //! opt-in system stays off and what needs it goes off; a run-time switch-off logs once and holds;
 //! a loadout item of a system that is off is left out.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Systems : LF_Test
 {
 	static const ResourceName ITEM = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

@@ -1,9 +1,9 @@
 // red-proof: Observed 2026-11-16 with `tools/cli test --no-build --only LF_Test_RaceEveryFinisher` on the unfixed code: failed "the runner-up's first time is a record (expected 3000, got -1)" and the third's, green once the finish carries every finisher.
-// tier: WORLD
 //! #2160 (from #2064): every finisher can set a personal best, not only the winner. A real
 //! three-racer race runs through LF_RaceRunner and settles; the record board holds all three times,
 //! and the event still names the winner and the winner's time for older subscribers. A leaver is
 //! not a finisher and gets no record. Records are saved and restored around the run (no ResetAll).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RaceEveryFinisher : LF_Test
 {
 	protected static const string UID_A = "race-every-a";

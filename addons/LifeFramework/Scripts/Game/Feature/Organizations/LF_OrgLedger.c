@@ -120,6 +120,13 @@ class LF_OrgLedger
 	protected bool m_bRebuilding;
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: forget the open ledger page (the world takes its screen down).
+	static void ResetStatics()
+	{
+		s_Ledger = null;
+	}
+
+//------------------------------------------------------------------------------------------------
 	static LF_OrgLedger Current()
 	{
 		return s_Ledger;
@@ -185,7 +192,13 @@ class LF_OrgLedger
 	//------------------------------------------------------------------------------------------------
 	static string HideoutAction(LF_OrgLedgerPage page)
 	{
-		if (page.m_iLease != LF_EOrgLease.FREE || !page.Can(LF_OrgRules.RIGHT_BUY))
+		if (!page.Can(LF_OrgRules.RIGHT_BUY))
+			return string.Empty;
+
+		if (page.m_iLease == LF_EOrgLease.OURS)
+			return "#LF-Org_GiveUpLease";
+
+		if (page.m_iLease != LF_EOrgLease.FREE)
 			return string.Empty;
 
 		return "#LF-Org_TakeLease";
@@ -390,7 +403,11 @@ class LF_OrgLedger
 
 		if (name == PART_HIDEOUT)
 		{
-			character.LF_AskOrganizationLease();
+			if (m_Page && m_Page.m_iLease == LF_EOrgLease.OURS)
+				character.LF_AskOrganizationLeaseRelease();
+			else
+				character.LF_AskOrganizationLease();
+
 			return;
 		}
 
@@ -426,5 +443,20 @@ class LF_OrgLedger
 
 		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.SOUND_HUD_MAP_CLOSE);
 		LF_Debug.Info("Organizations", "ledger closed");
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_OrgLedger's statics (LF_StaticReset finds it by reflection).
+class LF_OrgLedger_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_OrgLedger";
+	}
+
+	override void Apply()
+	{
+		LF_OrgLedger.ResetStatics();
 	}
 }

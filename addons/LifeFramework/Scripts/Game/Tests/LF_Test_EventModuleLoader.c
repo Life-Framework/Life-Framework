@@ -1,5 +1,4 @@
 // red-proof: `test --no-build --red LF_Test_EventModuleLoader` -> RED PROOF OK (2026-11-16): with the hook on nothing registers, so `the walk phase puts the scene on stage` and `the busy scene holds its phase` fail; without it `SUMMARY tier=only passed=1 failed=0`.
-// tier: WORLD
 //! Event module loader (#2137): an event config's module refs register by the root class of their
 //! .conf (an hour window and a players-nearby condition, a phase-length abort, a scene) and a ref of
 //! the wrong class is refused. Then an event that names them runs through the shell: outside the hour
@@ -7,6 +6,7 @@
 //! walkers on the grid cell `event-scene` and starts their walk. The busy scene holds the phase; once
 //! the walk is over and nobody sees the walkers they are removed and the event ends into cooldown.
 //! GridWorld has no AIWorld, so the test passes the AI budget and steps the scene's end by hand.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventModuleLoader : LF_Test
 {
 	static const string EVENT_ID = "test_module_loader";

@@ -1,10 +1,10 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_RobberyAlarmsShipped`: flipping the range comparison failed with `the bank bell carries further than the store buzzer`; restored, green.
-// tier: WORLD
 //! Robbery alarms (#740), the shipped data: every robbery type (the bank vault, the fuel station till, the
 //! general store till, the cash van, the police armory, the hospital till) resolves through LF_Police.conf to an alarm prefab
 //! that loads and plays its own sound project and event; no two kinds share a sound; a normal and a loud
 //! prefab of a kind play the same sound; the bank bell carries further than the retail store alarm; and the hospital
 //! till has its own kind (#1937) and its own clip (#1938): a sound project and event no other kind plays, and not the loud siren. That the sounds are heard is a manual step.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RobberyAlarmsShipped : LF_Test
 {
 	override string GetName()

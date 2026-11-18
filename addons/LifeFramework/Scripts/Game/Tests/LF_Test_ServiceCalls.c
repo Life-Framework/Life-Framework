@@ -2,7 +2,7 @@
 //------------------------------------------------------------------------------------------------
 //! comms/routing (#248): a medic call reaches only on-duty medics, an unknown service is rejected,
 //! and nobody on duty gives "no answer".
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ServiceCalls : LF_Test
 {
 	override string GetName()

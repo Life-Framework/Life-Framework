@@ -4,9 +4,9 @@
 // --world Worlds/GridWorld/GridWorld.ent` failed `- the world places a lawless zone that registered itself`. The RedProof()
 // hook skips the fixture zone and the same assertions go red.
 
-// tier: WORLD
 //! The lawless zone rule on a fixture quarry the test registers and removes itself (GridWorld places no
 //! town zones on purpose, docs/architecture/three-worlds.md), plus the annex lawless signs.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_QuarryZone : LF_Test
 {
 	//! Far from the grid annex (x 18..114, z 18..114) and its gate spawn.

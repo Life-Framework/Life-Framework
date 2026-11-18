@@ -206,11 +206,21 @@ class LF_NotificationManagerComponent : ScriptComponent
 		if (!Replication.IsServer())
 			return;
 			
-		array<int> playerIds = {};
-		GetGame().GetPlayerManager().GetPlayers(playerIds);
-		
+		PlayerManager playerManager = GetGame().GetPlayerManager();
 		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
-		
+		if (!playerManager)
+			return;
+
+		// Off-duty filtering needs the accounts: without them nobody can be shown to be on duty.
+		if (onDutyOnly && !accountManager)
+		{
+			LF_Debug.Warn("Notify", "job notification not sent: the account manager is not up, so duty cannot be read");
+			return;
+		}
+
+		array<int> playerIds = {};
+		playerManager.GetPlayers(playerIds);
+
 		foreach (int playerId : playerIds)
 		{
 			IEntity playerEntity = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
@@ -346,37 +356,35 @@ class LF_NotificationManagerComponent : ScriptComponent
 	//! Show notification toast on this machine. Called by the owner-RPC on the local controller.
 	void ShowNotificationToast(string title, string message, float duration, LF_ENotificationType type, string messageArg = "")
 	{
-		// Add prefix based on type if no custom title
-		// TODO: these fallback titles are Spanish literals; move to localization keys in the
-		// localization phase.
+		// A toast with no title gets the one for its type, as a localization key translated below.
 		string displayTitle = title;
 		if (title.IsEmpty())
 		{
 			switch (type)
 			{
 				case LF_ENotificationType.POLICE_ALERT:
-					displayTitle = "[POLICÍA] ALERTA";
+					displayTitle = "#LF-Notify_TitlePolice";
 					break;
 				case LF_ENotificationType.EMS_ALERT:
-					displayTitle = "[EMS] EMERGENCIA";
+					displayTitle = "#LF-Notify_TitleEms";
 					break;
 				case LF_ENotificationType.ROBBERY_ALERT:
-					displayTitle = "[ALARMA] ROBO";
+					displayTitle = "#LF-Notify_TitleRobbery";
 					break;
 				case LF_ENotificationType.SMS_RECEIVED:
-					displayTitle = "[SMS] MENSAJE";
+					displayTitle = "#LF-Notify_TitleSms";
 					break;
 				case LF_ENotificationType.SUCCESS:
-					displayTitle = "[ÉXITO]";
+					displayTitle = "#LF-Notify_TitleSuccess";
 					break;
 				case LF_ENotificationType.WARNING:
-					displayTitle = "[ADVERTENCIA]";
+					displayTitle = "#LF-Notify_TitleWarning";
 					break;
 				case LF_ENotificationType.ERROR:
-					displayTitle = "[ERROR]";
+					displayTitle = "#LF-Notify_TitleError";
 					break;
 				default:
-					displayTitle = "[INFO]";
+					displayTitle = "#LF-Notify_TitleInfo";
 					break;
 			}
 		}

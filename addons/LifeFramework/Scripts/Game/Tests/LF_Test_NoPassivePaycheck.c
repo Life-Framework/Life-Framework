@@ -2,10 +2,10 @@
 // `SetEventMask(owner, EntityEvent.FRAME);` back to LF_PlayerJobComponent.OnPostInit printed
 // [LFTEST]   - the job component runs no per-frame paycheck clock (expected 0, got 8); restored, green.
 
-// tier: WORLD
 //! A spawned character is the only way to hold an LF_PlayerJobComponent, so this is WORLD.
 //! The old paycheck ran on the component's frame event; a component with no frame event and
 //! no cash after spawn cannot mint over time.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NoPassivePaycheck : LF_Test
 {
 	override string GetName()

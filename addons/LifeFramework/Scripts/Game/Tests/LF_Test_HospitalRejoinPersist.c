@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 with `tools\cli test --no-build --red LF_Test_HospitalRejoinPersist` (RED-OK persist/hospital-rejoin): with the payload read skipped, failed "the hospital wake is back (load 2)", "one rejoin row, however many loads (load 2) (expected 1, got 0)" and "the rejoin after the restart writes the bill"; green on the real code. The restart path is `tools\cli wt e2e`.
-// tier: PERSISTENCE
 //! #2101: a player who logs out downed still wakes at the hospital with the bill when the server
 //! restarts between the logout and the rejoin. The logout is recorded by the real rule
 //! (LF_DisconnectRules.Apply), saved as the "hospitalrejoin" payload, the session is wiped, and the
@@ -7,6 +6,7 @@
 //! Loading twice gives one pending rejoin; a save from before the payload (version 39) loads nothing.
 //! Across a restart (`tools\cli wt e2e`): the save boot records E2E_UID, the shutdown save carries
 //! it, and the reload boot finds the wake pending and writes the bill.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_HospitalRejoinPersist : LF_Test
 {
 	protected static const string UID = "hospital-rejoin-persist-uid";

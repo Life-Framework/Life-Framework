@@ -205,3 +205,18 @@ class LF_ATMManager : Managed
 		return false;
 	}
 };
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ATMManager's statics (LF_StaticReset finds it by reflection).
+class LF_ATMManager_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_ATMManager";
+	}
+
+	override void Apply()
+	{
+		LF_ATMManager.Reset();
+	}
+}

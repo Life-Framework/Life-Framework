@@ -1,10 +1,10 @@
 // red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_CaseBoard`: loosening the per-case cap in LF_CaseBoard.PinCard (`>` for `>=`) failed `- a case holds at most its four cards (expected 4, got 5)` and `- the card pinned last comes down first (expected 104, got 105)`. Restored; green.
-// tier: LOGIC
 //! Case board (#148), with no world: a report gets its time; a logged bag becomes an unpinned card;
 //! Pin puts the next card of an open case up, four at most a case; Unpin takes the last one down; the
 //! cases with cards come first; the look and the name only go out once identified; a field never
 //! carries the separator; burning the case file clears the cards; a closed case is not saved; and
 //! the face's string runs pin to pin.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CaseBoard : LF_Test
 {
 	protected static const string ROBBER = "caseboard-test-robber";

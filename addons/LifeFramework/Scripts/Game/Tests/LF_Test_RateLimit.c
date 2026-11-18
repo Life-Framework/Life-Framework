@@ -5,10 +5,10 @@
 //   [LFTEST]   - burst of one: the second request is refused (expected 1, got 0)
 // Restored `m_iCount < burst`; green.
 
-// tier: LOGIC
 //! Request rate limit (#693b): a fixed window admits a burst, the next request is refused (first
 //! refusal reported, the rest counted), a new window admits again and reports the count, buckets
 //! are per player and per kind, a clock wrap opens a new window, and every kind has a sane limit.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RateLimit : LF_Test
 {
 	override string GetName()
@@ -62,7 +62,7 @@ class LF_Test_RateLimit : LF_Test
 		ctx.True(allLocalAdmitted, "server-local requests (player 0) are not limited");
 
 		// Every kind has a positive window and burst, and the idle span outlasts every window.
-		array<LF_ERequestKind> kinds = {LF_ERequestKind.PURCHASE, LF_ERequestKind.TRAVEL, LF_ERequestKind.COMMS, LF_ERequestKind.SPAWN, LF_ERequestKind.INVENTORY};
+		array<LF_ERequestKind> kinds = {LF_ERequestKind.PURCHASE, LF_ERequestKind.TRAVEL, LF_ERequestKind.COMMS, LF_ERequestKind.SPAWN, LF_ERequestKind.INVENTORY, LF_ERequestKind.CRIME, LF_ERequestKind.CHESS, LF_ERequestKind.QUEST};
 		foreach (LF_ERequestKind kind : kinds)
 		{
 			string name = typename.EnumToString(LF_ERequestKind, kind);

@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-10 with `toolscli test --no-build --only LF_Test_ChainMoonshine`: a non-existent BerryJam prefab in the config failed `the moonshine chain is enabled` and `the moonshine chain resolves` (`chain moonshine disabled: a prefab does not resolve`), `SUMMARY tier=only passed=0 failed=1`; swapped for the real WaterBottle, green.
 
-// tier: WORLD
 //! The shipped moonshine chain (#420) loads from ResourceChains.conf with every prefab resolving,
 //! is tier 1 with no gate, and its steps hand items on: the mash output is the still input, and
-//! the still makes the moonshine bottle (#2001; a pack step for the convoy crate is a follow-up).
+//! the still makes the moonshine bottle (#2001), and a pack bench turns bottles into a crate (#2441, LF_Test_MoonshineCratePack).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ChainMoonshine : LF_Test
 {
 	override string GetName()
@@ -27,7 +27,7 @@ class LF_Test_ChainMoonshine : LF_Test
 		}
 
 		ctx.Equal(1, chain.m_iTier, "moonshine is the easy tier");
-		ctx.Equal(2, chain.m_aSteps.Count(), "two steps: mash, then distill");
+		ctx.Equal(3, chain.m_aSteps.Count(), "three steps: mash, distill, then pack (#2441)");
 		ctx.NotNull(chain.m_Heat, "a running site gives off heat");
 
 		LF_ChainStepDef mash = chain.FindStep("mash");

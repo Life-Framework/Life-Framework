@@ -3,7 +3,7 @@
 //! comms/board (#250): a medic call shows on the medic board and not on the police board; only the
 //! service's own on-duty staff may read it; a call leaves the board when it expires; a crime report
 //! and a payphone call both land on the police board.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ServiceBoard : LF_Test
 {
 	override string GetName()

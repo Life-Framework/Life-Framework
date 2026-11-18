@@ -6,12 +6,12 @@
 //   [LFTEST] SUMMARY tier=only passed=0 failed=1 total=1
 // Restored Resolve and the test passed.
 
-// tier: LOGIC
 //! #716: an account change finds its player without walking every player each time. 128 synthetic
 //! players, one change per account in one frame (a payday or a load): the old Publish read
 //! 2 * 128 * 128 = 32768 identities; the owner index must stay within N + D = 256 and still
 //! resolve each account to the right player, miss offline accounts, follow a player that left,
 //! and keep two players on one account.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AccountPublishCost : LF_Test
 {
 	override string GetName()

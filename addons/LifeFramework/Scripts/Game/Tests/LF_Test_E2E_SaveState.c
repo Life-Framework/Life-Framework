@@ -38,7 +38,7 @@
 // save of the live store, which has no "wantedlooks", and pass 2 failed with
 // `- e2e the robber's look survives the restart (expected '9B5BB216CC7FF18E|1=9F546CCA2582D16F', got '')`.
 // LF_TestLegacySnapshot now puts the crime reports back; both passes green, and green with --legacy-save.
-// tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
 	protected static const string ACCOUNT_UID = "e2e-uid";
@@ -55,6 +55,11 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	protected static const string STREET_ID = "e2e-street-car";
 	//! Playtime (#692, save version 26): 90 min on police duty in two stretches and 30 min civilian.
 	static const string PLAYTIME_UID = "e2e-playtime-account";
+	//! Grace clock (#2443, "graceclock" payload, save version 48): 7 minutes of one character's own play.
+	static const string GRACE_KEY = "e2e-grace-character";
+	//! Held cargo deposit (#2408, #2481, "jobruns" payload, save version 49): a courier mid-run with 150 held.
+	static const string DEPOSIT_UID = "e2e-deposit-courier";
+	static const int DEPOSIT_HELD = 150;
 	//! Job levels (#749, "joblevels" payload, save version 28): XP in three jobs, one of which
 	//! (CIVILIAN) the progression record's pre-#749 single level also carries.
 	static const string JOBS_UID = "e2e-job-levels";
@@ -80,6 +85,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	static const string HELD_SITE = "e2e-held-ground-site";
 	static const int HELD_SECONDS = 3600;
 	static const int HELD_POINTS = 12;
+	//! A second site the same organization holds as captured ground (#2816, "tenancy" payload, save version 58).
+	static const string CAPTURED_SITE = "e2e-captured-site";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -144,6 +151,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// alive in the world through the shutdown save, so the reload boot also sees whether the
 		// engine brings its items back on its own (a dupe next to the restored snapshot).
 		IEntity carrier = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(carrier);
 		// A stamped drill rides in the backpack (#470): its serial must survive the restart on the item.
 		if (carrier)
 		{
@@ -188,6 +196,23 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 			LF_Debug.Info(LF_PhotoIdCard.FEATURE, "e2e save: identity card " + LF_IdCard.NumberOf(LF_IdCard.FindShown(carrier, ID_HOLDER)));
 		}
 
+		// A house key bound to a house rides in the pocket (#2410): its binding must survive the restart
+		// ("itemkeys", save version 46).
+		if (carrier)
+		{
+			IEntity houseKey = LF_Utils.SpawnEntityPrefab(LF_Test_E2E_SaveStateVerify.HOUSE_KEY_PREFAB, carrier.GetOrigin());
+			LF_KeyComponent houseKeyComponent;
+			if (houseKey)
+				houseKeyComponent = LF_Component<LF_KeyComponent>.Find(houseKey);
+			ctx.NotNull(houseKeyComponent, "e2e a house key spawns for the carrier");
+			if (houseKeyComponent)
+			{
+				houseKeyComponent.SetHouseIdentifier(LF_Test_E2E_SaveStateVerify.HOUSE_KEY_HOUSE);
+				InventoryStorageManagerComponent keyStorage = LF_InventoryUtils.GetResponsibleStorageManager(carrier);
+				ctx.True(keyStorage && keyStorage.TryInsertItem(houseKey, EStoragePurpose.PURPOSE_DEPOSIT), "e2e the bound house key is carried before the save");
+			}
+		}
+
 		if (carrier)
 			ctx.True(LF_StorageSnapshot.CaptureCarried(CARRIED_CHARACTER_ID, carrier), "e2e carried inventory captured before the save");
 
@@ -218,6 +243,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// leave 9 rounds, clock out. A wanted report with its identified flag rides "wanted" (10).
 		LF_PlayerAccount dutyAccount = LF_TestPoliceKit.Account(DUTY_UID, true);
 		IEntity dutyBody = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(dutyBody);
 		if (dutyBody)
 		{
 			ctx.EqualStr("", LF_DutyLocker.ClockIn(dutyAccount, dutyBody), "e2e officer clocks in before the save");
@@ -232,6 +258,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// The medic duty inventory rides the same carried payload in its own slot (medic_duty, #258).
 		LF_PlayerAccount medicAccount = LF_TestPoliceKit.Account(MEDIC_UID, false);
 		IEntity medicBody = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(medicBody);
 		if (medicBody)
 		{
 			ctx.EqualStr("", LF_DutyLocker.ClockIn(medicAccount, medicBody, LF_Faction.MEDIC), "e2e medic clocks in before the save");
@@ -269,6 +296,11 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		array<ref LF_EvidenceLockerRow> lockerRows = {};
 		lockerRows.Insert(lockerRow);
 		LF_EvidenceLocker.ApplyAll(lockerRows);
+
+		// A locker rental (#2659, "lockers" payload, save version 57) must come back with its paid-until.
+		array<ref LF_LockerRentalRow> lockerRentalRows = {};
+		lockerRentalRows.Insert(LF_LockerRentalRow.Create("e2e-locker-site", OFFICER_UID, 1900000000));
+		LF_LockerBank.ApplyAll(lockerRentalRows);
 
 		// A half-finished chain batch (#417) must come back: barrel 3 of the Annex_Chains_Site, 3 of 8 units in.
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
@@ -348,8 +380,35 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		LF_Playtime.Credit(PLAYTIME_UID, "POLICE", 1800);
 		LF_Playtime.Credit(PLAYTIME_UID, LF_Playtime.JOB_CIVILIAN, 1800);
 		ctx.Equal(7200, LF_Playtime.Total(PLAYTIME_UID), "e2e playtime account has 2 h before the save");
+		LF_GraceCharacterClock.Credit(GRACE_KEY, 420);
+		ctx.Equal(420, LF_GraceCharacterClock.Seconds(GRACE_KEY), "e2e grace character has 7 min before the save");
 
 		SeedOrgLadder(ctx);
+		LF_Test_ReputationPersist.SeedE2E(ctx);
+		LF_Test_GarageSlotsPersist.SeedE2E(ctx);
+		// A car on the street holds an apple (#2809): the shutdown save captures its cargo into "carried".
+		IEntity cargoPayer = LF_TestCharacterFixture.Spawn(ctx);
+		if (cargoPayer)
+		{
+			LF_Test_VehicleCargoPersist.SeedE2E(ctx, cargoPayer);
+			LF_TestCharacterFixture.Delete(cargoPayer);
+		}
+
+#ifndef LF_E2E_LEGACY_SAVE
+		// A cargo run in progress holds a deposit ("jobruns" payload, save version 49, #2408, #2481): the
+		// restart ends the run, and the load must give the deposit back to the bank (500 + 150 after) and
+		// take the parcel the courier still carries out of the saved inventory (never both).
+		atmManager.CreateAccount(DEPOSIT_UID);
+		ctx.True(atmManager.Deposit(DEPOSIT_UID, 500), "e2e the deposit courier banks 500 before the save");
+		ctx.True(LF_CivilianJob.SignUp(DEPOSIT_UID, LF_EJobType.PARCEL), "e2e the deposit courier signs up for parcels");
+		ctx.True(LF_CivilianJob.StartRun(DEPOSIT_UID, LF_EJobType.PARCEL), "e2e the deposit courier starts a run before the save");
+		LF_CivilianJob.RecordDeposit(DEPOSIT_UID, DEPOSIT_HELD);
+		ctx.Equal(DEPOSIT_HELD, LF_CivilianJob.GetDeposit(DEPOSIT_UID), "e2e the run holds the deposit before the save");
+		LF_StorageSnapshotRecord courierGear = LF_StorageSnapshotRecord.Create(DEPOSIT_UID, LF_StorageSnapshot.SLOT_CARRIED);
+		courierGear.m_aItems.Insert(LF_StorageItemRecord.Create(LF_Bank.DRILL_PREFAB, 1, -1, 0, 0));
+		courierGear.m_aItems.Insert(LF_StorageItemRecord.Create(LF_CivilianJob.PrefabFor(LF_EJobType.PARCEL), 1, -1, 0, 1));
+		LF_StorageSnapshot.Set(courierGear);
+#endif
 
 		LF_JobLevels.Forget(JOBS_UID);
 		ctx.Equal(340, LF_JobLevels.AddXp(JOBS_UID, LF_JobLevels.JOB_CIVILIAN, 340, "e2e"), "e2e worker earns 340 civilian xp before the save");
@@ -390,6 +449,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		ctx.True(LF_Hideout.Assign(HELD_SITE, orgId), "e2e the organization leases the held site before the save");
 		ctx.True(LF_Hideout.TryUnlock(ORG_FOUNDER, HELD_SITE), "e2e the founder unlocks the held site before the save");
 		ctx.True(LF_Hideout.SetHeldGround(HELD_SITE, orgId, HELD_SECONDS, HELD_POINTS), "e2e the organization holds its site before the save");
+		ctx.True(LF_Hideout.HandOver(CAPTURED_SITE, orgId, "e2e"), "e2e the organization captures a second site beside its base before the save");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -418,9 +478,13 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateVerify : LF_Test
 {
+	//! #2410: the carried house key and the house it opens.
+	static const ResourceName HOUSE_KEY_PREFAB = "{3735389521255DBE}Prefabs/Items/HouseKeyItem.et";
+	static const string HOUSE_KEY_HOUSE = "e2e-carried-key-house";
+
 	protected static int s_iLooseApples;
 
 	//------------------------------------------------------------------------------------------------
@@ -523,6 +587,52 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(7200, LF_Playtime.Total(uid), "e2e the playtime total is 2 h after the restart");
 		LF_Debug.Info(LF_Playtime.FEATURE, string.Format("e2e restart: %1 has %2 s (POLICE %3 s, CIVILIAN %4 s)", uid, LF_Playtime.Total(uid), LF_Playtime.JobSeconds(uid, "POLICE"), LF_Playtime.JobSeconds(uid, LF_Playtime.JOB_CIVILIAN)));
 #endif
+		// #2443: the character grace clock survives the restart; a save older than it seeds only real characters.
+		string graceKey = LF_Test_E2E_SaveStateWrite.GRACE_KEY;
+		if (LF_E2E.SaveHas("graceclock"))
+			ctx.Equal(420, LF_GraceCharacterClock.Seconds(graceKey), "e2e the character grace clock survives the restart");
+		else
+			ctx.Equal(0, LF_GraceCharacterClock.Seconds(graceKey), "e2e a save older than graceclock has no grace clock for it");
+		LF_Debug.Info(LF_Grace.FEATURE, string.Format("e2e restart: grace clock of %1 is %2 s (boot save version %3)", graceKey, LF_GraceCharacterClock.Seconds(graceKey), LF_SaveStamp.BootSaveVersion()));
+		VerifyJobDeposit(ctx);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #2408 after the restart: the run a courier was on is over, and the deposit it held is in the bank
+	//! (500 banked + 150 held), not kept, and the parcel it carried is gone from the saved inventory (#2481).
+	//! A save older than "jobruns" (a --legacy-save, or the --pre-move ref build, whose pass 1 never wrote
+	//! the courier) holds no run and no deposit: the restart leaves none.
+	protected void VerifyJobDeposit(LF_TestContext ctx)
+	{
+		string uid = LF_Test_E2E_SaveStateWrite.DEPOSIT_UID;
+		if (!LF_E2E.SaveHas("jobruns"))
+		{
+			ctx.False(LF_CivilianJob.HasActiveRun(uid), "e2e a save older than jobruns has no run in progress after the restart");
+			ctx.Equal(0, LF_CivilianJob.GetDeposit(uid), "e2e a save older than jobruns holds no deposit after the restart");
+			LF_Debug.Info("Jobs", string.Format("e2e restart: boot save version %1 predates jobruns, no deposit to refund", LF_SaveStamp.BootSaveVersion()));
+			return;
+		}
+
+#ifdef LF_E2E_LEGACY_SAVE
+		ctx.False(LF_CivilianJob.HasActiveRun(uid), "e2e the version 23 save has no run in progress");
+#else
+		LF_BankAccount bank = LF_ATMManager.GetInstance().GetAccount(uid);
+		ctx.NotNull(bank, "e2e the deposit courier has a bank account after the restart");
+		if (bank)
+			ctx.Equal(500 + LF_Test_E2E_SaveStateWrite.DEPOSIT_HELD, bank.GetBalance(), "e2e the held cargo deposit is refunded to the bank by the restart");
+
+		ctx.False(LF_CivilianJob.HasActiveRun(uid), "e2e the run does not survive the restart");
+		ctx.Equal(0, LF_CivilianJob.GetDeposit(uid), "e2e no deposit is held after the restart");
+		LF_StorageSnapshotRecord gear = LF_StorageSnapshot.Get(uid, LF_StorageSnapshot.SLOT_CARRIED);
+		ctx.NotNull(gear, "e2e the courier's carried inventory is saved");
+		if (gear)
+		{
+			ctx.Equal(0, gear.CountPrefab(LF_CivilianJob.PrefabFor(LF_EJobType.PARCEL)), "e2e the restart took the parcel back with the deposit: never both");
+			ctx.Equal(1, gear.CountPrefab(LF_Bank.DRILL_PREFAB), "e2e the rest of the courier's gear is kept");
+		}
+
+		LF_Debug.Info("Jobs", string.Format("e2e restart: %1 bank is %2 (boot save version %3)", uid, LF_ATMManager.GetOrCreate(uid).GetBalance(), LF_SaveStamp.BootSaveVersion()));
+#endif
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -560,7 +670,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 #ifdef LF_E2E_PRE_MOVE
 		// --pre-move: a ref build from before #751 (its save version below the payload's) leased no
 		// site and held no ground; a later ref build wrote both, checked as on a plain restart.
-		if (LF_SaveStamp.BootSaveVersion() < LF_PersistenceComponentSerializer.PayloadSinceVersion("heldground"))
+		if (!LF_E2E.SaveHas("heldground"))
 		{
 			ctx.True(LF_Hideout.HeldGroundOf(site) == null, "e2e the ref build's save has no lease on the held site");
 			ctx.Equal(0, LF_Hideout.ExportHeldGround().Count(), "e2e the ref build's save loads every site unheld");
@@ -584,6 +694,50 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(LF_Test_E2E_SaveStateWrite.HELD_POINTS, held.m_iHoldPoints, "e2e the banked points are kept after the restart");
 #endif
 		LF_Debug.Info("Hideout", string.Format("e2e restart: %1 lease %2 holder '%3' hold %4 s points %5", site, LF_Hideout.GetOwner(site), held.m_sHolderOrgId, held.m_iHoldSeconds, held.m_iHoldPoints));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #2816 after the restart: the base lease stays a base, the captured site stays captured, and both are
+	//! still the organization's. Callers gate this on the loaded save's version.
+	protected void VerifyTenancy(LF_TestContext ctx)
+	{
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(LF_Test_E2E_SaveStateWrite.ORG_FOUNDER);
+		ctx.NotNull(org, "e2e the capturing organization is back after the restart");
+		if (!org)
+			return;
+
+		ctx.EqualStr(org.GetId(), LF_Hideout.GetOwner(LF_Test_E2E_SaveStateWrite.CAPTURED_SITE), "e2e the captured site keeps its lease after the restart");
+		ctx.True(LF_Hideout.IsCaptured(LF_Test_E2E_SaveStateWrite.CAPTURED_SITE), "e2e the captured site is still captured after the restart");
+		ctx.False(LF_Hideout.IsCaptured(LF_Test_E2E_SaveStateWrite.HELD_SITE), "e2e the base lease is still a base lease after the restart");
+		ctx.Equal(1, LF_Hideout.SitesOf(org.GetId(), true).Count(), "e2e the organization holds one captured site after the restart");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #2410: the carried house key comes back bound to its house. A legacy save (--legacy-save, no
+	//! build stamp) restores it unbound, as that build did; a ref build from before the house payloads
+	//! (--pre-move) carried no key.
+	protected void VerifyHouseKey(LF_TestContext ctx, IEntity restored)
+	{
+		if (!LF_E2E.SaveHas("houses"))
+		{
+			ctx.Pass("e2e a save older than the house payloads carries no house key");
+			return;
+		}
+
+		array<IEntity> keys = LF_InventoryUtils.FindItemsByPrefab(LF_InventoryUtils.GetResponsibleStorageManager(restored), HOUSE_KEY_PREFAB);
+		ctx.Equal(1, keys.Count(), "e2e the carried house key is back after the restart");
+		if (keys.IsEmpty())
+			return;
+
+		LF_KeyComponent key = LF_Component<LF_KeyComponent>.Find(keys[0]);
+		string bound;
+		if (key)
+			bound = key.GetHouseIdentifier();
+
+		if (LF_E2E.SaveHas("itemkeys"))
+			ctx.EqualStr(HOUSE_KEY_HOUSE, bound, "e2e the carried house key still opens its house after the restart");
+		else
+			ctx.EqualStr("", bound, "e2e a save older than itemkeys restores the house key unbound");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -673,6 +827,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 				LF_StorageSnapshot.Apply(restored, carried);
 				ctx.Equal(237, LF_MoneyUtils.GetCash(restored), "e2e 237 cash carried across the restart");
 				ctx.Equal(3, LF_InventoryUtils.GetAmount(restored, LF_TestCarriedInventoryKit.APPLE_PREFAB), "e2e 3 apples carried across the restart");
+				VerifyHouseKey(ctx, restored);
 				ctx.Equal(1, LF_TestCarriedInventoryKit.CountInside(restored, LF_TestCarriedInventoryKit.BACKPACK_PREFAB, LF_TestCarriedInventoryKit.WATER_PREFAB), "e2e water bottle still inside the backpack after the restart");
 				array<IEntity> backDrills = LF_InventoryUtils.FindItemsByPrefab(LF_InventoryUtils.GetResponsibleStorageManager(restored), LF_Bank.DRILL_PREFAB);
 				ctx.Equal(1, backDrills.Count(), "e2e carried drill is back after the restart");
@@ -694,7 +849,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 					// #1855: the drill flagged stolen before the save is still stolen; a save older than
 					// the itemstolen payload (--legacy-save) restores it unflagged, as that build did.
-					if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("itemstolen"))
+					if (LF_E2E.SaveHas("itemstolen"))
 						ctx.True(LF_StolenGoods.IsStolen(backDrills[0]), "e2e carried drill is still flagged stolen after the restart");
 					else
 						ctx.False(LF_StolenGoods.IsStolen(backDrills[0]), "e2e a legacy save restores the drill unflagged");
@@ -766,6 +921,17 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.False(LF_PersistenceComponentSerializer.IsLoadDamaged(), "e2e the restart load is not damaged, autosave runs");
 		LF_Debug.Info("Persistence", string.Format("e2e restart: loaded a save from game build %1 (save version %2), running %3", LF_SaveStamp.BootLoadedBuild(), LF_SaveStamp.BootSaveVersion(), GetGame().GetBuildVersion()));
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
+		// A save older than "lockers" (a --legacy-save, or the --pre-move ref build, whose pass 1 never wrote
+		// a rental) holds no rental: the check skips, as VerifyJobDeposit does for "jobruns".
+		if (LF_E2E.SaveHas("lockers"))
+		{
+			ctx.True(LF_LockerBank.IsRenting("e2e-locker-site", OFFICER_UID), "e2e locker rental survives the restart");
+			ctx.Equal(1900000000, LF_LockerBank.PaidUntil("e2e-locker-site", OFFICER_UID), "e2e locker rental keeps its paid-until");
+		}
+		else
+		{
+			LF_Debug.Info("Lockers", string.Format("e2e restart: boot save version %1 predates lockers, no rental to check", LF_SaveStamp.BootSaveVersion()));
+		}
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed after the restart");
 		if (chainBarrel)
@@ -869,7 +1035,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			// state rows and set none; a later ref build wrote them, checked as on a plain restart.
 			bool refBeforeState = false;
 #ifdef LF_E2E_PRE_MOVE
-			refBeforeState = LF_SaveStamp.BootSaveVersion() < LF_PersistenceComponentSerializer.PayloadSinceVersion("vehiclestate");
+			refBeforeState = !LF_E2E.SaveHas("vehiclestate");
 #endif
 			if (refBeforeState)
 			{
@@ -899,14 +1065,21 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET_ID, GARAGE_OWNER_UID, payer, fee, "roadmap-impound", reasonKey), "e2e street car is collected only once");
 			ctx.True(LF_VehicleOwnership.GetVehicle(STREET_ID) != null, "e2e collected car is in the impound yard");
 			LF_VehicleOwnership.Store(STREET_ID, GARAGE_OWNER_UID);
+			LF_Test_VehicleCargoPersist.VerifyE2E(ctx, payer);
 			LF_TestCharacterFixture.Delete(payer);
 		}
 
 		VerifyCharacterSlots(ctx);
 		VerifyPlaytime(ctx);
 		VerifyJobLevels(ctx);
+		if (LF_E2E.RequiresPayload("reputation"))
+			LF_Test_ReputationPersist.VerifyE2E(ctx);
+		if (LF_E2E.RequiresPayload("garageslots"))
+			LF_Test_GarageSlotsPersist.VerifyE2E(ctx);
 		VerifyOrgLadder(ctx);
 		VerifyHeldGround(ctx);
+		if (LF_E2E.RequiresPayload("tenancy"))
+			VerifyTenancy(ctx);
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");

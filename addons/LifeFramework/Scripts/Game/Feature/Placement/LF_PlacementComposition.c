@@ -332,8 +332,10 @@ class LF_PlacementCompositions
 		if (composition.Count() == 0)
 			return Refuse(player, "refused: the composition has no pieces", "");
 
-		if (composition.m_eWho == LF_EPlacementWho.ON_DUTY_POLICE && !LF_PoliceUtils.IsOnDutyCharacter(player))
-			return Refuse(player, string.Format("refused: %1 is not on-duty police", LF_PoliceRanks.ResolveUid(player)), "#LF-Placement_NotAllowed");
+		string toastKey;
+		string why = LF_PlacementPolicy.Check(player, composition.m_sName, composition.m_eWho, toastKey);
+		if (!why.IsEmpty())
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), why), toastKey);
 
 		// Before the probes, so a flood of proposals costs no traces.
 		if (!LF_RateLimit.AllowCharacter(player, LF_ERequestKind.SPAWN, "composition confirm"))
@@ -352,6 +354,11 @@ class LF_PlacementCompositions
 		if (!LF_PlacementGeometry.WithinReach(playerTransform[3], proposal, composition.m_fReach + TOLERANCE_METRES, LF_PlacementService.MAX_RISE, offBy))
 			return Refuse(player, "refused: the proposal is " + offBy, "#LF-Placement_Moved");
 
+		// Where this kind may go (#2447).
+		string zoneWhy = LF_PlacementPolicy.ZoneAt(player, composition.m_sName, proposal[3], toastKey);
+		if (!zoneWhy.IsEmpty())
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), zoneWhy), toastKey);
+
 		LF_PlacementCompositionPlan plan = new LF_PlacementCompositionPlan();
 		LF_EPlacementVerdict verdict = Plan(player, composition, ignore, proposal, plan);
 		if (verdict == LF_EPlacementVerdict.BLOCKED)
@@ -359,6 +366,20 @@ class LF_PlacementCompositions
 
 		if (verdict != LF_EPlacementVerdict.VALID)
 			return Refuse(player, "refused: " + plan.m_sReason, "#LF-Placement_NoGround");
+
+		// The cost (#2448): taken once, only now every piece is VALID; given back if a spawn fails.
+		LF_PlacementCostTerms terms = LF_PlacementCost.TermsFor(composition.m_sName);
+		if (LF_PlacementCost.CostIsItself(terms, ignore))
+		{
+			LF_Debug.Error(LF_PlacementRules.FEATURE, string.Format("the policy names the kit itself (%1) as the cost of %2; refusing", terms.m_sItem, composition.m_sName));
+			return Refuse(player, "refused: the cost item is the kit itself", "");
+		}
+
+		string costWhy;
+		string costToast;
+		LF_PlacementCharge charge = LF_PlacementCost.Take(player, terms, costWhy, costToast);
+		if (!charge)
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), costWhy), costToast);
 
 		LF_PlacedComposition placed = new LF_PlacedComposition();
 		placed.m_sName = composition.m_sName;
@@ -370,12 +391,14 @@ class LF_PlacementCompositions
 			if (!piece)
 			{
 				Remove(placed);
+				LF_PlacementCost.Refund(player, charge, "spawn failed");
 				return Refuse(player, string.Format("refused: spawn failed for %1", composition.m_aPieces[i].m_sPrefab), "");
 			}
 
 			placed.m_aIds.Insert(piece.GetID());
 		}
 
+		LF_PlacementCost.Keep(charge, placed.m_aIds);
 		s_aPlaced.Insert(placed);
 		LF_Debug.Info(LF_PlacementRules.FEATURE, string.Format("placed composition %1 (%2 pieces) for %3 at %4", composition.m_sName, placed.m_aIds.Count(), LF_PoliceRanks.ResolveUid(player), proposal[3]));
 		return placed;
@@ -412,8 +435,10 @@ class LF_PlacementCompositions
 			return 0;
 		}
 
+		EntityID pieceId = piece.GetID();
 		int removed = Remove(placed);
 		s_aPlaced.RemoveItem(placed);
+		LF_PlacementCost.OnPickedUp(player, pieceId);
 		LF_Debug.Info(LF_PlacementRules.FEATURE, string.Format("picked up composition %1: %2 pieces removed", placed.m_sName, removed));
 		return removed;
 	}
@@ -634,11 +659,9 @@ class LF_PlacementCompositionGhost
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PlacementCompositions's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PlacementCompositions's statics (LF_StaticReset finds it by reflection).
 class LF_PlacementCompositions_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PlacementCompositions_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PlacementCompositions";
@@ -651,11 +674,9 @@ class LF_PlacementCompositions_StaticResetHook : LF_StaticResetHook
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PlacementCompositionGhost's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PlacementCompositionGhost's statics (LF_StaticReset finds it by reflection).
 class LF_PlacementCompositionGhost_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PlacementCompositionGhost_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PlacementCompositionGhost";

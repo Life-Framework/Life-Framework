@@ -4,12 +4,12 @@
 // red-proof: 2026-11-15, one line broken, restored after its FAIL was seen:
 //   sheetTiles putting the plan first                    -> FAIL sheet: the plan comes last
 //   albedoJob returning the interior scale for exterior  -> FAIL albedo: the same scales as the export
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { albedoJob, reviewBlend, reviewShots, sheetCols, sheetTiles } from "../buildings/pipeline/review-shots.mjs";
 import { ALBEDO_SCALE, OUTSIDE_SHARE } from "../buildings/pipeline/materials.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 export async function main() {
   let failed = 0;
@@ -18,7 +18,7 @@ export async function main() {
     failed++;
     console.log(`FAIL ${what}`);
   };
-  const tmp = mkdtempSync(join(tmpdir(), "lf-review-shots-"));
+  const tmp = scratchDir("lf-review-shots-");
   try {
     const names = ["plan", "room2", "hall", "street_3q", "room1", "entrance", "street_front", "hall_back"];
     const tiles = sheetTiles({ shots: names.map((name) => ({ name, label: name, file: `${name}.png` })) });

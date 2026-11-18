@@ -132,7 +132,7 @@ class LF_FarmPlots
 	//------------------------------------------------------------------------------------------------
 	//! Server: every planted plot grows by seconds. While the Farming system is off nothing grows,
 	//! so a crop comes back exactly as it was when the system is turned on again (#960).
-	//! eturn How many plots grew.
+	//! \return How many plots grew.
 	static int AdvanceAll(float seconds)
 	{
 		if (!LF_Systems.IsEnabled(SYSTEM))
@@ -202,5 +202,20 @@ class LF_FarmPlots
 			if (row)
 				s_mPending.Remove(key);
 		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_FarmPlots's statics (LF_StaticReset finds it by reflection).
+class LF_FarmPlots_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_FarmPlots";
+	}
+
+	override void Apply()
+	{
+		LF_FarmPlots.ResetStatics();
 	}
 }

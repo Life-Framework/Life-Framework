@@ -1,5 +1,4 @@
 // red-proof: DeserializeStore without the ApplyAfterLoad call failed "the active character's wanted level is 0 (switches off, load 1) (expected 0, got 4)" and every other switched-off field
-// tier: PERSISTENCE
 //! Persistence switches (#689) on the real save path. A character with two slots (wanted 2 and 4),
 //! survival stats, a licence, carried cash and a jail sentence is saved. Loaded with every switch
 //! off, each field is back at its default, twice over (idempotent). The same save loaded with the
@@ -11,6 +10,7 @@
 //! carries it. The reload boot finds it cleared by the boot load, then turns the switch on (owner
 //! layer without the key), and a licence noted again survives a save and load. Every other field
 //! the other e2e tests check (cash, jail, wanted, survival) kept its switch on and survived.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_PersistSwitchesRestart : LF_Test
 {
 	//! The one owner config.json the e2e save boot writes; systems/keep-data writes the same text.

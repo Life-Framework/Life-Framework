@@ -1,11 +1,11 @@
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_ChainStationsPersist`: a wrong expected value failed `with the same 3 units of work (expected 2, got 3)` and `SUMMARY tier=only passed=0 failed=3` (run with its two siblings); restored, green.
 
-// tier: PERSISTENCE
 //! A half-finished batch rides the real save path (the "chainstations" payload, save version 20):
 //! after the store is wiped the barrel is empty, after the payload is read it is back at the same
 //! work and still finishes with the remaining units, and reading twice changes nothing. A saved
 //! batch whose barrel is not in the world waits and is kept, and a batch for a changed step is
 //! dropped. The test puts every barrel back the way it found it.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_ChainStationsPersist : LF_Test
 {
 	override string GetName()

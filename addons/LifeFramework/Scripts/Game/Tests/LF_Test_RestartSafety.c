@@ -26,7 +26,7 @@
 //   [LFTEST]   - a released stray manager does not drop the loaded balances
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestartBankSurvivesConnect : LF_Test
 {
 	protected static const string ACCOUNT_UID = "restart-bank-uid";
@@ -82,7 +82,7 @@ class LF_Test_RestartBankSurvivesConnect : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RestartJailSerializerRoundtrip : LF_Test
 {
 	protected static const string PRISONER_UID = "restart-jail-uid";
@@ -145,7 +145,7 @@ class LF_Test_RestartJailSerializerRoundtrip : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RestartVehicleNoGroundKey : LF_Test
 {
 	protected static const string VEHICLE_ID = "restart-vehicle-id";
@@ -185,7 +185,7 @@ class LF_Test_RestartVehicleNoGroundKey : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestartVehiclePlatesReserved : LF_Test
 {
 	protected static const string VEHICLE_ID = "restart-plate-vehicle";
@@ -222,7 +222,7 @@ class LF_Test_RestartVehiclePlatesReserved : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestartWhitelistUnreadableFileKept : LF_Test
 {
 	protected static const string EXISTING_UID = "restart-whitelist-existing";

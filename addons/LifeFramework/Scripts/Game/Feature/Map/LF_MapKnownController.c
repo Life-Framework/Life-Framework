@@ -1,120 +1,6 @@
-//------------------------------------------------------------------------------------------------
-//! The client side of discovery (card M13): every SCAN_MS the local player's machine looks for
-//! DISCOVER places in reach that its character has not visited and asks the server once per place
-//! (LF_MapKnownController.RpcAsk). The server decides; the client never marks a place itself.
-class LF_MapKnownScan
-{
-	static const int SCAN_MS = 2000; // lf-fixed: everon-map.md section 4, the client's look-around period
-	//! No discovery from a vehicle faster than 60 km/h (16.7 m/s): driving past is not a visit.
-	static const float MAX_SPEED_MS = 16.7; // lf-fixed: everon-map.md section 4, drive-by bound
-
-	protected static bool s_bRunning;
-	//! Place id -> tick of our last ask, so an unanswered ask is retried after one window.
-	protected static ref map<string, int> s_mAsked;
-	protected static ref array<int> s_aAskTimes;
-
-	//------------------------------------------------------------------------------------------------
-	static void Start()
-	{
-		if (s_bRunning)
-			return;
-
-		s_bRunning = true;
-		GetGame().GetCallqueue().CallLater(Tick, SCAN_MS, true);
-		LF_Debug.Info(LF_MapKnown.FEATURE, "discovery scan started");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static void ResetStatics()
-	{
-		if (s_bRunning && GetGame() && GetGame().GetCallqueue())
-			GetGame().GetCallqueue().Remove(Tick);
-
-		s_bRunning = false;
-		s_mAsked = null;
-		s_aAskTimes = null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The join sync replaced the known set: asks still in flight may be asked again.
-	static void ClearAsked()
-	{
-		s_mAsked = null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Our own copy of the server's rate window, so a street of shops queues instead of being refused.
-	protected static bool MayAsk(int nowMs)
-	{
-		if (!s_aAskTimes)
-			s_aAskTimes = {};
-
-		for (int i = s_aAskTimes.Count() - 1; i >= 0; i--)
-		{
-			if (nowMs - s_aAskTimes[i] >= LF_MapKnownRules.WINDOW_MS || nowMs < s_aAskTimes[i])
-				s_aAskTimes.Remove(i);
-		}
-
-		return s_aAskTimes.Count() < LF_MapKnownRules.ASKS_PER_WINDOW;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static void Tick()
-	{
-		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
-		if (!controller)
-			return;
-
-		IEntity character = controller.GetControlledEntity();
-		if (!character)
-			return;
-
-		Physics physics = character.GetRootParent().GetPhysics();
-		if (physics && physics.GetVelocity().Length() > MAX_SPEED_MS)
-			return;
-
-		LF_MapPoiConfig config = LF_MapPoiConfig.Get();
-		if (!config || !config.m_aKinds)
-			return;
-
-		int nowMs = System.GetTickCount();
-		if (!MayAsk(nowMs))
-			return;
-
-		if (!s_mAsked)
-			s_mAsked = new map<string, int>();
-
-		vector here = character.GetOrigin();
-		foreach (LF_MapPoiKind row : config.m_aKinds)
-		{
-			if (!row || row.m_eVisibility != LF_EMapPoiVisibility.DISCOVER)
-				continue;
-
-			array<string> ids = {};
-			array<IEntity> entities = {};
-			LF_Places.FindAllWithIds(row.m_sKind, ids, entities);
-			foreach (int i, IEntity place : entities)
-			{
-				string placeId = ids[i];
-				if (LF_MapKnown.LocalKnownOf(placeId) == LF_EMapPoiKnown.VISITED)
-					continue;
-
-				int askedAt;
-				if (s_mAsked.Find(placeId, askedAt) && nowMs - askedAt < LF_MapKnownRules.WINDOW_MS && nowMs >= askedAt)
-					continue;
-
-				if (vector.Distance(here, place.GetOrigin()) > LF_MapKnownRules.DEFAULT_RADIUS)
-					continue;
-
-				// One ask per tick: the window allows five a minute.
-				s_mAsked.Set(placeId, nowMs);
-				s_aAskTimes.Insert(nowMs);
-				controller.LF_AskDiscover(row.m_sKind, placeId);
-				return;
-			}
-		}
-	}
-}
+// Discovery on the wire (card M13): the server's join sync of a character's known set and each later change.
+// The look-around that finds visits runs on the server (LF_MapDiscoverScan, #2492): a client never knows
+// where a place it has not discovered is.
 
 //------------------------------------------------------------------------------------------------
 //! Server: the join sync again a moment later, for a player whose character key was not ready.
@@ -214,9 +100,6 @@ enum LF_EMapKnownSyncGate
 //! server's answer, and the join sync of the character's whole known set.
 modded class SCR_PlayerController
 {
-	//! Bound on a client-sent id; place and kind ids are short keys.
-	protected static const int LF_MAP_ID_MAX = 64; // lf-fixed: payload sanity bound, not a gameplay knob
-
 	//------------------------------------------------------------------------------------------------
 	override void OnControlledEntityChanged(IEntity from, IEntity to)
 	{
@@ -225,7 +108,7 @@ modded class SCR_PlayerController
 			return;
 
 		// The owner pulls the (maybe new) character's set on join, respawn and character switch, from
-		// its own controller, so the answer never races the controller's ownership; then looks around.
+		// its own controller, so the answer never races the controller's ownership.
 		if (GetGame().GetPlayerController() != this)
 			return;
 
@@ -233,14 +116,14 @@ modded class SCR_PlayerController
 			RpcAsk_LF_MapKnownSync();
 		else
 			Rpc(RpcAsk_LF_MapKnownSync);
-
-		LF_MapKnownScan.Start();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_MapKnownSync()
 	{
+		// Discovery is the server's own look-around (#2492): the client never knows where an unvisited place is.
+		LF_MapDiscoverScan.Start();
 		int playerId = GetPlayerId();
 		LF_EMapKnownSyncGate gate = LF_MapKnownSync.Admit(playerId, System.GetTickCount());
 		if (gate == LF_EMapKnownSyncGate.DEFER)
@@ -260,23 +143,17 @@ modded class SCR_PlayerController
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client: ask the server to record a visit.
-	void LF_AskDiscover(string kind, string placeId)
-	{
-		if (Replication.IsServer())
-			RpcAsk_LF_MapDiscover(kind, placeId);
-		else
-			Rpc(RpcAsk_LF_MapDiscover, kind, placeId);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server: one changed place to this player's map.
-	void LF_SendMapKnown(string placeId, int state)
+	//! Server: one changed place to this player's map, then (unless the caller batches) the private places
+	//! the player may now see, since a heard-of or visited place may be one of them.
+	void LF_SendMapKnown(string placeId, int state, bool withPlaces = true)
 	{
 		if (GetGame().GetPlayerController() == this)
 			RpcDo_LF_MapKnown(placeId, state);
 		else
 			Rpc(RpcDo_LF_MapKnown, placeId, state);
+
+		if (withPlaces)
+			LF_MapPrivatePlaces.SendTo(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -305,49 +182,9 @@ modded class SCR_PlayerController
 			RpcDo_LF_MapKnownSync(placeIds, states);
 		else
 			Rpc(RpcDo_LF_MapKnownSync, placeIds, states);
-	}
 
-	//------------------------------------------------------------------------------------------------
-	//! Server: the client says it stands at a place. Checked here: the kind is a DISCOVER POI, the
-	//! place is live, the server's own view of the character is in range, and the rate window.
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_MapDiscover(string kind, string placeId)
-	{
-		int playerId = GetPlayerId();
-		if (kind.IsEmpty() || placeId.IsEmpty() || kind.Length() > LF_MAP_ID_MAX || placeId.Length() > LF_MAP_ID_MAX)
-		{
-			LF_Debug.Warn(LF_MapKnown.FEATURE, string.Format("visit refused: malformed ask from player %1", playerId));
-			return;
-		}
-
-		LF_MapPoiConfig config = LF_MapPoiConfig.Get();
-		LF_MapPoiKind row;
-		if (config)
-			row = config.Find(kind);
-
-		if (!row || row.m_eVisibility != LF_EMapPoiVisibility.DISCOVER)
-		{
-			LF_Debug.Warn(LF_MapKnown.FEATURE, string.Format("visit refused: player %1 asked for %2 of kind '%3', not a discover kind", playerId, placeId, kind));
-			return;
-		}
-
-		IEntity character = GetControlledEntity();
-		if (!character)
-		{
-			LF_Debug.Warn(LF_MapKnown.FEATURE, string.Format("visit refused: player %1 has no character", playerId));
-			return;
-		}
-
-		vector origin;
-		bool live = LF_Places.FindOrigin(kind, placeId, origin);
-		float distance = 0;
-		if (live)
-			distance = vector.Distance(character.GetOrigin(), origin);
-
-		string characterId = LF_Utils.GetPlayerUID(playerId);
-		LF_EMapKnownOutcome outcome = LF_MapKnown.VisitAsk(playerId, characterId, placeId, live, distance, 0, System.GetTickCount());
-		if (outcome == LF_EMapKnownOutcome.VISITED || outcome == LF_EMapKnownOutcome.KEPT)
-			LF_SendMapKnown(placeId, LF_MapKnownRules.SavedState(LF_EMapPoiKnown.VISITED));
+		// The join sync is also the late joiner's private places: only this player's set, to this owner.
+		LF_MapPrivatePlaces.SendTo(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -362,7 +199,6 @@ modded class SCR_PlayerController
 	protected void RpcDo_LF_MapKnownSync(array<string> placeIds, array<int> states)
 	{
 		LF_MapKnown.SetLocalAll(placeIds, states);
-		LF_MapKnownScan.ClearAsked();
 		int count = 0;
 		if (placeIds)
 			count = placeIds.Count();
@@ -372,28 +208,9 @@ modded class SCR_PlayerController
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of the client scan (registered at script load; Core/LF_StaticReset.c).
-class LF_MapKnownScan_StaticResetHook : LF_StaticResetHook
-{
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_MapKnownScan_StaticResetHook());
-
-	override string Owner()
-	{
-		return "LF_MapKnownScan";
-	}
-
-	override void Apply()
-	{
-		LF_MapKnownScan.ResetStatics();
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! World-end reset of the server's join-sync gate (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of the server's join-sync gate (LF_StaticReset finds it by reflection).
 class LF_MapKnownSync_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_MapKnownSync_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_MapKnownSync";

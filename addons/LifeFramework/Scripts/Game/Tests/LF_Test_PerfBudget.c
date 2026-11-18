@@ -6,7 +6,6 @@ class LF_PerfRefItem
 	int m_iValue;
 }
 
-// tier: PERF
 //! perf/budget-128 (#335): the server cost gate. Runs only under `tools\cli test --tier perf` (a timing
 //! measure is flaky in the shared suite and blunt there); `--only` runs it too, at the lenient settings below. Builds a synthetic population (accounts, bank
 //! balances, a crime history, a money log) of `m_iPlayers` characters through the public
@@ -18,6 +17,7 @@ class LF_PerfRefItem
 //! What it cannot show: network cost (replication, RPC fan-out), real character entities and
 //! per-frame ticks over live players. Those are counted by LF_Perf on a real server and read
 //! in a multi-client run (docs/architecture/performance.md).
+[LF_TestInfo(LF_TestTier.PERF)]
 class LF_Test_PerfBudget : LF_Test
 {
 	protected static const string UID_PREFIX = "perf-bench-";

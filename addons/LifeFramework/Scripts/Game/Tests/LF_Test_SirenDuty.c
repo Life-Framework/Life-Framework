@@ -1,8 +1,8 @@
 // red-proof: observed 2026-11-10 with `toolsi test --no-build --only LF_Test_SirenDuty`: dropping the onDuty term from DutyAllows failed it with `- off-duty police are refused`. Restored; green.
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! vehicles/siren-duty (#464): only an on-duty member of the vehicle's service runs the siren.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SirenDuty : LF_Test
 {
 	override string GetName()

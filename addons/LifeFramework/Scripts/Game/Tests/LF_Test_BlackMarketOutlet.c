@@ -1,9 +1,9 @@
 // red-proof: Observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_BlackMarketOutlet`: RED-OK catalogue/black-market (fails with the hook on, 87 assertions); the hook lets the buyer hold CRIMINAL_WEAPONS before the first order, so `without the gate the back room refuses` fails. Hook off: green.
-// tier: WORLD
 //! Weapons are sold only through outlets (#1762, Refs #1065): the back room is the back_room outlet
 //! behind CRIMINAL_WEAPONS and names the licence it lacks, the black_market outlet gates both its
 //! guns the same way, no shop offers the police rifle, the Prefabs/Weapons/ price rule is gone, and
 //! a shop with neither a list nor an outlet sells nothing.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_BlackMarketOutlet : LF_Test
 {
 	protected static const ResourceName PISTOL = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";

@@ -3,11 +3,11 @@
 // "the axe maps to positive damage on the tree" and "axe damage lowers the tree hit
 // zone health (100 -> 100)". Restored, green.
 
-// tier: WORLD
 //! Logging chain wiring (logging/chain-wiring) proves the axe is listed on the
 //! tree. This test proves the damage path: a melee context built the way
 //! SCR_MeleeComponent builds it (damageSource = the swung tool) lowers the tree
 //! hit zone health for the axe and leaves it untouched for a wrong tool.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WoodcuttingDamage : LF_Test
 {
 	protected static const ResourceName TREE = "{391791B1CAE33AFE}Prefabs/Resources/WoodCutting/Pinus_Sylvestris/CuttableTree_Pinus_Sylvestris_2f.et";

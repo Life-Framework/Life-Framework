@@ -243,6 +243,17 @@ class LF_Breach
 			return false;
 		}
 
+		// A character in its grace may not breach (LF_Grace); refused before the charge is taken.
+		if (LF_Grace.Refuses(playerUid, "breach of " + targetId))
+		{
+			IEntity told = suspect;
+			if (!told)
+				told = chargeCarrier;
+
+			LF_Grace.Notify(told);
+			return false;
+		}
+
 		if (!ChargePrefabLoads())
 			return false;
 
@@ -347,7 +358,7 @@ class LF_Breach
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Locks the target again. Police can always repair. The owning organization can repair its
+	//! Locks the target again. Police on duty can always repair. The owning organization can repair its
 	//! own door. Anyone else is refused and the lock stays as it was.
 	static bool Repair(string targetId, string playerUid)
 	{
@@ -465,7 +476,8 @@ class LF_Breach
 	protected static bool PlayerMayRepair(LF_BreachTarget target, string playerUid)
 	{
 		LF_PlayerAccount account = LF_PlayerAccountManager.GetOrCreate(playerUid);
-		if (account && account.GetFaction() == LF_Faction.POLICE)
+		// Only on duty: an off-duty police account must not relock a vault for its own next robbery.
+		if (account && account.GetFaction() == LF_Faction.POLICE && account.IsOnDuty())
 			return true;
 
 		if (target.m_sOwnerOrganization.IsEmpty())
@@ -696,11 +708,9 @@ class LF_Breach
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Breach's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Breach's statics (LF_StaticReset finds it by reflection).
 class LF_Breach_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Breach_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Breach";

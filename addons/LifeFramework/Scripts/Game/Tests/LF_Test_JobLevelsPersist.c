@@ -4,12 +4,12 @@
 // Restored; green. With the single level clamped at 20 again, RunHighLevel failed
 // `- a single level 25 with 10 xp migrates to 30010 civilian xp (expected 30010, got 19010)` and
 // `- the mirror writes single level 25 back (expected 25, got 20)`. Restored; green.
-// tier: PERSISTENCE
 //! Per-job XP (#749) rides the real save path: the "joblevels" payload, save version 28. The XP of
 //! every job comes back after the store is wiped, a second load gives the same XP, and a version 27
 //! save (no "joblevels" rows) migrates: the progression records' single level comes back as
 //! CIVILIAN and the delivery career as DELIVERY, at the same levels, and every other job starts at
 //! 0. Bad rows are skipped, a row for an unknown job is kept. The test puts back what it found.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_JobLevelsPersist : LF_Test
 {
 	protected static const string WORKER = "test-joblevels-persist-worker";

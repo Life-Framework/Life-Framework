@@ -5,7 +5,7 @@
 // server registers no texture/image loader, so a direct load always fails headless
 // (same convention as LF_Test_MoneyRework's texture files).
 
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WhitelistChatResources : LF_Test
 {
 	override string GetName()

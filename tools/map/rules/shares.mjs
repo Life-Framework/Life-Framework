@@ -12,6 +12,7 @@
 //   inAudience(audience, id, member)  member = { uid, roles, org } -> bool
 //   expired(expires, now)             world seconds; expires 0 never expires -> bool
 //   diff(delivered, wanted)           -> { add: [...], remove: [...] } in list order
+//   areaValid(radius, style)          a row's optional area is drawable (metres 1..AREA_RADIUS_MAX, style id) -> bool
 //   evaluate(input)                   the case-table entry point -> "yes" | "no" | "add:..|remove:.."
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -43,6 +44,17 @@ export function expired(expires, now) {
   return expires > 0 && now >= expires;
 }
 
+/** LF_MapAreaStyle ids in order (tools/map/rules/areas.mjs STYLES holds the same names; the selftest compares). */
+export const AREA_STYLE_IDS = ["TOWN", "GATED", "CUSTOM", "SAFE", "LAWLESS", "EVENT"];
+/** The widest area a row may carry, in metres (LF_MapShareRules.AREA_RADIUS_MAX). */
+export const AREA_RADIUS_MAX = 5000;
+
+/** Is a row's optional area drawable? Radius 0 is "no area", not an error; it is not valid here. */
+export function areaValid(radius, style) {
+  if (!(radius > 0) || radius > AREA_RADIUS_MAX) return false;
+  return Number.isInteger(style) && style >= 0 && style < AREA_STYLE_IDS.length;
+}
+
 export function diff(delivered = [], wanted = []) {
   return {
     add: wanted.filter((k) => !delivered.includes(k)),
@@ -53,6 +65,7 @@ export function diff(delivered = [], wanted = []) {
 export function evaluate(input) {
   if (input.op === "audience") return inAudience(input.audience, input.id, input) ? "yes" : "no";
   if (input.op === "expired") return expired(input.expires, input.now) ? "yes" : "no";
+  if (input.op === "area") return areaValid(input.radius, input.style) ? "yes" : "no";
   if (input.op === "diff") {
     const d = diff(input.delivered, input.wanted);
     return `add:${d.add.join(",")}|remove:${d.remove.join(",")}`;

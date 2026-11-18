@@ -4,9 +4,9 @@
 //   [LFTEST] FAIL rules/quiz
 //   [LFTEST]   - a later session does not ask a passed account
 // Restored; green.
-// tier: LOGIC
 //! Rules orientation quiz (#915): who is asked, scoring, the retry limit, the once-per-account pass,
 //! the owner switches and what the client is sent. No world.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Quiz : LF_Test
 {
 	protected static const string ACCOUNT = "quiz-test-account";

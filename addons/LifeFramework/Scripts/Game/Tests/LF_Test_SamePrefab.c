@@ -2,7 +2,7 @@
 //------------------------------------------------------------------------------------------------
 //! prefab/same-prefab (#323): LF_Utils.SamePrefab and PrefabGuid. The GUID decides; the path only
 //! when a side has no GUID; casing never matters; empty never matches.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SamePrefab : LF_Test
 {
 	// Split from the path so enforce-lint L6 does not read a deliberate mismatch as a broken ref.

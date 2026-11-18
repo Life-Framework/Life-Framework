@@ -1,9 +1,9 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_MapKnown,LF_Test_MapKnownPersist: RED PROOF OK (with the payload read skipped, "no extra rows (expected 3, got 0)"); the first run also failed the same way on the real code while the mapknown read branch was misnested, green after the fix.
-// tier: PERSISTENCE
 //! map/known-persist (#2241): the "mapknown" payload round trips each character's heard-of and
 //! visited places, keeps the row of a place that is not live (a dark chapter's place), and a
 //! re-applied load is idempotent. Across a restart (`tools\cli wt e2e`): the save boot records
 //! E2E_CHARACTER visited E2E_PLACE and heard of E2E_DARK; the reload boot finds both.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_MapKnownPersist : LF_Test
 {
 	protected static const string CHARACTER = "mapknown-persist-character";

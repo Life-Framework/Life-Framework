@@ -1,6 +1,6 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --only` (all four broken in one run, 0/4 passed), then restored; green. Dropping the duplicate check in LF_Introductions.Introduce failed
 // `[LFTEST] FAIL interaction/introductions`, `- one pair after two identical introductions (expected 1, got 2)`.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_InteractionIntroductions : LF_Test
 {
 	override string GetName()

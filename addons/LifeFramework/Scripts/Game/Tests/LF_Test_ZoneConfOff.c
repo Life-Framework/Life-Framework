@@ -5,7 +5,7 @@
 //! zones/conf-off (#1077): a `.conf` that sets a zone rule set's permissions to 0 reads as 0. With
 //! member initializers on LF_ZoneRuleSet (`m_bAllowsRobbery = true`) the initializer beat the
 //! `.conf` value, so a pack overlay could never turn robbery off in a zone.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ZoneConfOff : LF_Test
 {
 	static const ResourceName CONF = "{CBBF8837BF96F37D}Configs/Tests/LF_Test_ZoneRulesOff.conf";

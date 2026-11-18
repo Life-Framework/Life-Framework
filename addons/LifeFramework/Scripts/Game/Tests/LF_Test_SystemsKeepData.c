@@ -2,7 +2,6 @@
 // without the Farming check in LF_FarmPlots.AdvanceAll, systems/keep-data failed
 // `- nothing grows while Farming is off (expected 0, got 1)` and `- with its 40 seconds (expected 40, got 70)`
 // (the save written while off carried growth). Restored; green.
-// tier: PERSISTENCE
 //! Systems (#960): a system that is off keeps its saved data, so turning it on again restores it.
 //! In one boot, with Farming off: a planted crop does not grow, rides the real save while off,
 //! comes back from the "farmplots" payload while off, and grows again once Farming is on.
@@ -12,6 +11,7 @@
 //! is written with Farming off. The reload boot (LF_E2E_LOAD_BOOT) starts with Farming off from
 //! that file, finds the crop loaded, deletes the file, turns Farming on and finds the crop still
 //! there. A normal suite run compiles neither branch and writes no file.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_SystemsKeepData : LF_Test
 {
 	static const string E2E_PLOT = "e2e-systems-farm";

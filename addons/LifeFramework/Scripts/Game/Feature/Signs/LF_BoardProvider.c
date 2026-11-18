@@ -157,6 +157,14 @@ class LF_BoardProviders
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the per-player limit on board reads a client asks for (the comms bucket, like the
+	//! service board read). A refusal logs once per window and toasts unless notify is false.
+	static bool AllowReadAt(int playerId, int nowMs, bool notify = true)
+	{
+		return LF_RateLimit.AllowWithAt(playerId, LF_ERequestKind.COMMS, "board read", nowMs, LF_RateLimit.COMMS_WINDOW_MS, LF_RateLimit.COMMS_BURST, notify);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server body of the read RPC. The reader must stand at the kind's board; the server finds it,
 	//! the client names only the kind.
 	static void ServerRead(SCR_PlayerController controller, string kind)
@@ -231,11 +239,9 @@ class LF_BoardProviders
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_BoardProviders's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_BoardProviders's statics (LF_StaticReset finds it by reflection).
 class LF_BoardProviders_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_BoardProviders_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_BoardProviders";
@@ -276,6 +282,11 @@ modded class SCR_PlayerController
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_Board(string kind)
 	{
+		// Every refusal path in ServerRead logs, so the limit comes first: a spamming client cannot
+		// flood the log or the answers. Server-driven reads call ServerRead directly and are not counted.
+		if (!LF_BoardProviders.AllowReadAt(GetPlayerId(), System.GetTickCount()))
+			return;
+
 		LF_BoardProviders.ServerRead(this, kind);
 	}
 

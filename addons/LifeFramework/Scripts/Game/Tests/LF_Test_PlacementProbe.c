@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-11, LF_PlacementAudit.RayLine reporting `d = len` instead of the traced distance: `--only LF_Test_PlacementProbe` failed "a ray down stops on the table top (expected 0.500393, got 1.90127)" and "a ray from the side stops at the table's edge (expected 1, got 1.60437)". Restored, green.
 // red-proof: 2026-11-12, FindExcluded returning null for the "@prefab:x,y,z" token: --only LF_Test_PlacementProbe failed (1 failing). Restored, green.
 //! The probe ray behind `tools\cli place` (LF_PlacementAudit.RayLine, tools/place/place.mjs): the
@@ -6,6 +5,7 @@
 //! trusting mesh bounds. On a table spawned on open ground south of the DebugWorld town (310, 100):
 //! a ray down finds the table top and names the table, a ray from the side stops at its edge, and a
 //! ray through open air reports its full length and no hit.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementProbe : LF_Test
 {
 	protected static const ResourceName TABLE = "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et";

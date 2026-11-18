@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with `--red LF_Test_FittedBuildingIndestructible` on DebugWorld (spawned garages): `RED PROOF OK`; with the fit skipped, `explosive and true damage past full health leave the fitted building's health alone (expected 10000, got 0)`, `the fitted building is not destroyed` and `the fitted building takes no damage` failed. Green: 10 assertions.
-// tier: WORLD
 //! D15: a fitted vanilla building is indestructible, its unfitted neighbour is not. On a world with
 //! vanilla buildings (CoreOnEveron) the test takes the two destructible buildings nearest the map's
 //! middle; on DebugWorld it spawns two vanilla garages. It fits the first through LF_FittedBuildings
@@ -7,6 +6,7 @@
 //! with explosive and true damage past its full health, and hits the neighbour with true damage:
 //! the fitted one keeps its health and stays standing, the neighbour loses health.
 //!   tools\cli test --no-build --only LF_Test_FittedBuildingIndestructible --world Worlds/CoreOnEveron/CoreOnEveron.ent
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FittedBuildingIndestructible : LF_Test
 {
 	static const ResourceName GARAGE = "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et";

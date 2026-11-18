@@ -1,7 +1,7 @@
 // red-proof: change an expected value (e.g. wanted clamp 5 -> 6) or break the
 // clamp in LF_PlayerAccount.SetWantedLevel, then run the fast tier.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AccountWantedClamp : LF_Test
 {
 	override string GetName()
@@ -37,7 +37,7 @@ class LF_Test_AccountWantedClamp : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AccountCharacterRoster : LF_Test
 {
 	override string GetName()
@@ -73,7 +73,7 @@ class LF_Test_AccountCharacterRoster : LF_Test
 
 //------------------------------------------------------------------------------------------------
 //! Save-data round trip through the public record + manager seam.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AccountSaveRoundtrip : LF_Test
 {
 	override string GetName()
@@ -112,7 +112,7 @@ class LF_Test_AccountSaveRoundtrip : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AccountManagerCache : LF_Test
 {
 	override string GetName()

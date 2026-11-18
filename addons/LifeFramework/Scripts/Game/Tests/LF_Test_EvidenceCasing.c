@@ -1,9 +1,9 @@
 // red-proof: Observed 2026-11-09 with `tools/cli test --no-build --only LF_Test_EvidenceCasing`: loosening the per-scene cap in LF_Evidence.OnShot (`>` for `>=`) failed `investigation/casing` with `- a scene leaves at most its casing cap`. Restored; green.
-// tier: WORLD
 //! Scene evidence (#268): a crime report opens a scene; a shot inside it leaves exactly one
 //! casing, a shot outside leaves none, a scene's casings are capped, an item dropped in the scene
 //! gets a marker, untouched evidence expires, and bagging records the report, the place and the
 //! time on the bag and takes the piece off the ground.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EvidenceCasing : LF_Test
 {
 	protected static const vector SCENE = "1000 0 1000";

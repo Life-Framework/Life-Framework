@@ -1,6 +1,27 @@
 //------------------------------------------------------------------------------------------------
 //! Workplace actions. Offer checks do not pay and do not grant XP.
 //------------------------------------------------------------------------------------------------
+//! The standing gate of a job counter (#2701): sign-up reads the gate `job:<JOB>`, a run start the
+//! gate `run:<JOB>` (LF_ReputationGateDef rows). Standing lives on the server, so the greyed offer
+//! reads it only where the server runs; the server decides again on use.
+class LF_JobStandingGate
+{
+	//------------------------------------------------------------------------------------------------
+	static string GateId(string verb, LF_EJobType job)
+	{
+		return verb + ":" + typename.EnumToString(LF_EJobType, job);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return "" when the player's standing passes the gate, else the refusal `#` key (the faction's words),
+	//! with the minimum tier's word key in tierWord.
+	static string Refusal(string uid, string verb, LF_EJobType job, out string tierWord)
+	{
+		return LF_Reputation.Refusal(uid, GateId(verb, job), tierWord);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class LF_JobSignUpAction : ScriptedUserAction
 {
 	[Attribute("5", UIWidgets.ComboBox, "Job", "", ParamEnumArray.FromEnum(LF_EJobType))]
@@ -21,17 +42,19 @@ class LF_JobSignUpAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	//! The career lives on the server. A client reads the level replicated on the player's
 	//! LF_PlayerJobComponent, or fuel and taxi stay greyed on a dedicated client forever.
-	protected bool OfferOpen(IEntity user, string uid)
+	//! \return "" when the level is enough, else the job-level words (LF_JobLevelWords, never a number).
+	protected string LevelRefusal(IEntity user, string uid)
 	{
+		int need = LF_CivilianJob.RequiredLevel(m_eJob);
 		if (Replication.IsServer())
-			return LF_CivilianJob.CanSignUp(uid, m_eJob);
+			return LF_JobLevelWords.Refusal(LF_JobLevels.JOB_DELIVERY, LF_CivilianJob.GetLevel(uid), need);
 
 		int level = 1;
 		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(user);
 		if (jobs)
 			level = Math.Max(1, jobs.GetJobLevel());
 
-		return LF_CivilianJob.IsDeliveryJob(m_eJob) && level >= LF_CivilianJob.RequiredLevel(m_eJob);
+		return LF_JobLevelWords.Refusal(LF_JobLevels.JOB_DELIVERY, level, need);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -44,10 +67,26 @@ class LF_JobSignUpAction : ScriptedUserAction
 			return false;
 		}
 
-		if (!OfferOpen(user, uid))
+		string refusal = LevelRefusal(user, uid);
+		if (!refusal.IsEmpty() || !LF_CivilianJob.IsDeliveryJob(m_eJob))
 		{
-			SetCannotPerformReason("#LF-Job_MoreRunsFirst");
+			if (refusal.IsEmpty())
+				refusal = "#LF-Job_MoreRunsFirst";
+
+			SetCannotPerformReason(LF_Terms.Text(refusal));
 			return false;
+		}
+
+		// Standing is server state: a dedicated client cannot read it, so the server decides on use.
+		if (Replication.IsServer())
+		{
+			string tierWord;
+			string standing = LF_JobStandingGate.Refusal(uid, "job", m_eJob, tierWord);
+			if (!standing.IsEmpty())
+			{
+				SetCannotPerformReason(LF_Reputation.RefusalText(standing, tierWord));
+				return false;
+			}
 		}
 
 		return true;
@@ -66,6 +105,15 @@ class LF_JobSignUpAction : ScriptedUserAction
 		if (uid.IsEmpty())
 		{
 			LF_Debug.Error("Jobs", "signup action refused: player has no account id");
+			return;
+		}
+
+		string tierWord;
+		string standing = LF_JobStandingGate.Refusal(uid, "job", m_eJob, tierWord);
+		if (!standing.IsEmpty())
+		{
+			LF_Debug.Info("Jobs", string.Format("signup refused: %1 lacks the standing for %2", uid, LF_JobStandingGate.GateId("job", m_eJob)));
+			LF_Utils.NotifyEntity(pUserEntity, standing, LF_CivilianJob.NameKey(m_eJob), 6.0, tierWord);
 			return;
 		}
 
@@ -127,6 +175,7 @@ class LF_JobStartRunAction : ScriptedUserAction
 	override bool CanBePerformedScript(IEntity user)
 	{
 		string refusal;
+		string tierWord;
 		if (Replication.IsServer())
 		{
 			string uid = LF_Utils.GetPlayerUid(user);
@@ -134,6 +183,8 @@ class LF_JobStartRunAction : ScriptedUserAction
 				refusal = "#EL-Job_NotSignedUp";
 			else if (LF_CivilianJob.HasActiveRun(uid))
 				refusal = "#EL-Job_NoActiveRun";
+			else
+				refusal = LF_JobStandingGate.Refusal(uid, "run", m_eJob, tierWord);
 		}
 		else
 		{
@@ -152,7 +203,7 @@ class LF_JobStartRunAction : ScriptedUserAction
 		if (refusal.IsEmpty())
 			return true;
 
-		SetCannotPerformReason(LF_Terms.Text(refusal));
+		SetCannotPerformReason(LF_Reputation.RefusalText(refusal, tierWord));
 		return false;
 	}
 
@@ -183,19 +234,35 @@ class LF_JobStartRunAction : ScriptedUserAction
 			return;
 		}
 
-		if (!LF_CivilianJob.StartRun(uid, m_eJob))
-			return;
-
-		if (!LF_CivilianJob.GiveCargo(pUserEntity, m_eJob))
+		// Standing gate (#2701): the server decides again on use, whatever the client offered.
+		string tierWord;
+		string standing = LF_JobStandingGate.Refusal(uid, "run", m_eJob, tierWord);
+		if (!standing.IsEmpty())
 		{
-			LF_CivilianJob.AbandonRun(uid);
+			LF_Debug.Info("Jobs", string.Format("start run refused: %1 lacks the standing for %2", uid, LF_JobStandingGate.GateId("run", m_eJob)));
+			LF_Utils.NotifyEntity(pUserEntity, standing, LF_CivilianJob.NameKey(m_eJob), 6.0, tierWord);
 			return;
 		}
 
+		// The cargo deposit comes off the player's cash first; a player short of it gets no run and no cargo.
+		int deposit;
+		LF_ERunStart started = LF_CivilianJob.BeginRun(pUserEntity, uid, m_eJob, LF_JobGuards.Now(), deposit);
+		if (started == LF_ERunStart.NO_DEPOSIT)
+		{
+			LF_Utils.NotifyEntity(pUserEntity, LF_CivilianJob.KEY_NEED_DEPOSIT, LF_CivilianJob.NameKey(m_eJob), 6.0, deposit.ToString());
+			return;
+		}
+
+		if (started != LF_ERunStart.STARTED)
+			return;
+
+		// The nearest drop goes on the map and the waypoint (LF_JobMapMarks; a taxi run gets none).
+		LF_JobMapMarks.OnRunStarted(uid, m_eJob, pUserEntity.GetOrigin());
+
 		// A first-time courier does not know where the drop is; the toast says.
-		string started = LF_CivilianJob.RunStartedKey(m_eJob);
-		if (!started.IsEmpty())
-			LF_Utils.NotifyEntity(pUserEntity, started, LF_CivilianJob.NameKey(m_eJob), 8.0);
+		string startedKey = LF_CivilianJob.RunStartedKey(m_eJob);
+		if (!startedKey.IsEmpty())
+			LF_Utils.NotifyEntity(pUserEntity, startedKey, LF_CivilianJob.NameKey(m_eJob), 8.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -247,16 +314,16 @@ class LF_JobDropoffAction : ScriptedUserAction
 			return;
 		}
 
+		// The rules (a placed drop, the distance, the time, a taxi's passenger) and the payout are one call.
 		LF_EJobType finished = LF_CivilianJob.GetActiveJob(uid);
-		if (!LF_CivilianJob.TakeCargo(pUserEntity, finished))
-			return;
-
 		int levelBefore = LF_CivilianJob.GetLevel(uid);
-		int paid = LF_CivilianJob.CompleteRun(uid);
+		string refusal;
+		int paid = LF_CivilianJob.Dropoff(pUserEntity, uid, pOwnerEntity, LF_JobGuards.Now(), refusal);
+		if (!refusal.IsEmpty())
+			LF_Utils.NotifyEntity(pUserEntity, refusal, LF_CivilianJob.NameKey(finished), 5.0);
+
 		if (paid <= 0)
 			return;
-
-		LF_CivilianJob.HandCash(pUserEntity, paid);
 
 		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(pUserEntity);
 		if (jobs)
@@ -316,10 +383,14 @@ class LF_JobAbandonAction : ScriptedUserAction
 		}
 
 		LF_EJobType finished = LF_CivilianJob.GetActiveJob(uid);
+		int forfeited = LF_CivilianJob.GetDeposit(uid);
 		if (!LF_CivilianJob.AbandonRun(uid))
 			return;
 
-		LF_Utils.NotifyEntity(pUserEntity, "#EL-Job_Abandoned", LF_CivilianJob.NameKey(finished), 4.0);
+		if (forfeited > 0)
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-Job_AbandonedDeposit", LF_CivilianJob.NameKey(finished), 5.0, forfeited.ToString());
+		else
+			LF_Utils.NotifyEntity(pUserEntity, "#EL-Job_Abandoned", LF_CivilianJob.NameKey(finished), 4.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

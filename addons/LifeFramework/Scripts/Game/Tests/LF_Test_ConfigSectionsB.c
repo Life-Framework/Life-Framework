@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_ConfigSectionsB`: removing the `fineMultiplier` read from LF_ZoneConfig.ApplyOwner failed `- the owner's fine multiplier applies to SAFE (expected 2, got 1)`. Restored; green.
-// tier: LOGIC
 //! #283 (config sections B): the owner's `zones`, `organizations` and `persistence` sections change
 //! one field of a shipped value each; a bad value is refused with the shipped one kept; a changed
 //! default rank right reaches a new organization's ladder; and `organizations` reaches a client
 //! through the config stream.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigSectionsB : LF_Test
 {
 	override string GetName()

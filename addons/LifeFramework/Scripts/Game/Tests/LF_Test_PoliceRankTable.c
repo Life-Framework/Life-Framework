@@ -1,7 +1,7 @@
 // red-proof: observed 2026-11-12 with `tools\cli test --no-build --only LF_Test_PoliceRankTable` and LF_Police.conf patrol m_iDutySecondsForNext 1800:
 // [LFTEST] FAIL police/rank-table - patrol promotes after an hour on duty (expected 3600, got 1800). Restored to 3600; green.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceRankTable : LF_Test
 {
 	override string GetName()

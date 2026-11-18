@@ -3,7 +3,7 @@
 // `[LFTEST] - wanted up by the configured amount (expected 0, got 1)`.
 // Restored the expected value to 1.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Fuel : LF_Test
 {
 	override string GetName()
@@ -113,7 +113,7 @@ class LF_Test_Roadmap_Fuel : LF_Test
 	}
 }
 
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_FuelWorld : LF_Test
 {
 	protected static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
@@ -184,6 +184,8 @@ class LF_Test_Roadmap_FuelWorld : LF_Test
 		ctx.NotNull(bank, "e2e bank account exists");
 		if (bank)
 			ctx.Equal(0, bank.GetBalance(), "a refused robbery does not change the bank");
+
+		LF_TestCharacterFixture.Delete(character);
 	}
 
 	//------------------------------------------------------------------------------------------------

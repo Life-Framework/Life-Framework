@@ -3,10 +3,10 @@
 // `[LFTEST] FAIL police/fine-ticket`, `- the carried ticket is stamped paid`.
 // A new prefab needs `tools/cli build` first (FineTicket.et is not in main's resourceDatabase.rdb).
 
-// tier: WORLD
 //! police/fine-ticket: the ticket item exists and reads like a ticket, the desk takes carried cash
 //! once and stamps it a receipt, the clock reprints the paper, a respawn hands an unpaid ticket
 //! back, the old remote fine is gone, and the desk carries Pay ticket.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FineTicket : LF_Test
 {
 	protected static const string HOLDER = "fine-ticket-holder";

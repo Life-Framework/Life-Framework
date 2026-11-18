@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-12 with `tools\cli test --no-build --only LF_Test_JobLevelGates`: LF_CivilianJob.GetLevel
 // reading CIVILIAN instead of DELIVERY failed `- CIVILIAN xp does not open delivery work`,
 // `- 499 delivery xp is still level 1` and `- the taxi still needs level 3`. Restored; green.
-// tier: LOGIC
 //! Gates read job levels (#749, D12): delivery sign-up reads DELIVERY, a licence reads its family's
 //! job (or the jobs config's licenceGates row), a chain step and a quest read the job they name.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobLevelGates : LF_Test
 {
 	static const string COURIER = "test-jobgates-courier";

@@ -3,7 +3,7 @@
 // `[LFTEST] - wanted rises once at arm time (expected 0, got 1)`.
 // Restored the expected value to 1.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Breach : LF_Test
 {
 	override string GetName()
@@ -57,6 +57,7 @@ class LF_Test_Roadmap_Breach : LF_Test
 
 		LF_PlayerAccount police = LF_PlayerAccountManager.GetOrCreate(policeUid);
 		police.SetFaction(LF_Faction.POLICE);
+		police.SetOnDuty(true);
 		ctx.True(LF_Breach.Repair(targetId, policeUid), "police repair succeeds");
 		ctx.True(LF_Breach.IsLocked(targetId), "repair sets the lock");
 
@@ -87,7 +88,7 @@ class LF_Test_Roadmap_Breach : LF_Test
 	}
 }
 
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_BreachWorld : LF_Test
 {
 	override string GetName()
@@ -143,6 +144,7 @@ class LF_Test_Roadmap_BreachWorld : LF_Test
 		LF_PlayerAccountManager.GetOrCreate(uid);
 		LF_PlayerAccount police = LF_PlayerAccountManager.GetOrCreate(policeUid);
 		police.SetFaction(LF_Faction.POLICE);
+		police.SetOnDuty(true);
 
 		if (!doorLock.IsLocked())
 			LF_Breach.Repair(LF_TestAnnex.BREACH_DOOR, policeUid);
@@ -161,7 +163,7 @@ class LF_Test_Roadmap_BreachWorld : LF_Test
 	}
 }
 
-// tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_Roadmap_BreachPersistence : LF_Test
 {
 	override string GetName()
@@ -186,6 +188,7 @@ class LF_Test_Roadmap_BreachPersistence : LF_Test
 		LF_PlayerAccountManager.GetOrCreate(uid);
 		LF_PlayerAccount police = LF_PlayerAccountManager.GetOrCreate(policeUid);
 		police.SetFaction(LF_Faction.POLICE);
+		police.SetOnDuty(true);
 
 		if (!doorLock.IsLocked())
 			LF_Breach.Repair(LF_TestAnnex.BREACH_DOOR, policeUid);

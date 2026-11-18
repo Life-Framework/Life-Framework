@@ -1,7 +1,7 @@
 // red-proof: 2026-11-14, LF_VehicleOwnership.IsOwnedEntity returning false: `--only LF_Test_CleanupSweep` failed `an owned parked car is kept` and `the old far item and the stray car are swept (expected 2, got 3)`. Restored, green.
-// tier: WORLD
 //! World cleanup (#690): an old dropped item far from players is removed; one near a player, an
 //! owned parked car and a named entity are kept; an unowned car left alone goes too.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CleanupSweep : LF_Test
 {
 	protected static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

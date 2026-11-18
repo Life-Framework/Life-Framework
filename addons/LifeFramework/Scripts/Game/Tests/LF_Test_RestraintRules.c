@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-13 with `tools\cli test --no-build --only LF_Test_RestraintRules`: IsCompliant with `<` in place of `<=` failed `the window includes its last second`; restored, green.
-// tier: LOGIC
 //! police/restraint-rules: who may cuff whom. An on-duty officer holding handcuffs may cuff a downed
 //! player, or a held-up one who holds no weapon while the hold-up is recent; never someone already
 //! cuffed. Any on-duty officer may uncuff a cuffed player. A hold-up records when its target was
 //! held up, which is what makes them compliant.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RestraintRules : LF_Test
 {
 	override string GetName()

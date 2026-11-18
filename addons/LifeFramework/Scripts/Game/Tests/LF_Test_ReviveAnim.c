@@ -5,7 +5,7 @@
 //! runs one animation per medic, and stops it when the hold is cancelled, the medic walks out of
 //! reach, the patient stops being downed, or the hold overruns. Broadcasts are silenced; the test
 //! counts the starts and stops the server decided.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ReviveAnim : LF_Test
 {
 	override string GetName()
@@ -22,6 +22,7 @@ class LF_Test_ReviveAnim : LF_Test
 		LF_Downed.SetTestAllEligible(true);
 		LF_ReviveAnim.ResetStatics();
 		LF_ReviveAnim.SetSilent(true);
+		LF_ReviveAnim.SetCooldown(0);
 
 		// The pure step: a refusal or an overrun stops it, a healthy hold goes on.
 		ctx.Equal(LF_EReviveAnimStep.KEEP, LF_ReviveAnim.Step(LF_EReviveRefusal.NONE, 1), "a healthy hold keeps animating");

@@ -2,7 +2,7 @@
 // a real id out of range, or make IsValidAction accept ids >= COUNT), then run the fast tier;
 // the range assertions below go red.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DebugActionValidation : LF_Test
 {
 	override string GetName()

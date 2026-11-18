@@ -25,6 +25,11 @@ class LF_StorageItemRecord : Managed
 	[NonSerialized()]
 	bool m_bStolen;
 
+	//! House a key opens (LF_KeyComponent, #2410), empty for anything that is not a bound house
+	//! key. Travels in the separate itemkeys payload (save version 47), like the serial.
+	[NonSerialized()]
+	string m_sHouseKey;
+
 	//------------------------------------------------------------------------------------------------
 	static LF_StorageItemRecord Create(string prefab, int quantity, int parent, int storage, int slot)
 	{
@@ -56,6 +61,16 @@ class LF_StorageItemSerialRecord : Managed
 	string m_sOwnerKey;
 	string m_sSlot;
 	ref array<string> m_aSerials = {};
+}
+
+//------------------------------------------------------------------------------------------------
+//! House keys of one snapshot (#2410), parallel to its item list ("" = not a bound house key). The
+//! itemkeys payload (save version 47), keyed by the snapshot's stable owner key and slot name.
+class LF_StorageItemKeyRecord : Managed
+{
+	string m_sOwnerKey;
+	string m_sSlot;
+	ref array<string> m_aHouseKeys = {};
 }
 
 //------------------------------------------------------------------------------------------------
@@ -255,6 +270,7 @@ class LF_StorageSnapshot
 			copy.m_iAmmo = source.m_iAmmo;
 			copy.m_sSerial = source.m_sSerial;
 			copy.m_bStolen = source.m_bStolen;
+			copy.m_sHouseKey = source.m_sHouseKey;
 			int parent = source.m_iParent;
 			if (parent >= 0 && parent < heldIndex && held[parent])
 			{
@@ -387,7 +403,8 @@ class LF_StorageSnapshot
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The quantity of the prefab removed from one record (only items nothing sits in).
-	static int StripPrefabFrom(notnull LF_StorageSnapshotRecord record, ResourceName prefab)
+	//! \param[in] limit At most this many (a bigger stack is cut by the part needed); 0 removes them all.
+	static int StripPrefabFrom(notnull LF_StorageSnapshotRecord record, ResourceName prefab, int limit = 0)
 	{
 		int count = record.m_aItems.Count();
 		array<bool> holds = {};
@@ -405,7 +422,19 @@ class LF_StorageSnapshot
 		for (int index = 0; index < count; index++)
 		{
 			LF_StorageItemRecord entry = record.m_aItems[index];
-			if (entry && !holds[index] && LF_Utils.SamePrefab(entry.m_sPrefab, prefab))
+			bool wanted = entry && !holds[index] && LF_Utils.SamePrefab(entry.m_sPrefab, prefab);
+			if (wanted && limit > 0 && removed >= limit)
+				wanted = false;
+
+			if (wanted && limit > 0 && entry.m_iQuantity > limit - removed)
+			{
+				// A stack bigger than what is still to go: cut it and keep the rest.
+				entry.m_iQuantity = entry.m_iQuantity - (limit - removed);
+				removed = limit;
+				wanted = false;
+			}
+
+			if (wanted)
 			{
 				removed += entry.m_iQuantity;
 				newIndex[index] = -1;
@@ -417,7 +446,7 @@ class LF_StorageSnapshot
 		}
 
 		if (kept.Count() == count)
-			return 0;
+			return removed;
 
 		foreach (LF_StorageItemRecord moved : kept)
 		{
@@ -427,6 +456,21 @@ class LF_StorageSnapshot
 
 		record.m_aItems = kept;
 		return removed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Removes one item of the prefab from one stored snapshot (a held cargo the restart refunds, #2481).
+	//! \return How many were removed (0 or 1); 0 when the snapshot is not stored or holds none.
+	static int StripOne(string ownerKey, string slot, ResourceName prefab)
+	{
+		if (ownerKey.IsEmpty() || prefab.IsEmpty())
+			return 0;
+
+		LF_StorageSnapshotRecord record = Get(ownerKey, slot);
+		if (!record || !record.m_aItems)
+			return 0;
+
+		return StripPrefabFrom(record, prefab, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -648,6 +692,10 @@ class LF_StorageSnapshot
 
 				record.m_bStolen = LF_StolenGoods.IsStolen(item);
 
+				LF_KeyComponent houseKey = LF_KeyComponent.Cast(item.FindComponent(LF_KeyComponent));
+				if (houseKey)
+					record.m_sHouseKey = houseKey.GetHouseIdentifier();
+
 				items.Insert(record);
 				CaptureChildren(item, items.Count() - 1, items, visited);
 			}
@@ -732,6 +780,7 @@ class LF_StorageSnapshot
 			SetAmmo(occupants[match], item);
 			SetSerial(occupants[match], item);
 			SetStolen(occupants[match], item);
+			SetHouseKey(occupants[match], item);
 		}
 
 		// What the snapshot does not list is not carried: default prefab contents included.
@@ -815,6 +864,24 @@ class LF_StorageSnapshot
 
 		int ammo = Math.ClampInt(item.m_iAmmo, 0, magazine.GetMaxAmmoCount());
 		magazine.SetAmmoCount(ammo);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a house key gets back the house it opens (#2410). An item without the component is
+	//! skipped with a warning.
+	protected static void SetHouseKey(IEntity entity, LF_StorageItemRecord item)
+	{
+		if (item.m_sHouseKey.IsEmpty())
+			return;
+
+		LF_KeyComponent key = LF_KeyComponent.Cast(entity.FindComponent(LF_KeyComponent));
+		if (!key)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("house key %1 not restored: %2 has no key component", item.m_sHouseKey, item.m_sPrefab));
+			return;
+		}
+
+		key.SetHouseIdentifier(item.m_sHouseKey);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -910,6 +977,78 @@ class LF_StorageSnapshot
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The itemkeys payload (#2410): one record per stored snapshot that holds a bound house key.
+	static array<ref LF_StorageItemKeyRecord> ExportItemKeys()
+	{
+		array<ref LF_StorageItemKeyRecord> rows = new array<ref LF_StorageItemKeyRecord>();
+		if (!s_mSnapshots)
+			return rows;
+
+		foreach (string key, LF_StorageSnapshotRecord record : s_mSnapshots)
+		{
+			if (!record || !record.m_aItems)
+				continue;
+
+			LF_StorageItemKeyRecord row = new LF_StorageItemKeyRecord();
+			row.m_sOwnerKey = record.m_sOwnerKey;
+			row.m_sSlot = record.m_sSlot;
+			bool any;
+			foreach (LF_StorageItemRecord item : record.m_aItems)
+			{
+				string houseKey;
+				if (item)
+					houseKey = item.m_sHouseKey;
+				else
+					houseKey = "";
+
+				if (!houseKey.IsEmpty())
+					any = true;
+
+				row.m_aHouseKeys.Insert(houseKey);
+			}
+
+			if (any)
+				rows.Insert(row);
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Runs after the carried payload loaded the snapshots. A row whose snapshot is gone or whose item
+	//! count differs is skipped with a warning (those keys come back unbound).
+	//! \return Number of snapshots that took their house keys.
+	static int ApplyItemKeys(array<ref LF_StorageItemKeyRecord> rows)
+	{
+		if (!rows)
+			return 0;
+
+		int matched;
+		foreach (LF_StorageItemKeyRecord row : rows)
+		{
+			if (!row || !row.m_aHouseKeys)
+				continue;
+
+			LF_StorageSnapshotRecord record = Get(row.m_sOwnerKey, row.m_sSlot);
+			if (!record || !record.m_aItems || record.m_aItems.Count() != row.m_aHouseKeys.Count())
+			{
+				LF_Debug.Warn(FEATURE, string.Format("house keys for %1/%2 skipped: no matching snapshot", row.m_sOwnerKey, row.m_sSlot));
+				continue;
+			}
+
+			for (int index = 0; index < record.m_aItems.Count(); index++)
+			{
+				if (record.m_aItems[index])
+					record.m_aItems[index].m_sHouseKey = row.m_aHouseKeys[index];
+			}
+
+			matched++;
+		}
+
+		return matched;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The itemserials payload: one record per stored snapshot that holds a stamped item.
 	static array<ref LF_StorageItemSerialRecord> ExportItemSerials()
 	{
@@ -950,7 +1089,7 @@ class LF_StorageSnapshot
 	//------------------------------------------------------------------------------------------------
 	//! Runs after the carried payload loaded the snapshots. A row whose snapshot is gone or whose
 	//! item count differs is skipped with a warning (those items come back unstamped).
-	//! eturn Number of snapshots that took their serials.
+	//! \return Number of snapshots that took their serials.
 	static int ApplyItemSerials(array<ref LF_StorageItemSerialRecord> rows)
 	{
 		if (!rows)
@@ -1020,7 +1159,7 @@ class LF_StorageSnapshot
 	//------------------------------------------------------------------------------------------------
 	//! Runs after the carried payload loaded the snapshots. A state whose snapshot is gone, or
 	//! whose item count differs, is skipped with a warning (the magazines keep prefab ammo).
-	//! eturn Number of snapshots that took their state.
+	//! \return Number of snapshots that took their state.
 	static int ApplyItemState(array<ref LF_StorageItemStateRecord> states)
 	{
 		if (!states)
@@ -1076,12 +1215,15 @@ class LF_StorageSnapshot
 		SetAmmo(entity, item);
 		SetSerial(entity, item);
 		SetStolen(entity, item);
+		SetHouseKey(entity, item);
 
 		// A restored stack keeps its own slot instead of merging into a neighbour.
 		bool isStack = entity.FindComponent(LF_QuantityComponent) != null;
 		if (isStack)
 			LF_QuantityComponent.SetTransferIntent(entity, true);
 
+		// The server's own insert: a restricted storage (hideout stash) takes this carrier-less item (#2584).
+		EntityID scope = LF_ServerInsertScope.Begin(entity);
 		bool inserted;
 		if (item.m_iStorage >= 0 && item.m_iStorage < storages.Count())
 		{
@@ -1093,6 +1235,8 @@ class LF_StorageSnapshot
 
 		if (!inserted)
 			inserted = manager.TryInsertItem(entity);
+
+		LF_ServerInsertScope.End(scope);
 
 		if (!inserted)
 		{
@@ -1109,11 +1253,9 @@ class LF_StorageSnapshot
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_StorageSnapshot's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_StorageSnapshot's statics (LF_StaticReset finds it by reflection).
 class LF_StorageSnapshot_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_StorageSnapshot_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_StorageSnapshot";

@@ -8,7 +8,7 @@
 //! real health: zero needs hold health at the config cap and never kill, an injury below the cap
 //! is not worsened, met needs give back only what needs took, and low needs raise stamina drain
 //! until the player eats and drinks. Every rate comes from LF_SurvivalConfig.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SurvivalLight : LF_Test
 {
 	override string GetName()

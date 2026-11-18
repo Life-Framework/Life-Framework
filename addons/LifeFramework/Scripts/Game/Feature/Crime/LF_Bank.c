@@ -121,6 +121,35 @@ class LF_Bank
 	protected static ref map<string, ref LF_BankVaultState> s_mVaults;
 
 	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! Drops every vault. The world-end hook (LF_Bank_StaticResetHook) calls it so a world reload in
+	//! the same process does not inherit the last world's vaults, stock or looter.
+	static void ResetStatics()
+	{
+		s_mVaults = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Configured vaults in this world.
+	static int VaultCount()
+	{
+		if (!s_mVaults)
+			return 0;
+
+		return s_mVaults.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests only: puts vaults in as the table and returns the old one, so a test can run the
+	//! reset hook and give the world's vaults back.
+	static map<string, ref LF_BankVaultState> SwapVaults(map<string, ref LF_BankVaultState> vaults)
+	{
+		map<string, ref LF_BankVaultState> old = s_mVaults;
+		s_mVaults = vaults;
+		return old;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static map<string, ref LF_BankVaultState> Vaults()
 	{
 		if (!s_mVaults)
@@ -381,8 +410,9 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The tool the robber would use on this vault: "drill", "charge", or "" for none. A drill wins
-	//! over a charge so the charge is kept. toolItem is the drill or fence charge found, if any.
+	//! The tool the robber would use on this vault: "drill", "charge", or "" for none. A drill held in
+	//! the hands wins over a charge so the charge is kept; a drill only in the pack comes last (it
+	//! is the "hold it" hint when nothing else works). toolItem is the drill or fence charge found, if any.
 	static string PickTool(LF_BankVaultState vault, IEntity robber, out IEntity toolItem)
 	{
 		toolItem = null;
@@ -395,16 +425,16 @@ class LF_Bank
 		if (!inventory)
 			return "";
 
-		if (tools.Find(TOOL_DRILL) != -1)
+		// The drill in the hands is the one that works; a spare in the pack is not it, so it does not
+		// beat a keycard or charge the robber can use. A pack drill is the answer only when nothing
+		// else is usable, so the gate can still say "hold the drill".
+		bool wantsDrill = tools.Find(TOOL_DRILL) != -1;
+		if (wantsDrill)
 		{
-			array<IEntity> drills = LF_InventoryUtils.FindItemsByPrefab(inventory, DRILL_PREFAB);
-			if (!drills.IsEmpty())
+			IEntity held = LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID);
+			if (held)
 			{
-				// The drill in the hands is the one that works; a spare in the pack is not it.
-				toolItem = LF_HandTool.HeldTool(robber, LF_VaultDrill.TOOL_ID);
-				if (!toolItem)
-					toolItem = drills[0];
-
+				toolItem = held;
 				return TOOL_DRILL;
 			}
 		}
@@ -426,6 +456,16 @@ class LF_Bank
 				toolItem = charges[0];
 
 			return TOOL_CHARGE;
+		}
+
+		if (wantsDrill)
+		{
+			array<IEntity> spares = LF_InventoryUtils.FindItemsByPrefab(inventory, DRILL_PREFAB);
+			if (!spares.IsEmpty())
+			{
+				toolItem = spares[0];
+				return TOOL_DRILL;
+			}
 		}
 
 		return "";
@@ -636,6 +676,9 @@ class LF_Bank
 	//! the breach does not arm, or the vault is not configured.
 	static bool Rob(string vaultId, string playerUid, IEntity robber = null, float jamRoll = -1)
 	{
+		if (LF_CuffEnforcement.Refuse(robber, "vault robbery"))
+			return false;
+
 		if (vaultId.IsEmpty() || playerUid.IsEmpty())
 		{
 			LF_Debug.Error("Bank", "rob refused: vault id or player uid is empty");
@@ -651,6 +694,13 @@ class LF_Bank
 
 		if (LF_Systems.Refuses(LF_RobAction.SYSTEM, "vault robbery of " + vaultId))
 			return false;
+
+		// A character in its grace may not rob (LF_Grace): no drill starts, no charge is set.
+		if (LF_Grace.Refuses(playerUid, "vault robbery of " + vaultId))
+		{
+			LF_Grace.Notify(robber);
+			return false;
+		}
 
 		if (!GatesPass(vault, playerUid))
 			return false;
@@ -834,8 +884,31 @@ class LF_Bank
 			vault.m_fAdvancedSeconds = vault.m_fAdvancedSeconds + elapsedSeconds;
 
 		RefillStock(vault, elapsedSeconds);
+		return AdvanceFuse(vault, elapsedSeconds);
+	}
 
-		bool open = LF_Breach.Advance(vaultId, elapsedSeconds);
+	//------------------------------------------------------------------------------------------------
+	//! Server: a charge's fuse timer fired on this vault (LF_BreachTargetComponent.FireFuse). Moves the
+	//! breach fuse on by the seconds it was set for and pays the pending haul once the lock opens. The
+	//! cooldown and stock clocks are not moved: they run on world time.
+	//! \return False when vaultId is not a bank vault (the caller advances the plain breach target).
+	static bool FuseFired(string vaultId, float fuseSeconds)
+	{
+		LF_BankVaultState vault = Vaults().Get(vaultId);
+		if (!vault)
+			return false;
+
+		bool open = AdvanceFuse(vault, fuseSeconds);
+		LF_Debug.Info("Bank", string.Format("fuse fired on %1 open=%2", vaultId, open));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The breach step shared by Advance and FuseFired: the pending bags spawn once, the first time the
+	//! lock is seen open (m_bSpawnPending is cleared before SpawnWave).
+	protected static bool AdvanceFuse(LF_BankVaultState vault, float elapsedSeconds)
+	{
+		bool open = LF_Breach.Advance(vault.m_sVaultId, elapsedSeconds);
 		if (vault.m_bSpawnPending && open)
 		{
 			vault.m_bSpawnPending = false;
@@ -1119,6 +1192,10 @@ class LF_Bank
 			return false;
 		}
 
+		// Dirty money (#2851): with the server's switch on the vault's bags hold marked notes.
+		if (LF_LaunderConfig.CrimePaysMarked())
+			return WriteWorldBagMarked(bag, cash);
+
 		Resource money = Resource.Load(LF_MoneyUtils.CashPrefab());
 		if (!money || !money.IsValid())
 		{
@@ -1166,16 +1243,110 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The bag fill as marked notes: the bag's storage when it has one, else a marked-notes stack
+	//! hung on the bag with its quantity set, the same two ways the cash fill uses.
+	protected static bool WriteWorldBagMarked(IEntity bag, int amount)
+	{
+		ResourceName prefab = LF_MarkedCash.Prefab();
+		if (prefab.IsEmpty())
+		{
+			LF_Debug.Error("Bank", "money bag fill refused: the marked-notes slot has no prefab");
+			return false;
+		}
+
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(bag);
+		if (manager)
+		{
+			int added = LF_MarkedCash.Add(manager, amount, "robbery");
+			if (added == amount)
+				return true;
+
+			if (added > 0)
+				LF_MarkedCash.Take(manager, added, "robbery-rollback");
+		}
+
+		IEntity notes = FindNotesChild(bag, prefab);
+		if (!notes)
+		{
+			notes = LF_Utils.SpawnEntityPrefab(prefab, bag.GetOrigin());
+			if (!notes)
+			{
+				LF_Debug.Error("Bank", "money bag fill refused: marked notes did not spawn");
+				return false;
+			}
+
+			bag.AddChild(notes, -1, EAddChildFlags.AUTO_TRANSFORM);
+		}
+
+		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(notes);
+		if (!quantity || !quantity.SetQuantity(amount))
+		{
+			LF_Debug.Error("Bank", string.Format("money bag fill refused: marked notes did not become %1", amount));
+			return false;
+		}
+
+		LF_Debug.Info("Bank", string.Format("money bag filled with %1 marked notes (robbery)", amount));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The marked notes a vault bag holds (storage first, then a hung stack), or -1 with no bag.
+	static int ReadWorldBagMarked(IEntity bag)
+	{
+		if (!bag)
+			return -1;
+
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(bag);
+		if (manager)
+		{
+			int stored = LF_MarkedCash.Count(manager);
+			if (stored > 0)
+				return stored;
+		}
+
+		IEntity notes = FindNotesChild(bag, LF_MarkedCash.Prefab());
+		if (!notes)
+			return 0;
+
+		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(notes);
+		if (!quantity)
+			return 0;
+
+		return quantity.GetQuantity();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The bag's cash stack: any quantity child that is not marked notes (#2851), so a marked bag
+	//! never reads as cash.
 	protected static IEntity FindCashChild(IEntity bag)
 	{
 		if (!bag)
 			return null;
 
+		ResourceName marked = LF_MarkedCash.Prefab();
 		IEntity child = bag.GetChildren();
 		while (child)
 		{
 			LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(child);
-			if (quantity)
+			if (quantity && !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(child), marked))
+				return child;
+
+			child = child.GetSibling();
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static IEntity FindNotesChild(IEntity bag, ResourceName prefab)
+	{
+		if (!bag || prefab.IsEmpty())
+			return null;
+
+		IEntity child = bag.GetChildren();
+		while (child)
+		{
+			if (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(child), prefab))
 				return child;
 
 			child = child.GetSibling();
@@ -1248,5 +1419,20 @@ class LF_Bank
 			return null;
 
 		return vault.m_aBags[index];
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_Bank's statics (LF_StaticReset finds it by reflection).
+class LF_Bank_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_Bank";
+	}
+
+	override void Apply()
+	{
+		LF_Bank.ResetStatics();
 	}
 }

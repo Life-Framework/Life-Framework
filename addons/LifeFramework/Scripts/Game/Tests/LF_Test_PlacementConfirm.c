@@ -1,11 +1,11 @@
 // red-proof: observed 2026-11-14 (#1026 review) with `--only LF_Test_PlacementConfirm`: TOLERANCE_METRES = 0 failed `the officer's proposal at the server's spot was refused` (3.57 m from the player after stepping back, most 2.75 m), and Confirm without its ProposalProblem refusal failed `a proposal with no forward` and `a proposal out of the world: the logged reason says 'malformed'`; restored, green.
-// tier: WORLD
 //! #1026 acceptance: the placement service's server confirm. An on-duty officer stands on the main
 //! street's south verge, half turned up the street, with the folded spike strip at their feet. The
 //! ghost's spot is still placed after the officer stepped 1 m back and turned 25 degrees, and the item
 //! is used up. Proposals 5 m along the street, malformed
 //! (no forward, out of the world), on the strip just laid, and a civilian's are each refused with
 //! the reason logged, and their items stay.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementConfirm : LF_Test
 {
 	static const ResourceName ITEM = "{4B8BDB727DEE59B8}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et";

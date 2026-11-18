@@ -2,7 +2,7 @@
 // (return a == b) and run `tools\cli test --tier fast`; the empty-identifier assertions fail
 // because "" == "" matches, so an unbound house key opens every house.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HouseKeyMatch : LF_Test
 {
 	override string GetName()

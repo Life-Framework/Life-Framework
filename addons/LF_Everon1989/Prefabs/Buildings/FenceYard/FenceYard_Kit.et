@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "FE1FB17EB192F8D2"
+ {
+  LightEntity {
+   ID "FE1F50A2C42A8882"
+   coords 2.75 2.6 0
+   Color 1 0.9 0.75 1
+   LV 4
+   ClipEV -10
+   CastShadow 0
+   Radius 4.5
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "FE1F4BE538AD3A58"
+   coords -3.2 2.5 1.5
+   Color 1 0.9 0.75 1
+   LV 3.5
+   ClipEV -10
+   CastShadow 0
+   Radius 3.5
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+  LightEntity {
+   ID "FE1F3EADB73EA865"
+   coords -3.38 2.9 -6.8
+   Color 1 0.9 0.75 1
+   LV 3
+   ClipEV -10
+   CastShadow 0
+   Radius 3.2
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+ }
+}

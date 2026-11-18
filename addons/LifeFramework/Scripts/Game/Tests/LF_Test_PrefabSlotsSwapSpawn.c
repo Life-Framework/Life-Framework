@@ -21,8 +21,8 @@ class LF_Test_PrefabSlotsSwapStub : LF_ConfigPackSource
 //! A pack swaps one slot (evidence_marker) and the swapped prefab really spawns; a bad swap
 //! (phone_handset to a missing prefab) falls back to the core default, which also spawns, and logs
 //! `[LFDebug:PrefabSlots] ... rejected` (the log line is the proof of the Error, see the red-proof).
-// tier: WORLD
 // red-proof: batched `--red` 2026-11-15: with the pack stub skipped the swap assertion fails (expected the casing, got the core marker).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PrefabSlotsSwapSpawn : LF_Test
 {
 	static const ResourceName CASING = "{7D3A9E15C2B4F680}Prefabs/Investigation/LF_EvidenceCasing.et";

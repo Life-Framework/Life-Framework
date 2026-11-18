@@ -2,12 +2,12 @@
 // inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // (tools/lib/pr-quality.mjs) and the evidence table (tools/commands/evidence.mjs). No game, no git.
 // red-proof: see the two observed lines in docs/architecture/agent-quality.md "Proof of the checks".
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import * as feature from "../feature/new.mjs";
 import * as pq from "../lib/pr-quality.mjs";
 import { fitWidth, pairs, table } from "../commands/evidence.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -17,7 +17,7 @@ const check = (ok, msg) => {
 // ------------------------------------------------------------- the scaffold
 const ST_TAIL = "\n  }\n }\n}\n";
 function scratchTree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-feature-ws-selftest-"));
+  const root = scratchDir("lf-feature-ws-selftest-");
   const put = (rel, text) => {
     mkdirSync(dirname(join(root, rel)), { recursive: true });
     writeFileSync(join(root, rel), text);
@@ -64,7 +64,8 @@ try {
   }
   if (existsSync(join(root, `${game}/Tests/LF_Test_RadarGun.c`))) {
     const t = read(`${game}/Tests/LF_Test_RadarGun.c`);
-    check(/^\/\/ tier: LOGIC$/m.test(t), "the logic test has no // tier: LOGIC line");
+    check(/^\[LF_TestInfo\(LF_TestTier\.LOGIC\)\]$/m.test(t), "the logic test has no [LF_TestInfo(LF_TestTier.LOGIC)] line");
+    check(!/^\/\/ tier:/m.test(t), "the logic test still writes a // tier: comment; the tier lives only in [LF_TestInfo]");
     check(/^\/\/ red-proof: PENDING/m.test(t), "the red-proof slot is not PENDING, so validate-tests would accept an unobserved proof");
     check(t.includes('return "police/radar-gun";'), "the test name is not <area>/<kebab>");
     check(/if \(!RedProof\(\)\)/.test(t) && /--red LF_Test_RadarGun/.test(t), "the logic test lacks the RedProof() hook or the --red red-proof instruction, so a new test would need a hand-made red proof");
@@ -81,7 +82,7 @@ try {
   check(st.endsWith(ST_TAIL), "the string table no longer ends with its closing braces");
   check(st.includes('Id "LF-RadarGun_Action"') && st.includes('Id "LF-RadarGun_Denied"') && st.includes('Id "LF-Old"'), "the string rows were not appended beside the old ones");
   check(!read(`${game}/Core/LF_StaticReset.c`).includes("LF_RadarGun"), "the scaffold edited the central LF_StaticReset.c");
-  check(/class LF_RadarGun_StaticResetHook : LF_StaticResetHook[\s\S]*LF_StaticReset\.Register\(new LF_RadarGun_StaticResetHook\(\)\)[\s\S]*LF_RadarGun\.ResetStatics\(\);/.test(read(`${game}/Feature/Police/LF_RadarGun.c`)), "the scaffold did not register LF_RadarGun's reset hook in its own file");
+  check(/class LF_RadarGun_StaticResetHook : LF_StaticResetHook[\s\S]*LF_RadarGun\.ResetStatics\(\);/.test(read(`${game}/Feature/Police/LF_RadarGun.c`)) && !read(`${game}/Feature/Police/LF_RadarGun.c`).includes("LF_StaticReset.Register"), "the scaffold did not write LF_RadarGun's reset hook (with no static Register, #2755) in its own file");
   const md = read(`${game}/Feature/Police/Feature.md`);
   check(md.startsWith("# Police\n\n## Intent\n\nOld text.") && md.includes("## Radar gun (#901)"), "Feature.md was rewritten instead of appended to");
   check(read("docs/features/police.md").includes("### `LF_RadarGun`") && read("docs/features/police.md").includes("### `LF_Old`"), "docs/features/police.md lost a row or did not gain one");

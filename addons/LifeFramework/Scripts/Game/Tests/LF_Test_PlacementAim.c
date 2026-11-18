@@ -1,10 +1,10 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_PlacementAim`: STEP_DEGREES = 10 failed `a 15 degree turn right from 350 wraps to 5 (0 not in [4.99, 5.01])`; restored, green.
-// tier: LOGIC
 //! Aimed placement (#1028): the geometry the ghost follows, with no world. The aim point is where the
 //! ray strikes (or its far end), kept within the aim reach of the player; turning moves in 15 degree
 //! steps (1 fine) and wraps; a thing placed across a road snaps to the road's axis, either way
 //! across, with a little turn either side the server still accepts; a wall face gives the heading out
 //! of it and refuses a floor or ceiling.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PlacementAim : LF_Test
 {
 	override string GetName()

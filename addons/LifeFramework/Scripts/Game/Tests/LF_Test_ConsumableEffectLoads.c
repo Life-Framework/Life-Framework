@@ -1,8 +1,8 @@
 // red-proof: observed 2026-11-14 with `toolscli test --no-build --only LF_Test_ConsumableEffectLoads`: with [BaseContainerProps()] removed from modded SCR_ConsumableBandage it failed `the bandage's effect entry loads as SCR_ConsumableBandage` and the log had `Unknown class 'SCR_ConsumableBandage'`; restored, green.
-// tier: WORLD
 //! The vanilla field dressing prefab keeps its SCR_ConsumableBandage effect. A `modded class` of
 //! that config class must repeat the base's [BaseContainerProps()]; without it the prefab's effect
 //! entry fails with "Unknown class 'SCR_ConsumableBandage'" and the item does nothing.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ConsumableEffectLoads : LF_Test
 {
 	static const ResourceName BANDAGE_PREFAB = "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et";

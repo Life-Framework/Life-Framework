@@ -1,9 +1,7 @@
 // Git merge driver for generated files.
-// Language confs resolve by tools\cli regen-localization.
-// LF_TestRegistrations.generated.c resolves by tools\cli regen-tests.
-// The driver runs those commands. It does not hand-edit the generated text.
+// Language confs resolve by tools\cli regen-localization (the driver runs its script; it does not hand-edit the generated text).
 //
-// The driver runs mid-merge, so it must never write into the worktree: a test file that only the
+// The driver runs mid-merge, so it must never write into the worktree: a file that only the
 // incoming side has would land as an untracked file and git would then refuse to write its own copy
 // ("untracked working tree files would be overwritten by merge"). The inputs are materialised in a
 // scratch git repo under os.tmpdir(), the generator runs there, and only %A is written.
@@ -11,7 +9,7 @@
 //   node tools/merge/regen-generated.mjs %O %A %B %P
 
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -23,11 +21,57 @@ const ST_PATHS = [
   "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
 ];
 const TOOLS_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const TESTS_PREFIX = "addons/LifeFramework/Scripts/Game/Tests";
-const REGISTRY_NAME = "LF_TestRegistrations.generated.c";
 
-function git(args) {
-  return spawnSync("git", args, { windowsHide: true, encoding: "utf8" });
+// Every child runs with a time limit, no stdin and a kill signal, so a stuck git or PowerShell can never
+// hang `git merge` (#2549). A timeout or spawn error throws BoundedRunError; runDriver turns it into one stderr
+// line and exit 1, which leaves the file conflicted for git and lets the merge finish.
+// LF_MERGE_DRIVER_TIMEOUT_MS overrides every limit (the selftest); LF_MERGE_DRIVER_GENERATOR_STUB runs
+// `node <script>` in place of PowerShell (the selftest's child that never exits) and
+// LF_MERGE_DRIVER_STUB_TIMEOUT_MS bounds only that stub, so the selftest can kill a hung stub in 2 s while
+// the driver's own git calls keep their 20 s limit on a loaded box (#2746).
+// LF_MERGE_DRIVER_TRACE=<file> appends one line per child process (`<ms> <command>`); the selftest counts them.
+// A child costs about 230 ms to spawn on a loaded Windows box, so the driver's git calls are O(1), never one per file.
+const GIT_TIMEOUT_MS = 20_000;
+const GENERATOR_TIMEOUT_MS = 90_000;
+
+export class BoundedRunError extends Error {}
+
+export function timeoutFor(defaultMs, env = process.env, name = "LF_MERGE_DRIVER_TIMEOUT_MS") {
+  const override = Number(env[name]);
+  return Number.isFinite(override) && override > 0 ? override : defaultMs;
+}
+
+export function runBounded(step, command, args, options, defaultMs, overrideName) {
+  const limit = timeoutFor(defaultMs, process.env, overrideName);
+  const started = Date.now();
+  const result = spawnSync(command, args, {
+    windowsHide: true,
+    encoding: "utf8",
+    maxBuffer: 256 * 1024 * 1024,
+    ...options,
+    stdio: [options.input === undefined ? "ignore" : "pipe", "pipe", "pipe"],
+    timeout: limit,
+    killSignal: "SIGKILL",
+  });
+  if (process.env.LF_MERGE_DRIVER_TRACE) {
+    try {
+      appendFileSync(process.env.LF_MERGE_DRIVER_TRACE, `${Date.now() - started} ${step}\n`);
+    } catch {
+      // tracing is diagnostics only
+    }
+  }
+  if (result.error) {
+    const seconds = ((Date.now() - started) / 1000).toFixed(1);
+    const why = result.error.code === "ETIMEDOUT" ? `timed out after ${seconds}s (limit ${Math.round(limit / 1000)}s)` : `failed after ${seconds}s: ${result.error.message}`;
+    throw new BoundedRunError(`${step} ${why}`);
+  }
+  return result;
+}
+
+let fixCommand = "tools\\cli regen-localization";
+
+function git(args, options = {}, limitMs = GIT_TIMEOUT_MS) {
+  return runBounded(`git ${args.slice(0, 3).join(" ")}`, "git", args, options, limitMs);
 }
 
 function gitPath(rel) {
@@ -38,7 +82,6 @@ function gitPath(rel) {
 
 export function regenKind(pathname) {
   const path = String(pathname ?? "").replace(/\\/g, "/");
-  if (path.endsWith(`/${REGISTRY_NAME}`) || path === REGISTRY_NAME) return "tests";
   if (path.includes("/Language/") && path.endsWith(".conf")) return "localization";
   if (/everonlife_localization\.[A-Za-z0-9_]+\.conf$/.test(path)) return "localization";
   return null;
@@ -46,9 +89,6 @@ export function regenKind(pathname) {
 
 export function regenPlan(pathname) {
   const kind = regenKind(pathname);
-  if (kind === "tests") {
-    return { kind, script: "tools/validation/gen-test-registry.ps1", args: ["-Write"] };
-  }
   if (kind === "localization") {
     return { kind, script: "tools/validation/regen-localization.ps1", args: ["-Write"] };
   }
@@ -111,30 +151,6 @@ function showPath(rev, path) {
   return result.stdout;
 }
 
-function listTestSources(rev) {
-  const result = git(["ls-tree", "-r", "--name-only", rev, "--", TESTS_PREFIX]);
-  if (result.status !== 0) return [];
-  return result.stdout
-    .split(/\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.endsWith(".c") && !line.endsWith(REGISTRY_NAME));
-}
-
-function normalize(text) {
-  if (text == null) return null;
-  return text.replace(/\r\n/g, "\n");
-}
-
-function pickThree(base, ours, theirs) {
-  const baseNorm = normalize(base);
-  const oursNorm = normalize(ours);
-  const theirsNorm = normalize(theirs);
-  if (oursNorm === theirsNorm) return { ok: true, text: ours ?? theirs };
-  if (oursNorm === baseNorm) return { ok: true, text: theirs };
-  if (theirsNorm === baseNorm) return { ok: true, text: ours };
-  return { ok: false };
-}
-
 function writeInto(root, rel, text) {
   const full = join(root, rel);
   if (text == null) {
@@ -152,12 +168,16 @@ function runPowershell(scratch, script, args) {
   for (const [key, value] of Object.entries(process.env)) {
     if (!/^GIT_(DIR|WORK_TREE|INDEX_FILE|PREFIX|COMMON_DIR|OBJECT_DIRECTORY|ALTERNATE_OBJECT_DIRECTORIES|NAMESPACE)$/i.test(key)) env[key] = value;
   }
-  const init = spawnSync("git", ["init", "-q"], { windowsHide: true, cwd: scratch, encoding: "utf8", env });
+  const init = git(["init", "-q"], { cwd: scratch, env });
   if (init.status !== 0) return init;
-  return spawnSync(
+  const stub = process.env.LF_MERGE_DRIVER_GENERATOR_STUB;
+  if (stub) return runBounded("generator stub", process.execPath, [stub], { cwd: scratch, env }, GENERATOR_TIMEOUT_MS, "LF_MERGE_DRIVER_STUB_TIMEOUT_MS");
+  return runBounded(
+    `powershell ${script}`,
     powershell,
-    ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", join(TOOLS_ROOT, script), ...args],
-    { windowsHide: true, cwd: scratch, encoding: "utf8", env },
+    ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", join(TOOLS_ROOT, script), ...args],
+    { cwd: scratch, env },
+    GENERATOR_TIMEOUT_MS,
   );
 }
 
@@ -179,30 +199,24 @@ function materializeStringTable(scratch, sides) {
   return { ok: true };
 }
 
-function materializeTests(scratch, sides) {
-  const paths = new Set([
-    ...listTestSources(sides.base),
-    ...listTestSources(sides.ours),
-    ...listTestSources(sides.theirs),
-  ]);
-  for (const path of paths) {
-    const picked = pickThree(showPath(sides.base, path), showPath(sides.ours, path), showPath(sides.theirs, path));
-    if (!picked.ok) {
-      return { ok: false, error: `lf-regen-tests: ${path} conflicts; resolve that test file, then tools\\cli regen-tests` };
-    }
-    writeInto(scratch, path, picked.text);
-  }
-  return { ok: true };
-}
-
 function runDriver() {
   const oursPath = process.argv[3];
   const pathname = process.argv[5] || "";
   const plan = regenPlan(pathname);
   if (!oursPath || !plan) {
-    console.error("lf-regen: expected a language conf or LF_TestRegistrations.generated.c");
+    console.error("lf-regen: expected a language conf");
     process.exit(1);
   }
+  try {
+    runPlan(plan, oursPath, pathname);
+  } catch (error) {
+    if (!(error instanceof BoundedRunError)) throw error;
+    console.error(`lf-regen: ${error.message}; the file is left conflicted, run ${fixCommand} after the merge`);
+    process.exitCode = 1;
+  }
+}
+
+function runPlan(plan, oursPath, pathname) {
   const sides = resolveSides();
   if (!sides) {
     console.error("lf-regen: cannot identify the merge sides");
@@ -214,7 +228,7 @@ function runDriver() {
   }
   const scratch = mkdtempSync(join(tmpdir(), "lf-regen-"));
   try {
-    const prepared = plan.kind === "tests" ? materializeTests(scratch, sides) : materializeStringTable(scratch, sides);
+    const prepared = materializeStringTable(scratch, sides);
     if (!prepared.ok) {
       console.error(prepared.error);
       process.exitCode = 1;
@@ -227,9 +241,7 @@ function runDriver() {
       process.exitCode = result.status || 1;
       return;
     }
-    const outputRel = plan.kind === "tests"
-      ? `${TESTS_PREFIX}/${REGISTRY_NAME}`
-      : pathname.replace(/\\/g, "/").replace(/^\.\//, "");
+    const outputRel = pathname.replace(/\\/g, "/").replace(/^\.\//, "");
     writeFileSync(oursPath, readFileSync(join(scratch, outputRel)));
   } finally {
     rmSync(scratch, { recursive: true, force: true });

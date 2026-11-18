@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-13 with `tools\cli test --no-build --only LF_Test_SpikeStripGeometry`: SweepCrosses testing only the end point (`from = to`) failed `a path across the middle crosses`, `a fast path that jumps the strip between ticks still crosses` and `a turned strip catches a path along z`; restored, green.
-// tier: LOGIC
 //! The spike strip's pure rules (#646): a wheel path that crosses the footprint is caught even when
 //! it jumps clean over the 30 cm strip between two ticks, a path beside it or short of it is not;
 //! the strip runs across a nearby road on the officer's side, else where the officer faces; the
 //! ground rule is the placement tool's 0.25 m; the laid transform follows a slope.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SpikeStripGeometry : LF_Test
 {
 	override string GetName()

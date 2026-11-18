@@ -68,6 +68,17 @@ class LF_WhitelistManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: the lists, the load-failed latch, the counters and a test save path all go; the file stays.
+	static void ResetStatics()
+	{
+		Reset();
+		s_sSavePath = "";
+		s_iMissingFileReports = 0;
+		s_iFactionRefusals = 0;
+		s_bLoadFailed = false;
+	}
+
+//------------------------------------------------------------------------------------------------
 	//! Drop the in-memory lists. The file stays. The next Load is a restart.
 	static void Reset()
 	{
@@ -130,16 +141,36 @@ class LF_WhitelistManager
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Check if player is whitelisted for job
-	static bool IsWhitelistedForJob(string playerUID, LF_EJobType jobType)
+	//! The faction roster a job reads (#2577): POLICE job to POLICE faction. A job with no roster
+	//! (MEDIC has no faction) returns false.
+	static bool FactionOfJob(LF_EJobType jobType, out LF_EFactionType factionType)
+	{
+		if (jobType == LF_EJobType.POLICE)
+		{
+			factionType = LF_EFactionType.POLICE;
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Check if an account is whitelisted for a job. There is one whitelist: the faction roster keyed by
+	//! the account uid (LF_Utils.GetAccountUID, not the character key, so a second character of an
+	//! approved officer passes). The old per-job list is still read for back-compat and never written.
+	static bool IsWhitelistedForJob(string accountUid, LF_EJobType jobType)
 	{
 		if (!IsJobRestricted(jobType))
 			return true; // Not restricted, always allowed
-		
+
+		LF_EFactionType factionType;
+		if (FactionOfJob(jobType, factionType) && IsWhitelistedForFaction(accountUid, factionType))
+			return true;
+
 		if (!s_mJobWhitelist)
 			Initialize();
-		
-		array<LF_EJobType> playerJobs = s_mJobWhitelist.Get(playerUID);
+
+		array<LF_EJobType> playerJobs = s_mJobWhitelist.Get(accountUid);
 		if (!playerJobs)
 			return false;
 		
@@ -235,8 +266,10 @@ class LF_WhitelistManager
 	//! Remove player from faction whitelist (admin command)
 	static bool RemoveFactionWhitelist(string playerUID, LF_EFactionType factionType)
 	{
+		// Load first: a remove before anything read the file (a trial expiring right after a restart)
+		// found no cache, returned false, and the officer stayed in the file.
 		if (!s_mFactionWhitelist)
-			return false;
+			Initialize();
 		
 		array<LF_EFactionType> playerFactions = s_mFactionWhitelist.Get(playerUID);
 		if (!playerFactions)
@@ -256,8 +289,10 @@ class LF_WhitelistManager
 	//! Remove player from job whitelist (admin command)
 	static bool RemoveJobWhitelist(string playerUID, LF_EJobType jobType)
 	{
+		// Load first: a remove before anything read the file (a trial expiring right after a restart)
+		// found no cache, returned false, and the officer stayed in the file.
 		if (!s_mJobWhitelist)
-			return false;
+			Initialize();
 		
 		array<LF_EJobType> playerJobs = s_mJobWhitelist.Get(playerUID);
 		if (!playerJobs)
@@ -600,5 +635,20 @@ class LF_WhitelistManager
 		}
 
 		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_WhitelistManager's statics (LF_StaticReset finds it by reflection).
+class LF_WhitelistManager_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_WhitelistManager";
+	}
+
+	override void Apply()
+	{
+		LF_WhitelistManager.ResetStatics();
 	}
 }

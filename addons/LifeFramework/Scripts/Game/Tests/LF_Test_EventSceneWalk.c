@@ -1,10 +1,10 @@
 // red-proof: `test --no-build --red LF_Test_EventSceneWalk` -> RED PROOF OK (2026-11-17): with the hook on nobody moves, so `walker 1 reached the target` and `passed every waypoint first` fail; without it `SUMMARY tier=only passed=1 failed=0`.
-// tier: WORLD
 //! Event scene walk (#1956): the walkers of the grid cell `event-scene` (Grid_event_scene.layer) follow
 //! the plan's waypoints in order to the target. GridWorld has no AIWorld, so the test moves the
 //! walkers toward the point the walk names for each (what the AI group does on a real map) and checks
 //! the books: every moving walker reaches the target inside the plan's walk budget, and a walker that
 //! stands still times out with a logged `[LFDebug:Events]` line and is removed out of sight.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventSceneWalk : LF_Test
 {
 	static const string SCENE = "grid_event_scene";

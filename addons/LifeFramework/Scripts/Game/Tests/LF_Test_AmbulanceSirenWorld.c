@@ -1,8 +1,8 @@
 // red-proof: the pre-fix prefab (ParentContextList `driver` on both siren actions) fails `a siren action has no positional context` (0 vs 1 context); observed 2026-11-16: light default back to lit (m_isOn = true, SpawnLights in OnPostInit) -> `a fresh vehicle starts with every bar light off` FAIL on both service vehicles, green on the fix; also m_bDutyOnly 0 on the prefab actions -> [LFTEST] FAIL a siren action on the ambulance is for the on-duty medic only
-// tier: WORLD
 //! The ambulance's siren (#923): the prefab carries the toggle with its other light controls
 //! (no positional context, so the seated driver sees them; a duty-only on and off pair that shows greyed with a reason when off duty), its own sound project loads and is
 //! set on the manager, the police car keeps the shared siren, and an anonymous request is refused.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_AmbulanceSirenWorld : LF_Test
 {
 	static const ResourceName AMBULANCE = "{D8C109C681E7AAF1}Prefabs/Vehicles/Wheeled/M997/LF_M997_Ambulance.et";

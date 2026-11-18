@@ -15,6 +15,7 @@ tools\cli audit placement --annex               also the debug annex (the old te
 tools\cli audit placement --from tmp/place-audit/out.txt   re-rank the last measurements (records.json beside it), no server
 tools\cli audit placement --strict              exit 1 when anything in the town is flagged (a pre-filming gate); the debug grid never fails it (docs/architecture/world-zones.md)
 tools\cli audit placement --grid --strict       GridWorld at the grid bar (on the ground, reachable); clean since 2026-11-17 (#1814), so any finding fails it. `wt gate`/`ci` run it when a GridWorld layer or a prefab changes, the main guard after every merge
+tools\cli audit placement --world MainWorld --layer Place_<place>_<slot>.layer --strict   one island layer (what `town fit` writes) on MainWorld; only that layer is measured, and a layer that selects nothing fails with its name. A run that leaves no out.txt prints the test run log, the server console.log and the pool lines to read
 tools\cli audit selftest                        the Node checks on fixtures (also in tools\cli validate)
 ```
 

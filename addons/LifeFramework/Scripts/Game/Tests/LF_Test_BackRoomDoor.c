@@ -1,7 +1,7 @@
 // red-proof: 2026-11-14 `tools\cli test --no-build --only LF_Test_BackRoomDoor` with the shut label changed to the open one failed `a searched back room reads as shut (expected '#LF-BackRoom_DoorShut', got '#LF-Shop_Open_BackRoom')`. Restored; green.
-// tier: LOGIC
 //! Back room door (#933): the prompt names the room and, once police have searched it, says it is
 //! shut and why; the shut refusal tells the player what to do (come back later).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_BackRoomDoor : LF_Test
 {
 	override string GetName()

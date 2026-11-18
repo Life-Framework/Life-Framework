@@ -1,10 +1,10 @@
 // red-proof: 2026-11-08, removed the hit zone heal (SetHealthScaled(1)) in LF_DestructibleResourceHitZone.OnDamage; `--only LF_Test_MiningDamage` failed "the rock's hit zone heals back" and "fifteen hits drop the iron row's five nuggets (expected 5, got 1)": the rock was destroyed by health after the first piece. Restored, green.
 
-// tier: WORLD
 //! Mining by hitting the rock. A melee context built the way SCR_MeleeComponent
 //! builds it (damageSource = the swung tool) goes through the iron rock's damage
 //! manager: the axe is refused, three pickaxe hits drop one iron nugget beside
 //! the rock, five pieces spend it (hidden, no more hits), and it grows back.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MiningDamage : LF_Test
 {
 	protected static const ResourceName IRON_ORE = "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et";

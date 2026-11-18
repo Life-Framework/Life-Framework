@@ -4,17 +4,18 @@
 // The modded `LF_StaticResetHooks` chain nested one super.Run frame per feature and overflowed the
 // script stack at about 123 layers. This proves, on a throwaway tree under the OS temp dir:
 //   - staticResetProblems flags a modded layer (what validate-registries fails on) and passes a hook class;
-//   - the codemod turns every layer into a self-registering LF_StaticResetHook subclass, keeps the
+//   - the codemod turns every layer into an LF_StaticResetHook subclass (no registration line, #2755), keeps the
 //     reset calls, rewrites the central file to the flat registry, and a second run changes nothing;
 //   - addHooks (the scaffold and heal-hotspots) writes the new form and is idempotent.
 //
-// red-proof: 2026-11-16 with the MODDED check removed from staticResetProblems this printed
+// red-proof: 2026-11-17 (#2755) with the STATIC_REGISTER loop removed this printed FAIL "a hook that registers
+// from a static initializer is a problem (#2755)". 2026-11-16 with the MODDED check removed from staticResetProblems this printed
 // FAIL "a modded layer is a problem (validate-registries fails it)".
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { CENTRAL, addHooks, centralFile, hookedCalls, registryHooks, staticResetProblems } from "../lib/static-reset-hooks.mjs";
 import { migrateRepo } from "../codemods/static-reset-registry.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const check = (ok, msg) => {
@@ -29,7 +30,7 @@ const layer = (names) =>
     .map((n) => `\t\tdone.Insert("${n}");\n\t\tif (apply)\n\t\t\t${n}.ResetStatics();\n`)
     .join("")}\t}\n}\n`;
 
-const dir = mkdtempSync(join(tmpdir(), "lf-static-reset-selftest-"));
+const dir = scratchDir("lf-static-reset-selftest-");
 const put = (rel, text) => {
   mkdirSync(dirname(join(dir, rel)), { recursive: true });
   writeFileSync(join(dir, rel), text);
@@ -64,9 +65,12 @@ try {
   check(again.files.length === 0 && !again.central && [one, two, tail].map(get).join("\n") === before, "codemod: second run changes nothing");
 
   const scaffold = addHooks(cls("LF_Delta"), [{ cls: "LF_Delta", method: "ResetStatics" }]);
-  check(/protected static bool s_bRegistered = LF_StaticReset\.Register\(new LF_Delta_StaticResetHook\(\)\);/.test(scaffold), "addHooks: writes a self-registering hook class");
+  check(/class LF_Delta_StaticResetHook : LF_StaticResetHook/.test(scaffold) && !/s_bRegistered|LF_StaticReset\.Register/.test(scaffold) && staticResetProblems(scaffold).problems.length === 0, "addHooks: writes a hook class with no static registration (#2755)");
   check(addHooks(scaffold, [{ cls: "LF_Delta", method: "ResetStatics" }]) === scaffold && hookedCalls(scaffold).length === 1, "addHooks: idempotent");
-  check(staticResetProblems(scaffold.replace(/LF_StaticReset\.Register\(new LF_Delta_StaticResetHook\(\)\)/, "true")).problems.length === 1, "a hook class that never registers is a problem");
+  const registering = scaffold.replace("{\n\toverride string Owner()", "{\n\tprotected static bool s_bRegistered = LF_StaticReset.Register(new LF_Delta_StaticResetHook());\n\n\toverride string Owner()");
+  check(registering !== scaffold && staticResetProblems(registering).problems.some((m) => /static initializer calls LF_StaticReset\.Register/.test(m)), "a hook that registers from a static initializer is a problem (#2755)");
+  check(staticResetProblems("class LF_Z\n{\n\tstatic bool s_b = LF_StaticReset.Register(new LF_Y_StaticResetHook());\n}\n").problems.length === 1, "a static Register initializer outside a hook class is a problem too");
+  check(staticResetProblems("class LF_Z\n{\n\tvoid Go()\n\t{\n\t\tLF_StaticReset.Register(new LF_Y_StaticResetHook());\n\t}\n}\n").problems.length === 0, "Register inside a function is fine");
 } catch (e) {
   check(false, `selftest threw: ${e.stack || e.message}`);
 } finally {

@@ -13,6 +13,18 @@ GenericEntity : "{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_H
      Height 1.8048
     }
    }
+   additionalActions + {
+    LF_HouseLockAction "{F36B7CD188821BD9}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_SetHomeAction "{69A56BFA83EAD194}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
   }
  }
 }

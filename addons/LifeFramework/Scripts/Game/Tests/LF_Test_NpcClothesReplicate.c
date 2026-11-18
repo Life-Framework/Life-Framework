@@ -3,12 +3,12 @@
 // `- the NPC replicates, so its worn clothes reach clients: {850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et`
 // (the worn-count assertions passed: the server dresses the NPC; the client never saw it).
 // Green after the fix.
-// tier: WORLD
 //! Station NPCs (Npc_Base.et) wear clothes that BaseLoadoutManagerComponent spawns on the server.
 //! Those clothes carry an RplComponent, so a client only sees them when the NPC is replicated too
 //! (Runtime override + Hierarchy, as vanilla Character_Base): without it the dedicated client
 //! renders the NPC in underwear (#150). The dedicated-client screenshots in the PR are the proof
 //! of the client side; this guards the server-side half cheaply.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NpcClothesReplicate : LF_Test
 {
 	override string GetName()

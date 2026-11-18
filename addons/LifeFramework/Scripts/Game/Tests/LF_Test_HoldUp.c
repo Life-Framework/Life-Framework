@@ -1,8 +1,8 @@
 // red-proof: Observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_HoldUp`: asserting two incident rows instead of one failed `one hold-up logs one incident (expected 2, got 1)`; restored.
 
-// tier: WORLD
 //! incident/holdup: one hold-up publishes one intent that the incident log records (actor, target,
 //! position, zone); out of range, no weapon, and the cooldown are refused and record nothing.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HoldUp : LF_Test
 {
 	override string GetName()

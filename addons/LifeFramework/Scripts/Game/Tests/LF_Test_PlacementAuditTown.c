@@ -1,10 +1,10 @@
-// tier: WORLD
 // red-proof: 2026-11-11, LF_PlacementAudit.RunBatch with its `measured++` commented out: `tools\cli audit placement` failed "the town audit measured every listed entity (expected 732, got 0)" and "the town audit found the layer entities in the world". Restored, green.
 //! The town walk behind `tools\cli audit placement` (agent-box/place-audit.mjs). That command writes
 //! $profile:place-audit/in.txt (every entity the DebugWorld layers place) and runs this test alone;
 //! the test measures each one with LF_PlacementAudit and writes out.txt, which the command ranks.
 //! In a normal suite run there is no in.txt: the test checks the walk on the evidence locker instead,
 //! which stood half inside the police station wall until this audit found it (2026-11-11).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementAuditTown : LF_Test
 {
 	static const string IN_PATH = "$profile:place-audit/in.txt";

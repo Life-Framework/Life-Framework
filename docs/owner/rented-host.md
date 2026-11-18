@@ -98,6 +98,10 @@ the commands do this:
 - `tools\cli host backup` copies the profile into `backups\<time>`.
 - `tools\cli host restore <folder>` puts a backup back. It keeps what it replaces under
   `backups\<time>-replaced-by-restore`.
+- If you put back only an older police roster (`LifeFramework/whitelist.txt`) while
+  `LifeFramework/whitelist-legacy-migrated.txt` stays, the uids once migrated from a legacy whitelist
+  file are not added again. Delete the marker file to run the migration again at the next start; it adds
+  back every uid still in the legacy file, including ones an admin had removed since.
 - `tools\cli host prune` keeps the newest 20 backups.
 - `tools\cli host drill <backup>` boots a backup on a scratch profile on a pool machine and passes only
   if the save loads with its accounts. Run it on a backup before you rely on it.

@@ -1,9 +1,9 @@
 // red-proof: Observed 2026-11-09 with `--only`: with the cooldown check disabled in LF_IncidentFlags.Report, `a second report inside the cooldown is refused (expected 1, got 2)`; restored; green.
 
-// tier: LOGIC
 //! incident/report: a player report flags only the reporter's recent incidents, the cooldown
 //! refuses a second report, an administrator marks a flag handled, the Game Master feed carries
 //! flagged incidents first (even far away), and the flag command parses.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_IncidentReport : LF_Test
 {
 	override string GetName()

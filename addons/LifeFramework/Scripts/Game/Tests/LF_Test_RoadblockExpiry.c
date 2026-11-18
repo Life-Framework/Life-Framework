@@ -1,10 +1,10 @@
 // red-proof: observed 2026-11-16 (#2100) with `tools\cli test --no-build --red LF_Test_RoadblockExpiry`: `RED PROOF OK (all 1 listed test(s) fail with the hook on)` (RedProof() skips every expire call, so "an expired roadblock leaves no piece" and the later counts fail); green without the hook (`--only LF_Test_RoadblockExpiry,LF_Test_Roadblock`, 2 passed). On main before the feature the file does not compile.
-// tier: WORLD
 //! #2100 acceptance: a deployed roadblock clears itself (LF_Roadblock.c). Three sets are laid through
 //! the server path (LF_Roadblocks.Deploy). The first is older than the configured time (20 minutes by
 //! default, Configs/Police/LF_Roadblock.conf) and is removed with every piece when the expiry runs.
 //! The second is removed when its officer goes off duty. The third, inside the window and laid by an
 //! officer still on duty, stays; it goes when its officer's account is gone.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RoadblockExpiry : LF_Test
 {
 	protected static const string OFFICER_A_UID = "roadblock-expiry-a";

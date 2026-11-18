@@ -194,6 +194,46 @@ StringTable {
      Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
+    CustomStringTableItem "{A5BFE7A72F0C053D}" {
+     Id "LF-Dialogue_HarbourMaster_Bye"
+     Target_en_us "Mind the edge of the quay."
+     Comment "Harbour master caption (#2692): the goodbye."
+    }
+    CustomStringTableItem "{A55113E34B39D13E}" {
+     Id "LF-Dialogue_HarbourMaster_FirstJob"
+     Target_en_us "Crates, mostly. The coaster unloads onto the quay and somebody has to carry them across to the sheds. It pays by the crate, on the spot."
+     Comment "Harbour master caption (#2692): the first job, carrying crates from the quay (the parcel run)."
+    }
+    CustomStringTableItem "{71AC670B32383636}" {
+     Id "LF-Dialogue_HarbourMaster_Go"
+     Target_en_us "Good. Take a crate from the pile by the crane and carry it where the tag says. Then come back for the next one."
+     Comment "Harbour master caption (#2692): how the crate run works."
+    }
+    CustomStringTableItem "{0C493581129EAF98}" {
+     Id "LF-Dialogue_HarbourMaster_Greet"
+     Target_en_us "Harbour office. Mind the crane and mind the ropes. What can I do for you?"
+     Comment "Harbour master caption (#2692): the greeting."
+    }
+    CustomStringTableItem "{841D61171005B9D8}" {
+     Id "LF-Dialogue_HarbourMaster_SayAskWork"
+     Target_en_us "Is there any work on the quay?"
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{329FE33AE5F0B131}" {
+     Id "LF-Dialogue_HarbourMaster_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{5644E7F72839DB8C}" {
+     Id "LF-Dialogue_HarbourMaster_SayNotNow"
+     Target_en_us "Not just now."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{555B8170F5B38060}" {
+     Id "LF-Dialogue_HarbourMaster_SayTakeJob"
+     Target_en_us "I'll carry the crates."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
     CustomStringTableItem "{29B583DBF009AF66}" {
      Id "LF-Dialogue_NightShift_AboutMove"
      Target_en_us "They gave us one bus and one suitcase each. The island is quiet, and the quiet is hard at first. But nobody asks you to leave in the middle of dinner."
@@ -414,6 +454,16 @@ StringTable {
      Target_en_us "Republic of Everon, Identity Card"
      Comment "Title of the ID card view another player holds up."
     }
+    CustomStringTableItem "{9F32BE4E1F1F7320}" {
+     Id "LF-Item_TouristMap_Description"
+     Target_en_us "A printed tourist and road map of the island. Studying it pencils every place a visitor might look for onto your own map."
+     Comment "Tourist map (#2242): the item's inventory description."
+    }
+    CustomStringTableItem "{27B0683382098CD2}" {
+     Id "LF-Item_TouristMap_Name"
+     Target_en_us "Tourist map of Everon"
+     Comment "Tourist map (#2242): the item's name in the inventory."
+    }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
      Target_en_us "Fence"
@@ -429,10 +479,115 @@ StringTable {
      Target_en_us "I teach people to survive outside town. Water, food, a fire, a shelter. The weather turns fast on Everon."
      Comment "NPC role talk (ranger), from tools/assets/outfits/roles.json."
     }
+    CustomStringTableItem "{894DEDBF2566803F}" {
+     Id "LF-OrgWarAnnounce_Accepted"
+     Target_en_us "NOTICE: the challenge is answered. War stands between %1."
+     Comment "Pack wording (#2687): toast, the target answered; %1 is 'Declarer / Target'. A typed notice from the commune registry."
+    }
+    CustomStringTableItem "{6B2968AE4D37B43B}" {
+     Id "LF-OrgWarAnnounce_Declared"
+     Target_en_us "NOTICE: war declared, %1. Entered in the commune register."
+     Comment "Pack wording (#2687): toast, a declaration was filed; %1 is 'Declarer / Target'."
+    }
+    CustomStringTableItem "{DF43B09F9542632C}" {
+     Id "LF-OrgWarAnnounce_Forfeit"
+     Target_en_us "NOTICE: war struck from the register, a party has no members left: %1"
+     Comment "Pack wording (#2687): toast, a party emptied and forfeited; %1 is 'Declarer / Target'."
+    }
+    CustomStringTableItem "{2D2EA5314BFF70E2}" {
+     Id "LF-OrgWarAnnounce_Lapsed"
+     Target_en_us "NOTICE: declaration lapsed, no answer was entered: %1"
+     Comment "Pack wording (#2687): toast, a declaration went unanswered; %1 is 'Declarer / Target'."
+    }
+    CustomStringTableItem "{BCE3B48C1AFA5908}" {
+     Id "LF-OrgWarAnnounce_MemberAccepted"
+     Target_en_us "Registry notice: your organization stands at war with %1."
+     Comment "Pack wording (#2687): member notice, the war started; %1 is the other organization."
+    }
+    CustomStringTableItem "{8D1E355F097B9209}" {
+     Id "LF-OrgWarAnnounce_MemberDeclaredIn"
+     Target_en_us "Registry notice: %1 has declared war on your organization. Enter your answer at the war desk before the window closes."
+     Comment "Pack wording (#2687): member notice, your side was challenged; %1 is the declaring organization."
+    }
+    CustomStringTableItem "{3D0D433C6A9B0736}" {
+     Id "LF-OrgWarAnnounce_MemberDeclaredOut"
+     Target_en_us "Registry notice: your declaration of war on %1 is entered. They have a short while to answer."
+     Comment "Pack wording (#2687): member notice, your side declared; %1 is the other organization."
+    }
+    CustomStringTableItem "{B8A01155184465E4}" {
+     Id "LF-OrgWarAnnounce_MemberForfeit"
+     Target_en_us "Registry notice: your war with %1 is struck from the register, a party has no members left."
+     Comment "Pack wording (#2687): member notice, forfeit; %1 is the other organization."
+    }
+    CustomStringTableItem "{BB7C911F87DB48D5}" {
+     Id "LF-OrgWarAnnounce_MemberLapsed"
+     Target_en_us "Registry notice: your declaration between your organization and %1 lapsed unanswered."
+     Comment "Pack wording (#2687): member notice, the declaration went unanswered; %1 is the other organization."
+    }
+    CustomStringTableItem "{51697BB4C899E53B}" {
+     Id "LF-OrgWarAnnounce_MemberTime"
+     Target_en_us "Registry notice: your war with %1 has run its term and is closed."
+     Comment "Pack wording (#2687): member notice, the war ran out; %1 is the other organization."
+    }
+    CustomStringTableItem "{43B80C35B8C70D2C}" {
+     Id "LF-OrgWarAnnounce_Time"
+     Target_en_us "NOTICE: war closed, the term has run out: %1"
+     Comment "Pack wording (#2687): toast, a war ran out; %1 is 'Declarer / Target'."
+    }
+    CustomStringTableItem "{ECF697E63340D4B1}" {
+     Id "LF-OrgWarAnnounce_Title"
+     Target_en_us "Public Notice, Commune Registry"
+     Comment "Pack wording (#2687): toast title for organization war announcements."
+    }
+    CustomStringTableItem "{55B8E2A6EE0328FD}" {
+     Id "LF-OrgWarBoard_Accepted"
+     Target_en_us "NOTICE. %1 and %2 stand at war by entry of the registry. The war closes in %3."
+     Comment "Pack wording (#2687): war notice board, a war in progress. %1 and %2 the sides, %3 time left."
+    }
+    CustomStringTableItem "{6653EC7BA0A42E2B}" {
+     Id "LF-OrgWarBoard_Declared"
+     Target_en_us "NOTICE. %1 has filed a declaration of war against %2. An answer is due within %3."
+     Comment "Pack wording (#2687): war notice board, a declaration waiting for the answer. %1 declarer, %2 target, %3 time left."
+    }
+    CustomStringTableItem "{B09A1BE26DCB4E81}" {
+     Id "LF-OrgWarBoard_Ended"
+     Target_en_us "NOTICE. The war between %1 and %2 is closed, the term having run out %3 ago."
+     Comment "Pack wording (#2687): war notice board, a war that ran out. %3 = time since the end."
+    }
+    CustomStringTableItem "{0D3A30839518352E}" {
+     Id "LF-OrgWarBoard_Forfeit"
+     Target_en_us "NOTICE. %1 and %2: the war was struck from the register when a party gave up, %3 ago."
+     Comment "Pack wording (#2687): war notice board, a war ended by forfeit. %3 = time since the end."
+    }
+    CustomStringTableItem "{6F51040220808FFE}" {
+     Id "LF-OrgWarBoard_Lapsed"
+     Target_en_us "NOTICE. %1 filed a declaration of war against %2. No answer was entered and it lapsed %3 ago."
+     Comment "Pack wording (#2687): war notice board, a declaration nobody answered. %3 = time since it lapsed."
+    }
+    CustomStringTableItem "{F444A385FAAADBCA}" {
+     Id "LF-OrgWarBoard_None"
+     Target_en_us "No notice of war is posted. The commune is quiet."
+     Comment "Pack wording (#2687): war notice board line when no notice is up."
+    }
+    CustomStringTableItem "{242AAC788D3EBF12}" {
+     Id "LF-OrgWarBoard_Read"
+     Target_en_us "Read the notices of war"
+     Comment "Pack wording (#2687): action on the war notice board."
+    }
+    CustomStringTableItem "{67B59D6E581EA252}" {
+     Id "LF-OrgWarBoard_Title"
+     Target_en_us "Commune Registry: Notices of War"
+     Comment "Pack wording (#2687): title of the war notice board card."
+    }
     CustomStringTableItem "{B0E7C6F894684DEC}" {
      Id "LF-Org_LedgerTitle"
      Target_en_us "{Org} Register - 1989 ledger"
      Comment "Registry ledger page title."
+    }
+    CustomStringTableItem "{4B7A1E93C2D05F68}" {
+     Id "LF-Place_SaintPhilippe"
+     Target_en_us "Saint Philippe"
+     Comment "Named place (#1943, town pass #1947): the map label dispatch reads for a robbery away from any sign; LF_NamedPlaces.Nearest."
     }
     CustomStringTableItem "{D8F9FC9FD0EEAC13}" {
      Id "LF-PoliceApp_Title"
@@ -1484,6 +1639,31 @@ StringTable {
      Target_en_us "Open cases, one column each: the crime, where and when, the suspect, and the evidence pinned against it."
      Comment "Case board Read card (#148)."
     }
+    CustomStringTableItem "{B36E6F94CE8AA8A7}" {
+     Id "LF-Sign_PoliceFront_How"
+     Target_en_us "Licences and permits: the desk in the porch|Enquiries: the front counter in the hall|Wanted notices: the board on the hall wall|Officers: the duty room, through the door between the hall benches"
+     Comment "Police station fascia sign card, How section (Everon 1989 pack). Items separated by |."
+    }
+    CustomStringTableItem "{BB9BA6C4A8677A06}" {
+     Id "LF-Sign_PoliceFront_Needs"
+     Target_en_us "Cash for a licence or permit fee"
+     Comment "Police station fascia sign card, Needs section (Everon 1989 pack)."
+    }
+    CustomStringTableItem "{3D32D85B2CC2A704}" {
+     Id "LF-Sign_PoliceFront_Next"
+     Target_en_us "Officers on duty: the patrol cars wait in the yard."
+     Comment "Police station fascia sign card, Next section (Everon 1989 pack)."
+    }
+    CustomStringTableItem "{DE2A7A265D6907E9}" {
+     Id "LF-Sign_PoliceFront_Title"
+     Target_en_us "Gendarmerie"
+     Comment "Title of the fascia sign over the police station's front door (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Gendarmerie."
+    }
+    CustomStringTableItem "{2EEE13F78C153D7D}" {
+     Id "LF-Sign_PoliceFront_What"
+     Target_en_us "The police post of Everon. Licences and permits at the porch desk, enquiries at the front counter, the wanted board in the hall."
+     Comment "Police station fascia sign card, What section (Everon 1989 pack)."
+    }
     CustomStringTableItem "{1A20ADB3E49DD4E0}" {
      Id "LF-Sign_PoliceStation_How"
      Target_en_us "Punch the clock on the duty desk: *Clock in* puts your own clothes and pockets in the locker and hands you the police uniform; *Clock out* gives them back|Read the wanted board beside the desk|At the armory: *Draw kit*"
@@ -1819,6 +1999,11 @@ StringTable {
      Target_en_us "Cars and trucks for sale. Each comes locked, with one key and its own plates."
      Comment "Sign card for the vehicle lot counter, What section."
     }
+    CustomStringTableItem "{C8A0D5FC27A2CA22}" {
+     Id "LF-SiteFlag_Unclaimed"
+     Target_en_us "No holder on record"
+     Comment "Pack wording (#2687): painted board on a contested site's flag pole when no organisation holds the site."
+    }
     CustomStringTableItem "{08E024031EF25E98}" {
      Id "LF-TownBoard_Title"
      Target_en_us "Everon town board"
@@ -2003,6 +2188,11 @@ StringTable {
      Id "LF-Townsfolk_CafeOwner_Role"
      Target_en_us "Café owner"
      Comment "Townsfolk (The relocated, #1960): what Odile Marchand does, the role line under the name."
+    }
+    CustomStringTableItem "{D20E34A328504890}" {
+     Id "LF-Townsfolk_HarbourMaster_Name"
+     Target_en_us "Marcel Roux"
+     Comment "Townsfolk (M6, #2692): the harbour master's name, the speaker line of his dialogue."
     }
     CustomStringTableItem "{7C3E5A19D04B82F6}" {
      Id "LF-Townsfolk_NightShift_Name"

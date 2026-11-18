@@ -14,10 +14,10 @@
 // "FAIL cannot load tools/lib/world-sync.mjs or tools/commands/world-sync.mjs".
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = 0;
@@ -58,7 +58,7 @@ const OT = `${LAYERS}/Other.layer`;
 
 // A bare origin with main, a maintainer clone on ws/town, and a second clone ("up") that pushes to main.
 function scene() {
-  const tmp = mkdtempSync(join(tmpdir(), "lf-world-sync-"));
+  const tmp = scratchDir("lf-world-sync-");
   const origin = join(tmp, "origin.git");
   const seed = join(tmp, "seed");
   git(tmp, "init", "-q", "--bare", "-b", "main", origin);

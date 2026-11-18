@@ -100,11 +100,11 @@ class LF_VehiclePriceModel
 		if (priceOverride >= 0)
 			return priceOverride;
 
-		int counted = Math.Max(basePrice, 0);
+		int counted = LF_Utils.MaxInt(basePrice, 0);
 		if (valueCap > 0)
-			counted = Math.Min(counted, valueCap);
+			counted = LF_Utils.MinInt(counted, valueCap);
 
-		return Math.Max(counted * percent / 100, 0);
+		return LF_Utils.MaxInt(counted * percent / 100, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------

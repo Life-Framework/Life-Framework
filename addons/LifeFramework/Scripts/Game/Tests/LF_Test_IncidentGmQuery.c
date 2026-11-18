@@ -1,8 +1,8 @@
 // red-proof: Observed 2026-11-09 with `tools/cli test --no-build --only`: with the admin check disabled in LF_IncidentGm.Answer a non-administrator got rows (`a non-administrator gets no rows`); restored; green.
 
-// tier: LOGIC
 //! incident/gm-query: the Game Master feed refuses a non-administrator with nothing, answers an
 //! administrator with rows near the camera inside the window only, and caps the rows.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_IncidentGmQuery : LF_Test
 {
 	override string GetName()

@@ -7,7 +7,7 @@
 //! map switches itself off at game start with one reason, and stays off; one placed kind of several
 //! keeps it on; a system with no places listed is never touched; a part of a system that went off
 //! is off with it. Uses a catalog built in script and a test place kind, so it runs on any map.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SystemsPlaces : LF_Test
 {
 	static const string KIND_HERE = "LF_Test_PlaceHere";

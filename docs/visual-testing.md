@@ -109,9 +109,11 @@ way `ci`'s Workbench steps choose (`tools/lib/wb-gate.mjs` chooseGate: live free
 machine gets this worktree's snapshot (uncommitted files too) through the pool's run folders, and the
 pictures are copied back to `tmp/look/<area>/` with `index.json` pointing at them (`machine` says
 where they were taken). With no room anywhere it queues (re-read every 20 s, up to 20 min,
-`LF_LOOK_WAIT_S`) instead of failing. A machine that cannot run it after all (the RAM went, its
-build lock is held, or the Workbench timed out with no shot while short of RAM) hands it back and
-the next machine is tried. `--local` keeps it on this PC, queuing here for RAM and the build lock;
+`LF_LOOK_WAIT_S`) instead of failing. A machine that cannot run it after all (the RAM went, or the Workbench timed out with no
+shot while short of RAM) hands it back and the next machine is tried. A held build lock (another
+headless Workbench: a build, an rdb refresh, another look) is a wait, not a refusal: the look prints
+`look: queued: another headless Workbench holds the build lock` and re-checks every 20 s for up to
+`LF_LOOK_WAIT_S`, so a one-PC pool no longer ends in `no machine left to try` (#2808). `--local` keeps it on this PC, queuing here for RAM and the build lock;
 `--machine <name>` sends it to one pool machine; `--force` runs here with no RAM check. A live
 `look serve` here is always used first. On 2026-11-14, with 0.1 GB free on this PC, `look bank`
 ran on lf-testbox in 297 s the first time (a new run folder: 67 s to sync) and on lf-cloud in 93 s.
@@ -134,6 +136,19 @@ Read `contact.jpg` (sized for an agent to read in one image) and then the PNG of
 looks off. Each close-up label carries the entity's world bounds in metres and its scale factor
 when that is not 1; compare sizes between neighbours. The exit code is 1 when a shot is missing or
 Workbench timed out, never because of a flag.
+
+**What a picture shows.** A look shows the working tree: HEAD plus uncommitted and untracked
+files. Shoot "before" from a checkout without your edit (before the first edit, `git stash`, or the
+base commit), never after `dress.mjs` or any generator has already rewritten the file. Every
+`index.json` carries `inputs.addons` (the git tree of `addons/` the look was asked to show) and
+`inputs.rendered` (the tree the Workbench had on disk when it shot: the viewer checkout for the look
+server, the snapshot for a fresh Workbench); the summary prints it as `addons=<tree>`. The look fails
+when the two differ, and a routed look also fails when the box rendered another tree than this
+checkout's. `tools\cli evidence <key> after <area>` refuses a pair whose before and after show the
+same tree (`--same-inputs` for a change outside `addons/`). On 2026-11-17 PR #2364's general store
+before and after looked the same: the "before" look ran after `dress.mjs` had rewritten the prefab,
+so both pictures showed the new prefab (snapshot `f66939f0` held the 1312-line file). The look itself
+was right: the same prefab, committed in another worktree, showed its thinner shelves at once.
 
 **Flags** are printed per shot and written into the tile label and `index.json`. They are hints
 that say where to look first, not verdicts:
@@ -243,7 +258,7 @@ What a look from **another worktree** costs is decided by what differs from the 
 |---|---|
 | nothing | `server-same`: shot as is |
 | only files outside `addons/` | `server-reopen` |
-| a modified addon file whose extension is in `FAST_PATH_EXT` (empty; `LF_LOOK_REOPEN_EXT=.layer` to probe) | `server-reopen`; the file is written **in place** (open, truncate, write: an editor's save), HEAD moves with no worktree write, because `git checkout` unlinks and recreates a file and a reopen after that crashed Workbench 4 of 4 (2026-11-14) |
+| a modified `.layer` when `FAST_PATH_EXT` lists it (empty; `LF_LOOK_REOPEN_EXT=.layer` to probe). Only `.layer` can ever take this path (`REOPEN_SAFE_EXT`): a prefab, material, config or mesh stays loaded in Workbench across a world reopen, so it restarts whatever the variable says | `server-reopen`; the file is written **in place** (open, truncate, write: an editor's save), HEAD moves with no worktree write, because `git checkout` unlinks and recreates a file and a reopen after that crashed Workbench 4 of 4 (2026-11-14) |
 | any other addon change (added, deleted, renamed, a script, a `.meta`, the look plugin) | `server-restart`: 10 to 17 s |
 
 **Not proven (2026-11-17):** the in-place reopen. On the shared box every look between mine came from another worktree

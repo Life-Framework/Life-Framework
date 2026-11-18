@@ -1,8 +1,8 @@
-// tier: LOGIC
 // red-proof: 2026-11-16, `--red LF_Test_RadioPlaylist` (RedProof skips marking the tracks playable): RED-OK, failed "the missing track 1 is skipped (expected 2, got -1)", "the list still wraps past the gap", "two tracks are playable". Then `--only` green.
 //! Radio playlists (LF_RadioPlaylist, Feature/Atmosphere): a list rotates in order and wraps, an
 //! hour-limited list plays only in its hours, a missing track is skipped with one error and a list
 //! with nothing playable answers -1. Pure data in, indexes out; no world, no sound project.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RadioPlaylist : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

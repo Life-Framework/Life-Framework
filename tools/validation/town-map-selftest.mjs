@@ -18,16 +18,17 @@
 //   - the real dossiers' halls, shops and houses are found without a hand edit (Saint-Philippe fills the town template, Meaux
 //     fills the village one, and Meaux's approved mapping passes `--check` under its own template).
 // red-proof: with TYPE_ALIASES emptied this printed "FAIL alias: municipal-office resolves to government" (2026-11-17).
+// red-proof: before templates/districts.json existed this printed "FAIL cannot load the districts template: no template districts" (2026-11-18).
 // red-proof: with chooseTemplate ignoring the mapping this printed "FAIL template choice: a mapping for village beats the gazetteer kind" (2026-11-17).
 // red-proof: before tools/town/map.mjs existed this printed "FAIL cannot load tools/town/map.mjs: ERR_MODULE_NOT_FOUND" (2026-11-16).
 // red-proof: with the interior gate in `eligible()` removed this printed "FAIL slot arrival maps to b02, which has no interior (only candidate left)" (2026-11-16).
 // red-proof: with "At 4503, 10772." added to a template's `about` this printed "FAIL template town has problems: .about: ... holds a coordinate pair" (2026-11-16).
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIXTURE = join(ROOT, "tools", "town", "fixtures", "map-dossier.json");
@@ -270,7 +271,7 @@ function throws(fn) {
 }
 
 // ---- the CLI: `town map`, `--check`, and no overwrite of a reviewed mapping
-const tmp = mkdtempSync(join(tmpdir(), "lf-town-map-"));
+const tmp = scratchDir("lf-town-map-");
 try {
   const out = join(tmp, "mapping.json");
   const cli = (...args) => spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "town", ...args], { cwd: ROOT, encoding: "utf8", timeout: 60000, windowsHide: true });
@@ -300,8 +301,36 @@ try {
   rmSync(tmp, { recursive: true, force: true });
 }
 
+// ---- the districts template (#2896): a residential ring has no hall and no board, so nothing in it is required
+{
+  let districts = null;
+  try {
+    districts = map.loadTemplate("districts", ROOT);
+  } catch (e) {
+    fail(`cannot load the districts template: ${e.message}`);
+  }
+  if (districts) {
+    const probs = map.checkTemplate(districts);
+    check(probs.length === 0, `template districts has problems: ${probs.join("; ")}`);
+    check(districts.slots.every((s) => s.required === false), `districts: no slot is required, but ${districts.slots.filter((s) => s.required).map((s) => s.id).join(", ")} is`);
+    check(["house", "fuel", "garage", "farm-plot", "taxi", "shop", "pub"].every((id) => districts.slots.some((s) => s.id === id)) && districts.slots.length === 7, "districts: the slots are house, fuel, garage, farm-plot, taxi, shop and pub");
+    check(!districts.slots.some((s) => s.id === "hall" || s.id === "board"), "districts: no hall and no board slot");
+    const allNone = { schema: 1, template: "districts", place: dossier.place.slug, status: "proposed", slots: Object.fromEntries(districts.slots.map((s) => [s.id, { none: true, reason: "nothing for this place" }])) };
+    check(map.checkMapping(allNone, dossier, districts).length === 0, "districts: a mapping with every slot none passes --check (nothing is required)");
+    check(map.chooseTemplate({ mapping: { template: "districts" }, dossier: { place: { kind: "town" } } }).kind === "districts", "template choice: a districts mapping uses the districts template");
+    const sd = join(ROOT, "docs", "everon", "places", "saint-philippe-districts");
+    if (existsSync(join(sd, "mapping.json"))) {
+      const sdMap = JSON.parse(readFileSync(join(sd, "mapping.json"), "utf8"));
+      const sdDossier = JSON.parse(readFileSync(join(sd, "dossier.json"), "utf8"));
+      check(sdMap.template === "districts" && !("hall" in sdMap.slots) && !("board" in sdMap.slots), "saint-philippe-districts: the mapping uses the districts template, with no hall and no board");
+      const sdProbs = map.checkMapping(sdMap, sdDossier, districts);
+      check(sdProbs.length === 0, `saint-philippe-districts: the mapping fails --check under districts: ${sdProbs.join("; ")}`);
+    }
+  }
+}
+
 // ---- the committed templates stay out of coordinates on disk too (not just after parsing)
-for (const kind of ["town", "village"]) {
+for (const kind of ["town", "village", "districts"]) {
   const text = readFileSync(join(ROOT, "tools", "town", "templates", `${kind}.json`), "utf8");
   check(!/\d{3,}\s*,\s*-?\d{3,}/.test(text), `templates/${kind}.json holds a coordinate-looking pair`);
 }

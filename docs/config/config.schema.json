@@ -154,6 +154,11 @@
                 "type": "boolean",
                 "description": "Hidden: the outlet no longer sells the item; a later layer can set it back. The remove verb takes the offer out of the list instead",
                 "default": false
+              },
+              "grantsLicence": {
+                "type": "string",
+                "description": "Licence row: the counter issues this licence (LF_ELicenseType name) under the licence office's rules (fee, clean record, wait; LF_LicenceDesk) instead of selling an item. m_sItem is then only the row's key and names no catalogue item. Empty is an item row",
+                "default": ""
               }
             },
             "additionalProperties": false
@@ -411,6 +416,21 @@
       "additionalProperties": false,
       "x-class": "LF_GraceConfig"
     },
+    "houses": {
+      "type": "object",
+      "description": "The houses owner-config section: Configs/Houses/LF_Houses.conf with the owner's `houses` section layered over it.",
+      "properties": {
+        "doorCloseDelaySeconds": {
+          "type": "number",
+          "description": "Seconds a locked house's open door stays open before it closes itself. 0 turns the auto-close off",
+          "default": 20,
+          "minimum": 0,
+          "maximum": 600
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_HousesConfig"
+    },
     "idCard": {
       "type": "object",
       "description": "The photo identity card: Configs/Identity/LF_PhotoIdCard.conf with the owner's `idCard` section layered over it.",
@@ -471,6 +491,41 @@
           "default": 1200,
           "minimum": 0,
           "maximum": 86400
+        },
+        "runMinDistance": {
+          "type": "number",
+          "description": "Delivery run: the drop-off must be at least this many metres (straight line) from where the run started, or the run pays nothing",
+          "default": 300,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "runMinTimeFraction": {
+          "type": "number",
+          "description": "Delivery run: the run must take at least this share of the expected driving time (distance over the road speed), or it pays nothing",
+          "default": 0.6,
+          "minimum": 0,
+          "maximum": 1
+        },
+        "runRoadSpeed": {
+          "type": "number",
+          "description": "Delivery run: road speed in metres per second used to work out the expected driving time of a run",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cargoDepositPercent": {
+          "type": "integer",
+          "description": "Delivery cargo deposit: percent of the cargo's shop sell price taken at the start of a run. It is returned on delivery and kept when the run is abandoned. 0 turns the deposit off",
+          "default": 100,
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "cargoDepositFallback": {
+          "type": "integer",
+          "description": "Delivery cargo deposit: the deposit base when the shop price list has no sell price for the cargo",
+          "default": 50,
+          "minimum": 0,
+          "maximum": 1000000
         },
         "jobXpFirstLevel": {
           "type": "integer",
@@ -686,6 +741,49 @@
       "additionalProperties": false,
       "x-class": "LF_LicencesConfig"
     },
+    "lockers": {
+      "type": "object",
+      "description": "The lockers owner-config section: Configs/Lockers/LF_Lockers.conf with the owner's `lockers` section layered over it.",
+      "properties": {
+        "rentPrice": {
+          "type": "integer",
+          "description": "Cash for one rent period at a locker site. 0 rents free",
+          "default": 100,
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "rentPeriodDays": {
+          "type": "integer",
+          "description": "Days one rent payment lasts. 0 means a locker never lapses",
+          "default": 7,
+          "minimum": 0,
+          "maximum": 3650
+        },
+        "gracePeriodDays": {
+          "type": "integer",
+          "description": "Days after the paid-until moment before the contents move to the site's lost-and-found",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 3650
+        },
+        "reclaimFee": {
+          "type": "integer",
+          "description": "Cash to take the contents back from lost-and-found. 0 reclaims free",
+          "default": 50,
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "weightCapacity": {
+          "type": "number",
+          "description": "Kilograms one locker holds",
+          "default": 60,
+          "minimum": 1,
+          "maximum": 10000
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_LockerConfig"
+    },
     "logoutBody": {
       "type": "object",
       "description": "Owner config, section \"logoutBody\".",
@@ -782,6 +880,13 @@
           "minimum": 0,
           "maximum": 1000000
         },
+        "hideoutLeaseIdleDays": {
+          "type": "integer",
+          "description": "Real days a hideout lease may stand with no member of its organization connected before the lease lapses (#2573); 0 = leases never lapse",
+          "default": 14,
+          "minimum": 0,
+          "maximum": 3650
+        },
         "rankDefaults": {
           "type": "object",
           "description": "Rights of the default ranks a new organization starts with, one entry per rank id (founder, officer, member). A rank with no entry keeps its shipped rights. Applies to organizations founded after the change; a saved organization keeps its own ranks. Records are an object keyed by a stable key. The key is a default rank id: founder, officer or member. The entry starts from the shipped rights, so only the permissions written change. It applies to organizations founded afterwards; a saved organization keeps its own ranks.",
@@ -827,7 +932,7 @@
               },
               "declareWar": {
                 "type": "boolean",
-                "description": "Reserved for the war record: no effect yet",
+                "description": "May declare a war on another organization and answer a declaration made on it",
                 "default": false
               },
               "useStash": {
@@ -848,6 +953,66 @@
             },
             "additionalProperties": false
           }
+        },
+        "wars": {
+          "type": "object",
+          "description": "The rules of an organization war: the fee, the answer window, how long a war lasts, the cooldown between the same two organizations, the shorter cooldown after a declaration lapses, the member minimum and the two kill rules.",
+          "properties": {
+            "fee": {
+              "type": "integer",
+              "description": "Cash the declaring organization pays from its fund to declare a war",
+              "default": 5000,
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "answerSeconds": {
+              "type": "integer",
+              "description": "Seconds the challenged organization has to answer a declaration before it lapses",
+              "default": 600,
+              "minimum": 10,
+              "maximum": 86400
+            },
+            "lengthSeconds": {
+              "type": "integer",
+              "description": "Seconds a war lasts once answered (7200 is one in-game day at the 2 hour day)",
+              "default": 7200,
+              "minimum": 60,
+              "maximum": 604800
+            },
+            "cooldownSeconds": {
+              "type": "integer",
+              "description": "Seconds before the same two organizations may fight another war. 0 means no cooldown",
+              "default": 86400,
+              "minimum": 0,
+              "maximum": 2592000
+            },
+            "lapseCooldownSeconds": {
+              "type": "integer",
+              "description": "Seconds before the same two organizations may declare again after a declaration lapsed unanswered, so a fund cannot be drained by re-declaring on a loop. 0 means no cooldown",
+              "default": 3600,
+              "minimum": 0,
+              "maximum": 2592000
+            },
+            "minMembers": {
+              "type": "integer",
+              "description": "Members each side needs to declare or answer a war",
+              "default": 3,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "warKillsAreMurder": {
+              "type": "boolean",
+              "description": "When on, a kill between organizations at war is murder like any other",
+              "default": false
+            },
+            "tagWarKills": {
+              "type": "boolean",
+              "description": "When on, a kill between organizations at war is tagged as a war kill in the record",
+              "default": true
+            }
+          },
+          "additionalProperties": false,
+          "x-class": "LF_OrgWarConfig"
         }
       },
       "additionalProperties": false,
@@ -1176,6 +1341,62 @@
           "default": 168,
           "minimum": 0,
           "maximum": 100000
+        },
+        "armoryCooldownMinutes": {
+          "type": "integer",
+          "description": "Minutes of real time between two armory kits for one officer. Saved, so clocking out and a restart do not reset it. At least 1: the spike strip and roadblock kit carry no serial, so only the cooldown limits them",
+          "default": 120,
+          "minimum": 1,
+          "maximum": 1440
+        },
+        "dutyShiftMaxSeconds": {
+          "type": "integer",
+          "description": "Most seconds of one duty shift that count for duty pay and rank; 0 means no cap. Past it the clock runs on unpaid until the officer clocks out and in again, so an officer who walked away from the game stops earning. A disconnect also stops the clock",
+          "default": 10800,
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "trialSweepSeconds": {
+          "type": "integer",
+          "description": "Seconds between the server's checks for an on-duty officer whose trial ran out. That officer is clocked out",
+          "default": 60,
+          "minimum": 10,
+          "maximum": 3600
+        },
+        "ticketRateWindowSeconds": {
+          "type": "integer",
+          "description": "Seconds of the window in which an officer may send ticket requests (ticketRateBurst per window)",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 60
+        },
+        "ticketRateBurst": {
+          "type": "integer",
+          "description": "Ticket requests one officer may send per ticketRateWindowSeconds. More are refused",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 50
+        },
+        "spikeStripMaxPerOfficer": {
+          "type": "integer",
+          "description": "Spike strips one officer may have deployed at once. Each deployed strip checks for wheels 20 times a second",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 20
+        },
+        "callReward": {
+          "type": "integer",
+          "description": "Cash an officer is paid, once, when their fine of a taken police call suspect at the call site completes the call",
+          "default": 150,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "callRadius": {
+          "type": "number",
+          "description": "Metres from a police call site within which the fine by the officer holding the call completes it",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 2000
         }
       },
       "additionalProperties": false,
@@ -1364,6 +1585,99 @@
       "additionalProperties": false,
       "x-class": "LF_ShopPricesConfig"
     },
+    "sites": {
+      "type": "object",
+      "description": "The rules of each contested site: radius, member minimum, capture, decay, flip cooldown and rent, per hideout id (#2679, gang war #1022).",
+      "properties": {
+        "rules": {
+          "type": "object",
+          "description": "The rules of each contested site, one entry per hideout id the site guards. A field an entry leaves out has the default rule. The core ships none: a pack adds the sites of its map. Records are an object keyed by a stable key. The key is the hideout id the site guards. An id no shipped entry has adds a site; an existing id changes only the fields given. A field an entry leaves out has the default rule.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
+              "radius": {
+                "type": "integer",
+                "description": "Metres from the site's centre within which a member counts as on the site",
+                "default": 60,
+                "minimum": 1,
+                "maximum": 1000
+              },
+              "innerRadius": {
+                "type": "integer",
+                "description": "Metres from the site's centre of the inner ring; a member there counts double. 0 means no inner ring. At most radius",
+                "default": 20,
+                "minimum": 0,
+                "maximum": 1000
+              },
+              "minMembersPresent": {
+                "type": "integer",
+                "description": "Members of one organization that must stand on the site before it gains or captures",
+                "default": 2,
+                "minimum": 1,
+                "maximum": 100
+              },
+              "captureSeconds": {
+                "type": "integer",
+                "description": "Capture progress, in counted-member seconds, at which the site changes hands",
+                "default": 300,
+                "minimum": 1,
+                "maximum": 86400
+              },
+              "decayPerHour": {
+                "type": "integer",
+                "description": "Seconds of capture progress lost per hour while nobody stands on the site. 0 means progress never fades",
+                "default": 600,
+                "minimum": 0,
+                "maximum": 1000000
+              },
+              "flipCooldownSeconds": {
+                "type": "integer",
+                "description": "Seconds after the site changes hands in which no new capture completes. 0 means no cooldown",
+                "default": 1800,
+                "minimum": 0,
+                "maximum": 604800
+              },
+              "rentPerHour": {
+                "type": "integer",
+                "description": "Cash the holder earns per hour of holding the site. 0 earns nothing",
+                "default": 600,
+                "minimum": 0,
+                "maximum": 1000000
+              },
+              "maxRentBanked": {
+                "type": "integer",
+                "description": "Most cash a site banks for its holder before it is collected",
+                "default": 3000,
+                "minimum": 0,
+                "maximum": 100000000
+              },
+              "activeWindowSeconds": {
+                "type": "integer",
+                "description": "Seconds a member stays counted as active after the last thing they did on the site",
+                "default": 300,
+                "minimum": 1,
+                "maximum": 86400
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_SitesConfig"
+    },
     "staff": {
       "type": "object",
       "description": "The `staff` owner section (M4, #1343): where staff notifications are posted.",
@@ -1399,6 +1713,42 @@
       },
       "additionalProperties": false,
       "x-class": "LF_SystemsConfig"
+    },
+    "taxiFares": {
+      "type": "object",
+      "description": "Taxi fare numbers: Configs/Jobs/LF_TaxiFares.conf with the owner's `taxiFares` section layered over it.",
+      "properties": {
+        "floor": {
+          "type": "integer",
+          "description": "Taxi fare: the least a fare pays, and what a short hop pays",
+          "default": 80,
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "ratePerMetre": {
+          "type": "number",
+          "description": "Taxi fare: cash added per metre of straight-line distance beyond a short hop",
+          "default": 0.04,
+          "minimum": 0.001,
+          "maximum": 1000
+        },
+        "cap": {
+          "type": "integer",
+          "description": "Taxi fare: the most a fare pays, however far it went. Must not be below the floor",
+          "default": 300,
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "shortHopMetres": {
+          "type": "number",
+          "description": "Taxi fare: a drop-off this many metres or fewer from the pickup pays the floor only. 0 prices every metre",
+          "default": 100,
+          "minimum": 0,
+          "maximum": 10000
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_TaxiFareConfig"
     },
     "vehicles": {
       "type": "object",

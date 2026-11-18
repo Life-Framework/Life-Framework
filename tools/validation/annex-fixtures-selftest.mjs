@@ -13,10 +13,10 @@
 // printed "FAIL a new test names a village entity: expected /names village
 // entity "Roadmap_Bank_Vault"/" and exited 1 (2026-11-11).
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { checkAnnexFixtures, LAYERS, TESTS } from "./validate-annex-fixtures.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 function put(root, path, text) {
   const full = join(root, path);
@@ -24,11 +24,11 @@ function put(root, path, text) {
   writeFileSync(full, text);
 }
 
-const test = (body) => `// tier: WORLD\nclass LF_Test_X extends LF_Test\n{\n\toverride void Run(LF_TestContext ctx)\n\t{\n${body}\n\t}\n}\n`;
+const test = (body) => `[LF_TestInfo(LF_TestTier.WORLD)]\nclass LF_Test_X extends LF_Test\n{\n\toverride void Run(LF_TestContext ctx)\n\t{\n${body}\n\t}\n}\n`;
 const find = (n) => `\t\tctx.NotNull(GetGame().GetWorld().FindEntityByName("${n}"), "placed");`;
 
 function tree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-annex-"));
+  const root = scratchDir("lf-annex-");
   put(root, `${LAYERS}/Annex.layer`, `GenericEntity Annex_Desk : "{1111111111111111}Prefabs/Desk.et" {\n coords 0 0 0\n}\n`);
   put(root, `${LAYERS}/Street_Bank.layer`, `GenericEntity Roadmap_Bank_Vault : "{2222222222222222}Prefabs/Door.et" {\n components {\n  X "{3333333333333333}" {\n   m_sTargetId "Roadmap_Bank_Vault"\n  }\n }\n}\nGenericEntity Roadmap_Bank_Bag : "{2222222222222223}Prefabs/Bag.et" {\n}\n`);
   put(root, `${TESTS}/LF_Test_Old.c`, test(find("Roadmap_Bank_Bag")));

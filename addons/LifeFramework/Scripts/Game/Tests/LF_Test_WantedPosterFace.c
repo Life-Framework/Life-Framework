@@ -3,11 +3,11 @@
 //   [LFTEST]   - just outside, a built face stays (hysteresis) (expected 0, got -1)
 // Restored the margin and the test passed (13 assertions).
 
-// tier: LOGIC
 //! The face's budget rules (docs/architecture/visual-boards-budget.md): build within the draw
 //! radius, release beyond it plus the margin, keep in between; posters sit in one centred row up
 //! to four and two rows above that; the owner's `wantedBoard` section sets the count and radius
 //! inside their limits.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WantedPosterFace : LF_Test
 {
 	override string GetName()

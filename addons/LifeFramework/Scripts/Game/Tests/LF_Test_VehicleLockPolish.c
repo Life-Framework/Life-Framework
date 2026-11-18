@@ -2,8 +2,8 @@
 // run `tools\cli test --no-build --only LF_Test_VehicleLockPolish`; the "locked reads Unlock"
 // assertion fails.
 
-// tier: LOGIC
 //! Lock label per state, sort order below Get in, occupant key permission, Store-in-garage offer.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehicleLockPolish : LF_Test
 {
 	override string GetName()

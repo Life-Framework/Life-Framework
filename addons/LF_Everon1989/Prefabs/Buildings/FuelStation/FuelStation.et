@@ -45,5 +45,9 @@ SCR_DestructibleBuildingEntity : "{65ED02B8B05842F8}Prefabs/Structures/Commercia
     }
    }
   }
+  GenericEntity : "{45E645258D8E87F2}Prefabs/Buildings/FuelStation/FuelStation_Kit.et" {
+   ID "F5F1000000000001"
+   coords 0 0 0
+  }
  }
 }

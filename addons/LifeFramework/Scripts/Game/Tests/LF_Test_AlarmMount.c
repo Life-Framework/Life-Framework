@@ -4,10 +4,10 @@
 //   [LFTEST]   - the van alarm stands on the roof (5.96046e-08 m up)
 //   [LFTEST]   - the van alarm is on the van, not the road
 // Restored; green.
-// tier: WORLD
 //! dispatch/alarm-mount: a robbed site near an alarm mount sounds its alarm there, a small beacon on the bell box
 //! above the bank vault door and on the cash van roof. The alarm stood on the ground at the site point instead: a
 //! 1.6 m beacon on a post by the vault door and on the road behind the van (#571 maintainer review).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_AlarmMount : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

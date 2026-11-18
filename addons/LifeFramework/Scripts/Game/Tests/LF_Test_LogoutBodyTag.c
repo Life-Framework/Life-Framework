@@ -1,6 +1,6 @@
 // red-proof: RED-OK character/logout-body-tag (fails with the hook on, 11 assertions), 2026-11-16
-// tier: LOGIC
 //! Logged-out tag (#1974): the model is on for a logged-out body and off for a connected or rejoined one.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_LogoutBodyTag : LF_Test
 {
 	override string GetName()

@@ -1,6 +1,8 @@
 // Pure rules of the test pool queue (tools/remote/pool.mjs): lanes, priority
 // order with aging, the RAM gate, and the session lease. No I/O, so
 // tools/validation/pool-selftest.mjs proves them without a game.
+import { ISLAND, SEED_PEAKS_MB, worldClass } from "./pool-ram.mjs";
+import { DEFAULT_CLIENT_VRAM_MB, DEFAULT_MIN_FREE_VRAM_MB, sessionVramReserveMb, vramVerdict } from "./pool-vram.mjs";
 
 export const PRIORITIES = ["low", "normal", "high"];
 export const DEFAULTS = {
@@ -22,6 +24,11 @@ export const DEFAULTS = {
   // Per session profile (session up --profile): the same two numbers, measured per profile. A profile
   // missing here uses the full numbers above. tools/pool.json "sessionReserve" overrides these.
   sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } },
+  // GPU memory (VRAM) a game client takes per session profile, and the VRAM left free after a start
+  // (#2629, tools/lib/pool-vram.mjs). A machine whose free VRAM cannot be read skips the rule.
+  // tools/pool.json / lf.local.json "sessionReserveClientVramMb" overrides.
+  sessionReserveClientVramMb: { ...DEFAULT_CLIENT_VRAM_MB },
+  minFreeVramMb: DEFAULT_MIN_FREE_VRAM_MB,
   // Memory a test server takes while it boots, before free RAM shows it (MB): counted for a test lane
   // locked less than testBootS ago and for each start still in flight ahead of a burst start (#1195).
   // Measured 2026-11-14 on lf-cloud: 12 fast-tier test servers took 9.2 GB, about 770 MB each.
@@ -145,6 +152,20 @@ export function sessionReserveMb(settings, clients, profile = "full") {
   const server = own?.serverMb ?? settings.sessionReserveServerMb ?? DEFAULTS.sessionReserveServerMb;
   const client = own?.clientMb ?? settings.sessionReserveClientMb ?? DEFAULTS.sessionReserveClientMb;
   return server + client * Math.max(0, Number(clients) || 0);
+}
+
+// GPU memory (MB) a ticket will take: its clients' share for a session, 0 for a test lane (no client).
+// settings.sessionReserveClientVramMb falls back to the code defaults.
+export function ticketVramReserveMb(t, settings = {}) {
+  if ((t?.lane ?? "session") !== "session") return 0;
+  return sessionVramReserveMb({ sessionReserveClientVramMb: DEFAULTS.sessionReserveClientVramMb, ...settings }, t?.clients ?? 1, t?.profile ?? "full");
+}
+
+// The VRAM gate for a job on one machine (settings: pool settings; vramFreeMb: its free VRAM or null when
+// unknown; pendingMb: clients still starting). Unknown skips the rule (pool-vram.mjs vramVerdict).
+export function vramGate(settings, { vramFreeMb, clients = 1, profile = "full", lane = "session", pendingMb = 0 } = {}) {
+  const reserveMb = ticketVramReserveMb({ lane, clients, profile }, settings);
+  return vramVerdict({ freeMb: vramFreeMb, minFreeMb: settings?.minFreeVramMb ?? DEFAULTS.minFreeVramMb, reserveMb, pendingMb });
 }
 
 export function laneKind(purpose) {
@@ -273,7 +294,9 @@ export function burstAdmit(ahead, mine, { freeLanes, freeMb, pendingMb = 0, minF
 // test the test server's boot reserve. A ticket without a lane (an older CLI) is a session.
 export function ticketReserveMb(t, settings = {}) {
   if ((t?.lane ?? "session") === "session") return sessionReserveMb(settings, t?.clients ?? 1, t?.profile ?? "full");
-  return settings.testReserveMb ?? DEFAULTS.testReserveMb;
+  const base = settings.testReserveMb ?? DEFAULTS.testReserveMb;
+  // An island-world test (the placement audit on MainWorld) holds the island server's peak, not a small boot's.
+  return worldClass(t?.world) === ISLAND ? Math.max(base, SEED_PEAKS_MB["test:island"]) : base;
 }
 
 // Memory still booting on a machine that its free RAM does not show yet (MB), from its live lane
@@ -349,12 +372,17 @@ export function ramVerdict({ running = 0, freeMb, minFreeMb, reserveMb = 0, pend
 // most headroom first (the gate refuses them anyway; the order only decides what `pool status` names).
 // cands: [{ name, freeMb, pendingMb?, multiplier? }]. Returns rows { name, room, headroomMb, score }
 // best first, in the order given for ties.
-export function rankMachines(cands, { minFreeMb = DEFAULTS.minFreeMb, reserveMb = 0, roomyMb = DEFAULTS.roomyMb } = {}) {
+// VRAM (#2629): a candidate with vramFreeMb (known) and a job with vramReserveMb > 0 (a client session) also
+// needs vramFreeMb - vramPendingMb - vramReserveMb >= minFreeVramMb to count as having room; one that
+// cannot fit goes with the no-room machines even when its RAM is roomy. Unknown VRAM, or a job with no
+// client, leaves the rule out, so the order is the RAM order.
+export function rankMachines(cands, { minFreeMb = DEFAULTS.minFreeMb, reserveMb = 0, roomyMb = DEFAULTS.roomyMb, vramReserveMb = 0, minFreeVramMb = DEFAULTS.minFreeVramMb } = {}) {
   const rows = cands.map((c, i) => {
     const known = Number.isFinite(c.freeMb);
     const headroomMb = known ? c.freeMb - (Number(c.pendingMb) || 0) - reserveMb : null;
     const multiplier = Number(c.multiplier) > 0 ? Number(c.multiplier) : 1;
-    const room = known ? headroomMb >= minFreeMb : null;
+    const vramOk = vramVerdict({ freeMb: c.vramFreeMb, minFreeMb: minFreeVramMb, reserveMb: vramReserveMb, pendingMb: Number(c.vramPendingMb) || 0 }).ok;
+    const room = known ? headroomMb >= minFreeMb && vramOk : vramOk ? null : false;
     const score = known ? Math.min(headroomMb, roomyMb) / multiplier : 0;
     return { name: c.name, room, headroomMb, score, multiplier, i };
   });
@@ -435,6 +463,11 @@ export const BUDGET_MIN_RUNS = 5;
 export const TIMEOUT_RATE_RAISE = 0.02;
 export const BOOT_BUDGET_S = 30;
 // Starting budgets (seconds) until a kind has history. e2e is per pass.
+// An island-world run (MainWorld, CoreOnEveron, the island mission) streams Everon after boot: its own seed,
+// floor and history, apart from the small-world runs of the same purpose (#2394, a 30 s history budget killed
+// an audit that needs minutes). Boot is budgeted separately (bootBudgetSeconds).
+export const ISLAND_BUDGET_S = 300;
+export const ISLAND_BUDGET_FLOOR_S = 180;
 export const DEFAULT_BUDGET_S = { "test only": 30, "test fast": 45, "test all": 90, "test all core-only": 90, "test persistence": 120, "test perf": 120, e2e: 120 };
 
 // The run-log label of a test run (runs.jsonl "purpose", the budget key, the pool status column).
@@ -472,15 +505,19 @@ export function p95(values) {
   return v.length ? v[Math.max(0, Math.ceil(0.95 * v.length) - 1)] : 0;
 }
 
+// Whether a world (path, mission header, bare name) is island-sized: the pool's world class (pool-ram.mjs).
+export const isIslandWorld = (world) => worldClass(world) === ISLAND;
+
 // Budget for one run kind on one machine, in seconds, excluding boot:
 //   3x the p95 of that machine's recent passing runs of the kind, never under
 //   the 30 s floor; a seeded default (times the machine multiplier) until it
 //   has 5 passes. A kind whose recent runs timed out more than 2% of the time
 //   gets double, so a budget that is too tight corrects itself.
 // runs: the pool's runs.jsonl records. Returns { runS, source, rate }.
-export function budgetSeconds(runs, kind, machine, { multiplier = 1, override } = {}) {
+export function budgetSeconds(runs, kind, machine, { multiplier = 1, override, world } = {}) {
   if (Number.isFinite(override) && override > 0) return { runS: Math.round(override), source: "override", rate: 0 };
-  const mine = runs.filter((r) => r.purpose === kind && r.machine === machine).slice(-50);
+  const island = isIslandWorld(world);
+  const mine = runs.filter((r) => r.purpose === kind && r.machine === machine && isIslandWorld(r.world) === island).slice(-50);
   const perPass = kind === "e2e" ? 2 : 1;
   const passes = mine.filter((r) => r.result === "pass").slice(-30).map((r) => Number(r.durS) / perPass);
   const timeouts = mine.filter((r) => r.result === "timeout").length;
@@ -488,12 +525,13 @@ export function budgetSeconds(runs, kind, machine, { multiplier = 1, override } 
   let runS;
   let source;
   if (passes.length >= BUDGET_MIN_RUNS) {
-    runS = Math.max(BUDGET_FLOOR_S, 3 * p95(passes));
+    runS = Math.max(island ? ISLAND_BUDGET_FLOOR_S : BUDGET_FLOOR_S, 3 * p95(passes));
     source = "history";
   } else {
-    runS = (DEFAULT_BUDGET_S[kind] ?? 90) * multiplier;
+    runS = island ? Math.max(ISLAND_BUDGET_S, DEFAULT_BUDGET_S[kind] ?? 0) * multiplier : (DEFAULT_BUDGET_S[kind] ?? 90) * multiplier;
     source = "default";
   }
+  if (island) source += "+island";
   if (rate > TIMEOUT_RATE_RAISE) {
     runS *= 2;
     source += "+raised";

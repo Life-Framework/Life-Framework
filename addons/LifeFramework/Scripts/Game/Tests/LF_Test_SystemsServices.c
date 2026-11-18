@@ -1,10 +1,10 @@
 // red-proof: observed 2026-11-14 with `tools/cli test --no-build --only LF_Test_SystemsServices`: removing each system's gate (the Refuses/IsEnabled call at its entry point, one per system) failed one line each: `- Comms off: a service call is refused`, `- Chat off: the base game's chat panels are left alone`, `- Medic off: nobody is downed`, `- Crime off: a crime is not recorded`, `- Police off: a crime is not dispatched`, `- Investigation off: no witness scene opens`, `- Vehicles off: with the off caption (expected '#LF-Systems_Off', got '#EL-Vehicle_CannotAfford')`, `- VehicleLock off: the doors are open`, `- LicensePlate off: no plate is issued`, `- SirenLights off: the siren does not start`, `- Quests off: a quest does not progress`. Restored; green.
-// tier: WORLD
 //! Systems (#1076): the service systems read the switch. With each of Comms, Chat, Medic, Police,
 //! Crime, Investigation, Vehicles, VehicleLock, LicensePlate, SirenLights and Quests off in the
 //! owner config, one server entry point of it refuses (or one prompt hides) and what it saved stays;
 //! with it on again the same call goes through. Police and Investigation are turned off with what
 //! they need turned off too: a config that cut Crime under Police would be refused (#279).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SystemsServices : LF_Test
 {
 	static const ResourceName POLICE_CAR = "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et";

@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_StationsProgress`: a wrong expected value failed `three workers need a third of that (expected 5, got 4)` and `SUMMARY tier=only passed=0 failed=3` (run with its two siblings); restored, green.
 
-// tier: LOGIC
 //! Hands-on station progress (#417): progress belongs to the station and adds across workers, so
 //! one worker takes N times as long as N workers; a saved batch restores clamped; a work tick that
 //! comes faster than a hold can finish is refused; site heat rises with work and fades.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StationsProgress : LF_Test
 {
 	override string GetName()

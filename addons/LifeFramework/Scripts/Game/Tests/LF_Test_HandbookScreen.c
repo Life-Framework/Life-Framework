@@ -1,8 +1,8 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_HandbookScreen`: `RED-OK rules/handbook-screen (fails with the hook on, 16 assertions)`; the hook skips building the page, so `a page builds` and every page assertion fail. Green without the hook.
-// tier: LOGIC
 //! Handbook screen (#1773): the parts the screen is built from, with no widgets. The list names its
 //! rows by place so a pick maps back to a page, the second page's title is the one its part carries,
 //! and the empty handbook says so instead of showing an empty list.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HandbookScreen : LF_Test
 {
 	override string GetName()

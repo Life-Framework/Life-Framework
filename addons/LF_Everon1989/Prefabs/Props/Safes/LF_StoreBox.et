@@ -1,0 +1,22 @@
+GenericEntity : "{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et" {
+ ID "818BFACC14BB79EE"
+ components {
+  MeshObject "{6E1B3A7C95D20401}" {
+   Object "{138FB8A2D71B1603}Assets/Props/Furniture/CabinetMetal_01/CabinetMetal_01.xob"
+   Materials {
+    MaterialAssignClass "{52D485D9F95DCA5D}" {
+     SourceMaterial "CabinetMetal_01"
+     AssignedMaterial "{EA63D4D4EFD67A2C}Assets/Props/Furniture/CabinetMetal_01/Data/CabinetMetal_01_olive_V1.emat"
+    }
+    MaterialAssignClass "{54D6838AB7137835}" {
+     SourceMaterial "Color_palette"
+     AssignedMaterial "{40F12B1BDC73F38E}Common/Materials/ColorPalette/Color_palette_01_LEMON_12_S1_R2.emat"
+    }
+   }
+  }
+  LF_HeistVaultComponent "{6E1B3A7C95D2040B}" {
+   m_sLootKind "bags"
+   m_sSafeType "store_box"
+  }
+ }
+}

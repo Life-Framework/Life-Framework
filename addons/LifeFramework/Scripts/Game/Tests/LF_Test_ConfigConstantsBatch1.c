@@ -1,8 +1,8 @@
 // red-proof: observed 2026-11-12 with `toolsi test --no-build --only LF_Test_ConfigConstantsBatch1`: expecting a founding fee of 251 failed `- founding fee (expected 251, got 250)` and `SUMMARY tier=only passed=0 failed=1`; restored, green.
 
-// tier: WORLD
 //! Config-constants batch 1 (#284): the tunables moved out of script keep today's values. Each
 //! accessor reads the shipped .conf and must return the number the constant had before.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ConfigConstantsBatch1 : LF_Test
 {
 	override string GetName()

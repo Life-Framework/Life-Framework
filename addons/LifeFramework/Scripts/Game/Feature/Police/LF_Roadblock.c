@@ -695,11 +695,9 @@ modded class LF_AgentHarnessVerbs
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Roadblocks's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Roadblocks's statics (LF_StaticReset finds it by reflection).
 class LF_Roadblocks_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Roadblocks_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Roadblocks";
@@ -712,11 +710,9 @@ class LF_Roadblocks_StaticResetHook : LF_StaticResetHook
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_RoadblockConfig's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_RoadblockConfig's statics (LF_StaticReset finds it by reflection).
 class LF_RoadblockConfig_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_RoadblockConfig_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_RoadblockConfig";

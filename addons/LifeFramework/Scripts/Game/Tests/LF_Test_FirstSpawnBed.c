@@ -1,8 +1,8 @@
 // red-proof: observed 2026-11-16 with `tools/cli test --no-build --red LF_Test_FirstSpawnBed` (RED PROOF OK): with the fixture beds not spawned, "the second new character lands on a bed too" and the other bed assertions failed; green on the real code.
-// tier: WORLD
 //! #1965: a new character's first spawn lands on a free first-spawn bed, the next new character on
 //! the next bed, and a spawn that is not a first spawn (a respawn after a death, a rejoin) or a
 //! world with every bed taken takes the normal spawn point.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FirstSpawnBed : LF_Test
 {
 	static const ResourceName BED_PREFAB = "{15468371DAC524FC}Prefabs/Medic/LF_FirstSpawnBed.et";

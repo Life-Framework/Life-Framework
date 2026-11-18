@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "template": "districts",
+  "place": "saint-philippe-districts",
+  "status": "proposed",
+  "note": "Proposal for lead approval (D10): the tool proposal, hand-edited for state 2a, on the districts template (#2896, no required slot): the districts have no hall and no board, so b05 (a 663 m2 house) and b01 (a henhouse) are no longer mapped. The districts are the residential ring east of the square (scout centre 4650, 10700, radius 160). 2a needs the districts houses and a fuel station on the road; the rest stays none. Approval is a reviewed PR holding only this file (label town-mapping); `toolscli town map saint-philippe-districts --check` passes.",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-17",
+    "buildings": 77,
+    "freePlots": 8
+  },
+  "slots": {
+    "house": {
+      "building": "b14",
+      "score": 0.873,
+      "why": [
+        "type house (first choice): House_Village_E_1I04sr_green, 234.2 m2, 2 floors, interior yes, 7 furnished props; the districts home kit"
+      ],
+      "alternatives": [
+        {
+          "building": "b05",
+          "score": 0.922
+        },
+        {
+          "building": "b04",
+          "score": 0.917
+        },
+        {
+          "building": "b11",
+          "score": 0.877
+        }
+      ]
+    },
+    "fuel": {
+      "building": "b09",
+      "score": 0.714,
+      "why": [
+        "type fuel (first choice): FuelStation_E_01_building, 60 m2, interior yes, 53.1 m from the centre; the bible spacing rule wants fuel on the road east of the square"
+      ]
+    },
+    "garage": {
+      "none": true,
+      "reason": "not a state 2a slot; b76 is 158 m out at the edge of the survey and no 2a chapter needs a garage there"
+    },
+    "farm-plot": {
+      "none": true,
+      "reason": "plot p3 fits but the village template lists no farm-plot prefab, so there is nothing to place on it; revisit when one is added"
+    },
+    "taxi": {
+      "none": true,
+      "reason": "the town taxi stand is mapped at the dock (saint-philippe-dock, slot taxi); b01 is a henhouse, no kerb anchor, and a second Saint-Philippe stand has no chapter that needs it"
+    },
+    "shop": {
+      "none": true,
+      "reason": "shops are on the square (general-store, clothing, gun-counter); the districts get no shop in state 2a and the tool pick b11 is a house"
+    },
+    "pub": {
+      "none": true,
+      "reason": "the square owns the cafe and pub; the tool pick b04 is a plain village house and the dossier lists no pub within the districts"
+    }
+  }
+}

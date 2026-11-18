@@ -2,7 +2,8 @@
 // carried cash into the pot at the start sign; the lobby closes after the course's lobby seconds;
 // too few entrants refunds everyone; the server watches checkpoint crossings and pays the pot by
 // the course split when every racer still in has finished (or the time limit runs out). A leaver
-// forfeits the fee. The pot is session state, never persisted: a session end mid-race refunds
+// forfeits the fee, and so does a racer who stays without a living body past the course's AFK grace;
+// after the first finisher the race settles at the course's settle delay (#2406). The pot is session state, never persisted: a session end mid-race refunds
 // everyone still in before the engine's shutdown save. Money moves only through LF_MoneyUtils.
 
 enum LF_ERaceState
@@ -25,17 +26,112 @@ enum LF_ERaceJoin
 }
 
 //------------------------------------------------------------------------------------------------
-//! One racer in one race. The body is re-resolved by uid at every use; the stored id is only the
-//! fallback for a body that has no player (a test fixture).
+//! How the runner sees the players: the live PlayerManager. A test installs a subclass with a
+//! synthetic population (LF_RaceRunner.SetPlayers) to count and time the lookups at 128 players.
+class LF_RacePlayers : Managed
+{
+	//------------------------------------------------------------------------------------------------
+	bool Available()
+	{
+		return GetGame() && GetGame().GetPlayerManager();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void GetPlayers(notnull array<int> outIds)
+	{
+		outIds.Clear();
+		if (Available())
+			GetGame().GetPlayerManager().GetPlayers(outIds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string UidOf(int playerId)
+	{
+		return LF_Utils.GetPlayerUID(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	IEntity ControlledBy(int playerId)
+	{
+		if (!Available())
+			return null;
+
+		return GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int PlayerOf(IEntity body)
+	{
+		if (!body || !Available())
+			return 0;
+
+		return GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(body);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One racer in one race. The body is re-resolved at every use through the racer's cached player
+//! id, checked with one uid compare (#2404); the stored body id is only the fallback for a body
+//! that has no player (a test fixture).
 class LF_RaceEntrant
 {
 	string m_sUid;
+	//! The player this racer was last seen as; 0 when unknown. Checked against the uid at every use.
+	int m_iPlayerId;
+	//! World ms before which a racer with no online player is not looked up again.
+	float m_fRescanAtMs;
 	EntityID m_BodyId = EntityID.INVALID;
 	int m_iFee;
 	ref LF_RaceProgress m_Progress = new LF_RaceProgress();
 	//! World position at the last detection tick, so a fast car is checked along its path.
 	vector m_vLast;
 	bool m_bHasLast;
+	//! The body the last position belongs to. A new body (respawn, character switch) starts a new path.
+	EntityID m_LastBodyId = EntityID.INVALID;
+	//! World ms since which this racer has had no living body; -1 while there is one (#2406).
+	float m_fAbsentSinceMs = -1;
+
+	//------------------------------------------------------------------------------------------------
+	//! Notes whether the racer had a living body at nowMs. \return true once the racer has been without
+	//! one for graceSeconds (0 never drops a racer).
+	bool AbsentTooLong(bool hasBody, float nowMs, int graceSeconds)
+	{
+		if (hasBody)
+		{
+			m_fAbsentSinceMs = -1;
+			return false;
+		}
+
+		if (m_fAbsentSinceMs < 0)
+			m_fAbsentSinceMs = nowMs;
+
+		return graceSeconds > 0 && nowMs - m_fAbsentSinceMs >= graceSeconds * 1000;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where this tick's path starts for body bodyId standing at now, and remembers now for the next
+	//! tick. The path is only joined to the last spot when the same body stood there: a death,
+	//! respawn or character switch would otherwise draw a line from the old body to the new one
+	//! and pass any checkpoint on it (docs/reviews/2026-11-17-life.md).
+	vector Step(EntityID bodyId, vector now)
+	{
+		vector from = now;
+		if (m_bHasLast && bodyId != EntityID.INVALID && bodyId == m_LastBodyId)
+			from = m_vLast;
+
+		m_vLast = now;
+		m_bHasLast = true;
+		m_LastBodyId = bodyId;
+		return from;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No living body this tick: the next one starts a new path.
+	void Lose()
+	{
+		m_bHasLast = false;
+		m_LastBodyId = EntityID.INVALID;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -48,8 +144,10 @@ class LF_RaceInstance
 	int m_iPot;
 	int m_iStarted;
 	float m_fStartMs;
+	//! World ms of the first finisher's finish; -1 until someone finishes (#2406).
+	float m_fFirstFinishMs = -1;
 	ref array<ref LF_RaceEntrant> m_aEntrants = new array<ref LF_RaceEntrant>();
-	//! Racers who left before finishing. Their fees stay in the pot; only a session end pays them back.
+	//! Racers who left or were dropped after the start. Their fees stay in the pot; only a session end pays them back.
 	ref array<ref LF_RaceEntrant> m_aLeavers = new array<ref LF_RaceEntrant>();
 
 	//------------------------------------------------------------------------------------------------
@@ -62,6 +160,16 @@ class LF_RaceInstance
 		}
 
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The settle delay after the first finisher has run out at nowMs (the course's m_iSettleSeconds, 0 off).
+	bool SettleDue(float nowMs)
+	{
+		if (!m_Course || m_Course.m_iSettleSeconds <= 0 || m_fFirstFinishMs < 0)
+			return false;
+
+		return nowMs - m_fFirstFinishMs >= m_Course.m_iSettleSeconds * 1000;
 	}
 }
 
@@ -102,8 +210,14 @@ class LF_RaceRunner
 	//! How often the server checks racers against their next checkpoint.
 	static const int TICK_MS = 250; // lf-fixed: detection cadence tied to the default 12 m checkpoint radius
 
+	//! How often a racer with no online player is looked up again by a full player scan.
+	static const int RESCAN_MS = 1000; // lf-fixed: lookup cadence for an offline racer, not gameplay tuning
+
 	protected static ref map<string, ref LF_RaceInstance> s_mRaces;
 	protected static ref LF_RaceClock s_Clock;
+	protected static ref LF_RacePlayers s_Players;
+	//! Full player scans since the last reset (a perf and regression counter).
+	protected static int s_iScans;
 	protected static bool s_bTicking;
 	protected static int s_iSerial;
 
@@ -123,6 +237,36 @@ class LF_RaceRunner
 			s_Clock = new LF_RaceClock();
 
 		return s_Clock;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static LF_RacePlayers Players()
+	{
+		if (!s_Players)
+			s_Players = new LF_RacePlayers();
+
+		return s_Players;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: the population the runner sees; null goes back to the live PlayerManager.
+	static void SetPlayers(LF_RacePlayers players)
+	{
+		s_Players = players;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Full player scans since the last reset.
+	static int GetScanCount()
+	{
+		return s_iScans;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the 250 ms checkpoint tick is on the call queue. It runs only while a race is RACING.
+	static bool IsTicking()
+	{
+		return s_bTicking;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -251,6 +395,7 @@ class LF_RaceRunner
 		LF_RaceEntrant entrant = new LF_RaceEntrant();
 		entrant.m_sUid = uid;
 		entrant.m_BodyId = body.GetID();
+		entrant.m_iPlayerId = Players().PlayerOf(body);
 		entrant.m_iFee = fee;
 		race.m_aEntrants.Insert(entrant);
 		race.m_iPot = race.m_iPot + fee;
@@ -329,10 +474,21 @@ class LF_RaceRunner
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A racer leaves (disconnect): dropped from the race, the fee stays in the pot. Nothing is paid
-	//! out, so a leaving body's saved inventory cannot carry a duplicate.
+	//! A racer leaves (disconnect). While the race is in its LOBBY the fee goes back at once, to the
+	//! racer's bank (never to the leaving body, so the disconnect save carries no duplicate), and an
+	//! emptied lobby closes. Once RACING the racer is dropped and the fee stays in the pot. Nothing
+	//! is paid to a leaving body either way.
 	//! \return true when the racer was in a race.
 	static bool Forfeit(string uid)
+	{
+		return Drop(uid, "left", "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes a racer out of the race: a leaver (disconnect) or one dropped for being without a living
+	//! body too long. \param toastKey tells the racer, when online, why; "" says nothing.
+	//! \return true when the racer was in a race and not a finisher.
+	protected static bool Drop(string uid, string why, string toastKey)
 	{
 		string courseId = CourseOf(uid);
 		if (courseId.IsEmpty())
@@ -343,17 +499,32 @@ class LF_RaceRunner
 		if (entrant.m_Progress.m_bFinished)
 		{
 			// A finisher keeps the place; the prize goes to the bank when the race settles.
-			LF_Debug.Info(FEATURE, string.Format("race '%1' finisher %2 left; the place stands", courseId, uid));
+			LF_Debug.Info(FEATURE, string.Format("race '%1' finisher %2 %3; the place stands", courseId, uid, why));
 			return false;
 		}
 
-		LF_Debug.Info(FEATURE, string.Format("race '%1' %2 left and forfeits the %3 fee; pot %4", courseId, uid, entrant.m_iFee, race.m_iPot));
+		if (race.m_eState == LF_ERaceState.LOBBY)
+		{
+			race.m_aEntrants.RemoveItem(entrant);
+			race.m_iPot = race.m_iPot - entrant.m_iFee;
+			PayToBank(entrant, entrant.m_iFee, entrant.m_iFee, REASON_REFUND, courseId);
+			LF_Debug.Info(FEATURE, string.Format("race '%1' %2 %3 in the lobby; the %4 fee went back to the bank; pot %5", courseId, uid, why, entrant.m_iFee, race.m_iPot));
+			if (race.m_aEntrants.IsEmpty())
+			{
+				Detach(courseId);
+				LF_Debug.Info(FEATURE, string.Format("race '%1' lobby closed: nobody is left", courseId));
+			}
+
+			return true;
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("race '%1' %2 %3 and forfeits the %4 fee; pot %5", courseId, uid, why, entrant.m_iFee, race.m_iPot));
 		race.m_aLeavers.Insert(entrant);
 		race.m_aEntrants.RemoveItem(entrant);
+		if (!toastKey.IsEmpty())
+			NotifyOnline(entrant, toastKey, "");
 
-		if (race.m_eState == LF_ERaceState.RACING)
-			SettleIfDone(courseId);
-
+		SettleIfDone(courseId);
 		return true;
 	}
 
@@ -374,9 +545,39 @@ class LF_RaceRunner
 		if (verdict == LF_ERaceCheck.ACCEPTED || verdict == LF_ERaceCheck.LAP_DONE)
 			Notify(entrant, "#LF-Race_Checkpoint", LF_RaceCourse.NextCheckpoint(race.m_Course, entrant.m_Progress));
 		else if (verdict == LF_ERaceCheck.FINISHED)
+		{
+			if (race.m_fFirstFinishMs < 0)
+				race.m_fFirstFinishMs = race.m_fStartMs + timeMs;
+
 			SettleIfDone(courseId);
+			WarnStragglers(race);
+		}
 
 		return verdict;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After the first finisher, tells the racers still out how long the race waits for them (#2406).
+	protected static void WarnStragglers(LF_RaceInstance race)
+	{
+		if (Races().Get(race.m_Course.m_sId) != race || race.m_Course.m_iSettleSeconds <= 0)
+			return;
+
+		int finished = 0;
+		foreach (LF_RaceEntrant entrant : race.m_aEntrants)
+		{
+			if (entrant.m_Progress.m_bFinished)
+				finished++;
+		}
+
+		if (finished != 1)
+			return;
+
+		foreach (LF_RaceEntrant racer : race.m_aEntrants)
+		{
+			if (!racer.m_Progress.m_bFinished)
+				NotifyOnline(racer, "#LF-Race_Closing", race.m_Course.m_iSettleSeconds.ToString());
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -485,10 +686,23 @@ class LF_RaceRunner
 			return null;
 
 		Races().Remove(courseId);
-		if (Races().IsEmpty())
+		if (!AnyRacing())
 			StopTicking();
 
 		return race;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while some race is RACING: only then the checkpoint tick has work (#2406).
+	protected static bool AnyRacing()
+	{
+		foreach (string courseId, LF_RaceInstance race : Races())
+		{
+			if (race.m_eState == LF_ERaceState.RACING)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -536,7 +750,14 @@ class LF_RaceRunner
 		if (body)
 			added = LF_MoneyUtils.AddCash(body, amount, reason);
 
-		int rest = amount - added;
+		PayToBank(entrant, amount - added, amount, reason, courseId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pays rest (the part of amount the body could not take) into the racer's bank account, the place for
+	//! money that has no living body to go to.
+	protected static void PayToBank(LF_RaceEntrant entrant, int rest, int amount, string reason, string courseId)
+	{
 		if (rest <= 0)
 			return;
 
@@ -556,23 +777,16 @@ class LF_RaceRunner
 	//! body the racer entered with (a fixture has no player).
 	protected static IEntity ResolveBody(LF_RaceEntrant entrant)
 	{
-		PlayerManager players = GetGame().GetPlayerManager();
-		if (players)
+		LF_RacePlayers players = Players();
+		int playerId = PlayerIdOf(entrant);
+		if (playerId > 0)
 		{
-			array<int> ids = {};
-			players.GetPlayers(ids);
-			foreach (int playerId : ids)
-			{
-				if (LF_Utils.GetPlayerUID(playerId) != entrant.m_sUid)
-					continue;
+			// Online: the controlled body if it lives, never the corpse the racer entered with.
+			IEntity controlled = players.ControlledBy(playerId);
+			if (IsAlive(controlled))
+				return controlled;
 
-				// Online: the controlled body if it lives, never the corpse the racer entered with.
-				IEntity controlled = players.GetPlayerControlledEntity(playerId);
-				if (IsAlive(controlled))
-					return controlled;
-
-				return null;
-			}
+			return null;
 		}
 
 		if (entrant.m_BodyId == EntityID.INVALID || !GetGame().GetWorld())
@@ -583,10 +797,48 @@ class LF_RaceRunner
 			return null;
 
 		// A body some other player now controls is not this racer's.
-		if (players && players.GetPlayerIdFromControlledEntity(entered) > 0)
+		if (players.PlayerOf(entered) > 0)
 			return null;
 
 		return entered;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The racer's online player id, or 0. The cached id costs one uid compare; only a miss scans the
+	//! players, and a racer found offline is scanned for again at most once per RESCAN_MS (#2404).
+	protected static int PlayerIdOf(notnull LF_RaceEntrant entrant)
+	{
+		LF_RacePlayers players = Players();
+		if (!players.Available())
+			return 0;
+
+		if (entrant.m_iPlayerId > 0)
+		{
+			if (players.UidOf(entrant.m_iPlayerId) == entrant.m_sUid)
+				return entrant.m_iPlayerId;
+
+			entrant.m_iPlayerId = 0;
+			entrant.m_fRescanAtMs = 0;
+		}
+
+		float now = NowMs();
+		if (entrant.m_fRescanAtMs > now)
+			return 0;
+
+		s_iScans++;
+		array<int> ids = {};
+		players.GetPlayers(ids);
+		foreach (int playerId : ids)
+		{
+			if (players.UidOf(playerId) != entrant.m_sUid)
+				continue;
+
+			entrant.m_iPlayerId = playerId;
+			return playerId;
+		}
+
+		entrant.m_fRescanAtMs = now + RESCAN_MS;
+		return 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -620,6 +872,17 @@ class LF_RaceRunner
 			return;
 
 		int playerId = players.GetPlayerIdFromControlledEntity(body);
+		if (playerId <= 0)
+			return;
+
+		LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Race_Title", key, 6.0, LF_ENotificationType.INFO, arg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tells a racer by player id, so a racer without a living body (dead, still loading) hears it too.
+	protected static void NotifyOnline(LF_RaceEntrant entrant, string key, string arg)
+	{
+		int playerId = PlayerIdOf(entrant);
 		if (playerId <= 0)
 			return;
 
@@ -661,6 +924,15 @@ class LF_RaceRunner
 	//! Server checkpoint detection: each racer against the next checkpoint's placed radius.
 	static void Tick()
 	{
+		TickAt(NowMs());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One detection tick as of world time nowMs (a test passes a later time to run the AFK grace and
+	//! the settle delay without waiting): checkpoints, then racers without a body too long, then a
+	//! race whose settle delay after the first finisher has run out.
+	static void TickAt(float nowMs)
+	{
 		array<string> ids = {};
 		foreach (string courseId, LF_RaceInstance race : Races())
 		{
@@ -674,7 +946,7 @@ class LF_RaceRunner
 			if (!running)
 				continue;
 
-			int timeMs = (int)(NowMs() - running.m_fStartMs);
+			int timeMs = (int)(nowMs - running.m_fStartMs);
 			array<string> uids = {};
 			foreach (LF_RaceEntrant entrant : running.m_aEntrants)
 				uids.Insert(entrant.m_sUid);
@@ -691,20 +963,49 @@ class LF_RaceRunner
 
 				string next = LF_RaceCourse.NextCheckpoint(running.m_Course, racer.m_Progress);
 				IEntity body = ResolveBody(racer);
-				if (next.IsEmpty() || !body)
+				if (racer.AbsentTooLong(body != null, nowMs, running.m_Course.m_iAfkGraceSeconds))
+				{
+					Drop(uid, "was without a living body too long", "#LF-Race_Dropped");
+					continue;
+				}
+
+				if (!body)
+				{
+					racer.Lose();
+					continue;
+				}
+
+				if (next.IsEmpty())
 					continue;
 
 				vector now = WorldPosition(body);
-				vector from = now;
-				if (racer.m_bHasLast)
-					from = racer.m_vLast;
-
-				racer.m_vLast = now;
-				racer.m_bHasLast = true;
+				vector from = racer.Step(body.GetID(), now);
 				if (LF_RaceCheckpointComponent.Crossed(next, from, now))
 					PassAt(id, uid, next, timeMs);
 			}
+
+			if (Races().Get(id) == running && running.SettleDue(nowMs))
+				SettleLate(id, running);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The settle delay after the first finisher ran out: pays the finishers; racers still out lose their
+	//! fee to the pot.
+	protected static void SettleLate(string courseId, LF_RaceInstance race)
+	{
+		int stillOut = 0;
+		foreach (LF_RaceEntrant entrant : race.m_aEntrants)
+		{
+			if (entrant.m_Progress.m_bFinished)
+				continue;
+
+			stillOut++;
+			NotifyOnline(entrant, "#LF-Race_TimeUp", "");
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("race '%1' settles %2 s after the first finisher; %3 racers still out forfeit their fee", courseId, race.m_Course.m_iSettleSeconds, stillOut));
+		Settle(courseId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -720,6 +1021,8 @@ class LF_RaceRunner
 
 		s_mRaces = null;
 		s_Clock = null;
+		s_Players = null;
+		s_iScans = 0;
 	}
 }
 

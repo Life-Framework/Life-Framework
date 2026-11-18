@@ -1,9 +1,9 @@
 // red-proof: Observed 2026-11-16: before the classes existed `tools\cli test --no-build --only LF_Test_JoinNotice` failed to compile ("Can't find variable 'LF_JoinNotice'"); green after. `--red LF_Test_JoinNotice` then RED-OK: skipping the spawn failed "the first spawn of a uid shows one toast (expected 1, got 0)".
-// tier: LOGIC
 //! The alpha notice at a player's first spawn (#1448): the `joinNotice` owner section (`enabled`,
 //! `key`) shows one toast per account uid per session, driven by LF_OnPlayerSpawnedEvent. Enabled
 //! with a key: one toast per uid, none on a respawn, one more for another uid. Disabled (the
 //! default): none. An empty key: one LF_Debug.Warn for the session and no toast.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JoinNotice : LF_Test
 {
 	static const string ON_FIXTURE = "{\"schemaVersion\":1,\"joinNotice\":{\"enabled\":true,\"key\":\"LF_Test_Notice\"}}";

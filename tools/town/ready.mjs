@@ -6,16 +6,17 @@
 //   1. `town check <place>` passes (the static checks: slots mapped, layers, claims, kinds, footprints, budget);
 //   2. the reach proof passes: `session town-reach --place <place>` walks a character from the arrival slot's entrance to every
 //      other slot's entrance on the island navmesh (agent-box/proofs/town-reach.mjs, LF_TownReachHarness.c);
-//   3. the server boot log has no "switches off" line (a system whose places are not on the map, LF_Systems.CheckPlaces).
+//   3. the server boot log has no "no <Kind> placed on this map: off" line (a system whose places are not on the map,
+//      LF_Systems.CheckPlaces; the line is logged under the system's own id, `[LFDebug:Jail] no JailCell placed on this map: off`).
 // It needs a running `session up --mission island` for 2 and 3 (one boot, shared: sessions are RAM-heavy); `--session-up` boots
 // one and takes it down after, `--no-session` runs only the static half and says the rest was not run (exit 1: not ready).
 // Exit 0 only when every place passes every step.
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const help = "ready <state> [--session-up] [--no-session]   every place of the state: town check, the reach proof on the island, no 'switches off' in the boot log; exit 1 unless all pass";
+export const help = "ready <state> [--session-up] [--no-session]   every place of the state: town check, the reach proof on the island, no system switched off for want of a place in the boot log; exit 1 unless all pass";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -25,9 +26,25 @@ export const STATE_PLACES = {
   1: ["saint-philippe", "meaux"],
 };
 
-// Pure: the "switches off" lines of a console log, [] when none.
+// Pure: the lines of a console log where a system switched itself off for want of a place, [] when none. The real line (LF_Systems.SwitchOff
+// through CheckPlaces, seen in the island boot 2026-11-17) is `[LFDebug:<SystemId>] no <Kind> placed on this map: off`.
 export function switchOffLines(logText) {
-  return String(logText).split(/\r?\n/).filter((l) => /switch(es|ed)? off/i.test(l) && /Systems/.test(l));
+  return String(logText).split(/\r?\n/).filter((l) => /\[LFDebug:[^\]]+\] no \S+(?: or \S+)* placed on this map: off/.test(l));
+}
+
+// The session server's boot log text: pulled from the box when the session runs on another machine (`session pull` puts the newest
+// server console.log at <dest>/server/console.log), else the newest one in this checkout's session dir. "" when none is found.
+export function readServerLog(root) {
+  const dest = join(root, "tmp", "town-ready-pull");
+  mkdirSync(dest, { recursive: true });
+  const f = join(dest, "server", "console.log");
+  rmSync(f, { force: true });
+  spawnSync(process.execPath, [join(root, "agent-box", "session.mjs"), "pull", dest], { cwd: root, encoding: "utf8", timeout: 300000, windowsHide: true });
+  if (existsSync(f)) return readFileSync(f, "utf8");
+  const logs = join(process.env.LOCALAPPDATA ?? "", "LifeFramework", "session", basename(root), "server", "logs");
+  if (!existsSync(logs)) return "";
+  const newest = readdirSync(logs).filter((d) => existsSync(join(logs, d, "console.log"))).sort().pop();
+  return newest ? readFileSync(join(logs, newest, "console.log"), "utf8") : "";
 }
 
 // Pure: the one TOWNREACH json of a proof's stdout, or null.
@@ -86,10 +103,11 @@ export async function main(args, { root = ROOT } = {}) {
       if (!out || !out.pass) p.notes.push(out ? out.results.filter((x) => !x.ok).map((x) => `${x.slot}: ${x.detail}`).join("; ") : "the proof printed no TOWNREACH line (is a --mission island session up?)");
     }
     if (places.some((p) => p.reach !== null)) {
-      const logs = cli(["logs", "switches off"], root, { timeout: 60000 });
-      const lines = switchOffLines(logs.stdout ?? "");
+      const log = readServerLog(root);
+      const lines = switchOffLines(log);
+      if (!log) for (const p of places.filter((x) => x.reach !== null)) p.notes.push("the server boot log could not be read");
       for (const p of places.filter((x) => x.reach !== null)) {
-        p.switchOff = lines.length === 0;
+        p.switchOff = log ? lines.length === 0 : null;
         if (lines.length) p.notes.push(`switched off: ${lines.slice(0, 3).join(" | ")}`);
       }
     }

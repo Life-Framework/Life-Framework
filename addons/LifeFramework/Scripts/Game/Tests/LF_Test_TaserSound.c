@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-13 with `tools\cli test --no-build --only LF_Test_TaserSound`: with the M9 handling project put back in Handgun_Taser.et the test failed (`the taser plays its own handling project`, `no M9 sound project is left on the taser`); restored, green.
-// tier: WORLD
 //! The taser's sounds (#341, asset pipeline sound stage): the weapon prefab lists the taser's own
 //! shot and handling sound projects in place of the vanilla M9's, the three projects load, the
 //! stun flag a client reads follows the stun, and the buzz rule starts and stops on that flag.
 //! That a sound is heard is a client matter (harness `sound`, and ears).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TaserSound : LF_Test
 {
 	static const ResourceName TASER_PREFAB = "{6D583A40C5C5C150}Prefabs/Weapons/Handguns/Taser/Handgun_Taser.et";

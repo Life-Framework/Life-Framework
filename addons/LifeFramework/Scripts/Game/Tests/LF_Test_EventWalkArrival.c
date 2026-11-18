@@ -1,9 +1,9 @@
 // red-proof: Observed 2026-11-16 with `tools/cli test --no-build --red LF_Test_EventWalkArrival`: `RED PROOF OK`; with the group-done flag off, "a formation member 4.4 m out arrived with its group", "a member 10.6 m out that followed the leader arrived" and "the outer member of a line of six, 18.8 m out, arrived" fail; green with `--only`.
 
-// tier: LOGIC
 //! The scene walk's arrival rule (#2174): a walker that passed every waypoint arrives near the target;
 //! once the AI group has finished its route, a member standing in the group's formation around the
 //! target has arrived too, instead of timing out as stuck.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_EventWalkArrival : LF_Test
 {
 	override string GetName()

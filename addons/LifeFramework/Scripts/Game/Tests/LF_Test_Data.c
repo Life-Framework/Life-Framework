@@ -2,7 +2,7 @@
 // "{0000000000000001}UI/Layouts/Missing.layout" to the layout list failed it with
 // `[LFTEST] FAIL config-and-localization`,
 // `- menu layout loads: {0000000000000001}UI/Layouts/Missing.layout`. Restored; green.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Data : LF_Test
 {
 	override string GetName()
@@ -16,7 +16,6 @@ class LF_Test_Data : LF_Test
 			"{CBD13209101AACEE}UI/Layouts/Menus/Inventory/SplitQuantityDialog.layout",
 			"{64B1F5DD29214016}UI/Layouts/EL_SurvivalHUD.layout",
 			"{B1C08A9DC82E6FEC}UI/Layouts/UIKit/LF_UIKeyRow.layout",
-			"{41C6F92AE5EA775C}UI/Layouts/PoliceMenu.layout",
 			"{1CBC0B1329A8762C}UI/Layouts/DeathScreen.layout"
 		};
 

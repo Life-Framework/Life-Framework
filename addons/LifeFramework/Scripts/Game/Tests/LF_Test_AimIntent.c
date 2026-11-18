@@ -1,8 +1,8 @@
 // red-proof: Observed 2026-11-09 with `toolscli test --no-build --only LF_Test_AimIntent`: asserting three rows instead of two failed `9 s of sustained aim writes two rows, one per window (expected 3, got 2)`; restored.
 
-// tier: LOGIC
 //! incident/aim-throttle: sustained aim at one player logs one intent row per window; a gap or a
 //! glance restarts the streak; the cone and range are pure checks.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AimIntent : LF_Test
 {
 	override string GetName()

@@ -3,12 +3,12 @@
 // holds every worn item in its equipped-loadout storage, which replicates the slot to clients (expected 3, got 0)`,
 // the same for 2 more prefabs and all 22 placed NPCs. With vanilla SCR_EquipedLoadoutStorageComponent:
 // `- ... Npc_Default_01.et is hidden from a player's inventory Vicinity`. Green with LF_NpcLoadoutStorageComponent.
-// tier: WORLD
 //! Every NPC wears its loadout: jacket, pants and boots are attached to the NPC (children carrying
 //! BaseLoadoutClothComponent), each sits in a slot of the NPC's equipped-loadout storage (the
 //! inventory state a client receives, so it wears the item instead of dropping it at the NPC's
 //! feet, #328), and no loose cloth item lies near it. Checks a fresh spawn of each NPC prefab and
 //! every dressed NPC the DebugWorld town places.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NpcWearsClothes : LF_Test
 {
 	protected ref array<IEntity> m_aFound = {};

@@ -1,0 +1,18 @@
+{
+  "section": "residentmemory",
+  "class": "LF_ResidentMemorySavePayload",
+  "version": 1,
+  "roots": "LF_ResidentMemorySaveRow",
+  "records": {
+    "LF_ResidentMemorySaveRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sResident",
+        "string m_sUid",
+        "int m_iScore",
+        "array<string> m_aReasons",
+        "array<int> m_aLastSeconds"
+      ]
+    }
+  }
+}

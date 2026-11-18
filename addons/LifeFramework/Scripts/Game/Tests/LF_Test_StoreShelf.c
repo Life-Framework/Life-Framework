@@ -1,12 +1,12 @@
 // red-proof: observed 2026-11-16 (#1891), `tools\cli test --no-build --no-cache --only <the 10 classes>` on GridWorld before the grid fixtures: 10 of 15 failed on `... resolves in the DebugWorld` (Shop_GeneralStore_Debug, Shop_BlackMarket_Debug, FenceNpc are town entities); on Grid_shops_till fixtures 15 of 15 pass.
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_StoreShelf,...`: LF_Stores.Pay not removing the paid tags failed `- the tag is cleared (expected 0, got 1)` and `- a second visit to the till has nothing to charge (expected 1, got 0)`; restored, green.
 
-// tier: WORLD
 //! The physical general store (#202) on the GridWorld counter: a shelf item taken by hand leaves the
 //! stock once and is tagged unpaid; a price-list sale of the same line leaves it once more (never the
 //! same unit twice, even before the pickup was noticed); an empty line refuses; the till charges
 //! exactly what is carried unpaid, clears the tags and hands over a receipt; a short purse pays for
 //! none of it. Deletes what it spawns and puts the stock back.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_StoreShelf : LF_Test
 {
 	static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

@@ -2,7 +2,7 @@
 // alone (no playerId) in LF_Utils.BuildLocalIdentity failed it with
 // `[LFTEST] FAIL spawn/local-identity`, `- two players get different local identities`. Restored; green.
 
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_LocalIdentity : LF_Test
 {
 	override string GetName()

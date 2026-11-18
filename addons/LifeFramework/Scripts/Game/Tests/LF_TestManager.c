@@ -13,6 +13,14 @@ class LF_TestManager
 	protected ref array<string> m_aOnly = {};
 	protected bool m_bRed;
 	protected bool m_bLogicWorld;
+	//! The fixture spawn point (the gate), what a run found standing there before its first test, how much a test
+	//! added to it, and the tests that added it (WatchGate, NoteLeftovers, FixtureLeftovers).
+	protected vector m_vGate;
+	protected ref LF_TestDebrisProbe m_GateProbe;
+	protected int m_iGateLeft;
+	protected ref array<string> m_aLeakers = {};
+	//! Duplicate class names already logged, so each is logged once per process.
+	protected static ref array<string> s_aLoggedDuplicates;
 
 	//! The minimal world tools\cli test boots when every selected test is LOGIC (tools/lib/test-world.mjs).
 	static const string LOGIC_WORLD = "Worlds/TestLogic/TestLogic.ent";
@@ -27,28 +35,19 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Collects now (every LF_Test with its own [LF_TestInfo], in class-name order) and returns the list a run
+	//! walks. Call it on a fresh manager: on the running singleton it would rebuild the list mid-run.
+	array<ref LF_Test> Collected()
+	{
+		CollectTests();
+		return m_aTests;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Register(LF_Test test, LF_TestTier tier)
 	{
 		test.SetTier(tier);
 		m_aTests.Insert(test);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A pack test (a pack's Scripts/Game/Tests, registered by its generated
-	//! LF_PackTestRegistrations.generated.c). It runs only when named (-Only): a tier run skips it, and
-	//! `tools\cli test` names it in the pack leg, which boots under the pack's mission header so its
-	//! config overlays apply (docs/architecture/three-worlds.md "Pack test leg").
-	void RegisterPack(LF_Test test, LF_TestTier tier)
-	{
-		test.SetPackTest(true);
-		Register(test, tier);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Empty in the core. A pack's generated registry overrides it (modded class LF_TestManager) and
-	//! calls RegisterPack for each of its tests; the core never names a pack test.
-	protected void RegisterPackTests()
-	{
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -168,6 +167,7 @@ class LF_TestManager
 		string cases = "";
 
 		PrintFormat("[LFTEST] SUITE START tier=%1", tierName);
+		WatchGate(red);
 
 		foreach (LF_Test test : m_aTests)
 		{
@@ -230,6 +230,8 @@ class LF_TestManager
 			test.SetRedProof(red);
 			test.Run(ctx);
 			test.SetRedProof(false);
+			if (!red)
+				NoteLeftovers(name);
 
 			if (red)
 			{
@@ -299,12 +301,82 @@ class LF_TestManager
 			cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"no test matches --only\"/></testcase>\n", missing);
 		}
 
+		// A run leaves no fixture character or loose physics prop at the gate (#2792). `tools\cli test` sends
+		// the whole suite as one --only list, so this covers a filtered run too (a red proof keeps its debris on purpose).
+		if (!red && m_GateProbe && total > 0)
+		{
+			total++;
+			string leftovers = FixtureLeftovers();
+			if (leftovers != "")
+			{
+				failures++;
+				PrintFormat("[LFTEST] FAIL suite/no-leftover-fixtures");
+				PrintFormat("[LFTEST]   - a test left characters or loose props at the gate (end the test with LF_TestCharacterFixture.Delete):%1", leftovers);
+				foreach (string leaker : m_aLeakers)
+					PrintFormat("[LFTEST]   - left by %1", leaker);
+				cases += string.Format("<testcase name=\"suite/no-leftover-fixtures\" time=\"0\"><failure message=\"fixtures left at the gate\">%1</failure></testcase>\n", EscapeXml(leftovers));
+			}
+			else
+			{
+				passed++;
+				PrintFormat("[LFTEST] PASS suite/no-leftover-fixtures (nothing left at the gate)");
+				cases += "<testcase name=\"suite/no-leftover-fixtures\" time=\"0\"/>\n";
+			}
+		}
+
 		PrintFormat("[LFTEST] SUMMARY tier=%1 passed=%2 failed=%3 total=%4 skipped=%5", tierName, passed, failures, total, skippedNeedsPack);
 		reportXml = string.Format(
 			"<testsuites><testsuite name=\"LifeFramework-%1\" tests=\"%2\" failures=\"%3\" errors=\"0\" time=\"0\">%4</testsuite></testsuites>",
 			tierName, total, failures, cases);
 
 		return failures;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Before the first test: remembers what already stands at the gate (the map's props, the spawn point) so the end-of-run
+	//! check names only what a test added. A run with no world or no spawn point has no gate and skips the check.
+	protected void WatchGate(bool red)
+	{
+		m_vGate = vector.Zero;
+		m_iGateLeft = 0;
+		m_aLeakers.Clear();
+		m_GateProbe = null;
+		// A red proof keeps its debris on purpose.
+		if (red || m_bLogicWorld || !GetGame() || !GetGame().GetWorld())
+			return;
+
+		m_vGate = LF_TestDebrisProbe.Gate();
+		if (m_vGate == vector.Zero)
+			return;
+
+		m_GateProbe = new LF_TestDebrisProbe();
+		m_GateProbe.Watch(m_vGate);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After each test: names it in m_aLeakers when it left more characters or loose props at the gate than were there before.
+	//! Only counts (a query); a sweep that deleted them mid-suite crashed the engine (#2792).
+	protected void NoteLeftovers(string testName)
+	{
+		if (!m_GateProbe)
+			return;
+
+		m_GateProbe.Leftovers(m_vGate);
+		if (m_GateProbe.Count() > m_iGateLeft)
+			m_aLeakers.Insert(string.Format("%1 (+%2)", testName, m_GateProbe.Count() - m_iGateLeft));
+
+		m_iGateLeft = m_GateProbe.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fixture characters and loose props the run added at the gate and nothing deleted, as " | prefab@origin h=height"
+	//! entries; "" when the gate is clean (or the run has no gate to look at).
+	protected string FixtureLeftovers()
+	{
+		if (!m_GateProbe)
+			return "";
+
+		return m_GateProbe.Leftovers(m_vGate);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -347,15 +419,91 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Registrations live in the machine-generated LF_TestRegistrations.generated.c,
-	//! derived from each test file's `// tier:` comment. Regenerate with
-	//! `tools\cli regen-tests` after adding or re-tiering a test; never edit the
-	//! generated file by hand.
+	//! Every LF_Test descendant that carries its own LF_TestInfo attribute (LF_TestInfo.c), found by
+	//! reflection (#2610). Tier and pack flag come from the attribute; the order is a sort by class
+	//! name, so it never depends on reflection order or on a shared file. No registry, no generator.
 	protected void CollectTests()
 	{
 		m_aTests.Clear();
-		LF_TestRegistrations.RegisterAll(this);
-		RegisterPackTests();
+		array<typename> types = {};
+		typename base = LF_Test;
+		base.GetInheritedTypes(types);
+
+		map<string, typename> byName = new map<string, typename>();
+		array<string> names = {};
+		foreach (typename type : types)
+		{
+			if (!FindInfo(type))
+				continue;
+
+			string className = type.ToString();
+			if (byName.Contains(className))
+			{
+				LogDuplicate(className);
+				continue;
+			}
+
+			byName.Insert(className, type);
+			names.Insert(className);
+		}
+
+		names.Sort();
+		foreach (string name : names)
+		{
+			typename testType = byName.Get(name);
+			LF_Test test = LF_Test.Cast(testType.Spawn());
+			if (!test)
+			{
+				LF_Debug.Error("Tests", string.Format("%1 has [LF_TestInfo] but Spawn() returned no test; skipped", name));
+				continue;
+			}
+
+			LF_TestInfo info = FindInfo(testType);
+			test.SetPackTest(info.m_bPack);
+			Register(test, info.m_eTier);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The class's own LF_TestInfo, or null. Attributes are not inherited, so a subclass of a tagged
+	//! test, or a helper base, has none and is not a test.
+	static LF_TestInfo FindInfo(typename type)
+	{
+		array<Class> attributes = {};
+		type.GetAttributes(attributes);
+		foreach (Class attribute : attributes)
+		{
+			LF_TestInfo info = LF_TestInfo.Cast(attribute);
+			if (info)
+				return info;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a comes before b in the order array<string>.Sort() gives.
+	static bool SortsBefore(string a, string b)
+	{
+		if (a == b)
+			return false;
+
+		array<string> pair = {a, b};
+		pair.Sort();
+		return pair[0] == a;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void LogDuplicate(string className)
+	{
+		if (!s_aLoggedDuplicates)
+			s_aLoggedDuplicates = new array<string>();
+
+		if (s_aLoggedDuplicates.Find(className) != -1)
+			return;
+
+		s_aLoggedDuplicates.Insert(className);
+		LF_Debug.Warn("Tests", string.Format("%1 is registered twice; kept the first registration", className));
 	}
 
 	//------------------------------------------------------------------------------------------------

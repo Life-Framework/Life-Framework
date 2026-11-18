@@ -1,6 +1,6 @@
 {
   "about": "Police station: the shot list of the Villa_E_2I01_Police fit-out and the booking walkthrough. A civilian walks in the front door to the licence desk, an officer clocks in at the duty desk and draws kit at the armory, then the cell and the evidence locker are shown (the cuff and jail legs have their own proofs). Points are building space (tools/buildings/pipeline/scenario.mjs); the front (porch, front door) faces +z and the first floor is y 3.8. The same room points are what tools/buildings/police-station/looks.mjs shoots with `look grid:police-station-kit --interior` (no session): hall, office, cell, canteen, records, interview, plus the exterior by day and at night. The walkthrough steps need a session and the station staged in a world with a police roster entry; they were not run in the build pass (see the PR).",
-  "session": { "profile": "full", "mission": "playtest" },
+  "session": { "profile": "full", "mission": "grid" },
   "steps": [
     { "shot": "warmup", "look": [1.5, 3.0, 7.6], "from": [-6, -1.4, 12], "wait": 6000, "why": "the first frames after a teleport draw the building before it streams in" },
 

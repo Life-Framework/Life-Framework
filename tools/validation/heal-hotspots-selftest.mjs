@@ -16,13 +16,13 @@
 // FAIL "heal: LF_Delta's reset is now a hook in Feature/Delta/LF_Delta.c"; step 4's plain merge printing
 // "PASS old branch + migrated main: a plain merge conflicts" is the standing red for the problem itself.
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { CENTRAL, addHooks, centralCalls, centralFile, hookedCalls, registryHooks, staticResetProblems } from "../lib/static-reset-hooks.mjs";
 import { areaPath, renderIndex, splitSections } from "../lib/features-index.mjs";
 import { healBranch } from "../lib/heal-hotspots.mjs";
 import { overlap } from "../lib/ship-queue.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
 const check = (ok, msg) => {
@@ -30,7 +30,7 @@ const check = (ok, msg) => {
   if (!ok) failed++;
 };
 
-const dir = mkdtempSync(join(tmpdir(), "lf-heal-selftest-"));
+const dir = scratchDir("lf-heal-selftest-");
 const g = (...args) => execFileSync("git", args, { cwd: dir, encoding: "utf8", windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
 const put = (rel, text) => {
   mkdirSync(dirname(join(dir, rel)), { recursive: true });

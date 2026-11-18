@@ -1,8 +1,8 @@
 // red-proof: 2026-11-15 `tools/cli test --no-build --red LF_Test_HandToolEquip,LF_Test_VaultDrillAction,LF_Test_VaultDrillCancel,LF_Test_VaultDrillPayOnce` RED-OK, hook on failed `- after the full time the vault opens`, `- the haul is paid (expected 1, got 0)`.
-// tier: WORLD
 //! A drill that runs its full time, held at the door, opens the vault and pays exactly once: the
 //! haul spawns on the tick the server clock passes the drill time; further ticks, a second rob and
 //! a repeated finish pay nothing more, and the drill is left at the vault.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VaultDrillPayOnce : LF_Test
 {
 	override string GetName()
@@ -43,5 +43,6 @@ class LF_Test_VaultDrillPayOnce : LF_Test
 		ctx.False(LF_Bank.FinishDrill(vaultId, uid, robber, null), "a repeated finish pays nothing");
 		ctx.Equal(1, LF_Bank.GetSpawnedBagCount(vaultId), "paid once");
 		LF_VaultDrill.s_fNowOverride = -1;
+		LF_TestVaultDrillFixture.Release(robber, vaultId);
 	}
 }

@@ -239,6 +239,9 @@ class LF_IdRequestSheet
 
 	protected static ref LF_UIScreen s_Screen;
 	protected static bool s_bAnswered;
+	//! Answers this client sent since the world began (Send past its answered gate). A sheet closed
+	//! by a newer request, or by the world ending, is not an answer.
+	protected static int s_iAnswersSent;
 
 	//------------------------------------------------------------------------------------------------
 	static array<ref LF_UIPart> BuildParts()
@@ -254,9 +257,10 @@ class LF_IdRequestSheet
 	//------------------------------------------------------------------------------------------------
 	static LF_UIScreen Open()
 	{
-		if (s_Screen)
-			s_Screen.Close();
-
+		// The sheet being replaced belongs to the old request, which the server already dropped for
+		// the new one. Closing it must not answer: OnClosed would send a refusal that the server
+		// reads as the answer to the NEW request, and the officer hears "refused" (#2413).
+		Dismiss();
 		s_bAnswered = false;
 		s_Screen = LF_UIScreen.Open(BuildParts(), LF_UISkin.IdCheck());
 		if (!s_Screen)
@@ -274,6 +278,24 @@ class LF_IdRequestSheet
 
 		LF_Debug.Info(LF_PhotoIdCard.FEATURE, "ID request sheet open");
 		return s_Screen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Closes the open sheet without answering it.
+	static void Dismiss()
+	{
+		if (!s_Screen)
+			return;
+
+		s_bAnswered = true;
+		s_Screen.Close();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return How many answers this client has sent since the world began.
+	static int AnswersSent()
+	{
+		return s_iAnswersSent;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -312,6 +334,7 @@ class LF_IdRequestSheet
 			return;
 
 		s_bAnswered = true;
+		s_iAnswersSent++;
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (!controller)
 		{
@@ -324,6 +347,15 @@ class LF_IdRequestSheet
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: forget the open request sheet and its answered flag.
+	static void ResetStatics()
+	{
+		s_Screen = null;
+		s_bAnswered = false;
+		s_iAnswersSent = 0;
+	}
+
+//------------------------------------------------------------------------------------------------
 	static LF_UIScreen Current()
 	{
 		return s_Screen;
@@ -331,11 +363,9 @@ class LF_IdRequestSheet
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_IdCheck's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_IdCheck's statics (LF_StaticReset finds it by reflection).
 class LF_IdCheck_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_IdCheck_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_IdCheck";
@@ -344,5 +374,20 @@ class LF_IdCheck_StaticResetHook : LF_StaticResetHook
 	override void Apply()
 	{
 		LF_IdCheck.ResetStatics();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_IdRequestSheet's statics (LF_StaticReset finds it by reflection).
+class LF_IdRequestSheet_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_IdRequestSheet";
+	}
+
+	override void Apply()
+	{
+		LF_IdRequestSheet.ResetStatics();
 	}
 }

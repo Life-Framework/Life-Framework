@@ -1,9 +1,9 @@
 // red-proof: 2026-11-14 `tools/cli test --no-build --only LF_Test_ChopShopPlacedCar` with PayoutFor reading `vehicle.GetPrefabData().GetPrefabName()` (the old code) failed `- a placed S105 pays 30 percent of 1000, not the 800 default (expected 300, got 240)`. Restored to LF_Utils.GetPrefabName; green.
-// tier: WORLD
 //! A lock-up car placed in the world (a layer entity that overrides the lock component, the shape of
 //! Roadmap_Lockpick_Car) pays what its prefab is worth, $300 for the S105 (#611, #415, #601). It paid
 //! the unlisted default (800 x 30 = 240) because the yard read the prefab name off the entity data
 //! raw, which a layer override does not carry.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ChopShopPlacedCar : LF_Test
 {
 	override string GetName()

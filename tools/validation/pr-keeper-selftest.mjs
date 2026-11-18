@@ -11,38 +11,41 @@
 // red-proof (2026-11-08): without `git merge --abort` in healMerge's abort path
 //   it printed "real-conflict: merge left in progress"; with the registry
 //   unclassified it printed "registry-only: expected healed, got needs-human".
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { conflictKind, healMerge, isLive, predictConflicts, pushBranch, LIVE_MS } from "../prs.mjs";
-import { safeRemoveTree } from "../link-safety.mjs";
+import { describeRun, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
+
+useHermeticGit(); // no machine git config, no auto-gc beside the scratch repos (tools/lib/selftest-git.mjs)
 
 const failures = [];
 const fail = (m) => failures.push(m);
 const TESTS = "addons/LifeFramework/Scripts/Game/Tests";
-const REGISTRY = `${TESTS}/LF_TestRegistrations.generated.c`;
+// A generated file both sides regenerate: the core language conf stands in for it (conflictKind "regen-localization").
+const REGISTRY = "addons/LifeFramework/Language/everonlife_localization.en_us.conf";
 const SCRIPT = "addons/LifeFramework/Scripts/Game/Core/LF_Foo.c";
 
 function git(dir, args) {
   return spawnSync("git", args, { cwd: dir, windowsHide: true, encoding: "utf8" });
 }
 function must(dir, args) {
-  const r = git(dir, args);
-  if (r.status !== 0) throw new Error(`git ${args.join(" ")} in ${dir}: ${r.stderr || r.stdout}`);
+  const r = runGit(dir, args); // a probe through git() may fail quietly on purpose; a must() may not
+  if (r.status !== 0) throw new Error(`git ${args.join(" ")} in ${dir}: ${describeRun(r)}`);
   return r.stdout.trim();
 }
 function write(dir, rel, text) {
   mkdirSync(join(dir, rel, ".."), { recursive: true });
   writeFileSync(join(dir, rel), text);
 }
-// Stand-in for gen-test-registry.ps1: one line per test file, sorted.
+// Stand-in for regen-localization: one line per test file, sorted.
 function regenRegistry(dir) {
   const names = readdirSync(join(dir, TESTS)).filter((n) => n.endsWith(".c") && !n.endsWith(".generated.c")).sort();
   write(dir, REGISTRY, `// GENERATED\n${names.map((n) => `register ${n.replace(/\.c$/, "")}`).join("\n")}\n`);
 }
 function addTest(dir, name) {
-  write(dir, `${TESTS}/${name}.c`, `// tier: LOGIC\nclass ${name} : LF_Test {}\n`);
+  write(dir, `${TESTS}/${name}.c`, `[LF_TestInfo(LF_TestTier.LOGIC)]\nclass ${name} : LF_Test {}\n`);
   regenRegistry(dir);
 }
 function commit(dir, msg) {
@@ -50,20 +53,26 @@ function commit(dir, msg) {
   must(dir, ["commit", "-q", "-m", msg]);
 }
 const regenerate = (dir, kind) => {
-  if (kind !== "regen-tests") return { ok: false, error: `unexpected ${kind}` };
+  if (kind !== "regen-localization") return { ok: false, error: `unexpected ${kind}` };
   regenRegistry(dir);
   return { ok: true };
 };
 
 // Classification.
 for (const [p, k] of [
-  [REGISTRY, "regen-tests"],
-  ["addons/LifeFramework/Language/everonlife_localization.en_us.conf", "regen-localization"],
+  [REGISTRY, "regen-localization"],
   ["addons/LifeFramework/Language/everonlife_localization.st", "string-table"],
   ["docs/features.md", "markdown"],
   ["docs/features/money-economy.md", "markdown"],
   ["docs/debug-log-triage.md", "markdown"],
   ["tools/validation/enforce-lint-baseline.json", "lint-baseline"],
+  ["addons/LF_Everon1989/Language/lf_everon1989_localization.de_de.conf", "regen-localization"],
+  ["addons/LF_Everon1989/Language/lf_everon1989_localization.st", "string-table"],
+  ["docs/architecture/events.md", "markdown"],
+  ["docs/architecture/core-pack-inventory.md", "markdown"],
+  ["docs/config-inventory.md", "regen-config-inventory"],
+  ["addons/LifeFramework/Configs/Systems/LF_SystemCatalog.conf", null],
+  ["tools/validation/record-shapes.json", null],
   [SCRIPT, null],
   [`${TESTS}/LF_Test_A.c`, null],
   ["docs/worktrees.md", null],
@@ -71,7 +80,7 @@ for (const [p, k] of [
   if (conflictKind(p) !== k) fail(`conflictKind(${p}) = ${conflictKind(p)}, expected ${k}`);
 }
 
-const temp = mkdtempSync(join(tmpdir(), "lf-pr-keeper-"));
+const temp = scratchDir("lf-pr-keeper-");
 try {
   const origin = join(temp, "origin.git");
   const seed = join(temp, "seed");
@@ -222,7 +231,7 @@ ${t}`);
 } catch (e) {
   fail(`scenario threw: ${e.message}`);
 } finally {
-  safeRemoveTree(temp);
+  removeScratch(temp);
 }
 
 if (failures.length) {

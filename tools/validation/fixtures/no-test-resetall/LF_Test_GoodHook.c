@@ -1,5 +1,4 @@
 // Fixture for no-test-resetall-selftest.mjs: the allowed shape (own feature's statics only).
-// tier: LOGIC
 // red-proof: fixture only.
 class LF_Test_GoodHook : LF_Test
 {

@@ -1,11 +1,11 @@
 // red-proof: #2137 extension: observed 2026-11-16 green in the pack leg (`event modules: 2 of 2 registered`, passed=1 failed=0); the #1957 part was observed 2026-11-17 (#1957): with the test and no pack data, `tools\cli test --no-build --only LF_Test_EveronArrivalEvent` failed (passed=0 failed=1, the overlay does not resolve the event); with the event, scene, dawn condition and outfit confs it passes (passed=1 failed=0).
-// tier: WORLD
 //! #1957 under the Everon 1989 header (the pack leg of `tools\cli test`): the flagship's dawn
 //! arrival is pack data layered over the core event list (#1952). The event resolves by id, its
 //! first phase waits for a dawn hour window, its scene has placed-waypoint ids in walking order that
 //! the planner accepts, and the outfits the families wear load with every clothing prefab real. The
 //! town card places the waypoints and the shell module that spawns the scene follows (#757), so no
 //! marker is looked up here.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronArrivalEvent : LF_Test
 {
 	static const ResourceName EVENTS_OVERLAY = "{891648ED4392010D}Configs/Events/LF_Events_Everon1989.conf";

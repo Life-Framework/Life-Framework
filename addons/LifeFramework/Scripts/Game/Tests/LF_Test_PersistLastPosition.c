@@ -1,10 +1,10 @@
 // red-proof: Observed 2026-11-16 with `tools/cli test --no-build --red LF_Test_PersistLastPosition` (RED-OK spawn/last-position): with the payload read skipped, failed "the last position is back (load 1)"; green on the real code.
-// tier: PERSISTENCE
 //! #1777: a character's last position (position, heading, time taken) survives the "lastpos" payload
 //! and a restart. A save from before the payload (version 34, and the version just before "lastpos")
 //! loads with no rows; loading twice changes nothing.
 //! Across a restart (`tools\cli wt e2e`): the save boot records E2E_ID, the shutdown save carries it,
 //! and the reload boot finds the same position, heading and time.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_PersistLastPosition : LF_Test
 {
 	protected static const string CHAR_ID = "lastpos-persist-character";

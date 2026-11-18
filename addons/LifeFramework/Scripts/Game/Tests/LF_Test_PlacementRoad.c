@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-14 on CoreOnEveron (real Everon roads): the `a proposal along the road is refused` assertion flipped to `== -1` failed the test (`[LFTEST] FAIL placement/across-road`); restored, 36 assertions green over 4 road stretches. On DebugWorld the no-road-network branch, with NearestRoad forced to return true, failed `no AI road network finds no road`.
-// tier: WORLD
 //! #1026 review, #1129: the ACROSS_ROAD snap and the server's across-the-road check on a world with an
 //! AI road network. DebugWorld has none (its roads are spline meshes), so there the test only says so;
 //! the real run is on vanilla Everon with the core's game mode and an AI world (Worlds/CoreOnEveron):
@@ -8,6 +7,7 @@
 //! off it and checks that the road is found, that the plan's axis runs straight across it for a player
 //! facing 40 degrees up the road, and that the server accepts a proposal across the road (and 10 degrees
 //! off) and refuses one turned 30 degrees and one along the road.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementRoad : LF_Test
 {
 	override string GetName()

@@ -1,9 +1,9 @@
 // red-proof: Observed 2026-11-17 with `tools\cli test --no-build --red LF_Test_PoliceContactStamp`: RED PROOF OK, with the stamps skipped the cuffed and searched suspects have no contact age and rejoin in place (`expected 'jail', got 'in place'`). On main the test could not compile (`LF_Cuffing.StampContact`, `LF_ConfiscateAction.StampContact` undefined). Green after the change.
-// tier: LOGIC
 //! rejoin/police-contact-stamp (#2102, #1972, #1794): a completed cuffing and a person search stamp police
 //! contact on the suspect, so a wanted player who logs out inside the contact window rejoins in jail. A cuffing
 //! the restraint refused (RATE_LIMITED, NO_CUFFS, ...) is no contact. Tests use their own uids and never
 //! reset the shared statics: they forget only the stamps they made.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceContactStamp : LF_Test
 {
 	override string GetName()

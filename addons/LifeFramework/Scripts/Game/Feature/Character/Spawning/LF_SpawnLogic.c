@@ -337,6 +337,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 				#endif
 					{
 				LF_Debug.Warn("Spawn", "player " + playerId + " already controls a character - not spawning another");
+				AdoptLivingBody(LF_Utils.GetPlayerUID(playerId), controlled);
 				return;
 					}
 			}
@@ -394,6 +395,28 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A player who takes control of a living body no spawn made here (a save restored it) keeps it,
+	//! and CreateCharacter does not spawn another. Nothing then ran the progression apply that every
+	//! spawned body gets (BindAccountComponents): the body held only its starter licences, so the
+	//! licence desk and the gun counter treated a permit holder as one without a permit (#2413).
+	//! Idempotent: applying again to a body that already has the record changes nothing.
+	//! \param uid The character key progression is stored under (LF_Utils.GetPlayerUID).
+	//! \param body The living body the player controls.
+	//! \return true when the store had a record to apply.
+	static bool AdoptLivingBody(string uid, IEntity body)
+	{
+		if (!body || uid.IsEmpty())
+		{
+			LF_Debug.Warn("Spawn", "a restored body was not given its progression: no body or no character key");
+			return false;
+		}
+
+		bool applied = LF_Progression.ApplyToCharacter(uid, body);
+		LF_Debug.Info("Spawn", string.Format("restored body of %1 given its progression (record found: %2)", uid, applied));
+		return applied;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The player gets their logout body back as it is: no snapshot, no kit, nothing re-issued (the
 	//! body still holds its card, tickets and job). Only the hand-over and the per-connection marks.
 	protected void TakeBackBody(int playerId, notnull IEntity body)
@@ -433,9 +456,13 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		if (LF_FirstSpawnBeds.Resolve(playerId, characterPersistenceId, position, yawPitchRoll))
 			return true;
 
-		// Order: the jail return (after the spawn, LF_Jail.OnPlayerSpawned), the hospital wake,
-		// the first-spawn bed, then the saved spot (off by default, #1778), then the spawn point below.
+		// Order (LF_SpawnPriority): the jail return (after the spawn, LF_Jail.OnPlayerSpawned), the
+		// hospital wake, the first-spawn bed, then the saved spot (off by default, #1778), the player's
+		// own house (#2652), then the role's spawn point below.
 		if (LF_RejoinSpot.Resolve(playerId, LF_Utils.GetPlayerUID(playerId), characterPersistenceId, position, yawPitchRoll))
+			return true;
+
+		if (LF_SpawnPriority.ResolveHouse(playerId, LF_Utils.GetPlayerUID(playerId), position, yawPitchRoll))
 			return true;
 
 		SCR_SpawnPoint spawnPoint = ResolveSpawnPoint(playerId);

@@ -1,9 +1,9 @@
 // red-proof: StripPrefabFrom without the parent remap failed "the apple in the pouch follows the pouch to its new place (expected 2, got 4)"
-// tier: LOGIC
 //! Persistence switches (#689): the owner's `persistence.keep*` keys, and what each switch resets
 //! in the stores a load just filled (LF_PersistenceKeep.ApplyAfterLoad). Cash, carried gear, jail
 //! and licences here; survival and wanted, which live on the game mode, ride the real save path in
 //! persistence/switches. The test puts back every store it touched.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PersistSwitches : LF_Test
 {
 	protected static const string OWNER_A = "test-persist-switch-a";
@@ -128,7 +128,7 @@ class LF_Test_PersistSwitches : LF_Test
 		ctx.Equal(0, carried.m_aItems[2].m_iParent, "the pouch, moved up two places, still sits in the backpack");
 		ctx.Equal(2, carried.m_aItems[3].m_iParent, "the apple in the pouch follows the pouch to its new place");
 		ctx.Equal(0, LF_StorageSnapshot.Get(OWNER_B, LF_StorageSnapshot.SLOT_CARRIED).CountPrefab(cash), "every character's carried cash is gone");
-		ctx.Equal(30, LF_StorageSnapshot.Get(OWNER_A, DUTY_SLOT).CountPrefab(cash), "a locker snapshot keeps its cash");
+		ctx.Equal(0, LF_StorageSnapshot.Get(OWNER_A, DUTY_SLOT).CountPrefab(cash), "a duty locker snapshot loses its cash too (#2547)");
 
 		ctx.Equal(0, LF_StorageSnapshot.StripPrefab(LF_StorageSnapshot.SLOT_CARRIED, cash), "a second pass removes nothing");
 	}

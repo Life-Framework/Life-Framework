@@ -1,9 +1,9 @@
-// tier: WORLD
 // red-proof: 2026-11-13, Sawmill.et with m_bStartsOn 1: `--only LF_Test_AmbientSwitch` failed "a sawmill is quiet until a log is cut". Restored, green.
 //! The replicated on/off behind an ambient sound (LF_AmbientSwitchComponent, Feature/Atmosphere) on
 //! the server: the store radio starts on and a player's switch flips it; the sawmill starts off and
 //! a pulse (what LF_ProcessAction sends after a log is cut) turns it on. The emitter beside it must
 //! name a sound project, or the prefab is silent.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_AmbientSwitch : LF_Test
 {
 	protected static const ResourceName RADIO = "{6E621E4B599F06FD}Prefabs/Atmosphere/LF_Radio_Store.et";

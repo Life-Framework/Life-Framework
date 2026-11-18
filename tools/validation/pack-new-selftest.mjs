@@ -8,14 +8,14 @@
 // "FAIL scaffold passes validate-pack-manifest: LF_Test/Configs/LF_PackManifest.conf: m_sPackId
 // is "LF_Wrong", expected "LF_Test"" and exited 1 (2026-11-14).
 
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { scaffoldPack } from "../pack/new.mjs";
 import { launchAddonsFor, packLaunch } from "../lib/addons.mjs";
 import { checkBoundary } from "./validate-addon-boundary.mjs";
 import { checkPackManifest } from "./validate-pack-manifest.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 function put(root, path, text) {
   const full = join(root, path);
@@ -24,7 +24,7 @@ function put(root, path, text) {
 }
 
 function tree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-packnew-"));
+  const root = scratchDir("lf-packnew-");
   put(root, "addons/LifeFramework/LifeFramework.gproj", 'GameProject {\n ID "LifeFramework"\n GUID "4550A2B656E1B569"\n}\n');
   put(root, "addons/LifeFramework/Scripts/Game/Feature/Packs/LF_PackManifest.c", 'class LF_PackManifest\n{\n\tstatic const string CORE_VERSION = "0.1.0";\n}\n');
   put(root, "addons/LifeFramework/Worlds/DebugWorld/DebugWorld.ent.meta", 'MetaFileClass {\n Name "{F3AA388E8466788C}Worlds/DebugWorld/DebugWorld.ent"\n}\n');

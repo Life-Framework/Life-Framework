@@ -92,7 +92,7 @@ class LF_TestPoliceKit
 //! Clock in stores the civilian inventory and issues the starter police kit; clock out stores
 //! the police inventory (with what the officer picked up, and the rounds left in the magazine)
 //! and returns the civilian one; clocking in again brings the police inventory back.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PoliceDutySwap : LF_Test
 {
 	protected static const string UID = "police-duty-swap";
@@ -180,7 +180,7 @@ class LF_Test_PoliceDutySwap : LF_Test
 //------------------------------------------------------------------------------------------------
 //! Death on duty: the shift ends, the respawn carries the stored civilian inventory, and no
 //! police inventory stays stored next to the lootable body.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PoliceDeathOnDuty : LF_Test
 {
 	protected static const string UID = "police-death-on-duty";
@@ -229,7 +229,7 @@ class LF_Test_PoliceDeathOnDuty : LF_Test
 //------------------------------------------------------------------------------------------------
 //! Posters: a description and no name until identified; the place only for on-duty police; the
 //! poster comes down when wanted returns to 0.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceWantedBoard : LF_Test
 {
 	protected static const string ROBBER = "police-board-robber";
@@ -295,7 +295,7 @@ class LF_Test_PoliceWantedBoard : LF_Test
 //------------------------------------------------------------------------------------------------
 //! The placed station: the desk clocks in with a punch-clock sound, the board reads posters and
 //! prints its title, and the old debug duty point no longer offers duty.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PoliceStationWorld : LF_Test
 {
 	override string GetName()
@@ -354,7 +354,7 @@ class LF_Test_PoliceStationWorld : LF_Test
 //------------------------------------------------------------------------------------------------
 //! Magazine ammo rides beside a snapshot (itemstate payload) and never inside the carried
 //! record's positional format.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceItemState : LF_Test
 {
 	override string GetName()

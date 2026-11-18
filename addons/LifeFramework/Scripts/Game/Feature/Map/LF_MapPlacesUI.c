@@ -373,6 +373,8 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	protected int m_iCardGroup = -1;
 	protected bool m_bOverCard;
 	protected float m_fZoom;
+	protected float m_fFrameSeconds;	// frame time summed since the map opened (the harness `map probe` reads it)
+	protected int m_iFrames;
 
 	//------------------------------------------------------------------------------------------------
 	//! The zoom of the view the map shows now.
@@ -425,8 +427,7 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			}
 		}
 
-		LF_MapPoiAudience audience = new LF_MapPoiAudience();
-		LF_MapKnown.FillAudience(audience);
+		LF_MapPoiAudience audience = LF_MapPoiAudience.Local();
 		LF_MapPois.CollectLive(audience, m_aPois);
 
 		m_MapEntity.GetOnMapPan().Insert(OnMapPan);
@@ -434,9 +435,36 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		m_MapEntity.GetOnMapZoomEnd().Insert(OnMapZoomEnd);
 		LF_Debug.Info(FEATURE, string.Format("map opened: %1 places for this player", m_aPois.Count()));
 
+		m_fFrameSeconds = 0;
+		m_iFrames = 0;
 		Rebuild();
 		if (System.IsCLIParam(PROBE_PARAM))
 			RunProbe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Update(float timeSlice)
+	{
+		m_fFrameSeconds += timeSlice;
+		m_iFrames++;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The mean frame time in ms since the map opened, and the frames it covers.
+	float FrameMs(out int frames)
+	{
+		frames = m_iFrames;
+		if (m_iFrames <= 0)
+			return 0;
+
+		return m_fFrameSeconds * 1000 / m_iFrames;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The `-lfMapPlacesProbe` measurement on demand (the harness `map probe`). \return its log line.
+	string Probe()
+	{
+		return RunProbe();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -773,7 +801,7 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	//! Measures the widget route in the engine: a rebuild (cluster plus restyle) and a reposition over 400
 	//! synthetic POIs, many passes. Runs only with `-lfMapPlacesProbe`, logs the mean cost in microseconds
 	//! (#2232 notes; the numbers are in docs/architecture/everon-map.md).
-	protected void RunProbe()
+	protected string RunProbe()
 	{
 		array<ref LF_MapPoi> real = {};
 		foreach (LF_MapPoi saved : m_aPois)
@@ -802,12 +830,14 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			Reposition();
 
 		int repositionMs = System.GetTickCount() - start;
-		LF_Debug.Info(FEATURE, string.Format("probe widgets: 400 POIs, zoom %1, %2 groups: rebuild %3 us, reposition %4 us per pass", m_fZoom, m_aGroups.Count(), rebuildMs * 1000 / passes, repositionMs * 1000 / (passes * 10)));
+		string line = string.Format("probe widgets: 400 POIs, zoom %1, %2 groups: rebuild %3 us, reposition %4 us per pass", m_fZoom, m_aGroups.Count(), rebuildMs * 1000 / passes, repositionMs * 1000 / (passes * 10));
+		LF_Debug.Info(FEATURE, line);
 
 		m_aPois.Clear();
 		foreach (LF_MapPoi keep : real)
 			m_aPois.Insert(keep);
 
 		Rebuild();
+		return line;
 	}
 }

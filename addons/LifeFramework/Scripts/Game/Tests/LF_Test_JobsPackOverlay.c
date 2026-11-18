@@ -23,7 +23,7 @@ class LF_Test_JobsPackSourceStub : LF_ConfigPackSource
 //! MINER's cap, removes LUMBERJACK, adds FISH and replaces MEDIC (tracks), patches `gather`, removes
 //! `fruit_pick` and adds `fish_cast` (xpAwards), and adds a MINER_GOLD gate (licenceGates). The owner
 //! then overrides what the pack added.
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JobsPackOverlay : LF_Test
 {
 	override string GetName()

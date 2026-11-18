@@ -7,7 +7,7 @@
 //! The config stream carries only what a client reads (#285): the header and the shops section,
 //! written from the typed fields. Another section of the owner file, an unknown key in the shops
 //! section and anything else in config.json never leave the server.
-// tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigStreamClientOnly : LF_Test
 {
 	override string GetName()

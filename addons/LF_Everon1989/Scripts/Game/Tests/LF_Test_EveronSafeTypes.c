@@ -1,9 +1,9 @@
 // red-proof: 2026-11-17 `tools\cli test --no-build --red LF_Test_EveronSafeTypes`: RED-OK everon/safe-types (12 assertions; RedProof skips the overlay apply); failed "the pack patches the store_box haul to 120 (expected 120, got 150)". Green without the hook (pack leg).
-// tier: WORLD
 //! Safe types in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the pack's safe
 //! type overlay patches the core store_box row (1989 till takings) and leaves the other tiers as
 //! the core ships them. The vault-room door kit names bank_room, a type the table has, and the town
 //! bank's own prefab sets no type, so its numbers do not move.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronSafeTypes : LF_Test
 {
 	static const ResourceName OVERLAY = "{CB77B848FEFA13A3}Configs/Crime/LF_SafeTypes_Everon1989.conf";

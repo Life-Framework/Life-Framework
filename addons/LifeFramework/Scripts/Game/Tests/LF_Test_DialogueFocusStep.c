@@ -1,7 +1,7 @@
 // red-proof: Observed 2026-11-16 with `toolsi test --no-build --red LF_Test_DialogueFocusStep`: RED-OK, with the hook forgetting the held key Down held 4 ticks fails `Down held several ticks moves focus one row (expected 1, got 0)`; green without it.
-// tier: LOGIC
 //! #1715: MenuDown then MenuUp in the clerk dialogue returns the focus to the first reply. A key
 //! held across several ticks (the harness holds one 300 ms) steps once, not once per tick.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DialogueFocusStep : LF_Test
 {
 	override string GetName()

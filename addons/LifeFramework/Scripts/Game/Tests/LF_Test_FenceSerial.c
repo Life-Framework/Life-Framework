@@ -1,8 +1,8 @@
 // red-proof: Observed 2026-11-09 with `tools/cli test --no-build --only LF_Test_FenceSerial`: making LF_FenceSerials.Identify return 0 failed `investigation/serial` with `- a logged tool identifies its buyer's report (expected 1, got 0)`. Restored; green.
-// tier: LOGIC
 //! Fence tool serials (#272): each sale books a distinct serial to its buyer, and a tool checked at
 //! the evidence locker identifies its buyer's open wanted report and nobody else's. An unknown
 //! serial identifies nothing.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FenceSerial : LF_Test
 {
 	protected static const string BUYER = "serial-buyer";

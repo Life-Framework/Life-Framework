@@ -5,7 +5,8 @@
 
 // red-proof: Jailbreak escape (#235), observed 2026-11-10: with `CheckEscape`/`NoteEscape` returning false the test failed `- walking out through the open door is an escape`. Restored; green.
 
-// tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
+//! Needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_Jailbreak : LF_Test
 {
 	override string GetName()
@@ -77,7 +78,7 @@ class LF_Test_Roadmap_Jailbreak : LF_Test
 	}
 }
 
-// tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_JailbreakWorld : LF_Test
 {
 	override string GetName()

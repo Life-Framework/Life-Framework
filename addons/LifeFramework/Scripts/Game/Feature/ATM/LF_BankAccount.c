@@ -64,7 +64,7 @@ class LF_BankAccount : Managed
 
 		int charged = amount;
 		if (!allowDebt)
-			charged = Math.Max(Math.Min(amount, m_iBalance), 0);
+			charged = LF_Utils.MaxInt(LF_Utils.MinInt(amount, m_iBalance), 0);
 
 		m_iBalance -= charged;
 		PublishMoved(charged, false, reason, "");

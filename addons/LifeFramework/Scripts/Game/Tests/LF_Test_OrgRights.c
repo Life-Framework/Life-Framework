@@ -2,11 +2,11 @@
 // dropping the ladder check from LF_OrganizationManager.Kick failed `[LFTEST] FAIL org/rights`,
 // `- an officer cannot kick an equal`, `- the demoted officer is a member again (expected 'member', got '')`.
 // Restored; green.
-// tier: LOGIC
 //! #750a rights and ladder: the bit per right (and the replicated bits match it), the back-fill from
 //! the four bools a rank saved before the mask, each server action against a rank with and without
 //! its right, the ladder rules for promote, demote and kick (never up to your own rung, never on an
 //! equal), and the offer side's entries agreeing with the server.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OrgRights : LF_Test
 {
 	protected static const string FOUNDER = "org-rights-founder";

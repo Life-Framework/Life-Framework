@@ -1,8 +1,8 @@
 // red-proof: 2026-11-16 `cli test --no-build --red LF_Test_GridTeleport` (GridWorld): RED-OK, the Serve act skipped fails "the player stands within 3 m of the frame spawn (129.275 m)"; green with the act on.
-// tier: WORLD
 //! Grid teleport (#1813): `grid frame` puts the caller within 3 m of the frame spawn, an unknown slug
 //! logs LF_Debug.Warn and moves nothing, a caller without the dev gate moves nothing, and a world with
 //! no grid cells refuses (the suite's world 2, GridWorld, has them; the check is skipped elsewhere).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_GridTeleport : LF_Test
 {
 	override string GetName()

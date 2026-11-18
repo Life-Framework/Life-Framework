@@ -4,10 +4,10 @@
 //   [LFTEST]   - the character GUID alone loads its prefab: {{9B5BB216CC7FF18}
 // Restored it and the test passed (17 assertions).
 
-// tier: WORLD
 //! The portrait's look (LF_WantedLook): a dressed character becomes its prefab GUID and the GUIDs
 //! of what its loadout slots hold, with no path on the wire; every GUID alone loads its prefab
 //! (the client spawns from it); the look parses back slot for slot; a malformed name gives no GUID.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WantedLook : LF_Test
 {
 	override string GetName()

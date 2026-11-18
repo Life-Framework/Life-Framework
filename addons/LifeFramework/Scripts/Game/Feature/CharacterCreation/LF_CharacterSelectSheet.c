@@ -85,6 +85,24 @@ class LF_CharacterSelectSheet
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World end: the old world's sheet is still on screen when its session ends, and the next
+	//! session would draw over it, so it is taken down before the static is dropped.
+	static void ResetStatics()
+	{
+		Hide();
+		s_Sheet = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: holds an already open screen as the current sheet (Open needs a player controller).
+	static void AdoptForTest(LF_UIScreen screen)
+	{
+		LF_CharacterSelectSheet sheet = new LF_CharacterSelectSheet();
+		sheet.m_Screen = screen;
+		s_Sheet = sheet;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static LF_UIScreen Current()
 	{
 		if (!s_Sheet)
@@ -144,5 +162,20 @@ class LF_CharacterSelectSheet
 	protected static void Reopen(SCR_PlayerController controller, string names, bool canRegister)
 	{
 		Open(controller, names, canRegister);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CharacterSelectSheet's statics (LF_StaticReset finds it by reflection).
+class LF_CharacterSelectSheet_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_CharacterSelectSheet";
+	}
+
+	override void Apply()
+	{
+		LF_CharacterSelectSheet.ResetStatics();
 	}
 }

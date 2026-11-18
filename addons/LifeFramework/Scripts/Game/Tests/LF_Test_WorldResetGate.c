@@ -2,9 +2,9 @@
 // `tools\cli test --no-build --only LF_Test_WorldResetGate`; "a respawn with company on the server leaves the world alone" failed.
 // Restored it and it passed.
 
-// tier: LOGIC
 //! The world reset gate: a respawn resets the world only in a playtest mission, with the dev gate
 //! open and nobody else online. The menu and globe request needs the mission and the dev gate.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WorldResetGate : LF_Test
 {
 	override string GetName()

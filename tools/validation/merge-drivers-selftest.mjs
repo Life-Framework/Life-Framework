@@ -2,14 +2,15 @@
 // inputs: tools/**, agent-box/**, .githooks/**
 // Does not boot the game and does not merge this worktree.
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mergeStringTables, parseStringTable } from "../merge/union-string-table.mjs";
 import { mergeLines } from "../merge/merge-markdown.mjs";
 import { mergeJsonKeys } from "../merge/merge-json-keys.mjs";
-import { regenPlan } from "../merge/regen-generated.mjs";
+import { regenPlan, timeoutFor } from "../merge/regen-generated.mjs";
+import { driverBackstopMs } from "../merge/run-driver.mjs";
 import { mergeLintBaselines } from "../merge/union-lint-baseline.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -130,22 +131,20 @@ if (!lintRound.ok || lintRound.text !== lintText) fail("enforce-lint-baseline.js
 const locPlan = regenPlan("addons/LifeFramework/Language/everonlife_localization.en_us.conf");
 const packLocPlan = regenPlan("addons/LF_Everon1989/Language/lf_everon1989_localization.en_us.conf");
 if (!packLocPlan || packLocPlan.kind !== "localization") fail("a pack language conf should resolve by regen-localization -Write");
-const testPlan = regenPlan("addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c");
 if (!locPlan || !locPlan.script.endsWith("regen-localization.ps1") || !locPlan.args.includes("-Write")) {
   fail("language confs should resolve by regen-localization -Write");
-}
-if (!testPlan || !testPlan.script.endsWith("gen-test-registry.ps1") || !testPlan.args.includes("-Write")) {
-  fail("the test registry should resolve by regen-tests -Write");
 }
 
 const attributes = readFileSync(join(ROOT, ".gitattributes"), "utf8");
 const driverConfig = readFileSync(join(ROOT, "tools", "merge", "drivers.gitconfig"), "utf8");
+// #2618: tests register themselves with [LF_TestInfo]; no registry, so no lf-regen-tests driver.
+if (/lf-regen-tests/.test(attributes) || /lf-regen-tests/.test(driverConfig)) fail("the lf-regen-tests driver is gone with the test registry (#2618)");
+if (regenPlan("addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c")) fail("the old registry path must not resolve to a generator");
 for (const [path, driver] of [
   ["addons/LifeFramework/Language/everonlife_localization.st", "lf-string-table"],
   ["addons/LifeFramework/Language/everonlife_localization.*.conf", "lf-regen-localization"],
   ["addons/LF_Everon1989/Language/lf_everon1989_localization.st", "lf-string-table"],
   ["addons/LF_Everon1989/Language/lf_everon1989_localization.*.conf", "lf-regen-localization"],
-  ["addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c", "lf-regen-tests"],
   ["docs/features.md", "lf-markdown"],
   ["docs/features/*.md", "lf-markdown"],
   ["docs/debug-log-triage.md", "lf-markdown"],
@@ -376,69 +375,36 @@ ${clean.stderr}`);
   const regenRepo = join(temp, "regen");
   initRepo(regenRepo);
   configureDriver(regenRepo, "lf-regen-localization", "regen-generated.mjs");
-  configureDriver(regenRepo, "lf-regen-tests", "regen-generated.mjs");
   writeFileSync(
     join(regenRepo, ".gitattributes"),
-    "everonlife_localization.en_us.conf merge=lf-regen-localization\nLF_TestRegistrations.generated.c merge=lf-regen-tests\n",
+    "everonlife_localization.en_us.conf merge=lf-regen-localization\n",
   );
   writeFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "ours-conf\n");
-  writeFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "ours-registry\n");
   commitAll(regenRepo, "base");
   git(regenRepo, ["checkout", "-q", "-b", "theirs"]);
   writeFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "theirs-conf\n");
-  writeFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "theirs-registry\n");
   commitAll(regenRepo, "theirs");
   git(regenRepo, ["checkout", "-q", "master"]);
   writeFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "master-conf\n");
-  writeFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "master-registry\n");
   commitAll(regenRepo, "ours");
   const regenEnv = { ...process.env, LF_MERGE_REGEN_MODE: "plan" };
   const regenMerge = git(regenRepo, ["merge", "theirs", "--no-edit"], regenEnv);
   if (regenMerge.status !== 0) fail(`regen driver merge should be clean:\n${regenMerge.stdout}\n${regenMerge.stderr}`);
   else {
     const conf = readFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "utf8");
-    const registry = readFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "utf8");
     if (!conf.startsWith("regen:localization")) fail(`conf driver wrote ${JSON.stringify(conf)}`);
-    if (!registry.startsWith("regen:tests")) fail(`registry driver wrote ${JSON.stringify(registry)}`);
   }
 
-  // Regression: the registry driver ran mid-merge and wrote the incoming side's new test files into
-  // the worktree as untracked files, so git then refused to write them ("untracked working tree
-  // files would be overwritten by merge"). The driver must generate in a temp dir and touch only %A.
-  const testsRel = "addons/LifeFramework/Scripts/Game/Tests";
-  const registryRel = `${testsRel}/LF_TestRegistrations.generated.c`;
-  const testSource = (name) => `// tier: LOGIC\nclass ${name} : LF_Test\n{\n}\n`;
-  const writeTest = (repo, name) => {
-    mkdirSync(join(repo, testsRel), { recursive: true });
-    writeFileSync(join(repo, testsRel, `${name}.c`), testSource(name));
-  };
-  const untrackedRepo = join(temp, "untracked");
-  initRepo(untrackedRepo);
-  configureDriver(untrackedRepo, "lf-regen-tests", "regen-generated.mjs");
-  writeFileSync(join(untrackedRepo, ".gitattributes"), "LF_TestRegistrations.generated.c merge=lf-regen-tests\n");
-  writeTest(untrackedRepo, "LF_Test_Old");
-  mkdirSync(join(untrackedRepo, testsRel), { recursive: true });
-  writeFileSync(join(untrackedRepo, registryRel), "base-registry\n");
-  commitAll(untrackedRepo, "base");
-  git(untrackedRepo, ["checkout", "-q", "-b", "theirs"]);
-  writeTest(untrackedRepo, "LF_Test_Incoming");
-  writeFileSync(join(untrackedRepo, registryRel), "theirs-registry\n");
-  commitAll(untrackedRepo, "theirs");
-  git(untrackedRepo, ["checkout", "-q", "master"]);
-  writeTest(untrackedRepo, "LF_Test_Local");
-  writeFileSync(join(untrackedRepo, registryRel), "ours-registry\n");
-  commitAll(untrackedRepo, "ours");
-  const untrackedMerge = git(untrackedRepo, ["merge", "theirs", "--no-edit"]);
-  const untrackedOut = `${untrackedMerge.stdout}\n${untrackedMerge.stderr}`;
-  if (untrackedMerge.status !== 0) {
-    fail(`registry driver merge should be clean (it must not write untracked test files into the worktree):\n${untrackedOut}`);
-  } else {
-    const registry = readFileSync(join(untrackedRepo, registryRel), "utf8");
-    for (const name of ["LF_Test_Old", "LF_Test_Incoming", "LF_Test_Local"]) {
-      if (!registry.includes(`new ${name}()`)) fail(`regenerated registry is missing ${name}:\n${registry}`);
-    }
-    const status = git(untrackedRepo, ["status", "--porcelain"]).stdout.trim();
-    if (status) fail(`the registry driver left the worktree dirty:\n${status}`);
+
+  // The launcher honours the same override: a backstop of three times it for the wrapped driver.
+  if (driverBackstopMs({ LF_MERGE_DRIVER_TIMEOUT_MS: "2000" }) !== 11000) fail("driverBackstopMs should be 3x the override plus 5 s");
+  if (driverBackstopMs({}) !== 240_000) fail("driverBackstopMs default should be 240 s");
+  // #2746: the stub-only variable shortens the stub's limit and leaves the git limit alone.
+  const stubVar = "LF_MERGE_DRIVER_STUB_TIMEOUT_MS";
+  if (timeoutFor(20_000, { [stubVar]: "2000" }, stubVar) !== 2000) fail("the stub override should set the stub limit");
+  if (timeoutFor(20_000, { [stubVar]: "2000" }) !== 20_000) fail("the stub override must not shorten the git limit");
+  if (timeoutFor(20_000, {}) !== 20_000 || timeoutFor(20_000, { LF_MERGE_DRIVER_TIMEOUT_MS: "abc" }) !== 20_000) {
+    fail("timeoutFor should ignore a missing or non-numeric override");
   }
 
   // The localization driver generates the same way: real string table, scratch dir, only %A written.
@@ -466,6 +432,37 @@ ${clean.stderr}`);
     const locStatus = git(locRepo, ["status", "--porcelain"]).stdout.trim();
     if (locStatus) fail(`the localization driver left the worktree dirty:\n${locStatus}`);
   }
+
+  // #2549, #2746: a generator that never exits must not hang `git merge`. The stub replaces PowerShell with a
+  // child that never ends; its own 2 s limit kills it, the driver prints one line and exits 1, and the merge
+  // stops with the conf left conflicted for the human (or `regen-localization`) to resolve.
+  const hungRepo = join(temp, "loc-hung");
+  initRepo(hungRepo);
+  configureDriver(hungRepo, "lf-regen-localization", "regen-generated.mjs");
+  writeFileSync(join(hungRepo, ".gitattributes"), "everonlife_localization.en_us.conf merge=lf-regen-localization\n");
+  mkdirSync(join(hungRepo, langRel), { recursive: true });
+  writeFileSync(join(hungRepo, langRel, "everonlife_localization.st"), readFileSync(join(ROOT, langRel, "everonlife_localization.st")));
+  writeFileSync(join(hungRepo, confRel), "base-conf\n");
+  commitAll(hungRepo, "base");
+  git(hungRepo, ["checkout", "-q", "-b", "theirs"]);
+  writeFileSync(join(hungRepo, confRel), "theirs-conf\n");
+  commitAll(hungRepo, "theirs");
+  git(hungRepo, ["checkout", "-q", "master"]);
+  writeFileSync(join(hungRepo, confRel), "ours-conf\n");
+  commitAll(hungRepo, "ours");
+  const hangScript = join(temp, "hang-generator.mjs");
+  writeFileSync(hangScript, "setInterval(() => {}, 1000);\n");
+  const hungEnv = { ...process.env, LF_MERGE_DRIVER_GENERATOR_STUB: hangScript, LF_MERGE_DRIVER_STUB_TIMEOUT_MS: "2000" };
+  const hungStart = Date.now();
+  const hungMerge = git(hungRepo, ["merge", "theirs", "--no-edit"], hungEnv);
+  const hungSeconds = (Date.now() - hungStart) / 1000;
+  if (hungMerge.status === 0) fail("a hung generator should leave the conf conflicted, but the merge was clean");
+  else {
+    if (!/generator stub timed out after/.test(hungMerge.stderr)) fail(`a hung generator should print the timeout line, got:\n${hungMerge.stderr}`);
+    if (!git(hungRepo, ["ls-files", "-u"]).stdout.includes("everonlife_localization.en_us.conf")) fail("a hung generator should leave the conf unmerged");
+    if (hungSeconds > 60) fail(`a hung generator held the merge for ${hungSeconds.toFixed(0)} s`);
+  }
+  git(hungRepo, ["merge", "--abort"]);
 } finally {
   rmSync(temp, { recursive: true, force: true });
 }
@@ -475,4 +472,4 @@ if (failures.length) {
   for (const failure of failures) console.log(`  - ${failure}`);
   process.exit(1);
 }
-console.log("merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, generated files call regen, lint baseline keeps both sides' fixes, keyed table rows and gallery JSON keys union with per-key conflicts)");
+console.log("merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, the localization driver regenerates the conf, a hung generator is killed and leaves the conf conflicted, lint baseline keeps both sides' fixes, keyed table rows and gallery JSON keys union with per-key conflicts)");

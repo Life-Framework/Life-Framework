@@ -1,8 +1,8 @@
 // red-proof: Observed 2026-11-16: `--only LF_Test_OutletSerialWired` with the armory caller reverted to `Issue(uid, prefab)` failed `the issued rifle's serial names the armory`; with the outlet passed it is green. `--red LF_Test_OutletSerialWired` (RedProof() sells with no outlet): RED-OK, fails `the sold pistol's serial names the gun counter`.
-// tier: WORLD
 //! The serial names the outlet that issued or sold the weapon (#2153, Refs #2123): a rifle drawn from
 //! the armory reads "LF-police_armory-NNNN", and a weapon the gun counter sells reads
 //! "LF-gun_counter-NNNN", so a seized gun traces back to where it came from.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_OutletSerialWired : LF_Test
 {
 	protected static const string SENIOR_UID = "outlet-wired-senior";

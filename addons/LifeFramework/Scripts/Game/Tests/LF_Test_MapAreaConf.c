@@ -1,11 +1,11 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_MapAreaConf: RED-OK (RedProof() skips LF_MapAreas.AppendConfigRows, so "the zone's own area and the two rows are in the list (expected 3, got 1)", "the circle row is on the map" and "the polygon row is on the map" fail). Green without it: passed=2 with LF_Test_MapAreas.
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! map/area-conf (#2233 split M5b, everon-map.md section 2): the area table Configs/Map/LF_MapAreas.conf.
 //! The core file loads and holds no row (core holds no coordinate). Its rows, a circle and a polygon,
 //! become map areas through LF_MapAreas.AppendConfigRows; a row with no outline is skipped; a name
 //! already in the list (a zone entity, a layer entity) is not drawn twice. A pack's own rows, merged
 //! over the core file, are tested in the pack.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapAreaConf : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

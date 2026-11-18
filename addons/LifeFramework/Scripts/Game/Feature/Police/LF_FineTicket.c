@@ -586,7 +586,7 @@ class LF_FineTickets
 			}
 
 			s_aTickets.Insert(record.Copy());
-			s_iLastNumber = Math.Max(s_iLastNumber, record.m_iNumber);
+			s_iLastNumber = LF_Utils.MaxInt(s_iLastNumber, record.m_iNumber);
 		}
 
 		for (int i = 1; i < s_aTickets.Count(); i++)
@@ -697,11 +697,9 @@ modded class LF_GameModeRoleplay
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_FineTickets's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_FineTickets's statics (LF_StaticReset finds it by reflection).
 class LF_FineTickets_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_FineTickets_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_FineTickets";

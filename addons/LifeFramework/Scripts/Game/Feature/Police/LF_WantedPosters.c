@@ -67,7 +67,8 @@ class LF_WantedPosters
 		if (!Replication.IsServer())
 			return false;
 
-		if (s_Subscriber && LF_EventBus.SubscriberCount(LF_OnWantedChanged) > 0)
+		// Its own subscription, not any listener: LF_Dispatch listens to the same event (#2579).
+		if (s_Subscriber && LF_EventBus.IsSubscribed(LF_OnWantedChanged, s_Subscriber))
 			return true;
 
 		s_Subscriber = new LF_WantedPostersSubscriber();
@@ -319,11 +320,9 @@ class LF_WantedPostersSubscriber : LF_EventSubscriber
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_WantedPosters's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_WantedPosters's statics (LF_StaticReset finds it by reflection).
 class LF_WantedPosters_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_WantedPosters_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_WantedPosters";

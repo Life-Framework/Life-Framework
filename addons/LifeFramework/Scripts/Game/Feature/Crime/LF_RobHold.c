@@ -15,7 +15,8 @@ enum LF_ERobHoldEnd
 	POLICE,	//!< An on-duty officer came within the police radius
 	DOWNED,	//!< The robber went down or died
 	GONE,	//!< The robber left the server, or the till or attendant is gone
-	TILL	//!< The hold was kept but the till could not pay (no room for the cash)
+	TILL,	//!< The hold was kept but the till could not pay (no room for the cash)
+	CLERK	//!< The attendant went down or died: the hold ends unpaid (#2540)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -52,6 +53,28 @@ class LF_RobHoldRules
 			return LF_ERobHoldEnd.PAID;
 
 		return LF_ERobHoldEnd.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The robber's end (Judge) once the attendant's state is counted: a downed or dead attendant
+	//! ends a hold the robber still keeps, even one about to pay, as CLERK (#2540). A robber who
+	//! left, went down or lowered the weapon is told that instead.
+	static LF_ERobHoldEnd JudgeClerk(LF_ERobHoldEnd end, bool clerkDown)
+	{
+		if (!clerkDown)
+			return end;
+
+		if (end == LF_ERobHoldEnd.NONE || end == LF_ERobHoldEnd.PAID || end == LF_ERobHoldEnd.POLICE)
+			return LF_ERobHoldEnd.CLERK;
+
+		return end;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Only a kept hold opens the till; every other end pays nothing.
+	static bool Pays(LF_ERobHoldEnd end)
+	{
+		return end == LF_ERobHoldEnd.PAID;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -114,6 +137,7 @@ class LF_RobHoldRules
 			case LF_ERobHoldEnd.POLICE: return "#LF-RobHold_Fail_Police";
 			case LF_ERobHoldEnd.DOWNED: return "#LF-RobHold_Fail_Downed";
 			case LF_ERobHoldEnd.TILL: return "#LF-RobHold_Fail_Till";
+			case LF_ERobHoldEnd.CLERK: return "#LF-RobHold_Fail_Clerk";
 		}
 
 		return "";
@@ -151,6 +175,9 @@ class LF_RobHoldRules
 
 		if (refusal == LF_RobHold.REFUSED_BUSY)
 			return "#LF-RobHold_Refused_Busy";
+
+		if (refusal == LF_RobHold.REFUSED_HOLDING)
+			return "#LF-RobHold_Refused_Holding";
 
 		if (refusal == LF_RobHold.REFUSED_RATE)
 			return "#LF-RobHold_Refused_Rate";
@@ -196,12 +223,15 @@ class LF_RobHold
 	static const string REFUSED_WEAPON = "robbery refused: no weapon drawn";
 	static const string REFUSED_RATE = "robbery refused: too soon after the last attempt";
 	static const string REFUSED_REACH = "robbery refused: not within the till's radius";
+	static const string REFUSED_HOLDING = "robbery refused: already holding up another till";
 
 	protected static ref array<ref LF_RobHoldSession> s_aActive;
 	protected static bool s_bTicking;
 	protected static LF_ERobHoldEnd s_eLastEnd = LF_ERobHoldEnd.NONE;
 	//! The last refusal toast sent (test seam): the key the robber was told, or empty.
 	protected static string s_sLastRefusalNotice;
+	//! Cash the last finished hold paid (test seam).
+	protected static int s_iLastPaid;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -209,6 +239,7 @@ class LF_RobHold
 		s_aActive = null;
 		s_eLastEnd = LF_ERobHoldEnd.NONE;
 		s_sLastRefusalNotice = "";
+		s_iLastPaid = 0;
 		if (s_bTicking && GetGame())
 			GetGame().GetCallqueue().Remove(Tick);
 
@@ -237,6 +268,12 @@ class LF_RobHold
 	}
 
 	//------------------------------------------------------------------------------------------------
+	static int LastPaid()
+	{
+		return s_iLastPaid;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string LastRefusalNotice()
 	{
 		return s_sLastRefusalNotice;
@@ -245,7 +282,7 @@ class LF_RobHold
 	//------------------------------------------------------------------------------------------------
 	//! Server: a refused demand told to the robber the way every other crime path tells a grace
 	//! refusal (#2075): the grace toast. Other refusals have their caption in the conversation and
-	//! need no toast. eturn The toast key sent, or empty.
+	//! need no toast. \return The toast key sent, or empty.
 	static string NoteRefusal(IEntity player, string refusal)
 	{
 		s_sLastRefusalNotice = "";
@@ -280,14 +317,47 @@ class LF_RobHold
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected static LF_RobHoldSession FindByPlayer(int playerId)
+	{
+		if (playerId <= 0)
+			return null;
+
+		foreach (LF_RobHoldSession session : Active())
+		{
+			if (session.m_iPlayerId == playerId)
+				return session;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a robber holds one till at a time (#2540). REFUSED_HOLDING while `playerId` keeps a
+	//! hold running, else empty.
+	static string HolderRefusal(int playerId)
+	{
+		if (FindByPlayer(playerId))
+			return REFUSED_HOLDING;
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: why `player` cannot rob the till of `npc` now, or empty. Reads only, logs nothing.
 	static string Refusal(IEntity player, IEntity npc)
 	{
 		if (!LF_Systems.IsEnabled(LF_RobAction.SYSTEM))
 			return LF_RobAction.REFUSED_OFF;
 
+		if (LF_Restraint.IsRestrained(player))
+			return LF_RobAction.REFUSED_CUFFED;
+
 		if (!LF_HoldUp.IsArmed(player))
 			return REFUSED_WEAPON;
+
+		string holding = HolderRefusal(GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(player));
+		if (!holding.IsEmpty())
+			return holding;
 
 		LF_RobAction till = TillOf(npc);
 		if (!till)
@@ -314,6 +384,9 @@ class LF_RobHold
 		int playerId = players.GetPlayerIdFromControlledEntity(player);
 		if (!LF_RateLimit.Allow(playerId, LF_ERequestKind.CRIME, "robbery start", false))
 			return REFUSED_RATE;
+
+		if (LF_CuffEnforcement.Refuse(player, "held robbery"))
+			return LF_RobAction.REFUSED_CUFFED;
 
 		string refusal = Refusal(player, npc);
 		if (!refusal.IsEmpty())
@@ -388,16 +461,20 @@ class LF_RobHold
 		bool armed;
 		float distance;
 		bool policeNear;
+		bool clerkDown;
 		if (present)
 		{
-			downed = LF_Downed.IsDowned(player) || IsDead(player);
+			// Cuffed ends it like downed: the server, not the robber's client, decides (#2417).
+			downed = LF_Downed.IsDowned(player) || IsDead(player) || LF_Restraint.IsRestrained(player);
 			armed = LF_HoldUp.IsArmed(player);
 			distance = vector.Distance(player.GetOrigin(), session.m_vTill);
 			policeNear = PoliceWithin(session.m_vTill, session.m_fPoliceRadius);
+			clerkDown = LF_Downed.IsDowned(npc) || IsDead(npc);
 		}
 
 		int elapsed = System.GetTickCount() - session.m_iStartMs;
 		LF_ERobHoldEnd end = LF_RobHoldRules.Judge(present, downed, armed, distance, session.m_fRadius, policeNear, elapsed, session.m_iHoldMs);
+		end = LF_RobHoldRules.JudgeClerk(end, clerkDown);
 		if (end != LF_ERobHoldEnd.NONE)
 			return end;
 
@@ -421,9 +498,11 @@ class LF_RobHold
 		IEntity player = players.GetPlayerControlledEntity(session.m_iPlayerId);
 		IEntity npc = GetGame().GetWorld().FindEntityByID(session.m_NpcId);
 		int paid = 0;
-		if (end == LF_ERobHoldEnd.PAID)
+		if (LF_RobHoldRules.Pays(end))
 		{
-			paid = session.m_Till.PayHeld(player);
+			if (session.m_Till)
+				paid = session.m_Till.PayHeld(player);
+
 			if (paid > 0)
 				LF_Utils.NotifyEntity(player, "#EL-Stole_Money", "#EL-Robbery_Successful", 3.0, paid.ToString());
 			else
@@ -439,7 +518,36 @@ class LF_RobHold
 			controller.LF_RobHoldEnd(end, paid);
 
 		s_eLastEnd = end;
+		s_iLastPaid = paid;
 		LF_Debug.Info(FEATURE, string.Format("held robbery ends for player %1: %2, paid %3", session.m_iPlayerId, typename.EnumToString(LF_ERobHoldEnd, end), paid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: a hold for `playerId` with no till, attendant or tick behind it.
+	static void SeatForTest(int playerId)
+	{
+		LF_RobHoldSession session = new LF_RobHoldSession();
+		session.m_iPlayerId = playerId;
+		Active().Insert(session);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: end `playerId`'s hold the way Tick does, from the robber's end and the attendant's
+	//! state. \return The end it finished with, or NONE when the player holds nothing or it goes on.
+	static LF_ERobHoldEnd SettleForTest(int playerId, LF_ERobHoldEnd robberEnd, bool clerkDown)
+	{
+		// Only a seated hold: a real one (with a till) pays through Tick and nothing else.
+		LF_RobHoldSession session = FindByPlayer(playerId);
+		if (!session || session.m_Till)
+			return LF_ERobHoldEnd.NONE;
+
+		LF_ERobHoldEnd end = LF_RobHoldRules.JudgeClerk(robberEnd, clerkDown);
+		if (end == LF_ERobHoldEnd.NONE)
+			return end;
+
+		Finish(session, end);
+		Active().RemoveItem(session);
+		return s_eLastEnd;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -480,11 +588,9 @@ class LF_RobHold
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_RobHold's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_RobHold's statics (LF_StaticReset finds it by reflection).
 class LF_RobHold_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_RobHold_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_RobHold";

@@ -11,11 +11,11 @@
 // /Feature\/Crime\/LF_Bad\.c: core script names village entity "Roadmap_Bank_Vault"/"
 // and exited 1.
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { LAYERS } from "./validate-annex-fixtures.mjs";
 import { SCRIPTS, checkCoreVillageNames } from "./validate-core-village-names.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 
 function put(root, path, text) {
   const full = join(root, path);
@@ -27,7 +27,7 @@ const script = (body) => `class LF_X\n{\n\tstatic void Run()\n\t{\n${body}\n\t}\
 const find = (n) => `\t\tIEntity e = GetGame().GetWorld().FindEntityByName("${n}");`;
 
 function tree() {
-  const root = mkdtempSync(join(tmpdir(), "lf-corevillage-"));
+  const root = scratchDir("lf-corevillage-");
   put(root, `${LAYERS}/Annex.layer`, `GenericEntity Annex_Desk : "{1111111111111111}Prefabs/Desk.et" {\n coords 0 0 0\n}\n`);
   put(root, `${LAYERS}/Street_Bank.layer`, `GenericEntity Roadmap_Bank_Vault : "{2222222222222222}Prefabs/Door.et" {\n components {\n  MeshObject {\n   Object "{5555555555555555}a.xob"\n  }\n }\n}\n`);
   put(root, `${LAYERS}/Street_Nested.layer`, `$grp GenericEntity : "{4444444444444444}Prefabs/Counter.et" {\n Roadmap_Nested_Depot {\n  coords 0 0 1\n }\n}\n`);

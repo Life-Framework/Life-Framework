@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_VehicleColours,LF_Test_VehicleColoursOverlay` (RED-OK): without the pack source the overlay adds nothing, `- add: the S105 row has two colours (expected 2, got 1)`. Green with the hook off.
-// tier: WORLD
 //! Epic #1826: a pack `.conf` fills the colours config by catalog prefab: a row is added, a row's
 //! colour list is replaced by a patch, a row is removed, and a model with no row is unlisted.
 class LF_Test_VehicleColoursOverlaySource : LF_ConfigPackSource
@@ -19,6 +18,7 @@ class LF_Test_VehicleColoursOverlaySource : LF_ConfigPackSource
 }
 
 //------------------------------------------------------------------------------------------------
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VehicleColoursOverlay : LF_Test
 {
 	override string GetName()

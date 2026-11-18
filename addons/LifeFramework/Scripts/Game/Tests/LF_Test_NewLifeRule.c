@@ -1,9 +1,9 @@
 // red-proof: observed 2026-11-10 with `toolsi test --no-build --only LF_Test_NewLifeRule`: asserting the second look also reminds failed `- the reminder fires once`; restored, green.
 
-// tier: LOGIC
 //! medic/nlr: a real death gives a wristband on the wake; a return near the scene inside the
 //! window reminds once and logs one incident row; outside the window nothing; a revive (no
 //! recorded death) gives no wristband.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_NewLifeRule : LF_Test
 {
 	override string GetName()

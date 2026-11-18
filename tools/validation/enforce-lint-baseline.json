@@ -60,16 +60,6 @@
   "text": "Widget rowWidget = GetGame().GetWorkspace().CreateWidgets(\"{CE14CB47B66299DC}UI/Layouts/QuestMenuRow.layout\", m_wQuestList);"
  },
  {
-  "rule": "L2",
-  "file": "Scripts/Game/Feature/Whitelist/LF_WhitelistContextAction.c",
-  "text": "LF_WhitelistRespawnHandlerComponent whitelistComponent = LF_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(LF_WhitelistRespawnHandlerComponent));"
- },
- {
-  "rule": "L2",
-  "file": "Scripts/Game/Feature/Whitelist/LF_WhitelistContextAction.c",
-  "text": "LF_WhitelistRespawnHandlerComponent whitelistComponent = LF_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(LF_WhitelistRespawnHandlerComponent));"
- },
- {
   "rule": "L3",
   "file": "Scripts/Game/Feature/AgentHarness/LF_AgentHarness.c",
   "text": "GetGame().GetCallqueue().CallLater(Poll, 400, true);"
@@ -93,11 +83,6 @@
   "rule": "L4",
   "file": "Scripts/Game/Tests/LF_Test_Roadmap_Resources.c",
   "text": "protected static ref array<IEntity> s_aBars = {};"
- },
- {
-  "rule": "L6",
-  "file": "Prefabs/Items/Food/RowanBerries.et",
-  "text": "Object \"{B09DB5A4E4B8AD7B}Assets/Items/Food/Rowan Berries/rowan_berries.xob\""
  },
  {
   "rule": "L9",
