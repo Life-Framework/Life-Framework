@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "kit": "chess",
+  "system": "chess",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_chess_table.layer",
+    "group": "LF_ChessTable_Grid",
+    "origin": "LF_ChessTable_Grid",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        24.8,
+        -6.05
+      ],
+      "max": [
+        24.8,
+        -3.85
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "Street kit: the table stands on the cobbled street west of the pub, clear of the garden fence (24.8 m out along the pub right side, +x is west for b03). The two seats flank the table along z and face it. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "chess-table",
+      "name": "LF_ChessTable",
+      "prefab": "{33881F3E4E64549D}Prefabs/Props/Chess/LF_ChessTable.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        24.8,
+        -0.7,
+        -4.95
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chess-seat-white",
+      "name": "LF_ChessSeat_White",
+      "prefab": "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        24.8,
+        -0.7,
+        -6.05
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chess-seat-black",
+      "name": "LF_ChessSeat_Black",
+      "prefab": "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        24.8,
+        -0.7,
+        -3.85
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

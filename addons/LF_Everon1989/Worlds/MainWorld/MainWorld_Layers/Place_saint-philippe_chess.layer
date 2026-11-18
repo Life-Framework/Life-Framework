@@ -1,0 +1,23 @@
+GenericEntity Fit_saint_philippe_chess_Place {
+ components {
+  LF_PlaceComponent "{A360E7A9261AA9F1}" {
+   m_sKind "ChessTable"
+   m_sId "saint-philippe.chess"
+  }
+  LF_FittedBuildingComponent "{D4C0A97C4FA2C37E}" {
+  }
+ }
+ coords 4455.75 13.1 10701.55
+}
+GenericEntity Fit_saint_philippe_chess_chess_table : "{33881F3E4E64549D}Prefabs/Props/Chess/LF_ChessTable.et" {
+ coords 4430.502 12.4 10703
+ angleY 172
+}
+GenericEntity Fit_saint_philippe_chess_chess_seat_white : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
+ coords 4430.349 12.4 10704.09
+ angleY 172
+}
+GenericEntity Fit_saint_philippe_chess_chess_seat_black : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
+ coords 4430.656 12.4 10701.911
+ angleY -8
+}
