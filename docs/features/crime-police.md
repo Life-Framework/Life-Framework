@@ -385,6 +385,10 @@
   `duty clock stopped`, `duty clock resumed`. A connected officer who stands idle is paused by the idle sampler below. The shift's counted seconds are session
   state: a server restart gives a fresh cap. The cap log fires once per shift. Tests `police/duty-shift-cap`,
   `police/duty-clock-disconnect`.
+- 🔨 **A dedicated server sees an officer who only looks around** (#3154, in-dev, proof `duty-idle-proof`). The idle
+  sampler reads the server's copy of a remote client's aim, and that copy follows the client: on a dedicated session a
+  client on duty that only pitched its view for 360 s kept the clock running, and the same client standing still was
+  paused about 330 s later.
 - 🔨 **Duty pay pauses while the officer or medic stands idle** (#3120, in-dev, WORLD `police/duty-idle`). `LF_DutyIdle`
   samples every connected on-duty player every 30 s. Moving more than 2 m (on foot or in any vehicle; a seat follows the
   vehicle's position) or turning the view about 10 degrees counts as active, so patrol, a desk, a parked car with the
