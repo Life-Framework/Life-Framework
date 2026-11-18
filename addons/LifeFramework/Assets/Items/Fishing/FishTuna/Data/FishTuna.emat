@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{BB339D466359F367}Assets/Items/Fishing/FishTuna/Data/FishTuna_BCR.edds"
+ NMOMap "{C6C438CB04D07641}Assets/Items/Fishing/FishTuna/Data/FishTuna_NMO.edds"
+}

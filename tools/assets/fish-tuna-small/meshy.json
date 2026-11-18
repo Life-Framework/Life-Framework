@@ -1,0 +1,14 @@
+{
+  "slug": "fish-tuna-small",
+  "generations": [
+    {
+      "date": "2026-11-18",
+      "tool": "Meshy text-to-3D",
+      "model": "meshy-6-lite",
+      "previewId": "01a1effe-75f7-72fd-aaef-49d5e87e0cf6",
+      "refineId": "01a1efff-02f9-7019-a576-018ab72a0e8f",
+      "prompt": "A single bluefin tuna fish, whole, swimming pose seen from the side, thick torpedo shaped body tapering to a narrow tail stalk, crescent shaped tail fin, short sickle shaped dorsal fins, row of small yellow finlets, deep blue-black back, silver white belly. Realistic game prop, no base, no stand, no water, no text, no logos.",
+      "texturePrompt": "Bluefin tuna: dark steel-blue back, silvery white flanks and belly, yellow finlets, glossy wet skin."
+    }
+  ]
+}
