@@ -86,6 +86,59 @@
       "floor": "f0"
     },
     {
+      "id": "lf-hospital-till",
+      "prefab": "{2D106F570E87D5D9}Prefabs/Props/Commercial/LF_HospitalTill.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        5.45,
+        0.26,
+        1.35
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_HospitalTillComponent",
+          "set": {
+            "m_sTargetId": "\"SaintPhilippe_Clinic_Till\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "lf-hospital-cabinet",
+      "prefab": "{E9A69A99981C062C}Prefabs/Props/Commercial/LF_HospitalCabinet.et",
+      "role": "furniture",
+      "verb": "against wall",
+      "offset": [
+        3.2,
+        0.26,
+        1.05
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_BreachTargetComponent",
+          "set": {
+            "m_sTargetId": "\"SaintPhilippe_Clinic_Cabinet\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "LF_HospitalCabinetComponent",
+          "set": {
+            "m_sTargetId": "\"SaintPhilippe_Clinic_Cabinet\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
       "id": "lf-dispatch-board-medic",
       "prefab": "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et",
       "role": "board",
