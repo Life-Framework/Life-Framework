@@ -5083,6 +5083,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Lockpick"
      Comment "Item name (#411)."
     }
+    CustomStringTableItem "{B7CF3EC52549209E}" {
+     Id "LF-Item_MarkedCash"
+     Target_en_us "Marked notes"
+     Comment "Item name: stolen banknotes still in a bank band; they look like cash but no shop or ATM takes them"
+    }
+    CustomStringTableItem "{4D5896C4AF350BBF}" {
+     Id "LF-Item_MarkedCash_Desc"
+     Target_en_us "Banknotes still in the bank's band. No shop or teller will take them as they are."
+     Comment "Item description of the marked notes"
+    }
     CustomStringTableItem "{315A7D38264FAED4}" {
      Id "LF-Item_MoneyBag"
      Target_en_us "Cash sack"
