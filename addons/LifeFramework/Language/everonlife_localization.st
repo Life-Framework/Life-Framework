@@ -7677,6 +7677,101 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "War notices"
      Comment "Title of the war notice board card (#2677)."
     }
+    CustomStringTableItem "{E2D1E8610799E24F}" {
+     Id "LF-OrgWarSheet_Accept"
+     Target_en_us "Accept"
+     Comment "War sheet button: accept the declaration in the row (#2675)."
+    }
+    CustomStringTableItem "{66B687D491E42733}" {
+     Id "LF-OrgWarSheet_ActiveLine"
+     Target_en_us "Wars in progress (%1)"
+     Comment "War sheet line above the active wars. %1 = count (#2675)."
+    }
+    CustomStringTableItem "{7A53D42CF1DC03B7}" {
+     Id "LF-OrgWarSheet_AnswerBy"
+     Target_en_us "Answer within %1"
+     Comment "War sheet pending row status. %1 = time left to answer, such as 9 min (#2675)."
+    }
+    CustomStringTableItem "{FAF591F49E6D3C03}" {
+     Id "LF-OrgWarSheet_Close"
+     Target_en_us "Close"
+     Comment "War sheet close button (#2675)."
+    }
+    CustomStringTableItem "{0CC38A7BD8CFF0E5}" {
+     Id "LF-OrgWarSheet_Declare"
+     Target_en_us "Declare"
+     Comment "War sheet button: declare war on the organisation in the row (#2675)."
+    }
+    CustomStringTableItem "{0985BBB12E38FF3B}" {
+     Id "LF-OrgWarSheet_EndsIn"
+     Target_en_us "Ends in %1"
+     Comment "War sheet active row status. %1 = time until the war ends (#2675)."
+    }
+    CustomStringTableItem "{EC6D5BB1509DD4D0}" {
+     Id "LF-OrgWarSheet_Intro"
+     Target_en_us "Declaring a war costs %1 from your fund. Both sides need at least %2 members. The other side has a short time to answer."
+     Comment "War sheet intro line. %1 = the fee as money, %2 = the member minimum (#2675)."
+    }
+    CustomStringTableItem "{1954F9D1B9794DC7}" {
+     Id "LF-OrgWarSheet_IntroNoOrg"
+     Target_en_us "You belong to no {org}, so you cannot declare or answer a war. The register is below. A declaration costs %1 and both sides need %2 members."
+     Comment "War sheet intro for a viewer with no organisation. %1 = fee, %2 = member minimum (#2675)."
+    }
+    CustomStringTableItem "{A554181130589FE1}" {
+     Id "LF-OrgWarSheet_IntroNoRight"
+     Target_en_us "Your rank cannot declare or answer a war. A declaration costs %1 and both sides need %2 members."
+     Comment "War sheet intro for a member whose rank lacks the war right. %1 = fee, %2 = member minimum (#2675)."
+    }
+    CustomStringTableItem "{CF5337F9DE14C7CD}" {
+     Id "LF-OrgWarSheet_IntroTooFew"
+     Target_en_us "Your {org} needs %2 members to declare or answer a war. A declaration costs %1."
+     Comment "War sheet intro when the viewer's organisation is under the member minimum. %1 = fee, %2 = minimum (#2675)."
+    }
+    CustomStringTableItem "{E3E3577C0775B16B}" {
+     Id "LF-OrgWarSheet_Members"
+     Target_en_us "%1 members"
+     Comment "War sheet register row status. %1 = member count (#2675)."
+    }
+    CustomStringTableItem "{1D6443E6EB523B34}" {
+     Id "LF-OrgWarSheet_Open"
+     Target_en_us "Wars"
+     Comment "Registry desk action name: opens the war sheet (#2675)."
+    }
+    CustomStringTableItem "{6E46E29A07149C56}" {
+     Id "LF-OrgWarSheet_OrgsLine"
+     Target_en_us "On the register (%1)"
+     Comment "War sheet line above the register list. %1 = count (#2675)."
+    }
+    CustomStringTableItem "{A728D68B4D022A0F}" {
+     Id "LF-OrgWarSheet_PendingLine"
+     Target_en_us "Declared against you (%1)"
+     Comment "War sheet line above the declarations made on the viewer's organisation. %1 = count (#2675)."
+    }
+    CustomStringTableItem "{0C1332EF71C3032A}" {
+     Id "LF-OrgWarSheet_StateAtWar"
+     Target_en_us "At war"
+     Comment "War sheet register row status: the two are at war (#2675)."
+    }
+    CustomStringTableItem "{596E0A35FB7B60FB}" {
+     Id "LF-OrgWarSheet_StateCooldown"
+     Target_en_us "Too soon to declare"
+     Comment "War sheet register row status: the pair cooldown after a war is running (#2675)."
+    }
+    CustomStringTableItem "{E81FDC27EE4A5512}" {
+     Id "LF-OrgWarSheet_StatePending"
+     Target_en_us "Declaration waiting"
+     Comment "War sheet register row status: a declaration between the two is waiting for an answer (#2675)."
+    }
+    CustomStringTableItem "{586D525A4BF713EF}" {
+     Id "LF-OrgWarSheet_StateTooFew"
+     Target_en_us "Under %1 members"
+     Comment "War sheet register row status: the organisation is under the member minimum. %1 = minimum (#2675)."
+    }
+    CustomStringTableItem "{CB90D6E283C0FEB5}" {
+     Id "LF-OrgWarSheet_Title"
+     Target_en_us "Organisation wars"
+     Comment "War sheet title (#2675)."
+    }
     CustomStringTableItem "{7E0E46C2E4A95435}" {
      Id "LF-OrgWar_Accepted"
      Target_en_us "Declaration answered. Your organizations are at war."
