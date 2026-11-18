@@ -2424,6 +2424,31 @@ StringTable {
      Target_en_us "The town square is a safe zone. Within 30 metres of the fountain nobody can hurt anyone: a shot fired on, into, or out of the square does no harm."
      Comment "Safe zone sign card, What section."
     }
+    CustomStringTableItem "{327C120B0ED84A6C}" {
+     Id "LF-Sign_Supermarket_How"
+     Target_en_us "Take what you want off the shelves and *Pay* at the till|Or browse the till's list for everything we stock"
+     Comment "Sign card for the supermarket, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{409FE5719F11DCE3}" {
+     Id "LF-Sign_Supermarket_Needs"
+     Target_en_us "Cash."
+     Comment "Sign card for the supermarket, Needs section."
+    }
+    CustomStringTableItem "{D76920D84DA109D0}" {
+     Id "LF-Sign_Supermarket_Next"
+     Target_en_us "The other village shops are along the main street"
+     Comment "Sign card for the supermarket, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{6331B102EC3688DE}" {
+     Id "LF-Sign_Supermarket_Title"
+     Target_en_us "Supermarket"
+     Comment "Title of the fascia and sign at the village supermarket."
+    }
+    CustomStringTableItem "{01D9AC4455F43C50}" {
+     Id "LF-Sign_Supermarket_What"
+     Target_en_us "Groceries, drinks and the odd tin of dressings."
+     Comment "Sign card for the supermarket, What section."
+    }
     CustomStringTableItem "{DFA15542C4155B52}" {
      Id "LF-Sign_TestOrg_How"
      Target_en_us "Use Join test organisation. The first one in founds it and takes the hideout yard. Use Leave organisation to get out again."
