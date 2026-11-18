@@ -194,6 +194,13 @@ toolscli main-guard start | stop | status | watch   # status is also a line in `
    (`classifyStep` in `tools/lib/main-guard.mjs`). `build` runs with `--wait`, so a busy build lock queues first. A red
    set on a refusal before this rule (7587bfd5, which reverted #2369 in #2736) is put back to `compiled-ok` and its
    `main-guard/suite` status set to pending at worker start, or by `tools\cli main-guard reclassify [--dry-run]`.
+   **The guard never acts on stale code.** A running worker never reloads its modules: on 2026-11-18 one that started
+   14 s before the main checkout pulled #2763 still judged a held lock as red and reverted #2881 (#2884) and #2887
+   (#2899). The worker records the blob ids of `mg.GUARD_CODE` it loaded and compares them with `origin/main` every
+   tick. On drift it checks nothing and reverts nothing; once no stage-2 run is going it fast-forwards the main checkout
+   and restarts itself on the new code (`STALE:` in the log when the checkout cannot fast-forward). `start` always runs
+   the main checkout's `tools/main-guard.mjs`, brought to `origin/main` first, and refuses when it cannot be; `status`
+   prints `code: origin/main's` or `code: STALE` (`main-guard-stale-code-selftest.mjs`).
    **The suite bisect matches the failing-test set (#2052).** At a red head the guard records the failing test names
    and FAIL lines (`suite red set:` in the log, `failing` and `failLines` in `lastResult`). The bisect reruns just
    those tests at each candidate and counts a commit as red only when it fails one of them; another test failing there,

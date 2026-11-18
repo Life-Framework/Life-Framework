@@ -26,7 +26,7 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   and `LF_JobStartRunAction` reads `run:<JOB>` (`LF_JobStandingGate`). The core ships fuel and taxi at the town, tier 0.
   A refusal is the `#LF-Reputation_Refuse_<Faction>` key with the minimum tier's word as the argument, never a number
   (the underworld gives no tier word). The server refuses and notifies in `PerformAction`; the greyed offer reads
-  standing only on the server host (a dedicated client waits for the owner RPC). The sign-up offer's level refusal
+  standing on the server host, and on a dedicated client from `ClientTier` (#2915, below). The sign-up offer's level refusal
   now uses `LF_JobLevelWords` (#2700). Test `reputation/gate`.
 - ✅ **The owner learns their own tiers** (#2704, merged, in-dev): `LF_ReputationSync.c` packs the three tiers into one int and
   sends it on spawn and on each tier change to that player's own controller only (`RpcDo_LF_StandingTiers`, `RplRcver.Owner`,
@@ -48,5 +48,10 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   gate passes (checked on the server, where `Offers` runs), the pick signs the player up for the contract's job if needed (the JobSignUp
   hook), then `LF_ReputationContracts.Begin` (dead or downed, purchase rate limit, gate, busy, cooldown, deposit). The NPC answers
   `#LF-Contract_Started` or the refusal key; a toast repeats it. Test `dialogue/contract`. The harbour master's reply is pack data (#2709).
-- 🔲 Client greying from `ClientTier`, screens, the pack's words,
+- ✅ **A job you cannot take yet is greyed in words on a dedicated client** (#2915, merged, in-dev): `LF_ReputationOfferGrey.c`
+  reads the gate row and the client's own tier from `LF_ReputationSync.ClientTier`; a modded `LF_JobSignUpAction` and
+  `LF_JobStartRunAction` (`CanBePerformedScript`, client branch only) grey the offer with the faction's refusal and the
+  tier word, before the press. No tiers received yet shows the offer (the server still refuses on use); a gate with no
+  row is open. The host path is unchanged. Test `reputation/offer-grey`.
+- 🔲 Screens, the pack's words,
   pack overlay and the owner `config.json` section `reputation` (later cards of #1018).
