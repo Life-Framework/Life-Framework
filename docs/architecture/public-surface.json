@@ -37,6 +37,8 @@
     "LF_QuizQuestion",
     "LF_RaceCoursesConfig",
     "LF_RadioPlaylistConfig",
+    "LF_ReputationConfig",
+    "LF_ReputationContractsConfig",
     "LF_ResourceChainConfig",
     "LF_ResidentsConfig",
     "LF_RespawnConfig",

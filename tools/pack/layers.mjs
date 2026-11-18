@@ -70,6 +70,11 @@ Object.assign(SECTIONS, {
   "market.goods": row("market", "goods", "LF_MarketConfig", "Configs/Market/LF_Market.conf", "m_aGoods", "m_sGood", (p) => guidOf(p.m_sGood), noOwner),
   // The core file lists no rung (LF_MedicRanks falls back to the built-in three in script), so the core layer is empty: a pack adds.
   "medic.ranks": row("medic", "ranks", "LF_MedicConfig", null, "m_aRanks", "m_sId", byField("m_sId"), noOwner),
+  "reputation.factions": row("reputation", "factions", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aFactions", "m_sId", byField("m_sId")),
+  "reputation.awards": row("reputation", "awards", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aAwards", "m_sAction", byField("m_sAction")),
+  "reputation.gates": row("reputation", "gates", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aGates", "m_sGate", byField("m_sGate")),
+  "reputation.pays": row("reputation", "pays", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aPays", "m_sFaction", byField("m_sFaction")),
+  "reputationContracts.contracts": row("reputationContracts", "contracts", "LF_ReputationContractsConfig", "Configs/Reputation/LF_ReputationContracts.conf", "m_aContracts", "m_sId", byField("m_sId")),
   "townBoard.cards": row("townBoard", "cards", "LF_TownBoardConfig", "Configs/TownBoard/LF_TownBoard.conf", "m_aCards", "m_sId", byField("m_sId")),
   "ui-theme.themes": row("ui-theme", "themes", "LF_UIThemeConfig", "Configs/UI/LF_UITheme.conf", "m_aThemes", "m_sThemeId", byField("m_sThemeId")),
   "vehicle-colours.models": row("vehicle-colours", "models", "LF_VehicleColoursConfig", "Configs/Vehicles/LF_VehicleColours.conf", "m_aModels", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),

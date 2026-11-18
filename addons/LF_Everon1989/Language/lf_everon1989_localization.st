@@ -524,6 +524,46 @@ StringTable {
      Target_en_us "Tourist map of Everon"
      Comment "Tourist map (#2242): the item's name in the inventory."
     }
+    CustomStringTableItem "{78E9902BB0209A7E}" {
+     Id "LF-Level_Far_Farmer"
+     Target_en_us "You have not put in enough seasons on the land for that."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{A718D65B1FDFE9B2}" {
+     Id "LF-Level_Far_Lumberjack"
+     Target_en_us "You have not spent enough days in the timber for that."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{E7776BB29B052CA7}" {
+     Id "LF-Level_Far_Medic"
+     Target_en_us "The infirmary does not trust you with that yet. More time on the ward first."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{8A34CDF81572554B}" {
+     Id "LF-Level_Far_Miner"
+     Target_en_us "You have not put in enough shifts at the quarry for that."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{C350EDAE16B51A03}" {
+     Id "LF-Level_Near_Farmer"
+     Target_en_us "Not quite yet. A few more days in the orchards and the foreman will take you on."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{4C195362770B5C66}" {
+     Id "LF-Level_Near_Lumberjack"
+     Target_en_us "Nearly there. A few more days on the saw and the woodsmen will trust you with it."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{8ABADA8A8ECDE7C1}" {
+     Id "LF-Level_Near_Medic"
+     Target_en_us "Nearly there. A few more patients under the doctor's eye first."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{B3848ED998DC1D4A}" {
+     Id "LF-Level_Near_Miner"
+     Target_en_us "Nearly there. A few more shifts at the quarry and the foreman will let you."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
      Target_en_us "Fence"
