@@ -28,18 +28,6 @@ GenericEntity Fit_saint_philippe_parcel_job_depot : "{28F9F4DC40089B51}Prefabs/P
       "default"
      }
     }
-    LF_JobSignUpAction "{B0B5A00100000013}" {
-     m_eJob FUEL_DELIVERY
-     ParentContextList {
-      "default"
-     }
-    }
-    LF_JobSignUpAction "{B0B5A00100000015}" {
-     m_eJob TAXI
-     ParentContextList {
-      "default"
-     }
-    }
     LF_JobStartRunAction "{B0B5A00100000017}" {
      m_eJob PARCEL
      ParentContextList {
