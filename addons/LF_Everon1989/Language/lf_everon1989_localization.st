@@ -39,6 +39,26 @@ StringTable {
      Target_en_us "Come in, come in. The coffee is hot. You are new here, I can tell. Nobody walks that slowly who has lived here long."
      Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
     }
+    CustomStringTableItem "{7175FAEEC545FB58}" {
+     Id "LF-Dialogue_CafeOwner_GreetFriendly"
+     Target_en_us "Welcome back! You always bring a smile in with you. What can I do for you?"
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{6F4DC97D37490E2A}" {
+     Id "LF-Dialogue_CafeOwner_GreetRefuses"
+     Target_en_us "I have nothing to say to you. Please leave my cafe."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{D147578847F58E39}" {
+     Id "LF-Dialogue_CafeOwner_GreetRegular"
+     Target_en_us "There is my favourite customer! Sit, sit. Ask me anything."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{8DFEB7702C93ABF5}" {
+     Id "LF-Dialogue_CafeOwner_GreetWary"
+     Target_en_us "Oh. It is you. What do you need?"
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
     CustomStringTableItem "{73190CD9164F1A41}" {
      Id "LF-Dialogue_CafeOwner_Handbook"
      Target_en_us "And read the handbook. It is short. It tells you what the town expects of you, and what the police will not forgive."
@@ -259,6 +279,26 @@ StringTable {
      Target_en_us "Evening. Or morning, I lose track on nights. You are one of the new families, yes? Sit if you like."
      Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
     }
+    CustomStringTableItem "{CD248C95DC1ABEA0}" {
+     Id "LF-Dialogue_NightShift_GreetFriendly"
+     Target_en_us "Ah, good evening. Good to see you. Sit if you like."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{DE5B4981A3551962}" {
+     Id "LF-Dialogue_NightShift_GreetRefuses"
+     Target_en_us "I know your face from the night. Do not speak to me."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{A3A002843565D613}" {
+     Id "LF-Dialogue_NightShift_GreetRegular"
+     Target_en_us "My friend! The night is long and your company shortens it. What do you want to know?"
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{313BEDDBB4D62D31}" {
+     Id "LF-Dialogue_NightShift_GreetWary"
+     Target_en_us "You again. Make it short, I have work."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
     CustomStringTableItem "{D435BA49E015D84F}" {
      Id "LF-Dialogue_NightShift_SayBye"
      Target_en_us "Goodbye."
@@ -287,6 +327,26 @@ StringTable {
     CustomStringTableItem "{EE06F137A9E223A3}" {
      Id "LF-Dialogue_OldMan_Greet"
      Target_en_us "Sit down a minute. Everyone is in a hurry these days. I only watch the square."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{19F518135D4FF803}" {
+     Id "LF-Dialogue_OldMan_GreetFriendly"
+     Target_en_us "Ah, there you are. A friendly face is good to see. Sit a moment."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{3582FBD5E8DCF917}" {
+     Id "LF-Dialogue_OldMan_GreetRefuses"
+     Target_en_us "I saw what you did. Keep walking."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{02D74A9E8D29DB53}" {
+     Id "LF-Dialogue_OldMan_GreetRegular"
+     Target_en_us "My friend! The harbour is better for having you in it. What can an old fisherman do for you?"
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{0DA987094106C72C}" {
+     Id "LF-Dialogue_OldMan_GreetWary"
+     Target_en_us "Hm. You again. Say what you want, and be quick."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
     CustomStringTableItem "{22873025BE77ACB7}" {
