@@ -229,13 +229,52 @@ pack(two, "LF_Bbb", { gproj: "6000000000000004", man: G.man2, mis: G.misB }, man
 }
 
 // ---- Every list section in the core is in the table ----
+// This check matched nothing until #2764 (its regex had lost its backslashes), so these lists went in
+// without a row. KNOWN_GAPS is a baseline that only shrinks: a list outside it with no row fails, and
+// a gap that gets its row must leave the list (follow-up: add the rows, then delete this list).
+const KNOWN_GAPS = new Set([
+  "prefabs.slots",
+  "sounds.slots",
+  "safeTypes.types",
+  "dialogue.nodes",
+  "dialogue.lines",
+  "dialogue.index",
+  "events.events",
+  "jobs.tracks",
+  "jobs.xpAwards",
+  "jobs.licenceGates",
+  "licences.rules",
+  "mapAreas.areas",
+  "mapPois.kinds",
+  "zones.ruleSets",
+  "organizations.rankDefaults",
+  "police.ranks",
+  "welcomeGift.gifts",
+  "racing.courses",
+  "residents.residents",
+  "handbook.pages",
+  "signs.signs",
+  "drinkImpairment.drinks",
+  "systems.catalog",
+  "terms.terms",
+  "townBoard.cards",
+  "ui-theme.themes",
+  "vehicle-colours.models",
+]);
 {
+  const declared = new Set();
   for (const f of walk(join(REAL, "addons", "LifeFramework", "Scripts")).filter((p) => p.endsWith(".c"))) {
     const text = readFileSync(f, "utf8");
-    if (!/classs+w+s*:s*LF_ConfigList/.test(text)) continue;
-    for (const m of text.matchAll(/override string GetName()s*{s*return "([^"]+)";/g)) {
-      if (!SECTIONS[m[1]]) fail(`${f.slice(REAL.length + 1)} declares the list ${m[1]}; add its row to SECTIONS in tools/pack/layers.mjs`);
+    if (!/class\s+\w+\s*:\s*LF_ConfigList\b/.test(text)) continue;
+    for (const m of text.matchAll(/override string GetName\(\)\s*\{\s*return "([^"]+)";/g)) {
+      declared.add(m[1]);
+      if (!SECTIONS[m[1]] && !KNOWN_GAPS.has(m[1])) fail(`${f.slice(REAL.length + 1)} declares the list ${m[1]}; add its row to SECTIONS in tools/pack/layers.mjs`);
     }
+  }
+  if (!declared.size) fail("the section coverage check found no LF_ConfigList class (its pattern broke again)");
+  for (const g of KNOWN_GAPS) {
+    if (SECTIONS[g]) fail(`${g} has a row in SECTIONS now; delete it from KNOWN_GAPS`);
+    else if (!declared.has(g)) fail(`${g} is in KNOWN_GAPS but no core class declares it; delete it from KNOWN_GAPS`);
   }
 }
 
