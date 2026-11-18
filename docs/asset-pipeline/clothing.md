@@ -306,6 +306,19 @@ a garment be generated from the base body; the balaclava (`tools/assets/balaclav
 `Body_LOD0`, offset 6 mm, with an eye opening, and the knit maps are drawn in the same script.
 `verify.min_diff` lowers the "looks like vanilla" threshold for a garment as small as a hat.
 
+**Face masks (`purge-masks`).** `tools/assets/doll-mask` and `hockey-mask` are two more `mesh.build` garments, written on a
+shared builder, `tools/assets/pipeline/blender/mask_shell.py`. It welds the template's head, cuts the front shell by a per-mask
+outline and eye holes, pushes every vertex out to a clear gap above the real skin (smoothing pulls the nose below it, so a
+BVH check fixes that), thickens it, adds an elastic strap cut from the head above the ears, and makes the ground model from the
+shell lying face up. The face is painted in numpy on a front projection (u and v are x and z in metres, so a feature keeps its
+size), saved as BCR and NMO TIFs, and the script renders three review pictures on the base head. Three traps it hit: the head's
+own `UVMap0` and `UVMap1` layers come along with the cut and must be removed or the preview reads the wrong one; a numpy
+`negative ** 2.8` is NaN and paints the whole map black; and the BCR's alpha is roughness, so any previewer must ignore it. Paint
+the base colour darker than the picture you want: game lighting reads about 1.7 times lighter (a white mask came out pure white
+until the base went from 0.5 to 0.28). The Hat slot is the only head slot (`Character_Base.et` has no face or eyewear slot), so a
+mask and a hat cannot be worn together. A re-import over an earlier run's files fails its first try with "Wrong GUID/name";
+clear the asset folder with `node tools/safe-rm.mjs` and run `--from fit` (or run `--from import` again).
+
 ## What the tool does not do
 
 - Paint. `tint` covers a recolour; anything with lettering or insignia is a PNG painted on the
