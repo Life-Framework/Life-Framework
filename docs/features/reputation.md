@@ -53,5 +53,12 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   `LF_JobStartRunAction` (`CanBePerformedScript`, client branch only) grey the offer with the faction's refusal and the
   tier word, before the press. No tiers received yet shows the offer (the server still refuses on use); a gate with no
   row is open. The host path is unchanged. Test `reputation/offer-grey`.
+- ✅ **A running contract shows in the tracker with its time left** (#2914, merged, in-dev): `LF_ContractTracker.c`. `Take` sends
+  the contract's own player one line by an Owner RPC on their controller (`RpcDo_LF_ContractLine`; never anyone else), `End`,
+  the stale drop and `Forget` clear it. The client counts down itself and shows who it is for and the time left in words
+  (`LF_EContractTimeWord`: plenty over half, soon over a fifth, hurry, then the line goes; never a number), and under it
+  what walking away costs in words (`#LF-ContractTracker_Cost`, never points) when the contract has a stake. The title
+  is the pack's row `Title_<contractId>`, else `Title_Default`. There was no on-screen quest tracker, so the line is a
+  paper tag built from UI kit parts (`LF_ContractTrackerHud`, no layout). Test `reputation/contract-tracker`.
 - 🔲 Screens, the pack's words,
   pack overlay and the owner `config.json` section `reputation` (later cards of #1018).
