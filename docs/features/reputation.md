@@ -19,5 +19,6 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   `LF_ReputationRow`: row version, character record key, faction, points). 0 rows are not written; on load a
   removed faction is skipped with a warning and points clamp to the current thresholds. Cooldowns and daily caps
   stay session state. Proof: `LF_Test_ReputationPersist` and `tools/cli wt e2e`.
-- 🔲 Event subscriptions, job gates, contracts, owner RPC and screens, the pack's words,
+- ✅ **Standing listens to the event bus** (#2697, merged, in-dev): `LF_ReputationSubscriber` (`Feature/Reputation/LF_ReputationSubscriber.c`, subscribed from the game mode) awards a config row per event, so no feature calls standing. A paid civilian run (`LF_OnJobCompleted`, not police or medic duty; a `job_completed:<JOB>` row overrides the general one) raises town. An arrest costs town and police and gives the underworld a little. `LF_OnSuspectIdentified` costs town. A player witness's statement raises police; one that describes a suspect also costs the witness 5 underworld (outline R4); a town NPC witness earns nothing. `LF_OnVehicleRecovered` raises the officer's police standing, `LF_OnFlaggedLogout` lowers it. `LF_OnFenceSale`, `LF_OnVehicleChopped`, a chain `collect` and `LF_OnHeistLoot` raise the underworld. Loss needs proof: a wanted level changing or a cleared accusation moves nothing. Test `reputation/events`.
+- 🔲 Job gates, contracts, owner RPC and screens, the pack's words,
   pack overlay and the owner `config.json` section `reputation` (later cards of #1018).
