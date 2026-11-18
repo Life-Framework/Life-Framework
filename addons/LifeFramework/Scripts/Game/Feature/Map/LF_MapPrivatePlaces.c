@@ -81,7 +81,7 @@ class LF_MapPrivatePlaces
 
 		foreach (LF_MapPoiKind row : config.m_aKinds)
 		{
-			if (row && row.m_eVisibility != LF_EMapPoiVisibility.PUBLIC)
+			if (row && !LF_MapPoiConfig.IsSlotRow(row) && row.m_eVisibility != LF_EMapPoiVisibility.PUBLIC)
 				LF_MapPois.GatherKind(row.m_sKind, into);
 		}
 	}

@@ -322,7 +322,9 @@ Pre-Alpha", 256 slots), is hidden from Scenarios. Decided (D13):
 
 Steps 1 to 3 landed in #2204 (W1): the apple-farm layer and `EveronLifeGameMode.conf` are deleted, `Gamemode.layer`
 holds the `SCR_AIWorld_Eden` with `GM_Eden.nmn`, `LF_EveronIsland.conf` exists and `session up --mission island`
-boots it. The old spawn (4472, 10535) stays until the `arrival` slot owns one.
+boots it. The old spawn (4472, 10535) was removed from `MainWorld` when the town hall forecourt got its own
+spawn point, `Fit_saint_philippe_safe_zone_spawn` in `Place_saint-philippe_safe-zone.layer` (4426, 10664, 12 m
+inside the arrival safe circle). `CoreOnEveron` keeps its own spawn at the old spot for the walk proof.
 
 1. Keep `MainWorld` (no new GUID), delete the legacy apple-farm layer and retire `EveronLifeGameMode.conf`.
 2. Copy CoreOnEveron's game layer into it: the `SCR_AIWorld_Eden` with the soldier `NavmeshWorldComponent`

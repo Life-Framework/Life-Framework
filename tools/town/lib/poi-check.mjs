@@ -50,7 +50,10 @@ export function loadPoiKinds(root) {
 export function checkSlotPois(template, kinds) {
   const out = [];
   const known = kinds instanceof Set ? kinds : new Set(kinds ?? []);
-  for (const s of Array.isArray(template?.slots) ? template.slots : []) {
+  const slots = Array.isArray(template?.slots) ? template.slots : [];
+  const shared = new Map();
+  for (const s of slots) if (typeof s?.poi === "string" && s.poi !== NONE) shared.set(s.poi, (shared.get(s.poi) ?? 0) + 1);
+  for (const s of slots) {
     const at = `slot ${s?.id ?? "?"}`;
     const p = s?.poi;
     if (typeof p !== "string" || !p) {
@@ -68,6 +71,12 @@ export function checkSlotPois(template, kinds) {
     }
     if (!Array.isArray(s.places) || !s.places.includes(p)) {
       out.push(`${at}: front kind '${p}' is not one of the slot's places (${Array.isArray(s.places) ? s.places.join(", ") : "none"}), so fitting the slot would never register it`);
+      continue;
+    }
+    // Slots that share a front kind (every shop uses StoreCounter) would all read as the base row's name on the map,
+    // so each needs a slot row `<kind>/<slot id>` (#3515, LF_MapPoiConfig.FindSlotRow).
+    if (shared.get(p) > 1 && !known.has(`${p}/${s.id}`)) {
+      out.push(`${at}: front kind '${p}' is shared by ${shared.get(p)} slots, so the map would give them one name; add a POI row '${p}/${s.id}' to the pack overlay (LF_MapPois*.conf) with its own label`);
     }
   }
   return out;

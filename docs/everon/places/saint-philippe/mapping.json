@@ -278,7 +278,7 @@
       "shared": true,
       "why": [
         "MunicipalOffice_E_01 (government), 429 m2, the town hall south of the square that the arrival slot holds; the safe zone is a zone entity over the forecourt and the square where newcomers land, so it shares b45 as street furniture does",
-        "D10 pick (#3346), card X3 #3350: one SAFE `LF_ZoneComponent` (kind SafeZone) covering the town hall forecourt and the square, not the bank or the gun counter (the slot's 70 m margin is the reach of the zone; the fit card sets the radius). No LAWLESS zone before M7 (D11)"
+        "D10 pick (#3346), card X3 #3350: one SAFE `LF_ZoneComponent` (kind SafeZone) covering the town hall forecourt and the square, not the bank or the gun counter (the slot's 120 m margin is the reach of the zones: the square circle, and a 25 m one over the hostel first-spawn beds, where a newcomer wakes; the fit card sets the radii). No LAWLESS zone before M7 (D11)"
       ]
     },
     "atms": {
