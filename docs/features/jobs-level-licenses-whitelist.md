@@ -78,7 +78,8 @@
   `LF_JobMapMarks` finds them by place, not by name) on the entrance walls of the east districts' wooden house and the
   dock's metal shed, cabin, garage and barracks (318 to 480 m out; `runMinDistance` stays 300). `town drops saint-philippe
   parcel-drops` writes them from the dossiers and seats each on its host's real wall. The island depot counter offers
-  parcel sign-up only: the fuel and taxi sign-ups are removed because the island has no fuel or taxi sites yet.
+  parcel, fuel delivery and taxi sign-ups again (#3373; they were dropped on 2026-11-18 while the island had no fuel or
+  taxi sites). The fuel pickup and drop props (#3370) and the taxi rank (#3114) are the sites those two jobs run from.
 
 - ✅ **Sign-up offers on a dedicated client** (2026-11-08, #157): the greyed reason reads
   `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
