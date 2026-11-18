@@ -30,6 +30,10 @@
   built-in defaults.
 
 ### `LF_CharacterSurvivalComponent` — `Feature/Survival/LF_CharacterSurvivalComponent.c`
+- ✅ (2026-11-18, #3359) **A corpse stops draining.** A respawned body shares the character's stats object with
+  its corpse; the corpse's tick kept running until cleanup (10+ min), so hunger and thirst fell twice as fast.
+  `Tick` now ends the body's own tick and drops its stats reference once the body is dead. Test
+  `survival/corpse-no-drain` (drives `TickAt(nowMs)` on both bodies).
 - ✅ (2026-11-08) Server-authoritative: stats tick on the server only, on a
   1 s call-queue timer. The delta is clamped to 5 s so a hitch does not drop a
   chunk. The owner gets whole-point hunger and thirst and the low-needs flag as

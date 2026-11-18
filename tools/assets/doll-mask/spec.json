@@ -1,0 +1,48 @@
+{
+  "slug": "doll-mask",
+  "name": "DollMask",
+  "kind": "clothing",
+  "route": "c",
+  "roadmap": "#1997",
+  "concept": "A 1989 moulded white plastic doll mask with a painted smile, rosy cheeks, brows and lashes: a cheap toy-shop face that hides the wearer. It is cut from the base body head by model.py (the same method as the balaclava) and worn through the vanilla knitted hat prefab, so it takes the Hat slot, the pickup and equip actions and the sounds of a hat.",
+  "base": "{BCCB7D5AB38BB3A7}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_base.et",
+  "slot": "Hat",
+  "hide": null,
+  "mesh": {
+    "build": "model.py",
+    "source": "build:dollmask.blend",
+    "object": "DollMask",
+    "item_object": "DollMask_item",
+    "material": "DollMask",
+    "item_material": "DollMask_item",
+    "maps": {
+      "BCRMap": "build:DollMask_BCR.tif",
+      "NMOMap": "build:DollMask_NMO.tif"
+    },
+    "weights_from": "body",
+    "smooth": 2,
+    "clearance_m": 0.003,
+    "exporter": "stock",
+    "prune_skeleton": true
+  },
+  "materials": [],
+  "budget": {
+    "texture_px": 1024,
+    "lod0_tris": 4500,
+    "lod_ratios": [
+      0.5,
+      0.25,
+      0.12
+    ]
+  },
+  "asset_dir": "Assets/Characters/HeadGear/LF/DollMask",
+  "prefab_dir": "Prefabs/Characters/HeadGear/LF",
+  "prefab": {
+    "name_key": "#LF-DollMask_Name",
+    "description_key": "#LF-DollMask_Description"
+  },
+  "verify": {
+    "expect": "changed",
+    "min_diff": 0.15
+  }
+}

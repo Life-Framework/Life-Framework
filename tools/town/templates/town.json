@@ -4,7 +4,7 @@
   "about": "Slots of a town place (docs/architecture/everon-world.md 3.2). Tooling data: no coordinates and no place names. `needs` is what a building must offer; `places` are the LF_Places kinds the core system looks for once the slot is fitted (the first one carries the slot's id). `poi` is the front kind that has a row in LF_MapPois.conf (or a pack overlay) and so shows on the map, or \"none\" when the slot puts none there; `town map --check` fails a slot with neither (tools/town/lib/poi-check.mjs).",
   "slots": [
     {
-      "id": "arrival", "required": true, "kit": "arrival", "host": "building", "poi": "none",
+      "id": "arrival", "required": true, "margin": 160, "kit": "arrival", "host": "building", "poi": "none",
       "needs": { "interior": "required", "minArea": 90, "prefer": "large", "maxDistance": 80, "types": ["government", "townhouse", "house", "villa", "hotel"] },
       "places": ["Spawn", "Clerk", "LicenceDesk"]
     },

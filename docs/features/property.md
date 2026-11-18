@@ -111,3 +111,17 @@
   random order and the first with room for a person (a box trace) wins; none clear gives the outside point;
   no outside point gives the role spawn. A house with no component takes the role spawn (an Info line). The core
   authors no points; the pack adds them (#812). Port of `OVT_SpawnPointComponent` (`THIRD_PARTY.md`). Proof: `spawn/house-point`.
+
+### Locked vanilla buildings — `Feature/Houses/LF_BuildingLocks.c` (2026-11-18, #3203, parent #3201)
+- 🟡 A map maker drops `Prefabs/Systems/Houses/LF_BuildingLock.et` inside a vanilla house and nobody opens
+  that building's doors. The marker (`LF_BuildingLockComponent`) finds its building the way `LF_FittedBuildings`
+  does (one bounded sphere query, the building whose bounds hold the marker) and registers the building's
+  `EntityID` with the marker's sign key on **every machine**; nothing replicates and nothing is saved (the markers
+  load again after a restart and for a late joiner). `LF_DoorUserAction` walks the door's parents to the building:
+  the prompt names the reason, and the server refuses a forged open. Closing an open door still works.
+- 🟡 Sign keys: `#LF-BuildingLock_Private`, `_StaffOnly`, `_ForSaleSoon`, `_OpeningSoon`, `_Closed` (neutral core text;
+  a pack rewords them by overriding the same Ids). An unmarked or unfound building stays open; no building within the
+  radius logs `LF_Debug.Error("BuildingLock", ...)`.
+- 🟡 Precedence: a building that also holds an open marker (a fitted place's `LF_FittedBuildingComponent`; a house
+  marker will call `LF_BuildingLocks.RegisterOpenAt`) ignores the private lock, so later cards never edit the lock
+  layer. Proof: `houses/building-lock-private`.
