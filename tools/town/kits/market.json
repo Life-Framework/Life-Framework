@@ -46,7 +46,7 @@
       "verb": "on floor",
       "offset": [
         -14.9,
-        0,
+        -0.081,
         0
       ],
       "yaw": -90,
@@ -61,7 +61,7 @@
       "verb": "on market-stall",
       "offset": [
         -14.9,
-        1.027,
+        0.946,
         0
       ],
       "yaw": -90,
