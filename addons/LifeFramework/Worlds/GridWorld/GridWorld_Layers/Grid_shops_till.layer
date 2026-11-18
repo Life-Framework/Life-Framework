@@ -180,3 +180,36 @@ GenericEntity Grid_shops_till_Spawn {
  coords 61.5 0 33.7
  angleY 180
 }
+GenericEntity Grid_shops_till_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{5A4B0B84C86E4846}" {
+     ContextName "default"
+     Position PointInfo "{5A4B0B84C86E4847}" {
+      Offset 0 0.3 0.35
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_RobAction "{5A4B0B84C86E484A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86E484B}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_sAlarmKind "shopbell"
+     m_iMoneyAmount 150
+     m_iMinPayout 150
+     m_iMaxPayout 150
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+ }
+ coords 62.056 0.001 28.52
+}
