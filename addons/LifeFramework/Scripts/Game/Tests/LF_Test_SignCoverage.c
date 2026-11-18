@@ -71,7 +71,8 @@ class LF_Test_SignCoverage : LF_Test
 	//! core test mission does not load (docs/architecture/core-pack-inventory.md).
 	protected static bool IsPackPlaced(string id)
 	{
-		return id == "mining";
+		// plot_for_sale: the face of the LF_PlotSign prefab (#2780), placed one per plot by a pack or the grid; the core world has no plot.
+		return id == "mining" || id == "plot_for_sale";
 	}
 
 	//------------------------------------------------------------------------------------------------

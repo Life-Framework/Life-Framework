@@ -9835,6 +9835,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Next"
      Comment "Sign card section heading: where to go after this place."
     }
+    CustomStringTableItem "{DFB2C6F5B97FC132}" {
+     Id "LF-Sign_PlotForSale_Next"
+     Target_en_us "Stand at the sign with the price in carried cash and choose Buy plot."
+     Comment "Read card of the plot sign: what to do next (#2780)."
+    }
+    CustomStringTableItem "{BEBD6A10FB2E9747}" {
+     Id "LF-Sign_PlotForSale_Title"
+     Target_en_us "For sale"
+     Comment "Core plot sign face and Read title (#2780): a plot nobody owns yet."
+    }
+    CustomStringTableItem "{3FF5200250B9B700}" {
+     Id "LF-Sign_PlotForSale_What"
+     Target_en_us "A plot of land nobody owns yet. Use the sign to buy it with cash."
+     Comment "Read card of the plot sign (#2780)."
+    }
     CustomStringTableItem "{C71FE54AE5989467}" {
      Id "LF-Sign_Read"
      Target_en_us "Read: %1"

@@ -1,6 +1,12 @@
 GenericEntity : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  ID "AC0F98E045A48444"
  components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "plot_for_sale"
+   m_vRimColor 0.75 0.1 0.1
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.75 0.1 0.1
+  }
   LF_PlotComponent "{19835BCD6A3E4F05}" {
   }
   ActionsManagerComponent "{C2AEC892676B4809}" {
