@@ -45,6 +45,12 @@
   mode keeps no manager fields; `LF_GameModeRoleplay.ResolveConnectManagers()`
   only resolves them.
 
+- ✅ (2026-11-19, #3352) **The ATM is a placeable prefab**: `Prefabs/Props/Money/LF_ATM.et` is a
+  vanilla `Safe_01` steel safe (the game has no ATM mesh) with `LF_ATMAction`, an `RplComponent` and an
+  `LF_PlaceComponent` of kind `ATM`, id `atm` by default. A place id is unique, so a second machine
+  overrides `m_sId` in its layer entry (the grid cell `slice-3352` does). Test `money/atm-prefab`; the old
+  inline `ATM.layer` entity in DebugWorld stays as it is.
+
 ### ATM terminal — `Feature/ATM/LF_ATMTerminal.c` (was `LF_ATMMenu`)
 - ✅ (2026-11-08, M1-13) **Terminal screen** on `LF_UIScreen` with the
   `LF_UISkin.Terminal()` skin: green phosphor (vanilla `robotomono` face) in a
