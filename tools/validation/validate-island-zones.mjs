@@ -1,5 +1,4 @@
 // tools/validation/validate-island-zones.mjs
-// inputs: always
 //
 // The island zone: `MainWorld_Layers/Place_*.layer`, the layers `tools\cli town fit` writes onto the real Everon map
 // (docs/architecture/everon-world.md 3.4, card #2206). A separate validator from validate-world-zones, which it does not touch.
@@ -18,6 +17,7 @@
 // red-proof: tools/validation/island-zones-selftest.mjs runs the fixture places in tools/town/fixtures/check-place/ (a complete one, a
 // one-slot draft, a claim without its layer, a missing slot, an entity outside its footprint, a double claim, a non-town-draft branch)
 // in both modes and asserts each result.
+// inputs: tools/town/claims/*.json, tools/town/templates/**, tools/town/fixtures/**, docs/everon/places/**, addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/*.layer, addons/*/Configs/Map/*.conf, addons/LifeFramework/Configs/Systems/LF_SystemCatalog.conf
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
