@@ -168,6 +168,11 @@
   `LF_DeathScreen` (workspace widget), and its Respawn button runs
   `SCR_RespawnComponent.RpcAsk_LF_Respawn` → `LF_SpawnLogic.RespawnPlayer_S`
   (account-aware, re-applies the faction loadout).
+- ✅ **The death screen names the price** (#3152; test `ui/death-screen-cost`): above the Respawn button a
+  kit body line reads "You wake at the hospital. The bill is $150. What you carried stays with your body."
+  `LF_DeathScreen.CostText` builds it from `LF_RespawnConfig.m_iBillAmount` (the client already has the
+  config; a pack's bill shows), a bill of 0 drops the bill sentence, and the currency symbol is the
+  `{currency:sym}` term.
 - ⚠️ Body persistence until restart is default-engine behavior (no explicit
   corpse-cleanup control in this mod yet) — verify on a dedicated server.
 - ✅ **You wake up in hospital** (M1-26, #121; tests `respawn/bill-once`,
@@ -275,3 +280,7 @@
 
 ### Loading a downed player is not for bystanders (#2405, life review 2026-11-17)
 - ✅ `m_bCarryAnyone` now defaults to off: only an on-duty medic or on-duty police may load a downed player into a vehicle (`LF_Carry.MayCarry`, server and the client's offer). A stretcher vehicle (`m_aStretcherVehicles`, its seat pauses the bleed-out, #262) takes an on-duty medic only, whatever the config (`LF_Carry.MayUseVehicle`). In any other vehicle the patient bleeds out as normal. On a stretcher the bleed-out stays paused but the give-up clock runs (`LF_BleedOut.Advance` -> `LF_AdvanceDownedFor`), so a seated player can always give up. Refusal text `LF-Carry_NotAllowedDuty`. Tests `medic/carry`, `medic/bleed-out`. ⚠️ Not covered: an on-duty medic who leaves a patient on a stretcher keeps the bleed-out paused.
+
+### Medic ranks read pack overlays; the 1989 ladder (#3047)
+- 🧪 `LF_MedicConfig.Get()` merges every pack overlay the mission header lists over `LF_Medic.conf`: `m_aRanks` is a list keyed by rank id (`LF_MedicRankList`, `LF_MedicRank` is now an `LF_ConfigRecord`), so a pack adds, patches, replaces or removes a rung (`docs/config/override-model.md`). The core file ships no rung, so the pack's rungs are the whole ladder and the built-in three stand only when none is given. A saved rank is the rung's index, so a remove is refused on every rung but the last; a rung with no title key or a pay below -1 is refused. No owner `config.json` section. Test `medic/pack-overlay` (LOGIC).
+- 🧪 The 1989 Everon pack (`LF_Everon1989/Configs/Medic/LF_Medic_Everon1989.conf`, listed in the header) sets a four-rung ladder: orderly (0.22 cash per on-duty second; dressing, tourniquet), EMT (0.26; saline bag), paramedic (0.30; morphine), doctor (0.34; surgical gauze). Promotion after 1, 2 and 4 hours of total duty; the top rung never promotes. Titles: pack rows `LF-MedicRank_Orderly` and `LF-MedicRank_Emt`, the core rows for paramedic and doctor. The core built-in paid 0.4 (jobs config rate), 0.5 and 0.6, so no rung paid less than before (lead decision on #3051). Maintainer decision 2026-11-18 narrowed the duty-versus-civilian pay gap: the ladder is now 0.22 / 0.26 / 0.30 / 0.34 (about 790 to 1220 an hour against 400 to 480 for a civilian run) and `server/flagship/config.json` sets `medicDutyPayPerSecond` 0.22; the core defaults are unchanged. Test `everon/medic-ranks` (pack leg).

@@ -22,7 +22,9 @@ enum LF_EShopRefusal
 	NEEDS_RANK,
 	NEEDS_ORG_RIGHT,
 	//! The Shop system is off on this server (#1074).
-	SYSTEM_OFF
+	SYSTEM_OFF,
+	//! The resident clerk turned the buyer away (#2911).
+	RESIDENT_REFUSES
 }
 
 class LF_ShopRefusal
@@ -85,6 +87,9 @@ class LF_ShopRefusal
 		if (reason == LF_EShopRefusal.SYSTEM_OFF)
 			return "#LF-Systems_Off";
 
+		if (reason == LF_EShopRefusal.RESIDENT_REFUSES)
+			return "#LF-Shop_RefuseResident";
+
 		return string.Empty;
 	}
 
@@ -98,7 +103,13 @@ class LF_ShopRefusal
 		if (key.IsEmpty() || detail.IsEmpty())
 			return key;
 
-		return WidgetManager.Translate(key, WidgetManager.Translate(detail));
+		string line = WidgetManager.Translate(key, WidgetManager.Translate(detail));
+
+		//! #3150: a licence refusal also says where to get it and what it costs.
+		if (reason == LF_EShopRefusal.NEEDS_LICENCE)
+			line = line + " " + LF_LicenceWhere.LineForName(detail);
+
+		return line;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -106,7 +117,7 @@ class LF_ShopRefusal
 	//! The upper bound is the last enum value: it was OUT_OF_STOCK, which read CLOSED as no shop.
 	static LF_EShopRefusal FromWire(int reason)
 	{
-		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.SYSTEM_OFF)
+		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.RESIDENT_REFUSES)
 			return LF_EShopRefusal.NO_SHOP;
 
 		return reason;

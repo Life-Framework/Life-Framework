@@ -85,3 +85,28 @@ Stolen money is a separate item that never counts as cash.
   never forfeits) is forfeited: `LF_Debug.Info("Laundering", ...)` names owner, marked and clean amounts, nobody is paid, and the
   station frees for anyone. A timer frees it without anyone touching it; the clock is part of the save.
 - Test: `LF_Test_LaunderStation` (WORLD), `LF_Test_LaunderStationPersist` (PERSISTENCE, restart check under `wt e2e`).
+
+### The informant's tip-off — `Feature/Laundering/LF_InformantHook.c` (#2921)
+- ✅ Dialogue hook `Informant` (`LF_DialogueHook_Informant`; a dialogue file names it as reply action and condition, no param):
+  "Heard where the man is buying?" costs `m_iInformantFee` cash (core 300, 0 is free) and puts a private mark, labelled
+  `#LF-Informant_Mark`, on today's open buyer spot (`LF_BuyerRotation.OpenSpot`) for that player only (a PLAYER row of
+  `LF_MapShares`, key `informant:<uid>`). The mark expires when the buyer's period ends, so it never shows a spot he has left.
+- ✅ The server re-checks everything and refuses in words with nothing taken: dead or downed and rate-limited asks do nothing;
+  police on duty, or underworld standing below `m_iInformantMinTier` (core 1), get "Never heard of him." (same words, so a
+  refusal does not say which); no spot placed refuses before any cash moves; a player who already paid this period is told so
+  and charged nothing; too little cash refuses; a mark that cannot be put pays the fee back. The reply is hidden from a
+  character the informant would not talk to.
+- ✅ Nothing is saved: a restart clears the marks and a player may buy the tip again. No dialogue file ships in core; the pack's
+  informant NPC wires the hook.
+- Test: `LF_Test_InformantTip` (WORLD).
+
+### Selling chain goods to the buyer — `Feature/Laundering/LF_BuyerSaleAction.c`, `LF_BuyerPrices.c` (#2920)
+- ✅ `LF_BuyerSaleAction` ("Sell the goods", `#LF-BuyerSale_Action`) sits on `LF_IllicitBuyer.et`. `LF_BuyerSale.ServerSell` takes
+  every chain good (`LF_ChainSearch.IsGood`, the `m_bGoods` outputs) the character carries that the price list
+  (`Configs/Crime/LF_BuyerPrices.conf`, `LF_BuyerPrices`) names, and pays the sum: marked notes when the dirty-money switch
+  (`LF_LaunderConfig.m_bCrimePaysMarked`) is on, cash when it is off. The core list prices moonshine; the 1989 pack overrides the file (B4).
+- ✅ Server only, and checked again there: a living standing seller, not cuffed (`LF_CuffEnforcement`), the buyer is the live one
+  and stands at the spot the rotation has open now, within `m_fReach` (4 m), not repeating inside `m_iMinActionMs` (1 s), something to sell.
+- ✅ All or nothing on the inventory side: goods are taken first; a short take, or a payout that does not land, puts every unit
+  back (and takes back any part paid). Cash is booked on the ledger with reason `buyer-sale`; marked notes get a `marked` trail line.
+- Test: `LF_Test_BuyerSale` (WORLD).

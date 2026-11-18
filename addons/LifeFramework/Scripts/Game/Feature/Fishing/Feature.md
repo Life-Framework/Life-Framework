@@ -27,12 +27,16 @@ Rung 4 background: pure rules and a config, no screen, no world, no replication 
 ## Decided
 
 - Size is a prefab (small, medium, large), not a weight float. Open water and an emptied spot give small fish only.
-- The core ships one neutral species set with empty fish prefabs and placeholder rod and bait prefabs; the pack
-  overlays the 1989 species, tables and prices (#800).
+- The core ships one neutral species set (mackerel, bass, tuna, perch, carp, trout), each with three size prefabs (#3119):
+  children of the trout prefabs, so they share its model, with their own names and catalogue rows on `fish_counter`. A
+  table entry for a species with an empty size prefab is dropped at load with `LF_Debug.Error`, so a bad row costs that
+  fish, not the bait. The pack overlays the 1989 species, tables and prices (#800).
 
 ## Not built yet
 
-The float prop and its sound, the `LF_OnFishCaught` event, the licence gate on the fish counter, the FISHER job track, the pack's species and prices.
+A splash sound (the dip cue is the base game's UI click until the sound pipeline supplies one), the licence gate on the fish counter, the pack's species and prices.
+
+Built in #2995: the float (`LF_FishingFloat`, owner-side, from the session events), the `LF_OnFishCaught` event (`LF_FishingEvents.c`), the FISHER track and its `fish_catch` XP row, and the grid pond cell `slice-fi4` with a spot, a chandler and a fish counter (the proof ground; session proof `agent-box/proofs/fishing-proof.mjs`).
 
 ## Dependencies
 

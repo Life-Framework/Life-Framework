@@ -62,7 +62,7 @@
   so every player's map draws a mark per unowned plot and drops it when the plot is bought or comes back when the owner is cleared.
   No coordinate or map name in core: the placed signs are the plots, so a pack's plots show as soon as they are placed.
 - 🟡 A town board card whose place id is `*` (`LF_TownBoard.PLACE_NEAREST`) points at the nearest place of its kind, so the
-  Everon 1989 board's "Plots for sale" card (it replaces the rules card; a rules board stands beside it) names the nearest
+  Everon 1989 board's "Plots for sale" card (it took the rules card's slot until #3077 made room for twelve cards and the rules card came back) names the nearest
   plot still for sale and "Set waypoint" marks it. Reading it records no single plot as heard of. Proof:
   `property/plot-for-sale-marks` (owned vs unowned map marks, the card's nearest plot, a cleared owner).
 

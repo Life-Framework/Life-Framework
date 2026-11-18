@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "parcel-drops",
+  "drops": [
+    {
+      "place": "saint-philippe-districts",
+      "building": "b34"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b05"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b14"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b24"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b35"
+    }
+  ],
+  "kit": "parcel-drops",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_parcel-drops.layer",
+  "kinds": [],
+  "rows": 5,
+  "date": "2026-11-18"
+}

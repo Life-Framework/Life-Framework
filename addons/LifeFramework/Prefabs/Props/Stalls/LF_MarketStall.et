@@ -31,6 +31,15 @@ GenericEntity {
       Description "#LF-Stall_RentDesc"
      }
     }
+    LF_StallBuyAction "{B8D3F1A604C9E752}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7E2C9A5D1F408B36}" {
+      Name "#LF-Stall_Buy"
+      Description "#LF-Stall_BuyDesc"
+     }
+    }
    }
   }
   RplComponent "{C7D4A9E1B2F58360}" {

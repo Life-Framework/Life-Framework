@@ -99,15 +99,67 @@ class LF_VaultDrill
 	//------------------------------------------------------------------------------------------------
 	static bool IsDrilling(string vaultId)
 	{
+		if (!Replication.IsServer())
+			return ReplicatedDriller(vaultId) != 0;
+
 		return Find(vaultId) != null;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! True when this character is the one drilling the vault (the action then reads "Stop drilling").
+	//! On a client the sessions are not there; the vault's replicated driller id answers (#2418).
 	static bool IsDrillingBy(string vaultId, IEntity robber)
 	{
+		if (!robber)
+			return false;
+
+		if (!Replication.IsServer())
+		{
+			int driller = ReplicatedDriller(vaultId);
+			return driller != 0 && driller == PlayerIdOf(robber);
+		}
+
 		LF_VaultDrillSession session = Find(vaultId);
-		return session && robber && session.m_Robber == robber.GetID();
+		return session && session.m_Robber == robber.GetID();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The vault's replicated driller id (LF_BankVaultComponent), 0 for nobody or no such vault.
+	protected static int ReplicatedDriller(string vaultId)
+	{
+		LF_BankVaultComponent vault = VaultComponent(vaultId);
+		if (!vault)
+			return 0;
+
+		return vault.GetDrillerId();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static LF_BankVaultComponent VaultComponent(string vaultId)
+	{
+		IEntity entity = LF_Places.Find(LF_Bank.PLACE_KIND, vaultId);
+		if (!entity)
+			return null;
+
+		return LF_Component<LF_BankVaultComponent>.Find(entity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static int PlayerIdOf(IEntity character)
+	{
+		if (!character || !GetGame() || !GetGame().GetPlayerManager())
+			return 0;
+
+		return GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(character);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: mirrors who drills this vault onto its component, for the clients' prompt.
+	protected static void PublishDriller(string vaultId, IEntity robber)
+	{
+		LF_BankVaultComponent vault = VaultComponent(vaultId);
+		if (vault)
+			vault.SetDriller(PlayerIdOf(robber));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -138,6 +190,7 @@ class LF_VaultDrill
 		session.m_fStartedAt = Now();
 		session.m_fSeconds = seconds;
 		s_aSessions.Insert(session);
+		PublishDriller(vaultId, robber);
 		Spin(drill, true);
 		LF_Debug.Info(FEATURE, string.Format("%1 starts drilling %2 for %3 s", playerUid, vaultId, seconds));
 		LF_Utils.NotifyEntity(robber, "#LF-Bank_DrillStarted", "#EL-Bank_Rob", 4.0);
@@ -211,6 +264,7 @@ class LF_VaultDrill
 	{
 		// Removed before paying: a second tick, a second action or a repeat call cannot pay again.
 		s_aSessions.RemoveItem(session);
+		PublishDriller(session.m_sVaultId, null);
 		IEntity drill = FindById(session.m_Drill);
 		Spin(drill, false);
 		LF_Debug.Info(FEATURE, string.Format("%1 finished drilling %2 after %3 s", session.m_sPlayerUid, session.m_sVaultId, Now() - session.m_fStartedAt));
@@ -221,6 +275,7 @@ class LF_VaultDrill
 	protected static void Drop(LF_VaultDrillSession session, string reason)
 	{
 		s_aSessions.RemoveItem(session);
+		PublishDriller(session.m_sVaultId, null);
 		Spin(FindById(session.m_Drill), false);
 		LF_Debug.Info(FEATURE, string.Format("drilling %1 by %2 stopped (%3): nothing paid", session.m_sVaultId, session.m_sPlayerUid, reason));
 		IEntity robber = FindById(session.m_Robber);
