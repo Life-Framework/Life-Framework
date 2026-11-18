@@ -895,8 +895,17 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.False(LF_PersistenceComponentSerializer.IsLoadDamaged(), "e2e the restart load is not damaged, autosave runs");
 		LF_Debug.Info("Persistence", string.Format("e2e restart: loaded a save from game build %1 (save version %2), running %3", LF_SaveStamp.BootLoadedBuild(), LF_SaveStamp.BootSaveVersion(), GetGame().GetBuildVersion()));
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
-		ctx.True(LF_LockerBank.IsRenting("e2e-locker-site", OFFICER_UID), "e2e locker rental survives the restart");
-		ctx.Equal(1900000000, LF_LockerBank.PaidUntil("e2e-locker-site", OFFICER_UID), "e2e locker rental keeps its paid-until");
+		// A save older than "lockers" (a --legacy-save, or the --pre-move ref build, whose pass 1 never wrote
+		// a rental) holds no rental: the check skips, as VerifyJobDeposit does for "jobruns".
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("lockers"))
+		{
+			ctx.True(LF_LockerBank.IsRenting("e2e-locker-site", OFFICER_UID), "e2e locker rental survives the restart");
+			ctx.Equal(1900000000, LF_LockerBank.PaidUntil("e2e-locker-site", OFFICER_UID), "e2e locker rental keeps its paid-until");
+		}
+		else
+		{
+			LF_Debug.Info("Lockers", string.Format("e2e restart: boot save version %1 predates lockers, no rental to check", LF_SaveStamp.BootSaveVersion()));
+		}
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed after the restart");
 		if (chainBarrel)
