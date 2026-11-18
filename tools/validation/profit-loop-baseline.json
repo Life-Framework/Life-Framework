@@ -8,10 +8,5 @@
   "id": "machine:cement-plant",
   "margin": 24,
   "reason": "Shipped prices (#686 audit): sand, gravel and cement bags are 12 each under the Prefabs/Items/Resources rule = 36; the plant makes 10 Brick that sell for 6 each = 60. A design decision to retune (Brick sell 3 closes it); not changed here."
- },
- {
-  "id": "market:GoldBar",
-  "margin": 30,
-  "reason": "Shipped prices (#2848): the shop sells GoldBar for 250 but the market curve (LF_Market.conf, off by default, #2844) pays up to a ceiling of 280. A design decision to retune (GoldBar shop buy 280 or ceiling 250 closes it); not changed here."
  }
 ]
