@@ -171,7 +171,10 @@ export function sourceComponent(kit, row, c, root, cache = new Map()) {
       const set = scalarSet(comp);
       const setOk = Object.entries(c.set ?? {}).every(([k, v]) => set[k] === v);
       const blocksOk = JSON.stringify(comp.kids.map(compClass)) === names;
-      cands.push({ comp, exact: setOk && blocksOk, score: (setOk ? 2 : 0) + (blocksOk ? 1 : 0) });
+      // A prefab-less row (a bare GenericEntity) matches every such entity by class alone, so its own entity wins on name:
+      // the taxi pad took the drop pad's action block (#2318).
+      const nameOk = row.name && e.name === row.name;
+      cands.push({ comp, exact: setOk && blocksOk, score: (nameOk ? 4 : 0) + (setOk ? 2 : 0) + (blocksOk ? 1 : 0) });
     }
   }
   cands.sort((x, y) => y.score - x.score);
