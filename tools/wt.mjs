@@ -28,6 +28,7 @@ import { ADDONS } from "./lib/addons.mjs";
 import { sessionDirOf } from "./lib/session-lease.mjs";
 import * as pinLib from "./lib/guard-pin.mjs";
 import { guardAlert } from "./lib/main-guard.mjs";
+import { recordClaim } from "./lib/main-write-guard.mjs";
 import { refuseMessage } from "./lib/disk-guard.mjs";
 import { isMachineWide, machineLockDir } from "./lib/machine-locks.mjs";
 
@@ -645,6 +646,8 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
     if (fromWarm) delete state.warm[claimed.id];
   }, { waitMs: lockWait });
   mark("finish", t2);
+  // This session now owns the worktree: the write hook refuses it any file in the main checkout (#2785).
+  recordClaim(main, { sessionId: process.env.CLAUDE_CODE_SESSION_ID, slug, path: dir });
   kickWarmFill(root);
   return { slug, path: dir, branch, ports, base, pinned, pinNote, guardWarn, priority, warm: fromWarm, ms: Date.now() - t0, lockMs, phases };
 }
