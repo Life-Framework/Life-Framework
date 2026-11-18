@@ -53,19 +53,19 @@ stand Fit_saint_philippe_arrival_Place
 wait 1500
 shot ui island_01_square
 
-step 2 The clerk greets you; read the rules pending #2932
-stand Fit_saint_philippe_arrival_Clerk
+step 2 The clerk greets you; read the rules
+stand Fit_saint_philippe_arrival_town_hall_clerk
 wait 1500
-use LF_DialogueTalkAction Fit_saint_philippe_arrival_Clerk
+use LF_QuestAction Fit_saint_philippe_arrival_town_hall_clerk
 wait 4000
 shot ui island_02_clerk_greets
 input MenuSelect
 wait 2000
 input MenuBack
 wait 1500
-stand Fit_saint_philippe_arrival_Sign_Rules
+stand Fit_saint_philippe_arrival_lf_sign_rules
 wait 1000
-use LF_SignReadAction Fit_saint_philippe_arrival_Sign_Rules
+use LF_SignReadAction Fit_saint_philippe_arrival_lf_sign_rules
 wait 1000
 shot ui island_02_rules
 input MenuBack
