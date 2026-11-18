@@ -1,0 +1,8 @@
+GenericEntity Lock_fixture_barn {
+ components {
+  LF_BuildingLockComponent "{19835BCD6A3E4F05}" {
+   m_sBuildingId "fixture.barn"
+  }
+ }
+ coords 203 10 98
+}
