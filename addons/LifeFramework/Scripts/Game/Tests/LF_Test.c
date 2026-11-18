@@ -38,7 +38,7 @@ class LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Set by LF_TestManager.RegisterPack: the test lives in a pack (its Scripts/Game/Tests) and runs
+	//! Set from [LF_TestInfo(..., pack: true)] by LF_TestManager: the test lives in a pack (its Scripts/Game/Tests) and runs
 	//! only when named, which the pack leg of `tools\cli test` does under the pack's mission header.
 	void SetPackTest(bool on)
 	{

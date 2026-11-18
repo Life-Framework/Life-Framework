@@ -35,7 +35,7 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Collects now (generated registry, attribute-discovered tests merged in by class name, pack) and returns the list a run
+	//! Collects now (every LF_Test with its own [LF_TestInfo], in class-name order) and returns the list a run
 	//! walks. Call it on a fresh manager: on the running singleton it would rebuild the list mid-run.
 	array<ref LF_Test> Collected()
 	{
@@ -48,31 +48,6 @@ class LF_TestManager
 	{
 		test.SetTier(tier);
 		m_aTests.Insert(test);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A pack test (a pack's Scripts/Game/Tests, registered by its generated
-	//! LF_PackTestRegistrations.generated.c). It runs only when named (-Only): a tier run skips it, and
-	//! `tools\cli test` names it in the pack leg, which boots under the pack's mission header so its
-	//! config overlays apply (docs/architecture/three-worlds.md "Pack test leg").
-	void RegisterPack(LF_Test test, LF_TestTier tier)
-	{
-		// A class that carries its own [LF_TestInfo(..., pack: true)] may already be collected (#2757).
-		if (HasClass(test.ClassName()))
-		{
-			LogDuplicate(test.ClassName());
-			return;
-		}
-
-		test.SetPackTest(true);
-		Register(test, tier);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Empty in the core. A pack's generated registry overrides it (modded class LF_TestManager) and
-	//! calls RegisterPack for each of its tests; the core never names a pack test.
-	protected void RegisterPackTests()
-	{
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -444,20 +419,49 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Two sources while tests move to attributes (#2610, #2757): the machine-generated
-	//! LF_TestRegistrations.generated.c (from each unconverted file's `// tier:` comment; `tools\cli
-	//! regen-tests`, never by hand) and the LF_Test descendants that carry their own LF_TestInfo
-	//! attribute (LF_TestInfo.c), found by reflection. A class already registered is dropped (logged once).
-	//! Order: the attribute tests are sorted by class name and merged into the generated list,
-	//! each before the first generated test whose class name sorts after it. The generated tests keep
-	//! their order (some still depend on it), the result does not depend on reflection order, and
-	//! once every test has the attribute the whole list is in class-name order.
+	//! Every LF_Test descendant that carries its own LF_TestInfo attribute (LF_TestInfo.c), found by
+	//! reflection (#2610). Tier and pack flag come from the attribute; the order is a sort by class
+	//! name, so it never depends on reflection order or on a shared file. No registry, no generator.
 	protected void CollectTests()
 	{
 		m_aTests.Clear();
-		LF_TestRegistrations.RegisterAll(this);
-		MergeDiscovered();
-		RegisterPackTests();
+		array<typename> types = {};
+		typename base = LF_Test;
+		base.GetInheritedTypes(types);
+
+		map<string, typename> byName = new map<string, typename>();
+		array<string> names = {};
+		foreach (typename type : types)
+		{
+			if (!FindInfo(type))
+				continue;
+
+			string className = type.ToString();
+			if (byName.Contains(className))
+			{
+				LogDuplicate(className);
+				continue;
+			}
+
+			byName.Insert(className, type);
+			names.Insert(className);
+		}
+
+		names.Sort();
+		foreach (string name : names)
+		{
+			typename testType = byName.Get(name);
+			LF_Test test = LF_Test.Cast(testType.Spawn());
+			if (!test)
+			{
+				LF_Debug.Error("Tests", string.Format("%1 has [LF_TestInfo] but Spawn() returned no test; skipped", name));
+				continue;
+			}
+
+			LF_TestInfo info = FindInfo(testType);
+			test.SetPackTest(info.m_bPack);
+			Register(test, info.m_eTier);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -478,79 +482,6 @@ class LF_TestManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void MergeDiscovered()
-	{
-		array<typename> types = {};
-		typename base = LF_Test;
-		base.GetInheritedTypes(types);
-
-		map<string, ref LF_Test> byName = new map<string, ref LF_Test>();
-		map<string, LF_TestInfo> infos = new map<string, LF_TestInfo>();
-		array<string> names = {};
-		foreach (typename type : types)
-		{
-			LF_TestInfo info = FindInfo(type);
-			if (!info)
-				continue;
-
-			string className = type.ToString();
-			if (byName.Contains(className) || HasClass(className))
-			{
-				LogDuplicate(className);
-				continue;
-			}
-
-			LF_Test test = LF_Test.Cast(type.Spawn());
-			if (!test)
-			{
-				LF_Debug.Error("Tests", string.Format("%1 has [LF_TestInfo] but Spawn() returned no test; skipped", className));
-				continue;
-			}
-
-			byName.Insert(className, test);
-			infos.Insert(className, info);
-			names.Insert(className);
-		}
-
-		if (names.IsEmpty())
-			return;
-
-		names.Sort();
-
-		array<ref LF_Test> generated = {};
-		foreach (LF_Test t : m_aTests)
-		{
-			generated.Insert(t);
-		}
-
-		m_aTests.Clear();
-		int next = 0;
-		foreach (LF_Test g : generated)
-		{
-			while (next < names.Count() && SortsBefore(names[next], g.ClassName()))
-			{
-				RegisterDiscovered(byName.Get(names[next]), infos.Get(names[next]));
-				next++;
-			}
-
-			m_aTests.Insert(g);
-		}
-
-		while (next < names.Count())
-		{
-			RegisterDiscovered(byName.Get(names[next]), infos.Get(names[next]));
-			next++;
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void RegisterDiscovered(LF_Test test, LF_TestInfo info)
-	{
-		test.SetPackTest(info.m_bPack);
-		Register(test, info.m_eTier);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! True when a comes before b in the order array<string>.Sort() gives.
 	static bool SortsBefore(string a, string b)
 	{
@@ -560,18 +491,6 @@ class LF_TestManager
 		array<string> pair = {a, b};
 		pair.Sort();
 		return pair[0] == a;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected bool HasClass(string className)
-	{
-		foreach (LF_Test test : m_aTests)
-		{
-			if (test && test.ClassName() == className)
-				return true;
-		}
-
-		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
