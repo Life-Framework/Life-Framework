@@ -8,11 +8,11 @@
   "kinds": [
     "StoreCounter"
   ],
-  "rows": 6,
+  "rows": 5,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_saint_philippe_general_store_Place"
   },
-  "date": "2026-11-17"
+  "date": "2026-11-18"
 }
