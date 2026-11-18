@@ -549,7 +549,9 @@ class LF_ContractTrackerSubscriber : LF_EventSubscriber
 		if (!spawned)
 			return false;
 
-		string uid = spawned.m_sAccountUid;
+		// Contracts are keyed by the character's record key; the event carries the account uid, which
+		// is only that key on slot 1 (#331). Resolve it to the active character's key.
+		string uid = LF_PlayerAccountManager.ResolveCharacterKey(spawned.m_sAccountUid);
 		if (uid.IsEmpty())
 			uid = LF_Utils.GetPlayerUID(spawned.m_iPlayerId);
 
