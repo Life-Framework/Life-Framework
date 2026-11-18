@@ -28,3 +28,10 @@ Each owned vehicle record carries a tow state (`LF_EVehicleTowState`), towed-at 
 - **Others:** the chop shop resolves a colour child to its base colour first (`LF_ChopShopRules.PayoutForPrefab`), so it pays as its model. Impound already falls back from the spawn prefab to the catalog prefab. A respawn whose saved colour prefab no longer loads (a pack dropped it) comes back in the model's base colour with a warning (`LF_VehicleOwnership.RespawnNameFor`).
 - **Data:** `LF_VehicleColours.conf` empty in core; pack rows in cc-2 and cc-4. Colour names are neutral core strings.
 - **Proof:** `vehicles/colours` (LOGIC), `vehicles/colours-overlay` (WORLD, a pack overlay add, patch and remove).
+
+## DLC vehicles (#3304, harvester spike #3282)
+
+- **Player sees:** the Rally tractor (`Z7211`) can be sold at the lot. A player without the Rally DLC who presses Buy is told *This tractor needs the Rally DLC.* and is not charged; an owner gets the locked child like any lot car. Vanilla refuses a non-owner the driver seat, so the lot never sells a tractor nobody could drive.
+- **Rule:** `LF_VehicleDlcGate` (server, in `LF_VehicleLotComponent.BuyColour`, before the spawn point and the charge). A prefab under `/Wheeled/Z7211/` is a DLC vehicle and the gate asks `DlcManager.Get().CanUseResource(buyer, prefab)`; a missing DlcManager refuses with `LF_Debug.Error` ("not sold"). A base-game vehicle is never asked. The engine answer sits behind `LF_VehicleDlcChecker` so a LOGIC test can answer for it.
+- **Data:** the price row (`LF_VehiclePrices.conf`, $3,000) and the locked child `EL_Z7211_red_CIV.et`. The offer row on a lot layer is a town/pack edit and is not part of the gate.
+- **Proof:** `vehicles/dlc-gate` (LOGIC). The real DlcManager answer for a remote player is a manual check on a dedicated server.

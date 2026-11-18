@@ -12228,6 +12228,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
     }
+    CustomStringTableItem "{3304D1C0A7E25B91}" {
+     Id "LF-Vehicle_NeedsRallyDlc"
+     Target_en_us "This tractor needs the Rally DLC."
+     Comment "Vehicle purchase refused: the lot does not sell the Rally tractor to a player without the DLC (#3304)"
+    }
     CustomStringTableItem "{5E0B7D31C9A24F86}" {
      Id "LF-Wanted_BuildHidden"
      Target_en_us "build hidden"

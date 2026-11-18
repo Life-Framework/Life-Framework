@@ -375,6 +375,10 @@ class LF_VehicleLotComponent : ScriptComponent
 			return false;
 		}
 
+		// A vehicle the base game restricts to a DLC (the Rally tractor, #3304) is refused before any charge.
+		if (!LF_VehicleDlcGate.Allows(buyer, offer.GetPrefab(), reasonKey))
+			return false;
+
 		vector origin;
 		if (!LF_VehicleSpawnPointComponent.FindFreeOrigin(m_sShopId, origin))
 		{
