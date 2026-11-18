@@ -52,6 +52,7 @@ Object.assign(SECTIONS, {
   "jobs.tracks": row("jobs", "tracks", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aTracks", "m_sJob", byField("m_sJob"), same),
   "jobs.xpAwards": row("jobs", "xpAwards", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aXpAwards", "m_sAction", byField("m_sAction"), same),
   "jobs.licenceGates": row("jobs", "licenceGates", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aLicenceGates", "m_sLicence", byField("m_sLicence"), same),
+  "jobs.runPays": row("jobs", "runPays", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aRunPays", "m_sJob", byField("m_sJob"), same),
   "mapAreas.areas": row("mapAreas", "areas", "LF_MapAreaConfig", "Configs/Map/LF_MapAreas.conf", "m_aAreas", "m_sId", byField("m_sId")),
   "mapPois.kinds": row("mapPois", "kinds", "LF_MapPoiConfig", "Configs/Map/LF_MapPois.conf", "m_aKinds", "m_sKind", byField("m_sKind")),
   "zones.ruleSets": row("zones", "ruleSets", "LF_ZoneConfig", "Configs/Moderation/LF_Zones.conf", "m_aRuleSets", "m_eRule", zoneRule, (k) => (ZONE_RULES.includes(k) ? k : "")),

@@ -91,15 +91,44 @@ class LF_TaxiFareConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Merges the owner's "taxiFares" section over this instance, which holds the core `.conf`.
+	//! Merges the layers over this instance, which holds the core `.conf`: each pack overlay of this
+	//! class in load order (the fields it sets directly, #3147), then the owner's "taxiFares" section.
 	void ApplyLayers()
 	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_TaxiFareConfig, SECTION, resources, names);
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyContainer(resource.GetResource().ToBaseContainer());
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("taxiFares: pack overlay %1 changed %2 fields", names[i], changed));
+		}
+
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
 		if (!reader)
 			return;
 
 		ApplyOwner(reader);
 		LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("taxiFares: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one pack `.conf` of this class: only the fields it sets directly. \return Fields changed.
+	int ApplyContainer(BaseContainer container)
+	{
+		if (!container)
+			return 0;
+
+		int changed;
+		if (container.IsVariableSetDirectly("m_iFloor") && container.Get("m_iFloor", m_iFloor))
+			changed++;
+		if (container.IsVariableSetDirectly("m_fRatePerMetre") && container.Get("m_fRatePerMetre", m_fRatePerMetre))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iCap") && container.Get("m_iCap", m_iCap))
+			changed++;
+		if (container.IsVariableSetDirectly("m_fShortHopMetres") && container.Get("m_fShortHopMetres", m_fShortHopMetres))
+			changed++;
+		return changed;
 	}
 
 	//------------------------------------------------------------------------------------------------
