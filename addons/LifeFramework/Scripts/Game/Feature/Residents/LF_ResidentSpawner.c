@@ -71,8 +71,8 @@ class LF_ResidentSpawner
 
 		int seconds = DEFAULT_SWEEP_SECONDS;
 		LF_ResidentsConfig config = LF_ResidentsConfig.Get();
-		if (config && config.m_iSweepSeconds > 0)
-			seconds = config.m_iSweepSeconds;
+		if (config)
+			seconds = config.SweepSeconds();
 
 		s_bScheduled = true;
 		GetGame().GetCallqueue().CallLater(Tick, seconds * 1000, true);
@@ -106,8 +106,8 @@ class LF_ResidentSpawner
 		array<vector> where = {};
 		source.Positions(where);
 
-		float spawnSq = config.m_iSpawnRadiusM * config.m_iSpawnRadiusM;
-		float despawnSq = config.m_iDespawnRadiusM * config.m_iDespawnRadiusM;
+		float spawnSq = config.SpawnRadius() * config.SpawnRadius();
+		float despawnSq = config.DespawnRadius() * config.DespawnRadius();
 		int changes = Despawn(minute, where, despawnSq);
 
 		array<string> ids = {};
@@ -300,7 +300,7 @@ class LF_ResidentSpawner
 		if (!near)
 			return false;
 
-		if (s_mLive.Count() >= config.m_iMaxLive)
+		if (s_mLive.Count() >= config.MaxLive())
 		{
 			if (!s_mCapped)
 				s_mCapped = new set<string>();
@@ -309,7 +309,7 @@ class LF_ResidentSpawner
 			{
 				s_mCapped.Insert(id);
 				s_iCapWarns++;
-				LF_Debug.Warn(FEATURE, string.Format("resident '%1' is due but the live cap of %2 is reached; waiting", id, config.m_iMaxLive));
+				LF_Debug.Warn(FEATURE, string.Format("resident '%1' is due but the live cap of %2 is reached; waiting", id, config.MaxLive()));
 			}
 
 			return false;
