@@ -56,3 +56,10 @@ bench, bus stop) near players.
   statics reset through `LF_ResidentSpawner_StaticResetHook`. Persisted: nothing, a restart re-spawns by proximity.
 - **Data:** `LF_Residents.conf` root fields `m_iSpawnRadiusM`, `m_iDespawnRadiusM`, `m_iMaxLive`, `m_iSweepSeconds`.
 - **Proof:** `residents/spawner` (WORLD).
+
+## Resident talk (#2908)
+
+- **Player sees:** a resident whose dialogue has `greet_<word>` nodes greets them by how they feel about them: warmly for a regular, "I've nothing to say to you." from one who saw a theft (no replies, the talk ends).
+- **Owner and side:** server. `LF_Dialogue.Start` calls `LF_ResidentTalk.StartNode`; the word is `LF_ResidentMemory.Tier`. The client is sent node and line ids only.
+- **Rules:** node order: `<residentId>_greet_<word>` (pack), `greet_<word>` (core), else the dialogue's `m_sStart`. A character that is not a live resident opens on `m_sStart`. Data: `Configs/Dialogue/LF_Dialogue_Resident.conf` (id `resident` in the dialogue index).
+- **Proof:** `residents/resident-talk` (WORLD).
