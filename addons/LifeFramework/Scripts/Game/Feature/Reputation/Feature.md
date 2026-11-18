@@ -26,11 +26,13 @@ Rung 4 background: server-only state, no screen in this card. Target: rung 3 for
 - Persistence (`Persistence/`, #2698): the `reputation` payload, `LF_ReputationRow` rows through a
   `modded class LF_Reputation` seam (`ExportAll`/`ApplyAll`); load replaces the store, skips removed factions and clamps.
 - `LF_OnReputationChanged` (`LF_ReputationEvents.c`) fires only when a tier changes.
+- `LF_ReputationSync` (`LF_ReputationSync.c`, #2704): on spawn and on each tier change the owner gets their packed
+  tiers by an Owner RPC on their controller (`ClientTier` on the client); town and police changes toast in words.
 
 ## Not built yet (later cards of chapter #1018)
 
-Event subscriptions, gates in job sign-up, contracts, the owner
-RPC and screens, the pack's words, and the pack overlay and owner `config.json` section for the config.
+Event subscriptions, gates in job sign-up, contracts,
+screens, the pack's words, and the pack overlay and owner `config.json` section for the config.
 
 ## Dependencies
 

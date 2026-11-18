@@ -8886,6 +8886,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Distrusted"
      Comment "Standing: neutral core label of tier -2. The pack overlays the words."
     }
+    CustomStringTableItem "{3783CFF6EFED5F5A}" {
+     Id "LF-Reputation_Toast_Police_Down"
+     Target_en_us "The police have started to keep an eye on you"
+     Comment "Standing toast: the police tier went down. Words only, never a number."
+    }
+    CustomStringTableItem "{9CA1505D71AF22D9}" {
+     Id "LF-Reputation_Toast_Police_Up"
+     Target_en_us "The police have started to see you as one of the good ones"
+     Comment "Standing toast: the police tier went up. Words only, never a number."
+    }
+    CustomStringTableItem "{B879A4BDE2FB466F}" {
+     Id "LF-Reputation_Toast_Title"
+     Target_en_us "Standing"
+     Comment "Standing: title of the toast when the player's standing with the town or the police changes tier."
+    }
+    CustomStringTableItem "{88053A4E9492D71B}" {
+     Id "LF-Reputation_Toast_Town_Down"
+     Target_en_us "People in town have started to keep their distance"
+     Comment "Standing toast: the town tier went down. Words only, never a number."
+    }
+    CustomStringTableItem "{A0995D5E8C36B097}" {
+     Id "LF-Reputation_Toast_Town_Up"
+     Target_en_us "People in town have started to trust you"
+     Comment "Standing toast: the town tier went up. Words only, never a number."
+    }
     CustomStringTableItem "{C96808FBA0407AFE}" {
      Id "LF-Restrain_Action"
      Target_en_us "Cuff"
