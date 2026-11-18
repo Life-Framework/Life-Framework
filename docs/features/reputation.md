@@ -76,4 +76,11 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   tiers this client holds (`ClientLine`, "Locals: Known. The law: Unknown."; `#LF-Reputation_File_Line` is "%1: %2."). The clerk's
   "What does my file say?" reply (on the town node, action hook `StandingFile`) says the same, one entry per faction, with the server
   tiers. No number, no bar, no underworld. Test `reputation/words`.
-- 🔲 Screens, the pack's words and values (#2709), and the owner `config.json` section `reputation` (later cards of #1018).
+- 🟡 **The 1989 pack speaks standing** (#2709, `Configs/Reputation/LF_Reputation_Everon1989.conf`, `LF_ReputationContracts_Everon1989.conf`, both in
+  the mission header's overlays): the three factions' tier words are the pack's (`#LF-Everon_Tier_<Faction>_<Tier>` rows in
+  `LF_Everon1989/Language/`, from `docs/architecture/reputation.md` section 1; the underworld's are never shown), a `job_completed:<JOB>` award for
+  parcel (4), fuel (6) and taxi (6) runs with a 60 s cooldown, the gate `contract:harbour_crates` (town, tier 1, Known) and the harbour master's
+  early crates contract (a parcel run, x1.4 pay, +12 on finish, -10 if dropped, 25 min limit; tracker title `LF-ContractTracker_Title_harbour_crates`).
+  Test `everon/reputation` (pack leg). Not yet: the harbour master's dialogue reply that offers it, and the chop shop's "car to order" contract
+  (no core job matches it).
+- 🔲 Screens, and the owner `config.json` section `reputation` (later cards of #1018).
