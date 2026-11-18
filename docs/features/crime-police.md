@@ -79,7 +79,7 @@
 | Alarm | `store` | `bank` | `bank`, loud |
 | Action name | "Crack the box safe" | "Rob the bank" | "Break into the reserve depot" |
 
-- `store_box` matches the placed shop tills: they ship with 0 police needed and 150 cash a haul (`LF_FuelTill_Attended.et`). `LF_RobAction`'s own code default is 2 police, which every placed till overrides to 0, so the tier follows the placed value. With no tool it opens after the fuse. `m_fDrillSeconds` is 10 only because the setter needs a positive value; no drill is accepted. The Everon pack patches the haul to 120 (1989 till takings).
+- `store_box` matches the placed shop tills: they ship with 0 police needed, 150 cash a haul and a 900 s cooldown (`LF_FuelTill_Attended.et`; it was 60 s, which paid a solo robber 150 a minute, #2418). `LF_RobAction`'s own code default is 2 police, which every placed till overrides to 0, so the tier follows the placed value. With no tool it opens after the fuse. `m_fDrillSeconds` is 10 only because the setter needs a positive value; no drill is accepted. The Everon pack patches the haul to 120 (1989 till takings).
 - `bank_room` is today's bank: the numbers `LF_BankVault.et` sets (1 bag, 500, 60 s, 0 police, no fuse, drill or charge, bank alarm, no jam, 30 s drill).
 - `reserve_vault` is the big vault for a later "Federal Reserve" building (docs only; in-world text says "reserve depot"). The existing `LF_BankVault.et` prefab keeps its GUID, path and its own explicit numbers and sets no type, because it is the playtest town's bank today; a building that uses it as the reserve vault sets `m_sSafeType "reserve_vault"` on its placement and drops the explicit numbers.
 - Test `crime/safe-types` (LOGIC) and `everon/safe-types` (pack leg). Log `[LFDebug:SafeTypes]`.
