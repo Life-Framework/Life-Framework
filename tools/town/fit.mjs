@@ -316,7 +316,10 @@ export function planFit(opts, ctx = {}) {
   const entry = mapping.slots?.[slotId];
   if (!entry) return (errors.push(`slot ${slotId} is not in the mapping`), fail());
   if (entry.none) return (errors.push(`slot ${slotId} is mapped to none${entry.reason ? ` (${entry.reason})` : ""}: nothing to fit`), fail());
-  for (const p of checkMapping(mapping, dossier, template)) if (!/^slot /.test(p) || p.startsWith(`slot ${slotId}:`)) errors.push(`mapping: ${p}`);
+  // A slot whose building is in ANOTHER place's survey (`dossier` on its entry): `dossier` here is that survey, the place's own
+  // is `mappingDossier`, and the building is claimed under "<survey slug>/<id>" so it never meets this place's own b14.
+  const buildingKey = entry.dossier ? `${entry.dossier}/${entry.building}` : entry.building;
+  for (const p of checkMapping(mapping, opts.mappingDossier ?? dossier, template, entry.dossier ? { [entry.dossier]: dossier } : null)) if (!/^slot /.test(p) || p.startsWith(`slot ${slotId}:`)) errors.push(`mapping: ${p}`);
   if (errors.length) return fail();
 
   const kit = opts.kits?.[slot.kit];
@@ -340,7 +343,7 @@ export function planFit(opts, ctx = {}) {
   // `--refit`: this slot's own claim, already committed on origin/main (every worktree carries it), does not block its re-fit.
   // The same slot held by an open PR or a sibling worktree, and any other slot's claim on the building, still refuse.
   const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && c.where === "origin/main")) : taken;
-  errors.push(...conflicts(blocking, { place, slot: slotId, building: entry.building, plot: entry.plot, shared: entry.shared }));
+  errors.push(...conflicts(blocking, { place, slot: slotId, building: buildingKey, plot: entry.plot, shared: entry.shared }));
   if (errors.length) return { ...fail(), notes };
 
   // The building: a mapped one stands where the dossier says; a plot gets the purpose-built building first (D9).
@@ -416,7 +419,7 @@ export function planFit(opts, ctx = {}) {
     schema: 1,
     place,
     slot: slotId,
-    ...(entry.building ? { building: entry.building } : { plot: entry.plot }),
+    ...(entry.building ? { building: buildingKey } : { plot: entry.plot }),
     ...(entry.shared ? { shared: true } : {}),
     kit: slot.kit,
     layer: `${LAYER_DIR}/${layerName}`,
@@ -593,8 +596,11 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
   let plan;
   try {
     const placeDir = join(root, "docs", "everon", "places", place);
-    const dossier = readJson(resolve(root, flags.dossier ?? join(placeDir, "dossier.json")), "dossier");
+    const mappingDossier = readJson(resolve(root, flags.dossier ?? join(placeDir, "dossier.json")), "dossier");
     const mapping = readJson(resolve(root, flags.mapping ?? join(placeDir, "mapping.json")), "mapping");
+    // A slot whose entry names another place's survey (`dossier`) fits against that dossier.
+    const survey = mapping.slots?.[slotId]?.dossier;
+    const dossier = survey && SLUG_RX.test(survey) ? readJson(join(root, "docs", "everon", "places", survey, "dossier.json"), "dossier") : mappingDossier;
     const template = flags["template-file"] ? readJson(resolve(root, flags["template-file"]), "template") : loadTemplate(mapping.template, root);
     const entry = template.slots.find((s) => s.id === slotId);
     const kits = {};
@@ -604,7 +610,7 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
       if (existsSync(kf)) kits[entry.kit] = readJson(kf, "kit");
     }
     const shell = ctxShell ?? shellReader(root);
-    const fitOpts = { place, slot: slotId, dossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, refit: Boolean(flags.refit), allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
+    const fitOpts = { place, slot: slotId, dossier, mappingDossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, refit: Boolean(flags.refit), allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
     plan = await planFitSeated(fitOpts, { root, run, readGame: await gameReader(), shell });
   } catch (e) {
     console.log(`REFUSE  ${e.message}`);
