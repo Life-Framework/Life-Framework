@@ -48,7 +48,8 @@ harmless to your editor because the worktree is a separate directory.
   only warned about, never rewritten. `LF_RDB_REFRESH=0` turns the refresh off. Do not commit it.
 - **Build** — the headless Workbench build is the one truly shared resource
   (shader cache, resource DB). It is serialized by a machine-wide lock file:
-  one build at a time, everyone else `--wait`s. `cli dev` skips the build
+  one build at a time, everyone else `--wait`s. A `look` and the rdb refresh take a per-worktree lock
+  (`look-<slug>`, `rdb-<slug>`) and a Workbench slot instead, so they run side by side up to the slot count. `cli dev` skips the build
   entirely, so the everyday loop never contends.
 - **Hub** — coordination state lives in `<main>/tmp/wt/` (git-ignored):
   `state.json` (registry + ports + the warm pool) and `locks/`. Derived from `git worktree

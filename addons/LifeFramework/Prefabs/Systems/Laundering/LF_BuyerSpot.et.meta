@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{D9D016A65F3245D7}Prefabs/Characters/Residents/Resident_Civilian.et"
+ Name "{208688EDE535B6A4}Prefabs/Systems/Laundering/LF_BuyerSpot.et"
  Configurations {
   EntityTemplateResourceClass PC {
   }

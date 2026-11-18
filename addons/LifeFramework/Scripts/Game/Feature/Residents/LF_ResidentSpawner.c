@@ -52,7 +52,7 @@ class LF_ResidentSpawner
 {
 	static const string FEATURE = "Residents";
 	//! The neutral civilian a resident with no prefab of their own spawns as.
-	static const ResourceName DEFAULT_PREFAB = "{D9D016A65F3245D7}Prefabs/Characters/Residents/Resident_Civilian.et";
+	static const ResourceName DEFAULT_PREFAB = "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et";
 	static const int DEFAULT_SWEEP_SECONDS = 5;	// lf-fixed: used only when the config does not resolve
 
 	protected static ref map<string, ref LF_ResidentLive> s_mLive;

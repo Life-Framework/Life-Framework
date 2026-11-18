@@ -38,8 +38,16 @@ Stolen money is a separate item that never counts as cash.
   unix time and the seed, nothing saved, so a restart keeps it. The period hands out one spot (a spot added
   mid-period joins at the next period). No spot placed: none, one warning.
 - ✅ The seed is a server secret, not config or script: made at random on first use and kept in
-  `$profile:LifeFramework/buyer-rotation-seed.txt`. Delete the file to reshuffle the buyer. The buyer NPC at
-  the open spot, the sale and the pack's spots come next. Test: `LF_Test_BuyerRotation` (WORLD).
+  `$profile:LifeFramework/buyer-rotation-seed.txt`. Delete the file to reshuffle the buyer. The sale and the
+  pack's spots come next. Test: `LF_Test_BuyerRotation` (WORLD).
+- ✅ The buyer stands at the open spot (#2919): `LF_BuyerNpc` (started from the game mode, server only) sweeps every 5 s.
+  A man in a work jacket (core prefab `Prefabs/Characters/LF_IllicitBuyer.et`, a denim jacket; a pack dresses him, B4)
+  is spawned on the open `chain_buyer` spot when a player is within 150 m of it, then loiters (`LF_NpcLoiter.Settle`:
+  a free seat nearby, else leans or smokes). When the rotation moves he is removed from the old spot and appears at
+  the new one; with no player within 200 m of him he is removed. One buyer at most, none at the other spots, nothing
+  saved. The spot prefab `Prefabs/Systems/Laundering/LF_BuyerSpot.et` carries `LF_BuyerSpotComponent`.
+  Test: `LF_Test_BuyerNpc` (WORLD). Look: `grid:slice-b1` (cones stand in for spots: a live spot in a grid layer
+  would join every test's rotation).
 
 ### Wash rules — `Feature/Laundering/LF_LaunderRules.c` (#2852)
 - ✅ Pure logic, no entity: `LF_LaunderRules.Quote(key, marked, nowSec, cutPct, batchMax, dailyCap)` gives the
@@ -77,3 +85,14 @@ Stolen money is a separate item that never counts as cash.
   never forfeits) is forfeited: `LF_Debug.Info("Laundering", ...)` names owner, marked and clean amounts, nobody is paid, and the
   station frees for anyone. A timer frees it without anyone touching it; the clock is part of the save.
 - Test: `LF_Test_LaunderStation` (WORLD), `LF_Test_LaunderStationPersist` (PERSISTENCE, restart check under `wt e2e`).
+
+### Selling chain goods to the buyer — `Feature/Laundering/LF_BuyerSaleAction.c`, `LF_BuyerPrices.c` (#2920)
+- ✅ `LF_BuyerSaleAction` ("Sell the goods", `#LF-BuyerSale_Action`) sits on `LF_IllicitBuyer.et`. `LF_BuyerSale.ServerSell` takes
+  every chain good (`LF_ChainSearch.IsGood`, the `m_bGoods` outputs) the character carries that the price list
+  (`Configs/Crime/LF_BuyerPrices.conf`, `LF_BuyerPrices`) names, and pays the sum: marked notes when the dirty-money switch
+  (`LF_LaunderConfig.m_bCrimePaysMarked`) is on, cash when it is off. The core list prices moonshine; the 1989 pack overrides the file (B4).
+- ✅ Server only, and checked again there: a living standing seller, not cuffed (`LF_CuffEnforcement`), the buyer is the live one
+  and stands at the spot the rotation has open now, within `m_fReach` (4 m), not repeating inside `m_iMinActionMs` (1 s), something to sell.
+- ✅ All or nothing on the inventory side: goods are taken first; a short take, or a payout that does not land, puts every unit
+  back (and takes back any part paid). Cash is booked on the ledger with reason `buyer-sale`; marked notes get a `marked` trail line.
+- Test: `LF_Test_BuyerSale` (WORLD).
