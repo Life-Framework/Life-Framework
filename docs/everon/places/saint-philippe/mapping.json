@@ -308,6 +308,21 @@
         "ShedMetal_02_short_nowalls (industrial), 182.6 m2, open-sided, no door, 166.5 m south-west of the scout centre at the village edge, off the roads",
         "D10 pick (#3174), lumber epic #3169: the sawmill shed and the log yard (kinds LogPile, Processor) go under and around this open-sided metal shed; a doorless prop, so the allocation gives it no other purpose, and none of the four free plots, which are all for sale (Plots_saint-philippe.layer). b125 and b126 are the same kind of open shed. Whether trees stand within reach of the yard is the fit card's check (the survey counts vegetation for the whole radius, not per spot)"
       ]
+    },
+    "farm": {
+      "building": "b73",
+      "alternatives": [
+        {
+          "building": "b100"
+        },
+        {
+          "building": "b23"
+        }
+      ],
+      "why": [
+        "Barn_E_02 (farm), 80.8 m2, 118.6 m south-west of the scout centre at the village edge, the farm barn with open ground round it",
+        "D10 pick (#3190), lumber epic #3169 sibling (Z2): the cabbage plots, the seed crate and the farm_plots sign (kinds FarmPlot, SeedCrate) go on the open ground round this barn, which stays locked 'Propriete privee' (L0 #3204) since the slot uses its yard, not its door. None of the four free plots was used: all four carry sale signs (Plots_saint-philippe.layer). Every henhouse stands in a house yard, and b96 is the barn behind the range, so b73 is the one farm barn clear of both. b100 (north-east edge) and b23 are the same kind of barn"
+      ]
     }
   }
 }

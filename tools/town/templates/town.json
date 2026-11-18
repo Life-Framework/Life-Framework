@@ -112,6 +112,11 @@
       "places": ["LogPile", "Processor"]
     },
     {
+      "id": "farm", "required": false, "kit": "farm", "host": "building", "poi": "none", "margin": 20,
+      "needs": { "interior": "optional", "minArea": 60, "prefer": "far", "types": ["farm"] },
+      "places": ["FarmPlot", "SeedCrate"]
+    },
+    {
       "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 110, "types": ["shop", "townhouse", "house"] },
       "places": ["GunCounter"]
