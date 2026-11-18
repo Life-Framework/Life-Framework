@@ -61,8 +61,9 @@ async function runPlugin(plan, budgetS) {
   for (const f of readdirSync(dir)) rmSync(join(dir, f), { force: true });
   writeFileSync(join(dir, "plan.txt"), plan);
   const injected = join(ROOT, "addons", "LifeFramework", "Scripts", "WorkbenchGame", "LFVisual");
-  const wbLock = await import("../lib/wb-lock.mjs");
-  const slot = await wbLock.acquireWorkbench(ROOT, { purpose: "place settle physics", waitMs: 1800000 });
+  const wbRoute = await import("../lib/wb-route.mjs");
+  wbRoute.requireLocalWorkbench(ROOT, "place settle physics"); // never on a PC without the workbench cap
+  const slot = await wbRoute.acquireWorkbench(ROOT, { purpose: "place settle physics", waitMs: 1800000 });
   try {
     mkdirSync(injected, { recursive: true });
     cpSync(PLUGIN, join(injected, "LF_PlaceSettlePlugin.c"));
