@@ -193,6 +193,11 @@ class LF_VehiclePricesConfig
 	[Attribute("0", UIWidgets.Auto, "Percent of the base price a garage charges (free today)", params: "0 1000")]
 	int m_iGaragePercent;
 
+	//! #3151: the car lot refuses a buyer without the driving licence. Core ships it off; a pack
+	//! overlay turns it on (what the server is). Server only: the lot's buy runs on the server.
+	[Attribute("0", UIWidgets.CheckBox, "The car lot sells only to a buyer who holds the driving licence")]
+	bool m_bLotNeedsDrivingLicence;
+
 	[Attribute("", UIWidgets.Object, "Per-vehicle base prices and overrides")]
 	ref array<ref LF_VehiclePriceEntry> m_aVehicles;
 
@@ -233,6 +238,23 @@ class LF_VehiclePricesConfig
 	{
 		s_Config = null;
 		s_bLoadAttempted = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #3151: whether the lot asks for the driving licence on this server (false with no config).
+	static bool LotNeedsDrivingLicence()
+	{
+		LF_VehiclePricesConfig config = Get();
+		return config && config.m_bLotNeedsDrivingLicence;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: turns the lot's licence gate on or off until the next Reload().
+	static void SetLotNeedsDrivingLicenceForTest(bool on)
+	{
+		LF_VehiclePricesConfig config = Get();
+		if (config)
+			config.m_bLotNeedsDrivingLicence = on;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -396,6 +418,8 @@ class LF_VehiclePricesConfig
 			changed++;
 		if (container.IsVariableSetDirectly("m_iGaragePercent") && container.Get("m_iGaragePercent", m_iGaragePercent))
 			changed++;
+		if (container.IsVariableSetDirectly("m_bLotNeedsDrivingLicence") && container.Get("m_bLotNeedsDrivingLicence", m_bLotNeedsDrivingLicence))
+			changed++;
 
 		if (!m_aVehicles)
 			m_aVehicles = new array<ref LF_VehiclePriceEntry>();
@@ -413,7 +437,7 @@ class LF_VehiclePricesConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader, string source = "config.json")
 	{
-		array<string> ownerKeys = {"buyPercent", "sellBackPercent", "chopPercent", "chopValueCap", "impoundPercent", "garagePercent", "vehicles"};
+		array<string> ownerKeys = {"buyPercent", "sellBackPercent", "chopPercent", "chopValueCap", "impoundPercent", "garagePercent", "lotNeedsDrivingLicence", "vehicles"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("buyPercent", m_iBuyPercent, PERCENT_MIN, PERCENT_MAX);
 		reader.ReadInt("sellBackPercent", m_iSellBackPercent, PERCENT_MIN, PERCENT_MAX);
@@ -421,6 +445,7 @@ class LF_VehiclePricesConfig
 		reader.ReadInt("chopValueCap", m_iChopValueCap, PRICE_MIN, PRICE_MAX);
 		reader.ReadInt("impoundPercent", m_iImpoundPercent, PERCENT_MIN, PERCENT_MAX);
 		reader.ReadInt("garagePercent", m_iGaragePercent, PERCENT_MIN, PERCENT_MAX);
+		reader.ReadBool("lotNeedsDrivingLicence", m_bLotNeedsDrivingLicence);
 
 		if (!m_aVehicles)
 			m_aVehicles = new array<ref LF_VehiclePriceEntry>();

@@ -1,0 +1,52 @@
+GenericEntity Fit_saint_philippe_newsagent_Place {
+ components {
+  LF_PlaceComponent "{E9B1AB7E4D7EA52C}" {
+   m_sKind "StoreCounter"
+   m_sId "saint-philippe.newsagent"
+  }
+  LF_FittedBuildingComponent "{D9B25BDBB5CB35C6}" {
+  }
+ }
+ coords 4437 11.9 10691.4
+}
+GenericEntity Fit_saint_philippe_newsagent_newsagent_counter : "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et" {
+ coords 4436.682 11.95 10689.866
+ angleY -5
+}
+GenericEntity Fit_saint_philippe_newsagent_newsagent_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{7C4D2E1A5B6F8093}" {
+   m_sShopName "#LF-Shop_Name_Newsagent"
+   m_sShopDescription "#LF-Shop_Desc_Newsagent"
+   m_sStockId "newsagent"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{7C4D2E1A5B6F8094}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{7C4D2E1A5B6F8095}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{7C4D2E1A5B6F8096}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7C4D2E1A5B6F8097}" {
+      Name "#LF-Shop_Open_Newsagent"
+      Description "#LF-Shop_OpenDesc_Newsagent"
+     }
+    }
+   }
+  }
+ }
+ coords 4436.682 13.138 10689.866
+ angleY -5
+}
+GenericEntity Fit_saint_philippe_newsagent_newsagent_papers : "{EA34FD3A068E550A}Prefabs/Props/Commercial/NewspaperStand_01.et" {
+ coords 4438.036 11.95 10689.885
+ angleY -5
+}
