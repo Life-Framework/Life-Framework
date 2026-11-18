@@ -310,7 +310,7 @@ export function rewrite(text, block) {
 
 const text = readFileSync(FURNITURE, "utf8");
 // Every prop that stands on something is snapped onto the real top under it (tools/buildings/pipeline/surface.mjs); the y typed
-// above is a hint. A tilted row is left as written. `toolsi building check clothing-store` proves the result.
+// above is a hint. A tilted row is left as written. `tools\cli building check clothing-store` proves the result.
 const spec = JSON.parse(readFileSync(join(dirname(FURNITURE), "..", "..", "..", "..", "..", "..", "tools", "buildings", "clothing-store", "spec.json"), "utf8"));
 for (const it of items) if (it.angles) it.free = true;
 const snap = await snapItems(items, { fixed: [...prefabChildren(rewrite(text, "")), ...specSupports(spec)] });

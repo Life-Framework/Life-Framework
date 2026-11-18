@@ -80,6 +80,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_ChainTrace.Install();
 		// The replicated DELIVERY level follows every job level change (server only, #749).
 		LF_JobLevelSync.EnsureSubscribed();
+		// Mining, logging and medic work earn MINER, LUMBERJACK and MEDIC XP (server only, #2707).
+		LF_JobLevelSources.EnsureSubscribed();
 		// Interaction menu role slots, on every machine (offer on the client, decide on the server).
 		LF_OrgInviteRole.Register();
 		LF_HoldUpRole.Register();
@@ -113,6 +115,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_WorldReset.Start();
 		// Organization wars lapse and end on time, an emptied org forfeits, the island is told (server only, #2669).
 		LF_OrgWarSweep.Start();
+		// Abandoned owned cars are towed to the impound lot (server only, #2657).
+		LF_VehicleTow.Start();
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -11,12 +11,12 @@
 // "FAIL pack check: a pack section named like a core section must be an error" and "FAIL schema: a refused pack
 // section must stay out"; a ShopsBad default or a wrong explain path printed one FAIL each (observed 2026-11-14).
 
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkPack, summary } from "../pack/check.mjs";
 import { explain, main as explainMain } from "../pack/explain.mjs";
-import { SECTIONS, walk } from "../pack/layers.mjs";
+import { SECTIONS, UNMODELLED, confRecords, loadCore, walk } from "../pack/layers.mjs";
 import { checkText } from "../config/check.mjs";
 import { build, coreKeysOf, generate, readScripts } from "../config/schema.mjs";
 import { loadPackSections } from "../config/pack-sections.mjs";
@@ -229,13 +229,38 @@ pack(two, "LF_Bbb", { gproj: "6000000000000004", man: G.man2, mis: G.misB }, man
 }
 
 // ---- Every list section in the core is in the table ----
+// This check matched nothing until #2764 (its regex had lost its backslashes). A core list needs a row in
+// SECTIONS, or an entry in UNMODELLED with the reason it cannot be merged offline. KNOWN_GAPS was the
+// baseline of lists with neither (27 at #2764, none since #2804); it stays empty, so a new list fails.
+const KNOWN_GAPS = new Set([]);
 {
+  const declared = new Set();
   for (const f of walk(join(REAL, "addons", "LifeFramework", "Scripts")).filter((p) => p.endsWith(".c"))) {
     const text = readFileSync(f, "utf8");
-    if (!/classs+w+s*:s*LF_ConfigList/.test(text)) continue;
-    for (const m of text.matchAll(/override string GetName()s*{s*return "([^"]+)";/g)) {
-      if (!SECTIONS[m[1]]) fail(`${f.slice(REAL.length + 1)} declares the list ${m[1]}; add its row to SECTIONS in tools/pack/layers.mjs`);
+    if (!/class\s+\w+\s*:\s*LF_ConfigList\b/.test(text)) continue;
+    for (const m of text.matchAll(/override string GetName\(\)\s*\{\s*return "([^"]+)";/g)) {
+      declared.add(m[1]);
+      if (!SECTIONS[m[1]] && !UNMODELLED[m[1]] && !KNOWN_GAPS.has(m[1])) fail(`${f.slice(REAL.length + 1)} declares the list ${m[1]}; add its row to SECTIONS in tools/pack/layers.mjs, or its reason to UNMODELLED`);
     }
+  }
+  if (!declared.size) fail("the section coverage check found no LF_ConfigList class (its pattern broke again)");
+  for (const g of KNOWN_GAPS) {
+    if (SECTIONS[g] || UNMODELLED[g]) fail(`${g} is covered now; delete it from KNOWN_GAPS`);
+    else if (!declared.has(g)) fail(`${g} is in KNOWN_GAPS but no core class declares it; delete it from KNOWN_GAPS`);
+  }
+  for (const [g, why] of Object.entries(UNMODELLED)) {
+    if (SECTIONS[g]) fail(`${g} has a row in SECTIONS; delete it from UNMODELLED`);
+    else if (!declared.has(g)) fail(`${g} is in UNMODELLED but no core class declares it; delete it`);
+    else if (!String(why).trim()) fail(`${g} is in UNMODELLED with no reason`);
+  }
+  // Every row names a real core file (or none) and a class and field the core declares.
+  for (const [list, def] of Object.entries(SECTIONS)) {
+    if (def.core && !existsSync(join(REAL, "addons", "LifeFramework", def.core))) fail(`${list}: core file ${def.core} does not exist`);
+    if (!declared.has(list)) fail(`SECTIONS has ${list} but no core class declares that list`);
+    // The core file's root class is the row's class, and each of its records yields an id.
+    const root = loadCore(join(REAL, "addons"), def);
+    if (def.core && root?.cls !== def.cls) fail(`${list}: ${def.core} is a ${root?.cls}, the row says ${def.cls}`);
+    if (root) for (const r of confRecords(def, root)) if (!r.id) fail(`${list}: a record of ${def.core} has no id through the row's id() (wrong id field?)`);
   }
 }
 

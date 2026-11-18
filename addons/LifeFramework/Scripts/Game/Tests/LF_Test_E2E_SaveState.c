@@ -149,6 +149,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// alive in the world through the shutdown save, so the reload boot also sees whether the
 		// engine brings its items back on its own (a dupe next to the restored snapshot).
 		IEntity carrier = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(carrier);
 		// A stamped drill rides in the backpack (#470): its serial must survive the restart on the item.
 		if (carrier)
 		{
@@ -240,6 +241,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// leave 9 rounds, clock out. A wanted report with its identified flag rides "wanted" (10).
 		LF_PlayerAccount dutyAccount = LF_TestPoliceKit.Account(DUTY_UID, true);
 		IEntity dutyBody = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(dutyBody);
 		if (dutyBody)
 		{
 			ctx.EqualStr("", LF_DutyLocker.ClockIn(dutyAccount, dutyBody), "e2e officer clocks in before the save");
@@ -254,6 +256,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// The medic duty inventory rides the same carried payload in its own slot (medic_duty, #258).
 		LF_PlayerAccount medicAccount = LF_TestPoliceKit.Account(MEDIC_UID, false);
 		IEntity medicBody = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(medicBody);
 		if (medicBody)
 		{
 			ctx.EqualStr("", LF_DutyLocker.ClockIn(medicAccount, medicBody, LF_Faction.MEDIC), "e2e medic clocks in before the save");
@@ -376,6 +379,13 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		SeedOrgLadder(ctx);
 		LF_Test_ReputationPersist.SeedE2E(ctx);
 		LF_Test_GarageSlotsPersist.SeedE2E(ctx);
+		// A car on the street holds an apple (#2809): the shutdown save captures its cargo into "carried".
+		IEntity cargoPayer = LF_TestCharacterFixture.Spawn(ctx);
+		if (cargoPayer)
+		{
+			LF_Test_VehicleCargoPersist.SeedE2E(ctx, cargoPayer);
+			LF_TestCharacterFixture.Delete(cargoPayer);
+		}
 
 #ifndef LF_E2E_LEGACY_SAVE
 		// A cargo run in progress holds a deposit ("jobruns" payload, save version 49, #2408, #2481): the
@@ -1021,6 +1031,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET_ID, GARAGE_OWNER_UID, payer, fee, "roadmap-impound", reasonKey), "e2e street car is collected only once");
 			ctx.True(LF_VehicleOwnership.GetVehicle(STREET_ID) != null, "e2e collected car is in the impound yard");
 			LF_VehicleOwnership.Store(STREET_ID, GARAGE_OWNER_UID);
+			LF_Test_VehicleCargoPersist.VerifyE2E(ctx, payer);
 			LF_TestCharacterFixture.Delete(payer);
 		}
 

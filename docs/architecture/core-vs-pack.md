@@ -183,7 +183,7 @@ warning). Base-game GUIDs cannot be resolved offline and are counted, not listed
 terms (#958), map independence (#961) and profit loops over pack prices (#686) are not in it yet.
 Exit 1 on any error. `pack explain` is its other half: `docs/config/owner-config.md` "Where a value came from".
 The list sections both read are one table, `SECTIONS` in `tools/pack/layers.mjs`; a section moved onto the
-override model adds its row there (`pack-check-selftest.mjs` fails until it does).
+override model adds its row there (`pack-check-selftest.mjs` fails until it does). A list that cannot be merged offline is in `UNMODELLED` in the same file with its reason (dialogue nodes and lines, licence rules); the old `KNOWN_GAPS` baseline is empty (#2804).
 
 ### A pack's own config sections (#553)
 
