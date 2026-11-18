@@ -109,6 +109,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_PoliceCallPay.Install();
 		// A playtest mission remembers where its vehicles stand, for the world reset (server only).
 		LF_WorldReset.Start();
+		// Organization wars lapse and end on time, an emptied org forfeits, the island is told (server only, #2669).
+		LF_OrgWarSweep.Start();
 	}
 
 	//------------------------------------------------------------------------------------------------

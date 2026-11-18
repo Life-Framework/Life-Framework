@@ -487,6 +487,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_OrgWarLapseCooldown(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_OrgWarPersist(), LF_TestTier.PERSISTENCE;
 		// self-registered: new LF_Test_OrgWarState(), LF_TestTier.LOGIC;
+		// self-registered: new LF_Test_OrgWarSweep(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_OutletSerial(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_OutletSerialWired(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_PackManifest(), LF_TestTier.LOGIC;
