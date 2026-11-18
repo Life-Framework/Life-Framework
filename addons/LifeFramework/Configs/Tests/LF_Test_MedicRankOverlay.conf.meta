@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5E2A91C7B84D3F06}Configs/Tests/LF_Test_MedicRankOverlay.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

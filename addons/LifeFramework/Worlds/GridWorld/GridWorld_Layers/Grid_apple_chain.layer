@@ -158,25 +158,25 @@ GenericEntity Annex_AppleTrader {
     {
      $grp GenericEntity : "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et" {
       Annex_Apple_5A0E821DC5FD6433 {
-       coords -0.137 -0.036 -0.08
+       coords -0.137 0.001 -0.08
       }
       Annex_Apple_5A0E821DC5FD1C61 {
-       coords -0.074 -0.043 0.152
+       coords -0.074 0.001 0.152
       }
       Annex_Apple_5A0E821DC5FD1115 {
-       coords 0.168 -0.036 0.057
+       coords 0.168 0.001 0.057
       }
       Annex_Apple_5A0E821DC5FD1220 {
-       coords -0.002 -0.036 0.074
+       coords -0.002 0.001 0.074
       }
       Annex_Apple_5A0E821DC5FD1706 {
-       coords -0.165 -0.036 0.08
+       coords -0.165 0.001 0.08
       }
       Annex_Apple_5A0E821DC5FD082C {
-       coords -0.052 -0.036 -0.034
+       coords -0.052 0.001 -0.034
       }
       Annex_Apple_5A0E821DC5FD0D6E {
-       coords 0.1 -0.036 -0.035
+       coords 0.1 0.001 -0.035
       }
      }
     }

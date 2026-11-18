@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{C4204DB6E99B55EC}Configs/Map/LF_MapPois_SaintPhilippe.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

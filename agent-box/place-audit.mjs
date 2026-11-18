@@ -40,7 +40,7 @@ export const GRID_CIRCLE = { x: 66, z: 66, r: 80 }; // the same circle for GridW
 
 // --grid measures GridWorld at the grid bar (docs/architecture/world-zones.md, "Look bar: Low"): props still stand on
 // the ground and are reachable, nothing else is judged (tilt, scale, overlaps, doors and the polish kinds are the town's).
-export const GRID_BAR_KINDS = new Set(["floating", "sunk", "unreachable"]);
+export const GRID_BAR_KINDS = new Set(["floating", "sunk", "contact", "unreachable"]);
 
 // The ranked rows cut to the grid bar: a row keeps only its bar problems and drops out when it has none.
 export function gridBar(ranked) {
@@ -50,7 +50,7 @@ export function gridBar(ranked) {
 }
 
 // Thresholds (metres, degrees). The physical ones match LF_PlacementAudit (GAP, TILT, SCALE_MIN/MAX).
-export const LIMITS = { gap: 0.15, tilt: 5, overlap: 0.08, sharedOverlap: 0.02, door: 0.1, doorClear: 1.0, doorWalk: 3, walk: 1.5, signWalk: 3, scaleMin: 0.5, scaleMax: 2, oddLow: 0.75, oddHigh: 1.6, roadMargin: 0.3, roadMaxWidth: 15 };
+export const LIMITS = { gap: 0.15, tilt: 5, overlap: 0.08, sharedOverlap: 0.02, door: 0.1, doorClear: 1.0, doorWalk: 3, walk: 1.5, signWalk: 3, scaleMin: 0.5, scaleMax: 2, oddLow: 0.75, oddHigh: 1.6, roadMargin: 0.3, roadMaxWidth: 15, contact: 0.01, contactHeight: 1.5 };
 
 // Layers that hold no props: world settings, managers, factions, the roads themselves (checked as paths).
 const SKIP_LAYERS = new Set(["default.layer", "Gamemode.layer", "Factions.layer", "Village_Roads.layer", "Roadmap.layer"]);
@@ -203,6 +203,10 @@ export function parseRow(rest) {
   if (kv.missing) return { missing: true };
   return {
     gap: Number(kv.gap),
+    // LF_PlaceSnap's contact gap: the mesh bottom minus the highest support under a 3x3 footprint, proxy boxes ignored. null: no support found ("cgap=none").
+    cgap: kv.cgap === undefined || kv.cgap === "none" || !Number.isFinite(Number(kv.cgap)) ? null : Number(kv.cgap),
+    cspread: kv.cspread === undefined ? null : Number(kv.cspread),
+    chits: kv.chits ?? null,
     pgap: Number(kv.pgap),
     tilt: Number(kv.tilt),
     walk: Number(kv.walk),
@@ -233,7 +237,7 @@ const label = (e) => e.name || (e.prefab ? e.prefab.split("/").pop().replace(/\.
 // ----------------------------------------------------------------------------- checks
 
 // Severity points per problem kind; the rank sums them and weights interactables and named areas.
-export const WEIGHT = { floating: 10, sunk: 7, overhang: 6, clips: 6, overlaps: 5, "blocks-door": 7, "door-path": 4, "in-road": 5, scaled: 6, "odd-scale": 2, size: 6, tilted: 2, unreachable: 6 };
+export const WEIGHT = { floating: 10, contact: 8, sunk: 7, overhang: 6, clips: 6, overlaps: 5, "blocks-door": 7, "door-path": 4, "in-road": 5, scaled: 6, "odd-scale": 2, size: 6, tilted: 2, unreachable: 6 };
 
 // Expected sizes (tools/place/expected-sizes.json): the first entry whose regex matches the prefab file name
 // (or, for a bare mesh entity, the mesh file name) gives the sane range for the largest side, in metres, in
@@ -266,6 +270,20 @@ export function sizeProblem(e, m, sizes) {
   return { covered: true, problem: { kind: "size", amount, text: `size ${r2(side)} m outside ${s.min}-${s.max} m for ${s.id} (${s.why})` } };
 }
 
+// Judged by contact (#2953): a small prop (under LIMITS.contactHeight) that must rest on furniture or the ground, whose
+// LF_PlaceSnap contact gap was measured. Exempt: vehicles (their bounds include the wheels and the suspension travel,
+// cgap 10 to 28 cm on level ground), vegetation, hung kinds, things laid down on purpose (sacks, logs, tilted props),
+// buildings and ground surfaces, rock chains, road furniture and markings, characters. Everything else keeps the 15 cm
+// bar of the bounds trace (floating / sunk).
+export function contactJudged(e, m) {
+  if (m.cgap === null || m.cgap === undefined || !Number.isFinite(m.cgap) || m.character || m.point) return false;
+  if (2 * m.box.h[1] >= LIMITS.contactHeight || volume(m) > 40) return false;
+  if (m.tilt > LIMITS.tilt) return false;
+  const mounted = m.backed && (isKind(e, "mounted") || (m.gap > 0.5 && Math.min(m.box.h[0], m.box.h[2]) < 0.15));
+  if (mounted) return false;
+  return !["vehicle", "vegetation", "mounted", "laidDown", "building", "surface", "chain", "roadFurniture"].some((k) => isKind(e, k));
+}
+
 // Problems for one measured entity, before pairs (overlaps, doors, roads) are added.
 export function singleProblems(e, m) {
   const out = [];
@@ -276,10 +294,19 @@ export function singleProblems(e, m) {
   const mounted = m.backed && (isKind(e, "mounted") || (m.gap > 0.5 && Math.min(m.box.h[0], m.box.h[2]) < 0.15));
   const building = isKind(e, "building") || volume(m) > 40;
   const vehicle = isKind(e, "vehicle");
-  if (!mounted && m.gap > LIMITS.gap) out.push({ kind: "floating", amount: m.gap, text: `floating ${r2(m.gap)} m above ${m.on}` });
-  const sunk = -Math.max(m.gap, m.pgap); // both the bounds bottom and the pivot under the floor (LF_PlacementAudit.Flags)
-  if (!mounted && !vehicle && sunk > (building ? 0.5 : LIMITS.gap)) out.push({ kind: "sunk", amount: sunk, text: `sunk ${r2(sunk)} m into ${m.on}` });
-  if (!mounted && m.over > 0 && m.gap <= LIMITS.gap && m.on !== "terrain") out.push({ kind: "overhang", amount: m.over / 4, text: `${m.over}/4 corners hang off the edge of ${m.on} (drop ${r2(m.drop)} m)` });
+  // A contact-judged prop is held to 1 cm either way by the measured contact (the single trace under the bounds centre read
+  // 3 to 23 cm for juice standing on its board, and 9.5 cm sunk for a till that is); the 15 cm bar stays for the rest.
+  if (contactJudged(e, m)) {
+    if (Math.abs(m.cgap) > LIMITS.contact) {
+      const cm = (Math.abs(m.cgap) * 100).toFixed(1);
+      out.push({ kind: "contact", amount: Math.abs(m.cgap), text: `${m.cgap > 0 ? "hovers" : "sunk"} ${cm} cm ${m.cgap > 0 ? "over" : "into"} its support (contact gap under a 3x3 footprint; surface ${m.on}${m.cspread > 0.02 ? `, support varies ${r2(m.cspread)} m under it` : ""})` });
+    }
+  } else {
+    if (!mounted && m.gap > LIMITS.gap) out.push({ kind: "floating", amount: m.gap, text: `floating ${r2(m.gap)} m above ${m.on}` });
+    const sunk = -Math.max(m.gap, m.pgap); // both the bounds bottom and the pivot under the floor (LF_PlacementAudit.Flags)
+    if (!mounted && !vehicle && sunk > (building ? 0.5 : LIMITS.gap)) out.push({ kind: "sunk", amount: sunk, text: `sunk ${r2(sunk)} m into ${m.on}` });
+  }
+  if (!mounted && m.over > 0 && (m.gap <= LIMITS.gap || contactJudged(e, m)) && m.on !== "terrain") out.push({ kind: "overhang", amount: m.over / 4, text: `${m.over}/4 corners hang off the edge of ${m.on} (drop ${r2(m.drop)} m)` });
   if (m.tilt > LIMITS.tilt && !isKind(e, "laidDown") && !veg) out.push({ kind: "tilted", amount: m.tilt / 45, text: `tilted ${Math.round(m.tilt)} deg` });
   if (m.scale < LIMITS.scaleMin || m.scale > LIMITS.scaleMax) out.push({ kind: "scaled", amount: 1, text: `scale ${r2(m.scale)}` });
   else if (!/^Sign_/.test(e.name || "") && (m.scale < LIMITS.oddLow || m.scale > LIMITS.oddHigh)) out.push({ kind: "odd-scale", amount: 1, text: `scale ${r2(m.scale)}` });
@@ -836,11 +863,44 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
   if (!singleProblems(kioskCounter, sunkM).some((p) => p.kind === "sunk")) fail("a backed prop named Roadmap_* sunk 0.35 m into a floor is flagged");
   if (singleProblems({ name: "Roadmap_Sign_Map", prefab: "Prefabs/Props/Signs/Map_01.et" }, sunkM).length !== 0) fail("a real map on a wall is still hung");
   worldSelftest(fail);
+  contactSelftest(fail);
   gridSelftest(fail);
   islandSelftest(fail);
   noOutputSelftest(fail);
   if (!process.exitCode) console.log("place-audit selftest: OK");
   return process.exitCode ?? 0;
+}
+
+// Contact (#2953): agent-box/fixtures/place-audit-contact/ holds the placement spike's measured rows (out.txt, records.json).
+// red-proof: 2026-11-18 before cgap was read the selftest printed "FAILED contact: AppleJuice ... flagged floating" (old gap 0.23)
+// and "FAILED contact: IronNugget_01 (cgap -0.031) not flagged sunk"; with contactJudged it prints OK.
+function contactSelftest(fail) {
+  const dir = join(ROOT, "agent-box", "fixtures", "place-audit-contact");
+  const records = readJson(join(dir, "records.json"), null);
+  if (!records) return fail("contact: agent-box/fixtures/place-audit-contact/records.json missing");
+  const outText = readFileSync(join(dir, "out.txt"), "utf8");
+  const res = analyse(records, outText, {});
+  // Only the resting checks: the fixture crates are not checked against the size table here.
+  const REST = new Set(["contact", "floating", "sunk"]);
+  const kinds = (n) => (res.ranked.find((r) => r.name === n)?.problems ?? []).map((p) => p.kind).filter((k) => REST.has(k));
+  const text = (n) => (res.ranked.find((r) => r.name === n)?.problems ?? []).map((p) => p.text).join(";");
+  if (kinds("AppleJuice").length) fail(`contact: AppleJuice on its board (old gap 0.23, cgap 0.0005) flagged ${kinds("AppleJuice")}`);
+  if (!kinds("IronNugget_01").includes("contact") || !/sunk 3\.1 cm/.test(text("IronNugget_01"))) fail(`contact: IronNugget_01 (cgap -0.031) not flagged sunk: ${text("IronNugget_01")}`);
+  if (kinds("IronNugget_01").includes("sunk")) fail("contact: a contact-judged prop is also flagged by the old sunk bar");
+  if (!kinds("Farm_PressApple_1").includes("contact") || !/hovers 8\.7 cm/.test(text("Farm_PressApple_1"))) fail(`contact: Farm_PressApple_1 (cgap 0.087) not flagged: ${text("Farm_PressApple_1")}`);
+  if (kinds("Van_Delivery").length) fail(`contact: a vehicle (cgap 0.18, wheels) flagged ${kinds("Van_Delivery")}`);
+  if (kinds("Sign_Hung").length) fail(`contact: a hung sign flagged ${kinds("Sign_Hung")}`);
+  if (kinds("Sack_Laid").length) fail(`contact: a sack laid down flagged ${kinds("Sack_Laid")}`);
+  if (kinds("Shed_Big").length) fail(`contact: a building under the old 15 cm bar flagged ${kinds("Shed_Big")}`);
+  if (kinds("Crate_Tall").length) fail(`contact: a 1.6 m prop at 5 cm (old bar) flagged ${kinds("Crate_Tall")}`);
+  if (kinds("Crate_Edge").length) fail(`contact: 8 mm (under 1 cm) flagged ${kinds("Crate_Edge")}`);
+  if (!kinds("Crate_Over").includes("contact")) fail(`contact: a 1.2 cm hover is not flagged: ${kinds("Crate_Over")}`);
+  if (!kinds("Crate_Under").includes("contact")) fail(`contact: a 1.2 cm sink is not flagged: ${kinds("Crate_Under")}`);
+  if (!kinds("Crate_NoHit").includes("floating")) fail(`contact: no support found (cgap=none) falls back to the 15 cm trace: ${kinds("Crate_NoHit")}`);
+  if (!kinds("Crate_Big").includes("floating")) fail(`contact: a 1.6 m prop 0.4 m up keeps the old floating bar: ${kinds("Crate_Big")}`);
+  const allowed = analyse(records, outText, { allow: [{ match: "^IronNugget_01", kind: "contact", why: "t" }] });
+  if (allowed.ranked.some((r) => r.name === "IronNugget_01")) fail("contact: the allowlist does not suppress a contact problem");
+  if (parseRow("gap=0.1 cgap=none cspread=0 chits=0/18").cgap !== null) fail("contact: cgap=none parses as a number");
 }
 
 // A run that leaves no out.txt says why and where to look (#2301). red-proof: 2026-11-17 with the old one-line message the selftest printed

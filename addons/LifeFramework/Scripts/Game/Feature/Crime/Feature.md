@@ -84,6 +84,7 @@ ob refused logged, offer reads #LF-Bank_NeedTool.
 - Timed drill (hand tool): the drill is an `LF_HandToolComponent` held from the quick slots; `LF_Bank.Rob` with it held starts `LF_VaultDrill`, which pays through `LF_Bank.FinishDrill` only after `m_fDrillSeconds` of server time held in reach. Cancel, put away, walk off or go down pays nothing.
 - Drill: kept, jams at m_fJamChance, and is left at the vault as scene evidence either way (its serial names the buyer at the locker). Charge: consumed by LF_Breach.Arm, which also accepts the fence LF_Charge. Drill time is the vault fuse.
 - Every attempt publishes LF_OnVaultBreach (opened, jammed, refused). Test crime/vault-tool; proof session.mjs vault-proof.
+- Dedicated clients (#2418): the vault table and drill sessions are server-only. `LF_Bank.ClientGateReason` builds the client prompt from replicated state (account bits, breach RplProps, `GetTuning()`, the `m_iRplDrillerId` RplProp `LF_VaultDrill` sets); the server refuses cooldown, stock and grace with a toast. Proof: `session.mjs vault-offer-proof`.
 
 
 ## Safe types

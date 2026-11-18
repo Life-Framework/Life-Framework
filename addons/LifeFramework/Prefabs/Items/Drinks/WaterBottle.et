@@ -24,6 +24,17 @@ GenericEntity : "{693D54F74C95B3D6}Prefabs/Items/Drinks/Drink_Base.et" {
      }
     }
    }
+   additionalActions + {
+    LF_PlantAction "{2818A1C0D3E54F11}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{2818A1C0D3E54F12}" {
+      Name "#LF-Plant_Action_Water"
+     }
+     m_eMode WATER
+    }
+   }
   }
  }
 }

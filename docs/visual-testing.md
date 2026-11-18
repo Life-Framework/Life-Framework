@@ -110,10 +110,11 @@ machine gets this worktree's snapshot (uncommitted files too) through the pool's
 pictures are copied back to `tmp/look/<area>/` with `index.json` pointing at them (`machine` says
 where they were taken). With no room anywhere it queues (re-read every 20 s, up to 20 min,
 `LF_LOOK_WAIT_S`) instead of failing. A machine that cannot run it after all (the RAM went, or the Workbench timed out with no
-shot while short of RAM) hands it back and the next machine is tried. A held build lock (another
-headless Workbench: a build, an rdb refresh, another look) is a wait, not a refusal: the look prints
-`look: queued: another headless Workbench holds the build lock` and re-checks every 20 s for up to
-`LF_LOOK_WAIT_S`, so a one-PC pool no longer ends in `no machine left to try` (#2808). `--local` keeps it on this PC, queuing here for RAM and the build lock;
+shot while short of RAM) hands it back and the next machine is tried. Fresh looks of different worktrees run side by side: each takes its worktree's own `look-<slug>` lock and one
+Workbench slot (the RAM-sized cap the rdb refresh uses), not the hub-wide `build` lock, which only a build and a
+look-server request take (2026-11-18: under the hub lock 51 of 90 looks queued, 44 beside a free slot). A held lock
+is a wait, not a refusal: the look prints `look: queued: ...` and re-checks every 20 s for up to
+`LF_LOOK_WAIT_S`, so a one-PC pool no longer ends in `no machine left to try` (#2808). `--local` keeps it on this PC, queuing here for RAM and the lock;
 `--machine <name>` sends it to one pool machine; `--force` runs here with no RAM check. A live
 `look serve` here is always used first. On 2026-11-14, with 0.1 GB free on this PC, `look bank`
 ran on lf-testbox in 297 s the first time (a new run folder: 67 s to sync) and on lf-cloud in 93 s.
@@ -131,6 +132,36 @@ tools\cli look bank --edit               the World Editor view instead of play m
 tools\cli look bank --measure            also print Workbench's peak working set
 tools\cli look selftest                  the Node checks (also in tools\cli validate)
 ```
+
+**Contact sheet: does it touch what it stands on (`look contact`, #2955).** Measuring a gap is not
+looking at it. The audit's `cgap` says 1.9 cm; the sheet shows the red outline of the item's bottom
+face floating over the green outline of the board.
+
+```
+tools\cli look contact general-store-shop --stock general_store        a store's shelf stock, one row per slot
+tools\cli look contact place:<place>/<slot> --stock <store_key>         the same on the island (MainWorld)
+tools\cli look contact general-store-shop --stock general_store --items Apple@0,Juice@3   only those slots
+tools\cli look contact general-store-shop --stock general_store --worst --max 8   the largest |cgap| first
+tools\cli look contact bank --entities Till_Bank,Desk_Bank             named layer entities
+tools\cli look contact bank                                             the closest layer props (--close N)
+```
+
+Each item is one row of five tiles: four low side views (camera 2 cm over the measured bottom) and one top-down.
+Red is the measured bottom face (`LF_PlaceSnap.Measure`, the same numbers as the audit), green the support
+the nine traces found under it (yellow), and the tile label says `gap +1.9 cm [OFF]` past 1 cm.
+Framed on the measured contact, never the pivot. Shots 3 s per item once Workbench is up.
+
+Stock is found **in the session that takes the pictures**: the plugin asks the store component for the copy
+at the slot (`LF_StoreComponent.GetShelfItem`). The slot list comes from the audit's `shelf <store>/<file>@<slot>`
+rows (`--from <out.txt>`, default `tmp/place-audit/out.txt`, or name the slots with `--items <file>@<slot>`
+and no audit file at all). Their positions are never used: Workbench play spawns its own stock, so matching by the
+test server's positions missed the first item of every sheet. It goes through the look server like any look
+(`--serve`, `--fresh`).
+
+Keep the sheet for the PR: `tools\cli evidence <issue> after tmp\look\contact-<area>-<store>\contact.jpg --name contact-<area>`.
+**A PR that changes a `.layer` under `Worlds/` (store slots live in them; not the DebugWorld test annex) must
+embed a contact sheet** (`wt ship` checks that an embedded picture has "contact" in its path or alt text). Nothing moved
+(a rename, a removal)? Write a line `No contact sheet: <reason>`. Scripts, docs and prefabs alone are never asked.
 
 Read `contact.jpg` (sized for an agent to read in one image) and then the PNG of any tile that
 looks off. Each close-up label carries the entity's world bounds in metres and its scale factor
@@ -168,7 +199,7 @@ bank's wide shot). So the flags catch broken renders; the judgment is still the 
 ### `tools\cli look serve`: one Workbench for every look
 
 A fresh `look` starts a Workbench (about 28 s, 1.9 GB peak) and exits. With about ten agents on a
-15.6 GB PC those spikes queue behind each other on the build lock. `look serve` keeps one hidden
+15.6 GB PC those spikes queue behind each other for Workbench slots and RAM. `look serve` keeps one hidden
 Workbench up for the whole machine; while it is up, every `tools\cli look <area>` from any worktree
 sends its plan there instead and costs a few seconds.
 
@@ -322,7 +353,7 @@ nudges it, the lowest point on the ground; a drop is placed, not a physics fall)
 **inventory** freezes it in the air and puts the camera where its `PreviewRenderAttributes` say. Values
 are read from the prefab file; one it inherits and does not state is read as the engine default and
 said on the first line (`not stated in the prefab file`). `RestingAdditiveRotationLS` is not applied.
-It is the same hidden Workbench as `look <area>` (build lock, 2.2 GB, `--wait`, `--force`).
+It is the same hidden Workbench as `look <area>` (its worktree's look lock, 2.2 GB, `--wait`, `--force`).
 
 ### How it works
 

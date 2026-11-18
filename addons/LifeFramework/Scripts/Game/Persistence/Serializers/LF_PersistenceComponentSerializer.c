@@ -356,15 +356,21 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
+		LF_SaveTiming.BeginStore();
 		context.WriteValue("version", SECTIONED_FORMAT);
+		int start = LF_SaveTiming.Now();
 		WritePrefix(context);
+		LF_SaveTiming.Part("prefix", start);
 
 		foreach (string payload : order)
 		{
+			start = LF_SaveTiming.Now();
 			WritePersistencePayload(persistence, context, payload);
+			LF_SaveTiming.Part(payload, start);
 		}
 
 		LF_SaveSections.WriteAll(context);
+		LF_SaveTiming.EndStore();
 		return ESerializeResult.OK;
 	}
 
@@ -683,6 +689,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			// Every save point (autosave, manual, shutdown) refreshes living players first.
 			int captured = LF_StorageSnapshot.CaptureAllPlayers();
 			int placed = LF_PersistentStorageComponent.CaptureAllPlaced();
+			LF_LockerStorageManagerComponent.CaptureAllOpen();
 			LF_VehicleOwnership.CaptureAllCargo();
 			array<ref LF_StorageSnapshotRecord> carriedRecords = LF_StorageSnapshot.ExportAll();
 			if (!carriedRecords)

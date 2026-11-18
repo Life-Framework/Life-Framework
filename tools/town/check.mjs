@@ -11,6 +11,9 @@
 //   - with --complete (and in `town ready`): every mapped slot is fitted. Place COMPLETENESS is never part of `validate`;
 //   - every layer registers the LF_Places kinds its slot promises (`LF_PlaceComponent` m_sKind, id `<place>.<slot>`); a promised
 //     kind that no system lists in `m_aPlaces` of LF_SystemCatalog.conf is a WARN (the layer is right, nothing reads the kind yet);
+//   - a fitted slot whose kind needs a working component (BACKED_KINDS: JailCell, the shop counters) carries it, inline or in a prefab it
+//     places, or in the layer of a companion slot that rides in its building (`with: <slot id>`, #3099): an ERROR with --complete, a WARN
+//     otherwise (#2937); skipped with a note under --no-perf, which has no prefab reader;
 //   - every entity of a layer stands inside its claimed building's footprint (or plot) plus the slot's margin;
 //   - no two claims name one building or plot (a street slot marked `shared` may stand on a building another slot holds);
 //   - a claim whose `destruction.mode` is "needs-hook" is a WARN until the core's indestructible hook lands (D15);
@@ -43,7 +46,14 @@ export const SLOT_MARGIN = { taxi: 8, board: 10 }; // a template slot's own `mar
 export const SLOT_SIZE = { arrival: "large", bank: "large", police: "large", board: "small", taxi: "small", parcel: "small", fence: "small" };
 // Per place: a slot set within this radius shares one view (docs/architecture/performance.md "Per place").
 export const PLACE_RADIUS = 60;
+// LF_Places kinds that only work with a real component on a placed entity, not the marker alone (#2937). The marker switches the
+// system on; the component is what it runs: the jail's cell, the shop a counter sells from. A kind absent here needs nothing but its
+// marker (a clerk or teller is a resident the pack's timetable spawns at the marker). Keep the value a class name.
+export const BACKED_KINDS = { JailCell: "LF_JailCellComponent", StoreCounter: "LF_ShopComponent", ClothingCounter: "LF_ShopComponent", GunCounter: "LF_ShopComponent" };
 export const PLACE_LIMITS = { lights: 24, shadow: 12, entities: 1500 };
+// The market, chess and range slots (#3078): the trader's stall runs LF_TraderManagerComponent, the chess table LF_ChessTableComponent,
+// and a range lane is SCR_FiringRangeTarget, an entity class (BaseBuilding), not a component: `layerBacking` reads those heads too.
+Object.assign(BACKED_KINDS, { MarketTrader: "LF_TraderManagerComponent", ChessTable: "LF_ChessTableComponent", RangeLane: "SCR_FiringRangeTarget" });
 
 export const layerNameOf = (place, slot) => `Place_${place}_${slot}.layer`;
 export const claimNameOf = (place, slot) => `${place}-${slot}.json`;
@@ -67,6 +77,27 @@ export function layerMarkers(text) {
     if (kind) out.push({ kind, id: id ?? "" });
   }
   return out;
+}
+
+// The component classes a layer (or prefab) text declares: every `Class "{GUID}" {` line inside a `components` block.
+const COMPONENT_RX = /^\s*([A-Za-z_]\w*)\s+"\{[0-9A-Fa-f]{16}\}"\s*\{/gm;
+// The prefabs an entity header places: `GenericEntity Name : "{GUID}path.et" {`. A path named only inside a property is not placed.
+const PLACED_RX = /^\s*(?:\$grp\s+)?\w*Entity\b[^\n:"]*:\s*"(\{[0-9A-Fa-f]{16}\}[^"]+)"/gm;
+
+// Pure but for `resolve` (`{GUID}path` -> { text } or null): the component classes a layer carries, inline or through the prefabs it
+// places and their parent prefabs. An unreadable prefab adds nothing. `seen` guards a reference loop.
+export function layerComponents(text, resolve, seen = new Set(), depth = 0) {
+  const found = new Set();
+  const body = String(text);
+  for (const m of body.matchAll(COMPONENT_RX)) found.add(m[1]);
+  if (depth >= 12) return found;
+  for (const m of body.matchAll(PLACED_RX)) {
+    if (seen.has(m[1])) continue;
+    seen.add(m[1]);
+    const got = resolve(m[1]);
+    if (got) for (const c of layerComponents(got.text, resolve, seen, depth + 1)) found.add(c);
+  }
+  return found;
 }
 
 // ------------------------------------------------------------------ geometry
@@ -202,6 +233,24 @@ export function checkClaimsAndFootprints(data, { complete = false } = {}) {
 
 // ------------------------------------------------------------------ the full place check
 
+// An entity header names its class and the prefab it inherits: `Class [Name] : "{GUID}path" {`, a placed entity in a layer or a prefab's root.
+const ENTITY_HEAD_RX = /^\s*(?:\$grp\s+)?([A-Za-z_]\w*)\s+(?:[^\s:"{]+\s+)?:\s*"(\{[0-9A-Fa-f]{16}\}[^"]+)"/gm;
+
+// Every class a layer carries that backs a kind: its components (`layerComponents`) and the class of each entity head, in the layer or in
+// a prefab it places, parents included (a range target is an entity class, so no component line names it). `resolve` as above.
+export function layerBacking(text, resolve, seen = new Set(), depth = 0) {
+  const found = layerComponents(text, resolve);
+  if (depth >= 12) return found;
+  for (const m of String(text).matchAll(ENTITY_HEAD_RX)) {
+    found.add(m[1]);
+    if (seen.has(m[2])) continue;
+    seen.add(m[2]);
+    const got = resolve(m[2]);
+    if (got) for (const c of layerBacking(got.text, resolve, seen, depth + 1)) found.add(c);
+  }
+  return found;
+}
+
 // Pure but for `resolve` (a `{GUID}path` -> { text } reader; null skips the perf count). opts: { resolve, complete }.
 export function checkPlace(data, opts = {}) {
   const { place, template } = data;
@@ -231,6 +280,24 @@ export function checkPlace(data, opts = {}) {
       for (const m of markers) if (promised.includes(m.kind) && m.id !== `${place}.${row.slot}`) errors.push(`slot ${row.slot}: ${m.kind} marker has id '${m.id}', expected '${place}.${row.slot}'`);
     }
     if (known) for (const kind of promised) if (!known.has(kind)) warnings.push(`slot ${row.slot}: kind ${kind} is in no system's m_aPlaces (LF_SystemCatalog.conf); the layer is right but nothing looks for it yet`);
+  }
+
+  // A kind whose system runs a real component, not the marker (#2937): a fitted slot that registers it has the component in its layer,
+  // inline or in a prefab it places. A marker alone switches the system on and leaves it nothing to run (an arrest with no cell, a
+  // shop with no counter). An error with --complete; otherwise a warning, so a maintainer's own edit is never blocked mid-draft.
+  const wanted = base.slots.filter((r) => r.layer !== null).flatMap((r) => (slotsById.get(r.slot)?.places ?? []).filter((k) => BACKED_KINDS[k]).map((k) => ({ row: r, kind: k, comp: BACKED_KINDS[k] })));
+  if (wanted.length && !opts.resolve) {
+    notes.push(`working components not checked (no prefab resolver): ${[...new Set(wanted.map((w) => `${w.kind} needs ${w.comp}`))].join(", ")}`);
+  } else if (wanted.length) {
+    for (const { row, kind, comp } of wanted) {
+      if (layerBacking(row.layer, opts.resolve).has(comp)) continue;
+      // A companion slot rides in this slot's building (`with: <slot id>` in the template: the jail cell beside the police desk, #2975):
+      // the component may sit in its layer, which stands in the same building.
+      if (base.slots.some((r) => r.layer !== null && slotsById.get(r.slot)?.with === row.slot && layerBacking(r.layer, opts.resolve).has(comp))) continue;
+      const msg = `slot ${row.slot}: kind ${kind} has a marker but no ${comp} on any entity of the layer, inline or in a placed prefab: the system switches on and has nothing to run (fit it with the ${row.slot} kit)`;
+      if (opts.complete) errors.push(msg);
+      else warnings.push(msg);
+    }
   }
 
   // The map POI-kind slot check (#2245): each slot's front kind has a POI row, or is `none`.
@@ -296,9 +363,11 @@ export function guardIslandLayers({ branch, files }) {
       continue;
     }
     // The branch joins place and slot with '-'; the layer joins them with '_' (slugs hold no '_'), so the layer is this branch's own
-    // when its two parts joined with '-' give the branch's suffix.
+    // when its two parts joined with '-' give the branch's suffix. A follow-up on a slot's open draft adds a '-<word>' tail
+    // (ws/town-draft-saint-philippe-cafe-shop builds on ws/town-draft-saint-philippe-cafe) and may change that one slot's layer.
     const parts = base.replace(/^Place_/, "").split("_");
-    if (parts.length !== 2 || parts.join("-") !== draft[1]) errors.push(`${f}: branch ${name} may change only its own Place_<place>_<slot>.layer, not ${base}.layer`);
+    const own = parts.length === 2 && (parts.join("-") === draft[1] || draft[1].startsWith(`${parts.join("-")}-`));
+    if (!own) errors.push(`${f}: branch ${name} may change only its own Place_<place>_<slot>.layer, not ${base}.layer`);
   }
   return { errors, touched };
 }
