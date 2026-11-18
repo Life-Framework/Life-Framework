@@ -1,0 +1,58 @@
+// Grid cell c16r6 for sign-overhaul: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_sign_overhaul_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 215 0 95
+}
+SCR_DestructibleEntity Grid_sign_overhaul_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 220 0 95
+}
+SCR_DestructibleEntity Grid_sign_overhaul_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 225 0 95
+ angleY 270
+}
+SCR_DestructibleEntity Grid_sign_overhaul_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 225 0 100
+ angleY 270
+}
+SCR_DestructibleEntity Grid_sign_overhaul_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 225 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_sign_overhaul_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 220 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_sign_overhaul_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 215 0 105
+ angleY 90
+}
+GenericEntity Grid_sign_overhaul_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:sign-overhaul"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 214.2 0.505 95.6
+ angleY -90
+}
+GenericEntity Grid_sign_overhaul_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "sign-overhaul"
+  }
+ }
+ coords 214.3 0 97.5
+ angleY 90
+}
+GenericEntity Grid_sign_overhaul_R0 : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "chalk_sample"
+  }
+ }
+ coords 222.615 0.001 99.999
+ angleY -90
+}

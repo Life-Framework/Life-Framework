@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{D1564322B1F65004}Assets/Items/Store1989/CannedFish/Data/CannedFish_BCR.edds"
+ NMOMap "{21C5C0BD6F67ED46}Assets/Items/Store1989/CannedFish/Data/CannedFish_NMO.edds"
+}
