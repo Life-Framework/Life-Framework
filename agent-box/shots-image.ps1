@@ -4,6 +4,8 @@
 #   norm   { in, out, width }                 png (or bmp) -> png scaled to `width`; prints "stats <mean> <sd> <skyFrac>"
 #   sheet  { tiles:[{file,label,marks:[{name,x,y}]}], out, cols, maxWidth, quality }   contact sheet jpeg (png when `out` ends in .png)
 #   crop   { in, out, x, y, w, h, maxSide }   native-resolution crop, scaled down only if over maxSide
+#   label  { in, out, quality, polys:[{kind,pts:[[x,y]..]}], marks:[{kind,text,px,py,lx,ly,w,h}], bar:{x,y,len,text}, north:{x,y} }
+#          outlines, id labels, a scale bar and a north arrow over a picture at its own size (tools/scout/label.mjs)
 Add-Type -AssemblyName System.Drawing
 $spec = Get-Content -Raw -LiteralPath $args[0] | ConvertFrom-Json
 
@@ -59,6 +61,57 @@ if ($spec.op -eq 'crop') {
   $c[0].Save($spec.out, [System.Drawing.Imaging.ImageFormat]::Png)
   $c[1].Dispose(); $c[0].Dispose()
   Write-Output "ok ${ow}x${oh}"
+  exit 0
+}
+
+if ($spec.op -eq 'label') {
+  # Footprint outlines, id labels, a scale bar and a north arrow over a picture, at its native size (tools/scout/label.mjs).
+  $src = [System.Drawing.Image]::FromFile($spec.in)
+  $c = New-Canvas $src.Width $src.Height
+  $g = $c[1]
+  $g.DrawImage($src, 0, 0, $src.Width, $src.Height)
+  $src.Dispose()
+  $font = New-Object System.Drawing.Font('Consolas', 10, [System.Drawing.FontStyle]::Bold)
+  $box = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(215, 0, 0, 0))
+  $yellow = [System.Drawing.Color]::FromArgb(255, 255, 215, 0)
+  $cyan = [System.Drawing.Color]::FromArgb(255, 90, 220, 255)
+  foreach ($p in @($spec.polys)) {
+    if ($null -eq $p) { continue }
+    $col = $yellow; if ($p.kind -eq 'alt') { $col = $cyan }
+    $pen = New-Object System.Drawing.Pen($col, 2)
+    $pts = @(); foreach ($q in @($p.pts)) { $pts += New-Object System.Drawing.PointF([single]$q[0], [single]$q[1]) }
+    if ($pts.Count -ge 3) { $g.DrawPolygon($pen, [System.Drawing.PointF[]]$pts) }
+    $pen.Dispose()
+  }
+  foreach ($m in @($spec.marks)) {
+    if ($null -eq $m) { continue }
+    $col = $yellow; if ($m.kind -eq 'alt') { $col = $cyan }
+    $pen = New-Object System.Drawing.Pen($col, 1)
+    $lcx = [double]$m.lx; if ([double]$m.px -gt [double]$m.lx) { $lcx = [double]$m.lx + [double]$m.w }
+    $g.DrawLine($pen, [single]$m.px, [single]$m.py, [single]$lcx, [single]([double]$m.ly + [double]$m.h / 2))
+    $g.FillEllipse((New-Object System.Drawing.SolidBrush($col)), [single]([double]$m.px - 3), [single]([double]$m.py - 3), 6, 6)
+    $g.FillRectangle($box, [single]$m.lx, [single]$m.ly, [single]$m.w, [single]$m.h)
+    $g.DrawRectangle($pen, [single]$m.lx, [single]$m.ly, [single]$m.w, [single]$m.h)
+    $g.DrawString([string]$m.text, $font, (New-Object System.Drawing.SolidBrush($col)), [single]([double]$m.lx + 3), [single]([double]$m.ly + 1))
+    $pen.Dispose()
+  }
+  $white = New-Object System.Drawing.Pen([System.Drawing.Color]::White, 3)
+  $blk = New-Object System.Drawing.Pen([System.Drawing.Color]::Black, 5)
+  if ($spec.bar) {
+    $b = $spec.bar
+    foreach ($pn in @($blk, $white)) { $g.DrawLine($pn, [single]$b.x, [single]$b.y, [single]([double]$b.x + [double]$b.len), [single]$b.y) }
+    $g.DrawString([string]$b.text, $font, [System.Drawing.Brushes]::Black, [single]([double]$b.x + 1), [single]([double]$b.y - 19))
+    $g.DrawString([string]$b.text, $font, [System.Drawing.Brushes]::White, [single]([double]$b.x), [single]([double]$b.y - 20))
+  }
+  if ($spec.north) {
+    $n = $spec.north
+    foreach ($pn in @($blk, $white)) { $g.DrawLine($pn, [single]$n.x, [single]([double]$n.y + 26), [single]$n.x, [single]([double]$n.y - 6)) }
+    $g.DrawString('N', $font, [System.Drawing.Brushes]::Black, [single]([double]$n.x - 5), [single]([double]$n.y - 24))
+    $g.DrawString('N', $font, [System.Drawing.Brushes]::White, [single]([double]$n.x - 6), [single]([double]$n.y - 25))
+  }
+  if ($spec.out -match '\.png$') { $c[0].Save($spec.out, [System.Drawing.Imaging.ImageFormat]::Png) } else { Save-Jpeg $c[0] $spec.out ([int]$spec.quality) }
+  $g.Dispose(); $c[0].Dispose()
+  Write-Output "ok label"
   exit 0
 }
 
