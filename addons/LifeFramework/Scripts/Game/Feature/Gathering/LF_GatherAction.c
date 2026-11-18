@@ -81,7 +81,16 @@ class LF_GatherAction : ScriptedUserAction
 		{
 			inventoryManager.RpcAsk_PlaySound(LF_NetworkUtils.GetRplId(pUserEntity), "SOUND_PICK_UP");
 			LF_Debug.Log("Gathering", string.Format("gathered %1 x%2", m_GatherItemPrefab, added));
-			LF_EventBus.Publish(LF_OnGathered.Create(LF_Utils.GetPlayerUID(pUserEntity), m_sNodeId, LF_GatherTools.JobFamily(m_Node), m_GatherItemPrefab, added, ToolSpeedFor(pUserEntity)));
+			// The level source awards XP from this event; the toast reports what it actually paid.
+			string uid = LF_Utils.GetPlayerUID(pUserEntity);
+			string family = LF_GatherTools.JobFamily(m_Node);
+			string xpJob = FamilyJob(family);
+			int xpBefore = LF_JobLevels.XpOf(uid, xpJob);
+			LF_EventBus.Publish(LF_OnGathered.Create(uid, m_sNodeId, family, m_GatherItemPrefab, added, ToolSpeedFor(pUserEntity)));
+			int xpPaid = 0;
+			if (!xpJob.IsEmpty())
+				xpPaid = LF_JobLevels.XpOf(uid, xpJob) - xpBefore;
+			NotifyGathered(pUserEntity, m_GatherItemPrefab, added, xpPaid);
 
 			// Notify job manager for reward
 			LF_JobManager jobManager = LF_JobManager.GetInstance();
@@ -327,6 +336,144 @@ class LF_GatherAction : ScriptedUserAction
 
 		LF_Debug.Warn("Gathering", string.Format("rejected gather: %1 is empty, next in %2 min", owner.GetName(), minutes));
 		LF_Utils.NotifyEntity(user, "#LF-Gather_EmptyWait", "", 4.0, minutes.ToString());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The job a gather family pays XP into, or "" when the family pays none (digging, foraging).
+	static string FamilyJob(string family)
+	{
+		string action = LF_JobLevelSources.ActionForFamily(family);
+		if (action.IsEmpty())
+			return "";
+
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (!config)
+			return "";
+
+		LF_JobXpAwardDef award = config.FindAward(action);
+		if (!award)
+			return "";
+
+		return award.m_sJob;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return What a trader pays now for one unit of `good`, from the market config; 0 when the market
+	//! does not list it. A live curve price wins over the base.
+	protected static int MarketPrice(ResourceName good)
+	{
+		LF_MarketConfig config = LF_MarketConfig.Get();
+		if (!config)
+			return 0;
+
+		LF_MarketGoodDef def = config.FindGood(good);
+		if (!def)
+			return 0;
+
+		int live = LF_MarketBook.CurrentPrice(good);
+		if (live > 0)
+			return live;
+
+		return def.m_iBase;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return What a trader pays for one `item`: its own market row, else the row of the first
+	//! product a processing machine makes from it (the bar for an ore). 0 when no trader buys it.
+	//! \param[out] soldAs The item the price is for; empty when the price is 0.
+	static int TraderPrice(ResourceName item, out ResourceName soldAs)
+	{
+		soldAs = ResourceName.Empty;
+		int price = MarketPrice(item);
+		if (price > 0)
+		{
+			soldAs = item;
+			return price;
+		}
+
+		LF_ResourceChainConfig chains = LF_ResourceChainCatalog.GetConfig();
+		if (!chains || !chains.m_aMachines)
+			return 0;
+
+		foreach (LF_ResourceMachineDef machine : chains.m_aMachines)
+		{
+			if (!machine || !machine.m_aInputs || !machine.m_aOutputs)
+				continue;
+
+			bool takesItem = false;
+			foreach (LF_ProcessingInput input : machine.m_aInputs)
+			{
+				if (input && LF_Utils.SamePrefab(input.m_InputPrefab, item))
+					takesItem = true;
+			}
+
+			if (!takesItem)
+				continue;
+
+			foreach (LF_ProcessingOutput output : machine.m_aOutputs)
+			{
+				if (!output)
+					continue;
+
+				price = MarketPrice(output.m_OutputPrefab);
+				if (price > 0)
+				{
+					soldAs = output.m_OutputPrefab;
+					return price;
+				}
+			}
+		}
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The item's display name in the running language.
+	static string ItemName(ResourceName prefab)
+	{
+		string name = "#LF-Gather_Unknown";
+		UIInfo uiInfo = LF_UIInfoUtils.GetInfo(prefab);
+		if (uiInfo && !uiInfo.GetName().IsEmpty())
+			name = uiInfo.GetName();
+
+		return LF_Terms.Text(name);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The toast sentence for a gather: what came in, the XP when some was paid, and what a trader
+	//! pays when one buys it (left out when `price` is 0).
+	static string ToastText(string itemName, int amount, int xp, int price, string soldAsName)
+	{
+		string text;
+		if (xp > 0)
+			text = LF_Terms.Text("#LF-Gather_ToastXp", itemName, amount.ToString(), xp.ToString());
+		else
+			text = LF_Terms.Text("#LF-Gather_Toast", itemName, amount.ToString());
+
+		return text + PriceSentence(price, soldAsName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! " The trader pays $50 for Iron bar." or "" when `price` is 0.
+	static string PriceSentence(int price, string soldAsName)
+	{
+		if (price <= 0)
+			return "";
+
+		return " " + LF_Terms.Text("#LF-Gather_ToastPrice", price.ToString(), soldAsName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: one toast to the player for a finished gather.
+	protected static void NotifyGathered(IEntity user, ResourceName item, int amount, int xp)
+	{
+		ResourceName soldAs;
+		int price = TraderPrice(item, soldAs);
+		string soldAsName = "";
+		if (price > 0)
+			soldAsName = ItemName(soldAs);
+
+		LF_Utils.NotifyEntity(user, ToastText(ItemName(item), amount, xp, price, soldAsName), "", 4.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
