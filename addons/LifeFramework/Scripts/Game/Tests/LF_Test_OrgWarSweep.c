@@ -59,6 +59,7 @@ class LF_Test_OrgWarSweep : LF_Test
 		rules.m_iAnswerSeconds = 600;
 		rules.m_iLengthSeconds = 3600;
 		rules.m_iCooldownSeconds = 7200;
+		rules.m_iLapseCooldownSeconds = 0; // the sweep test re-declares right after a lapse; the lapse cooldown has its own test (#2769)
 		rules.m_iMinMembers = 1;
 
 		int t0 = 1800000000;
