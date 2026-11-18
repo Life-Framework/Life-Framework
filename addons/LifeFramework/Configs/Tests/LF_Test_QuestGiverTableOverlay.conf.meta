@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{8D14F6A2C95B3E70}Configs/Tests/LF_Test_QuestGiverTableOverlay.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
