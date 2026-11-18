@@ -84,6 +84,21 @@
         "lead-approved: the clothes shop-house on the square (4441, 10789)"
       ]
     },
+    "residents": {
+      "building": "b15",
+      "alternatives": [
+        {
+          "building": "b44"
+        },
+        {
+          "building": "b111"
+        }
+      ],
+      "why": [
+        "House_Town_E_2I03 (townhouse), 255.8 m2, 3 floors, front door known, interior yes",
+        "the residents' shared home (#3001): the unmapped town house beside the town hall (4444, 10671), 77 m from the bank, 31 m from the pub, 104 m from the general store, so every walk the timetable asks for is under the 120 m walking cap"
+      ]
+    },
     "gun-counter": {
       "building": "b48",
       "why": [
