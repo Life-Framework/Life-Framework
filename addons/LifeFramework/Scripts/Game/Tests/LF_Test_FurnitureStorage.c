@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_FurnitureStorage,LF_Test_FurnitureStoragePersist,LF_Test_EveronFurnitureStorageStock` (RED PROOF OK, all three fail with the hook on): LF_Test_FurnitureStorage: RED-OK (RedProof() skips the placement record, so the storage key is never attached and "is recorded as a permanent placement" fails for every furniture). Green otherwise.
+// red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_FurnitureStorage` (batched run, RED PROOF OK): RED-OK (RedProof() skips the placement record, so the storage key is never attached and "is recorded as a permanent placement" fails for every furniture). Green otherwise.
 //! housing/furniture-storage: the seven storage furniture items (wardrobe, dresser, cupboard, chest, crate,
 //! fridge, kitchen unit) place a prop with a real inventory. Each placed prefab carries the capacity component
 //! with its item-size limit, holds ten apples, registers under `furniture:<placement id>` once recorded, is

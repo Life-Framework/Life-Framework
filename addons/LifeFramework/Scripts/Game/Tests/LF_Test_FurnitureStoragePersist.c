@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_FurnitureStorage,LF_Test_FurnitureStoragePersist,LF_Test_EveronFurnitureStorageStock` (RED PROOF OK, all three fail with the hook on): LF_Test_FurnitureStoragePersist: RED-OK (RedProof() skips the load's storage restore, so "the load restores the three items once" fails). Green otherwise.
+// red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_FurnitureStoragePersist` (batched run, RED PROOF OK): RED-OK (RedProof() skips the load's storage restore, so "the load restores the three items once" fails). Green otherwise.
 //! housing/furniture-storage-save (PERSISTENCE): the contents of a placed wardrobe persist with the placement.
 //! Seeded with 151 cash, an apple and a water bottle, captured, then the wardrobe is deleted and the saved
 //! placement rows and storage snapshots are applied again (the load). The wardrobe stands again with the same
