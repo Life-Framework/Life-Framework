@@ -20,3 +20,13 @@
   past the need is refused whole and names the item and the overflow; a refused try changes nothing.
 - 🟡 Deposited items are counts, never entities; `Parse`, `Format` and `CountOf` read and write the string.
   Nothing calls the rules yet (later M8 slices). Proof: `property/build-stage-rules`.
+
+### Plot purchase — `Feature/Property/LF_PlotComponent.c` (2026-11-18, #2649, spec #756)
+- 🟡 A for-sale plot sign (`Prefabs/Props/Property/LF_PlotSign.et`, an `LF_PlotComponent` naming a
+  `LF_Property.conf` plot key) shows "Buy plot ($price)". The request carries the used sign's plot key: the server sells
+  it only when a live sign with that key is within 5 m of the caller's character, so a nearer neighbouring sign
+  never sells instead (#2777 review). Rate-limited as a purchase; a dead or downed buyer is refused.
+- 🟡 Refused, nothing taken: no sign in reach, a plot with no price, an owned plot, short carried cash, a
+  cuffed buyer. Bought: exactly the price leaves the buyer's carried cash (ledger reason `property_buy`),
+  the buyer's character key becomes the owner in `LF_Properties` with the purchase time, and a toast says
+  so. The row rides the existing `properties` payload. Proof: `property/plot-buy`.

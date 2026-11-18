@@ -91,3 +91,4 @@ processing upgrade are kept at the desk.
   `Configs/Signs/LF_Signs.conf`. Nothing new persists: the register and the hideout lease already do.
 - **Proof:** `organizations/test-org-sign` (LOGIC), `organizations/test-org-sign-world` (WORLD),
   `node agent-box/session.mjs test-org-sign-proof`.
+- `LF_OrgWarKills` - war kills (#2670, W5). `LF_Murder` skips a kill between members of two organizations at war with `SKIP_ORG_WAR` (no murder, no wanted) unless `warKillsAreMurder` is on; the subscriber on `LF_OnPlayerKilled` files a `war_kill` incident when `tagWarKills` is on. Membership is by the account's active character. A war never lifts a safe zone.
