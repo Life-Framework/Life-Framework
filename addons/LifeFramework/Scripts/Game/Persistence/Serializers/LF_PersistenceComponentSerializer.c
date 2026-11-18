@@ -1810,6 +1810,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("planted crops failed to read, the plants stay as they were");
+			}
 		}
 		else if (payload == "lockers")
 		{
