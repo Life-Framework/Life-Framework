@@ -82,6 +82,28 @@ class LF_CharacterCreationRules
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server check of the slot a switch pick names (LF_CharacterSwitch): another existing character,
+	//! or a new resident while a slot is free. "" accepts.
+	static string RefuseSwitchSlot(LF_PlayerAccount account, int slot)
+	{
+		if (!account)
+			return "#EL-CC_Error_NoAccount";
+
+		if (slot == LF_CharacterSelectSheet.SLOT_NEW)
+		{
+			if (account.GetCharacterCount() >= LF_CharacterConfig.MaxPerAccount())
+				return "#LF-Char_Error_Full";
+
+			return "";
+		}
+
+		if (!account.GetCharacterAt(slot))
+			return "#LF-CharSel_Refused";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server check of anything that re-enters the arrival flow (the quiz's Continue, a form R-89
 	//! answer): only a player the server is still arriving may. Anyone else is already in the world
 	//! (alive, dead, downed, cuffed, jailed) and must not reach the pick or a fresh spawn (#2413).
@@ -131,6 +153,9 @@ class LF_CharacterCreationManager : Managed
 	protected ref set<int> m_PickOffered = new set<int>();
 	//! Players who chose "register a new resident" on the pick: their form R-89 may add a character.
 	protected ref set<int> m_RegisterOffered = new set<int>();
+	//! Players the server sent the switch sheet while they play (LF_CharacterSwitch, from the clerk).
+	//! Their pick is a switch: checked again, then the body is stored and removed before the spawn.
+	protected ref set<int> m_SwitchOffered = new set<int>();
 	//! Players whose arrival flow is open (#2413): filled on connect, cleared when they spawn. The
 	//! quiz's Continue and the registration form re-enter the flow only for these players, so a dead,
 	//! downed, cuffed or jailed player cannot restart it and pick another character.
@@ -176,6 +201,7 @@ class LF_CharacterCreationManager : Managed
 
 		s_Instance.m_PickOffered.RemoveItem(playerId);
 		s_Instance.m_RegisterOffered.RemoveItem(playerId);
+		s_Instance.m_SwitchOffered.RemoveItem(playerId);
 		s_Instance.m_IdentityWaiting.RemoveItem(playerId);
 		s_Instance.m_IdentityNoticeSent.RemoveItem(playerId);
 		s_Instance.m_FlowOpen.RemoveItem(playerId);
@@ -215,7 +241,136 @@ class LF_CharacterCreationManager : Managed
 	//! \return true when an offer or wait is still recorded for this player id.
 	bool HasPlayerState(int playerId)
 	{
-		return m_PickOffered.Contains(playerId) || m_RegisterOffered.Contains(playerId) || m_IdentityWaiting.Contains(playerId) || m_IdentityNoticeSent.Contains(playerId) || m_FlowOpen.Contains(playerId);
+		return m_PickOffered.Contains(playerId) || m_RegisterOffered.Contains(playerId) || m_SwitchOffered.Contains(playerId) || m_IdentityWaiting.Contains(playerId) || m_IdentityNoticeSent.Contains(playerId) || m_FlowOpen.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True while this player has the switch sheet open.
+	bool HasSwitchOffer(int playerId)
+	{
+		return m_SwitchOffered.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, from the player's ask after the clerk said yes: opens the switch sheet. Needs the
+	//! clerk's fresh grant (LF_CharacterSwitch.ConsumeGrant), so a client cannot open it from anywhere,
+	//! and every refusal is checked again here.
+	//! \return True when the sheet was sent.
+	bool OfferSwitch(int playerId)
+	{
+		if (!Replication.IsServer())
+			return false;
+
+		if (!LF_CharacterSwitch.ConsumeGrant(playerId, LF_CharacterSwitch.Now()))
+		{
+			LF_Debug.Warn(LF_CharacterSwitch.FEATURE, string.Format("switch sheet refused for player %1: the clerk granted no switch just now", playerId));
+			return false;
+		}
+
+		string refusal = LF_CharacterSwitch.RefuseNow(playerId);
+		if (!refusal.IsEmpty())
+		{
+			LF_CharacterSwitch.TellRefused(playerId, refusal, "the sheet");
+			return false;
+		}
+
+		SCR_PlayerController controller = FindController(playerId);
+		LF_PlayerAccount account = FindAccount(LF_Utils.GetAccountUID(playerId));
+		if (!controller || !account || !account.GetActiveCharacter())
+			return false;
+
+		int currentSlot = account.GetCharacters().Find(account.GetActiveCharacter());
+		bool canRegister = account.GetCharacterCount() < LF_CharacterConfig.MaxPerAccount();
+		if (!m_SwitchOffered.Contains(playerId))
+			m_SwitchOffered.Insert(playerId);
+
+		LF_Debug.Info(LF_CharacterSwitch.FEATURE, string.Format("switch sheet sent to player %1: %2 character(s), playing slot %3, new slot %4", playerId, account.GetCharacterCount(), currentSlot + 1, canRegister));
+		controller.LF_ShowCharacterSwitch(CharacterNames(account), canRegister, currentSlot);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the player put the switch sheet away; they stay who they are.
+	void CancelSwitch(int playerId)
+	{
+		if (!m_SwitchOffered.Contains(playerId))
+			return;
+
+		m_SwitchOffered.RemoveItem(playerId);
+		LF_Debug.Info(LF_CharacterSwitch.FEATURE, string.Format("player %1 stays as %2", playerId, LF_Utils.GetPlayerUID(playerId)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a pick from the switch sheet. Staying is a cancel; anything else is checked again, the
+	//! current character stored and its body removed, then the arrival flow spawns the pick (or opens
+	//! form R-89 for a new resident).
+	protected void ServerSwitchPick(notnull SCR_PlayerController controller, int playerId, int slot)
+	{
+		m_SwitchOffered.RemoveItem(playerId);
+		LF_PlayerAccount account = FindAccount(LF_Utils.GetAccountUID(playerId));
+		if (!account || !account.GetActiveCharacter())
+		{
+			LF_Debug.Warn(LF_CharacterSwitch.FEATURE, string.Format("switch pick of player %1 dropped: no account or character", playerId));
+			return;
+		}
+
+		int currentSlot = account.GetCharacters().Find(account.GetActiveCharacter());
+		if (slot == currentSlot)
+		{
+			CancelSwitch(playerId);
+			LF_Debug.Info(LF_CharacterSwitch.FEATURE, string.Format("player %1 picked the character they play: nothing changes", playerId));
+			return;
+		}
+
+		string refusal = LF_CharacterSwitch.RefuseNow(playerId);
+		if (refusal.IsEmpty())
+			refusal = LF_CharacterCreationRules.RefuseSwitchSlot(account, slot);
+
+		if (!refusal.IsEmpty())
+		{
+			LF_CharacterSwitch.TellRefused(playerId, refusal, "the pick");
+			return;
+		}
+
+		string fromKey = account.GetActiveCharacterKey();
+		if (!LF_CharacterSwitch.StoreAndRemoveBody(playerId))
+		{
+			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-CharSwitch_Title", "#LF-CharSel_Refused", 5.0, LF_ENotificationType.WARNING);
+			return;
+		}
+
+		// From here the player is arriving again: the flow, the form and the spawn treat them so.
+		OpenFlow(playerId);
+		if (slot == LF_CharacterSelectSheet.SLOT_NEW)
+		{
+			m_RegisterOffered.Insert(playerId);
+			LF_Debug.Info(LF_CharacterSwitch.FEATURE, string.Format("player %1 left %2 to register another character (%3 of %4)", playerId, fromKey, account.GetCharacterCount() + 1, LF_CharacterConfig.MaxPerAccount()));
+			ShowRegistrationForm(controller, "");
+			return;
+		}
+
+		account.SetActiveCharacter(account.GetCharacterAt(slot));
+		LF_AccountReplication.Publish(account);
+		LF_Debug.Info(LF_CharacterSwitch.FEATURE, string.Format("player %1 switched from %2 to slot %3 (key %4)", playerId, fromKey, slot + 1, account.GetActiveCharacterKey()));
+		SpawnPlayer(playerId, controller);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The account's character names in slot order, one per line, as the sheet reads them.
+	protected static string CharacterNames(notnull LF_PlayerAccount account)
+	{
+		string names;
+		for (int slot = 0; slot < account.GetCharacterCount(); slot++)
+		{
+			LF_PlayerCharacter character = account.GetCharacterAt(slot);
+			if (slot > 0)
+				names += LF_CharacterSelectSheet.NAME_SEPARATOR;
+
+			if (character)
+				names += character.GetFullName();
+		}
+
+		return names;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -423,17 +578,7 @@ class LF_CharacterCreationManager : Managed
 			return;
 		}
 
-		string names;
-		for (int slot = 0; slot < account.GetCharacterCount(); slot++)
-		{
-			LF_PlayerCharacter character = account.GetCharacterAt(slot);
-			if (slot > 0)
-				names += LF_CharacterSelectSheet.NAME_SEPARATOR;
-
-			if (character)
-				names += character.GetFullName();
-		}
-
+		string names = CharacterNames(account);
 		bool canRegister = account.GetCharacterCount() < LF_CharacterConfig.MaxPerAccount();
 		m_PickOffered.Insert(controller.GetPlayerId());
 		LF_Debug.Info("CharacterCreation", string.Format("character pick sent to player %1: %2 character(s), new slot %3", controller.GetPlayerId(), account.GetCharacterCount(), canRegister));
@@ -451,6 +596,13 @@ class LF_CharacterCreationManager : Managed
 
 		if (GateQuiz(playerId, LF_Utils.GetAccountUID(playerId)))
 			return;
+
+		// A pick from the switch sheet (the player is still in their body) is a switch.
+		if (m_SwitchOffered.Contains(playerId))
+		{
+			ServerSwitchPick(controller, playerId, slot);
+			return;
+		}
 
 		bool offered = m_PickOffered.Contains(playerId);
 		LF_PlayerAccount account = FindAccount(LF_Utils.GetAccountUID(playerId));

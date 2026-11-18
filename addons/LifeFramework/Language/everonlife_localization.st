@@ -2500,6 +2500,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Civil Registry, Residents on File"
      Comment "Character pick title on arrival, shown when an account may hold more than one character. A 1989 registry sheet."
     }
+    CustomStringTableItem "{EC96C639C81618E1}" {
+     Id "LF-CharSwitch_ClerkNo"
+     Target_en_us "I cannot change your papers right now."
+     Comment "Town clerk answer when a character switch is refused; a toast says why."
+    }
+    CustomStringTableItem "{D428313AD233AA61}" {
+     Id "LF-CharSwitch_ClerkYes"
+     Target_en_us "Of course. Which of your files shall I pull?"
+     Comment "Town clerk answer when a character switch is allowed; the switch sheet opens after the talk."
+    }
+    CustomStringTableItem "{9A4F3971C8398625}" {
+     Id "LF-CharSwitch_Combat"
+     Target_en_us "Not in the middle of a fight. Wait a couple of minutes."
+     Comment "Toast: character switch refused shortly after hitting or being hit by another player."
+    }
+    CustomStringTableItem "{2A1C08B1ACC157AC}" {
+     Id "LF-CharSwitch_Contraband"
+     Target_en_us "Not with contraband on you or a run under way."
+     Comment "Toast: character switch refused while carrying contraband or hauling a convoy run."
+    }
+    CustomStringTableItem "{2899AD20654A0D26}" {
+     Id "LF-CharSwitch_Cuffed"
+     Target_en_us "Not while you are cuffed or in custody."
+     Comment "Toast: character switch refused while cuffed, held or escorted."
+    }
+    CustomStringTableItem "{B6110ED9E8A0575C}" {
+     Id "LF-CharSwitch_Downed"
+     Target_en_us "Not while you are down."
+     Comment "Toast: character switch refused while downed."
+    }
+    CustomStringTableItem "{945D348B9613DEA5}" {
+     Id "LF-CharSwitch_Intro"
+     Target_en_us "Choose which of your residents goes on from here. The one you put away keeps their place, papers and pockets until you come back to them."
+     Comment "Character switch sheet instruction line. One button per other character follows."
+    }
+    CustomStringTableItem "{C61776D5D8142E8B}" {
+     Id "LF-CharSwitch_Jailed"
+     Target_en_us "Not while you are serving a sentence."
+     Comment "Toast: character switch refused while jailed."
+    }
+    CustomStringTableItem "{7C49AC7D4A60754B}" {
+     Id "LF-CharSwitch_JobRun"
+     Target_en_us "Finish or cancel your job run first."
+     Comment "Toast: character switch refused during an open delivery job run."
+    }
+    CustomStringTableItem "{083048FE55B906B8}" {
+     Id "LF-CharSwitch_Off"
+     Target_en_us "Only one file per person is kept here."
+     Comment "Toast: the server allows one character per account, so there is nothing to switch to."
+    }
+    CustomStringTableItem "{46083630BC792DED}" {
+     Id "LF-CharSwitch_OnDuty"
+     Target_en_us "Clock off duty first."
+     Comment "Toast: character switch refused while on police or medic duty."
+    }
+    CustomStringTableItem "{A4AD76E302FDB567}" {
+     Id "LF-CharSwitch_Playing"
+     Target_en_us "On file now"
+     Comment "Character switch sheet: status beside the character being played."
+    }
+    CustomStringTableItem "{C5632848E7273BA4}" {
+     Id "LF-CharSwitch_Racing"
+     Target_en_us "Not while you are entered in a race."
+     Comment "Toast: character switch refused while in a race."
+    }
+    CustomStringTableItem "{C5993D99EE2058E4}" {
+     Id "LF-CharSwitch_Stay"
+     Target_en_us "Stay as you are"
+     Comment "Character switch sheet: closes the sheet and keeps the current character."
+    }
+    CustomStringTableItem "{1566950A275C9033}" {
+     Id "LF-CharSwitch_Title"
+     Target_en_us "Civil Registry, Change of File"
+     Comment "Title of the character switch sheet and of its refusal toasts (#331). A 1989 registry office."
+    }
+    CustomStringTableItem "{C333F7EA551D3122}" {
+     Id "LF-CharSwitch_Vehicle"
+     Target_en_us "Step out of the vehicle first."
+     Comment "Toast: character switch refused while in a vehicle."
+    }
+    CustomStringTableItem "{1E2628AE7332248D}" {
+     Id "LF-CharSwitch_Wanted"
+     Target_en_us "Not while you are wanted. Settle your record first."
+     Comment "Toast: character switch refused while wanted."
+    }
     CustomStringTableItem "{D05A58380EB506C0}" {
      Id "LF-Char_Error_Full"
      Target_en_us "Every character slot on this account is taken."
@@ -3658,6 +3743,16 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{BCE0D0B87758A6FA}" {
      Id "LF-Dialogue_Clerk_SayNext"
      Target_en_us "What should I do now?"
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{9B92A4F13AC0D017}" {
+     Id "LF-Dialogue_Clerk_SayPapers"
+     Target_en_us "About my papers."
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{7F7E08FC92C27753}" {
+     Id "LF-Dialogue_Clerk_SaySwitch"
+     Target_en_us "I need another of my files. (Change character)"
      Comment "Dialogue reply the player can pick when talking to the clerk NPC."
     }
     CustomStringTableItem "{53AB451CE6742B73}" {

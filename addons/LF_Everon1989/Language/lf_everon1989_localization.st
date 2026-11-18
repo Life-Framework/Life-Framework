@@ -189,6 +189,11 @@ StringTable {
      Target_en_us "What should I do now?"
      Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
     }
+    CustomStringTableItem "{4F445F57EEA164E6}" {
+     Id "LF-Dialogue_ClerkEveron_SayPapers"
+     Target_en_us "About my papers."
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
     CustomStringTableItem "{2267C33EA00A76DD}" {
      Id "LF-Dialogue_ClerkEveron_SayReady"
      Target_en_us "I understand. What now?"
