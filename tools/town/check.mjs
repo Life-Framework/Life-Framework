@@ -50,6 +50,9 @@ export const PLACE_RADIUS = 60;
 // marker (a clerk or teller is a resident the pack's timetable spawns at the marker). Keep the value a class name.
 export const BACKED_KINDS = { JailCell: "LF_JailCellComponent", StoreCounter: "LF_ShopComponent", ClothingCounter: "LF_ShopComponent", GunCounter: "LF_ShopComponent" };
 export const PLACE_LIMITS = { lights: 24, shadow: 12, entities: 1500 };
+// The market, chess and range slots (#3078): the trader's stall runs LF_TraderManagerComponent, the chess table LF_ChessTableComponent,
+// and a range lane is SCR_FiringRangeTarget, an entity class (BaseBuilding), not a component: `layerBacking` reads those heads too.
+Object.assign(BACKED_KINDS, { MarketTrader: "LF_TraderManagerComponent", ChessTable: "LF_ChessTableComponent", RangeLane: "SCR_FiringRangeTarget" });
 
 export const layerNameOf = (place, slot) => `Place_${place}_${slot}.layer`;
 export const claimNameOf = (place, slot) => `${place}-${slot}.json`;
@@ -229,6 +232,24 @@ export function checkClaimsAndFootprints(data, { complete = false } = {}) {
 
 // ------------------------------------------------------------------ the full place check
 
+// An entity header names its class and the prefab it inherits: `Class [Name] : "{GUID}path" {`, a placed entity in a layer or a prefab's root.
+const ENTITY_HEAD_RX = /^\s*(?:\$grp\s+)?([A-Za-z_]\w*)\s+(?:[^\s:"{]+\s+)?:\s*"(\{[0-9A-Fa-f]{16}\}[^"]+)"/gm;
+
+// Every class a layer carries that backs a kind: its components (`layerComponents`) and the class of each entity head, in the layer or in
+// a prefab it places, parents included (a range target is an entity class, so no component line names it). `resolve` as above.
+export function layerBacking(text, resolve, seen = new Set(), depth = 0) {
+  const found = layerComponents(text, resolve);
+  if (depth >= 12) return found;
+  for (const m of String(text).matchAll(ENTITY_HEAD_RX)) {
+    found.add(m[1]);
+    if (seen.has(m[2])) continue;
+    seen.add(m[2]);
+    const got = resolve(m[2]);
+    if (got) for (const c of layerBacking(got.text, resolve, seen, depth + 1)) found.add(c);
+  }
+  return found;
+}
+
 // Pure but for `resolve` (a `{GUID}path` -> { text } reader; null skips the perf count). opts: { resolve, complete }.
 export function checkPlace(data, opts = {}) {
   const { place, template } = data;
@@ -268,7 +289,7 @@ export function checkPlace(data, opts = {}) {
     notes.push(`working components not checked (no prefab resolver): ${[...new Set(wanted.map((w) => `${w.kind} needs ${w.comp}`))].join(", ")}`);
   } else if (wanted.length) {
     for (const { row, kind, comp } of wanted) {
-      if (layerComponents(row.layer, opts.resolve).has(comp)) continue;
+      if (layerBacking(row.layer, opts.resolve).has(comp)) continue;
       const msg = `slot ${row.slot}: kind ${kind} has a marker but no ${comp} on any entity of the layer, inline or in a placed prefab: the system switches on and has nothing to run (fit it with the ${row.slot} kit)`;
       if (opts.complete) errors.push(msg);
       else warnings.push(msg);
