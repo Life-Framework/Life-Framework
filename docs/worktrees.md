@@ -176,6 +176,23 @@ through the pool at `--priority high`.
 toolscli main-guard start | stop | status | watch   # status is also a line in `toolscli lead`
 ```
 
+0. **Stage 0, validate (#2889).** On a new head (batched to one run per 3 min, retried at ~10 min after a no-verdict) the guard
+   runs `validate --all` (about 3 min, no Workbench) in the compile worktree before the compile; it never holds the
+   compile or stage 2 and never marks the head red on GitHub. A failure reruns just the failing checks at the same
+   head (`LF_VALIDATE_ONLY=<script,...>`, read by `validate`); green on the rerun is a flake
+   (`main-guard-flakes.log`). Red twice bisects the merges since the last green validate by the failing check set
+   (`validateGate`, same rules as the suite bisect: a merge that fails other checks, or no single merge, blames
+   nobody). The blamed PR gets a comment with the check and its output, the staff webhook a line, and a fix card is
+   opened. **Only a hard data-safety check reverts** (`HARD_CHECKS`: `validate-repo.ps1` (duplicate GUIDs, orphan metas,
+   generated files), `validate-persistence-version.ps1`, `validate-record-shapes.mjs`, `validate-record-var-names.mjs`)
+   and then through the usual revert PR. A head still red with the set already flagged is logged, not flagged again
+   (`validateRed` in the state file, shown in `main-guard status` and `lead`); a green head clears it.
+   **A red explained by an earlier guard revert is not reverted.** On 2026-11-18 the guard reverted #3008, then #3017,
+   the test fix that matched it, which failed once #3008 was gone (closed by hand as #3031). A culprit merged after a
+   PR the guard reverted, whose revert merge is on main, and that changes a file of that PR (append-only docs and
+   language files do not count) gets a comment and no revert, in stage 2 and stage 0 alike
+   (`explainedByEarlierRevert`; the test fix ships together with the re-land). Proven on a fixture repo by
+   `main-guard-validate-selftest.mjs`. A running worker needs a restart (`main-guard stop`, `start`) to load it.
 1. **Stage 1, compile first.** On a new `origin/main` head (batched to one run per 3 min) it runs the Workbench compile
    (`ci --wb-only --compile-only`, on a pool machine with the `workbench` cap) in `Life-Framework-ws-main-guard-compile`.
    Pass: the head is `compiled-ok`. Fail: no recheck (a compile error is deterministic); it bisects the first-parent

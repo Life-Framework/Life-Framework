@@ -719,6 +719,11 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   let scripts = readdirSync(dir).filter(
     (f) => /\.(ps1|cmd|bat|sh|mjs|js|cjs)$/.test(f) && !f.endsWith("README.md"),
   );
+  // LF_VALIDATE_ONLY=a.mjs,b.ps1: run just those checks (the main guard's bisect probes rerun only the failing ones, #2889).
+  if (area === "validate" && process.env.LF_VALIDATE_ONLY) {
+    const only = new Set(process.env.LF_VALIDATE_ONLY.split(",").map((x) => x.trim()).filter(Boolean));
+    scripts = scripts.filter((x) => only.has(x));
+  }
   // `validate --world`: only the checks that read .layer files (tools/lib/world-checks.mjs). On a maintainer
   // world branch (any validate, CI included) a failing LAYOUT check is a warning, not a blocker.
   if (area === "validate" && opts.world) scripts = worldChecks.worldScripts(scripts);
