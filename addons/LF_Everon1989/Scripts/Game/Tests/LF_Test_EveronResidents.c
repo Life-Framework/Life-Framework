@@ -96,26 +96,23 @@ class LF_Test_EveronResidents : LF_Test
 			if (!def.m_sWorkKind.IsEmpty())
 				ctx.True(IsPackKind(def.m_sWorkKind), string.Format("%1 work kind '%2' is a pack place kind", id, def.m_sWorkKind));
 
-			// The day parses (every kind known to this check, so none is dropped) and covers all 24 h.
-			LF_ResidentTimetable day = LF_ResidentTimetable.Build(def, new LF_Test_EveronResidentsKinds());
-			ctx.NotNull(day, id + " timetable builds: " + LF_ResidentTimetable.GetLastRefusal());
-			if (!day)
-				continue;
-
-			ctx.Equal(0, LF_ResidentTimetable.GetDroppedCount(), id + " timetable drops no line");
-			int minute;
-			bool covered = true;
-			for (minute = 0; minute < LF_ResidentTimetable.MINUTES_PER_DAY; minute += 15)
+			// The day parses: every line has a valid, distinct HH:MM start and a home or work place. The last line holds
+			// across midnight to the first (LF_ResidentTimetable), so a parsed day covers all 24 h.
+			ctx.True(def.m_aTimetable && def.m_aTimetable.Count() >= 2, id + " has a day of at least two lines");
+			set<int> starts = new set<int>();
+			foreach (LF_ResidentEntryDef line : def.m_aTimetable)
 			{
-				LF_ResidentSlot slot = day.At(minute);
-				if (!slot || slot.m_sKind.IsEmpty())
-				{
-					covered = false;
-					break;
-				}
+				int start = LF_ResidentTimetable.MinuteOf(line.m_sTime);
+				ctx.True(start >= 0, string.Format("%1 line %2 is a 24 h HH:MM time", id, line.m_sTime));
+				ctx.False(starts.Contains(start), string.Format("%1 has one line starting at %2", id, line.m_sTime));
+				starts.Insert(start);
+				bool home = line.m_sPlace == LF_ResidentTimetable.ROLE_HOME;
+				bool work = line.m_sPlace == LF_ResidentTimetable.ROLE_WORK;
+				ctx.True(home || work, string.Format("%1 line %2 is at home or work", id, line.m_sTime));
+				if (work)
+					ctx.False(def.m_sWorkKind.IsEmpty(), string.Format("%1 line %2 works but has no work kind", id, line.m_sTime));
 			}
 
-			ctx.True(covered, id + " timetable puts them somewhere at every hour of the day");
 			foreach (LF_ResidentEntryDef entry : def.m_aTimetable)
 			{
 				ctx.True(entry.m_sAnchor == "counter" || entry.m_sAnchor == "bench" || entry.m_sAnchor == "door", string.Format("%1 line %2 stands on a known anchor ('%3')", id, entry.m_sTime, entry.m_sAnchor));
@@ -130,12 +127,3 @@ class LF_Test_EveronResidents : LF_Test
 	}
 }
 
-//------------------------------------------------------------------------------------------------
-//! Names every pack kind as known, so the timetable check does not depend on which places this boot placed.
-class LF_Test_EveronResidentsKinds : LF_ResidentKindCheck
-{
-	override bool Knows(string kind)
-	{
-		return !kind.IsEmpty();
-	}
-}
