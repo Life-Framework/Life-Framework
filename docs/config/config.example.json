@@ -273,6 +273,7 @@
     "chopValueCap": 3000,
     "impoundPercent": 10,
     "garagePercent": 0,
+    "lotNeedsDrivingLicence": false,
     "vehicles": {
       "54C3CC22DEBD57BE": {
         "basePrice": 1200,

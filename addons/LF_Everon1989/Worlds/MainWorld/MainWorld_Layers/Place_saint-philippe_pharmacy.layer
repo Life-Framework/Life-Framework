@@ -1,0 +1,46 @@
+GenericEntity Fit_saint_philippe_pharmacy_Place {
+ components {
+  LF_PlaceComponent "{1B9D0306FEDFC5C2}" {
+   m_sKind "StoreCounter"
+   m_sId "saint-philippe.pharmacy"
+  }
+  LF_FittedBuildingComponent "{AC81EDD37D53D96B}" {
+  }
+ }
+ coords 4431.4 9.2 10841.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_shop_house_e_2_i01t_furniture_drugstore_lf_01 : "{1D49EA09388829EB}Prefabs/Buildings/Drugstore/Furniture/ShopHouse_E_2I01t_furniture_drugstore_lf_01.et" {
+ coords 4431.4 9 10841.5
+ angleY 76
+}
+GenericEntity Fit_saint_philippe_pharmacy_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ components {
+  LF_AlarmMountComponent "{B18DF3E384CC59BD}" {
+   m_vOffset 0 0.167 0.065
+   m_fReach 10
+  }
+ }
+ coords 4439.901 11.6 10838.569
+ angleY 76
+}
+GenericEntity Fit_saint_philippe_pharmacy_counter_shop_01 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4431.466 9.199 10839.898
+ angleY 76
+}
+GenericEntity Fit_saint_philippe_pharmacy_cashier_shop_01 : "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et" {
+ coords 4431.365 10.238 10840.296
+ angleY -104
+}
+GenericEntity Fit_saint_philippe_pharmacy_lf_pharmacy_counter : "{E66CFB8EA2048E05}Prefabs/Props/Commercial/LF_PharmacyCounter.et" {
+ components {
+  LF_ShopComponent "{837E80AF6CCDBB47}" {
+   m_sOutletId "pharmacy_counter"
+  }
+ }
+ coords 4431.909 9.199 10838.123
+ angleY 76
+}
+LF_NpcBaseEntity Fit_saint_philippe_pharmacy_village_drugstore_pharmacist : "{87E1270978227F3A}Prefabs/Characters/Npcs/LF_Npc_Pharmacist.et" {
+ coords 4430.937 9.199 10838.19
+ angleY 76
+}

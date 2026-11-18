@@ -4,7 +4,7 @@
 //! Checked against the merged pack config (pack leg): each stock id loads with the items the card names,
 //! every prefab resolves, no item is sold for less than the store pays back (no money loop), and a good on
 //! the market curve is never sold cheaper than the market's ceiling (no shop-to-trader loop, #3121).
-//! The hardware counter copies the general store's rows (same prefab, same price) while both are open.
+//! The hardware counter has its own rows since #3220 (the general store no longer sells them).
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronVillageStock : LF_Test
 {
@@ -51,7 +51,6 @@ class LF_Test_EveronVillageStock : LF_Test
 		CheckStock(ctx, manager, "newsagent", {MAP, WATER});
 		CheckStock(ctx, manager, "mechanic", {PARTS});
 
-		CheckHardwareCopiesGeneralStore(ctx);
 
 		//! The cafe menu and the general store were priced apart from the market curve: an apple was $2 at both
 		//! while the trader paid up to $5. Every row of both stocks gets the same no-loop checks.
@@ -130,26 +129,4 @@ class LF_Test_EveronVillageStock : LF_Test
 			ctx.True(row.m_iPrice >= curve.m_iCeiling, string.Format("%1: %2 sells for %3 and the market pays up to %4", id, prefab, row.m_iPrice, curve.m_iCeiling));
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! Until the general store's hardware rows move out (#3276), both counters charge the same.
-	protected void CheckHardwareCopiesGeneralStore(LF_TestContext ctx)
-	{
-		LF_ShopStock hardware = LF_ShopStockConfig.Get().Find("hardware");
-		LF_ShopStock general = LF_ShopStockConfig.Get().Find("general_store");
-		ctx.NotNull(general, "the general store has a stock");
-		if (!hardware || !general)
-			return;
-
-		foreach (LF_ShopStockItem row : general.m_aItems)
-		{
-			if (!row)
-				continue;
-
-			LF_ShopStockItem copy = hardware.FindItem(row.m_Prefab);
-			if (!copy)
-				continue;
-
-			ctx.Equal(row.m_iPrice, copy.m_iPrice,string.Format("hardware charges what the general store charges for %1", row.m_Prefab));
-		}
-	}
 }

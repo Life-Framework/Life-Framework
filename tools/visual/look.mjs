@@ -35,7 +35,7 @@ import { townWorld } from "../lib/addons.mjs";
 import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
 import { GRID_WORLD, ISLAND_WORLD, PACK_GRID_WORLD, gridLayerDirs, gridWorldFor, islandLayersDir } from "../lib/worlds.mjs";
 import { PLACE_RX, resolvePlace } from "./look-place.mjs";
-import { lookStartVerdict, phaseText, renderProblem, requestNeedsRam, timeline } from "../lib/look-job.mjs";
+import { lookStartVerdict, lookSummaryLine, phaseText, renderProblem, requestNeedsRam, timeline } from "../lib/look-job.mjs";
 import * as poolRam from "../lib/pool-ram.mjs";
 import { SEED_PEAKS_MB } from "../lib/pool-ram.mjs";
 
@@ -64,6 +64,13 @@ const ISLAND_SERVE_BUDGET_S = 270;
 export const worldFlag = (w) => (typeof w !== "string" ? null : /^island$/i.test(w) ? ISLAND_WORLD : w);
 // Seconds per phase of this process's look (slot wait, RAM wait, build lock, Workbench start, world, shots, collect); printed and kept in index.json.
 const TL = timeline();
+
+// The one SUMMARY line of a look (lockWait, slotWait, work: tools/lib/look-job.mjs). Printed here, it lands in the
+// look's own tmp/logs/look-<stamp>.log (the quiet wrapper keeps the whole output), which `look stats` reads
+// across the worktrees (tools/visual/look-stats.mjs). Written to no file of its own, so a look is counted once.
+function emitLookSummary({ area, served, shots, started, phases }) {
+  console.log(lookSummaryLine({ ok: true, area, served, shots, at: new Date(started).toISOString(), phases }));
+}
 
 export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 
@@ -960,6 +967,7 @@ async function run(args) {
   const startLabel = served === "fresh" ? "Workbench start" : "request to first step";
   TL.add("collect", (Date.now() - collectT0) / 1000);
   console.log(`look: phases: ${phaseText(TL.get())}`);
+  emitLookSummary({ area: args.pos.join("+"), served, shots: shots.length - missing, started, phases: TL.get() });
   console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} addons=${renderedTree ? renderedTree.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, world and play ${r1((status.readyMs ?? 0) / 1000)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
   for (const s of summaries) {
     console.log(`  ${s.area}: ${s.contact}`);
@@ -1290,7 +1298,7 @@ export async function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | town:<area> | place:<place>/<slot> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--world <path|island>] [--edit] [--close N] [--radius m] [--interior x,y,z|auto] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh|--cold] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
+const USAGE = "usage: tools\\cli look <area | town:<area> | place:<place>/<slot> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--world <path|island>] [--edit] [--close N] [--radius m] [--interior x,y,z|auto] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh|--cold] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look stats [--hours 24] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);
@@ -1301,6 +1309,7 @@ export async function main(argv) {
     args.pos.shift();
   }
   if (args.pos[0] === "selftest") return selftest();
+  if (args.pos[0] === "stats") return (await import("./look-stats.mjs")).main({ root: ROOT, hours: args.flags.hours });
   const route = await import("../lib/wb-route.mjs");
   if (args.pos[0] === "serve") {
     // The look server is a long-lived Workbench on this PC: no remote form. --status and --stop start nothing.
@@ -1508,6 +1517,11 @@ async function remoteLook(m, args, argv, pool, { warm = !args.flags.cold && !arg
     }
   }
   console.log(`look: phases here: ${phaseText(TL.get())}${remotePhases ? `; on ${m.name}: ${phaseText(remotePhases)}` : ""}`);
+  // A routed look waited on the box's lock and slot: those waits come from the box's timing; its work is the copy here.
+  const waits = Object.fromEntries(Object.entries(remotePhases ?? {}).filter(([k]) => /-wait$/.test(k)));
+  const phases = { ...TL.get() };
+  for (const [k, v] of Object.entries(waits)) phases[k] = (phases[k] ?? 0) + v;
+  emitLookSummary({ area: args.pos.join("+"), served: "remote", shots: pulled.areas.length, started: t0, phases });
   for (const a of pulled.areas) console.log(`  ${a.name}: ${a.contact}`);
   if (pulled.overview) console.log(`  overview: ${pulled.overview}`);
   return r.code;
