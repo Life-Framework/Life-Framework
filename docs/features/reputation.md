@@ -43,5 +43,10 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   no contract money (a late finish still pays the plain run). Stakes move no money. A contract whose run vanished (a wipe) is dropped with
   no stake. Session state: a restart refunds the run's deposit and drops the contract. A drop-off by a dead or downed body pays nothing.
   Core ships one neutral parcel row (`test_parcel`); the offer that calls `Begin` and the pack's contracts are later cards. Test `reputation/contract`.
-- 🔲 The contract offer, client greying from `ClientTier`, screens, the pack's words,
+- ✅ **Contract offer in dialogue** (#2913, merged, in-dev): `LF_DialogueHook_Contract.c`. A dialogue reply with `m_sAction "Contract"`,
+  `m_sCondition "Contract"` and the contract id as `m_sParam` starts the contract: the reply is offered only when the contract's standing
+  gate passes (checked on the server, where `Offers` runs), the pick signs the player up for the contract's job if needed (the JobSignUp
+  hook), then `LF_ReputationContracts.Begin` (dead or downed, purchase rate limit, gate, busy, cooldown, deposit). The NPC answers
+  `#LF-Contract_Started` or the refusal key; a toast repeats it. Test `dialogue/contract`. The harbour master's reply is pack data (#2709).
+- 🔲 Client greying from `ClientTier`, screens, the pack's words,
   pack overlay and the owner `config.json` section `reputation` (later cards of #1018).
