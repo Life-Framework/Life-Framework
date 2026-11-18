@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "kind": "districts",
+  "about": "Slots of a residential ring round a square (the districts): homes, a fuel station on the road, and the small trades that may stand among them. Nothing here is required: a district has no hall and no notice board (the square owns both), so a mapping may leave any slot none. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "house", "required": false, "kit": "house", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "minArea": 50, "prefer": "near", "types": ["house", "townhouse", "farmhouse"] },
+      "places": ["House"]
+    },
+    {
+      "id": "fuel", "required": false, "kit": "fuel", "host": "building", "poi": "none",
+      "needs": { "interior": "optional", "minArea": 40, "prefer": "far", "types": ["fuel"] },
+      "places": ["FuelTill"]
+    },
+    {
+      "id": "garage", "required": false, "kit": "garage", "host": "building", "poi": "none",
+      "needs": { "interior": "optional", "minArea": 25, "prefer": "far", "types": ["garage", "shed", "industrial", "farm", "farm-small"] },
+      "plot": { "minWidth": 12, "minDepth": 10, "prefabs": [{ "type": "garage", "stem": "HouseAddon_Garage_E_01" }] },
+      "places": ["Garage"]
+    },
+    {
+      "id": "farm-plot", "required": false, "kit": "farm-plot", "host": "plot", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "far" },
+      "plot": { "minWidth": 20, "minDepth": 16, "prefabs": [] },
+      "places": ["FarmPlot"]
+    },
+    {
+      "id": "taxi", "required": false, "kit": "taxi", "host": "street", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 80 },
+      "places": ["TaxiRank"]
+    },
+    {
+      "id": "shop", "required": false, "kit": "general-store", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 40, "prefer": "near", "maxDistance": 110, "types": ["shop", "house"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "pub", "required": false, "kit": "pub", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 110, "types": ["pub", "shop", "house"] },
+      "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "pub", "stem": "PubVillage_E_2L01_V1" }] },
+      "places": ["PubBar"]
+    }
+  ]
+}

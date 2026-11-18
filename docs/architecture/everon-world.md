@@ -173,7 +173,7 @@ supplies every coordinate the later steps use. No step types a coordinate.
 
 ### 3.2 Mapping: templates, then a per-place mapping file
 
-- **Template** (`tools/town/templates/<kind>.json`, kinds `town`, `village`, `harbour`, `site`): the
+- **Template** (`tools/town/templates/<kind>.json`, kinds `town`, `village`, `harbour`, `districts`, `site`; `districts` is the residential ring round a square, with no required slot): the
   slots of a place kind. Each slot has an id, `required` or optional, the kit it takes, what the
   building needs (interior, ground floor, area, street frontage, distance from the square) and the
   `LF_Places` kinds the core system looks for once it is fitted. Each slot also names its `poi`, the
