@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "26E596B6A7091071"
+ {
+  GenericEntity : "{B8FD99C47D856E7F}Prefabs/Vegetation/Crops/FarmPlot_CabbageVisual.et" {
+   ID "26E596B6A7091072"
+   scale 0.55
+  }
+ }
+}

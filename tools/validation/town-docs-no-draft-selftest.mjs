@@ -1,13 +1,18 @@
 // tools/validation/town-docs-no-draft-selftest.mjs
-// inputs: docs/starter-packs/town.md, docs/worktrees.md
+// inputs: docs/starter-packs/town.md, docs/worktrees.md, docs/architecture/everon-world.md,
+//         docs/everon/world-bible.md
 //
 // Town cards ship with `wt ship` and auto-merge: there are no maintainer approvals since 2026-11-18.
 // Proves the town starter pack never tells a town agent to open a draft PR, that the worktrees ship
-// docs say town cards auto-merge, and that the town pack asks for a contact sheet with the before and
-// after pictures. The `town-draft-<place>-<slot>` worktree name stays (the zone guard reads it), so it
-// is removed before the draft word is searched for. No game, no network.
+// docs say town cards auto-merge, that the town pack asks for a contact sheet with the before and
+// after pictures, and that the architecture and bible docs about town work say the same (no draft,
+// names auto-merge). The `town-draft-<place>-<slot>` worktree name stays (the zone guard reads it), so
+// it is removed before the draft word is searched for. No game, no network.
 // red-proof: before this change docs/starter-packs/town.md:7, :38 and docs/worktrees.md:160 said the
 // town PR is a draft, so this printed "FAIL ... says draft" lines and exited 1 (2026-11-18, #3199).
+// red-proof: before the #3258 follow-up, docs/architecture/everon-world.md:161, :249, :250 and :283 and
+// docs/everon/world-bible.md:199 said "draft", so section 3 printed "FAIL ... says draft" and exited 1
+// (2026-11-18, #3199).
 
 import { dirname, join, resolve } from "node:path";
 import { readFileSync } from "node:fs";
@@ -55,8 +60,18 @@ if (start < 0 || end < 0) {
 const townAutoMerge = wt.some((l) => /town/i.test(l) && /auto-merge/i.test(l) && !/--draft/.test(l));
 if (!townAutoMerge) fail(`${wtRel} has no line saying town cards ship with auto-merge`);
 
+// 3. The architecture and bible docs about town work: the same rule, no draft line and an
+//    auto-merge ship.
+for (const rel of ["docs/architecture/everon-world.md", "docs/everon/world-bible.md"]) {
+  const lines = read(rel).split("\n");
+  lines.forEach((line, i) => {
+    if (/draft/i.test(hideName(line))) fail(`${rel}:${i + 1} says draft: ${line.trim()}`);
+  });
+  if (!/auto-merge/i.test(lines.join("\n"))) fail(`${rel} never says a town card auto-merges`);
+}
+
 if (failed) {
   console.log(`town-docs-no-draft-selftest: ${failed} failure(s)`);
   process.exit(1);
 }
-console.log("town-docs-no-draft-selftest: ok (town pack and ship docs say auto-merge, no draft)");
+console.log("town-docs-no-draft-selftest: ok (town pack, ship docs, everon-world and world-bible say auto-merge, no draft)");
