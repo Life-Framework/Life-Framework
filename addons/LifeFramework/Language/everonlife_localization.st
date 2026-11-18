@@ -9326,6 +9326,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Your rank cannot escort"
      Comment "Escort refused because the officer's rank is below the configured escort rank"
     }
+    CustomStringTableItem "{37D9CCF94EDAF2EB}" {
+     Id "LF-Rank_KitAboveRankTaken"
+     Target_en_us "Kit above your new rank was taken back"
+     Comment "Toast: after a demotion the armory took back the issued kit the officer's new rank may not hold"
+    }
     CustomStringTableItem "{A2D4831F96B7DC32}" {
      Id "LF-RateLimit_Slow"
      Target_en_us "Too many requests at once. Wait a moment and try again."
