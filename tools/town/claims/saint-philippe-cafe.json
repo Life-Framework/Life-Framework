@@ -8,7 +8,7 @@
   "kinds": [
     "CafeTable"
   ],
-  "rows": 2,
+  "rows": 3,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

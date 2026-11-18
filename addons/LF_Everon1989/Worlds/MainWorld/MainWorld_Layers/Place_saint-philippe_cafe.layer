@@ -9,6 +9,10 @@ GenericEntity Fit_saint_philippe_cafe_Place {
  }
  coords 4455.4 13.1 10700.3
 }
+GenericEntity Fit_saint_philippe_cafe_cafe_till : "{EEFD19AAC8216449}Prefabs/Props/Commercial/LF_CafeTill.et" {
+ coords 4460.034 14.118 10705.732
+ angleY 172
+}
 GenericEntity Fit_saint_philippe_cafe_anchor_counter {
  components {
   LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
