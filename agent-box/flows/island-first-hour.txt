@@ -148,10 +148,12 @@ expect cash -250
 
 step 6c Buy the driving licence at the town hall desk
 # The flagship's car lot refuses a buyer without the driving licence (#3151): $100 in carried cash at
-# the licence desk in the town hall (LF_LicenceDeskDrivingAction on the town hall furniture).
-stand Fit_saint_philippe_arrival_town_hall_furniture_01
+# the licence desk in the town hall. The desk is an unnamed part of the town hall furniture about 10 m
+# from that prefab's origin (past the harness's 1.5 m part reach), and 1 to 2 m from the clerk: stand at
+# the clerk and use the nearest desk.
+stand Fit_saint_philippe_arrival_town_hall_clerk
 wait 1500
-use LF_LicenceDeskDrivingAction Fit_saint_philippe_arrival_town_hall_furniture_01
+use LF_LicenceDeskDrivingAction
 wait 1500
 shot ui island_06c_driving_licence
 expect cash -100
