@@ -15,7 +15,7 @@
 //     and so is a slot the mapping leaves out or marks `none`;
 //   - --dry writes nothing.
 // red-proof: before tools/town/fit.mjs existed this printed "FAIL cannot load tools/town/fit.mjs: ERR_MODULE_NOT_FOUND" (2026-11-16).
-// red-proof: with the claim conflicts ignored in planFit() this printed "FAIL a building claimed on origin/main was fitted again" (and the open-PR and same-slot cases) (2026-11-16).
+// red-proof: with the claim conflicts ignored in planFit() this printed "FAIL a building claimed on origin/main was fitted again" (and the open-PR and same-slot cases) (2026-11-16). --refit: with the origin/main filter in planFit() removed it printed "FAIL --refit refused a slot whose own claim is on origin/main" (2026-11-18).
 // red-proof: with the nested blocks dropped from the layer text (renderBlock writing nothing) this printed "FAIL the sign lost its nested Materials block" (2026-11-17).
 // red-proof: with componentGuid reading addons only and no kit-source fallback this printed "FAIL a component the prefab lacks did not take its guid from the kit's source" and the vanilla-guid case (2026-11-17).
 // red-proof: before verifySteps existed (audit and look steps inline in main, the audit on no world, `look` on a bare x,z) this threw "fitMod.verifySteps is not a function" (2026-11-17).
@@ -147,6 +147,22 @@ const absent = fitMod.planFit({ ...base, slot: "garage" }, ctx());
 check(!absent.ok, "a slot the mapping lacks was fitted");
 const self = fitMod.planFit(base, ctx((cmd, args) => (cmd === "git" && args[0] === "ls-tree" ? { status: 0, stdout: "tools/town/claims/sample-square-shop.json\n", stderr: "" } : cmd === "git" && args[0] === "show" ? { status: 0, stdout: JSON.stringify({ schema: 1, place: "sample-square", slot: "shop", building: "b03" }), stderr: "" } : noGit(cmd, args))));
 check(!self.ok, "a slot already fitted on origin/main was fitted again");
+
+// ---- --refit: a slot claimed on origin/main is re-fitted; one held by another branch or another slot is still refused
+const ownOnMain = (cmd, args) => (cmd === "git" && args[0] === "ls-tree" ? { status: 0, stdout: "tools/town/claims/sample-square-shop.json\n", stderr: "" } : cmd === "git" && args[0] === "show" ? { status: 0, stdout: JSON.stringify({ schema: 1, place: "sample-square", slot: "shop", building: "b03" }), stderr: "" } : noGit(cmd, args));
+const refit = fitMod.planFit({ ...base, refit: true }, ctx(ownOnMain));
+check(refit.ok, `--refit refused a slot whose own claim is on origin/main: ${(refit.errors || []).join("; ")}`);
+const ownPr = (cmd, args) => {
+  if (cmd === "gh" && args[0] === "pr") return { status: 0, stdout: JSON.stringify([{ number: 4243, headRefName: "ws/town-draft-sample-square-shop-2", headRefOid: "abc", files: [{ path: "tools/town/claims/sample-square-shop.json" }] }]), stderr: "" };
+  if (cmd === "gh" && args[0] === "api") return { status: 0, stdout: JSON.stringify({ schema: 1, place: "sample-square", slot: "shop", building: "b03" }), stderr: "" };
+  return noGit(cmd, args);
+};
+const refitPr = fitMod.planFit({ ...base, refit: true }, ctx(ownPr));
+check(!refitPr.ok && /already claimed/.test((refitPr.errors || []).join(" ")), "--refit fitted a slot another open PR claims");
+for (const where of ["main", "pr"]) {
+  const r = fitMod.planFit({ ...base, refit: true }, ctx(held(where)));
+  check(!r.ok && /already claimed/.test((r.errors || []).join(" ")), `--refit fitted a building another slot claims on ${where === "main" ? "origin/main" : "an open PR"}`);
+}
 
 // ---- nested blocks and component GUIDs of a kit row's overrides (a sign rendered white, an alarm box lost its component)
 {
