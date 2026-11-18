@@ -125,7 +125,7 @@ Saint-Philippe this weekend.
 | Key | Issue | Card | Depends |
 |---|---|---|---|
 | S1 | #3296 | Foundation: style, size and rows, the chalk style end to end (this PR) | |
-| S2 | #3299 | The trader price board prints today's market prices on its face (weekend) | S1 |
+| S2 | #3299 | The trader price board prints today's market prices on its face (weekend; done, merged in-dev) | S1 |
 | S3 | #3301 | Shop fascias in painted shop lettering, per-placement colours (weekend) | S1 |
 | S4 | #3303 | Enamel plates for civic signs | S3 |
 | S5 | #3305 | A-frame pavement boards in chalk with specials (weekend) | S1 |

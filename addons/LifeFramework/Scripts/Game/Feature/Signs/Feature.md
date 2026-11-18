@@ -143,3 +143,7 @@ for `quad16x9`) at the prop's face offset, angles and scale, and paints the styl
 First style: `chalk` on `LF_Sign_Chalkboard` (face `-90 0 0`, offset `0 1.53 0.3`, scale 1.15 covers the slate).
 Sample sign `chalk_sample` (Today's prices, four rows) stands in GridWorld cell `sign-overhaul`. Tests LOGIC
 `signs/face-plan`, `signs/styles`. Proof of a face is a full-profile session shot (`look` draws render targets white).
+
+## Live rows (#3299, 2026-11-18)
+
+A sign may print rows from live state: `LF_SignComponent.m_sRowSource` names an `LF_SignRowSource` (`LF_SignRowSource.c`; a feature adds one in a `modded class LF_SignRowSourceSet`, no central list). The source names the board kind the server answers (`LF_BoardProviders`, the existing read RPC) and turns the answer into `LF_SignRow`s. A face with a source polls every 2 s (`ROW_POLL_MS`): a newer stored reply repaints the face; else, when the viewer is within 90 percent of the board read distance (the server refuses further), it asks once and again after 60 s (`LF_SignRowSources.ShouldAsk`). The ask is `SCR_PlayerController.LF_AskBoard(kind, true)`; every ask is noted in a client FIFO and `LF_BoardProviders.Open` gives a reply to a face ask to `LF_SignRowSources.TakeFaceReply` instead of opening a card (an ask older than 15 s is dropped). Nothing is replicated and nothing is sent per frame. A sign with a source hides its own `LF_SignReadAction` (the source's board has its own). First source: `market` (`Feature/Market/LF_PriceBoardFace.c`, the trader price board). Test `market/price-board-face`.

@@ -17,6 +17,8 @@ class LF_SignComponent : ScriptComponent
 	//! LF_Places kind every sign claims under its sign id, so a reader (the town board) finds the
 	//! place a sign stands for by component, never by entity name or coordinates.
 	static const string PLACE_KIND = "Sign";
+	//! How often a face with live rows checks for a new reply or for a viewer in reach.
+	static const int ROW_POLL_MS = 2000;	// lf-fixed: a printed face, not an animation
 
 	//! The prefab (slot "sign_face"), or empty when no usable prefab resolves (logged).
 	static ResourceName FacePrefab()
@@ -64,6 +66,9 @@ class LF_SignComponent : ScriptComponent
 
 	[Attribute("", UIWidgets.EditComboBox, "Face size in Configs/Signs/LF_SignStyles.conf: the carrier mesh and its shown area. Needed with a style")]
 	protected string m_sSize;
+
+	[Attribute("", UIWidgets.EditBox, "Live rows on a styled face: a row source kind (market). The client asks the server when the viewer is within reach and repaints the rows. Empty: the sign's own config rows (LF_SignRowSource.c)")]
+	protected string m_sRowSource;
 
 	[Attribute("0", UIWidgets.CheckBox, "The prop mesh itself samples $rendertarget (an A4 notice with LF_SignFace.emat). No sheet is spawned")]
 	protected bool m_bFaceOnOwner;
@@ -120,6 +125,8 @@ class LF_SignComponent : ScriptComponent
 	protected bool m_bResolved;
 
 	protected ref LF_SignStyledFace m_StyledFace;
+	protected int m_iRowVersion;
+	protected int m_iRowAskMs;
 	protected IEntity m_Face;
 	protected IEntity m_FaceTarget;
 	protected Widget m_wFaceRoot;
@@ -246,12 +253,106 @@ class LF_SignComponent : ScriptComponent
 		}
 
 		m_StyledFace = new LF_SignStyledFace();
-		if (m_StyledFace.Build(owner, sign, style, size, m_vFaceOffset, m_vFaceAngles, m_fFaceScale))
+		LF_SignDef printed = LiveSign(sign);
+		if (m_StyledFace.Build(owner, printed, style, size, m_vFaceOffset, m_vFaceAngles, m_fFaceScale))
+		{
+			StartRowPoll();
 			return true;
+		}
 
 		m_StyledFace.Release();
 		m_StyledFace = null;
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when this sign prints rows from a live source: its Read card is the source's own card.
+	bool HasRowSource()
+	{
+		return !m_sRowSource.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sign with the newest live rows, else the config sign. The title and style stay the config's.
+	protected LF_SignDef LiveSign(LF_SignDef sign)
+	{
+		if (m_sRowSource.IsEmpty())
+			return sign;
+
+		m_iRowVersion = LF_SignRowSources.VersionFor(m_sRowSource);
+		array<ref LF_SignRow> rows = LF_SignRowSources.RowsFor(m_sRowSource);
+		if (!rows)
+			return sign;
+
+		LF_SignDef copy = LF_SignCatalog.WithTitle(sign, sign.m_sTitle);
+		copy.m_aRows = rows;
+		return copy;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void StartRowPoll()
+	{
+		if (m_sRowSource.IsEmpty() || !GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		if (!LF_SignRowSources.Find(m_sRowSource))
+		{
+			LF_Debug.Error("Signs", string.Format("sign %1: row source '%2' is not registered; the face prints its config rows", m_sSignId, m_sRowSource));
+			return;
+		}
+
+		GetGame().GetCallqueue().Remove(PollRows);
+		GetGame().GetCallqueue().CallLater(PollRows, ROW_POLL_MS, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every couple of seconds: repaint when a newer reply is held; else ask the server once when the
+	//! viewer is within reach (and again after the refresh window).
+	protected void PollRows()
+	{
+		IEntity owner = GetOwner();
+		if (!owner || owner.IsDeleted() || !m_StyledFace)
+			return;
+
+		LF_SignRowSource source = LF_SignRowSources.Find(m_sRowSource);
+		if (!source)
+			return;
+
+		if (LF_SignRowSources.VersionFor(m_sRowSource) != m_iRowVersion)
+		{
+			Repaint(owner);
+			return;
+		}
+
+		IEntity viewer = LF_Utils.GetLocalCharacter();
+		if (!viewer || !LF_SignRowSources.InAskRange(vector.Distance(viewer.GetOrigin(), owner.GetOrigin()), LF_PoliceConfig.BoardReadDistance()))
+			return;
+
+		int now = System.GetTickCount();
+		if (!LF_SignRowSources.ShouldAsk(m_iRowAskMs, now))
+			return;
+
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (!controller)
+			return;
+
+		m_iRowAskMs = now;
+		controller.LF_AskBoard(source.GetBoardKind(), true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Print the face again with the newest rows.
+	protected void Repaint(IEntity owner)
+	{
+		LF_SignDef sign = GetSign();
+		if (!sign)
+			return;
+
+		if (m_StyledFace)
+			m_StyledFace.Release();
+
+		m_StyledFace = null;
+		BuildStyledFace(owner, sign);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -614,7 +715,10 @@ class LF_SignComponent : ScriptComponent
 	protected void ClearFace()
 	{
 		if (GetGame() && GetGame().GetCallqueue())
+		{
 			GetGame().GetCallqueue().Remove(BuildFace);
+			GetGame().GetCallqueue().Remove(PollRows);
+		}
 
 		if (m_StyledFace)
 			m_StyledFace.Release();
@@ -857,6 +961,7 @@ class LF_SignComponent : ScriptComponent
 		src.Get("m_bShowFace", m_bShowFace);
 		src.Get("m_sStyle", m_sStyle);
 		src.Get("m_sSize", m_sSize);
+		src.Get("m_sRowSource", m_sRowSource);
 		src.Get("m_bFaceOnOwner", m_bFaceOnOwner);
 		src.Get("m_bFaceOnChild", m_bFaceOnChild);
 		src.Get("m_vFaceOffset", m_vFaceOffset);
