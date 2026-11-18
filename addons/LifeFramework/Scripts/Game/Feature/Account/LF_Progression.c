@@ -177,6 +177,7 @@ class LF_Progression
 		LF_UnemploymentBenefit.ForgetCollection(playerUid);
 		LF_JobLevels.Forget(playerUid);
 		LF_Reputation.Forget(playerUid);
+		LF_ResidentMemory.Forget(playerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -33,7 +33,7 @@ Rung 4 background: pure rules and a config, no screen, no world, no replication 
 
 ## Not built yet (later cards of the chapter)
 
-The save of the per-good price state (#2846; `LF_MarketBook` and the trader sale landed in #2845), the pack overlay and owner
+The pack overlay and owner (the per-good price state is saved as section `market` since #2846, `LF_MarketSave.c`)
 `config.json` section, and any screen.
 
 ## Dependencies
