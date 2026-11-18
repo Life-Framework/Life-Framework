@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronMarket` printed `RED PROOF OK`; with the pack layer removed (an empty header as the pack source) it failed e.g. `GoldBar.et base is today's sell price (expected 120, got 200)` and the market-on, copper-removed and eight-goods checks. `--only` then passed under the pack header.
+// red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronMarket` printed `RED PROOF OK`; with the pack layer removed (an empty header as the pack source) it failed e.g. `GoldBar.et base is today's sell price (expected 120, got 200)` and the market-on, copper-removed and eight-goods checks. `--only` then passed under the pack header. 2026-11-18 (#3028): the recovery check passes hundredths (it went hollow when Recover moved to hundredths); with a 1 h window instead of 24 h it failed `everon/market`, with 24 h it passes.
 //! #2849 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the pack's market overlay
 //! switches the market on and gives the eight goods the 1989 trader buys (apples, plums, cement, gravel, sand,
 //! iron bars, planks, cabbages) a curve. Each curve is read against the pack trader's own price list: ceiling
@@ -159,8 +159,9 @@ class LF_Test_EveronMarket : LF_Test
 			ctx.Equal(2, good.m_iDropPerUnitPct, name + " drops 2 percent of the base per unit");
 			ctx.True(good.m_iRecoverPctPerHour > 0, name + " recovers");
 
-			int back = config.Recover(good.m_sGood, good.m_iFloor, HOURS_24);
-			ctx.True((good.m_iBase - back) * 10 <= good.m_iBase, string.Format("%1 floored at %2 is back to %3 of base %4 after 24 h (within 10 percent)", name, good.m_iFloor, back, good.m_iBase));
+			// Recover speaks hundredths of a cash unit (#3028): start from the floor in hundredths and compare there.
+			int backFine = config.Recover(good.m_sGood, good.FloorFine(), HOURS_24);
+			ctx.True((good.BaseFine() - backFine) * 10 <= good.BaseFine(), string.Format("%1 floored at %2 is back to %3 hundredths of base %4 after 24 h (within 10 percent)", name, good.m_iFloor, backFine, good.BaseFine()));
 			ctx.True(good.m_iFloor * 2 >= good.m_iBase, name + " floor is at least 0.5x the base");
 			ctx.True(good.m_iBase <= good.m_iCeiling, name + " base is inside the ceiling");
 		}
