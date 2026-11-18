@@ -6537,6 +6537,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Safe zone"
      Comment "Map label of a safe zone at the closest zoom."
     }
+    CustomStringTableItem "{E3A1B2C4D5F60718}" {
+     Id "LF-Market_BoardTitle"
+     Target_en_us "Prices today"
+     Comment "Title of the trader chalk price board card."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60719}" {
+     Id "LF-Market_NoPrices"
+     Target_en_us "No prices today."
+     Comment "Price board line when the market is off or lists no goods."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F6071A}" {
+     Id "LF-Market_Price"
+     Target_en_us "%1  %2"
+     Comment "Price board line: %1 good name, %2 price."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F6071B}" {
+     Id "LF-Market_PriceDown"
+     Target_en_us "%1  %2 %3"
+     Comment "Price board line for a good below its base: %1 name, %2 price, %3 down arrow."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F6071C}" {
+     Id "LF-Market_Read"
+     Target_en_us "Read today's prices"
+     Comment "Action on the trader chalk price board."
+    }
     CustomStringTableItem "{DF4F6E621FD608FA}" {
      Id "LF-MedicRank_Doctor"
      Target_en_us "Doctor"
