@@ -246,7 +246,7 @@ class LF_SignComponent : ScriptComponent
 		}
 
 		m_StyledFace = new LF_SignStyledFace();
-		if (m_StyledFace.Build(owner, sign, style, size, m_vFaceOffset, m_vFaceAngles, m_fFaceScale))
+		if (m_StyledFace.Build(owner, sign, style, size, m_vFaceOffset, m_vFaceAngles, m_fFaceScale, HasPaintedFace(), m_vPaintColor, m_vTextColor))
 			return true;
 
 		m_StyledFace.Release();
