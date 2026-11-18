@@ -699,10 +699,60 @@ StringTable {
      Target_en_us "Nearly there. A few more shifts at the quarry and the foreman will let you."
      Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
     }
+    CustomStringTableItem "{5A7C1E04B93D6F0E}" {
+     Id "LF-MapPoi_Cafe"
+     Target_en_us "Cafe"
+     Comment "Map POI kind name (#2247): the cafe."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0C}" {
+     Id "LF-MapPoi_ClothingStore"
+     Target_en_us "Clothing store"
+     Comment "Map POI kind name (#2247): the clothing store counter."
+    }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
      Target_en_us "Fence"
      Comment "Map POI kind name (#2230): the fence. A hidden kind, never public; shown only as a personal pencil mark after the player met them."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0F}" {
+     Id "LF-MapPoi_FillingStation"
+     Target_en_us "Filling station"
+     Comment "Map POI kind name (#2247): the fuel till."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0B}" {
+     Id "LF-MapPoi_GeneralStore"
+     Target_en_us "General store"
+     Comment "Map POI kind name (#2247): the general store counter."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0D}" {
+     Id "LF-MapPoi_GunStore"
+     Target_en_us "Gun store"
+     Comment "Map POI kind name (#2247): the gun store counter."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F13}" {
+     Id "LF-MapPoi_Hostel"
+     Target_en_us "Hostel"
+     Comment "Map POI kind name (#2247): the hostel."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F11}" {
+     Id "LF-MapPoi_NoticeBoard"
+     Target_en_us "Notice board"
+     Comment "Map POI kind name (#2247): the town board."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F12}" {
+     Id "LF-MapPoi_ParcelDepot"
+     Target_en_us "Parcel depot"
+     Comment "Map POI kind name (#2247): the parcel depot."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F10}" {
+     Id "LF-MapPoi_TaxiRank"
+     Target_en_us "Taxi rank"
+     Comment "Map POI kind name (#2247): the taxi rank."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0A}" {
+     Id "LF-MapPoi_TownHall"
+     Target_en_us "Town hall"
+     Comment "Map POI kind name (#2247): the town hall, where the clerk sits."
     }
     CustomStringTableItem "{9C1E4A73D0B58F26}" {
      Id "LF-MedicRank_Emt"
