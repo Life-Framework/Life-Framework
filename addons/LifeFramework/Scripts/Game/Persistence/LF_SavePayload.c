@@ -241,7 +241,9 @@ class LF_SaveSections
 		{
 			context.StartObject(OBJECT_PREFIX + section.Name());
 			context.WriteValue(VERSION_KEY, section.Version());
+			int start = LF_SaveTiming.Now();
 			section.WriteSection(context);
+			LF_SaveTiming.Part(section.Name(), start);
 			context.EndObject();
 		}
 
