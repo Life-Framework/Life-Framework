@@ -8527,6 +8527,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "It is past watering now."
      Comment "Toast: watering refused, the plant is ripe, dead or rotten (#2664)."
     }
+    CustomStringTableItem "{5C2E81D9A47B03F6}" {
+     Id "LF-Plant_NotOpenGround"
+     Target_en_us "Seeds only go in open ground: not indoors, under cover, on a road or in water."
+     Comment "Toast: planting refused, the spot is inside or under a building, on a road or below sea level (#2821)."
+    }
     CustomStringTableItem "{AFB196EB146950F9}" {
      Id "LF-Plant_NotRipe"
      Target_en_us "It is not ripe yet."
