@@ -34,8 +34,10 @@ class LF_LaunderStationComponentClass : ScriptComponentClass
 //! the site's chain heat settings, the same heat a still gets, so the smell trace (LF_ChainTrace)
 //! leads the police to it.
 //!
-//! Not saved: a restart empties the station (a batch in it is lost). The day totals are session-only
-//! too (LF_LaunderRules).
+//! Saved (#2894): the batch is the "launder" save section (LF_LaunderSave.c), keyed by the station's
+//! chain site id; wash and ready time are kept as seconds, since world time restarts at 0. A batch
+//! washed but uncollected for m_iForfeitSeconds is forfeited: logged, nobody paid, the station frees.
+//! The day totals stay session-only (LF_LaunderRules).
 class LF_LaunderStationComponent : ScriptComponent
 {
 	static const string FEATURE = "Laundering";
@@ -62,6 +64,9 @@ class LF_LaunderStationComponent : ScriptComponent
 	[Attribute("3.5", UIWidgets.Auto, "Metres from the station a character must stand")]
 	protected float m_fReach;
 
+	[Attribute("7200", UIWidgets.Auto, "Seconds a washed batch waits for its owner; then it is forfeited (nobody is paid) and the station frees. 0 never forfeits")]
+	protected int m_iForfeitSeconds;
+
 	//! STATE_EMPTY, STATE_WASHING or STATE_READY. Server writes, clients read for the offer.
 	[RplProp()]
 	protected int m_iState;
@@ -85,15 +90,29 @@ class LF_LaunderStationComponent : ScriptComponent
 			return;
 
 		LF_ChainSites.Register(m_sSiteId, m_sChainId, owner.GetOrigin());
+		LF_LaunderStations.Register(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Test and setup seam: a station spawned in script uses its prefab's site; a test sets its own.
+	//! The site id is also the save key, so the station moves to its new key in LF_LaunderStations.
 	void Configure(string siteId, string chainId, int heatPerBatch)
 	{
+		if (Replication.IsServer())
+			LF_LaunderStations.Unregister(this);
+
 		m_sSiteId = siteId;
 		m_sChainId = chainId;
 		m_iHeatPerBatch = heatPerBatch;
+		if (Replication.IsServer() && !m_sSiteId.IsEmpty())
+			LF_LaunderStations.Register(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test and setup seam: seconds a washed batch waits for its owner (0 never forfeits).
+	void SetForfeitSeconds(int seconds)
+	{
+		m_iForfeitSeconds = LF_Utils.MaxInt(seconds, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -103,13 +122,117 @@ class LF_LaunderStationComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! STATE_EMPTY, STATE_WASHING or STATE_READY. On the server it is computed at nowSeconds.
+	//! The station's save key: its chain site id.
+	string GetStationKey()
+	{
+		return m_sSiteId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! STATE_EMPTY, STATE_WASHING or STATE_READY. On the server it is computed at nowSeconds, after
+	//! forfeiting a washed batch left past its window.
 	int GetState(float nowSeconds)
 	{
 		if (!Replication.IsServer())
 			return m_iState;
 
+		Expire(nowSeconds);
 		return StateAt(nowSeconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner of the loaded batch (empty when the station is empty).
+	string GetOwnerKey()
+	{
+		return m_sOwnerKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Clean cash owed for the loaded batch (a short pay leaves the unpaid rest here).
+	int GetOwedClean()
+	{
+		return m_iClean;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a washed batch left uncollected past m_iForfeitSeconds is forfeited. It is logged with
+	//! owner and amounts, nobody is paid, and the station frees.
+	//! \return True when a batch was forfeited.
+	bool Expire(float nowSeconds)
+	{
+		if (m_iForfeitSeconds <= 0 || StateAt(nowSeconds) != STATE_READY)
+			return false;
+
+		float waited = nowSeconds - m_fReadyAt;
+		if (waited < m_iForfeitSeconds)
+			return false;
+
+		LF_Debug.Info(FEATURE, string.Format("station %1: %2's washed batch forfeited, uncollected for %3 s (limit %4 s): %5 marked, %6 clean owed; nobody paid, station free", m_sSiteId, m_sOwnerKey, (int)waited, m_iForfeitSeconds, m_iMarked, m_iClean));
+		ClearBatch(nowSeconds);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ClearBatch(float nowSeconds)
+	{
+		m_sOwnerKey = "";
+		m_iMarked = 0;
+		m_iClean = 0;
+		m_fReadyAt = 0;
+		Sync(nowSeconds);
+		ScheduleTimer(nowSeconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: the loaded batch as a row, or null when the station is empty. Times are
+	//! seconds relative to nowSeconds (world time restarts at 0 on a boot). Forfeits first.
+	LF_LaunderStationRow Export(float nowSeconds)
+	{
+		Expire(nowSeconds);
+		if (m_sOwnerKey.IsEmpty())
+			return null;
+
+		int washLeft;
+		int readyFor;
+		if (nowSeconds < m_fReadyAt)
+			washLeft = (int)Math.Ceil(m_fReadyAt - nowSeconds); // lf-float: sub-second wash time, rounded up
+		else
+			readyFor = (int)Math.Floor(nowSeconds - m_fReadyAt); // lf-float: sub-second ready time, rounded down
+
+		return LF_LaunderStationRow.Create(m_sSiteId, m_sOwnerKey, m_iMarked, m_iClean, washLeft, readyFor);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: puts a saved batch back at nowSeconds, or empties the station for a null
+	//! row. Idempotent: the same row gives the same batch. A broken row is logged and dropped.
+	void Import(LF_LaunderStationRow row, float nowSeconds)
+	{
+		if (!row)
+		{
+			if (!m_sOwnerKey.IsEmpty())
+				LF_Debug.Info(FEATURE, string.Format("station %1: the save holds no batch; %2's live batch is replaced by an empty station", m_sSiteId, m_sOwnerKey));
+
+			ClearBatch(nowSeconds);
+			return;
+		}
+
+		if (row.m_sOwnerKey.IsEmpty() || row.m_iMarked <= 0 || row.m_iClean < 0 || row.m_iWashLeft < 0 || row.m_iReadySeconds < 0)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("station %1: saved batch dropped, it is broken (owner '%2', %3 marked, %4 clean, wash %5 s, ready %6 s)", m_sSiteId, row.m_sOwnerKey, row.m_iMarked, row.m_iClean, row.m_iWashLeft, row.m_iReadySeconds));
+			ClearBatch(nowSeconds);
+			return;
+		}
+
+		m_sOwnerKey = row.m_sOwnerKey;
+		m_iMarked = row.m_iMarked;
+		m_iClean = row.m_iClean;
+		m_fReadyAt = nowSeconds + row.m_iWashLeft - row.m_iReadySeconds;
+		LF_Debug.Info(FEATURE, string.Format("station %1 restored: %2's batch of %3 marked for %4 clean, wash %5 s left, ready for %6 s", m_sSiteId, m_sOwnerKey, m_iMarked, m_iClean, row.m_iWashLeft, row.m_iReadySeconds));
+		if (!Expire(nowSeconds))
+		{
+			Sync(nowSeconds);
+			ScheduleTimer(nowSeconds);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -211,9 +334,9 @@ class LF_LaunderStationComponent : ScriptComponent
 		if (vector.Distance(user.GetOrigin(), GetOwner().GetOrigin()) > m_fReach)
 			return LF_ELaunderStation.TOO_FAR;
 
-		float last = -100000;
-		m_mLastAction.Find(key, last);
-		if ((nowSeconds - last) * 1000 < m_iMinActionMs)
+		// Find leaves `last` at 0 on a miss, so a first action early in the world must not read as a repeat.
+		float last;
+		if (m_mLastAction.Find(key, last) && (nowSeconds - last) * 1000 < m_iMinActionMs)
 		{
 			LF_Debug.Warn(FEATURE, string.Format("station %1: %2 asked again faster than a hold, refused", m_sSiteId, key));
 			return LF_ELaunderStation.TOO_FAST;
@@ -237,6 +360,7 @@ class LF_LaunderStationComponent : ScriptComponent
 		if (access != LF_ELaunderStation.OK)
 			return access;
 
+		Expire(nowSeconds);
 		if (StateAt(nowSeconds) != STATE_EMPTY)
 			return LF_ELaunderStation.BUSY;
 
@@ -274,8 +398,7 @@ class LF_LaunderStationComponent : ScriptComponent
 		m_iClean = quote.m_iClean;
 		m_fReadyAt = nowSeconds + LF_LaunderRules.SecondsFor(taken, config.m_iBatchMax, config.m_iBatchSeconds);
 		Sync(nowSeconds);
-		GetGame().GetCallqueue().Remove(OnReadyTimer);
-		GetGame().GetCallqueue().CallLater(OnReadyTimer, (int)((m_fReadyAt - nowSeconds) * 1000) + 100, false);
+		ScheduleTimer(nowSeconds);
 
 		LF_EventBus.Publish(LF_OnMoneyMoved.CreateFull(key, LF_Ledger.ACCOUNT_MARKED, taken, false, REASON_IN, LF_MarkedCash.Count(user), ""));
 		Warm(key, nowSeconds);
@@ -284,19 +407,54 @@ class LF_LaunderStationComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The wash finished: clients see the batch ready.
-	protected void OnReadyTimer()
+	//! Server: one timer for the next edge of the batch: the wash ends (clients see it ready), then
+	//! the forfeit window ends (the station frees without anyone touching it).
+	protected void ScheduleTimer(float nowSeconds)
+	{
+		if (!GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		GetGame().GetCallqueue().Remove(OnTimer);
+		if (m_sOwnerKey.IsEmpty())
+			return;
+
+		float next = m_fReadyAt;
+		if (nowSeconds >= m_fReadyAt)
+		{
+			if (m_iForfeitSeconds <= 0)
+				return;
+
+			next = m_fReadyAt + m_iForfeitSeconds;
+		}
+
+		int delayMs = LF_Utils.MaxInt((int)((next - nowSeconds) * 1000), 0) + 100;
+		GetGame().GetCallqueue().CallLater(OnTimer, delayMs, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnTimer()
 	{
 		BaseWorld world = GetGame().GetWorld();
-		if (world)
-			Sync(world.GetWorldTime() / 1000);
+		if (!world)
+			return;
+
+		float now = world.GetWorldTime() / 1000;
+		if (!Expire(now))
+		{
+			Sync(now);
+			ScheduleTimer(now);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnDelete(IEntity owner)
 	{
 		if (GetGame() && GetGame().GetCallqueue())
-			GetGame().GetCallqueue().Remove(OnReadyTimer);
+			GetGame().GetCallqueue().Remove(OnTimer);
+
+		// A station that leaves keeps its batch as a pending save row (LF_LaunderStations).
+		if (Replication.IsServer())
+			LF_LaunderStations.Unregister(this);
 
 		super.OnDelete(owner);
 	}
@@ -326,6 +484,7 @@ class LF_LaunderStationComponent : ScriptComponent
 		if (access != LF_ELaunderStation.OK)
 			return access;
 
+		Expire(nowSeconds);
 		int state = StateAt(nowSeconds);
 		if (state == STATE_EMPTY)
 			return LF_ELaunderStation.EMPTY;
@@ -349,11 +508,7 @@ class LF_LaunderStationComponent : ScriptComponent
 		}
 
 		LF_Debug.Info(FEATURE, string.Format("station %1: %2 took %3 clean for %4 marked", m_sSiteId, key, owed, m_iMarked));
-		m_sOwnerKey = "";
-		m_iMarked = 0;
-		m_iClean = 0;
-		m_fReadyAt = 0;
-		Sync(nowSeconds);
+		ClearBatch(nowSeconds);
 		return LF_ELaunderStation.OK;
 	}
 
