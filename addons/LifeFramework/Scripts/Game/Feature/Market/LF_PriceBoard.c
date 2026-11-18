@@ -12,7 +12,7 @@ class LF_PriceBoard
 	static const string FEATURE = "Market";
 	static const string KIND = "prices";
 	static const string READ_ACTION = "LF_PriceBoardReadAction";
-	static const int NUMBERS_PER_GOOD = 2;
+	static const int NUMBERS_PER_GOOD = 2;	// lf-fixed: wire stride (price, base), not a tunable
 	static const string ARROW_DOWN = "v";
 
 	//------------------------------------------------------------------------------------------------
