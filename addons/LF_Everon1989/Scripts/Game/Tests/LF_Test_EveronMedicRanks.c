@@ -1,6 +1,6 @@
 // red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_MedicPackOverlay,LF_Test_EveronMedicRanks` printed `RED-OK everon/medic-ranks (fails with the hook on, 5 assertions)`; first failure `the pack ladder has four rungs (expected 4, got 0)`. The hook swaps in an empty header as the pack source. `--only` passes under the pack header.
 //! #3047 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the pack's medic overlay
-//! gives a four-rung ladder: orderly, EMT, paramedic, doctor. Pay rises with each rung (0.3, 0.4, 0.55, 0.7
+//! gives a four-rung ladder: orderly, EMT, paramedic, doctor. Pay rises with each rung (0.4, 0.5, 0.6, 0.7
 //! cash per on-duty second), the first three promote after 1, 2 and 4 hours of duty, the top rung never
 //! does, and each rung adds one medicine tier to the kit. Every kit prefab resolves to a real resource and a
 //! rank-0 orderly is refused the paramedic's morphine.
@@ -48,7 +48,7 @@ class LF_Test_EveronMedicRanks : LF_Test
 			return;
 
 		array<string> ids = {"orderly", "emt", "paramedic", "doctor"};
-		array<float> pay = {0.3, 0.4, 0.55, 0.7};
+		array<float> pay = {0.4, 0.5, 0.6, 0.7};
 		array<int> seconds = {3600, 7200, 14400, 0};
 		foreach (int i, string id : ids)
 		{
