@@ -2134,6 +2134,31 @@ StringTable {
      Target_en_us "Start a crew"
      Comment "Town board card (organisations): card title."
     }
+    CustomStringTableItem "{E37B52C51E000EF7}" {
+     Id "LF-TownCard_Plots_Category"
+     Target_en_us "Property"
+     Comment "Town board card (plots for sale, #2984): category."
+    }
+    CustomStringTableItem "{6205E969F3A4DA32}" {
+     Id "LF-TownCard_Plots_Detail"
+     Target_en_us "Walk to a *plot sign* and use *Buy plot* with the price in cash|Plots for sale are marked on your map and the nearest one is pinned here|A bought plot is yours across restarts; nobody else can buy it"
+     Comment "Town board card (plots for sale): detail sheet text."
+    }
+    CustomStringTableItem "{5C623565EE17828D}" {
+     Id "LF-TownCard_Plots_Line"
+     Target_en_us "Land for sale on the island. Marked on your map."
+     Comment "Town board card (plots for sale): one line on the card."
+    }
+    CustomStringTableItem "{19166851D7D315EF}" {
+     Id "LF-TownCard_Plots_Place"
+     Target_en_us "Plot for sale"
+     Comment "Town board card (plots for sale): name of the place in the where line."
+    }
+    CustomStringTableItem "{D17128F9B8C720F4}" {
+     Id "LF-TownCard_Plots_Title"
+     Target_en_us "Plots for sale"
+     Comment "Town board card (plots for sale): card title."
+    }
     CustomStringTableItem "{43D58C6A3657CB6C}" {
      Id "LF-TownCard_Police_Category"
      Target_en_us "Police"

@@ -6512,6 +6512,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Clinic"
      Comment "Map POI kind name (#2230): the hospital or clinic."
     }
+    CustomStringTableItem "{912FF601FBAB64D2}" {
+     Id "LF-MapPoi_PlotForSale"
+     Target_en_us "Plot for sale"
+     Comment "Map POI kind name (#2984): a plot sign nobody owns yet; it leaves the map once the plot is bought."
+    }
     CustomStringTableItem "{83D5FBD46034ADAD}" {
      Id "LF-MapPoi_PoliceArmoury"
      Target_en_us "{Police} armoury"

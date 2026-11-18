@@ -30,7 +30,9 @@ waypoint button.
 - **Where a card points:** a place kind and id in `LF_Places`, kind `Sign` by default: every
   `LF_SignComponent` claims its sign id there (`LF_Places.Claim`, the first prop of a shared id wins).
   The core never names a place or holds a coordinate; a pack on another map points its cards at its
-  own signs. A place not on the map reads "Ask around" and has no waypoint button.
+  own signs. A place not on the map reads "Ask around" and has no waypoint button. A card whose place id is `*`
+  (`PLACE_NEAREST`) points at the nearest live place of its kind to the board (the 1989 "Plots for sale" card, kind
+  `PlotForSale`, #2984); it marks no single place heard of.
 - **Data:** `Configs/TownBoard/LF_TownBoard.conf` (`LF_TownBoardConfig`, public surface) ships the
   title and no cards. The pack adds them: `LF_Everon1989/Configs/TownBoard/LF_TownBoard_Everon1989.conf`
   (an overlay listed in both mission headers), text in the pack table (`LF-TownCard_*`,
