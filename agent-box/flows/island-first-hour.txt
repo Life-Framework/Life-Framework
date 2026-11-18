@@ -53,19 +53,19 @@ stand Fit_saint_philippe_arrival_Place
 wait 1500
 shot ui island_01_square
 
-step 2 The clerk greets you; read the rules pending #2932
-stand Fit_saint_philippe_arrival_Clerk
+step 2 The clerk greets you; read the rules
+stand Fit_saint_philippe_arrival_town_hall_clerk
 wait 1500
-use LF_DialogueTalkAction Fit_saint_philippe_arrival_Clerk
+use LF_QuestAction Fit_saint_philippe_arrival_town_hall_clerk
 wait 4000
 shot ui island_02_clerk_greets
 input MenuSelect
 wait 2000
 input MenuBack
 wait 1500
-stand Fit_saint_philippe_arrival_Sign_Rules
+stand Fit_saint_philippe_arrival_lf_sign_rules
 wait 1000
-use LF_SignReadAction Fit_saint_philippe_arrival_Sign_Rules
+use LF_SignReadAction Fit_saint_philippe_arrival_lf_sign_rules
 wait 1000
 shot ui island_02_rules
 input MenuBack
@@ -90,9 +90,9 @@ shot ui island_04_paid
 expect cash up
 
 step 5 Bank teller: deposit 20, withdraw 200 pending #2932
-stand Fit_saint_philippe_bank_LF_BankTeller
+stand Fit_saint_philippe_bank_bank_teller
 wait 1500
-use LF_ATMAction Fit_saint_philippe_bank_LF_BankTeller
+use LF_ATMAction Fit_saint_philippe_bank_bank_teller
 wait 1200
 click Key2Button
 click Key0Button
@@ -142,9 +142,9 @@ wait 500
 expect cash -250
 
 step 6c Buy the cheapest car at the lot pending #2933
-stand Fit_saint_philippe_carlot_Roadmap_Vehicle_Lot
+stand Fit_saint_philippe_carlot_vehicle_lot
 wait 1500
-use LF_VehicleBuyAction Fit_saint_philippe_carlot_Roadmap_Vehicle_Lot
+use LF_VehicleBuyAction Fit_saint_philippe_carlot_vehicle_lot
 wait 1500
 shot ui island_06c_lot
 click Car0_Action
@@ -171,24 +171,24 @@ expect cash down
 expect item WaterBottle
 
 step 8 Police duty: clock in and out at the desk pending #2319
-stand Fit_saint_philippe_police_Roadmap_Police_Desk
+stand Fit_saint_philippe_police_police_kit_duty_desk
 wait 1500
-use LF_DutyAction Fit_saint_philippe_police_Roadmap_Police_Desk
+use LF_DutyAction Fit_saint_philippe_police_police_kit_duty_desk
 wait 1500
 shot ui island_08_police_on_duty
 expect duty police
-use LF_DutyAction Fit_saint_philippe_police_Roadmap_Police_Desk
+use LF_DutyAction Fit_saint_philippe_police_police_kit_duty_desk
 wait 1500
 expect duty off
 
 step 9 Medic duty: clock in and out at the clinic desk pending #2320
-stand Fit_saint_philippe_clinic_Roadmap_Hospital_Duty_Desk
+stand Fit_saint_philippe_clinic_lf_medic_duty_desk
 wait 1500
-use LF_DutyAction Fit_saint_philippe_clinic_Roadmap_Hospital_Duty_Desk
+use LF_DutyAction Fit_saint_philippe_clinic_lf_medic_duty_desk
 wait 1500
 shot ui island_09_medic_on_duty
 expect duty medic
-use LF_DutyAction Fit_saint_philippe_clinic_Roadmap_Hospital_Duty_Desk
+use LF_DutyAction Fit_saint_philippe_clinic_lf_medic_duty_desk
 wait 1500
 expect duty off
 

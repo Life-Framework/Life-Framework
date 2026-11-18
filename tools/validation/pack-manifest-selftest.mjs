@@ -3,6 +3,7 @@
 // Proves validate-pack-manifest fails on each violation it exists for, in a fixture tree.
 // red-proof: with the baseline check disabled this printed "FAIL removed public name: expected
 // /was removed/" and exited 1 (2026-11-14).
+// inputs: imports
 
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";

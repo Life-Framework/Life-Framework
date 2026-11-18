@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{DD8C24A0E8CC6095}Prefabs/Items/Fishing/LF_FishTuna.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

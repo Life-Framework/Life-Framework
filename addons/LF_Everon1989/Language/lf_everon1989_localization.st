@@ -949,6 +949,71 @@ StringTable {
      Target_en_us "First wages"
      Comment "Arrival chain step 3 title."
     }
+    CustomStringTableItem "{A089683A227009CA}" {
+     Id "LF-Quest_SettleFish_Desc"
+     Target_en_us "Catch a fish and sell it at the fish counter."
+     Comment "Settling-in chain: sell a fish at the fish counter."
+    }
+    CustomStringTableItem "{34CC25BF3950DC70}" {
+     Id "LF-Quest_SettleFish_Title"
+     Target_en_us "Sell a catch"
+     Comment "Settling-in chain, one of three errands after the car. Title."
+    }
+    CustomStringTableItem "{6E07D3A5B533B63A}" {
+     Id "LF-Quest_SettleFuel_Desc"
+     Target_en_us "Fuel runs are open to you now. Take a jerrycan job from the dispatch board and deliver it."
+     Comment "Settling-in chain step 2: one paid fuel run."
+    }
+    CustomStringTableItem "{233D2662DE4FBD92}" {
+     Id "LF-Quest_SettleFuel_Title"
+     Target_en_us "Your first fuel run"
+     Comment "Settling-in chain step 2 title."
+    }
+    CustomStringTableItem "{066FD416F050DA24}" {
+     Id "LF-Quest_SettleParcels_Desc"
+     Target_en_us "Run five parcels for the post office. Five runs earns you the level for the fuel run, which comes next."
+     Comment "Settling-in chain step 1: five paid parcel runs."
+    }
+    CustomStringTableItem "{893130A1FA32D104}" {
+     Id "LF-Quest_SettleParcels_Title"
+     Target_en_us "Five parcel runs"
+     Comment "Settling-in chain step 1 title (#3125)."
+    }
+    CustomStringTableItem "{EC2F8F67C4ED1B67}" {
+     Id "LF-Quest_SettlePermit_Desc"
+     Target_en_us "Apply for a firearm permit at the gun store counter and collect it when it is ready."
+     Comment "Settling-in chain: collect the firearm permit."
+    }
+    CustomStringTableItem "{F789C21DFB0FD2E7}" {
+     Id "LF-Quest_SettlePermit_Title"
+     Target_en_us "A firearm permit"
+     Comment "Settling-in chain, one of three errands after the car. Title."
+    }
+    CustomStringTableItem "{87B321F40E5414E6}" {
+     Id "LF-Quest_SettlePlot_Desc"
+     Target_en_us "Find a plot for sale and read its sign. It says what the plot costs and how to buy it."
+     Comment "Settling-in chain: read a plot-for-sale sign."
+    }
+    CustomStringTableItem "{3C8729FB1CF04D6E}" {
+     Id "LF-Quest_SettlePlot_Title"
+     Target_en_us "A plot of your own"
+     Comment "Settling-in chain, one of three errands after the car. Title."
+    }
+    CustomStringTableItem "{32119D9F88CBF879}" {
+     Id "LF-Quest_SettlePlot_TurnIn"
+     Target_en_us "That is how land is bought here. Save up, and the plot is yours."
+     Comment "Settling-in chain: shown when the plot sign is read."
+    }
+    CustomStringTableItem "{8F2D02985CDF28BF}" {
+     Id "LF-Quest_SettleWheels_Desc"
+     Target_en_us "Buy any car at the car lot. The town board shows where it is."
+     Comment "Settling-in chain step 3: buy a car."
+    }
+    CustomStringTableItem "{71D42A3909D03894}" {
+     Id "LF-Quest_SettleWheels_Title"
+     Target_en_us "Your own wheels"
+     Comment "Settling-in chain step 3 title."
+    }
     CustomStringTableItem "{C2A7527A4FB2AAB1}" {
      Id "LF-QuizEveron_fear_A1"
      Target_en_us "Comply. Your life comes first."

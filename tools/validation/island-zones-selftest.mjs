@@ -13,6 +13,7 @@
 // the claim's `destruction.mode: "needs-hook"` is a warning and never an error; the per-place limits within 60 m;
 // the guard lets a town-draft branch change only its own layer; the repo as it stands passes validate-island-zones.
 // red-proof: before tools/town/check.mjs existed this printed "FAIL cannot load tools/town/check.mjs: ERR_MODULE_NOT_FOUND" (2026-11-17).
+// red-proof: with the '-<word>' tail rule left out of guardIslandLayers() this printed "FAIL a ws/town-draft-<place>-<slot>-<word> branch may change its slot's layer (#3101)" (2026-11-18).
 // red-proof: with the footprint test left out of checkClaimsAndFootprints() this printed "FAIL outside-footprint: no error contains 'Fit_shop_Stray stands 26 m outside building b03'" (2026-11-17).
 
 // red-proof: before the partial rule (#2347) this printed "FAIL missing-layer-claim [partial]: expected pass, got fail: slot shop: no claim ..." and the
@@ -123,6 +124,9 @@ for (const name of names) {
   check(g("ws/town-draft-sample-square-shop", [arrival]).errors.length === 1, "the guard should refuse a town-draft branch that changes another slot's layer");
   check(g("ws/town-draft-saint-philippe-general-store", [`${LAYER_DIR}/Place_saint-philippe_general-store.layer`]).errors.length === 0, "hyphens in the place and the slot must not confuse the guard");
   check(g("ws/town-draft-saint-philippe-general-store", [`${LAYER_DIR}/Place_saint-philippe_clothing.layer`]).errors.length === 1, "a town-draft branch of one slot must not change a sibling's layer");
+  check(g("ws/town-draft-saint-philippe-cafe-shop", [`${LAYER_DIR}/Place_saint-philippe_cafe.layer`]).errors.length === 0, "a ws/town-draft-<place>-<slot>-<word> branch may change its slot's layer (#3101)");
+  check(g("ws/town-draft-saint-philippe-cafe-shop", [`${LAYER_DIR}/Place_saint-philippe_clothing.layer`]).errors.length === 1, "a -suffix town-draft branch must not change a sibling slot's layer");
+  check(g("ws/town-draft-saint-philippe-cafe-shop", [`${LAYER_DIR}/Place_saint-philippe_cafe-shop.layer`]).errors.length === 0, "a branch's exact place-slot layer is still its own");
   check(g("ws/fix-bug", ["docs/features/world.md", `${LAYER_DIR}/Gamemode.layer`]).errors.length === 0, "the guard touches only Place_*.layer files");
   check(g("main", [shop]).errors.length === 0 && g("HEAD", [shop]).errors.length === 0, "main and a detached HEAD are not checked");
 }

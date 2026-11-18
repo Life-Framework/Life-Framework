@@ -370,7 +370,7 @@
 - ✅ **Duty pay at the desk** (verified 2026-11-08: LOGIC test `jobs/duty-pay`;
   the 2-client cash check is manual). Going off duty pays the shift's on-duty
   seconds times `m_fPoliceDutyPayPerSecond` (`Configs/Jobs/LF_Jobs.conf`, flagship
-  0.5) as cash through `LF_DutyPay.PayAtClockOut`, with the pick-up sound and a
+  0.25 since 2026-11-18, was 0.5) as cash through `LF_DutyPay.PayAtClockOut`, with the pick-up sound and a
   `#EL-Duty_Paid` toast. Seconds settled by an armory draw mid-shift are kept
   for the clock-out. A second clock-out, a clock-out with no clock-in, and a
   non-police account pay nothing. Unpaid seconds are session state: a restart
@@ -382,10 +382,17 @@
   officer stays on duty with the body and kit, but the time away is never counted. `OnPlayerReturned` (on spawn) starts
   the clock again inside the same shift cap, which also restarts the clock of an officer whose on-duty flag survived a
   server restart. The cap applies to every duty role (police and medic). Log `[LFDebug:Ranks] shift cap reached`,
-  `duty clock stopped`, `duty clock resumed`. Not tracked: whether a connected officer is moving (no activity signal
-  exists), so an officer who stays connected but idle earns up to the cap. The shift's counted seconds are session
+  `duty clock stopped`, `duty clock resumed`. A connected officer who stands idle is paused by the idle sampler below. The shift's counted seconds are session
   state: a server restart gives a fresh cap. The cap log fires once per shift. Tests `police/duty-shift-cap`,
   `police/duty-clock-disconnect`.
+- 🔨 **Duty pay pauses while the officer or medic stands idle** (#3120, in-dev, WORLD `police/duty-idle`). `LF_DutyIdle`
+  samples every connected on-duty player every 30 s. Moving more than 2 m (on foot or in any vehicle; a seat follows the
+  vehicle's position) or turning the view about 10 degrees counts as active, so patrol, a desk, a parked car with the
+  officer looking out and driving to a call all keep the clock running. After `dutyIdleSeconds` (jobs config, default
+  300; 0 = off) with none of that, the clock is settled at the moment the window ran out and stopped; the idle time earns
+  no pay and no rank time. The next sample that sees activity starts it again (at most 30 s late). Rank rates are
+  untouched. A logout while paused needs nothing: the spawn restarts the clock (`ResumeDutyClock`). Watches are runtime
+  only. Log `[LFDebug:DutyIdle] duty clock paused`, `duty clock resumed`.
 - 🔨 **A character switch settles the duty clock first** (#2838, in-dev, LOGIC `police/duty-clock-character-switch`). Every
   change of the account's active character (a pick, a new character made active, the active one removed) runs
   `LF_PoliceRanks.SettleForCharacterSwitch` before it: the running seconds go to the outgoing character's rank time
@@ -549,8 +556,8 @@
   wanted list. DebugWorld places `Roadmap_Police_Armory` at `241.2 0 244.2`
   (police station forecourt) on `Street_Police.layer`.
 - 🔨 The flagship ladder (#1769, merged, in-dev; `LF_Police_Everon1989.conf`): five ranks, Cadet, Patrol,
-  Senior Patrol, Sergeant, Lieutenant. Fine caps 500, 1000, 2500, 4000, 5000; pay 0.3, 0.5, 0.65, 0.8, 1
-  per on-duty second; duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
+  Senior Patrol, Sergeant, Lieutenant. Fine caps 500, 1000, 2500, 4000, 5000; pay 0.25, 0.28, 0.30, 0.33, 0.35
+  per on-duty second (900 to 1260 an hour; was 0.3 to 1 until 2026-11-18, the duty-versus-civilian pay gap); duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
   the pack patches the core's `patrol` (index 0) into Cadet and `senior` (index 1) into Patrol and appends the other three.
   Titles are the pack's `LF-Rank_*` rows. A saved rank above the ladder clamps to the top on load.
 - 🔨 Only an officer above the new rank promotes (#2095, in-dev). `LF_PoliceRanks.Promote` (server) refuses
