@@ -58,8 +58,16 @@ class LF_PlacementPickup
 		if (!why.IsEmpty())
 			return Refuse(string.Format("refused: %1 picking up %2: %3", pickerKey, id, why));
 
+		// Storage furniture with something in it stays: the pick-up path has no inventory to put it in.
+		if (LF_PlacedStorage.HasContents(placed, id))
+		{
+			LF_PlacedStorage.NotifyEmptyFirst(player);
+			return Refuse(string.Format("refused: %1 picking up %2: it still holds items, empty it first", pickerKey, id));
+		}
+
 		EntityID placedId = placed.GetID();
 		LF_PlacementSave.Forget(id);
+		LF_PlacedStorage.Release(id);
 		SCR_EntityHelper.DeleteEntityAndChildren(placed);
 		LF_PlacementCost.OnPickedUp(player, placedId);
 		GiveItemBack(player, row.m_sItemPrefab);

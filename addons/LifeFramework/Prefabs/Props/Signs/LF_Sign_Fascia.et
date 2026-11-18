@@ -13,6 +13,8 @@ GenericEntity : "{7D7C2DB551E9C36E}Prefabs/Structures/BuildingParts/Signs/Commer
    Enabled 0
   }
   LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sStyle "fascia"
+   m_sSize "fascia"
    m_bFaceOnOwner 1
    m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
    m_vTitlePos 40 26 0

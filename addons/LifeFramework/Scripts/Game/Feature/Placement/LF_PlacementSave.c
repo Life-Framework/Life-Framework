@@ -196,6 +196,7 @@ class LF_PlacementSave
 		s_mRows.Set(id, row);
 		s_mLive.Set(id, placed.GetID());
 		LF_PlacedOwnerComponent.Stamp(placed, ownerKey);
+		LF_PlacedStorage.Attach(placed, id); // storage furniture: its contents persist under this id
 		LF_Debug.Info(FEATURE, string.Format("recorded permanent placement %1 (%2) for %3 at %4, %5 owned", id, kind, ownerKey, row.m_vPos, CountOwned(ownerKey)));
 		return id;
 	}
@@ -324,6 +325,7 @@ class LF_PlacementSave
 			s_mRows.Set(row.m_sPlacementId, row);
 			s_mLive.Set(row.m_sPlacementId, placed.GetID());
 			LF_PlacedOwnerComponent.Stamp(placed, row.m_sOwnerKey);
+			LF_PlacedStorage.Attach(placed, row.m_sPlacementId); // storage furniture: its saved contents come back
 			standing++;
 		}
 

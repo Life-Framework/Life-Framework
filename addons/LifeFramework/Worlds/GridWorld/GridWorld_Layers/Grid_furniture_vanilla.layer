@@ -1,0 +1,118 @@
+// Grid cell c19r1 for furniture-vanilla: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 251 0 35
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 255.4 0 35
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 259.8 0 35
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 264.2 0 35
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 268.6 0 35
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 273 0 35
+ angleY 270
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 273 0 40
+ angleY 270
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 273 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 268.6 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 264.2 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 259.8 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 255.4 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_furniture_vanilla_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 251 0 45
+ angleY 90
+}
+GenericEntity Grid_furniture_vanilla_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:furniture-vanilla"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 250.2 0.505 35.6
+ angleY -90
+}
+GenericEntity Grid_furniture_vanilla_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "furniture-vanilla"
+  }
+ }
+ coords 250.3 0 37.5
+ angleY 90
+}
+GenericEntity Grid_furniture_vanilla_R0_1 : "{EFF4F80C6C9E1391}Prefabs/Placeables/Furniture/Furniture_Bed_Placed.et" {
+ coords 253 0.002 37
+ angleY 180
+}
+GenericEntity Grid_furniture_vanilla_R0_2 : "{67954C21A04E0A48}Prefabs/Placeables/Furniture/Furniture_BedDouble_Placed.et" {
+ coords 256.599 0.001 36.993
+ angleY 180
+}
+GenericEntity Grid_furniture_vanilla_R0_3 : "{E4521D3149560EA2}Prefabs/Placeables/Furniture/Furniture_Sofa_Placed.et" {
+ coords 260.2 0.001 37.003
+ angleY 180
+}
+GenericEntity Grid_furniture_vanilla_R0_4 : "{5B8F03FFE9257A82}Prefabs/Placeables/Furniture/Furniture_Armchair_Placed.et" {
+ coords 263.799 0.002 36.967
+ angleY 180
+}
+GenericEntity Grid_furniture_vanilla_R0_5 : "{C927C9A3560142D2}Prefabs/Placeables/Furniture/Furniture_CoffeeTable_Placed.et" {
+ coords 267.4 0.001 37
+ angleY 180
+}
+GenericEntity Grid_furniture_vanilla_R0_6 : "{5914A5E4BFEB5380}Prefabs/Placeables/Furniture/Furniture_Rug_Placed.et" {
+ coords 271.058 0.004 37
+ angleY 180
+}
+GenericEntity Grid_furniture_vanilla_R1_1 : "{1146F43F2F714497}Prefabs/Placeables/Furniture/Furniture_Tv_Placed.et" {
+ coords 253 0.001 42.974
+ angleY 180
+}
+GenericEntity Grid_furniture_vanilla_R1_2 : "{C807905E1EA78CE6}Prefabs/Placeables/Furniture/Furniture_Radio_Placed.et" {
+ coords 256.597 0.001 43.006
+ angleY 180
+}
+GenericEntity Grid_furniture_vanilla_R1_3 : "{F20EBA81A2FEECD8}Prefabs/Placeables/Furniture/Furniture_Plant_Placed.et" {
+ coords 260.204 0.001 43.017
+ angleY 180
+}
+GenericEntity Grid_furniture_vanilla_R1_4 : "{C4832B638C6FFDFF}Prefabs/Placeables/Furniture/Furniture_Stove_Placed.et" {
+ coords 263.475 0.001 43.352
+ angleY 180
+}
+GenericEntity Grid_furniture_vanilla_R1_5 : "{9C4E2301D74B31CC}Prefabs/Placeables/Furniture/Furniture_Bookcase_Placed.et" {
+ coords 266.65 0.001 43.25
+ angleY 180
+}
+GenericEntity Grid_furniture_vanilla_R1_6 : "{BACF278EF2B29706}Prefabs/Placeables/Furniture/Furniture_Workbench_Placed.et" {
+ coords 271 0.002 43
+ angleY 180
+}

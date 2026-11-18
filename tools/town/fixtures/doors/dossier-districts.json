@@ -1,0 +1,67 @@
+{
+ "place": "fixture-town-districts",
+ "buildings": [
+  {
+   "id": "b09",
+   "stem": "Shop_E_1",
+   "type": "shop",
+   "x": 101,
+   "z": 101,
+   "doors": 2,
+   "interior": {
+    "value": "yes"
+   },
+   "footprint": {
+    "corners": [
+     [
+      96,
+      96
+     ],
+     [
+      106,
+      96
+     ],
+     [
+      106,
+      106
+     ],
+     [
+      96,
+      106
+     ]
+    ]
+   }
+  },
+  {
+   "id": "b10",
+   "stem": "Hut_E_1",
+   "type": "house",
+   "x": 400,
+   "z": 100,
+   "doors": 1,
+   "interior": {
+    "value": "yes"
+   },
+   "footprint": {
+    "corners": [
+     [
+      395,
+      95
+     ],
+     [
+      405,
+      95
+     ],
+     [
+      405,
+      105
+     ],
+     [
+      395,
+      105
+     ]
+    ]
+   }
+  }
+ ]
+}

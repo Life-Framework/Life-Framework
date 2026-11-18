@@ -30,6 +30,12 @@ class LF_Test_EveronPlotPrices : LF_Test
 			ctx.True(!LF_PropertyConfig.PlotTierId(key).IsEmpty(), key + " names the house tier built on it");
 		}
 
+		// Maintainer balance: the cheapest plot is about 3-4 h of courier work away.
+		ctx.Equal(4500, LF_PropertyConfig.PlotPrice("saint-philippe.p1"), "saint-philippe.p1 costs 4500");
+		ctx.Equal(4000, LF_PropertyConfig.PlotPrice("saint-philippe.p2"), "saint-philippe.p2 costs 4000");
+		ctx.Equal(3500, LF_PropertyConfig.PlotPrice("saint-philippe.p3"), "saint-philippe.p3 costs 3500");
+		ctx.Equal(2800, LF_PropertyConfig.PlotPrice("saint-philippe.p4"), "saint-philippe.p4 costs 2800");
+
 		ctx.True(LF_PropertyConfig.PlotPrice("plot-a") > 0, "the core example plot stays in the catalogue");
 
 		LF_PropertyConfig.Reload();

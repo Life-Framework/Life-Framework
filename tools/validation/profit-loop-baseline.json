@@ -8,5 +8,10 @@
   "id": "machine:cement-plant",
   "margin": 24,
   "reason": "Shipped prices (#686 audit): sand, gravel and cement bags are 12 each under the Prefabs/Items/Resources rule = 36; the plant makes 10 Brick that sell for 6 each = 60. A design decision to retune (Brick sell 3 closes it); not changed here."
+ },
+ {
+  "id": "machine:sawmill",
+  "margin": 15,
+  "reason": "Lumber (#3264): the general-store log buys at 10; the sawmill now makes 4 planks and 1 kindling per log, which a trader buys at 5 each = 25. Logs are felled, not bought, and LB12 (the lumber economy card) retunes the log, plank and trader prices together, so the loop is listed here until it does. Sawing is the only labour and the check counts none."
  }
 ]

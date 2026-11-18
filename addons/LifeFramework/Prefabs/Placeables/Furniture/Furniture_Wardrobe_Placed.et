@@ -1,0 +1,52 @@
+GenericEntity : "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et" {
+ ID "33C2D6E116E06F2F"
+ components {
+  ActionsManagerComponent "{8B5D49613C659E4A}" {
+   ActionContexts {
+    UserActionContext "{7E2BED26FB99AAB6}" {
+     ContextName "default"
+     Position PointInfo "{F9620EB2C78751EC}" {
+      Offset -0.75 1 0.382
+     }
+     Radius 1.742
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{F7B9A7ACC9E68485}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_FurnitureStorageOpenAction "{2B89012D9215176D}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo SCR_ActionUIInfo "{4A6588467FC730FF}" {
+      Name "#LF-FurnitureStorage_Open"
+     }
+    }
+   }
+  }
+  LF_FurnitureStorageManagerComponent "{AF6164D4D5AA97B7}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{1F6E3BF26ABA6286}" {
+   Attributes SCR_ItemAttributeCollection "{E85626D633E251A9}" {
+    ItemDisplayName SCR_InventoryUIInfo "{034C79BAB9BBD6EA}" {
+     Name "#LF-Furniture_Wardrobe_Name"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 120000
+   MaxItemSize 70 140 70
+   m_fMaxWeight 60
+  }
+  LF_PersistentStorageComponent "{D75773DB7CCF6AAC}" {
+   m_bKeyAssignedLater 1
+  }
+  LF_PlacedOwnerComponent "{457391F3550AB781}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

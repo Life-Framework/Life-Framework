@@ -101,10 +101,20 @@ class LF_Test_LoggingChain : LF_Test
 			if (!process)
 				continue;
 
-			bool inputIsLog = false;
-			if (process.m_aProcessingInputs)
+			// The recipe lives in the chain row the action names (#3264); the prefab arrays stay empty.
+			array<ref LF_ProcessingInput> recipeInputs = process.m_aProcessingInputs;
+			array<ref LF_ProcessingOutput> recipeOutputs = process.m_aProcessingOutputs;
+			LF_ResourceMachineDef machine = LF_ResourceChainCatalog.FindMachine(process.m_sMachineId);
+			if (machine)
 			{
-				foreach (LF_ProcessingInput input : process.m_aProcessingInputs)
+				recipeInputs = machine.m_aInputs;
+				recipeOutputs = machine.m_aOutputs;
+			}
+
+			bool inputIsLog = false;
+			if (recipeInputs)
+			{
+				foreach (LF_ProcessingInput input : recipeInputs)
 				{
 					if (input.m_InputPrefab == LOG)
 						inputIsLog = true;
@@ -112,9 +122,9 @@ class LF_Test_LoggingChain : LF_Test
 			}
 
 			bool outputIsWood = false;
-			if (process.m_aProcessingOutputs)
+			if (recipeOutputs)
 			{
-				foreach (LF_ProcessingOutput output : process.m_aProcessingOutputs)
+				foreach (LF_ProcessingOutput output : recipeOutputs)
 				{
 					if (output.m_OutputPrefab == PLANK || output.m_OutputPrefab == KINDLING)
 						outputIsWood = true;

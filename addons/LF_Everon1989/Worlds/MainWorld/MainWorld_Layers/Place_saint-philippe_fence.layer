@@ -1,0 +1,36 @@
+GenericEntity Fit_saint_philippe_fence_Place {
+ components {
+  LF_PlaceComponent "{F4AD18E5093D4BBE}" {
+   m_sKind "FenceYard"
+   m_sId "saint-philippe.fence"
+  }
+  LF_FittedBuildingComponent "{30D402362F73F75F}" {
+  }
+ }
+ coords 4546.2 16.9 10670
+}
+GenericEntity Fit_saint_philippe_fence_fence_yard_furniture_01 : "{21ABC616E459B346}Prefabs/Buildings/FenceYard/Furniture/FenceYard_furniture_01.et" {
+ coords 4546.2 16.7 10670
+ angleY -11
+}
+GenericEntity Fit_saint_philippe_fence_kit : "{6C6855E3C560B551}Prefabs/Buildings/FenceYard/FenceYard_Kit.et" {
+ coords 4546.2 16.7 10670
+ angleY -11
+}
+GenericEntity Fit_saint_philippe_fence_fence_yard_stall : "{4855AC571C89CA6D}Prefabs/Props/Commercial/LF_FenceStall.et" {
+ coords 4547.171 16.89 10671.819
+ angleY -11
+}
+LF_NpcBaseEntity Fit_saint_philippe_fence_fence_yard_fence : "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.et" {
+ coords 4547.224 16.89 10672.593
+ angleY 169
+}
+GenericEntity Fit_saint_philippe_fence_chop_bench : "{9C2E4A7B1D5F8036}Prefabs/Crime/LF_ChopBench.et" {
+ components {
+  LF_ChopShopComponent "{4531DCE1B778380A}" {
+   m_sShopId "saint-philippe-chop"
+  }
+ }
+ coords 4542.339 16.89 10670.472
+ angleY 79
+}

@@ -218,6 +218,22 @@ class LF_JobStartRunAction : ScriptedUserAction
 		return string.Empty;
 	}
 
+	//! The toast key for a start that did not begin a run; "" for STARTED. A refused start never
+	//! returns in silence (#3356: "Pick up parcel" did nothing while a dead run was still open).
+	static string StartRefusalKey(LF_ERunStart outcome)
+	{
+		if (outcome == LF_ERunStart.STARTED)
+			return string.Empty;
+		if (outcome == LF_ERunStart.NO_DEPOSIT)
+			return LF_CivilianJob.KEY_NEED_DEPOSIT;
+		if (outcome == LF_ERunStart.ALREADY_RUN)
+			return LF_CivilianJob.KEY_ALREADY_RUN;
+		if (outcome == LF_ERunStart.NO_CARGO)
+			return LF_CivilianJob.KEY_NO_ROOM;
+
+		return LF_CivilianJob.KEY_START_REFUSED;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
@@ -249,12 +265,15 @@ class LF_JobStartRunAction : ScriptedUserAction
 		LF_ERunStart started = LF_CivilianJob.BeginRun(pUserEntity, uid, m_eJob, LF_JobGuards.Now(), deposit);
 		if (started == LF_ERunStart.NO_DEPOSIT)
 		{
-			LF_Utils.NotifyEntity(pUserEntity, LF_CivilianJob.KEY_NEED_DEPOSIT, LF_CivilianJob.NameKey(m_eJob), 6.0, deposit.ToString());
+			LF_Utils.NotifyEntity(pUserEntity, StartRefusalKey(started), LF_CivilianJob.NameKey(m_eJob), 6.0, deposit.ToString());
 			return;
 		}
 
 		if (started != LF_ERunStart.STARTED)
+		{
+			LF_Utils.NotifyEntity(pUserEntity, StartRefusalKey(started), LF_CivilianJob.NameKey(m_eJob), 6.0);
 			return;
+		}
 
 		// The nearest drop goes on the map and the waypoint (LF_JobMapMarks; a taxi run gets none).
 		LF_JobMapMarks.OnRunStarted(uid, m_eJob, pUserEntity.GetOrigin());

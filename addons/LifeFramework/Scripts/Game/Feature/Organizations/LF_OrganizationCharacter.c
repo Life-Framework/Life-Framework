@@ -244,7 +244,7 @@ modded class SCR_ChimeraCharacter
 		if (!LF_RefuseAwayFromOrganizationDesk("lease", 0))
 		{
 			string characterId = LF_OrganizationPlayer.CharacterId(this);
-			if (!characterId.IsEmpty() && LF_OrgHideoutLease.Lease(characterId, LF_Hideout.OrgHideoutId()))
+			if (!characterId.IsEmpty() && LF_OrgHideoutLease.Lease(characterId, LF_Hideout.BaseSiteForCharacter(characterId)))
 				notice = "#LF-Org_Leased";
 		}
 
@@ -267,7 +267,7 @@ modded class SCR_ChimeraCharacter
 		if (!LF_RefuseAwayFromOrganizationDesk("lease release", 0))
 		{
 			string characterId = LF_OrganizationPlayer.CharacterId(this);
-			if (!characterId.IsEmpty() && LF_OrgHideoutLease.Release(characterId, LF_Hideout.OrgHideoutId()))
+			if (!characterId.IsEmpty() && LF_OrgHideoutLease.Release(characterId, LF_Hideout.BaseSiteForCharacter(characterId)))
 				notice = "#LF-Org_LeaseGivenUp";
 			else
 				LF_NotificationManagerComponent.NotifyPlayer(LF_PlayerInteraction.PlayerIdOf(this), "#LF-Org_Title", "#LF-Org_LeaseReleaseRefused", 4.0, LF_ENotificationType.WARNING);
@@ -365,7 +365,7 @@ modded class SCR_ChimeraCharacter
 			fund = org.GetFund();
 			rights = LF_OrgRules.RightsOf(org, characterId);
 			processing = org.HasProcessingSlot();
-			lease = LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.OrgHideoutId());
+			lease = LF_OrgHideoutLease.StateFor(org.GetId(), LF_Hideout.BaseSiteFor(org.GetId()));
 			members = LF_OrganizationPlayer.MemberLines(org);
 			rank = org.GetRankName(characterId);
 		}

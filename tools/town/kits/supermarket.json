@@ -20,43 +20,15 @@
     "vanilla": "{A43A100E3C377DB2}Prefabs/Structures/Core/Building_Base.et"
   },
   "store": {
-    "prefab": "{4338F327E7041386}Prefabs/Buildings/Supermarket/Supermarket_Store.et",
-    "config": [
-      {
-        "component": "LF_ShopComponent",
-        "set": {},
-        "blocks": [
-          "m_aShopItems"
-        ]
-      },
-      {
-        "component": "LF_StoreComponent",
-        "set": {
-          "m_sStoreKey": "\"everon_supermarket\"",
-          "m_vBoundaryCenter": "0 0 0",
-          "m_vBoundaryHalf": "8.6 0 6.6",
-          "m_iRestockSeconds": "120"
-        },
-        "blocks": [
-          "m_aLines"
-        ]
-      },
-      {
-        "component": "ActionsManagerComponent",
-        "set": {},
-        "blocks": [
-          "ActionContexts",
-          "additionalActions"
-        ]
-      }
-    ]
+    "prefab": "{416686D8F5FBEAF2}Prefabs/Buildings/Supermarket/Supermarket_Till.et",
+    "config": []
   },
   "anchoring": {
-    "floorY": 0.099,
+    "floorY": 0,
     "floors": [
       {
         "id": "f0",
-        "y": 0.099
+        "y": 0
       }
     ],
     "footprint": {
@@ -76,19 +48,44 @@
   },
   "rows": [
     {
-      "id": "supermarket-furniture-01",
-      "prefab": "{11C46B870238004E}Prefabs/Buildings/Supermarket/Furniture/Supermarket_furniture_01.et",
-      "role": "furniture",
+      "id": "supermarket-till",
+      "prefab": "{416686D8F5FBEAF2}Prefabs/Buildings/Supermarket/Supermarket_Till.et",
+      "role": "till",
       "verb": "on floor",
       "offset": [
-        0,
-        0,
-        0
+        10.3,
+        1.04,
+        2.5
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "lf-sign-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        9,
+        3.3,
+        6.3
       ],
       "yaw": 0,
-      "from": "Supermarket.et",
-      "wall": "free",
-      "floor": "all"
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"supermarket\"",
+            "m_vRimColor": "0.92 0.86 0.6",
+            "m_vPaintColor": "0.1 0.24 0.46",
+            "m_vTextColor": "0.96 0.93 0.82"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0"
     },
     {
       "id": "electricity-box-small-01",
@@ -96,11 +93,11 @@
       "role": "alarm",
       "verb": "against wall",
       "offset": [
-        -2.4,
-        2.3,
-        -7
+        8.1,
+        2.6,
+        6.3
       ],
-      "yaw": 180,
+      "yaw": 0,
       "config": [
         {
           "component": "LF_AlarmMountComponent",
@@ -111,7 +108,7 @@
           "blocks": []
         }
       ],
-      "wall": "-z",
+      "wall": "+z",
       "floor": "f0"
     },
     {
@@ -121,14 +118,14 @@
       "role": "npc",
       "verb": "on floor",
       "offset": [
-        7.831,
-        0.099,
-        0.35
+        9.4,
+        0.1,
+        2.5
       ],
-      "yaw": -90,
+      "yaw": 90,
       "class": "LF_NpcBaseEntity",
       "from": "Village_Buildings.layer",
-      "wall": "+x",
+      "wall": "free",
       "floor": "f0"
     }
   ]

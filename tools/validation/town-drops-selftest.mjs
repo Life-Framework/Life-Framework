@@ -38,10 +38,11 @@ check(Math.abs(shifted.kit.rows[0].offset[0] - 0.8 * 5) < 0.01 || shifted.kit.ro
 const turned = dropKit(building("b1", 0, 0), "parcel-drops", null, 0, 1).kit.rows[0];
 check(turned.offset[0] > 5 && turned.offset[0] < 8 && Math.abs(turned.yaw - 90) < 0.01, `turn 1 stands east of the box facing east, got ${JSON.stringify([turned.offset, turned.yaw])}`);
 
-// checkOutposts: an empty list, the own place, a missing dossier, a missing building, a repeat.
+// checkOutposts: an empty list, the own place (allowed since #3346: a village-wide slot lists its own buildings), a missing dossier, a missing building, a repeat.
 const own = "home";
 check(checkOutposts("parcel-drops", { drops: [] }, null, own).length === 1, "no drops is a problem");
-check(checkOutposts("parcel-drops", { drops: [{ place: own, building: "b1" }] }, null, own).length === 1, "a drop in the own place is a problem");
+check(checkOutposts("parcel-drops", { drops: [{ place: own, building: "b1" }] }, null, own).length === 0, "a drop in the own place passes (#3346)");
+check(checkOutposts("parcel-drops", { drops: [{ place: own, building: "b9" }] }, { [own]: dossierOf(own, [building("b1", 0, 0)]) }, own).length === 1, "a missing building in the own place is a problem");
 const others = { dock: dossierOf("dock", [building("b1", 0, 0)]) };
 check(checkOutposts("parcel-drops", { drops: [{ place: "dock", building: "b1" }] }, others, own).length === 0, "a real drop passes");
 check(checkOutposts("parcel-drops", { drops: [{ place: "dock", building: "b9" }] }, others, own).length === 1, "a missing building is a problem");

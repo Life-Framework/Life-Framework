@@ -1,0 +1,52 @@
+GenericEntity : "{E1D3E7F0A1833454}Prefabs/Props/Furniture/Kitchen_02.et" {
+ ID "B1A7EE5BBA131FB9"
+ components {
+  ActionsManagerComponent "{133D385286C80874}" {
+   ActionContexts {
+    UserActionContext "{FBADA2EB785FEC34}" {
+     ContextName "default"
+     Position PointInfo "{E0EB16C78B3039EB}" {
+      Offset -1.109 1.088 0.372
+     }
+     Radius 2.071
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{ADC2C31585FC124E}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_FurnitureStorageOpenAction "{504C50269435D171}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo SCR_ActionUIInfo "{E0CE325AB6D2566E}" {
+      Name "#LF-FurnitureStorage_Open"
+     }
+    }
+   }
+  }
+  LF_FurnitureStorageManagerComponent "{B0A6EF77FF5AC1C1}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{17DADF5E01B53F70}" {
+   Attributes SCR_ItemAttributeCollection "{F42292BB8ACC7810}" {
+    ItemDisplayName SCR_InventoryUIInfo "{1D37E0B0EF8AB992}" {
+     Name "#LF-Furniture_KitchenUnit_Name"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 100000
+   MaxItemSize 70 70 70
+   m_fMaxWeight 50
+  }
+  LF_PersistentStorageComponent "{AA2818A7967CCE44}" {
+   m_bKeyAssignedLater 1
+  }
+  LF_PlacedOwnerComponent "{6B6B2E38A953FAF6}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}
