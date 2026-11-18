@@ -1672,6 +1672,16 @@ class LF_VehicleOwnership
 	//! goes into keyHolder's inventory, or onto the pad when there is no holder.
 	protected static bool SpawnOwned(LF_VehicleRecord record, vector origin, vector angles, IEntity keyHolder)
 	{
+		// A car this session spawned that left the world without a capture (an admin delete, a wreck
+		// sweep) is at the impound at once. Its snapshot predates whatever was taken out since, so it
+		// gives nothing back: applying it would duplicate the items (#2809 review).
+		LF_VehicleSession previous = Sessions().Get(record.m_sVehicleId);
+		if (previous && previous.m_Vehicle != EntityID.INVALID && !FindLive(previous.m_Vehicle))
+		{
+			ForgetCargo(record.m_sVehicleId, "the car left the world without a capture");
+			previous.m_Vehicle = EntityID.INVALID;
+		}
+
 		string spawnName = record.m_sSpawnPrefab;
 		if (spawnName.IsEmpty())
 			spawnName = record.m_sPrefab;

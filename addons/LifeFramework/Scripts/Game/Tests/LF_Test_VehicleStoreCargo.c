@@ -1,6 +1,7 @@
 // red-proof: #2809, 2026-11-18 `tools/cli test --no-build --red LF_Test_VehicleStoreCargo,LF_Test_VehicleCargoPersist`:
 // RED PROOF OK (RedProof() drops the snapshot the store and the tow took): `the retrieved car holds the apple (expected 1, got 0)`.
 // Before #2809 the car with an apple was refused at the garage (#2411); the first assertion failed on that code.
+// #2830 review, 2026-11-18: a car deleted outside Store/tow, then collected at the impound, came back with an apple already taken out (`--only LF_Test_VehicleStoreCargo` on the unfixed code: `expected 0, got 1`); passes with the SpawnOwned guard.
 // tier: WORLD
 //! The garage, the tow and the impound keep a car's cargo (#2809, replacing the #2411 refusal): a
 //! car holding an apple is stored, comes back from the garage with the apple and its stock fill
@@ -84,6 +85,31 @@ class LF_Test_VehicleStoreCargo : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Takes the apple out of the car's cargo storage, as a player emptying the trunk would.
+	static bool TakeApple(string vehicleId)
+	{
+		IEntity car = LF_VehicleOwnership.GetVehicle(vehicleId);
+		if (!car)
+			return false;
+
+		SCR_UniversalInventoryStorageComponent cargo = SCR_UniversalInventoryStorageComponent.Cast(car.FindComponent(SCR_UniversalInventoryStorageComponent));
+		if (!cargo)
+			return false;
+
+		for (int slot = 0; slot < cargo.GetSlotsCount(); slot++)
+		{
+			IEntity item = cargo.Get(slot);
+			if (item && LF_Utils.SamePrefab(LF_Utils.GetPrefabName(item), APPLE_PREFAB))
+			{
+				LF_TestCharacterFixture.Delete(item);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
 		array<ref LF_VehicleRecord> before = LF_VehicleOwnership.ExportAll();
@@ -138,6 +164,18 @@ class LF_Test_VehicleStoreCargo : LF_Test
 		LF_VehicleOwnership.ApplyCargo(VEHICLE);
 		ctx.Equal(1, CountInCar(VEHICLE, APPLE_PREFAB), "the collected car holds the apple");
 		ctx.Equal(stock + 1, ItemsInCar(VEHICLE), "the collected car holds its stock fill and the apple, nothing doubled");
+
+		// Untracked exit (#2830 review): the apple is taken out, then the car leaves the world without a
+		// capture (an admin delete, a wreck sweep). The impound gives the car back, never the old snapshot's apple.
+		ctx.True(TakeApple(VEHICLE), "fixture: the apple is taken out of the car");
+		ctx.Equal(0, CountInCar(VEHICLE, APPLE_PREFAB), "fixture: the car is empty of apples");
+		LF_TestCharacterFixture.Delete(LF_VehicleOwnership.GetVehicle(VEHICLE));
+		ctx.True(LF_VehicleOwnership.IsImpounded(VEHICLE), "the deleted car is at the impound");
+		LF_MoneyUtils.AddCash(owner, fee);
+		ctx.True(LF_VehicleOwnership.CollectFromImpound(VEHICLE, OWNER, owner, fee, LF_TestAnnex.IMPOUND_PAD_ID, reasonKey), "the owner collects the deleted car");
+		LF_VehicleOwnership.ApplyCargo(VEHICLE);
+		ctx.Equal(0, CountInCar(VEHICLE, APPLE_PREFAB), "a car that left without a capture does not bring back the apple taken out of it");
+		ctx.Equal(stock, ItemsInCar(VEHICLE), "the car comes back with its stock fill only");
 
 		// Scrap: the record and its cargo are gone.
 		IEntity car = LF_VehicleOwnership.GetVehicle(VEHICLE);
