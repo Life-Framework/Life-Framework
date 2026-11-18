@@ -4495,7 +4495,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3156C3E290A7D4B3}" {
      Id "LF-Gather_ToastPrice"
-     Target_en_us "The trader pays $%1 for %2."
+     Target_en_us "The trader pays {currency:sym}%1 for %2."
      Comment "Second sentence of a gather or process toast when a trader buys the item or its product (#3156). %1 = price, %2 = item name"
     }
     CustomStringTableItem "{3156B2D18F6C3EA2}" {
