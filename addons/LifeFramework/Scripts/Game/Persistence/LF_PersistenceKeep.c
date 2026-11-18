@@ -139,6 +139,33 @@ class LF_PersistenceKeep
 		cash += LF_StorageSnapshot.StripPrefab(LF_DutyLocker.SLOT_MEDIC, cashPrefab);
 		// A car's saved cargo (#2809) is not gear a wipe drops, but its cash is cash.
 		cash += LF_StorageSnapshot.StripPrefab(LF_VehicleOwnership.SLOT_CARGO, cashPrefab);
+
+		// Marked notes (#2850) are dirty money, money all the same: they go with the cash.
+		int marked = StripMarkedNotes(dutyOnly);
+		LF_Debug.Info(FEATURE, string.Format("keepCash off: %1 marked notes removed with the cash", marked));
 		return cash;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Strips the marked-notes stacks (LF_MarkedCash) from the slots StripCash clears.
+	//! \param[in] dutyOnly True when the carried and civilian slots were already dropped.
+	//! \return The total marked notes removed, 0 when the slot has no prefab.
+	protected static int StripMarkedNotes(bool dutyOnly)
+	{
+		ResourceName marked = LF_MarkedCash.Prefab();
+		if (marked.IsEmpty())
+			return 0;
+
+		int removed;
+		if (!dutyOnly)
+		{
+			removed += LF_StorageSnapshot.StripPrefab(LF_StorageSnapshot.SLOT_CARRIED, marked);
+			removed += LF_StorageSnapshot.StripPrefab(LF_DutyLocker.SLOT_CIVILIAN, marked);
+		}
+
+		removed += LF_StorageSnapshot.StripPrefab(LF_DutyLocker.SLOT_POLICE, marked);
+		removed += LF_StorageSnapshot.StripPrefab(LF_DutyLocker.SLOT_MEDIC, marked);
+		removed += LF_StorageSnapshot.StripPrefab(LF_VehicleOwnership.SLOT_CARGO, marked);
+		return removed;
 	}
 }

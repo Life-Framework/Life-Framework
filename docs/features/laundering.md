@@ -14,5 +14,8 @@ Stolen money is a separate item that never counts as cash.
   with its reason. A slot with no usable prefab makes `Add` log `LF_Debug.Error("Laundering", ...)`
   and return 0 (`GetLastError`).
 - ✅ No save payload: they are items in inventories and persist like any other item.
+- ✅ Dirty money is money: with `persistence.keepCash` off, a wipe strips marked notes from every slot it
+  strips cash from (`LF_PersistenceKeep.StripMarkedNotes`: carried, civilian stash, duty kits, car cargo).
+  Test: `LF_Test_MarkedCashWipe` (LOGIC).
 - ⚠️ Looks the same as cash for now (same mesh, only the name differs); a band or tint is a follow-up.
 - Test: `LF_Test_MarkedCash` (WORLD).
