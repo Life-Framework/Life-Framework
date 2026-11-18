@@ -28,6 +28,16 @@
   (`docs/config/override-model.md`). Tiers stay core-only. A pack plot whose key is a house id is refused like a
   core one (#2783). A path override (tests) reads that file alone. Proof: `property/pack-overlay`.
 
+### Saint-Philippe plot signs — `LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Plots_saint-philippe.layer` (2026-11-18, #2936)
+- 🟡 The four free plots of the scout dossier (p1 to p4) each carry an `LF_PlotSign.et` on the island, keys
+  `saint-philippe.p1` to `.p4`, priced by the pack overlay `Configs/Property/LF_Property_Everon1989.conf` (6000, 5000,
+  4500, 3500; tier `cottage`), which the header lists. The signs rest on the terrain (contact gap under 1 mm). Proof:
+  `everon/plot-prices` (pack leg), `look contact place:saint-philippe/plots`.
+- 🟡 (#2918) The merged catalogue (core plots plus the pack overlay) is checked as a whole: keys unique and no house id, every
+  plot names a core tier whose stages have work and item counts, prices above 0 and under ten times the priciest core plot.
+  Plot labels in period words and pack-set build stages are not possible yet: `LF_PropertyPlotDef` has no label field and tiers
+  are core-only (a core change, split off). Proof: `everon/plots` (pack leg).
+
 ### Plot purchase — `Feature/Property/LF_PlotComponent.c` (2026-11-18, #2649, spec #756)
 - 🟡 A for-sale plot sign (`Prefabs/Props/Property/LF_PlotSign.et`, an `LF_PlotComponent` naming a
   `LF_Property.conf` plot key) shows "Buy plot ($price)". The request carries the used sign's plot key: the server sells
@@ -101,3 +111,25 @@
   random order and the first with room for a person (a box trace) wins; none clear gives the outside point;
   no outside point gives the role spawn. A house with no component takes the role spawn (an Info line). The core
   authors no points; the pack adds them (#812). Port of `OVT_SpawnPointComponent` (`THIRD_PARTY.md`). Proof: `spawn/house-point`.
+
+### Locked vanilla buildings — `Feature/Houses/LF_BuildingLocks.c` (2026-11-18, #3203, parent #3201)
+- 🟡 A map maker drops `Prefabs/Systems/Houses/LF_BuildingLock.et` inside a vanilla house and nobody opens
+  that building's doors. The marker (`LF_BuildingLockComponent`) finds its building the way `LF_FittedBuildings`
+  does (one bounded sphere query, the building whose bounds hold the marker) and registers the building's
+  `EntityID` with the marker's sign key on **every machine**; nothing replicates and nothing is saved (the markers
+  load again after a restart and for a late joiner). `LF_DoorUserAction` walks the door's parents to the building:
+  the prompt names the reason, and the server refuses a forged open. Closing an open door still works.
+- 🟡 Sign keys: `#LF-BuildingLock_Private`, `_StaffOnly`, `_ForSaleSoon`, `_OpeningSoon`, `_Closed` (neutral core text;
+  a pack rewords them by overriding the same Ids). An unmarked or unfound building stays open; no building within the
+  radius logs `LF_Debug.Error("BuildingLock", ...)`.
+- 🟡 Precedence: a building that also holds an open marker (a fitted place's `LF_FittedBuildingComponent`; a house
+  marker will call `LF_BuildingLocks.RegisterOpenAt`) ignores the private lock, so later cards never edit the lock
+  layer. Proof: `houses/building-lock-private`.
+- 🟡 Saint-Philippe lock layer (#3204): `node tools/town/locks.mjs saint-philippe` writes
+  `LF_Everon1989/.../MainWorld_Layers/Locks_saint-philippe.layer` from `purpose.json` (never hand-edited): one marker per
+  enterable building no fitted slot carries, at the footprint centre, with a pack sign key (`LF-Everon-Lock_*`: Propriété
+  privée for homes of residents, barns, lock-ups and outbuildings; Réservé au personnel; À vendre bientôt for the homes
+  for sale; Ouverture prochaine for planned shops; Zone militaire; École : vacances d'été; À louer bientôt; Fermé).
+  Left out: fitted or in-flight rows, the churches and chapels (D1), `sp:b49` (org registry) and side buildings of a
+  fitted business. `tools\cli town doors saint-philippe --planned` shows the carriers; a shop or home card that fits
+  its building needs no edit here (the open marker wins). Selftest: `node tools/town/locks.selftest.mjs`.

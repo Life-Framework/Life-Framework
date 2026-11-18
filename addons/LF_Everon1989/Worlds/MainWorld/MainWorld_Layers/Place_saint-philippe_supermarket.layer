@@ -1,0 +1,41 @@
+GenericEntity Fit_saint_philippe_supermarket_Place {
+ components {
+  LF_PlaceComponent "{08022845C5344B2B}" {
+   m_sKind "StoreCounter"
+   m_sId "saint-philippe.supermarket"
+  }
+  LF_FittedBuildingComponent "{012258FBCF272D08}" {
+  }
+ }
+ coords 4373.5 12.7 10681.5
+}
+GenericEntity Fit_saint_philippe_supermarket_supermarket_till : "{416686D8F5FBEAF2}Prefabs/Buildings/Supermarket/Supermarket_Till.et" {
+ coords 4377.409 13.74 10671.648
+ angleY 172
+}
+GenericEntity Fit_saint_philippe_supermarket_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "supermarket"
+   m_vRimColor 0.92 0.86 0.6
+   m_vPaintColor 0.1 0.24 0.46
+   m_vTextColor 0.96 0.93 0.82
+  }
+ }
+ coords 4380.919 16 10673.454
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_supermarket_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ components {
+  LF_AlarmMountComponent "{35CDD7C6966C0A11}" {
+   m_vOffset 0 0.167 0.065
+   m_fReach 10
+  }
+ }
+ coords 4380.769 15.3 10674.342
+ angleY 82
+}
+LF_NpcBaseEntity Fit_saint_philippe_supermarket_village_supermarket_shopkeeper : "{AB73D0036F42E73E}Prefabs/Characters/Npcs/LF_Shopkeeper.et" {
+ coords 4377.284 12.695 10672.539
+ angleY 172
+}

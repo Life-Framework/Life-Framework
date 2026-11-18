@@ -664,6 +664,35 @@
             },
             "additionalProperties": false
           }
+        },
+        "runPays": {
+          "type": "object",
+          "description": "What a finished delivery run pays, one row per job (PARCEL, FUEL_DELIVERY, TAXI); a pack sets its own rows. Records are an object keyed by a stable key. The key is the delivery job (PARCEL, FUEL_DELIVERY or TAXI). A job with no row keeps its shipped pay; an existing key changes only the fields given.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
+              "pay": {
+                "type": "integer",
+                "description": "Cash one finished run of the job pays. Below 1 is refused and the shipped pay is used",
+                "default": 40,
+                "minimum": 1,
+                "maximum": 1000000
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false,

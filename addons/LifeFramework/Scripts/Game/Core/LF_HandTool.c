@@ -4,7 +4,7 @@
 //! parcel reuses it). It is the vanilla gadget path: an item with an SCR_GadgetComponent is
 //! quick-slottable, SCR_CharacterInventoryStorageComponent.UseItem sends it to the hands through
 //! SCR_GadgetManagerComponent.SetGadgetMode(IN_HAND), and the hold pose is the prefab's
-//! ItemAnimationAttributes (the wrench's RepairKit graph). The prefab sets the tool id.
+//! ItemAnimationAttributes (the drill: the wrench's RepairKit graph; the parcel: the supply-box carry graph). The prefab sets the tool id.
 //------------------------------------------------------------------------------------------------
 [ComponentEditorProps(category: "LifeFramework/Core", description: "Hand tool: held from the quick slots; use actions read its tool id while it is held.")]
 class LF_HandToolComponentClass : SCR_GadgetComponentClass

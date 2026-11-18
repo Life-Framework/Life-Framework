@@ -1,0 +1,32 @@
+GenericEntity Plot_saint_philippe_p1 : "{DA9D4FEB9BD67EA5}Prefabs/Props/Property/LF_PlotSign.et" {
+ components {
+  LF_PlotComponent "{19835BCD6A3E4F05}" {
+   m_sPlotKey "saint-philippe.p1"
+  }
+ }
+ coords 4566 16.661 10602
+}
+GenericEntity Plot_saint_philippe_p2 : "{DA9D4FEB9BD67EA5}Prefabs/Props/Property/LF_PlotSign.et" {
+ components {
+  LF_PlotComponent "{19835BCD6A3E4F05}" {
+   m_sPlotKey "saint-philippe.p2"
+  }
+ }
+ coords 4528 16.493 10693
+}
+GenericEntity Plot_saint_philippe_p3 : "{DA9D4FEB9BD67EA5}Prefabs/Props/Property/LF_PlotSign.et" {
+ components {
+  LF_PlotComponent "{19835BCD6A3E4F05}" {
+   m_sPlotKey "saint-philippe.p3"
+  }
+ }
+ coords 4514 16.661 10594
+}
+GenericEntity Plot_saint_philippe_p4 : "{DA9D4FEB9BD67EA5}Prefabs/Props/Property/LF_PlotSign.et" {
+ components {
+  LF_PlotComponent "{19835BCD6A3E4F05}" {
+   m_sPlotKey "saint-philippe.p4"
+  }
+ }
+ coords 4619 21.137 10711
+}

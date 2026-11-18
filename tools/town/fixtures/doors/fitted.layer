@@ -1,0 +1,14 @@
+GenericEntity Fit_fixture_shop_Place {
+ components {
+  LF_PlaceComponent "{60F580E538DA8215}" {
+   m_sKind "StoreCounter"
+   m_sId "fixture.shop"
+  }
+  LF_FittedBuildingComponent "{06527558DE238CBB}" {
+  }
+ }
+ coords 101 10 99
+}
+GenericEntity Fit_fixture_shop_till : "{EEFD19AAC8216449}Prefabs/Props/Commercial/LF_CafeTill.et" {
+ coords 500 10 500
+}

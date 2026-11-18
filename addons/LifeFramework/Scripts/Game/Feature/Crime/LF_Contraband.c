@@ -229,6 +229,13 @@ class LF_Contraband
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return True while this character hauls a convoy run (a character switch is refused then).
+	static bool HasRun(string characterId)
+	{
+		return Find(characterId) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string GetLastRefusal()
 	{
 		return s_sLastRefusal;

@@ -28,7 +28,7 @@ line if a kit row is named differently, and drop the `pending #N` from that step
 
 | # | Do | Observe | Slot card |
 |---|---|---|---|
-| 1 | Join, pass the rules quiz (5 questions), sign form R-89 | You spawn on the south road with $100 cash and $1000 in the bank; walk north into the square | on main |
+| 1 | Join, pass the rules quiz (5 questions), sign form R-89 | A new character wakes in a hostel first-spawn bed (about 4474, 10762, inside the 25 m hostel safe circle); a later or bedless spawn lands on the town hall forecourt (inside the 52 m square circle). $100 cash and $1000 in the bank; walk to the square (#3350 follow-up) | on main |
 | 2 | Talk to the clerk at the town hall; read the rules sign | The clerk greets you and points to work; the rules sign opens | pending #2932 |
 | 3 | At the parcel kiosk: Take courier work (parcel only), Pick up parcel; carry it to a drop: a mailbox 300 m or more away (the dock metal shed north of the square, or the wooden house east), wait out the walk, Complete the run | A toast pays the run (about $40); the job shows Courier | draft #2325 and #2959 |
 | 4 | Open your status | Cash went up by the pay; job XP or level moved | follows step 3 |

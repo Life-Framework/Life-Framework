@@ -60,6 +60,15 @@ class LF_ResourceMachineDef
 
 	[Attribute("", UIWidgets.Object, "Outputs produced per process")]
 	ref array<ref LF_ProcessingOutput> m_aOutputs;
+
+	[Attribute("", UIWidgets.EditBox, "Job whose level the machine needs (MINER, ...). Empty: no level gate (#3226)")]
+	string m_sLevelJob;
+
+	[Attribute("0", UIWidgets.Auto, "Level in m_sLevelJob the server needs before it runs the machine. 0 or 1: no gate")]
+	int m_iMinLevel;
+
+	[Attribute("1", UIWidgets.Auto, "Whole batches one interaction runs at most, as far as the inventory covers them (#3226)")]
+	int m_iMaxBatches;
 }
 
 //------------------------------------------------------------------------------------------------

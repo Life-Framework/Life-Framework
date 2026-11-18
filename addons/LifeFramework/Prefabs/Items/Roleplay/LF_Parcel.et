@@ -21,13 +21,13 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
     ItemAnimationAttributes ItemAnimationAttributes "{59E108DB000CCEEB}" {
      AnimationAttachments {
       AnimationAttachmentInfo "{59E33B494D8FF442}" {
-       AnimGraph "{CEC539E559BB8BA6}Assets/Items/Equipment/workspaces/RepairKit.agr"
-       AnimInstance "{23AF6C3E45B2D948}Assets/Items/Equipment/workspaces/RepairKit.asi"
+       AnimGraph "{44A1E0130301E5F5}Assets/Items/Equipment/workspaces/MedicalKit_supplies.agr"
+       AnimInstance "{A9CBB5C81F08B71B}Assets/Items/Equipment/workspaces/MedicalKit_supplies.asi"
        BindingName "Gadget"
       }
      }
-     HandAdditiveRotation 0 0 0
-     HandAdditiveTranslation 0 0 0
+     HandAdditiveRotation 0 90 0
+     HandAdditiveTranslation 0 0.22 0.08
     }
     CustomAttributes {
      CharacterModifierAttributes "{59E489793FA8F156}" {

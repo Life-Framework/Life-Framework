@@ -1,6 +1,8 @@
 // tools/town/outposts.mjs - the pure helpers of an `outposts` slot (the parcel drop points, #2959).
 //
-// An outposts slot stands in buildings of OTHER places' surveys, one small prop per building (a mailbox on the entrance wall).
+// An outposts slot stands in buildings of one or more surveys, one small prop per building (a mailbox on the entrance wall). The parcel
+// drops list OTHER places' buildings; a village-wide slot (ATMs, payphones, bins, #3346) lists its own place's buildings too (`place` = the slug
+// of the mapping's own place), read from the same dossier file.
 // Its mapping entry lists them: `drops`: [{ place, building }]. It rides on the same idea as an entry's `dossier` (a harbour
 // master's cabin in the dock survey, #3058: `others` holds the other places' dossiers, a building is keyed "<place>/<id>"):
 // each drop is read as `{ building, dossier: place }`, so one footprint lookup (check.mjs `slotGround`) serves both.
@@ -52,7 +54,6 @@ export function checkOutposts(slotId, e, dossiers, ownPlace) {
       out.push(`${name} needs a place and a building`);
       continue;
     }
-    if (dr.place === ownPlace) out.push(`${name}: ${dr.place} is this place; an outposts drop stands in another place's dossier`);
     const key = `${dr.place}/${dr.building}`;
     if (seen.has(key)) out.push(`${name}: ${key} is listed twice`);
     seen.add(key);

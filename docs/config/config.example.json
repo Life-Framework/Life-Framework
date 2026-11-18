@@ -98,7 +98,8 @@
         "job": "MINER",
         "minLevel": 4
       }
-    }
+    },
+    "runPays": {}
   },
   "joinNotice": {
     "enabled": false,

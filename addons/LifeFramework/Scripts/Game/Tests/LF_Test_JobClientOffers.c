@@ -23,9 +23,8 @@ class LF_Test_JobClientOffers : LF_Test
 		ctx.EqualStr("#EL-Job_NotSignedUp", LF_JobStartRunAction.ClientRefusal(LF_EJobType.UNEMPLOYED, LF_EJobType.PARCEL), "nobody signed up: the parcel is refused");
 		ctx.EqualStr("#EL-Job_NotSignedUp", LF_JobStartRunAction.ClientRefusal(LF_EJobType.TAXI, LF_EJobType.PARCEL), "signed up for another job: the parcel is refused");
 
-		ctx.True(LF_CivilianJob.ClientRunOpen(LF_EJobType.PARCEL, true), "a courier carrying the parcel can complete the run");
-		ctx.False(LF_CivilianJob.ClientRunOpen(LF_EJobType.PARCEL, false), "a courier without the parcel has no run to complete");
-		ctx.True(LF_CivilianJob.ClientRunOpen(LF_EJobType.TAXI, false), "a taxi fare has no cargo; the server decides");
-		ctx.False(LF_CivilianJob.ClientRunOpen(LF_EJobType.UNEMPLOYED, true), "no delivery job: no run");
+		ctx.True(LF_CivilianJob.ClientRunOpen(LF_EJobType.PARCEL), "a courier can complete or abandon the run; the cargo is not read (#3356)");
+		ctx.True(LF_CivilianJob.ClientRunOpen(LF_EJobType.TAXI), "a taxi fare has no cargo; the server decides");
+		ctx.False(LF_CivilianJob.ClientRunOpen(LF_EJobType.UNEMPLOYED), "no delivery job: no run");
 	}
 }

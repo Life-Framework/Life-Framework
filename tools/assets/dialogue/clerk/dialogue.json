@@ -12,8 +12,16 @@
       "options": [
         { "text": "new", "next": "menu", "condition": "QuestNotTurnedIn", "param": "arrival_register", "action": "QuestConverse" },
         { "text": "next", "next": "menu", "condition": "QuestTurnedIn", "param": "arrival_register", "action": "QuestConverse" },
-        { "text": "lost", "next": "menu", "condition": "IdCardMissing", "action": "IdCardReplace" },
+        { "text": "papers", "next": "papers", "condition": "PapersOffered" },
         { "text": "bye", "next": "bye" }
+      ]
+    },
+    {
+      "id": "papers",
+      "options": [
+        { "text": "lost", "next": "menu", "condition": "IdCardMissing", "action": "IdCardReplace" },
+        { "text": "switch", "condition": "CharacterSwitchOffered", "action": "CharacterSwitch" },
+        { "text": "next", "next": "menu", "action": "QuestConverse" }
       ]
     },
     {
@@ -57,6 +65,8 @@
     "town": "Tell me about this {town}.",
     "file": "What does my file say?",
     "lost": "I have lost my identity card.",
+    "papers": "About my papers.",
+    "switch": "I need another of my files. (Change character)",
     "bye": "Goodbye."
   }
 }

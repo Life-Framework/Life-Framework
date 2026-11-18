@@ -76,3 +76,17 @@ wraps it yet.
 sack's thin side (0.25 m) toward the leg. The offset puts the gathered neck (model y 0.42) in the fist and
 moves the sack 3 cm out from the thigh. `heldxf` reads the sack's base at 0.45 m and the hand at 0.93 m, on
 the left side.
+
+## The courier parcel (2026-11-18)
+
+`LF_Parcel.et` borrowed the wrench's `RepairKit` set with no offset (a hand tool, #1846). A box's origin is its
+centre and that set puts the prop bone at the fist, so the fist sat inside the middle of the box. It now
+borrows the **vanilla supply-box carry**, `MedicalKit_supplies.agr` + `.asi` (what a mortar ammo box and the
+carryable magazine boxes use, `CarryableMagazinItemAnimationAttributes.conf`): one hand down by the left side.
+`heldxf` reads its `LeftHandProp` at `-0.25, 0.58, 0.04` in the body frame with the fist 0.34 m higher
+(`PoseFrame` has it). Values: `HandAdditiveTranslation 0 0.22 0.08` lifts the box until the fist is on its
+top edge and moves it 8 cm out from the thigh, `HandAdditiveRotation 0 90 0` turns its long side (0.38 m)
+front to back so the 0.26 m side faces the leg. Test `jobs/parcel-hold` reads the lift. Pictures: `node
+agent-box/session.mjs parcel-hold-proof --name <prefix>` on an `up --clients 2 --profile full` session (the
+harness verb `walk <s>` gives the carrier a held forward key; standing and walking, from the side and the
+front).

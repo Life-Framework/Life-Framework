@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5D85C77ADE2060FB}Prefabs/Placeables/Furniture/Furniture_Cupboard_Item.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
