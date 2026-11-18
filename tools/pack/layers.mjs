@@ -70,6 +70,7 @@ Object.assign(SECTIONS, {
   "property.plots": row("property", "plots", "LF_PropertyConfig", "Configs/Property/LF_Property.conf", "m_aPlots", "m_sPlotId", byField("m_sPlotId")),
   "market.goods": row("market", "goods", "LF_MarketConfig", "Configs/Market/LF_Market.conf", "m_aGoods", "m_sGood", (p) => guidOf(p.m_sGood), noOwner),
   // The core file lists no rung (LF_MedicRanks falls back to the built-in three in script), so the core layer is empty: a pack adds.
+  "farming.crops": row("farming", "crops", "LF_CropCatalogue", "Configs/Farming/LF_Crops.conf", "m_aCrops", "m_sCropId", byField("m_sCropId"), noOwner),
   "medic.ranks": row("medic", "ranks", "LF_MedicConfig", null, "m_aRanks", "m_sId", byField("m_sId"), noOwner),
   "reputation.factions": row("reputation", "factions", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aFactions", "m_sId", byField("m_sId")),
   "reputation.awards": row("reputation", "awards", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aAwards", "m_sAction", byField("m_sAction")),
