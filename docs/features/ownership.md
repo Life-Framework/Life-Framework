@@ -143,6 +143,11 @@
   refused even for a member, who carries it first (#2574, #2584, WORLD `hideout/stash-put-carrier`;
   log `stash <id> refused <prefab> from the ground`). Membership and the
   rank's stash right (`USE_STASH`) are the key: an open or breached door does not open the stash.
+- 🧪 **The server-insert bypass is per item** (#2835, WORLD `inventory/server-insert-scope-aborted`):
+  `LF_ServerInsertScope.Begin(item)` opens the bypass for that one item only, and the stash and the
+  locked-car gate ask `IsOpenFor(item)`. A script error between `Begin` and `End` cannot leave a locked
+  car or a stash open to other items, and the frame-end sweep closes what it left open (log
+  `server insert scope left open for <n> item(s) by an aborted insert; closed`).
 - ✅ Stash contents survive a restart through `LF_PersistentStorageComponent`
   keyed `hideout:Roadmap_Hideout` (not an entity id), so the stash keeps its
   items wherever the layer places it. See the placed-storage row under Carried
