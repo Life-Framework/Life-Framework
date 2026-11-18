@@ -2700,6 +2700,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Contraband"
      Comment "Toast title for contraband convoy messages"
     }
+    CustomStringTableItem "{2F9A63C8D5E1074B}" {
+     Id "LF-ContractTracker_Cost"
+     Target_en_us "They will remember if you drop this."
+     Comment "Contract tracker line (#2914): what walking away costs, in words, never points. Shown when the contract has a stake."
+    }
+    CustomStringTableItem "{8D40B6E3172A9C58}" {
+     Id "LF-ContractTracker_Line"
+     Target_en_us "%1: %2"
+     Comment "Contract tracker line (#2914): %1 = who it is for and what to do, %2 = the time left in words."
+    }
+    CustomStringTableItem "{19B4CE7D60A835F2}" {
+     Id "LF-ContractTracker_Time_Hurry"
+     Target_en_us "hurry"
+     Comment "Contract tracker line (#2914): under a fifth of the time is left."
+    }
+    CustomStringTableItem "{A7D2189E4B6C30F5}" {
+     Id "LF-ContractTracker_Time_Plenty"
+     Target_en_us "plenty of time"
+     Comment "Contract tracker line (#2914): more than half the time is left."
+    }
+    CustomStringTableItem "{E3518B0FC2A7D694}" {
+     Id "LF-ContractTracker_Time_Soon"
+     Target_en_us "time is getting on"
+     Comment "Contract tracker line (#2914): between a fifth and a half of the time is left."
+    }
+    CustomStringTableItem "{5C1E7A02B93D4F61}" {
+     Id "LF-ContractTracker_Title_Default"
+     Target_en_us "Your contract"
+     Comment "Contract tracker line (#2914): the title of a contract with no pack row of its own (LF-ContractTracker_Title_<contractId>)."
+    }
     CustomStringTableItem "{3565B0AEE39851EE}" {
      Id "LF-Contract_Busy"
      Target_en_us "You already have a contract. Finish that one first."
