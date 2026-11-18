@@ -5018,6 +5018,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Report"
      Comment "Toast title for the report to staff."
     }
+    CustomStringTableItem "{A2F0BAF8FDA44A7C}" {
+     Id "LF-Informant_Already"
+     Target_en_us "I told you already. He is where I marked it."
+     Comment "Informant answer (#2921): the player already holds this period's mark; nothing was taken."
+    }
+    CustomStringTableItem "{B96A99BF8300C7A3}" {
+     Id "LF-Informant_Mark"
+     Target_en_us "The buyer"
+     Comment "Map mark label (#2921): where the informant says the illicit buyer is standing today; private to the player who paid."
+    }
+    CustomStringTableItem "{8BD615448C30E422}" {
+     Id "LF-Informant_NeverHeard"
+     Target_en_us "Never heard of him."
+     Comment "Informant refusal (#2921): police on duty, or too little underworld standing; the same words either way. Also the toast."
+    }
+    CustomStringTableItem "{239CCFD8A1E56524}" {
+     Id "LF-Informant_NoCash"
+     Target_en_us "The tip costs {currency:sym}%1. Come back when you have it."
+     Comment "Informant refusal toast (#2921): not enough cash; %1 is the fee. Nothing was taken."
+    }
+    CustomStringTableItem "{0BFA75DDB569A395}" {
+     Id "LF-Informant_NoSpot"
+     Target_en_us "Nobody is buying today. Nothing to sell you."
+     Comment "Informant answer (#2921): no buyer spot is placed on this map; nothing was taken."
+    }
+    CustomStringTableItem "{CECFA4732D210AB0}" {
+     Id "LF-Informant_Told"
+     Target_en_us "Heard he is buying today. I marked it on your map; the spot will not hold past this shift."
+     Comment "Informant answer (#2921): the fee was paid and the buyer's spot is on the map; also the toast."
+    }
     CustomStringTableItem "{00B6F39DAD843E76}" {
      Id "LF-Interact_AlreadyKnown"
      Target_en_us "They already know your name."
