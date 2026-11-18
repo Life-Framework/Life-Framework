@@ -180,6 +180,16 @@ class LF_StallComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the rules' stall (listings, earnings) while rented, else null. LF_StallTrade works on it (#2926).
+	LF_Stall GetStall()
+	{
+		if (!m_bRented)
+			return null;
+
+		return m_Stall;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: ends the rent when the market day it was rented for is over (another day, or the closing
 	//! hour has passed). Does nothing on a client or while the pitch is still good.
 	//! \return true when a rent ended

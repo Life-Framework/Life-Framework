@@ -1,4 +1,5 @@
 // tools/validation/input-listeners-selftest.mjs — red proof for validate-input-listeners.
+// inputs: imports
 import assert from "node:assert/strict";
 import { problems } from "./validate-input-listeners.mjs";
 

@@ -33,7 +33,7 @@ Maybe. Until the public launch, the server can be wiped at any time. Every wipe 
 | Action | Key |
 | --- | --- |
 | Use a sign, counter, or door, then pick the row you want | F |
-| Lock or unlock a car | U (gamepad: press the right stick) |
+| Lock or unlock a car | F6 (gamepad: press the right stick) |
 | Open the emote menu | F1 |
 | Give up while downed (hold it for 30 seconds first) | Hold X (gamepad: hold Y) |
 | Type a number on a keypad | 0 to 9, on the number row or the numpad |

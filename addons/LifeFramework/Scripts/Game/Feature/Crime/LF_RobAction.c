@@ -48,6 +48,13 @@ class LF_RobAction : ScriptedUserAction
 
 	protected float m_fLastRobTime;
 
+	//------------------------------------------------------------------------------------------------
+	//! The alarm kind this till sounds (an LF_AlarmKind id), "" for the plain siren. Set per site on the action.
+	string GetAlarmKind()
+	{
+		return m_sAlarmKind;
+	}
+
 	protected static string s_sLastRefusal;
 	protected static int s_iCashPaid;
 	protected static int s_iAlertCount;

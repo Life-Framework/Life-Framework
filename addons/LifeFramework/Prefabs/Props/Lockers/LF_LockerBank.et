@@ -23,6 +23,15 @@ GenericEntity : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_
       Description "#LF-LockerBank_Title"
      }
     }
+    LF_LockerOpenAction "{4B9E27D1A83C5F60}" {
+     ParentContextList {
+      "LF_LockerBank"
+     }
+     UIInfo UIInfo "{A27D91C3E5B4086F}" {
+      Name "#LF-LockerBank_Open"
+      Description "#LF-LockerBank_Title"
+     }
+    }
    }
   }
   RplComponent "{FA6FFF2F08D41001}" {

@@ -49,7 +49,7 @@ bench, bus stop) near players.
   `LF_ResidentAnchors.Resolve` finds nearest the player. Spawn when a player is within `m_iSpawnRadiusM` (150) of
   the anchor, despawn when none is within `m_iDespawnRadiusM` (200) of the character (horizontal metres, so
   a player on a roof counts). A line change to another place or anchor despawns first, then spawns at the new spot only if
-  a player is near it. `m_iMaxLive` (24) caps live residents; the rest wait, first by id wins, and each waiting
+  a player is near it. `m_iMaxLive` (24) caps live residents; the rest wait (`LF_ResidentDirector` picks who, see below), and each waiting
   resident is logged once (`LF_Debug.Warn("Residents", ...)`). The prefab is `LF_ResidentDef.m_sPrefab`, default the neutral
   civilian `Npc_Civilian_01`; any AI on it is deactivated. `m_sActivity` is recorded (`ActivityOf`) and logged on
   spawn; no animation or emote plays yet. Live residents are keyed by resident id and hold `EntityID`;
@@ -70,3 +70,13 @@ bench, bus stop) near players.
 - **Owner and side:** server. `LF_ResidentWalk.Move` is called from `LF_ResidentSpawner.Despawn`; `LF_ResidentMover` drives the vanilla AI (a test swaps it).
 - **Rules:** see `docs/features/residents.md` "LF_ResidentWalk". Data: `LF_Residents.conf` `m_iMaxWalking` (4). No AIWorld: placed, never walked. Persisted: nothing.
 - **Proof:** `residents/walk` (WORLD).
+
+## Resident director (#2910)
+
+- **Player sees:** when more residents are due than the live cap, the ones in the place they stand in (a counter worker
+  beside them first) are there, not whoever sorts first by id.
+- **Owner and side:** server. `LF_ResidentDirector.Pick(due, players, slots, into)` is pure; `LF_ResidentSpawner.SweepAt`
+  builds the due list (`LF_ResidentCandidate`: id, timetable line, anchor spot) and spawns what it returns.
+- **Rules:** counter worker (`work` at `counter`) within 15 m of a player first; the rest by horizontal distance to the
+  nearest player; ties by id. Persisted: nothing.
+- **Proof:** `residents/resident-director` (LOGIC).

@@ -56,6 +56,8 @@ class LF_PlantRow : Managed
 class LF_Plants
 {
 	static const string FEATURE = "Farming";
+	//! How far above the spot the open-ground trace starts, metres: above any roof of a house (#2821).
+	static const float OPEN_TRACE_UP_M = 12.0;	// lf-fixed: open-ground trace height
 	static const int TICK_MS = 1000;	// lf-fixed: the farming clock tick, as LF_FarmPlots
 	//! Metres a gardener may stand from a plant to water, harvest or inspect it.
 	static const float REACH = LF_PlantRules.MAX_REACH;	// lf-fixed: the planting reach of spec #809
@@ -341,6 +343,9 @@ class LF_Plants
 			inVehicle = character.IsInVehicle();
 
 		place = LF_PlantRules.CanPlace(nearest, vector.Distance(user.GetOrigin(), spot), inVehicle, LF_Zones.IsSafe(spot), CountByOwner(ownerKey), Count());
+		if (place == LF_EPlantPlace.OK)
+			place = OpenGroundAt(user, spot);
+
 		if (place != LF_EPlantPlace.OK)
 		{
 			LF_Debug.Info(FEATURE, string.Format("%1 may not plant %2 at %3: %4", ownerKey, crop.m_sCropId, spot, typename.EnumToString(LF_EPlantPlace, place)));
@@ -515,6 +520,63 @@ class LF_Plants
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Is spot (already on the terrain) open ground for this planter (#2821): the planter stands on the terrain
+	//! and not on a floor, nothing built stands over the spot, it is not a road and not below sea level.
+	//! Reads the world with a trace from above the spot; LF_PlantRules.OpenGround decides.
+	static LF_EPlantPlace OpenGroundAt(IEntity user, vector spot)
+	{
+		ArmaReforgerScripted game = GetGame();
+		if (!game || !game.GetWorld() || !user)
+			return LF_EPlantPlace.OK;
+
+		BaseWorld world = game.GetWorld();
+		vector feet = user.GetOrigin();
+		float standHeight = feet[1] - world.GetSurfaceY(feet[0], feet[2]);
+
+		array<IEntity> skip = {user};
+		bool covered;
+		string material;
+		for (int attempt = 0; attempt < 4; attempt++)
+		{
+			TraceParam trace = new TraceParam();
+			trace.Start = spot + Vector(0, OPEN_TRACE_UP_M, 0);
+			trace.End = spot - Vector(0, 0.2, 0);
+			trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+			trace.LayerMask = EPhysicsLayerPresets.Projectile;
+			trace.ExcludeArray = skip;
+			float fraction = world.TraceMove(trace, null);
+			if (fraction >= 1)
+				break;
+
+			if (trace.TraceEnt)
+			{
+				if (ChimeraCharacter.Cast(trace.TraceEnt))
+				{
+					// A person standing over the spot is not a roof.
+					skip.Insert(trace.TraceEnt);
+					continue;
+				}
+
+				// The terrain is an entity too. Anything else the trace meets first is built: a roof or a prop above
+				// the spot, or a sidewalk, slab, deck or rock lying on it. On real Everon a sidewalk hit sits 0.13 m up
+				// and names no material (#3023 review), so a height floor alone let it through.
+				typename hitType = trace.TraceEnt.Type();
+				if (!hitType.IsInherited(GenericTerrainEntity) && !hitType.IsInherited(GenericWorldEntity))
+					covered = true;
+			}
+
+			material = trace.TraceMaterial;
+			break;
+		}
+
+		LF_EPlantPlace verdict = LF_PlantRules.OpenGround(standHeight, spot[1], world.GetOceanBaseHeight(), covered, material);
+		if (verdict != LF_EPlantPlace.OK)
+			LF_Debug.Info(FEATURE, string.Format("not open ground at %1: stand=%2 covered=%3 material=%4", spot, standHeight, covered, material));
+
+		return verdict;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The spot moved onto the terrain under it, so a ground change never floats a plant.
 	static vector SnapToGround(vector spot)
 	{
@@ -616,6 +678,24 @@ class LF_Plants
 
 		foreach (string id : ids)
 			ClearVisual(id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! World reset (#2820): every plant row, local mesh and replicated row is dropped and the 1 s tick
+	//! stops. Unlike ResetStatics it keeps the farming clock and a test's catalogue override.
+	//! \return How many plants were cleared.
+	static int ClearAll()
+	{
+		int cleared = Plants().Count();
+		LF_PlantReplication.RetractAll();
+		ClearAllVisuals();
+		s_mPlants = new map<string, ref LF_PlantRow>();
+		s_mShownStage = null;
+		StopTicking();
+		if (cleared > 0)
+			LF_Debug.Info(FEATURE, string.Format("world reset: cleared %1 plant(s)", cleared));
+
+		return cleared;
 	}
 
 	//------------------------------------------------------------------------------------------------

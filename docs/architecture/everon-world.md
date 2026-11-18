@@ -227,6 +227,12 @@ supplies every coordinate the later steps use. No step types a coordinate.
   and a row standing in a prop the host carries itself (a vanilla furniture set a layer cannot remove) is flagged.
   `town fit <place> <slot> --check` prints the per-row corrections against the layer on disk and writes nothing.
 
+- **Outposts slots (`town drops <place> <slot>`).** A slot whose host is `outposts` (template `town`: `parcel-drops`) lists
+  `drops: [{ place, building }]` in the mapping, buildings of OTHER places' dossiers that lie outside this place's own survey
+  (the parcel run needs stops 300 m or more from the depot). One layer holds one `LF_ParcelDrop` mailbox per drop, each
+  placed a metre outside its building's entrance side and slid onto the host's real wall by the same offline seat as `town fit`;
+  the claim names the drops, and `town check` tests each entity against its own drop building's footprint (2 m margin).
+
 ### 3.4 Parallelism
 
 - **One layer per slot.** `Place_<place>_<slot>.layer` is the unit of work and the unit of review. The
@@ -240,7 +246,10 @@ supplies every coordinate the later steps use. No step types a coordinate.
   12 m for a street slot, `taxi` 8 m, `board` 10 m, or the template slot's own `margin`), and no two claims may name one
   building (a street slot marked `shared` may stand on a building another slot holds).
 - **Who writes.** Only a worktree named `town-draft-<place>-<slot>` writes an island layer. Its PR is a
-  draft with before and after pictures and goes to the maintainer (bible step 4). The playtest town's
+  draft with before and after pictures and goes to the maintainer (bible step 4). A follow-up on a slot whose
+  draft is still open is `town-draft-<place>-<slot>-<word>`: `town fit` ignores the base draft's claim and the
+  guard lets it change that one slot's layer. Claims copied into a `ws/island-integration` worktree are never
+  rivals (#3101). The playtest town's
   guard and the maintainer's own worktree are unchanged.
 - **Scale.** One agent per slot inside a place, and places run side by side. The pool is the limit: each
   `look` needs a Workbench on lf-testbox or lf-cloud, about 1.5 to 2 minutes for an Everon look (below),
@@ -265,8 +274,8 @@ town (`world-zones.md` "Tests do not read the town").
   `validate-island-zones`): every required slot of the template is mapped; per slot, a fitted slot (one with a
   layer or a claim) has both and they agree with the mapping; every layer registers the kinds the slot promises, which `town check` reads
   from the `.layer` text (a kind no system lists in `m_aPlaces` of `LF_SystemCatalog.conf` is a warning); a kind whose system runs a component, not the marker
-  (`BACKED_KINDS` in `tools/town/check.mjs`: JailCell, the shop counters), has that component in the layer or a prefab it places
-  (an error with `--complete`, a warning otherwise, #2937); the kits' prefabs resolve.
+  (`BACKED_KINDS` in `tools/town/check.mjs`: JailCell, the shop counters), has that component in the layer or a prefab it places, or in the layer of a companion slot that rides in its building
+  (`with: <slot id>` on the template slot: the jail cell beside the police desk, #3099) (an error with `--complete`, a warning otherwise, #2937); the kits' prefabs resolve.
   It also counts each slot's layer against the building budget of its size (the `perf building` counts) and the
   per-place limits within 60 m (24 lights, 12 shadow casters, 1,500 added entities; `performance.md`), and warns on a claim
   whose `destruction.mode` is `needs-hook` until the indestructible hook lands. The map POI-kind slot check (M17, #2245,
