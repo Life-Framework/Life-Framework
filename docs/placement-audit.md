@@ -56,6 +56,7 @@ them, which is how apple juice bottles stood inside the general store till.
 | in the road | the box centre on a carriageway of `Village_Roads.layer` (roads under 15 m wide, not the market, square or fuel apron) | half width - 0.3 m |
 | scale | entity scale outside 0.5 to 2 (odd: outside 0.75 to 1.6, signs excepted) | |
 | tilted | up axis off vertical | 5 deg |
+| contact (row field only, #2953 makes it a check) | `cgap`: mesh-bounds bottom minus the highest support under a 3x3 footprint (`LF_PlaceSnap.Measure`; a trace that starts inside a proxy box is dropped), with `cspread` and `chits`. The `gap` above traces once under the centre on every layer and read 3 to 23 cm for juice standing on a wide universal shelf; cgap read 0.5 mm | not judged yet |
 | size | the largest side of the measured box (world space, scale applied) outside the range `tools/place/expected-sizes.json` gives for that kind of prop | per entry; see "Expected sizes" |
 | unreachable | interactables: no standing spot within 1.5 m of the edge (3 m for signs) | |
 

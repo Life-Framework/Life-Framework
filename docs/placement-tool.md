@@ -198,6 +198,17 @@ probe, so it needs no pool machine. The audit that follows is `audit placement -
 | Sign refused on `House_Town_E_2I01` ("something stands between"); sacks 0.66 m above the ground on its east wall (2026-11-16, `town-post-office`) | wall face: the farthest hit was a door set back 0.22 m, so the real wall counted as in front of it; the floor sample at the wall plane landed on its ledge | `against` takes the largest cluster of the target's own hits as the face and floors only in front of it |
 | Lamp behind a strongbox | composition: what the camera sees | not measurable; shots |
 
+## Contact sheets: `toolscli look contact` (placement spike, #2955)
+
+`toolscli look contact <area> [--entities A,B | --stock <store_key> [--items X@0,Y@3] [--from out.txt]] [--max N] [--worst]`
+frames each item where it touches what it stands on: four low side views with the camera 2 cm over the measured bottom
+and one top-down. The plugin (`contact` line, `tools/visual/wb/LF_VisualShotsPlugin.c`) measures with `LF_PlaceSnap` and
+draws the measured bottom face red, the traced support green and the nine contact rays yellow, through the mesh, so a
+1 cm hover is two separate outlines. The tile names the gap (`gap +1.9 cm [OFF]` past 1 cm). One row per item, one
+sheet per batch (`tmp/look/contact-<area>/contact.jpg`), about 0.6 s per view once Workbench is up. `--stock` reads
+the last `audit placement` rows; Workbench play spawns its own stock, so a copy the server had and the session did
+not is missed (#2955 reads the store in the session instead).
+
 ## Still needs a shot or a human
 
 - **Facing.** `against` and `--facing` take the prop's front as local `+z`. A mesh whose front is
