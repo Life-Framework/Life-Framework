@@ -58,3 +58,4 @@ office). Low priority; the menu flow is fine for V1 as long as it is honest.
 
 - `Account` (the record it writes), `Character`/`Spawning` (the entity it
   spawns), `Banking`/`ATM` + `Survival` (init on created character).
+- Changing character mid-session: `LF_CharacterSwitch.c` (the clerk hooks, the refusal rules, storing and removing the body, the switch RPCs). The pick reuses `RpcAsk_LF_SelectCharacter`; the sheet has a switch mode. `docs/features/core.md` "Changing character at the clerk".
