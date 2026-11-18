@@ -1,0 +1,20 @@
+{
+  "sites": [
+    {
+      "site": "addons/LifeFramework/Scripts/Game/Core/LF_GameModeRoleplay.c::LF_PublishConfigStream",
+      "reason": "The host is the publisher: LF_ConfigStream.Publish() builds the payload from the server's own loaded configs, which the host already reads directly. OnArrived only feeds a client's copy, so the host needs no local call (#2641)."
+    },
+    {
+      "site": "addons/LifeFramework/Scripts/Game/Feature/Farming/LF_PlantReplication.c::LF_PlantBroadcastUpsert",
+      "reason": "A listen host draws plants through LF_Plants itself; the broadcast only fills a remote client's mirror (LF_PlantReplication header comment, #2819)."
+    },
+    {
+      "site": "addons/LifeFramework/Scripts/Game/Feature/Farming/LF_PlantReplication.c::LF_PlantBroadcastRemove",
+      "reason": "Same as LF_PlantBroadcastUpsert: the host's own LF_Plants meshes are removed by LF_Plants, the broadcast serves the client mirror."
+    },
+    {
+      "site": "addons/LifeFramework/Scripts/Game/Feature/Farming/LF_PlantReplication.c::LF_PlantBroadcastClear",
+      "reason": "Same as LF_PlantBroadcastUpsert: the host's own LF_Plants meshes are cleared by LF_Plants, the broadcast serves the client mirror."
+    }
+  ]
+}

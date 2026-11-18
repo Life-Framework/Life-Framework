@@ -222,6 +222,10 @@ class LF_NpcLoiter
 		if (!npc || !Replication.IsServer() || KindOf(npc) != LF_ENpcLoiter.NONE)
 			return KindOf(npc);
 
+		// A live resident does what their timetable line says (LF_ResidentActivity), never the role's own settle (#2948).
+		if (!LF_ResidentSpawner.ResidentIdOf(npc).IsEmpty())
+			return LF_ENpcLoiter.NONE;
+
 		LF_SitAction seat = FindFreeSeat(npc);
 		if (seat && Sit(npc, seat))
 			return LF_ENpcLoiter.SEAT;

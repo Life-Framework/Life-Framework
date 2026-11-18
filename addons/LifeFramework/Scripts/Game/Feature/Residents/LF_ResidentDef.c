@@ -47,6 +47,9 @@ class LF_ResidentDef : LF_ConfigRecord
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Character prefab this resident spawns as (#2858). Empty: the neutral civilian", "et")]
 	ResourceName m_sPrefab;
 
+	[Attribute("", UIWidgets.EditBox, "Quest id this resident asks a passing player for (#2862), from Configs/Quests/LF_ResidentNeedQuests.conf. Empty: no need")]
+	string m_sNeedQuest;
+
 	[Attribute("", UIWidgets.Object, "The day, per game day (no weekdays yet): lines by start time, none sharing a start")]
 	ref array<ref LF_ResidentEntryDef> m_aTimetable;
 
@@ -97,6 +100,9 @@ class LF_ResidentsConfig
 
 	[Attribute("5", UIWidgets.EditBox, "Seconds between spawner sweeps")]
 	int m_iSweepSeconds;
+
+	[Attribute("4", UIWidgets.EditBox, "Most residents walking between anchors at once (#2909); further moves place the resident directly")]
+	int m_iMaxWalking;
 
 	protected static ref LF_ResidentsConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -189,6 +195,15 @@ class LF_ResidentsConfig
 			return 24;	// lf-fixed: default live cap when the conf leaves it unset
 
 		return m_iMaxLive;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int MaxWalking()
+	{
+		if (m_iMaxWalking <= 0)
+			return 4;	// lf-fixed: default walking cap when the conf leaves it unset
+
+		return m_iMaxWalking;
 	}
 
 	//------------------------------------------------------------------------------------------------

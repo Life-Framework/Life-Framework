@@ -15,7 +15,9 @@ tools\cli scout <place>                      # dossier: docs/everon/places/<slug
 tools\cli scout label <slug>                 # img/overview-top-labelled.jpg: mapped buildings (b01, b14) and slots on the overhead shot; attach it to the mapping PR
 tools\cli town map <slug> [--template town|village|districts] [--force]   # proposes slot -> building; `--check` refuses an incomplete one
 tools\cli town kit extract <layer> <group>   # a kit from a building that already works; no absolute positions
-tools\cli town fit <place> <slot>            # writes MainWorld_Layers/Place_<place>_<slot>.layer + a claim
+tools\cli town fit <place> <slot> --no-look  # iterate with this: writes MainWorld_Layers/Place_<place>_<slot>.layer + a claim, audits; seconds
+tools\cli town fit <place> <slot>            # the same, then TWO island looks (outside and --interior auto): once, at the end
+tools\cli town fit <place> <slot> --refit   # re-fit a slot already claimed on main (its own claim); another PR's or slot's claim still refuses
 tools\cli town fit <place> <slot> --check    # per-row seat corrections (floor, wall, clip) against the layer on disk; writes nothing
 tools\cli town check <place>                 # static kinds and claims; then audit placement --world MainWorld
 tools\cli town ready <state>                 # every place of the state passes, systems present, arrival route walks
@@ -26,10 +28,16 @@ tools\cli look place:<place>/<slot> --interior auto   # its ground floor from in
   and reads the viewpoint from the dossier and mapping. A plain area, `town:<area>` or `x,z` opens DebugWorld, where an
   island slot is sky. The "before" is the same command on main (the slot unfitted), the "after" on the draft branch.
   The work is about a minute; the queue for the island's RAM can be 30 minutes, so run it once per draft, in the foreground.
+- **Iterate without pictures.** Fix kit rows with `town fit --no-look` and `--check` (seconds each). A plain `town fit`
+  already takes both looks, so never follow it with `look place:` for the same slot. On 2026-11-18 a police draft re-ran
+  a plain fit four times at about 10 min each.
+- **A run past 600 s moves to the background.** Wait for its notification (or `t3_background_wait`). Never
+  `Wait-Process`, `tail -F` or a second copy of the same look: that morning agents wrote 23 such waits.
 - The mapping is a PR that holds only `mapping.json`; nothing is placed before the lead merges it.
 - A fit runs in a worktree named `town-draft-<place>-<slot>`. Only that name writes an island layer.
 - Its PR is a **draft** with before and after pictures. The maintainer reviews it before any merge.
 - Claims live in `tools/town/claims/<place>-<slot>.json`; a claim `origin/main` or an open PR holds is refused.
+  `--refit` ignores this slot's own claim on `origin/main` (re-fitting a slot already merged) and still refuses an open PR, a sibling worktree or another slot holding it.
 
 ## Known traps
 - **Never touch the maintainer's worktree** (`ws/town-maintainer-edits`) or the playtest town's layers. The lead

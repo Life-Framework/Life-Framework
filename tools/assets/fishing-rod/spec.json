@@ -1,0 +1,24 @@
+{
+  "slug": "fishing-rod",
+  "name": "FishingRod",
+  "kind": "gadget",
+  "roadmap": "#2928",
+  "concept": "A 1989 Everon angler's rod: a dark green fibreglass blank with red thread wraps and wire guides, a cork handle, a steel reel seat and a fixed-spool reel. Held in the hands like a tool from a quick slot; casting and reeling are the fishing rules.",
+  "prompt": "Modelled in Blender by model.py: a 1.2 m spinning rod, tip bowed up, cork handle, steel reel seat, fixed-spool reel with a crank under the handle, eight wire guides with red thread wraps. no text, no logos.",
+  "texture_prompt": "",
+  "size_m": { "length": 1.2, "height": 0.1, "width": 0.075 },
+  "budget": { "lod0_tris": 3000, "lod_ratios": [0.6, 0.3], "texture_px": 1024, "credits": 0 },
+  "fit": { "offset": [0, 0, 0] },
+  "parts": [],
+  "asset_dir": "Assets/Items/Fishing/FishingRod",
+  "prefab_dir": "Prefabs/Items/Fishing",
+  "gadget": {
+    "name_key": "#LF-Item_FishingRod_Name",
+    "description_key": "#LF-Item_FishingRod_Description",
+    "weight": 0.6,
+    "volume": 3000,
+    "components": []
+  },
+  "materials": { "default": "scanned", "regions": [], "classes": {} },
+  "source": { "blender": "model.py" }
+}

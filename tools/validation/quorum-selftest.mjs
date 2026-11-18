@@ -95,6 +95,7 @@ try {
     async getIssue(n) { const i = issues[n]; return i ? { number: n, state: i.state, stateReason: "", labels: [...i.labels] } : null; },
     async addLabels(n, l) { for (const x of l) if (!issues[n].labels.includes(x)) issues[n].labels.push(x); },
     async removeLabels(n, l) { issues[n].labels = issues[n].labels.filter((x) => !l.includes(x)); },
+    async editLabels(nums, add, remove) { for (const n of nums) { await this.removeLabels(n, remove); await this.addLabels(n, add); } },
     async close(n) { issues[n].state = "closed"; },
     async reopen(n) { issues[n].state = "open"; },
   };

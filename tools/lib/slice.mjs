@@ -391,7 +391,7 @@ export function brief(issue, card, worktreeSlug) {
     "3. Implement the smallest change inside owns; run the targeted test until green.",
     `4. Gate ${card.tier}: ${gate}.${card.risk.length ? ` Risk ${card.risk.join(", ")}: an independent reviewer (lf-hard, interrogate) reads the diff before merge; findings in tmp/review-${slug}.md.` : ""}`,
     `5. Ship: tools\\cli wt ship ${slug} --refs ${issue.number}. Visible change: one look picture; polish nitpicks become follow-up issues, not blockers.`,
-    `6. Record as soon as ship says ok, then stop: tools\\cli slice record ${issue.number} --model ${card.model || "sonnet"} --outcome merged --gate pass|fail --minutes N (an open auto-merge PR is recorded as shipped; never wait for GitHub to merge). Unfinished: --outcome handoff|split|failed.`,
+    `6. Record as soon as ship says ok, then stop: tools\\cli slice record ${issue.number} --model ${card.model || "sonnet"} --outcome merged --gate pass|fail (minutes come from the worktree clock; an open auto-merge PR is recorded as shipped; never wait for GitHub to merge). Unfinished: --outcome handoff|split|failed.`,
     "Starter pack: tools\\cli brief slice (the exact commands, the red-proof loop, known traps); a map, town, grid or building slice also reads its own kind.",
     "Stay in your lane: do not re-verify other slices, start no helper agents, no wait loops. Report in five lines; say merged, in-dev.",
   ];
@@ -410,8 +410,25 @@ export function ledgerRow(o) {
   if (!MODELS.includes(o.model)) p.push(`--model ${MODELS.join("|")}`);
   if (!OUTCOMES.includes(o.outcome)) p.push(`--outcome ${OUTCOMES.join("|")}`);
   if (!["pass", "fail"].includes(o.gate)) p.push("--gate pass|fail (the first gate run)");
-  if (!(o.minutes > 0)) p.push("--minutes N");
+  if (!(o.minutes > 0)) p.push("--minutes N (no worktree start time found to compute it from)");
   return p;
+}
+
+// Minutes on the ledger are the wall clock from the worktree's creation to the record call, never the agent's estimate:
+// self-reported values ran about 3x the real time (#2940: 4 min real, 20 recorded; efficiency pass 2, 2026-11-18) and
+// skewed `slice stats` and the model routing. The agent's own number, when given, is kept apart as agentMinutes.
+// started / now: ISO strings (or Date); agent: the --minutes value or null. Returns the fields to put on the row:
+// { minutes, minutesSource: "worktree" | "agent", startedAt?, agentMinutes? }; minutes is null when neither exists.
+export function ledgerMinutes({ started, now, agent }) {
+  const t0 = started ? new Date(started).getTime() : NaN;
+  const t1 = new Date(now).getTime();
+  const out = {};
+  if (agent > 0) out.agentMinutes = agent;
+  if (Number.isFinite(t0) && Number.isFinite(t1) && t1 >= t0) {
+    return { minutes: Math.max(1, Math.round((t1 - t0) / 60000)), minutesSource: "worktree", startedAt: new Date(t0).toISOString(), ...out };
+  }
+  if (agent > 0) return { minutes: agent, minutesSource: "agent" };
+  return { minutes: null };
 }
 
 // `record --outcome merged` is true only when a PR for the slice is merged (agents recorded "merged" while

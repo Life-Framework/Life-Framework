@@ -86,7 +86,7 @@ GenericEntity Annex_Convoy_Start {
    }
   }
  }
- coords 145 0 52
+ coords 145 0.022 52
  Flags 0x403 0
 }
 GenericEntity Annex_Convoy_Drop {
@@ -128,7 +128,7 @@ GenericEntity Annex_Convoy_Drop {
    }
   }
  }
- coords 148 0 52
+ coords 148 0.022 52
  Flags 0x403 0
 }
 GenericEntity Annex_Convoy_Drop_Near {
@@ -171,6 +171,6 @@ GenericEntity Annex_Convoy_Drop_Near {
    }
   }
  }
- coords 151 0 52
+ coords 151 0.022 52
  Flags 0x403 0
 }

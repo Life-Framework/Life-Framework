@@ -10,6 +10,7 @@
 //   LF_WorkplaceComponent       Jobs/LF_WorkplaceComponent.c        kind Workplace,    id m_sPlaceId or the name (detail: its job)
 //   LF_HospitalTillComponent    Crime/LF_HospitalSite.c             kind HospitalSite, id m_sTargetId or the name
 //   LF_HospitalCabinetComponent Crime/LF_HospitalSite.c             kind HospitalSite, id m_sTargetId or the name
+//   LF_PlotComponent            Property/LF_PlotComponent.c         kind PlotForSale,  id m_sPlotKey (the sign shows until the plot is owned)
 // Live state (Core/LF_PlaceLiveState.c): a place with state >= 0 registers only while the mission header's
 // m_aLF_LiveStates lists it (an empty or missing list: every state is live). Dedicated components are always live.
 import { existsSync, readFileSync } from "node:fs";
@@ -21,6 +22,7 @@ export const PLACE_SOURCES = {
   LF_WorkplaceComponent: { kind: "Workplace", idAttr: "m_sPlaceId", detailAttr: "m_sJob" },
   LF_HospitalTillComponent: { kind: "HospitalSite", idAttr: "m_sTargetId" },
   LF_HospitalCabinetComponent: { kind: "HospitalSite", idAttr: "m_sTargetId" },
+  LF_PlotComponent: { kind: "PlotForSale", idAttr: "m_sPlotKey" },
 };
 
 // --world names. main: the pack's island. town: what the playtest mission loads around the village (the

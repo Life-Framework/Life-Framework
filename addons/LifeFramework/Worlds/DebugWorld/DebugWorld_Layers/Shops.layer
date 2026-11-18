@@ -236,6 +236,21 @@ GenericEntity Shop_GeneralStore_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commerci
      }
      m_sStoreKey "general_store"
     }
+    LF_RobAction "{5A4B0B84C86E484A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86E484B}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_sAlarmKind "shopbell"
+     m_iMoneyAmount 150
+     m_iMinPayout 150
+     m_iMaxPayout 150
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+    }
    }
   }
  }

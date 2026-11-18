@@ -277,20 +277,100 @@ class LF_MapPlaceIcons
 	//! Loads the first quad that exists. \return true when one loaded.
 	static bool Apply(ImageWidget widget, notnull array<string> candidates)
 	{
+		LF_MapIconPick pick = Resolve(widget, candidates);
+		return pick && !pick.m_sQuad.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Loads the first quad that exists and says which one it was (the imageset and the quad name), so a
+	//! caller can remember the answer and not search the sets again (#2397). An empty quad means none loaded.
+	static LF_MapIconPick Resolve(ImageWidget widget, notnull array<string> candidates)
+	{
+		LF_MapIconPick pick = new LF_MapIconPick();
 		if (!widget)
-			return false;
+			return pick;
 
 		ResourceName pack = PackImageSet();
 		foreach (string quad : candidates)
 		{
 			if (!pack.IsEmpty() && widget.LoadImageFromSet(0, pack, quad))
-				return true;
+			{
+				pick.m_Set = pack;
+				pick.m_sQuad = quad;
+				return pick;
+			}
 
 			if (widget.LoadImageFromSet(0, CORE_IMAGESET, quad))
-				return true;
+			{
+				pick.m_Set = CORE_IMAGESET;
+				pick.m_sQuad = quad;
+				return pick;
+			}
 		}
 
-		return false;
+		return pick;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Loads a quad `Resolve` found before. \return true when it loaded (nothing is loaded for an empty pick).
+	static bool Load(ImageWidget widget, notnull LF_MapIconPick pick)
+	{
+		if (!widget || pick.m_sQuad.IsEmpty())
+			return false;
+
+		return widget.LoadImageFromSet(0, pick.m_Set, pick.m_sQuad);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Which quad of which imageset a list of candidates came to (#2397). One object per distinct candidate list,
+//! kept by the layer while the map is open; a widget that already shows it is not touched again.
+class LF_MapIconPick : Managed
+{
+	ResourceName m_Set;
+	string m_sQuad;
+}
+
+//------------------------------------------------------------------------------------------------
+//! What a drawn icon shows, remembered so a rebuild writes only what changed (#2397): the engine calls a
+//! restyle makes (image load, opacity, count text) cost about 15 us a widget, 400 widgets a zoom end, and the
+//! solo zooms rebuild groups that are the same as before.
+class LF_MapIconState : Managed
+{
+	//! The pick the icon shows (null before the first style).
+	LF_MapIconPick m_Pick;
+	bool m_bFaded;
+	//! 0 for a single place (count hidden), the member count for a stamp, -1 before the first style.
+	int m_iCount = -1;
+	//! The place a single icon was styled for, and the state it was drawn in (null for a stamp). A place is
+	//! built once and never edited, so the same object in the same state needs no restyle at all.
+	LF_MapPoi m_Poi;
+	LF_EMapPoiState m_ePoiState;
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the icon already shows `poi` in `state`.
+	bool SamePlace(LF_MapPoi poi, LF_EMapPoiState state)
+	{
+		return poi && m_Poi == poi && m_ePoiState == state;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the icon must load `pick`.
+	bool PickChanged(LF_MapIconPick pick)
+	{
+		return pick != m_Pick;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool FadedChanged(bool faded)
+	{
+		return faded != m_bFaded;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool CountChanged(int count)
+	{
+		return count != m_iCount;
 	}
 }
 
@@ -366,6 +446,10 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	protected ref array<Widget> m_aWidgets = {};
 	protected ref array<ref LF_MapPoiHandler> m_aHandlers = {};
 	protected ref array<bool> m_aShown = {};
+	protected ref array<ImageWidget> m_aIcons = {};	// the "Icon" and "Count" widgets of each group widget, found once (#2397)
+	protected ref array<TextWidget> m_aCounts = {};
+	protected ref array<ref LF_MapIconState> m_aStates = {};	// what each icon shows now
+	protected ref map<string, ref LF_MapIconPick> m_mPicks = new map<string, ref LF_MapIconPick>();	// candidate list to the quad it resolved to
 	protected ref LF_MapPoiHandler m_CardHandler;
 	protected ref LF_MapPoiHandler m_ButtonHandler;
 	protected int m_iHovered = -1;
@@ -488,6 +572,10 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		m_aWidgets.Clear();
 		m_aHandlers.Clear();
 		m_aShown.Clear();
+		m_aIcons.Clear();
+		m_aCounts.Clear();
+		m_aStates.Clear();
+		m_mPicks.Clear();
 		m_CardHandler = null;
 		m_ButtonHandler = null;
 		m_iHovered = -1;
@@ -520,10 +608,17 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	//! the map is open). Runs on open and when a zoom ends, not per frame.
 	protected void Rebuild()
 	{
+		RebuildAt(CurrentZoom());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Rebuild for a given zoom (the probe alternates two, so every pass changes the groups as a real zoom end does).
+	protected void RebuildAt(float zoom)
+	{
 		if (!m_wLayer)
 			return;
 
-		m_fZoom = CurrentZoom();
+		m_fZoom = zoom;
 		m_aGroups.Clear();
 		LF_MapClusterRules.BuildFromPois(m_aPois, m_fZoom, m_aGroups);
 		HideCard();
@@ -545,6 +640,9 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			m_aHandlers.Insert(handler);
 			m_aWidgets.Insert(created);
 			m_aShown.Insert(true);
+			m_aIcons.Insert(ImageWidget.Cast(created.FindAnyWidget("Icon")));
+			m_aCounts.Insert(TextWidget.Cast(created.FindAnyWidget("Count")));
+			m_aStates.Insert(new LF_MapIconState());
 		}
 
 		for (int i = 0; i < m_aWidgets.Count(); i++)
@@ -563,44 +661,102 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Icon, count and tint for group i.
+	//! Only what differs from what the widget shows is written (#2397): the quad lookup is remembered per
+	//! candidate list, and the image, opacity and count text are touched only when they change.
 	protected void Style(int i)
 	{
 		LF_MapClusterGroup group = m_aGroups[i];
-		Widget root = m_aWidgets[i];
-		ImageWidget icon = ImageWidget.Cast(root.FindAnyWidget("Icon"));
-		TextWidget count = TextWidget.Cast(root.FindAnyWidget("Count"));
-		array<string> candidates = {};
+		LF_MapIconState state = m_aStates[i];
+		m_aHandlers[i].SetIndex(i);
+		LF_MapPoi place;
 		if (group.IsSingle())
-		{
-			LF_MapPoi poi = m_aPois[group.m_aMembers[0]];
-			if (group.m_eState == LF_EMapPoiState.PENCIL)
-				candidates.Insert("pencil_cross");
-			else
-				LF_MapPlaceIcons.Candidates(poi.m_sKind, poi.m_sIcon, poi.m_sCategory, candidates);
-		}
-		else
-		{
-			candidates.Insert("stamp_town");
-			candidates.Insert("cat_civic");
-		}
+			place = m_aPois[group.m_aMembers[0]];
 
-		LF_MapPlaceIcons.Apply(icon, candidates);
+		// The solo zooms rebuild the same single places over and over: nothing to write.
+		if (state.SamePlace(place, group.m_eState))
+			return;
+
+		state.m_Poi = place;
+		state.m_ePoiState = group.m_eState;
+		ImageWidget icon = m_aIcons[i];
+		TextWidget count = m_aCounts[i];
+		array<string> candidates = {};
+		IconCandidates(group, candidates);
 		if (icon)
 		{
-			if (group.m_eState == LF_EMapPoiState.FADED)
-				icon.SetOpacity(FADED_ALPHA);
-			else
-				icon.SetOpacity(1);
+			LF_MapIconPick pick = PickFor(icon, candidates);
+			if (state.PickChanged(pick))
+			{
+				LF_MapPlaceIcons.Load(icon, pick);
+				state.m_Pick = pick;
+			}
+
+			bool faded = group.m_eState == LF_EMapPoiState.FADED;
+			if (state.FadedChanged(faded))
+			{
+				if (faded)
+					icon.SetOpacity(FADED_ALPHA);
+				else
+					icon.SetOpacity(1);
+
+				state.m_bFaded = faded;
+			}
 		}
 
 		if (count)
 		{
-			count.SetVisible(!group.IsSingle());
+			int members = 0;
 			if (!group.IsSingle())
-				count.SetText(group.m_aMembers.Count().ToString());
+				members = group.m_aMembers.Count();
+
+			if (state.CountChanged(members))
+			{
+				count.SetVisible(members > 0);
+				if (members > 0)
+					count.SetText(members.ToString());
+
+				state.m_iCount = members;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The quads group i tries, in order: the kind's own, the row's icon, the category's; a pencil cross for a
+	//! place only suspected; a stamp for a cluster. A modded layer (the heard-of "?") overrides this, not Style.
+	protected void IconCandidates(notnull LF_MapClusterGroup group, notnull array<string> candidates)
+	{
+		if (!group.IsSingle())
+		{
+			candidates.Insert("stamp_town");
+			candidates.Insert("cat_civic");
+			return;
 		}
 
-		m_aHandlers[i].SetIndex(i);
+		LF_MapPoi poi = m_aPois[group.m_aMembers[0]];
+		if (group.m_eState == LF_EMapPoiState.PENCIL)
+			candidates.Insert("pencil_cross");
+		else
+			LF_MapPlaceIcons.Candidates(poi.m_sKind, poi.m_sIcon, poi.m_sCategory, candidates);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The quad a candidate list resolves to, searched in the imagesets once per list while the map is open.
+	//! The first sight of a list loads it into `icon`.
+	protected LF_MapIconPick PickFor(ImageWidget icon, notnull array<string> candidates)
+	{
+		string key;
+		foreach (string quad : candidates)
+		{
+			key += quad + "|";
+		}
+
+		LF_MapIconPick pick;
+		if (m_mPicks.Find(key, pick))
+			return pick;
+
+		pick = LF_MapPlaceIcons.Resolve(icon, candidates);
+		m_mPicks.Set(key, pick);
+		return pick;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -808,29 +964,79 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			real.Insert(saved);
 
 		m_aPois.Clear();
+		array<string> kinds = {"Bank", "Shop", "Clinic", "PoliceStation", "BusStop", "Garage"};
+		array<string> categories = {"civic", "shop", "health", "law", "travel", "work"};
+		// Spread over the ground the map shows now, so every icon is on screen (the dearest case).
+		float centreX;
+		float centreZ;
+		m_MapEntity.GetMapCenterWorldPosition(centreX, centreZ);
+		float viewM = 800;
+		float ppu = m_MapEntity.GetCurrentZoom();
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (workspace && ppu > 0)
+			viewM = workspace.GetWidth() / ppu;
+
 		for (int i = 0; i < 400; i++)
 		{
 			LF_MapPoi probe = new LF_MapPoi();
 			probe.m_sId = "probe" + i.ToString();
-			probe.m_sKind = "Bank";
-			probe.m_sCategory = "civic";
-			probe.m_vPos = Vector(Math.Mod(i * 7919.0, 12800), 0, Math.Mod(i * 104729.0, 12800));
+			probe.m_sKind = kinds[i % kinds.Count()];
+			probe.m_sCategory = categories[i % categories.Count()];
+			float fx = Math.Mod(i * 0.6180339, 1.0) - 0.5;
+			float fz = Math.Mod(i * 0.7548776, 1.0) - 0.5;
+			probe.m_vPos = Vector(centreX + fx * viewM * 0.9, 0, centreZ + fz * viewM * 0.5);
 			probe.m_eState = LF_EMapPoiState.FULL;
 			m_aPois.Insert(probe);
 		}
 
+		// A real zoom end changes the view, so the passes alternate two zooms: clustered (2 and 3) and solo (4 and 5).
 		int passes = 50;
-		int start = System.GetTickCount();
-		for (int p = 0; p < passes; p++)
-			Rebuild();
+		float zoomLow = 2;
+		float zoomHigh = 3;
+		string line = "probe widgets: 400 POIs";
+		for (int band = 0; band < 2; band++)
+		{
+			string name = "clustered 2/3";
+			if (band == 1)
+			{
+				zoomLow = 4;
+				zoomHigh = 5;
+				name = "solo 4/5";
+			}
 
-		int rebuildMs = System.GetTickCount() - start;
-		start = System.GetTickCount();
+			array<ref LF_MapClusterGroup> scratch = {};
+			int start = System.GetTickCount();
+			for (int c = 0; c < passes; c++)
+			{
+				scratch.Clear();
+				float zoomC = zoomLow;
+				if ((c % 2) == 1)
+					zoomC = zoomHigh;
+
+				LF_MapClusterRules.BuildFromPois(m_aPois, zoomC, scratch);
+			}
+
+			int clusterMs = System.GetTickCount() - start;
+			start = System.GetTickCount();
+			for (int p = 0; p < passes; p++)
+			{
+				float zoomP = zoomLow;
+				if ((p % 2) == 1)
+					zoomP = zoomHigh;
+
+				RebuildAt(zoomP);
+			}
+
+			int rebuildMs = System.GetTickCount() - start;
+			line += string.Format(" | zoom end %1, %2 groups: rebuild %3 us (cluster %4 us)", name, m_aGroups.Count(), rebuildMs * 1000 / passes, clusterMs * 1000 / passes);
+		}
+
+		int start2 = System.GetTickCount();
 		for (int r = 0; r < passes * 10; r++)
 			Reposition();
 
-		int repositionMs = System.GetTickCount() - start;
-		string line = string.Format("probe widgets: 400 POIs, zoom %1, %2 groups: rebuild %3 us, reposition %4 us per pass", m_fZoom, m_aGroups.Count(), rebuildMs * 1000 / passes, repositionMs * 1000 / (passes * 10));
+		int repositionMs = System.GetTickCount() - start2;
+		line += string.Format(" | reposition %1 us per pass", repositionMs * 1000 / (passes * 10));
 		LF_Debug.Info(FEATURE, line);
 
 		m_aPois.Clear();

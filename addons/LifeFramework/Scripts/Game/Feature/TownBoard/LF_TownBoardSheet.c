@@ -46,7 +46,7 @@ class LF_TownBoardSheet
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RICH, "Detail", body));
 
 		vector place;
-		if (LF_TownBoard.FindPlace(card, place))
+		if (LF_TownBoard.FindPlace(card, place, boardOrigin))
 		{
 			string mark = KEY_MARK;
 			if (marked)
@@ -103,7 +103,7 @@ class LF_TownBoardSheet
 
 		LF_TownBoardCard card = LF_TownBoard.FindCard(m_sCardId);
 		vector place;
-		if (!card || !LF_TownBoard.FindPlace(card, place))
+		if (!card || !LF_TownBoard.FindPlace(card, place, m_vBoard))
 		{
 			LF_Debug.Warn(LF_TownBoard.FEATURE, string.Format("mark refused: card '%1' has no place on this map", m_sCardId));
 			return;

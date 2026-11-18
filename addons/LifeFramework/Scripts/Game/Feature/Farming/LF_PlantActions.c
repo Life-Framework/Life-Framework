@@ -10,7 +10,7 @@ enum LF_EPlantActionMode
 //------------------------------------------------------------------------------------------------
 //! What a gardener does with free crops (#2664), one class with a mode. The plants themselves are
 //! rows on the server with local meshes, so the action sits on a replicated item the gardener holds
-//! (PLANT on a seed, WATER on a water container) or on the character (HARVEST, INSPECT) and acts on
+//! (PLANT on a seed, WATER on a water container; HARVEST and INSPECT are not wired, never on the character) and acts on
 //! the spot in front of the user or the nearest plant within reach. The server checks everything.
 class LF_PlantAction : ScriptedUserAction
 {
@@ -26,6 +26,12 @@ class LF_PlantAction : ScriptedUserAction
 	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
 	{
 		m_Owner = pOwnerEntity;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	LF_EPlantActionMode GetMode()
+	{
+		return m_eMode;
 	}
 
 	//------------------------------------------------------------------------------------------------

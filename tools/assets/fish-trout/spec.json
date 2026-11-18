@@ -1,0 +1,24 @@
+{
+  "slug": "fish-trout",
+  "name": "FishTrout",
+  "kind": "gadget",
+  "roadmap": "#2928",
+  "concept": "A brown trout, the first fish you can hold: olive-brown back, pale flank, orange-red fins. One mesh; three prefabs scale it to a small, a medium and a large catch.",
+  "prompt": "Modelled in Blender by model.py: a brown trout lying flat, 30 cm, olive back, pale belly, fins and a tail, a black eye. no text, no logos.",
+  "texture_prompt": "",
+  "size_m": { "length": 0.3, "height": 0.08, "width": 0.07 },
+  "budget": { "lod0_tris": 1200, "lod_ratios": [0.6, 0.3], "texture_px": 512, "credits": 0 },
+  "fit": { "offset": [0, 0, 0] },
+  "parts": [],
+  "asset_dir": "Assets/Items/Fishing/FishTrout",
+  "prefab_dir": "Prefabs/Items/Fishing",
+  "gadget": {
+    "name_key": "#LF-Item_FishTrout_Name",
+    "description_key": "#LF-Item_FishTrout_Description",
+    "weight": 0.5,
+    "volume": 500,
+    "components": []
+  },
+  "materials": { "default": "scanned", "regions": [], "classes": {} },
+  "source": { "blender": "model.py" }
+}

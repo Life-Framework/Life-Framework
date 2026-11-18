@@ -76,7 +76,7 @@ class LF_Test_StoreFoldedStack : LF_Test
 
 			ids.Insert(copy.GetID());
 			float rise = copy.GetOrigin()[1] - top;
-			ctx.True(Math.AbsFloat(rise - (0.02 + i * STEP)) < 0.01, string.Format("copy %1 stands %2 m above the counter (wanted %3)", i, rise, 0.02 + i * STEP));
+			ctx.True(Math.AbsFloat(rise - i * STEP) < 0.01, string.Format("copy %1 stands %2 m above the counter (wanted %3: the bottom copy rests on it, LF_PlaceSnap)", i, rise, i * STEP));
 			ctx.True(AngleOff(copy.GetYawPitchRoll()[0], wantYaw) < 1, string.Format("copy %1 is turned by the slot yaw (yaw %2, wanted %3)", i, copy.GetYawPitchRoll()[0], wantYaw));
 		}
 
@@ -110,7 +110,7 @@ class LF_Test_StoreFoldedStack : LF_Test
 				if (closed)
 				{
 					float riseAfter = closed.GetOrigin()[1] - top;
-					ctx.True(Math.AbsFloat(riseAfter - (0.02 + c * STEP)) < 0.01, string.Format("copy %1 dropped into the gap (%2 m above the counter)", c, riseAfter));
+					ctx.True(Math.AbsFloat(riseAfter - c * STEP) < 0.01, string.Format("copy %1 dropped into the gap (%2 m above the counter)", c, riseAfter));
 				}
 			}
 

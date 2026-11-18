@@ -12,6 +12,11 @@
 //! per sign (m_bOwned, RplProp + BumpMe on change; a late joiner gets it with the entity snapshot).
 //! LF_Properties.SetOwner / ApplyAll refresh the live signs, so a sale, a clear and a save load all
 //! reach every client. The owner's key is never replicated. The Buy action reads only this flag.
+//!
+//! FINDING A PLOT (#2984). A sign that is for sale registers in LF_Places as kind PLACE_KIND, id = its plot
+//! key, and leaves it once the plot is owned (server: RefreshOwned; client: the replicated flag's callback).
+//! The map draws the kind from its POI row (Configs/Map/LF_MapPois.conf) and a town board card can point at it
+//! (LF_TownBoard.PLACE_NEAREST), so neither names a coordinate or a map: the placed signs are the plots.
 //------------------------------------------------------------------------------------------------
 enum LF_EPlotBuy
 {
@@ -35,16 +40,21 @@ class LF_PlotComponent : ScriptComponent
 	static const float REACH = 5.0; // lf-fixed: interaction reach, the same 5 m as the hideout stash request
 	//! The ledger reason of a plot purchase.
 	static const string REASON_BUY = "property_buy";
+	//! The LF_Places kind of a plot that is for sale now; the id is the plot key.
+	static const string PLACE_KIND = "PlotForSale";
 
 	[Attribute("", UIWidgets.EditBox, "Plot key: the m_sPlotId of an LF_PropertyPlotDef in Configs/Property/LF_Property.conf")]
 	protected string m_sPlotKey;
 
 	//! Whether somebody owns this sign's plot. Set by the server only; clients read the replicated copy.
-	[RplProp()]
+	[RplProp(onRplName: "OnOwnedReplicated")]
 	protected bool m_bOwned;
 
 	//! Live plot signs; the component's own OnDelete removes it.
 	protected static ref array<LF_PlotComponent> s_aLive;
+
+	//! The key this sign is registered under in LF_Places, empty when it is not.
+	protected string m_sPlacedKey;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -58,6 +68,7 @@ class LF_PlotComponent : ScriptComponent
 			LF_Debug.Warn(FEATURE, string.Format("plot sign %1 has no plot key; it sells nothing", LF_Utils.GetPrefabName(owner)));
 
 		RefreshOwned();
+		SyncPlace();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -66,7 +77,57 @@ class LF_PlotComponent : ScriptComponent
 		if (s_aLive)
 			s_aLive.RemoveItem(this);
 
+		DropPlace();
 		super.OnDelete(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the server changed the owned flag; the plot enters or leaves the for-sale places.
+	protected void OnOwnedReplicated()
+	{
+		SyncPlace();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Makes LF_Places agree with the sign: registered while the plot is for sale, absent otherwise.
+	//! A second sign of the same plot does not take the place over (Claim), so a key has one mark.
+	protected void SyncPlace()
+	{
+		if (!GetOwner())
+			return;
+
+		if (!IsForSale())
+		{
+			DropPlace();
+			return;
+		}
+
+		if (m_sPlacedKey == m_sPlotKey)
+			return;
+
+		DropPlace();
+		if (LF_Places.Claim(PLACE_KIND, m_sPlotKey, GetOwner()))
+			m_sPlacedKey = m_sPlotKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes this sign out of LF_Places when it holds the place.
+	protected void DropPlace()
+	{
+		if (m_sPlacedKey.IsEmpty())
+			return;
+
+		if (LF_Places.Find(PLACE_KIND, m_sPlacedKey) == GetOwner())
+			LF_Places.Unregister(PLACE_KIND, m_sPlacedKey);
+
+		m_sPlacedKey = "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true when this sign's plot is on the for-sale places now (tests).
+	bool IsListed()
+	{
+		return !m_sPlacedKey.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -82,6 +143,7 @@ class LF_PlotComponent : ScriptComponent
 	{
 		m_sPlotKey = plotKey;
 		RefreshOwned();
+		SyncPlace();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -114,6 +176,7 @@ class LF_PlotComponent : ScriptComponent
 		m_bOwned = nowOwned;
 		Replication.BumpMe();
 		LF_Debug.Info(FEATURE, string.Format("plot sign '%1' owned=%2", m_sPlotKey, nowOwned));
+		SyncPlace();
 		return true;
 	}
 

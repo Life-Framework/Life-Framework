@@ -1,0 +1,4 @@
+MatPBRBasic : "{5CDDE2709BA9A5EE}Assets/_BaseMaterials/Characters_MatPBRBasic.emat" {
+ BCRMap "{5EB86E0B9D19613B}Assets/Characters/HeadGear/LF/Balaclava/Data/Balaclava_BCR.edds"
+ NMOMap "{31C9608F3C4B9899}Assets/Characters/HeadGear/LF/Balaclava/Data/Balaclava_NMO.edds"
+}

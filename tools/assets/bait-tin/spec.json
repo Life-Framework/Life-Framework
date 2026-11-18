@@ -1,0 +1,24 @@
+{
+  "slug": "bait-tin",
+  "name": "BaitTin",
+  "kind": "gadget",
+  "roadmap": "#2928",
+  "concept": "A round green-enamelled tobacco tin with a pressed steel lid and a wire clasp: the angler's bait tin, worms and dough balls inside, kept in a pocket or on the belt.",
+  "prompt": "Modelled in Blender by model.py: a small round enamelled tin, pressed steel lid with a ring, hinge at the back, clasp at the front. no text, no logos.",
+  "texture_prompt": "",
+  "size_m": { "length": 0.097, "height": 0.042, "width": 0.097 },
+  "budget": { "lod0_tris": 800, "lod_ratios": [0.6, 0.3], "texture_px": 512, "credits": 0 },
+  "fit": { "offset": [0, 0, 0] },
+  "parts": [],
+  "asset_dir": "Assets/Items/Fishing/BaitTin",
+  "prefab_dir": "Prefabs/Items/Fishing",
+  "gadget": {
+    "name_key": "#LF-Item_BaitTin_Name",
+    "description_key": "#LF-Item_BaitTin_Description",
+    "weight": 0.15,
+    "volume": 300,
+    "components": []
+  },
+  "materials": { "default": "scanned", "regions": [], "classes": {} },
+  "source": { "blender": "model.py" }
+}
