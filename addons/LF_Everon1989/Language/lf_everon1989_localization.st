@@ -224,6 +224,36 @@ StringTable {
      Target_en_us "Mind the edge of the quay."
      Comment "Harbour master caption (#2692): the goodbye."
     }
+    CustomStringTableItem "{7E9DDAA8102F7328}" {
+     Id "LF-Dialogue_HarbourMaster_ContractBusy"
+     Target_en_us "You already have a load on your back. Finish that one first."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{7EFE04DBAEF1FD6D}" {
+     Id "LF-Dialogue_HarbourMaster_ContractCooldown"
+     Target_en_us "Not now. Let your arms rest. Come back in a little while."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{2D047BD4994A439B}" {
+     Id "LF-Dialogue_HarbourMaster_ContractRunOpen"
+     Target_en_us "You are carrying something already. Deliver it, then we talk."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{64B76FBB42089C1D}" {
+     Id "LF-Dialogue_HarbourMaster_ContractStarted"
+     Target_en_us "Good. Crates are on the quay by the crane. Mind the clock, I am watching it."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{0CAB3606C5E90963}" {
+     Id "LF-Dialogue_HarbourMaster_CratesEarly"
+     Target_en_us "I keep the big loads for people I know. Come back when the town knows you. Carry a few crates first."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{1BC2671024BE40DA}" {
+     Id "LF-Dialogue_HarbourMaster_CratesOffer"
+     Target_en_us "You, I know. I have a load that must be across before the tide turns. Fast work, better money, and I will want it done on time. Do you want it?"
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
     CustomStringTableItem "{A55113E34B39D13E}" {
      Id "LF-Dialogue_HarbourMaster_FirstJob"
      Target_en_us "Crates, mostly. The coaster unloads onto the quay and somebody has to carry them across to the sheds. It pays by the crate, on the spot."
@@ -239,6 +269,11 @@ StringTable {
      Target_en_us "Harbour office. Mind the crane and mind the ropes. What can I do for you?"
      Comment "Harbour master caption (#2692): the greeting."
     }
+    CustomStringTableItem "{31104EFBD559B194}" {
+     Id "LF-Dialogue_HarbourMaster_SayAskCrates"
+     Target_en_us "Have you got a bigger load?"
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
     CustomStringTableItem "{841D61171005B9D8}" {
      Id "LF-Dialogue_HarbourMaster_SayAskWork"
      Target_en_us "Is there any work on the quay?"
@@ -252,6 +287,11 @@ StringTable {
     CustomStringTableItem "{5644E7F72839DB8C}" {
      Id "LF-Dialogue_HarbourMaster_SayNotNow"
      Target_en_us "Not just now."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{DF9EF80D315A7206}" {
+     Id "LF-Dialogue_HarbourMaster_SayTakeCrates"
+     Target_en_us "I'll take the load."
      Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
     }
     CustomStringTableItem "{555B8170F5B38060}" {
