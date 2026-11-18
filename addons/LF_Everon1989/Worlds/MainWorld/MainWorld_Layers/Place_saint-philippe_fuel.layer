@@ -35,3 +35,13 @@ GenericEntity Fit_saint_philippe_fuel_anchor_door {
  coords 4615.095 18.9 10664.933
  angleY -10
 }
+GenericEntity Fit_saint_philippe_fuel_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ components {
+  LF_AlarmMountComponent "{F5F179D75F4DFC41}" {
+   m_vOffset 0 0.167 0.065
+   m_fReach 10
+  }
+ }
+ coords 4620.076 21.1 10653.931
+ angleY -100
+}
