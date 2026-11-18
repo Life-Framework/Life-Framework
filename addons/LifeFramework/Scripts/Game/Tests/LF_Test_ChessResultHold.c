@@ -4,6 +4,7 @@
 //! #2405 (review 2026-11-17): with both seats held and the game over, a third player pressing Play
 //! used to call NewGame() and wipe the result. Now only the two players keep the board, until
 //! RESULT_HOLD_MS after the last move; a free seat still starts a new game for a newcomer.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ChessResultHold : LF_Test
 {
 	protected static const int WHITE = 201;

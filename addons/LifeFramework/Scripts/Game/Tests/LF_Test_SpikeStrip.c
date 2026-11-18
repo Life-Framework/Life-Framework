@@ -7,6 +7,7 @@
 //! it between two checks: the two wheels whose paths crossed are DESTROYED through the vanilla wheel
 //! damage (radius state below the tyre's own radius), the two that passed beside it are not.
 //! Picking the strip up gives the officer the folded item back.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SpikeStrip : LF_Test
 {
 	static const ResourceName ITEM = "{4B8BDB727DEE59B8}Prefabs/Props/Roleplay/SpikeStrip/SpikeStrip_Item.et";

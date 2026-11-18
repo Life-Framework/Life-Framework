@@ -1,6 +1,7 @@
 // red-proof: loading APPLE_PREFAB in place of TOMATO_ITEM in the first assertion failed it with
 // `[LFTEST]   - the removed tomato prefab no longer exists` (observed 2026-11-10, `test --no-build --only LF_Test_RemovedTomatoSkip`). Restored; green.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RemovedTomatoSkip : LF_Test
 {
 	protected static const ResourceName TOMATO_ITEM = "{0815D91FDF997A0A}Prefabs/Items/Food/Tomato.et";

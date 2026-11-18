@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6D1F3A52B9C07E84}Configs/Lockers/LF_Lockers.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

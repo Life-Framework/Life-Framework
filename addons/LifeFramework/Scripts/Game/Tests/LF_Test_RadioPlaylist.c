@@ -3,6 +3,7 @@
 //! Radio playlists (LF_RadioPlaylist, Feature/Atmosphere): a list rotates in order and wraps, an
 //! hour-limited list plays only in its hours, a missing track is skipped with one error and a list
 //! with nothing playable answers -1. Pure data in, indexes out; no world, no sound project.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RadioPlaylist : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

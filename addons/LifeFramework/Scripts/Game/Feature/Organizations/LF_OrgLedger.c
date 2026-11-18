@@ -192,7 +192,13 @@ class LF_OrgLedger
 	//------------------------------------------------------------------------------------------------
 	static string HideoutAction(LF_OrgLedgerPage page)
 	{
-		if (page.m_iLease != LF_EOrgLease.FREE || !page.Can(LF_OrgRules.RIGHT_BUY))
+		if (!page.Can(LF_OrgRules.RIGHT_BUY))
+			return string.Empty;
+
+		if (page.m_iLease == LF_EOrgLease.OURS)
+			return "#LF-Org_GiveUpLease";
+
+		if (page.m_iLease != LF_EOrgLease.FREE)
 			return string.Empty;
 
 		return "#LF-Org_TakeLease";
@@ -397,7 +403,11 @@ class LF_OrgLedger
 
 		if (name == PART_HIDEOUT)
 		{
-			character.LF_AskOrganizationLease();
+			if (m_Page && m_Page.m_iLease == LF_EOrgLease.OURS)
+				character.LF_AskOrganizationLeaseRelease();
+			else
+				character.LF_AskOrganizationLease();
+
 			return;
 		}
 
@@ -437,11 +447,9 @@ class LF_OrgLedger
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_OrgLedger's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_OrgLedger's statics (LF_StaticReset finds it by reflection).
 class LF_OrgLedger_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_OrgLedger_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_OrgLedger";

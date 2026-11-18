@@ -7,6 +7,7 @@
 //! with explosive and true damage past its full health, and hits the neighbour with true damage:
 //! the fitted one keeps its health and stays standing, the neighbour loses health.
 //!   tools\cli test --no-build --only LF_Test_FittedBuildingIndestructible --world Worlds/CoreOnEveron/CoreOnEveron.ent
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FittedBuildingIndestructible : LF_Test
 {
 	static const ResourceName GARAGE = "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et";

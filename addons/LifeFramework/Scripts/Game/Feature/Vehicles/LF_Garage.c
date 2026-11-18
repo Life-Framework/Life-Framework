@@ -21,6 +21,13 @@ class LF_GarageConfig
 	static const float DEFAULT_DESK_REACH = 5;
 	static const float DEFAULT_GARAGE_RADIUS = 15;
 	static const float DEFAULT_PAD_OCCUPIED_RADIUS = 3;
+	static const int DEFAULT_BASE_SLOTS = 2; // lf-fixed: fallback when the conf does not resolve; the live value is the config field
+	static const int DEFAULT_MAX_SLOTS = 6; // lf-fixed: fallback when the conf does not resolve; the live value is the config field
+	static const int DEFAULT_SLOT_PRICE_START = 500; // lf-fixed: fallback when the conf does not resolve; the live value is the config field
+	static const int DEFAULT_SLOT_PRICE_STEP = 250; // lf-fixed: fallback when the conf does not resolve; the live value is the config field
+	static const int DEFAULT_TOW_AFTER_MINUTES = 60; // lf-fixed: fallback when the conf does not resolve; the live value is the config field
+	static const int DEFAULT_TOW_FEE = 150; // lf-fixed: fallback when the conf does not resolve; the live value is the config field
+	static const float DEFAULT_TOW_EXEMPT_NEAR_GARAGE = 30; // lf-fixed: fallback when the conf does not resolve; the live value is the config field
 
 	[Attribute("250", UIWidgets.Auto, "Impound fee in carried cash to collect one vehicle. 0 releases for free")]
 	int m_iImpoundFee;
@@ -33,6 +40,27 @@ class LF_GarageConfig
 
 	[Attribute("3", UIWidgets.Auto, "Metres around a vehicle pad that count as occupied by a parked vehicle", params: "1 20")]
 	float m_fPadOccupiedRadius;
+
+	[Attribute("2", UIWidgets.Auto, "Garage slots every character has for free (#774)", params: "0 20")]
+	int m_iBaseSlots;
+
+	[Attribute("6", UIWidgets.Auto, "Most garage slots one character can hold, bought ones included", params: "1 50")]
+	int m_iMaxSlots;
+
+	[Attribute("500", UIWidgets.Auto, "Price of the first bought slot, in cash", params: "0 1000000")]
+	int m_iSlotPriceStart;
+
+	[Attribute("250", UIWidgets.Auto, "Added to the price for each slot bought after the first", params: "0 1000000")]
+	int m_iSlotPriceStep;
+
+	[Attribute("60", UIWidgets.Auto, "Minutes a street vehicle may stand unattended before it is towed (#774)", params: "1 10000")]
+	int m_iTowAfterMinutes;
+
+	[Attribute("150", UIWidgets.Auto, "Fee in carried cash to collect a towed vehicle", params: "0 1000000")]
+	int m_iTowFee;
+
+	[Attribute("30", UIWidgets.Auto, "Metres from a garage within which a standing vehicle is never towed", params: "0 500")]
+	float m_fTowExemptNearGarage;
 
 	protected static ref LF_GarageConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -106,6 +134,76 @@ class LF_GarageConfig
 
 		return config.m_fPadOccupiedRadius;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	static int BaseSlots()
+	{
+		LF_GarageConfig config = Get();
+		if (!config)
+			return DEFAULT_BASE_SLOTS;
+
+		return config.m_iBaseSlots;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int MaxSlots()
+	{
+		LF_GarageConfig config = Get();
+		if (!config)
+			return DEFAULT_MAX_SLOTS;
+
+		return config.m_iMaxSlots;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int SlotPriceStart()
+	{
+		LF_GarageConfig config = Get();
+		if (!config)
+			return DEFAULT_SLOT_PRICE_START;
+
+		return config.m_iSlotPriceStart;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int SlotPriceStep()
+	{
+		LF_GarageConfig config = Get();
+		if (!config)
+			return DEFAULT_SLOT_PRICE_STEP;
+
+		return config.m_iSlotPriceStep;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TowAfterMinutes()
+	{
+		LF_GarageConfig config = Get();
+		if (!config)
+			return DEFAULT_TOW_AFTER_MINUTES;
+
+		return config.m_iTowAfterMinutes;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int TowFee()
+	{
+		LF_GarageConfig config = Get();
+		if (!config)
+			return DEFAULT_TOW_FEE;
+
+		return config.m_iTowFee;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float TowExemptNearGarage()
+	{
+		LF_GarageConfig config = Get();
+		if (!config)
+			return DEFAULT_TOW_EXEMPT_NEAR_GARAGE;
+
+		return config.m_fTowExemptNearGarage;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -151,6 +249,29 @@ class LF_Garage
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! CanPark plus the slot cap (#2655): an owner whose stored vehicles already fill slotCap is
+	//! refused. reasonKey is the string key naming why ("" when parking is allowed); a caller
+	//! shows it with the cap as its argument.
+	static bool CanPark(bool isOwner, bool inVehicle, bool garageNearby, int slotsUsed, int slotCap, out string reasonKey)
+	{
+		reasonKey = "";
+		if (!CanPark(isOwner, inVehicle, garageNearby))
+		{
+			reasonKey = "#LF-Garage_StepOut";
+			return false;
+		}
+
+		if (slotsUsed >= slotCap)
+		{
+			LF_Debug.Log("Garage", string.Format("park refused: all %1 garage slots are in use", slotCap));
+			reasonKey = "#LF-Garage_SlotsFull";
+			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return true when user stands within the configured desk reach of desk.
 	static bool WithinReach(IEntity user, IEntity desk)
 	{
@@ -162,9 +283,9 @@ class LF_Garage
 
 	//------------------------------------------------------------------------------------------------
 	//! \return True when the vehicle's storages hold an item beyond the prefab's own fill (the
-	//! MultiSlots a stock car spawns with, such as the S105's two field dressings). A stored
-	//! vehicle keeps no cargo: the record has no inventory and retrieve spawns a fresh prefab with
-	//! its own fill, so storing would delete everything else (#2411).
+	//! MultiSlots a stock car spawns with, such as the S105's two field dressings). The garage keeps
+	//! the cargo since #2809 (LF_VehicleOwnership.CaptureCargo); the stolen-car recover still asks
+	//! the officer to search the car first.
 	static bool HasCargo(IEntity vehicle)
 	{
 		if (!vehicle)
@@ -310,17 +431,13 @@ class LF_Garage
 
 	//------------------------------------------------------------------------------------------------
 	//! Why vehicle cannot go into the garage as it is, as a string key; empty when it can.
-	//! Storing deletes the vehicle entity and its children, so a car that still holds items is
-	//! refused instead of losing them (#2411), and so is one with the owner or a keyholder still
-	//! seated. Other occupants do not refuse: the store ejects them (StopAndEject) and Store
+	//! A car with the owner or a keyholder still seated is refused (#2411). Cargo does not refuse:
+	//! the record keeps it (#2809), and the garage has no capacity limit that would need it. Other occupants do not refuse: the store ejects them (StopAndEject) and Store
 	//! checks the seats again before deleting, so a player is never deleted with the car.
 	static string StoreRefusalKey(IEntity vehicle, string vehicleId, string ownerUid)
 	{
 		if (KeyholderInside(vehicle, vehicleId, ownerUid))
 			return "#LF-Garage_Occupied";
-
-		if (HasCargo(vehicle))
-			return "#LF-Garage_EmptyCargo";
 
 		return "";
 	}
@@ -404,7 +521,7 @@ class LF_Garage
 		int ledgerFee = LF_GarageConfig.ImpoundFee();
 		string nextOut = LF_VehicleOwnership.LatestImpounded(uid);
 		if (!nextOut.IsEmpty())
-			ledgerFee = LF_VehicleOwnership.ImpoundFeeOf(nextOut);
+			ledgerFee = LF_VehicleTow.FeeOf(nextOut);
 		controller.LF_ShowGarageLedger(nameKeys, plates, places, ledgerFee, LF_NetworkUtils.GetRplId(desk));
 		LF_Debug.Info("Garage", string.Format("ledger shown to %1: %2 vehicle(s)", uid, nameKeys.Count()));
 		return true;
@@ -634,10 +751,10 @@ class LF_ImpoundCollectAction : ScriptedUserAction
 		string vehicleId = LF_VehicleOwnership.LatestImpounded(uid);
 		int fee = LF_GarageConfig.ImpoundFee();
 		if (!vehicleId.IsEmpty())
-			fee = LF_VehicleOwnership.ImpoundFeeOf(vehicleId);
+			fee = LF_VehicleTow.FeeOf(vehicleId);
 		bool collected = false;
 		if (!vehicleId.IsEmpty())
-			collected = LF_VehicleOwnership.CollectFromImpound(vehicleId, uid, pUserEntity, fee, desk.GetPadId(), reasonKey);
+			collected = LF_VehicleTow.Collect(vehicleId, uid, pUserEntity, desk.GetPadId(), reasonKey);
 		else
 			LF_Debug.Info("Vehicle", string.Format("impound collect refused: nothing impounded for %1", uid));
 
@@ -661,11 +778,9 @@ class LF_ImpoundCollectAction : ScriptedUserAction
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_GarageConfig's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_GarageConfig's statics (LF_StaticReset finds it by reflection).
 class LF_GarageConfig_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_GarageConfig_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_GarageConfig";

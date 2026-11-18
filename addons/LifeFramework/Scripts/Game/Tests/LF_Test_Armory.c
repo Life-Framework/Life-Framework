@@ -4,6 +4,7 @@
 //! With the keycard it pays its weapons once, each stamped with a book serial that names the thief,
 //! and files the loud report. It pays again only after a police repair, the loot cooldown and
 //! stock; an empty store refuses until the refill brings a kit back.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Armory : LF_Test
 {
 	override string GetName()

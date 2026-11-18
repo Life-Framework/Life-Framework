@@ -143,7 +143,7 @@ class LF_PoliceRanks
 		if (!row)
 			return 0;
 
-		return Math.Max(row.m_iDutySecondsForNext, 0);
+		return LF_Utils.MaxInt(row.m_iDutySecondsForNext, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -948,10 +948,12 @@ class LF_PoliceRanks
 			int deltaSeconds = (nowMs - started) / 1000;
 			if (deltaSeconds > 0)
 			{
-				// A shift counts for at most dutyShiftMaxMinutes (#2416): an officer who left the
-				// game running earns up to that and no more until they clock in again.
-				int credited = ShiftCredit(deltaSeconds, account.GetShiftSeconds(), LF_PoliceConfig.DutyShiftMaxSeconds());
-				if (credited < deltaSeconds)
+				// A shift counts for at most dutyShiftMaxSeconds (#2416, #2622): an officer who left the
+				// game running earns up to that and no more until they clock in again. Logged once,
+				// at the settle that reaches the cap.
+				int cap = LF_PoliceConfig.DutyShiftMaxSeconds();
+				int credited = ShiftCredit(deltaSeconds, account.GetShiftSeconds(), cap);
+				if (credited < deltaSeconds && account.GetShiftSeconds() < cap)
 					LF_Debug.Info("Ranks", string.Format("%1: shift cap reached, %2 of %3 s counted (%4 s already this shift)", account.GetPersistentId(), credited, deltaSeconds, account.GetShiftSeconds()));
 
 				if (credited > 0)
@@ -976,9 +978,13 @@ class LF_PoliceRanks
 
 	//------------------------------------------------------------------------------------------------
 	//! Pure: how many of deltaSeconds still count when shiftSoFar of capSeconds is already used.
+	//! A cap of 0 or less counts every second.
 	static int ShiftCredit(int deltaSeconds, int shiftSoFar, int capSeconds)
 	{
-		return Math.Max(0, Math.Min(deltaSeconds, capSeconds - shiftSoFar));
+		if (capSeconds <= 0)
+			return LF_Utils.MaxInt(0, deltaSeconds);
+
+		return LF_Utils.MaxInt(0, LF_Utils.MinInt(deltaSeconds, capSeconds - shiftSoFar));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1005,10 +1011,17 @@ class LF_PoliceRanks
 	//! \return True when a running clock was stopped.
 	static bool StopDutyClockOf(LF_PlayerAccount account)
 	{
+		return StopDutyClockAt(account, NowMs());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! StopDutyClockOf with the world time passed in, so a test can drive the disconnect.
+	static bool StopDutyClockAt(LF_PlayerAccount account, int nowMs)
+	{
 		if (!account || !account.IsDutyClockRunning())
 			return false;
 
-		SettleDutyAt(account, false, NowMs());
+		SettleDutyAt(account, false, nowMs);
 		LF_Debug.Info("Ranks", string.Format("duty clock stopped for %1: the player left", account.GetPersistentId()));
 		return true;
 	}
@@ -1162,11 +1175,9 @@ class LF_PoliceIssueFacts : LF_BuyerFacts
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PoliceRanks's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PoliceRanks's statics (LF_StaticReset finds it by reflection).
 class LF_PoliceRanks_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PoliceRanks_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PoliceRanks";

@@ -7,6 +7,7 @@
 //! engine has loaded the core and the base game addons and nothing else, so the suite proves what the
 //! core does alone. A normal run has the same core loaded and may have more; this test then only
 //! checks the core is there. The pack is never named: anything outside the known base set counts.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CoreOnlyBoot : LF_Test
 {
 	protected static const string CORE_GUID = "4550A2B656E1B569";

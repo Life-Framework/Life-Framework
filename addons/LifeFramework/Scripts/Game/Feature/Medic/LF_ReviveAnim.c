@@ -16,6 +16,15 @@ class LF_ReviveAnimSession : Managed
 }
 
 //------------------------------------------------------------------------------------------------
+//! When one medic last started a CPR, for the start cooldown. Server only.
+class LF_ReviveAnimStamp : Managed
+{
+	EntityID m_Medic;
+	float m_fAt;
+	bool m_bLogged;
+}
+
+//------------------------------------------------------------------------------------------------
 //! The medic's CPR while a revive runs (#512). The server decides: the client only reports that the
 //! revive hold began, and the server re-runs the revive rule (LF_Revive.Check) before it tells the
 //! medic's owner to start the CPR loiter (LF_ReviveAnimPlayer), which the base game replicates. The
@@ -29,19 +38,31 @@ class LF_ReviveAnim
 	static const int WATCH_MS = 400;
 
 	protected static ref array<ref LF_ReviveAnimSession> s_aSessions = {};
+	//! Seconds a medic waits between two CPR starts: stops a hold-release-hold spam from flooding every client.
+	// lf-fixed: anti-spam guard, not a gameplay value; no server wants it tuned
+	static const float START_COOLDOWN_SECONDS = 0.5;
+
+	protected static ref array<ref LF_ReviveAnimStamp> s_aStamps = {};
+	protected static float s_fCooldown = START_COOLDOWN_SECONDS;
 	protected static bool s_bWatching;
 	protected static bool s_bSilent;
 	protected static int s_iStarts;
 	protected static int s_iStops;
+	protected static int s_iThrottled;
+	protected static int s_iThrottleLogs;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_aSessions.Clear();
+		s_aStamps.Clear();
+		s_fCooldown = START_COOLDOWN_SECONDS;
 		s_bWatching = false;
 		s_bSilent = false;
 		s_iStarts = 0;
 		s_iStops = 0;
+		s_iThrottled = 0;
+		s_iThrottleLogs = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -61,6 +82,64 @@ class LF_ReviveAnim
 	static int GetStopCount()
 	{
 		return s_iStops;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: the start cooldown in seconds (0 = off).
+	static void SetCooldown(float seconds)
+	{
+		s_fCooldown = seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int GetThrottledCount()
+	{
+		return s_iThrottled;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int GetThrottleLogCount()
+	{
+		return s_iThrottleLogs;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: is a new CPR start from this medic inside the cooldown after their last one? Logs the
+	//! first refusal of each window. Prunes the records whose window has passed.
+	protected static bool IsThrottled(IEntity medic)
+	{
+		float now = Now();
+		LF_ReviveAnimStamp found;
+		for (int i = s_aStamps.Count() - 1; i >= 0; i--)
+		{
+			LF_ReviveAnimStamp stamp = s_aStamps[i];
+			if (now - stamp.m_fAt >= s_fCooldown)
+				s_aStamps.Remove(i);
+			else if (stamp.m_Medic == medic.GetID())
+				found = stamp;
+		}
+
+		if (!found)
+			return false;
+
+		s_iThrottled++;
+		if (!found.m_bLogged)
+		{
+			found.m_bLogged = true;
+			s_iThrottleLogs++;
+			LF_Debug.Info(FEATURE, "revive animation start throttled for " + LF_Utils.GetPlayerUid(medic));
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Stamp(IEntity medic)
+	{
+		LF_ReviveAnimStamp stamp = new LF_ReviveAnimStamp();
+		stamp.m_Medic = medic.GetID();
+		stamp.m_fAt = Now();
+		s_aStamps.Insert(stamp);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -122,6 +201,10 @@ class LF_ReviveAnim
 		if (Find(medic))
 			return true;
 
+		if (IsThrottled(medic))
+			return false;
+
+		Stamp(medic);
 		LF_ReviveAnimSession session = new LF_ReviveAnimSession();
 		session.m_Medic = medic.GetID();
 		session.m_Patient = patient.GetID();
@@ -389,11 +472,9 @@ modded class SCR_PlayerController
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_ReviveAnim's statics (registered at script load; Core/LF_StaticReset.c). Sessions hold the last world's entities.
+//! World-end reset of LF_ReviveAnim's statics (LF_StaticReset finds it by reflection). Sessions hold the last world's entities.
 class LF_ReviveAnim_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ReviveAnim_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_ReviveAnim";

@@ -4,6 +4,7 @@
 //! it is the murder of that player: the murder path resolves the account uid through LF_LogoutBody.
 //! A plain NPC (or any entity that is not a logout body) is still an NPC; a connected player keeps
 //! their own uid. The real kill with a killer is a manual step in the PR.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MurderLogoutBody : LF_Test
 {
 	protected static const string UID = "murder-logout-body-uid";

@@ -155,14 +155,21 @@ function dropTicket(ctx) {
 }
 
 const NOOP = { name: null, release: () => {} };
+// until() turned true while queued: the caller no longer needs the lock (a shared rdb appeared).
+const satisfiedHandle = () => ({ name: null, release: () => {}, satisfied: true });
 
 // Blocks (async) until a Workbench lock is free here. waitMs bounds the queue (default 1 h).
-export async function acquireWorkbench(root, { purpose = "workbench", waitMs = 3600000, pollMs = 2000, log = console.log } = {}) {
+export async function acquireWorkbench(root, { purpose = "workbench", waitMs = 3600000, pollMs = 2000, log = console.log, until } = {}) {
   if (heldHere > 0 || process.env.LF_WB_HELD === "1") return NOOP;
   const ctx = begin(root, purpose);
   const t0 = Date.now();
   let said = false;
   for (;;) {
+    if (until?.()) {
+      dropTicket(ctx);
+      return satisfiedHandle();
+    }
+    ctx.limit = wbLimit(root);
     const r = tryTake(root, ctx.limit, ctx.id, { ...ctx.meta, pid: process.pid });
     if (r.lock) return finish(root, ctx, r.lock, Date.now() - t0, log);
     if (!said) {
@@ -178,13 +185,18 @@ export async function acquireWorkbench(root, { purpose = "workbench", waitMs = 3
 }
 
 // Same, blocking the thread (for sync callers such as look).
-export function acquireWorkbenchSync(root, { purpose = "workbench", waitMs = 3600000, pollMs = 2000, log = console.log } = {}) {
+export function acquireWorkbenchSync(root, { purpose = "workbench", waitMs = 3600000, pollMs = 2000, log = console.log, until } = {}) {
   if (heldHere > 0 || process.env.LF_WB_HELD === "1") return NOOP;
   const ctx = begin(root, purpose);
   const t0 = Date.now();
   let said = false;
   const cell = new Int32Array(new SharedArrayBuffer(4));
   for (;;) {
+    if (until?.()) {
+      dropTicket(ctx);
+      return satisfiedHandle();
+    }
+    ctx.limit = wbLimit(root);
     const r = tryTake(root, ctx.limit, ctx.id, { ...ctx.meta, pid: process.pid });
     if (r.lock) return finish(root, ctx, r.lock, Date.now() - t0, log);
     if (!said) {

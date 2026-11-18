@@ -93,9 +93,9 @@ class LF_PoliceConfig
 	static const int DEFAULT_ARMORY_COOLDOWN_MINUTES = 120;
 	static const int ARMORY_COOLDOWN_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int ARMORY_COOLDOWN_MAX = 1440;	// lf-fixed: the schema limit, mirrors the attribute params
-	static const int DEFAULT_DUTY_SHIFT_MAX_MINUTES = 120;
-	static const int DUTY_SHIFT_MIN = 5;	// lf-fixed: the schema limit, mirrors the attribute params
-	static const int DUTY_SHIFT_MAX = 1440;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int DEFAULT_DUTY_SHIFT_MAX_SECONDS = 10800;
+	static const int DUTY_SHIFT_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params (0 = no cap)
+	static const int DUTY_SHIFT_MAX = 86400;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int DEFAULT_TRIAL_SWEEP_SECONDS = 60;
 	static const int TRIAL_SWEEP_MIN = 10;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int TRIAL_SWEEP_MAX = 3600;	// lf-fixed: the schema limit, mirrors the attribute params
@@ -201,8 +201,8 @@ class LF_PoliceConfig
 	[Attribute("120", UIWidgets.Auto, "Minutes of real time between two armory kits for one officer. Saved, so clocking out and a restart do not reset it. At least 1: the spike strip and roadblock kit carry no serial, so only the cooldown limits them", params: "1 1440")]
 	int m_iArmoryCooldownMinutes;
 
-	[Attribute("120", UIWidgets.Auto, "Most minutes of one duty shift that count for duty pay and rank. Past it the clock runs on unpaid until the officer clocks out and in again, so an officer who walked away from the game stops earning. A disconnect also stops the clock", params: "5 1440")]
-	int m_iDutyShiftMaxMinutes;
+	[Attribute("10800", UIWidgets.Auto, "Most seconds of one duty shift that count for duty pay and rank; 0 means no cap. Past it the clock runs on unpaid until the officer clocks out and in again, so an officer who walked away from the game stops earning. A disconnect also stops the clock", params: "0 86400")]
+	int m_iDutyShiftMaxSeconds;
 
 	[Attribute("60", UIWidgets.Auto, "Seconds between the server's checks for an on-duty officer whose trial ran out. That officer is clocked out", params: "10 3600")]
 	int m_iTrialSweepSeconds;
@@ -339,7 +339,7 @@ class LF_PoliceConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds", "applyMinPlaytimeHours", "applyRejectCooldownHours", "trialHours", "armoryCooldownMinutes", "dutyShiftMaxMinutes", "trialSweepSeconds", "ticketRateWindowSeconds", "ticketRateBurst", "spikeStripMaxPerOfficer", "callReward", "callRadius"};
+		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds", "applyMinPlaytimeHours", "applyRejectCooldownHours", "trialHours", "armoryCooldownMinutes", "dutyShiftMaxSeconds", "trialSweepSeconds", "ticketRateWindowSeconds", "ticketRateBurst", "spikeStripMaxPerOfficer", "callReward", "callRadius"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("arrestMinRank", m_iArrestMinRank, RANK_MIN, RANK_MAX);
 		reader.ReadInt("escortMinRank", m_iEscortMinRank, RANK_MIN, RANK_MAX);
@@ -370,7 +370,7 @@ class LF_PoliceConfig
 		reader.ReadInt("applyRejectCooldownHours", m_iApplyRejectCooldownHours, APPLY_HOURS_MIN, APPLY_HOURS_MAX);
 		reader.ReadInt("trialHours", m_iTrialHours, APPLY_HOURS_MIN, APPLY_HOURS_MAX);
 		reader.ReadInt("armoryCooldownMinutes", m_iArmoryCooldownMinutes, ARMORY_COOLDOWN_MIN, ARMORY_COOLDOWN_MAX);
-		reader.ReadInt("dutyShiftMaxMinutes", m_iDutyShiftMaxMinutes, DUTY_SHIFT_MIN, DUTY_SHIFT_MAX);
+		reader.ReadInt("dutyShiftMaxSeconds", m_iDutyShiftMaxSeconds, DUTY_SHIFT_MIN, DUTY_SHIFT_MAX);
 		reader.ReadInt("trialSweepSeconds", m_iTrialSweepSeconds, TRIAL_SWEEP_MIN, TRIAL_SWEEP_MAX);
 		reader.ReadInt("ticketRateWindowSeconds", m_iTicketRateWindowSeconds, TICKET_RATE_WINDOW_MIN, TICKET_RATE_WINDOW_MAX);
 		reader.ReadInt("ticketRateBurst", m_iTicketRateBurst, TICKET_RATE_BURST_MIN, TICKET_RATE_BURST_MAX);
@@ -502,7 +502,7 @@ class LF_PoliceConfig
 		ctx.WriteValue("applyRejectCooldownHours", m_iApplyRejectCooldownHours);
 		ctx.WriteValue("trialHours", m_iTrialHours);
 		ctx.WriteValue("armoryCooldownMinutes", m_iArmoryCooldownMinutes);
-		ctx.WriteValue("dutyShiftMaxMinutes", m_iDutyShiftMaxMinutes);
+		ctx.WriteValue("dutyShiftMaxSeconds", m_iDutyShiftMaxSeconds);
 		ctx.WriteValue("trialSweepSeconds", m_iTrialSweepSeconds);
 		ctx.WriteValue("ticketRateWindowSeconds", m_iTicketRateWindowSeconds);
 		ctx.WriteValue("ticketRateBurst", m_iTicketRateBurst);
@@ -610,13 +610,14 @@ class LF_PoliceConfig
 
 	//------------------------------------------------------------------------------------------------
 	//! Most seconds of one duty shift that count for pay and rank (LF_PoliceRanks.SettleDutyAt, #2416).
+	//! 0 means no cap.
 	static int DutyShiftMaxSeconds()
 	{
 		LF_PoliceConfig config = Get();
 		if (!config)
-			return DEFAULT_DUTY_SHIFT_MAX_MINUTES * 60;
+			return DEFAULT_DUTY_SHIFT_MAX_SECONDS;
 
-		return Math.ClampInt(config.m_iDutyShiftMaxMinutes, DUTY_SHIFT_MIN, DUTY_SHIFT_MAX) * 60;
+		return Math.ClampInt(config.m_iDutyShiftMaxSeconds, DUTY_SHIFT_MIN, DUTY_SHIFT_MAX);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -680,7 +681,7 @@ class LF_PoliceConfig
 		if (!config)
 			return DEFAULT_SEARCH_COOLDOWN_SECONDS;
 
-		return Math.Max(config.m_iSearchCooldownSeconds, 0);
+		return LF_Utils.MaxInt(config.m_iSearchCooldownSeconds, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------

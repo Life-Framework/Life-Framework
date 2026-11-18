@@ -3,6 +3,7 @@
 //! #2580 (#2417 item 26): LF_JailWork.Begin refused nobody for distance, only Finish checked
 //! LF_WorkAnim.MAX_RANGE, so a prisoner across the cell could start a task. A worker beyond range
 //! starts no task; one inside range starts one.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JailWorkBeginRange : LF_Test
 {
 	override string GetName()

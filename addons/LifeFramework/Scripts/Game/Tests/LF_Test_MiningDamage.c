@@ -5,6 +5,7 @@
 //! builds it (damageSource = the swung tool) goes through the iron rock's damage
 //! manager: the axe is refused, three pickaxe hits drop one iron nugget beside
 //! the rock, five pieces spend it (hidden, no more hits), and it grows back.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MiningDamage : LF_Test
 {
 	protected static const ResourceName IRON_ORE = "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et";

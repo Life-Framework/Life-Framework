@@ -16,6 +16,7 @@
 // dedicated/replication-world (WORLD) red-proof: see the comment above that class.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AccountStateBits : LF_Test
 {
 	override string GetName()
@@ -65,6 +66,7 @@ class LF_Test_AccountStateBits : LF_Test
 }
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_LicenseBits : LF_Test
 {
 	override string GetName()
@@ -99,6 +101,7 @@ class LF_Test_LicenseBits : LF_Test
 }
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CharacterCreationRules : LF_Test
 {
 	override string GetName()
@@ -126,6 +129,7 @@ class LF_Test_CharacterCreationRules : LF_Test
 }
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RobNoAccount : LF_Test
 {
 	override string GetName()
@@ -154,6 +158,7 @@ class LF_Test_RobNoAccount : LF_Test
 // `[LFTEST]   - the character carries the written account state (expected 263, got 0)` and
 // `[LFTEST]   - arm sets the replicated open flag for clients`. Restored both.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_AccountReplicationWorld : LF_Test
 {
 	protected static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";

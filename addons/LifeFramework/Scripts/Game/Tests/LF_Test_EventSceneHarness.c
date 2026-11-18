@@ -4,6 +4,7 @@
 //! the files keep off and registers its modules; with the hour forced to dawn the shell starts it.
 //! A missing conf, no conf and a conf of another root class are refused and change nothing. `Stop`
 //! puts the files' own list back. Only this feature's statics are touched, never ResetAll().
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventSceneHarness : LF_Test
 {
 	static const ResourceName FIXTURE = "{901C603717D05377}Configs/Tests/LF_Test_EventSceneFixture.conf";

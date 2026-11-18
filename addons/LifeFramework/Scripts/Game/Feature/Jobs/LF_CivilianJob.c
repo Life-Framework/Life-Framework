@@ -136,7 +136,7 @@ class LF_CivilianJob
 		}
 
 		LF_JobWorker worker = Worker(playerUid);
-		worker.m_iPaidTotal = Math.Max(0, paidTotal);
+		worker.m_iPaidTotal = LF_Utils.MaxInt(0, paidTotal);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -584,7 +584,7 @@ class LF_CivilianJob
 		if (playerUid.IsEmpty())
 			return;
 
-		Worker(playerUid).m_iDeposit = Math.Max(0, amount);
+		Worker(playerUid).m_iDeposit = LF_Utils.MaxInt(0, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -969,7 +969,11 @@ class LF_CivilianJob
 		if (!TakeCargo(user, finished))
 			return 0;
 
-		int paid = CompleteRun(uid);
+		int taxiFare = -1;
+		if (finished == LF_EJobType.TAXI)
+			taxiFare = LF_TaxiFare.Price(Worker(uid).m_vRunStart, site.GetOrigin());
+
+		int paid = CompleteRun(uid, taxiFare);
 		if (paid <= 0)
 			return 0;
 
@@ -1010,7 +1014,8 @@ class LF_CivilianJob
 	//! Pays the active run once and grants job XP. A second call pays nothing. This is the payout
 	//! only: the drop-off rules (distance, time, passenger) are Dropoff's, and the deposit is the
 	//! caller's to return (ReleaseDeposit).
-	static int CompleteRun(string playerUid)
+	//! \param[in] taxiFare The distance-priced fare (LF_TaxiFare) a taxi run pays; -1 pays the flat PAY_TAXI.
+	static int CompleteRun(string playerUid, int taxiFare = -1)
 	{
 		if (playerUid.IsEmpty())
 		{
@@ -1026,6 +1031,9 @@ class LF_CivilianJob
 		}
 
 		int amount = PayFor(worker.m_eActiveJob);
+		if (worker.m_eActiveJob == LF_EJobType.TAXI && taxiFare > 0)
+			amount = taxiFare;
+
 		LF_EJobType finished = worker.m_eActiveJob;
 		worker.m_bActive = false;
 		worker.m_eActiveJob = LF_EJobType.UNEMPLOYED;

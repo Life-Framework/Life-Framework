@@ -4,6 +4,7 @@
 //! behind CRIMINAL_WEAPONS and names the licence it lacks, the black_market outlet gates both its
 //! guns the same way, no shop offers the police rifle, the Prefabs/Weapons/ price rule is gone, and
 //! a shop with neither a list nor an outlet sells nothing.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_BlackMarketOutlet : LF_Test
 {
 	protected static const ResourceName PISTOL = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";

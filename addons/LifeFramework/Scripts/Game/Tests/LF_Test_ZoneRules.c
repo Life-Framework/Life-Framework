@@ -4,6 +4,7 @@
 //! zones/rules: rule lookup by shape (circle, box turned by yaw, polyline corridor), strictest rule
 //! wins on overlap, a zone change reaches the bus, the incident log stamps the zone, and lawless
 //! keeps wanted unless config says so.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ZoneRules : LF_Test
 {
 	override string GetName()

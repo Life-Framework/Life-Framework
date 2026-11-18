@@ -9,6 +9,7 @@
 // the car stays where it was.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JailVehicleArrest : LF_Test
 {
 	override string GetName()

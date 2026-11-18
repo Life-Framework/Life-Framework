@@ -7,6 +7,7 @@
 //! restrained target. A free target gets no "Revoke firearm permit" interaction and the server's
 //! LF_LicenceDesk.Revoke refuses (the permit stays); once the target is cuffed the offer shows and
 //! the revoke takes the permit.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LicenceRevokeCuffs : LF_Test
 {
 	protected static const string OFFICER_UID = "lf-test-revoke-officer";

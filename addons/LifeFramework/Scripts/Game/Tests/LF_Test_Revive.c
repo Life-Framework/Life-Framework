@@ -22,6 +22,7 @@ class LF_TestReviveRecorder : LF_EventSubscriber
 //! a medic out of range, a patient who is not down and a revive of yourself are refused and change
 //! nothing. Test characters have no player behind them, so the duty flag is passed in.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Revive : LF_Test
 {
 	override string GetName()

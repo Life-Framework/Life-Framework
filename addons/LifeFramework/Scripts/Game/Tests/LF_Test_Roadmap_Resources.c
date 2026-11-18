@@ -5,6 +5,7 @@
 // Restored the expected value to 0.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Resources : LF_Test
 {
 	protected static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
@@ -77,6 +78,7 @@ class LF_Test_Roadmap_Resources : LF_Test
 }
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_ResourcesWorld : LF_Test
 {
 	protected static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
@@ -242,5 +244,7 @@ class LF_Test_Roadmap_ResourcesWorld : LF_Test
 		ctx.Equal(1, barsInInventory + barsDropped, "two nuggets become one iron bar");
 		ctx.Equal(cashBefore, LF_MoneyUtils.GetCash(character), "smelting does not mint cash");
 		ctx.Equal(0, jobs.GetProcessReward(BAR), "the furnace line has no process reward");
+
+		LF_TestCharacterFixture.Delete(character);
 	}
 }

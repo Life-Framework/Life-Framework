@@ -4,6 +4,7 @@
 //! each of the three townsfolk (old man, cafe owner, night-shift worker) carries an `LF_DialogueComponent` and a
 //! talk action, and the component's dialogue id resolves through the pack's index overlay to that person's voiced
 //! conf. Found by prefab, never by a town coordinate; the pack owns the prefabs, the core names none of them.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronTownsfolkTalk : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

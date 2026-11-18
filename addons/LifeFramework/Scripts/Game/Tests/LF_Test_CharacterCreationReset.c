@@ -3,6 +3,7 @@
 //! character/creation-reset (#2415): the pick and register offers are keyed by player id and ids
 //! restart at 1, so a stale entry lets a new player 1 pass RefuseFurtherCharacter. A disconnect
 //! forgets the player's offers and the world-end reset drops the manager.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CharacterCreationReset : LF_Test
 {
 	protected static const int PLAYER = 7771;

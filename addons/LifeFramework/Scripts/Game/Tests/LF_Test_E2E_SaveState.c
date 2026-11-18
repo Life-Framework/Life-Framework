@@ -39,6 +39,7 @@
 // `- e2e the robber's look survives the restart (expected '9B5BB216CC7FF18E|1=9F546CCA2582D16F', got '')`.
 // LF_TestLegacySnapshot now puts the crime reports back; both passes green, and green with --legacy-save.
 // tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
 	protected static const string ACCOUNT_UID = "e2e-uid";
@@ -374,6 +375,15 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		ctx.Equal(420, LF_GraceCharacterClock.Seconds(GRACE_KEY), "e2e grace character has 7 min before the save");
 
 		SeedOrgLadder(ctx);
+		LF_Test_ReputationPersist.SeedE2E(ctx);
+		LF_Test_GarageSlotsPersist.SeedE2E(ctx);
+		// A car on the street holds an apple (#2809): the shutdown save captures its cargo into "carried".
+		IEntity cargoPayer = LF_TestCharacterFixture.Spawn(ctx);
+		if (cargoPayer)
+		{
+			LF_Test_VehicleCargoPersist.SeedE2E(ctx, cargoPayer);
+			LF_TestCharacterFixture.Delete(cargoPayer);
+		}
 
 #ifndef LF_E2E_LEGACY_SAVE
 		// A cargo run in progress holds a deposit ("jobruns" payload, save version 49, #2408, #2481): the
@@ -459,6 +469,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 
 //------------------------------------------------------------------------------------------------
 // tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateVerify : LF_Test
 {
 	//! #2410: the carried house key and the house it opens.
@@ -1019,12 +1030,17 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET_ID, GARAGE_OWNER_UID, payer, fee, "roadmap-impound", reasonKey), "e2e street car is collected only once");
 			ctx.True(LF_VehicleOwnership.GetVehicle(STREET_ID) != null, "e2e collected car is in the impound yard");
 			LF_VehicleOwnership.Store(STREET_ID, GARAGE_OWNER_UID);
+			LF_Test_VehicleCargoPersist.VerifyE2E(ctx, payer);
 			LF_TestCharacterFixture.Delete(payer);
 		}
 
 		VerifyCharacterSlots(ctx);
 		VerifyPlaytime(ctx);
 		VerifyJobLevels(ctx);
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("reputation"))
+			LF_Test_ReputationPersist.VerifyE2E(ctx);
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("garageslots"))
+			LF_Test_GarageSlotsPersist.VerifyE2E(ctx);
 		VerifyOrgLadder(ctx);
 		VerifyHeldGround(ctx);
 

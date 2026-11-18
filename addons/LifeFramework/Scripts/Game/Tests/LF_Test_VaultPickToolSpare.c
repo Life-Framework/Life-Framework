@@ -3,6 +3,7 @@
 //! A drill only in the pack never blocks the charge on a drill-or-charge vault (#2581): the robber
 //! with a spare drill and a charge is sent to the charge; once the drill is in the hands it is the
 //! drill. A drill-only vault still points a pack drill at "hold it".
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VaultPickToolSpare : LF_Test
 {
 	override string GetName()
@@ -38,5 +39,7 @@ class LF_Test_VaultPickToolSpare : LF_Test
 
 		LF_TestVaultDrillFixture.Hold(robber, drill, false);
 		ctx.True(LF_Bank.PickTool(state, robber, item) == LF_Bank.TOOL_CHARGE, "drill back in the pack: the charge again");
+
+		LF_TestVaultDrillFixture.Release(robber);
 	}
 }

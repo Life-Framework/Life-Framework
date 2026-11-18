@@ -6,6 +6,7 @@
 //! A spawned character is the only way to hold an LF_PlayerJobComponent, so this is WORLD.
 //! The old paycheck ran on the component's frame event; a component with no frame event and
 //! no cash after spawn cannot mint over time.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NoPassivePaycheck : LF_Test
 {
 	override string GetName()

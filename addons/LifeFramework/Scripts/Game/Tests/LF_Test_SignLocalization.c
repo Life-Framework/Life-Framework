@@ -4,6 +4,7 @@
 // showed the dedicated test server resolves sign keys.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SignLocalization : LF_Test
 {
 	override string GetName()

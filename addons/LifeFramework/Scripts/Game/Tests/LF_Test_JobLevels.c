@@ -10,6 +10,7 @@
 //! Per-job XP (#749, D12): XP reaches levels through the job's thresholds, an action's cooldown and
 //! a job's daily cap hold back farming, an unknown job or action earns nothing, and the pre-#749
 //! curves convert both ways.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobLevels : LF_Test
 {
 	static const string UID = "test-joblevels-worker";

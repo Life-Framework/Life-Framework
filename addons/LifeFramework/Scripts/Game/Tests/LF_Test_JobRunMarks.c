@@ -7,6 +7,7 @@
 //! drop-off, none for a taxi run or when no drop is placed), a next stop replaces it, a respawn sends
 //! the waypoint again, and abandoning or completing the run clears the row and the waypoint. Real
 //! LF_CivilianJob runs, a recording share sink and a recording waypoint sink, no network.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobRunMarks : LF_Test
 {
 	protected static const int RUNNER = 1;

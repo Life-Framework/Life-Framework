@@ -6,6 +6,7 @@
 //! a slot of the 20 cap (a player with 20 marks got no dispatch or org marks) and was uploaded and saved
 //! as the player's own mark, so an org or dispatch mark stayed on the map after leaving the org or duty.
 //! Pure script: marker objects shaped as LF_MapShareComponent and the marker dialog make them.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapShareNotPersonal : LF_Test
 {
 	override string GetName()

@@ -341,7 +341,9 @@ class LF_PlacementService
 		LF_EPlacementSnap snap = placeable.GetSnap();
 		if (snap == LF_EPlacementSnap.ACROSS_ROAD)
 			hasRoad = NearestRoad(ahead, roadDir);
-		else if (snap != LF_EPlacementSnap.GROUND)
+		else if (snap == LF_EPlacementSnap.WALL)
+			return LF_PlacementFurniture.PlanWall(player, placeable, ignore, transform, probe); // furniture (#2654)
+		else if (snap != LF_EPlacementSnap.GROUND && snap != LF_EPlacementSnap.FLOOR)
 		{
 			LF_Debug.Error(FEATURE, string.Format("snap mode %1 is not built yet (#1028); refusing", typename.EnumToString(LF_EPlacementSnap, snap)));
 			LevelAt(ahead, LF_PlacementGeometry.Flat(playerTransform[2]), transform);
@@ -367,7 +369,10 @@ class LF_PlacementService
 		vector playerTransform[4];
 		player.GetWorldTransform(playerTransform);
 		LF_EPlacementSnap snap = placeable.GetSnap();
-		if (snap != LF_EPlacementSnap.GROUND && snap != LF_EPlacementSnap.ACROSS_ROAD)
+		if (snap == LF_EPlacementSnap.WALL)
+			return LF_PlacementFurniture.PlanWallAimed(player, placeable, ignore, eye, aimDir, transform, probe, clamped); // furniture (#2654)
+
+		if (snap != LF_EPlacementSnap.GROUND && snap != LF_EPlacementSnap.ACROSS_ROAD && snap != LF_EPlacementSnap.FLOOR)
 		{
 			LF_Debug.Error(FEATURE, string.Format("snap mode %1 is not built yet (the buildings, #1033); refusing", typename.EnumToString(LF_EPlacementSnap, snap)));
 			LevelAt(playerTransform[3], LF_PlacementGeometry.HeadingOf(yaw), transform);
@@ -559,14 +564,28 @@ class LF_PlacementService
 				return Refuse(player, "refused: " + roadProblem, "#LF-Placement_Moved");
 		}
 
+		string wallWhy = LF_PlacementFurniture.WallProblem(placeable, proposal, player, item); // furniture (#2654)
+		if (!wallWhy.IsEmpty())
+			return Refuse(player, "refused: " + wallWhy, "#LF-Placement_NoGround");
+
 		vector transform[4];
 		LF_PlacementProbe probe = new LF_PlacementProbe();
-		LF_EPlacementVerdict verdict = ProbeAt(player, placeable, item, proposal, transform, probe);
+		LF_EPlacementVerdict verdict;
+		if (placeable.GetSnap() == LF_EPlacementSnap.WALL)
+			verdict = LF_PlacementFurniture.ProbeProposal(player, placeable, item, proposal, transform, probe); // furniture (#2654)
+		else
+			verdict = ProbeAt(player, placeable, item, proposal, transform, probe);
 		if (verdict == LF_EPlacementVerdict.BLOCKED)
 			return Refuse(player, "refused: " + LF_PlacementRules.Reason(verdict, probe, MAX_STEP), "#LF-Placement_Blocked");
 
 		if (verdict != LF_EPlacementVerdict.VALID)
 			return Refuse(player, "refused: " + LF_PlacementRules.Reason(verdict, probe, MAX_STEP), "#LF-Placement_NoGround");
+
+		// Permanent kinds are capped per owner and per property (#1032, LF_PlacementSave).
+		string capToast;
+		string capWhy = LF_PlacementSave.CheckBeforePlace(player, placeable, transform[3], capToast);
+		if (!capWhy.IsEmpty())
+			return Refuse(player, string.Format("refused: %1 %2", LF_PoliceRanks.ResolveUid(player), capWhy), capToast);
 
 		// The cost (#2448): taken once, only now the spot is VALID; given back if the spawn fails.
 		LF_PlacementCostTerms terms = LF_PlacementCost.TermsFor(placeable.GetKind());
@@ -591,6 +610,7 @@ class LF_PlacementService
 
 		array<EntityID> placedIds = {placed.GetID()};
 		LF_PlacementCost.Keep(charge, placedIds);
+		LF_PlacementSave.OnPlaced(player, placeable, item, placed);
 		SCR_EntityHelper.DeleteEntityAndChildren(item);
 		LF_Debug.Info(FEATURE, string.Format("placed %1 for %2 at %3 heading %4 (%5), %6", LF_PlacementRules.Describe(placed), LF_PoliceRanks.ResolveUid(player), transform[3], transform[2], typename.EnumToString(LF_EPlacementLifetime, placeable.GetLifetime()), offBy));
 		return placed;
@@ -750,11 +770,9 @@ class LF_PlacementService
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PlacementService's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PlacementService's statics (LF_StaticReset finds it by reflection).
 class LF_PlacementService_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PlacementService_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PlacementService";

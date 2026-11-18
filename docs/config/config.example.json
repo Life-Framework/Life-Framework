@@ -113,6 +113,13 @@
     "permitWaitDays": 1,
     "permitConvictionDays": 7
   },
+  "lockers": {
+    "rentPrice": 100,
+    "rentPeriodDays": 7,
+    "gracePeriodDays": 2,
+    "reclaimFee": 50,
+    "weightCapacity": 60
+  },
   "logoutBody": {
     "windowSeconds": 300,
     "downedWindowSeconds": 600
@@ -133,6 +140,16 @@
       "officer": {
         "withdraw": true
       }
+    },
+    "wars": {
+      "fee": 5000,
+      "answerSeconds": 600,
+      "lengthSeconds": 7200,
+      "cooldownSeconds": 86400,
+      "lapseCooldownSeconds": 3600,
+      "minMembers": 3,
+      "warKillsAreMurder": false,
+      "tagWarKills": true
     }
   },
   "persistence": {
@@ -181,7 +198,7 @@
     "applyRejectCooldownHours": 72,
     "trialHours": 168,
     "armoryCooldownMinutes": 120,
-    "dutyShiftMaxMinutes": 120,
+    "dutyShiftMaxSeconds": 10800,
     "trialSweepSeconds": 60,
     "ticketRateWindowSeconds": 10,
     "ticketRateBurst": 3,
@@ -226,11 +243,25 @@
     },
     "extraItemPrefabs": []
   },
+  "sites": {
+    "rules": {
+      "hideout_example": {
+        "captureSeconds": 180,
+        "rentPerHour": 900
+      }
+    }
+  },
   "staff": {
     "webhookUrl": ""
   },
   "systems": {
     "switches": {}
+  },
+  "taxiFares": {
+    "floor": 80,
+    "ratePerMetre": 0.04,
+    "cap": 300,
+    "shortHopMetres": 100
   },
   "vehicles": {
     "buyPercent": 100,

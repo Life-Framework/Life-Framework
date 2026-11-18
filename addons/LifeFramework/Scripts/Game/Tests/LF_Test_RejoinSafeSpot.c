@@ -5,6 +5,7 @@
 //! spot, under the terrain, in water, inside geometry, inside the jail, in a restricted zone, in a
 //! locked house. The order in GetCreationPosition (jail, hospital wake, saved spot, spawn point) is
 //! checked through LF_RejoinSpot.Applies.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RejoinSafeSpot : LF_Test
 {
 	protected static const int NOW = 1700100000;

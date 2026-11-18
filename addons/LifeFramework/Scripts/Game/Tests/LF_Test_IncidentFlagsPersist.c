@@ -2,6 +2,7 @@
 // tier: PERSISTENCE
 //! The incident flags ride the real save path (the "incidentflags" payload, save version 17): a
 //! flagged incident is still flagged after the store is wiped, and loading twice adds no rows.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_IncidentFlagsPersist : LF_Test
 {
 	override string GetName()

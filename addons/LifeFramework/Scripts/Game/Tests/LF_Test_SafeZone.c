@@ -9,6 +9,7 @@
 // tier: WORLD
 //! Safe zone damage rule, plus a fixture plaza (a safe circle with a CIVILIAN spawn point in it) the
 //! test registers and removes itself; GridWorld places no town zones (docs/architecture/three-worlds.md).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SafeZone : LF_Test
 {
 	static const ResourceName SPAWN_POINT_PREFAB = "{260C1BEFBF9AA86B}Prefabs/MP/Spawn/SpawnPoint_LIFE.et";

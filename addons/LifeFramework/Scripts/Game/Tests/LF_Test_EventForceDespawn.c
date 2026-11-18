@@ -5,6 +5,7 @@
 //! scene slot and the AI budget come free), and the players' eyes are collected once per walk step,
 //! not once per waiting walker. The grid cell `event-scene` has the spawn markers; the eyes are passed
 //! in, like in the other scene tests.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventForceDespawn : LF_Test
 {
 	static const string SCENE = "grid_event_scene";

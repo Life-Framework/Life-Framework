@@ -10,7 +10,8 @@ enum LF_WhitelistType
 
 //------------------------------------------------------------------------------------------------
 //! One configurable whitelist: a type, a UUID file, and the in-memory copy of that file.
-//! Server only: the client never reads the file, it receives flags via LF_PlayerWhitelistComponent.
+//! Server only: the client never reads the file. Read only since #2575: nothing writes it, and
+//! LF_WhitelistLegacyMigration moves its POLICE uids into the roster once.
 [BaseContainerProps()]
 class LF_Whitelist
 {
@@ -84,35 +85,6 @@ class LF_Whitelist
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Session only: the legacy file is no longer written (#2575). The roster
-	//! (LF_WhitelistManager) is the saved list; this keeps the in-memory copy in step.
-	void AddNewUuidToFile(string uuid)
-	{
-		if (!Replication.IsServer())
-			return;
-
-		if (m_aWhitelistUuids.Contains(uuid))
-			return;
-
-		m_aWhitelistUuids.Insert(uuid);
-		LF_Debug.Log("Whitelist", string.Format("added uuid %1 to the session copy of %2 (legacy file not written)", uuid, m_sWhitelistFilePath));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Session only: the legacy file stays as it is on disk (#2575).
-	void RemoveUUIDFromFile(string uuid)
-	{
-		if (!Replication.IsServer())
-			return;
-
-		if (!m_aWhitelistUuids.Contains(uuid))
-			return;
-
-		m_aWhitelistUuids.RemoveItem(uuid);
-		LF_Debug.Log("Whitelist", string.Format("removed uuid %1 from the session copy of %2 (legacy file not written)", uuid, m_sWhitelistFilePath));
-	}
-
-	//------------------------------------------------------------------------------------------------
 	void LF_Whitelist()
 	{
 		if (GetGame() && GetGame().InPlayMode())
@@ -151,6 +123,9 @@ class LF_WhitelistLegacyMigration
 		if (IsMarked(markerPath, key))
 		{
 			LF_Debug.Log("Whitelist", string.Format("legacy %1 list already migrated, ignored: %2", typeName, path));
+			int ignored = CountIgnored(type, path);
+			if (ignored > 0)
+				LF_Debug.Warn("Whitelist", string.Format("%1 uids in the legacy %2 file are not on the roster and are ignored (the file is read once; grant or remove through the roster): %3", ignored, typeName, path));
 			return 0;
 		}
 
@@ -185,6 +160,33 @@ class LF_WhitelistLegacyMigration
 
 		LF_Debug.Info("Whitelist", string.Format("migrated %1 legacy %2 uids from %3", migrated, typeName, path));
 		return migrated;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Uids in an already migrated POLICE legacy file that are not on the roster: added to the file
+	//! after the move, or removed from the roster since. Both are ignored for good. Migrate warns
+	//! with this count, once per file per boot (it runs once, at game mode start).
+	//! \return 0 for a type with no roster, a missing file, or a roster that could not be read.
+	static int CountIgnored(LF_WhitelistType type, string path)
+	{
+		if (type != LF_WhitelistType.POLICE)
+			return 0;
+
+		array<string> uids = {};
+		if (!LF_Whitelist.ReadUuids(path, uids))
+			return 0;
+
+		LF_WhitelistManager.Initialize();
+		if (LF_WhitelistManager.IsLoadFailed())
+			return 0;
+
+		int ignored = 0;
+		foreach (string uid : uids)
+		{
+			if (!LF_WhitelistManager.IsWhitelistedForFaction(uid, LF_EFactionType.POLICE))
+				ignored++;
+		}
+		return ignored;
 	}
 
 	//------------------------------------------------------------------------------------------------

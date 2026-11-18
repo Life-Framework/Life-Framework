@@ -141,7 +141,7 @@ class LF_ArmoryKits
 			return cooldown;
 		}
 
-		return Math.Max(cooldown - elapsed, 0);
+		return LF_Utils.MaxInt(cooldown - elapsed, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -240,6 +240,32 @@ class LF_ArmoryKits
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A gear wipe (keepCarriedGear off, #2621): every officer's outstanding serials are cleared, so
+	//! no one is refused a kit for gear the wipe took. A serial in `stillHeld` (a gun the wipe kept,
+	//! such as a kit stored in the police duty locker) stays out. Each row's last issue time stays,
+	//! so the cooldown runs as saved. Idempotent: a second call clears nothing.
+	//! \param[in] stillHeld Serials of guns that survived the wipe; null clears every serial.
+	//! \return Serials cleared across all officers.
+	static int ClearAllOutstanding(set<string> stillHeld = null)
+	{
+		int cleared;
+		foreach (LF_ArmoryKitRow row : Rows())
+		{
+			for (int i = row.m_aSerials.Count() - 1; i >= 0; i--)
+			{
+				if (stillHeld && stillHeld.Contains(row.m_aSerials[i]))
+					continue;
+
+				row.m_aSerials.Remove(i);
+				cleared++;
+			}
+		}
+
+		s_mLostAsked = null;
+		return cleared;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void ClearLostAsk(string uid)
 	{
 		if (s_mLostAsked)
@@ -284,11 +310,9 @@ class LF_ArmoryKits
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_ArmoryKits's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_ArmoryKits's statics (LF_StaticReset finds it by reflection).
 class LF_ArmoryKits_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ArmoryKits_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_ArmoryKits";

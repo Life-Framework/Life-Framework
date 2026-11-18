@@ -4,6 +4,7 @@
 //! "itemstolen" payload, save version 35): captured from the live item, written, wiped, read back,
 //! applied onto a fresh character. Before, the flag was an EntityID in a session set and a restart
 //! laundered the item. A row that no longer matches its snapshot is skipped.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_CarriedStolenPersist : LF_Test
 {
 	protected static const string CHARACTER_ID = "carried-stolen-character";

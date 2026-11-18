@@ -4,6 +4,7 @@
 //! the line transport returns false and the first line is back on the idle frequency with a
 //! key that is not the call's. Line B here is the payphone prop itself, which carries no radio.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PhoneVoiceConnectFail : LF_Test
 {
 	static const ResourceName PAYPHONE = "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et";
@@ -74,8 +75,7 @@ class LF_Test_PhoneVoiceConnectFail : LF_Test
 			LF_PhoneComponent component = LF_PhoneComponent.Of(phone);
 			if (component && component.ServerLineEntity())
 				SCR_EntityHelper.DeleteEntityAndChildren(component.ServerLineEntity());
-			if (phone)
-				SCR_EntityHelper.DeleteEntityAndChildren(phone);
+			LF_TestLooseSweep.DeleteBuilding(phone);
 		}
 
 		LF_TestCharacterFixture.Delete(caller);

@@ -12,6 +12,7 @@
 //! A signed-up delivery job survives a save and load (found by the #183 journey: PARCEL ->
 //! UNEMPLOYED after a restart). The career level that gates the job rides the progression
 //! payload; the sign-up rides "jobsignups" (save version 11). An active run is not saved.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_JobSignUpPersist : LF_Test
 {
 	protected static const string COURIER = "signup-courier";

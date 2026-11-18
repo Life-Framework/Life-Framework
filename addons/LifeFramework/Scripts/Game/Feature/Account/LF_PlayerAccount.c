@@ -134,7 +134,7 @@ class LF_PlayerAccount : Managed
 	//! Persistence seam (LF_Progression): the saved total. Negative is read as 0.
 	void SetOnDutySeconds(int seconds)
 	{
-		GetStanding().m_iOnDutySeconds = Math.Max(0, seconds);
+		GetStanding().m_iOnDutySeconds = LF_Utils.MaxInt(0, seconds);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ class LF_PlayerAccount : Managed
 	//! Persistence seam (LF_Progression): the saved unpaid seconds. Negative is read as 0.
 	void SetUnpaidDutySeconds(int seconds)
 	{
-		GetStanding().m_iUnpaidDutySeconds = Math.Max(0, seconds);
+		GetStanding().m_iUnpaidDutySeconds = LF_Utils.MaxInt(0, seconds);
 	}
 
 	//------------------------------------------------------------------------------------------------

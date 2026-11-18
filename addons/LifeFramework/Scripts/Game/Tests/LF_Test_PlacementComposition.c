@@ -4,24 +4,25 @@
 //! shape as a roadblock's cones and barriers) is placed by an officer on the main street's south
 //! verge: one plan with one verdict, one confirm that spawns every piece with each piece on the
 //! ground, and one pick-up that removes all of them. A second set on top of the first, a malformed
-//! proposal and a far-away picker are refused and change nothing. Further into the annex, a set with one piece half on a table (a rise past the step) is TOO_STEEP and places nothing.
+//! proposal and a far-away picker are refused and change nothing. On the same ground, a set with one piece half on a table (a rise past the step) is TOO_STEEP and places nothing.
+//! Both stand on STAGE, not at the fixture spawn point: other tests leave characters and scattered drops
+//! around the spawn point, and one of them under a cone refused the set as "the ground rises 1.5 m" (#2762).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementComposition : LF_Test
 {
 	static const ResourceName CONE = "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et";
 	protected static const ResourceName TABLE = "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et";
-	//! Just inside the annex's north gate, on open GridWorld ground (LF_Test_GridWorldBoot's gate spawn); the
-	//! fixture is read by name and falls back to its known spot when the test runs in a world without it.
-	protected static const vector GATE = "74 0 108";
-	//! Further into the annex from the gate, for the steep spot.
-	protected static const vector INSIDE = "-8 0 -8";
+	//! The middle of grid cell c20r5 (x 262..274, z 82..94): open, flat GridWorld ground 190 m from the fixture
+	//! spawn point (the north gate, 74 0 108), no claim and no fixture on it. The tests below own it.
+	protected static const vector STAGE = "268 0 88";
 
-	protected vector GateGround()
+	//------------------------------------------------------------------------------------------------
+	//! STAGE with the terrain height under it. Shared with the other placement tests that need clear ground.
+	static vector StageGround()
 	{
-		IEntity spawn = GetGame().GetWorld().FindEntityByName("Spawn_Grid_Gate");
-		if (spawn)
-			return spawn.GetOrigin();
-
-		return GATE;
+		vector at = STAGE;
+		at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]);
+		return at;
 	}
 
 	override string GetName()
@@ -39,13 +40,10 @@ class LF_Test_PlacementComposition : LF_Test
 		LF_PlacementComposition roadblock = Roadblock();
 		ctx.Equal(3, roadblock.Count(), "the test composition has three pieces");
 
-		vector gate = GateGround();
-		Stand(officer, gate, 0);
-		Stand(bystander, gate + "12 0 0", 0);
+		vector stage = StageGround();
+		Stand(officer, stage, 0);
+		Stand(bystander, stage + "12 0 0", 0);
 		PlaceAndPickUp(ctx, roadblock, officer, bystander);
-
-		Stand(officer, gate + INSIDE, 0);
-		Stand(bystander, gate + INSIDE + "12 0 0", 0);
 		SteepSpot(ctx, roadblock, officer);
 
 		LF_TestCharacterFixture.Delete(officer);
@@ -74,7 +72,7 @@ class LF_Test_PlacementComposition : LF_Test
 
 		LF_PlacementCompositionPlan plan = new LF_PlacementCompositionPlan();
 		LF_EPlacementVerdict verdict = LF_PlacementCompositions.Plan(officer, roadblock, null, spot, plan);
-		ctx.Equal(LF_EPlacementVerdict.VALID, verdict, "the verge ahead of the officer is valid for the whole set: " + plan.m_sReason);
+		ctx.Equal(LF_EPlacementVerdict.VALID, verdict, "the verge ahead of the officer is valid for the whole set: " + plan.m_sReason + DebrisIfBad(verdict == LF_EPlacementVerdict.VALID, spot[3]));
 		ctx.Equal(3, plan.Count(), "one plan holds a verdict for each piece");
 
 		// One ghost for the set, from its pieces; it follows the plan and goes away.
@@ -177,6 +175,17 @@ class LF_Test_PlacementComposition : LF_Test
 		ctx.Equal(0, LF_PlacementCompositions.Count(), "the refusal places no piece of the set");
 
 		LF_TestCharacterFixture.Delete(table);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What stands near the spot, for a failure line; empty when the plan was valid.
+	static string DebrisIfBad(bool valid, vector at)
+	{
+		if (valid)
+			return "";
+
+		LF_TestDebrisProbe probe = new LF_TestDebrisProbe();
+		return " (near it:" + probe.Describe(at) + ")";
 	}
 
 	//------------------------------------------------------------------------------------------------

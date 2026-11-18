@@ -6,6 +6,7 @@
 //! from the base. DebugWorld has no AI road network, so "off the road" runs the real probe and "on the road"
 //! runs the pure rule over a road fact (LF_Test_PlacementRoad covers the road network on Everon). Two
 //! neighbouring houses are spawned and bound; the spots are measured from their origins, never typed.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementPolicyWhere : LF_Test
 {
 	protected static const ResourceName BUILDING = "{74676598DF38F201}Prefabs/Structures/Core/EL_Building_Base.et";

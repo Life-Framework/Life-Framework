@@ -48,7 +48,10 @@ agent per area. `tools\cli usage` shows where the tokens went.
    Text is LF in the repo and in every checkout (`* text=auto eol=lf`; `.cmd`/`.bat`
    stay CRLF). Generators write LF; scripts that patch files need not handle `\r\n`.
    A lone CR byte in a text file is a bug: a `\return` in a doc comment written through a shell
-   becomes CR plus `eturn` and splits the comment. `validate-no-lone-cr` fails it.
+   becomes CR plus `eturn` and splits the comment. `validate-no-lone-cr` fails it. The same
+   shell eats the backslash of a regex (`/s+/` for `/\s+/`, `SCRIPTs*(E)`) or turns `\b`
+   into a backspace byte in `tools/`; write regex-heavy code with the Write/Edit tools
+   and let `validate-regex-backslashes` catch what slips (`// lf-regex-ok: <why>` allows a real letter).
 5. **All classes are `LF_`; tests are `LF_Test_*`.** The `EL_` to `LF_` rename
    landed 2026-11-09 (#334). The real EveronLife mod (`EL_`) can load on the same
    server, so an `EL_` name can collide. `validate-no-el-prefix.mjs` rejects any
@@ -77,8 +80,9 @@ agent per area. `tools\cli usage` shows where the tokens went.
 10. **Shared registries are per-feature files; never append to a central list.**
     A proof verb is `agent-box/proofs/<verb>.mjs`; a bus event is in
     `Feature/<Area>/LF_<Area>Events.c`; a world-end static reset is an
-    `LF_StaticResetHook` subclass in the owning class's file that calls `LF_StaticReset.Register`
-    from a static initializer (`Core/LF_StaticReset.c` lists nothing; no modded chain, #2034); a harness verb is a `modded class LF_AgentHarnessVerbs` in its
+    `LF_StaticResetHook` subclass in the owning class's file with no registration line:
+    `LF_StaticReset` finds every subclass by reflection (lists nothing, no modded chain #2034, no static
+    initializer #2755: all static initializers share one size-capped function); a harness verb is a `modded class LF_AgentHarnessVerbs` in its
     feature (`LF_AgentHarness.Dispatch` is frozen). `validate-registries` enforces all
     four; `tools\cli heal-hotspots <slug>` moves an old branch's StaticReset and
     `docs/features.md` edits to their new files. A new CLI command is
@@ -105,7 +109,7 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `tools\cli wt new <slug> [--wait]` | Create worktree `Life-Framework-ws-<slug>` on `ws/<slug>` with its own ports; claims a ready warm checkout (about 2 s) when the pool has one (`wt warm`, `docs/worktrees.md` "Fast `wt new`") |
 | `tools\cli feature new <Area> <Name> [--kind logic\|world\|ui\|item] [--issue N]` | Scaffold a feature: script, tests with red-proof slots, session proof, string rows, docs rows, `tmp/pr-body-<slug>.md` and `tmp/feature-<name>.md` (the ordered checklist). `feature check` lists the `TODO(scaffold)` markers left |
 | `tools\cli evidence <issue> before\|after <area\|png>` / `... table` | Keep `look` pictures in `website/public/docs-images/<issue>/` and print the before and after markdown for the PR |
-| `tools\cli validate [--full\|--all]` | The repo checks in `tools/validation/` whose declared inputs changed since their last green run in this worktree (it says how many it skipped). The default also skips the Workbench compile (`validate-scripts.ps1`). `--all` runs every check; `--full`, `ci` and `wt gate` run every check plus the compile |
+| `tools\cli validate [--full\|--all]` | The repo checks in `tools/validation/` except those already green on the exact same input content in this or any other worktree (it says how many it skipped). The default also skips the Workbench compile (`validate-scripts.ps1`). `--all` runs every check; `--full`, `ci` and `wt gate` run every check plus the compile |
 | `tools\cli test --no-build --tier fast\|all\|persistence` | Boot DebugWorld, run the `LF_Test` suite; exit code is pass/fail; a compile error fails it |
 | `tools\cli test --no-build --only <LF_Test_Class\|name\|LF_Test_File>[,...]` | Run just those tests (the iteration loop); prints `SUMMARY tier=only` |
 | `tools\cli test --no-build --red <LF_Test_Class\|name\|LF_Test_File>[,...]` | Batched red proof: ONE boot, each test's `RedProof()` hook on; exit 0 only if every listed test FAILED, else names the hollow ones; prints `SUMMARY tier=red` |
@@ -114,8 +118,8 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `tools\cli dev --tier fast` | validate + test without a build, then dump `[LFDebug:*]` lines |
 | `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
 | `tools\cli logs <pattern>` | Grep the newest server `console.log` |
-| `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
-| `tools\cli wt ship <slug> [--refs N] [--body-file F]` | No pre-merge gate (maintainer, 2026-11-15). PR body checks (`tools/lib/pr-quality.mjs`: a body file for an `addons/` change, `## Manual testing`, a picture for a player-visible change, no open finding in `tmp/review-<slug>.md`), a seconds-long preflight (merge-tree, `validate` of changed inputs), push, PR, `gh pr merge --auto --merge` at once; a branch GitHub calls behind gets main merged in and pushed again. GitHub's `validate` is the only pre-merge check (docs/worktrees.md "Ship"). `--refs N` puts `Refs #N` in the body; merging never closes an issue |
+| `tools\cli regen-tests` / `regen-localization` | Check every test's `[LF_TestInfo]` (nothing is generated) / regenerate the language tables |
+| `tools\cli wt ship <slug> [--refs N] [--body-file F] [--commit "<subject>"]` | No pre-merge gate (maintainer, 2026-11-15). `--commit` commits leftover changes first; a main conflict only in the language confs is regenerated, not returned to you. PR body checks (`tools/lib/pr-quality.mjs`: a body file for an `addons/` change, `## Manual testing`, a picture for a player-visible change, no open finding in `tmp/review-<slug>.md`), a seconds-long preflight (merge-tree, `validate` of changed inputs), push, PR, `gh pr merge --auto --merge` at once; a branch GitHub calls behind gets main merged in and pushed again. GitHub's `validate` is the only pre-merge check (docs/worktrees.md "Ship"). `--refs N` puts `Refs #N` in the body; merging never closes an issue |
 | `tools\cli wt gate <slug>` | Optional manual gate for the diff's tier (`tools/lib/gate-tier.mjs`); not part of ship |
 | `tools\cli main-guard start\|stop\|status` | The gate, on main after the merge: the Workbench compile first on each new head (a red compile is bisected and reverted at once), then build, full suite, placement audit and e2e (flake rule: red twice). Each head's `compiled-ok`/`green`/`red` is in `tmp/wt/main-guard-state.json` and a `main-guard` commit status. `wt new` and `world-sync` pin to the newest `compiled-ok` commit (`--unchecked-main` / `--unchecked` override); `promote --confirm` needs `green` (docs/worktrees.md "Main guard") |
 | `toolscli playtest checklist [--all] [--budget 60]` / `playtest verdicts <file>` | One playtest session for many `needs-playtest` issues: collects the `## Manual testing` steps of their merged PRs, drops repeats, orders them as a walking route (two-player, restart and JIP marked), estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass/fail box per issue, the fixed smoke list (`docs/playtest/smoke-list.md`) first. Default is the top hour: open M2 chapter and epic work first, then big player flows, polish last; one line can cover several issues. `verdicts` reads the ticked file and PRINTS the `gh` label and comment commands; the maintainer or lead runs them, agents never do |
@@ -133,8 +137,12 @@ agent per area. `tools\cli usage` shows where the tokens went.
 
 Launch tools through `tools/lib/quiet-launch.{mjs,ps1}` (hidden `LF-Agents` desktop; node spawns get `windowsHide: true`), never in front of the user; `tools\cli hidden [--close]` lists them, `LF_SHOW_WINDOWS=1` shows them (`docs/setup.md`).
 
-**No Workbench on this PC.** The maintainer's world editor lives here, so this PC's pool caps lack
-`workbench` (`lf.local.json`) and no agent starts a headless Workbench on it. `ci`, `validate --full`,
+**No Workbench on the maintainer's PC (Gaming-Box).** Its world editor lives there, so that machine's pool caps lack
+`workbench` (`lf.local.json`) and no agent starts a headless Workbench on it. This is about that one machine, not
+about you: on lf-testbox (PC1, the laptop, now the primary dev box) Workbench is allowed through the pool, so a
+rdb refresh, compile or `look` that runs there is correct and you never kill it. `toolscli status` prints
+`workbench: ALLOWED` or `NOT allowed` for the machine you are on.
+On Gaming-Box: `ci`, `validate --full`,
 `build`, `look`, `rdb` and the rdb refresh before `test` and `session up` go to a pool machine with the cap
 (`lf-cloud`, `lf-testbox`) or wait for one within a budget; `pack`, `asset` plugin runs, `ui-image` and
 every `cli call wb_*` tool refuse here (`wb_read_props` too: use `api_search`, `game_read`, `asset_search`,
@@ -159,6 +167,9 @@ junctions into the Steam installs; on 2026-11-07 `git worktree remove --force`
 worktree with `tools\cli wt prune <slug>`; delete any other tree with
 `node tools/safe-rm.mjs <dir>` (`link-safety-selftest` proves both).
 
+- **Never write into the main checkout.** Use absolute paths under your worktree. A PreToolUse hook
+  (`.claude/settings.json`) denies Write/Edit there once `wt new` ran in your session, and `lead` moves stray
+  untracked files to `C:\LF\lead\stray` (`docs/worktrees.md` "Writes into the main checkout").
 - **Scratch goes in `<worktree>/tmp/`** (gitignored, created by `wt new`) with
   names unique to your task, such as `tmp/pr-body-<slug>.md`. Never use a
   shared session scratch dir for files you publish (one agent shipped another's
@@ -176,7 +187,8 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
 ## Tests
 
 - One file per test: `Scripts/Game/Tests/LF_Test_*.c` extending `LF_Test`, with
-  `// tier: LOGIC|WORLD|PERSISTENCE` above the class and a `// red-proof:` line.
+  `[LF_TestInfo(LF_TestTier.LOGIC|WORLD|PERSISTENCE|PERF)]` directly above the class (the only tier
+  source) and a `// red-proof:` line.
 - Tiers are setup cost, not subject: `LOGIC` is pure script (`--tier fast`);
   `WORLD` loads a resource or touches the world; `PERSISTENCE` is a save round trip;
   `PERF` is a timing gate (`perf/budget-128`): not in `fast` or `all`, so no gate flakes on it; run it
@@ -189,13 +201,16 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   what its assertions guard. It passes only if every listed test FAILS and names any that still
   passed (hollow). Record the `RED-OK` line. Node selftests in `tools/` keep their own red
   proofs; they are instant and need no game run.
-- The registry is generated by `tools\cli regen-tests`; never hand-edit it. Adding a test never touches `LF_TestManager.c`.
+- There is no test registry: `LF_TestManager` finds every `LF_Test` with its own `[LF_TestInfo]` by reflection and runs
+  them sorted by class name (#2610). Adding a test touches only its own file; `validate-registries` fails a test class
+  without the attribute, with two, or a central list. The tools (shards, worlds, `--only`) read the same attribute lines.
 - **Pack data is tested in the pack.** A test that names pack files or needs the pack's config overlays is
-  `addons/LF_Everon1989/Scripts/Game/Tests/LF_Test_Everon*.c` (same file rules; `regen-tests` writes the pack's
-  own registry). `tools\cli test` runs it in the pack leg, a boot under the pack header so the overlays apply
+  `addons/LF_Everon1989/Scripts/Game/Tests/LF_Test_Everon*.c` (same file rules; its attribute says
+  `pack: true`). `tools\cli test` runs it in the pack leg, a boot under the pack header so the overlays apply
   (`--tier all`, or `--only`/`--red` by name). Never a node selftest that reads `.conf` text
   (`docs/architecture/three-worlds.md` "Pack test leg").
 - Loop: `tools\cli test --no-build --only <LF_Test_Class>` (~10 s) until green, one `--red` run for the new tests, then `--tier all` once at the end.
+- **A test deletes what it spawns** (`LF_TestCharacterFixture.Delete`; `LF_TestLooseSweep.DeleteBuilding` for a payphone booth, whose loose part outlives the booth; `LF_TestVaultDrillFixture.Release` for a robber). Every fixture character spawns at the gate, so leftovers pile up under later tests (#2792). A run ends with `suite/no-leftover-fixtures`, which fails and names the test that left a character or prefab-less prop within 9 m of the gate. Never delete characters in a sweep after each test: it crashed the engine, and deleting a character that carries a path-loaded pack crashes it too (use the GUID reference, `LF_TestVaultDrillFixture.PACK_PREFAB`).
 - **A test never calls `LF_StaticReset.ResetAll()`**: it wipes every feature's statics and fails every later test in the suite (2026-11-16, 38 tests, #2092). Apply only your own feature's `LF_StaticResetHook` (`<Owner>.ResetStatics()`); `validate-no-test-resetall` fails core and pack tests that call it.
 - **A node selftest that builds a scratch git repo** calls `useHermeticGit()` and cleans up with `removeScratch()`
   (`tools/lib/selftest-git.mjs`): no machine git config, a fixed identity and branch, no auto-gc holding the folder
@@ -227,6 +242,15 @@ bug for each one; they transfer here because the engine is the same.
 - **No ternary operator.** `cond ? a : b` is a compile error. Write `if/else`.
 - **No null-coalescing operator.** Initialize in the declaration or guard with
   `if (!x)`.
+- **`Substring` and `string.Format` cut at 8191 chars, silently.** Rebuilding a
+  long string (a save, a config, a payload) with `a.Substring(..) + b` loses its
+  tail with no error; join pieces under 8 KB with `+` or write through a JSON
+  context. `validate-string-splice` fails a new site; a bounded one is marked
+  `// lf-bounded: <why>` (the baseline only shrinks).
+- **`Math.Max`, `Math.Min` and `Math.Clamp` work in floats.** An int above 2^24 (unix seconds, money, XP,
+  a running counter) comes back rounded: 1800000480 became 1800000512 (#2787). Use `LF_Utils.MaxInt`,
+  `MinInt`, `ClampInt` (or `Math.ClampInt`) for any int that can be large; `validate-int-time-math` fails a
+  time-named int argument (real float time math is marked `// lf-float: <why>`).
 - **Strong refs (`ref`) for Managed classes.** A Managed field not marked `ref`
   is garbage-collected at end of frame. Put `ref` on BOTH the collection and
   its elements: `ref array<ref LF_Foo>`, `ref map<string, ref LF_Foo>`.
@@ -241,8 +265,12 @@ bug for each one; they transfer here because the engine is the same.
   `Replication.BumpMe()` after changing it. Throttle to significant changes or
   batch; per-frame `BumpMe` floods the network.
 - **RPC direction.** `RplRcver.Server` = client→server (name `RpcAsk_*`);
-  `RplRcver.Broadcast`/`Owner` = server→client (name `RpcDo_*`). Host check:
-  `if (Replication.IsServer())` call the handler directly, else `Rpc(...)`.
+  `RplRcver.Broadcast`/`Owner` = server→client (name `RpcDo_*`). On the server
+  (a listen host too), `Rpc()` runs a `Server` handler, or an `Owner` handler
+  on an entity the server owns, at once inside the call: no host branch, and a
+  direct call beside it runs the handler twice. A `Broadcast` never runs on the
+  server; call its effect locally when the host's player must see it. An entity
+  with no `RplComponent` drops every Rpc (`docs/architecture/rpc-routing.md`).
 - **A client can only RPC on entities it owns.** Inter-player communication
   goes through the server. Validate client requests on the server (money,
   inventory, RPC payloads); never trust the client.
@@ -255,6 +283,10 @@ bug for each one; they transfer here because the engine is the same.
   `version` first; binary save contexts are positional (write order = read
   order). Load must be idempotent (runs on fresh load AND when re-applying to a
   live session). No console guards; consoles are handled internally.
+  A save record is keyed by the variable name given to `context.Write`/`Read` in
+  `LF_PersistenceComponentSerializer.c`: a new payload takes a fresh name, one
+  write and one read (a reused `slotRows` once loaded every garage slot as 0);
+  `validate-record-var-names` fails a repeat.
   **In-session round trips prove nothing about restarts**; the restart path is
   ground truth.
 

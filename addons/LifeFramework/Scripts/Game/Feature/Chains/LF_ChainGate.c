@@ -74,13 +74,28 @@ class LF_ChainGate
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Localization key shown to the worker for a refusal. Empty for OK.
-	static string ReasonKey(LF_EChainGate gate)
+	//! The words for a level refusal: the step's job and how far short the worker is (#2700),
+	//! never the level itself.
+	static string LevelKey(notnull LF_ChainStepDef step, int level)
+	{
+		return LF_JobLevelWords.Refusal(LevelJob(step), level, step.m_iMinLevel);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Localization key shown to the worker for a refusal. Empty for OK. \param step and
+	//! \param level (the worker's level in the step's job) pick the words of a level refusal.
+	static string ReasonKey(LF_EChainGate gate, LF_ChainStepDef step = null, int level = 0)
 	{
 		switch (gate)
 		{
 			case LF_EChainGate.LICENSE: return "#LF-Chain_NeedLicense";
-			case LF_EChainGate.LEVEL: return "#LF-Chain_NeedLevel";
+			case LF_EChainGate.LEVEL:
+			{
+				if (!step)
+					return "#LF-Chain_NeedLevel";
+
+				return LevelKey(step, level);
+			}
 			case LF_EChainGate.EQUIPMENT: return "#LF-Chain_NeedEquipment";
 		}
 

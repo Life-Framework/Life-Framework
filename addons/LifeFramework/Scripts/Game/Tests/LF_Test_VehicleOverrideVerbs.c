@@ -4,6 +4,7 @@
 //! the list, `op: patch` of an id no lower layer has is refused (nothing added), `replace` rebuilds
 //! the entry in its place from the class defaults, `add` of a listed vehicle (by its lot prefab or
 //! its locked child's GUID) is refused, and a new vehicle still needs a base price.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_VehicleOverrideVerbs : LF_Test
 {
 	override string GetName()

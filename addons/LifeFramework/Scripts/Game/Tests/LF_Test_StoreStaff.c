@@ -9,6 +9,7 @@
 //! a line for the walk-out key; a shopkeeper standing inside a store's boundary is that store's staff,
 //! one standing outside it is not, and a shoplifting walk-out makes the staff say the line. Goods
 //! carried unpaid cannot be sold back to the shop (#1143 review).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_StoreStaff : LF_Test
 {
 	static const ResourceName SHOPKEEPER = "{AB73D0036F42E73E}Prefabs/Characters/Npcs/LF_Shopkeeper.et";

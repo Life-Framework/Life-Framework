@@ -2,6 +2,7 @@
 // tier: WORLD
 //! Officer search for chain goods (#419), against a real inventory: the moonshine bottle (the still makes it since #2001) in a
 //! character's inventory is collected as flagged goods, an ordinary item is not. Deletes what it spawns.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ChainSearchWorld : LF_Test
 {
 	override string GetName()

@@ -8,6 +8,7 @@
 //! RpcAsk_Withdraw run (ServeDeposit / ServeWithdraw) with a real character, so cash is the
 //! MoneyStack in its pockets and the balance is the LF_BankAccount the RPC would use.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ATMBoundary : LF_Test
 {
 	override string GetName()

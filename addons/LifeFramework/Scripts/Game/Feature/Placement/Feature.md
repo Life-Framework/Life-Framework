@@ -150,3 +150,40 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Proof:** `placement/policy-cost` (WORLD: a refused proposal and an unaffordable set take nothing, a set whose spawn fails
   is given back, a paid set takes the price once and a set on top takes nothing more, the payer's pick-up refunds once and
   a bystander's refunds nobody).
+
+## Permanent placements (#1032, slice #2653)
+
+- **Player sees:** a chair (any placeable whose lifetime is PERMANENT) is still where they put it after a restart.
+  Past 40 placements of their own, or 25 on one property, the server refuses with "Pick one up first". The owner
+  standing within 4 m picks one up; it is gone for good, the item comes back, a refundable price is refunded.
+- **Owner and side:** server. `LF_PlacementService.Confirm` asks `LF_PlacementSave.CheckBeforePlace` before it charges
+  and calls `OnPlaced` after the spawn (a hook each). `LF_PlacementSave` keeps one row per placement (stable id,
+  prefab, position and angles, owner character key, kind, property = nearest bound house within 30 m, item prefab)
+  and a session-only EntityID map. `LF_PlacementPickup.PickUp` checks owner and reach, then forgets the row, deletes
+  the entity, calls `LF_PlacementCost.OnPickedUp` and gives the item back (at the feet when it does not fit).
+- **Data:** payload `placements` (save version 52, last in `RegisterPersistencePayloads`); `m_iOwnerCap` (40) and
+  `m_iPropertyCap` (25) on `LF_PlacementPolicyConfig`. Temporary kinds never get a row. Strings
+  `#LF-Placement_CapOwner`, `_CapProperty`.
+- **Proof:** `placement/persist` (PERSISTENCE: payload round trip, no duplicate on a second apply, missing prefab
+  skipped; the e2e reload boot finds the kept chair and not the picked-up one), `placement/cap` (WORLD).
+
+## Pick up a placed prop (#2751)
+
+- **Player sees:** a "Pick up" action on a chair, table, shelf or lamp they placed, and only on theirs. They take it back: it goes
+  into the inventory (at their feet when it does not fit), a refundable price is refunded.
+- **Owner and side:** `LF_PlacedOwnerComponent` on the placed prefab holds the placer's character key (RplProp, written on the server
+  by `LF_PlacementSave.Record` and `ApplyAll`) so the client's prompt matches; `LF_PlacementPickupAction` shows and performs only for that key.
+  `PerformAction` runs on the server and calls `LF_PlacementPickup.PickUp`, which checks owner and reach again from the saved row.
+  A prefab without the component has no owner and so no pick-up (the spike strip has its own).
+- **Data:** a placed prefab that should be pick-up-able has `RplComponent` enabled, `LF_PlacedOwnerComponent` and an `ActionsManagerComponent`
+  with `LF_PlacementPickupAction` (copy `Furniture_Chair_Placed.et`; the context is anchored by `tools/actions/place-action-contexts.mjs`,
+  `tools/actions/anchors.json`). String `#LF-Placement_PickUp`.
+- **Proof:** `placement/pickup-action` (WORLD: every furniture item's placed prefab has the action and the owner stamp; shown to the owner
+  and not to a bystander; a bystander or the owner at 10 m is refused; the owner in reach takes it back).
+
+## House furniture (#2654)
+
+- **Player sees:** a chair, table or lamp placed on the floor of their own (or key-held) house, a shelf flush on the wall they aim at; refused elsewhere. They stay after a restart (permanent, #2653).
+- **Owner and side:** server. FLOOR is GROUND; WALL is `LF_PlacementFurniture` (aimed ray, face normal heading, 1 cm gap, floor probe at middle and front edge). `LF_PlacementService.Confirm` refuses a WALL proposal more than 2 cm off a wall.
+- **Data:** `Prefabs/Placeables/Furniture/Furniture_{Chair,Table,Shelf,Lamp}_Item.et` and the `Furniture_*` policy entries. Strings `#LF-Furniture_*_Name`. The placed prefabs are `Furniture_*_Placed.et`: the vanilla prop plus the owner stamp and the Pick up action (#2751).
+- **Proof:** `housing/furniture` (WORLD). The ghost and the shelf against a real house wall are manual (below).

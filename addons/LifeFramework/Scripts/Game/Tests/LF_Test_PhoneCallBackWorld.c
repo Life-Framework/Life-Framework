@@ -6,6 +6,7 @@
 //! payphone back, anyone there picks up and the request leaves the pad; a rung-out call offers
 //! too; the bus hears left, rung and answered.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PhoneCallBackWorld : LF_Test
 {
 	static const ResourceName PAYPHONE = "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et";
@@ -111,8 +112,7 @@ class LF_Test_PhoneCallBackWorld : LF_Test
 			LF_PhoneComponent component = LF_PhoneComponent.Of(phone);
 			if (component && component.ServerLineEntity())
 				SCR_EntityHelper.DeleteEntityAndChildren(component.ServerLineEntity());
-			if (phone)
-				SCR_EntityHelper.DeleteEntityAndChildren(phone);
+			LF_TestLooseSweep.DeleteBuilding(phone);
 		}
 
 		LF_TestCharacterFixture.Delete(caller);

@@ -13,6 +13,7 @@
 //! Those RPCs must stay behind LF_DevGate. On the playtest mission a non-admin's stand is refused
 //! before the server touches the character or the world, and the refusal is a named token the
 //! harness reports, not a silent timeout.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HarnessDevGate : LF_Test
 {
 	static const string PLAYTEST_MISSION = "{43902474F5601DAA}Missions/LF_HostedTest.conf"; // core fixture: the playtest headers are pack (#323)

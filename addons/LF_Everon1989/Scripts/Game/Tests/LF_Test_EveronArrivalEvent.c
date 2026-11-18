@@ -6,6 +6,7 @@
 //! the planner accepts, and the outfits the families wear load with every clothing prefab real. The
 //! town card places the waypoints and the shell module that spawns the scene follows (#757), so no
 //! marker is looked up here.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronArrivalEvent : LF_Test
 {
 	static const ResourceName EVENTS_OVERLAY = "{891648ED4392010D}Configs/Events/LF_Events_Everon1989.conf";

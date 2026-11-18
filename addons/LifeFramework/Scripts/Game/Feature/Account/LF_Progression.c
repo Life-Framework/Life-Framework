@@ -166,7 +166,8 @@ class LF_Progression
 
 	//------------------------------------------------------------------------------------------------
 	//! Drops everything progression holds for the player (test cleanup, admin wipe). The account's
-	//! rank and duty totals belong to the account and are left alone.
+	//! rank and duty totals belong to the account and are left alone. Standing is per character, so
+	//! it goes too (docs/architecture/reputation.md section 6).
 	static void Forget(string playerUid)
 	{
 		if (s_mRecords)
@@ -175,6 +176,7 @@ class LF_Progression
 		LF_CivilianJob.ForgetCareer(playerUid);
 		LF_UnemploymentBenefit.ForgetCollection(playerUid);
 		LF_JobLevels.Forget(playerUid);
+		LF_Reputation.Forget(playerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -327,8 +329,8 @@ class LF_Progression
 			if (standing)
 			{
 				standing.m_iPoliceRank = UsableRank(uid, record.m_iPoliceRank);
-				standing.m_iOnDutySeconds = Math.Max(0, record.m_iOnDutySeconds);
-				standing.m_iUnpaidDutySeconds = Math.Max(0, record.m_iUnpaidDutySeconds);
+				standing.m_iOnDutySeconds = LF_Utils.MaxInt(0, record.m_iOnDutySeconds);
+				standing.m_iUnpaidDutySeconds = LF_Utils.MaxInt(0, record.m_iUnpaidDutySeconds);
 				LF_AccountReplication.Publish(accounts.GetFromCache(uid));
 			}
 			else if (record.m_iPoliceRank != 0 || record.m_iOnDutySeconds != 0)
@@ -360,8 +362,8 @@ class LF_Progression
 				continue;
 
 			standing.m_iPoliceRank = UsableRank(uid, record.m_iPoliceRank);
-			standing.m_iOnDutySeconds = Math.Max(0, record.m_iOnDutySeconds);
-			standing.m_iUnpaidDutySeconds = Math.Max(0, record.m_iUnpaidDutySeconds);
+			standing.m_iOnDutySeconds = LF_Utils.MaxInt(0, record.m_iOnDutySeconds);
+			standing.m_iUnpaidDutySeconds = LF_Utils.MaxInt(0, record.m_iUnpaidDutySeconds);
 		}
 	}
 
@@ -474,11 +476,9 @@ class LF_Progression
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Progression's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Progression's statics (LF_StaticReset finds it by reflection).
 class LF_Progression_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Progression_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Progression";

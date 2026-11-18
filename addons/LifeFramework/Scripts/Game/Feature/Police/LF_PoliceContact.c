@@ -64,7 +64,7 @@ class LF_PoliceContact
 		if (!s_mStampMs || uid.IsEmpty() || !s_mStampMs.Contains(uid))
 			return -1;
 
-		return Math.Max(0, (nowMs - s_mStampMs.Get(uid)) / 1000);
+		return LF_Utils.MaxInt(0, (nowMs - s_mStampMs.Get(uid)) / 1000);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -162,11 +162,9 @@ modded class LF_GameModeRoleplay
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PoliceContact's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PoliceContact's statics (LF_StaticReset finds it by reflection).
 class LF_PoliceContact_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PoliceContact_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PoliceContact";

@@ -74,7 +74,7 @@ class LF_PoliceCallPay
 		if (!config)
 			return DEFAULT_REWARD;
 
-		return Math.Max(config.m_iCallReward, 0);
+		return LF_Utils.MaxInt(config.m_iCallReward, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -267,7 +267,7 @@ class LF_PoliceCallPay
 		}
 
 		// The reward never exceeds the fine, so a suspect and an officer working together cannot mint cash.
-		int reward = Math.Min(Reward(), Math.Max(fineAmount, 0));
+		int reward = LF_Utils.MinInt(Reward(), LF_Utils.MaxInt(fineAmount, 0));
 		int paid;
 		if (reward > 0)
 		{
@@ -332,11 +332,9 @@ class LF_PoliceCallPaySubscriber : LF_EventSubscriber
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PoliceCallPay's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PoliceCallPay's statics (LF_StaticReset finds it by reflection).
 class LF_PoliceCallPay_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PoliceCallPay_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PoliceCallPay";

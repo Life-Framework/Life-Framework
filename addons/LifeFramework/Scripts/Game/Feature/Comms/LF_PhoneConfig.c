@@ -101,13 +101,13 @@ class LF_PhoneConfig
 	//------------------------------------------------------------------------------------------------
 	static int RingSeconds()
 	{
-		return Math.Max(Get().m_iRingSeconds, 1);
+		return LF_Utils.MaxInt(Get().m_iRingSeconds, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static int RingPulseSeconds()
 	{
-		return Math.Max(Get().m_iRingPulseSeconds, 1);
+		return LF_Utils.MaxInt(Get().m_iRingPulseSeconds, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -119,13 +119,13 @@ class LF_PhoneConfig
 	//------------------------------------------------------------------------------------------------
 	static int MaxCallSeconds()
 	{
-		return Math.Max(Get().m_iMaxCallSeconds, 1);
+		return LF_Utils.MaxInt(Get().m_iMaxCallSeconds, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static int CallBackOfferSeconds()
 	{
-		return Math.Max(Get().m_iCallBackOfferSeconds, 1);
+		return LF_Utils.MaxInt(Get().m_iCallBackOfferSeconds, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -163,11 +163,9 @@ class LF_PhoneConfig
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PhoneConfig's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PhoneConfig's statics (LF_StaticReset finds it by reflection).
 class LF_PhoneConfig_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PhoneConfig_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PhoneConfig";

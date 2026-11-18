@@ -3,6 +3,7 @@
 //! Nothing is paid before the drill has run its time: starting pays nothing; cancelling or putting
 //! the drill away stops the drilling and the vault stays shut with no haul, even after the full
 //! time has passed on the server clock. Walking off and going down stop it too (the pure step).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VaultDrillCancel : LF_Test
 {
 	override string GetName()
@@ -51,5 +52,6 @@ class LF_Test_VaultDrillCancel : LF_Test
 		ctx.True(LF_VaultDrill.Step(true, false, 0, true, 99, 10) == LF_EVaultDrillStep.STOP_DOWN, "a downed robber stops it");
 		ctx.True(LF_VaultDrill.Step(true, true, 0, true, 9.5, 10) == LF_EVaultDrillStep.KEEP, "short of the time it keeps going");
 		LF_VaultDrill.s_fNowOverride = -1;
+		LF_TestVaultDrillFixture.Release(robber, vaultId);
 	}
 }

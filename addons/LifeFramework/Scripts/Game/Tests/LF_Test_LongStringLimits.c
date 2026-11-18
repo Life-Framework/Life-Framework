@@ -5,6 +5,7 @@
 //! `IndexOf`, a JSON context and a file round trip keep a 140000-char string whole. `Substring` caps its
 //! RESULT at 8191 chars and `string.Format` caps its result at 8191 (8190 when the long argument is not
 //! first). An engine update that moves any of these fails here, and the doc table is then stale.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_LongStringLimits : LF_Test
 {
 	//! The longest string `Substring` returns: 8192 bytes less the terminator.

@@ -239,11 +239,9 @@ class LF_MapDiscoverScan
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of the server scan (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of the server scan (LF_StaticReset finds it by reflection).
 class LF_MapDiscoverScan_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_MapDiscoverScan_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_MapDiscoverScan";

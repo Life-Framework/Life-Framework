@@ -3,6 +3,7 @@
 //! catalogue/search-legality (#1764): a police search reads item legality. A pistol carried without
 //! FIREARM_PERMIT is flagged, seized and filed as #LF-Offence_UnlicensedItem; the same pistol with
 //! the permit is left alone and nothing is filed.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SearchLegality : LF_Test
 {
 	protected static const string UID = "search-legality-a";

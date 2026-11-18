@@ -5,6 +5,7 @@
 // The distinct pair was then restored.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_RecipeChains : LF_Test
 {
 	override string GetName()

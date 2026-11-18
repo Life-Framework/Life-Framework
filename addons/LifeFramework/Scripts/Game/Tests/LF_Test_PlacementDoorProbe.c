@@ -5,6 +5,7 @@
 //! walk-up in front of a ground-floor door, with the reason "a door", and passes a spot 4 m in front of
 //! the door or 2.5 m beside it. A house door is spawned on open ground south of the DebugWorld town
 //! (310, 100); the spots are measured from its own leaf box, never typed.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementDoorProbe : LF_Test
 {
 	protected static const ResourceName DOOR = "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et";

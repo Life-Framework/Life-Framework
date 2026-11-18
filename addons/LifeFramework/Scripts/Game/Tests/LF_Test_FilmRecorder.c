@@ -4,6 +4,7 @@
 // Restored.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FilmRecorder : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

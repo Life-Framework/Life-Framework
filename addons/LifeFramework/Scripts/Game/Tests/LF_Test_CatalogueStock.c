@@ -5,6 +5,7 @@
 //! Catalogue stock and restock (#1064): an offer with a stock counts down per sale, the next sale
 //! refuses at zero, the shelf is full again after the restock time, an unlimited offer never runs
 //! out, an offer is counted on its own, and the owner fields stock and restockSeconds patch by key.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CatalogueStock : LF_Test
 {
 	override string GetName()

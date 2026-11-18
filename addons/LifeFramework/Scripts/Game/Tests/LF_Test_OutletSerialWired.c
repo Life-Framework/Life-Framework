@@ -3,6 +3,7 @@
 //! The serial names the outlet that issued or sold the weapon (#2153, Refs #2123): a rifle drawn from
 //! the armory reads "LF-police_armory-NNNN", and a weapon the gun counter sells reads
 //! "LF-gun_counter-NNNN", so a seized gun traces back to where it came from.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_OutletSerialWired : LF_Test
 {
 	protected static const string SENIOR_UID = "outlet-wired-senior";

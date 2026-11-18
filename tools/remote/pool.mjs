@@ -31,6 +31,7 @@ import * as wt from "../wt.mjs";
 import * as q from "../lib/pool-queue.mjs";
 import { PS_GPU_PROBE, PS_READ_HEARTBEAT, desktopLine, parseProbe, readLocalProbe } from "../lib/gpu-session.mjs";
 import * as pr from "../lib/pool-ram.mjs";
+import * as pv from "../lib/pool-vram.mjs";
 import { idleVerdict } from "../lib/look-job.mjs";
 import * as gc from "../lib/session-gc.mjs";
 import * as rt from "../lib/rt-gc.mjs";
@@ -98,6 +99,10 @@ export function poolSettings(root) {
     testBootS: pick("testBootS", "LF_POOL_TEST_BOOT_S"),
     // Per profile: pool.json / lf.local.json "sessionReserve": { "lowspec": { "serverMb", "clientMb" } }.
     sessionReserve: { ...q.DEFAULTS.sessionReserve, ...(base.sessionReserve ?? {}), ...(over.sessionReserve ?? {}) },
+    // GPU memory (VRAM) per game client by profile, and the VRAM left free after a start (#2634, tools/lib/pool-vram.mjs):
+    // pool.json / lf.local.json "sessionReserveClientVramMb": { "lowspec": MB, "full": MB }, "minFreeVramMb".
+    sessionReserveClientVramMb: { ...q.DEFAULTS.sessionReserveClientVramMb, ...(isObj(base.sessionReserveClientVramMb) ? base.sessionReserveClientVramMb : {}), ...(isObj(over.sessionReserveClientVramMb) ? over.sessionReserveClientVramMb : {}) },
+    minFreeVramMb: pick("minFreeVramMb", "LF_POOL_MIN_FREE_VRAM_MB"),
     // The ship queue's gate counts: "shipQueue": { "parallel": N, "light": N } in pool.json or the "pool" key of
     // lf.local.json (tools/ship-queue.mjs gateSlots; the lf.local.json value wins per key).
     shipQueue: { ...(isObj(base.shipQueue) ? base.shipQueue : {}), ...(isObj(over.shipQueue) ? over.shipQueue : {}) },
@@ -1957,7 +1962,9 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
       };
       // The machine with the most RAM headroom for this session goes first, weighted by speed
       // (q.rankMachines): a starved machine is not tried while another has room.
-      const order = orderMachines(root, q.withoutAvoided(machines, avoid), settings, { reserveMb: q.sessionReserveMb(settings, clients, profile), stateOf: (m) => seenOf(m)?.state, localFreeMb: opts.localFreeMb });
+      // A machine whose free VRAM cannot hold the clients ranks as no room too (#2634, pv / q.vramGate).
+      const vramReserveMb = q.ticketVramReserveMb({ lane: "session", clients, profile }, settings);
+      const order = orderMachines(root, q.withoutAvoided(machines, avoid), settings, { reserveMb: q.sessionReserveMb(settings, clients, profile), vramReserveMb, stateOf: (m) => seenOf(m)?.state, localFreeMb: opts.localFreeMb, localVramMb: opts.localVramMb });
       for (const m of order) {
         const lanes = lanesFor(m, "session");
         const st = seenOf(m);
@@ -1973,6 +1980,12 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
               saidDown.add("disk");
               log(`session: this PC refuses sessions for now (${disk}); asking the other machines`);
             }
+            continue;
+          }
+          // Too little free VRAM for the clients: leave the request to the others, like the disk floor.
+          const vram = q.vramGate(settings, { vramFreeMb: localVramFreeMb(opts.localVramMb, vramReserveMb), clients, profile, pendingMb: pv.bootingVramMb(localLockInfos(root, m), settings) });
+          if (!vram.ok) {
+            ramShort = ramShort ?? { why: `${m.name}: ${vram.reason}` };
             continue;
           }
           const blocked = {};
@@ -2002,7 +2015,7 @@ export async function chooseSessionMachine(root, { clients = 1, profile = "full"
           markHealth(root, m, { reachable: false, error: "lane read failed" });
           continue;
         }
-        if (v.ram) ramShort = ramShort ?? { needMb: v.needMb, why: `${m.name}: ${v.ram}` };
+        if (v.ram || v.vram) ramShort = ramShort ?? { needMb: v.vram ? undefined : v.needMb, why: `${m.name}: ${v.ram ?? v.vram}` };
         else {
           laneSeen = true;
           busy.push(m.name);
@@ -2551,6 +2564,8 @@ export function remoteState(m) {
     pr.PS_PROC_SCAN,
     // The box's own measured peaks (its look, rdb and holder jobs record there), one JSON line.
     `$pf = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\pool-peaks.json'; if (Test-Path -LiteralPath $pf) { Write-Host ('lf-pool: peaks ' + ([IO.File]::ReadAllText($pf)).Trim()) }`,
+    pv.PS_VRAM_READ,
+    pv.PS_VRAM_TOTAL_READ,
     PS_GPU_PROBE,
     PS_READ_HEARTBEAT,
     ...(m.thermalLog ? [`$thermDir = ${tb.psQuote(m.thermalLog)}`, PS_THERMAL, "if ($thermC -ne $null) { Write-Host ('lf-pool: thermal ' + $thermC.ToString([Globalization.CultureInfo]::InvariantCulture)) }"] : []),
@@ -2588,7 +2603,7 @@ export function parseRemoteState(text) {
   // The ArmaReforger processes there (Workbench, servers, clients: the pool's or not); null when the box
   // answered without the scan lines (an older holder), so its gate falls back to lock-based pending.
   const procs = freeMb !== null ? pr.parseScan(text) : null;
-  return { locks, freeMb, totalMb, thermalC, diskGb, procs, peaks, gpuProbe: parseProbe(text), heartbeat: (/^lf-gpu-hb: (.*)$/m.exec(String(text)) ?? [])[1] ?? null };
+  return { locks, freeMb, totalMb, vramFreeMb: pv.parseVramLine(text), vramTotalMb: pv.parseVramTotalLine(text), thermalC, diskGb, procs, peaks, gpuProbe: parseProbe(text), heartbeat: (/^lf-gpu-hb: (.*)$/m.exec(String(text)) ?? [])[1] ?? null };
 }
 
 function remoteLocks(m) {
@@ -2623,19 +2638,40 @@ export function orderMachines(root, machines, settings, opts = {}) {
 }
 
 // The rows of q.rankMachines for these machines ({ name, room, headroomMb, score }, best first).
-export function rankedMachines(root, machines, settings, { reserveMb = 0, stateOf = () => null, localFreeMb } = {}) {
+// vramReserveMb (#2634): what a client session takes on the GPU; with it a machine whose free VRAM cannot
+// hold the clients ranks as no room (q.rankMachines). localVramMb is a test seam for this PC's free VRAM.
+export function rankedMachines(root, machines, settings, { reserveMb = 0, vramReserveMb = 0, stateOf = () => null, localFreeMb, localVramMb } = {}) {
   const views = machines.map((m) => {
     if (m.via === "local") {
       // A scan counts what every running process still grows into (a Workbench loading included).
       const procs = localFreeMb !== undefined || ramSeamMb() ? null : localScan();
       const pendingMb = procs ? pr.unrealisedMb(procs, pr.readPeaks(wt.hubDirOf(root))) : otherSessionLanes(root, m, null).reduce((n, s) => n + s.pendingMb, 0);
-      return { name: m.name, freeMb: localFreeMb ?? Math.round(freemem() / 1048576), pendingMb, multiplier: m.budgetMultiplier };
+      return { name: m.name, freeMb: localFreeMb ?? Math.round(freemem() / 1048576), pendingMb, multiplier: m.budgetMultiplier, ...vramView(m, vramReserveMb, localVramFreeMb(localVramMb, vramReserveMb), localLockInfos(root, m), settings) };
     }
     const st = stateOf(m);
     const pendingMb = st ? (st.procs ? pr.unrealisedMb(st.procs, pr.mergePeaks(pr.readPeaks(wt.hubDirOf(root)), st.peaks)) : remotePendingMb(settings, Object.values(st.locks ?? {}).filter((i) => i?.alive))) : 0;
-    return { name: m.name, freeMb: st?.freeMb ?? null, pendingMb, multiplier: m.budgetMultiplier };
+    return { name: m.name, freeMb: st?.freeMb ?? null, pendingMb, multiplier: m.budgetMultiplier, ...vramView(m, vramReserveMb, st?.vramFreeMb ?? null, Object.values(st?.locks ?? {}).filter((i) => i?.alive), settings) };
   });
-  return q.rankMachines(views, { minFreeMb: settings.minFreeMb, reserveMb, roomyMb: settings.roomyMb });
+  return q.rankMachines(views, { minFreeMb: settings.minFreeMb, reserveMb, roomyMb: settings.roomyMb, vramReserveMb, minFreeVramMb: settings.minFreeVramMb });
+}
+
+// This PC's free VRAM (MB) for a job that takes some (reserveMb > 0), else null without running nvidia-smi.
+// seam (a number or null) stands in for the read in the selftests.
+export function localVramFreeMb(seam, reserveMb) {
+  if (!(reserveMb > 0)) return null;
+  const v = seam !== undefined ? seam : pv.readVramFreeMb();
+  return Number.isFinite(v) ? v : null;
+}
+
+// The VRAM fields of one machine's rank candidate: its free VRAM and what clients still starting there take.
+// Nothing when the job has no client, so the order stays the RAM order; unknown VRAM is logged once.
+function vramView(m, vramReserveMb, vramFreeMb, infos, settings) {
+  if (!(vramReserveMb > 0)) return {};
+  if (!Number.isFinite(vramFreeMb)) {
+    pv.noteVramUnknown(m.name);
+    return { vramFreeMb: null };
+  }
+  return { vramFreeMb, vramPendingMb: pv.bootingVramMb(infos ?? [], settings) };
 }
 
 // One line for a job pinned to `pinned` (--local / --machine / --remote) when the pool, left to
@@ -2709,8 +2745,12 @@ export function remoteSessionVerdict(m, st, settings, { clients = 1, profile = "
   const lane = lanesFor(m, "session").some((l) => !st.locks[l.lock] || !st.locks[l.lock].alive);
   if (!lane) return { ok: false, lane: false };
   if (Number.isFinite(st.thermalC) && st.thermalC >= (m.thermalHoldC ?? 90)) return { ok: false, lane: true, ram: `${st.thermalC} °C, at or over its ${m.thermalHoldC ?? 90} °C hold`, hot: st.thermalC };
-  if (!Number.isFinite(st.freeMb)) return { ok: true, lane: true };
   const infos = Object.values(st.locks).filter((i) => i?.alive);
+  // GPU memory (#2634): the clients must fit the machine's free VRAM; unknown VRAM skips the rule.
+  const vram = q.vramGate(settings, { vramFreeMb: st.vramFreeMb, clients, profile, pendingMb: pv.bootingVramMb(infos, settings, now) });
+  if (!vram.ok) return { ok: false, lane: true, vram: vram.reason, needMb: vram.needMb };
+  if (vram.unknown) pv.noteVramUnknown(m.name);
+  if (!Number.isFinite(st.freeMb)) return { ok: true, lane: true };
   const v = remoteAdmission(m, st, settings, { kind: "session", clients, profile, world, now, peaks, infos });
   return v.ok ? { ok: true, lane: true } : { ok: false, lane: true, ram: v.reason, needMb: v.needMb };
 }
@@ -2832,7 +2872,9 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     const st = h.reachable && m.via !== "local" ? remoteState(m) : null;
     const heat = st && Number.isFinite(st.thermalC) ? `  ${st.thermalC} °C (holds new jobs at ${m.thermalHoldC})` : m.thermalLog && st ? "  temperature unknown (thermal log stale)" : "";
     const ram = m.via === "local" ? ramText(root) : st && Number.isFinite(st.freeMb) ? `RAM ${(st.freeMb / 1024).toFixed(1)}/${(st.totalMb / 1024).toFixed(1)} GB free (floor ${(settings.minFreeMb / 1024).toFixed(1)})${heat}` : "";
-    const head = `${m.name}  ${where}  ${healthWord(h, now)}  ${build}  ${ram ? `${ram}  ` : ""}${lanes}`.replace(/ {2,}$/, "");
+    // GPU memory (#2634): free and used VRAM; nothing when nvidia-smi is missing or does not answer.
+    const vram = m.via === "local" ? pv.vramUsageText(pv.readVramFreeMb(), pv.readVramTotalMb()) : st ? pv.vramUsageText(st.vramFreeMb, st.vramTotalMb) : "";
+    const head = `${m.name}  ${where}  ${healthWord(h, now)}  ${build}  ${ram ? `${ram}${vram}  ` : vram ? `${vram.trim()}  ` : ""}${lanes}`.replace(/ {2,}$/, "");
     if (!h.reachable) {
       console.log(head);
       continue;

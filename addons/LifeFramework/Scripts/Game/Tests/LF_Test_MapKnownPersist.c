@@ -4,6 +4,7 @@
 //! visited places, keeps the row of a place that is not live (a dark chapter's place), and a
 //! re-applied load is idempotent. Across a restart (`tools\cli wt e2e`): the save boot records
 //! E2E_CHARACTER visited E2E_PLACE and heard of E2E_DARK; the reload boot finds both.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_MapKnownPersist : LF_Test
 {
 	protected static const string CHARACTER = "mapknown-persist-character";

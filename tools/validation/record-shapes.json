@@ -1,5 +1,5 @@
 {
-  "saveVersion": 50,
+  "saveVersion": 55,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -52,7 +52,12 @@
     "itemkeys": "LF_StorageItemKeyRecord",
     "graceclock": "LF_GraceClockRow",
     "jobruns": "LF_JobRunRow",
-    "leaseidle": "LF_HideoutIdleRow"
+    "leaseidle": "LF_HideoutIdleRow",
+    "properties": "LF_PropertyRecord",
+    "placements": "LF_PlacementRow",
+    "reputation": "LF_ReputationRow",
+    "orgwars": "LF_OrgWarRecord",
+    "garageslots": "LF_GarageSlotRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -617,6 +622,68 @@
         "int m_iVersion",
         "string m_sHideoutId",
         "int m_iLastActive"
+      ]
+    },
+    "LF_PropertyRecord": {
+      "since": 51,
+      "fields": [
+        "string m_sPropertyId",
+        "string m_sOwnerKey",
+        "string m_sOrgId",
+        "string m_sLayoutId",
+        "int m_iBuildStage",
+        "int m_iWorkDone",
+        "string m_sDeposited",
+        "int m_iPurchasedAt",
+        "int m_iRentPaidUntil",
+        "bool m_bOwnerSpawnsHere"
+      ]
+    },
+    "LF_PlacementRow": {
+      "since": 52,
+      "fields": [
+        "int m_iVersion",
+        "string m_sPlacementId",
+        "string m_sPrefab",
+        "vector m_vPos",
+        "vector m_vAngles",
+        "string m_sOwnerKey",
+        "string m_sKind",
+        "string m_sPropertyId",
+        "string m_sItemPrefab"
+      ]
+    },
+    "LF_ReputationRow": {
+      "since": 53,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterKey",
+        "string m_sFaction",
+        "int m_iPoints"
+      ]
+    },
+    "LF_OrgWarRecord": {
+      "since": 54,
+      "fields": [
+        "int m_iVersion",
+        "string m_sWarId",
+        "string m_sDeclarerOrgId",
+        "string m_sTargetOrgId",
+        "LF_EOrgWarState m_eState",
+        "int m_iDeclaredAt",
+        "int m_iAcceptedAt",
+        "int m_iEndsAt",
+        "int m_iAnswerWindowSec",
+        "int m_iCooldownSec",
+        "int m_iCooldownUntil"
+      ]
+    },
+    "LF_GarageSlotRow": {
+      "since": 55,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterKey",
+        "int m_iBought"
       ]
     }
   }

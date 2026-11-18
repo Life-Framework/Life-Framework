@@ -9,6 +9,7 @@
 // remaining time. Vehicle escort is the next slice and is not covered here.
 
 // tier: WORLD (needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047)
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_Jailing : LF_Test
 {
 	override string GetName()
@@ -90,6 +91,7 @@ class LF_Test_Roadmap_Jailing : LF_Test
 }
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_JailingWorld : LF_Test
 {
 	protected static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
@@ -173,6 +175,7 @@ class LF_Test_Roadmap_JailingWorld : LF_Test
 }
 
 // tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_Roadmap_JailingPersistence : LF_Test
 {
 	override string GetName()

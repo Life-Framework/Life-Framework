@@ -1816,14 +1816,12 @@ class LF_UIScreen
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_UIScreen's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_UIScreen's statics (LF_StaticReset finds it by reflection).
 //! A sheet still open when the world ends (a quiz page at the kick, a form at a disconnect) never
 //! runs Close, so its prompt hold would outlive the world and hide every interaction prompt in the
 //! next session of the same game process.
 class LF_UIScreen_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_UIScreen_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_UIScreen";

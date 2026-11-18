@@ -11,6 +11,7 @@
 // GridWorld (#1893): passes as it stands on 2026-11-16 (`--only LF_Test_PoliceRankPermissions --world Worlds/GridWorld/GridWorld.ent`);
 // it sets its own cell origin (LF_Jail.SetCellOrigin) and needs no town station.
 // tier: WORLD (LF_Jail moves real bodies and syncs the placed cell; LOGIC runs on any map, #1047)
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PoliceRankPermissions : LF_Test
 {
 	override string GetName()

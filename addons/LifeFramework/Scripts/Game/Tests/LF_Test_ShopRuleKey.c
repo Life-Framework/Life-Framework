@@ -4,6 +4,7 @@
 //! A prefab rule is addressed by "prefab:<GUID>", not by the type key every prefab rule shares:
 //! two prefab rules get distinct keys, and an owner record for one prefab changes only that rule.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ShopRuleKey : LF_Test
 {
 	static const string PREFAB_A = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

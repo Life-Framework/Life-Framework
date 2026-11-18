@@ -6,6 +6,7 @@
 //! shown ones plus the disabled ones. The in-game proof counted 0 marks after placing 1 off screen, so
 //! the 21st mark was never refused and an upload dropped every off-screen mark from the save.
 //! Pure script: marker objects in two lists, no manager and no player needed.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapMarksOffscreen : LF_Test
 {
 	override string GetName()

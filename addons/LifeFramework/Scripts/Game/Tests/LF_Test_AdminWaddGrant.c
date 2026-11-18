@@ -4,6 +4,7 @@
 //! chat/admin-wadd-grant (#2548, #2412 item 1): `!wadd POLICE <uid>` stores the uid on the roster police duty
 //! reads (LF_WhitelistManager) and only then logs and reports the grant to staff. An unknown or rosterless
 //! type, and a uid already on the roster, store and report nothing.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AdminWaddGrant : LF_Test
 {
 	override string GetName()

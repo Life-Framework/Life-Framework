@@ -160,7 +160,7 @@ class LF_OrgConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"foundingFee", "nameMin", "nameMax", "offerMs", "maxCashMove", "priceExtraStorage", "priceProcessingSlot", "priceParkedVehicle", "deskRange", "heldGroundMaxPoints", "hideoutLeaseIdleDays", "rankDefaults"};
+		array<string> ownerKeys = {"foundingFee", "nameMin", "nameMax", "offerMs", "maxCashMove", "priceExtraStorage", "priceProcessingSlot", "priceParkedVehicle", "deskRange", "heldGroundMaxPoints", "hideoutLeaseIdleDays", "rankDefaults", "wars"};
 		reader.WarnUnknownKeys(ownerKeys);
 		int nameMin = m_iNameMin;
 		int nameMax = m_iNameMax;
@@ -378,7 +378,7 @@ class LF_OrgRankDefault : LF_ConfigRecord
 	[Attribute("0", UIWidgets.CheckBox, "May promote and demote members below this rank")]
 	bool m_bManageRanks;
 
-	[Attribute("0", UIWidgets.CheckBox, "Reserved for the war record: no effect yet")]
+	[Attribute("0", UIWidgets.CheckBox, "May declare a war on another organization and answer a declaration made on it")]
 	bool m_bDeclareWar;
 
 	[Attribute("0", UIWidgets.CheckBox, "Reserved: the hideout stash opens for every member today")]
@@ -568,11 +568,9 @@ class LF_OrgRankDefaultList : LF_ConfigList
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_OrgConfig's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_OrgConfig's statics (LF_StaticReset finds it by reflection).
 class LF_OrgConfig_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_OrgConfig_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_OrgConfig";

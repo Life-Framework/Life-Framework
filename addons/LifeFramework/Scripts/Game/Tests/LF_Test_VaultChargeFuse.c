@@ -3,6 +3,7 @@
 //! A charge set on a vault whose safe type has a fuse opens the vault when the fuse fires and pays the
 //! haul once (#2541). The fuse used to advance the breach by the component's own fuse (0 on a vault)
 //! and skipped LF_Bank, so the robber took the wanted level and the vault never opened.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VaultChargeFuse : LF_Test
 {
 	static const ResourceName SAFE_PREFAB = "{B5A9BA64B3966CC1}Prefabs/Props/Commercial/LF_SafeBox.et";

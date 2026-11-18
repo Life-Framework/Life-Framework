@@ -7,6 +7,7 @@
 //! nothing and never doubles the shelf, a saved stock for an item the store no longer sells is
 //! dropped, and a stock saved for a store that is not in the world waits and is kept. The test puts
 //! the store back the way it found it.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_StorePersist : LF_Test
 {
 	override string GetName()

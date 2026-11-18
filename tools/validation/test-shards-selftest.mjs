@@ -1,5 +1,5 @@
 // Proves the test-shard split and merge (tools/lib/test-shards.mjs) on fixtures. Does not boot the game.
-// inputs: tools/lib/test-cache.mjs, tools/lib/test-shards.mjs, tools/validation/test-shards-selftest.mjs, addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c
+// inputs: tools/lib/test-cache.mjs, tools/lib/test-shards.mjs, tools/validation/test-shards-selftest.mjs, tools/lib/test-world.mjs, addons/**
 // red-proof 2026-11-15 (#1703 gate "shard 1: no SUMMARY (exit 0); its 568 test(s) have no verdict", a re-queued gate answered by the pass cache): with parseShardOutput not reading the CACHED line "a CACHED pass line is the slice's verdict (summary=false 0/0)".
 import { rmSync } from "node:fs";
 import { join } from "node:path";
@@ -20,7 +20,14 @@ const real = s.readRegistry(root);
 check(real.length > 100, `the registry parses (${real.length} tests)`);
 check(new Set(real.map((t) => t.cls)).size === real.length, "registry class names are unique");
 check(!real.some((t) => t.tier === "PERF"), "a PERF test is not in the shard registry (`--tier all` does not run it, and a slice would run it at the lenient settings)");
-check(s.parseRegistry("manager.Register(new LF_Test_P(), LF_TestTier.PERF);\nmanager.Register(new LF_Test_Q(), LF_TestTier.LOGIC);").length === 2, "parseRegistry reads the PERF tier");
+{
+  // #2789: a slice's legs each print an [LFTEST] SUMMARY; the slice count is their sum, never the last leg alone.
+  const twoLegs = "test: leg 1/2 world GridWorld\n01:08:47.471 SCRIPT       : [LFTEST] SUMMARY tier=only passed=878 failed=1 total=879 skipped=0\ntest-e2e: SUMMARY tier=only passed=878 failed=1 total=879 (23 s)\ntest: leg 2/2 world pack\n01:09:09.768 SCRIPT       : [LFTEST] SUMMARY tier=only passed=19 failed=0 total=19 skipped=0\ntest-e2e: SUMMARY tier=only passed=19 failed=0 total=19 (7 s)\nSUMMARY test fail tier=all legs=2 passed=897 failed=1 total=898\n";
+  const pl = s.parseShardOutput(twoLegs);
+  check(pl.total === 898 && pl.passed === 897 && pl.failed === 1 && pl.seconds === 30, `parseShardOutput sums the core and pack legs (${pl.total}/898)`);
+  const mm = s.mergeShards([{ index: 1, expected: 898, code: 1, parsed: pl, seconds: 30 }]);
+  check(!mm.notes.some((n) => /matched twice/.test(n)), `a two-leg slice of 898 is not "ran 19 of 879" (${mm.notes.join("; ")})`);
+}
 {
   const plan = s.planShards(real, 4, {});
   check(plan.flat().length === real.length && new Set(plan.flat()).size === real.length, "the real registry splits into 4 slices covering every test once");

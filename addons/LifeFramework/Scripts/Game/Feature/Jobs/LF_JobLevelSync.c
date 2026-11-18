@@ -71,11 +71,9 @@ class LF_JobLevelSync : LF_EventSubscriber
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_JobLevelSync's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_JobLevelSync's statics (LF_StaticReset finds it by reflection).
 class LF_JobLevelSync_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_JobLevelSync_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_JobLevelSync";

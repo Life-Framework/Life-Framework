@@ -25,7 +25,7 @@ import * as mg from "./lib/main-guard.mjs";
 import * as pin from "./lib/guard-pin.mjs";
 import { hostname } from "node:os";
 
-const HOST = (process.env.LF_MACHINE_NAME || hostname()).replace(/s+/g, "-");
+const HOST = pin.leaseHostName(process.env.LF_MACHINE_NAME || hostname());
 
 const SELF = fileURLToPath(import.meta.url);
 const TICK_MS = 60 * 1000;
@@ -175,18 +175,22 @@ async function checkHead(root, dir, head) {
     log(root, `${head.slice(0, 8)} ${step.name}: ${step.args.join(" ")}`);
     const r = await runCli(root, dir, step.args, `${head.slice(0, 8)}-${step.name.replace(/\W+/g, "-")}`);
     if (r.code === 0) continue;
-    if (mg.isEnvExit(r.code)) {
-      log(root, `${head.slice(0, 8)} ${step.name}: exit ${r.code} is the machine (logoff, shutdown or budget kill), not the commit; no recheck, no revert, retried on a later tick (log ${r.log})`);
-      writeState(root, { running: null });
+    const failing = step.name === "suite" ? mg.failingTests(r.text, testSources(dir)) : [];
+    // env (the machine died) and infra (a held lock, no Workbench slot or pool machine; #2759) are no verdict: no
+    // recheck, no bisect, no revert, no red mark; lastChecked stays, so a later tick runs this head again.
+    const v1 = mg.classifyStep(step.name, r.code, r.text, failing);
+    if (v1.verdict !== "red") {
+      log(root, `${head.slice(0, 8)} ${step.name}: ${v1.verdict.toUpperCase()} (${v1.why}), not the commit; no recheck, no revert, retried on a later tick (log ${r.log})`);
+      writeState(root, { running: null, lastResult: { head, verdict: v1.verdict, step: step.name, what: v1.why, at: now() } });
       return;
     }
-    const failing = step.name === "suite" ? mg.failingTests(r.text, testSources(dir)) : [];
     const what = failing.length ? failing.slice(0, 3).join(", ") : step.name;
     log(root, `${head.slice(0, 8)} ${step.name} RED (exit ${r.code}, ${what}); rechecking at the same head (log ${r.log})`);
     const again = await runCli(root, dir, step.recheck(failing), `${head.slice(0, 8)}-recheck`);
-    if (mg.isEnvExit(again.code)) {
-      log(root, `${head.slice(0, 8)} ${step.name} recheck: exit ${again.code} is the machine, not the commit; no revert, retried on a later tick`);
-      writeState(root, { running: null });
+    const v2 = mg.classifyStep(step.name, again.code, again.text, step.name === "suite" ? mg.failingTests(again.text, testSources(dir)) : []);
+    if (v2.verdict === "env" || v2.verdict === "infra") {
+      log(root, `${head.slice(0, 8)} ${step.name} recheck: ${v2.verdict.toUpperCase()} (${v2.why}), not the commit; no revert, retried on a later tick`);
+      writeState(root, { running: null, lastResult: { head, verdict: v2.verdict, step: step.name, what: v2.why, at: now() } });
       return;
     }
     const verdict = mg.judgeRecheck(true, again.code !== 0);
@@ -211,8 +215,9 @@ async function checkHead(root, dir, head) {
       b = await mg.bisectBySet(list, failing, async (c) => {
         checkout(dir, c.sha);
         const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
-        if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
         const failed = mg.failingTests(x.text, testSources(dir));
+        const xv = mg.classifyStep(step.name, x.code, x.text, failed);
+        if (xv.verdict === "env" || xv.verdict === "infra") throw new Error(`bisect ${c.sha.slice(0, 8)}: ${xv.verdict} (${xv.why}), not the commit; nothing is reverted`);
         const hit = mg.setHits(failing, failed);
         log(root, `  bisect ${c.sha.slice(0, 8)} ${hit.length ? `red (${hit.slice(0, 3).join(", ")})` : x.code === 0 ? "green" : `green for the set (exit ${x.code}, other failures: ${failed.slice(0, 3).join(", ") || "none parsed"})`} (${c.subject.slice(0, 60)})`);
         return failed;
@@ -221,7 +226,8 @@ async function checkHead(root, dir, head) {
       b = await mg.bisect(list, async (c) => {
         checkout(dir, c.sha);
         const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
-        if (mg.isEnvExit(x.code)) throw new Error(`bisect ${c.sha.slice(0, 8)}: exit ${x.code} is the machine, not the commit; nothing is reverted`);
+        const xv = mg.classifyStep(step.name, x.code, x.text);
+        if (xv.verdict === "env" || xv.verdict === "infra") throw new Error(`bisect ${c.sha.slice(0, 8)}: ${xv.verdict} (${xv.why}), not the commit; nothing is reverted`);
         log(root, `  bisect ${c.sha.slice(0, 8)} ${x.code === 0 ? "green" : "red"} (${c.subject.slice(0, 60)})`);
         return x.code !== 0;
       });
@@ -243,6 +249,32 @@ async function checkHead(root, dir, head) {
   mark(root, dir, head, "green");
   writeState(root, { running: null, lastChecked: head, lastGreen: head, lastResult: { head, verdict: "green", at: now() } });
   log(root, `${head.slice(0, 8)} green`);
+}
+
+// The stage-2 reds the guard set on an infra refusal before #2759 (2026-11-17: 7587bfd5, a held build lock): read
+// back from the step logs, put back to compiled-ok in the hub file, and withdrawn on GitHub (main-guard/suite
+// pending), so promote and the compiled-ok pin no longer skip them. Runs at worker start and as
+// `main-guard reclassify [--dry-run]`.
+export function reclassifyInfra(root, { dryRun = false, say = (s) => log(root, s) } = {}) {
+  const logs = join(mainRoot(root), "tmp", "logs");
+  let names = [];
+  try { names = readdirSync(logs); } catch {}
+  const logsOf = (sha, step) => {
+    const pre = `main-guard-${sha.slice(0, 8)}-`;
+    const tags = [`${pre}${step.replace(/\W+/g, "-")}-`, `${pre}recheck-`];
+    return names.filter((n) => tags.some((t) => n.startsWith(t) && /^\d+\.log$/.test(n.slice(t.length)))).map((n) => { try { return readFileSync(join(logs, n), "utf8"); } catch { return ""; } });
+  };
+  const found = mg.infraRedHeads(pin.readHeads(hub(root)).heads, logsOf);
+  for (const f of found) {
+    say(`reclassify ${f.sha.slice(0, 8)}: ${f.step} red was infra (${f.why})${dryRun ? " [dry run]" : "; now compiled-ok, main-guard/suite pending"}`);
+    if (dryRun) continue;
+    pin.clearInfraRed(hub(root), f.sha, f.why);
+    const r = pin.postInfra(mainRoot(root), f.sha, f.why);
+    if (r.status !== 0) say(`  status on ${f.sha.slice(0, 8)} not posted: ${String(r.stderr || "").trim().slice(0, 160)}`);
+    const st = readState(root);
+    if (st.lastResult?.head === f.sha && st.lastResult.verdict === "red") writeState(root, { lastResult: { ...st.lastResult, verdict: "infra", note: f.why } });
+  }
+  return found;
 }
 
 function openFixCard(root, dir, c, stepName, what, failLog) {
@@ -388,6 +420,7 @@ export async function runWorker(root) {
   // The first start pins the start head: merges on main before it are never blamed. The guard has not
   // checked it, so the first run proves it (lastGreen) before anything can be bisected.
   if (!st.startHead) writeState(root, { startedAt: now(), startHead: head0, lastChecked: null, lastGreen: null, reverted: st.reverted ?? [] });
+  try { reclassifyInfra(root); } catch (e) { log(root, `reclassify failed: ${e?.message ?? e}`); }
   // One guard for the repo: the lease (main-guard/lease status on the root commit) must be free, stale or ours.
   const lease = pin.readLease(dir);
   const ld = pin.leaseDecision(lease, HOST);
@@ -395,15 +428,20 @@ export async function runWorker(root) {
   else if (!ld.ok) { log(root, `lease refused: ${ld.why}; worker exits`); try { unlinkSync(lockPath(root)); } catch {} return 1; }
   log(root, `lease: ${lease === undefined ? "unreadable" : ld.why}`);
   pin.writeLease(dir, "held", HOST, process.pid);
-  let leaseAt = Date.now();
   writeState(root, { running: null, pid: process.pid });
-  for (;;) {
-    if (Date.now() - leaseAt > 5 * 60 * 1000) {
+  // The lease is renewed on its own timer: the loop below awaits a compile for many minutes, and a lease renewed only
+  // between ticks went 16 min stale under a live worker (#2754), which the watchdog and `lead` read as a dead guard.
+  let leaseLost = null;
+  const beat = setInterval(() => {
+    try {
       const cur = pin.readLease(dir);
-      if (cur && cur.state === "held" && cur.host !== HOST) { log(root, `lease taken by ${cur.host}; worker exits`); break; }
+      if (cur && cur.state === "held" && !pin.sameLeaseHost(cur.host, HOST)) { leaseLost = cur.host; return; }
       pin.writeLease(dir, "held", HOST, process.pid);
-      leaseAt = Date.now();
-    }
+    } catch (e) { log(root, `lease renewal failed: ${e?.message ?? e}`); }
+  }, 5 * 60 * 1000);
+  beat.unref?.();
+  for (;;) {
+    if (leaseLost) { log(root, `lease taken by ${leaseLost}; worker exits`); break; }
     if (off()) { log(root, "LF_MAIN_GUARD=0: worker exits"); break; }
     if (readState(root).stop) { writeState(root, { stop: false }); log(root, "stop requested: worker exits"); break; }
     try {
@@ -441,9 +479,42 @@ export async function runWorker(root) {
     }
     await new Promise((r) => setTimeout(r, TICK_MS));
   }
+  clearInterval(beat);
   pin.writeLease(dir, "released", HOST);
   try { unlinkSync(lockPath(root)); } catch {}
   return 0;
+}
+
+// One watchdog tick (#2754), run every 5 min by the LF-MainGuardWatch scheduled task: a dead worker is started again,
+// a hung one or a crash loop only alerts. Restarts are remembered in <hub>/main-guard-watch.json (3 per hour at most).
+// Alerts go to the log and the staff webhook, at most one per 30 min.
+export async function watch(root, dryRun = false) {
+  const mr = mainRoot(root);
+  const f = join(hub(root), "main-guard-watch.json");
+  let w = {};
+  try { w = JSON.parse(readFileSync(f, "utf8")); } catch {}
+  const save = () => { try { writeFileSync(f, JSON.stringify(w, null, 2) + "\n"); } catch {} };
+  wt.git(mr, ["fetch", "origin", "--prune"]);
+  const lease = pin.readLease(mr);
+  const alive = workerAlive(root);
+  const d = mg.watchDecision({ off: off(), alive, lease, host: HOST, restarts: w.restarts ?? [] });
+  console.log(`main-guard watch: ${d.action}: ${d.why}`);
+  if (dryRun || d.action === "none") return 0;
+  log(root, `watch: ${d.action}: ${d.why}`);
+  const say = async (text) => {
+    if (Date.now() - Date.parse(w.alertAt ?? "") < 30 * 60 * 1000) return;
+    w.alertAt = now();
+    await staffLine(root, text);
+  };
+  if (d.action === "alert") { await say(`main guard watchdog: ${d.why}`); save(); return 1; }
+  w.restarts = [...(w.restarts ?? []), now()].slice(-10);
+  save();
+  const code = await main(["start"], { root });
+  const up = workerAlive(root);
+  log(root, `watch: restart ${up ? `ok (pid ${up})` : "FAILED"}`);
+  await say(up ? `main guard watchdog: the guard was down (${d.why}); restarted, pid ${up}` : `main guard watchdog: the guard was down (${d.why}) and the restart FAILED (exit ${code}); see ${logPath(root)}`);
+  save();
+  return up ? 0 : 1;
 }
 
 export async function main(args, { root }) {
@@ -474,6 +545,11 @@ export async function main(args, { root }) {
     console.log(mg.statusLine(readState(root), { alive: workerAlive(root) }));
     return workerAlive(root) ? 0 : 1;
   }
+  if (sub === "reclassify") {
+    const found = reclassifyInfra(root, { dryRun: args.includes("--dry-run"), say: (s) => { console.log(s); log(root, s); } });
+    if (!found.length) console.log("main-guard reclassify: no red head was an infra refusal");
+    return 0;
+  }
   if (sub === "check") {
     const want = args[1];
     if (!want) { console.log("usage: tools\cli main-guard check <sha>   compile, then the full check, on exactly that main commit"); return 1; }
@@ -484,6 +560,7 @@ export async function main(args, { root }) {
     console.log(`main-guard: check of ${sha.slice(0, 8)} requested; it runs next (${workerAlive(root) ? "worker running" : "start the guard"}). Statuses: main-guard/compile, main-guard/suite on ${sha.slice(0, 8)}`);
     return 0;
   }
+  if (sub === "watch") return watch(root, args.includes("--dry-run"));
   if (sub === "stop") {
     const pid = workerAlive(root);
     if (!pid) { console.log("main-guard: not running"); return 0; }
@@ -491,7 +568,7 @@ export async function main(args, { root }) {
     try { process.kill(pid); } catch {}
     try { unlinkSync(lockPath(root)); } catch {}
     writeState(root, { stop: false, running: null });
-    if (pin.readLease(mainRoot(root))?.host === HOST) pin.writeLease(mainRoot(root), "released", HOST);
+    if (pin.sameLeaseHost(pin.readLease(mainRoot(root))?.host, HOST)) pin.writeLease(mainRoot(root), "released", HOST);
     console.log(`main-guard: stopped (pid ${pid})`);
     return 0;
   }
@@ -513,7 +590,7 @@ export async function main(args, { root }) {
     console.log(`  log ${logPath(root)}; flakes ${flakeLog(root)}`);
     return 0;
   }
-  console.log("usage: tools\\cli main-guard start | stop | status");
+  console.log("usage: tools\\cli main-guard start | stop | status | watch [--dry-run]");
   return 1;
 }
 

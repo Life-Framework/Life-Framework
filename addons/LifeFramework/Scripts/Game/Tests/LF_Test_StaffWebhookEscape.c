@@ -5,6 +5,7 @@
 //! admin-sourced text. Control characters other than newline, return and tab are escaped, a line cut
 //! at MAX_TEXT never ends inside a multi-byte character, and a request's callback is held until its
 //! answer arrives.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StaffWebhookEscape : LF_Test
 {
 	override string GetName()

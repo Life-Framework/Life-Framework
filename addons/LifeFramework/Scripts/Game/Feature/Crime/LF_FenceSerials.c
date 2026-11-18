@@ -287,11 +287,9 @@ class LF_FenceSerials
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_FenceSerials's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_FenceSerials's statics (LF_StaticReset finds it by reflection).
 class LF_FenceSerials_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_FenceSerials_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_FenceSerials";

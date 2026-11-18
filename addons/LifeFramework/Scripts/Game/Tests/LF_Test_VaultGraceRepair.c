@@ -3,6 +3,7 @@
 //! Vault abuse gates (#2539): a character in its grace cannot start a vault robbery or arm a breach
 //! (the charge stays in the pack's place: nothing arms); an off-duty police account cannot relock a
 //! vault, an on-duty one can; the bank's world-end reset hook leaves no vault behind.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VaultGraceRepair : LF_Test
 {
 	protected static const string UID_NEW = "vault-grace-new";

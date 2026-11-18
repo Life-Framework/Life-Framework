@@ -4,6 +4,7 @@
 //! action id, licenceGates by licence name) takes add, replace, patch and remove from the owner's
 //! section; `remove` takes the entry out, `patch` of a missing id is refused, and a refusal skips
 //! only its own record. The no-verb upsert of #749 is tested in LF_Test_JobLevelsConfig.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobsOverrideModel : LF_Test
 {
 	override string GetName()

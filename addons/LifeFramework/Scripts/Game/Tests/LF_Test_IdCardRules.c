@@ -3,6 +3,7 @@
 // `[LFTEST] FAIL creation/id-card-rules`,
 // `- a second card for the same character is refused (expected 2, got 0)`. Restored; green.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_IdCardRules : LF_Test
 {
 	override string GetName()

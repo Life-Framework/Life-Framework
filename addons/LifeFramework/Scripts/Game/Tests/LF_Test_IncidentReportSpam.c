@@ -3,6 +3,7 @@
 // tier: LOGIC
 //! incident/report-spam (#2414): a /report with nothing to flag starts the cooldown too, so it cannot be
 //! repeated every frame (each call ran a log query, wrote a line and sent a notification).
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_IncidentReportSpam : LF_Test
 {
 	override string GetName()

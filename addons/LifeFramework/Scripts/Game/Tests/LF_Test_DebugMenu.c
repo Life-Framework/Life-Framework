@@ -3,6 +3,7 @@
 // the range assertions below go red.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DebugActionValidation : LF_Test
 {
 	override string GetName()

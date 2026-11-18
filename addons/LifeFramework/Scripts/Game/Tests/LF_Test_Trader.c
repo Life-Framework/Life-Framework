@@ -6,6 +6,7 @@
 // actions/guards (LF_ProcessAction.IsRecipeConfigured).
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_TraderSellRules : LF_Test
 {
 	protected static const ResourceName APPLE_PREFAB = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

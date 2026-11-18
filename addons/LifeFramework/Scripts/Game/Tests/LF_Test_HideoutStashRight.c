@@ -3,6 +3,7 @@
 //! hideout/stash-right (review 2026-11-17): the rank's stash right (USE_STASH) was saved, shown and
 //! editable in the rank config, yet the stash opened for every member. A rank without it is shut out;
 //! a rank with it still gets in, and a non-member never does.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HideoutStashRight : LF_Test
 {
 	protected static const string SITE = "hideout-stash-right-site";

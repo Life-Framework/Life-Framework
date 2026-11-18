@@ -65,7 +65,7 @@ export function clientArgs(run, port = BOOT_PORT) {
   return ["-client", `127.0.0.1:${port}`, "-addonsDir", `${run}/client-addons`, "-profile", `${run}/client-profile`, "-window", "-screenWidth", "640", "-screenHeight", "360", "-noSound", "-noSplash", "-noFocus", "-disableCrashReporter"];
 }
 
-const MOD_PROBLEM = /BACKENDs+(E)|(workshop|addon|mod)\b[^\n]*\b(not found|missing|failed|unable|could not|couldn't|cannot|can't|doesn't exist|does not exist|not available|download(?:ing)? (?:error|failed))|\b(not found|missing|failed|unable|could not|cannot)\b[^\n]*\b(workshop|addon|mod)\b/i;
+const MOD_PROBLEM = /BACKEND\s+\(E\)|(workshop|addon|mod)\b[^\n]*\b(not found|missing|failed|unable|could not|couldn't|cannot|can't|doesn't exist|does not exist|not available|download(?:ing)? (?:error|failed))|\b(not found|missing|failed|unable|could not|cannot)\b[^\n]*\b(workshop|addon|mod)\b/i;
 const SCRIPT_ERROR = /SCRIPT\s+\(E\)|\bVME\b|Virtual Machine Exception/;
 const JOIN_LINE = /\[LFDebug:CharacterCreation\] flow start for player \d+|\bPlayer\b[^\n]*\b(connected|joined)\b|### Updating player/i;
 

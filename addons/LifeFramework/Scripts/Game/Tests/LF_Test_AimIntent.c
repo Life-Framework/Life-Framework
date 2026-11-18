@@ -3,6 +3,7 @@
 // tier: LOGIC
 //! incident/aim-throttle: sustained aim at one player logs one intent row per window; a gap or a
 //! glance restarts the streak; the cone and range are pure checks.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AimIntent : LF_Test
 {
 	override string GetName()

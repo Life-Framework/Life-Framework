@@ -4,6 +4,7 @@
 //! once. The next one is refused before anything is spawned, with the reason logged and the item
 //! kept; picking one up (or one expiring) frees a place. The strips stand at the officer's feet,
 //! laid with the deployer the service would set, so the test needs no valid street spot.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SpikeStripCap : LF_Test
 {
 	protected static const string OFFICER_UID = "spike-cap-officer";

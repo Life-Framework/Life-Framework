@@ -4,6 +4,7 @@
 //! On a server it takes effect once however often it is called (one subscriber per event, one
 //! tick); on a client it does nothing; the world-end reset (LF_StaticReset -> Uninstall) removes
 //! it and a later world can install again.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StaffRelayInstall : LF_Test
 {
 	override string GetName()

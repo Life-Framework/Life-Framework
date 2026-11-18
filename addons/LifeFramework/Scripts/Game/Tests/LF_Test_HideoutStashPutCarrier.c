@@ -10,6 +10,7 @@
 //! a vehicle or from a body is refused; a living member's own inventory and the save restore still
 //! fill it. An item on the ground has no carrier, like a server spawn, so the stash takes a
 //! carrier-less item only inside LF_ServerInsertScope (restore, AddAmount seeding) (#2584).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HideoutStashPutCarrier : LF_Test
 {
 	protected static const ResourceName CAR = "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et";

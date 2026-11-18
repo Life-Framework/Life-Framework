@@ -11,7 +11,7 @@
 //!
 //! FIELDS. keepCash (cash stacks in the carried, civilian stash and duty snapshots),
 //! keepCarriedGear (every carried snapshot and civilian stash, cash included; the duty kits stay,
-//! #2547), keepSurvival (hunger, thirst), keepWanted (every character's wanted level; the posters
+//! #2547; the armory book's outstanding serials are cleared, cooldowns kept, #2621), keepSurvival (hunger, thirst), keepWanted (every character's wanted level; the posters
 //! are pruned after, LF_WantedReports.PruneCleared), keepJail (serving sentences),
 //! keepLicences (earned licences; the body keeps its starter ones). Fields the save does not hold today (position, vehicle fuel, damage and trunk, house contents) have no switch.
 //------------------------------------------------------------------------------------------------
@@ -34,6 +34,11 @@ class LF_PersistenceKeep
 			int dropped = LF_StorageSnapshot.ClearSlot(LF_StorageSnapshot.SLOT_CARRIED);
 			int stashes = LF_StorageSnapshot.ClearSlot(LF_DutyLocker.SLOT_CIVILIAN);
 			LF_Debug.Info(FEATURE, string.Format("keepCarriedGear off: %1 carried snapshot(s) reset to the starting loadout, %2 civilian stash(es) dropped", dropped, stashes));
+			// The wiped gear included issued kits: the armory book hands their serials back (#2621).
+			// A kit in a kept slot (the police duty locker) still exists, so its serials stay out.
+			// The issue cooldown stays as saved.
+			int serials = LF_ArmoryKits.ClearAllOutstanding(KeptSerials());
+			LF_Debug.Info(FEATURE, string.Format("keepCarriedGear off: %1 outstanding armory serial(s) cleared, issue cooldowns kept", serials));
 			reset++;
 		}
 
@@ -91,8 +96,27 @@ class LF_PersistenceKeep
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Strips the cash stacks from every slot a player can carry back: carried, the civilian stash and
-	//! both duty slots. A duty slot is not cleared, only its cash goes.
+	//! Serials of every item still in a stored snapshot (called after the carried and civilian slots
+	//! are dropped, so these are the guns the wipe kept).
+	protected static set<string> KeptSerials()
+	{
+		set<string> serials = new set<string>();
+		array<ref LF_StorageSnapshotRecord> records = LF_StorageSnapshot.ExportAll();
+		foreach (LF_StorageSnapshotRecord record : records)
+		{
+			foreach (LF_StorageItemRecord item : record.m_aItems)
+			{
+				if (item && !item.m_sSerial.IsEmpty())
+					serials.Insert(item.m_sSerial);
+			}
+		}
+
+		return serials;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Strips the cash stacks from every slot a player can carry back: carried, the civilian stash,
+	//! both duty slots and car cargo (#2809). A duty slot is not cleared, only its cash goes.
 	//! \param[in] dutyOnly True when the carried and civilian slots were already dropped.
 	//! \return The total cash removed.
 	protected static int StripCash(bool dutyOnly)
@@ -113,6 +137,8 @@ class LF_PersistenceKeep
 
 		cash += LF_StorageSnapshot.StripPrefab(LF_DutyLocker.SLOT_POLICE, cashPrefab);
 		cash += LF_StorageSnapshot.StripPrefab(LF_DutyLocker.SLOT_MEDIC, cashPrefab);
+		// A car's saved cargo (#2809) is not gear a wipe drops, but its cash is cash.
+		cash += LF_StorageSnapshot.StripPrefab(LF_VehicleOwnership.SLOT_CARGO, cashPrefab);
 		return cash;
 	}
 }

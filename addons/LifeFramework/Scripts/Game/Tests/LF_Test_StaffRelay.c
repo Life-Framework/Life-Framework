@@ -3,6 +3,7 @@
 //! moderation/staff-relay (#1284): one admin action and one report flag, each published on the bus,
 //! reach the staff webhook as two lines once their windows end; ten flags inside one window give
 //! one batched line; nothing is sent before the window ends. A captured sender stands in for the POST.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_StaffRelay : LF_Test
 {
 	override string GetName()

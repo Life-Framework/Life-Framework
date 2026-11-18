@@ -5,6 +5,7 @@
 //! found by component through LF_Places, never by entity name. The four waypoints come back in their
 //! order though the layer lists them out of order, the two spawn markers likewise, the target resolves
 //! by scene id, and an unknown or empty scene finds nothing.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventWaypoints : LF_Test
 {
 	static const string SCENE = "grid_event_scene";

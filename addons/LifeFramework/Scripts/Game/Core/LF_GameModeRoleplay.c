@@ -93,8 +93,12 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_ConvictionRecord.EnsureSubscribed();
 		// The record board keeps each character's best race time per course (server only, #1925).
 		LF_RaceRecords.EnsureSubscribed();
+		// The war notice board keeps each ended war for an hour (server only, #2677).
+		LF_OrgWarBoard.Install();
 		// The serial book stamps every tool the fence sells (server only).
 		LF_FenceSerials.EnsureSubscribed();
+		// Standing moves on jobs, arrests, statements, fence and chop shop events (server only, #2697).
+		LF_ReputationSubscriber.EnsureSubscribed();
 		// The wanted board's posters rebuild on a crime, a wanted level, an identification (server only).
 		LF_WantedPosters.Install();
 		// The case board rebuilds for on-duty officers on the same events (server only, #148).
@@ -107,6 +111,10 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_PoliceCallPay.Install();
 		// A playtest mission remembers where its vehicles stand, for the world reset (server only).
 		LF_WorldReset.Start();
+		// Organization wars lapse and end on time, an emptied org forfeits, the island is told (server only, #2669).
+		LF_OrgWarSweep.Start();
+		// Abandoned owned cars are towed to the impound lot (server only, #2657).
+		LF_VehicleTow.Start();
 	}
 
 	//------------------------------------------------------------------------------------------------

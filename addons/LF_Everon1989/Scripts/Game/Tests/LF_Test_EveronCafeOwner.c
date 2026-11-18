@@ -5,6 +5,7 @@
 //! Every line has a caption key that resolves, a sound event and a length with a mouth envelope; every reply
 //! has its text; the conversation is playable and ends. The dialogue is pack content, voiced with ElevenLabs
 //! (voice Mariva Viva Muse, tools/assets/dialogue/cafe_owner).
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronCafeOwner : LF_Test
 {
 	static const ResourceName CAFE_OWNER = "{8A8B0025C1E0037F}Configs/Dialogue/LF_Dialogue_CafeOwner.conf";

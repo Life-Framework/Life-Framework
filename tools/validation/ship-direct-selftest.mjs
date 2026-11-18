@@ -85,5 +85,19 @@ function fakes(over = {}) {
   check(/--auto", "--merge"/.test(cli.slice(cli.indexOf("async function shipDirectCmd"))), "cli: auto-merge --merge");
 }
 
+// 7. shipMergeBase: a generated-only conflict is healed, a human conflict throws with the files named.
+{
+  const logs = [];
+  const healed = lib.shipMergeBase("w", "main", () => ({ status: "healed", resolved: ["addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c"] }), (l) => logs.push(l));
+  check(healed.status === "healed" && /regenerated .*LF_TestRegistrations/.test(logs.join(" ")), "shipMergeBase: registry conflict healed, not failed");
+  let msg = "";
+  try { lib.shipMergeBase("w", "main", () => ({ status: "needs-human", reason: "conflicts outside generated and driver-merged files", conflicted: ["a.c"] })); } catch (e) { msg = e.message; }
+  check(/conflicts in: a.c/.test(msg), "shipMergeBase: human conflict throws and names the file");
+  const cli = readFileSync(new URL("../cli.mjs", import.meta.url), "utf8");
+  const direct = cli.slice(cli.indexOf("async function shipDirectCmd"));
+  check(direct.includes("shipMergeBase(wtRoot, base, healMergeSync"), "cli: ship merges main through healMerge, not a plain git merge");
+  check(cli.includes(`argValue(flags, "--commit")`), "cli: wt ship --commit commits a dirty worktree");
+}
+
 if (failed) process.exit(1);
 console.log("PASS  ship-direct selftest");

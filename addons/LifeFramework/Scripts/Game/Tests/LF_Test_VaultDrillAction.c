@@ -3,6 +3,7 @@
 //! The vault door offers the drill while it is held: on the annex vault the rob action is listed,
 //! reads "Drill the vault door" with the drill in the hands and passes its gate; with the drill
 //! only in the pack it reads the vault's rob name and the gate asks to hold the drill.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VaultDrillAction : LF_Test
 {
 	override string GetName()
@@ -52,5 +53,7 @@ class LF_Test_VaultDrillAction : LF_Test
 
 		ctx.True(LF_BankRobAction.NameFor(vault, robber) == "#LF-Bank_Drill", "drill in the hands: Drill the vault door");
 		ctx.True(LF_Bank.GateReason(vault.GetVaultId(), uid, robber) == "", "drill in the hands: the gate passes");
+
+		LF_TestVaultDrillFixture.Release(robber);
 	}
 }

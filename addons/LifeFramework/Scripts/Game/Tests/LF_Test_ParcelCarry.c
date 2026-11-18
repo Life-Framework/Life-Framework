@@ -4,6 +4,7 @@
 // tier: WORLD
 //! A carried parcel is kept in the hands of a living carrier; a downed or dead one lets go.
 //! A dropped parcel (not in any slot) is told apart from a carried one.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ParcelCarry : LF_Test
 {
 	override string GetName()

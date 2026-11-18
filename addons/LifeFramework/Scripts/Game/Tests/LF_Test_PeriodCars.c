@@ -3,6 +3,7 @@
 //! The free 1.9 period cars (#981): the Dana 2101 and the Sputnik T601 are on the car lot with a
 //! configured price, a locked child that loads, and no Rally DLC prefab. A bought Dana spawns locked,
 //! with a plate and a key, like every other car on the lot.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PeriodCars : LF_Test
 {
 	override string GetName()

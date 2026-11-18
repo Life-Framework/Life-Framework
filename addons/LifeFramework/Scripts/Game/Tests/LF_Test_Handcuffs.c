@@ -4,6 +4,7 @@
 //! restraint recognises, the worn model resolves, and the cuffed flag on a character disables its
 //! weapon controls on the owner and gives them back when it clears. Who may cuff is
 //! police/restraint-rules; the two-player cuff and release is the session proof `cuffs-proof`.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Handcuffs : LF_Test
 {
 	static const ResourceName CUFFS_PREFAB = "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et";

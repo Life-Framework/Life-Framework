@@ -14,7 +14,7 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { writeFileAtomic } from "./atomic-file.mjs";
 import { dirname, join } from "node:path";
-import { readTown, testNames, withoutTown } from "./test-world.mjs";
+import { readTestInfo, readTown, testNames, withoutTown } from "./test-world.mjs";
 
 export const MAX_AUTO_SHARDS = 4;
 // A slice pays its own server boot, run folder and sync (measured 2026-11-14: 14 s on this PC, 30+ s on a
@@ -22,25 +22,21 @@ export const MAX_AUTO_SHARDS = 4;
 export const MIN_SHARD_SECONDS = 15;
 // Seconds per test when there is no history yet (measured, see above).
 export const DEFAULT_WEIGHT = { LOGIC: 0.003, WORLD: 0.015, PERSISTENCE: 0.01, PERF: 8 };
-const REGISTRY = ["addons", "LifeFramework", "Scripts", "Game", "Tests", "LF_TestRegistrations.generated.c"];
+// ---------------------------------------------------------------- the suite and history
 
-// ---------------------------------------------------------------- registry and history
+// [{ cls, tier }] of the core tests in run order (class name), from their [LF_TestInfo] lines (#2610).
+// There is no registry file: the attribute in each test's own file is the only source.
+const coreTests = (root) => readTestInfo(root).filter((t) => !t.pack).map(({ cls, tier }) => ({ cls, tier }));
 
-// [{ cls, tier }] in registration order, from the generated registry file.
-export function parseRegistry(text) {
-  return [...String(text).matchAll(/new (LF_Test_\w+)\(\),\s*LF_TestTier\.(\w+)/g)].map((m) => ({ cls: m[1], tier: m[2] }));
-}
-
-// Every registered test but the PERF tier, the town tests included: `wt e2e` needs them (tools/lib/e2e-legs.mjs).
+// Every core test but the PERF tier, the town tests included: `wt e2e` needs them (tools/lib/e2e-legs.mjs).
 export function readAllRegistry(root) {
-  return parseRegistry(readFileSync(join(root, ...REGISTRY), "utf8")).filter((t) => t.tier !== "PERF");
+  return coreTests(root).filter((t) => t.tier !== "PERF");
 }
 
-// The tests a `--tier all` run executes: the PERF tier runs only under `--tier perf`, so it is not in a shard plan or a timing history.
+// The core tests a `--tier all` run executes: the PERF tier runs only under `--tier perf`, so it is not in a shard plan or a timing history.
 // The town tests (tools/test/town-tests.json) run only under `test --town`, so no shard plan, gate or timing history holds them (#1895).
 export function readRegistry(root) {
-  const all = parseRegistry(readFileSync(join(root, ...REGISTRY), "utf8")).filter((t) => t.tier !== "PERF");
-  return withoutTown(all, { town: readTown(root), names: testNames(root) });
+  return withoutTown(readAllRegistry(root), { town: readTown(root), names: testNames(root) });
 }
 
 // Seconds per test from one console.log: the gap between a test's START line and the next one (or the
@@ -158,26 +154,28 @@ export function parseShardOutput(text) {
   for (const raw of String(text).split(/\r?\n/)) {
     const line = raw.replace(/^\d+:\d+:\d+(?:\.\d+)?\s+\w+\s*:\s*/, "");
     const s = /\[LFTEST\] SUMMARY tier=\w+ passed=(\d+) failed=(\d+) total=(\d+)(?: skipped=(\d+))?/.exec(line);
+    // One SUMMARY per leg, summed: a slice can boot more than one (GridWorld and a DebugWorld pin). #2789: a
+    // slice's own pack leg printed the last SUMMARY (19) and was read as the whole slice of 879.
     if (s) {
-      out.passed = +s[1];
-      out.failed = +s[2];
-      out.total = +s[3];
-      out.skipped = s[4] ? +s[4] : 0;
+      out.passed += +s[1];
+      out.failed += +s[2];
+      out.total += +s[3];
+      out.skipped += s[4] ? +s[4] : 0;
       out.summary = true;
       cur = null;
       continue;
     }
-    // A slice the pass cache answered boots nothing and prints no [LFTEST] SUMMARY, only this line (a re-queued gate re-runs identical inputs).
+    // A leg the pass cache answered boots nothing and prints no [LFTEST] SUMMARY, only this line (a re-queued gate re-runs identical inputs).
     const c = /^test: CACHED pass\b.*\((\d+)\/(\d+) passed, tier=/.exec(line.trim());
     if (c) {
-      out.passed = +c[1];
-      out.total = +c[2];
-      out.failed = out.total - out.passed;
+      out.passed += +c[1];
+      out.total += +c[2];
+      out.failed += +c[2] - +c[1];
       out.summary = true;
       continue;
     }
     const t = /test-e2e: SUMMARY .*\((\d+) s\)/.exec(line);
-    if (t) out.seconds = +t[1];
+    if (t) out.seconds = (out.seconds ?? 0) + +t[1];
     const w = /^pool: \w+(?: \w+)* runs on (.+?)(?:,| \()/.exec(line.trim());
     if (w) out.where = w[1].replace(/^this PC.*/, "this PC");
     const f = /\[LFTEST\] FAIL (.*)$/.exec(line);

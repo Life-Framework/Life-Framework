@@ -2,6 +2,7 @@
 // [LFTEST]   - enter applies upward velocity (expected 0, got 12)
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JumpPad : LF_Test
 {
 	override string GetName()

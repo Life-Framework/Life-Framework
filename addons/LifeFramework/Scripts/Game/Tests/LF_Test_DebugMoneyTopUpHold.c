@@ -2,6 +2,7 @@
 // tier: LOGIC
 //! #1855: a cash amount `resetplayer <cash>` set holds. The 60 s playtest top-up tick refilled $750 to
 //! 20,000 between a fence buy and sell, so the sale read as $20,100.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DebugMoneyTopUpHold : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

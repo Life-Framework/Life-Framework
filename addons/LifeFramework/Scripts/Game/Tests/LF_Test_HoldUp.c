@@ -3,6 +3,7 @@
 // tier: WORLD
 //! incident/holdup: one hold-up publishes one intent that the incident log records (actor, target,
 //! position, zone); out of range, no weapon, and the cooldown are refused and record nothing.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HoldUp : LF_Test
 {
 	override string GetName()

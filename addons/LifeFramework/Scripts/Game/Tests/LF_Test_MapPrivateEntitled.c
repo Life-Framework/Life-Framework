@@ -5,6 +5,7 @@
 //! not the hidden fence, not the police armoury, not an unheard discover place. A heard-of discover place, a
 //! fence the character met and, on duty, the armoury join the set; a public place is never part of it. Also
 //! the wire form, the duty mask that triggers a resend, and the server scan's grid.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MapPrivateEntitled : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

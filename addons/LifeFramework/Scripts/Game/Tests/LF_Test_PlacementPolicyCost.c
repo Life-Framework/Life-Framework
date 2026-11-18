@@ -4,7 +4,8 @@
 //! spot is VALID, exactly once. A paid set charges once; a refused one (malformed, on top of a set) charges
 //! nothing; a player who cannot pay is refused with the reason and keeps their cash; a set whose spawn fails
 //! gives the cost back; a refundable set refunds once to the payer on pick-up, and nothing to a bystander
-//! who picks it up. Cones on open GridWorld ground at the annex gate, like LF_Test_PlacementComposition.
+//! who picks it up. Cones on LF_Test_PlacementComposition.STAGE, clear ground away from the fixture spawn point (#2762).
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlacementPolicyCost : LF_Test
 {
 	protected static const ResourceName MISSING = "{0000000000002448}Prefabs/LF_Test/NoSuchPlacementPiece.et";
@@ -35,9 +36,9 @@ class LF_Test_PlacementPolicyCost : LF_Test
 		LF_PlacementCompositions.ResetStatics();
 		InstallTable();
 
-		vector gate = GateGround();
-		Stand(payer, gate, 0);
-		Stand(bystander, gate + "-1.5 0 0", 0);
+		vector stage = LF_Test_PlacementComposition.StageGround();
+		Stand(payer, stage, 0);
+		Stand(bystander, stage + "-1.5 0 0", 0);
 		int start = LF_MoneyUtils.GetCash(payer);
 		ctx.Equal(WALLET, LF_MoneyUtils.AddCash(payer, WALLET, "test"), "the payer carries their cash");
 		int full = start + WALLET;
@@ -106,7 +107,7 @@ class LF_Test_PlacementPolicyCost : LF_Test
 		LF_PlacementComposition broken = Cones(BROKEN);
 		broken.m_aPieces.Insert(LF_PlacementPiece.Create(MISSING, "0 0 1.5", 0, "-0.3 0.1 -0.3", "0.3 0.8 0.3"));
 		ctx.True(Confirm(payer, broken, spot) == null, "a set whose spawn fails is refused");
-		ctx.True(LF_PlacementCompositions.LastRefusal().IndexOf("spawn failed") != -1, "because the spawn failed: " + LF_PlacementCompositions.LastRefusal());
+		ctx.True(LF_PlacementCompositions.LastRefusal().IndexOf("spawn failed") != -1, "because the spawn failed: " + LF_PlacementCompositions.LastRefusal() + LF_Test_PlacementComposition.DebrisIfBad(LF_PlacementCompositions.LastRefusal().IndexOf("spawn failed") != -1, spot[3]));
 		ctx.Equal(full, LF_MoneyUtils.GetCash(payer), "the failed spawn gave the cost back");
 		ctx.Equal(0, LF_PlacementCost.Count(), "and remembers no charge");
 
@@ -114,7 +115,7 @@ class LF_Test_PlacementPolicyCost : LF_Test
 		LF_PlacedComposition placed = Confirm(payer, Cones(PAID), spot);
 		if (!placed)
 		{
-			ctx.Fail("the paid set was refused: " + LF_PlacementCompositions.LastRefusal());
+			ctx.Fail("the paid set was refused: " + LF_PlacementCompositions.LastRefusal() + LF_Test_PlacementComposition.DebrisIfBad(false, spot[3]));
 			return;
 		}
 
@@ -226,16 +227,6 @@ class LF_Test_PlacementPolicyCost : LF_Test
 		composition.AddPiece(LF_Test_PlacementComposition.CONE, "0 0 0");
 		composition.AddPiece(LF_Test_PlacementComposition.CONE, "1.5 0 0");
 		return composition;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected vector GateGround()
-	{
-		IEntity spawn = GetGame().GetWorld().FindEntityByName("Spawn_Grid_Gate");
-		if (spawn)
-			return spawn.GetOrigin();
-
-		return "74 0 108";
 	}
 
 	//------------------------------------------------------------------------------------------------

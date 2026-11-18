@@ -5,6 +5,7 @@
 //! #751 through the real save path ("heldground" payload). A held site comes back with its holder,
 //! hold seconds and points after the store is written and read, twice; a leased but unheld site
 //! writes no row and loads unheld. The "hideout" leases and locks are unchanged.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_HeldGroundRoundTrip : LF_Test
 {
 	protected static const string HELD_SITE = "held-ground-trip-held";

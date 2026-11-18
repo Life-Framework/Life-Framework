@@ -3,6 +3,7 @@
 //! Race runner (#1923): the entry fee leaves carried cash into the pot once, too few entrants
 //! refunds, a leaver forfeits, a finish pays the pot by the split, and a session end mid-race
 //! refunds everyone still in (the pot is session state). Bodies are fixture characters.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_RaceRunner : LF_Test
 {
 	protected static const string UID_A = "race-runner-a";

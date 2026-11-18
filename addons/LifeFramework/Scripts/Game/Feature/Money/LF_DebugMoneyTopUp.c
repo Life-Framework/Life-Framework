@@ -73,7 +73,7 @@ class LF_DebugMoneyTopUp
 	static int StartingBank(bool enabled, int normal, int target)
 	{
 		if (enabled)
-			return Math.Max(normal, target);
+			return LF_Utils.MaxInt(normal, target);
 		return normal;
 	}
 
@@ -107,11 +107,9 @@ class LF_DebugMoneyTopUp
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_DebugMoneyTopUp's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_DebugMoneyTopUp's statics (LF_StaticReset finds it by reflection).
 class LF_DebugMoneyTopUp_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_DebugMoneyTopUp_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_DebugMoneyTopUp";

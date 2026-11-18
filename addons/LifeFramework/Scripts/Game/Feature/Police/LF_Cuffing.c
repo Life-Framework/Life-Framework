@@ -543,11 +543,9 @@ modded class SCR_PlayerController
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Cuffing's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Cuffing's statics (LF_StaticReset finds it by reflection).
 class LF_Cuffing_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Cuffing_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Cuffing";

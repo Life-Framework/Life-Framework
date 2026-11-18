@@ -136,6 +136,9 @@ write fails) logs `LF_Debug.Error`, leaves `config.json` exactly as it was, and 
 layer, so every section runs on shipped values. The server always boots. The unit is the whole
 file, not a section: a step works on text, so a half-migrated document is never loaded.
 
+`StampVersion` never takes one `Substring` past 8191 chars (the engine cuts it silently); it
+joins pieces of 4000 (#2671, `docs/architecture/enforce-string-limits.md`).
+
 A migrated file is at the build's version, so the next boot finds nothing to do and writes no
 backup. A file with no `schemaVersion` reads as 1 and is not migrated.
 
@@ -329,6 +332,11 @@ schema, `/config` form and reference page list them. A `config.json` that names 
   configured mask, so a new organization gets it; a saved organization keeps its ranks. A
   `nameMin` above `nameMax` is refused (no name would be valid). The tunables are streamed; the
   rank defaults are not (the server builds an organization's ranks and replicates them).
+  `wars` is a nested object (`LF_OrgWarConfig`, #2667): `fee`, `answerSeconds`, `lengthSeconds`,
+  `cooldownSeconds`, `minMembers`, `warKillsAreMurder`, `tagWarKills`; the schema generator reads the
+  dotted `SECTION` "organizations.wars" as an object inside `organizations`.
+- `sites` (`LF_SitesConfig`, #2679): `rules` keyed by the hideout id a contested site guards (override model;
+  pack overlays too), `Configs/Sites/LF_Sites.conf` ships none. Server only, not streamed.
 - `persistence` (`LF_PersistenceConfig`, no `.conf`): `enableAutosave` and `autosaveInterval`.
   The shipped values are the `LF_PersistenceManagerComponent` attributes; `Resolve` starts from them,
   so a prefab edit still works. Read once when the timer is scheduled, so it needs a restart

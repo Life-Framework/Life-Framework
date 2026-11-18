@@ -3,6 +3,7 @@
 //! A late joiner gets the running event phases (#2106): a test event started by the shell is
 //! collected into the JIP pairs, a fresh board reads them, and holds the same id and phase. An idle
 //! event is not sent; odd trailing data is ignored.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_EventPhaseJip : LF_Test
 {
 	override string GetName()

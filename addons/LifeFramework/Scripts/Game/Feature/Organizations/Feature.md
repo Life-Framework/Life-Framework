@@ -37,13 +37,43 @@ processing upgrade are kept at the desk.
   demote and kick only go down it. `LF_OrgRankRole` fills `org_promote` / `org_demote`.
   The mask and order are saved in `orgranks` (save version 27); a version 1 record migrates on load.
 - `LF_OrgInvites` — session offers (not saved, 2 minute lapse);
-  `LF_OrgHideoutLease` — the yard lease.
+  `LF_OrgHideoutLease` — the yard lease (`Lease`; `Release` when a holder of the buy right gives it up, #2572).
 - `LF_OrgReplication` — the organization copy on each character for the offer side.
 - `LF_OrgInviteRole` — the `org_invite` handler. `LF_OrgLedger` — the page.
 - `LF_OrgMapMarks` — org map marks (#2240): members with `MANAGE_TERRITORY` place up to 20
   marks for the org, shared through `LF_MapShares` (ORG audience), saved in `orgmarks` (save
   version 44). Every membership change calls `LF_OrgMapMarks.RefreshCharacter` so the player's
   map gains or loses the marks at once (`docs/features/map.md`).
+- `LF_OrgWars` — the war record (#2666, M7 gang war W1): `LF_OrgWarRecord` moves DECLARED -> ACCEPTED ->
+  ENDED, or DECLARED -> LAPSED when the answer window passes. Server statics saved as payload `orgwars`
+  (save version 54, #2672): `ExportForSave(now)` writes open wars, closed ones still inside a pair
+  cooldown and always the newest war (so a war id is never reused after a restart); `ApplyAll` replaces the table, drops a row whose organization is gone (warn line) and never
+  ticks, so a deadline passed during downtime closes on the first sweep at the deadline. Keyed by org id,
+  all times unix seconds. `Declare`, `Accept`, `Tick`,
+  `End`, `IsAtWar`, `ActiveFor` take an `LF_OrgWarRules` value (declared in `LF_OrgWarConfig.c`, #2667: fee, window, length, cooldown, min
+  members, lapse cooldown). A refusal (self, unknown org, pending or at war with that org, pair
+  cooldown) logs `[LFDebug:OrgWars]` and returns a key. Each transition publishes `LF_OnOrgWarDeclared`,
+  `LF_OnOrgWarAccepted`, `LF_OnOrgWarEnded` (reason `time`, `lapsed`, `forfeit`) from
+  `LF_OrgWarsEvents.c`. A closed war starts the pair cooldown: ENDED the war cooldown, a LAPSED
+  declaration the shorter lapse cooldown (`lapseCooldownSeconds`, 1 h, #2769) so a fund cannot be drained by
+  re-declaring on a loop; both sides of the pair are held, and the record's `m_iCooldownSec` carries the
+  lapse value until `Accept` swaps in the war one. The shipped officer rung holds `DECLARE_WAR` (#2769), so
+  a lapse is not forced by an offline founder; an org's saved rank mask keeps what it saved. No RPC, UI or money here; rights and the fee are W3.
+- `LF_OrgWarDesk` — the war desk verbs (#2668, W3). `Declare(characterId, playerUid, targetOrgId)`: the rank
+  holds `DECLARE_WAR`, both orgs have the rules' member minimum, the fund covers the fee; the fee is
+  debited, then `LF_OrgWars.Declare`, and a record refusal (pending, cooldown) credits it back in the same
+  call. A paid fee publishes `LF_OnMoneyMoved` (source `org-war-fee`, no account side, so the ledger
+  skips it) and is not refunded on a lapse. `Answer(characterId, warId)`: a `DECLARE_WAR` holder of the
+  target accepts inside the window. Refusal keys map to `#LF-OrgWar_*` toasts (`RefusalText`).
+  `LF_OrgWarCharacter.c` holds `RpcAsk_LF_OrgWarDeclare` / `RpcAsk_LF_OrgWarAnswer` on the character with
+  the lease ask's guards (systems switch, PURCHASE bucket, desk range); no host branch. No UI (W7).
+- `LF_OrgWarBoard` — the war notice board (#2677, W9): a board kind `orgwars` (`LF_BoardProviders`, as the wanted board) on `Prefabs/Organizations/LF_OrgWarBoard.et`. A read lists declared, accepted and ended wars as notices in that order; ended and lapsed ones stay for 1 h (events `LF_OnOrgWarEnded`, memory only), open ones come from the war table. No new replication: one ask, one answer, per read.
+
+- `LF_OrgWarSweep` / `LF_OrgWarAnnounce` — the war clock and the island notice (#2669, W4). `LF_OrgWarSweep.Start()` (game mode, server)
+  calls `LF_OrgWars.Tick` every 30 s; `SweepAt(now)` is the same pass with the clock passed in. A subscriber on
+  `LF_OnOrganizationEmptied` calls `ForfeitOf`: every open war of that org ends with reason `forfeit`. `LF_OrgWarAnnounce`
+  turns `LF_OnOrgWarDeclared` / `Accepted` / `Ended` into one `NotifyAll` toast each plus a longer `NotifyPlayer` notice for
+  online members of both sides; texts are `#LF-OrgWarAnnounce_*` keys, neutral in core, worded by the pack.
 
 ## Iteration path
 
@@ -71,3 +101,4 @@ processing upgrade are kept at the desk.
   `Configs/Signs/LF_Signs.conf`. Nothing new persists: the register and the hideout lease already do.
 - **Proof:** `organizations/test-org-sign` (LOGIC), `organizations/test-org-sign-world` (WORLD),
   `node agent-box/session.mjs test-org-sign-proof`.
+- `LF_OrgWarKills` - war kills (#2670, W5). `LF_Murder` skips a kill between members of two organizations at war with `SKIP_ORG_WAR` (no murder, no wanted) unless `warKillsAreMurder` is on; the subscriber on `LF_OnPlayerKilled` files a `war_kill` incident when `tagWarKills` is on. Membership is by the account's active character. A war never lifts a safe zone.

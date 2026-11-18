@@ -12,6 +12,7 @@
 //! player never spawned. Every -noBackend run keeps one identity for the whole session, so this
 //! drives LF_PlayerIdentity.Resolve with the identity a listen host with the online service sees,
 //! at the times it sees it, and takes the result through the real save path.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_LateIdentity : LF_Test
 {
 	protected static const int HOST = 9701;

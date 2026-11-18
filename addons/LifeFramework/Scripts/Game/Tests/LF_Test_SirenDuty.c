@@ -3,6 +3,7 @@
 //------------------------------------------------------------------------------------------------
 // tier: LOGIC
 //! vehicles/siren-duty (#464): only an on-duty member of the vehicle's service runs the siren.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SirenDuty : LF_Test
 {
 	override string GetName()

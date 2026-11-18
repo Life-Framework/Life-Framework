@@ -67,11 +67,11 @@ class LF_MoneyUtils
 
 		int before;
 		if (dropOverflow)
-			before = Math.Max(GetCash(target), 0);
+			before = LF_Utils.MaxInt(GetCash(target), 0);
 
 		int added = LF_InventoryUtils.AddAmount(target, CashPrefab(), amount, dropOverflow);
 		if (dropOverflow)
-			LogDropped(target.GetOwner(), added, Math.Max(GetCash(target), 0) - before, reason);
+			LogDropped(target.GetOwner(), added, LF_Utils.MaxInt(GetCash(target), 0) - before, reason);
 
 		PublishMoved(target.GetOwner(), added, true, reason, counterpartyUid);
 		return added;
@@ -160,7 +160,7 @@ class LF_MoneyUtils
 		if (uid.IsEmpty())
 			return;
 
-		int balance = Math.Max(GetCash(owner), 0);
+		int balance = LF_Utils.MaxInt(GetCash(owner), 0);
 		LF_EventBus.Publish(LF_OnMoneyMoved.CreateFull(uid, LF_Ledger.ACCOUNT_CASH, moved, credit, reason, balance, counterpartyUid));
 	}
 	
@@ -273,11 +273,9 @@ class LF_MoneyUtils
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_MoneyUtils' statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_MoneyUtils' statics (LF_StaticReset finds it by reflection).
 class LF_MoneyUtils_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_MoneyUtils_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_MoneyUtils";

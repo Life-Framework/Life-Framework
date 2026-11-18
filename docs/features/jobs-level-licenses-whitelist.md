@@ -118,6 +118,13 @@
   pacing), licence purchase (`LF_LicenseGate`: the licence family's job at the catalog level,
   or a `jobs.licenceGates` row), chain steps and quests (`m_sLevelJob` / `m_sJob`, CIVILIAN by
   default), lockpicking skill (CIVILIAN).
+- ✅ (2026-11-17, #2700) **A job-level gate refuses in words, never a number.**
+  `LF_JobLevelWords.Refusal(job, have, need)` returns a `#LF-Level_Near_<Family>` key one level
+  short and `#LF-Level_Far_<Family>` further (Farmer, Miner, Lumberjack, Medic, Police, Delivery,
+  `Any` for other jobs; "Do more runs first" for DELIVERY). `LF_ChainGate.LevelKey/ReasonKey` and
+  `LF_LicenseGate.RefusalKey` take their keys from it, and a refused paid licence unlock toasts
+  the words. Test `level/job-level-words`. Job sign-up and run-start refusals (`LF_JobAction`)
+  and the chain station's `RefusalKey` still show the old line until #R4 / a follow-up wire them.
 - ✅ **Saved as the `joblevels` payload (save version 28)**: one `LF_JobXpRow` per (character,
   job). A version 7-27 save migrates: the single level goes onto CIVILIAN and the delivery
   career onto DELIVERY at the same levels; every other job starts at 0. Load is idempotent.
@@ -206,9 +213,16 @@
   uids are counted and logged, not migrated. The legacy file is only read; a line in
   `$profile:LifeFramework/whitelist-legacy-migrated.txt`, written after the roster saved, stops a
   later start re-adding a uid an admin removed. An unreadable roster or failed save leaves the
-  file unmarked, so the next start retries. `AddNewUuidToFile` and `RemoveUUIDFromFile` no longer
-  write the legacy file. To re-run it after restoring an older roster, delete the marker
+  file unmarked, so the next start retries. Nothing writes the legacy file (`AddNewUuidToFile` and
+  `RemoveUUIDFromFile` are deleted). To re-run it after restoring an older roster, delete the marker
   (`docs/owner/rented-host.md` "Backups").
+- ✅ **A migrated legacy file that still changes warns once per start** (2026-11-17, WORLD
+  `whitelist/legacy-ignored-count`, `whitelist/legacy-failure-paths`, #2607): when a POLICE legacy
+  file is already marked, `Migrate` counts its uids that are not on the roster
+  (`LF_WhitelistLegacyMigration.CountIgnored`: added to the file after the move, or removed from the
+  roster since) and logs `LF_Debug.Warn` `<n> uids in the legacy POLICE file are not on the roster and
+  are ignored`. An unreadable roster (adds nothing, no marker) and a failed roster save (no marker)
+  are tested, each followed by the next start migrating in full.
 
 ### `AdminChatChannel` — `Feature/Chat/AdminChatChannel.c`
 - ✅ **Server re-checks the admin role** (verified 2026-11-07):
@@ -291,3 +305,5 @@
     character, cash and cargo at the placed drop). Manual: a taxi fare with a second player is in the PR.
 - **Map marks (#2239):** a fare destination and a delivery stop become a shared mark plus the waypoint for their player, cleared when the run completes (`Feature/Jobs/LF_JobMapMarks.c`, `docs/features/map.md`; test `jobs/job-map-marks`). The marks are driven by `OnFareAccepted`/`OnStop`; nothing in the run code calls them until fares and stops exist.
 - 🧪 (2026-11-17) **A body the save restored gets its saved licences (#2413).** A player who takes control of a living body no spawn made (`LF_SpawnLogic.CreateCharacter`: "already controls a character") never went through `BindAccountComponents`, so the body held only its starter licences and `LF_LicenceDesk.Holds` charged a permit holder again. `LF_SpawnLogic.AdoptLivingBody` now runs `LF_Progression.ApplyToCharacter` on that body (idempotent; a missing body or key logs `[LFDebug:Spawn]` and applies nothing). Test `licence/restored-body` (WORLD). Manual: grant a permit, restart the server, rejoin: the licence desk and the gun counter see the permit and charge nothing.
+- 🧪 (2026-11-17) **A taxi stand is a place (#2691).** `Prefabs/Jobs/LF_TaxiStand.et` is a pole sign carrying `LF_TaxiStandComponent` (`Feature/Jobs/LF_TaxiStandComponent.c`), which registers in `LF_Places` as kind `taxi` (`LF_TaxiStand.PLACE_KIND`; place id = the component's id, else the entity name, else `taxi_<entity id>`). `LF_TaxiStandComponent.Nearest(pos)` returns the registered stand closest on the ground plane (or null), and `GetLabel()` names it for a fare and the map: the prefab's label, else the nearest map location (`LF_NamedPlaces`), else the place id. The core holds no coordinates or place names. Test `jobs/taxi-stand-places` (WORLD). Grid cell `taxi-stand` (`tools\cli look grid:taxi-stand`). No fare or map row reads the kind yet (#2690, #2239).
+- 🧪 (2026-11-17) **A taxi fare is priced by the distance driven (#2690).** A taxi drop-off pays `LF_TaxiFare.Price(pickup, dropoff)` instead of the flat 80: the pickup is the run's server-recorded start (`m_vRunStart`), the distance is the straight line to the drop site. A drop within `shortHopMetres` (100) of the pickup pays `floor` (80); beyond it the fare is `floor` plus `ratePerMetre` (0.04) per metre, never above `cap` (300), so Saint-Philippe to Montignac (3.7 km) pays about 228. The numbers are `Configs/Jobs/LF_TaxiFares.conf` with the owner's `taxiFares` section over it (`floor`, `ratePerMetre`, `cap`, `shortHopMetres`; its own section, not under `jobs`); a zero or negative number, or a cap below the floor, logs `LF_Debug.Error` and prices with the shipped numbers. `LF_CivilianJob.Dropoff` passes the fare to `CompleteRun`; the ledger reason and the XP are unchanged, and `CompleteRun` with no fare still pays the old flat `PAY_TAXI`. Test `jobs/taxi-fare` (LOGIC).

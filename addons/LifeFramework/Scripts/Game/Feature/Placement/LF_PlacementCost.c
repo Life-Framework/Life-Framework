@@ -170,11 +170,11 @@ class LF_PlacementCost
 		if (terms.m_eCost == LF_EPlacementCost.CASH)
 		{
 			toastKey = TOAST_CASH;
-			return string.Format("cannot pay $%1 for %2 (carries $%3)", terms.m_iAmount, terms.m_sKind, Math.Max(have, 0));
+			return string.Format("cannot pay $%1 for %2 (carries $%3)", terms.m_iAmount, terms.m_sKind, LF_Utils.MaxInt(have, 0));
 		}
 
 		toastKey = TOAST_ITEM;
-		return string.Format("needs %1 x %2 for %3 (carries %4)", terms.m_iAmount, LF_PlacementPolicy.KindOfPrefab(terms.m_sItem), terms.m_sKind, Math.Max(have, 0));
+		return string.Format("needs %1 x %2 for %3 (carries %4)", terms.m_iAmount, LF_PlacementPolicy.KindOfPrefab(terms.m_sItem), terms.m_sKind, LF_Utils.MaxInt(have, 0));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -375,11 +375,9 @@ class LF_PlacementCost
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_PlacementCost's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_PlacementCost's statics (LF_StaticReset finds it by reflection).
 class LF_PlacementCost_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_PlacementCost_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_PlacementCost";

@@ -265,11 +265,9 @@ class LF_ScannerSubscriber : LF_EventSubscriber
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_ScannerComponent's registry (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_ScannerComponent's registry (LF_StaticReset finds it by reflection).
 class LF_ScannerComponent_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_ScannerComponent_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_ScannerComponent";

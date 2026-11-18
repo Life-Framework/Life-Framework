@@ -3,6 +3,7 @@
 //! Handbook screen (#1773): the parts the screen is built from, with no widgets. The list names its
 //! rows by place so a pick maps back to a page, the second page's title is the one its part carries,
 //! and the empty handbook says so instead of showing an empty list.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HandbookScreen : LF_Test
 {
 	override string GetName()

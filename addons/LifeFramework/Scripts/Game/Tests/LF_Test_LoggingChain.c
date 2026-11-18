@@ -3,6 +3,7 @@
 // `tools\cli test --tier all`; the "tree tool list maps the axe" assertion
 // fails. Proven red by that perturbation, then reverted.
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LoggingChain : LF_Test
 {
 	protected static const ResourceName TREE = "{391791B1CAE33AFE}Prefabs/Resources/WoodCutting/Pinus_Sylvestris/CuttableTree_Pinus_Sylvestris_2f.et";

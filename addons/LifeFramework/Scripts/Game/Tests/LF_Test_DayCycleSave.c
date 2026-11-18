@@ -13,6 +13,7 @@
 //! Across a restart (`tools\cli wt e2e`): the save boot sets the clock to 03:00 on a 24 h day, so the
 //! shutdown save carries it. The reload boot (a real -loadSessionSave) finds the clock near 03:00 and
 //! an accelerated Apply with another startHour leaves it there.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_DayCycleSave : LF_Test
 {
 	protected static const float SAVED_HOUR = 3;

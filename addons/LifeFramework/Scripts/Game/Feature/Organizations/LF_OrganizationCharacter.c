@@ -121,6 +121,19 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	void LF_AskOrganizationLeaseRelease()
+	{
+		// A listen host is the server: its own RPC never reaches its handler, so call it directly.
+		if (Replication.IsServer())
+		{
+			RpcAsk_LF_OrganizationLeaseRelease();
+			return;
+		}
+
+		Rpc(RpcAsk_LF_OrganizationLeaseRelease);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_LF_OrganizationView()
 	{
@@ -233,6 +246,31 @@ modded class SCR_ChimeraCharacter
 			string characterId = LF_OrganizationPlayer.CharacterId(this);
 			if (!characterId.IsEmpty() && LF_OrgHideoutLease.Lease(characterId, LF_Hideout.OrgHideoutId()))
 				notice = "#LF-Org_Leased";
+		}
+
+		LF_PushOrganizationView(notice);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a holder of BUY_UPGRADE gives the hideout lease back at the desk (#2572). A refusal
+	//! (no right, not our lease, away from the desk) toasts the player and logs a warning.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_OrganizationLeaseRelease()
+	{
+		if (LF_RefuseOrganizationsOff("lease release"))
+			return;
+
+		if (!LF_OrgLedgerGate.AdmitCharacter(this, "lease release"))
+			return;
+
+		string notice = "#LF-Org_LeaseReleaseRefused";
+		if (!LF_RefuseAwayFromOrganizationDesk("lease release", 0))
+		{
+			string characterId = LF_OrganizationPlayer.CharacterId(this);
+			if (!characterId.IsEmpty() && LF_OrgHideoutLease.Release(characterId, LF_Hideout.OrgHideoutId()))
+				notice = "#LF-Org_LeaseGivenUp";
+			else
+				LF_NotificationManagerComponent.NotifyPlayer(LF_PlayerInteraction.PlayerIdOf(this), "#LF-Org_Title", "#LF-Org_LeaseReleaseRefused", 4.0, LF_ENotificationType.WARNING);
 		}
 
 		LF_PushOrganizationView(notice);

@@ -3,6 +3,7 @@
 //! A world end resets the store-read flags (LF_PersistenceComponentSerializer_StaticResetHook). A
 //! stale "store loaded" from the last world hid a continued save that never reached the store in the
 //! next one (an in-process scenario restart), so autosave overwrote the save on disk.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PersistStoreStaticReset : LF_Test
 {
 	//------------------------------------------------------------------------------------------------

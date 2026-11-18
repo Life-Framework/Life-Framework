@@ -10,6 +10,7 @@
 //! the clerk refuses a second card while the valid one is carried, refuses without the fee, and
 //! otherwise takes the fee, prints a new card with a new number and voids the old one; a spawn
 //! hands out no fresh card for a lost one; the clerk's conversation hooks exist.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PhotoIdCardWorld : LF_Test
 {
 	protected static const string HOLDER = "identity-world-holder";

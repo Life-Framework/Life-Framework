@@ -4,6 +4,7 @@
 //! The owner's "jobs" section (#749, D8): tracks, XP awards and licence gates merge per key over the
 //! shipped records, numbers outside the schema's range are refused, a threshold list with a bad
 //! element is refused whole, and whole numbers read as fractions where a float is expected.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobLevelsConfig : LF_Test
 {
 	override string GetName()

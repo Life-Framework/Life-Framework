@@ -3983,6 +3983,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the attendant"
      Comment "Action on the fuel station attendant: opens the conversation."
     }
+    CustomStringTableItem "{E5E20ACD90437F84}" {
+     Id "LF-Furniture_Chair_Name"
+     Target_en_us "Chair"
+     Comment "Inventory name of the carried chair a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{100E11EBB38DD2B9}" {
+     Id "LF-Furniture_Lamp_Name"
+     Target_en_us "Lamp"
+     Comment "Inventory name of the carried lamp a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{272F0629B6A6B098}" {
+     Id "LF-Furniture_Shelf_Name"
+     Target_en_us "Shelf"
+     Comment "Inventory name of the carried shelf a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{CD0C9FCE1E77121B}" {
+     Id "LF-Furniture_Table_Name"
+     Target_en_us "Table"
+     Comment "Inventory name of the carried table a player places in their own house (#2654)."
+    }
     CustomStringTableItem "{3CEA2232FA244C93}" {
      Id "LF-Garage_Blue"
      Target_en_us "Blue"
@@ -3997,6 +4017,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Garage_BuyHint"
      Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
      Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
+    }
+    CustomStringTableItem "{C97AAED75F4A4D52}" {
+     Id "LF-Garage_BuySlot"
+     Target_en_us "Buy a garage slot"
+     Comment "Garage desk action and toast title (#2656): buy one more garage slot with carried cash."
     }
     CustomStringTableItem "{58906F560E794544}" {
      Id "LF-Garage_EmptyCargo"
@@ -4108,6 +4133,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 is waiting on the pad in front of the garage."
      Comment "Retrieve succeeded. %1 is the plate"
     }
+    CustomStringTableItem "{51F194E2FE80AEC0}" {
+     Id "LF-Garage_SlotBought"
+     Target_en_us "Slot bought. Your garage now holds %1 vehicles."
+     Comment "Garage slot bought (#2656). %1 is the new slot cap."
+    }
+    CustomStringTableItem "{C1E5F8750E4D23B8}" {
+     Id "LF-Garage_SlotFailed"
+     Target_en_us "The slot could not be bought. Nothing was taken."
+     Comment "Garage slot refused (#2656): the cash could not be taken in full and was handed back."
+    }
+    CustomStringTableItem "{015CF51C90ECA5D4}" {
+     Id "LF-Garage_SlotNotAlive"
+     Target_en_us "You cannot buy a slot right now."
+     Comment "Garage slot refused (#2656): the buyer is dead or downed."
+    }
+    CustomStringTableItem "{AC1FD7B3F3DBE446}" {
+     Id "LF-Garage_SlotShortCash"
+     Target_en_us "The next slot costs {currency:sym}%1 in cash. You do not carry enough."
+     Comment "Garage slot refused (#2656): carried cash is short. %1 is the price."
+    }
+    CustomStringTableItem "{4F4F48DC707A84B4}" {
+     Id "LF-Garage_SlotsFull"
+     Target_en_us "Your garage is full: %1 vehicles at most. Retrieve one before storing another."
+     Comment "Garage store refused (#2655): the owner's stored vehicles fill every garage slot. %1 is the cap."
+    }
+    CustomStringTableItem "{E61274B7B23F4466}" {
+     Id "LF-Garage_SlotsMax"
+     Target_en_us "Your garage is at the most it can hold: %1 slots."
+     Comment "Garage slot refused (#2656): the character holds the max. %1 is the max."
+    }
     CustomStringTableItem "{A1C4E87B62D94F05}" {
      Id "LF-Garage_StepOut"
      Target_en_us "Step out of the vehicle first"
@@ -4152,6 +4207,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Gather_EmptyWait"
      Target_en_us "Picked clean. More in about %1 min."
      Comment "Toast when a gather spot is out of stock. %1 = minutes until the next one grows back (#2409)"
+    }
+    CustomStringTableItem "{8D3B6F20A4C17E95}" {
+     Id "LF-Gather_NeedPickaxe"
+     Target_en_us "You need a pickaxe to mine this"
+     Comment "Gather refused: a rock, no pickaxe held (#2706)"
+    }
+    CustomStringTableItem "{5C1E0A7D9B2F4E61}" {
+     Id "LF-Gather_NeedShovel"
+     Target_en_us "You need a shovel to dig here"
+     Comment "Gather refused: a digging spot, no shovel held (#2706)"
     }
     CustomStringTableItem "{44A28FD4E95EA8C3}" {
      Id "LF-Gather_RequiresItem"
@@ -5441,6 +5506,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Sin bonos activos"
      Comment "Character standing summary when there are no bonuses"
     }
+    CustomStringTableItem "{502AD651193AD12E}" {
+     Id "LF-Level_Far_Any"
+     Target_en_us "You are not experienced enough for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{3AF129B888C991B7}" {
+     Id "LF-Level_Far_Delivery"
+     Target_en_us "Do more runs first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{99637675CD655B38}" {
+     Id "LF-Level_Far_Farmer"
+     Target_en_us "You have not worked the land enough for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{1A467AE1429D59EA}" {
+     Id "LF-Level_Far_Lumberjack"
+     Target_en_us "You have not spent enough time in the forest for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{F468C3116863E4C2}" {
+     Id "LF-Level_Far_Medic"
+     Target_en_us "You are not experienced enough in medicine for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{B9DCBE4AEED66191}" {
+     Id "LF-Level_Far_Miner"
+     Target_en_us "You have not spent enough time mining for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{41FE6820DDF1221C}" {
+     Id "LF-Level_Far_Police"
+     Target_en_us "You are not experienced enough in the force for this yet."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{21C91A1344B91226}" {
+     Id "LF-Level_Near_Any"
+     Target_en_us "You are almost experienced enough for this. A little more practice first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{83D47B50E56450B1}" {
+     Id "LF-Level_Near_Delivery"
+     Target_en_us "Nearly there. A few more runs first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{96C6CD7CEE27AED3}" {
+     Id "LF-Level_Near_Farmer"
+     Target_en_us "Nearly there. A little more work in the fields first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{0001301D204BDAFA}" {
+     Id "LF-Level_Near_Lumberjack"
+     Target_en_us "Nearly there. A few more days felling timber first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{CE9DF1FD414FC63E}" {
+     Id "LF-Level_Near_Medic"
+     Target_en_us "Nearly there. A little more practice with patients first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{601CF8826758D265}" {
+     Id "LF-Level_Near_Miner"
+     Target_en_us "Nearly there. A few more shifts digging first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{01E474CC353E1714}" {
+     Id "LF-Level_Near_Police"
+     Target_en_us "Nearly there. A little more time on duty first."
+     Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
     CustomStringTableItem "{2024E806595907BF}" {
      Id "LF-Level_Promoted"
      Target_en_us "Your record now reads grade %1. Your supervisor has put you down for further training."
@@ -5894,6 +6029,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Search powers"
      Target_es_es "Facultad de registro"
      Comment "Licence name: authority to search"
+    }
+    CustomStringTableItem "{61B7DF5E288DB590}" {
+     Id "LF-License_Refused_Title"
+     Target_en_us "Not yet"
+     Comment "Job-level gate refusal in words, never a number (#2700)."
     }
     CustomStringTableItem "{78705B86BC3B43C0}" {
      Id "LF-License_Unemployed_Desc"
@@ -6917,6 +7057,191 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Withdraw from the fund"
      Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
     }
+    CustomStringTableItem "{C65C0D31073BC4C5}" {
+     Id "LF-OrgWarAnnounce_Accepted"
+     Target_en_us "War begins: %1"
+     Comment "Island toast: the target answered, the two organizations are at war; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{E7E4127834BBA4FA}" {
+     Id "LF-OrgWarAnnounce_Declared"
+     Target_en_us "War declared: %1"
+     Comment "Island toast: one organization declared war on another; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{7B94EDBB4BFE6C05}" {
+     Id "LF-OrgWarAnnounce_Forfeit"
+     Target_en_us "War forfeited, an organization has no members left: %1"
+     Comment "Island toast: an organization emptied and forfeited its war; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{BED6AA1BA673F932}" {
+     Id "LF-OrgWarAnnounce_Lapsed"
+     Target_en_us "Declaration lapsed, nobody answered: %1"
+     Comment "Island toast: a declaration went unanswered; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{7ABE18BB5495091F}" {
+     Id "LF-OrgWarAnnounce_MemberAccepted"
+     Target_en_us "Your organization is at war with %1."
+     Comment "Member notice: the war started; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{D7EF843062AAD3B6}" {
+     Id "LF-OrgWarAnnounce_MemberDeclaredIn"
+     Target_en_us "%1 declared war on your organization. Answer at the war desk before the window closes."
+     Comment "Member notice: your side was challenged; %1 is the declaring organization (#2669)."
+    }
+    CustomStringTableItem "{32DA70C1A2DADF42}" {
+     Id "LF-OrgWarAnnounce_MemberDeclaredOut"
+     Target_en_us "Your organization declared war on %1. They have a while to answer."
+     Comment "Member notice: your side declared; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{3AD6CA5542B4E1BC}" {
+     Id "LF-OrgWarAnnounce_MemberForfeit"
+     Target_en_us "Your war with %1 ended: an organization has no members left."
+     Comment "Member notice: forfeit; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{EFC7E0BD1866B610}" {
+     Id "LF-OrgWarAnnounce_MemberLapsed"
+     Target_en_us "The war declaration between your organization and %1 lapsed."
+     Comment "Member notice: the declaration went unanswered; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{B4C1B2C3C2F5929B}" {
+     Id "LF-OrgWarAnnounce_MemberTime"
+     Target_en_us "Your war with %1 is over, time is up."
+     Comment "Member notice: the war ran out; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{C90E4128872ED67A}" {
+     Id "LF-OrgWarAnnounce_Time"
+     Target_en_us "War over, time is up: %1"
+     Comment "Island toast: a war ran out; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{B604BC0B97BFA7A1}" {
+     Id "LF-OrgWarAnnounce_Title"
+     Target_en_us "Gang war"
+     Comment "Toast title for organization war announcements (#2669)."
+    }
+    CustomStringTableItem "{1CC3B7AA55E0C10E}" {
+     Id "LF-OrgWarBoard_Accepted"
+     Target_en_us "%1 and %2 are at war. The war ends in %3."
+     Comment "War notice: a war in progress. %1 and %2 the sides, %3 time left (#2677)."
+    }
+    CustomStringTableItem "{62AF3CB71CC1FDA0}" {
+     Id "LF-OrgWarBoard_Declared"
+     Target_en_us "%1 has declared war on %2. An answer is due in %3."
+     Comment "War notice: a declaration waiting for the answer. %1 declarer, %2 target, %3 time left (#2677)."
+    }
+    CustomStringTableItem "{C0F0A8AD758D2916}" {
+     Id "LF-OrgWarBoard_Ended"
+     Target_en_us "The war between %1 and %2 is over. It ended %3 ago."
+     Comment "War notice: a war that ran out. %3 = time since the end (#2677)."
+    }
+    CustomStringTableItem "{E119F9C79945E8A5}" {
+     Id "LF-OrgWarBoard_Forfeit"
+     Target_en_us "%1 and %2: the war ended when a side gave up, %3 ago."
+     Comment "War notice: a war ended by forfeit. %3 = time since the end (#2677)."
+    }
+    CustomStringTableItem "{718F296CDB0C307A}" {
+     Id "LF-OrgWarBoard_HoursMinutes"
+     Target_en_us "%1 h %2 min"
+     Comment "War notice time span from an hour up. %1 = hours, %2 = minutes (#2677)."
+    }
+    CustomStringTableItem "{B6581C263E795E36}" {
+     Id "LF-OrgWarBoard_Lapsed"
+     Target_en_us "%1 declared war on %2, but nobody answered. It lapsed %3 ago."
+     Comment "War notice: a declaration nobody answered. %3 = time since it lapsed (#2677)."
+    }
+    CustomStringTableItem "{7714D5DEF74ACFA3}" {
+     Id "LF-OrgWarBoard_Minutes"
+     Target_en_us "%1 min"
+     Comment "War notice time span under an hour. %1 = minutes (#2677)."
+    }
+    CustomStringTableItem "{367833D38BB24DC8}" {
+     Id "LF-OrgWarBoard_None"
+     Target_en_us "No war has been declared. It is quiet."
+     Comment "War notice board line when no notice is up (#2677)."
+    }
+    CustomStringTableItem "{15794F43B5EA9503}" {
+     Id "LF-OrgWarBoard_Read"
+     Target_en_us "Read the war notices"
+     Comment "Action on the war notice board (#2677)."
+    }
+    CustomStringTableItem "{4FA0A019D97109D5}" {
+     Id "LF-OrgWarBoard_Title"
+     Target_en_us "War notices"
+     Comment "Title of the war notice board card (#2677)."
+    }
+    CustomStringTableItem "{7E0E46C2E4A95435}" {
+     Id "LF-OrgWar_Accepted"
+     Target_en_us "Declaration answered. Your organizations are at war."
+     Comment "Toast: the target accepted the declaration (#2668)."
+    }
+    CustomStringTableItem "{1BC0FE9D5A782876}" {
+     Id "LF-OrgWar_Declared"
+     Target_en_us "War declared. The other organization has until the window closes to answer."
+     Comment "Toast: the declaration went through and the fee left the fund (#2668)."
+    }
+    CustomStringTableItem "{325F9ECB97909DF2}" {
+     Id "LF-OrgWar_RefuseCooldown"
+     Target_en_us "These organizations fought too recently to declare again."
+     Comment "Toast: declaration refused, the pair cooldown is running (#2668)."
+    }
+    CustomStringTableItem "{211295C1DAB28A4F}" {
+     Id "LF-OrgWar_RefuseExpired"
+     Target_en_us "The answer window has closed; the declaration lapsed."
+     Comment "Toast: answer refused, the declaration lapsed (#2668)."
+    }
+    CustomStringTableItem "{192720B36BC76B20}" {
+     Id "LF-OrgWar_RefuseFund"
+     Target_en_us "The organization fund cannot cover the war fee."
+     Comment "Toast: declaration refused, fund short of the fee (#2668)."
+    }
+    CustomStringTableItem "{56FB87313A015E3A}" {
+     Id "LF-OrgWar_RefuseGone"
+     Target_en_us "That organization or declaration no longer exists."
+     Comment "Toast: war request refused, the org or war is gone or already answered (#2668)."
+    }
+    CustomStringTableItem "{CD36D2312320E8CE}" {
+     Id "LF-OrgWar_RefuseNoOrg"
+     Target_en_us "You are not in an organization."
+     Comment "Toast: war request refused, the player has no organization (#2668)."
+    }
+    CustomStringTableItem "{4349F738359D727D}" {
+     Id "LF-OrgWar_RefuseNoRight"
+     Target_en_us "Your rank cannot declare or answer a war."
+     Comment "Toast: war request refused, the rank lacks the war right (#2668)."
+    }
+    CustomStringTableItem "{0C78381E5C917C43}" {
+     Id "LF-OrgWar_RefuseNotTarget"
+     Target_en_us "That declaration was not made on your organization."
+     Comment "Toast: answer refused, the player is not in the declared-on organization (#2668)."
+    }
+    CustomStringTableItem "{EA8BDFF1CAD3449B}" {
+     Id "LF-OrgWar_RefuseOtherTooFew"
+     Target_en_us "The other organization has too few members for a war."
+     Comment "Toast: war request refused, the other organization below the member minimum (#2668)."
+    }
+    CustomStringTableItem "{D2F018F47366235B}" {
+     Id "LF-OrgWar_RefusePending"
+     Target_en_us "A declaration or war between these organizations is already running."
+     Comment "Toast: declaration refused, the pair already has a pending or active war (#2668)."
+    }
+    CustomStringTableItem "{84D688375916FAB8}" {
+     Id "LF-OrgWar_RefuseSelf"
+     Target_en_us "An organization cannot declare war on itself."
+     Comment "Toast: declaration refused, target is the own organization (#2668)."
+    }
+    CustomStringTableItem "{25A42815D66DCE2F}" {
+     Id "LF-OrgWar_RefuseTooFew"
+     Target_en_us "Your organization has too few members for a war."
+     Comment "Toast: war request refused, own organization below the member minimum (#2668)."
+    }
+    CustomStringTableItem "{AD3C4AAA651C8DCC}" {
+     Id "LF-OrgWar_Refused"
+     Target_en_us "The war desk refused that."
+     Comment "Toast: a war request was refused for a reason with no text of its own (#2668)."
+    }
+    CustomStringTableItem "{85E483079A7BF56C}" {
+     Id "LF-OrgWar_Title"
+     Target_en_us "War desk"
+     Comment "Toast title for organization war declarations and answers (#2668)."
+    }
     CustomStringTableItem "{AF38925B41949B01}" {
      Id "LF-Org_AlreadyMember"
      Target_en_us "You already belong to an {org}."
@@ -6987,6 +7312,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Signed. The page is yours."
      Comment "Ledger notice line after founding."
     }
+    CustomStringTableItem "{15CA4CCA7E9E4914}" {
+     Id "LF-Org_GiveUpLease"
+     Target_en_us "Give up the lease"
+     Comment "Ledger row action: the holder gives the hideout yard lease back (#2572)."
+    }
     CustomStringTableItem "{6D53E58AC9FADED3}" {
      Id "LF-Org_Hideout"
      Target_en_us "Alley yard lease"
@@ -7027,6 +7357,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Free"
      Comment "Hideout lease status: nobody holds it."
     }
+    CustomStringTableItem "{FAF2A876ADF64AE5}" {
+     Id "LF-Org_LeaseGivenUp"
+     Target_en_us "You gave the alley yard back. Its gate is shut."
+     Comment "Ledger notice after the lease is given up (#2572)."
+    }
     CustomStringTableItem "{22205B2B89D3D298}" {
      Id "LF-Org_LeaseOurs"
      Target_en_us "Yours - members enter"
@@ -7036,6 +7371,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Org_LeaseRefused"
      Target_en_us "The lease was refused."
      Comment "Ledger notice: lease refused."
+    }
+    CustomStringTableItem "{3BCB98DA6F2D4899}" {
+     Id "LF-Org_LeaseReleaseRefused"
+     Target_en_us "Only a rank that may buy can give the lease up."
+     Comment "Toast and ledger notice when giving up the lease is refused (#2572)."
     }
     CustomStringTableItem "{717EDA57B8114856}" {
      Id "LF-Org_LeaseTaken"
@@ -7637,6 +7977,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Something is in the way."
      Comment "Toast when a placement is refused because something stands where it would go: a car, a post, a spike strip already lying there (#928)."
     }
+    CustomStringTableItem "{1C32E2DFC53A052C}" {
+     Id "LF-Placement_CapOwner"
+     Target_en_us "You already have as many things placed as you may keep. Pick one up first."
+     Comment "Toast when a permanent placement is refused: the player reached the per-player cap (#1032)."
+    }
+    CustomStringTableItem "{0E908C127EF9F835}" {
+     Id "LF-Placement_CapProperty"
+     Target_en_us "This property already holds as many placed things as it may. Pick one up first."
+     Comment "Toast when a permanent placement is refused: the property reached its cap (#1032)."
+    }
     CustomStringTableItem "{7D3F102C9E5B6C43}" {
      Id "LF-Placement_KeyCancel"
      Target_en_us "Cancel placing"
@@ -7722,10 +8072,45 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You are not allowed to place this."
      Comment "Toast when the placement service refuses because the player may not place that item: a spike strip off duty (#1026)."
     }
+    CustomStringTableItem "{3E6A1F5C92D80B47}" {
+     Id "LF-Placement_PickUp"
+     Target_en_us "Pick up"
+     Comment "Action name on a permanent prop its owner placed (a chair, a table): takes it back into the inventory (#2751)."
+    }
     CustomStringTableItem "{42E27FF2B0C5A49F}" {
      Id "LF-Placement_Title"
      Target_en_us "Placing"
      Comment "Toast title for every placement refusal (#1026)."
+    }
+    CustomStringTableItem "{91F3B6D2C0E8A474}" {
+     Id "LF-Plant_CharacterCap"
+     Target_en_us "You are already tending as many plants as you can."
+     Comment "Toast: the character has reached the per-character plant cap (12)."
+    }
+    CustomStringTableItem "{2B96D1F4A8C03E57}" {
+     Id "LF-Plant_InVehicle"
+     Target_en_us "You can't plant from a vehicle."
+     Comment "Toast: planting is refused while the player is in a vehicle."
+    }
+    CustomStringTableItem "{E4A07C5B1D3F9268}" {
+     Id "LF-Plant_SafeZone"
+     Target_en_us "Nothing grows in the safe zone."
+     Comment "Toast: planting is refused inside a safe zone."
+    }
+    CustomStringTableItem "{A8D5E2073B1C96F0}" {
+     Id "LF-Plant_ServerCap"
+     Target_en_us "The land is full; no more plants fit right now."
+     Comment "Toast: the server-wide plant cap (300) is reached."
+    }
+    CustomStringTableItem "{5C1E8A3D70B94F21}" {
+     Id "LF-Plant_TooClose"
+     Target_en_us "Too close to another plant."
+     Comment "Toast: a seed cannot be planted within 1.5 m of another plant."
+    }
+    CustomStringTableItem "{7D2F4B90E3A618C5}" {
+     Id "LF-Plant_TooFar"
+     Target_en_us "Too far away to plant there."
+     Comment "Toast: the spot is beyond the 4 m planting reach."
     }
     CustomStringTableItem "{F875CB040C3C2526}" {
      Id "LF-PoliceAppGm_Approve"
@@ -8002,6 +8387,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Process_NoItems"
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
+    }
+    CustomStringTableItem "{C1E9F68FC02150FF}" {
+     Id "LF-Property_Bought"
+     Target_en_us "Plot %1 is yours."
+     Comment "Toast: the plot purchase went through (#2649). %1 = the plot."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7355}" {
+     Id "LF-Property_BuildItemsFirst"
+     Target_en_us "Bring the materials first."
+     Comment "Build site refusal (#2650): work asked before the stage's items are in."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7351}" {
+     Id "LF-Property_BuildNeed"
+     Target_en_us "Need %1 more %2"
+     Comment "Deposit action at a build site (#2650). %1 = how many the stage still lacks, %2 = the item's name."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7353}" {
+     Id "LF-Property_BuildNoItems"
+     Target_en_us "You carry none of what this stage still needs."
+     Comment "Build site refusal (#2650): nothing to deposit."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7354}" {
+     Id "LF-Property_BuildNotYours"
+     Target_en_us "Only the owner and key holders can build here."
+     Comment "Build site refusal (#2650, #2815): the caller neither owns the plot nor carries its key."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7352}" {
+     Id "LF-Property_BuildWork"
+     Target_en_us "Build (%1/%2)"
+     Comment "Held work action at a build site (#2650). %1 = work done, %2 = work the stage needs."
+    }
+    CustomStringTableItem "{55D1BC2D7557DA0C}" {
+     Id "LF-Property_Buy"
+     Target_en_us "Buy plot (%1)"
+     Comment "Action on a for-sale plot sign (#2649). %1 = the formatted price (LF_MoneyFormat)."
+    }
+    CustomStringTableItem "{2E4ED8FC8172E6AA}" {
+     Id "LF-Property_NoCash"
+     Target_en_us "You do not carry enough cash for this plot."
+     Comment "Toast: plot purchase refused, short of cash; nothing was taken (#2649)."
+    }
+    CustomStringTableItem "{5CC34CD87EB4192B}" {
+     Id "LF-Property_NotHere"
+     Target_en_us "There is no plot for sale here."
+     Comment "Toast: plot purchase refused, no for-sale plot sign in reach (#2649)."
+    }
+    CustomStringTableItem "{7A2A3649718F2743}" {
+     Id "LF-Property_Owned"
+     Target_en_us "This plot is already owned."
+     Comment "Toast: plot purchase refused, somebody owns it (#2649)."
+    }
+    CustomStringTableItem "{A3C2CA7CE0677234}" {
+     Id "LF-Property_SetHome"
+     Target_en_us "Make this my spawn"
+     Comment "House door action: the owner makes this house where they wake up when they log in"
+    }
+    CustomStringTableItem "{92136B0C3106B107}" {
+     Id "LF-Property_Title"
+     Target_en_us "Property"
+     Comment "Toast title for a plot purchase answer (#2649)."
     }
    CustomStringTableItem "{468EF5CBF215416A}" {
     Id "LF-Quest_Accept"
@@ -8621,6 +9066,96 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Civil Registry, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
     }
+    CustomStringTableItem "{C80275F691522CBC}" {
+     Id "LF-Reputation_Faction_Police"
+     Target_en_us "The law"
+     Comment "Standing: neutral core label of the police faction. The pack overlays the words."
+    }
+    CustomStringTableItem "{AE91EA1CF28E3574}" {
+     Id "LF-Reputation_Faction_Town"
+     Target_en_us "Locals"
+     Comment "Standing: neutral core label of the town faction. The pack overlays the words."
+    }
+    CustomStringTableItem "{B97574F5460AB27E}" {
+     Id "LF-Reputation_Faction_Underworld"
+     Target_en_us "Underworld"
+     Comment "Standing: neutral core label of the underworld faction. Never shown to the player."
+    }
+    CustomStringTableItem "{F38A5D16B04E927C}" {
+     Id "LF-Reputation_Refuse_Any"
+     Target_en_us "You are not well enough known for this yet."
+     Comment "Standing gate refusal (#2701) for a faction with no words of its own. Never a number."
+    }
+    CustomStringTableItem "{91E4B7035CA2D68F}" {
+     Id "LF-Reputation_Refuse_Police"
+     Target_en_us "The law doesn't trust you enough for this yet. You would need to be at least: %1."
+     Comment "Standing gate refusal (#2701). %1 = the minimum tier word. Never a number. The pack overlays the words."
+    }
+    CustomStringTableItem "{2C7A91E45B03D8F6}" {
+     Id "LF-Reputation_Refuse_Town"
+     Target_en_us "The locals don't know you well enough for this work yet. You would need to be at least: %1."
+     Comment "Standing gate refusal (#2701): job sign-up or run start. %1 = the minimum tier word. Never a number. The pack overlays the words."
+    }
+    CustomStringTableItem "{6D0F3A82E715C4B9}" {
+     Id "LF-Reputation_Refuse_Underworld"
+     Target_en_us "Nobody in those circles knows you well enough."
+     Comment "Standing gate refusal (#2701). The underworld's tier is never shown, so no tier word. The pack overlays the words."
+    }
+    CustomStringTableItem "{067374E8D35098CE}" {
+     Id "LF-Reputation_Tier_0"
+     Target_en_us "Unknown"
+     Comment "Standing: neutral core label of tier 0. The pack overlays the words."
+    }
+    CustomStringTableItem "{EB0E8494CA8497EB}" {
+     Id "LF-Reputation_Tier_1"
+     Target_en_us "Known"
+     Comment "Standing: neutral core label of tier 1. The pack overlays the words."
+    }
+    CustomStringTableItem "{F014E5DE1DBB6EB7}" {
+     Id "LF-Reputation_Tier_2"
+     Target_en_us "Trusted"
+     Comment "Standing: neutral core label of tier 2. The pack overlays the words."
+    }
+    CustomStringTableItem "{37CF03FD90EA2650}" {
+     Id "LF-Reputation_Tier_3"
+     Target_en_us "Respected"
+     Comment "Standing: neutral core label of tier 3. The pack overlays the words."
+    }
+    CustomStringTableItem "{33DDEE3DC227F790}" {
+     Id "LF-Reputation_Tier_Neg1"
+     Target_en_us "Doubted"
+     Comment "Standing: neutral core label of tier -1. The pack overlays the words."
+    }
+    CustomStringTableItem "{00CAD4E0C49A2EC2}" {
+     Id "LF-Reputation_Tier_Neg2"
+     Target_en_us "Distrusted"
+     Comment "Standing: neutral core label of tier -2. The pack overlays the words."
+    }
+    CustomStringTableItem "{3783CFF6EFED5F5A}" {
+     Id "LF-Reputation_Toast_Police_Down"
+     Target_en_us "The {police} have started to keep an eye on you"
+     Comment "Standing toast: the police tier went down. Words only, never a number."
+    }
+    CustomStringTableItem "{9CA1505D71AF22D9}" {
+     Id "LF-Reputation_Toast_Police_Up"
+     Target_en_us "The {police} have started to see you as one of the good ones"
+     Comment "Standing toast: the police tier went up. Words only, never a number."
+    }
+    CustomStringTableItem "{B879A4BDE2FB466F}" {
+     Id "LF-Reputation_Toast_Title"
+     Target_en_us "Standing"
+     Comment "Standing: title of the toast when a standing tier changes."
+    }
+    CustomStringTableItem "{88053A4E9492D71B}" {
+     Id "LF-Reputation_Toast_Town_Down"
+     Target_en_us "People in {town} have started to keep their distance"
+     Comment "Standing toast: the town tier went down. Words only, never a number."
+    }
+    CustomStringTableItem "{A0995D5E8C36B097}" {
+     Id "LF-Reputation_Toast_Town_Up"
+     Target_en_us "People in {town} have started to trust you"
+     Comment "Standing toast: the town tier went up. Words only, never a number."
+    }
     CustomStringTableItem "{C96808FBA0407AFE}" {
      Id "LF-Restrain_Action"
      Target_en_us "Cuff"
@@ -8695,6 +9230,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Revive_Done"
      Target_en_us "You brought them back."
      Comment "Toast to the medic after a revive."
+    }
+    CustomStringTableItem "{F0336D48D1263225}" {
+     Id "LF-Revive_MedicDown"
+     Target_en_us "You cannot help anyone while you are down."
+     Comment "Revive refusal: the medic is downed or dead."
     }
     CustomStringTableItem "{7A30C5E1D49B6B01}" {
      Id "LF-Revive_NoItem"
@@ -9324,6 +9864,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_Next"
      Target_en_us "Next"
      Comment "Sign card section heading: where to go after this place."
+    }
+    CustomStringTableItem "{DFB2C6F5B97FC132}" {
+     Id "LF-Sign_PlotForSale_Next"
+     Target_en_us "Stand at the sign with the price in carried cash and choose Buy plot."
+     Comment "Read card of the plot sign: what to do next (#2780)."
+    }
+    CustomStringTableItem "{BEBD6A10FB2E9747}" {
+     Id "LF-Sign_PlotForSale_Title"
+     Target_en_us "For sale"
+     Comment "Core plot sign face and Read title (#2780): a plot nobody owns yet."
+    }
+    CustomStringTableItem "{3FF5200250B9B700}" {
+     Id "LF-Sign_PlotForSale_What"
+     Target_en_us "A plot of land nobody owns yet. Use the sign to buy it with cash."
+     Comment "Read card of the plot sign (#2780)."
     }
     CustomStringTableItem "{C71FE54AE5989467}" {
      Id "LF-Sign_Read"
@@ -10177,6 +10732,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-TouristMap_Use"
      Target_en_us "Study the tourist map"
      Comment "Tourist map item (#2242): the action that pencils every discoverable place onto the player's map."
+    }
+    CustomStringTableItem "{788218FBE4001F0E}" {
+     Id "LF-Tow_Towed"
+     Target_en_us "Your vehicle %1 was towed. Collect it at the impound desk."
+     Comment "Toast to the owner: their abandoned car was towed (#2657). %1 is the plate"
     }
     CustomStringTableItem "{65D7E4795D634FBD}" {
      Id "LF-TownBoard_Dir_E"

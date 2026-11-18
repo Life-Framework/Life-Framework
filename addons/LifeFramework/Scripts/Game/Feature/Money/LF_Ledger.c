@@ -264,17 +264,15 @@ class LF_Ledger
 			}
 
 			s_aEntries.Insert(record.Copy());
-			s_iLastId = Math.Max(s_iLastId, record.m_iId);
+			s_iLastId = LF_Utils.MaxInt(s_iLastId, record.m_iId);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------------------------
-//! World-end reset of LF_Ledger's statics (registered at script load; Core/LF_StaticReset.c).
+//! World-end reset of LF_Ledger's statics (LF_StaticReset finds it by reflection).
 class LF_Ledger_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_Ledger_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_Ledger";

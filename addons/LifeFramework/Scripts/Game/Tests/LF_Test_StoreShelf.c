@@ -7,6 +7,7 @@
 //! same unit twice, even before the pickup was noticed); an empty line refuses; the till charges
 //! exactly what is carried unpaid, clears the tags and hands over a receipt; a short purse pays for
 //! none of it. Deletes what it spawns and puts the stock back.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_StoreShelf : LF_Test
 {
 	static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";

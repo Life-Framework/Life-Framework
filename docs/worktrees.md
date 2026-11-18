@@ -32,6 +32,8 @@ harmless to your editor because the worktree is a separate directory.
   the redirect off. A holder started by older code in the old file still blocks until it ends.
   The per-worktree `(gamePort, a2sPort)` pair from `wt list` is still passed
   and is what a2s uses.
+- **Shared rdb cache** — a refresh that leaves the rdb fresh stores it in `<hub>/rdb-cache/<addon>/<key>.rdb` (key = sha1 of addon, every `path`+GUID of its `.meta` files and the Workbench exe size:mtime; 40 entries per addon, `tools/lib/rdb-cache.mjs`). The next worktree with the identical resource set copies it in (~0.4 s, verified with `rdbFreshness`) and logs `reused shared rdb <key8> (no Workbench)`; a refresh already queued for the Workbench slot or the build lock polls the cache each wait and stops waiting when the entry appears. A stale entry is deleted. The refresh itself takes a per-worktree `rdb-<slug>` lock, not the hub-wide `build` lock, so refreshes of different worktrees overlap up to the Workbench slot limit. `LF_RDB_CACHE=0` turns the cache off. `rdb-cache-selftest` proves it.
+- **A stale rdb never passes silently** — when a test run on this PC ends with an rdb still stale (the refresh failed or timed out in the Workbench queue), a whole-suite pass becomes `SUMMARY test fail rdb-stale=<addons>` and exits 1; a fast or `--only` run keeps its result and prints `SUMMARY test warn rdb-stale=...`. Neither goes into the pass cache. `LF_ALLOW_STALE_RDB=1` turns the failure into the warning (`tools/lib/rdb-stale-verdict.mjs`; on 2026-11-17, 8 of 36 runs started on a stale rdb reported green).
 - **Resource database** — `resourceDatabase.rdb` is gitignored and only Workbench
   writes it. `wt new`, `test`, `dev`, `serve`, `session up`, `host start`, and `wt e2e`
   copy `<main-checkout>/addons/LifeFramework/resourceDatabase.rdb` into the worktree when that
@@ -168,7 +170,7 @@ The gate now runs on `main`, after the merge (`tools/main-guard.mjs`, rules in `
 through the pool at `--priority high`.
 
 ```sh
-toolscli main-guard start | stop | status   # status is also a line in `toolscli lead`
+toolscli main-guard start | stop | status | watch   # status is also a line in `toolscli lead`
 ```
 
 1. **Stage 1, compile first.** On a new `origin/main` head (batched to one run per 3 min) it runs the Workbench compile
@@ -180,6 +182,13 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    `build`, `test --no-build --tier all`, `audit placement --strict`, `e2e --pre-move 502ebf39 --mission playtest`.
    All pass: `green`. A red step reruns at the same head; a pass on the rerun is a flake
    (`tmp/logs/main-guard-flakes.log`), red twice bisects and reverts.
+   **INFRA is not red (#2759).** A step the machine refused (a held lock, no free Workbench slot, no pool machine,
+   `build` exit 3, a Workbench that died before compiling) is `INFRA` in the log: no recheck, no bisect, no revert, no
+   red mark, and the head is tried again on a later tick. The same rule covers the recheck and every bisect probe. Only
+   the compiler's words (`SCRIPT (E)`, `does not compile`), a named failing test or another FAIL line is red
+   (`classifyStep` in `tools/lib/main-guard.mjs`). `build` runs with `--wait`, so a busy build lock queues first. A red
+   set on a refusal before this rule (7587bfd5, which reverted #2369 in #2736) is put back to `compiled-ok` and its
+   `main-guard/suite` status set to pending at worker start, or by `tools\cli main-guard reclassify [--dry-run]`.
    **The suite bisect matches the failing-test set (#2052).** At a red head the guard records the failing test names
    and FAIL lines (`suite red set:` in the log, `failing` and `failLines` in `lastResult`). The bisect reruns just
    those tests at each candidate and counts a commit as red only when it fails one of them; another test failing there,
@@ -204,6 +213,17 @@ toolscli main-guard start | stop | status   # status is also a line in `toolscli
    **One guard:** the worker holds a lease, the `main-guard/lease` status on the repository's root commit ("held
    <host> <pid> <time>", renewed every 5 min, stale after 30). `start` and the worker refuse while another machine
    holds a fresh lease; `stop` releases it.
+   **Watchdog (#2754).** The worker renews the lease on its own 5-min timer (not between ticks: a long compile
+   once left it 16 min stale under a live worker). `toolscli main-guard watch [--dry-run]` is one watchdog tick: it
+   reads the lease and this machine's worker pid and restarts a dead worker with `start` (rule `watchDecision` in
+   `tools/lib/main-guard.mjs`). It never touches a live worker (a live pid with a lease over 45 min old is only
+   reported as hung), never restarts a guard that was stopped on purpose (`stop` releases the lease) or one another
+   machine runs fresh, and stops after 3 restarts in an hour (a crash loop alerts instead). Restarts and alerts go to
+   `tmp/logs/main-guard.log` and the staff webhook, at most one alert per 30 min. The laptop runs it from the
+   scheduled task `LF-MainGuardWatch` every 5 min (`C:\LF\health\CHANGES.md` has the wiring and undo). Down means
+   the lease is over 15 min old: `lead` prints `!! MAIN GUARD DOWN: main-guard down for N min; you are X commit(s)
+   behind main` and `wt new` prints the same as `WARNING:` (a live local worker with a late lease is only a warning
+   past 45 min). `main-guard-watch-selftest` proves the rule.
 4. **Reverts.** `git revert -m 1` on `ws/revert-pr<N>-guard`, a PR `Revert #N (main guard: <what>)` with auto-merge, a
    comment on #N, its issues reopened as `regression`, one line to the staff webhook (`LF_STAFF_WEBHOOK_URL` or
    `"mainGuard": { "webhookUrl" }` in `lf.local.json`).
@@ -276,7 +296,7 @@ from <ref>`). The string-table driver refuses a side it cannot parse whole
 and writes git's line merge with exit 1 instead. `merge-content-selftest`
 merges real branches and compares the result byte for byte (#1154, #1161).
 
-The registry driver (`regen-generated.mjs`) reads the three sides' test sources with one `ls-tree` per side and one
+(Gone in #2618: tests carry `[LF_TestInfo]` and there is no registry or `lf-regen-tests` driver; the paragraph is history.) The registry driver (`regen-generated.mjs`) read the three sides' test sources with one `ls-tree` per side and one
 `git cat-file --batch`, never a git child per file: on a loaded laptop a spawn costs about 230 ms, and the old per-file
 `git show` (about 2300 children for 760 tests) ran past the 240 s backstop on every merge, in `git merge` and in
 `wt ship`'s merge alike. `LF_MERGE_DRIVER_TRACE=<file>` appends `<ms> <command>` per child process, which is how to
@@ -285,9 +305,9 @@ see where a slow merge goes; `merge-drivers-selftest` caps the git children at 1
 - **`DIRTY` or `BEHIND`, worktree not LIVE.** In its worktree (or a temporary
   detached `Life-Framework-heal-<n>` worktree at the PR head when it is gone,
   removed afterwards with the junction-safe helper) it merges `origin/main` with
-  the `tools/merge/` drivers. Conflicts only in the test registry, the language
+  the `tools/merge/` drivers. Conflicts only in the language
   confs, the string table, `features.md`, `debug-log-triage.md`, or the
-  enforce-lint baseline are resolved: the registry and confs by `regen-tests` /
+  enforce-lint baseline are resolved: the confs by
   `regen-localization`, the others by the drivers' merge logic on the index
   stages. Any other conflicted path aborts the merge; the PR, the worktree, and
   the branch stay as they were, and the PR is reported "needs a human/agent"
@@ -374,7 +394,7 @@ tools\cli pool prune [--dry-run] [--unmarked] [--lanes]    # remote run folders 
 tools\cli pool prune --idle <min> [--dry-run]              # every remote run folder idle that long (no lock, process or write)
 ```
 
-- **Sharding.** `--shards N|auto` splits the registry into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
+- **Sharding.** `--shards N|auto` splits the core suite (the `[LF_TestInfo]` lines) into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
 - **Nothing in a gate waits silently.** The rdb refresh before the suite waits for the hub `build` lock through `tools/lib/lock-wait.mjs`: it prints the holder (`waiting on the build lock ...: held by pid N (rdb refresh in <worktree>), held N s; budget ...`), repeats every 30 s, and gives up at `LF_RDB_WAIT_S` (900 s) for the whole process, every addon together; a later addon fails at once instead of waiting again. Shard children run with `LF_RDB_CHECKED=1`, so the slices never refresh or wait a second time (before, the gate and each slice each waited 15 min per addon, silently: 25+ min with no output). While slices run, the parent prints `shards: <pass> i/n still running after N s: <last line>` every `LF_SHARD_HEARTBEAT_S` (120 s) and stops a slice after `LF_SHARD_TIMEOUT_S` (2700 s). `lock-wait-selftest` proves it.
 - **Who uses it.** `test`, `dev`, `ci`, `wt test`, `wt gate`, `wt ship` (its
   gate), `wt e2e`, and `e2e`. Every run prints where it ran and how long it
@@ -593,7 +613,7 @@ LOGIC test never reads (about 2.4 s on lf-cloud, 1.5 s on the laptop).
 
 - **Routed to TestLogic**: `--tier fast` (fast runs LOGIC only), and `--only` or
   `--red` when every name resolves to a LOGIC test (class name or `GetName()`,
-  read from the `// tier:` lines). `test` prints `test: world
+  read from the `[LF_TestInfo]` lines). `test` prints `test: world
   Worlds/TestLogic/TestLogic.ent (<reason>)`.
 - **Routed to GridWorld** (`Worlds/GridWorld/GridWorld.ent`, #1804): `--tier all`,
   `--tier persistence`, an `--only`/`--red` list with any WORLD, PERSISTENCE or
@@ -663,8 +683,12 @@ machine) and on a pool machine runs `audit placement` in the synced run folder.
 
 ### No Workbench on this PC (the `workbench` cap)
 
-The maintainer's world editor lives on this PC (Gaming-Box) and agents never
-run a headless Workbench on it. That is `workbench` missing from this machine's
+"This PC" is the maintainer's world-editor machine, Gaming-Box, and only it. Agents never
+run a headless Workbench there. On lf-testbox (PC1, the laptop and primary dev box) and lf-cloud
+the `workbench` cap is present, a Workbench runs there through the pool, and nothing below applies.
+`toolscli status` prints `workbench: ALLOWED` or `NOT allowed` for the machine you are on.
+
+On Gaming-Box that is `workbench` missing from the machine's
 caps: `lf.local.json` `pool.machines` entry `{ "name": "local", "caps":
 ["server"] }`. A pool machine's own entry (`lf-cloud`, `lf-testbox`) keeps the
 cap and runs what is sent to it. `tools/lib/wb-route.mjs` reads the cap; every
@@ -1022,7 +1046,7 @@ the world, the script heap and the physics are the 1 GB, and no flag shrinks the
 reserve per lowspec client is 800 MB instead of 850 (`pool.json` `sessionReserve`); the server's is
 unchanged at 600.
 
-**VRAM.** A client also takes GPU memory (reserve per client: lowspec 700 MB, full 1800 MB; `sessionReserveClientVramMb`), and the 8 GB laptop card runs out before its RAM with 2 full clients. `tools/lib/pool-vram.mjs` reads the free VRAM (`nvidia-smi`, bounded by a timeout); the queue's machine choice (`rankMachines`) and `vramGate` leave a machine without room for a client session while another has it. A test-lane job ignores VRAM, and an unreadable card (no `nvidia-smi`, a failed read) skips the rule and is logged once, so RAM alone decides (`tools/validation/pool-vram-selftest.mjs`).
+**VRAM.** A client also takes GPU memory (reserve per client: lowspec 700 MB, full 1800 MB; `sessionReserveClientVramMb`), and the 8 GB laptop card runs out before its RAM with 2 full clients. `tools/lib/pool-vram.mjs` reads the free VRAM (`nvidia-smi`, bounded by a timeout); the queue's machine choice (`rankMachines`) and `vramGate` leave a machine without room for a client session while another has it. A test-lane job ignores VRAM, and an unreadable card (no `nvidia-smi`, a failed read) skips the rule and is logged once, so RAM alone decides (`tools/validation/pool-vram-selftest.mjs`). `tools/remote/pool.mjs` feeds it (#2634): the session router reads this PC's free VRAM with `nvidia-smi` and the laptop's in its one state read (`lf-pool: vram` and `vramtotal` lines), orders machines with `vramReserveMb` and refuses a start on one whose card cannot hold the clients (a request then goes to the other machine or queues, naming VRAM). `tools/pool.json` and the `pool` key of `lf.local.json` set `sessionReserveClientVramMb` (`{ "lowspec": 700, "full": 1800 }`) and `minFreeVramMb` (256, or `LF_POOL_MIN_FREE_VRAM_MB`). `tools\cli pool status` prints each machine's `VRAM 5.7/8.0 GB free (2.3 GB used)` beside its RAM; nothing when the card does not answer (`pool-selftest`, "GPU memory end to end"). The `acquire` path of a test or a pinned run does not read VRAM: a pin stays a pin.
 
 **What does free RAM is trimming.** A session waiting for the next harness command touches a
 fraction of its resident pages. `EmptyWorkingSet` (`tools/lib/ws-trim.mjs`) moves the rest to the
@@ -1501,9 +1525,10 @@ to prune and about any registry inconsistency.
 
 ## Incremental validate
 
-Plain `tools\cli validate` (and `dev`) runs a check only when something it reads changed since its last green run in
-this worktree, and says `incremental: ran N, skipped M`. `validate --all`, `validate --full`, `ci`, `wt gate`,
-`wt ship` and CI (`CI` or `GITHUB_ACTIONS` set, or `LF_VALIDATE_ALL=1`) always run every check.
+Plain `tools\cli validate` (and `dev`, and the `wt ship` preflight) runs a check only when it has not already passed on
+the exact same input content, in this worktree or any other, and says `incremental: ran N, skipped M`.
+`validate --all`, `validate --full`, `ci`, `wt gate` and CI (`CI` or `GITHUB_ACTIONS` set, or `LF_VALIDATE_ALL=1`)
+always run every check.
 
 Checks run 8-12 at once (by CPU count); when free RAM is short each one is counted at 80 MB and only as many start
 as fit over the pool's 1.5 GB floor, never fewer than 2 (`tools/lib/validate-concurrency.mjs`, 2026-11-17: a full
@@ -1513,9 +1538,13 @@ fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/r
   (`# inputs:` in a .ps1). `*` stays in one folder, `**` crosses folders; the check's own file, `tools/validation/*.json`
   and `tools/validation/fixtures/**` are always inputs. `inputs: always` runs every time (a check that reads machine or
   git state: the worktree registry, `origin/main`); `inputs: ttl=300` trusts a green run for 300 s. No header means always.
-- State is `tmp/validate-state.json`: a fingerprint (path, size, mtime of every matching file from
-  `git ls-files --cached --others --exclude-standard`) written only when the check passed, so a failing check is never
-  skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
+- State is `tmp/validate-state.json`: a fingerprint (path and git blob id of every matching file: `git ls-files -s`
+  for clean tracked files, a blob hash of the bytes for modified and untracked ones) written only when the check
+  passed, so a failing check is never skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.
+- Green fingerprints are also merged into `<git common dir>/lf/validate-green.json` (12 per check), shared by every
+  worktree: a fresh worktree skips each check another worktree passed on identical inputs (2026-11-17: 318 of 361
+  checks skipped on a fresh worktree; before, each slice's first validate ran all of them, ~4-6 min under load).
+  `always` and `ttl=` checks never use it. Delete the file to stop sharing.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
 - Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile. A check over it
   prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the
@@ -1555,3 +1584,12 @@ GitHub cannot list the merged PRs it prunes nothing.
 `--oldest N` caps a run to the N least recently active of the worktrees that qualify, to free the most space at once; every rule above still applies to each one.
 
 **Why the marker is bookkeeping (2026-11-17).** `wt list` reconciles the registry and rewrote `tmp/wt.json` in every worktree, so all 214 looked touched a minute ago and `prune-safe` pruned none while C: filled to 195 MB free. `writeMarker` now writes only when the content changes, and the idle check (`newestActivityMs` in `tools/lib/lead.mjs`) ignores `tmp/wt.json` and its temp and lock files. `disk-guard-selftest` proves both and the thresholds.
+
+## Writes into the main checkout (#2785)
+
+On 2026-11-17/18 three agents wrote a localization diff and several `LF_Test_*.c` files into the lead's main checkout instead of their worktree, and each one blocked `git pull --ff-only`. Most agents are launched with the main checkout as their cwd and `cd` into the worktree only for shell commands, so the cwd alone is not a signal. Two pieces, both cheap:
+
+- **PreToolUse hook** (`.claude/settings.json` runs `tools/hooks/main-write-guard.mjs`, rule in `tools/lib/main-write-guard.mjs`). Write, Edit, MultiEdit and NotebookEdit are denied on a file under the main checkout's `addons/`, `tools/`, `docs/`, `website/`, `agent-box/`, `.claude/`, `.githooks/` or `.github/` when the session is an agent: its cwd is a linked worktree, or `wt new` ran in this session (it writes `tmp/wt/session-claims/<session id>.json`; a claim ends when the worktree folder is gone or after 48 h). The deny names the worktree path to write instead. Never denied: the session's own worktree, main's `tmp/` and `lf.local.json`, a session with no claim and cwd in main (the lead, the maintainer's own editing), Read and Bash. `LF_ALLOW_MAIN_WRITE=1` turns it off. A broken hook allows the call. One call costs about 60 ms (`main-write-guard-selftest` prints the measure).
+- **`tools\cli lead stray [--dry-run]`**, also run by the lead view (`STRAY` line; `LF_LEAD_STRAY=0` turns it off): in the main checkout on branch `main`, untracked files under those folders older than 2 minutes are moved to `C:\LF\lead\stray\<timestamp>\<same relative path>` (`LF_LEAD_STRAY_DIR` overrides; `tmp/stray` when there is no `C:\LF\lead`). Tracked files an agent modified are listed with the `git diff` hint, never reverted.
+
+The hook cannot see a shell write (`echo > file`, a script); the stray pass is the net for those.

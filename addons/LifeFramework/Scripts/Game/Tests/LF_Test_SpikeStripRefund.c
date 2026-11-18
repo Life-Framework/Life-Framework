@@ -5,6 +5,7 @@
 //! pick-up. A second pick-up of the same strip refunds nothing; another officer folding a paid strip
 //! up refunds nobody. The test installs its own policy table (core ships every kind free) and
 //! deploys on open grid ground at the annex gate.
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SpikeStripRefund : LF_Test
 {
 	protected static const string PAYER_UID = "spike-refund-payer";

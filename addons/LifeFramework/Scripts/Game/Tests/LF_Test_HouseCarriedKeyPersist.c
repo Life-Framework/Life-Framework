@@ -4,6 +4,7 @@
 //! snapshot capture reads the binding, the "itemkeys" payload round trips it beside the carried
 //! snapshot (whose own format holds no binding), and the restore binds the respawned key again.
 //! Across a restart: `e2e/pass2-verify-load` (`tools\cli wt e2e`) carries a bound key on its carrier.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_HouseCarriedKeyPersist : LF_Test
 {
 	protected static const ResourceName KEY = "{3735389521255DBE}Prefabs/Items/HouseKeyItem.et";

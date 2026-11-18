@@ -8,6 +8,11 @@ enum LF_EIdentityFallback
 
 class LF_Utils : Managed
 {
+	//! Integer min, max and clamp for anything that can be large: unix seconds, millisecond stamps, money,
+	//! XP, running counters. Enforce `Math.Max`, `Math.Min` and `Math.Clamp` work in floats, so above
+	//! 2^24 (16,777,216) an int loses its low bits (unix 1800000480 comes back as 1800000512, #2787).
+	//! `validate-int-time-math` flags a time-named argument handed to them.
+
 	//------------------------------------------------------------------------------------------------
 	static int MaxInt(int a, int b)
 	{
@@ -22,8 +27,34 @@ class LF_Utils : Managed
 		return b;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! value limited to lo..hi without a float round trip. A reversed range (lo above hi) returns hi.
+	static int ClampInt(int value, int lo, int hi)
+	{
+		if (value < lo) value = lo;
+		if (value > hi) value = hi;
+		return value;
+	}
+
 	protected static ref array<IEntity> s_aNearbyEntities = {};
 	protected static string s_sRequiredComponent = "";
+	//! Tests only: the body (entity id as text) that stands in for a player, and its uid.
+	protected static string s_sTestUidBody;
+	protected static string s_sTestUid;
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests only: gives `body` (a test character no player controls) a player uid for GetPlayerUID,
+	//! as LF_QuestTrackerComponent.SetUidForTests does for quests. A null body or an empty uid clears it.
+	static void SetUidForTests(IEntity body, string uid)
+	{
+		s_sTestUidBody = "";
+		s_sTestUid = "";
+		if (!body || uid.IsEmpty())
+			return;
+
+		s_sTestUidBody = body.GetID().ToString();
+		s_sTestUid = uid;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static array<IEntity> GetNearbyVehicles(vector center, float radius, string requiredComponent = "")
@@ -466,6 +497,9 @@ class LF_Utils : Managed
 		if (!player)
 			return "";
 
+		if (!s_sTestUidBody.IsEmpty() && player.GetID().ToString() == s_sTestUidBody)
+			return s_sTestUid;
+
 #ifdef LF_HARNESS
 		// Film actors (LF_FilmDirector) have no player; the harness build gives them a stand-in uid.
 		string standIn = LF_FilmIdentity.Get(player);
@@ -756,3 +790,18 @@ class LF_Utils : Managed
 		return IsAnyInherited(type, from);
 	}
 };
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of the test uid stand-in in LF_Utils (LF_StaticReset finds it by reflection).
+class LF_Utils_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_Utils";
+	}
+
+	override void Apply()
+	{
+		LF_Utils.SetUidForTests(null, "");
+	}
+}

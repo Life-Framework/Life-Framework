@@ -3,6 +3,7 @@
 // run `tools\cli test --tier all`; the prefab load / spawn / manager assertions fail.
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Siren : LF_Test
 {
 	protected static const ResourceName POLICE_PREFAB = "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et";
@@ -33,5 +34,9 @@ class LF_Test_Siren : LF_Test
 
 		LF_SirenManagerComponent manager = LF_Component<LF_SirenManagerComponent>.Find(police);
 		ctx.NotNull(manager, "spawned police vehicle carries LF_SirenManagerComponent");
+
+		// The vehicle and its cargo props are not traceable; leaving them in the world fails
+		// debugworld/entity-collision when it runs later (#2699).
+		SCR_EntityHelper.DeleteEntityAndChildren(police);
 	}
 };

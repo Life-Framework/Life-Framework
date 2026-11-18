@@ -3,6 +3,7 @@
 //! Bank accounts, wanted reports and pending farm rows are saved stores with no world-end reset
 //! before this hook (#review 2026-11-17): in one process (a scenario restart, a Workbench play) the
 //! next world started with the last world's balances and posters and wrote them into its own save.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PersistOwnersStaticReset : LF_Test
 {
 	protected static const string UID = "persist-owners-reset-uid";

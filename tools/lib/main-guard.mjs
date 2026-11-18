@@ -3,13 +3,15 @@
 // tools/validation/main-guard-selftest.mjs.
 
 import { ownerOf } from "./world-test-judge.mjs";
+import { sameLeaseHost } from "./guard-pin.mjs";
 
 export const BATCH_MS = 10 * 60 * 1000; // a burst of merges is checked once, at most every 10 min
 export const PRE_MOVE = ["e2e", "--pre-move", "502ebf39", "--mission", "playtest"];
 
 // The full post-merge check, one step per entry. `recheck(failing)` is the cheap command that reruns only what failed.
 export const STEPS = [
-  { name: "build", args: ["build"], recheck: () => ["build"] },
+  // --wait: a build lock held by another worktree queues (900 s) instead of failing at once (#2759).
+  { name: "build", args: ["build", "--wait"], recheck: () => ["build", "--wait"] },
   { name: "suite", args: ["test", "--no-build", "--tier", "all"], recheck: (failing) => (failing.length ? ["test", "--no-build", "--no-cache", "--only", failing.join(",")] : ["test", "--no-build", "--no-cache", "--tier", "all"]) },
   { name: "placement audit", args: ["audit", "placement", "--strict"], recheck: () => ["audit", "placement", "--strict"] },
   { name: "grid placement audit", args: ["audit", "placement", "--grid", "--strict"], recheck: () => ["audit", "placement", "--grid", "--strict"] },
@@ -71,6 +73,62 @@ export function isEnvExit(code) {
 export function judgeRecheck(firstFailed, recheckFailed) {
   if (!firstFailed) return "green";
   return recheckFailed ? "red" : "flake";
+}
+
+// ---- INFRA (#2759): a step the machine refused, not one the commit failed. 2026-11-17 `build` printed only
+// "FAIL lock 'build' is held ... (a headless Workbench build is running in another worktree)", the rerun hit the
+// same lock, and "red twice" plus the bisect reverted #2369 (#2736). A refusal like that is no verdict: no recheck,
+// no bisect, no revert, no red mark; the head is retried on a later tick.
+export const INFRA_REFUSALS = [
+  [/\block\b[^\n]*\bis held\b|\bis held by\b[^\n]*(?:wait budget|gave up)/i, "a lock was held by another job"],
+  [/no free Workbench slot/i, "no free Workbench slot"],
+  [/no pool machine (?:could|with)|no reachable machine/i, "no pool machine took the job"],
+  [/session lane is held|no session lane|no lane within the wait/i, "no free lane"],
+  [/Couldn't build device list|^\s*ENV\s/i, "the Workbench died before compiling"],
+  [/Workbench not found|game install not found/i, "the toolchain is missing on the machine"],
+  [/This is the machine \(Workbench could not register/i, "the Workbench could not refresh the resource database"],
+];
+// The compiler's or the suite's own words: with any of these in the transcript the step failed, whatever else it says.
+export const REAL_FAILURE = /does not compile|Can't compile|SCRIPT\s*\(E\)|\bVME\b|\[LFTEST\] FAIL /i;
+
+// The infra refusal in a transcript, or null. With FAIL (or ENV) lines, every one of them must be a refusal: a lock
+// line beside a real finding is still red. Without any, the whole transcript is searched.
+export function infraReason(text) {
+  const t = String(text ?? "");
+  if (REAL_FAILURE.test(t)) return null;
+  const which = (s) => INFRA_REFUSALS.find(([re]) => re.test(s))?.[1] ?? null;
+  const fails = t.split(/\r?\n/).filter((l) => /^\s*(?:FAIL|ENV)\b/.test(l));
+  if (!fails.length) return which(t);
+  const whys = fails.map(which);
+  return whys.every(Boolean) ? whys[0] : null;
+}
+
+// One step result -> { verdict: ok | env | infra | red, why }. Only red may be rechecked, bisected or reverted.
+// failing: the test names parsed from a suite run (a named failing test is always red). `build` exits 3 when no
+// pool machine took it (tools/lib/wb-route.mjs): infra.
+export function classifyStep(stepName, code, text, failing = []) {
+  if (code === 0) return { verdict: "ok", why: "" };
+  if (isEnvExit(code)) return { verdict: "env", why: `exit ${code} is the machine (logoff, shutdown or budget kill)` };
+  if (failing.length) return { verdict: "red", why: "" };
+  const why = infraReason(text);
+  if (why) return { verdict: "infra", why };
+  if (stepName === "build" && code === 3 && !REAL_FAILURE.test(String(text ?? ""))) return { verdict: "infra", why: "no pool machine took the build (exit 3)" };
+  return { verdict: "red", why: "" };
+}
+
+// The red heads (stage 2 only; a compile red has its own verdict rule) whose recorded run was an infra refusal: the
+// marks the guard set before #2759. heads: { sha: { status, step } }; logsOf(sha, step) -> the transcripts of that
+// step's runs at that head (first run and recheck). Every transcript must be a refusal. -> [{ sha, step, why }]
+export function infraRedHeads(heads, logsOf) {
+  const out = [];
+  for (const [sha, h] of Object.entries(heads ?? {})) {
+    if (h?.status !== "red" || !h.step || h.step === "compile") continue;
+    const texts = logsOf(sha, h.step) ?? [];
+    if (!texts.length) continue;
+    const vs = texts.map((t) => classifyStep(h.step, 1, t));
+    if (vs.every((v) => v.verdict === "infra")) out.push({ sha, step: h.step, why: vs[0].why });
+  }
+  return out;
 }
 
 // Failing test names from a test run's output ([LFTEST] FAIL <name> ..., or the CLI's FAIL lines). The compact
@@ -190,7 +248,7 @@ export const COMPILE = ["ci", "--wb-only", "--compile-only"];
 // short of RAM (tools/lib/wb-gate.mjs ENV_SHORT_CODE): the machine failed, not the scripts.
 // A red verdict needs the compiler's own words in the transcript: any other non-zero exit (a sync that failed, a
 // Workbench that never started; 2026-11-15 an 11 s "exit 1" on lf-cloud) is no verdict, never a revert.
-export const COMPILE_ERROR = /does not compile|Can't compile|SCRIPTs*(E)/i;
+export const COMPILE_ERROR = /does not compile|Can't compile|SCRIPT\s*\(E\)/i;
 export function compileVerdict(code, text = null) {
   if (code === 0) return "ok";
   if (code === 3 || code === 4 || code == null) return "env";
@@ -273,3 +331,54 @@ export const REGEN_AFTER_REVERT = [
   ["tools/cli.mjs", "regen-localization"],
   ["tools/config/schema.mjs", "--write"],
 ];
+
+// ---- The watchdog (#2754): a dead guard is noticed and restarted, and a stale one is shouted about.
+// The worker renews its lease (the main-guard/lease status) every 5 min, but a long compile or a slow tick can delay
+// one, so "down" is three missed renewals (15 min), not the 30 min after which `start` may take the lease over.
+export const GUARD_DOWN_MS = 15 * 60 * 1000;
+export const GUARD_WEDGED_MS = 45 * 60 * 1000; // a live pid with a lease this old is hung, not slow
+export const RESTART_CAP = 3; // restarts per RESTART_WINDOW_MS before the watchdog stops and only alerts
+export const RESTART_WINDOW_MS = 60 * 60 * 1000;
+
+// Pure: the lease (guard-pin readLease: { state, host, pid, at } | null | undefined) -> what GitHub says about the guard.
+// state: live | down (held, renewal overdue) | stopped (released on purpose) | none | unknown (gh failed).
+export function guardHealth(lease, { now = Date.now(), downMs = GUARD_DOWN_MS } = {}) {
+  if (lease === undefined) return { state: "unknown", minutes: 0 };
+  if (!lease) return { state: "none", minutes: 0 };
+  const at = Date.parse(lease.at ?? "");
+  const minutes = Number.isFinite(at) ? Math.max(0, Math.round((now - at) / 60000)) : 0;
+  if (lease.state !== "held") return { state: "stopped", minutes, host: lease.host };
+  if (!Number.isFinite(at) || now - at > downMs) return { state: "down", minutes, host: lease.host, pid: lease.pid };
+  return { state: "live", minutes, host: lease.host, pid: lease.pid };
+}
+
+// The loud line for `lead` and `wt new`, null when the guard is fine or unknown. behind = commits between the pinned
+// compiled-ok head and origin/main (null when not known).
+// alive = this machine's worker pid: a live pid with a lease that is late but not hung is a busy guard, not a dead one.
+export function guardAlert(lease, { now = Date.now(), behind = null, downMs = GUARD_DOWN_MS, alive = null } = {}) {
+  const h = guardHealth(lease, { now, downMs });
+  if (alive && h.state === "down" && h.minutes * 60000 <= GUARD_WEDGED_MS) return null;
+  const gap = behind === null || behind === undefined ? "" : `; you are ${behind} commit(s) behind main`;
+  if (h.state === "down") return `main-guard down for ${h.minutes} min (last lease renewal on ${h.host}${gap}); \`tools\\cli main-guard start\`, or wait for the watchdog`;
+  if (h.state === "stopped") return `main-guard stopped ${h.minutes} min ago${gap}; \`tools\\cli main-guard start\``;
+  if (h.state === "none") return `main-guard has never held the lease${gap}; \`tools\\cli main-guard start\``;
+  return null;
+}
+
+// Pure: what one watchdog tick does. alive = pid of this machine's worker or null; restarts = ISO times of the
+// watchdog's recent restarts. -> { action: "none" | "restart" | "alert", why }.
+export function watchDecision({ off = false, alive = null, lease, host, now = Date.now(), restarts = [], downMs = GUARD_DOWN_MS, wedgedMs = GUARD_WEDGED_MS } = {}) {
+  if (off) return { action: "none", why: "LF_MAIN_GUARD=0" };
+  const h = guardHealth(lease, { now, downMs });
+  if (alive) {
+    const stale = sameLeaseHost(lease?.host, host) && lease?.state === "held" && h.minutes * 60000 > wedgedMs;
+    return stale ? { action: "alert", why: `worker pid ${alive} is alive but its lease is ${h.minutes} min old (hung?); not restarted` } : { action: "none", why: `worker pid ${alive} alive` };
+  }
+  if (h.state === "live" && !sameLeaseHost(lease.host, host)) return { action: "none", why: `${lease.host} runs the guard` };
+  if (h.state === "stopped") return { action: "none", why: `stopped on purpose ${h.minutes} min ago (tools\\cli main-guard start)` };
+  const recent = restarts.filter((t) => now - Date.parse(t) < RESTART_WINDOW_MS).length;
+  if (recent >= RESTART_CAP) return { action: "alert", why: `${recent} restarts in the last hour and the guard keeps dying; not restarting` };
+  // Our own pid is dead: ground truth, no need to wait for the lease to age. Another machine's lease must be overdue.
+  if (h.state === "live" || h.state === "down") return { action: "restart", why: `worker dead (lease ${h.state}, ${h.minutes} min since renewal on ${h.host})` };
+  return { action: "restart", why: h.state === "none" ? "no guard has ever held the lease" : "worker dead (lease unreadable, gh failed)" };
+}

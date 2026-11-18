@@ -7,6 +7,7 @@
 // tier: LOGIC
 //! medic/bill (#260): one revive writes one bill at the configured amount; paying takes cash once and
 //! clears it; the medic share is paid once, only after the patient paid.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_TreatmentBill : LF_Test
 {
 	protected static const string PATIENT = "bill-patient";

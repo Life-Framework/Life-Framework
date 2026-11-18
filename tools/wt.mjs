@@ -27,6 +27,8 @@ export { wtParent };
 import { ADDONS } from "./lib/addons.mjs";
 import { sessionDirOf } from "./lib/session-lease.mjs";
 import * as pinLib from "./lib/guard-pin.mjs";
+import { guardAlert } from "./lib/main-guard.mjs";
+import { recordClaim } from "./lib/main-write-guard.mjs";
 import { refuseMessage } from "./lib/disk-guard.mjs";
 import { isMachineWide, machineLockDir } from "./lib/machine-locks.mjs";
 
@@ -528,7 +530,7 @@ function defaultPin(root) {
   }
 }
 
-export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = true, unchecked = false, resolvePin = defaultPin, freeGb = freeDiskGbAt } = {}) {
+export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = true, unchecked = false, resolvePin = defaultPin, readLease = (r) => { try { return pinLib.readLease(r); } catch { return undefined; } }, freeGb = freeDiskGbAt } = {}) {
   checkBaseName(base);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
     throw new Error(`invalid slug '${slug}': lowercase letters, digits and single hyphens only`);
@@ -556,12 +558,15 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
   let start = "origin/" + base;
   let pinned = null;
   let pinNote = null;
+  let guardWarn = null;
   if (base === "main" && !unchecked) {
     const p = resolvePin(root);
     if (p) {
       start = p.sha;
       pinned = p.sha.slice(0, 8) + " (" + p.status + ", " + p.behind + " commit(s) behind origin/main)";
     } else pinNote = "no compiled-ok commit from the main guard found; based on origin/main";
+    // A dead guard stops moving the pin: say so loudly, with how far the pin has fallen behind (#2754).
+    guardWarn = guardAlert(readLease(root), { behind: p ? p.behind : null });
   }
 
   // Phase 1, locked: reserve the slug and its ports, then either claim a warm
@@ -641,8 +646,10 @@ export function wtNew(root, slug, { waitMs = 0, base = "main", priority, warm = 
     if (fromWarm) delete state.warm[claimed.id];
   }, { waitMs: lockWait });
   mark("finish", t2);
+  // This session now owns the worktree: the write hook refuses it any file in the main checkout (#2785).
+  recordClaim(main, { sessionId: process.env.CLAUDE_CODE_SESSION_ID, slug, path: dir });
   kickWarmFill(root);
-  return { slug, path: dir, branch, ports, base, pinned, pinNote, priority, warm: fromWarm, ms: Date.now() - t0, lockMs, phases };
+  return { slug, path: dir, branch, ports, base, pinned, pinNote, guardWarn, priority, warm: fromWarm, ms: Date.now() - t0, lockMs, phases };
 }
 
 // `git worktree add --no-checkout`: registers the worktree and its branch

@@ -4,6 +4,7 @@
 // tier: LOGIC
 //! Police calls (#2477, parent #234): a first wanted report posts a FINE call; an officer takes it only
 //! on duty and at or above its rank; one officer per call; Complete closes it once.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceCallAccept : LF_Test
 {
 	protected static const string SUSPECT = "police-call-suspect";
