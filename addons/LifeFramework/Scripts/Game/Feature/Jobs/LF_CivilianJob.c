@@ -146,6 +146,9 @@ class LF_CivilianJob
 		if (s_mWorkers)
 			s_mWorkers.Remove(playerUid);
 
+		// The run goes with the career, so its contract goes too (no stake): else the next plain run
+		// would settle as the wiped contract (#2817 review).
+		LF_ReputationContracts.Forget(playerUid);
 		LF_JobLevels.ForgetJob(playerUid, LF_JobLevels.JOB_DELIVERY);
 	}
 
@@ -957,6 +960,12 @@ class LF_CivilianJob
 			return 0;
 		}
 
+		if (!LF_Utils.IsAliveState(user) || LF_Downed.IsDowned(user))
+		{
+			LF_Debug.Warn("Jobs", string.Format("drop-off refused for %1: dead or downed, nothing paid (#2702)", uid));
+			return 0;
+		}
+
 		LF_EJobType finished = GetActiveJob(uid);
 		int passengers;
 		if (finished == LF_EJobType.TAXI)
@@ -978,7 +987,9 @@ class LF_CivilianJob
 			return 0;
 
 		GiveDepositBack(user, uid);
-		HandCash(user, paid);
+		int bonus = LF_Utils.ClampInt(LF_ReputationContracts.TakeLastBonus(uid), 0, paid);
+		HandCash(user, paid - bonus);
+		HandCash(user, bonus, LF_ReputationContracts.REASON_BONUS);
 		return paid;
 	}
 
@@ -1034,6 +1045,8 @@ class LF_CivilianJob
 		if (worker.m_eActiveJob == LF_EJobType.TAXI && taxiFare > 0)
 			amount = taxiFare;
 
+		amount = LF_ReputationContracts.Settle(playerUid, amount, LF_JobGuards.Now());
+
 		LF_EJobType finished = worker.m_eActiveJob;
 		worker.m_bActive = false;
 		worker.m_eActiveJob = LF_EJobType.UNEMPLOYED;
@@ -1070,6 +1083,7 @@ class LF_CivilianJob
 		worker.m_bRunTimed = false;
 		worker.m_iDeposit = 0;
 		LF_Debug.Log("Jobs", string.Format("run abandoned by %1, no pay, deposit %2 kept", playerUid, forfeited));
+		LF_ReputationContracts.Forfeit(playerUid, "abandoned", LF_JobGuards.Now());
 		LF_JobMapMarks.OnStopDone(playerUid);
 		return true;
 	}
@@ -1077,7 +1091,7 @@ class LF_CivilianJob
 	//------------------------------------------------------------------------------------------------
 	//! Places the awarded cash on the player. A short pocket is logged. The run
 	//! is already marked paid, so a full inventory does not pay a second time.
-	static void HandCash(IEntity user, int amount)
+	static void HandCash(IEntity user, int amount, string reason = "job-pay")
 	{
 		if (!user || amount <= 0)
 			return;
@@ -1085,7 +1099,7 @@ class LF_CivilianJob
 		if (LF_Systems.Refuses(SYSTEM, "run payout"))
 			return;
 
-		int given = LF_MoneyUtils.GiveCash(user, amount, "job-pay");
+		int given = LF_MoneyUtils.GiveCash(user, amount, reason);
 		if (given != amount)
 			LF_Debug.Warn("Jobs", string.Format("run payout short: paid %1 of %2 (player %3)", given, amount, user));
 		else
