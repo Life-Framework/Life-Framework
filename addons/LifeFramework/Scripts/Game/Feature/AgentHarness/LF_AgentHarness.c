@@ -3297,7 +3297,15 @@ class LF_AgentHarness
 		{
 			IEntity item = FindTarget(character, cmd.Arg1, cmd.Arg2);
 			if (!item && cmd.Arg2 != "")
+			{
 				item = FindTarget(character, cmd.Arg1, "");
+				string itemRefusal = FallbackRefusal(cmd.Arg2, NameOfHit(item));
+				if (itemRefusal != "")
+				{
+					WriteResult(cmd.Id, "error", itemRefusal);
+					return;
+				}
+			}
 			ScriptedUserAction itemAction;
 			if (item)
 				itemAction = FindShownOnEntity(item, cmd.Arg1, character);
@@ -3335,7 +3343,16 @@ class LF_AgentHarness
 			IEntity target = FindTarget(character, localClass, cmd.Arg2);
 			// A replicated NPC has no layer name on a client: take the nearest host of the action.
 			if (!target && cmd.Arg2 != "")
+			{
 				target = FindTarget(character, localClass, "");
+				// #2935: a named use that lands on a different named prop is a miss, not a pass.
+				string refusal = FallbackRefusal(cmd.Arg2, NameOfHit(target));
+				if (refusal != "")
+				{
+					WriteResult(cmd.Id, "error", refusal);
+					return;
+				}
+			}
 			ScriptedUserAction localAction;
 			if (target && localIndex > 0)
 				localAction = FindNthOnEntity(target, localClass, character, localIndex);
@@ -4234,6 +4251,28 @@ class LF_AgentHarness
 			return null;
 
 		return GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A named use whose name this client cannot see falls back to the nearest host of the action,
+	//! because a replicated NPC carries no layer name on a client. That fallback may only land on an
+	//! unnamed host: a host with another name is a different prop (a missing shop that opened the gun
+	//! counter next door, #2935). "" allows it, else the refusal names what it would have hit.
+	static string FallbackRefusal(string wantedName, string hitName)
+	{
+		if (wantedName.IsEmpty() || hitName.IsEmpty() || hitName == wantedName)
+			return "";
+
+		return "wrong_target:" + hitName;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string NameOfHit(IEntity hit)
+	{
+		if (!hit)
+			return "";
+
+		return hit.GetName();
 	}
 
 	//------------------------------------------------------------------------------------------------
