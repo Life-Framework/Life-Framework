@@ -35,6 +35,8 @@ Rung 4 background: server-only state, no screen in this card. Target: rung 3 for
   ledger part), `AbandonRun` calls `Forfeit` (the stake, points only). One at a time, a cooldown; session state.
 - Standing pay bonus (`LF_ReputationPay.c`, `m_aPays` in `LF_Reputation.conf`, #2703): `CompleteRun` adds the town tier's percent
   (`0 0 0 5 10 15`, max 15) of the run's base pay; `Dropoff` books it with the contract bonus under the ledger reason `standing-bonus`.
+- Pack overlays (`LF_ReputationOverlay.c`, #3044): `LF_ReputationConfig.Get()` and `LF_ReputationContractsConfig.Get()` layer each
+  mission-header overlay over the core file (factions, awards, gates, pays, contracts, by id: add, replace, patch, remove).
 - Contract offer in dialogue (`LF_DialogueHook_Contract.c`, #2913): the dialogue hook "Contract" offers a contract by id and calls
   `LF_ReputationContracts.Begin`; condition and action are both server-side.
 
