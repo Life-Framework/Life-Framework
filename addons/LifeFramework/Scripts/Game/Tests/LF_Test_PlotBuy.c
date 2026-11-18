@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_PlotBuy` printed `RED-OK property/plot-buy (fails with the hook on, 30 assertions)` (the hook skips every Buy call); `--only` then passed=4 failed=0.
+// red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_PlotBuy` printed `RED-OK property/plot-buy (fails with the hook on, 30 assertions)` (the hook skips every Buy call); `--only` then passed=4 failed=0. #2777 review: with the asked-key filter off, `--only` failed `the server sold the plot of the sign used, not the nearer neighbour (expected 'plot-a', got 'plot-b')` and took 7500 not 5000; with it on, passed.
 // tier: WORLD
 //! property/plot-buy (#2649): a player at a for-sale plot sign buys it with carried cash. The server
 //! picks the plot from the buyer's position (no id from the client). Enough cash makes the buyer the
@@ -9,6 +9,7 @@ class LF_Test_PlotBuy : LF_Test
 {
 	protected static const ResourceName SIGN = "{DA9D4FEB9BD67EA5}Prefabs/Props/Property/LF_PlotSign.et";
 	protected static const string PLOT = "plot-a";
+	protected static const string NEIGHBOUR = "plot-b";
 	protected static const string BUYER_UID = "lf-test-plot-buyer";
 	protected static const string SECOND_UID = "lf-test-plot-second";
 	protected static const string FAR_UID = "lf-test-plot-far";
@@ -29,8 +30,12 @@ class LF_Test_PlotBuy : LF_Test
 		IEntity second = LF_TestCharacterFixture.Spawn(ctx);
 		IEntity far = LF_TestCharacterFixture.Spawn(ctx);
 		IEntity sign;
+		IEntity neighbourSign;
 		if (buyer)
+		{
 			sign = LF_Utils.SpawnEntityPrefab(SIGN, buyer.GetOrigin() + "1 0 0");
+			neighbourSign = LF_Utils.SpawnEntityPrefab(SIGN, buyer.GetOrigin() + "0.5 0 0");
+		}
 
 		ctx.NotNull(sign, "the plot sign prefab spawns");
 		LF_PlotComponent plot;
@@ -38,13 +43,23 @@ class LF_Test_PlotBuy : LF_Test
 			plot = LF_Component<LF_PlotComponent>.Find(sign);
 
 		ctx.NotNull(plot, "the plot sign carries LF_PlotComponent");
-		if (price <= 0 || !buyer || !second || !far || !plot)
+		LF_PlotComponent neighbour;
+		if (neighbourSign)
+			neighbour = LF_Component<LF_PlotComponent>.Find(neighbourSign);
+
+		ctx.NotNull(neighbour, "the neighbouring plot sign spawns");
+		int neighbourPrice = LF_PropertyConfig.PlotPrice(NEIGHBOUR);
+		ctx.True(neighbourPrice > price, "the neighbouring plot costs more");
+		if (price <= 0 || !buyer || !second || !far || !plot || !neighbour)
 		{
 			Cleanup(buyer, second, far, sign);
+			LF_TestCharacterFixture.Delete(neighbourSign);
 			return;
 		}
 
 		plot.SetPlotKey(PLOT);
+		// #2777 review: a dearer plot's sign stands closer to the buyer than the sign they use.
+		neighbour.SetPlotKey(NEIGHBOUR);
 		string plotKey;
 
 		// Short cash: refused, nothing taken, nobody owns it.
@@ -53,12 +68,14 @@ class LF_Test_PlotBuy : LF_Test
 		ctx.Equal(price - 1, LF_MoneyUtils.GetCash(buyer), "and nothing is taken");
 		ctx.EqualStr("", LF_Properties.GetOwnerKey(PLOT), "and nobody owns the plot");
 
-		// Enough cash: owner, exactly the price taken.
-		SetCash(ctx, buyer, price + 50);
-		ctx.Equal(LF_EPlotBuy.BOUGHT, Buy(buyer, BUYER_UID, plotKey), "a buyer with the price buys the plot");
-		ctx.EqualStr(PLOT, plotKey, "the server picked the plot from the buyer's feet");
+		// Enough cash (and enough for the dearer neighbour too): the plot of the sign used, its price.
+		SetCash(ctx, buyer, neighbourPrice + 50);
+		ctx.Equal(LF_EPlotBuy.BOUGHT, Buy(buyer, BUYER_UID, plotKey, PLOT), "a buyer with the price buys the plot");
+		ctx.EqualStr(PLOT, plotKey, "the server sold the plot of the sign used, not the nearer neighbour");
+		ctx.EqualStr("", LF_Properties.GetOwnerKey(NEIGHBOUR), "the nearer neighbouring plot is not sold");
+		ctx.Equal(neighbourPrice + 50 - price, LF_MoneyUtils.GetCash(buyer), "exactly the asked plot's price was taken");
+		LF_TestCharacterFixture.Delete(neighbourSign);
 		ctx.EqualStr(BUYER_UID, LF_Properties.GetOwnerKey(PLOT), "the buyer owns the plot in LF_Properties");
-		ctx.Equal(50, LF_MoneyUtils.GetCash(buyer), "exactly the price was taken");
 		LF_PropertyRecord row = LF_Properties.Get(PLOT);
 		ctx.True(row && row.m_iPurchasedAt > 0, "the row records when it was bought");
 
@@ -82,13 +99,13 @@ class LF_Test_PlotBuy : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected LF_EPlotBuy Buy(IEntity buyer, string uid, out string plotKey)
+	protected LF_EPlotBuy Buy(IEntity buyer, string uid, out string plotKey, string askedKey = "")
 	{
 		plotKey = "";
 		if (RedProof())
 			return -1;
 
-		return LF_PlotComponent.Buy(buyer, uid, plotKey);
+		return LF_PlotComponent.Buy(buyer, uid, plotKey, askedKey);
 	}
 
 	//------------------------------------------------------------------------------------------------
