@@ -7037,6 +7037,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Car lot - price list"
      Comment "Car lot sheet title."
     }
+    CustomStringTableItem "{D346F69E748E0356}" {
+     Id "LF-Lumber_AlreadyFelled"
+     Target_en_us "This tree is already down."
+     Comment "Toast: felling refused, the tree is felled and has not regrown (#3259)."
+    }
+    CustomStringTableItem "{994FBED5D9F12308}" {
+     Id "LF-Lumber_NearBuilding"
+     Target_en_us "Too close to a building."
+     Comment "Toast: felling refused, a building is too near; keeps gardens and avenues standing (#3259)."
+    }
+    CustomStringTableItem "{DE994BAA5959C133}" {
+     Id "LF-Lumber_NearRoad"
+     Target_en_us "Too close to the road: it would fall across it."
+     Comment "Toast: felling refused, a road or paved surface is too near (#3259)."
+    }
+    CustomStringTableItem "{61435D35A213695C}" {
+     Id "LF-Lumber_NoAxe"
+     Target_en_us "You need an axe in your hands."
+     Comment "Toast: felling refused, no axe held (#3259)."
+    }
+    CustomStringTableItem "{39ECA47F906B44F1}" {
+     Id "LF-Lumber_NotATree"
+     Target_en_us "That can't be felled."
+     Comment "Toast: felling refused, a stump, fallen trunk, orchard or other tree that is never felled (#3259)."
+    }
+    CustomStringTableItem "{483778CCE8D259AA}" {
+     Id "LF-Lumber_SafeZone"
+     Target_en_us "No felling here."
+     Comment "Toast: felling refused inside a safe zone (#3259)."
+    }
+    CustomStringTableItem "{BC5CB49CBB20C17E}" {
+     Id "LF-Lumber_Tired"
+     Target_en_us "You're too tired. Catch your breath first."
+     Comment "Toast: felling refused, stamina is below what the tree costs (#3259)."
+    }
+    CustomStringTableItem "{1BD92A70876B9267}" {
+     Id "LF-Lumber_TooFar"
+     Target_en_us "Get closer to the trunk."
+     Comment "Toast: felling refused, the player stands too far from the tree (#3259)."
+    }
+    CustomStringTableItem "{BB558DD7CB298EBF}" {
+     Id "LF-Lumber_TooSmall"
+     Target_en_us "Too young to fell. Let it grow."
+     Comment "Toast: felling refused, a sapling (#3259)."
+    }
     CustomStringTableItem "{3651646B23FCD86B}" {
      Id "LF-Magazine_Taser_Description"
      Target_en_us "One shot for the taser."
