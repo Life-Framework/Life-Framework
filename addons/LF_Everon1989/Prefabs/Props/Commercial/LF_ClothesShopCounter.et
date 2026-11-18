@@ -1,0 +1,44 @@
+GenericEntity {
+ ID "01EF6E7A7581856A"
+ components {
+  MeshObject "{1A69DDE17414A6B7}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{CE417B28BACFAC96}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_ShopComponent "{1F23BF034A289CDE}" {
+   m_sShopName "#LF-Shop_Name_ClothesShop"
+   m_sShopDescription "#LF-Shop_Desc_ClothesShop"
+   m_sOutletId "clothing_rack"
+  }
+  ActionsManagerComponent "{FB6CD05DC57300AB}" {
+   ActionContexts {
+    UserActionContext "{A72527A17B03C7B3}" {
+     ContextName "default"
+     Position PointInfo "{0567C98BCAC87732}" {
+      Offset 0 0.9 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{CBD1A5800BC0014E}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B66DE893D875B977}" {
+      Name "#LF-Shop_Open_ClothesShop"
+      Description "#LF-Shop_Desc_ClothesShop"
+     }
+    }
+   }
+  }
+  RplComponent "{8BE6DEC0C3EFE7E4}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+}

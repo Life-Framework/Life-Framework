@@ -65,6 +65,12 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   what walking away costs in words (`#LF-ContractTracker_Cost`, never points) when the contract has a stake. The title
   is the pack's row `Title_<contractId>`, else `Title_Default`. There was no on-screen quest tracker, so the line is a
   paper tag built from UI kit parts (`LF_ContractTrackerHud`, no layout). Test `reputation/contract-tracker`.
+- ✅ **The tracker line comes back after a reconnect, with the time left** (#3144, merged, in-dev): `LF_ContractTrackerSubscriber`
+  listens for `LF_OnPlayerSpawnedEvent` (a reconnect, a late join, a respawn) and `LF_ContractTracker.Resend` sends a running
+  contract's line again over the same Owner RPC, with a fourth field, the seconds left (`limit - (now - takenAt)`, from
+  `LF_ReputationContracts.ActiveRun`), so the client's countdown and time word carry on instead of starting full. No new
+  RPC and no JIP state; a spawn with no contract, or one already out of time, sends nothing. A contract still ends on a
+  server restart. Test `reputation/contract-tracker-resend`.
 - 🟡 **The standing tables read pack overlays** (#3044): `LF_ReputationConfig.Get()` and `LF_ReputationContractsConfig.Get()`
   layer each overlay the mission header lists (`LF_ReputationOverlay.c`, load order) over the core file: factions (key `m_sId`),
   awards (`m_sAction`), gates (`m_sGate`), pays (`m_sFaction`) and contracts (`m_sId`) take add, replace, patch and remove
@@ -79,7 +85,8 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
 - 🟡 **The 1989 pack speaks standing** (#2709, `Configs/Reputation/LF_Reputation_Everon1989.conf`, `LF_ReputationContracts_Everon1989.conf`, both in
   the mission header's overlays): the three factions' tier words are the pack's (`#LF-Everon_Tier_<Faction>_<Tier>` rows in
   `LF_Everon1989/Language/`, from `docs/architecture/reputation.md` section 1; the underworld's are never shown), a `job_completed:<JOB>` award for
-  parcel (4), fuel (6) and taxi (6) runs with a 60 s cooldown, the gate `contract:harbour_crates` (town, tier 1, Known) and the harbour master's
+  parcel (10, #3083: ten runs, about 40 minutes, take a newcomer to Known), fuel (6) and taxi (6) runs with a 60 s cooldown, the pack's
+  town daily cap raised from the core 60 to 120 so those ten runs fit one in-game day (#3083), the gate `contract:harbour_crates` (town, tier 1, Known) and the harbour master's
   early crates contract (a parcel run, x1.4 pay, +12 on finish, -10 if dropped, 25 min limit; tracker title `LF-ContractTracker_Title_harbour_crates`).
   Test `everon/reputation` (pack leg). Not yet: the chop shop's "car to order" contract (no core job matches it).
 - 🧪 **The harbour master offers the harbour crates contract, voiced** (#3050, merged, in-dev): his pack dialogue (`tools/assets/dialogue/harbour_master/`, ElevenLabs
@@ -88,4 +95,5 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   the town knows you." Accepting runs the `Contract` action; the node after it has no line of its own, so he answers with the recorded line for the key the hook hands back
   (started, busy, cooldown, run already open). Declining ends the talk. Tests `everon/harbour-master` (pack leg: both replies, the pick starts the contract at Known and nothing
   below it) and `dialogue/contract` (the locked condition).
+- ✅ **Harbour crates proof** (#3084, merged, in-dev): session proof `harbour-crates` (`agent-box/proofs/harbour-crates-proof.mjs`, `up --mission island`). A Known character (set with the harness verbs `repgrant <FACTION> <points>` and `repshow <FACTION>` in `LF_ReputationHarnessVerbs.c`, dev-gated like `/licence`, no daily cap booked) talks to Marcel Roux, takes `harbour_crates`, reads the tracker, delivers and the server log shows pay x1.4, the `standing-bonus` ledger line and +12 town. It prints PASS or FAIL per step with the PR that should fix a failure. It passed 11 of 11 on a local merge of the harbour master (#3058) and the parcel drop points (#2973); on main plus #3058 alone step 7 fails, the island has no drop-off to deliver at.
 - 🔲 Screens, and the owner `config.json` section `reputation` (later cards of #1018).

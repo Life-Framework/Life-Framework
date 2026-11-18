@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3C303500B8A84FF7}Prefabs/Vegetation/Crops/LF_CabbageStage1.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

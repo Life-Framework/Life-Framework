@@ -44,7 +44,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
-import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
+import { baseChanges, incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import * as wt from "./wt.mjs";
 import { registerDrivers } from "./merge/register-drivers.mjs";
@@ -660,6 +660,11 @@ function toolEnv() {
 // `validate --full`, `ci`, `wt gate`, and `wt ship`.
 const FULL_ONLY = new Set(["validate-scripts.ps1"]);
 
+// Checks that are healthy but slow when the PC is busy get a longer budget (seconds). world-sync-selftest runs
+// ~500 git processes; with ~20 agents validating at once it took 113-393 s green and then past 600 s on
+// 2026-11-18, which the main guard blamed on an unrelated merge (#3283).
+const SLOW_CHECK_S = new Map([["validate-scripts.ps1", 1200], ["world-sync-selftest.mjs", 1200], ["selftest-scratch-selftest.mjs", 1200]]);
+
 // Checks are independent read-only scripts, so they run concurrently (most of
 // their time is PowerShell start-up), fewer at once when free RAM is short (tools/lib/validate-concurrency.mjs).
 // Output is printed in file order.
@@ -743,7 +748,7 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   const state = isValidate ? loadState(root) : null;
   let inc = null;
   if (isValidate && opts.incremental && !opts.full && !incrementalOff()) {
-    inc = plan(root, dir, scripts, state, snapshotFiles(root));
+    inc = plan(root, dir, scripts, state, snapshotFiles(root), process.env.LF_VALIDATE_NO_BASE ? null : baseChanges(root));
   }
   const jobs = scripts.map((s) => {
     if (skip.has(s)) return { s, skipped: "LF_VALIDATE_SKIP" };
@@ -779,7 +784,7 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
         const wb = FULL_ONLY.has(job.s) ? await wbRoute.acquireWorkbench(root, { purpose: job.s }) : null;
         try {
           // LF_WB_GUARDED: validate-scripts.ps1 refuses to start Workbench unless the CLI passed the cap check above.
-          dog.start(job.s, checkBudgetMs(process.env, FULL_ONLY.has(job.s) ? 1200 : null));
+          dog.start(job.s, checkBudgetMs(process.env, SLOW_CHECK_S.get(job.s) ?? null));
           job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env: FULL_ONLY.has(job.s) ? { ...env, LF_WB_GUARDED: "1" } : env, onSpawn: (h) => handles.set(job.s, h) });
         } finally {
           wb?.release();
@@ -825,7 +830,8 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
       const slow = [...ran].sort((a, b) => b.secs - a.secs).slice(0, 3).map((j) => `${j.s} ${j.secs.toFixed(1)} s`).join(", ");
       console.log(`slowest: ${slow}`);
     }
-    if (inc) console.log(`incremental: ran ${ran.length}, skipped ${skippedIncr} (inputs unchanged since their last green run; 'validate --all' runs every check)`);
+    const skippedBase = inc ? [...inc.values()].filter((v) => v.unchanged && v.base).length : 0;
+    if (inc) console.log(`incremental: ran ${ran.length}, skipped ${skippedIncr} (${skippedBase} as on origin/main, the rest unchanged since their last green run; 'validate --all' runs every check)`);
   }
   if (dog.frozenMs() >= 5000) {
     console.log(`WARN  ${area}: this process was frozen ${(dog.frozenMs() / 1000).toFixed(0)} s (longest ${(dog.longestFreezeMs() / 1000).toFixed(0)} s) by a synchronous call beside the checks (a lock wait or spawnSync in the same process); check times above leave it out`);

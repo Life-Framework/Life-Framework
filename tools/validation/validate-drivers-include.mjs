@@ -1,5 +1,4 @@
 // The shared git config holds at most one merge-drivers include, and it is the main checkout's.
-// inputs: always
 //
 // Worktrees share .git/config; the pre-commit hook once appended one include.path per worktree
 // (640 lines, 79 KB, "could not write config file" races). tools/merge/register-drivers.mjs keeps
@@ -10,6 +9,8 @@
 // red-proof (2026-11-14): with the heal call removed and the shared .git/config still holding three
 // worktree lines from old hooks this printed `FAIL .git/config has 3 merge-drivers include.path lines` and
 // exited 1.
+// inputs: always
+// (global: reads this checkout's git config (merge drivers), machine state)
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { driversIncludes, mainCheckout, registerDrivers } from "../merge/register-drivers.mjs";

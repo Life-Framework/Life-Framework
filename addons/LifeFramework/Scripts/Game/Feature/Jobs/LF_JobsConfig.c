@@ -139,6 +139,8 @@ class LF_JobsConfig
 	static const int CASH_MAX = 1000000;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const float COOLDOWN_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const float COOLDOWN_MAX = 86400;	// lf-fixed: the schema limit, one day
+	static const int DUTY_IDLE_MIN = 0;	// lf-fixed: the schema limit, 0 turns the idle pause off
+	static const int DUTY_IDLE_MAX = 86400;	// lf-fixed: the schema limit, one day
 	static const int XP_CAP_MIN = 0;	// lf-fixed: the schema limit, 0 is no cap
 	static const int XP_CAP_MAX = 100000000;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int XP_AWARD_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
@@ -176,6 +178,9 @@ class LF_JobsConfig
 
 	[Attribute("0.4", UIWidgets.Auto, "Medic duty pay in cash per second on duty, paid at the hospital desk on going off duty. 0 disables duty pay", params: "0 100")]
 	float m_fMedicDutyPayPerSecond;
+
+	[Attribute("300", UIWidgets.Auto, "Duty idle pause: an officer or medic on duty who for this many seconds neither moves 2 m, turns their view, nor rides a moving vehicle has the duty clock paused (no pay, no rank time) until they do. 0 turns the pause off", params: "0 86400")]
+	int m_iDutyIdleSeconds;
 
 	[Attribute("500", UIWidgets.Auto, "Unemployment benefit: a bank balance strictly below this may collect", params: "0 1000000")]
 	int m_iBenefitBalanceThreshold;
@@ -311,11 +316,12 @@ class LF_JobsConfig
 	//! \param[in] source The file, for log lines.
 	void ApplyOwner(notnull LF_ConfigReader reader, string source = "config.json")
 	{
-		array<string> ownerKeys = {"policeDutyPayPerSecond", "medicDutyPayPerSecond", "benefitBalanceThreshold", "benefitAmount", "benefitCooldownSeconds", "runMinDistance", "runMinTimeFraction", "runRoadSpeed", "cargoDepositPercent", "cargoDepositFallback", "jobXpFirstLevel", "jobXpLevelGrowth", "testUnlockAll", "tracks", "xpAwards", "licenceGates"};
+		array<string> ownerKeys = {"policeDutyPayPerSecond", "medicDutyPayPerSecond", "dutyIdleSeconds", "benefitBalanceThreshold", "benefitAmount", "benefitCooldownSeconds", "runMinDistance", "runMinTimeFraction", "runRoadSpeed", "cargoDepositPercent", "cargoDepositFallback", "jobXpFirstLevel", "jobXpLevelGrowth", "testUnlockAll", "tracks", "xpAwards", "licenceGates"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadBool("testUnlockAll", m_bTestUnlockAll);
 		reader.ReadFloat("policeDutyPayPerSecond", m_fPoliceDutyPayPerSecond, PAY_RATE_MIN, PAY_RATE_MAX);
 		reader.ReadFloat("medicDutyPayPerSecond", m_fMedicDutyPayPerSecond, PAY_RATE_MIN, PAY_RATE_MAX);
+		reader.ReadInt("dutyIdleSeconds", m_iDutyIdleSeconds, DUTY_IDLE_MIN, DUTY_IDLE_MAX);
 		reader.ReadInt("benefitBalanceThreshold", m_iBenefitBalanceThreshold, CASH_MIN, CASH_MAX);
 		reader.ReadInt("benefitAmount", m_iBenefitAmount, CASH_MIN, CASH_MAX);
 		reader.ReadFloat("benefitCooldownSeconds", m_fBenefitCooldownSeconds, COOLDOWN_MIN, COOLDOWN_MAX);

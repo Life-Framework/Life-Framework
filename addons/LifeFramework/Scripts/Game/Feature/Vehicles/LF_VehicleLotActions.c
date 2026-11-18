@@ -300,20 +300,44 @@ class LF_VehicleStoreHereAction : LF_VehicleStoreAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string OwnedId(IEntity vehicle, IEntity user)
+	//! The vehicle id when `uid` owns this car, else "". The server reads the ownership tables. A client
+	//! has none (they fill on the server only, #3366), so it reads the owner key the lock replicates;
+	//! that only decides whether the row shows, the server re-checks the tables on PerformAction.
+	//! \param useTables True on the server; false for the client branch (tests call it too).
+	static string OwnedIdFor(IEntity vehicle, string uid, bool useTables)
 	{
 		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
-		if (!vehicleLock || !user)
+		if (!vehicleLock || uid.IsEmpty())
 			return "";
 
 		string vehicleId = vehicleLock.GetVehicleIdentifier();
-		if (LF_VehicleOwnership.GetOwner(vehicleId) != LF_Utils.GetPlayerUID(user))
+		if (vehicleId.IsEmpty())
+			return "";
+
+		if (!useTables)
+		{
+			if (LF_VehicleLockComponent.OwnerMatches(vehicleLock.GetOwnerUid(), uid))
+				return vehicleId;
+
+			return "";
+		}
+
+		if (LF_VehicleOwnership.GetOwner(vehicleId) != uid)
 			return "";
 
 		if (LF_VehicleOwnership.GetVehicle(vehicleId) != vehicle)
 			return "";
 
 		return vehicleId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string OwnedId(IEntity vehicle, IEntity user)
+	{
+		if (!user)
+			return "";
+
+		return OwnedIdFor(vehicle, LF_Utils.GetPlayerUID(user), Replication.IsServer());
 	}
 
 	//------------------------------------------------------------------------------------------------

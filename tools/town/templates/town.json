@@ -4,7 +4,7 @@
   "about": "Slots of a town place (docs/architecture/everon-world.md 3.2). Tooling data: no coordinates and no place names. `needs` is what a building must offer; `places` are the LF_Places kinds the core system looks for once the slot is fitted (the first one carries the slot's id). `poi` is the front kind that has a row in LF_MapPois.conf (or a pack overlay) and so shows on the map, or \"none\" when the slot puts none there; `town map --check` fails a slot with neither (tools/town/lib/poi-check.mjs).",
   "slots": [
     {
-      "id": "arrival", "required": true, "kit": "arrival", "host": "building", "poi": "none",
+      "id": "arrival", "required": true, "margin": 160, "kit": "arrival", "host": "building", "poi": "none",
       "needs": { "interior": "required", "minArea": 90, "prefer": "large", "maxDistance": 80, "types": ["government", "townhouse", "house", "villa", "hotel"] },
       "places": ["Spawn", "Clerk", "LicenceDesk"]
     },
@@ -62,6 +62,56 @@
       "places": ["RangeLane"]
     },
     {
+      "id": "supermarket", "required": false, "kit": "supermarket", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 150, "prefer": "near", "maxDistance": 160, "types": ["shop", "townhouse"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "hardware", "required": false, "kit": "hardware", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["garage", "industrial", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "pharmacy", "required": false, "kit": "pharmacy", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 100, "prefer": "near", "maxDistance": 160, "types": ["shop", "townhouse"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "newsagent", "required": false, "kit": "newsagent", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "minArea": 8, "prefer": "near", "maxDistance": 160, "types": ["kiosk", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "seed-feed", "required": false, "kit": "seed-feed", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "minArea": 40, "prefer": "near", "maxDistance": 160, "types": ["farm", "garage", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "bakery", "required": false, "kit": "bakery", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "butcher", "required": false, "kit": "butcher", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "barber", "required": false, "kit": "barber", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
+      "places": ["BarberChair"]
+    },
+    {
+      "id": "furniture", "required": false, "kit": "furniture", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 100, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "woodlot", "required": false, "kit": "woodlot", "host": "building", "poi": "none", "margin": 14,
+      "needs": { "interior": "optional", "minArea": 80, "prefer": "far", "types": ["industrial", "shed", "farm", "garage"] },
+      "places": ["LogPile", "Processor"]
+    },
+    {
       "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 110, "types": ["shop", "townhouse", "house"] },
       "places": ["GunCounter"]
@@ -79,9 +129,24 @@
       "places": ["FenceYard"]
     },
     {
+      "id": "harbour", "required": false, "kit": "harbour-master", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 15, "prefer": "near", "maxDistance": 130, "types": ["industrial", "shed", "garage", "house"] },
+      "places": ["HarbourMaster"]
+    },
+    {
+      "id": "carlot", "required": false, "kit": "carlot", "host": "building", "poi": "none", "margin": 18,
+      "needs": { "interior": "optional", "minArea": 60, "prefer": "near", "maxDistance": 140, "types": ["garage"] },
+      "places": ["VehicleLot"]
+    },
+    {
       "id": "board", "required": true, "kit": "board", "host": "street", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 60 },
       "places": ["TownBoard", "MapBoard"]
+    },
+    {
+      "id": "jail", "required": false, "kit": "jail", "host": "street", "with": "police", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 110 },
+      "places": ["JailCell"]
     },
     {
       "id": "taxi", "required": false, "kit": "taxi", "host": "street", "poi": "none",
@@ -89,10 +154,20 @@
       "places": ["TaxiRank"]
     },
     {
+      "id": "parcel-drops", "required": false, "kit": "parcel-drops", "host": "outposts", "poi": "none",
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
       "id": "parcel", "required": false, "kit": "parcel", "host": "building", "poi": "none",
       "needs": { "interior": "optional", "minArea": 8, "prefer": "near", "maxDistance": 100, "types": ["kiosk", "shop"] },
       "plot": { "minWidth": 6, "minDepth": 6, "prefabs": [{ "type": "kiosk", "stem": "NewspaperBooth_E_01_redwhite" }] },
       "places": ["ParcelDepot"]
+    },
+    {
+      "id": "residents", "required": false, "kit": "residents", "host": "building", "poi": "none",
+      "needs": { "interior": "optional", "minArea": 60, "prefer": "near", "maxDistance": 130, "types": ["townhouse", "house", "villa"] },
+      "places": ["House"]
     }
   ]
 }

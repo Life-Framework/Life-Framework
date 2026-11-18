@@ -171,7 +171,9 @@ export function sourceComponent(kit, row, c, root, cache = new Map()) {
       const set = scalarSet(comp);
       const setOk = Object.entries(c.set ?? {}).every(([k, v]) => set[k] === v);
       const blocksOk = JSON.stringify(comp.kids.map(compClass)) === names;
-      cands.push({ comp, exact: setOk && blocksOk, score: (setOk ? 2 : 0) + (blocksOk ? 1 : 0) });
+      // A kit row has no prefab when its entities are bare ones, so every one of them matches; the row's own source entity wins.
+      const own = e.name && e.name === row.name ? 4 : 0;
+      cands.push({ comp, exact: setOk && blocksOk, score: own + (setOk ? 2 : 0) + (blocksOk ? 1 : 0) });
     }
   }
   cands.sort((x, y) => y.score - x.score);
@@ -235,6 +237,20 @@ export function openPrTownClaims(exec, { branch = null } = {}) {
   return { claims, note: "" };
 }
 
+// Pure: an integration worktree (ws/island-integration, #3076) merges other drafts' claim files to try them together and is never
+// pushed, so its copies are not claims of its own and must not block the drafts they came from.
+export const isIntegrationBranch = (branch) => /^ws\/island-integration(-[a-z0-9-]+)?$/.test(String(branch ?? ""));
+
+// Pure: whether a claim belongs to the draft this branch is stacked on. A follow-up branch ws/town-draft-<place>-<slot>-<word> builds on
+// the open draft ws/town-draft-<place>-<slot> and changes that slot's layer on top of it, so the draft's own claim (its open PR, its
+// worktree) is not a rival. Another slot's claim, or a PR of any other branch, still blocks.
+export function claimOfBase(c, { branch, place, slot }) {
+  const base = `ws/town-draft-${place}-${slot}`;
+  if (!branch || !String(branch).startsWith(`${base}-`)) return false;
+  if (c.place !== place || c.slot !== slot) return false;
+  return new RegExp(`^open PR #[0-9]+ \\(${base}\\)$`).test(c.where) || c.where === `worktree Life-Framework-ws-town-draft-${place}-${slot}`;
+}
+
 // Uncommitted claim files in sibling local worktrees: no network, read from `git worktree list --porcelain`.
 export function worktreeTownClaims(exec, root) {
   const ls = exec("git", ["worktree", "list", "--porcelain"]);
@@ -243,6 +259,7 @@ export function worktreeTownClaims(exec, root) {
   for (const block of String(ls.stdout).split(/\r?\n\r?\n/)) {
     const path = /^worktree (.+)$/m.exec(block)?.[1];
     if (!path || resolve(path) === resolve(root)) continue;
+    if (isIntegrationBranch(/^branch refs\/heads\/(.+)$/m.exec(block)?.[1])) continue;
     const dir = join(path, CLAIMS_DIR);
     if (!existsSync(dir)) continue;
     for (const f of readdirSync(dir).filter((n) => n.endsWith(".json"))) {
@@ -312,10 +329,14 @@ export function planFit(opts, ctx = {}) {
 
   const slot = template.slots.find((s) => s.id === slotId);
   if (!slot) return (errors.push(`the ${template.kind} template has no slot '${slotId}'`), fail());
+  if (slot.host === "outposts") return (errors.push(`slot ${slotId} stands in other places' buildings (an outposts slot): run tools\\cli town drops ${place} ${slotId}`), fail());
   const entry = mapping.slots?.[slotId];
   if (!entry) return (errors.push(`slot ${slotId} is not in the mapping`), fail());
   if (entry.none) return (errors.push(`slot ${slotId} is mapped to none${entry.reason ? ` (${entry.reason})` : ""}: nothing to fit`), fail());
-  for (const p of checkMapping(mapping, dossier, template)) if (!/^slot /.test(p) || p.startsWith(`slot ${slotId}:`)) errors.push(`mapping: ${p}`);
+  // A slot whose building is in ANOTHER place's survey (`dossier` on its entry): `dossier` here is that survey, the place's own
+  // is `mappingDossier`, and the building is claimed under "<survey slug>/<id>" so it never meets this place's own b14.
+  const buildingKey = entry.dossier ? `${entry.dossier}/${entry.building}` : entry.building;
+  for (const p of checkMapping(mapping, opts.mappingDossier ?? dossier, template, entry.dossier ? { [entry.dossier]: dossier } : null)) if (!/^slot /.test(p) || p.startsWith(`slot ${slotId}:`)) errors.push(`mapping: ${p}`);
   if (errors.length) return fail();
 
   const kit = opts.kits?.[slot.kit];
@@ -338,8 +359,9 @@ export function planFit(opts, ctx = {}) {
   }
   // `--refit`: this slot's own claim, already committed on origin/main (every worktree carries it), does not block its re-fit.
   // The same slot held by an open PR or a sibling worktree, and any other slot's claim on the building, still refuse.
+  for (let i = taken.length - 1; i >= 0; i--) if (claimOfBase(taken[i], { branch: opts.branch, place, slot: slotId })) taken.splice(i, 1);
   const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && c.where === "origin/main")) : taken;
-  errors.push(...conflicts(blocking, { place, slot: slotId, building: entry.building, plot: entry.plot, shared: entry.shared }));
+  errors.push(...conflicts(blocking, { place, slot: slotId, building: buildingKey, plot: entry.plot, shared: entry.shared }));
   if (errors.length) return { ...fail(), notes };
 
   // The building: a mapped one stands where the dossier says; a plot gets the purpose-built building first (D9).
@@ -415,7 +437,7 @@ export function planFit(opts, ctx = {}) {
     schema: 1,
     place,
     slot: slotId,
-    ...(entry.building ? { building: entry.building } : { plot: entry.plot }),
+    ...(entry.building ? { building: buildingKey } : { plot: entry.plot }),
     ...(entry.shared ? { shared: true } : {}),
     kit: slot.kit,
     layer: `${LAYER_DIR}/${layerName}`,
@@ -584,7 +606,7 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
   })();
 
   // Only a town-draft-<place>-<slot> worktree writes an island layer (T4 enforces it too); --dry and --out-dir are for trying and tests.
-  if (!flags.dry && !flags.check && !flags["out-dir"] && !new RegExp(`^ws/town-draft-${place}-${slotId}$`).test(branch ?? "")) {
+  if (!flags.dry && !flags.check && !flags["out-dir"] && !new RegExp(`^ws/town-draft-${place}-${slotId}(-[a-z0-9-]+)?$`).test(branch ?? "")) {
     console.log(`REFUSE  town fit writes an island layer only from the worktree ws/town-draft-${place}-${slotId} (this is ${branch ?? "unknown"}); create it with tools\\cli wt new town-draft-${place}-${slotId}, or pass --dry`);
     return 1;
   }
@@ -592,8 +614,11 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
   let plan;
   try {
     const placeDir = join(root, "docs", "everon", "places", place);
-    const dossier = readJson(resolve(root, flags.dossier ?? join(placeDir, "dossier.json")), "dossier");
+    const mappingDossier = readJson(resolve(root, flags.dossier ?? join(placeDir, "dossier.json")), "dossier");
     const mapping = readJson(resolve(root, flags.mapping ?? join(placeDir, "mapping.json")), "mapping");
+    // A slot whose entry names another place's survey (`dossier`) fits against that dossier.
+    const survey = mapping.slots?.[slotId]?.dossier;
+    const dossier = survey && SLUG_RX.test(survey) ? readJson(join(root, "docs", "everon", "places", survey, "dossier.json"), "dossier") : mappingDossier;
     const template = flags["template-file"] ? readJson(resolve(root, flags["template-file"]), "template") : loadTemplate(mapping.template, root);
     const entry = template.slots.find((s) => s.id === slotId);
     const kits = {};
@@ -603,7 +628,7 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
       if (existsSync(kf)) kits[entry.kit] = readJson(kf, "kit");
     }
     const shell = ctxShell ?? shellReader(root);
-    const fitOpts = { place, slot: slotId, dossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, refit: Boolean(flags.refit), allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
+    const fitOpts = { place, slot: slotId, dossier, mappingDossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, refit: Boolean(flags.refit), allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
     plan = await planFitSeated(fitOpts, { root, run, readGame: await gameReader(), shell });
   } catch (e) {
     console.log(`REFUSE  ${e.message}`);

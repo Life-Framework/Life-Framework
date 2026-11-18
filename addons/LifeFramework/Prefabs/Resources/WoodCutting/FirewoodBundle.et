@@ -1,0 +1,21 @@
+GenericEntity : "{6697C9B8CEB5234C}Prefabs/Resources/WoodCutting/WoodKindling.et" {
+ ID "7A3C1D52B6E4F804"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Firewood bundle"
+     Description "Split logs tied in a bundle, for a stove or a bakery oven"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 3
+     SizeSetupStrategy Volume
+     ItemVolume 400
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{4FBF5B87205EAE8A}Assets/Props/Civilian/WoodKindling_01/WoodKindling_Crate_01.xob"
+  }
+ }
+}

@@ -6,10 +6,10 @@ fails on a tunable constant that is neither baselined nor marked fixed (#277).
 
 ## Counts
 
-- Config roots (a `.conf` file whose root class is script-defined): **101**
-- Config attributes (`[Attribute(` in the root's script file): **1067**
-- Numeric constants in `Feature/`: **1201**; tunable **773**, fixed **168**, unclassified **260**
-- Tunables that are config defaults or marked `// lf-fixed:`: **622**; baselined debt for #284: **151**
+- Config roots (a `.conf` file whose root class is script-defined): **113**
+- Config attributes (`[Attribute(` in the root's script file): **1247**
+- Numeric constants in `Feature/`: **1301**; tunable **817**, fixed **188**, unclassified **296**
+- Tunables that are config defaults or marked `// lf-fixed:`: **666**; baselined debt for #284: **151**
 
 A constant is **tunable** when its name holds a time, range, price, cap or rate word
 (`_MS`, `_RADIUS`, `_FINE`, `MAX_`, ...). It is **fixed** when it holds a structural word
@@ -20,6 +20,7 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 
 | Root | Section | Owner | Attributes | Config | Script |
 |---|---|---|---|---|---|
+| `LF_BuyerPrices` | unrouted | core | 5 | `Configs/Crime/LF_BuyerPrices.conf` | `Scripts/Game/Feature/Laundering/LF_BuyerPrices.c` |
 | `LF_CharacterConfig` | persistence | core | 3 | `Configs/Account/LF_Characters.conf` | `Scripts/Game/Feature/Account/LF_CharacterConfig.c` |
 | `LF_ChopShopConfig` | crime | core | 15 | `Configs/Crime/LF_ChopShop.conf` | `Scripts/Game/Feature/Crime/LF_ChopShop.c` |
 | `LF_CleanupConfig` | unrouted | core | 8 | `Configs/World/LF_CleanupConfig.conf` | `Scripts/Game/Feature/World/LF_Cleanup.c` |
@@ -27,6 +28,7 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | `LF_CropCatalogue` | jobs | core | 11 | `Configs/Farming/LF_Crops.conf` | `Scripts/Game/Feature/Farming/LF_CropCatalogue.c` |
 | `LF_DialogueConfig` | unrouted | core | 21 | `Configs/Dialogue/LF_Dialogue_Clerk.conf` | `Scripts/Game/Feature/Dialogue/LF_DialogueConfig.c` |
 | `LF_DialogueConfig` | unrouted | core | 21 | `Configs/Dialogue/LF_Dialogue_FuelClerk.conf` | `Scripts/Game/Feature/Dialogue/LF_DialogueConfig.c` |
+| `LF_DialogueConfig` | unrouted | core | 21 | `Configs/Dialogue/LF_Dialogue_Resident.conf` | `Scripts/Game/Feature/Dialogue/LF_DialogueConfig.c` |
 | `LF_DialogueConfig` | unrouted | core | 21 | `Configs/Dialogue/LF_Dialogue_Shopkeeper.conf` | `Scripts/Game/Feature/Dialogue/LF_DialogueConfig.c` |
 | `LF_DialogueConfig` | unrouted | core | 21 | `Configs/Tests/LF_Test_DialogueClerkBadPatch.conf` | `Scripts/Game/Feature/Dialogue/LF_DialogueConfig.c` |
 | `LF_DialogueConfig` | unrouted | core | 21 | `Configs/Tests/LF_Test_DialogueClerkPatch.conf` | `Scripts/Game/Feature/Dialogue/LF_DialogueConfig.c` |
@@ -42,6 +44,7 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | `LF_EventsConfig` | unrouted | core | 8 | `Configs/Tests/LF_Test_EventOverlay.conf` | `Scripts/Game/Feature/Events/LF_EventDef.c` |
 | `LF_EventsConfig` | unrouted | core | 8 | `Configs/Tests/LF_Test_EventSceneFixture.conf` | `Scripts/Game/Feature/Events/LF_EventDef.c` |
 | `LF_EvidenceConfig` | crime | core | 7 | `Configs/Investigation/LF_Evidence.conf` | `Scripts/Game/Feature/Investigation/LF_EvidenceConfig.c` |
+| `LF_FishingConfig` | unrouted | core | 29 | `Configs/Fishing/LF_Fishing.conf` | `Scripts/Game/Feature/Fishing/LF_FishingConfig.c` |
 | `LF_GarageConfig` | vehicles | split | 12 | `Configs/Vehicles/LF_Garage.conf` | `Scripts/Game/Feature/Vehicles/LF_Garage.c` |
 | `LF_GraceConfig` | zones | core | 1 | `Configs/Moderation/LF_Grace.conf` | `Scripts/Game/Feature/Moderation/LF_Grace.c` |
 | `LF_HandbookConfig` | unrouted | core | 5 | `Configs/Rules/LF_Handbook.conf` | `Scripts/Game/Feature/Rules/LF_HandbookConfig.c` |
@@ -51,13 +54,16 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | `LF_ItemCatalogueConfig` | unrouted | core | 24 | `Configs/Catalogue/LF_ItemCatalogue.conf` | `Scripts/Game/Feature/Catalogue/LF_ItemCatalogueConfig.c` |
 | `LF_JobsConfig` | jobs | split | 26 | `Configs/Jobs/LF_Jobs.conf` | `Scripts/Game/Feature/Jobs/LF_JobsConfig.c` |
 | `LF_JobsConfig` | jobs | split | 26 | `Configs/Tests/LF_Test_JobsOverlay.conf` | `Scripts/Game/Feature/Jobs/LF_JobsConfig.c` |
+| `LF_LaunderConfig` | unrouted | core | 8 | `Configs/Crime/LF_Launder.conf` | `Scripts/Game/Feature/Laundering/LF_LaunderConfig.c` |
 | `LF_LedgerConfig` | shops | core | 4 | `Configs/Money/LF_Ledger.conf` | `Scripts/Game/Feature/Money/LF_LedgerConfig.c` |
 | `LF_LockerConfig` | unrouted | core | 5 | `Configs/Lockers/LF_Lockers.conf` | `Scripts/Game/Feature/Lockers/LF_LockerConfig.c` |
 | `LF_MapAreaConfig` | unrouted | core | 8 | `Configs/Map/LF_MapAreas.conf` | `Scripts/Game/Feature/Map/LF_MapAreaConfig.c` |
 | `LF_MapPoiConfig` | unrouted | core | 8 | `Configs/Map/LF_MapPois.conf` | `Scripts/Game/Feature/Map/LF_MapPoiConfig.c` |
 | `LF_MarketConfig` | unrouted | core | 9 | `Configs/Market/LF_Market.conf` | `Scripts/Game/Feature/Market/LF_MarketConfig.c` |
-| `LF_MedicConfig` | jobs | core | 35 | `Configs/Medic/LF_Medic.conf` | `Scripts/Game/Feature/Medic/LF_MedicConfig.c` |
-| `LF_MedicConfig` | jobs | core | 35 | `Configs/Tests/LF_Test_MedicOff.conf` | `Scripts/Game/Feature/Medic/LF_MedicConfig.c` |
+| `LF_MarketConfig` | unrouted | core | 9 | `Configs/Tests/LF_Test_MarketOverlay.conf` | `Scripts/Game/Feature/Market/LF_MarketConfig.c` |
+| `LF_MedicConfig` | jobs | core | 36 | `Configs/Medic/LF_Medic.conf` | `Scripts/Game/Feature/Medic/LF_MedicConfig.c` |
+| `LF_MedicConfig` | jobs | core | 36 | `Configs/Tests/LF_Test_MedicOff.conf` | `Scripts/Game/Feature/Medic/LF_MedicConfig.c` |
+| `LF_MedicConfig` | jobs | core | 36 | `Configs/Tests/LF_Test_MedicRankOverlay.conf` | `Scripts/Game/Feature/Medic/LF_MedicConfig.c` |
 | `LF_MissionHeader` | unrouted | core | 10 | `Configs/Tests/LF_Test_PackHeader.conf` | `Scripts/Game/Core/LF_MissionHeader.c` |
 | `LF_NpcOutfitPreset` | unrouted | core | 7 | `Configs/NpcOutfits/LF_Outfit_Doctor.conf` | `Scripts/Game/Core/Npcs/LF_NpcOutfitPreset.c` |
 | `LF_NpcOutfitPreset` | unrouted | core | 7 | `Configs/NpcOutfits/LF_Outfit_Police.conf` | `Scripts/Game/Core/Npcs/LF_NpcOutfitPreset.c` |
@@ -75,11 +81,16 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | `LF_PrefabSlotsConfig` | unrouted | core | 4 | `Configs/Tests/LF_Test_PrefabSlotsOverlay.conf` | `Scripts/Game/Core/Config/LF_PrefabSlots.c` |
 | `LF_PrefabSlotsConfig` | unrouted | core | 4 | `Configs/Tests/LF_Test_PrefabSlotsSwapOverlay.conf` | `Scripts/Game/Core/Config/LF_PrefabSlots.c` |
 | `LF_PropertyConfig` | unrouted | core | 15 | `Configs/Property/LF_Property.conf` | `Scripts/Game/Feature/Property/LF_PropertyConfig.c` |
+| `LF_PropertyConfig` | unrouted | core | 15 | `Configs/Tests/LF_Test_PropertyOverlay.conf` | `Scripts/Game/Feature/Property/LF_PropertyConfig.c` |
 | `LF_QuizBank` | unrouted | core | 10 | `Configs/Rules/LF_QuizBank.conf` | `Scripts/Game/Feature/Rules/LF_QuizConfig.c` |
 | `LF_QuizConfig` | unrouted | core | 10 | `Configs/Rules/LF_Quiz.conf` | `Scripts/Game/Feature/Rules/LF_QuizConfig.c` |
-| `LF_ReputationConfig` | unrouted | core | 13 | `Configs/Reputation/LF_Reputation.conf` | `Scripts/Game/Feature/Reputation/LF_ReputationConfig.c` |
+| `LF_ReputationConfig` | unrouted | core | 14 | `Configs/Reputation/LF_Reputation.conf` | `Scripts/Game/Feature/Reputation/LF_ReputationConfig.c` |
+| `LF_ReputationConfig` | unrouted | core | 14 | `Configs/Tests/LF_Test_ReputationOverlay.conf` | `Scripts/Game/Feature/Reputation/LF_ReputationConfig.c` |
 | `LF_ReputationContractsConfig` | unrouted | core | 10 | `Configs/Reputation/LF_ReputationContracts.conf` | `Scripts/Game/Feature/Reputation/LF_ReputationContracts.c` |
-| `LF_ResidentsConfig` | unrouted | core | 9 | `Configs/Residents/LF_Residents.conf` | `Scripts/Game/Feature/Residents/LF_ResidentDef.c` |
+| `LF_ReputationContractsConfig` | unrouted | core | 10 | `Configs/Tests/LF_Test_ReputationContractsOverlay.conf` | `Scripts/Game/Feature/Reputation/LF_ReputationContracts.c` |
+| `LF_ResidentMemoryConfig` | unrouted | core | 13 | `Configs/Residents/LF_ResidentMemory.conf` | `Scripts/Game/Feature/Residents/LF_ResidentMemoryConfig.c` |
+| `LF_ResidentNeedQuestsConfig` | unrouted | core | 1 | `Configs/Quests/LF_ResidentNeedQuests.conf` | `Scripts/Game/Feature/Residents/LF_ResidentNeeds.c` |
+| `LF_ResidentsConfig` | unrouted | core | 16 | `Configs/Residents/LF_Residents.conf` | `Scripts/Game/Feature/Residents/LF_ResidentDef.c` |
 | `LF_ResourceChainConfig` | unrouted | core | 15 | `Configs/Resources/ResourceChains.conf` | `Scripts/Game/Feature/Resources/LF_ResourceChainCatalog.c` |
 | `LF_RespawnConfig` | persistence | split | 7 | `Configs/Spawning/LF_Respawn.conf` | `Scripts/Game/Feature/Character/Spawning/LF_RespawnConfig.c` |
 | `LF_RoadblockConfig` | crime | core | 1 | `Configs/Police/LF_Roadblock.conf` | `Scripts/Game/Feature/Police/LF_Roadblock.c` |
@@ -101,6 +112,7 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | `LF_SoundSlotsConfig` | unrouted | core | 3 | `Configs/SoundSlots/LF_SoundSlots.conf` | `Scripts/Game/Core/Config/LF_SoundSlots.c` |
 | `LF_SoundSlotsConfig` | unrouted | core | 3 | `Configs/Tests/LF_Test_SoundSlotsOverlay.conf` | `Scripts/Game/Core/Config/LF_SoundSlots.c` |
 | `LF_SpawnHubConfig` | unrouted | core | 3 | `Configs/Debug/LF_SpawnHub.conf` | `Scripts/Game/Feature/Debug/LF_SpawnHub.c` |
+| `LF_StallConfig` | unrouted | core | 9 | `Configs/Market/LF_Stalls.conf` | `Scripts/Game/Feature/Market/LF_StallConfig.c` |
 | `LF_SurvivalConfig` | unrouted | split | 9 | `Configs/Survival/LF_Survival.conf` | `Scripts/Game/Feature/Survival/LF_SurvivalConfig.c` |
 | `LF_SystemCatalog` | unrouted | core | 11 | `Configs/Systems/LF_SystemCatalog.conf` | `Scripts/Game/Feature/Systems/LF_Systems.c` |
 | `LF_SystemsConfig` | unrouted | core | 11 | `Configs/Tests/LF_Test_SystemsOverlay.conf` | `Scripts/Game/Feature/Systems/LF_Systems.c` |
@@ -126,14 +138,14 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 
 | Section | Tunable | Baselined debt |
 |---|---|---|
-| jobs | 142 | 34 |
+| jobs | 147 | 34 |
 | shops | 26 | 13 |
 | crime | 239 | 52 |
 | licences | 7 | 3 |
 | vehicles | 19 | 7 |
 | zones | 32 | 8 |
 | persistence | 33 | 8 |
-| unrouted | 275 | 26 |
+| unrouted | 314 | 26 |
 
 ## Tunable constants by feature area
 
@@ -158,6 +170,7 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | Events | unrouted | 10 | 0 |
 | Farming | jobs | 7 | 1 |
 | Film | unrouted | 7 | 7 |
+| Fishing | unrouted | 6 | 0 |
 | Gathering | jobs | 2 | 1 |
 | Hideouts | crime | 5 | 1 |
 | Houses | zones | 3 | 0 |
@@ -165,32 +178,33 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | Interaction | unrouted | 5 | 5 |
 | Investigation | crime | 26 | 4 |
 | Jobs | jobs | 52 | 5 |
+| Laundering | unrouted | 5 | 0 |
 | Level | unrouted | 4 | 0 |
 | License | licences | 4 | 0 |
 | LicensePlate | licences | 3 | 3 |
-| Lockers | unrouted | 6 | 0 |
+| Lockers | unrouted | 7 | 0 |
 | Map | unrouted | 32 | 0 |
-| Market | unrouted | 2 | 0 |
-| Medic | jobs | 18 | 11 |
+| Market | unrouted | 11 | 0 |
+| Medic | jobs | 20 | 11 |
 | Mining | jobs | 2 | 2 |
 | Moderation | zones | 23 | 2 |
 | Money | shops | 5 | 1 |
 | Npc | unrouted | 1 | 0 |
 | Ops | unrouted | 11 | 0 |
-| Organizations | jobs | 48 | 1 |
+| Organizations | jobs | 51 | 1 |
 | Placement | unrouted | 13 | 0 |
 | Police | crime | 151 | 17 |
 | Property | unrouted | 4 | 0 |
 | Quantity | unrouted | 1 | 1 |
 | Quests | jobs | 5 | 5 |
 | Racing | unrouted | 13 | 0 |
-| Reputation | unrouted | 5 | 0 |
-| Residents | unrouted | 2 | 0 |
+| Reputation | unrouted | 8 | 0 |
+| Residents | unrouted | 13 | 0 |
 | Rules | unrouted | 8 | 0 |
 | Shop | shops | 17 | 9 |
 | Signs | zones | 6 | 6 |
 | SirenLights | vehicles | 2 | 2 |
-| Sites | unrouted | 29 | 0 |
+| Sites | unrouted | 33 | 0 |
 | Systems | unrouted | 1 | 0 |
 | TownBoard | unrouted | 7 | 0 |
 | Toys | unrouted | 1 | 1 |
@@ -429,6 +443,12 @@ Owner is core for every row until the M3 move.
 | `Film/LF_FilmRecorder.c` | `DEFAULT_MAX_SECONDS` | `300` | unrouted | to move (#284) |
 | `Film/LF_FilmRecorder.c` | `MAX_FPS` | `30` | unrouted | to move (#284) |
 | `Film/LF_FilmRecorder.c` | `STALL_MS` | `100` | unrouted | to move (#284) |
+| `Fishing/LF_FishingFloat.c` | `BOB_INTERVAL_MS` | `130` | unrouted | fixed (marked) |
+| `Fishing/LF_FishingHarness.c` | `AUTO_POLL_MS` | `40` | unrouted | fixed (marked) |
+| `Fishing/LF_FishingRodComponent.c` | `AIM_SHARE_OF_RANGE` | `0.75` | unrouted | fixed (marked) |
+| `Fishing/LF_FishingRodComponent.c` | `MIN_CAST_METRES` | `3` | unrouted | fixed (marked) |
+| `Fishing/LF_FishingSession.c` | `LIMIT_METRES` | `100000` | unrouted | fixed (marked) |
+| `Fishing/LF_FishingSession.c` | `MAX_ASK_METRES` | `200` | unrouted | fixed (marked) |
 | `Gathering/LF_GatherTools.c` | `MIN_SPEED` | `0.1` | jobs | fixed (marked) |
 | `Gathering/LF_MiningArea.c` | `MIN_TO_MS` | `60000` | jobs | to move (#284) |
 | `Hideouts/LF_Hideout.c` | `DAY_SECONDS` | `86400` | crime | fixed (marked) |
@@ -530,6 +550,11 @@ Owner is core for every row until the M3 move.
 | `Jobs/LF_TaxiFare.c` | `RATE_MAX` | `1000` | jobs | fixed (marked) |
 | `Jobs/LF_TaxiFare.c` | `RATE_MIN` | `0.001` | jobs | fixed (marked) |
 | `Jobs/LF_WorkplaceComponent.c` | `CLOCK_RANGE` | `3` | jobs | fixed (marked) |
+| `Laundering/LF_BuyerNpc.c` | `DESPAWN_RADIUS_M` | `200` | unrouted | fixed (marked) |
+| `Laundering/LF_BuyerNpc.c` | `SPAWN_RADIUS_M` | `150` | unrouted | fixed (marked) |
+| `Laundering/LF_BuyerNpc.c` | `SWEEP_SECONDS` | `5` | unrouted | fixed (marked) |
+| `Laundering/LF_LaunderRules.c` | `DAY_SECONDS` | `86400` | unrouted | fixed (marked) |
+| `Laundering/LF_LaunderSave.c` | `DROP_AFTER_MS` | `600000` | unrouted | fixed (marked) |
 | `Level/LF_JobLevels.c` | `DAY_SECONDS` | `86400` | unrouted | fixed (marked) |
 | `Level/LF_JobLevels.c` | `LEGACY_MAX_LEVEL` | `20` | unrouted | fixed (marked) |
 | `Level/LF_JobLevels.c` | `LEGACY_MAX_SINGLE_LEVEL` | `1000` | unrouted | fixed (marked) |
@@ -547,6 +572,7 @@ Owner is core for every row until the M3 move.
 | `Lockers/LF_LockerConfig.c` | `DEFAULT_RENT_PRICE` | `100` | unrouted | config default |
 | `Lockers/LF_LockerConfig.c` | `DEFAULT_WEIGHT_CAPACITY` | `60` | unrouted | config default |
 | `Lockers/LF_LockerRules.c` | `SECONDS_PER_DAY` | `86400` | unrouted | fixed (marked) |
+| `Lockers/LF_LockerStorageManagerComponent.c` | `WATCH_MS` | `1500` | unrouted | fixed (marked) |
 | `Map/LF_MapAreas.c` | `DEFAULT_SEGMENTS` | `32` | unrouted | fixed (marked) |
 | `Map/LF_MapAreas.c` | `MIN_SEGMENTS` | `3` | unrouted | fixed (marked) |
 | `Map/LF_MapAreas.c` | `MITER_MIN_DENOM` | `0.2` | unrouted | fixed (marked) |
@@ -579,8 +605,17 @@ Owner is core for every row until the M3 move.
 | `Map/LF_MapShares.c` | `TEXT_CAP` | `32` | unrouted | fixed (marked) |
 | `Map/LF_MapWaypointUI.c` | `CROSS_REACH` | `0.6` | unrouted | fixed (marked) |
 | `Map/LF_MapWaypointUI.c` | `MARK_RADIUS` | `14` | unrouted | fixed (marked) |
-| `Market/LF_PriceCurve.c` | `MAX_BULK_UNITS` | `100000` | unrouted | fixed (marked) |
+| `Market/LF_PriceBoard.c` | `NUMBERS_PER_GOOD` | `2` | unrouted | fixed (marked) |
+| `Market/LF_PriceCurve.c` | `INT_MAX` | `2147483647` | unrouted | fixed (marked) |
+| `Market/LF_PriceCurve.c` | `MAX_BULK_UNITS` | `60000` | unrouted | fixed (marked) |
+| `Market/LF_PriceCurve.c` | `MAX_CASH` | `10000000` | unrouted | fixed (marked) |
 | `Market/LF_PriceCurve.c` | `SECONDS_PER_HOUR` | `3600` | unrouted | fixed (marked) |
+| `Market/LF_StallComponent.c` | `LAPSE_CHECK_MS` | `30000` | unrouted | fixed (marked) |
+| `Market/LF_StallComponent.c` | `MAX_NAME` | `32` | unrouted | fixed (marked) |
+| `Market/LF_StallComponent.c` | `REACH` | `5.0` | unrouted | fixed (marked) |
+| `Market/LF_StallConfig.c` | `MAX_CASH` | `10000000` | unrouted | fixed (marked) |
+| `Market/LF_StallRules.c` | `DAYS_PER_WEEK` | `7` | unrouted | fixed (marked) |
+| `Market/LF_StallRules.c` | `MAX_TOTAL` | `1000000000` | unrouted | fixed (marked) |
 | `Medic/LF_BedDelivery.c` | `DISMOUNT_WAIT_MS` | `2500` | jobs | to move (#284) |
 | `Medic/LF_BedDelivery.c` | `STEP_OFF_MS` | `3000` | jobs | to move (#284) |
 | `Medic/LF_BleedOut.c` | `SYNC_STEP_SECONDS` | `5` | jobs | to move (#284) |
@@ -593,6 +628,8 @@ Owner is core for every row until the M3 move.
 | `Medic/LF_Knockout.c` | `HOLD_SECONDS` | `3600` | jobs | fixed (marked) |
 | `Medic/LF_Knockout.c` | `SETTLE_MS` | `1500` | jobs | fixed (marked) |
 | `Medic/LF_MedicConfig.c` | `DEFAULT_DOWNED_HEALTH_SCALED` | `0.1` | jobs | config default |
+| `Medic/LF_MedicRanks.c` | `DUTY_SECONDS_DOCTOR` | `7200` | jobs | fixed (marked) |
+| `Medic/LF_MedicRanks.c` | `DUTY_SECONDS_PARAMEDIC` | `3600` | jobs | fixed (marked) |
 | `Medic/LF_ReviveAnim.c` | `CHECK_MS` | `1500` | jobs | to move (#284) |
 | `Medic/LF_ReviveAnim.c` | `HOLD_SECONDS` | `4` | jobs | to move (#284) |
 | `Medic/LF_ReviveAnim.c` | `KNEEL_HEAD_MAX` | `1.3` | jobs | to move (#284) |
@@ -687,6 +724,9 @@ Owner is core for every row until the M3 move.
 | `Organizations/LF_OrgWarConfig.c` | `LAPSE_COOLDOWN_MIN` | `0` | jobs | fixed (marked) |
 | `Organizations/LF_OrgWarConfig.c` | `MEMBERS_MAX` | `100` | jobs | fixed (marked) |
 | `Organizations/LF_OrgWarConfig.c` | `MEMBERS_MIN` | `1` | jobs | fixed (marked) |
+| `Organizations/LF_OrgWarSheet.c` | `CLOSE_RANGE` | `4.0` | jobs | fixed (marked) |
+| `Organizations/LF_OrgWarSheet.c` | `ORGS_MAX` | `60` | jobs | fixed (marked) |
+| `Organizations/LF_OrgWarSheet.c` | `STATE_COOLDOWN` | `3` | jobs | fixed (marked) |
 | `Organizations/LF_OrgWarSweep.c` | `SWEEP_MS` | `30000` | jobs | fixed (marked) |
 | `Organizations/LF_TestOrgSign.c` | `REACH` | `5.0` | jobs | fixed (marked) |
 | `Placement/LF_PlacementAim.c` | `HINT_SECONDS` | `6` | unrouted | fixed (marked) |
@@ -876,13 +916,27 @@ Owner is core for every row until the M3 move.
 | `Racing/LF_RaceRunner.c` | `MAX_ENTRANTS` | `16` | unrouted | fixed (marked) |
 | `Racing/LF_RaceRunner.c` | `RESCAN_MS` | `1000` | unrouted | fixed (marked) |
 | `Racing/LF_RaceRunner.c` | `TICK_MS` | `250` | unrouted | fixed (marked) |
+| `Reputation/LF_ContractTracker.c` | `JOURNAL_MAX` | `32` | unrouted | fixed (marked) |
+| `Reputation/LF_ContractTracker.c` | `TICK_MS` | `1000` | unrouted | fixed (marked) |
 | `Reputation/LF_Reputation.c` | `DAY_SECONDS` | `7200` | unrouted | fixed (marked) |
 | `Reputation/LF_ReputationContracts.c` | `MAX_MULTIPLIER` | `1.6` | unrouted | fixed (marked) |
 | `Reputation/LF_ReputationContracts.c` | `MIN_MULTIPLIER` | `1.3` | unrouted | fixed (marked) |
+| `Reputation/LF_ReputationPay.c` | `MAX_PERCENT` | `15` | unrouted | fixed (marked) |
 | `Reputation/LF_ReputationSync.c` | `JOURNAL_MAX` | `32` | unrouted | fixed (marked) |
 | `Reputation/LF_ReputationSync.c` | `SPAWN_RETRY_MS` | `2000` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentActivity.c` | `SEAT_RANGE` | `2.5` | unrouted | fixed (marked) |
 | `Residents/LF_ResidentAnchors.c` | `OWN_RADIUS` | `30` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentMemory.c` | `SCORE_MAX` | `100` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentMemory.c` | `SCORE_MIN` | `-100` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentShopTerms.c` | `CLERK_RADIUS_M` | `5` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentShopTerms.c` | `DEFAULT_REGULAR_PERCENT` | `10` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentSpawner.c` | `DEFAULT_SWEEP_SECONDS` | `5` | unrouted | fixed (marked) |
 | `Residents/LF_ResidentTimetable.c` | `MINUTES_PER_DAY` | `1440` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentWalk.c` | `DEFAULT_MAX_WALKING` | `4` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentWalk.c` | `MAX_WALK_M` | `120` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentWalk.c` | `PACE_MS` | `0.9` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentWalk.c` | `TICK_MS` | `1000` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentWalk.c` | `WAYPOINT_RADIUS_M` | `1.5` | unrouted | fixed (marked) |
 | `Rules/LF_JoinNotice.c` | `DURATION_S` | `12.0` | unrouted | fixed (marked) |
 | `Rules/LF_QuizConfig.c` | `ATTEMPTS_MAX` | `20` | unrouted | fixed (marked) |
 | `Rules/LF_QuizConfig.c` | `ATTEMPTS_MIN` | `0` | unrouted | fixed (marked) |
@@ -918,7 +972,11 @@ Owner is core for every row until the M3 move.
 | `SirenLights/LF_SirenManagerComponent.c` | `MIN_TOGGLE_MS` | `300` | vehicles | to move (#284) |
 | `Sites/LF_ContestedSites.c` | `SWEEP_MS` | `5000` | unrouted | fixed (marked) |
 | `Sites/LF_ContestedSites.c` | `SWEEP_SECONDS` | `5` | unrouted | fixed (marked) |
+| `Sites/LF_SiteAlerts.c` | `CONTEST_REPEAT_SECONDS` | `60` | unrouted | fixed (marked) |
+| `Sites/LF_SiteAlerts.c` | `TOAST_SECONDS` | `8.0` | unrouted | fixed (marked) |
 | `Sites/LF_SiteFlagComponent.c` | `RECONCILE_MS` | `5000` | unrouted | fixed (marked) |
+| `Sites/LF_SiteRent.c` | `LOG_SECONDS` | `3600` | unrouted | fixed (marked) |
+| `Sites/LF_SiteStrongboxComponent.c` | `REACH` | `4.0` | unrouted | fixed (marked) |
 | `Sites/LF_SitesConfig.c` | `CAPTURE_MAX` | `86400` | unrouted | fixed (marked) |
 | `Sites/LF_SitesConfig.c` | `CAPTURE_MIN` | `1` | unrouted | fixed (marked) |
 | `Sites/LF_SitesConfig.c` | `COOLDOWN_MAX` | `604800` | unrouted | fixed (marked) |
@@ -946,7 +1004,7 @@ Owner is core for every row until the M3 move.
 | `Sites/LF_SitesConfig.c` | `WINDOW_MAX` | `86400` | unrouted | fixed (marked) |
 | `Sites/LF_SitesConfig.c` | `WINDOW_MIN` | `1` | unrouted | fixed (marked) |
 | `Systems/LF_Systems.c` | `MAX_DEPTH` | `8` | unrouted | fixed (marked) |
-| `TownBoard/LF_TownBoard.c` | `MAX_CARDS` | `8` | unrouted | fixed (marked) |
+| `TownBoard/LF_TownBoard.c` | `MAX_CARDS` | `12` | unrouted | fixed (marked) |
 | `TownBoard/LF_TownBoardFace.c` | `DRAW_RADIUS` | `30` | unrouted | fixed (marked) |
 | `TownBoard/LF_TownBoardFace.c` | `TICK_MS` | `1000` | unrouted | fixed (marked) |
 | `TownBoard/LF_TownBoardMapKnown.c` | `BOARD_REACH` | `12` | unrouted | fixed (marked) |

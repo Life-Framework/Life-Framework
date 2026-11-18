@@ -1,0 +1,21 @@
+GenericEntity : "{ACCC8B6FEB32034C}Prefabs/Items/Fishing/LF_FishTrout.et" {
+ ID "06BE5C165CED9558"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_FishCarp_Name"
+     Description "#LF-Item_FishCarp_Description"
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{AB413D9CB8783DEB}" {
+      CameraDistanceToItem 1.2
+     }
+    }
+   }
+  }
+  MeshObject "{CF3097B91F6EE919}" {
+   Object "{6B5796A0C11814A7}Assets/Items/Fishing/FishCarp/FishCarp.xob"
+  }
+ }
+}

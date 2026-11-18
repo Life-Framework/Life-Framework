@@ -1,0 +1,42 @@
+{
+  "slug": "chocolate-bar",
+  "name": "ChocolateBar",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "A wrapped bar of milk chocolate in a plain dark-red wrapper with a gold band: the sweet by the till at the village general store.",
+  "prompt": "Modelled in Blender by model.py: A wrapped bar of milk chocolate in a plain dark-red wrapper with a gold band: the sweet by the till at the village general store. no text, no logos.",
+  "texture_prompt": "",
+  "size_m": {
+    "length": 0.155,
+    "height": 0.012,
+    "width": 0.07
+  },
+  "budget": {
+    "lod0_tris": 600,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 512,
+    "credits": 0
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Store1989/ChocolateBar",
+  "prefab_dir": "Prefabs/Items/Store1989",
+  "prefab": false,
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  },
+  "source": {
+    "blender": "model.py"
+  }
+}

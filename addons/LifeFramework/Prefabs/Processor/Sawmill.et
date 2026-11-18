@@ -15,23 +15,62 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
    additionalActions {
     LF_ProcessAction "{598F21A877BE6DEE}" {
      UIInfo UIInfo "{5A5EE24316053903}" {
-      Name "Process wooden log"
+      Name "Saw logs into planks"
      }
      m_sMachineId "sawmill"
-     Duration 1
-     m_aProcessingInputs {
-      LF_ProcessingInput "{5A5EE2432A165320}" {
-       m_InputPrefab "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et"
-      }
+     Duration 10
+     m_bForceDropOutput 1
+     m_vDropOffset -1.8 0 0
+     m_vRotation 90 0 0
+    }
+    LF_ProcessAction "{5A5EE24316053A02}" {
+     ParentContextList {
+      "default"
      }
-     m_aProcessingOutputs {
-      LF_ProcessingOutput "{5A5EE2432BB9E04F}" {
-       m_OutputPrefab "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et"
-      }
-      LF_ProcessingOutput "{5ACEABD5A1ED6B84}" {
-       m_OutputPrefab "{6697C9B8CEB5234C}Prefabs/Resources/WoodCutting/WoodKindling.et"
-      }
+     UIInfo UIInfo "{5A5EE24316053B01}" {
+      Name "Split logs into fence posts"
      }
+     m_sMachineId "sawmill-posts"
+     Duration 8
+     m_bForceDropOutput 1
+     m_vDropOffset -1.8 0 0
+     m_vRotation 90 0 0
+    }
+    LF_ProcessAction "{5A5EE24316053A03}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A5EE24316053B02}" {
+      Name "Chop logs into firewood"
+     }
+     m_sMachineId "sawmill-firewood"
+     Duration 6
+     m_bForceDropOutput 1
+     m_vDropOffset -1.8 0 0
+     m_vRotation 90 0 0
+    }
+    LF_ProcessAction "{5A5EE24316053A04}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A5EE24316053B03}" {
+      Name "Saw hardwood into boards"
+     }
+     m_sMachineId "sawmill-boards"
+     Duration 15
+     m_bForceDropOutput 1
+     m_vDropOffset -1.8 0 0
+     m_vRotation 90 0 0
+    }
+    LF_ProcessAction "{5A5EE24316053A05}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A5EE24316053B04}" {
+      Name "Chop hardwood into firewood"
+     }
+     m_sMachineId "sawmill-hardwood-firewood"
+     Duration 6
      m_bForceDropOutput 1
      m_vDropOffset -1.8 0 0
      m_vRotation 90 0 0

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "jail",
+  "building": "b32",
+  "shared": true,
+  "kit": "jail",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_jail.layer",
+  "kinds": [
+    "JailCell"
+  ],
+  "rows": 1,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_jail_Place"
+  },
+  "date": "2026-11-18"
+}

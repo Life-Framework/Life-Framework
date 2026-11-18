@@ -5,7 +5,8 @@
 //     // inputs: addons/**/*.layer, docs/features.md      (.mjs)
 //     # inputs: addons/**/*.layer, docs/features.md        (.ps1)
 // Globs are repo-relative: `*` matches within a folder, `**` across folders.
-// The check's own file is always an input. `inputs: always`, or no header at
+// The check's own file is always an input, and so is its static import closure (plan()); `inputs: imports`
+// says "no data, only my code". `inputs: always`, or no header at
 // all, means the check runs every time (the safe default for a check that
 // reads machine state such as `git worktree list`).
 //
@@ -20,12 +21,21 @@
 // worktrees in <git common dir>/lf/validate-green.json: a fresh worktree skips every
 // check some other worktree already passed on the same inputs. Before this, the
 // first validate of each slice ran all ~350 checks (about 6 min under load, 2026-11-17). Full runs (`validate --full`, `--all`, ci, wt gate,
-// wt ship, CI) never consult it.
+// wt ship) never consult it. CI has its own green set, restored by actions/cache (#3189, ciGreenFile below).
+//
+// Base-clean skip (2026-11-18, efficiency pass 3): a check whose inputs match no path this branch
+// changed since its merge-base with origin/main gives the result it gives on that main commit, which
+// GitHub's full validate already ran (CI sets LF_VALIDATE_NO_BASE: a CI run is that validation, so it never trusts it). Before it, ~25 git-heavy
+// `tools/**` selftests (40-80 s each under load) re-ran on every slice whenever main's tools/ had
+// moved, slices that never touched tools/ included: 58% of all validate CPU on 2026-11-18.
+// A `ttl=` check (machine state such as the worktree registry) shares its green time across
+// worktrees, so it runs once per window on the machine, not once per worktree.
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { dirname, isAbsolute, join } from "node:path";
+import { dirname, isAbsolute, join, resolve } from "node:path";
 import { writeFileAtomic } from "./atomic-file.mjs";
+import { importClosure } from "./import-closure.mjs";
 
 const STATE_VERSION = 2; // 2: content-addressed fingerprints (1 used mtimes)
 const SHARED_KEEP = 12; // green fingerprints kept per check in the shared file
@@ -97,12 +107,13 @@ export function snapshotFiles(root) {
   return [...sig.entries()].sort((x, y) => (x[0] < y[0] ? -1 : 1));
 }
 
-export function fingerprint(files, globs, selfRel) {
+// `exact`: repo paths that always count (the check's import closure), looked up without a regexp each.
+export function fingerprint(files, globs, selfRel, exact = null) {
   const res = globs.map(globToRegExp);
   const h = createHash("sha1");
   let n = 0;
   for (const [rel, sig] of files) {
-    if (rel === selfRel || res.some((r) => r.test(rel))) {
+    if (rel === selfRel || exact?.has(rel) || res.some((r) => r.test(rel))) {
       h.update(`${rel}\0${sig}\n`);
       n++;
     }
@@ -113,7 +124,42 @@ export function fingerprint(files, globs, selfRel) {
 
 const stateFile = (root) => join(root, "tmp", "validate-state.json");
 
-export function sharedFile(root) {
+// CI green set (#3189). GitHub's runner has no tmp/ or git common dir that outlives the job, so the workflow
+// restores one file with actions/cache and names it in LF_VALIDATE_GREEN_FILE. Only then does CI skip checks,
+// and only a check whose fingerprint (its inputs' content, its own file, its import closure) is listed in the
+// file. The file carries the hash of this module family: a file written by a different validate tool is
+// ignored whole, so a change to the skip rules never inherits an old verdict. Machine-state `ttl` greens and
+// the base-clean skip (which trusts main's CI) are not used in CI: a runner is a new machine every time.
+const TOOL_FILES = ["tools/lib/validate-incremental.mjs", "tools/lib/import-closure.mjs", "tools/lib/atomic-file.mjs"];
+
+export function toolHash(root) {
+  const h = createHash("sha1");
+  for (const rel of TOOL_FILES) {
+    try {
+      h.update(`${rel}\0`).update(readFileSync(join(root, rel)).toString("utf8").replace(/\r\n/g, "\n")).update("\n");
+    } catch {
+      h.update(`${rel}\0missing\n`);
+    }
+  }
+  return h.digest("hex");
+}
+
+export function isCi(env = process.env) {
+  return !!(env.CI || env.GITHUB_ACTIONS);
+}
+
+// The CI green-set path, or null outside CI or when the workflow did not name one.
+// With a `root` the file applies only to the runner's workspace: a selftest that runs `validate` on a scratch repo
+// inherits the env and must neither read nor rewrite the real green set.
+export function ciGreenFile(env = process.env, root = null) {
+  if (!isCi(env) || !env.LF_VALIDATE_GREEN_FILE) return null;
+  if (root && env.GITHUB_WORKSPACE && resolve(root) !== resolve(env.GITHUB_WORKSPACE)) return null;
+  return env.LF_VALIDATE_GREEN_FILE;
+}
+
+export function sharedFile(root, env = process.env) {
+  const ci = ciGreenFile(env, root);
+  if (ci) return ci;
   try {
     let dir = execFileSync("git", ["rev-parse", "--git-common-dir"], { cwd: root, encoding: "utf8" }).trim();
     if (!isAbsolute(dir)) dir = join(root, dir);
@@ -123,22 +169,53 @@ export function sharedFile(root) {
   }
 }
 
-function loadShared(file) {
+// `tool` is the toolHash the file must carry (CI sets it, restoring a file another tool version wrote runs
+// everything); null trusts any file of this STATE_VERSION (the local per-machine file). `useTtl` is false in CI.
+// Every entry is checked for shape: a corrupt file (a string where a list belongs) must not match by substring.
+function loadShared(file, { tool = null, useTtl = true } = {}) {
+  const empty = { version: STATE_VERSION, checks: {}, ttl: {} };
   try {
     const s = JSON.parse(readFileSync(file, "utf8"));
-    if (s.version === STATE_VERSION && s.checks) return s;
+    if (!s || s.version !== STATE_VERSION || !s.checks || typeof s.checks !== "object" || Array.isArray(s.checks)) return empty;
+    if (tool && s.tool !== tool) return empty;
+    const checks = {};
+    for (const [name, list] of Object.entries(s.checks)) {
+      if (Array.isArray(list)) checks[name] = list.filter((fp) => typeof fp === "string" && /^[0-9a-f]{40}$/.test(fp));
+    }
+    const ttl = {};
+    if (useTtl && s.ttl && typeof s.ttl === "object") {
+      for (const [name, at] of Object.entries(s.ttl)) if (Number.isFinite(at)) ttl[name] = at;
+    }
+    return { ...s, checks, ttl };
   } catch {
     /* none yet, or a torn write: just no sharing */
   }
-  return { version: STATE_VERSION, checks: {} };
+  return empty;
+}
+
+// Paths this worktree changed since its merge-base with `ref` (committed, staged, modified,
+// deleted, untracked), or null when there is no such ref (then nothing is skipped this way).
+export function baseChanges(root, ref = "origin/main") {
+  try {
+    const git = (args) => execFileSync("git", args, { cwd: root, encoding: "utf8", maxBuffer: 1 << 28, stdio: ["ignore", "pipe", "ignore"] });
+    const mb = git(["merge-base", "HEAD", ref]).trim();
+    if (!/^[0-9a-f]{40}$/.test(mb)) return null;
+    const out = new Set(git(["diff", "--name-only", "--no-renames", "-z", mb]).split("\0").filter(Boolean));
+    for (const rel of lsz(root, ["--others", "--exclude-standard"])) out.add(rel);
+    return [...out];
+  } catch {
+    return null;
+  }
 }
 
 // Merge this run's green fingerprints into the shared file (newest first, SHARED_KEEP per check).
 // A lost race with another worktree only costs a cache miss.
-export function publishShared(file, state) {
+export function publishShared(file, state, opts = {}) {
   if (!file) return;
-  const shared = loadShared(file);
+  const shared = loadShared(file, opts);
+  if (opts.tool) shared.tool = opts.tool;
   for (const [name, e] of Object.entries(state.checks)) {
+    if (opts.useTtl !== false && e?.fp === "ttl" && e.at) shared.ttl[name] = Math.max(e.at, shared.ttl[name] ?? 0);
     if (!e?.fp || e.fp === "ttl") continue;
     const list = (shared.checks[name] ?? []).filter((fp) => fp !== e.fp);
     shared.checks[name] = [e.fp, ...list].slice(0, SHARED_KEEP);
@@ -151,7 +228,7 @@ export function publishShared(file, state) {
   }
 }
 
-export function loadState(root, shared = sharedFile(root)) {
+export function loadState(root, shared = sharedFile(root), env = process.env) {
   let state = { version: STATE_VERSION, checks: {} };
   try {
     const s = JSON.parse(readFileSync(stateFile(root), "utf8"));
@@ -160,8 +237,13 @@ export function loadState(root, shared = sharedFile(root)) {
     /* none yet */
   }
   // Not saved back into tmp/validate-state.json (saveState drops it).
-  Object.defineProperty(state, "shared", { value: shared ? loadShared(shared).checks : {}, enumerable: false, writable: true });
+  const ci = !!shared && shared === ciGreenFile(env, root);
+  const opts = ci ? { tool: toolHash(root), useTtl: false } : {};
+  const sh = shared ? loadShared(shared, opts) : { checks: {}, ttl: {} };
+  Object.defineProperty(state, "shared", { value: sh.checks, enumerable: false, writable: true });
+  Object.defineProperty(state, "sharedTtl", { value: sh.ttl, enumerable: false, writable: true });
   Object.defineProperty(state, "sharedFile", { value: shared, enumerable: false, writable: true });
+  Object.defineProperty(state, "sharedOpts", { value: opts, enumerable: false, writable: true });
   return state;
 }
 
@@ -172,36 +254,94 @@ export function saveState(root, state) {
   } catch {
     /* a read-only tmp just means no caching */
   }
-  if (state.sharedFile) publishShared(state.sharedFile, state);
+  if (state.sharedFile) publishShared(state.sharedFile, state, state.sharedOpts ?? {});
 }
 
 // Decide for each script: { name, fp|null, unchanged }.
 // `dir` is tools/validation (absolute), `rootRel` its repo-relative prefix.
-export function plan(root, dir, scripts, state, files) {
+// `changed` (from baseChanges) turns on the base-clean skip; null leaves it off.
+//
+// A .mjs check's static import closure (tools/lib/import-closure.mjs) is always among its inputs, whatever
+// its header lists: a header names the data a check reads, and the code it loads is never optional (before
+// this, 159 of 337 declared checks missed a module they import, so editing tools/lib/scratch.mjs re-ran none
+// of its users). The token `imports` in a header means "no data inputs, only my own code".
+export function plan(root, dir, scripts, state, files, changed = null) {
   const rootRel = "tools/validation";
   const out = new Map();
+  const importCache = new Map();
   for (const s of scripts) {
     const full = join(dir, s);
-    const globs = existsSync(full) ? parseInputs(readFileSync(full, "utf8")) : null;
-    if (!globs) {
+    const text = existsSync(full) ? readFileSync(full, "utf8") : "";
+    const declared = text ? parseInputs(text) : null;
+    if (!declared) {
       out.set(s, { fp: null, unchanged: false, why: "always runs" });
       continue;
+    }
+    const globs = declared.filter((g) => g !== "imports");
+    let exact = null;
+    if (/\.(mjs|js|cjs)$/.test(s) && !ttlOf(declared)) {
+      try {
+        exact = new Set(importClosure(root, `${rootRel}/${s}`, importCache));
+      } catch {
+        // Could not read an imported file: its inputs are unknown, so the check runs every time.
+        out.set(s, { fp: null, unchanged: false, why: "always runs (import closure unreadable)" });
+        continue;
+      }
     }
     const prev = state.checks[s];
     const ttl = ttlOf(globs);
     if (ttl) {
-      const fresh = !!prev?.at && Date.now() - prev.at < ttl * 1000;
-      out.set(s, { fp: "ttl", unchanged: fresh, why: `green ${ttl} s ago window` });
+      const at = Math.max(prev?.at ?? 0, state.sharedTtl?.[s] ?? 0);
+      const fresh = at > 0 && Date.now() - at < ttl * 1000;
+      out.set(s, { fp: "ttl", unchanged: fresh, why: `green within the last ${ttl} s on this machine` });
       continue;
     }
-    const fp = fingerprint(files, [...globs, ...IMPLICIT], `${rootRel}/${s}`);
+    const fp = fingerprint(files, [...globs, ...IMPLICIT], `${rootRel}/${s}`, exact);
     if (prev && prev.fp === fp) out.set(s, { fp, unchanged: true, why: "inputs unchanged since its last green run" });
     else if (state.shared?.[s]?.includes(fp)) out.set(s, { fp, unchanged: true, why: "green on these exact inputs in another worktree" });
+    else if (changed && !touches(changed, globs, `${rootRel}/${s}`, text, exact)) out.set(s, { fp, unchanged: true, base: true, why: "inputs as on origin/main (merge-base), which CI validated" });
     else out.set(s, { fp, unchanged: false, why: "inputs changed" });
   }
   return out;
 }
 
-export function incrementalOff(env = process.env) {
-  return !!(env.CI || env.GITHUB_ACTIONS || env.LF_VALIDATE_ALL);
+// Data folders that slices edit all the time (town claims and kits, grid cells, dialogue lines,
+// feature docs, PR pictures). For the base skip, a change there counts against a check's broad glob
+// (`tools/**`, `docs/**`, ...) only when the check's source names the folder; a narrower glob that
+// matches it always counts. Without this every town draft re-ran the ~25 git-heavy tools selftests.
+// [folder, the text a check that reads it names]
+export const DATA_DIRS = [
+  ["tools/grid/cells/", "grid/cells"],
+  ["tools/town/claims/", "town/claims"],
+  ["tools/town/kits/", "town/kits"],
+  ["tools/assets/dialogue/", "dialogue"],
+  ["docs/features/", "docs/features"],
+  ["website/public/docs-images/", "docs-images"],
+];
+const BROAD = new Set(["**", "tools/**", "docs/**", "website/**", "agent-box/**"]);
+
+// Does any changed path count as an input of this check (for the base skip)? A baseline beside the
+// checks (tools/validation/<name>.json, which every check fingerprints) counts only for the checks
+// whose source names it: record-shapes.json changes in every persistence slice.
+export function touches(changed, globs, selfRel, text = "", exact = null) {
+  const res = globs.map((g) => [g, globToRegExp(g)]);
+  return changed.some((rel) => {
+    if (rel === selfRel || exact?.has(rel)) return true;
+    const hits = res.filter(([, r]) => r.test(rel)).map(([g]) => g);
+    if (hits.some((g) => !BROAD.has(g))) return true;
+    if (rel.startsWith("tools/validation/fixtures/")) return true;
+    if (/^tools\/validation\/[^/]+$/.test(rel) && !/\.(mjs|ps1)$/.test(rel)) {
+      return text.includes(rel.split("/").pop().replace(/\.[^.]+$/, ""));
+    }
+    if (!hits.length) return false;
+    const data = DATA_DIRS.find(([d]) => rel.startsWith(d));
+    return !data || text.includes(data[1]);
+  });
 }
+
+// CI skips only when the workflow restored a green set and named it (ciGreenFile); LF_VALIDATE_ALL always wins.
+export function incrementalOff(env = process.env) {
+  if (env.LF_VALIDATE_ALL) return true;
+  return isCi(env) && !ciGreenFile(env);
+}
+

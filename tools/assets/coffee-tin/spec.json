@@ -1,0 +1,42 @@
+{
+  "slug": "coffee-tin",
+  "name": "CoffeeTin",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "A round tin of instant coffee, plain dark-red wrap, cream band and a slip-on yellow lid: sold at the Saint-Philippe general store.",
+  "prompt": "Modelled in Blender by model.py: A round tin of instant coffee, plain dark-red wrap, cream band and a slip-on yellow lid: sold at the Saint-Philippe general store. no text, no logos.",
+  "texture_prompt": "",
+  "size_m": {
+    "length": 0.09,
+    "height": 0.114,
+    "width": 0.09
+  },
+  "budget": {
+    "lod0_tris": 1200,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 512,
+    "credits": 0
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Store1989/CoffeeTin",
+  "prefab_dir": "Prefabs/Items/Store1989",
+  "prefab": false,
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  },
+  "source": {
+    "blender": "model.py"
+  }
+}
