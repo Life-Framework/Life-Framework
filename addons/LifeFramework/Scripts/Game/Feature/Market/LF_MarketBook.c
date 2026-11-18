@@ -18,7 +18,7 @@ class LF_MarketPrice
 //------------------------------------------------------------------------------------------------
 //! The market's live prices (#2845): server-only, in memory. One entry per good that has been sold
 //! since the world started; a good with no entry stands at its base. Recovery is applied lazily on
-//! each quote from the stamp (LF_PriceCurve.Recover, no tick). Saving the book is #2846.
+//! each quote from the stamp (LF_PriceCurve.Recover, no tick). Saved as the "market" section (LF_MarketSave.c).
 //! A good is curved only while the market is enabled and the config lists it; everything else sells
 //! at the trader's fixed value, exactly as before the market existed.
 class LF_MarketBook
@@ -165,6 +165,13 @@ class LF_MarketBook
 	protected static int ClampUnits(int units)
 	{
 		return LF_Utils.ClampInt(units, 0, LF_PriceCurve.MAX_BULK_UNITS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The live book, good to state (#2846: LF_MarketSavePayload writes and replaces it). Never cache it.
+	static map<ResourceName, ref LF_MarketPrice> Entries()
+	{
+		return s_mPrices;
 	}
 
 	//------------------------------------------------------------------------------------------------
