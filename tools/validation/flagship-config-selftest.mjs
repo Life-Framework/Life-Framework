@@ -3,6 +3,7 @@
 // server/flagship/server.json has the listing name and the same scenario and mods as server/example; neither
 // file holds a secret (passwords, admin uids, a webhook URL). Secrets live only in the host's secrets.json.
 // red-proof: adding game.password, a webhook URL or a changed name to a fixture copy below prints a FAIL line.
+// inputs: server/flagship/**, server/example/server.json, docs/config/*.json, addons/*/Configs/**/*.conf, addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/*.layer, tools/validation/profit-loop-baseline.json
 import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { checkText } from "../config/check.mjs";

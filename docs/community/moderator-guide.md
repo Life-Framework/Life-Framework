@@ -122,7 +122,7 @@ that nothing happened.
 ### Time and clips
 
 A row's time is the server's real clock (`System.GetUnixTime`). A player can
-show a clip stamp on screen with F9 (gamepad: tap RB and View together). It
+show a clip stamp on screen with F8 (gamepad: tap RB and View together). It
 prints the server name, the last six characters of their character id and the
 server date and time in UTC, the same clock the incident rows use. Ask for
 clips with the stamp on; it ties a clip to a row without anyone's word.

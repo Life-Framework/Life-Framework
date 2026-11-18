@@ -6,6 +6,7 @@
 // run printed "FAIL shipped fixtures: validate: unexpected  error 1:54 ... below the minimum 0" and
 // exited 1; with the `missing` loop of the validate stage removed the "wrong expectation" check printed
 // "FAIL a wrong expectation must fail the harness"; restored, it prints "config-harness-selftest: OK".
+// inputs: tools/test/config-fixtures/**, docs/config/*.json, addons/*/Configs/**/*.conf, addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/*.layer, tools/validation/profit-loop-baseline.json
 import { cpSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { FIXTURES, STAGES, isBoot, judgeBootLog, judgeRead, loadFixtures, main, runHarness, setBootDriver, setClientDriver } from "../config/harness.mjs";

@@ -4,6 +4,7 @@
 // overlay by the flagship mission header. Core Enforce tests cannot name a pack file (validate-addon-boundary),
 // so the pack values are checked here.
 // red-proof: a fixture copy below with a duplicate checkpoint, a payout split of 50/30/10 and no header line prints a FAIL line each.
+// inputs: addons/LF_Everon1989/Missions/LF_Everon1989.conf, addons/LF_Everon1989/Configs/Racing/LF_RaceCourses_Everon1989.conf
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
