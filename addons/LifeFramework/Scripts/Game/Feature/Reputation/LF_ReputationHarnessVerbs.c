@@ -52,11 +52,10 @@ modded class SCR_PlayerController
 	protected void RpcAsk_LF_ReputationHarness(string faction, int points, bool doSet)
 	{
 		int playerId = GetPlayerId();
-		if (!LF_DevGate.HarnessBuild() && !LF_DevGate.IsAllowedForPlayer(playerId))
-		{
-			LF_Debug.Warn(LF_Reputation.FEATURE, string.Format("harness standing refused for player %1: administrators only", playerId));
+		// Development worlds and harness builds, or an administrator (the same gate as /licence and /grid).
+		bool allowed = LF_DevGate.HarnessBuild() || LF_DevGate.CheckPlayerRequest(playerId, LF_Reputation.FEATURE, "harness standing");
+		if (!allowed)
 			return;
-		}
 
 		string uid = LF_Utils.GetPlayerUid(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId));
 		if (uid.IsEmpty())
