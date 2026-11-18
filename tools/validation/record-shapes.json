@@ -1,5 +1,5 @@
 {
-  "saveVersion": 55,
+  "saveVersion": 56,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
