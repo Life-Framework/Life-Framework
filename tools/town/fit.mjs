@@ -354,7 +354,17 @@ export function planFit(opts, ctx = {}) {
   // `--refit`: this slot's own claim, already committed on origin/main (every worktree carries it), does not block its re-fit.
   // The same slot held by an open PR or a sibling worktree, and any other slot's claim on the building, still refuse.
   for (let i = taken.length - 1; i >= 0; i--) if (claimOfBase(taken[i], { branch: opts.branch, place, slot: slotId })) taken.splice(i, 1);
-  const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && c.where === "origin/main")) : taken;
+  // A sibling worktree holding a byte-identical copy of that claim is the same checkout of main, not a second holder (#3088).
+  const mainOwn = taken.find((c) => c.place === place && c.slot === slotId && c.where === "origin/main");
+  // A stacked draft also carries its base branch's version of the claim, so that counts as the same checkout too.
+  const ownFile = join(root, CLAIMS_DIR, `${place}-${slotId}.json`);
+  const ownDisk = existsSync(ownFile) ? asClaim(readFileSync(ownFile, "utf8"), {}) : null;
+  const strip = (c) => {
+    const { where: _w, file: _f, ...rest } = c;
+    return JSON.stringify(rest);
+  };
+  const sameAsMain = (c) => c.where.startsWith("worktree ") && c.place === place && c.slot === slotId && ((mainOwn && strip(c) === strip(mainOwn)) || (ownDisk && strip(c) === strip(ownDisk)));
+  const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && c.where === "origin/main") && !sameAsMain(c)) : taken;
   errors.push(...conflicts(blocking, { place, slot: slotId, building: entry.building, plot: entry.plot, shared: entry.shared }));
   if (errors.length) return { ...fail(), notes };
 
