@@ -7,6 +7,7 @@
 //! 10 s fuse; a script-driven robbery arms it, the fuse runs out and exactly that haul spills.
 //! Lives in the pack because it names a pack prefab and the pack's overlay (the card's core test
 //! path cannot: validate-addon-boundary).
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronStoreBoxSafe : LF_Test
 {
 	static const ResourceName STORE_BOX = "{FDF16EF9B78A92F7}Prefabs/Props/Safes/LF_StoreBox.et";

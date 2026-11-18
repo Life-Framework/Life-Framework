@@ -4,6 +4,7 @@
 //! type overlay patches the core store_box row (1989 till takings) and leaves the other tiers as
 //! the core ships them. The vault-room door kit names bank_room, a type the table has, and the town
 //! bank's own prefab sets no type, so its numbers do not move.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronSafeTypes : LF_Test
 {
 	static const ResourceName OVERLAY = "{CB77B848FEFA13A3}Configs/Crime/LF_SafeTypes_Everon1989.conf";

@@ -4,6 +4,7 @@
 //! the handbook overlay and the prefab-slot overlay, both resolve, `LF_ConfigOverlay` picks each up
 //! for its own config class, and neither changes the core: the handbook keeps its core pages, every
 //! prefab slot keeps its core prefab. The stubs are empty; the flagship cards (#1007) fill them.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronRulesOverlays : LF_Test
 {
 	static const ResourceName HANDBOOK_OVERLAY = "{7829FAC0964C207C}Configs/Rules/LF_Handbook_Everon1989.conf";

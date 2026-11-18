@@ -4,6 +4,7 @@
 //! war kill. LF_Murder's war rule skips it (no murder, no wanted) and the subscriber files one `war_kill`
 //! incident; members of two organizations not at war are murder and file nothing; with
 //! `warKillsAreMurder` on the kill is murder and still tagged; `tagWarKills` off files nothing.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_OrgWarKillTag : LF_Test
 {
 	protected const string UID_A = "war-kill-uid-a";

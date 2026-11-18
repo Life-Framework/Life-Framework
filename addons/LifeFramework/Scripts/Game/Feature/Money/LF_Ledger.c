@@ -264,7 +264,7 @@ class LF_Ledger
 			}
 
 			s_aEntries.Insert(record.Copy());
-			s_iLastId = Math.Max(s_iLastId, record.m_iId);
+			s_iLastId = LF_Utils.MaxInt(s_iLastId, record.m_iId);
 		}
 	}
 }

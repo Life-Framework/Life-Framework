@@ -28,5 +28,11 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   (the underworld gives no tier word). The server refuses and notifies in `PerformAction`; the greyed offer reads
   standing only on the server host (a dedicated client waits for the owner RPC). The sign-up offer's level refusal
   now uses `LF_JobLevelWords` (#2700). Test `reputation/gate`.
-- 🔲 Contracts, owner RPC and screens, the pack's words,
+- ✅ **The owner learns their own tiers** (#2704, merged, in-dev): `LF_ReputationSync.c` packs the three tiers into one int and
+  sends it on spawn and on each tier change to that player's own controller only (`RpcDo_LF_StandingTiers`, `RplRcver.Owner`,
+  never an RplProp; points never leave the server). The client keeps them in `LF_ReputationSync.ClientTier` for greyed offers;
+  no screen draws the underworld. A spawn that comes before the account is cached waits once (2 s) instead of
+  sending the account key's tiers. A town or police tier change sends one toast in words through `NotifyPlayer`
+  (`#LF-Reputation_Toast_<Faction>_Up|Down`), the underworld none. Test `reputation/sync`.
+- 🔲 Contracts, client greying from `ClientTier`, screens, the pack's words,
   pack overlay and the owner `config.json` section `reputation` (later cards of #1018).

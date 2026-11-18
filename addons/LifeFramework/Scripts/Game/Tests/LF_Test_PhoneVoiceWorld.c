@@ -113,8 +113,7 @@ class LF_Test_PhoneVoiceWorld : LF_Test
 			LF_PhoneComponent component = LF_PhoneComponent.Of(phone);
 			if (component && component.ServerLineEntity())
 				SCR_EntityHelper.DeleteEntityAndChildren(component.ServerLineEntity());
-			if (phone)
-				SCR_EntityHelper.DeleteEntityAndChildren(phone);
+			LF_TestLooseSweep.DeleteBuilding(phone);
 		}
 
 		LF_TestCharacterFixture.Delete(caller);

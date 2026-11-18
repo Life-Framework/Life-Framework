@@ -10,6 +10,7 @@
 
 // tier: LOGIC
 //! The ledger card lists the reader's vehicles: model, plate, and where each one is.
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_GarageLedger : LF_Test
 {
 	protected static const string OWNER = "garage-ledger-owner";
@@ -80,6 +81,7 @@ class LF_Test_GarageLedger : LF_Test
 // tier: PERSISTENCE
 //! Garage it to keep it, through the real serializer: the garaged car comes back stored, the
 //! street car is at the impound lot, and the impound desk releases it once for the fee.
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_VehicleImpound : LF_Test
 {
 	protected static const string OWNER = "impound-owner";

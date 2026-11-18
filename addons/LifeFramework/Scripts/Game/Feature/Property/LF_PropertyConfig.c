@@ -201,7 +201,7 @@ class LF_PropertyConfig
 		if (!plot)
 			return 0;
 
-		return Math.Max(0, plot.m_iPrice);
+		return LF_Utils.MaxInt(0, plot.m_iPrice);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -292,7 +292,7 @@ class LF_PropertyConfig
 		if (!tier)
 			return 0;
 
-		return Math.Max(0, tier.m_iRentIntervalHours);
+		return LF_Utils.MaxInt(0, tier.m_iRentIntervalHours);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -303,7 +303,7 @@ class LF_PropertyConfig
 		if (!tier)
 			return 0;
 
-		return Math.Max(0, tier.m_iGraceHours);
+		return LF_Utils.MaxInt(0, tier.m_iGraceHours);
 	}
 }
 

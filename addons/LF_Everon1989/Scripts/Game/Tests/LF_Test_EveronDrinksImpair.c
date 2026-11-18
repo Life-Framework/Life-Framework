@@ -4,6 +4,7 @@
 //! overlay applies over the neutral core table. Beer and moonshine get their rows, and moonshine is the
 //! strongest drink. This replaced the node selftest that read the overlay's text
 //! (tools/validation/pack-drinks-impair-selftest.mjs), which could not show the row applies.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronDrinksImpair : LF_Test
 {
 	static const ResourceName OVERLAY = "{E721EE6C88C0A808}Configs/Survival/LF_DrinkImpairment_Everon1989.conf";

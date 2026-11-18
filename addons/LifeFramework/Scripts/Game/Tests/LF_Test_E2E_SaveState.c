@@ -39,6 +39,7 @@
 // `- e2e the robber's look survives the restart (expected '9B5BB216CC7FF18E|1=9F546CCA2582D16F', got '')`.
 // LF_TestLegacySnapshot now puts the crime reports back; both passes green, and green with --legacy-save.
 // tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
 	protected static const string ACCOUNT_UID = "e2e-uid";
@@ -292,6 +293,11 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		lockerRows.Insert(lockerRow);
 		LF_EvidenceLocker.ApplyAll(lockerRows);
 
+		// A locker rental (#2659, "lockers" payload, save version 56) must come back with its paid-until.
+		array<ref LF_LockerRentalRow> lockerRentalRows = {};
+		lockerRentalRows.Insert(LF_LockerRentalRow.Create("e2e-locker-site", OFFICER_UID, 1900000000));
+		LF_LockerBank.ApplyAll(lockerRentalRows);
+
 		// A half-finished chain batch (#417) must come back: barrel 3 of the Annex_Chains_Site, 3 of 8 units in.
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed before the save");
@@ -375,6 +381,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 
 		SeedOrgLadder(ctx);
 		LF_Test_ReputationPersist.SeedE2E(ctx);
+		LF_Test_GarageSlotsPersist.SeedE2E(ctx);
 
 #ifndef LF_E2E_LEGACY_SAVE
 		// A cargo run in progress holds a deposit ("jobruns" payload, save version 49, #2408, #2481): the
@@ -460,6 +467,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 
 //------------------------------------------------------------------------------------------------
 // tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateVerify : LF_Test
 {
 	//! #2410: the carried house key and the house it opens.
@@ -887,6 +895,8 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.False(LF_PersistenceComponentSerializer.IsLoadDamaged(), "e2e the restart load is not damaged, autosave runs");
 		LF_Debug.Info("Persistence", string.Format("e2e restart: loaded a save from game build %1 (save version %2), running %3", LF_SaveStamp.BootLoadedBuild(), LF_SaveStamp.BootSaveVersion(), GetGame().GetBuildVersion()));
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
+		ctx.True(LF_LockerBank.IsRenting("e2e-locker-site", OFFICER_UID), "e2e locker rental survives the restart");
+		ctx.Equal(1900000000, LF_LockerBank.PaidUntil("e2e-locker-site", OFFICER_UID), "e2e locker rental keeps its paid-until");
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed after the restart");
 		if (chainBarrel)
@@ -1028,6 +1038,8 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		VerifyJobLevels(ctx);
 		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("reputation"))
 			LF_Test_ReputationPersist.VerifyE2E(ctx);
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("garageslots"))
+			LF_Test_GarageSlotsPersist.VerifyE2E(ctx);
 		VerifyOrgLadder(ctx);
 		VerifyHeldGround(ctx);
 

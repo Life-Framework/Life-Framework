@@ -51,6 +51,29 @@ class LF_TestVaultDrillFixture
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Ends a test that used Robber() (#2792): the vault's drilling and loot are cleared, its place is
+	//! dropped and the robber is deleted with the pack and drill it carries. Every fixture character
+	//! spawns at the gate, so one left standing is one more under every later test there.
+	static void Release(IEntity robber, string vaultId = "")
+	{
+		if (!vaultId.IsEmpty())
+		{
+			LF_VaultDrill.Cancel(vaultId, "test end");
+			LF_Bank.Restock(vaultId);
+			LF_Places.Unregister(LF_Bank.PLACE_KIND, vaultId);
+		}
+
+		// The drill a finished drilling leaves at the vault is a loose entity of its own, not the robber's.
+		if (robber)
+		{
+			LF_TestLooseSweep sweep = new LF_TestLooseSweep();
+			sweep.Delete(robber.GetOrigin(), 4, LF_Bank.DRILL_PREFAB);
+		}
+
+		LF_TestCharacterFixture.Delete(robber);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void Hold(IEntity robber, IEntity drill, bool held)
 	{
 		LF_HandToolComponent tool = LF_HandTool.Of(drill);

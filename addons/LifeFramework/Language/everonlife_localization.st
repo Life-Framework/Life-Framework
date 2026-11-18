@@ -3998,6 +3998,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Park it at the garage next to the lot and store it to keep it. A car left on the street at a server restart is towed to the impound lot behind the garage."
      Comment "Shown after a vehicle purchase: the garage-it-to-keep-it rule"
     }
+    CustomStringTableItem "{C97AAED75F4A4D52}" {
+     Id "LF-Garage_BuySlot"
+     Target_en_us "Buy a garage slot"
+     Comment "Garage desk action and toast title (#2656): buy one more garage slot with carried cash."
+    }
     CustomStringTableItem "{58906F560E794544}" {
      Id "LF-Garage_EmptyCargo"
      Target_en_us "Empty the vehicle's storage first"
@@ -4108,10 +4113,35 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 is waiting on the pad in front of the garage."
      Comment "Retrieve succeeded. %1 is the plate"
     }
+    CustomStringTableItem "{51F194E2FE80AEC0}" {
+     Id "LF-Garage_SlotBought"
+     Target_en_us "Slot bought. Your garage now holds %1 vehicles."
+     Comment "Garage slot bought (#2656). %1 is the new slot cap."
+    }
+    CustomStringTableItem "{C1E5F8750E4D23B8}" {
+     Id "LF-Garage_SlotFailed"
+     Target_en_us "The slot could not be bought. Nothing was taken."
+     Comment "Garage slot refused (#2656): the cash could not be taken in full and was handed back."
+    }
+    CustomStringTableItem "{015CF51C90ECA5D4}" {
+     Id "LF-Garage_SlotNotAlive"
+     Target_en_us "You cannot buy a slot right now."
+     Comment "Garage slot refused (#2656): the buyer is dead or downed."
+    }
+    CustomStringTableItem "{AC1FD7B3F3DBE446}" {
+     Id "LF-Garage_SlotShortCash"
+     Target_en_us "The next slot costs {currency:sym}%1 in cash. You do not carry enough."
+     Comment "Garage slot refused (#2656): carried cash is short. %1 is the price."
+    }
     CustomStringTableItem "{4F4F48DC707A84B4}" {
      Id "LF-Garage_SlotsFull"
      Target_en_us "Your garage is full: %1 vehicles at most. Retrieve one before storing another."
      Comment "Garage store refused (#2655): the owner's stored vehicles fill every garage slot. %1 is the cap."
+    }
+    CustomStringTableItem "{E61274B7B23F4466}" {
+     Id "LF-Garage_SlotsMax"
+     Target_en_us "Your garage is at the most it can hold: %1 slots."
+     Comment "Garage slot refused (#2656): the character holds the max. %1 is the max."
     }
     CustomStringTableItem "{A1C4E87B62D94F05}" {
      Id "LF-Garage_StepOut"
@@ -5997,6 +6027,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Desempleado"
      Comment "Licence name: no employment"
     }
+    CustomStringTableItem "{E767EB7F650628AD}" {
+     Id "LF-LockerBank_AlreadyRented"
+     Target_en_us "You already rent a locker here."
+     Comment "Toast: a second rent at the same locker bank is refused."
+    }
+    CustomStringTableItem "{0D4C2B7A9E61F358}" {
+     Id "LF-LockerBank_CannotAfford"
+     Target_en_us "You do not have the rent in cash."
+     Comment "Toast or greyed prompt: the player carries less cash than the locker rent."
+    }
+    CustomStringTableItem "{93E1A6C04B7D2F85}" {
+     Id "LF-LockerBank_OutOfReach"
+     Target_en_us "Stand at the lockers to rent one."
+     Comment "Toast: the server found no locker bank within reach of the player."
+    }
+    CustomStringTableItem "{4F27D8B1C0A3E96D}" {
+     Id "LF-LockerBank_Refused"
+     Target_en_us "The locker could not be rented."
+     Comment "Toast: the rent was refused for a reason the player cannot fix (logged)."
+    }
+    CustomStringTableItem "{5B4F91955B355624}" {
+     Id "LF-LockerBank_Rent"
+     Target_en_us "Rent a locker"
+     Comment "Action on a locker bank: pay the rent for one locker here."
+    }
+    CustomStringTableItem "{5166BCD3DA9EC12C}" {
+     Id "LF-LockerBank_Rented"
+     Target_en_us "You rented a locker here."
+     Comment "Toast: the rent was paid and the locker at this bank is the player's."
+    }
+    CustomStringTableItem "{6A90D3BA614FE639}" {
+     Id "LF-LockerBank_Title"
+     Target_en_us "Lockers"
+     Comment "Title of the locker bank prompt and toast."
+    }
     CustomStringTableItem "{606F8E5D11807BC8}" {
      Id "LF-Locker_Cases"
      Target_en_us "Case file: %1"
@@ -7006,6 +7071,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-OrgRight_WITHDRAW"
      Target_en_us "Withdraw from the fund"
      Comment "Organisation right name, as a gated outlet's refusal names it (#988)."
+    }
+    CustomStringTableItem "{C65C0D31073BC4C5}" {
+     Id "LF-OrgWarAnnounce_Accepted"
+     Target_en_us "War begins: %1"
+     Comment "Island toast: the target answered, the two organizations are at war; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{E7E4127834BBA4FA}" {
+     Id "LF-OrgWarAnnounce_Declared"
+     Target_en_us "War declared: %1"
+     Comment "Island toast: one organization declared war on another; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{7B94EDBB4BFE6C05}" {
+     Id "LF-OrgWarAnnounce_Forfeit"
+     Target_en_us "War forfeited, an organization has no members left: %1"
+     Comment "Island toast: an organization emptied and forfeited its war; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{BED6AA1BA673F932}" {
+     Id "LF-OrgWarAnnounce_Lapsed"
+     Target_en_us "Declaration lapsed, nobody answered: %1"
+     Comment "Island toast: a declaration went unanswered; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{7ABE18BB5495091F}" {
+     Id "LF-OrgWarAnnounce_MemberAccepted"
+     Target_en_us "Your organization is at war with %1."
+     Comment "Member notice: the war started; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{D7EF843062AAD3B6}" {
+     Id "LF-OrgWarAnnounce_MemberDeclaredIn"
+     Target_en_us "%1 declared war on your organization. Answer at the war desk before the window closes."
+     Comment "Member notice: your side was challenged; %1 is the declaring organization (#2669)."
+    }
+    CustomStringTableItem "{32DA70C1A2DADF42}" {
+     Id "LF-OrgWarAnnounce_MemberDeclaredOut"
+     Target_en_us "Your organization declared war on %1. They have a while to answer."
+     Comment "Member notice: your side declared; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{3AD6CA5542B4E1BC}" {
+     Id "LF-OrgWarAnnounce_MemberForfeit"
+     Target_en_us "Your war with %1 ended: an organization has no members left."
+     Comment "Member notice: forfeit; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{EFC7E0BD1866B610}" {
+     Id "LF-OrgWarAnnounce_MemberLapsed"
+     Target_en_us "The war declaration between your organization and %1 lapsed."
+     Comment "Member notice: the declaration went unanswered; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{B4C1B2C3C2F5929B}" {
+     Id "LF-OrgWarAnnounce_MemberTime"
+     Target_en_us "Your war with %1 is over, time is up."
+     Comment "Member notice: the war ran out; %1 is the other organization (#2669)."
+    }
+    CustomStringTableItem "{C90E4128872ED67A}" {
+     Id "LF-OrgWarAnnounce_Time"
+     Target_en_us "War over, time is up: %1"
+     Comment "Island toast: a war ran out; %1 is 'Declarer / Target' (#2669)."
+    }
+    CustomStringTableItem "{B604BC0B97BFA7A1}" {
+     Id "LF-OrgWarAnnounce_Title"
+     Target_en_us "Gang war"
+     Comment "Toast title for organization war announcements (#2669)."
     }
     CustomStringTableItem "{1CC3B7AA55E0C10E}" {
      Id "LF-OrgWarBoard_Accepted"
@@ -8985,6 +9110,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Reputation_Tier_Neg2"
      Target_en_us "Distrusted"
      Comment "Standing: neutral core label of tier -2. The pack overlays the words."
+    }
+    CustomStringTableItem "{3783CFF6EFED5F5A}" {
+     Id "LF-Reputation_Toast_Police_Down"
+     Target_en_us "The {police} have started to keep an eye on you"
+     Comment "Standing toast: the police tier went down. Words only, never a number."
+    }
+    CustomStringTableItem "{9CA1505D71AF22D9}" {
+     Id "LF-Reputation_Toast_Police_Up"
+     Target_en_us "The {police} have started to see you as one of the good ones"
+     Comment "Standing toast: the police tier went up. Words only, never a number."
+    }
+    CustomStringTableItem "{B879A4BDE2FB466F}" {
+     Id "LF-Reputation_Toast_Title"
+     Target_en_us "Standing"
+     Comment "Standing: title of the toast when a standing tier changes."
+    }
+    CustomStringTableItem "{88053A4E9492D71B}" {
+     Id "LF-Reputation_Toast_Town_Down"
+     Target_en_us "People in {town} have started to keep their distance"
+     Comment "Standing toast: the town tier went down. Words only, never a number."
+    }
+    CustomStringTableItem "{A0995D5E8C36B097}" {
+     Id "LF-Reputation_Toast_Town_Up"
+     Target_en_us "People in {town} have started to trust you"
+     Comment "Standing toast: the town tier went up. Words only, never a number."
     }
     CustomStringTableItem "{C96808FBA0407AFE}" {
      Id "LF-Restrain_Action"

@@ -5,6 +5,7 @@
 //! `townsfolk` role (the role component overridden by GUID 7A31C05E94D2B861), a `Townsfolk` place id
 //! and the 1989 clothes in their loadout. Found by prefab and place id, never by a town coordinate.
 //! The pack owns the prefabs; the core names none of them.
+[LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronTownsfolk : LF_Test
 {
 	protected static const string ROLE = "townsfolk";

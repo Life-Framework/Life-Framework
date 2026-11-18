@@ -30,7 +30,8 @@ class LF_OrgWarRecord : Managed
 	int m_iEndsAt;
 	//! Answer window (seconds) the declaration was made under; the lapse time is declaredAt plus this.
 	int m_iAnswerWindowSec;
-	//! Post-war cooldown (seconds) the war was accepted under; applied from the end of the war.
+	//! Pair cooldown (seconds) applied from the close of the war: the lapse cooldown while DECLARED, the
+	//! post-war cooldown once accepted. Saved as it is, so no new field.
 	int m_iCooldownSec;
 	//! A new declaration on this pair is refused before this unix second (0 when none).
 	int m_iCooldownUntil;
@@ -126,7 +127,8 @@ class LF_OrgWars
 			if (other.m_eState == LF_EOrgWarState.DECLARED || other.m_eState == LF_EOrgWarState.ACCEPTED)
 				return Refused("declare", REFUSE_PENDING, declarerOrgId, targetOrgId);
 
-			if (other.m_eState == LF_EOrgWarState.ENDED && now < other.m_iCooldownUntil)
+			bool closed = other.m_eState == LF_EOrgWarState.ENDED || other.m_eState == LF_EOrgWarState.LAPSED;
+			if (closed && now < other.m_iCooldownUntil)
 				return Refused("declare", REFUSE_COOLDOWN, declarerOrgId, targetOrgId);
 		}
 
@@ -138,7 +140,8 @@ class LF_OrgWars
 		record.m_eState = LF_EOrgWarState.DECLARED;
 		record.m_iDeclaredAt = now;
 		record.m_iAnswerWindowSec = rules.m_iAnswerSeconds;
-		record.m_iCooldownSec = rules.m_iCooldownSeconds;
+		// A declaration that lapses starts the shorter lapse cooldown; Accept swaps in the full one.
+		record.m_iCooldownSec = rules.m_iLapseCooldownSeconds;
 		Table().Insert(record);
 		war = record;
 
@@ -208,7 +211,7 @@ class LF_OrgWars
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: close a war now with a reason (forfeit, or anything W-later adds). An ACCEPTED war becomes
-	//! ENDED and starts the pair cooldown; a DECLARED one becomes LAPSED. A war already closed is left alone.
+	//! ENDED and starts the pair cooldown; a DECLARED one becomes LAPSED and starts the lapse cooldown. A war already closed is left alone.
 	static void End(string warId, string reason, int now)
 	{
 		LF_OrgWarRecord war = Get(warId);
@@ -338,7 +341,7 @@ class LF_OrgWars
 	{
 		bool wasAtWar = war.m_eState == LF_EOrgWarState.ACCEPTED;
 		war.m_eState = state;
-		if (state == LF_EOrgWarState.ENDED)
+		if (state == LF_EOrgWarState.ENDED || state == LF_EOrgWarState.LAPSED)
 			war.m_iCooldownUntil = at + war.m_iCooldownSec;
 
 		LF_Debug.Info(FEATURE, string.Format("%1 %2 (%3) at %4", war.m_sWarId, typename.EnumToString(LF_EOrgWarState, state), reason, at));

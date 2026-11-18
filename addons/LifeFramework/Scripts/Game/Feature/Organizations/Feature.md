@@ -51,10 +51,14 @@ processing upgrade are kept at the desk.
   ticks, so a deadline passed during downtime closes on the first sweep at the deadline. Keyed by org id,
   all times unix seconds. `Declare`, `Accept`, `Tick`,
   `End`, `IsAtWar`, `ActiveFor` take an `LF_OrgWarRules` value (declared in `LF_OrgWarConfig.c`, #2667: fee, window, length, cooldown, min
-  members). A refusal (self, unknown org, pending or at war with that org, pair
+  members, lapse cooldown). A refusal (self, unknown org, pending or at war with that org, pair
   cooldown) logs `[LFDebug:OrgWars]` and returns a key. Each transition publishes `LF_OnOrgWarDeclared`,
   `LF_OnOrgWarAccepted`, `LF_OnOrgWarEnded` (reason `time`, `lapsed`, `forfeit`) from
-  `LF_OrgWarsEvents.c`. No RPC, UI or money here; rights and the fee are W3.
+  `LF_OrgWarsEvents.c`. A closed war starts the pair cooldown: ENDED the war cooldown, a LAPSED
+  declaration the shorter lapse cooldown (`lapseCooldownSeconds`, 1 h, #2769) so a fund cannot be drained by
+  re-declaring on a loop; both sides of the pair are held, and the record's `m_iCooldownSec` carries the
+  lapse value until `Accept` swaps in the war one. The shipped officer rung holds `DECLARE_WAR` (#2769), so
+  a lapse is not forced by an offline founder; an org's saved rank mask keeps what it saved. No RPC, UI or money here; rights and the fee are W3.
 - `LF_OrgWarDesk` — the war desk verbs (#2668, W3). `Declare(characterId, playerUid, targetOrgId)`: the rank
   holds `DECLARE_WAR`, both orgs have the rules' member minimum, the fund covers the fee; the fee is
   debited, then `LF_OrgWars.Declare`, and a record refusal (pending, cooldown) credits it back in the same
@@ -64,6 +68,12 @@ processing upgrade are kept at the desk.
   `LF_OrgWarCharacter.c` holds `RpcAsk_LF_OrgWarDeclare` / `RpcAsk_LF_OrgWarAnswer` on the character with
   the lease ask's guards (systems switch, PURCHASE bucket, desk range); no host branch. No UI (W7).
 - `LF_OrgWarBoard` — the war notice board (#2677, W9): a board kind `orgwars` (`LF_BoardProviders`, as the wanted board) on `Prefabs/Organizations/LF_OrgWarBoard.et`. A read lists declared, accepted and ended wars as notices in that order; ended and lapsed ones stay for 1 h (events `LF_OnOrgWarEnded`, memory only), open ones come from the war table. No new replication: one ask, one answer, per read.
+
+- `LF_OrgWarSweep` / `LF_OrgWarAnnounce` — the war clock and the island notice (#2669, W4). `LF_OrgWarSweep.Start()` (game mode, server)
+  calls `LF_OrgWars.Tick` every 30 s; `SweepAt(now)` is the same pass with the clock passed in. A subscriber on
+  `LF_OnOrganizationEmptied` calls `ForfeitOf`: every open war of that org ends with reason `forfeit`. `LF_OrgWarAnnounce`
+  turns `LF_OnOrgWarDeclared` / `Accepted` / `Ended` into one `NotifyAll` toast each plus a longer `NotifyPlayer` notice for
+  online members of both sides; texts are `#LF-OrgWarAnnounce_*` keys, neutral in core, worded by the pack.
 
 ## Iteration path
 

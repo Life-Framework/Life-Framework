@@ -115,8 +115,8 @@ agent per area. `tools\cli usage` shows where the tokens went.
 | `tools\cli dev --tier fast` | validate + test without a build, then dump `[LFDebug:*]` lines |
 | `tools\cli wt e2e <slug>` | Two-boot save, restart, and reload proof |
 | `tools\cli logs <pattern>` | Grep the newest server `console.log` |
-| `tools\cli regen-tests` / `regen-localization` | Regenerate the test registry / language tables |
-| `tools\cli wt ship <slug> [--refs N] [--body-file F] [--commit "<subject>"]` | No pre-merge gate (maintainer, 2026-11-15). `--commit` commits leftover changes first; a main conflict only in the test registry or language confs is regenerated, not returned to you. PR body checks (`tools/lib/pr-quality.mjs`: a body file for an `addons/` change, `## Manual testing`, a picture for a player-visible change, no open finding in `tmp/review-<slug>.md`), a seconds-long preflight (merge-tree, `validate` of changed inputs), push, PR, `gh pr merge --auto --merge` at once; a branch GitHub calls behind gets main merged in and pushed again. GitHub's `validate` is the only pre-merge check (docs/worktrees.md "Ship"). `--refs N` puts `Refs #N` in the body; merging never closes an issue |
+| `tools\cli regen-tests` / `regen-localization` | Check every test's `[LF_TestInfo]` (nothing is generated) / regenerate the language tables |
+| `tools\cli wt ship <slug> [--refs N] [--body-file F] [--commit "<subject>"]` | No pre-merge gate (maintainer, 2026-11-15). `--commit` commits leftover changes first; a main conflict only in the language confs is regenerated, not returned to you. PR body checks (`tools/lib/pr-quality.mjs`: a body file for an `addons/` change, `## Manual testing`, a picture for a player-visible change, no open finding in `tmp/review-<slug>.md`), a seconds-long preflight (merge-tree, `validate` of changed inputs), push, PR, `gh pr merge --auto --merge` at once; a branch GitHub calls behind gets main merged in and pushed again. GitHub's `validate` is the only pre-merge check (docs/worktrees.md "Ship"). `--refs N` puts `Refs #N` in the body; merging never closes an issue |
 | `tools\cli wt gate <slug>` | Optional manual gate for the diff's tier (`tools/lib/gate-tier.mjs`); not part of ship |
 | `tools\cli main-guard start\|stop\|status` | The gate, on main after the merge: the Workbench compile first on each new head (a red compile is bisected and reverted at once), then build, full suite, placement audit and e2e (flake rule: red twice). Each head's `compiled-ok`/`green`/`red` is in `tmp/wt/main-guard-state.json` and a `main-guard` commit status. `wt new` and `world-sync` pin to the newest `compiled-ok` commit (`--unchecked-main` / `--unchecked` override); `promote --confirm` needs `green` (docs/worktrees.md "Main guard") |
 | `toolscli playtest checklist [--all] [--budget 60]` / `playtest verdicts <file>` | One playtest session for many `needs-playtest` issues: collects the `## Manual testing` steps of their merged PRs, drops repeats, orders them as a walking route (two-player, restart and JIP marked), estimates minutes, and writes `tmp/playtest/checklist-<date>.md` with a pass/fail box per issue, the fixed smoke list (`docs/playtest/smoke-list.md`) first. Default is the top hour: open M2 chapter and epic work first, then big player flows, polish last; one line can cover several issues. `verdicts` reads the ticked file and PRINTS the `gh` label and comment commands; the maintainer or lead runs them, agents never do |
@@ -164,6 +164,9 @@ junctions into the Steam installs; on 2026-11-07 `git worktree remove --force`
 worktree with `tools\cli wt prune <slug>`; delete any other tree with
 `node tools/safe-rm.mjs <dir>` (`link-safety-selftest` proves both).
 
+- **Never write into the main checkout.** Use absolute paths under your worktree. A PreToolUse hook
+  (`.claude/settings.json`) denies Write/Edit there once `wt new` ran in your session, and `lead` moves stray
+  untracked files to `C:\LF\lead\stray` (`docs/worktrees.md` "Writes into the main checkout").
 - **Scratch goes in `<worktree>/tmp/`** (gitignored, created by `wt new`) with
   names unique to your task, such as `tmp/pr-body-<slug>.md`. Never use a
   shared session scratch dir for files you publish (one agent shipped another's
@@ -181,7 +184,8 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
 ## Tests
 
 - One file per test: `Scripts/Game/Tests/LF_Test_*.c` extending `LF_Test`, with
-  `// tier: LOGIC|WORLD|PERSISTENCE` above the class and a `// red-proof:` line.
+  `[LF_TestInfo(LF_TestTier.LOGIC|WORLD|PERSISTENCE|PERF)]` directly above the class (the only tier
+  source) and a `// red-proof:` line.
 - Tiers are setup cost, not subject: `LOGIC` is pure script (`--tier fast`);
   `WORLD` loads a resource or touches the world; `PERSISTENCE` is a save round trip;
   `PERF` is a timing gate (`perf/budget-128`): not in `fast` or `all`, so no gate flakes on it; run it
@@ -194,13 +198,16 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   what its assertions guard. It passes only if every listed test FAILS and names any that still
   passed (hollow). Record the `RED-OK` line. Node selftests in `tools/` keep their own red
   proofs; they are instant and need no game run.
-- The registry is generated by `tools\cli regen-tests`; never hand-edit it. Adding a test never touches `LF_TestManager.c`.
+- There is no test registry: `LF_TestManager` finds every `LF_Test` with its own `[LF_TestInfo]` by reflection and runs
+  them sorted by class name (#2610). Adding a test touches only its own file; `validate-registries` fails a test class
+  without the attribute, with two, or a central list. The tools (shards, worlds, `--only`) read the same attribute lines.
 - **Pack data is tested in the pack.** A test that names pack files or needs the pack's config overlays is
-  `addons/LF_Everon1989/Scripts/Game/Tests/LF_Test_Everon*.c` (same file rules; `regen-tests` writes the pack's
-  own registry). `tools\cli test` runs it in the pack leg, a boot under the pack header so the overlays apply
+  `addons/LF_Everon1989/Scripts/Game/Tests/LF_Test_Everon*.c` (same file rules; its attribute says
+  `pack: true`). `tools\cli test` runs it in the pack leg, a boot under the pack header so the overlays apply
   (`--tier all`, or `--only`/`--red` by name). Never a node selftest that reads `.conf` text
   (`docs/architecture/three-worlds.md` "Pack test leg").
 - Loop: `tools\cli test --no-build --only <LF_Test_Class>` (~10 s) until green, one `--red` run for the new tests, then `--tier all` once at the end.
+- **A test deletes what it spawns** (`LF_TestCharacterFixture.Delete`; `LF_TestLooseSweep.DeleteBuilding` for a payphone booth, whose loose part outlives the booth; `LF_TestVaultDrillFixture.Release` for a robber). Every fixture character spawns at the gate, so leftovers pile up under later tests (#2792). A run ends with `suite/no-leftover-fixtures`, which fails and names the test that left a character or prefab-less prop within 9 m of the gate. Never delete characters in a sweep after each test: it crashed the engine, and deleting a character that carries a path-loaded pack crashes it too (use the GUID reference, `LF_TestVaultDrillFixture.PACK_PREFAB`).
 - **A test never calls `LF_StaticReset.ResetAll()`**: it wipes every feature's statics and fails every later test in the suite (2026-11-16, 38 tests, #2092). Apply only your own feature's `LF_StaticResetHook` (`<Owner>.ResetStatics()`); `validate-no-test-resetall` fails core and pack tests that call it.
 - **A node selftest that builds a scratch git repo** calls `useHermeticGit()` and cleans up with `removeScratch()`
   (`tools/lib/selftest-git.mjs`): no machine git config, a fixed identity and branch, no auto-gc holding the folder
@@ -237,6 +244,10 @@ bug for each one; they transfer here because the engine is the same.
   tail with no error; join pieces under 8 KB with `+` or write through a JSON
   context. `validate-string-splice` fails a new site; a bounded one is marked
   `// lf-bounded: <why>` (the baseline only shrinks).
+- **`Math.Max`, `Math.Min` and `Math.Clamp` work in floats.** An int above 2^24 (unix seconds, money, XP,
+  a running counter) comes back rounded: 1800000480 became 1800000512 (#2787). Use `LF_Utils.MaxInt`,
+  `MinInt`, `ClampInt` (or `Math.ClampInt`) for any int that can be large; `validate-int-time-math` fails a
+  time-named int argument (real float time math is marked `// lf-float: <why>`).
 - **Strong refs (`ref`) for Managed classes.** A Managed field not marked `ref`
   is garbage-collected at end of frame. Put `ref` on BOTH the collection and
   its elements: `ref array<ref LF_Foo>`, `ref map<string, ref LF_Foo>`.

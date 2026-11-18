@@ -4,6 +4,7 @@
 // Restored the expected value to 1.
 
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Breach : LF_Test
 {
 	override string GetName()
@@ -89,6 +90,7 @@ class LF_Test_Roadmap_Breach : LF_Test
 }
 
 // tier: WORLD
+[LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_BreachWorld : LF_Test
 {
 	override string GetName()
@@ -164,6 +166,7 @@ class LF_Test_Roadmap_BreachWorld : LF_Test
 }
 
 // tier: PERSISTENCE
+[LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_Roadmap_BreachPersistence : LF_Test
 {
 	override string GetName()

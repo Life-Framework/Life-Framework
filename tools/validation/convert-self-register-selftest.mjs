@@ -3,8 +3,9 @@
 //
 // Proves tools/test/convert-self-register.mjs (#2616): it inserts the [LF_TestInfo(LF_TestTier.X)] attribute (#2610 R1b)
 // on the line above the class of a test file that lacks one, takes the tier from the file's `// tier:` line, leaves a converted file alone (idempotent),
-// and refuses a file with no tier or with two test classes. Cases run on fixture files in a scratch folder, once
+// handles a file with several test classes (each gets the nearest tier above it), writes pack: true for a pack test (path under a pack or --pack), and refuses a file with no tier or no test class. Cases run on fixture files in a scratch folder, once
 // through the library function and once through the command line with a glob.
+// red-proof: Run against the #2616 converter (one attribute per file, pack unknown) the two-class and pack checks fail (2026-11-18, #2617).
 // red-proof: Observed 2026-11-17 before the converter existed: the import failed (ERR_MODULE_NOT_FOUND) and the run exited 1.
 // Rewritten 2026-11-18 for the attribute shape: run against the old class-appending converter it printed FAIL for every attribute check.
 
@@ -12,7 +13,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { convertText } from "../test/convert-self-register.mjs";
+import { convertText, isPackPath } from "../test/convert-self-register.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
 let failures = 0;
@@ -50,6 +51,8 @@ class LF_Test_One : LF_Test
 {
 }
 
+// tier: WORLD
+//! second class
 class LF_Test_Two : LF_Test
 {
 }
@@ -84,8 +87,25 @@ check(again.text === plain.text, "a converted file is not changed");
 
 // Refusals.
 check(convertText(NO_TIER, "LF_Test_NoTier.c").status === "refused", "a file with no tier is refused");
-check(convertText(TWO, "LF_Test_One.c").status === "refused", "a file with two test classes is refused");
 check(convertText(NO_CLASS, "LF_Test_Helper.c").status === "refused", "a file with no test class is refused");
+
+// Two classes: each gets its own attribute from the nearest tier above it.
+const count = (s) => (s.match(/\[LF_TestInfo\(/g) || []).length;
+const two = convertText(TWO, "LF_Test_One.c");
+check(two.status === "converted", "a two-class file is converted");
+check(two.text.includes("[LF_TestInfo(LF_TestTier.LOGIC)]\nclass LF_Test_One : LF_Test"), "first class gets its own tier");
+check(two.text.includes("//! second class\n[LF_TestInfo(LF_TestTier.WORLD)]\nclass LF_Test_Two : LF_Test"), "second class gets the nearest tier above it");
+check(count(two.text) === 2, "exactly two attributes");
+check(convertText(two.text, "x").status === "already", "a converted two-class file is already");
+// Half done: one class has its attribute, the other gets one.
+const half = convertText(two.text.replace("[LF_TestInfo(LF_TestTier.WORLD)]\n", ""), "x");
+check(half.status === "converted" && count(half.text) === 2, "a class missing its attribute is added, the other left alone");
+
+// Pack: pack: true on every class; a pack path is recognised.
+const pack = convertText(TWO, "LF_Test_EveronX.c", { pack: true });
+check(pack.text.includes("[LF_TestInfo(LF_TestTier.LOGIC, pack: true)]\nclass LF_Test_One") && pack.text.includes("[LF_TestInfo(LF_TestTier.WORLD, pack: true)]\nclass LF_Test_Two"), "pack: true on every class");
+check(isPackPath("addons/LF_Everon1989/Scripts/Game/Tests/LF_Test_EveronX.c") && isPackPath(["C:", "lf", "addons", "LF_Other", "Scripts", "Game", "Tests", "a.c"].join("\\")), "a pack path is a pack path");
+check(!isPackPath("addons/LifeFramework/Scripts/Game/Tests/LF_Test_A.c"), "a core path is not");
 
 // Command line: glob, in-place write, exit code.
 const dir = scratchDir("lf-convert-selftest-");

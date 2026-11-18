@@ -63,6 +63,7 @@ class LF_Test_ConfigMergeFixture
 //------------------------------------------------------------------------------------------------
 //! An owner field overrides only itself; every field the owner leaves out keeps the shipped value.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigMergeFields : LF_Test
 {
 	override string GetName()
@@ -106,6 +107,7 @@ class LF_Test_ConfigMergeFields : LF_Test
 //! Rules merge by key, never by list position: the owner may list them in any order, an existing
 //! key keeps its place, a new key is appended (so it wins the walk), extra prefabs are added.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigMergeKeyed : LF_Test
 {
 	override string GetName()
@@ -164,6 +166,7 @@ class LF_Test_ConfigMergeKeyed : LF_Test
 //! skipped whole. A number where a record belongs used to be the engine-crash case (StartObject on
 //! a number), so this test also proves the reader checks the kind first.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigMergeReject : LF_Test
 {
 	override string GetName()
@@ -222,6 +225,7 @@ class LF_Test_ConfigMergeReject : LF_Test
 //! Without a usable owner layer every value stays shipped: no file, a malformed file, no section,
 //! or a section that is not an object.
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigMergeNoOwner : LF_Test
 {
 	override string GetName()
@@ -254,6 +258,7 @@ class LF_Test_ConfigMergeNoOwner : LF_Test
 //! An owner rule can set `prefab`: the rule then matches that prefab by GUID, whatever path either
 //! name carries, and merges field by field (the prefab on an existing rule leaves its prices alone).
 // tier: LOGIC
+[LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigMergePrefab : LF_Test
 {
 	override string GetName()

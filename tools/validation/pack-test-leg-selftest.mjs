@@ -149,8 +149,8 @@ if (existsSync(packDir)) {
   check(MISSION && meta.includes(`Name "${MISSION}"`), "PACK_TEST_MISSION matches the header's .meta");
   const packTests = fn(tw, "readPackTests")(root) ?? [];
   check(packTests.some((t) => t.cls === "LF_Test_EveronDrinksImpair" && t.tier === "WORLD"), "the pack registry lists LF_Test_EveronDrinksImpair (WORLD)");
-  const coreReg = readFileSync(join(root, "addons", "LifeFramework", "Scripts", "Game", "Tests", "LF_TestRegistrations.generated.c"), "utf8");
-  check(packTests.length > 0 && !packTests.some((t) => coreReg.includes(t.cls)), "the core registry names no pack test");
+  const core = new Set((fn(tw, "readTestInfo")(root) ?? []).filter((t) => !t.pack).map((t) => t.cls));
+  check(packTests.length > 0 && !packTests.some((t) => core.has(t.cls)), "no pack test is collected as a core test");
   const tiersAll = fn(tw, "testTiers")(root) ?? {};
   check(tiersAll["everon/drinks-impair"] === "WORLD", "testTiers resolves a pack test's GetName()");
 }
