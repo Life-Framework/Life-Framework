@@ -1,4 +1,5 @@
 // Red-proof for validate-core-place-names: each place name is caught, neutral text is not.
+// inputs: imports
 import { placeNameHits } from "./validate-core-place-names.mjs";
 
 const item = (id, en) => `CustomStringTableItem "{0000000000000001}" {\n Id "${id}"\n Target_en_us "${en}"\n}\n`;

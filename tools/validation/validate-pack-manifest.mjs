@@ -10,6 +10,7 @@
 //     public name; retire it through `deprecated` first).
 // A missing pack folder passes: the core must boot alone.
 // red-proof: tools/validation/pack-manifest-selftest.mjs plants each violation.
+// inputs: addons/LifeFramework/Scripts/**/*.c, addons/LF_*/**/*.conf, docs/architecture/public-surface.json, docs/architecture/public-surface-baseline.json
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative, sep } from "node:path";

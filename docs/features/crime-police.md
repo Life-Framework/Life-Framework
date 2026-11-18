@@ -382,10 +382,17 @@
   officer stays on duty with the body and kit, but the time away is never counted. `OnPlayerReturned` (on spawn) starts
   the clock again inside the same shift cap, which also restarts the clock of an officer whose on-duty flag survived a
   server restart. The cap applies to every duty role (police and medic). Log `[LFDebug:Ranks] shift cap reached`,
-  `duty clock stopped`, `duty clock resumed`. Not tracked: whether a connected officer is moving (no activity signal
-  exists), so an officer who stays connected but idle earns up to the cap. The shift's counted seconds are session
+  `duty clock stopped`, `duty clock resumed`. A connected officer who stands idle is paused by the idle sampler below. The shift's counted seconds are session
   state: a server restart gives a fresh cap. The cap log fires once per shift. Tests `police/duty-shift-cap`,
   `police/duty-clock-disconnect`.
+- 🔨 **Duty pay pauses while the officer or medic stands idle** (#3120, in-dev, WORLD `police/duty-idle`). `LF_DutyIdle`
+  samples every connected on-duty player every 30 s. Moving more than 2 m (on foot or in any vehicle; a seat follows the
+  vehicle's position) or turning the view about 10 degrees counts as active, so patrol, a desk, a parked car with the
+  officer looking out and driving to a call all keep the clock running. After `dutyIdleSeconds` (jobs config, default
+  300; 0 = off) with none of that, the clock is settled at the moment the window ran out and stopped; the idle time earns
+  no pay and no rank time. The next sample that sees activity starts it again (at most 30 s late). Rank rates are
+  untouched. A logout while paused needs nothing: the spawn restarts the clock (`ResumeDutyClock`). Watches are runtime
+  only. Log `[LFDebug:DutyIdle] duty clock paused`, `duty clock resumed`.
 - 🔨 **A character switch settles the duty clock first** (#2838, in-dev, LOGIC `police/duty-clock-character-switch`). Every
   change of the account's active character (a pick, a new character made active, the active one removed) runs
   `LF_PoliceRanks.SettleForCharacterSwitch` before it: the running seconds go to the outgoing character's rank time

@@ -38,6 +38,7 @@ class LF_QuestGiverComponent : ScriptComponent
 			return;
 
 		LF_QuestManager.GetInstance().RegisterGiver(this);
+		LF_QuestGiverTable.QueueAudit();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -69,9 +70,10 @@ class LF_QuestGiverComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The prefab's quests followed by the quest giver table's row for this giver id (#3124).
 	array<ref LF_QuestDefinition> GetQuests()
 	{
-		return m_aQuests;
+		return LF_QuestGiverTable.QuestsFor(m_sGiverId, m_aQuests);
 	}
 
 	//------------------------------------------------------------------------------------------------
