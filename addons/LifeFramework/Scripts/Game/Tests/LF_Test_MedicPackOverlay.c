@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_MedicPackOverlay,LF_Test_EveronMedicRanks` printed `RED-OK medic/pack-overlay (fails with the hook on, 7 assertions)`; first failure `three rungs: the refused rows and the removed extra are gone (expected 3, got 0)`. The hook skips the pack source, so the config lists no rung. `--only` passes.
+// red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_MedicPackOverlay` (batched with its pack-leg sibling) printed `RED-OK medic/pack-overlay (fails with the hook on, 7 assertions)`; first failure `three rungs: the refused rows and the removed extra are gone (expected 3, got 0)`. The hook skips the pack source, so the config lists no rung. `--only` passes.
 //! #3047: the medic config reads pack overlays like LF_PropertyConfig and LF_MarketConfig. The ladder is a
 //! list keyed by rank id: a pack row adds a rung, a repeated id patches it (pay, promotion time, kit set
 //! whole), `replace` rebuilds one, and a remove is refused on every rung but the last. A rung with no title
