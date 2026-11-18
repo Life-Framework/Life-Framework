@@ -23,7 +23,7 @@ Type `/report` in chat as soon as the event ends. It flags your recent incidents
 
 The stamp is a small tag in the top left corner. It shows the server name, the last six characters of your player ID, and the server's date and time in UTC, for example `LF  /  A1B2C3  /  2026-11-14 21:40:07 UTC`. The time comes from the same clock as the incident log, so staff can match your clip to a log row. It is not the in-game clock.
 
-- It starts off. Press **F9** (keyboard) or **RB + View** together (gamepad) to show it, and press the key again to hide it. The key is listed under Controls.
+- It starts off. Press **F8** (keyboard) or **RB + View** together (gamepad) to show it, and press the key again to hide it. The key is listed under Controls.
 - It appears a moment after you press the key, because the server has to answer first. The seconds keep moving on your screen between answers.
 - The server name is set by the server owner. The default is `LF`.
 - If the owner has turned the stamp off, the key shows a short message and nothing appears. Write the time down instead.
