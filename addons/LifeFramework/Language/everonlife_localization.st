@@ -6472,6 +6472,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Safe zone"
      Comment "Map label of a safe zone at the closest zoom."
     }
+    CustomStringTableItem "{DF4F6E621FD608FA}" {
+     Id "LF-MedicRank_Doctor"
+     Target_en_us "Doctor"
+     Comment "Medic rank title, rung 2 (#2708)"
+    }
+    CustomStringTableItem "{BA039C69E3728E5E}" {
+     Id "LF-MedicRank_KitRefused"
+     Target_en_us "Your {medic} rank may not draw this item"
+     Comment "Refusal when a medic draws kit above their rank (#2708)"
+    }
+    CustomStringTableItem "{F45008F52BDF7B2C}" {
+     Id "LF-MedicRank_Paramedic"
+     Target_en_us "Paramedic"
+     Comment "Medic rank title, rung 1 (#2708)"
+    }
+    CustomStringTableItem "{1E8C9F222375C5BB}" {
+     Id "LF-MedicRank_Trainee"
+     Target_en_us "Trainee {medic}"
+     Comment "Medic rank title, rung 0 (#2708)"
+    }
     CustomStringTableItem "{3C71B0A2D4E5F612}" {
      Id "LF-Medic_Downed"
      Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."

@@ -113,3 +113,10 @@ No stretcher-load sound yet.
 - **Owner and side:** `LF_DownedPatient` decides on the server.
 - **Data:** `Prefabs/Medic/LF_DownedPatient.et` (a `Character_Base` character with the same Revive, Drag, Carry, Put down and Load actions as a player, vanilla shirt, trousers and boots from the townsfolk row of `tools/assets/outfits/roles.json`) plus `LF_DownedPatientComponent`; `m_fPatientResetSeconds` (45) in `LF_Medic.conf`. Nothing persists. It is downed by `Kill` through the hit-zone path (`LF_Downed.IsEligible` lets the patient component through), never bleeds out (`LF_BleedOut.Advance` skips it), and is put back at its spot, healed and downed again by a shared 2 s tick once treated for `m_fPatientResetSeconds`, or at once by the world reset step `patient` (`LF_MedicWorldReset.c`). A dead or deleted patient is respawned from its prefab.
 - **Proof:** `medic/downed-patient` (LOGIC), `medic/downed-patient-world` (WORLD), `node agent-box/session.mjs downed-patient-proof`.
+
+## Medic ranks (#2708)
+
+- **Player sees:** nothing new on screen yet; a promoted medic earns more per duty second at clock-out. A kit draw above the medic's rank is refused with `#LF-MedicRank_KitRefused` once a locker calls `LF_MedicRanks.CanDraw` (follow-up).
+- **Owner and side:** `LF_MedicRanks` (`LF_MedicRanks.c`), server only. Separate from `LF_PoliceRanks` on purpose (#652 asked to generalise; not in M6).
+- **Data:** `m_aRanks` (`LF_MedicRank` rows) in `LF_Medic.conf`; empty uses the built-in trainee / paramedic / doctor. Rank and medic duty seconds live on `LF_CharacterStanding` and are saved by the `medicranks` save section (`LF_MedicRanksSavePayload`, section version 1, #2841).
+- **Proof:** `medic/ranks` (LOGIC), `medic/ranks-persist` (PERSISTENCE), `tools\cli wt e2e` (`medic/ranks-persist` in the reload boot, gated on `LF_SaveSections.BootHadSection("medicranks")`).
