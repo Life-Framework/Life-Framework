@@ -24,6 +24,16 @@ class LF_FittedBuildingComponent : ScriptComponent
 			return;
 
 		GetGame().GetCallqueue().CallLater(FitNow, 0, false);
+		// An open business ignores a private lock marker in the same building (#3203); every machine.
+		GetGame().GetCallqueue().CallLater(KeepOpen, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void KeepOpen()
+	{
+		IEntity owner = GetOwner();
+		if (owner)
+			LF_BuildingLocks.RegisterOpenAt(owner.GetOrigin(), m_fSearchRadius, owner.GetOrigin().ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -50,7 +60,13 @@ class LF_FittedBuildingComponent : ScriptComponent
 	override void OnDelete(IEntity owner)
 	{
 		if (GetGame() && GetGame().GetCallqueue())
+		{
 			GetGame().GetCallqueue().Remove(FitNow);
+			GetGame().GetCallqueue().Remove(KeepOpen);
+		}
+
+		if (owner)
+			LF_BuildingLocks.UnregisterOpen(owner.GetOrigin().ToString());
 
 		super.OnDelete(owner);
 	}
