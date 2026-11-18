@@ -186,7 +186,7 @@ for (const slot of town.slots) {
     check(!!p, `slot ${slot.id} maps to unknown plot ${e.plot}`);
     check(!!e.prefab && !!e.prefab.stem, `slot ${slot.id} maps to a plot with no prefab`);
   }
-  check(Array.isArray(e.why) && e.why.length > 0, `slot ${slot.id} carries no reason`);
+  check(e.none ? typeof e.reason === "string" && e.reason.length > 0 : Array.isArray(e.why) && e.why.length > 0, `slot ${slot.id} carries no reason`);
 }
 // Fit: the strong matches the doc names, by the scout's types.
 check(m.slots.clothing.building === "b03", `clothing should take the clothes shop b03, took ${m.slots.clothing.building}`);

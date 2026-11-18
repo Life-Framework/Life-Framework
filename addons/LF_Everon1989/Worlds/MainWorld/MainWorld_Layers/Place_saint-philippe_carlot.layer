@@ -1,0 +1,250 @@
+GenericEntity Fit_saint_philippe_carlot_Place {
+ components {
+  LF_PlaceComponent "{F3ECB677F61C6ADF}" {
+   m_sKind "VehicleLot"
+   m_sId "saint-philippe.carlot"
+  }
+  LF_FittedBuildingComponent "{DC91AB8AFA7F62E6}" {
+  }
+ }
+ coords 4391 15.8 10629.9
+}
+GenericEntity Fit_saint_philippe_carlot_vehicle_lot {
+ components {
+  LF_VehicleLotComponent "{E1B0E70100000003}" {
+   m_sShopId "roadmap-lot"
+   m_iCashCeiling 500
+   m_iExtraKeyPrice 25
+   m_bTestCarLot 1
+   m_aOffers {
+    LF_VehicleOffer "{E1B0E70100000011}" {
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     m_sSpawnPrefab "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et"
+     m_iPrice 1000
+     m_sNameKey "#EL-Vehicle_S105"
+    }
+    LF_VehicleOffer "{E1B0E70100000012}" {
+     m_sPrefab "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et"
+     m_sSpawnPrefab "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et"
+     m_iPrice 2500
+     m_sNameKey "#EL-Vehicle_UAZ469"
+    }
+    LF_VehicleOffer "{E1B0E70100000013}" {
+     m_sPrefab "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et"
+     m_sSpawnPrefab "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et"
+     m_iPrice 4000
+     m_sNameKey "#EL-Vehicle_S1203"
+    }
+    LF_VehicleOffer "{E1B0E70100000014}" {
+     m_sPrefab "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et"
+     m_sSpawnPrefab "{E1A452BE1A000001}Prefabs/Vehicles/Wheeled/UAZ452/EL_UAZ452_base.et"
+     m_iPrice 3500
+     m_sNameKey "#EL-Vehicle_UAZ452"
+    }
+    LF_VehicleOffer "{E1B0E70100000015}" {
+     m_sPrefab "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et"
+     m_sSpawnPrefab "{E1A923BE1A000001}Prefabs/Vehicles/Wheeled/M923A1/EL_M923A1_transport.et"
+     m_iPrice 8000
+     m_sNameKey "#EL-Vehicle_M923"
+    }
+    LF_VehicleOffer "{E1B0E70100000016}" {
+     m_sPrefab "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et"
+     m_sSpawnPrefab "{E1A2101BE1A00001}Prefabs/Vehicles/Wheeled/V2101/EL_V2101_beige.et"
+     m_iPrice 1800
+     m_sNameKey "#EL-Vehicle_Dana2101"
+    }
+    LF_VehicleOffer "{E1B0E70100000017}" {
+     m_sPrefab "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et"
+     m_sSpawnPrefab "{E1A601BE1A000001}Prefabs/Vehicles/Wheeled/T601/EL_T601_beige.et"
+     m_iPrice 700
+     m_sNameKey "#EL-Vehicle_SputnikT601"
+    }
+   }
+  }
+  LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
+   m_sShopId "roadmap-lot"
+   m_vOffset -0.7 0 12.5
+  }
+  MeshObject "{E1B0E70100000001}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{E1B0E70100000002}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{E1B0E70100000006}" {
+   ActionContexts {
+    UserActionContext "{E1B0E70100000007}" {
+     ContextName "default"
+     Radius 3
+     Position PointInfo "{E1B0E70100000008}" {
+      Offset 0 0.8 0
+     }
+    }
+   }
+   additionalActions {
+    LF_VehicleBuyAction "{E1B0E70100000021}" {
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000022}" {
+      Name "#EL-Vehicle_Buy"
+     }
+    }
+    LF_VehicleExtraKeyAction "{E1B0E70100000023}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000024}" {
+      Name "#EL-Vehicle_ExtraKey"
+     }
+    }
+   }
+  }
+  RplComponent "{E1B0E70100000009}" {
+   Enabled 1
+  }
+ }
+ coords 4390.762 15.8 10626.926
+ angleY -9
+}
+GenericEntity Fit_saint_philippe_carlot_garage {
+ components {
+  LF_VehicleGarageComponent "{A1C1080A00000001}" {
+   m_sPadId "roadmap-garage"
+  }
+  LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
+   m_sShopId "roadmap-garage"
+   m_vOffset 3 0 14.5
+   m_iSlots 2
+   m_vSlotStep 5 0 0
+   m_vAngles 0 0 0
+  }
+  MeshObject "{E1B0E70100000001}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{E1B0E70100000002}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{E1B0E70100000006}" {
+   ActionContexts {
+    UserActionContext "{E1B0E70100000007}" {
+     ContextName "default"
+     Radius 3
+     Position PointInfo "{E1B0E70100000008}" {
+      Offset 0 0.8 0
+     }
+    }
+   }
+   additionalActions {
+    LF_VehicleBuyAction "{E1B0E70100000021}" {
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000022}" {
+      Name "#EL-Vehicle_Buy"
+     }
+    }
+    LF_VehicleExtraKeyAction "{E1B0E70100000023}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000024}" {
+      Name "#EL-Vehicle_ExtraKey"
+     }
+    }
+   }
+  }
+  RplComponent "{E1B0E70100000009}" {
+   Enabled 1
+  }
+ }
+ coords 4394.417 15.62 10627.505
+ angleY -9
+}
+LF_NpcBaseEntity Fit_saint_philippe_carlot_car_lot_mechanic : "{009A8952A2537BB4}Prefabs/Characters/Npcs/Outfits/LF_Npc_Mechanic_2.et" {
+ coords 4387.834 15.8 10628.791
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_carlot_impound_desk {
+ components {
+  LF_ImpoundDeskComponent "{B7547E5E3F7A5535}" {
+   m_sPadId "roadmap-impound"
+  }
+  LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
+   m_sShopId "roadmap-impound"
+   m_vOffset 9 0 14.5
+   m_iSlots 2
+   m_vSlotStep 5 0 0
+   m_vAngles 0 0 0
+  }
+  MeshObject "{E1B0E70100000001}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{E1B0E70100000002}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{E1B0E70100000006}" {
+   ActionContexts {
+    UserActionContext "{E1B0E70100000007}" {
+     ContextName "default"
+     Radius 3
+     Position PointInfo "{E1B0E70100000008}" {
+      Offset 0 0.8 0
+     }
+    }
+   }
+   additionalActions {
+    LF_VehicleBuyAction "{E1B0E70100000021}" {
+     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000022}" {
+      Name "#EL-Vehicle_Buy"
+     }
+    }
+    LF_VehicleExtraKeyAction "{E1B0E70100000023}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E1B0E70100000024}" {
+      Name "#EL-Vehicle_ExtraKey"
+     }
+    }
+   }
+  }
+  RplComponent "{E1B0E70100000009}" {
+   Enabled 1
+  }
+ }
+ coords 4396.787 15.63 10627.88
+ angleY -9
+}
+Vehicle Fit_saint_philippe_carlot_lot_display_uaz469 : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et" {
+ coords 4382.246 13.75 10639.144
+ angleY 11
+}
+Vehicle Fit_saint_philippe_carlot_lot_display_dana2101 : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
+ coords 4398.819 14.73 10641.263
+ angleY 151
+}
+GenericEntity Fit_saint_philippe_carlot_vehicle_lot_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "vehicle_lot"
+   m_vRimColor 1 1 1
+   m_vPaintColor 0.12 0.3 0.55
+   m_vTextColor 1 1 1
+  }
+ }
+ coords 4381.744 14.96 10634.003
+ angleY -9
+}
