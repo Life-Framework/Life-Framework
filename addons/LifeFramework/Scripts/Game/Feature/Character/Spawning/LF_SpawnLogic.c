@@ -456,9 +456,13 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		if (LF_FirstSpawnBeds.Resolve(playerId, characterPersistenceId, position, yawPitchRoll))
 			return true;
 
-		// Order: the jail return (after the spawn, LF_Jail.OnPlayerSpawned), the hospital wake,
-		// the first-spawn bed, then the saved spot (off by default, #1778), then the spawn point below.
+		// Order (LF_SpawnPriority): the jail return (after the spawn, LF_Jail.OnPlayerSpawned), the
+		// hospital wake, the first-spawn bed, then the saved spot (off by default, #1778), the player's
+		// own house (#2652), then the role's spawn point below.
 		if (LF_RejoinSpot.Resolve(playerId, LF_Utils.GetPlayerUID(playerId), characterPersistenceId, position, yawPitchRoll))
+			return true;
+
+		if (LF_SpawnPriority.ResolveHouse(playerId, LF_Utils.GetPlayerUID(playerId), position, yawPitchRoll))
 			return true;
 
 		SCR_SpawnPoint spawnPoint = ResolveSpawnPoint(playerId);

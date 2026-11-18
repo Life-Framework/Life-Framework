@@ -8072,6 +8072,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You are not allowed to place this."
      Comment "Toast when the placement service refuses because the player may not place that item: a spike strip off duty (#1026)."
     }
+    CustomStringTableItem "{3E6A1F5C92D80B47}" {
+     Id "LF-Placement_PickUp"
+     Target_en_us "Pick up"
+     Comment "Action name on a permanent prop its owner placed (a chair, a table): takes it back into the inventory (#2751)."
+    }
     CustomStringTableItem "{42E27FF2B0C5A49F}" {
      Id "LF-Placement_Title"
      Target_en_us "Placing"
@@ -8387,6 +8392,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Property_Bought"
      Target_en_us "Plot %1 is yours."
      Comment "Toast: the plot purchase went through (#2649). %1 = the plot."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7355}" {
+     Id "LF-Property_BuildItemsFirst"
+     Target_en_us "Bring the materials first."
+     Comment "Build site refusal (#2650): work asked before the stage's items are in."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7351}" {
+     Id "LF-Property_BuildNeed"
+     Target_en_us "Need %1 more %2"
+     Comment "Deposit action at a build site (#2650). %1 = how many the stage still lacks, %2 = the item's name."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7353}" {
+     Id "LF-Property_BuildNoItems"
+     Target_en_us "You carry none of what this stage still needs."
+     Comment "Build site refusal (#2650): nothing to deposit."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7354}" {
+     Id "LF-Property_BuildNotYours"
+     Target_en_us "Only the owner and key holders can build here."
+     Comment "Build site refusal (#2650, #2815): the caller neither owns the plot nor carries its key."
+    }
+    CustomStringTableItem "{6B1E0D4C9A2F7352}" {
+     Id "LF-Property_BuildWork"
+     Target_en_us "Build (%1/%2)"
+     Comment "Held work action at a build site (#2650). %1 = work done, %2 = work the stage needs."
     }
     CustomStringTableItem "{55D1BC2D7557DA0C}" {
      Id "LF-Property_Buy"
