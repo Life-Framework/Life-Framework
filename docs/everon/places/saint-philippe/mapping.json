@@ -55,6 +55,13 @@
         "lead-approved: the vanilla police villa (4553, 10748)"
       ]
     },
+    "jail": {
+      "building": "b32",
+      "shared": true,
+      "why": [
+        "the villa's own barred cell, ground floor west: the jail cell rides in the police slot's building (b32)"
+      ]
+    },
     "clinic": {
       "building": "b39",
       "alternatives": [
@@ -173,6 +180,18 @@
       "why": [
         "NewspaperBooth_E_01_redyellow (kiosk), 20.5 m2, 67.3 m from the scout centre, interior yes",
         "kiosk on the west side of the square (4425, 10754)"
+      ]
+    },
+    "carlot": {
+      "building": "b77",
+      "alternatives": [
+        {
+          "building": "b70"
+        }
+      ],
+      "why": [
+        "Workshop_01_Main (garage), 92.7 m2, 123 m from the scout centre, interior yes",
+        "lead-approved (D10): the workshop garage beside the town hall (4391, 10630); Workshop_01_Side b70 is its small neighbour"
       ]
     }
   }

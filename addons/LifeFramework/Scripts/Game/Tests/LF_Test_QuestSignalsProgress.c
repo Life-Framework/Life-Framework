@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_QuestSignalsProgress`: `RED PROOF OK`; with each act skipped, `selling the fish moves its objective`, `which reaches level 2 (expected 2, got 1)` and `reaching level 2 moves the level 2 objective` fail. `--only` passes.
+// red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_QuestSignalsProgress`: `RED PROOF OK`; with each act skipped, `selling the fish moves its objective`, `which reaches level 2 (expected 2, got 1)` and `reaching level 2 moves the level 2 objective` fail. `--only` passes. Flake fix 2026-11-18: failed `--tier all` (and `--only LF_Test_FishSpeciesPrefabs,LF_Test_QuestSignalsProgress`) with `the seller lands a fish (expected 1, got 0)` on the unfixed test; the fish sale now runs on its own seller wearing a pack and both runs pass.
 //! quests/signals-progress (#3123): each hour-2 milestone reports its SIGNAL through the public server
 //! entry point of its own feature (plot buy, car lot buy, licence desk visit, fish counter sale, job XP
 //! award), moves only its own objective, and a refused purchase or sale moves nothing.
@@ -60,7 +60,7 @@ class LF_Test_QuestSignalsProgress : LF_Test
 		RunPlot(ctx, tracker, player);
 		RunVehicle(ctx, tracker, player);
 		RunPermit(ctx, tracker, player);
-		RunFish(ctx, tracker, player);
+		RunFish(ctx, manager);
 		RunJobLevel(ctx, tracker, player);
 
 		LF_TestCharacterFixture.Delete(player);
@@ -170,9 +170,32 @@ class LF_Test_QuestSignalsProgress : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void RunFish(LF_TestContext ctx, LF_QuestTrackerComponent tracker, IEntity player)
+	//! The sale runs on its own fresh character wearing a pack: the jacket alone rejected the trout
+	//! after fishing/species-prefabs ran first (#3123).
+	protected void RunFish(LF_TestContext ctx, LF_QuestManager manager)
 	{
-		IEntity counter = LF_Utils.SpawnEntityPrefab(FISH_COUNTER, player.GetOrigin() + "1 0 0");
+		IEntity seller = LF_TestCharacterFixture.Spawn(ctx);
+		if (!seller)
+			return;
+
+		// The jacket alone is too small for a trout once other tests have run; the fishing tests wear a pack too.
+		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(seller);
+		IEntity pack = LF_Utils.SpawnEntityPrefab(LF_TestVaultDrillFixture.PACK_PREFAB, seller.GetOrigin());
+		bool wearing = pack && inventory && inventory.TryInsertItem(pack, EStoragePurpose.PURPOSE_LOADOUT_PROXY);
+		ctx.True(wearing, "the seller wears a pack");
+		LF_QuestTrackerComponent tracker = LF_QuestTrackerComponent.Cast(seller.FindComponent(LF_QuestTrackerComponent));
+		ctx.NotNull(tracker, "the seller carries a quest tracker");
+		if (!wearing || !tracker)
+		{
+			if (!wearing)
+				LF_TestCharacterFixture.Delete(pack);
+
+			LF_TestCharacterFixture.Delete(seller);
+			return;
+		}
+
+		Open(manager, tracker, LF_QuestProgressSignals.FISH_SOLD);
+		IEntity counter = LF_Utils.SpawnEntityPrefab(FISH_COUNTER, seller.GetOrigin() + "1 0 0");
 		LF_ShopComponent shop;
 		if (counter)
 			shop = LF_Component<LF_ShopComponent>.Find(counter);
@@ -181,20 +204,22 @@ class LF_Test_QuestSignalsProgress : LF_Test
 		if (!shop)
 		{
 			LF_TestCharacterFixture.Delete(counter);
+			LF_TestCharacterFixture.Delete(seller);
 			return;
 		}
 
 		int earned;
 		string missing;
-		ctx.True(shop.Sell(FISH, 1, player, earned, missing) != LF_EShopRefusal.NONE, "selling a fish the seller does not carry is refused");
+		ctx.True(shop.Sell(FISH, 1, seller, earned, missing) != LF_EShopRefusal.NONE, "selling a fish the seller does not carry is refused");
 		ctx.False(Done(tracker, LF_QuestProgressSignals.FISH_SOLD), "a refused sale moves nothing");
 
-		ctx.Equal(1, LF_InventoryUtils.AddAmount(player, FISH, 1), "the seller lands a fish");
+		ctx.Equal(1, LF_InventoryUtils.AddAmount(seller, FISH, 1), "the seller lands a fish");
 		if (!RedProof())
-			ctx.Equal(LF_EShopRefusal.NONE, shop.Sell(FISH, 1, player, earned, missing), "the counter buys the fish");
+			ctx.Equal(LF_EShopRefusal.NONE, shop.Sell(FISH, 1, seller, earned, missing), "the counter buys the fish");
 
 		ctx.True(Done(tracker, LF_QuestProgressSignals.FISH_SOLD), "selling the fish moves its objective");
 		LF_TestCharacterFixture.Delete(counter);
+		LF_TestCharacterFixture.Delete(seller);
 	}
 
 	//------------------------------------------------------------------------------------------------

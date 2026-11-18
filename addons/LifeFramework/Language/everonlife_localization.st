@@ -3510,6 +3510,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Rob the safe"
      Comment "Annex safe robbery action name"
     }
+    CustomStringTableItem "{3152A1C0B7D34E02}" {
+     Id "LF-Death_CostBill"
+     Target_en_us "The bill is {currency:sym}%1."
+     Comment "Death screen cost line: the hospital bill; %1 is the amount from the respawn config, left out when it is 0 (#3152)."
+    }
+    CustomStringTableItem "{3152A1C0B7D34E03}" {
+     Id "LF-Death_CostKeeps"
+     Target_en_us "What you carried stays with your body."
+     Comment "Death screen cost line: the dead body keeps the carried items (#3152)."
+    }
+    CustomStringTableItem "{3152A1C0B7D34E01}" {
+     Id "LF-Death_CostWake"
+     Target_en_us "You wake at the hospital."
+     Comment "Death screen cost line: where a dead player wakes (#3152)."
+    }
     CustomStringTableItem "{EF124E70F7C349D7}" {
      Id "LF-DebugJailMe_Action"
      Target_en_us "Send me to jail (playtest)"
@@ -4487,6 +4502,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Gather_RequiresItemInHands"
      Target_en_us "Requires the right tool in hand"
      Comment "Gather refused: the required tool is not held"
+    }
+    CustomStringTableItem "{3156A1C07E5B2D91}" {
+     Id "LF-Gather_Toast"
+     Target_en_us "%1 x%2"
+     Comment "Toast after a gather or a process (#3156). %1 = item name, %2 = amount"
+    }
+    CustomStringTableItem "{3156C3E290A7D4B3}" {
+     Id "LF-Gather_ToastPrice"
+     Target_en_us "The trader pays {currency:sym}%1 for %2."
+     Comment "Second sentence of a gather or process toast when a trader buys the item or its product (#3156). %1 = price, %2 = item name"
+    }
+    CustomStringTableItem "{3156B2D18F6C3EA2}" {
+     Id "LF-Gather_ToastXp"
+     Target_en_us "%1 x%2 (+%3 XP)"
+     Comment "Toast after a gather that paid job XP (#3156). %1 = item name, %2 = amount, %3 = XP paid"
     }
     CustomStringTableItem "{2969D3779A79F0EA}" {
      Id "LF-Gather_Unknown"

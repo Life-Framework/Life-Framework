@@ -957,19 +957,17 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 #ifndef LF_E2E_PRE_MOVE
 			// --pre-move: the ref build (502ebf39) predates the folded piles (#1899), so its save has no pile to restore.
-			// The folded pile: the engine brought the three copies back; the line adopts each into its own
-			// slot. The bottom slot must not swallow the pile (delete two, respawn two).
+			// The folded pile: shelf copies are left out of the world save (#3127), so the engine brings
+			// none back; the line refills its three slots from the stock it is given, and nothing doubles.
 			s_aLoosePile = {};
 			GetGame().GetWorld().QueryEntitiesBySphere(loadedStore.GetOwner().GetOrigin(), 4, CollectLoosePile, null, EQueryEntitiesFlags.ALL);
-			array<EntityID> restoredPile = {};
-			restoredPile.Copy(s_aLoosePile);
-			ctx.Equal(3, restoredPile.Count(), "e2e the engine restored the three piled trousers");
+			ctx.Equal(0, s_aLoosePile.Count(), "e2e the engine restored no shelf trousers (shelf copies are not saved)");
 			loadedStore.AddTestLine(LF_Test_StoreFoldedStack.TROUSERS, 4, 3, LF_Test_StoreFoldedStack.CounterPile(), 4);
 			ctx.Equal(3, loadedStore.GetShelfCount(LF_Test_StoreFoldedStack.TROUSERS), "e2e the pile holds three after the restart");
 			for (int p = 0; p < 3; p++)
 			{
 				IEntity piled = loadedStore.GetShelfItem(LF_Test_StoreFoldedStack.TROUSERS, p);
-				ctx.True(piled && restoredPile.Contains(piled.GetID()), string.Format("e2e pile slot %1 holds a restored copy, not a respawned one", p));
+				ctx.True(piled && !LF_StoreShelfSave.IsSaved(piled), string.Format("e2e pile slot %1 holds a copy the world save leaves out", p));
 			}
 
 			s_aLoosePile = {};

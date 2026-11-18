@@ -5,7 +5,8 @@
 //     // inputs: addons/**/*.layer, docs/features.md      (.mjs)
 //     # inputs: addons/**/*.layer, docs/features.md        (.ps1)
 // Globs are repo-relative: `*` matches within a folder, `**` across folders.
-// The check's own file is always an input. `inputs: always`, or no header at
+// The check's own file is always an input, and so is its static import closure (plan()); `inputs: imports`
+// says "no data, only my code". `inputs: always`, or no header at
 // all, means the check runs every time (the safe default for a check that
 // reads machine state such as `git worktree list`).
 //
@@ -34,6 +35,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join } from "node:path";
 import { writeFileAtomic } from "./atomic-file.mjs";
+import { importClosure } from "./import-closure.mjs";
 
 const STATE_VERSION = 2; // 2: content-addressed fingerprints (1 used mtimes)
 const SHARED_KEEP = 12; // green fingerprints kept per check in the shared file
@@ -105,12 +107,13 @@ export function snapshotFiles(root) {
   return [...sig.entries()].sort((x, y) => (x[0] < y[0] ? -1 : 1));
 }
 
-export function fingerprint(files, globs, selfRel) {
+// `exact`: repo paths that always count (the check's import closure), looked up without a regexp each.
+export function fingerprint(files, globs, selfRel, exact = null) {
   const res = globs.map(globToRegExp);
   const h = createHash("sha1");
   let n = 0;
   for (const [rel, sig] of files) {
-    if (rel === selfRel || res.some((r) => r.test(rel))) {
+    if (rel === selfRel || exact?.has(rel) || res.some((r) => r.test(rel))) {
       h.update(`${rel}\0${sig}\n`);
       n++;
     }
@@ -204,16 +207,33 @@ export function saveState(root, state) {
 // Decide for each script: { name, fp|null, unchanged }.
 // `dir` is tools/validation (absolute), `rootRel` its repo-relative prefix.
 // `changed` (from baseChanges) turns on the base-clean skip; null leaves it off.
+//
+// A .mjs check's static import closure (tools/lib/import-closure.mjs) is always among its inputs, whatever
+// its header lists: a header names the data a check reads, and the code it loads is never optional (before
+// this, 159 of 337 declared checks missed a module they import, so editing tools/lib/scratch.mjs re-ran none
+// of its users). The token `imports` in a header means "no data inputs, only my own code".
 export function plan(root, dir, scripts, state, files, changed = null) {
   const rootRel = "tools/validation";
   const out = new Map();
+  const importCache = new Map();
   for (const s of scripts) {
     const full = join(dir, s);
     const text = existsSync(full) ? readFileSync(full, "utf8") : "";
-    const globs = text ? parseInputs(text) : null;
-    if (!globs) {
+    const declared = text ? parseInputs(text) : null;
+    if (!declared) {
       out.set(s, { fp: null, unchanged: false, why: "always runs" });
       continue;
+    }
+    const globs = declared.filter((g) => g !== "imports");
+    let exact = null;
+    if (/\.(mjs|js|cjs)$/.test(s) && !ttlOf(declared)) {
+      try {
+        exact = new Set(importClosure(root, `${rootRel}/${s}`, importCache));
+      } catch {
+        // Could not read an imported file: its inputs are unknown, so the check runs every time.
+        out.set(s, { fp: null, unchanged: false, why: "always runs (import closure unreadable)" });
+        continue;
+      }
     }
     const prev = state.checks[s];
     const ttl = ttlOf(globs);
@@ -223,10 +243,10 @@ export function plan(root, dir, scripts, state, files, changed = null) {
       out.set(s, { fp: "ttl", unchanged: fresh, why: `green within the last ${ttl} s on this machine` });
       continue;
     }
-    const fp = fingerprint(files, [...globs, ...IMPLICIT], `${rootRel}/${s}`);
+    const fp = fingerprint(files, [...globs, ...IMPLICIT], `${rootRel}/${s}`, exact);
     if (prev && prev.fp === fp) out.set(s, { fp, unchanged: true, why: "inputs unchanged since its last green run" });
     else if (state.shared?.[s]?.includes(fp)) out.set(s, { fp, unchanged: true, why: "green on these exact inputs in another worktree" });
-    else if (changed && !touches(changed, globs, `${rootRel}/${s}`, text)) out.set(s, { fp, unchanged: true, base: true, why: "inputs as on origin/main (merge-base), which CI validated" });
+    else if (changed && !touches(changed, globs, `${rootRel}/${s}`, text, exact)) out.set(s, { fp, unchanged: true, base: true, why: "inputs as on origin/main (merge-base), which CI validated" });
     else out.set(s, { fp, unchanged: false, why: "inputs changed" });
   }
   return out;
@@ -250,10 +270,10 @@ const BROAD = new Set(["**", "tools/**", "docs/**", "website/**", "agent-box/**"
 // Does any changed path count as an input of this check (for the base skip)? A baseline beside the
 // checks (tools/validation/<name>.json, which every check fingerprints) counts only for the checks
 // whose source names it: record-shapes.json changes in every persistence slice.
-export function touches(changed, globs, selfRel, text = "") {
+export function touches(changed, globs, selfRel, text = "", exact = null) {
   const res = globs.map((g) => [g, globToRegExp(g)]);
   return changed.some((rel) => {
-    if (rel === selfRel) return true;
+    if (rel === selfRel || exact?.has(rel)) return true;
     const hits = res.filter(([, r]) => r.test(rel)).map(([g]) => g);
     if (hits.some((g) => !BROAD.has(g))) return true;
     if (rel.startsWith("tools/validation/fixtures/")) return true;

@@ -19,6 +19,7 @@
 // red-proof: before the partial rule (#2347) this printed "FAIL missing-layer-claim [partial]: expected pass, got fail: slot shop: no claim ..." and the
 // same for one-slot-draft [partial] (2026-11-17).
 // red-proof: with the POI-kind call left out of checkPlace() this printed "FAIL complete: a slot with no poi should fail the POI check" and "FAIL complete: a front kind with no POI row should fail" (2026-11-17).
+// red-proof: with the BACKED_KINDS loop left out of checkPlace() this printed "FAIL jail: a JailCell marker with no cell component should fail a complete place" (2026-11-18).
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -107,6 +108,20 @@ for (const name of names) {
   check(checkPlace(slotsWith("none"), { resolve: resolve_ }).ok, "complete: an explicit poi none should pass");
   const unloaded = checkPlace({ ...data, poiKinds: null }, { resolve: resolve_ });
   check(unloaded.ok && has(unloaded.notes, "map POI kinds: not checked"), "complete: with no POI table loaded the check is skipped with a note");
+  // A kind whose system reads a real component (JailCell -> LF_JailCellComponent, #2969): a marker alone is a warning in a draft
+  // and an error in a complete place; the cell component in any fitted layer clears it.
+  {
+    const shopLayer = Object.keys(data.layers).find((n) => /_shop\.layer$/.test(n));
+    const jailData = (layerText) => ({ ...data, template: { ...data.template, slots: data.template.slots.map((s) => (s.id === "shop" ? { ...s, places: [...s.places, "JailCell"] } : s)) }, layers: { ...data.layers, [shopLayer]: layerText } });
+    const marker = `${data.layers[shopLayer]}\nGenericEntity Fit_jail_Place {\n components {\n  LF_PlaceComponent "{CD3757DA70ED5B73}" {\n   m_sKind "JailCell"\n   m_sId "sample-square.shop"\n  }\n }\n coords 0 0 0\n}\n`;
+    const cell = `${marker}\nGenericEntity Fit_jail_cell : "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.et" {\n components {\n  LF_JailCellComponent "{540EBBB989D3A80A}" {\n  }\n }\n coords 0 0 0\n}\n`;
+    const bare = checkPlace(jailData(marker), { resolve: resolve_, complete: true });
+    check(has(bare.errors, "no LF_JailCellComponent"), `jail: a JailCell marker with no cell component should fail a complete place (errors: ${bare.errors.join(" | ") || "none"})`);
+    const draft = checkPlace(jailData(marker), { resolve: resolve_ });
+    check(has(draft.warnings, "no LF_JailCellComponent") && !has(draft.errors, "LF_JailCellComponent"), "jail: the same gap is only a warning in a draft");
+    const backed = checkPlace(jailData(cell), { resolve: resolve_, complete: true });
+    check(!has(backed.errors, "LF_JailCellComponent") && !has(backed.warnings, "LF_JailCellComponent"), `jail: a layer with LF_JailCellComponent should clear it (${[...backed.errors, ...backed.warnings].join(" | ")})`);
+  }
   // A kind no system lists is a warning, not an error.
   const odd = { ...data, catalogKinds: new Set(["Spawn"]) };
   const r2 = checkPlace(odd, { resolve: resolve_ });

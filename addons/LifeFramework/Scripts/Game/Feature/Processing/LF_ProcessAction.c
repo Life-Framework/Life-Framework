@@ -123,6 +123,8 @@ class LF_ProcessAction : ScriptedUserAction
 			LF_Debug.Log("Processing", string.Format("processed %1 x%2", processingOutput.m_OutputPrefab, processingOutput.m_iOutputAmount));
 		}
 
+		LF_Utils.NotifyEntity(pUserEntity, ToastText(m_aProcessingOutputs), "", 4.0);
+
 		// The machine is heard running for a while (Feature/Atmosphere); no switch on the prefab, no sound.
 		LF_AmbientSwitchComponent.PulseOn(pOwnerEntity, m_fRunSoundSeconds);
 	}
@@ -181,6 +183,35 @@ class LF_ProcessAction : ScriptedUserAction
 		m_aProcessingInputs = machine.m_aInputs;
 		m_aProcessingOutputs = machine.m_aOutputs;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The toast sentence for a finished process: what came out, and what a trader pays for the first
+	//! output a market row lists (left out when none does).
+	static string ToastText(array<ref LF_ProcessingOutput> outputs)
+	{
+		string made;
+		int price;
+		string soldAsName;
+		foreach (LF_ProcessingOutput output : outputs)
+		{
+			if (!output)
+				continue;
+
+			if (!made.IsEmpty())
+				made = made + ", ";
+			made = made + LF_Terms.Text("#LF-Gather_Toast", LF_GatherAction.ItemName(output.m_OutputPrefab), output.m_iOutputAmount.ToString());
+
+			if (price > 0)
+				continue;
+
+			ResourceName soldAs;
+			price = LF_GatherAction.TraderPrice(output.m_OutputPrefab, soldAs);
+			if (price > 0)
+				soldAsName = LF_GatherAction.ItemName(soldAs);
+		}
+
+		return made + LF_GatherAction.PriceSentence(price, soldAsName);
 	}
 
 	//------------------------------------------------------------------------------------------------
