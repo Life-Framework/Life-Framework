@@ -376,9 +376,10 @@ class LF_MedicRanks
 
 //------------------------------------------------------------------------------------------------
 //! One rung of the medic ladder (LF_MedicConfig.m_aRanks). A saved rank is the rung's index, so a
-//! rung leaves only from the end of the ladder.
+//! rung leaves only from the end of the ladder. A record of the shared override model (LF_ConfigOverlay),
+//! keyed by `m_sId`, so a pack overlay can add, replace, patch or remove a rung (#3047).
 [BaseContainerProps()]
-class LF_MedicRank
+class LF_MedicRank : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Stable name of the rank, for logs and packs")]
 	string m_sId;
