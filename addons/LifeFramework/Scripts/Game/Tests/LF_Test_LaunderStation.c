@@ -1,4 +1,4 @@
-// red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_LaunderStation`: RED PROOF OK, 17 red with the load skipped: `the load took all 1000 marked notes (expected 0, got 1000)`, `site heat rose by one batch: 0`. Green: 31 assertions.
+// red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_LaunderStation`: RED PROOF OK, 17 red with the load skipped: `the load took all 1000 marked notes (expected 0, got 1000)`, `site heat rose by one batch: 0`. Green: 31 assertions. Review (#2893): a cuffed load took all 1000 notes (expected 12 RESTRAINED, got 0 OK) before the LF_CuffEnforcement check; green after.
 //! The laundering station (#2853): a character with 1000 marked notes loads a batch, the wash runs
 //! its batch time, and the same character takes out 700 cash with 0 marked left. The ledger books
 //! launder-in and launder-out; a batch left mid-wash waits for its owner only; a character at the
@@ -82,6 +82,16 @@ class LF_Test_LaunderStation : LF_Test
 		ctx.Equal(LF_ELaunderStation.DAILY_CAP, capped, "a character at the daily cap is refused");
 		ctx.True(LF_LaunderStationComponent.RefusalKey(capped) == "#LF-Launder_DailyCap", "the cap refusal has words");
 		ctx.Equal(500, LF_MarkedCash.Count(b), "the capped character keeps the notes");
+
+		// A cuffed character cannot hand over notes (review of #2893): refused, nothing taken.
+		SCR_ChimeraCharacter chimeraA = SCR_ChimeraCharacter.Cast(a);
+		if (chimeraA)
+		{
+			chimeraA.LF_SetRestrained(true);
+			ctx.Equal(LF_ELaunderStation.RESTRAINED, station.ServerLoad(a, 990), "a cuffed character's load is refused");
+			ctx.Equal(1000, LF_MarkedCash.Count(a), "the cuffed character keeps the notes");
+			chimeraA.LF_SetRestrained(false);
+		}
 
 		// A loads: notes leave first, the site warms by one batch of heat.
 		LF_ChainDef chain = LF_ChainCatalog.FindChain("cider");

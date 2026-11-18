@@ -13,7 +13,8 @@ enum LF_ELaunderStation
 	DAILY_CAP,
 	NOT_YOURS,
 	NOT_READY,
-	FAILED
+	FAILED,
+	RESTRAINED
 }
 
 //------------------------------------------------------------------------------------------------
@@ -203,6 +204,10 @@ class LF_LaunderStationComponent : ScriptComponent
 		if (!LF_Utils.IsAliveState(user) || LF_Downed.IsDowned(user))
 			return LF_ELaunderStation.NOT_ALIVE;
 
+		// Cuffed: refused like robbery and lockpicking (LF_CuffEnforcement tells the player why).
+		if (LF_CuffEnforcement.Refuse(user, "laundering"))
+			return LF_ELaunderStation.RESTRAINED;
+
 		if (vector.Distance(user.GetOrigin(), GetOwner().GetOrigin()) > m_fReach)
 			return LF_ELaunderStation.TOO_FAR;
 
@@ -255,10 +260,11 @@ class LF_LaunderStationComponent : ScriptComponent
 		int taken = LF_MarkedCash.Take(user, quote.m_iAccepted, REASON_IN);
 		if (taken != quote.m_iAccepted)
 		{
+			int putBack;
 			if (taken > 0)
-				LF_MarkedCash.Add(user, taken, REASON_REFUND, true);
+				putBack = LF_MarkedCash.Add(user, taken, REASON_REFUND, true);
 
-			LF_Debug.Error(FEATURE, string.Format("station %1: load by %2 failed, took %3 of %4; put back", m_sSiteId, key, taken, quote.m_iAccepted));
+			LF_Debug.Error(FEATURE, string.Format("station %1: load by %2 failed, took %3 of %4; put back %5", m_sSiteId, key, taken, quote.m_iAccepted, putBack));
 			return LF_ELaunderStation.FAILED;
 		}
 

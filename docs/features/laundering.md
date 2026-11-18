@@ -51,7 +51,7 @@ Stolen money is a separate item that never counts as cash.
 - ✅ The batch washes for `m_iBatchSeconds`, then only the character who loaded it collects: `LF_MoneyUtils.AddCash(...,
   "launder-out", "", true)` (overflow at the feet). A short pay keeps the unpaid rest in the station for the same character.
   Walking away mid-wash leaves the batch waiting; anyone else gets `#LF-Launder_NotYours`.
-- ✅ Refusals in words: dead or downed, out of reach (3.5 m), faster than one action per second, busy, no notes,
+- ✅ Refusals in words: dead or downed, cuffed (`LF_CuffEnforcement`), out of reach (3.5 m), faster than one action per second, busy, no notes,
   `#LF-Launder_DailyCap`, not yet washed.
 - ✅ Heat: each batch adds `m_iHeatPerBatch` (10) work units to the station's chain site (`m_sSiteId`, heat settings of
   `m_sChainId`, default `cider`) through `LF_ChainSites.AddWork` and publishes `LF_OnChainWork`, so the smell trace and
