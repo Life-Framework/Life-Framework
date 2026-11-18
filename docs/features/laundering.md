@@ -29,3 +29,12 @@ Stolen money is a separate item that never counts as cash.
   load) hold marked notes (`LF_Bank.ReadWorldBagMarked`). A bag's marked stack never reads as cash.
 - ✅ Chop shop and fence payouts stay clean cash (the fence is already the dirty exit for goods).
 - Test: `LF_Test_DirtyPayout` (WORLD).
+- ✅ The illicit buyer's open spot (#2856, beat 2 of #1025): `LF_BuyerSpotComponent` registers a place in
+  `LF_Places` under kind `chain_buyer` (server only); `LF_BuyerRotation.OpenSpot(unixNow)` names the one
+  open now. Time is cut into periods of `m_iBuyerPeriodHours` (core 4 h); a cycle of `count` periods visits
+  every spot once in a hashed shuffle, so the spot changes every period inside a cycle. A pure function of
+  unix time and the seed, nothing saved, so a restart keeps it. The period hands out one spot (a spot added
+  mid-period joins at the next period). No spot placed: none, one warning.
+- ✅ The seed is a server secret, not config or script: made at random on first use and kept in
+  `$profile:LifeFramework/buyer-rotation-seed.txt`. Delete the file to reshuffle the buyer. The buyer NPC at
+  the open spot, the sale and the pack's spots come next. Test: `LF_Test_BuyerRotation` (WORLD).

@@ -10,10 +10,15 @@ class LF_LaunderConfig
 	[Attribute("0", UIWidgets.CheckBox, "Till robberies and bank vault bags pay marked notes (LF_MarkedCash) instead of cash. Chop shop and fence stay cash.")]
 	bool m_bCrimePaysMarked;
 
+	[Attribute("4", UIWidgets.Auto, "Real hours the illicit buyer stays at one spot before moving to the next (1..168). The rotation seed is not here: it is a server secret in the profile (LF_BuyerRotation).")]
+	int m_iBuyerPeriodHours;
+
 	protected static ref LF_LaunderConfig s_Config;
 	protected static bool s_bLoadAttempted;
 	//! Tests only: -1 reads the config, 0 forces the switch off, 1 forces it on.
 	protected static int s_iCrimePaysMarkedForTests = -1;
+	//! Tests only: 0 reads the config, above 0 is the buyer period in hours.
+	protected static int s_iBuyerPeriodHoursForTests;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_LaunderConfig Get()
@@ -67,11 +72,33 @@ class LF_LaunderConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Hours the buyer stays at one spot, 1..168; 4 when the config is missing (logged in Get).
+	static int BuyerPeriodHours()
+	{
+		if (s_iBuyerPeriodHoursForTests > 0)
+			return s_iBuyerPeriodHoursForTests;
+
+		LF_LaunderConfig config = Get();
+		if (!config)
+			return 4;
+
+		return LF_Utils.ClampInt(config.m_iBuyerPeriodHours, 1, 168);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests only: force the period; 0 goes back to the config.
+	static void SetBuyerPeriodHoursForTests(int hours)
+	{
+		s_iBuyerPeriodHoursForTests = hours;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_Config = null;
 		s_bLoadAttempted = false;
 		s_iCrimePaysMarkedForTests = -1;
+		s_iBuyerPeriodHoursForTests = 0;
 	}
 }
 
