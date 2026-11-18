@@ -146,6 +146,9 @@ class LF_CivilianJob
 		if (s_mWorkers)
 			s_mWorkers.Remove(playerUid);
 
+		// The run goes with the career, so its contract goes too (no stake): else the next plain run
+		// would settle as the wiped contract (#2817 review).
+		LF_ReputationContracts.Forget(playerUid);
 		LF_JobLevels.ForgetJob(playerUid, LF_JobLevels.JOB_DELIVERY);
 	}
 

@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-18 with `toolscli test --no-build --red LF_Test_ReputationContract`: RED PROOF OK, first `a timed-out contract takes the stake and awards nothing (expected -15, got 0)`. Green with `--only`: passed=4 failed=0.
+// red-proof: observed 2026-11-18 with `toolscli test --no-build --red LF_Test_ReputationContract`: RED PROOF OK, first `a timed-out contract takes the stake and awards nothing (expected -15, got 0)`. Green with `--only`: passed=4 failed=0. Review (#2817): `RunWipeThenPlainRun` failed on the unfixed code (expected 40, got 60) and passed once ForgetCareer drops the contract.
 //! Contracts (#2702, docs/architecture/reputation.md "Spending standing: contracts" and section 8): a
 //! finished contract pays the run's base times its multiplier once and awards its points; an abandoned
 //! or timed-out one pays no contract money and takes the stake; one contract at a time per character,
@@ -81,6 +81,7 @@ class LF_Test_ReputationContract : LF_Test
 		RunCooldownAndAbandon(ctx);
 		RunTimeout(ctx);
 		RunRefusals(ctx);
+		RunWipeThenPlainRun(ctx);
 
 		Clean();
 		LF_ReputationConfig.Reload();
@@ -187,6 +188,25 @@ class LF_Test_ReputationContract : LF_Test
 		LF_CivilianJob.ForgetCareer(UID);
 		ctx.EqualStr("", LF_ReputationContracts.ActiveId(UID), "a contract whose run is gone is dropped");
 		ctx.Equal(100, LF_Reputation.Points(UID, "POLICE"), "dropping a stale contract takes no stake");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Review of #2817: a wipe drops the run mid-contract and the character starts a plain run before
+	//! anything reads the contract. The plain run must not inherit the old contract's multiplier and award.
+	protected void RunWipeThenPlainRun(LF_TestContext ctx)
+	{
+		Clean();
+		float now = LF_JobGuards.Now();
+		if (!StartParcel(ctx, "wipe"))
+			return;
+
+		TakeContract(ctx, "c_town", now, "wipe");
+		LF_CivilianJob.ForgetCareer(UID);
+		if (!StartParcel(ctx, "plain after wipe"))
+			return;
+
+		ctx.Equal(LF_CivilianJob.PAY_PARCEL, LF_CivilianJob.CompleteRun(UID), "a plain run after a wipe pays its base, not the wiped contract's multiplier");
+		ctx.Equal(0, LF_Reputation.Points(UID, "TOWN"), "a plain run after a wipe awards no contract standing");
 	}
 
 	//------------------------------------------------------------------------------------------------
