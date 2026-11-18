@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9C4541040DD4C49A}Prefabs/Placeables/Furniture/Furniture_CoffeeTable_Item.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

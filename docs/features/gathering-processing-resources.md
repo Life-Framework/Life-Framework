@@ -42,6 +42,13 @@
   empty input/output lists, missing inputs, and non-positive amounts are
   rejected before inventory mutation. Regression coverage is in
   `LF_Test_ActionGuards`.
+- ✅ Machine rules for the mining chains (#3226). A `ResourceChains.conf` machine row can set
+  `m_sLevelJob` + `m_iMinLevel`: the server refuses a player below that level in the job's own
+  words (`LF_JobLevelWords`, no number). It can set `m_iMaxBatches`: one interaction runs as many
+  whole batches as the inventory covers, up to the cap, takes all inputs together with the existing
+  rollback, and pays job rewards once per batch. A short input is named in the refusal ("Needs
+  Coal") instead of "Missing the input materials". Defaults (no job, cap 1) keep every existing
+  machine as it was. Test: `LF_Test_MachineRecipeRules`.
 - ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
   empty recipe or a prefab that does not resolve logs `LF_Debug.Error` and
   returns before inventory changes (verified 2026-10-11).
@@ -135,3 +142,6 @@
   buys omits the price sentence.
 - ✅ A finished process shows what came out (`Iron bar x1. The trader pays $50 for Iron bar.`), one toast per action.
 - ⚠️ The server builds the sentence, so item names are translated on the server; a dedicated server is a manual check.
+
+### `LF_TreeFelling` — `Feature/Lumber/LF_TreeFelling.c`
+- 🧪 **Felling rules for real map trees (#3259, design `docs/roadmap/lumber.md`).** Pure rules, not yet used in the world (the axe action is #3260). A base-game tree prefab path (`Prefabs/Vegetation/Tree/<species>/<name>.et`) is read as a wood class from `Configs/Lumber/LF_TreeSpecies.conf`: pine, spruce and larch are softwood; hornbeam, linden, alder, birch and poplar are hardwood; orchards, willow and rowan are not felled. The size is the first digit after the species stem, skipping the `02_` of the v2 models. Stumps, branches, `base` prefabs, fallen trunks and size 0 saplings are never felled. The yield table gives 15/25/35 s and 1/2/3 logs for softwood, 30/45/60 s and 1/2/3 logs for hardwood, the XP action (`gather_logging`, or `fell_hardwood` for hardwood) and the stamina cost. `Check` returns the first refusal in this order: NO_AXE, NOT_A_TREE, TOO_SMALL, ALREADY_FELLED, TOO_FAR (3 m), SAFE_ZONE, NEAR_ROAD (4 m), NEAR_BUILDING (12 m), TIRED. `KeyOf` is the stable tree key (decimetre x and z plus the lower-case prefab). `LF_TreeFellingLedger` records felled keys with their regrow time (softwood 45 min, hardwood 90 min) in whole seconds. Test `lumber/felling-rules`.

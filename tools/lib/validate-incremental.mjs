@@ -21,11 +21,11 @@
 // worktrees in <git common dir>/lf/validate-green.json: a fresh worktree skips every
 // check some other worktree already passed on the same inputs. Before this, the
 // first validate of each slice ran all ~350 checks (about 6 min under load, 2026-11-17). Full runs (`validate --full`, `--all`, ci, wt gate,
-// wt ship, CI) never consult it.
+// wt ship) never consult it. CI has its own green set, restored by actions/cache (#3189, ciGreenFile below).
 //
 // Base-clean skip (2026-11-18, efficiency pass 3): a check whose inputs match no path this branch
 // changed since its merge-base with origin/main gives the result it gives on that main commit, which
-// GitHub's full validate already ran (CI never uses this file: incrementalOff). Before it, ~25 git-heavy
+// GitHub's full validate already ran (CI sets LF_VALIDATE_NO_BASE: a CI run is that validation, so it never trusts it). Before it, ~25 git-heavy
 // `tools/**` selftests (40-80 s each under load) re-ran on every slice whenever main's tools/ had
 // moved, slices that never touched tools/ included: 58% of all validate CPU on 2026-11-18.
 // A `ttl=` check (machine state such as the worktree registry) shares its green time across
@@ -33,7 +33,7 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { dirname, isAbsolute, join } from "node:path";
+import { dirname, isAbsolute, join, resolve } from "node:path";
 import { writeFileAtomic } from "./atomic-file.mjs";
 import { importClosure } from "./import-closure.mjs";
 
@@ -124,7 +124,42 @@ export function fingerprint(files, globs, selfRel, exact = null) {
 
 const stateFile = (root) => join(root, "tmp", "validate-state.json");
 
-export function sharedFile(root) {
+// CI green set (#3189). GitHub's runner has no tmp/ or git common dir that outlives the job, so the workflow
+// restores one file with actions/cache and names it in LF_VALIDATE_GREEN_FILE. Only then does CI skip checks,
+// and only a check whose fingerprint (its inputs' content, its own file, its import closure) is listed in the
+// file. The file carries the hash of this module family: a file written by a different validate tool is
+// ignored whole, so a change to the skip rules never inherits an old verdict. Machine-state `ttl` greens and
+// the base-clean skip (which trusts main's CI) are not used in CI: a runner is a new machine every time.
+const TOOL_FILES = ["tools/lib/validate-incremental.mjs", "tools/lib/import-closure.mjs", "tools/lib/atomic-file.mjs"];
+
+export function toolHash(root) {
+  const h = createHash("sha1");
+  for (const rel of TOOL_FILES) {
+    try {
+      h.update(`${rel}\0`).update(readFileSync(join(root, rel)).toString("utf8").replace(/\r\n/g, "\n")).update("\n");
+    } catch {
+      h.update(`${rel}\0missing\n`);
+    }
+  }
+  return h.digest("hex");
+}
+
+export function isCi(env = process.env) {
+  return !!(env.CI || env.GITHUB_ACTIONS);
+}
+
+// The CI green-set path, or null outside CI or when the workflow did not name one.
+// With a `root` the file applies only to the runner's workspace: a selftest that runs `validate` on a scratch repo
+// inherits the env and must neither read nor rewrite the real green set.
+export function ciGreenFile(env = process.env, root = null) {
+  if (!isCi(env) || !env.LF_VALIDATE_GREEN_FILE) return null;
+  if (root && env.GITHUB_WORKSPACE && resolve(root) !== resolve(env.GITHUB_WORKSPACE)) return null;
+  return env.LF_VALIDATE_GREEN_FILE;
+}
+
+export function sharedFile(root, env = process.env) {
+  const ci = ciGreenFile(env, root);
+  if (ci) return ci;
   try {
     let dir = execFileSync("git", ["rev-parse", "--git-common-dir"], { cwd: root, encoding: "utf8" }).trim();
     if (!isAbsolute(dir)) dir = join(root, dir);
@@ -134,14 +169,28 @@ export function sharedFile(root) {
   }
 }
 
-function loadShared(file) {
+// `tool` is the toolHash the file must carry (CI sets it, restoring a file another tool version wrote runs
+// everything); null trusts any file of this STATE_VERSION (the local per-machine file). `useTtl` is false in CI.
+// Every entry is checked for shape: a corrupt file (a string where a list belongs) must not match by substring.
+function loadShared(file, { tool = null, useTtl = true } = {}) {
+  const empty = { version: STATE_VERSION, checks: {}, ttl: {} };
   try {
     const s = JSON.parse(readFileSync(file, "utf8"));
-    if (s.version === STATE_VERSION && s.checks) return { ttl: {}, ...s };
+    if (!s || s.version !== STATE_VERSION || !s.checks || typeof s.checks !== "object" || Array.isArray(s.checks)) return empty;
+    if (tool && s.tool !== tool) return empty;
+    const checks = {};
+    for (const [name, list] of Object.entries(s.checks)) {
+      if (Array.isArray(list)) checks[name] = list.filter((fp) => typeof fp === "string" && /^[0-9a-f]{40}$/.test(fp));
+    }
+    const ttl = {};
+    if (useTtl && s.ttl && typeof s.ttl === "object") {
+      for (const [name, at] of Object.entries(s.ttl)) if (Number.isFinite(at)) ttl[name] = at;
+    }
+    return { ...s, checks, ttl };
   } catch {
     /* none yet, or a torn write: just no sharing */
   }
-  return { version: STATE_VERSION, checks: {}, ttl: {} };
+  return empty;
 }
 
 // Paths this worktree changed since its merge-base with `ref` (committed, staged, modified,
@@ -161,11 +210,12 @@ export function baseChanges(root, ref = "origin/main") {
 
 // Merge this run's green fingerprints into the shared file (newest first, SHARED_KEEP per check).
 // A lost race with another worktree only costs a cache miss.
-export function publishShared(file, state) {
+export function publishShared(file, state, opts = {}) {
   if (!file) return;
-  const shared = loadShared(file);
+  const shared = loadShared(file, opts);
+  if (opts.tool) shared.tool = opts.tool;
   for (const [name, e] of Object.entries(state.checks)) {
-    if (e?.fp === "ttl" && e.at) shared.ttl[name] = Math.max(e.at, shared.ttl[name] ?? 0);
+    if (opts.useTtl !== false && e?.fp === "ttl" && e.at) shared.ttl[name] = Math.max(e.at, shared.ttl[name] ?? 0);
     if (!e?.fp || e.fp === "ttl") continue;
     const list = (shared.checks[name] ?? []).filter((fp) => fp !== e.fp);
     shared.checks[name] = [e.fp, ...list].slice(0, SHARED_KEEP);
@@ -178,7 +228,7 @@ export function publishShared(file, state) {
   }
 }
 
-export function loadState(root, shared = sharedFile(root)) {
+export function loadState(root, shared = sharedFile(root), env = process.env) {
   let state = { version: STATE_VERSION, checks: {} };
   try {
     const s = JSON.parse(readFileSync(stateFile(root), "utf8"));
@@ -187,10 +237,13 @@ export function loadState(root, shared = sharedFile(root)) {
     /* none yet */
   }
   // Not saved back into tmp/validate-state.json (saveState drops it).
-  const sh = shared ? loadShared(shared) : { checks: {}, ttl: {} };
+  const ci = !!shared && shared === ciGreenFile(env, root);
+  const opts = ci ? { tool: toolHash(root), useTtl: false } : {};
+  const sh = shared ? loadShared(shared, opts) : { checks: {}, ttl: {} };
   Object.defineProperty(state, "shared", { value: sh.checks, enumerable: false, writable: true });
   Object.defineProperty(state, "sharedTtl", { value: sh.ttl, enumerable: false, writable: true });
   Object.defineProperty(state, "sharedFile", { value: shared, enumerable: false, writable: true });
+  Object.defineProperty(state, "sharedOpts", { value: opts, enumerable: false, writable: true });
   return state;
 }
 
@@ -201,7 +254,7 @@ export function saveState(root, state) {
   } catch {
     /* a read-only tmp just means no caching */
   }
-  if (state.sharedFile) publishShared(state.sharedFile, state);
+  if (state.sharedFile) publishShared(state.sharedFile, state, state.sharedOpts ?? {});
 }
 
 // Decide for each script: { name, fp|null, unchanged }.
@@ -286,6 +339,9 @@ export function touches(changed, globs, selfRel, text = "", exact = null) {
   });
 }
 
+// CI skips only when the workflow restored a green set and named it (ciGreenFile); LF_VALIDATE_ALL always wins.
 export function incrementalOff(env = process.env) {
-  return !!(env.CI || env.GITHUB_ACTIONS || env.LF_VALIDATE_ALL);
+  if (env.LF_VALIDATE_ALL) return true;
+  return isCi(env) && !ciGreenFile(env);
 }
+

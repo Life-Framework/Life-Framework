@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{C807905E1EA78CE6}Prefabs/Placeables/Furniture/Furniture_Radio_Placed.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
