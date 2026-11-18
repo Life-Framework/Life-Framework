@@ -664,6 +664,16 @@ StringTable {
      Target_en_us "Fence"
      Comment "Map POI kind name (#2230): the fence. A hidden kind, never public; shown only as a personal pencil mark after the player met them."
     }
+    CustomStringTableItem "{9C1E4A73D0B58F26}" {
+     Id "LF-MedicRank_Emt"
+     Target_en_us "Emergency Medical Technician"
+     Comment "Medic rank title, rung 1 of the 1989 ladder (#3047); the maintainer confirms the copy."
+    }
+    CustomStringTableItem "{9C1E4A73D0B58F27}" {
+     Id "LF-MedicRank_Orderly"
+     Target_en_us "Orderly"
+     Comment "Medic rank title, rung 0 of the 1989 ladder (#3047); the maintainer confirms the copy."
+    }
     CustomStringTableItem "{6E1A4D2B9C70F358}" {
      Id "LF-Mission_Everon1989_Details"
      Target_en_us "Everon, 1989. Pick this scenario and host a local game to play alone, or host it for friends. Your first spawn opens form R-89 at the registry; sign it to start. Then take a job, bank your pay, buy at a shop and see how the police answer a crime. Police duty needs an approved application. A local game is a preview: how saving behaves on a dedicated server is not promised there. Report problems on the Life Framework Discord or GitHub."
