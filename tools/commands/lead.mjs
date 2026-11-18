@@ -1,6 +1,8 @@
 // tools\cli lead: the lead agent's one-screen dispatch view, so it stops gathering state with ad-hoc commands.
 //
 //   tools\cli lead [--prs N]          milestones, PRs, worktrees, pool, ship queue, accounts, slices (about 40 lines, under 15 s)
+//   tools\cli lead stray [--dry-run]  move untracked files an agent wrote into THIS (main) checkout's addons/, tools/, docs/ ... to the
+//                                     stray folder (C:\LF\lead\stray); the lead view runs it too, unless LF_LEAD_STRAY=0 (#2785)
 //   tools\cli lead prune-safe [--dry-run] [--oldest N]   prune only worktrees whose PR is MERGED on GitHub, clean, idle and unlocked
 //                                     (--oldest N: only the N least recently active of those; the rules do not change)
 //
@@ -21,8 +23,9 @@ import {
 } from "../lib/lead.mjs";
 import { readQueue } from "../lib/ship-queue.mjs";
 import { diskLines, oldestFirst, parseOldest } from "../lib/disk-guard.mjs";
+import { findStrays, moveStrays, parseStatus, strayRootOf } from "../lib/main-write-guard.mjs";
 
-export const help = "lead [--prs N] | lead prune-safe [--dry-run] [--oldest N]   one-screen dispatch view: milestones, PRs, worktrees, pool, ship queue, accounts, slices";
+export const help = "lead [--prs N] | lead stray [--dry-run] | lead prune-safe [--dry-run] [--oldest N]   one-screen dispatch view: milestones, PRs, worktrees, pool, ship queue, accounts, slices";
 
 
 // ---------------------------------------------------------------- process helpers
@@ -444,6 +447,33 @@ async function pruneSafe(root, args) {
   return failed ? 1 : 0;
 }
 
+// ---------------------------------------------------------------- strays (#2785)
+
+// Agents that wrote into the main checkout by a relative path leave untracked files that block `git pull --ff-only`.
+// Only the main checkout on branch main is touched; files younger than 2 minutes wait for the next pass; tracked files
+// an agent modified are listed, never reverted. Moved files keep their relative path under <stray>/<stamp>/.
+export function strayPass(root, { dry = false, env = process.env } = {}) {
+  if (env.LF_LEAD_STRAY === "0") return [];
+  if (!wt.isMainCheckout(root)) return [];
+  if (wt.currentBranch(root) !== "main") return [];
+  const st = wt.git(root, ["status", "--porcelain", "-z", "-uall"]);
+  if (st.status !== 0) return ["STRAY unavailable: git status failed"];
+  const found = findStrays(root, parseStatus(st.stdout));
+  const lines = [];
+  if (found.move.length) {
+    const dest = strayRootOf(root, env);
+    if (dry) {
+      lines.push(`STRAY would move ${found.move.length} untracked file(s) to ${dest}: ${found.move.slice(0, 6).join(", ")}`);
+    } else {
+      const moved = moveStrays(root, found.move, dest);
+      lines.push(`STRAY moved ${moved.length}/${found.move.length} untracked file(s) an agent wrote into this checkout to ${dest}: ${moved.slice(0, 6).map((m) => m.rel).join(", ")}${moved.length > 6 ? ", ..." : ""}`);
+    }
+  }
+  if (found.fresh.length) lines.push(`STRAY ${found.fresh.length} untracked file(s) under 2 min old, left for the next pass: ${found.fresh.slice(0, 4).join(", ")}`);
+  if (found.modified.length) lines.push(`STRAY ${found.modified.length} tracked file(s) modified in the main checkout (blocks git pull): ${found.modified.slice(0, 6).join(", ")}  -> git diff, then restore or move by hand`);
+  return lines;
+}
+
 // The size walk is synchronous, so it runs in its own process beside the others (`lead --disk-worker`).
 function diskWorker(root) {
   const main = wt.mainRootOf(root);
@@ -456,6 +486,11 @@ export async function main(args, { root }) {
   if (args[0] === "--disk-worker") return diskWorker(root);
   if (args[0] === "--pool-worker") return poolWorker(root, args[1]);
   if (args[0] === "prune-safe") return pruneSafe(root, args.slice(1));
+  if (args[0] === "stray") {
+    const lines = strayPass(root, { dry: args.includes("--dry-run") });
+    console.log(lines.length ? lines.join("\n") : "stray: nothing untracked or modified under addons/, tools/, docs/ ... in the main checkout (or this is not the main checkout on branch main)");
+    return 0;
+  }
   const t0 = Date.now();
   const gh = wt.ghBin();
   const pi = args.indexOf("--prs");
@@ -471,10 +506,11 @@ export async function main(args, { root }) {
     section("MAIN GUARD", 3000, () => guardSection(root)),
     section("ACCOUNTS", 13000, () => accountsSection(root)),
     section("SLICES", 13000, () => slicesSection(root)),
+    section("STRAY", 8000, async () => strayPass(root)),
   ]);
   // Disk: its own process (the walk is synchronous), cached sizes refreshed inside a deadline; appended to the worktree block.
   const diskP = sh(process.execPath, [join(root, "tools", "cli.mjs"), "lead", "--disk-worker"], { cwd: root, timeout: 12500 });
-  const [ms, prs, wts, pool, usage, ship, guard, acc, sl] = await sections;
+  const [ms, prs, wts, pool, usage, ship, guard, acc, sl, stray] = await sections;
   let diskLine;
   try {
     const dr = await diskP;
@@ -492,7 +528,7 @@ export async function main(args, { root }) {
     { name: "this PC", freeGb: wt.freeDiskGbAt(wt.mainRootOf(root)) },
     ...poolSnaps.filter((m) => m.via !== "local").map((m) => ({ name: m.name, freeGb: Number.isFinite(m.diskGb) ? m.diskGb : null, note: !m.health || m.health === "up" ? undefined : m.health })),
   ]);
-  const out = [...ms, ...prs, ...wts, ...disk, ...pool, ...usage, ...ship, ...guard, ...acc, ...sl];
+  const out = [...ms, ...prs, ...wts, ...disk, ...pool, ...usage, ...ship, ...guard, ...acc, ...sl, ...stray];
   out.push(`lead ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   console.log(out.join("\n"));
   return 0;

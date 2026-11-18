@@ -29,7 +29,7 @@
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { TEST_WORLD, GRID_WORLD, PLAYTEST_WORLD, PACK_ADDON, PACK_TEST_MISSION, PACK_TESTS_DIR, PACK_TEST_REGISTRY } from "./worlds.mjs";
+import { TEST_WORLD, GRID_WORLD, PLAYTEST_WORLD, PACK_ADDON, PACK_TEST_MISSION, PACK_TESTS_DIR } from "./worlds.mjs";
 
 export { GRID_WORLD, PLAYTEST_WORLD, PACK_TEST_MISSION };
 export const LOGIC_WORLD = TEST_WORLD;
@@ -39,20 +39,46 @@ export const TOWN_FILE = "tools/test/town-tests.json";
 
 const TESTS_DIR = ["addons", "LifeFramework", "Scripts", "Game", "Tests"];
 
+// A test is a class with its own `[LF_TestInfo(LF_TestTier.T[, pack: true])]` directly above it (#2610):
+// the one source of tier and pack flag, for the game (LF_TestManager) and for every tool here.
+const INFO_RE = /^[ \t]*\[LF_TestInfo\(\s*LF_TestTier\.(\w+)\s*(?:,\s*pack:\s*(true|false)\s*)?\)\]\s*(?:\/\/[^\n]*\s*)*class\s+(\w+)/gm;
+
+// [{ cls, tier, pack }] of one file's tests, in file order.
+export function parseTestInfo(text) {
+  return [...String(text).matchAll(INFO_RE)].map((m) => ({ cls: m[3], tier: m[1], pack: m[2] === "true" }));
+}
+
+// The run order of LF_TestManager: a sort by class name. Enforce's array<string>.Sort() compares bytes,
+// as a plain JS sort does for these ASCII names; never localeCompare.
+export const byClassName = (a, b) => (a.cls < b.cls ? -1 : a.cls > b.cls ? 1 : 0);
+
+// [{ cls, tier, pack }] of every test, core and pack, sorted by class name: what the game collects.
+export function readTestInfo(root) {
+  const rows = [];
+  for (const dir of [join(root, ...TESTS_DIR), packTestsDir(root)]) {
+    if (!existsSync(dir)) continue;
+    for (const f of readdirSync(dir)) {
+      if (f.endsWith(".c")) rows.push(...parseTestInfo(readFileSync(join(dir, f), "utf8")));
+    }
+  }
+  const seen = new Set();
+  return rows.filter((r) => !seen.has(r.cls) && seen.add(r.cls)).sort(byClassName);
+}
+
 // { "<LF_Test_Class>": "LOGIC", "<GetName() string>": "LOGIC", ... } from every test file's
-// `// tier:` line above each `class LF_Test_X : LF_Test`, the same source regen-tests reads.
+// `[LF_TestInfo(LF_TestTier.T)]` line above each test class.
 export function parseTiers(text) {
   const tiers = {};
   let pending = null;
   let cls = null;
   let inGetName = false;
   for (const line of text.split(/\r?\n/)) {
-    const t = /^\s*\/\/\s*tier:\s*(LOGIC|WORLD|PERSISTENCE)\b/.exec(line);
+    const t = /^\s*\[LF_TestInfo\(\s*LF_TestTier\.(\w+)/.exec(line);
     if (t) {
       pending = t[1];
       continue;
     }
-    const c = /^\s*class\s+(\w+)\s*:\s*LF_Test\b/.exec(line);
+    const c = /^\s*class\s+(\w+)\s*:/.exec(line);
     if (c) {
       cls = c[1];
       if (pending) tiers[cls] = pending;
@@ -122,27 +148,9 @@ function eachTestFile(root, parse) {
 export const testTiers = (root) => eachTestFile(root, parseTiers);
 export const testNames = (root) => eachTestFile(root, parseNames);
 
-// [{ cls, tier }] of the pack tests, from the registry `regen-tests` writes in the pack
-// (RegisterPack(new LF_Test_X(), LF_TestTier.T)). Empty when the pack or its tests are absent.
-export function parsePackRegistry(text) {
-  return [...String(text).matchAll(/RegisterPack\(\s*new (LF_Test_\w+)\(\),\s*LF_TestTier\.(\w+)\)/g)].map((m) => ({ cls: m[1], tier: m[2] }));
-}
-// [{ cls, tier }] of the pack classes that declare `[LF_TestInfo(LF_TestTier.T, pack: true)]` right above them (#2617).
-export function parsePackAttributes(text) {
-  return [...String(text).matchAll(/\[LF_TestInfo\(\s*LF_TestTier\.(\w+)\s*,\s*pack:\s*true\s*\)\]\s*(?:\/\/[^\n]*\s*)*class\s+(LF_Test_\w+)/g)].map((m) => ({ cls: m[2], tier: m[1] }));
-}
-// The pack's tests: attributes in its test files, plus rows of the generated registry while one exists.
+// [{ cls, tier }] of the pack tests: the classes whose LF_TestInfo says `pack: true` (#2617). Empty when the pack is absent.
 export function readPackTests(root) {
-  const dir = packTestsDir(root);
-  if (!existsSync(dir)) return [];
-  const rows = [];
-  const f = join(dir, PACK_TEST_REGISTRY);
-  if (existsSync(f)) rows.push(...parsePackRegistry(readFileSync(f, "utf8")));
-  for (const name of readdirSync(dir)) {
-    if (name.endsWith(".c")) rows.push(...parsePackAttributes(readFileSync(join(dir, name), "utf8")));
-  }
-  const seen = new Set();
-  return rows.filter((r) => !seen.has(r.cls) && seen.add(r.cls));
+  return readTestInfo(root).filter((t) => t.pack).map(({ cls, tier }) => ({ cls, tier }));
 }
 
 // The pack leg of a run: { world: PACK_TEST_MISSION, classes, reason } or null. A tier run takes the
@@ -296,4 +304,38 @@ export function mergeLegs(results) {
 export function legsSummaryLine(tier, v, legs) {
   const where = legs.map((l) => (l.world ?? PLAYTEST_WORLD).replace(/^.*\/([^/]+)\.(ent|conf)$/, "$1")).join("+");
   return `SUMMARY test ${v.code === 0 ? "ok" : "fail"} tier=${tier} legs=${legs.length} passed=${v.passed} failed=${v.failed} total=${v.total} worlds=${where}`;
+}
+
+// What validate-registries reports for one script file (rel is its repo path), as messages "line N: ...".
+// A test is `class X : LF_Test` with exactly one `[LF_TestInfo(...)]` directly above it (comment lines may sit
+// between); a pack file's tests say `pack: true` and a core file's do not. A central test list (the old
+// generated registry, `manager.Register(new LF_Test_X(), ...)`) is refused: adding a test touches only its file.
+export function testInfoProblems(rel, text) {
+  const out = [];
+  const inPack = /^addons\/(?!LifeFramework\/)/.test(rel);
+  const lines = String(text).split("\n");
+  const attr = /^\s*\[LF_TestInfo\(\s*LF_TestTier\.(\w+)\s*(?:,\s*pack:\s*(true|false)\s*)?\)\]\s*$/;
+  lines.forEach((line, i) => {
+    if (/\bclass\s+LF_(Pack)?TestRegistrations\b/.test(line) || /\.Register(Pack)?\(\s*new\s+LF_Test_\w+\(\)/.test(line))
+      out.push(`line ${i + 1}: a central test list; a test registers itself with [LF_TestInfo(...)] above its class (#2610)`);
+    const c = /^\s*class\s+(\w+)\s*:\s*LF_Test\s*(?:\{|$|\/\/)/.exec(line);
+    if (!c) return;
+    const above = [];
+    for (let k = i - 1; k >= 0 && above.length < 2; k--) {
+      const t = lines[k].trim();
+      if (!t || t.startsWith("//")) continue;
+      above.push(t);
+      if (!attr.test(t)) break;
+    }
+    const m = above.length ? attr.exec(above[0]) : null;
+    if (!m) {
+      out.push(`line ${i + 1}: ${c[1]} : LF_Test has no [LF_TestInfo(LF_TestTier.X)] directly above it, so the suite never collects it`);
+      return;
+    }
+    if (above.length > 1 && attr.test(above[1])) out.push(`line ${i + 1}: ${c[1]} has two [LF_TestInfo] attributes; keep one`);
+    const pack = m[2] === "true";
+    if (inPack && !pack) out.push(`line ${i + 1}: ${c[1]} is a pack test; its attribute needs pack: true`);
+    if (!inPack && pack) out.push(`line ${i + 1}: ${c[1]} is a core test; pack: true belongs only in a pack's Scripts/Game/Tests`);
+  });
+  return out;
 }

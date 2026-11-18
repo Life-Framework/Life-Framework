@@ -9,6 +9,9 @@
 //     LF_StaticResetHook subclass that LF_StaticReset finds by reflection, no static initializer (#2755; tools/lib/static-reset-hooks.mjs);
 //     `tools\cli heal-hotspots` moves an old branch's central entry there. A `modded class
 //     LF_StaticResetHooks` layer fails: one nested super.Run per feature overflowed the stack (#2034).
+//   - Tests/LF_TestRegistrations.generated.c (and the pack's): every test's registration row. Each test now
+//     carries [LF_TestInfo(LF_TestTier.X[, pack: true])] above its class and LF_TestManager finds it by
+//     reflection (#2610); a `class X : LF_Test` with no attribute, two of them, or a central list fails.
 //   - Core/Events/LF_Events.c: every feature's bus events. Each event class now lives in its
 //     feature, Feature/<Area>/LF_<Area>Events.c. Enforce Script compiles every file, so no include.
 // This check fails a new proof verb inside session.mjs, a proof module with the wrong shape, and an
@@ -24,6 +27,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { CENTRAL, centralCalls, staticResetProblems } from "../lib/static-reset-hooks.mjs";
+import { testInfoProblems } from "../lib/test-world.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const bad = [];
@@ -70,8 +74,13 @@ const allScripts = execFileSync("git", ["ls-files", "-z", "--cached", "--others"
   encoding: "utf8",
   maxBuffer: 1 << 28,
 }).split("\0").filter((f) => /\/Scripts\/.*\.c$/.test(f) && existsSync(join(root, f)));
+let tests = 0;
 for (const f of allScripts) {
   const text = readFileSync(join(root, f), "utf8");
+  if (/LF_Test|LF_TestInfo/.test(text)) {
+    for (const msg of testInfoProblems(f, text)) bad.push(`FAIL ${f}: ${msg}`);
+    tests += (text.match(/^\s*\[LF_TestInfo\(/gm) || []).length;
+  }
   if (!text.includes("LF_StaticResetHook") && !text.includes("LF_StaticReset.Register")) continue;
   const r = staticResetProblems(text);
   hooks += r.hooks;
@@ -94,4 +103,4 @@ if (bad.length) {
   console.log(`validate-registries: ${bad.length} problem(s). Shared registries are per-feature files; never append to a central list.`);
   process.exit(1);
 }
-console.log(`validate-registries: OK (${events} event class(es) in feature files; ${hooks} static-reset hook(s) in their own files; proofs discovered from agent-box/proofs)`);
+console.log(`validate-registries: OK (${events} event class(es) in feature files; ${hooks} static-reset hook(s) in their own files; ${tests} test(s) with [LF_TestInfo]; proofs discovered from agent-box/proofs)`);

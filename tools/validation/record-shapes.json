@@ -1,5 +1,5 @@
 {
-  "saveVersion": 54,
+  "saveVersion": 56,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -56,7 +56,9 @@
     "properties": "LF_PropertyRecord",
     "placements": "LF_PlacementRow",
     "reputation": "LF_ReputationRow",
-    "orgwars": "LF_OrgWarRecord"
+    "orgwars": "LF_OrgWarRecord",
+    "garageslots": "LF_GarageSlotRow",
+    "lockers": "LF_LockerRentalRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -675,6 +677,23 @@
         "int m_iAnswerWindowSec",
         "int m_iCooldownSec",
         "int m_iCooldownUntil"
+      ]
+    },
+    "LF_GarageSlotRow": {
+      "since": 55,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterKey",
+        "int m_iBought"
+      ]
+    },
+    "LF_LockerRentalRow": {
+      "since": 56,
+      "fields": [
+        "int m_iVersion",
+        "string m_sSiteId",
+        "string m_sCharacterKey",
+        "int m_iPaidUntil"
       ]
     }
   }
