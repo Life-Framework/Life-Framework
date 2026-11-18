@@ -4758,6 +4758,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Radio set"
      Comment "Toast title for calls placed on a carried radio set."
     }
+    CustomStringTableItem "{1C50A1F8B0E1940A}" {
+     Id "LF-Harvest_HopperFull"
+     Target_en_us "Hopper full, unload at the granary"
+     Comment "Hint when the reaper's hopper is at its cap and cutting stops (#3285)."
+    }
+    CustomStringTableItem "{3E7A1E93CB13CBFC}" {
+     Id "LF-Harvest_TooFast"
+     Target_en_us "Too fast to cut, slow down"
+     Comment "Hint when the hitched reaper is driven above its cutting speed (#3285)."
+    }
     CustomStringTableItem "{9306F928F7A81EBC}" {
      Id "LF-Heist_Armory_Open"
      Target_en_us "Breach the armory store"
