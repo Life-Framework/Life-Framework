@@ -1,0 +1,65 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "773EA9DD10EF23F1"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{76C1B2BA574582F0}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 60 0
+      CameraDistanceToItem 2
+      FOV 20
+     }
+    }
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Furniture_Stove_Name"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 40
+     SizeSetupStrategy Volume
+     ItemVolume 2500
+     RestingAdditiveRotationLS 0 0 0
+     RestingAdditiveOffsetLS 0 0 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{2D5E216856A3D748}Assets/Props/Furniture/Stove_01/Stove_01.xob"
+  }
+  LF_PlaceableComponent "{E1B1D40443D40E31}" {
+   m_sPlacedPrefab "{C4832B638C6FFDFF}Prefabs/Placeables/Furniture/Furniture_Stove_Placed.et"
+   m_vFootprintMins -0.67 0.1 -0.032
+   m_vFootprintMaxs 0.021 1.083 0.766
+   m_fReach 1
+   m_fAimReach 4
+   m_eSnap WALL
+   m_eWho HOUSE_OWNER_OR_KEY
+   m_sKind "Furniture_Stove"
+   m_eLifetime PERMANENT
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     ContextName "default"
+     Position PointInfo "{508AC2ABEAC4A0F5}" {
+      Offset 0 0.2119 0
+     }
+     Radius 1.07
+    }
+   }
+   additionalActions {
+    LF_PlacementAimAction "{20C81B0645A12768}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  SCR_GadgetComponent "{2098B1EEF3469A6F}" {
+   m_eAnimVariable LF_ITEM
+  }
+ }
+}

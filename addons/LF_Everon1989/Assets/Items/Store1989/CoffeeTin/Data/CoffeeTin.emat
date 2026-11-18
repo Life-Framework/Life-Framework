@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{411AF325F501756F}Assets/Items/Store1989/CoffeeTin/Data/CoffeeTin_BCR.edds"
+ NMOMap "{A3AF5B150C531BFA}Assets/Items/Store1989/CoffeeTin/Data/CoffeeTin_NMO.edds"
+}

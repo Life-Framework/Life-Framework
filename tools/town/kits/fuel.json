@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "kit": "fuel",
+  "system": "crime",
+  "source": {
+    "file": "tools/town/kits/sources/fuel.layer",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{00FD2B4A0BDEC271}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_building.et"
+  },
+  "anchoring": {
+    "floorY": 0.1,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.1
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -5.4,
+        -1.6
+      ],
+      "max": [
+        6.5,
+        0.4
+      ]
+    },
+    "front": "+x",
+    "counters": [],
+    "adapt": "The vanilla fuel-station shop (FuelStation_E_01_building, 10.9 x 5.5 m) is already furnished: a shop counter with its register prop at the -x end (local x -4.7, z -0.65, register at y 1.139), the street door on the +x wall at about z 0.35. The kit adds what the systems read: the attended till (meshless `LF_FuelTill_Attended`, on the register's own spot, so the robbery hold and the fuel_clerk dialogue find it), the fuel clerk behind the counter and the resident anchors (`counter` beside the clerk for the night-shift attendant, `door` on the forecourt by the street door). The slot's marker is the FuelTill place. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "till",
+      "prefab": "{9D3A51E060EFE982}Prefabs/Props/Commercial/LF_FuelTill_Attended.et",
+      "role": "till",
+      "verb": "on floor",
+      "free": true,
+      "offset": [
+        -5.074,
+        1.139,
+        -0.838
+      ],
+      "yaw": 174,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "clerk",
+      "prefab": "{4C624B7D84E8BAFA}Prefabs/Characters/Npcs/Outfits/LF_Npc_FuelClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "free": true,
+      "offset": [
+        -5.1,
+        0.1,
+        -0.1
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "anchor-counter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -5.1,
+        0.1,
+        -1.45
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "anchor-door",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        6.4,
+        0.1,
+        0.4
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"door\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "electricity-box-small-01",
+      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
+      "role": "alarm",
+      "verb": "against wall",
+      "offset": [
+        -5.3,
+        2.3,
+        -1.9
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_AlarmMountComponent",
+          "set": {
+            "m_vOffset": "0 0.167 0.065",
+            "m_fReach": "10"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-x",
+      "floor": "f0"
+    }
+  ]
+}
