@@ -5,7 +5,7 @@ import { arrive, clientBox, newestLog, sessionDir, sessionPaths } from "../sessi
 // #3154: the duty idle pause (#3120, LF_DutyIdle.c) on a DEDICATED server. The sampler reads the
 // server's copy of the officer's aim (ReadPose); a listen host reads its own, so only a remote client
 // shows whether the turn of a head reaches the server. Client 1 (on the police roster) clocks in at
-// the police desk and stands still in two phases, judged on the server log:
+// the annex police desk (a fixture, not the town) and stands still in two phases, judged on the server log:
 //   1. turning: it pitches its view 10 degrees every 5 s (a sawtooth, so no two samples 30 s apart
 //      see the same aim) for 360 s, longer than the 300 s window plus one 30 s sample: no
 //      "duty clock paused" line may appear.
@@ -14,7 +14,7 @@ import { arrive, clientBox, newestLog, sessionDir, sessionPaths } from "../sessi
 //   node agent-box/session.mjs duty-idle-proof
 //   tools\cli session down
 // Runs about 13 minutes; the harness commands of both phases keep the session lane alive.
-const DESK = "Roadmap_Police_Desk";
+const DESK = "Annex_Police_Desk";
 const PAUSED = /\[LFDebug:DutyIdle\][^\n]*duty clock paused/g;
 const TURN_MS = 360000;
 const CONTROL_MS = 400000;
