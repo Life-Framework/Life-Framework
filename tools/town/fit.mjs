@@ -253,6 +253,16 @@ export function worktreeTownClaims(exec, root) {
   return { claims, note: "" };
 }
 
+// Pure: whether a claim belongs to the draft this branch is stacked on. A follow-up branch ws/town-draft-<place>-<slot>-<word> builds on
+// the open draft ws/town-draft-<place>-<slot> and changes that slot's layer on top of it, so the draft's own claim (its open PR, its
+// worktree) is not a rival. Another slot's claim, or a PR of any other branch, still blocks.
+export function claimOfBase(c, { branch, place, slot }) {
+  const base = `ws/town-draft-${place}-${slot}`;
+  if (!branch || !String(branch).startsWith(`${base}-`)) return false;
+  if (c.place !== place || c.slot !== slot) return false;
+  return new RegExp(`^open PR #[0-9]+ \\(${base}\\)$`).test(c.where) || c.where === `worktree Life-Framework-ws-town-draft-${place}-${slot}`;
+}
+
 // Pure: why another claim blocks this fit ([] when none does). A street slot shares its building's frontage.
 export function conflicts(claims, { place, slot, building, plot, shared }) {
   const out = [];
@@ -338,6 +348,7 @@ export function planFit(opts, ctx = {}) {
   }
   // `--refit`: this slot's own claim, already committed on origin/main (every worktree carries it), does not block its re-fit.
   // The same slot held by an open PR or a sibling worktree, and any other slot's claim on the building, still refuse.
+  for (let i = taken.length - 1; i >= 0; i--) if (claimOfBase(taken[i], { branch: opts.branch, place, slot: slotId })) taken.splice(i, 1);
   const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && c.where === "origin/main")) : taken;
   errors.push(...conflicts(blocking, { place, slot: slotId, building: entry.building, plot: entry.plot, shared: entry.shared }));
   if (errors.length) return { ...fail(), notes };
@@ -584,7 +595,7 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
   })();
 
   // Only a town-draft-<place>-<slot> worktree writes an island layer (T4 enforces it too); --dry and --out-dir are for trying and tests.
-  if (!flags.dry && !flags.check && !flags["out-dir"] && !new RegExp(`^ws/town-draft-${place}-${slotId}$`).test(branch ?? "")) {
+  if (!flags.dry && !flags.check && !flags["out-dir"] && !new RegExp(`^ws/town-draft-${place}-${slotId}(-[a-z0-9-]+)?$`).test(branch ?? "")) {
     console.log(`REFUSE  town fit writes an island layer only from the worktree ws/town-draft-${place}-${slotId} (this is ${branch ?? "unknown"}); create it with tools\\cli wt new town-draft-${place}-${slotId}, or pass --dry`);
     return 1;
   }

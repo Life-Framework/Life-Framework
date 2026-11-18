@@ -123,6 +123,8 @@ for (const name of names) {
   check(g("ws/town-draft-sample-square-shop", [arrival]).errors.length === 1, "the guard should refuse a town-draft branch that changes another slot's layer");
   check(g("ws/town-draft-saint-philippe-general-store", [`${LAYER_DIR}/Place_saint-philippe_general-store.layer`]).errors.length === 0, "hyphens in the place and the slot must not confuse the guard");
   check(g("ws/town-draft-saint-philippe-general-store", [`${LAYER_DIR}/Place_saint-philippe_clothing.layer`]).errors.length === 1, "a town-draft branch of one slot must not change a sibling's layer");
+  check(g("ws/town-draft-saint-philippe-cafe-shop", [`${LAYER_DIR}/Place_saint-philippe_cafe.layer`]).errors.length === 0, "a stacked ws/town-draft-<place>-<slot>-<word> branch may change its slot's layer");
+  check(g("ws/town-draft-saint-philippe-cafe-shop", [`${LAYER_DIR}/Place_saint-philippe_clothing.layer`]).errors.length === 1, "a stacked town-draft branch must not change a sibling slot's layer");
   check(g("ws/fix-bug", ["docs/features/world.md", `${LAYER_DIR}/Gamemode.layer`]).errors.length === 0, "the guard touches only Place_*.layer files");
   check(g("main", [shop]).errors.length === 0 && g("HEAD", [shop]).errors.length === 0, "main and a detached HEAD are not checked");
 }

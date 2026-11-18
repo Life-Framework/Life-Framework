@@ -844,6 +844,11 @@ StringTable {
      Target_en_us "Helene Roux"
      Comment "Saint-Philippe resident teller: display name (#2906)."
     }
+    CustomStringTableItem "{D48C1FE2090106F1}" {
+     Id "LF-Shop_Desc_Cafe"
+     Target_en_us "A drink, a snack, a word with the owner"
+     Comment "Shop description of the Saint-Philippe café till (#3063)."
+    }
     CustomStringTableItem "{CA4D10F34DED233D}" {
      Id "LF-Shop_Desc_ClothesShop"
      Target_en_us "Jackets, shirts, trousers and hats in this year's colours."
@@ -879,6 +884,11 @@ StringTable {
      Target_en_us "Hard hats, work boots, gloves and a flashlight."
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
     }
+    CustomStringTableItem "{0B134C85762A065A}" {
+     Id "LF-Shop_Name_Cafe"
+     Target_en_us "Café bar"
+     Comment "Shop name of the Saint-Philippe café till (#3063): the pub's bar counter, stock cafe."
+    }
     CustomStringTableItem "{3891D91F71F15DB1}" {
      Id "LF-Shop_Name_ClothesShop"
      Target_en_us "Clothes shop"
@@ -908,6 +918,11 @@ StringTable {
      Id "LF-Shop_Name_Workwear"
      Target_en_us "Workwear counter"
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
+    }
+    CustomStringTableItem "{0EC694A26B780C12}" {
+     Id "LF-Shop_Open_Cafe"
+     Target_en_us "Order food and drink"
+     Comment "Interaction name at the café till (#3063): opens the café price list."
     }
     CustomStringTableItem "{AB6C9C6741E3729B}" {
      Id "LF-Shop_Open_ClothesShop"
