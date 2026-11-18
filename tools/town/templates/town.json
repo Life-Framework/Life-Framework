@@ -104,7 +104,7 @@
     {
       "id": "furniture", "required": false, "kit": "furniture", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 100, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
-      "places": ["StoreCounter"]
+      "places": ["FurnitureCounter"]
     },
     {
       "id": "woodlot", "required": false, "kit": "woodlot", "host": "building", "poi": "none", "margin": 14,
