@@ -48,7 +48,10 @@ agent per area. `tools\cli usage` shows where the tokens went.
    Text is LF in the repo and in every checkout (`* text=auto eol=lf`; `.cmd`/`.bat`
    stay CRLF). Generators write LF; scripts that patch files need not handle `\r\n`.
    A lone CR byte in a text file is a bug: a `\return` in a doc comment written through a shell
-   becomes CR plus `eturn` and splits the comment. `validate-no-lone-cr` fails it.
+   becomes CR plus `eturn` and splits the comment. `validate-no-lone-cr` fails it. The same
+   shell eats the backslash of a regex (`/s+/` for `/\s+/`, `SCRIPTs*(E)`) or turns `\b`
+   into a backspace byte in `tools/`; write regex-heavy code with the Write/Edit tools
+   and let `validate-regex-backslashes` catch what slips (`// lf-regex-ok: <why>` allows a real letter).
 5. **All classes are `LF_`; tests are `LF_Test_*`.** The `EL_` to `LF_` rename
    landed 2026-11-09 (#334). The real EveronLife mod (`EL_`) can load on the same
    server, so an `EL_` name can collide. `validate-no-el-prefix.mjs` rejects any

@@ -3,6 +3,7 @@
 // tools/validation/main-guard-selftest.mjs.
 
 import { ownerOf } from "./world-test-judge.mjs";
+import { sameLeaseHost } from "./guard-pin.mjs";
 
 export const BATCH_MS = 10 * 60 * 1000; // a burst of merges is checked once, at most every 10 min
 export const PRE_MOVE = ["e2e", "--pre-move", "502ebf39", "--mission", "playtest"];
@@ -370,10 +371,10 @@ export function watchDecision({ off = false, alive = null, lease, host, now = Da
   if (off) return { action: "none", why: "LF_MAIN_GUARD=0" };
   const h = guardHealth(lease, { now, downMs });
   if (alive) {
-    const stale = lease?.host === host && lease?.state === "held" && h.minutes * 60000 > wedgedMs;
+    const stale = sameLeaseHost(lease?.host, host) && lease?.state === "held" && h.minutes * 60000 > wedgedMs;
     return stale ? { action: "alert", why: `worker pid ${alive} is alive but its lease is ${h.minutes} min old (hung?); not restarted` } : { action: "none", why: `worker pid ${alive} alive` };
   }
-  if (h.state === "live" && lease.host !== host) return { action: "none", why: `${lease.host} runs the guard` };
+  if (h.state === "live" && !sameLeaseHost(lease.host, host)) return { action: "none", why: `${lease.host} runs the guard` };
   if (h.state === "stopped") return { action: "none", why: `stopped on purpose ${h.minutes} min ago (tools\\cli main-guard start)` };
   const recent = restarts.filter((t) => now - Date.parse(t) < RESTART_WINDOW_MS).length;
   if (recent >= RESTART_CAP) return { action: "alert", why: `${recent} restarts in the last hour and the guard keeps dying; not restarting` };
