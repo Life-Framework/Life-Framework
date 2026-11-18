@@ -1414,6 +1414,11 @@ StringTable {
      Target_en_us "Picks and shovels for working miners. A miner of rank 2 can buy the pickaxe."
      Comment "General store counter (#3085): the miner's supply description."
     }
+    CustomStringTableItem "{3E7A91C04B52D682}" {
+     Id "LF-Shop_Desc_Newsagent"
+     Target_en_us "Newspapers, magazines, bottled water and the tourist map of Everon."
+     Comment "Shop description of the Saint-Philippe newsagent kiosk till (#3222)."
+    }
     CustomStringTableItem "{88A40BFFEF7CB897}" {
      Id "LF-Shop_Desc_PharmacyCounter"
      Target_en_us "Morphine and saline, for licensed medics only."
@@ -1454,6 +1459,11 @@ StringTable {
      Target_en_us "Miner's supply"
      Comment "General store counter (#3085): the miner's supply name."
     }
+    CustomStringTableItem "{3E7A91C04B52D681}" {
+     Id "LF-Shop_Name_Newsagent"
+     Target_en_us "Tabac-presse"
+     Comment "Shop name of the Saint-Philippe newsagent kiosk till (#3222): stock newsagent."
+    }
     CustomStringTableItem "{B1BC977506FDDA48}" {
      Id "LF-Shop_Name_PharmacyCounter"
      Target_en_us "Dispensary"
@@ -1473,6 +1483,11 @@ StringTable {
      Id "LF-Shop_Name_Workwear"
      Target_en_us "Workwear counter"
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
+    }
+    CustomStringTableItem "{3E7A91C04B52D684}" {
+     Id "LF-Shop_OpenDesc_Newsagent"
+     Target_en_us "Buy the tourist map or a paper"
+     Comment "Action description on the newsagent kiosk till (#3222)."
     }
     CustomStringTableItem "{0EC694A26B780C12}" {
      Id "LF-Shop_Open_Cafe"
@@ -1498,6 +1513,11 @@ StringTable {
      Id "LF-Shop_Open_MinersSupply"
      Target_en_us "Miner's supply"
      Comment "General store counter (#3085): the miner's supply action label."
+    }
+    CustomStringTableItem "{3E7A91C04B52D683}" {
+     Id "LF-Shop_Open_Newsagent"
+     Target_en_us "Browse the kiosk"
+     Comment "Action label on the newsagent kiosk till (#3222)."
     }
     CustomStringTableItem "{7729AC333C1E6567}" {
      Id "LF-Shop_Open_PharmacyCounter"
