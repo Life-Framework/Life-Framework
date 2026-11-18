@@ -169,8 +169,8 @@ class LF_BuildSiteComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! param user The character to test.
-	//! eturn True when the character carries (in the left-hand slot or anywhere in the inventory) a
+	//! \param user The character to test.
+	//! \return True when the character carries (in the left-hand slot or anywhere in the inventory) a
 	//! key item bound to this plot (#2815). Same key system as a house door (LF_LockComponent.UserHasValidKey);
 	//! an unbound key matches nothing. Server and client may call it; it does not log.
 	static bool UserHoldsKey(IEntity user, string plotKey)
