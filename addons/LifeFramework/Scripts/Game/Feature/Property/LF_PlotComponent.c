@@ -7,6 +7,11 @@
 //! client can never buy a plot it is not standing at, and of two signs a few metres apart the server
 //! never sells the one the player did not pick, at a price the prompt did not show. The owner check comes before any cash moves and the
 //! owner is set in the same server call, so two buyers can not both pay for one plot.
+//!
+//! OWNED STATE ON CLIENTS (#2780). A client has no property book, so the server replicates one bool
+//! per sign (m_bOwned, RplProp + BumpMe on change; a late joiner gets it with the entity snapshot).
+//! LF_Properties.SetOwner / ApplyAll refresh the live signs, so a sale, a clear and a save load all
+//! reach every client. The owner's key is never replicated. The Buy action reads only this flag.
 //------------------------------------------------------------------------------------------------
 enum LF_EPlotBuy
 {
@@ -34,6 +39,10 @@ class LF_PlotComponent : ScriptComponent
 	[Attribute("", UIWidgets.EditBox, "Plot key: the m_sPlotId of an LF_PropertyPlotDef in Configs/Property/LF_Property.conf")]
 	protected string m_sPlotKey;
 
+	//! Whether somebody owns this sign's plot. Set by the server only; clients read the replicated copy.
+	[RplProp()]
+	protected bool m_bOwned;
+
 	//! Live plot signs; the component's own OnDelete removes it.
 	protected static ref array<LF_PlotComponent> s_aLive;
 
@@ -47,6 +56,8 @@ class LF_PlotComponent : ScriptComponent
 		s_aLive.Insert(this);
 		if (m_sPlotKey.IsEmpty())
 			LF_Debug.Warn(FEATURE, string.Format("plot sign %1 has no plot key; it sells nothing", LF_Utils.GetPrefabName(owner)));
+
+		RefreshOwned();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -70,6 +81,55 @@ class LF_PlotComponent : ScriptComponent
 	void SetPlotKey(string plotKey)
 	{
 		m_sPlotKey = plotKey;
+		RefreshOwned();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Returns true when somebody owns this sign's plot. On a client this is the replicated copy, the
+	//! only owner state a client has; on the server it is what RefreshOwned last read from the book.
+	bool IsOwned()
+	{
+		return m_bOwned;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Returns true when the config sells this plot and nobody owns it: what the Buy action shows on.
+	bool IsForSale()
+	{
+		return !m_bOwned && GetPrice() > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: reads the owner from LF_Properties and, when it changed, replicates the owned flag.
+	//! Does nothing on a client. Returns true when the flag changed.
+	bool RefreshOwned()
+	{
+		if (!Replication.IsServer())
+			return false;
+
+		bool nowOwned = !m_sPlotKey.IsEmpty() && !LF_Properties.GetOwnerKey(m_sPlotKey).IsEmpty();
+		if (nowOwned == m_bOwned)
+			return false;
+
+		m_bOwned = nowOwned;
+		Replication.BumpMe();
+		LF_Debug.Info(FEATURE, string.Format("plot sign '%1' owned=%2", m_sPlotKey, nowOwned));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: refreshes the live signs of a plot after its owner changed (LF_Properties.SetOwner), or
+	//! every live sign when the key is empty (the book was replaced, LF_Properties.ApplyAll).
+	static void RefreshKey(string plotKey)
+	{
+		if (!s_aLive)
+			return;
+
+		foreach (LF_PlotComponent plot : s_aLive)
+		{
+			if (plot && (plotKey.IsEmpty() || plot.GetPlotKey() == plotKey))
+				plot.RefreshOwned();
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
