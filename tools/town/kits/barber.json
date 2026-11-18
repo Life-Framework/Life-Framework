@@ -23,44 +23,30 @@
     "footprint": {
       "source": "rows",
       "min": [
-        6,
-        0.5
+        -4.5,
+        -5.3
       ],
       "max": [
-        8.74,
-        3.4
+        -0.75,
+        -1.4
       ]
     },
     "front": "+z",
     "counters": [],
-    "adapt": "The coiffeur on the ground floor of a House_Town_E_2I02 townhouse, in the building's own frame: +z is the street side, the two front doors stand at about x -1.2 and x -3.75. The east end of the ground floor (the +x wall at x 8.75, which the clinic kit also uses for its desk) is the salon: two bathroom mirrors on that wall 1.6 m apart, each with a barber chair (`LF_BarberChair`: the look sheet and the fee come from the prefab) 1.4 m in front of it facing the glass; the flat's own sofa and table are the waiting corner. The fascia hangs over the doors in barber red and white. Rows are rigid: shift, never stretch."
+    "adapt": "The coiffeur in the hall of a House_Town_E_2I02 townhouse, in the building's own frame: +z is the street side, the carriage doors stand at x -3.75..-1.25. The south end of the hall (x -4.5..-0.75, z -5.3..-1.4) is empty tile with the east wall unbroken: one wide wall mirror at z -3.75 with a barber chair (`LF_BarberChair`: the look sheet and the fee come from the prefab) 1.4 m in front of it on each side of the middle, a basin on the same wall to the north, and a small counter against the west wall. The flat's own rooms are behind the doors and stay as the vanilla building has them. The fascia hangs over the carriage doors in barber red and white. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
-      "id": "barber-mirror-1",
-      "prefab": "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et",
+      "id": "barber-mirror",
+      "prefab": "{34E90D599E5E3517}Prefabs/Props/Furniture/MirrorBathroom_02/MirrorBathroom_02.et",
       "role": "dressing",
       "verb": "against wall",
       "offset": [
-        8.7,
-        1.55,
-        1.6
+        -0.75,
+        1.3,
+        -3.75
       ],
-      "yaw": 180,
-      "wall": "+x",
-      "floor": "f0"
-    },
-    {
-      "id": "barber-mirror-2",
-      "prefab": "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        8.7,
-        1.55,
-        3.1
-      ],
-      "yaw": 180,
+      "yaw": -90,
       "wall": "+x",
       "floor": "f0"
     },
@@ -70,9 +56,9 @@
       "role": "interactable",
       "verb": "on floor",
       "offset": [
-        7.3,
-        0,
-        1.6
+        -2.15,
+        0.26,
+        -4.5
       ],
       "yaw": 90,
       "wall": "free",
@@ -84,12 +70,40 @@
       "role": "interactable",
       "verb": "on floor",
       "offset": [
-        7.3,
-        0,
-        3.1
+        -2.15,
+        0.26,
+        -3
       ],
       "yaw": 90,
       "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barber-basin",
+      "prefab": "{49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -0.75,
+        0.26,
+        -1.95
+      ],
+      "yaw": -90,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "barber-counter",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "furniture",
+      "verb": "against wall",
+      "offset": [
+        -4,
+        0.26,
+        -4.45
+      ],
+      "yaw": 90,
+      "wall": "-x",
       "floor": "f0"
     },
     {
@@ -100,14 +114,14 @@
       "offset": [
         -2.4,
         3,
-        6.74
+        5.951
       ],
       "yaw": 0,
       "config": [
         {
           "component": "LF_SignComponent",
           "set": {
-            "m_sSignId": "\"grid:coiffeur\"",
+            "m_sSignId": "\"barber\"",
             "m_vRimColor": "0.72 0.08 0.1",
             "m_vPaintColor": "0.96 0.95 0.9",
             "m_vTextColor": "0.72 0.08 0.1"
@@ -116,7 +130,8 @@
         }
       ],
       "wall": "+z",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "free"
     }
   ]
 }

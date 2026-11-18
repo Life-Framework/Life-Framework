@@ -8,7 +8,7 @@
   "kinds": [
     "BarberChair"
   ],
-  "rows": 5,
+  "rows": 6,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

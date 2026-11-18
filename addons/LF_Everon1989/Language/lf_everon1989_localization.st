@@ -1534,6 +1534,16 @@ StringTable {
      Target_en_us "The vault door on the bank's east wall. Behind it, a bag of cash."
      Comment "Sign card for the bank vault door (a robbery site), What section."
     }
+    CustomStringTableItem "{A5CB85E823411AF3}" {
+     Id "LF-Sign_Barber_Title"
+     Target_en_us "Coiffeur"
+     Comment "Fascia of the Saint-Philippe barber shop (#3236): the board over the door and the prompt Read: Coiffeur."
+    }
+    CustomStringTableItem "{E17DC6149D683CEE}" {
+     Id "LF-Sign_Barber_What"
+     Target_en_us "The village coiffeur: sit in a chair and pick a new cut, colour or beard|Prices are 1989 prices, cash only"
+     Comment "Sign card for the Saint-Philippe barber shop, What section (#3236)."
+    }
     CustomStringTableItem "{5065DFD658DCD5F6}" {
      Id "LF-Sign_BlackMarket_How"
      Target_en_us "Stand at the stall and knock (F). The price list opens: pick the handgun and pay."
