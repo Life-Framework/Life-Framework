@@ -9,8 +9,8 @@ them back. Specs #753, #776; chapter #1038.
 
 ## Interaction pattern
 
-Rung 1 once the world pieces land (a locker bank prop with a use action). This slice (#2658, L1) is the
-rules and config only: pure script, no prop, no UI, no save data yet.
+Rung 1: a locker bank prop (`Prefabs/Props/Lockers/LF_LockerBank.et`, a vanilla metal cabinet) with a
+"Rent a locker" use action (#2659). Rules and config came first (#2658).
 
 ## Rules (#2658)
 
@@ -27,6 +27,17 @@ rules and config only: pure script, no prop, no UI, no save data yet.
 - Times are UTC seconds, passed in by the caller (`LF_LockerRules` reads no clock and no config), so the rules
   test without a world.
 
+## Renting (#2659)
+
+- `LF_LockerBankComponent` marks a prop as a bank: `m_sSiteId` (the stable key rentals are saved under; set it on
+  the placed instance, a bank without one is keyed by its rounded position and warns) and `m_fReach` (2.5 m).
+- `LF_LockerRentAction` runs on the server for the acting character. `LF_LockerBank.RentNearest` finds the bank
+  from that character's own position and its character record key (`LF_Utils.GetPlayerUID`); nothing the client
+  sends picks the bank or the renter. Refused: out of reach, already renting here, short of `rentPrice` (nothing
+  taken). The cash is taken only after every check; a short take is handed back.
+- Saved as the `lockers` payload (save v56): rows `{siteId, characterKey, paidUntil}`. A save before v56 loads
+  with nobody renting. Apply replaces the table, so a second apply gives the same table.
+
 ## Data
 
 `Configs/Lockers/LF_Lockers.conf` (`LF_LockerConfig`), owner JSON section `lockers`: `rentPrice` 100,
@@ -35,5 +46,5 @@ only; `/configreload` re-reads it.
 
 ## Not built here
 
-The locker bank and lost-and-found props, the rent and reclaim actions and their sheet, the stored
-contents and their persistence, and the daily lapse sweep are later slices of #1038.
+Renewal, the lost-and-found prop, the reclaim action, the stored contents and their persistence, a rent
+sheet, and the daily lapse sweep are later slices of #1038. No bank is placed in a world yet.
