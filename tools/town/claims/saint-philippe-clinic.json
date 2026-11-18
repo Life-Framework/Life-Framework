@@ -9,7 +9,7 @@
     "HospitalSite",
     "MedicDesk"
   ],
-  "rows": 8,
+  "rows": 10,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

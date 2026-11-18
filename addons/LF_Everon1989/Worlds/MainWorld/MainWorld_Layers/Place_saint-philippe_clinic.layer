@@ -26,6 +26,27 @@ GenericEntity Fit_saint_philippe_clinic_lf_medic_duty_desk : "{A0B78CD65C661B15}
  coords 4421.294 10.96 10777.208
  angleY 152
 }
+GenericEntity Fit_saint_philippe_clinic_lf_hospital_till : "{2D106F570E87D5D9}Prefabs/Props/Commercial/LF_HospitalTill.et" {
+ components {
+  LF_HospitalTillComponent "{E11FD1BB36043573}" {
+   m_sTargetId "SaintPhilippe_Clinic_Till"
+  }
+ }
+ coords 4423.622 10.96 10778.049
+ angleY 152
+}
+GenericEntity Fit_saint_philippe_clinic_lf_hospital_cabinet : "{E9A69A99981C062C}Prefabs/Props/Commercial/LF_HospitalCabinet.et" {
+ components {
+  LF_BreachTargetComponent "{1CED7C398B3479F9}" {
+   m_sTargetId "SaintPhilippe_Clinic_Cabinet"
+  }
+  LF_HospitalCabinetComponent "{721529CA2232801E}" {
+   m_sTargetId "SaintPhilippe_Clinic_Cabinet"
+  }
+ }
+ coords 4425.451 10.96 10779.402
+ angleY 152
+}
 GenericEntity Fit_saint_philippe_clinic_lf_dispatch_board_medic : "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et" {
  coords 4421.914 12.11 10774.253
  angleY 62
