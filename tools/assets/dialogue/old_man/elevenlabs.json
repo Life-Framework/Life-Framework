@@ -66,58 +66,6 @@
       "request_id": "z9UkuyUiQiIVoVEFDwiu",
       "seconds": 2.85,
       "mouth": "699679997531000000249575699825413689268656754425467542100"
-    },
-    "greet_refuses": {
-      "hash": "762f65517cea9c84",
-      "date": "2026-11-18",
-      "voice_id": "nTMUXLFSfbWmdKKy7nDC",
-      "voice_name": "Alder - Warm, Raspy and Comforting",
-      "model": "eleven_multilingual_v2",
-      "text": "I saw what you did. Keep walking.",
-      "chars": 33,
-      "chars_total": 13,
-      "request_id": "kZNxA3DAlUww42sP5HNV",
-      "seconds": 2.36,
-      "mouth": "797999798696246474575321110124675236773357542000"
-    },
-    "greet_wary": {
-      "hash": "f648b60a7e5a9238",
-      "date": "2026-11-18",
-      "voice_id": "nTMUXLFSfbWmdKKy7nDC",
-      "voice_name": "Alder - Warm, Raspy and Comforting",
-      "model": "eleven_multilingual_v2",
-      "text": "Hm. You again. Say what you want, and be quick.",
-      "chars": 47,
-      "chars_total": 19,
-      "request_id": "t1wq739Gfdew4R4qFSuE",
-      "seconds": 3.56,
-      "mouth": "688876310000000002445453667886642100007999999789779974645654235531531000"
-    },
-    "greet_friendly": {
-      "hash": "cd7db08b84743d40",
-      "date": "2026-11-18",
-      "voice_id": "nTMUXLFSfbWmdKKy7nDC",
-      "voice_name": "Alder - Warm, Raspy and Comforting",
-      "model": "eleven_multilingual_v2",
-      "text": "Ah, there you are. A friendly face is good to see. Sit a moment.",
-      "chars": 64,
-      "chars_total": 26,
-      "request_id": "yfcwJLHAMMUSLR1WTUAi",
-      "seconds": 6.3,
-      "mouth": "579933799986565457676577631110000000048543358744456433468867955641455215349994333332110110111010111699979659333543333321133100"
-    },
-    "greet_regular": {
-      "hash": "34d7ed3f833d32a0",
-      "date": "2026-11-18",
-      "voice_id": "nTMUXLFSfbWmdKKy7nDC",
-      "voice_name": "Alder - Warm, Raspy and Comforting",
-      "model": "eleven_multilingual_v2",
-      "text": "My friend! The harbour is better for having you in it. What can an old fisherman do for you?",
-      "chars": 92,
-      "chars_total": 37,
-      "request_id": "NGunjsehGOjhgyWfSsxO",
-      "seconds": 6.85,
-      "mouth": "68996766999777562111010000002996799995599979914888664655679834656555544441152100000000011147416786867899856777997557663655577444344433200"
     }
   },
   "voice": {
