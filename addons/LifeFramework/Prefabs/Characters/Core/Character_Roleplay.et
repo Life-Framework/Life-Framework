@@ -41,24 +41,6 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
     }
    }
    additionalActions + {
-    LF_PlantAction "{2818A1C0D3E54F21}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{2818A1C0D3E54F22}" {
-      Name "#LF-Plant_Action_Harvest"
-     }
-     m_eMode HARVEST
-    }
-    LF_PlantAction "{2818A1C0D3E54F23}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{2818A1C0D3E54F24}" {
-      Name "#LF-Plant_Action_Inspect"
-     }
-     m_eMode INSPECT
-    }
     LF_IntroduceAction "{9A4FE806F7DEBA95}" {
      ParentContextList {
       "LF_ID"

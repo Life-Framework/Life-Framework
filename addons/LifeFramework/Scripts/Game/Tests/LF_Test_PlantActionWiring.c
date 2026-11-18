@@ -1,9 +1,9 @@
-// red-proof: observed 2026-11-18 with `tools\cli test --no-build --only LF_Test_PlantActionWiring` before the prefabs carried the action: failed `cabbage seed carries one PLANT action (expected 1, got 0)`, `water bottle carries one WATER action`, `character carries one HARVEST action`, `character carries one INSPECT action`, `SUMMARY tier=only passed=1 failed=1`; with the actions on the prefabs, green.
+// red-proof: observed 2026-11-18 with `tools\cli test --no-build --only LF_Test_PlantActionWiring` before the prefabs carried the action: failed `cabbage seed carries one PLANT action (expected 1, got 0)`, `water bottle carries one WATER action`, `character carries one HARVEST action`, `character carries one INSPECT action`, `SUMMARY tier=only passed=1 failed=1`; with the actions on the prefabs, green. #3000 review: with HARVEST/INSPECT still on Character_Roleplay the new check failed `character carries no plant action ... (expected 0, got 2)`; removed, green.
 
 //! farming/plant-action-wiring (#2818): a player holding seeds sees Plant, holding a water bottle sees
-//! Water, and near a plant the character offers Harvest and Inspect. Each seed prefab the crop catalogue
-//! names, the cabbage seed pack item, the core water bottle and the player character prefab resolve an
-//! `LF_PlantAction` of the right mode (#2664 built the action; this is the prefab wiring).
+//! Water. Each seed prefab the crop catalogue names, the cabbage seed pack item and the core water bottle
+//! resolve an `LF_PlantAction` of the right mode (#2664 built the action; this is the prefab wiring). The
+//! player character carries none: its actions show to other players, never to the body's own player.
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PlantActionWiring : LF_Test
 {
@@ -21,7 +21,6 @@ class LF_Test_PlantActionWiring : LF_Test
 	{
 		array<LF_EPlantActionMode> plant = {LF_EPlantActionMode.PLANT};
 		array<LF_EPlantActionMode> water = {LF_EPlantActionMode.WATER};
-		array<LF_EPlantActionMode> person = {LF_EPlantActionMode.HARVEST, LF_EPlantActionMode.INSPECT};
 
 		CheckPrefab(ctx, CABBAGE_SEED, "cabbage seed", plant);
 		CheckPrefab(ctx, WATER_BOTTLE, "water bottle", water);
@@ -37,10 +36,31 @@ class LF_Test_PlantActionWiring : LF_Test
 			}
 		}
 
+		// HARVEST and INSPECT never sit on the character: the engine does not offer a player their own
+		// body's actions, so there the prompt only showed to OTHER players looking at someone (#3000 review).
 		IEntity character = LF_TestCharacterFixture.Spawn(ctx);
 		if (character)
-			CheckActions(ctx, character, "character", person);
+			CheckNone(ctx, character, "character");
 		LF_TestCharacterFixture.Delete(character);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CheckNone(LF_TestContext ctx, IEntity entity, string label)
+	{
+		ActionsManagerComponent actions = ActionsManagerComponent.Cast(entity.FindComponent(ActionsManagerComponent));
+		if (!actions)
+			return;
+
+		array<BaseUserAction> list = {};
+		actions.GetActionsList(list);
+		int count;
+		foreach (BaseUserAction base : list)
+		{
+			if (LF_PlantAction.Cast(base))
+				count++;
+		}
+
+		ctx.Equal(0, count, label + " carries no plant action (others looking at it would see Harvest and Inspect)");
 	}
 
 	//------------------------------------------------------------------------------------------------
