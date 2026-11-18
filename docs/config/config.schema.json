@@ -743,6 +743,13 @@
           "default": 7,
           "minimum": 0,
           "maximum": 365
+        },
+        "driverLicenceFee": {
+          "type": "integer",
+          "description": "Licence desk: the driving licence's fee in carried cash, issued at once",
+          "default": 100,
+          "minimum": 0,
+          "maximum": 1000000
         }
       },
       "additionalProperties": false,
