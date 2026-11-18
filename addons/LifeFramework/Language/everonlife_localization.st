@@ -10419,6 +10419,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Order between 1 and 99."
      Comment "Shop refusal: quantity outside the per-order limit."
     }
+    CustomStringTableItem "{3A7C5E91D20B48F6}" {
+     Id "LF-Shop_RefuseResident"
+     Target_en_us "Not to you."
+     Comment "Shop refusal: the resident clerk will not serve this buyer (#2911)."
+    }
     CustomStringTableItem "{2D906536332C3F77}" {
      Id "LF-Shop_RefuseTooFast"
      Target_en_us "One order at a time. Give the till a moment."
