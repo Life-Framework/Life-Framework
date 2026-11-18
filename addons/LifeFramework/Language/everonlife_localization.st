@@ -4000,6 +4000,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Stand next to the plot"
      Comment "Refusal toast: the player is too far from the plot."
     }
+    CustomStringTableItem "{B0445D47AEAB9C63}" {
+     Id "LF-Fishing_AlreadyOut"
+     Target_en_us "Your line is already out."
+     Comment "Toast: a second cast while one is out (#2930)."
+    }
+    CustomStringTableItem "{81924E1B885918BD}" {
+     Id "LF-Fishing_Bite"
+     Target_en_us "Strike!"
+     Comment "Toast prompt: the fish bit, strike now (#2930)."
+    }
+    CustomStringTableItem "{1946E4A004ECDA03}" {
+     Id "LF-Fishing_Cannot"
+     Target_en_us "You cannot fish right now."
+     Comment "Toast: any other reason a cast is refused (#2930)."
+    }
+    CustomStringTableItem "{8CD441A093B5E4D8}" {
+     Id "LF-Fishing_CastOut"
+     Target_en_us "Line out. Wait for the float to dip."
+     Comment "Toast: the cast went out (#2930)."
+    }
+    CustomStringTableItem "{7DAB65CD9C11C4D6}" {
+     Id "LF-Fishing_Caught"
+     Target_en_us "You landed a fish."
+     Comment "Toast: a strike inside the window gave a fish (#2930)."
+    }
+    CustomStringTableItem "{5B8680B38E02BCD8}" {
+     Id "LF-Fishing_Empty"
+     Target_en_us "Nothing was on the line."
+     Comment "Toast: the strike landed but no fish could be given (#2930)."
+    }
+    CustomStringTableItem "{5790E82CE5251627}" {
+     Id "LF-Fishing_Level"
+     Target_en_us "You need more fishing experience for this rod."
+     Comment "Toast: the rod needs a higher FISHER level (#2930)."
+    }
+    CustomStringTableItem "{32889A24787436BC}" {
+     Id "LF-Fishing_Missed"
+     Target_en_us "Too late. The bait is gone."
+     Comment "Toast: the strike came after the window, or never (#2930)."
+    }
+    CustomStringTableItem "{C5BD575D50A5AAF2}" {
+     Id "LF-Fishing_NoBait"
+     Target_en_us "You need bait. Buy a tin at the chandler."
+     Comment "Toast: a cast with no bait in the inventory (#2930)."
+    }
+    CustomStringTableItem "{10A11C7FDC837A35}" {
+     Id "LF-Fishing_NoRod"
+     Target_en_us "Take the fishing rod into your hands first."
+     Comment "Toast: a cast without the rod in hand (#2930)."
+    }
+    CustomStringTableItem "{B9929BF760F3D4E0}" {
+     Id "LF-Fishing_NotWater"
+     Target_en_us "Cast onto the water."
+     Comment "Toast: the cast target is not water (#2930)."
+    }
+    CustomStringTableItem "{BF92FABD9F5CC662}" {
+     Id "LF-Fishing_Range"
+     Target_en_us "Too far to cast."
+     Comment "Toast: the cast target is beyond the rod range (#2930)."
+    }
+    CustomStringTableItem "{8A16D2B2E04DC5C5}" {
+     Id "LF-Fishing_Rate"
+     Target_en_us "Slow down. You are casting too fast."
+     Comment "Toast: more casts in a minute than allowed (#2930)."
+    }
+    CustomStringTableItem "{A790DD90B5BCFA87}" {
+     Id "LF-Fishing_Title"
+     Target_en_us "Fishing"
+     Comment "Toast title for every fishing message (#2930)."
+    }
     CustomStringTableItem "{FA4E9EE301A756F1}" {
      Id "LF-Fruit_Apples"
      Target_en_us "apples"
@@ -10604,6 +10674,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-SpikeStrip_PoliceOnly"
      Target_en_us "Only an on-duty officer can handle the spike strip."
      Comment "Toast and greyed-out reason when someone who is not on-duty police tries the strip."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60738}" {
+     Id "LF-Stall_AlreadyRented"
+     Target_en_us "This stall is taken, or you already rent one today."
+     Comment "Toast: stall rent refused, the stall is rented or the player has another; nothing was taken (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60735}" {
+     Id "LF-Stall_Closed"
+     Target_en_us "The market is closed. Stalls rent on market day."
+     Comment "Cannot-rent reason and toast outside market hours (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60737}" {
+     Id "LF-Stall_NoCash"
+     Target_en_us "You do not carry enough cash for the pitch fee."
+     Comment "Toast: stall rent refused, short of cash; nothing was taken (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60731}" {
+     Id "LF-Stall_Rent"
+     Target_en_us "Rent stall (%1)"
+     Comment "Action on a free market stall (#2925). %1 = the formatted pitch fee."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60732}" {
+     Id "LF-Stall_RentDesc"
+     Target_en_us "Rent this stall for today's market."
+     Comment "Description of the rent action on a market stall (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60736}" {
+     Id "LF-Stall_Rented"
+     Target_en_us "You rented a stall for today's market."
+     Comment "Toast: the pitch fee was paid and the stall is yours until the market closes (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60733}" {
+     Id "LF-Stall_Taken"
+     Target_en_us "Stall of %1"
+     Comment "Prompt on a rented market stall (#2925). %1 = the holder's name."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60730}" {
+     Id "LF-Stall_Title"
+     Target_en_us "Market stall"
+     Comment "Toast title for a market stall rent (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60734}" {
+     Id "LF-Stall_Unnamed"
+     Target_en_us "a trader"
+     Comment "Holder label on a rented stall whose holder has no name (#2925)."
     }
     CustomStringTableItem "{C6CD1F2F0A61F3B5}" {
      Id "LF-Stolen_Already"

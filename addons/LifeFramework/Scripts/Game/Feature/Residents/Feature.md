@@ -56,3 +56,10 @@ bench, bus stop) near players.
   statics reset through `LF_ResidentSpawner_StaticResetHook`. Persisted: nothing, a restart re-spawns by proximity.
 - **Data:** `LF_Residents.conf` root fields `m_iSpawnRadiusM`, `m_iDespawnRadiusM`, `m_iMaxLive`, `m_iSweepSeconds`.
 - **Proof:** `residents/spawner` (WORLD).
+
+## Resident walk (#2909)
+
+- **Player sees:** a resident whose line moves on (bench to counter) walking to the next anchor at walking pace when they are near, then starting the activity, instead of vanishing and appearing.
+- **Owner and side:** server. `LF_ResidentWalk.Move` is called from `LF_ResidentSpawner.Despawn`; `LF_ResidentMover` drives the vanilla AI (a test swaps it).
+- **Rules:** see `docs/features/residents.md` "LF_ResidentWalk". Data: `LF_Residents.conf` `m_iMaxWalking` (4). No AIWorld: placed, never walked. Persisted: nothing.
+- **Proof:** `residents/walk` (WORLD).
