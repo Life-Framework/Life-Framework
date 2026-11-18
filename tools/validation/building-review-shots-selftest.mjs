@@ -4,6 +4,7 @@
 // red-proof: 2026-11-15, one line broken, restored after its FAIL was seen:
 //   sheetTiles putting the plan first                    -> FAIL sheet: the plan comes last
 //   albedoJob returning the interior scale for exterior  -> FAIL albedo: the same scales as the export
+// inputs: tools/**, agent-box/**
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";

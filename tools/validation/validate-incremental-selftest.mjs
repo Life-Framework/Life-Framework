@@ -5,6 +5,9 @@
 // repo: a check is skipped only when its declared inputs are untouched since its last green run,
 // and every kind of change (edit, add, delete, rename, its own script, a baseline) re-runs it.
 //
+// red-proof: 2026-11-18 (#3115, import closure), with plan() building an empty closure the run printed `FAIL editing a module the check
+// imports did not re-run it`, `FAIL editing a module the check imports only through another module ...` and `FAIL a branch edit to a
+// transitively imported module must run an imports check`; restored, it passes.
 // red-proof: 2026-11-18 (base skip), with touches() returning false the run printed `FAIL a modified input since the base
 // must run the check` and three more FAIL lines; restored, it passes.
 // red-proof: 2026-11-14, with fingerprint() no longer hashing each matched file path and stat signature
@@ -28,6 +31,7 @@ check(JSON.stringify(parseInputs("# t\n# inputs: a.layer\n")) === '["a.layer"]',
 check(parseInputs("// inputs: always\n") === null, "'always' must mean no skipping");
 check(parseInputs("// nothing declared\nconst x = 1;\n") === null, "no header must mean no skipping");
 check(ttlOf(parseInputs("// inputs: ttl=300\n")) === 300, "ttl token not read");
+check(JSON.stringify(parseInputs("// c\n// inputs: imports\n")) === '["imports"]', "the imports token is an input list, not 'always'");
 const g = (glob, path) => globToRegExp(glob).test(path);
 check(g("addons/**/*.layer", "addons/A/B/c.layer"), "** across folders");
 check(g("addons/**/*.layer", "addons/c.layer"), "** matches zero folders");
@@ -72,11 +76,15 @@ try {
   put("tools/validation/check-b.mjs", "// check-b\n// inputs: docs/*.md\n");
   put("tools/validation/check-c.mjs", "// check-c\n// inputs: always\n");
   put("tools/validation/check-t.mjs", "// check-t\n// inputs: ttl=300\n");
+  // check-d reads no data, only the modules it imports (dep.mjs, which imports dep2.mjs): `inputs: imports`.
+  put("tools/validation/check-d.mjs", '// check-d\n// inputs: imports\nimport "../lib/dep.mjs";\n');
+  put("tools/lib/dep.mjs", 'import "./dep2.mjs";\nexport const x = 1;\n');
+  put("tools/lib/dep2.mjs", "export const y = 2;\n");
   put("world/a/one.layer", "1");
   put("world/a/two.layer", "2");
   put("docs/x.md", "d");
   const dir = join(root, "tools", "validation");
-  const scripts = ["check-a.mjs", "check-b.mjs", "check-c.mjs", "check-t.mjs"];
+  const scripts = ["check-a.mjs", "check-b.mjs", "check-c.mjs", "check-t.mjs", "check-d.mjs"];
   const plans = (state) => plan(root, dir, scripts, state, snapshotFiles(root));
   const green = (p, now = Date.now()) => ({ checks: Object.fromEntries([...p].filter(([, v]) => v.fp).map(([k, v]) => [k, { fp: v.fp, at: now }])) });
 
@@ -124,6 +132,18 @@ try {
   bump("docs/x.md");
   check(plans(s7).get("check-b.mjs").unchanged, "touching a matched file's mtime (same bytes) must skip: fingerprints are content-addressed");
 
+  // A check's static import closure is an input whatever its header lists (#3115): `imports` checks have no data.
+  const s8 = green(plans({ checks: {} }));
+  check(plans(s8).get("check-d.mjs").unchanged, "an imports check with nothing changed must skip");
+  put("tools/lib/unrelated.mjs", "export const z = 3;\n");
+  put("world/a/one.layer", "1 changed again");
+  check(plans(s8).get("check-d.mjs").unchanged, "a module the check does not import (or a data file) re-ran an imports check");
+  put("tools/lib/dep.mjs", 'import "./dep2.mjs";\nexport const x = 5;\n');
+  check(!plans(s8).get("check-d.mjs").unchanged, "editing a module the check imports did not re-run it");
+  const s9 = green(plans({ checks: {} }));
+  put("tools/lib/dep2.mjs", "export const y = 9;\n");
+  check(!plans(s9).get("check-d.mjs").unchanged, "editing a module the check imports only through another module did not re-run it");
+
   // A fresh worktree has no local state; a fingerprint another worktree published as green skips the check.
   const fresh = plans({ checks: {} });
   const shared = { checks: {}, shared: { "check-a.mjs": [fresh.get("check-a.mjs").fp] } };
@@ -151,6 +171,9 @@ try {
   pb = basePlan();
   check(!pb.get("check-a.mjs").unchanged, "a modified input since the base must run the check");
   check(pb.get("check-b.mjs").unchanged, "an edit outside a check's inputs must not run it");
+  check(pb.get("check-d.mjs").unchanged && pb.get("check-d.mjs").base, "an imports check whose modules the branch did not touch must skip against the base");
+  put("tools/lib/dep2.mjs", "export const y = 10;\n");
+  check(!basePlan().get("check-d.mjs").unchanged, "a branch edit to a transitively imported module must run an imports check");
   sh("add", "-A");
   sh("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "branch");
   check(!basePlan().get("check-a.mjs").unchanged, "an input changed in a branch commit (not only the working tree) must run the check");

@@ -1,4 +1,5 @@
 // tools/validation/ui-back-path-selftest.mjs — red proof for validate-ui-back-path.
+// inputs: imports
 import assert from "node:assert/strict";
 import { problems } from "./validate-ui-back-path.mjs";
 

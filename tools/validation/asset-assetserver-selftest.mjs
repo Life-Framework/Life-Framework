@@ -5,6 +5,7 @@
 //   licenceGate editorial test disabled          -> FAIL gate: Editorial is refused
 //   scoreCandidate not returning 0 when refused  -> FAIL score: a refused licence never ranks
 //   sourceProblems skipping the risk_accepted    -> FAIL purchased: a CGTrader source needs risk_accepted
+// inputs: tools/**, agent-box/**, docs/credits.md
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";

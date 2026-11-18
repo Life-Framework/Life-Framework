@@ -1,6 +1,7 @@
 // Selftest for validate-input-vanilla-clash (#3089): the 2026-11-18 U and F9 bindings clash; the new keys do not.
 // red-proof: with `keyboard:KC_U` on LF_VehicleLockToggle and `keyboard:KC_F9` on LF_ClipStamp the real conf fails
 // (check 1); with the keys the card moved them to it passes (check 2).
+// inputs: addons/LifeFramework/Configs/System/chimeraInputCommon.conf
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
