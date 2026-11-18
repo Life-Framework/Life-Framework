@@ -11,8 +11,10 @@
 //   - a kind that needs no component (a clerk is a resident spawned at the marker) passes with the marker alone;
 //   - with no prefab resolver the check is skipped with a note, not failed;
 //   - a jail slot of a marker and no LF_JailCellComponent fails --complete (the #2975 case);
+//   - the cell may sit in a companion slot that rides in the promiser's building (`with: police`, the jail beside the police desk, #3099);
 //   - the committed Saint-Philippe place loads and checks without throwing.
 // red-proof: before BACKED_KINDS and the component check existed this printed "FAIL clothing [complete]: expected fail, got pass" (2026-11-18).
+// red-proof: before a companion slot counted, the "police [cell in the jail slot that rides with it]" case printed FAIL expecting a pass (2026-11-18).
 // red-proof: with the prefab walk reduced to the layer's own text this printed "FAIL clothing [shop in a prefab]: expected pass" (2026-11-18).
 
 import { readFileSync } from "node:fs";
@@ -121,6 +123,40 @@ const resolve_ = (ref) => {
   check(!j.ok && has(j.errors, "LF_JailCellComponent") && has(j.errors, "slot police"), `police [complete]: expected an error naming slot police and LF_JailCellComponent (errors: ${j.errors.join(" | ") || "none"})`);
   const cell = `GenericEntity Fit_police_Cell {\n components {\n  LF_JailCellComponent "{6666666666666666}" {\n  }\n }\n coords 983 12.4 2015\n}\n`;
   check(checkPlace(place("police", "JailCell", cell), { resolve: resolve_, complete: true }).ok, "police [cell inline]: expected pass");
+}
+
+// ------------------------------------------------------------------ the cell in a companion slot (#3099): the jail rides in the police building
+{
+  // A second slot in the same place, mapped to the host's building (a street slot may share it), its layer and claim beside the host's.
+  const ride = (host, slot, kind, extra, tweak = {}) => {
+    const b = place(slot, kind, extra);
+    const entry = { ...b.mapping.slots[slot], shared: true };
+    const tslot = { ...b.template.slots.find((s) => s.id === slot), host: "street", ...tweak };
+    return {
+      ...host,
+      mapping: { ...host.mapping, slots: { ...host.mapping.slots, [slot]: entry } },
+      template: { ...host.template, slots: [...host.template.slots, tslot] },
+      claims: { ...host.claims, [`sample-square-${slot}.json`]: { ...b.claims[`sample-square-${slot}.json`], shared: true } },
+      layers: { ...host.layers, [`Place_sample-square_${slot}.layer`]: b.layers[`Place_sample-square_${slot}.layer`] },
+    };
+  };
+  const cellOf = (slot) => `GenericEntity Fit_${slot}_Cell {
+ components {
+  LF_JailCellComponent "{6666666666666666}" {
+  }
+ }
+ coords 983 12.4 2015
+}
+`;
+  const host = place("police", "JailCell", counter);
+  const riding = checkPlace(ride(host, "jail", "JailCell", cellOf("jail"), { with: "police" }), { resolve: resolve_, complete: true });
+  check(riding.ok, `police [cell in the jail slot that rides with it]: expected pass (errors: ${riding.errors.join(" | ") || "none"})`);
+  const apart = checkPlace(ride(host, "jail", "JailCell", cellOf("jail")), { resolve: resolve_, complete: true });
+  check(!apart.ok && has(apart.errors, "slot police") && has(apart.errors, "LF_JailCellComponent"), `police [a jail slot that does not ride with it]: expected an error naming slot police (errors: ${apart.errors.join(" | ") || "none"})`);
+  const other = checkPlace(ride(host, "jail", "JailCell", cellOf("jail"), { with: "bank" }), { resolve: resolve_, complete: true });
+  check(!other.ok && has(other.errors, "slot police"), `police [a jail slot that rides with another slot]: expected an error naming slot police (errors: ${other.errors.join(" | ") || "none"})`);
+  const bare = checkPlace(ride(host, "jail", "JailCell", counter, { with: "police" }), { resolve: resolve_, complete: true });
+  check(!bare.ok && has(bare.errors, "slot police"), `police [the riding jail slot has no cell either]: expected an error naming slot police (errors: ${bare.errors.join(" | ") || "none"})`);
 }
 
 // ------------------------------------------------------------------ the committed Saint-Philippe place loads and checks

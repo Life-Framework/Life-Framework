@@ -19,9 +19,10 @@
 // red-proof: with the nested blocks dropped from the layer text (renderBlock writing nothing) this printed "FAIL the sign lost its nested Materials block" (2026-11-17).
 // red-proof: with componentGuid reading addons only and no kit-source fallback this printed "FAIL a component the prefab lacks did not take its guid from the kit's source" and the vanilla-guid case (2026-11-17).
 // red-proof: before verifySteps existed (audit and look steps inline in main, the audit on no world, `look` on a bare x,z) this threw "fitMod.verifySteps is not a function" (2026-11-17).
+// red-proof: with claimOfBase() and isIntegrationBranch() not applied in planFit()/worktreeTownClaims() the stacked -suffix and integration-worktree cases printed "FAIL a -suffix branch was refused its base draft's own slot" and "FAIL an integration worktree's claim copy blocked a fit" (2026-11-18, #3101).
 // red-proof: with the kit rows' yaw ignored (anchor yaw 0) this printed "FAIL shop row fit-display is not where kit apply puts it" (2026-11-16).
 
-import { existsSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { scratchDir } from "../lib/scratch.mjs";
@@ -201,6 +202,53 @@ for (const where of ["main", "pr"]) {
   check(looks.some((a) => a.join(" ").endsWith("--interior auto")), "the interior look lacks --interior auto");
   check(!steps.some(([, a]) => a.some((x) => x === "--local" || x === "--machine" || x === "--remote")), "a verify step pins a machine");
   check(fitMod.verifySteps("p", "s", "L.layer", { "no-audit": true, "no-look": true }).length === 0, "--no-audit --no-look still ran a step");
+}
+
+// ---- a stacked follow-up branch (ws/town-draft-<place>-<slot>-<word>) is not blocked by the draft it builds on, only by others (#3101)
+{
+  const { claimOfBase, isIntegrationBranch } = fitMod;
+  const claim = (where, slot = "cafe") => ({ place: "saint-philippe", slot, where });
+  const stacked = { branch: "ws/town-draft-saint-philippe-cafe-shop", place: "saint-philippe", slot: "cafe" };
+  check(claimOfBase(claim("open PR #3016 (ws/town-draft-saint-philippe-cafe)"), stacked), "the base draft's open PR claim blocked its stacked follow-up");
+  check(claimOfBase(claim("worktree Life-Framework-ws-town-draft-saint-philippe-cafe"), stacked), "the base draft's worktree claim blocked its stacked follow-up");
+  check(!claimOfBase(claim("open PR #3099 (ws/town-draft-saint-philippe-cafe-other)"), stacked), "an unrelated PR's claim on the slot was let through");
+  check(!claimOfBase(claim("origin/main"), stacked), "a claim on origin/main was let through (that is --refit's job)");
+  check(!claimOfBase(claim("open PR #3016 (ws/town-draft-saint-philippe-cafe)", "bank"), stacked), "another slot's claim was let through");
+  check(!claimOfBase(claim("open PR #3016 (ws/town-draft-saint-philippe-cafe)"), { ...stacked, branch: "ws/town-draft-saint-philippe-cafe" }), "the draft's own branch counted as stacked on itself");
+  check(isIntegrationBranch("ws/island-integration") && isIntegrationBranch("ws/island-integration-2") && !isIntegrationBranch("ws/town-draft-saint-philippe-cafe") && !isIntegrationBranch(undefined), "isIntegrationBranch answers wrong");
+
+  // planFit end to end: the open base draft's PR claim holds the same building and slot.
+  const baseClaim = { schema: 1, place: "sample-square", slot: "shop", building: "b03", layer: "x.layer", kit: "k" };
+  const basePr = (cmd, args) => {
+    if (cmd === "gh" && args[0] === "pr") return { status: 0, stdout: JSON.stringify([{ number: 3016, headRefName: "ws/town-draft-sample-square-shop", headRefOid: "abc", files: [{ path: "tools/town/claims/sample-square-shop.json" }] }]), stderr: "" };
+    if (cmd === "gh" && args[0] === "api") return { status: 0, stdout: JSON.stringify(baseClaim), stderr: "" };
+    return noGit(cmd, args);
+  };
+  const plain = fitMod.planFit({ ...base, branch: "ws/town-draft-sample-square-bar" }, ctx(basePr));
+  check(!plain.ok && /already claimed/.test((plain.errors || []).join(" ")), "a branch that is not stacked on the draft fitted a slot an open PR holds");
+  const suffixed = fitMod.planFit({ ...base, branch: "ws/town-draft-sample-square-shop-extra" }, ctx(basePr));
+  check(suffixed.ok, `a -suffix branch was refused its base draft's own slot: ${(suffixed.errors || []).join("; ")}`);
+  const otherPr = (cmd, args) => (cmd === "gh" && args[0] === "pr" ? { status: 0, stdout: JSON.stringify([{ number: 3017, headRefName: "ws/town-draft-sample-square-shop-rival", headRefOid: "abc", files: [{ path: "tools/town/claims/sample-square-shop.json" }] }]), stderr: "" } : basePr(cmd, args));
+  const rival = fitMod.planFit({ ...base, branch: "ws/town-draft-sample-square-shop-extra" }, ctx(otherPr));
+  check(!rival.ok && /already claimed/.test((rival.errors || []).join(" ")), "a -suffix branch fitted a slot a rival's PR holds");
+
+  // an integration worktree's copy of the claim is no claim; a real sibling worktree's still is
+  const claimDir = scratchDir("lf-fit-wt-");
+  try {
+    const mk = (name, branch) => {
+      const dir = join(claimDir, name, "tools", "town", "claims");
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(join(dir, "sample-square-shop.json"), JSON.stringify(baseClaim));
+      return `worktree ${join(claimDir, name)}\nbranch refs/heads/${branch}\n`;
+    };
+    const porcelain = (...blocks) => (cmd, args) => (cmd === "git" && args[0] === "worktree" ? { status: 0, stdout: blocks.join("\n") + "\n", stderr: "" } : noGit(cmd, args));
+    const viaIntegration = fitMod.planFit(base, ctx(porcelain(mk("integ", "ws/island-integration"))));
+    check(viaIntegration.ok, `an integration worktree's claim copy blocked a fit: ${(viaIntegration.errors || []).join("; ")}`);
+    const viaSibling = fitMod.planFit(base, ctx(porcelain(mk("sib", "ws/town-draft-sample-square-shop-rival"))));
+    check(!viaSibling.ok && /already claimed/.test((viaSibling.errors || []).join(" ")), "a real sibling worktree's claim no longer blocks a fit");
+  } finally {
+    rmSync(claimDir, { recursive: true, force: true });
+  }
 }
 
 // ---- dry writes nothing
