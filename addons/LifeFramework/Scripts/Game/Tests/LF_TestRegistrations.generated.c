@@ -400,6 +400,8 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_LicensePlateParenting(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_LicenseWhitelist(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_LocalIdentity(), LF_TestTier.LOGIC;
+		// self-registered: new LF_Test_LockerPersist(), LF_TestTier.PERSISTENCE;
+		// self-registered: new LF_Test_LockerRent(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_LockerRules(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_LockpickDoor(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_LockpickDoorWorld(), LF_TestTier.WORLD;
