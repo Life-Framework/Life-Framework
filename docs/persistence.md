@@ -500,6 +500,27 @@ across the `wt e2e` restart, keepLicences off from the owner file).
   flag) reset at world end, so an in-process scenario restart checks its own store again
   (`persist/store-static-reset`).
 
+## Save timing (#2945)
+
+Every save logs two lines (`LF_SaveTiming`):
+
+- `save timing: store N ms (name=ms ...)`: the LF store write (the account and bank prefix, every
+  legacy payload, every section), naming at most 6 parts of 2 ms or more.
+- `save timing: engine save AUTO N ms over F frame(s), longest frame L ms, LF store S ms`: the whole
+  engine save from `OnBeforeSave` to `OnAfterSave`. A callqueue tick runs once a frame while the save
+  is in flight, so `longest frame` is the hitch players feel. At the server's 30 fps cap, 34 ms is
+  one normal frame.
+
+Measured on the island (`session up --mission island`, 2 spawned players, 2026-11-18, PC1): the engine
+spreads a save over 3 to 4 frames, 98 to 131 ms in total; the longest frame was 34 ms on every save
+and the LF store took 2 to 11 ms of it. The 2.8 to 6 s frames #2934 recorded came with the server's
+working set jumping from about 450 MB to 920 MB at each save on a box short of RAM: Windows had paged
+the server's cold memory out, and the save, which walks that memory, faulted it back in from the
+pagefile. Trimming the working set on a box with free RAM (soft faults) did not reproduce it
+(longest frame 34 ms). A host with RAM to spare and no pagefile pressure does not show it. On a live
+server, read the `longest frame` value. If it is over 500 ms, check the host's free RAM and swap
+before the save code, then the `store` line's slowest parts.
+
 ## Rules (paid for by real bugs)
 
 - A serializer that compiles but is not listed in the `.conf` is silently
