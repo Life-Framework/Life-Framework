@@ -138,33 +138,16 @@
       "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
     },
     {
-      "match": "^Annex_Convoy_(Start|Drop|Drop_Near) ",
+      "match": "^(NPCIDCard|WhitelistIDCard)_Debug ",
       "kind": "contact",
-      "layer": "Grid_convoy.layer",
-      "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
-    },
-    {
-      "match": "^Grid_community_hall_Radio ",
-      "kind": "contact",
-      "layer": "Grid_community_hall.layer",
-      "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
+      "layer": "NPCs.layer",
+      "why": "maintainer town fix pending #2956: the contact audit (#2953) measures it resting wrong; `place settle` (#2954) writes the settled height. The ID card sits 8 cm into its support. (The grid copies in Grid_npcs and Grid_whitelist_chat are settled.)"
     },
     {
       "match": "^(NPCIDCard|WhitelistIDCard)_Debug ",
       "kind": "contact",
-      "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
-    },
-    {
-      "match": "^ConfiscatedRifle_Debug ",
-      "kind": "contact",
-      "layer": "Grid_crimes.layer",
-      "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
-    },
-    {
-      "match": "^Annex_Apple_",
-      "kind": "contact",
-      "layer": "Grid_apple_chain.layer",
-      "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
+      "layer": "WhitelistChat.layer",
+      "why": "maintainer town fix pending #2956: the contact audit (#2953) measures it resting wrong; `place settle` (#2954) writes the settled height. The ID card sits 8 cm into its support. (The grid copies in Grid_npcs and Grid_whitelist_chat are settled.)"
     }
   ]
 }
