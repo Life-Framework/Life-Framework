@@ -633,11 +633,11 @@
    "x": 4501.5,
    "z": 10623.6,
    "doors": 1,
-   "purpose": "e",
-   "use": "site cabin: Chantier, keep out",
+   "purpose": "b",
+   "use": "org registry (organisation office, war board)",
    "status": "planned",
-   "card": "L0",
-   "issue": 3204
+   "card": "X33",
+   "issue": 3410
   },
   {
    "id": "sp:b50",

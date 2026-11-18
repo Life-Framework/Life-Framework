@@ -194,6 +194,71 @@
       "places": ["Memorial"]
     },
     {
+      "id": "safe-zone", "required": false, "kit": "safe-zone", "host": "street", "poi": "none", "margin": 70,
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 60 },
+      "places": ["SafeZone"]
+    },
+    {
+      "id": "atms", "required": false, "kit": "atms", "host": "outposts", "poi": "none", "margin": 3,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
+      "id": "payphones", "required": false, "kit": "payphones", "host": "outposts", "poi": "none", "margin": 6,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
+      "id": "street-life", "required": false, "kit": "street-life", "host": "outposts", "poi": "none", "margin": 10,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
+      "id": "parked-cars", "required": false, "kit": "parked-cars", "host": "outposts", "poi": "none", "margin": 14,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
+      "id": "fuel-run", "required": false, "kit": "fuel-run", "host": "street", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 160 },
+      "places": ["FuelPickup"]
+    },
+    {
+      "id": "fuel-drops", "required": false, "kit": "fuel-drops", "host": "outposts", "poi": "none", "margin": 12,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
+      "id": "pond", "required": false, "kit": "pond", "host": "building", "poi": "none", "margin": 75,
+      "needs": { "interior": "optional", "prefer": "far", "types": ["farm", "shed", "industrial"] },
+      "places": ["FishingSpot"]
+    },
+    {
+      "id": "orchard", "required": false, "kit": "orchard", "host": "building", "poi": "none", "margin": 25,
+      "needs": { "interior": "optional", "minArea": 60, "prefer": "far", "types": ["farm"] },
+      "places": ["Orchard"]
+    },
+    {
+      "id": "night-lights", "required": false, "kit": "night-lights", "host": "outposts", "poi": "none", "margin": 6,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
+      "id": "square-evening", "required": false, "kit": "square-evening", "host": "outposts", "poi": "none", "margin": 25,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
+      "id": "cashvan", "required": false, "kit": "cashvan", "host": "outposts", "poi": "none", "margin": 20,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
+      "id": "org", "required": false, "kit": "org", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "minArea": 15, "prefer": "near", "maxDistance": 120, "types": ["industrial", "kiosk", "shop", "townhouse"] },
+      "places": ["OrgDesk"]
+    },
+    {
       "id": "parcel", "required": false, "kit": "parcel", "host": "building", "poi": "none",
       "needs": { "interior": "optional", "minArea": 8, "prefer": "near", "maxDistance": 100, "types": ["kiosk", "shop"] },
       "plot": { "minWidth": 6, "minDepth": 6, "prefabs": [{ "type": "kiosk", "stem": "NewspaperBooth_E_01_redwhite" }] },
