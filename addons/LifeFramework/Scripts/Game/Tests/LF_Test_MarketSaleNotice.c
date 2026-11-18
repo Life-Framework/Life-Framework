@@ -55,9 +55,10 @@ class LF_Test_MarketSaleNotice : LF_Test
 		ctx.EqualStr(LF_MarketSaleNotice.KEY_DOWN, crossed, "a sale crossing a band says the down line");
 		ctx.EqualStr("", Sell(1, now), "a second sale inside the same band says nothing");
 
-		// A day later the price crept back to the base; the next seller hears it.
-		int later = now + 24 * LF_PriceCurve.SECONDS_PER_HOUR;
-		ctx.Equal(BASE, LF_MarketBook.CurrentPriceAt(COPPER, later), "a day of recovery is back at the base");
+		// Three days later the price crept back to the base (to the cent, #3028: recovery steps are
+		// hundredths now, so a day leaves it a little short); the next seller hears it.
+		int later = now + 72 * LF_PriceCurve.SECONDS_PER_HOUR;
+		ctx.Equal(BASE, LF_MarketBook.CurrentPriceAt(COPPER, later), "three days of recovery are back at the base");
 		ctx.EqualStr(LF_MarketSaleNotice.KEY_UP, Sell(1, later), "the recovered good says the up line to the next seller");
 		ctx.EqualStr("", Sell(1, later), "and only once");
 

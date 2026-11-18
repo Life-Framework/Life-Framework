@@ -681,6 +681,24 @@ class LF_Plants
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World reset (#2820): every plant row, local mesh and replicated row is dropped and the 1 s tick
+	//! stops. Unlike ResetStatics it keeps the farming clock and a test's catalogue override.
+	//! \return How many plants were cleared.
+	static int ClearAll()
+	{
+		int cleared = Plants().Count();
+		LF_PlantReplication.RetractAll();
+		ClearAllVisuals();
+		s_mPlants = new map<string, ref LF_PlantRow>();
+		s_mShownStage = null;
+		StopTicking();
+		if (cleared > 0)
+			LF_Debug.Info(FEATURE, string.Format("world reset: cleared %1 plant(s)", cleared));
+
+		return cleared;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Persistence seam: every plant, clocks relative to now (zero or less).
 	static array<ref LF_PlantRow> ExportAll()
 	{
