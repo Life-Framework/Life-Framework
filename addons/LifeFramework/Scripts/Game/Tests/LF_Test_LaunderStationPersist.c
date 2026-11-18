@@ -38,7 +38,7 @@ class LF_Test_LaunderStationPersist : LF_Test
 
 #ifdef LF_E2E_LOAD_BOOT
 		// The reload boot: the e2e batch came back from the real save, when it carried the section.
-		if (LF_E2E.RequiresSeed("launder save section", LF_SaveSections.BootHadSection(LF_LaunderSavePayload.NAME)))
+		if (LF_E2E.RequiresSection(LF_LaunderSavePayload.NAME))
 			VerifyE2E(ctx);
 
 		return;

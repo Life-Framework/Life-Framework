@@ -1,0 +1,48 @@
+{
+  "slug": "fish-trout-small",
+  "name": "FishTroutSmall",
+  "kind": "gadget",
+  "roadmap": "#2928",
+  "concept": "The small size of the brown trout: the same model as fish-trout, scaled to 0.18 m by the clean stage.",
+  "prompt": "Modelled in Blender by model.py: a brown trout lying flat, 30 cm, olive back, pale belly, fins and a tail, a black eye. no text, no logos.",
+  "texture_prompt": "",
+  "size_m": {
+    "length": 0.18,
+    "height": 0.048,
+    "width": 0.042
+  },
+  "budget": {
+    "lod0_tris": 1200,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 512,
+    "credits": 0
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Fishing/FishTroutSmall",
+  "prefab_dir": "Prefabs/Items/Fishing",
+  "gadget": {
+    "name_key": "#LF-Item_FishTrout_Small_Name",
+    "description_key": "#LF-Item_FishTrout_Small_Description",
+    "weight": 0.12,
+    "volume": 150,
+    "components": []
+  },
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  },
+  "source": {
+    "blender": "model.py"
+  }
+}

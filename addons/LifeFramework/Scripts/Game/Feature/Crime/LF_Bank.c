@@ -416,11 +416,23 @@ class LF_Bank
 	static string PickTool(LF_BankVaultState vault, IEntity robber, out IEntity toolItem)
 	{
 		toolItem = null;
-		if (!vault || !robber)
+		if (!vault)
+			return "";
+
+		return PickToolFrom(vault.m_sTools, robber, toolItem);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! PickTool over a comma list of tools. A client reads the list from the vault's tuning
+	//! (LF_BankVaultComponent.GetTuning), where the server's vault table is not there.
+	static string PickToolFrom(string toolList, IEntity robber, out IEntity toolItem)
+	{
+		toolItem = null;
+		if (!robber)
 			return "";
 
 		array<string> tools = {};
-		vault.m_sTools.Split(",", tools, true);
+		toolList.Split(",", tools, true);
 		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(robber);
 		if (!inventory)
 			return "";
@@ -702,8 +714,12 @@ class LF_Bank
 			return false;
 		}
 
-		if (!GatesPass(vault, playerUid))
+		string refusal = GateRefusal(vault, playerUid);
+		if (!refusal.IsEmpty())
+		{
+			LF_Utils.NotifyEntity(robber, refusal, "#EL-Bank_Rob", 4.0);
 			return false;
+		}
 
 		vault.m_sLooterUid = playerUid;
 		if (robber)
@@ -719,6 +735,7 @@ class LF_Bank
 			if (tool.IsEmpty())
 			{
 				LF_Debug.Warn("Bank", string.Format("rob refused: %1 carries none of the tools [%2] for %3", playerUid, vault.m_sTools, vaultId));
+				LF_Utils.NotifyEntity(robber, "#LF-Bank_NeedTool", "#EL-Bank_Rob", 4.0);
 				LF_EventBus.Publish(LF_OnVaultBreach.Create(playerUid, vaultId, "", "", "refused"));
 				return false;
 			}
@@ -743,6 +760,10 @@ class LF_Bank
 			if (!LF_Breach.CanArm(vaultId) || LF_VaultDrill.IsDrilling(vaultId))
 			{
 				LF_Debug.Info("Bank", string.Format("drill refused: %1 is open, armed or already being drilled", vaultId));
+				if (LF_VaultDrill.IsDrilling(vaultId))
+					LF_Utils.NotifyEntity(robber, "#LF-Bank_DrillBusy", "#EL-Bank_Rob", 4.0);
+				else
+					LF_Utils.NotifyEntity(robber, "#EL-Breach_AlreadyOpen", "#EL-Bank_Rob", 4.0);
 				return false;
 			}
 
@@ -772,6 +793,9 @@ class LF_Bank
 		if (!LF_Breach.Arm(vaultId, playerUid, charger, robber))
 		{
 			LF_Debug.Log("Bank", string.Format("rob refused: breach did not arm %1", vaultId));
+			// Grace tells the robber itself; an open or armed door is the refusal a client's prompt cannot see.
+			if (!LF_Breach.CanArm(vaultId))
+				LF_Utils.NotifyEntity(robber, "#EL-Breach_AlreadyOpen", "#EL-Bank_Rob", 4.0);
 			return false;
 		}
 
@@ -996,6 +1020,10 @@ class LF_Bank
 		if (vaultId.IsEmpty() || playerUid.IsEmpty())
 			return "#EL-Bank_NotReady";
 
+		// The vault table is filled on the server only; a dedicated client reads what replicates (#2418).
+		if (!Replication.IsServer())
+			return ClientGateReason(vaultId, robber);
+
 		LF_BankVaultState vault = Vaults().Get(vaultId);
 		if (!vault)
 			return "#EL-Bank_NotReady";
@@ -1030,6 +1058,65 @@ class LF_Bank
 			return "#LF-Bank_HoldDrill";
 
 		if (LF_VaultDrill.IsDrilling(vaultId))
+			return "#LF-Bank_DrillBusy";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client offer check: the gates a remote client can read. The faction and the police count are
+	//! the replicated copies (LF_AccountReplication), open or armed is the door's replicated flag, the
+	//! tools and the police minimum come from the vault's own tuning, the driller from its RplProp.
+	//! Cooldown, stock and grace live on the server only: Rob refuses those and tells the robber.
+	static string ClientGateReason(string vaultId, IEntity robber)
+	{
+		IEntity entity = LF_Places.Find(PLACE_KIND, vaultId);
+		LF_BankVaultComponent vault;
+		if (entity)
+			vault = LF_Component<LF_BankVaultComponent>.Find(entity);
+		if (!vault || !vault.GetTuning())
+			return "#EL-Bank_NotReady";
+
+		LF_SafeTuning tuning = vault.GetTuning();
+		bool civilian = !robber || LF_AccountStateBits.IsCivilian(LF_AccountReplication.GetState(robber));
+		bool breachBusy = false;
+		LF_BreachTargetComponent breach = LF_Component<LF_BreachTargetComponent>.Find(entity);
+		if (breach)
+			breachBusy = breach.IsReplicatedOpen() || breach.IsReplicatedArmed();
+
+		bool toolsRequired = robber && !tuning.m_sRequiredTools.IsEmpty();
+		string tool = "";
+		bool holdsDrill = false;
+		if (toolsRequired)
+		{
+			IEntity toolItem;
+			tool = PickToolFrom(tuning.m_sRequiredTools, robber, toolItem);
+			holdsDrill = LF_HandTool.Holds(robber, LF_VaultDrill.TOOL_ID);
+		}
+
+		return ClientReason(civilian, LF_AccountReplication.GetPoliceOnDutyCount(), tuning.m_iMinPoliceOnDuty, breachBusy, toolsRequired, tool, holdsDrill, vault.GetDrillerId() != 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the client offer's answer, in the server's order. Empty when the prompt may be used.
+	static string ClientReason(bool civilian, int policeOnDuty, int minPolice, bool breachBusy, bool toolsRequired, string tool, bool holdsDrill, bool drillBusy)
+	{
+		if (!civilian)
+			return "#EL-Bank_CiviliansOnly";
+
+		if (!PoliceOnDutyAllows(policeOnDuty, minPolice))
+			return "#EL-Bank_NeedPolice";
+
+		if (breachBusy)
+			return "#EL-Breach_AlreadyOpen";
+
+		if (toolsRequired && tool.IsEmpty())
+			return "#LF-Bank_NeedTool";
+
+		if (toolsRequired && tool == TOOL_DRILL && !holdsDrill)
+			return "#LF-Bank_HoldDrill";
+
+		if (drillBusy)
 			return "#LF-Bank_DrillBusy";
 
 		return "";
@@ -1071,34 +1158,42 @@ class LF_Bank
 	//------------------------------------------------------------------------------------------------
 	protected static bool GatesPass(LF_BankVaultState vault, string playerUid)
 	{
+		return GateRefusal(vault, playerUid).IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The server's gates for a rob. Empty when they pass, else the localization key the robber is
+	//! told: a dedicated client's prompt cannot see the cooldown or the stock (#2418).
+	protected static string GateRefusal(LF_BankVaultState vault, string playerUid)
+	{
 		LF_PlayerAccount account = LF_PlayerAccountManager.GetOrCreate(playerUid);
 		if (!CivilianAllowed(account))
 		{
 			LF_Debug.Log("Bank", string.Format("rob refused: %1 is not a civilian", playerUid));
-			return false;
+			return "#EL-Bank_CiviliansOnly";
 		}
 
 		int police = CountPoliceOnDuty();
 		if (!PoliceOnDutyAllows(police, vault.m_iMinPolice))
 		{
 			LF_Debug.Log("Bank", string.Format("rob refused: %1 police on duty, need %2", police, vault.m_iMinPolice));
-			return false;
+			return "#EL-Bank_NeedPolice";
 		}
 
 		if (vault.m_bCooldownRunning && CooldownBlocks(vault.m_fCooldownSeconds, ElapsedSeconds(vault)))
 		{
 			LF_Debug.Log("Bank", string.Format("rob refused: vault %1 is on cooldown", vault.m_sVaultId));
-			return false;
+			return "#EL-Bank_Cooldown";
 		}
 
 		RefillStock(vault, 0);
 		if (vault.m_iStock == 0)
 		{
 			LF_Debug.Log("Bank", string.Format("rob refused: %1 is out of stock", vault.m_sVaultId));
-			return false;
+			return "#LF-Heist_Empty";
 		}
 
-		return true;
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

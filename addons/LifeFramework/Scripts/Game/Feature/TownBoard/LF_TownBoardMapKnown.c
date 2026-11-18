@@ -32,7 +32,7 @@ class LF_TownBoardMapKnown
 	//! \return True when reading the card can mark a place.
 	static bool PoiPlaceOf(notnull LF_MapPoiConfig config, LF_TownBoardCard card, out string placeId)
 	{
-		if (!card || card.m_sPlaceId.IsEmpty())
+		if (!card || card.m_sPlaceId.IsEmpty() || card.m_sPlaceId == LF_TownBoard.PLACE_NEAREST)
 			return false;
 
 		string kind = card.m_sPlaceKind;

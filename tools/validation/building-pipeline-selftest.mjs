@@ -18,6 +18,7 @@
 //   alarmChild written inside the components block (#1143 PR 2) -> FAIL store: the alarm bell box is a child entity carrying the alarm mount, after the components
 //   slotsOf without the clearance check (2026-11-15, #1143)      -> FAIL store: goods taller than the gap above a board are refused
 //   addProps inserting before the children's opening brace       -> FAIL polish: a hand-placed prop lands at the end of the furniture child list
+// inputs: tools/**, agent-box/**
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";

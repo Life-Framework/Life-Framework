@@ -1,0 +1,48 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "6363F2E5B279074B"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_FishingRod_Name"
+     Description "#LF-Item_FishingRod_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.6
+     SizeSetupStrategy Volume
+     ItemVolume 3000
+     RestingUP Up
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{3D9A61C47E2B5F40}" {
+     AnimationAttachments {
+      AnimationAttachmentInfo "{3D9A61C47E2B5F41}" {
+       AnimGraph "{CEC539E559BB8BA6}Assets/Items/Equipment/workspaces/RepairKit.agr"
+       AnimInstance "{23AF6C3E45B2D948}Assets/Items/Equipment/workspaces/RepairKit.asi"
+       BindingName "Gadget"
+      }
+     }
+     HandAdditiveRotation 0 0 0
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{F4A564631BA8842C}" {
+      CameraOrbitAngles -25 -25 0
+      CameraDistanceToItem 3.6
+      FOV 20
+     }
+    }
+    CommonItemType "LF_ITEM"
+   }
+  }
+  MeshObject "{DB9AEA85B40D5D8E}" {
+   Object "{A3B6E01A5745B98D}Assets/Items/Fishing/FishingRod/FishingRod.xob"
+  }
+  RigidBody "{A38156B13E917E52}" {
+   LayerPreset "ItemFireView"
+   ModelGeometry 1
+  }
+  LF_FishingRodComponent "{3D9A61C47E2B5F42}" {
+   m_eAnimVariable ADRIANOV
+   m_sToolId "rod"
+  }
+ }
+}

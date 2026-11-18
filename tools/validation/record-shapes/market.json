@@ -1,7 +1,7 @@
 {
   "section": "market",
   "class": "LF_MarketSavePayload",
-  "version": 1,
+  "version": 2,
   "roots": "LF_MarketPriceRow",
   "records": {
     "LF_MarketPriceRow": {

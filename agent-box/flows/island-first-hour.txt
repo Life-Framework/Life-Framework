@@ -3,33 +3,29 @@
 # The manual twin for the live 0grind smoke is docs/playtest/island-first-hour.md.
 #
 #   node agent-box/session.mjs up --mission island --clients 1 --roster 1 --profile full --wait
-# (--roster 1 lets client 1 clock in as police; `--admin-client` is refused off the playtest mission.)
-# A step passes when its stand/use lines say ok AND the `state` line after it moved (cash, bank, job,
-# duty); the harness cannot assert that, so read the state lines. The 2026-11-18 run on main is in
-# docs/playtest/island-first-hour.md "Flow status".
 #   node agent-box/harness.mjs --client 1 flow island-first-hour
 #   node agent-box/session.mjs down
 #
-# Each step opens with a `shot ui island_<n>_<step>` so the output reads step by step; the step's
-# `use`/`stand` lines that follow say ok or error. The flow does not stop on a failed line, so one
-# run reports every step. Fresh profile: form R-89 is the first screen.
+# A fresh client profile is required: the rules quiz and form R-89 must be the first screens, and step 1
+# checks the starting money. --roster 1 lets client 1 clock in as police (`--admin-client` is refused off
+# the playtest mission).
+#
+# The flow judges itself (agent-box/flow-asserts.mjs). `step <id> <title> [pending #N]` opens a step and
+# reads the player's state; any failed line in the step, or a failed `expect`, fails it. The run ends
+# with a PASS/FAIL table and exits 1 when any step failed. A failed step does not stop the run.
 #
 # Entities are named in the fitted island layers (addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/
 # Place_saint-philippe_<slot>.layer) as Fit_saint_philippe_<slot>_<kit row>. `stand`/`use` find them by
-# name in the running world, so this flow does not need the DebugWorld pad index (`layer` verb).
+# name in the running world. A `use` whose named entity is missing fails (wrong_target:<what it hit>),
+# never falls back to a nearby prop with the same action.
 #
-# PENDING steps name the entity their slot card is expected to fit. When the card lands, check its
-# layer and fix the name here if the kit row differs; until then those lines report error/not found.
-#   pending #2932 arrival clerk, rules sign, bank teller   pending #2325 parcel depot and drop
-#   pending #2315 clothing shop                             pending #2933 car lot
-#   pending #2314 general store                             pending #2319 police desk
-#   pending #2320 clinic duty desk
+# Pending steps name the entity their slot card is expected to fit. When the card lands, check its
+# layer and fix the name here if the kit row differs, then drop the `pending #N` from the step line.
 
-# --- 1. Spawn on the south road (form R-89), walk into the square ---------------------------
+# Arrival, before step 1: the rules orientation quiz (#915), then form R-89. The right option of each
+# question, in order, is in addons/LF_Everon1989/Configs/Rules/LF_Quiz_Everon.conf (m_iCorrect 1 0 2 1 0);
+# if the pack changes the questions, change these five clicks (session.mjs quizAnswers() reads the same file).
 ui
-# The rules orientation quiz (#915) comes first: the right option of each question, in order, from
-# addons/LF_Everon1989/Configs/Rules/LF_Quiz_Everon.conf (m_iCorrect 1 0 2 1 0). If the pack changes
-# the questions, change these five lines (session.mjs quizAnswers() reads the same file).
 shot ui island_01_quiz
 click QuizOption1Button
 wait 500
@@ -48,54 +44,55 @@ type RegLastName Newcomer
 type RegAge 24
 click SignButton
 wait 8000
+
+step 1 Spawn on the south road and walk into the square
+expect cash =100
+expect bank =1000
 shot ui island_01_spawn
-state
 stand Fit_saint_philippe_arrival_Place
 wait 1500
 shot ui island_01_square
 
-# --- 2. Clerk greets and points the way; read the rules (pending #2932) ---------------------
-shot ui island_02_clerk_before
-stand Fit_saint_philippe_arrival_Clerk
+step 2 The clerk greets you; read the rules
+stand Fit_saint_philippe_arrival_town_hall_clerk
 wait 1500
-use LF_DialogueTalkAction Fit_saint_philippe_arrival_Clerk
+use LF_QuestAction Fit_saint_philippe_arrival_town_hall_clerk
 wait 4000
 shot ui island_02_clerk_greets
 input MenuSelect
 wait 2000
 input MenuBack
 wait 1500
-stand Fit_saint_philippe_arrival_Sign_Rules
+stand Fit_saint_philippe_arrival_lf_sign_rules
 wait 1000
-use LF_SignReadAction Fit_saint_philippe_arrival_Sign_Rules
+use LF_SignReadAction Fit_saint_philippe_arrival_lf_sign_rules
 wait 1000
 shot ui island_02_rules
 input MenuBack
 wait 1000
 
-# --- 3. Get a job: parcel delivery, run one parcel (pending #2325) ---------------------------
-shot ui island_03_job_before
+step 3 Sign up for courier work pending #2325
 stand Fit_saint_philippe_parcel_Roadmap_Job_Depot
 wait 1500
 use LF_JobSignUpAction Fit_saint_philippe_parcel_Roadmap_Job_Depot
 wait 1000
+expect job PARCEL
+shot ui island_03_signed_up
+
+step 4 Deliver one parcel and get paid pending #2325
 use LF_JobStartRunAction Fit_saint_philippe_parcel_Roadmap_Job_Depot
 wait 1000
-shot ui island_03_job_started
 stand Fit_saint_philippe_parcel_Roadmap_Job_Drop
 wait 1500
 use LF_JobDropoffAction Fit_saint_philippe_parcel_Roadmap_Job_Drop
 wait 1000
-
-# --- 4. Earn money, feel progression: cash, job XP and level in state ------------------------
 shot ui island_04_paid
-state
+expect cash up
 
-# --- 5. Bank the pay at the teller (pending #2932) -------------------------------------------
-shot ui island_05_bank_before
-stand Fit_saint_philippe_bank_LF_BankTeller
+step 5 Bank teller: deposit 20, withdraw 200 pending #2932
+stand Fit_saint_philippe_bank_bank_teller
 wait 1500
-use LF_ATMAction Fit_saint_philippe_bank_LF_BankTeller
+use LF_ATMAction Fit_saint_philippe_bank_bank_teller
 wait 1200
 click Key2Button
 click Key0Button
@@ -111,10 +108,10 @@ wait 1500
 shot ui island_05_withdrawn
 click CloseButton
 wait 500
-state
+expect cash +180
+expect bank -180
 
-# --- 6. Buy clothes: a shirt (pending #2315) --------------------------------------------------
-shot ui island_06_clothing_before
+step 6 Buy a shirt at the clothing shop pending #2315
 stand Fit_saint_philippe_clothing_Shop_Clothing
 wait 1500
 use LF_ShopAction Fit_saint_philippe_clothing_Shop_Clothing
@@ -127,29 +124,27 @@ wait 1500
 shot ui island_06_shirt_paid
 click CloseButton
 wait 500
+expect cash down
 
-# --- 6b. Buy the firearm permit at the gun counter (fitted on main) ---------------------------
-shot ui island_06b_gun_before
+step 6b Buy the firearm permit at the gun counter
 stand Fit_saint_philippe_gun_counter_lf_gun_counter
 wait 1500
 use LF_ShopAction Fit_saint_philippe_gun_counter_lf_gun_counter
 wait 1200
 shot ui island_06b_gun_counter
-# The firearm permit is the licence row of the gun counter's list ($250; Item0Row is the PM pistol).
-# Pass: state shows cash down by 250. With only the starting $100 (no teller yet) the counter refuses.
+# The permit is the licence row ($250; Item0Row is the PM pistol). A newcomer needs step 5's cash.
 click Licence0Row_Action
 click PayButton
 wait 1500
 shot ui island_06b_permit_paid
 click CloseButton
 wait 500
-state
+expect cash -250
 
-# --- 6c. Buy the cheapest car at the lot (pending #2933) --------------------------------------
-shot ui island_06c_carlot_before
-stand Fit_saint_philippe_carlot_Roadmap_Vehicle_Lot
+step 6c Buy the cheapest car at the lot pending #2933
+stand Fit_saint_philippe_carlot_vehicle_lot
 wait 1500
-use LF_VehicleBuyAction Fit_saint_philippe_carlot_Roadmap_Vehicle_Lot
+use LF_VehicleBuyAction Fit_saint_philippe_carlot_vehicle_lot
 wait 1500
 shot ui island_06c_lot
 click Car0_Action
@@ -157,10 +152,9 @@ wait 2000
 shot ui island_06c_bought
 click LotClose
 wait 500
-state
+expect money down
 
-# --- 7. Groceries at the general store (pending #2314) ----------------------------------------
-shot ui island_07_store_before
+step 7 Buy water at the general store pending #2314
 stand Fit_saint_philippe_general_store_Shop_GeneralStore
 wait 1500
 use LF_ShopAction Fit_saint_philippe_general_store_Shop_GeneralStore
@@ -173,31 +167,32 @@ wait 1500
 shot ui island_07_groceries_paid
 click CloseButton
 wait 500
+expect cash down
+expect item WaterBottle
 
-# --- 8. Police duty: clock in at the desk, clock out (pending #2319; --roster 1) ---------------
-shot ui island_08_police_before
-stand Fit_saint_philippe_police_Roadmap_Police_Desk
+step 8 Police duty: clock in and out at the desk pending #2319
+stand Fit_saint_philippe_police_police_kit_duty_desk
 wait 1500
-use LF_DutyAction Fit_saint_philippe_police_Roadmap_Police_Desk
+use LF_DutyAction Fit_saint_philippe_police_police_kit_duty_desk
 wait 1500
 shot ui island_08_police_on_duty
-state
-use LF_DutyAction Fit_saint_philippe_police_Roadmap_Police_Desk
+expect duty police
+use LF_DutyAction Fit_saint_philippe_police_police_kit_duty_desk
 wait 1500
+expect duty off
 
-# --- 9. Medic duty: clock in at the clinic desk, clock out (pending #2320) ---------------------
-shot ui island_09_medic_before
-stand Fit_saint_philippe_clinic_Roadmap_Hospital_Duty_Desk
+step 9 Medic duty: clock in and out at the clinic desk pending #2320
+stand Fit_saint_philippe_clinic_lf_medic_duty_desk
 wait 1500
-use LF_DutyAction Fit_saint_philippe_clinic_Roadmap_Hospital_Duty_Desk
+use LF_DutyAction Fit_saint_philippe_clinic_lf_medic_duty_desk
 wait 1500
 shot ui island_09_medic_on_duty
-state
-use LF_DutyAction Fit_saint_philippe_clinic_Roadmap_Hospital_Duty_Desk
+expect duty medic
+use LF_DutyAction Fit_saint_philippe_clinic_lf_medic_duty_desk
 wait 1500
+expect duty off
 
-# --- 10. The town board leads somewhere (fitted on main) --------------------------------------
-shot ui island_10_board_before
+step 10 Take a card from the town board
 stand Fit_saint_philippe_board_sign_town_map
 wait 1500
 use LF_TownBoardCardAction Fit_saint_philippe_board_sign_town_map
@@ -205,4 +200,3 @@ wait 1200
 shot ui island_10_board
 input MenuBack
 wait 1000
-state

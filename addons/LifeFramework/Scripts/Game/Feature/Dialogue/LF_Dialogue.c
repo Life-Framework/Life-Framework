@@ -131,7 +131,8 @@ class LF_Dialogue
 
 		LF_DialogueSession session = Track(playerId, npc.GetID());
 		LF_Debug.Info(FEATURE, string.Format("player %1 talks to '%2'", playerId, config.m_sId));
-		Enter(controller, session, npc, config, config.m_sStart, null);
+		// A live resident opens on the greeting for how they feel about this player (#2908).
+		Enter(controller, session, npc, config, LF_ResidentTalk.StartNode(player, npc, config), null);
 		return true;
 	}
 

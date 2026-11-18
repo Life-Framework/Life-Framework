@@ -37,7 +37,7 @@ section, **Maintainer only**, and is not shown to the moderator.
    names.
 5. The trial moderator writes a test ticket from the rows, following steps 1 to 4
    of [From report to ruling](./moderator-guide.md#from-report-to-ruling): in-game
-   names, time, place, what happened, the clip with its F9 stamp if there is one,
+   names, time, place, what happened, the clip with its F8 stamp if there is one,
    and the incident numbers. Then the moderator proposes a written warning, naming
    the rule and the response. The rule text, what a written warning is and where it
    is recorded and delivered, and when damage between players breaks a rule are in
@@ -64,7 +64,7 @@ reads the scoring sheet only after the ruling is written.
 
 The reporter's ticket, from Tomas Reil: "About 21:14 UTC outside the Morton general
 store. I walked out and Mara Voss shot me until I went down. We had not spoken.
-My clip has the F9 stamp, which reads 21:14:31 UTC."
+My clip has the F8 stamp, which reads 21:14:31 UTC."
 
 The administrator reads the panel at 21:20:40 UTC and tells the moderator:
 
@@ -88,7 +88,7 @@ rows below.
 | Uids | Both account uids taken from the rows, kept in the ticket and not posted publicly | |
 | Kinds and times | Each row's kind as the panel shows it, and its minutes ago | |
 | Order | Damage before the Downed, Death or Murder row | |
-| Clip | The F9 stamp matched to the row time, or noted as none | |
+| Clip | The F8 stamp matched to the row time, or noted as none | |
 | Ruling | A written warning that names the rule and the response | |
 | Scope | No kick, ban or whitelist change proposed (any of these is wrong for this drill) | |
 | Escalation | The in-game part is left to the administrator | |

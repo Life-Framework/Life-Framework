@@ -1,0 +1,5 @@
+{
+  "schemaVersion": 1,
+  "jobs": { "benefitAmount": 100, "benefitCooldownSeconds": 1200 },
+  "vehicles": { "buyPercent": 100 }
+}

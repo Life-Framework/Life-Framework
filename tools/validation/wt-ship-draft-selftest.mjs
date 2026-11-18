@@ -5,6 +5,9 @@
 // inputs: tools/lib/ship-direct.mjs, tools/wt.mjs, tools/cli.mjs
 // red-proof 2026-11-17: before the flag existed (shipDirect ignored `draft`, createPrGh had no --draft) this printed
 // "FAIL  draft: no autoMerge step planned" and "FAIL  createPrGh --draft passes --draft to gh pr create".
+// red-proof 2026-11-18 (#2940): with ship-direct.mjs as it was, a reused open PR was left ready with auto-merge on; the
+// selftest printed "FAIL  draft: reused PR gets auto-merge off and draft", "FAIL  draft: prints 'draft: auto-merge off
+// (REVIEW-NEEDED)'" and "FAIL  draft: a failed auto-merge disable fails the ship".
 
 import { readFileSync } from "node:fs";
 
@@ -56,6 +59,36 @@ function fakes(over = {}) {
   const d = fakes({ findPr: () => (d.calls.push("findPr"), { number: 9, url: "https://x/pull/9" }) });
   const r = await lib.shipDirect(d, { slug: "x", draft: true });
   check(r.code === 0 && r.pr.number === 9 && !d.calls.includes("autoMerge"), "draft: open PR reused, no auto-merge");
+}
+// 4b. --draft on an open PR an earlier ship left ready with auto-merge queued (#2940, PR #2938): auto-merge is turned
+// off, the PR goes back to draft, and the summary says so. A refused disable fails the ship instead of passing it.
+{
+  const d = fakes({
+    findPr: () => (d.calls.push("findPr"), { number: 9, url: "https://x/pull/9" }),
+    disableAutoMerge: (n) => (d.calls.push(`disableAutoMerge:${n}`), { status: 0, stdout: "" }),
+    convertToDraft: (n) => (d.calls.push(`convertToDraft:${n}`), { status: 0, stdout: "" }),
+  });
+  const lines = [];
+  d.log = (l) => lines.push(l);
+  const r = await lib.shipDirect(d, { slug: "x", draft: true });
+  check(r.code === 0 && d.calls.includes("disableAutoMerge:9") && d.calls.includes("convertToDraft:9"), `draft: reused PR gets auto-merge off and draft, calls were ${d.calls.join(",")}`);
+  check(!d.calls.includes("autoMerge"), "draft: reused PR is never auto-merged");
+  check(lines.includes("draft: auto-merge off (REVIEW-NEEDED)"), "draft: prints 'draft: auto-merge off (REVIEW-NEEDED)'");
+  const f = fakes({ findPr: () => ({ number: 9, url: "https://x/pull/9" }), disableAutoMerge: () => ({ status: 1, stderr: "boom" }) });
+  const rf = await lib.shipDirect(f, { slug: "x", draft: true });
+  check(rf.code === 1, "draft: a failed auto-merge disable fails the ship");
+  const ok = fakes({ findPr: () => ({ number: 9, url: "https://x/pull/9" }), disableAutoMerge: () => ({ status: 1, stderr: "auto-merge is not enabled" }) });
+  check((await lib.shipDirect(ok, { slug: "x", draft: true })).code === 0, "draft: 'not enabled' on disable is fine");
+  const fresh = fakes();
+  fresh.disableAutoMerge = () => (fresh.calls.push("disableAutoMerge"), { status: 0 });
+  await lib.shipDirect(fresh, { slug: "x", draft: true });
+  check(!fresh.calls.includes("disableAutoMerge"), "draft: a freshly created draft needs no disable call");
+}
+// 4c. Wiring: the CLI passes real disable / convert-to-draft calls.
+{
+  const cli = readFileSync(new URL("../cli.mjs", import.meta.url), "utf8");
+  const cmd = cli.slice(cli.indexOf("async function shipDirectCmd"), cli.indexOf("async function wtShipCmd"));
+  check(/--disable-auto/.test(cmd) && /"ready", String\(n\), "--undo"/.test(cmd), "cli: shipDirectCmd wires --disable-auto and gh pr ready --undo");
 }
 // 5. createPrGh passes --draft to `gh pr create` only when asked.
 {

@@ -42,7 +42,7 @@ class LF_TownBoardConfig
 	[Attribute("#LF-TownBoard_Title", UIWidgets.EditBox, "Header printed on the board (key or text)")]
 	string m_sTitle;
 
-	[Attribute("", UIWidgets.Object, "Cards, in board order: left to right, then the next row. The board shows the first 8")]
+	[Attribute("", UIWidgets.Object, "Cards, in board order: left to right, then the next row. The board shows the first 12")]
 	ref array<ref LF_TownBoardCard> m_aCards;
 
 	//------------------------------------------------------------------------------------------------
@@ -181,10 +181,13 @@ class LF_TownBoard
 	static const string FEATURE = "TownBoard";
 	static const ResourceName CONFIG_PATH = "{7C1E5A93D24B6F08}Configs/TownBoard/LF_TownBoard.conf";
 
-	//! The board has room for two rows of four cards (LF_TownBoardFace).
-	static const int MAX_CARDS = 8;	// lf-fixed: the face's slots and the prefab's card contexts
+	//! The board has room for three rows of four cards (LF_TownBoardFace).
+	static const int MAX_CARDS = 12;	// lf-fixed: the face's slots and the prefab's card contexts
 	//! A place this close to the board is "right here" rather than a distance and a direction.
 	static const float NEAR_METERS = 15;	// lf-fixed: reads better than "10 m north" across a square
+
+	//! A card's place id that means "the nearest place of the card's kind" (FindPlace).
+	static const string PLACE_NEAREST = "*";
 
 	static const string KEY_TITLE = "#LF-TownBoard_Title";
 	static const string KEY_WHERE = "#LF-TownBoard_Where";
@@ -195,12 +198,14 @@ class LF_TownBoard
 
 	protected static ref LF_TownBoardConfig s_Config;
 	protected static bool s_bLoadAttempted;
+	protected static int s_iDropWarnings;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_Config = null;
 		s_bLoadAttempted = false;
+		s_iDropWarnings = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -232,6 +237,7 @@ class LF_TownBoard
 			if (s_Config)
 			{
 				s_Config.ApplyPackOverlays();
+				WarnIfDropped(s_Config);
 				LF_Debug.Info(FEATURE, string.Format("%1 card(s) on the board", CardCount()));
 			}
 		}
@@ -245,6 +251,25 @@ class LF_TownBoard
 	{
 		s_Config = config;
 		s_bLoadAttempted = config != null;
+		WarnIfDropped(config);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One warning per config when it lists more cards than the board has slots: the rest are dropped.
+	protected static void WarnIfDropped(LF_TownBoardConfig config)
+	{
+		if (!config || !config.m_aCards || config.m_aCards.Count() <= MAX_CARDS)
+			return;
+
+		s_iDropWarnings++;
+		LF_Debug.Warn(FEATURE, string.Format("%1 cards configured but the board has %2 slots: the last %3 are not shown", config.m_aCards.Count(), MAX_CARDS, config.m_aCards.Count() - MAX_CARDS));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: how many times a config with more cards than slots was warned about.
+	static int DropWarnCount()
+	{
+		return s_iDropWarnings;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -310,8 +335,10 @@ class LF_TownBoard
 
 	//------------------------------------------------------------------------------------------------
 	//! Where the card's place stands. False (origin untouched) when the card has no place or the
-	//! place is not on this map.
-	static bool FindPlace(LF_TownBoardCard card, out vector origin)
+	//! place is not on this map. A card whose place id is PLACE_NEAREST points at the place of its
+	//! kind nearest `from` (the board), so a card can name a kind whose members come and go, such as
+	//! the plots for sale; with no `from` it takes the first.
+	static bool FindPlace(LF_TownBoardCard card, out vector origin, vector from = vector.Zero)
 	{
 		if (!card || card.m_sPlaceId.IsEmpty())
 			return false;
@@ -320,7 +347,37 @@ class LF_TownBoard
 		if (kind.IsEmpty())
 			kind = LF_SignComponent.PLACE_KIND;
 
+		if (card.m_sPlaceId == PLACE_NEAREST)
+			return NearestOfKind(kind, from, origin);
+
 		return LF_Places.FindOrigin(kind, card.m_sPlaceId, origin);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The live place of `kind` nearest `from` (ground distance); the first one when `from` is zero.
+	//! False (origin untouched) when none is placed.
+	static bool NearestOfKind(string kind, vector from, out vector origin)
+	{
+		array<IEntity> places = {};
+		LF_Places.FindAll(kind, places);
+		bool found;
+		float best;
+		foreach (IEntity place : places)
+		{
+			vector here = place.GetOrigin();
+			float distance;
+			if (from != vector.Zero)
+				distance = vector.DistanceXZ(from, here);
+
+			if (!found || distance < best)
+			{
+				found = true;
+				best = distance;
+				origin = here;
+			}
+		}
+
+		return found;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -378,7 +435,7 @@ class LF_TownBoard
 	static string WhereText(LF_TownBoardCard card, vector from)
 	{
 		vector place;
-		if (!FindPlace(card, place))
+		if (!FindPlace(card, place, from))
 			return Text(KEY_NO_PLACE);
 
 		string name = PlaceName(card);

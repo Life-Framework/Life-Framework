@@ -183,7 +183,200 @@ class LF_MedicConfig
 			LF_Debug.Error(LF_Downed.FEATURE, string.Format("medic config does not resolve, using defaults: %1", CONFIG_PATH));
 			s_Config = LF_MedicConfig.CreateDefault();
 		}
+		else
+		{
+			s_Config.ApplyLayers();
+		}
 
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges each pack overlay (the mission header's m_aLF_ConfigOverlays, in load order) over this
+	//! instance, which holds the core `.conf`: the rank ladder by rank id (add, replace, patch, remove;
+	//! docs/config/override-model.md). The core file ships no rung, so a pack's rungs are the whole ladder
+	//! and the built-in three stand only when no rung is given. No owner `config.json` section.
+	void ApplyLayers()
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_MedicConfig, "medic", resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyPackContainer(resource.GetResource().ToBaseContainer(), names[i], claims);
+			LF_Debug.Info(LF_MedicRanks.FEATURE, string.Format("medic: pack overlay %1 changed %2 ranks", names[i], changed));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one pack overlay's `m_aRanks` by rank id. \return Ranks changed.
+	//! \param[in] root The overlay's root container.
+	//! \param[in] source The overlay file, for log lines.
+	int ApplyPackContainer(notnull BaseContainer root, string source, LF_ConfigClaims claims = null)
+	{
+		return LF_ConfigOverlay.ApplyContainerList(new LF_MedicRankList(this), root, "m_aRanks", source, claims);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the cached instance; the next Get loads the `.conf` again (world end, tests).
+	static void Reload()
+	{
+		s_Config = null;
+		s_bLoadAttempted = false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The medic ladder for the shared merge (LF_ConfigOverlay), keyed by rank id. A saved rank is the rung's
+//! index, so a remove is refused on any rung that is not the last. A new or replaced rung needs an id and a
+//! title key, a pay of -1 (the jobs config rate) or more, and no negative promotion time.
+class LF_MedicRankList : LF_ConfigList
+{
+	protected LF_MedicConfig m_Config;
+
+	void LF_MedicRankList(LF_MedicConfig config)
+	{
+		m_Config = config;
+		if (!m_Config.m_aRanks)
+			m_Config.m_aRanks = new array<ref LF_MedicRank>();
+	}
+
+	override string GetName()
+	{
+		return "medic.ranks";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aRanks.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aRanks[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_MedicRank.Cast(record).m_sId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sId", id);
+		return id;
+	}
+
+	override string IdHint()
+	{
+		return "a rank id";
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_MedicRank rank = LF_MedicRank.Cast(record);
+		if (index < m_Config.m_aRanks.Count())
+			m_Config.m_aRanks.Set(index, rank);
+		else
+			m_Config.m_aRanks.Insert(rank);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aRanks.RemoveOrdered(index);
+	}
+
+	override string RemoveRefusal(int index)
+	{
+		if (index != m_Config.m_aRanks.Count() - 1)
+			return "a saved rank is the rung's index, so only the last rung can be removed";
+
+		return string.Empty;
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		LF_MedicRank rank = LF_MedicRank.Cast(record);
+		if (rank.m_sId.IsEmpty())
+			return "the entry has no rank id";
+		if (rank.m_sTitleKey.IsEmpty())
+			return "a rank needs a title key";
+		if (rank.m_fPayPerSecond < -1)
+			return string.Format("pay %1 is below -1", rank.m_fPayPerSecond);
+		if (rank.m_iDutySecondsForNext < 0)
+			return string.Format("duty seconds %1 is below 0", rank.m_iDutySecondsForNext);
+
+		return string.Empty;
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_MedicRank rank = LF_MedicRank.Cast(record);
+		int changed;
+		string titleKey;
+		if (container.IsVariableSetDirectly("m_sTitleKey") && container.Get("m_sTitleKey", titleKey) && !titleKey.IsEmpty())
+		{
+			rank.m_sTitleKey = titleKey;
+			changed++;
+		}
+
+		if (container.IsVariableSetDirectly("m_fPayPerSecond"))
+		{
+			float pay;
+			if (container.Get("m_fPayPerSecond", pay) && pay >= -1)
+			{
+				rank.m_fPayPerSecond = pay;
+				changed++;
+			}
+			else
+			{
+				LF_Debug.Error(LF_MedicRanks.FEATURE, string.Format("medic.ranks %1: pack pay is below -1; keeping %2", rank.m_sId, rank.m_fPayPerSecond));
+			}
+		}
+
+		if (container.IsVariableSetDirectly("m_iDutySecondsForNext"))
+		{
+			int seconds;
+			if (container.Get("m_iDutySecondsForNext", seconds) && seconds >= 0)
+			{
+				rank.m_iDutySecondsForNext = seconds;
+				changed++;
+			}
+			else
+			{
+				LF_Debug.Error(LF_MedicRanks.FEATURE, string.Format("medic.ranks %1: pack duty seconds is below 0; keeping %2", rank.m_sId, rank.m_iDutySecondsForNext));
+			}
+		}
+
+		// The kit is replaced whole: a pack that sets m_aKit names every prefab the rung adds.
+		if (container.IsVariableSetDirectly("m_aKit"))
+		{
+			array<ResourceName> kit = {};
+			if (container.Get("m_aKit", kit))
+			{
+				rank.m_aKit = new array<ResourceName>();
+				rank.m_aKit.Copy(kit);
+				changed++;
+			}
+		}
+
+		return changed;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_MedicConfig's statics (LF_StaticReset finds it by reflection).
+class LF_MedicConfig_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_MedicConfig";
+	}
+
+	override void Apply()
+	{
+		LF_MedicConfig.Reload();
 	}
 }
