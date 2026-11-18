@@ -1,11 +1,13 @@
 // Proves the test-shard split and merge (tools/lib/test-shards.mjs) on fixtures. Does not boot the game.
 // inputs: tools/lib/test-cache.mjs, tools/lib/test-shards.mjs, tools/validation/test-shards-selftest.mjs, tools/lib/test-world.mjs, addons/**
+// red-proof 2026-11-18 (#2789, a real sharded run: "shard 1: ran 530 of 529 test(s) (a name matched twice or not at all)" from the runner's own suite/no-leftover-fixtures check): with the strict count check back, "a boot's suite check is not a name matched twice" fails; with the pack job removed from runPasses, "the pack leg is one more job" fails.
 // red-proof 2026-11-15 (#1703 gate "shard 1: no SUMMARY (exit 0); its 568 test(s) have no verdict", a re-queued gate answered by the pass cache): with parseShardOutput not reading the CACHED line "a CACHED pass line is the slice's verdict (summary=false 0/0)".
 import { rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as s from "../lib/test-shards.mjs";
 import * as tc from "../lib/test-cache.mjs";
+import * as tw from "../lib/test-world.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
@@ -182,6 +184,54 @@ check(m.code === 1, "a failed test outranks a missing verdict");
   const m = s.mergeShards([{ index: 1, expected: 568, code: 0, parsed: cp, seconds: 1 }]);
   check(m.code === 0 && m.passed === 568 && !m.notes.length, `a cached slice merges as a pass (code ${m.code}, ${m.notes.join("; ")})`);
   check(!s.parseShardOutput(tc.reuseLine({ at: "t", passed: 1, tier: "all", key: "k" })).summary, "a cached line with no counts is no verdict");
+  const cm = s.mergeShards([{ index: 1, expected: 567, code: 0, parsed: cp, seconds: 1 }]);
+  check(cm.code === 0 && cm.suiteChecks === 1, `a cached slice carries its past run's suite check (${cm.notes.join("; ")})`);
+}
+
+// --- #2789: the pack leg rides the shards; a mixed core/pack suite is counted once
+{
+  const pack = tw.readPackTests(root);
+  const packSet = new Set(pack.map((x) => x.cls));
+  check(pack.length > 5, `the pack tests parse from their [LF_TestInfo(pack: true)] (${pack.length})`);
+  check(!real.some((x) => packSet.has(x.cls)), "no pack test is in the core registry a shard plan splits");
+  const pl = tw.packLeg({ tier: "all", pack });
+  check(pl && pl.classes.length === pack.filter((x) => x.tier !== "PERF").length && pl.classes.every((c) => packSet.has(c)), "the pack leg of a tier-all run is exactly the pack tests");
+  check(tw.packLeg({ tier: "all", pack, coreOnly: true }) === null, "a core-only pass has no pack leg");
+  for (const n of [1, 2, 3, 4]) {
+    const slices = [...s.planShards(real, n, {}), pl.classes];
+    const flat = slices.flat();
+    check(flat.length === real.length + pl.classes.length && new Set(flat).size === flat.length, `${n} core slice(s) + the pack leg run every test exactly once (${flat.length})`);
+  }
+  // A fake run over a mixed fixture: each boot prints one more test (the suite check), the pack job runs on the pack world.
+  const core = [];
+  for (let i = 0; i < 10; i++) core.push({ cls: `LF_Test_C${i}`, tier: i % 2 ? "WORLD" : "LOGIC" });
+  const fixturePack = [{ cls: "LF_Test_EveronA", tier: "WORLD" }, { cls: "LF_Test_EveronB", tier: "PERSISTENCE" }];
+  const world = "{PACK}Missions/pack.conf";
+  const plan = s.planShards(core, 2, {});
+  const pass = { name: "normal", classes: plan, pack: { world, classes: fixturePack.map((x) => x.cls) } };
+  const seen = [];
+  const [res] = await s.runPasses([pass], async (job) => {
+    seen.push(job);
+    const n = job.classes.length + 1; // + suite/no-leftover-fixtures
+    return { code: 0, text: out("only", n, 0, n), seconds: 1 };
+  });
+  check(seen.length === 3 && seen.filter((j) => j.pack).length === 1, `the pack leg is one more job beside the 2 slices (${seen.length} jobs)`);
+  const pj = seen.find((j) => j.pack);
+  check(pj && pj.world === world && pj.classes.join() === "LF_Test_EveronA,LF_Test_EveronB" && pj.count === 3 && pj.index === 3, "the pack job carries the pack world and exactly the pack classes");
+  const ran = seen.flatMap((j) => j.classes);
+  check(ran.length === 12 && new Set(ran).size === 12, "slices and pack job together run each of the 12 tests once");
+  check(res.merged.code === 0 && res.merged.notes.length === 0, `a boot's suite check is not a name matched twice (${res.merged.notes.join("; ")})`);
+  check(res.merged.suiteChecks === 3 && res.merged.total === 15, `the merge counts the 3 suite checks (total ${res.merged.total})`);
+  check(s.mergedLines(res.merged).some((l) => /suite check\(s\) counted/.test(l)), "the merged SUMMARY line says the suite checks are in the total");
+  // A pack job that ran nothing, and a slice that ran a test twice, still fail the pass.
+  const bad = (job) => (job.pack ? { code: 0, text: out("only", 1, 0, 1), seconds: 1 } : { code: 0, text: out("only", job.classes.length + 3, 0, job.classes.length + 3), seconds: 1 });
+  const [r2] = await s.runPasses([pass], async (job) => bad(job));
+  check(r2.merged.code === 1 && r2.merged.notes.some((n) => /pack leg\): ran 1 of 2/.test(n)), `a pack job that ran 1 of 2 tests is named (${r2.merged.notes.join("; ")})`);
+  check(r2.merged.notes.some((n) => /^shard 1: ran \d+ of \d+/.test(n)), "a slice that ran 3 more tests than it was given is a duplicate, not a suite check");
+  // Slack is one per boot: two boots (a pinned test leg) may add two, not three.
+  const twoBoots = [out("only", 4, 0, 4), out("only", 3, 0, 3)].join("\n");
+  check(s.mergeShards([mk(1, 5, 0, twoBoots, 5)]).code === 0, "a slice of two boots may add two suite checks");
+  check(s.mergeShards([mk(1, 4, 0, twoBoots, 5)]).code === 1, "a slice of two boots may not add three");
 }
 
 if (failures.length) {
