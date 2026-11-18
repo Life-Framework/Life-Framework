@@ -312,6 +312,7 @@ export function planFit(opts, ctx = {}) {
 
   const slot = template.slots.find((s) => s.id === slotId);
   if (!slot) return (errors.push(`the ${template.kind} template has no slot '${slotId}'`), fail());
+  if (slot.host === "outposts") return (errors.push(`slot ${slotId} stands in other places' buildings (an outposts slot): run tools\\cli town drops ${place} ${slotId}`), fail());
   const entry = mapping.slots?.[slotId];
   if (!entry) return (errors.push(`slot ${slotId} is not in the mapping`), fail());
   if (entry.none) return (errors.push(`slot ${slotId} is mapped to none${entry.reason ? ` (${entry.reason})` : ""}: nothing to fit`), fail());

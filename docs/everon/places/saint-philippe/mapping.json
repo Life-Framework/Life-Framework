@@ -140,6 +140,20 @@
         "NewspaperBooth_E_01_redyellow (kiosk), 20.5 m2, 67.3 m from the scout centre, interior yes",
         "kiosk on the west side of the square (4425, 10754)"
       ]
+    },
+    "parcel-drops": {
+      "drops": [
+        { "place": "saint-philippe-districts", "building": "b34" },
+        { "place": "saint-philippe-dock", "building": "b05", "turn": 3 },
+        { "place": "saint-philippe-dock", "building": "b14" },
+        { "place": "saint-philippe-dock", "building": "b24" },
+        { "place": "saint-philippe-dock", "building": "b35" }
+      ],
+      "why": [
+        "the run pays only 300 m or more from where it starts (runMinDistance, never lowered), and no building of this survey is that far from the depot kiosk b21 (the survey radius is 170 m)",
+        "so the drops stand in the east districts (b34 wooden house, 325 m) and at the dock (b05 metal shed 318 m, b14 cabin 393 m, b24 garage 443 m, b35 barracks 479 m), one mailbox on each building's entrance wall; b51, the one other building of the districts survey past 300 m, stands only 302 m out and was left out",
+        "`tools\\cli town drops saint-philippe parcel-drops` seats them; the entities are the drop-off site (LF_JobSiteComponent DROP) the jobs system finds by place, not markers"
+      ]
     }
   }
 }

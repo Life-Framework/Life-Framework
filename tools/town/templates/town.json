@@ -78,6 +78,11 @@
       "needs": { "interior": "optional", "minArea": 8, "prefer": "near", "maxDistance": 100, "types": ["kiosk", "shop"] },
       "plot": { "minWidth": 6, "minDepth": 6, "prefabs": [{ "type": "kiosk", "stem": "NewspaperBooth_E_01_redwhite" }] },
       "places": ["ParcelDepot"]
+    },
+    {
+      "id": "parcel-drops", "required": false, "kit": "parcel-drops", "host": "outposts", "poi": "none",
+      "needs": { "interior": "optional" },
+      "places": []
     }
   ]
 }

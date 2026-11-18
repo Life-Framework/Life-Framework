@@ -71,20 +71,24 @@ shot ui island_02_rules
 input MenuBack
 wait 1000
 
-step 3 Sign up for courier work pending #2325
-stand Fit_saint_philippe_parcel_Roadmap_Job_Depot
+step 3 Sign up for courier work
+stand Fit_saint_philippe_parcel_job_depot
 wait 1500
-use LF_JobSignUpAction Fit_saint_philippe_parcel_Roadmap_Job_Depot
+use LF_JobSignUpAction Fit_saint_philippe_parcel_job_depot
 wait 1000
 expect job PARCEL
 shot ui island_03_signed_up
 
-step 4 Deliver one parcel and get paid pending #2325
-use LF_JobStartRunAction Fit_saint_philippe_parcel_Roadmap_Job_Depot
+# The drops stand 300 m or more from the depot (runMinDistance), so the run is also timed: it pays only after
+# distance / 10 m/s * 0.6 s on the clock (318 m = 19 s). The teleport is quick, so the flow waits the time out.
+# Drop points are Fit_<place>_parcel_drops_drop_<building> in Place_saint-philippe_parcel-drops.layer (the dock
+# metal shed b05 is 318 m from the depot).
+step 4 Deliver one parcel and get paid
+use LF_JobStartRunAction Fit_saint_philippe_parcel_job_depot
 wait 1000
-stand Fit_saint_philippe_parcel_Roadmap_Job_Drop
-wait 1500
-use LF_JobDropoffAction Fit_saint_philippe_parcel_Roadmap_Job_Drop
+stand Fit_saint_philippe_dock_parcel_drops_drop_b05
+wait 24000
+use LF_JobDropoffAction Fit_saint_philippe_dock_parcel_drops_drop_b05
 wait 1000
 shot ui island_04_paid
 expect cash up
